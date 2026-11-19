@@ -1,0 +1,44 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence_sha256": {
+   "artifacts/compute/mi210-row-filings-20261104/inf22-m4-aa-np4-r8-20261103/end.txt": "d2faf796e66de35aa4e6c222680352ce8ca93de5ec7a3873d275908040c9d804",
+   "artifacts/compute/mi210-row-filings-20261104/inf22-m4-aa-np4-r8-20261103/manifest.json": "4a34b8f61b918d0eb0ba66af08336e0ce0b79dd922f1752654ddb9ff46d5cf54",
+   "artifacts/compute/mi210-row-filings-20261104/inf22-m4-aa-np4-r8-20261103/native-result.json": "b88d043a60dc72d821d9811c47bc8d71bfb907f6f94d76d257f076a2f880332e"
+  },
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Descriptive capture completion only: unique row-time native result, np4/65536 fresh A/A pair reports A1=136.7282990891, A2=131.2161727436 tok/s, A2/A1=0.9596855488. Higher throughput is better; decision=null and gate_authorized=false. This filing does not impose an acceptance floor or authorize folding/promotion.",
+  "tick_text": "",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:10:03+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-03T18:11:19Z reason=complete",
+ "filed_at": "2026-11-04T07:10:03+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "mi210-serving-program.md:M4-GPU-AA-NP4",
+ "id": "inf22-m4-aa-np4-r8-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/inf22-m4-aa-np4-r8-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/captures/result.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "codex-inf22",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Descriptive capture completion only: unique row-time native result, np4/65536 fresh A/A pair reports A1=136.7282990891, A2=131.2161727436 tok/s, A2/A1=0.9596855488. Higher throughput is better; decision=null and gate_authorized=false. This filing does not impose an acceptance floor or authorize folding/promotion.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/captures/result.json",
+ "root_cause_family": null,
+ "row": "inf22-m4-aa-np4-r8-20261103",
+ "row_verdict": "pass",
+ "rule": "descriptive same-source A/A np4/65536: report throughput A2/A1; no acceptance floor, no decision-grade or promotion claim",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "b88d043a60dc72d821d9811c47bc8d71bfb907f6f94d76d257f076a2f880332e",
+  "result": "pass",
+  "status": "filed"
+ }
+}

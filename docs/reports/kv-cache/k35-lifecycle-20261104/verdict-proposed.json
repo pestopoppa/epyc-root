@@ -1,0 +1,6 @@
+{
+  "verdict": "pass",
+  "rationale": "Lifecycle-only two-arm rule met: dedicated spec-type none PID4020185 and fresh native draft-mtp PID4023919 each complete16 tokens. No-draft argv lacks draft model/device/layer/length flags and request has no speculative override; every sampling phase succeeds, captured PID/birth health/listener checks are enforced by bound runner, and each cleanup proves dead rc0. First after-cleanup21:25:44.607220Z precedes second before-launch21:25:46.488185Z. No throughput, quality, residency or global runner-coverage claim. Parent KVU-16h-runner cannot be ticked: it requires all named runners guarded and separately launched.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency",
+  "provenance_caveat": "Original native_job.py receipt digest predates a native-only blocker-filter edit; exact executed-source warrant is not established. Retain upstream scoped engineering lifecycle conclusion only."
+}

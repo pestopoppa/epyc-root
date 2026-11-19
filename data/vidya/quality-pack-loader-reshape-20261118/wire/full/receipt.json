@@ -1,0 +1,181 @@
+{
+  "excluded": "Empty transient .lock files",
+  "files": {
+    "RESULT.json": {
+      "archive": "RESULT.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "b5883f01e41bf101a8801b6c821a48ffdd7d6cb613934b10f01c3e377ca48cda"
+    },
+    "external:filing-done/verdict.json": {
+      "archive": "owner-verdict.json",
+      "encoding": "raw",
+      "sha256": "3fd7aa49f46ffa57d1869dc7fd8897a412673c472ebd08a95bb621c6ad0f02ae",
+      "source": "/mnt/raid0/llm/tmp/compute-flags/filing-done/handoff-vidya-quality-pack-loader-diag-wire-20261118.verdict.json"
+    },
+    "native/banked-capture.json": {
+      "archive": "native/banked-capture.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "4d039882c5fd96f659a29de819bfd09222530188df13df047a9e9cb2f9e82deb"
+    },
+    "native/banked-capture.sha256": {
+      "archive": "native/banked-capture.sha256",
+      "encoding": "raw",
+      "sha256": "0484242defbacc113768ab7b5804f9fcc8a38bf4e86dfa4869e7afaeaef73907"
+    },
+    "native/candidate-diagnostic-capture.json": {
+      "archive": "native/candidate-diagnostic-capture.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "dc0c35b9ea0b963364a3c16d5fdd032b7cd8bb716e450b7243bda9c79092c1aa"
+    },
+    "native/candidate-diagnostic-capture.sha256": {
+      "archive": "native/candidate-diagnostic-capture.sha256",
+      "encoding": "raw",
+      "sha256": "e9cb2b227993c0e42eebdaa76000dd943454152a8d7abbe38eb2edb5706a085c"
+    },
+    "native/candidate/cleanup.json": {
+      "archive": "native/candidate/cleanup.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "2658047746c4e38a360fb5e6636829020a125f88cfbf19318fbf040453e46342"
+    },
+    "native/candidate/qwen4exp-loader-cpu-json.custody.json": {
+      "archive": "native/candidate/qwen4exp-loader-cpu-json.custody.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "8d9fe28720176b3ded8aa77a463bf8b1cef9d899b6316fd55d6c4cf71891c8e0"
+    },
+    "native/candidate/qwen4exp-loader-cpu-json.request.json": {
+      "archive": "native/candidate/qwen4exp-loader-cpu-json.request.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee"
+    },
+    "native/candidate/qwen4exp-loader-cpu-json.response.json": {
+      "archive": "native/candidate/qwen4exp-loader-cpu-json.response.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "0d3836f61b3c599329fbbb056f049f3dd17f74fbbd4569d90e2f458a865d1bf6"
+    },
+    "native/candidate/server.json": {
+      "archive": "native/candidate/server.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "99aa5de6b241845bf9d372e461097769fc610327e56bc14c78fb1924c5e225d2"
+    },
+    "native/candidate/server.log": {
+      "archive": "native/candidate/server.log",
+      "encoding": "raw",
+      "sha256": "c17e9bee53c721b8f486711f04ad56c0d35efbff0dfd7ddce2ba72fcc6b8882a"
+    },
+    "native/production/cleanup.json": {
+      "archive": "native/production/cleanup.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "c12d0abaa6c7353edd9c18d0f86167609301a5e7ba4c3ca308a99cec037c6009"
+    },
+    "native/production/qwen4exp-loader-cpu-json.custody.json": {
+      "archive": "native/production/qwen4exp-loader-cpu-json.custody.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "71a7f49d731d213a064ab0e4b34f3a1fce6564ea2ca4f4238fe10a3d1c367d2f"
+    },
+    "native/production/qwen4exp-loader-cpu-json.request.json": {
+      "archive": "native/production/qwen4exp-loader-cpu-json.request.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee"
+    },
+    "native/production/qwen4exp-loader-cpu-json.response.json": {
+      "archive": "native/production/qwen4exp-loader-cpu-json.response.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "c389d3577251b031c7eaea48a889d50feb178774f2f13d90c10ba2ffaa79c56a"
+    },
+    "native/production/server.json": {
+      "archive": "native/production/server.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "305b3a9927d19fe1ec0c1d923914328b6f685470fe82d8ed255b61825d300308"
+    },
+    "native/production/server.log": {
+      "archive": "native/production/server.log",
+      "encoding": "raw",
+      "sha256": "2da54c1a3c2b4e4d39ca5ab8d993f6bcc7afc6ed0ba145f31474ec5378267d65"
+    },
+    "native/scheduler.grant": {
+      "archive": "native/scheduler.grant",
+      "encoding": "raw",
+      "sha256": "f94d98179003716255f1cd2dd7eacce706fb6ff8be415e1c0fd84bca6fe6d7d5"
+    },
+    "planning-context/alarms.yaml": {
+      "archive": "planning-context/alarms.yaml",
+      "encoding": "raw",
+      "sha256": "f4b1d90100463f6100cf25c88895cd89f123f5606d9923cd78514593ae7c5ecd"
+    },
+    "planning-context/exact.known-good.json": {
+      "archive": "planning-context/exact.known-good.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "ab21c25e996210fc848ade66ec57ae89e823551aac600162dac9bc4178595a0a"
+    },
+    "planning-context/foreign_binary.known-good.json": {
+      "archive": "planning-context/foreign_binary.known-good.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "39d9085ed46f6c31e723f89c936120044f3d7b9f8ce2b5eb4a9869da10db9dc5"
+    },
+    "planning-context/foreign_model.known-good.json": {
+      "archive": "planning-context/foreign_model.known-good.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "39d9085ed46f6c31e723f89c936120044f3d7b9f8ce2b5eb4a9869da10db9dc5"
+    },
+    "planning-context/foreign_recipe.known-good.json": {
+      "archive": "planning-context/foreign_recipe.known-good.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "39d9085ed46f6c31e723f89c936120044f3d7b9f8ce2b5eb4a9869da10db9dc5"
+    },
+    "planning-context/foreign_run.known-good.json": {
+      "archive": "planning-context/foreign_run.known-good.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "39d9085ed46f6c31e723f89c936120044f3d7b9f8ce2b5eb4a9869da10db9dc5"
+    },
+    "planning-context/foreign_source.known-good.json": {
+      "archive": "planning-context/foreign_source.known-good.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "39d9085ed46f6c31e723f89c936120044f3d7b9f8ce2b5eb4a9869da10db9dc5"
+    },
+    "planning-context/index.yaml": {
+      "archive": "planning-context/index.yaml",
+      "encoding": "raw",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "planning-context/ledger.jsonl": {
+      "archive": "planning-context/ledger.jsonl.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "886a02ed6bd0d78fb4e651384d35c65fb2896f5feeb38feb7ebd92ffe36900ef"
+    },
+    "planning-context/ledger.jsonl.sync.json": {
+      "archive": "planning-context/ledger.jsonl.sync.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "459d5c8244e40f8ce6d56e587d3b9d7b30a911e85c0d3093238a3d4e59a70346"
+    },
+    "planning-context/ordinary_cpu.known-good.json": {
+      "archive": "planning-context/ordinary_cpu.known-good.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "39d9085ed46f6c31e723f89c936120044f3d7b9f8ce2b5eb4a9869da10db9dc5"
+    },
+    "planning-context/ordinary_hip.known-good.json": {
+      "archive": "planning-context/ordinary_hip.known-good.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "39d9085ed46f6c31e723f89c936120044f3d7b9f8ce2b5eb4a9869da10db9dc5"
+    },
+    "planning-context/reads.jsonl": {
+      "archive": "planning-context/reads.jsonl.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "bd6560dfb5b9980f1904d67801de474fb1726c95e5496a36d3a2035424498faf"
+    },
+    "planning-context/receipt.json": {
+      "archive": "planning-context/receipt.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "caaa65adb9b63f3cbd6b2416546b86374505fba13ba445b865ba44431c8610d7"
+    },
+    "qwen4exp_cpu_loader_diagnostic.json": {
+      "archive": "qwen4exp_cpu_loader_diagnostic.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "021ea5b754aec1ba7016b49a139c9e5b241b20f5e1fbed96a89245955d4e54d7"
+    }
+  },
+  "native_planning_receipt": "planning-context/receipt.json.original-bytes.json",
+  "owner_verdict": "owner-verdict.json",
+  "row": "handoff-vidya-quality-pack-loader-diag-wire-20261118",
+  "schema": "epyc.evidence_archive.v1",
+  "source_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-diag-wire-20261118/out"
+}

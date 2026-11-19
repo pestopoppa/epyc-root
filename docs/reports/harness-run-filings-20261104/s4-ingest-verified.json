@@ -1,0 +1,66 @@
+{
+  "schema": "epyc.s4-omega-filing-review.v1",
+  "outcome": "FUTILITY",
+  "rc": 0,
+  "denominator": 16,
+  "complete_pairs": 1,
+  "incomplete_pairs": 7,
+  "not_run_pairs": 8,
+  "tool_liveness": "NOT_MET",
+  "capture": "s4/capture.json",
+  "input_sha256": {
+    "s4/capture.json": "40101184ece90609122ee573234bea6d3c946b9c5238126c13f81a37da859ae2",
+    "s4/drain.json": "60b2d586782f39c5f9302250487a8c417f692cd89f3f0bc8443982620e946dd4",
+    "s4/linkage.txt": "189968baf59e7686beba01be85ae20813e03fe44d6f5375c069fcfa4629b39bb",
+    "s4/pairs.jsonl": "39064e07a83e1fd433f4545817dd7b1a78a0954ec73b271f3ff5c1122183f27e",
+    "s4/live-0581c5e1f26f491788d4d6174c5e759e.manifest.json": "d7b955c4dd0a3316222596809a9b1bfb4ef807a93468b5a4add170109e84f7a9",
+    "s4/live-199f78a2d596479f9f312f661275dd27.manifest.json": "d53d335de8be54ac5500b2059d2afce2fa93b9f7c819d0e998359d5443ffe21b",
+    "s4/live-2c9bd6826a3a48e59f10cbc1ae5300c9.manifest.json": "3ba4d7c7287708eefaef25723ca5a5be6bb61734663ac730981154504cbf6af5",
+    "s4/live-5e56dc9d05324da696559981351fe217.manifest.json": "88e990e5d5a97078ace73effea0cca04e5e894136e38aa00ac3d048080e40032",
+    "s4/live-83a4c9b73cf9440c81256705eaa47834.manifest.json": "cb5be18b3f123168fd70ad157c2c369f921db9079397b150fed62868ee18d6d1",
+    "s4/live-a1880d0d487c4b8ea2a21bedf8bab9f1.manifest.json": "7f2f88370e224f23efd6ac8b7f81bbb8ff75055fdd7d6a17831f06d5611cd221",
+    "s4/live-eddb44661f4746ca9bf4b382aaf675f5.manifest.json": "c93545cbb9c337596310a7ffe52aa167bf8386f44264b32f034fb5285504284d",
+    "s4/live-0581c5e1f26f491788d4d6174c5e759e.records.jsonl": "a25cc68ef52e362de666c57e298dd88a96376bc0415204c0a89ec4b41deda59d",
+    "s4/live-199f78a2d596479f9f312f661275dd27.records.jsonl": "4910a889b94e12a5ebded56152732bf809639ecf666737e1e7f7116cb644bfb7",
+    "s4/live-2c9bd6826a3a48e59f10cbc1ae5300c9.records.jsonl": "d97445028047396024741d55f82b71c52ce4fe17d671c0b5ab229ae9ea44a9cc",
+    "s4/live-5e56dc9d05324da696559981351fe217.records.jsonl": "4041ff745384cc9fe5116342bb409dd4e8fd6e0dd82085ea075d37077b6649ce",
+    "s4/live-83a4c9b73cf9440c81256705eaa47834.records.jsonl": "16bda356e07b8dd5fdb883c7e15519d429f0d1c30235807f19e853feff9b2177",
+    "s4/live-a1880d0d487c4b8ea2a21bedf8bab9f1.records.jsonl": "9fde57c90514874c790718868e448d9b0917fa561515262336f12ec48a6be694",
+    "s4/live-eddb44661f4746ca9bf4b382aaf675f5.records.jsonl": "0df921afba36c9dcf151662ac650731f725de8fc71a9b0869ad59782cc8013a3"
+  },
+  "adapter_ingest": {
+    "adapter": "adapters/s4_omega_ab.py",
+    "adapter_id": "vidya.adapters.s4_omega_ab/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 150,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "s4"
+    ],
+    "refused": [],
+    "rows_projected": 50,
+    "source": "s4-omega-ab",
+    "units_matched": 7,
+    "units_projected": 7
+  },
+  "ledger": "/mnt/raid0/llm/state/vidya/ledger.jsonl",
+  "ingest_as_of": "2026-11-04T00:00:00Z",
+  "as_of_note": "Explicit as-of is start of UTC day, earlier than actual 07:15Z ingestion on Nov 4; it is a cutoff, not the write timestamp. Do not claim that ingestion occurred at midnight.",
+  "pin_checks": {
+    "packet_sha256_manifest": "sha256sum -c SOURCES.sha256 passed all 20 entries",
+    "check_inputs": "PASS source manifest digest, complete file set and source file digests, kernel binary and template digest (checked Nov 4); suite digest matches capture",
+    "model_edge": "prepublication receipt records edge SHA 07b181eed5d3b8c0317427faea571256f2f6bb3d97265bf6ccc096f5e9dac6a9; no in-grant hash, not independently rehashed here",
+    "linkage": "run linkage.txt PASS CPU ggml under kernel build path; run capture records exclusive CPU mapping",
+    "correlation_and_drain": "capture reports all 10 backend_match=true; drain.json survivors=[]"
+  },
+  "limitations": [
+    "All seven native manifests are refused; adapter validates and retains original per-record status.",
+    "The adapter projected 50 native metrics as 150 frames; no suite or paired claim inferred.",
+    "Native output_tokens_reported absent from all 10 rows; no native output-token count invented.",
+    "Dynamic capture correlations were read from producer-authored capture, not independently recomputed."
+  ],
+  "durable_evidence_recommendation": "File original capture.json, drain.json, linkage.txt, driver/pairs.jsonl, all original native manifests and records plus their .sources snapshots and this digest manifest. Preserve report and preflight/source manifest, and link retained source roots or package them before row scratch reclamation. File as partial/refused; no efficacy or production placement conclusion."
+}

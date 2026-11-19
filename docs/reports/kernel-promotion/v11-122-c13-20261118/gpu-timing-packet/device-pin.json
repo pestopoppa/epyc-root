@@ -1,0 +1,14 @@
+{
+  "node": 4,
+  "gpu_id": 25466,
+  "name": "aldebaran",
+  "pci": {
+    "unique_id": 14324574859193849836,
+    "vendor_id": 4098,
+    "device_id": 29711,
+    "domain": 0,
+    "location_id": 17152,
+    "drm_render_minor": 128,
+    "gfx_target_version": 90010
+  }
+}

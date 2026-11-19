@@ -1,0 +1,166 @@
+{
+  "_archive_original": {
+    "archive": "native-official.tar.gz",
+    "member": "RESULT.original.json",
+    "normalization": "Anonymous model_stat vector labelled as filesystem stat fields. Reconstruct vector in st_dev,st_ino,st_size,st_mtime_ns,st_ctime_ns order.",
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/RESULT.json",
+    "sha256": "15370d41bf8acaa48d9d3bd9ffc8b0e6982ed82ecce91ab46d5950e85c824adb"
+  },
+  "actor_argv": [
+    "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python3",
+    "-B",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/instrument.py",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/attempt-9x3b5skk/lane",
+    "19413"
+  ],
+  "actor_identity": {
+    "pgrp": 500207,
+    "pid": 500207,
+    "starttime": "88840767",
+    "state": "R"
+  },
+  "attempt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/attempt-9x3b5skk",
+  "call_id": "d3373069549c424eb7830db933cae11e",
+  "cleanup": {
+    "actor": true,
+    "port_free": true,
+    "server": true
+  },
+  "cpus": [
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "facets": {
+    "actor_metrics": {
+      "call_id": "d3373069549c424eb7830db933cae11e",
+      "payload_json": "{\"backend_kind\":\"opencode\",\"backend_model\":\"vidya-seat/vidya-seat\",\"call_id\":\"d3373069549c424eb7830db933cae11e\",\"failure_class\":null,\"mechanism_family_bucket\":null,\"metrics_error\":null,\"opencode\":{\"context_first_tokens\":1274,\"context_max_tokens\":1274,\"decoded_includes_reasoning\":true,\"final_finish\":\"stop\",\"final_step_capped\":false,\"metrics_error\":null,\"permission_rejected\":0,\"primary_session_id\":\"ses_e1099d4c2ffe4l5nT90R9oWdy9\",\"reasoning_token_estimator\":null,\"reasoning_tokens_estimated\":false,\"session_ids\":[\"ses_e1099d4c2ffe4l5nT90R9oWdy9\"],\"sessions\":[{\"bundle_paths\":[],\"bundle_tool_calls\":0,\"bundle_tools\":{},\"cache_read_tokens\":0,\"cache_write_tokens\":0,\"compactions\":0,\"context_first_tokens\":1274,\"context_max_tokens\":1274,\"decoded_includes_reasoning\":true,\"decoded_tokens\":1,\"export\":{\"bytes\":3990,\"path\":\"/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/attempt-9x3b5skk/actor-replies/20261118T160338-export-ses_e1099d4c2ffe4l5nT90R9oWdy9.json\",\"sha256\":\"9a19d2ef4536ae6f3dae955cb0844d42c419af855f80dfbc0ea9824551670fa7\"},\"final_finish\":\"stop\",\"final_step_capped\":false,\"output_capped_steps\":0,\"permission_rejected\":0,\"prompt_tokens\":1274,\"reasoning_chars\":0,\"reasoning_estimated_steps\":0,\"reasoning_steps\":[{\"chars\":0,\"message_id\":\"msg_1ef662c87001mwzytUhyS717pD\",\"source\":\"server_usage\",\"step\":1,\"tokens\":0}],\"reasoning_token_estimator\":null,\"reasoning_tokens\":0,\"reasoning_tokens_estimated\":false,\"reasoning_unknown_steps\":0,\"reasoning_usage_steps\":1,\"section_pulls\":{\"attempts\":0,\"bundles\":{},\"error_attempts\":0,\"known_output_attempts\":0,\"truncation_reported\":0,\"truncation_unknown\":0,\"unattributed_attempts\":0,\"unit\":\"utf8_tool_output_bytes_including_formatting\",\"unknown_output_attempts\":0},\"session_id\":\"ses_e1099d4c2ffe4l5nT90R9oWdy9\",\"steps\":1,\"tool_calls\":0,\"tool_output_chars\":0,\"tools\":{}}],\"totals\":{\"bundle_tool_calls\":0,\"cache_read_tokens\":0,\"cache_write_tokens\":0,\"compactions\":0,\"decoded_tokens\":1,\"output_capped_steps\":0,\"prompt_tokens\":1274,\"reasoning_chars\":0,\"reasoning_estimated_steps\":0,\"reasoning_tokens\":0,\"reasoning_unknown_steps\":0,\"reasoning_usage_steps\":1,\"steps\":1,\"tool_calls\":0,\"tool_output_chars\":0}},\"repair_ran\":true,\"returncode\":0,\"role\":\"critic\",\"salvaged\":false,\"schema\":\"epyc.autokernel.actor_call_metrics.v1\",\"schema_valid\":false,\"seat_arm\":\"plain+ctx-variable\",\"seat_env\":{\"OPENCODE_DISABLE_AUTOUPDATE\":\"true\",\"OPENCODE_DISABLE_MODELS_FETCH\":\"true\"},\"timed_out\":false,\"trial_id\":null,\"ts\":\"2026-11-18T16:03:38Z\",\"wall_s\":6.232}",
+      "record_sha256": "5f3fded052a413505dd320d0b3954326be90263892d3009b3e81adba4e68c9c9"
+    },
+    "context_bundle": {
+      "basis": "context offered by the producer",
+      "context_chars": 125,
+      "files": {
+        "sections/01-target.md": {
+          "bytes": 125,
+          "sha256": "9631694d782cc6bce67dd29bc490aa87101a3a7e8b0425e696e1c1b7e961fe20"
+        }
+      },
+      "index_chars": 1361,
+      "inline_equivalent_prompt_chars": 204,
+      "manifest_sha256": "c6963f6b75f33e24d4cc7218680f46278bfa2da333e4006649cfc7b5e452bf17",
+      "mode": "variable",
+      "prompt": {
+        "chars": 1440,
+        "sha256": "a0cfe28e84f0773f7f999a87d5c595daacdbf758fb7e7534c1c9b28c520e6ca2"
+      },
+      "sections": [
+        {
+          "chars": 125,
+          "inline": false,
+          "key": "target"
+        }
+      ]
+    },
+    "server": {
+      "build_info": "b10303-ffc1bac82",
+      "endpoint": "http://127.0.0.1:19413/v1",
+      "n_ctx": 8192,
+      "props_at": "2026-11-18T16:03:32Z",
+      "props_sha256": "b8fe8b16157f57b73e79c45eab895e295b63ad7c8da42be56860f13e82e59350",
+      "served_model": "vidya-seat"
+    }
+  },
+  "grant_cpu_list": "72-95",
+  "ingest": {
+    "adapter": "adapters/autokernel_actor_seat.py",
+    "adapter_id": "vidya.adapters.autokernel_actor_seat/v1",
+    "declined": [],
+    "dry_run": true,
+    "frames_emitted": 3,
+    "missing": [],
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/attempt-9x3b5skk/actor-replies/actor-calls.jsonl"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "ak-actor-seat",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "mode": "official",
+  "pins": {
+    "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "kernel_server_version": 10303,
+    "model": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+    "model_sha256": "c159d1518f16bc42533d9a09f034eb598b670341adc2b08b9a9751614aea71eb",
+    "model_stat_fields": {
+      "st_ctime_ns": 1769627064381075183,
+      "st_dev": 2431,
+      "st_ino": 188775692,
+      "st_mtime_ns": 1765590200108301020,
+      "st_size": 804753824
+    },
+    "opencode_version": "2.2.5",
+    "research_commit": "61b9df9e897430fa9d233b6236d045a4de1e8a09",
+    "root_commit": "d32e0dae3e7d3630446d0e99987ed76da15ea59d"
+  },
+  "row_id": "vb-ak-seat-native-instrument-20261118",
+  "server_argv": [
+    "/mnt/raid0/llm/kernels/production/cpu/llama-server",
+    "--model",
+    "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "19413",
+    "--alias",
+    "vidya-seat",
+    "--ctx-size",
+    "8192",
+    "--parallel",
+    "1",
+    "--threads",
+    "24",
+    "--threads-http",
+    "1",
+    "--device",
+    "none",
+    "--n-gpu-layers",
+    "0",
+    "--no-webui",
+    "--jinja",
+    "--reasoning",
+    "off",
+    "--n-predict",
+    "128"
+  ],
+  "server_identity": {
+    "pgrp": 499804,
+    "pid": 499804,
+    "starttime": "88840686",
+    "state": "R"
+  },
+  "status": "complete"
+}

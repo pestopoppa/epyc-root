@@ -1,0 +1,144 @@
+{
+  "at": "2026-11-18T00:36:17.831105+00:00",
+  "broad_pack_status": "incomplete",
+  "chat_template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "files_sha256": {
+    "SOURCE.sha256": "5b1e21c593f06f566e70d643078d78e4a16bffea41060b991e81dab00b788e1c",
+    "capture.py": "87d0b9c000da19b0bf74bcfccf5dbbbe8c3d253d713996e5ba66b346c56c4a10",
+    "frontdoor-full-receipt.json": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+    "make_plan.py": "e45c3bf5b52597036c535ed263b03361372f829733d1cd0b5d88f6b3be1734d9",
+    "plan.json": "f01254d548176fd25fd5df29daaa29b785f597cf91e445555f5626099594e891",
+    "publication.log": "b7e1e8d073c5e3ec492608df664d59637979a9b5b31fb97eaeebe9fcd5aefd3d",
+    "row-launch.sh": "6f9324234e190642be7a71ed1f7bf41196c6715e8beacf1cd1cee1c66d66d498",
+    "row.spec.json": "4c8c1a833dbe7dc7399d798d4d2b46edd82d5114c09b969366148656d5ea5625",
+    "smoke-PASS.json": "1fb0acbda5644bebbba82487771c00d69040634ac812c72a1161d1969d8d4289",
+    "smoke-launcher.out": "e86f8a5bddf7306ddf4fb3ac4afc26ac48bc534ddc879c8f46d29d8478912626",
+    "smoke-model-plan.original-bytes.json": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+    "smoke-native/banked-capture.json": "3a5af805f8879e2b5565dd7479383be524171e29ebc48f654e2c6a50de7dcb69",
+    "smoke-native/banked-capture.sha256": "0c6aa04ab3b8af2cf42f86fc0a741bcd4e305b66b267bd25738419936242738e",
+    "smoke-native/production/cleanup.json": "237eed4667fccd2c4c6fa72df8e11ea91ebc9e18addc20c52a9839012e00eeaa",
+    "smoke-native/production/native-smoke.request.json": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "smoke-native/production/native-smoke.response.json": "97b692a68117d2c43e0fc2a1d8572fe1bab9e731a7e0ba1eb9d661bf5bab9db3",
+    "smoke-native/production/server.json": "90ab8f37e1e35ee4b9901f83d69e1f6a0d2264b641b63e56a81d43042e94aa54",
+    "smoke-native/production/server.log": "8ad8462bf777bbcff76df9407b1d1a06fbcd7adc88dc60c00af11c9caa363a33",
+    "smoke-native/scheduler.grant": "935a78c1700eab9f65c0fa27600d8cda87f6ee30109438885012685eedf2eab4",
+    "smoke-result.json": "ce774fef9b0872200d09567f90953d31ed69d3f96555b97a6a62491e9c9f6d83",
+    "smoke_predicate.py": "3185cb6d7c70194d84eac231c2e9de0b5113c1410690dd6721c3796a532e8a06",
+    "worker-model-hash-receipt.json": "868818543b1d0e80db4829e26f40d6d7e6e13c09e99b78c4be3f8d9625e3f806"
+  },
+  "full_job_complete": false,
+  "full_request_count_per_arm": 4,
+  "kernel_images": {
+    "candidate": {
+      "binary_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+      "build_manifest_sha256": "f77db04733a8c85d520dd09cef13c2312212a25745dcfed95978cb0e4fab384b",
+      "kernel_commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+      "kernel_tree": "e6dc8715fa3374406b38de48571e8700bded094f"
+    },
+    "production": {
+      "binary_sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+      "build_manifest_sha256": "ccfe57b18bc720e569c2e97e55454a27865d15dd928857d4ba3674874a1608a2",
+      "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "kernel_tree": "a7c564ffbac0a86ce648ef6f11c1748c81a6560d"
+    }
+  },
+  "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "native_capture_task": "VB-V9-8-QUALITY-PACK-WORKER-GENERAL",
+  "original_bytes_envelopes": {
+    "plan.json": "plan.json.original-bytes.json",
+    "smoke-native/banked-capture.json": "smoke-native/banked-capture.json.original-bytes.json",
+    "smoke-result.json": "smoke-result.json.original-bytes.json",
+    "worker-model-hash-receipt.json": "worker-model-hash-receipt.json.original-bytes.json"
+  },
+  "prior_frontdoor_json_mismatch": {
+    "completion_tokens": [
+      8,
+      13
+    ],
+    "content_equal": false,
+    "id": "json",
+    "token_ids_equal": false
+  },
+  "prior_frontdoor_receipt_sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+  "profile": "worker-general-cpu-moe-mtp",
+  "profile_provenance": {
+    "compiled_serving_context_tokens": 262144,
+    "compiled_serving_role": "frontdoor",
+    "compiled_serving_slots": 4,
+    "compiled_serving_spec": {
+      "disabled_by": null,
+      "draft_max": null,
+      "draft_min": null,
+      "draft_model_path": null,
+      "draft_p_min": null,
+      "draft_p_split": null,
+      "enabled": false,
+      "n_gpu_layers_draft": null,
+      "ngram_mod_n_match": null,
+      "ngram_mod_n_max": null,
+      "ngram_mod_n_min": null,
+      "threads_draft": null,
+      "type": null
+    },
+    "gate_model_lineage": "Promotion gates retain pre-lineup Gemma4 v10 worker-general history. Current worker-general registry and compiled priors resolve to Qwen3.6 MoE.",
+    "registry_commit": "12afe2858f9dbd4691447926d6cf1864de64348c",
+    "registry_model": "Qwen3.6-35B-A3B-MTP-Q8_0",
+    "registry_model_architecture": "qwen35moe",
+    "registry_role": "worker_general",
+    "registry_worker_acceleration": {
+      "draft_max": 4,
+      "spec_type": "draft-mtp"
+    },
+    "sources_sha256": {
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml": "14dcd1ef4c08ca824561e9daa9c7bb71785a080c909accca0ea450fed0f6b8c0",
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml": "9615682d9461ced4f3a10cfebb9c8925bd40db351d2aa9bd18a5745bed40df79",
+      "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/.claude/skills/kernel-promotion/promotion_gates.yaml": "a84c92d3cda08f51942bdbf9ece6c388f92a6befd03a4903aeed5bc57e0cb1d6"
+    }
+  },
+  "promotion_authorized": false,
+  "publication": {
+    "book_s": 1500,
+    "cpu_region": "any-cpu-quarter",
+    "estimate_s": 1200,
+    "gib": 48,
+    "manifest_path": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-worker-general-20261118.json",
+    "manifest_sha256": "0de74f3c71787f43bfc0fb783af3e1cadeebcd90c712966bbb8c9233ffc68f31",
+    "min_window_s": 1500,
+    "port": 19470,
+    "published_at": "2026-11-18T00:35:03Z",
+    "status": "PUBLISHED",
+    "window_s": 1800
+  },
+  "quality_transfer_authorized": false,
+  "question_pool_sha256": "09208a08bbcbbbfcf90f5563099cb4d9c5ca7d3755aef367302a1080b53270ac",
+  "row_id": "handoff-vidya-quality-pack-worker-general-20261118",
+  "schema": "epyc.vidya.quality_pack_worker_general_preparation.v1",
+  "scope": "isolated bounded worker-general CPU/MTP slice",
+  "smoke": {
+    "captured_process_dead": true,
+    "completion_tokens": 8,
+    "cpus": [
+      116,
+      117,
+      118,
+      119
+    ],
+    "listener_closed": true,
+    "model": "Qwen3-0.6B Q8_0",
+    "passed_at": "2026-11-18T00:35:09Z",
+    "request_sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "response_sha256": "97b692a68117d2c43e0fc2a1d8572fe1bab9e731a7e0ba1eb9d661bf5bab9db3",
+    "status": "PASS",
+    "units": 1
+  },
+  "task": "VB-V9-8-QUALITY-PACK-WORKER-PREP",
+  "validation": [
+    "packet SHA manifest",
+    "candidate build identity",
+    "model stat vs original digest receipts",
+    "launcher shell syntax and Python AST",
+    "four distinct worker prompts disjoint from frontdoor prompts",
+    "both kernels expose MTP cap and draft counts in prior native output",
+    "publisher smoke predicate"
+  ]
+}

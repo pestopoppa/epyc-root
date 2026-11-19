@@ -1,0 +1,13 @@
+{
+  "schema": "epyc.ufh12.gs.live-plan.v1",
+  "recorded_at": "2026-11-02T10:58:08.238241+00:00",
+  "script": "/mnt/raid0/llm/epyc-orchestrator/scripts/migration/reembed_stores_eg2.py",
+  "script_sha256": "3c772189d93ad05914cc537981fe1cee9e90c1332a33c37716f93b6abeccf1b0",
+  "app_head": "9e138e3a3e22ecf8c57cd5bf50beed571d107b54",
+  "rc": 0,
+  "plan_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor/live-plan.json",
+  "plan_sha256": "d4149e6212e02a7423f5a8f4a3730cfb8b7934b0eb3b18c8b0b95ef2fd569db2",
+  "stderr_bytes": 0,
+  "mode": "read-only plan with immutable sqlite; no quiescence or atomic-snapshot claim",
+  "python_bytecode_writes_disabled": true
+}

@@ -76,6 +76,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 CODE_ROOT = HERE.parent.parent
+sys.path.insert(0, str(HERE.parent / "coordination"))
+import quiet_host  # noqa: E402  the ONE quiet-host grant check
 ROOT = Path(os.environ.get("HYGIENE_ROOT") or HERE.parent.parent)
 STATE_DIR = Path(os.environ.get("HYGIENE_STATE_DIR") or ROOT / "logs" / "hygiene")
 LLM = "/mnt/raid0/llm"
@@ -100,10 +102,14 @@ HEAVY_STARVED_S = 3 * 86400
 RELAUNCH_MIN_S = 1800
 BACKUP_STATUS = Path(os.environ.get("HYGIENE_BACKUP_STATUS", f"{LLM}/claude-backups/LAST_STATUS"))
 BACKUP_MAX_AGE_S = 36 * 3600
+LOOP_STATE_STATUS = Path(os.environ.get("HYGIENE_LOOP_STATE_STATUS",
+                                        f"{LLM}/claude-backups/loop-state.LAST_STATUS"))
 REGION_LOCK = os.environ.get("HYGIENE_REGION_LOCK", f"{LLM}/epyc-orchestrator/scripts/region-lock")
 CPU_WINDOW = Path(os.environ.get("HYGIENE_CPU_WINDOW", f"{LLM}/autokernel/cpu-window.json"))
 ALARM = ROOT / "scripts" / "coordination" / "alarm_channel.py"
 REGISTRY = ROOT / "scripts" / "coordination" / "observer_registry.json"
+WORKSPACE_CLONE = os.environ.get("HYGIENE_WORKSPACE_CLONE", "/workspace")
+WORKSPACE_BEHIND_MAX = 50
 LOG_MAX_BYTES = 5 * 2**20
 HISTORY_KEEP = 14
 # Cadence is the inherited 1800-second invariant; timeout is a subsystem tunable.
@@ -246,7 +252,7 @@ def fmt_gb(n: float | None) -> str:
 def du_bytes(path: str, timeout: int = 1800) -> int | None:
     if not os.path.exists(path):
         return None
-    cp = run(["du", "-sx", "--block-size=1", path], timeout=timeout)
+    cp = run(quiet_host.scan_prefix() + ["du", "-sx", "--block-size=1", path], timeout=timeout)
     try:
         return int(cp.stdout.split()[0]) if cp and cp.stdout else None
     except (ValueError, IndexError):
@@ -443,6 +449,30 @@ def backups(t: Tick, status: Path = BACKUP_STATUS) -> None:
         t.clear_alarm(key, "claude-backups fresh")
 
 
+def loop_state_backups(t: Tick, status: Path = LOOP_STATE_STATUS) -> None:
+    """BK-5: the nightly loop-state snapshot (scripts/backup/backup_loop_state.sh, host cron 04:30) must be
+    visible when it fails or does not run. Same contract as `backups`: a missing/old/non-OK status file
+    raises `loop-state-backup-stale`. Silent only when the status directory itself does not exist."""
+    key = "loop-state-backup-stale"
+    try:
+        st = status.stat()
+        text = status.read_text(errors="replace").strip()
+    except OSError:
+        if status.parent.exists():
+            t.raise_alarm(key, "warning", f"{status} is missing — the nightly loop-state backup has no status")
+        return
+    age = time.time() - st.st_mtime
+    ok = "OK" in text.split()
+    t.log(f"loop-state backups: {status} age {age / 3600:.1f} h, '{text[:60]}'")
+    if age > BACKUP_MAX_AGE_S or not ok:
+        t.raise_alarm(key, "warning",
+                      f"loop-state backup last status '{text[:80]}' is {age / 3600:.0f} h old "
+                      f"(> {BACKUP_MAX_AGE_S // 3600} h or not OK). The host job "
+                      "(backup_loop_state.sh, host crontab 04:30) did not run or failed.")
+    else:
+        t.clear_alarm(key, "loop-state backup fresh")
+
+
 def _event_daemon_copies(proc_root: Path = Path("/proc")) -> list[int]:
     """Strict read-only identity scan. Unreadable live entries are uncertainty.
 
@@ -569,6 +599,9 @@ def event_duty(t: Tick, registry_path: Path = REGISTRY, root: Path = ROOT) -> No
 # --------------------------------------------------------------------------- heavy gate
 def heavy_gate() -> tuple[bool, str]:
     """(open?, why). Three-valued underneath: unreadable == closed."""
+    gid = quiet_host.quiet_host_grant()       # 2026-11-10 19:02Z: region-lock was empty while a whole-host grant was live
+    if gid:
+        return False, f"DEFER-QUIET-HOST quiet-host grant {gid} live"
     try:
         cw = json.loads(CPU_WINDOW.read_text())
         exp = cw.get("expires_at")
@@ -734,6 +767,35 @@ def codex_report(t: Tick) -> None:
     t.log("codex: report written -> " + str(t.state_dir / "codex_report.json"))
 
 
+def workspace_sync(t: Tick, repo: str = WORKSPACE_CLONE, check=None) -> None:
+    """NIB2-99: warn-only. Alarm `workspace-clone-drift` if /workspace main is >50 behind or any ahead.
+
+    Read-only (workspace_sync_check.py never fetches or syncs). An unreadable clone stays silent.
+    """
+    key = "workspace-clone-drift"
+    if check is None:
+        spec = importlib.util.spec_from_file_location("_workspace_sync_check", HERE / "workspace_sync_check.py")
+        if spec is None or spec.loader is None:
+            return
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        check = mod.workspace_sync_status
+    s = check(repo)
+    if not s.get("ok"):
+        t.log(f"workspace-sync: {s.get('error')}")
+        return
+    behind, ahead = s["behind"], s["ahead"]
+    t.log(f"workspace-sync: {repo} {behind} behind / {ahead} ahead of origin/main")
+    if behind > WORKSPACE_BEHIND_MAX or ahead > 0:
+        t.raise_alarm(key, "warning",
+                      f"{repo} main is {behind} behind (> {WORKSPACE_BEHIND_MAX}) / {ahead} ahead "
+                      "(> 0) of origin/main. Scripts run from it are stale or a commit landed on its "
+                      "local main. Sync by hand (fast-forward, push any ahead commits first); the tick "
+                      "never syncs.", {"behind": behind, "ahead": ahead})
+    else:
+        t.clear_alarm(key, f"{repo} within {WORKSPACE_BEHIND_MAX} behind, 0 ahead")
+
+
 # --------------------------------------------------------------------------- main
 def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STATE_DIR) -> int:
     state_dir.mkdir(parents=True, exist_ok=True)
@@ -748,7 +810,9 @@ def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STA
         disk_free(t)
         keeper(t)
         backups(t)
+        loop_state_backups(t)
         event_duty(t)
+        workspace_sync(t)
         heavy(t, force=force_heavy)
     finally:
         t.flush()

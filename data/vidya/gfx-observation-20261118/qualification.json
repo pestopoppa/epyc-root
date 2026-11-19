@@ -1,0 +1,14 @@
+{
+  "row": "vb-ak-r18-gfx-observation-20261118",
+  "publisher_rc": 0,
+  "status": "GPU-SMOKE-QUEUED",
+  "native_smoke_pass": false,
+  "official_acceptance": false,
+  "controls": {
+    "structural_groups_passed": 6,
+    "installed_ingestion_rows": 1,
+    "installed_ingestion_frames": 3
+  },
+  "note": "Publisher queued the real GPU smoke behind current device ownership. Structural fixtures are not native evidence. Initial pre-publication view/task-lint and window-bound refusals were corrected; no native qualification attempt has run.",
+  "source_manifest_sha256": "0e443c31c6f9c08592a2b9b7dca009d3de88db7db5cac65dbae8b4191c2d37f6"
+}

@@ -1,0 +1,59 @@
+[
+  {
+    "expected": "REFUSE",
+    "name": "missing_clock",
+    "operation": "remove",
+    "path": [
+      "artifacts",
+      "clock_before"
+    ],
+    "value": null
+  },
+  {
+    "expected": "REFUSE",
+    "name": "mixed_phase",
+    "operation": "remove",
+    "path": [
+      "artifacts",
+      "server_log"
+    ],
+    "value": null
+  },
+  {
+    "expected": "REFUSE",
+    "name": "wrong_candidate",
+    "operation": "replace",
+    "path": [
+      "identity",
+      "source_commit"
+    ],
+    "value": "bad"
+  },
+  {
+    "expected": "REFUSE",
+    "name": "incomplete",
+    "operation": "replace",
+    "path": [
+      "complete"
+    ],
+    "value": false
+  },
+  {
+    "expected": "REFUSE",
+    "name": "wrong_order",
+    "operation": "replace",
+    "path": [
+      "mode"
+    ],
+    "value": "mask"
+  },
+  {
+    "expected": "UNKNOWN",
+    "name": "native_unproved",
+    "operation": "replace",
+    "path": [
+      "synthetic"
+    ],
+    "value": false
+  }
+]

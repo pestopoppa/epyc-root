@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-kvfork",
+  "rationale": "rc=0, native verdict PASS and COMPLETE binding 8dbc7ac1ac533bfdaa0c746b9119d845babbbb1b16b02479d9329159d795362f; 86 paired receipts,64 supported and22 declared unsupported. Original and extended outputs/normalized metadata agree bitwise under each skip setting on the same champion build/thread configuration, with finite outputs, matched hashes, in-process HIP/KFD residency and final custody. Completes GPU preservation only; shared suite is independently filed.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:08:05+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T11:53:46Z reason=complete",
+ "filed_at": "2026-11-04T07:08:05+00:00",
+ "filed_by": "handoff-kvfork",
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17a",
+ "id": "kvfork17a-gpu-preserve-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/kvfork17a-gpu-preserve-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17a-gpu-preserve/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-kvfork",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc=0, native verdict PASS and COMPLETE binding 8dbc7ac1ac533bfdaa0c746b9119d845babbbb1b16b02479d9329159d795362f; 86 paired receipts,64 supported and22 declared unsupported. Original and extended outputs/normalized metadata agree bitwise under each skip setting on the same champion build/thread configuration, with finite outputs, matched hashes, in-process HIP/KFD residency and final custody. Completes GPU preservation only; shared suite is independently filed.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17a-gpu-preserve/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "kvfork17a-gpu-preserve-20261102",
+ "row_verdict": "pass",
+ "rule": "PASS only with all 86 paired original-versus-extended cases, exactly 22 declared ROCm0 unsupported and 64 supported; for each supported case compare bytes and metadata under each of skip-off and skip-on using the same champion source-bound build and grant, with finite outputs, matching hashes, >=2 in-process own-HIP mapping and positive KFD VRAM samples per invocation, and verified custody. No shared-case or historical-binary equivalence claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "1c039f764602d5935d309313eec9639e4bce6648d4fb06f92ca89db9ad8ba3fc",
+  "result": "pass",
+  "status": "filed"
+ }
+}

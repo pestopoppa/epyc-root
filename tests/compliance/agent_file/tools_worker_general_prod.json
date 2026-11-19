@@ -1,0 +1,687 @@
+[
+ {
+  "type": "function",
+  "function": {
+   "name": "budget_override",
+   "description": "Request additional tool budget for active task.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "category": {
+      "type": "string",
+      "description": "Budget category: read|write|exec|llm"
+     },
+     "reason": {
+      "type": "string",
+      "description": "Why extra budget is needed"
+     }
+    },
+    "required": [
+     "category"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "csv_to_json",
+   "description": "Convert CSV data to JSON array",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "csv_content": {
+      "type": "string",
+      "description": "CSV string"
+     },
+     "delimiter": {
+      "type": "string",
+      "description": "",
+      "default": ","
+     },
+     "has_header": {
+      "type": "boolean",
+      "description": "",
+      "default": true
+     }
+    },
+    "required": [
+     "csv_content"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "fetch_stock_price",
+   "description": "Compatibility stub for stock price lookup; no market data backend is configured",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "ticker": {
+      "type": "string",
+      "description": "Stock ticker symbol"
+     }
+    },
+    "required": [
+     "ticker"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "get_time",
+   "description": "Get the current local time for an IANA timezone",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "timezone": {
+      "type": "string",
+      "description": "IANA timezone name, e.g. UTC or Asia/Tokyo"
+     }
+    }
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "histogram",
+   "description": "Create histogram from data (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "array",
+      "description": "Data values",
+      "items": {}
+     },
+     "bins": {
+      "type": "integer",
+      "description": "",
+      "default": 20
+     },
+     "width": {
+      "type": "integer",
+      "description": "",
+      "default": 80
+     },
+     "height": {
+      "type": "integer",
+      "description": "",
+      "default": 20
+     }
+    },
+    "required": [
+     "data"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "json_query",
+   "description": "Query JSON data using JMESPath expressions",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "object",
+      "description": "JSON data to query"
+     },
+     "query": {
+      "type": "string",
+      "description": "JMESPath expression"
+     }
+    },
+    "required": [
+     "data",
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "json_to_csv",
+   "description": "Convert JSON array to CSV",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "array",
+      "description": "Array of objects",
+      "items": {}
+     },
+     "columns": {
+      "type": "array",
+      "description": "Column order (optional)",
+      "items": {}
+     }
+    },
+    "required": [
+     "data"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "list_files",
+   "description": "List files in a directory",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Directory path"
+     },
+     "pattern": {
+      "type": "string",
+      "description": "Glob pattern to filter"
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_braille",
+   "description": "Create braille character plot for terminal (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "array",
+      "description": "X coordinates",
+      "items": {}
+     },
+     "y": {
+      "type": "array",
+      "description": "Y coordinates",
+      "items": {}
+     },
+     "plot_type": {
+      "type": "string",
+      "description": "scatter, line",
+      "default": "line"
+     },
+     "width": {
+      "type": "integer",
+      "description": "",
+      "default": 80
+     },
+     "height": {
+      "type": "integer",
+      "description": "",
+      "default": 20
+     },
+     "title": {
+      "type": "string",
+      "description": "",
+      "default": "Plot"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_function",
+   "description": "Plot mathematical function (sin, cos, exp, etc.)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "function": {
+      "type": "string",
+      "description": "sin, cos, exp, log, x^2, x^3, sqrt, tanh, sigmoid, gaussian"
+     },
+     "x_min": {
+      "type": "number",
+      "description": "",
+      "default": -3.14159
+     },
+     "x_max": {
+      "type": "number",
+      "description": "",
+      "default": 3.14159
+     },
+     "width": {
+      "type": "integer",
+      "description": "",
+      "default": 80
+     },
+     "height": {
+      "type": "integer",
+      "description": "",
+      "default": 20
+     }
+    },
+    "required": [
+     "function"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_sixel",
+   "description": "Create high-resolution sixel graphics plot (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "array",
+      "description": "X coordinates",
+      "items": {}
+     },
+     "y": {
+      "type": "array",
+      "description": "Y coordinates",
+      "items": {}
+     },
+     "plot_type": {
+      "type": "string",
+      "description": "",
+      "default": "line"
+     },
+     "width": {
+      "type": "integer",
+      "description": "Pixel width",
+      "default": 800
+     },
+     "height": {
+      "type": "integer",
+      "description": "Pixel height",
+      "default": 400
+     },
+     "title": {
+      "type": "string",
+      "description": ""
+     },
+     "colors": {
+      "type": "array",
+      "description": "Color palette",
+      "items": {}
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "read_file",
+   "description": "Read contents of a file",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Path to file"
+     },
+     "max_lines": {
+      "type": "integer",
+      "description": "Maximum lines to read"
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "read_json",
+   "description": "Read and parse a JSON file",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Path to JSON file"
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "render_math",
+   "description": "Render LaTeX to Unicode/ASCII (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "latex": {
+      "type": "string",
+      "description": "LaTeX expression"
+     },
+     "format": {
+      "type": "string",
+      "description": "unicode or ascii",
+      "default": "unicode"
+     }
+    },
+    "required": [
+     "latex"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_files",
+   "description": "Search files under a directory for text content",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "directory": {
+      "type": "string",
+      "description": "Directory to search"
+     },
+     "content": {
+      "type": "string",
+      "description": "Text to search for"
+     },
+     "recursive": {
+      "type": "boolean",
+      "description": "Search recursively"
+     },
+     "pattern": {
+      "type": "string",
+      "description": "Glob pattern to filter files"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "Maximum matching files to return"
+     }
+    },
+    "required": [
+     "directory",
+     "content"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "sql_query",
+   "description": "Execute SQL query on in-memory SQLite database",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "SQL query"
+     },
+     "tables": {
+      "type": "object",
+      "description": "Dict of table_name -> list of dicts"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "start_service",
+   "description": "Dry-run compatibility stub; does not start system services",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Service name requested by the prompt"
+     }
+    },
+    "required": [
+     "name"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_create",
+   "description": "Create a task to track a unit of work.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "subject": {
+      "type": "string",
+      "description": "Brief imperative title"
+     },
+     "description": {
+      "type": "string",
+      "description": "What needs to be done"
+     },
+     "active_form": {
+      "type": "string",
+      "description": "Present continuous status text"
+     }
+    },
+    "required": [
+     "subject",
+     "description"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_list",
+   "description": "List tracked tasks for this request.",
+   "parameters": {
+    "type": "object",
+    "properties": {}
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_update",
+   "description": "Update task status.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "task_id": {
+      "type": "string",
+      "description": ""
+     },
+     "status": {
+      "type": "string",
+      "description": ""
+     }
+    },
+    "required": [
+     "task_id"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "translate_text",
+   "description": "Compatibility stub for translation; no translation backend is configured",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": "Text to translate"
+     },
+     "source_lang": {
+      "type": "string",
+      "description": "Source language"
+     },
+     "target_lang": {
+      "type": "string",
+      "description": "Target language"
+     }
+    },
+    "required": [
+     "text",
+     "target_lang"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_conclude",
+   "description": "Persist a durable user preference or fact. Scanned for injection safety.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "fact": {
+      "type": "string",
+      "description": "The preference or fact to store"
+     },
+     "category": {
+      "type": "string",
+      "description": "One of: general, format, workflow, style, domain",
+      "default": "general"
+     },
+     "user_id": {
+      "type": "string",
+      "description": "",
+      "default": "default"
+     }
+    },
+    "required": [
+     "fact"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_context",
+   "description": "Get contextual answer about the user's preferences or background.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "question": {
+      "type": "string",
+      "description": "Question about user preferences"
+     },
+     "user_id": {
+      "type": "string",
+      "description": "",
+      "default": "default"
+     }
+    },
+    "required": [
+     "question"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_profile",
+   "description": "Retrieve the current user profile (preferences, facts, background).",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "user_id": {
+      "type": "string",
+      "description": "User identifier",
+      "default": "default"
+     }
+    }
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_search",
+   "description": "Search stored user facts by keyword.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query (case-insensitive substring)"
+     },
+     "user_id": {
+      "type": "string",
+      "description": "",
+      "default": "default"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "write_json",
+   "description": "Write data to a JSON file",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Path to JSON file"
+     },
+     "data": {
+      "type": "object",
+      "description": "Data to write"
+     },
+     "indent": {
+      "type": "integer",
+      "description": "Indentation level"
+     }
+    },
+    "required": [
+     "path",
+     "data"
+    ]
+   }
+  }
+ }
+]

@@ -1,0 +1,6 @@
+3hop1__116597_591997_60904
+4hop1__588005_88110_67938_13402
+leval-legal:6:0
+leval-meeting:8:0
+squality:63521_1
+narrativeqa:57cc5523770d264c141abd6a01f7acdaf080c633_2

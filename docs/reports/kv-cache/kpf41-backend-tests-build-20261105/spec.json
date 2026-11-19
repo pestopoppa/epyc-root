@@ -1,0 +1,22 @@
+{
+  "id": "kpf41-backend-tests-build-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only PASS requires clean detached source 15caecbbf4cb27452dbd87fa1a68a0e75098388e, linked gfx90a HIP test-backend-ops, own ggml linkage and hashes for executable and four libraries with source recheck. Stop on source drift, build/linkage, STOP or deadline. No GPU execution, backend parity or production claim.",
+  "estimate_s": 3600,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-41.BACKEND-TESTS-BUILD",
+  "priority_rank": 35,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105",
+  "kind": "compute",
+  "smoke_timeout_s": 900,
+  "first_progress_s": 900,
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf41-backend-tests-build"
+}

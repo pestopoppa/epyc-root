@@ -1,0 +1,570 @@
+{
+ "box_rule_bound_fails_on_ge2_workloads": {
+  "B12/decode/T1": false,
+  "B12/decode/T3": false,
+  "B12/prefill/T512": false,
+  "B4/decode/T1": false,
+  "B4/decode/T3": false,
+  "B4/prefill/T512": false
+ },
+ "box_rule_closes_negative_on_q38fn": false,
+ "calib": {
+  "cross": {
+   "di081": {
+    "B12/decode/T1": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": []
+    },
+    "B12/decode/T3": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": []
+    },
+    "B12/prefill/T512": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": []
+    },
+    "B4/decode/T1": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": []
+    },
+    "B4/decode/T3": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ]
+    },
+    "B4/prefill/T512": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ]
+    }
+   },
+   "leaves_compared": 1098,
+   "max_abs_float_diff": 0.0,
+   "mismatches": 0,
+   "table": {
+    "B12/decode/T1": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       3.08,
+       3.052
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.56,
+      "ratio_realizable": 0.563
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       3.042,
+       3.043
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.558,
+      "ratio_realizable": 0.557
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       3.04,
+       3.051
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.565,
+      "ratio_realizable": 0.568
+     }
+    },
+    "B12/decode/T3": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       2.528,
+       2.494
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.715,
+      "ratio_realizable": 0.694
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       2.533,
+       2.546
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.676,
+      "ratio_realizable": 0.665
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       2.474,
+       2.479
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.725,
+      "ratio_realizable": 0.694
+     }
+    },
+    "B12/prefill/T512": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       1.874,
+       1.842
+      ],
+      "ratio_bound": 1.649,
+      "ratio_idealized_dispatch": 0.997,
+      "ratio_realizable": 0.972
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "eplb_R32@random",
+      "contiguous_vs_null_random": [
+       1.819,
+       1.824
+      ],
+      "ratio_bound": 1.649,
+      "ratio_idealized_dispatch": 0.93,
+      "ratio_realizable": 0.918
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.573,
+       1.597
+      ],
+      "ratio_bound": 1.649,
+      "ratio_idealized_dispatch": 1.131,
+      "ratio_realizable": 1.091
+     }
+    },
+    "B4/decode/T1": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       1.675,
+       1.672
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 1.016,
+      "ratio_realizable": 1.012
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.669,
+       1.673
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 1.005,
+      "ratio_realizable": 1.004
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       1.672,
+       1.673
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 1.032,
+      "ratio_realizable": 1.013
+     }
+    },
+    "B4/decode/T3": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.495,
+       1.487
+      ],
+      "ratio_bound": 1.547,
+      "ratio_idealized_dispatch": 1.198,
+      "ratio_realizable": 1.154
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.5,
+       1.506
+      ],
+      "ratio_bound": 1.547,
+      "ratio_idealized_dispatch": 1.135,
+      "ratio_realizable": 1.112
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.488,
+       1.487
+      ],
+      "ratio_bound": 1.547,
+      "ratio_idealized_dispatch": 1.196,
+      "ratio_realizable": 1.141
+     }
+    },
+    "B4/prefill/T512": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.283,
+       1.276
+      ],
+      "ratio_bound": 1.65,
+      "ratio_idealized_dispatch": 1.392,
+      "ratio_realizable": 1.345
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.271,
+       1.265
+      ],
+      "ratio_bound": 1.65,
+      "ratio_idealized_dispatch": 1.334,
+      "ratio_realizable": 1.314
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.196,
+       1.196
+      ],
+      "ratio_bound": 1.65,
+      "ratio_idealized_dispatch": 1.478,
+      "ratio_realizable": 1.414
+     }
+    }
+   }
+  },
+  "same": {
+   "di081": {
+    "B12/decode/T1": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": []
+    },
+    "B12/decode/T3": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": []
+    },
+    "B12/prefill/T512": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ]
+    },
+    "B4/decode/T1": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": []
+    },
+    "B4/decode/T3": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ]
+    },
+    "B4/prefill/T512": {
+     "bound_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ],
+     "realizable_ge_1.10_domains": [
+      "code",
+      "prose",
+      "reasoning"
+     ]
+    }
+   },
+   "leaves_compared": 1098,
+   "max_abs_float_diff": 0.0,
+   "mismatches": 0,
+   "table": {
+    "B12/decode/T1": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       3.08,
+       3.052
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.654,
+      "ratio_realizable": 0.627
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       3.042,
+       3.043
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.613,
+      "ratio_realizable": 0.592
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       3.04,
+       3.051
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.619,
+      "ratio_realizable": 0.611
+     }
+    },
+    "B12/decode/T3": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       2.528,
+       2.494
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.938,
+      "ratio_realizable": 0.794
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       2.533,
+       2.546
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.818,
+      "ratio_realizable": 0.73
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       2.474,
+       2.479
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 0.864,
+      "ratio_realizable": 0.762
+     }
+    },
+    "B12/prefill/T512": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.874,
+       1.842
+      ],
+      "ratio_bound": 1.649,
+      "ratio_idealized_dispatch": 1.512,
+      "ratio_realizable": 1.382
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.819,
+       1.824
+      ],
+      "ratio_bound": 1.649,
+      "ratio_idealized_dispatch": 1.44,
+      "ratio_realizable": 1.315
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.573,
+       1.597
+      ],
+      "ratio_bound": 1.649,
+      "ratio_idealized_dispatch": 1.535,
+      "ratio_realizable": 1.399
+     }
+    },
+    "B4/decode/T1": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       1.675,
+       1.672
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 1.206,
+      "ratio_realizable": 1.078
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.669,
+       1.673
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 1.137,
+      "ratio_realizable": 1.041
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       1.672,
+       1.673
+      ],
+      "ratio_bound": 1.375,
+      "ratio_idealized_dispatch": 1.151,
+      "ratio_realizable": 1.061
+     }
+    },
+    "B4/decode/T3": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       1.495,
+       1.487
+      ],
+      "ratio_bound": 1.547,
+      "ratio_idealized_dispatch": 1.436,
+      "ratio_realizable": 1.223
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.5,
+       1.506
+      ],
+      "ratio_bound": 1.547,
+      "ratio_idealized_dispatch": 1.328,
+      "ratio_realizable": 1.173
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R0",
+      "contiguous_vs_null_random": [
+       1.488,
+       1.487
+      ],
+      "ratio_bound": 1.547,
+      "ratio_idealized_dispatch": 1.366,
+      "ratio_realizable": 1.197
+     }
+    },
+    "B4/prefill/T512": {
+     "code": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.283,
+       1.276
+      ],
+      "ratio_bound": 1.65,
+      "ratio_idealized_dispatch": 1.636,
+      "ratio_realizable": 1.556
+     },
+     "prose": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.271,
+       1.265
+      ],
+      "ratio_bound": 1.65,
+      "ratio_idealized_dispatch": 1.629,
+      "ratio_realizable": 1.534
+     },
+     "reasoning": {
+      "best_bound": "oracle_R32",
+      "best_realizable": "deepinfer_R32@random",
+      "contiguous_vs_null_random": [
+       1.196,
+       1.196
+      ],
+      "ratio_bound": 1.65,
+      "ratio_idealized_dispatch": 1.641,
+      "ratio_realizable": 1.563
+     }
+    }
+   }
+  }
+ },
+ "filed_dir": "/mnt/raid0/llm/epyc-inference-research/data/moe-routing-rt1-q38fn-20261023",
+ "proxy": "Qwen3.8-Flash-Next UD-IQ4_XS qwen4exp 48 layers 512 experts top-10 (PROXY for DS41; not DS41)",
+ "schema": "brf-t3/rt6-q38fn-check/1"
+}

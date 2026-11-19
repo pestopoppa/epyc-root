@@ -38,6 +38,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -101,6 +102,8 @@ export EPYC_USER_ID="${{EPYC_USER_ID:?set EPYC_USER_ID before running}}"
 source {env_file}
 export OPENCODE_CONFIG="$EVID/opencode.jsonc"
 node {lint} "$OPENCODE_CONFIG" {env_file}
+python3 {script} check-catalog --evidence "$EVID" \\
+  --model-role "$EPYC_MODEL_ROLE" --build-info "$EPYC_BUILD_INFO"
 opencode --version > "$EVID/opencode-version.txt"
 date +%s.%N > "$EVID/window-start.txt"
 # No --auto: permission asks are auto-rejected. edit and bash are allowed by
@@ -214,7 +217,62 @@ def render_config(template_text: str, enable_mcp: bool) -> str:
     return template_text.replace(needle, '"enabled": true')
 
 
+def load_mcp_launch_spec(path: Path) -> dict[str, Any]:
+    """Validate a row-owned launch declaration without importing/starting its server.
+
+    The file map pins declared inputs, not the complete runtime dependency closure
+    or a running process. Live catalog and serving custody are still row duties.
+    """
+    spec = json.loads(path.read_bytes())
+    if not isinstance(spec, dict) or set(spec) != {'command', 'cwd', 'files'}:
+        raise ValueError('MCP launch spec requires exactly command, cwd and files')
+    command, cwd, files = spec['command'], spec['cwd'], spec['files']
+    if not isinstance(command, list) or not command or any(
+            not isinstance(v, str) or not v or '\x00' in v
+            or any(marker in v for marker in ('{env:', '{file:')) for v in command):
+        raise ValueError('MCP command must be a nonempty literal argv list')
+    if not isinstance(cwd, str) or any(marker in cwd for marker in ('{env:', '{file:')) \
+            or not Path(cwd).is_absolute() \
+            or not Path(cwd).is_dir():
+        raise ValueError('MCP cwd must be an existing absolute directory')
+    executable = Path(command[0])
+    if not executable.is_absolute() or not executable.is_file() \
+            or not os.access(executable, os.X_OK):
+        raise ValueError('MCP executable must be an existing absolute executable file')
+    if not isinstance(files, dict) or not files or command[0] not in files:
+        raise ValueError('MCP files must pin the executable and declared source inputs')
+    for name, digest in files.items():
+        if not isinstance(name, str) or not Path(name).is_absolute() \
+                or not isinstance(digest, str) or len(digest) != 64 \
+                or any(c not in '0123456789abcdef' for c in digest):
+            raise ValueError('MCP file pins require absolute paths and SHA-256 digests')
+        if hashlib.sha256(Path(name).read_bytes()).hexdigest() != digest:
+            raise ValueError(f'MCP launch input drift: {name}')
+    return spec
+
+
+def render_mcp_launch(config: str, spec: dict[str, Any]) -> str:
+    """Replace only the existing orchestrator MCP command and cwd."""
+    defaults = {
+        'command': '["{env:EPYC_ORCHESTRATOR_MCP_PYTHON}", "-m", "src.mcp_server"]',
+        'cwd': '"{env:EPYC_ORCHESTRATOR_REPO}"',
+    }
+    for key, value in defaults.items():
+        needle = f'"{key}": {value}'
+        if config.count(needle) != 1:
+            raise ValueError(f'expected exactly one default MCP {key}')
+        config = config.replace(needle, f'"{key}": {json.dumps(spec[key])}')
+    return config
+
+
 def cmd_prepare(args: argparse.Namespace) -> int:
+    config = render_config(TEMPLATE.read_text(), args.enable_mcp)
+    launch_path = getattr(args, 'mcp_launch_spec', None)
+    if launch_path is not None:
+        if not args.enable_mcp or not args.catalog_manifest:
+            raise ValueError('--mcp-launch-spec requires --enable-mcp and catalog binding')
+        config = render_mcp_launch(config, load_mcp_launch_spec(Path(launch_path)))
+    binding = prepare_catalog_binding(args, config)
     out = Path(args.out).resolve()
     repo, evidence = out / "repo", out / "evidence"
     if out.exists() and any(out.iterdir()):
@@ -232,7 +290,12 @@ def cmd_prepare(args: argparse.Namespace) -> int:
          "commit", "-q", "-m", "fixture"],
         check=True,
     )
-    (evidence / "opencode.jsonc").write_text(render_config(TEMPLATE.read_text(), args.enable_mcp))
+    (evidence / "opencode.jsonc").write_text(config)
+    binding_digest = None
+    if binding is not None:
+        raw = json.dumps(binding, sort_keys=True, indent=2) + "\n"
+        (evidence / "catalog-binding.json").write_text(raw)
+        binding_digest = hashlib.sha256(raw.encode()).hexdigest()
     run_sh = evidence / "run.sh"
     run_sh.write_text(
         RUN_SH.format(
@@ -254,6 +317,7 @@ def cmd_prepare(args: argparse.Namespace) -> int:
                 "mcp_enabled": args.enable_mcp,
                 "orchestrator_commits": ORCHESTRATOR_COMMITS,
                 "prompt": TASK_PROMPT,
+                "catalog_binding_sha256": binding_digest,
             },
             indent=2,
         )
@@ -265,6 +329,134 @@ def cmd_prepare(args: argparse.Namespace) -> int:
 
 def _sh(value: object) -> str:
     return "'" + str(value).replace("'", "'\"'\"'") + "'"
+
+
+def prepare_catalog_binding(args: argparse.Namespace, config: str) -> dict[str, Any] | None:
+    """Bind a declared catalog snapshot before execution, never on historical runs.
+
+    Model/server are the exact --model-role/--build-info declarations. Snapshot
+    bytes must hash to the manifest catalog identity; this is not proof that a
+    live tools/list actually served them. That custody remains a row requirement.
+    """
+    fields = (args.catalog_manifest, args.catalog_arm, args.catalog_trial, args.catalog_snapshot)
+    if all(value is None for value in fields):
+        return None
+    if any(value is None for value in fields):
+        raise ValueError('all four --catalog-* options are required together')
+    manifest_path = Path(args.catalog_manifest).resolve()
+    manifest_raw = manifest_path.read_bytes()
+    manifest = json.loads(manifest_raw)
+    identity, catalogs = manifest['identity'], manifest['catalogs']
+    if not all(isinstance(identity.get(k), str) and identity[k].strip()
+               for k in ('model', 'server', 'plugin', 'base_catalog')):
+        raise ValueError('missing shared catalog identity')
+    if not all(isinstance(catalogs.get(k), str) and catalogs[k].strip()
+               for k in ('baseline', 'candidate')) or catalogs['baseline'] == catalogs['candidate']:
+        raise ValueError('distinct arm catalogs required')
+    if identity['base_catalog'] != catalogs['baseline'] or identity['plugin'] != plugin_sha256():
+        raise ValueError('baseline catalog or current plugin identity mismatch')
+    tasks = [t for t in manifest['tasks'] if t['id'] == 'calc-add-fix']
+    if len(tasks) != 1 or tasks[0].get('previously_passing') is not True \
+            or tasks[0].get('fixture') != task_suite_fingerprint():
+        raise ValueError('manifest must freeze the previously passing calc-add-fix fixture')
+    snapshot = Path(args.catalog_snapshot).resolve()
+    catalog = hashlib.sha256(snapshot.read_bytes()).hexdigest()
+    if catalog != catalogs[args.catalog_arm]:
+        raise ValueError('catalog snapshot digest mismatch')
+    binding = {
+        'schema': 'hs4-p6-binding/v1',
+        'comparison': {'task': 'calc-add-fix', 'arm': args.catalog_arm,
+                       'trial': args.catalog_trial, 'fixture': task_suite_fingerprint(),
+                       'identity': identity, 'catalog': catalog},
+        'manifest_path': str(manifest_path),
+        'manifest_sha256': hashlib.sha256(manifest_raw).hexdigest(),
+        'catalog_snapshot_path': str(snapshot),
+        'config_sha256': hashlib.sha256(config.encode()).hexdigest(),
+        'prompt_sha256': hashlib.sha256(TASK_PROMPT.encode()).hexdigest(),
+        'producer_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        'identity_basis': 'prospective declarations; live catalog/model/build custody required separately',
+    }
+    launch_path = getattr(args, 'mcp_launch_spec', None)
+    if launch_path is not None:
+        path = Path(launch_path).resolve()
+        launch_raw = path.read_bytes()
+        spec = load_mcp_launch_spec(path)
+        if config != render_mcp_launch(render_config(TEMPLATE.read_text(), True), spec):
+            raise ValueError('MCP launch configuration drift during preparation')
+        # The original manifest chooses each arm's launch input prospectively.
+        if manifest.get('mcp_launch_specs', {}).get(args.catalog_arm) \
+                != hashlib.sha256(launch_raw).hexdigest():
+            raise ValueError('manifest MCP launch spec digest mismatch')
+        binding['mcp_launch'] = {
+            'path': str(path), 'sha256': hashlib.sha256(launch_raw).hexdigest(),
+            'spec': spec,
+        }
+    return binding
+
+
+def load_catalog_binding(evid: Path, model_role: str, build_info: str) -> dict[str, Any] | None:
+    path = evid / 'catalog-binding.json'
+    prepared_path = evid / 'prepared.json'
+    prepared = json.loads(prepared_path.read_text()) if prepared_path.is_file() else {}
+    expected = prepared.get('catalog_binding_sha256')
+    if expected is None:
+        if path.exists():
+            raise ValueError('refusing retrospective catalog binding')
+        return None
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != expected:
+        raise ValueError('catalog binding drift')
+    binding = json.loads(raw)
+    comparison = binding['comparison']
+    pins = ((evid / 'opencode.jsonc', binding['config_sha256']),
+            (evid / 'prompt.txt', binding['prompt_sha256']),
+            (Path(binding['manifest_path']), binding['manifest_sha256']),
+            (Path(binding['catalog_snapshot_path']), comparison['catalog']),
+            (Path(__file__), binding['producer_sha256']))
+    if any(hashlib.sha256(path.read_bytes()).hexdigest() != digest for path, digest in pins):
+        raise ValueError('catalog input drift')
+    if 'mcp_launch' in binding:
+        launch = binding['mcp_launch']
+        path = Path(launch['path'])
+        if hashlib.sha256(path.read_bytes()).hexdigest() != launch['sha256'] \
+                or load_mcp_launch_spec(path) != launch['spec']:
+            raise ValueError('MCP launch declaration drift')
+    identity = comparison['identity']
+    if identity['plugin'] != plugin_sha256() or comparison['fixture'] != task_suite_fingerprint():
+        raise ValueError('catalog producer/fixture drift')
+    if identity['model'] != model_role or identity['server'] != build_info:
+        raise ValueError('catalog serving declaration mismatch')
+    return binding
+
+
+def cmd_check_catalog(args: argparse.Namespace) -> int:
+    try:
+        evid = Path(args.evidence)
+        binding = load_catalog_binding(evid, args.model_role, args.build_info)
+        if binding and any((evid / name).exists() for name in
+                           ('window-start.txt', 'events.jsonl', 'catalog-record.json')):
+            raise ValueError('refusing to rerun an exposed catalog trial')
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f'catalog binding refused: {exc}', file=sys.stderr)
+        return 2
+    return 0
+
+
+def catalog_usage_complete(session: dict[str, Any]) -> bool:
+    """P6 cost requires explicit nonnegative step usage, including cache usage."""
+    steps = [p for msg in session.get('messages', []) for p in msg.get('parts', [])
+             if p.get('type') == 'step-finish']
+    if not steps:
+        return False
+    for step in steps:
+        tokens = step.get('tokens')
+        if not isinstance(tokens, dict) or not isinstance(tokens.get('cache'), dict):
+            return False
+        counts = [tokens.get(k) for k in ('input', 'output', 'reasoning')]
+        counts += [tokens['cache'].get(k) for k in ('read', 'write')]
+        if any(type(n) is not int or n < 0 for n in counts):
+            return False
+    return True
 
 
 # ---------------------------------------------------------------- verify
@@ -358,6 +550,13 @@ def check_fixture(repo: Path) -> dict[str, Any]:
 
 def cmd_verify(args: argparse.Namespace) -> int:
     evid = Path(args.evidence).resolve()
+    try:
+        binding = load_catalog_binding(evid, args.model_role, args.build_info)
+        if binding and (evid / 'catalog-record.json').exists():
+            raise ValueError('catalog trial already finalized')
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f'catalog binding refused: {exc}', file=sys.stderr)
+        return 2
     repo = Path(args.repo).resolve() if args.repo else evid.parent / "repo"
     session_id = (evid / "session-id.txt").read_text().strip()
     start = float((evid / "window-start.txt").read_text().strip())
@@ -390,9 +589,32 @@ def cmd_verify(args: argparse.Namespace) -> int:
         checks.append(_check(v == PINNED_VERSION, "opencode-version-pinned", v))
     fixture_ok = _by_name(checks, "A1-fixture-test-passes")["ok"]
     tokens = resolve_token_counts(session, tap_tokens)
-    capture = capture_beliefs(args, evid, session, session_id, start, end, fixture_ok, tokens)
+    capture = capture_beliefs(
+        args, evid, session, session_id, start, end, fixture_ok, tokens,
+        arm_role=binding['comparison']['arm'].upper() if binding else 'BASELINE',
+        record_extra={'catalog_comparison': binding['comparison']} if binding else None,
+    )
     checks.append(_check(capture["status"] in {"written", "skipped"}, "sc86-belief-capture",
                          f"{capture['status']}: {capture.get('path') or capture.get('reason')}"))
+    if binding:
+        checks.append(_check(
+            catalog_usage_complete(session) and exit_file.is_file() and version.is_file(),
+            'catalog-native-records-complete',
+            'P6 requires explicit step usage, exit status and shell version records',
+        ))
+        behavioral = {'A1-read-edit-bash-loop', 'A1-fixture-test-passes', 'A3-no-compaction-or-subtask'}
+        uncertain = any(not c['ok'] for c in checks if c['check'] not in behavioral)
+        result = {
+            **binding['comparison'],
+            'outcome': 'infra_error' if uncertain else 'pass' if all(c['ok'] for c in checks) else 'fail',
+            'tokens': None if uncertain else tokens['input_tokens'] + tokens['session_completion_tokens'],
+            'token_basis': 'prompt plus completion, A5 parity required',
+            'session_id': session_id, 'window': [start, end],
+            'binding_sha256': json.loads((evid / 'prepared.json').read_text())['catalog_binding_sha256'],
+            'identity_basis': binding['identity_basis'],
+        }
+        with (evid / 'catalog-record.json').open('x') as fh:
+            fh.write(json.dumps(result, sort_keys=True, indent=2) + '\n')
     verdict = {
         "schema": "hs4-p04-acceptance/v1",
         "pass": all(c["ok"] for c in checks),
@@ -564,7 +786,8 @@ def capture_beliefs(args, evid: Path, session: dict[str, Any], session_id: str,
                     run_id: str | None = None,
                     suite: dict[str, str] | None = None,
                     producer: str = "scripts/harness/hs4_p04_acceptance.py",
-                    record_extra: dict[str, Any] | None = None) -> dict[str, Any]:
+                    record_extra: dict[str, Any] | None = None,
+                    arm_role: str = "BASELINE") -> dict[str, Any]:
     """SC86 hook: write the run sidecar and call the belief writer (P0.5).
 
     One task, one trial. The attempt passes when the fixture test passes.
@@ -601,7 +824,7 @@ def capture_beliefs(args, evid: Path, session: dict[str, Any], session_id: str,
         "run_id": run_id or f"hs4-p04-{session_id}",
         "started_at": _utc(start),
         "finished_at": _utc(end),
-        "arm_role": "BASELINE",
+        "arm_role": arm_role,
         "harness": {"name": cap.HARNESS_NAME, "pin": AUDITED_TIP},
         "plugin": {"name": "@epyc/opencode-plugin", "sha256": plugin_sha256()},
         "config_sha256": cap.file_sha256(evid / "opencode.jsonc"),
@@ -640,6 +863,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--out", required=True)
     p.add_argument("--enable-mcp", action="store_true",
                    help="enable the orchestrator MCP server so the session_id stamp is exercised")
+    p.add_argument('--catalog-manifest', help='prospective frozen P6 comparison manifest')
+    p.add_argument('--catalog-arm', choices=['baseline', 'candidate'])
+    p.add_argument('--catalog-trial', type=int, choices=[1, 2])
+    p.add_argument('--catalog-snapshot', help='catalog bytes whose SHA-256 is the arm identity')
+    p.add_argument('--mcp-launch-spec', help='prospective row-owned MCP argv/cwd/file pins JSON')
+    p = sub.add_parser('check-catalog')
+    p.add_argument('--evidence', required=True)
+    p.add_argument('--model-role', required=True)
+    p.add_argument('--build-info', required=True)
     p = sub.add_parser("verify")
     p.add_argument("--evidence", required=True)
     p.add_argument("--repo")
@@ -658,7 +890,8 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     if args.cmd is None:
         args = ap.parse_args(["plan", *(argv or [])])
-    return {"plan": cmd_plan, "prepare": cmd_prepare, "verify": cmd_verify}[args.cmd](args)
+    return {"plan": cmd_plan, "prepare": cmd_prepare, "verify": cmd_verify,
+            'check-catalog': cmd_check_catalog}[args.cmd](args)
 
 
 if __name__ == "__main__":

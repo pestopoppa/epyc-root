@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-INF45-P23-TBDS-20261111",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_inf45_p23_tbds_20261111.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "kvu19b.native-custody.v1",
+  "status": "QUALIFIED",
+  "progress": 3,
+  "model": null,
+  "scope": "synthetic target conditional on constant-offset assumption; interior drift UNKNOWN; no real target alignment, inference or attribution",
+  "binary_sha256": "fdf372f2046436b39a48282b3ffca34978e16e9b62688df67f86cb7dc559ec9b",
+  "files": {
+    "verification.json": "aab7479cda4654e82e679e1f5b5f25030e5bf361af46f761656f9b1ffcbc97ff",
+    "dispatch.csv": "48d6f85d95fa4dc6d34dea23c084b06567c7e3914ae8806f840c38e07ab8cff0",
+    "build.log": "881077b0ca109b3dac4e4dfe4a66cbe5be4c18240605f400b3872a66fa06bba9",
+    "witness.log": "03c2e06f87dd9c6dc178e7ec476dffff441d00824d894436c731743bf421ac7c",
+    "clock": "fdf372f2046436b39a48282b3ffca34978e16e9b62688df67f86cb7dc559ec9b",
+    "after.json": "81ce9637a2f1cf73cd2d54f90e18fee32f7614ca7f3de589d3cee92240f9e202",
+    "verify.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.json": "37340d1cb066e75375d33a94b5312a0e89c97a849a26aa59340c5c2ae9c00a9c",
+    "before.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "allocator_pass": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-elementwise-20261118-v6/PASS.json",
+    "sha256": "23f3ab77a09b16ca1529983b36df0e190b4ae9495209d81bb1763f837e603c19"
+  },
+  "controls": {
+    "log_sha256": "cb03f28a3ecf66b4def6e3a98f70f3bf0de9a86c440b3102dd90a09af8aa593f",
+    "status": "PASS",
+    "test_sha256": "87423c86a1b6bd9357e17c35f299f19330566e9abe0a301157e5fa776bd5415f"
+  },
+  "controls_native": {
+    "expected": 3,
+    "passed": 3
+  },
+  "next_action": "Use the existing ready row for an authorized official grant. After completion, reconcile the full 96-invocation capture with the exact-candidate planner canary and file original evidence.",
+  "official_result_exists": false,
+  "official_result_expected": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/native/RESULT.json",
+  "passed_at": "2026-11-18T21:43:00Z",
+  "projected": 3,
+  "ready_row": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/ni-gpu-pool-elementwise-20261118-v6.json",
+    "sha256": "ee0bc3a8f7288e0a613b8904aee68558de31d0ddba1877d909f366c8ae10978a"
+  },
+  "refused": 0,
+  "republished_by_this_agent": false,
+  "residency_samples": {
+    "NORM-2026102603": 14,
+    "SUM-2026102603": 14,
+    "SUM_ROWS-2026102603": 15
+  },
+  "row_id": "ni-gpu-pool-elementwise-20261118-v6",
+  "seed": 2026102603,
+  "smoke_result": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-elementwise-20261118-v6/historical544-1795038169/SMOKE.json",
+    "sha256": "3dd329236143cbfbf2bc3ec16ac7fefee5df99c0cf220c9f2f4a05017eee8c70"
+  },
+  "spec": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/spec.json",
+    "sha256": "eba70b3262f6e51894a09a7e7481928ab53f269be999bdee01fa1b21d0cff548"
+  },
+  "status": "publisher_smoke_pass_ready",
+  "targets": {
+    "failed": 0,
+    "missing": 0,
+    "passed": 0,
+    "unsupported": 17
+  },
+  "task_text": "- [ ] **SC18-GPU-POOL-C5-HISTORICAL544 \u2014 capture the complete historical-seed C5 comparison.** Model-free synthetic tensors on C5 source `c72ec82f5417bb2937310326120f149b665e8400`, MI210 / CPUs 184-191, est 330 s. Compare the exact 544 historical target observations on the pinned C5 candidate across all 32 original seeds, plus 96 separately counted supported controls in 96 native invocations. Require prospective sealed capture, exact seed/description/artifact custody, zero strict projection refusals, all controls passing, explicit target PASS/UNSUPPORTED/failure dispositions, at least two distinct in-window same-PID positive-VRAM/KFD/pinned-map/affinity samples per invocation and an exact-candidate planning-context canary. Finite selected-case census only; no performance, production, promotion or RVP-C2-2 conclusion. Stop on complete answer or futility at STOP, deadline, missing targets or invalid custody. [inference]"
+}

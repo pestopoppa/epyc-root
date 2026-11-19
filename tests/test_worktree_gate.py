@@ -11,6 +11,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -20,6 +21,7 @@ _SPEC = importlib.util.spec_from_file_location("worktree_gate", ROOT / "scripts/
 wg = importlib.util.module_from_spec(_SPEC)
 sys.modules["worktree_gate"] = wg
 _SPEC.loader.exec_module(wg)
+_REAL_SOURCES = list(wg.REFERENCE_SOURCES)   # the autouse fixture blanks the module's copy
 
 
 def git(cwd, *args):
@@ -210,6 +212,87 @@ def test_reference_in_live_launch_script_is_refused(repo, tmp_path):
     assert verdict(q, probe=probe).verdict == wg.REMOVABLE
 
 
+def _aged(path, days):
+    t = os.stat(path).st_mtime - days * 86400
+    os.utime(path, (t, t))
+
+
+def _ref_verdict(repo, tmp_path, name, fname, days_old, *, suffixes=(".sh", ".env", ".bash", ".bak"),
+                 max_age=None):
+    """A worktree named by one file of the given age in a scratch root; return the verdict."""
+    p = add_wt(repo, tmp_path, name)
+    root = tmp_path / f"scratch-{name}"
+    root.mkdir()
+    f = root / fname
+    f.write_text(f'export EPYC_ROOT_REPO="{p}"\n')
+    _aged(f, days_old)
+    probe = wg.gather_probe(sources=[(str(root), suffixes or None, 4, max_age)], files=[], glob_files=[])
+    return verdict(p, probe=probe)
+
+
+def test_fresh_env_reference_still_blocks_and_stale_one_ages_out(repo, tmp_path):
+    # NEGATIVE CONTROL first: a live .env reference must still block removal.
+    assert _ref_verdict(repo, tmp_path, "envlive", "run.env", 1).verdict == "REFERENCED"
+    assert _ref_verdict(repo, tmp_path, "envold", "run.env", wg.BASH_ENV_MAX_AGE_DAYS + 3).verdict == wg.REMOVABLE
+
+
+def test_fresh_bash_reference_still_blocks_and_stale_one_ages_out(repo, tmp_path):
+    assert _ref_verdict(repo, tmp_path, "bashlive", "run.bash", 1).verdict == "REFERENCED"
+    assert _ref_verdict(repo, tmp_path, "bashold", "run.bash", wg.BASH_ENV_MAX_AGE_DAYS + 3).verdict == wg.REMOVABLE
+
+
+def test_stale_bak_is_ignored_but_fresh_bak_still_blocks(repo, tmp_path):
+    for fname in ("launch.sh.bak", "launch.bak-20261001", "x.bak"):
+        n = fname.replace(".", "-")
+        live = _ref_verdict(repo, tmp_path, f"live-{n}", fname, 1, suffixes=None)
+        assert live.verdict == "REFERENCED", fname
+        stale = _ref_verdict(repo, tmp_path, f"stale-{n}", fname, wg.BAK_STALE_DAYS + 2, suffixes=None)
+        assert stale.verdict == wg.REMOVABLE, fname
+
+
+def test_a_file_merely_containing_bak_in_a_word_is_not_a_backup(repo, tmp_path):
+    # a name that only resembles a backup ("kebab.sh") is a live script and must still block
+    v = _ref_verdict(repo, tmp_path, "notbak", "kebab.sh", wg.BAK_STALE_DAYS + 2, suffixes=None)
+    assert v.verdict == "REFERENCED"
+
+
+def test_campaign_input_reference_never_ages_out_with_default_sources(repo, tmp_path):
+    row = [r for r in _REAL_SOURCES if r[0].endswith("campaigns/*/inputs")][0]
+    assert row[3] is None   # the shipped table carries no cap
+    p = add_wt(repo, tmp_path, "campin")
+    root = tmp_path / "campaigns" / "c1" / "inputs"
+    root.mkdir(parents=True)
+    f = root / "cfg.json"
+    f.write_text(str(p))
+    _aged(f, 400)
+    probe = wg.gather_probe(sources=[(str(root),) + tuple(row[1:])], files=[], glob_files=[])
+    assert verdict(p, probe=probe).verdict == "REFERENCED"
+
+
+def test_campaign_env_never_ages_out_but_tmp_env_does(repo, tmp_path):
+    # NEGATIVE CONTROL: a 20-day-old launch.env in a campaign dir (shipped source rows) still protects.
+    camp_row = [r for r in _REAL_SOURCES if r[0].endswith("autokernel/campaigns/*")][0]
+    tmp_row = [r for r in _REAL_SOURCES if r[0].endswith("/tmp")][0]
+    age = wg.BASH_ENV_MAX_AGE_DAYS + 6
+    p = add_wt(repo, tmp_path, "campenv")
+    cdir = tmp_path / "campaigns" / "c1"
+    cdir.mkdir(parents=True)
+    f = cdir / "launch.env"
+    f.write_text(f'export EPYC_ROOT_REPO="{p}"\n')
+    _aged(f, age)
+    probe = wg.gather_probe(sources=[(str(cdir),) + tuple(camp_row[1:])], files=[], glob_files=[])
+    assert verdict(p, probe=probe).verdict == "REFERENCED"
+    # the same file in the {LLM}/tmp-shaped source ages out
+    q = add_wt(repo, tmp_path, "tmpenv")
+    tdir = tmp_path / "llmtmp2"
+    tdir.mkdir()
+    g = tdir / "launch.env"
+    g.write_text(f'export EPYC_ROOT_REPO="{q}"\n')
+    _aged(g, age)
+    probe2 = wg.gather_probe(sources=[(str(tdir),) + tuple(tmp_row[1:])], files=[], glob_files=[])
+    assert verdict(q, probe=probe2).verdict == wg.REMOVABLE
+
+
 def test_reference_from_inside_the_tree_itself_does_not_count(repo, tmp_path):
     p = add_wt(repo, tmp_path, "selfref")
     probe = wg.Probe()
@@ -288,3 +371,168 @@ def test_should_continue_aborts_scan(repo, tmp_path):
     with pytest.raises(Stop):
         wg.build_report([str(repo)], base="origin/main", min_idle_days=0, sizes=False,
                         should_continue=stop)
+
+
+# ---- per-repo base resolution (kernel tree has no origin/main) ------------------------------
+
+@pytest.fixture
+def kernel_repo(tmp_path):
+    """A kernel-shaped repo: origin is 'upstream' with master, NO origin/main; frozen
+    production-consolidated-v1 (branch AND a same-named tag, as in llama.cpp) + ak/champion/x."""
+    up = tmp_path / "up.git"
+    git(tmp_path, "init", "--bare", "-b", "master", str(up))
+    k = tmp_path / "kernel"
+    git(tmp_path, "clone", str(up), str(k))
+    (k / "a.txt").write_text("a\n")
+    git(k, "add", ".")
+    git(k, "commit", "-m", "init")
+    git(k, "push", "origin", "HEAD:master")
+    git(k, "fetch", "origin")
+    git(k, "branch", "production-consolidated-v1")
+    git(k, "tag", "production-consolidated-v1")
+    git(k, "branch", "ak/champion/x")
+    return k
+
+
+def kwt(kernel, tmp_path, name, *, to_champion=False):
+    path = tmp_path / "wts" / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    git(kernel, "worktree", "add", "-b", f"experimental/{name}", str(path), "ak/champion/x")
+    (path / f"{name}.txt").write_text(name)
+    git(path, "add", f"{name}.txt")
+    git(path, "commit", "-m", f"work {name}")
+    if to_champion:   # champion advances by a patch-equivalent commit (cherry-pick)
+        git(kernel, "worktree", "add", "--detach", str(tmp_path / "wts" / f"champ-{name}"), "ak/champion/x")
+        cw = tmp_path / "wts" / f"champ-{name}"
+        git(cw, "cherry-pick", f"experimental/{name}")
+        git(cw, "branch", "-f", "ak/champion/x", "HEAD")
+        git(kernel, "worktree", "remove", str(cw))
+    return path
+
+
+def kverdict(kernel, path):
+    wt = wg._find(str(path))
+    bases, _ = wg.resolve_bases(str(kernel))
+    wg.classify(wt, base=bases, min_idle_days=0.0, probe=wg.Probe(),
+                canonical_roots=[], now=time.time() + 86400 * 30)
+    return wt
+
+
+def test_kernel_tree_bases_are_frozen_tip_plus_champions(kernel_repo):
+    bases, _ = wg.resolve_bases(str(kernel_repo))
+    assert bases == ["refs/heads/production-consolidated-v1", "refs/heads/ak/champion/x"]
+    # origin/main does not exist here: the old default would have been UNVERIFIABLE
+    assert wg.resolve_bases(str(kernel_repo), "origin/main")[0] == ["origin/main"]
+
+
+def test_experimental_head_on_champion_tip_is_removable(kernel_repo, tmp_path):
+    p = tmp_path / "wts" / "e0"
+    git(kernel_repo, "worktree", "add", "-b", "experimental/e0", str(p), "ak/champion/x")
+    assert kverdict(kernel_repo, p).verdict == wg.REMOVABLE
+
+
+def test_experimental_patch_folded_into_champion_is_removable(kernel_repo, tmp_path):
+    p = kwt(kernel_repo, tmp_path, "e1", to_champion=True)
+    assert kverdict(kernel_repo, p).verdict == wg.REMOVABLE
+
+
+def test_NEG_unfolded_kernel_commit_is_unlanded(kernel_repo, tmp_path):
+    p = kwt(kernel_repo, tmp_path, "e2")
+    v = kverdict(kernel_repo, p)
+    assert v.verdict == "UNLANDED" and v.unlanded == 1
+
+
+def test_NEG_frozen_only_match_does_not_make_unfolded_work_landed(kernel_repo, tmp_path):
+    # commit on top of the champion that exists on NO accepted base, even though the tree's
+    # fork point is an ancestor of the frozen tip: must stay UNLANDED
+    p = kwt(kernel_repo, tmp_path, "e3")
+    git(p, "commit", "--allow-empty", "-m", "more")
+    assert kverdict(kernel_repo, p).verdict == "UNLANDED"
+
+
+def test_NEG_unknown_base_fails_closed(tmp_path):
+    r = tmp_path / "bare"
+    git(tmp_path, "init", "-b", "main", str(r))
+    (r / "a").write_text("a")
+    git(r, "add", ".")
+    git(r, "commit", "-m", "i")
+    p = tmp_path / "wts" / "w"
+    p.parent.mkdir()
+    git(r, "worktree", "add", "-b", "w", str(p), "HEAD")
+    bases, _ = wg.resolve_bases(str(r))
+    assert bases == []
+    wt = wg._find(str(p))
+    wg.classify(wt, base=bases, min_idle_days=0.0, probe=wg.Probe(),
+                canonical_roots=[], now=time.time() + 86400 * 30)
+    assert wt.verdict == "UNVERIFIABLE"
+    ok, _ = wg.remove_one(str(p), base="auto", min_idle_days=0, fetch=False)
+    assert not ok and p.exists()
+
+
+def test_NEG_unresolvable_champion_ref_is_dropped_not_trusted(kernel_repo):
+    git(kernel_repo, "branch", "-D", "ak/champion/x")
+    bases, _ = wg.resolve_bases(str(kernel_repo))
+    assert bases == ["refs/heads/production-consolidated-v1"]
+
+
+def test_report_records_resolved_bases(kernel_repo, tmp_path):
+    kwt(kernel_repo, tmp_path, "e4")
+    rep = wg.build_report([str(kernel_repo)], base="auto", min_idle_days=0, sizes=False,
+                          probe=wg.Probe(), canonical_roots=[])
+    assert rep["bases"]["kernel"][0] == "refs/heads/production-consolidated-v1"
+    assert [w["verdict"] for w in rep["worktrees"] if "e4" in w["path"]] == ["UNLANDED"]
+
+
+@pytest.fixture
+def idle_old(monkeypatch):
+    """New fixture trees are 0 days idle; pretend they are old enough for the close-lane idle floor."""
+    monkeypatch.setattr(wg, "_idle_days", lambda wt, now: 5.0)
+
+
+def test_close_lane_selects_only_ticket_lane_class_and_goes_through_gate(repo, tmp_path, idle_old):
+    ok = add_wt(repo, tmp_path, "codex-ni-TKT777-a")
+    dirty = add_wt(repo, tmp_path, "ni08-TKT777-b")
+    (dirty / "untracked").write_text("x")
+    other_ticket = add_wt(repo, tmp_path, "codex-ni-TKT888-c")
+    other_class = add_wt(repo, tmp_path, "scratch-TKT777-d")
+    # dry-run touches nothing and names the retained tree
+    rc, lines = wg.close_lane("TKT777", [str(repo)], base="origin/main", apply=False, fetch=False)
+    assert rc == 1 and ok.exists()
+    assert any(l.startswith("WOULD-REMOVE") and str(ok) in l for l in lines)
+    assert any(l.startswith("RETAINED") and str(dirty) in l and "DIRTY" in l for l in lines)
+    rc, lines = wg.close_lane("TKT777", [str(repo)], base="origin/main", apply=True, fetch=False)
+    assert rc == 1
+    assert not ok.exists() and dirty.exists()          # dirty refused by the gate, never forced
+    assert other_ticket.exists() and other_class.exists()
+
+
+def test_close_lane_token_boundary_nib2_7_does_not_match_nib2_70(repo, tmp_path, idle_old):
+    seven = add_wt(repo, tmp_path, "codex-ni-NIB2-7-a")
+    seventy = add_wt(repo, tmp_path, "codex-ni-NIB2-70-b")
+    rc, lines = wg.close_lane("NIB2-7", [str(repo)], base="origin/main", apply=True, fetch=False)
+    assert rc == 0 and not seven.exists() and seventy.exists()
+    assert any("selected=1" in l for l in lines)
+
+
+def test_close_lane_refuses_lane_prefix_tokens(repo, tmp_path, idle_old):
+    p = add_wt(repo, tmp_path, "codex-ni-TKT999-z")
+    for tok in ("codex-ni-TKT", "-codex-ni", "ni08-TKT", "-ni", "codexTKT"):
+        rc, _ = wg.close_lane(tok, [str(repo)], base="origin/main", apply=True, fetch=False)
+        assert rc == 2 and p.exists(), tok
+
+
+def test_close_lane_apply_keeps_a_nonzero_idle_floor(repo, tmp_path):
+    p = add_wt(repo, tmp_path, "codex-ni-TKT555-a")
+    rc, _ = wg.close_lane("TKT555", [str(repo)], base="origin/main", apply=True, fetch=False,
+                          min_idle_days=0)
+    assert rc == 2 and p.exists()
+    # default floor: a just-created tree is RECENT and survives --apply
+    rc, lines = wg.close_lane("TKT555", [str(repo)], base="origin/main", apply=True, fetch=False)
+    assert rc == 1 and p.exists()
+
+
+def test_close_lane_refuses_prefix_only_selection(repo, tmp_path):
+    p = add_wt(repo, tmp_path, "codex-ni-TKT999-a")
+    rc, lines = wg.close_lane("ni", [str(repo)], base="origin/main", apply=True, fetch=False)
+    assert rc == 2 and p.exists()
+    assert wg.main(["close-lane", "--ticket", "codex"]) == 2

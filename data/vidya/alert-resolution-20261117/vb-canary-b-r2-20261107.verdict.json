@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "operator-adhoc-ops-20261105",
+  "rationale": "Canary B with live BGE-large embedder (v10 CPU store, :18798): canary_exit 0, gate_result.status PASS \u2014 numeric_trial 0+/N- insight incl. trial 1500 and live toolrunner-convention row present in assembled AutoPilot planner context; frontier section assembled; canonical ledger, baseline and telemetry unchanged; 2 embed calls, 0 errors. RESULT: /mnt/raid0/llm/tmp/vb-canary-b-r2-20261107/RESULT.json",
+  "verdict": "pass"
+ },
+ "at": "2026-11-07T18:51:47+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-07T18:29:47Z reason=complete",
+ "filed_at": "2026-11-07T18:51:47+00:00",
+ "filed_by": "operator-adhoc-ops-20261105",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-CANARY-B-LIVE-EMBEDDER",
+ "id": "vb-canary-b-r2-20261107",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-canary-b-r2-20261107.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-canary-b-r2-20261107/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "operator-adhoc-ops-20261105",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Canary B with live BGE-large embedder (v10 CPU store, :18798): canary_exit 0, gate_result.status PASS \u2014 numeric_trial 0+/N- insight incl. trial 1500 and live toolrunner-convention row present in assembled AutoPilot planner context; frontier section assembled; canonical ledger, baseline and telemetry unchanged; 2 embed calls, 0 errors. RESULT: /mnt/raid0/llm/tmp/vb-canary-b-r2-20261107/RESULT.json",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-canary-b-r2-20261107/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-canary-b-r2-20261107",
+ "row_verdict": "pass",
+ "rule": "Canary B verdict with live BGE-large embedder (bge-large-en-v1.5-f16.gguf, production-consolidated-v10 CPU kernel store, 4 threads, loopback :18798): PASS (canary_exit 0) iff the assembled AutoPilot planner context holds the numeric_trial 0+/N- insight listing trial 1500 AND the strategy-store row 'toolrunner backend and REPL extraction fix' with bind=live AND an assembled frontier section, with the belief reader ready (T1 count recorded; 0 is the intended post-rebase state). Code ROOT e2fab70b84fc, orchestrator a4963aa31c2c; reader from the hub view. FAIL (exit 1) if a conclusion or the section is absent. UNKNOWN (exit 2) on embedder not healthy in 180 s, embed error/degenerate vector, reader not ready, assembly error, or protected-state hash change. Not a measurement; no timing claim. Stop at the first verdict; no in-run retry.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "064f6b7d61f3b44b0df98a57788d98530e708c1daf32e682d00220f18a1b6504",
+  "result": "pass",
+  "status": "filed"
+ }
+}

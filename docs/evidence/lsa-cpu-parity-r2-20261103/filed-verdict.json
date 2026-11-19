@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Infrastructure-invalid pair: dense output exists, but all arm aborted at lsa-screen-reference.h:76 assertion ith == 0 && nth == 1. Monitor /proc exit race masked this failure. all.bin and trace are absent; finite logits, max_abs <=1e-5, exact argmax and 16-layer mask checks cannot be evaluated. Grant rc=0 is not scientific success. Composite LSA-SCREEN-1 remains open pending full CPU and MI210 screen.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:33:15+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-03T17:59:39Z reason=complete",
+ "filed_at": "2026-11-04T07:33:15+00:00",
+ "filed_by": "agent",
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-screen-1-cpu-parity-r2-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/lsa-screen-1-cpu-parity-r2-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "lsa-screen",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Infrastructure-invalid pair: dense output exists, but all arm aborted at lsa-screen-reference.h:76 assertion ith == 0 && nth == 1. Monitor /proc exit race masked this failure. all.bin and trace are absent; finite logits, max_abs <=1e-5, exact argmax and 16-layer mask checks cannot be evaluated. Grant rc=0 is not scientific success. Composite LSA-SCREEN-1 remains open pending full CPU and MI210 screen.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/RESULT.json",
+ "root_cause_family": null,
+ "row": "lsa-screen-1-cpu-parity-r2-20261103",
+ "row_verdict": "inconclusive",
+ "rule": "One 45-ID prefill pair on Qwen3.8-27B-Q8_0: all vocabulary logits finite, max absolute dense/all difference <=1e-5, exact argmax equality, exactly the 16 global layers observed with unchanged all-key masks. Stop on completed pair or first failed check; no timing or quality claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "2444fb737f551e56f9ee1a631a93573c0132dd300da43dc2816cc3b2d88f8964",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

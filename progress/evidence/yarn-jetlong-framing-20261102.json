@@ -1,0 +1,33 @@
+{
+  "build_receipt_sha256": "d183021466fa6975764bfce189a7f8363ff36f3eb708b1c44dee329759303acd",
+  "cache_n": 0,
+  "cleanup": {
+    "captured_server": {
+      "pid": 173896,
+      "start_ticks": 174258209
+    },
+    "subreaper": {
+      "kernel_echild": true,
+      "reaped": [
+        {
+          "pid": 173896,
+          "wait_status": 9
+        }
+      ],
+      "state": "complete"
+    }
+  },
+  "dryrun_id": "yarn-jetlong-framing2048-cpu-20261102-v1",
+  "exit_code": 0,
+  "expected": 2048,
+  "fixture_sha256": "4ecd988c5180c7e4f6f3f6d03097a4089c67834230e8d58bdb550e241197fd36",
+  "limitations": "Four-CPU short diagnostic; no 300K/524K recall, Gate A identity, or throughput claim. No native belief tuple was emitted.",
+  "prompt_n": 2048,
+  "result_path": "/mnt/raid0/llm/tmp/yarn/jetlong-framing-diagnostic/results/RESULT.json",
+  "result_sha256": "717de6c7e1d7c812afcb9ad6d79db0a47f7a6ff24d2ce9914474948b846a1f78",
+  "schema": "jetlong-short-framing-observation-v1",
+  "scope": "2048-token numeric /completion framing at ctx=4096 only; no recall, 300K/524K framing, or scientific campaign claim",
+  "source_seal_sha256": "feb6d3d333f36b14e03aa3b472bfdb8f70b4f676e914a634505eaaabb419a4ca",
+  "tokens_evaluated": 2048,
+  "truncated": false
+}

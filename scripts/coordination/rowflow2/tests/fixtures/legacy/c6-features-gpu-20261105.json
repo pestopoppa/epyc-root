@@ -1,0 +1,23 @@
+{
+ "budget_gib": 1.0,
+ "busy_fraction": 1.0,
+ "decision_rule": "C6 default-off probes + Meta host-view test (correctness). Stores gpu-20261030-729599d69-c6 vs gpu-20261024-c72ec82f5-c5 proven by manifest rehash, --version an",
+ "declared_threads": 8,
+ "estimate_s": 600,
+ "gib": 16,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:C6-FEATURES-DEFAULT-OFF",
+ "id": "c6-features-gpu-20261105",
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/c6-features-gpu-20261105/launch.sh"
+ },
+ "min_window_s": 900,
+ "owner": "operator-adhoc-takeover-20261105",
+ "priority_rank": 100.0,
+ "published_at": "2026-11-05T13:26:24Z",
+ "regions": "mi210_0,184-191",
+ "schema": "epyc.row.v3",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/c6-features-gpu-20261105/STOP",
+ "window_s": 1200
+}

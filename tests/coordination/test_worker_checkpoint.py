@@ -588,3 +588,48 @@ def test_receipt_exposes_major_checkpoint_and_disjoint_context(lane: Path) -> No
     )
     assert receipt["payload"]["major_checkpoint"] is True
     assert receipt["payload"]["next_context"] == "disjoint"
+
+
+def test_resume_state_populated_from_executed_validation_and_flags(lane: Path) -> None:
+    dirty(lane)
+    (lane / "docs" / "table.csv").write_text("a,b\n", encoding="utf-8")
+    (lane / "tool.py").write_text("x = 1\n", encoding="utf-8")
+    receipt = wc.run_checkpoint(
+        request(paths=(ARTIFACT, "docs/table.csv", "tool.py"),
+                remaining_uncertainty="timing only measured once",
+                rollback_note="git revert the commit; no state changed",
+                continuation_state="done"),
+        repo=lane)
+    rs = receipt["payload"]["resume_state"]
+    assert rs["latest_validation_command"] == [sys.executable, "-c", "print('validation-ok')"]
+    assert rs["latest_validation_output"]["exit_code"] == 0
+    assert "validation-ok" in rs["latest_validation_output"]["stdout"]["preview"]
+    assert rs["remaining_uncertainty"] == "timing only measured once"
+    assert rs["rollback_note"] == "git revert the commit; no state changed"
+    assert rs["continuation_state"] == "done"
+    assert rs["non_source_artifacts"] == sorted([ARTIFACT, "docs/table.csv"])  # tool.py is source
+
+
+def test_resume_state_missing_evidence_renders_unknown_not_empty(lane: Path) -> None:
+    dirty(lane)
+    rs = wc.run_checkpoint(request(), repo=lane)["payload"]["resume_state"]
+    assert rs["remaining_uncertainty"] == rs["rollback_note"] == rs["continuation_state"] == "unknown"
+    assert rs["non_source_artifacts"] == [ARTIFACT]
+    assert wc._resume_state(request(), [], [])["latest_validation_command"] == "unknown"
+    assert wc._resume_state(request(), [], [])["latest_validation_output"] == "unknown"
+
+
+def test_resume_state_rejects_bad_continuation_state(lane: Path) -> None:
+    dirty(lane)
+    with pytest.raises(wc.CheckpointError):
+        wc.run_checkpoint(request(continuation_state="maybe"), repo=lane)
+
+
+def test_cli_resume_state_flags_publish_and_pass_bus_schema(lane: Path, bus_root: Path) -> None:
+    dirty(lane)
+    command = cli_args(lane, "resume-state", bus_root=bus_root) + [
+        "--remaining-uncertainty", "one run", "--rollback-note", "revert", "--continuation-state", "resumable"]
+    done = subprocess.run(command, text=True, capture_output=True, check=False)
+    assert done.returncode == 0, done.stderr
+    rs = json.loads(done.stdout)["bus_publication"]["envelope"]["payload"]["resume_state"]
+    assert rs["continuation_state"] == "resumable" and rs["remaining_uncertainty"] == "one run"

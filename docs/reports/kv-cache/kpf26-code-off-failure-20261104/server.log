@@ -1,0 +1,132 @@
+0.00.026.712 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.027.036 W srv  llama_server: -----------------
+0.00.027.037 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.027.038 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.027.038 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.027.038 W srv  llama_server: -----------------
+0.00.028.248 I srv    load_model: loading model '/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf'
+0.03.544.487 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 98304, kv_unified = 'true'
+0.03.572.265 I srv  init_slot_fo: cross-slot prefix fork enabled: mode = checkpoint, min tokens = 1024, cache_idle_slots = 0
+0.03.592.238 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.03.592.295 I srv  llama_server: model loaded
+0.03.592.301 I srv  llama_server: listening on http://127.0.0.1:18978
+0.54.240.793 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1
+0.54.240.855 I slot launch_slot_: id  3 | task 4 | processing task, is_child = 0
+0.54.240.858 I slot get_availabl: id  2 | task -1 | selected slot by LRU, t_last = -1
+0.54.240.878 I slot launch_slot_: id  2 | task 3 | processing task, is_child = 0
+0.57.591.367 W srv          stop: cancel task, id_task = 7
+1.00.106.932 W srv          stop: cancel task, id_task = 8
+1.02.623.030 W srv          stop: cancel task, id_task = 10
+1.05.138.922 W srv          stop: cancel task, id_task = 12
+1.07.656.168 W srv          stop: cancel task, id_task = 14
+1.10.171.960 W srv          stop: cancel task, id_task = 16
+1.12.702.099 W srv          stop: cancel task, id_task = 18
+1.14.791.960 I srv  prefill_budg: prefill-budget: iter 1: decode_rows = 0 (slots 0), prompt = 2048 (slots 1), budget = 0, t_iter = 20550.9 ms, kv_pos = 2048, ms/tok = 10.035
+1.14.792.212 I slot get_availabl: id  1 | task -1 | selected slot by LRU, t_last = -1
+1.14.792.308 I slot launch_slot_: id  1 | task 6 | processing task, is_child = 0
+1.18.297.921 W srv          stop: cancel task, id_task = 24
+1.20.813.391 W srv          stop: cancel task, id_task = 25
+1.23.328.430 W srv          stop: cancel task, id_task = 27
+1.25.846.368 W srv          stop: cancel task, id_task = 29
+1.28.362.332 W srv          stop: cancel task, id_task = 31
+1.30.877.543 W srv          stop: cancel task, id_task = 33
+1.33.392.751 W srv          stop: cancel task, id_task = 35
+1.35.404.583 I srv  prefill_budg: prefill-budget: iter 2: decode_rows = 0 (slots 0), prompt = 2048 (slots 1), budget = 0, t_iter = 20612.1 ms, kv_pos = 4096, ms/tok = 10.050
+1.35.404.801 I slot print_timing: id  1 | task 6 | prompt processing, n_tokens =   2048, progress = 0.36, t =  20.61 s / 99.36 tokens per second
+1.35.404.890 I slot print_timing: id  2 | task 3 | prompt processing, n_tokens =   2048, progress = 0.37, t =  41.16 s / 49.75 tokens per second
+1.38.431.576 W srv          stop: cancel task, id_task = 40
+1.40.938.685 W srv          stop: cancel task, id_task = 41
+1.43.445.706 W srv          stop: cancel task, id_task = 43
+1.45.961.210 W srv          stop: cancel task, id_task = 45
+1.48.476.776 W srv          stop: cancel task, id_task = 47
+1.50.992.478 W srv          stop: cancel task, id_task = 49
+1.53.508.588 W srv          stop: cancel task, id_task = 51
+1.56.024.783 W srv          stop: cancel task, id_task = 53
+1.58.540.088 W srv          stop: cancel task, id_task = 55
+2.01.053.701 W srv          stop: cancel task, id_task = 57
+2.03.568.461 W srv          stop: cancel task, id_task = 59
+2.03.996.594 I srv  prefill_budg: prefill-budget: iter 3: decode_rows = 0 (slots 0), prompt = 2048 (slots 2), budget = 0, t_iter = 28591.6 ms, kv_pos = 6144, ms/tok = 12.005
+2.03.996.843 I slot print_timing: id  1 | task 6 | prompt processing, n_tokens =   3545, progress = 0.62, t =  49.20 s / 72.05 tokens per second
+2.04.004.540 I slot print_timing: id  2 | task 3 | prompt processing, n_tokens =   2599, progress = 0.47, t =  69.76 s / 37.25 tokens per second
+2.07.502.863 W srv          stop: cancel task, id_task = 64
+2.10.018.834 W srv          stop: cancel task, id_task = 65
+2.12.535.787 W srv          stop: cancel task, id_task = 67
+2.15.051.372 W srv          stop: cancel task, id_task = 69
+2.17.567.660 W srv          stop: cancel task, id_task = 71
+2.20.083.041 W srv          stop: cancel task, id_task = 73
+2.22.598.571 W srv          stop: cancel task, id_task = 75
+2.25.113.776 W srv          stop: cancel task, id_task = 77
+2.27.629.446 W srv          stop: cancel task, id_task = 79
+2.28.861.043 I srv  prefill_budg: prefill-budget: iter 4: decode_rows = 0 (slots 0), prompt = 2048 (slots 3), budget = 0, t_iter = 24856.3 ms, kv_pos = 8192, ms/tok = 12.071
+2.28.861.324 I slot print_timing: id  1 | task 6 | prompt processing, n_tokens =   3636, progress = 0.64, t =  74.07 s / 49.09 tokens per second
+2.28.868.957 I slot print_timing: id  2 | task 3 | prompt processing, n_tokens =   3452, progress = 0.63, t =  94.63 s / 36.48 tokens per second
+2.32.367.264 W srv          stop: cancel task, id_task = 84
+2.34.882.321 W srv          stop: cancel task, id_task = 85
+2.37.398.519 W srv          stop: cancel task, id_task = 87
+2.39.914.059 W srv          stop: cancel task, id_task = 89
+2.42.429.234 W srv          stop: cancel task, id_task = 91
+2.44.943.986 W srv          stop: cancel task, id_task = 93
+2.47.459.681 W srv          stop: cancel task, id_task = 95
+2.49.974.808 W srv          stop: cancel task, id_task = 97
+2.52.491.022 W srv          stop: cancel task, id_task = 99
+2.55.006.457 W srv          stop: cancel task, id_task = 101
+2.56.533.312 W srv          stop: cancel task, id_task = 103
+3.00.037.228 W srv          stop: cancel task, id_task = 106
+3.02.551.843 W srv          stop: cancel task, id_task = 107
+3.05.066.966 W srv          stop: cancel task, id_task = 109
+3.07.063.279 I srv  prefill_budg: prefill-budget: iter 5: decode_rows = 0 (slots 0), prompt = 2048 (slots 2), budget = 0, t_iter = 38186.5 ms, kv_pos = 10240, ms/tok = 15.358
+3.07.063.580 I slot print_timing: id  1 | task 6 | prompt processing, n_tokens =   5680, progress = 1.00, t = 112.27 s / 50.59 tokens per second
+3.07.072.149 I slot print_timing: id  2 | task 3 | prompt processing, n_tokens =   3456, progress = 0.63, t = 132.83 s / 26.02 tokens per second
+3.07.079.907 I slot print_timing: id  3 | task 4 | prompt processing, n_tokens =   1104, progress = 0.20, t =  63.08 s / 17.50 tokens per second
+3.10.088.495 W srv          stop: cancel task, id_task = 114
+3.12.604.712 W srv          stop: cancel task, id_task = 115
+3.15.120.449 W srv          stop: cancel task, id_task = 117
+3.17.636.489 W srv          stop: cancel task, id_task = 119
+3.20.151.743 W srv          stop: cancel task, id_task = 121
+3.22.657.500 W srv          stop: cancel task, id_task = 123
+3.25.172.416 W srv          stop: cancel task, id_task = 125
+3.27.691.432 W srv          stop: cancel task, id_task = 127
+3.30.214.098 W srv          stop: cancel task, id_task = 129
+3.32.730.451 W srv          stop: cancel task, id_task = 131
+3.35.245.790 W srv          stop: cancel task, id_task = 133
+3.35.610.372 I srv  prefill_budg: prefill-budget: iter 6: decode_rows = 0 (slots 0), prompt = 2048 (slots 3), budget = 0, t_iter = 28530.3 ms, kv_pos = 12288, ms/tok = 14.645
+3.35.644.272 I slot print_timing: id  2 | task 3 | prompt processing, n_tokens =   3545, progress = 0.64, t = 161.40 s / 21.96 tokens per second
+3.35.651.976 I slot print_timing: id  3 | task 4 | prompt processing, n_tokens =   3059, progress = 0.55, t =  91.65 s / 33.38 tokens per second
+3.39.127.637 W srv          stop: cancel task, id_task = 138
+3.41.642.896 W srv          stop: cancel task, id_task = 139
+3.44.158.029 W srv          stop: cancel task, id_task = 141
+3.46.673.536 W srv          stop: cancel task, id_task = 143
+3.49.188.814 W srv          stop: cancel task, id_task = 145
+3.51.704.468 W srv          stop: cancel task, id_task = 147
+3.54.219.181 W srv          stop: cancel task, id_task = 149
+3.56.730.277 W srv          stop: cancel task, id_task = 151
+3.58.612.984 W srv          stop: cancel task, id_task = 3
+3.59.245.366 W srv          stop: cancel task, id_task = 153
+4.01.760.935 W srv          stop: cancel task, id_task = 156
+4.04.276.558 W srv          stop: cancel task, id_task = 158
+4.06.613.572 W srv          stop: cancel task, id_task = 6
+4.06.613.578 W srv          stop: cancel task, id_task = 4
+4.06.807.698 W srv          stop: cancel task, id_task = 160
+4.07.940.856 W srv          stop: cancel task, id_task = 162
+4.09.313.530 W srv          stop: cancel task, id_task = 163
+4.11.828.507 W srv          stop: cancel task, id_task = 169
+4.13.796.469 I srv  prefill_budg: prefill-budget: iter 7: decode_rows = 5 (slots 1), prompt = 2043 (slots 2), budget = 0, t_iter = 38144.4 ms, kv_pos = 14336, ms/tok = 16.658
+4.13.796.853 I slot      release: id  3 | task 4 | stop processing: n_tokens = 3151, truncated = 0
+4.13.796.862 I slot      release: id  1 | task 6 | stop processing: n_tokens = 5689, truncated = 0
+4.13.796.867 I slot      release: id  2 | task 3 | stop processing: n_tokens = 5496, truncated = 0
+4.13.796.882 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+4.13.796.960 I slot launch_slot_: id  0 | task 167 | processing task, is_child = 0
+4.15.195.584 I srv  prefill_budg: prefill-budget: iter 8: decode_rows = 0 (slots 0), prompt = 154 (slots 1), budget = 0, t_iter = 1398.5 ms, kv_pos = 14490, ms/tok = 12.869
+4.17.761.700 I srv  prefill_budg: prefill-budget: iter 9: decode_rows = 0 (slots 0), prompt = 285 (slots 1), budget = 0, t_iter = 2558.9 ms, kv_pos = 14775, ms/tok = 10.924
+4.17.762.121 I slot print_timing: id  0 | task 167 | prompt processing, n_tokens =    439, progress = 0.99, t =   3.97 s / 110.71 tokens per second
+4.17.865.017 I srv  prefill_budg: prefill-budget: iter 10: decode_rows = 0 (slots 0), prompt = 4 (slots 1), budget = 0, t_iter = 95.6 ms, kv_pos = 14779, ms/tok = 10.924
+4.22.440.308 I slot print_timing: id  0 | task 167 | n_decoded =    100, tg =  21.86 t/s, tg_3s =  21.86 t/s
+4.25.490.811 I slot print_timing: id  0 | task 167 | n_decoded =    155, tg =  20.33 t/s, tg_3s =  18.03 t/s
+4.28.544.483 I slot print_timing: id  0 | task 167 | n_decoded =    204, tg =  19.10 t/s, tg_3s =  16.05 t/s
+4.30.793.906 I slot print_timing: id  0 | task 167 | prompt eval time =    4068.01 ms /   443 tokens (    9.18 ms per token,   108.90 tokens per second)
+4.30.793.911 I slot print_timing: id  0 | task 167 |        eval time =   12928.90 ms /   256 tokens (   50.50 ms per token,    19.80 tokens per second)
+4.30.793.911 I slot print_timing: id  0 | task 167 |       total time =   16996.91 ms /   699 tokens
+4.30.793.917 I slot print_timing: id  0 | task 167 |    graphs reused =         81
+4.30.793.922 I slot print_timing: id  0 | task 167 | draft acceptance = 0.52439 (  172 accepted /   328 generated), mean len =  3.10
+4.30.794.011 I slot      release: id  0 | task 167 | stop processing: n_tokens = 698, truncated = 0
+4.55.705.292 I srv    operator(): operator(): cleaning up before exit...

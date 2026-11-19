@@ -18,7 +18,7 @@ production tree; arm builds are read from /mnt/raid0/llm/kernels/builds.
 """
 from __future__ import annotations
 
-import argparse, hashlib, json, os, re, shlex, signal, statistics, subprocess, sys, threading, time
+import argparse, hashlib, json, math, os, re, shlex, signal, statistics, subprocess, sys, threading, time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -235,17 +235,28 @@ def parse_tbo(text: str) -> dict:
     return {"passed": passed, "total": total, "n_fail_lines": len(fails), "max_nmse_on_fail": max(nm) if nm else None,
             "first_fails": fails[:5], "ok100": bool(m) and passed == total and total > 0 and not fails}
 
-PERF_RE = re.compile(r"MUL_MAT\((?P<vars>[^)]*)\):\s+(?P<runs>\d+) runs\s+-\s+(?P<us>[0-9.]+) us/run")
+PERF_RE = re.compile(r"MUL_MAT\((?P<vars>[^)]*)\):\s+(?P<runs>\S+) runs\s+-\s+(?P<us>\S+) us/run")
 def parse_tbo_perf(text: str) -> dict:
-    """{(type_a, n): us_per_run} from `test-backend-ops perf -o MUL_MAT -p type_a=...`. Keeps the mean of repeats per (type,n,m,k,bs)."""
+    """Dense f32 timings keyed by (type,n,m,k); refuse invalid execution records.
+
+    An rc=0 launch can still report an invalid timing. Reject the entire
+    population rather than silently dropping that cell or averaging it away.
+    """
     acc: dict = {}
     for l in text.splitlines():
         m = PERF_RE.search(l)
         if not m: continue
         v = dict(kv.split("=", 1) for kv in re.split(r",(?![^\[]*\])", m["vars"]) if "=" in kv)
         if v.get("type_b", "f32") != "f32" or v.get("bs", "[1,1]") != "[1,1]": continue
-        key = (v["type_a"], int(v["n"]), v["m"], v["k"])
-        acc.setdefault(key, []).append(float(m["us"]))
+        try:
+            runs, us = int(m["runs"]), float(m["us"])
+            dims = [int(v[d]) for d in ("n", "m", "k")]
+            if runs <= 0 or not math.isfinite(us) or us <= 0 or min(dims) <= 0:
+                raise ValueError("nonpositive runs/dimensions or invalid timing")
+            key = (v["type_a"], dims[0], str(dims[1]), str(dims[2]))
+        except (KeyError, ValueError) as exc:
+            raise ValueError(f"invalid MUL_MAT perf record: {l.strip()}") from exc
+        acc.setdefault(key, []).append(us)
     return {k: statistics.mean(x) for k, x in acc.items()}
 
 def parse_bench(text: str) -> list[dict]:
@@ -472,7 +483,11 @@ def tbo(ctx, name, exe_build: Path, lib_build: Path, dev: str, backend: str, op:
     if pins:
         out["pin"] = pins[0]
         if not pins[0]["ok"]: out |= {"rc": 125, "passed": 0, "pin_refused": True}   # D1: residual escape / unprovable pin => run refused
-    if perf_filter: out["perf"] = {f"{k[0]}|{k[1]}|{k[2]}|{k[3]}": v for k, v in parse_tbo_perf(text).items()}
+    if perf_filter:
+        try:
+            out["perf"] = {f"{k[0]}|{k[1]}|{k[2]}|{k[3]}": v for k, v in parse_tbo_perf(text).items()}
+        except ValueError as exc:
+            out |= {"rc": out["rc"] or 126, "perf": {}, "perf_parse_error": str(exc)}
     ctx.say(f"tbo {name}: rc={rc} {out['passed']}/{out['total']} fails={out['n_fail_lines']}" if not perf_filter else f"tbo perf {name}: rc={rc} cases={len(out['perf'])}")
     return out
 
@@ -618,21 +633,49 @@ LB1C_TYPES = ["q4_K", "q6_K", "iq4_xs", "iq4_nl", "iq3_s"]
 def run_lb1c(ctx, A, B, launches=3):
     """EXL3-LB1c per-type ne11 4..9 sweep on MUL_MAT cases via tbo perf (both arms alternating). Model-independent: the served ne00/ne01 shapes are in tbo's case list."""
     out = {}
+    receipts = ctx.res.setdefault("lb1c_launches", {})
     for t in LB1C_TYPES:
-        byn: dict = {}
+        runs = []
+        receipts[t] = []
         for i in range(launches):
             for nm, b in (("A", A), ("B", B)):
                 if ctx.should_stop(): break
                 r = tbo(ctx, f"lb1c_{t}_{nm}{i}", b, b, "gpu", "ROCm0", "MUL_MAT", timeout=600, perf_filter=f"type_a={t},type_b=f32")
-                for k, us in (r.get("perf") or {}).items():
+                receipts[t].append({"arm": nm, "launch": i, "result": r})
+                ctx.save()
+                runs.append((nm, r))
+        # Failed/partial launches cannot supply timings to a crossover. Retain
+        # their receipts, but require every scheduled launch to finish cleanly.
+        out[t] = {}
+        if len(runs) != 2 * launches or any(r.get("rc") != 0 for _, r in runs):
+            continue
+        per_launch = []
+        malformed = False
+        for nm, r in runs:
+            cells = {}
+            for k, us in (r.get("perf") or {}).items():
+                try:
                     ty, n, m, kk = k.split("|")
-                    if 4 <= int(n) <= 9: byn.setdefault((int(n), m, kk), {}).setdefault(nm, []).append(us)
-        # collapse shapes: per n, per launch, mean over served shapes
-        per_n: dict = {}
-        for (n, m, kk), d in byn.items():
-            for nm, v in d.items():
-                per_n.setdefault(n, {}).setdefault(nm, []).append(v)
-        out[t] = {n: {nm: [statistics.mean(col) for col in zip(*v)] for nm, v in d.items() if v and all(len(x) == len(v[0]) for x in v)} for n, d in per_n.items()}
+                    n = int(n)
+                    if ty != t or not math.isfinite(us) or us <= 0:
+                        raise ValueError("invalid perf cell")
+                except (TypeError, ValueError):
+                    malformed = True
+                    break
+                if 4 <= n <= 9:
+                    cells.setdefault(n, {})[(m, kk)] = us
+            per_launch.append((nm, cells))
+        if malformed:
+            continue
+        for n in range(4, 10):
+            shapes = set(per_launch[0][1].get(n, {}))
+            # The same shapes must occur in EVERY arm and launch. Averaging
+            # unmatched shapes can make a slower kernel appear faster.
+            if not shapes or any(set(cells.get(n, {})) != shapes for _, cells in per_launch):
+                continue
+            out[t][n] = {nm: [statistics.mean(cells[n].values())
+                             for arm, cells in per_launch if arm == nm]
+                         for nm in ("A", "B")}
     return out
 
 def run_050(ctx: Ctx, dry: bool):

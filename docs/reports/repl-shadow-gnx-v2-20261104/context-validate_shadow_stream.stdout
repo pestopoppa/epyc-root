@@ -1,0 +1,71 @@
+{
+  "status": "found",
+  "symbol": {
+    "uid": "Function:scripts/vidya/producers/repl_shadow_validate.py:validate_shadow_stream",
+    "name": "validate_shadow_stream",
+    "kind": "Function",
+    "filePath": "scripts/vidya/producers/repl_shadow_validate.py",
+    "startLine": 49,
+    "endLine": 144
+  },
+  "epistemic": "exact",
+  "incoming": {
+    "calls": [
+      {
+        "uid": "Function:tests/vidya/test_repl_shadow_validate.py:test_valid_observed_and_unknown",
+        "name": "test_valid_observed_and_unknown",
+        "filePath": "tests/vidya/test_repl_shadow_validate.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_repl_shadow_validate.py:test_truncated_and_unrehashed_tampering",
+        "name": "test_truncated_and_unrehashed_tampering",
+        "filePath": "tests/vidya/test_repl_shadow_validate.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_repl_shadow_validate.py:test_rehashed_counts_result_and_source_forgery",
+        "name": "test_rehashed_counts_result_and_source_forgery",
+        "filePath": "tests/vidya/test_repl_shadow_validate.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_repl_shadow_validate.py:test_incomplete_and_duplicate_json_keys",
+        "name": "test_incomplete_and_duplicate_json_keys",
+        "filePath": "tests/vidya/test_repl_shadow_validate.py"
+      }
+    ]
+  },
+  "outgoing": {
+    "calls": [
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow.py:ShadowAttribution.observe_open#3",
+        "name": "observe_open",
+        "filePath": "scripts/vidya/producers/repl_shadow.py"
+      },
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow.py:ShadowAttribution.result#0",
+        "name": "result",
+        "filePath": "scripts/vidya/producers/repl_shadow.py"
+      },
+      {
+        "uid": "Method:scripts/vidya/producers/repl_shadow.py:ShadowAttribution.result#0",
+        "name": "result",
+        "filePath": "scripts/vidya/producers/repl_shadow.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/producers/repl_shadow_validate.py:_stamp",
+        "name": "_stamp",
+        "filePath": "scripts/vidya/producers/repl_shadow_validate.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/producers/repl_shadow_validate.py:_span",
+        "name": "_span",
+        "filePath": "scripts/vidya/producers/repl_shadow_validate.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/producers/repl_shadow_validate.py:_identity",
+        "name": "_identity",
+        "filePath": "scripts/vidya/producers/repl_shadow_validate.py"
+      }
+    ]
+  },
+  "processes": []
+}

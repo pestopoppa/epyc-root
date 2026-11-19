@@ -1,0 +1,25 @@
+{
+  "id": "kvu-kpf18-g3-supervisor-desc-r2-20261105",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-desc-r2-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-desc-r2-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS iff the copied source-sealed actual supervisor passes four model-free real direct-child and descendant controls: normal, child failure, mocked STOP, mocked deadline; all captured descendants absent after owned drain, source seals unchanged and child return outcomes as declared. Mocked admission, STOP and deadline do not qualify full native lifecycle or GPU execution.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18.0d(item 3, group 3)",
+  "priority_rank": 46,
+  "first_progress_s": 30,
+  "dryrun_timeout_s": 90,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-desc-r2-20261105",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute",
+  "unit_key": "case_count",
+  "lineage": "kvu-kpf18-g3-supervisor-desc",
+  "supersedes": "kvu-kpf18-g3-supervisor-desc-20261105"
+}

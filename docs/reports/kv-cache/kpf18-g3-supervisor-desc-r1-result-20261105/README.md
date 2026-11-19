@@ -1,0 +1,3 @@
+# Descendant supervisor qualification, r1
+
+The full run reported four successful tests in `full-test.log` and wrote `RESULT.json`, but the grant ended rc 75 (`partial-native-incomplete`), so this is INCONCLUSIVE under the row contract. The outer engine's completion check invokes `job.py --complete` outside the inner job's exported environment, while that path calls `boundary()` and requires `FILLER_STOPFILE` and `FILLER_DEADLINE`. The completed test output alone is not a full-row PASS. The r2 successor removes that dependency while still checking the task's STOP file and source seals. No native GPU or full-lifecycle conclusion follows.

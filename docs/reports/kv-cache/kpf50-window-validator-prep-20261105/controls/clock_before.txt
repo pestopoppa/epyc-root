@@ -1,0 +1,11 @@
+{
+  "frequency_hz": 1000000000,
+  "samples": [
+    {
+      "host_after_ns": 90,
+      "host_before_ns": 90,
+      "hsa_ticks": 90
+    }
+  ],
+  "schema": "epyc.kpf50.hsa-clock.v1"
+}

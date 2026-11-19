@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "codex-54e7bf03cb52037c",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The agent concludes the task is complete after running offline controls and syntax checks, but explicitly states 'Native smoke and admission remain pending' and 'candidate_collected': False. The task involves a 'production bank' and 'admission', yet the actual production run and admission were never executed or verified.",
+          "confidence": "high",
+          "severity": "major"
+        },
+        {
+          "code": "MAST-11",
+          "name": "Premature termination",
+          "evidence": "The agent sends a final message summarizing the work as 'Prepared and archived' and lists the receipt and offline results, effectively concluding the task while admitting that 'Native smoke and admission remain pending' and the candidate was not collected.",
+          "confidence": "high",
+          "severity": "major"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795007026,
+        "warnings": []
+      }
+    }
+  ]
+}

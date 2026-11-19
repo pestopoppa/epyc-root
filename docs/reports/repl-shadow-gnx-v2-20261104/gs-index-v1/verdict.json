@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Official run ended rc75 reason=disk-floor one second after launch. No official context or impact receipts exist; smoke was only a source scan and is not a risk verdict. No source edit is authorized from this result. Preserve manifest, end and poller at docs/reports/repl-shadow-gnx-v2-20261104/gs-index-v1. The current free-space recovery does not prove the earlier sample cause beyond the recorded disk-floor stop.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T14:21:48+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-04T14:17:51Z reason=disk-floor",
+ "filed_at": "2026-11-04T14:21:48+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.11",
+ "id": "ufh12-gs-frozen-gnx-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh12-gs-frozen-gnx-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "Official run ended rc75 reason=disk-floor one second after launch. No official context or impact receipts exist; smoke was only a source scan and is not a risk verdict. No source edit is authorized from this result. Preserve manifest, end and poller at docs/reports/repl-shadow-gnx-v2-20261104/gs-index-v1. The current free-space recovery does not prove the earlier sample cause beyond the recorded disk-floor stop.",
+ "result_exists": false,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "ufh12-gs-frozen-gnx-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "Pin detached root commit 981ef5ba9ad1476bdb0d7feb84067f4fac074776, run wrapper index with four-quadrant admission, record context and upstream impact for emit, validate, rederive in frozen capture and project in coverage adapter. PASS requires all exact target identities and LOW/MEDIUM. HIGH/CRITICAL immediately recorded stop and warning; no edits. Unknown, ambiguity, mismatched target/index or partial is not PASS; smoke scan is not verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

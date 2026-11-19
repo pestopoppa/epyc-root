@@ -1,0 +1,34 @@
+{
+  "status": "MINIMAL_RETENTION_UNPUBLISHED",
+  "ready": false,
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v2-20261104",
+  "changed": [
+    "spec.json",
+    "packet-pins.json",
+    "source-commit.json"
+  ],
+  "removed_keep": "orch-src/**",
+  "retained_source_evidence": [
+    "source-sha256.json",
+    "source-commit.json"
+  ],
+  "code_pins_unchanged": true,
+  "source_closure_unchanged": true,
+  "source": {
+    "commit": "77ba24efe7f27783a3a98be5474bace26c753f12",
+    "mechanism": "git worktree add --detach",
+    "tracked_state": "clean",
+    "source_manifest": "source-sha256.json",
+    "source_manifest_sha256": "95ee9cd67ad44df71491975d12ec6342da7110540a707496800b26b07471188a",
+    "closure_files_verified": 1837
+  },
+  "publisher_invoked": false,
+  "job_invoked": false,
+  "gpu_polled": false,
+  "at": "2026-11-04T16:36:22.987746+00:00",
+  "offline_controls": {
+    "passed": 33,
+    "total": 33
+  },
+  "packet_pins_verified": true
+}

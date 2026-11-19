@@ -1,0 +1,83 @@
+LEGACY drafter on 'architect_general': master hand-carries ['spec_type', 'draft_model', 'draft_max', 'draft_p_min'] for roles.qwen38_flash_next_ud_iq4xs_local, which declares no `drafters`. Migrate it (DRAFT-SEL-1).
+LEGACY drafter on 'frontdoor': master hand-carries ['spec_type', 'draft_max'] for roles.qwen36_35b_a3b_mtp_q8_local, which declares no `drafters`. Migrate it (DRAFT-SEL-1).
+numa_mode: ok
+  detail: evaluated numa_mode: both (source: declared:stack_topology.yaml)
+research_registry_fresh: skipped
+  warn: LOUD: --allow-stale-research-registry: research registry NOT checked against origin/main; output may drop landed declarations -- do not commit it
+shared_with_derivations: ok
+  detail: port_map, role_launch_meta, numa_config, roles.<alias>.model and _LEGACY_SERVER_URL_FALLBACKS all recompute from server_mode.*.shared_with
+lean_registry: ok
+  detail: recompiled from master: /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/research/orchestration/model_registry.yaml -> /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/orchestration/model_registry.yaml
+  detail: 16 roles projected through the active manifest
+  detail: lean changed: evicted scripts.server.stack_manifest so the later steps of this run import it against the regenerated lean, not the one it was loaded from
+descriptors: updated
+  detail: wrote 4 descriptor(s): /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/orchestration/model_descriptors.yaml
+stack_priors: updated
+  detail: wrote 16 role prior(s): /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/orchestration/derived/stack_priors.yaml
+  detail: numa mode source: declared:stack_topology.yaml
+procedure_enums: updated
+  detail: synced: /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/orchestration/procedures/add_model_to_registry.yaml, /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/orchestration/procedure.schema.json
+operator_summary: updated
+  detail: wrote generated operator summary: /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/docs/generated/current_stack_summary.md
+guard: warnings
+  warn: hardcoded_surface.production_blocker.retired_role_in_active_code: scripts/benchmark/seeding_types.py:49: "dev", "reap_25b", [remediation: remove from live behavior or mark explicit legacy/test-only]
+guard_all_surfaces: warnings
+  warn: hardcoded_surface.production_blocker.retired_role_in_active_code: scripts/benchmark/seeding_types.py:49: "dev", "reap_25b", [remediation: remove from live behavior or mark explicit legacy/test-only]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:83: "bonsai_27b_q1_0": { [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:143: # (qwen35_122b_q4km / glm_52_ud_iq2m) unresolved to exercise that path. [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:147: staged_keys=("bonsai_27b_q1_0",), [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:155: assert "bonsai_27b_q1_0" not in rpg.DEFAULT_STAGED_KEYS [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:156: assert "bonsai_27b_q1_0" not in rpg.PruneConfig().staged_keys [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:205: assert "bonsai_27b_q1_0" in cards [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:206: assert cards["bonsai_27b_q1_0"]["forced"] is True [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:207: assert cards["bonsai_27b_q1_0"]["staged"] is True [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:209: assert "bonsai_27b_q1_0" not in {d["key"] for d in out["floor_dropped"]} [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:216: staged_keys=("bonsai_27b_q1_0",), [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:222: assert "bonsai_27b_q1_0" in cards       # forced survives [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:73: reviewer_agent, architect_coding) that Role._missing_ resolves. If this [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:85: "architect_coding", [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:309: scoring_config={"timeout": 5, "judge_role": "thinking_reasoning"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:311: assert calls[0]["json"]["force_role"] == "thinking_reasoning" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_fleet_layer_fallback.py:41: "architect_general": {"port": 8083, "model_role": "qwen36_27b_mtp_q8_local"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_fleet_layer_fallback.py:48: "architect_critic": {"port": 8074, "model_role": "qwen35_122b_q4km"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_model_descriptor_compiler.py:621: "reap_25b": { [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_model_descriptor_compiler.py:676: assert model["role_bindings"]["server_roles"] == ["reap_25b"] [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:133: assert "thinking_reasoning" not in WORKING_VALUES  # Role with no server [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:272: "thinking_reasoning",  # a Role member with no server (retired) [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_pipeline_routing.py:32: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_q_reward_role_key.py:106: for role in ("architect_coding", "mock"): [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: iterates the legacy "architect_coding" key to prove q-reward role-key handling stays stable for historical replay data. Migrating would drop legacy-key regression coverage.]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_registry_loader.py:18: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_seeding_reward_provenance.py:297: role="architect_coding", [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_seeding_reward_provenance.py:302: reward_provenance={"role": "architect_coding", "mode": "repl", "http_status": 203}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_seeding_reward_provenance.py:308: "architect_coding:repl": fastest, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_seeding_reward_provenance.py:317: assert md["architect_role"] == "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_seeding_reward_provenance.py:320: "architect_coding", [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_seeding_reward_provenance.py:330: lambda r: ["architect_general:repl", "architect_coding:repl"], [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/chapters/10-escalation-and-routing.md:429: signals.thinking_requested = True  # Route to thinking_reasoning model [remediation: generate current stack tables or label snapshot as historical]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/diagrams/orchestration_topology.md:34: THR[thinking_reasoning] [remediation: generate current stack tables or label snapshot as historical]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/proposals/gpu-shadow-lane-registry-proposal.md:37: `roles:` section. Insert the block **after `coder_escalation_q8` and before [remediation: generate current stack tables or label snapshot as historical]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/proposals/gpu-shadow-lane-registry-proposal.md:62: type_v: f16  # deliberate deviation from the qwen36_27b_q8 catalogue row (q8_0): [remediation: generate current stack tables or label snapshot as historical]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/proposals/gpu-shadow-lane-registry-proposal.md:113: - no edits to the existing `qwen36_27b_q8` catalogue entry beyond (optionally) [remediation: generate current stack tables or label snapshot as historical]
+guard_strict: failed
+  error: strict: hardcoded_surface.production_blocker.retired_role_in_active_code: scripts/benchmark/seeding_types.py:49: "dev", "reap_25b", [remediation: remove from live behavior or mark explicit legacy/test-only]
+reasoning_effort_certifications: ok
+  detail: declared prompt-effort levels match their certified model/quant/kernel era
+artifact_integrity: ok
+  detail: artifact_pins_strict=True launcher_ledger_strict=False template_pins_strict=False
+serving_shape_capacity: ok
+  detail: fresh-process serving capacity validation passed on /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/orchestration/model_registry.yaml
+stack_manifest_registry: skipped
+  warn: skipped because earlier stack-change checks failed
+q_scorer_priors: skipped
+  warn: skipped because earlier stack-change checks failed
+runtime_attestation: skipped
+  warn: skipped because earlier stack-change checks failed
+declared_env_attestation: skipped
+  warn: COULD-NOT-CHECK: no managed live process in this tree's state file (a lane worktree has none); this is not a pass
+simulated_fixtures: reference
+  detail: data-only stack-change fixture target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py
+promotion_gate: reference
+  detail: no-inference promotion target: /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -m pytest -q -c /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/pyproject.toml --rootdir=/mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator -o addopts= -p no:cacheprovider /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/tests/unit/test_stack_change_pipeline_simulated_fixtures.py /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/tests/unit/test_build_server_command_helpers.py /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/tests/unit/test_seeding_infra.py /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/tests/unit/test_seeding_infra_additional.py /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/tests/unit/test_seeding_infra_branching.py /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/orchestrator/tests/unit/test_seed_specialist_routing_main_and_retry.py
+summary: failed
+acceptance: blocked
+promotion_gate: fix 1 error(s) before promotion

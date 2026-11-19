@@ -1,0 +1,21 @@
+{
+  "target": {
+    "id": "Function:scripts/vidya/cli.py:cmd_ingest",
+    "name": "cmd_ingest",
+    "type": "Function",
+    "filePath": "scripts/vidya/cli.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 0,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 0,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "byDepthCounts": {},
+  "affected_processes": [],
+  "affected_modules": [],
+  "byDepth": {}
+}

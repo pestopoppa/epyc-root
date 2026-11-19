@@ -1,0 +1,43 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "Model-free owned HIP fixture loads pinned historical ggml HIP backend and allocates device memory. Require seven live source-bound PID/birth, executable, backend mapping, KFD device and positive own-VRAM snapshots over at least 12 seconds with captured-child cleanup. Stop on missing residency, identity or backend drift, compiler, STOP, deadline or cleanup failure. This does not qualify native gate, actual model, continuous residency, compute activity or inference.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 4,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18.0d(item 3, group 3)",
+ "id": "kvu-kpf18-g3-live-residency-fixture-20261105",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-live-residency-fixture-20261105/launch.sh",
+  "sha256": "545011a2b7ced745a7af2916f1ce3773d8fb9b92ac5d4dd743eac6a8bade7da2"
+ },
+ "lineage": "kpf18-g3-live-residency-fixture",
+ "min_window_s": 300,
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:816: untestable prose prerequisite: 'after 160 bit-identical tokens.\\n        - (iii) The defect classes the fork mutants model (`fork_clobber_src`, wrong sta'"
+ ],
+ "published_at": "2026-11-05T03:50:16Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-kvu/docs/reports/kv-cache/kpf18-g3-live-residency-fixture-20261105/spec.json",
+ "regions": "mi210_0,184-187",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-live-residency-fixture-20261105/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-live-residency-fixture-20261105",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-live-residency-fixture-20261105/STOP",
+ "unit_key": "samples",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-live-residency-fixture-20261105"
+}

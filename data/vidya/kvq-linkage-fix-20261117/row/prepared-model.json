@@ -1,0 +1,7 @@
+{
+  "model_ctime_ns": 1786727071283192651,
+  "preflight_mtime_at_preparation": "2026-11-17T11:10:14.766890401Z",
+  "preflight_sha256": "c059be6fb39dc5ef23d99a4e3b4ec6f4f8a5b50cc9220b73bdedcf7872f06132",
+  "schema": "epyc.vidya.kvq_prepared_model.v1",
+  "source_closure_mtime_at_preparation": "2026-11-17T11:09:53.840715323Z"
+}

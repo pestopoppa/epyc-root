@@ -1,0 +1,31 @@
+{
+  "id": "hsf3-incremental-r2-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-incremental-r2-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-incremental-r2-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Count valid JSON objects and target events solely in complete newline-terminated records appended after exact SHA-256 matched prior progress-byte frontiers. Fail on ambiguous frontier matches, unstable source, file larger than 128 MiB or prior seal mismatch. Unmatched files and all SQLite/tap data remain unknown. No gap distribution, independent replicate or HSF-3 closure follows.",
+  "estimate_s": 600,
+  "ram_gib": 2,
+  "handoff_task": "handoffs/active/kv-cache-program.md:HSF-3",
+  "priority_rank": 90,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-incremental-r2-20261105",
+  "unit_key": "progress.files_matched",
+  "keep": [
+    "census.py",
+    "prior.json",
+    "runtime.sha256",
+    "out/**",
+    "launch.sh",
+    "spec.json",
+    "smoke/**"
+  ],
+  "question": "How many valid JSON records were appended beyond the precisely bound prior progress-log byte frontiers?",
+  "expected_effect_vs_sample_error": "Deterministic descriptive count; not a sampling claim.",
+  "stop_rule": "Stop on bounded source failure, ambiguity, STOP or deadline; no retry or inference about unmatched sources.",
+  "gate_class": "futility-only"
+}

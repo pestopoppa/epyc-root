@@ -1,0 +1,44 @@
+{
+ "id": "vb-ak-r18-gfx-observation-20261118",
+ "queued_at": "2026-11-18T22:17:31Z",
+ "regions": "mi210_0,184-187",
+ "smoke_s": 180,
+ "spec": {
+  "budget_gib": 0.25,
+  "decision_rule": "One original fixed 32-token Qwen3.8-27B-Q8_0 DFlash2 request on pinned v10 ffc1bac82 with one device-lock owner, four actual granted host CPUs, native trace reduction, two valid request boundary samples, linked own-child GPU residency and zero projection refusals. Stop on answer, first refusal, STOP or the earlier of 300 seconds and the allocator deadline. Observed-window activity-weighted seconds only, with no optimization objective. Official completion also requires the isolated exact-weight autokernel.planner canary: eligible1/refused0, exact27B visible, CPU/different-weight/same-filename-different-digest excluded. Publisher smoke alone is never official acceptance.",
+  "dryrun_native_result": true,
+  "estimate_s": 300,
+  "first_progress_s": 180,
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R18-GFX-OBSERVATION",
+  "id": "vb-ak-r18-gfx-observation-20261118",
+  "keep": [
+   "*.py",
+   "*.sh",
+   "*.json",
+   "*.sha256",
+   "weights.stat.*",
+   "reader/**",
+   "native-*/**"
+  ],
+  "kind": "compute",
+  "lane": "gpu",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/launch.sh",
+  "max_window_s": 600,
+  "min_window_s": 300,
+  "owner": "handoff-vidya-belief-substrate",
+  "priority_rank": 100,
+  "publish_warnings": [
+   "vidya-belief-substrate-program.md:372: untestable prose prerequisite: 'after sealed strict readback and canary, or on first source/custody/native refusal, STOP or deadline, retaining errors a'",
+   "prep-in-grant: /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/observation.py runs `\"verify_ggml_linkage.sh\", \"weights.sha256\", \"weights.stat.before\", \"weights.stat.after\")`; verify/prepare inputs once before publishing, not inside the grant (it spends grant time; publish continues)"
+  ],
+  "ram_gib": 40,
+  "regions": "mi210_0,184-187",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/official-RESULT.json",
+  "schema": "epyc.row.v3",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118",
+  "shape": "gpu",
+  "smoke_predicate": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/native.py complete",
+  "verdict_by": "agent"
+ }
+}

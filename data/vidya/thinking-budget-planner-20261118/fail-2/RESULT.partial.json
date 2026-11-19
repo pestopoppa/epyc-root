@@ -1,0 +1,15 @@
+{
+  "cpus": [
+    140,
+    141,
+    142,
+    143
+  ],
+  "id": "vb-tb-semantics-native-planner-20261118",
+  "mode": "publisher-smoke",
+  "native_rows": 0,
+  "pins_sha256": "6ac935ab3bd65ca8983e685d098a89040f1a91912dd7ae78c684c0a05240253b",
+  "refusal": "ModuleNotFoundError: No module named 'autokernel'",
+  "refusal_count": 1,
+  "status": "UNKNOWN"
+}

@@ -2,7 +2,7 @@
 
 This inert field contract keeps recorded experience separate from generated teacher targets. It defines types and provenance only; it contains no records, examples, synthetic values, inference outputs, or training instructions.
 
-Source: [Experience Distillation, arXiv v1](https://arxiv.org/html/2607.21051v1). Owning scope: [RTG-39 blocked handoff](../../handoffs/blocked/swarm-dataset-distillation.md).
+Source: [Experience Distillation, arXiv v1](https://arxiv.org/html/2607.21051v1). Owning scope: [RTG-39 blocked handoff](../../handoffs/completed/swarm-dataset-distillation.md).
 
 ## Source-grounded construction levers
 

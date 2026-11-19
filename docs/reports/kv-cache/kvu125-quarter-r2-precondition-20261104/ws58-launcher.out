@@ -1,0 +1,12 @@
+2026-11-02T11:46:09Z [handoff-kvu12-5-quarter-r2-20261102] launcher up pid=121565 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu12-5-quarter-r2-20261102/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu12-5-quarter-r2-20261102/stop minwin=45000s ports=18970 dryrun=1
+2026-11-02T11:46:09Z [handoff-kvu12-5-quarter-r2-20261102] START regions=72-75 cpus=72-75 threads=4 gpu=0 end=2026-11-03T00:20Z
+job rc=0
+2026-11-02T11:46:12Z [handoff-kvu12-5-quarter-r2-20261102] ended rc=75 reason=partial-native-incomplete (grant deleted)
+2026-11-02T11:46:12Z [handoff-kvu12-5-quarter-r2-20261102] one window done; exiting (no --repeat)
+2026-11-03T07:19:17Z [handoff-kvu12-5-quarter-r2-20261102] launcher up pid=4094204 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/kvu/kvu12-5-quarter-r2-20261102/STOP minwin=45000s ports=18970 dryrun=0
+2026-11-03T07:19:22Z [handoff-kvu12-5-quarter-r2-20261102] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-11-03T22:23Z
+/mnt/raid0/llm/epyc-orchestrator/src/runtime/region_lock_cli.py: FAILED
+sha256sum: WARNING: 1 computed checksum did NOT match
+2026-11-03T07:19:22Z [handoff-kvu12-5-quarter-r2-20261102] WARN: 4094761 is not a group leader
+2026-11-03T07:19:22Z [handoff-kvu12-5-quarter-r2-20261102] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-03T07:19:22Z [handoff-kvu12-5-quarter-r2-20261102] one window done; exiting (no --repeat)

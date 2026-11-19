@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/kvfork/kvu19b-multi-clock-20261105/verify.py", line 43, in <module>
+    if __name__=='__main__':main(Path(sys.argv[1]))
+                            ~~~~^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/kvfork/kvu19b-multi-clock-20261105/verify.py", line 34, in main
+    result=check(before,after,log,rows)
+  File "/mnt/raid0/llm/tmp/kvfork/kvu19b-multi-clock-20261105/verify.py", line 6, in check
+    if not 1000000 <= before['frequency_hz'] <= 400000000: raise ValueError('invalid HSA frequency')
+                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid HSA frequency

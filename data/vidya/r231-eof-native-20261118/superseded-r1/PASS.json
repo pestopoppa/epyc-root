@@ -1,0 +1,23 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r231-eof-native-wire-20261118/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-18T03:35:27Z reason=partial-native-incomplete",
+ "engine_sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 90,
+ "first_unit_at": "2026-11-18T03:35:27Z",
+ "id": "vidya-r231-eof-native-wire-20261118",
+ "launcher_sha256": "72f179fe6fff159586a93c9699807ffebd36d62bc3e114fb44f3c96e941886c0",
+ "measured_busy_fraction": null,
+ "measured_claimed_cpus": 4,
+ "measured_threads": null,
+ "passed_at": "2026-11-18T03:35:32Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "116-119",
+ "residency_evidence": null,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r231-eof-native-wire-20261118/native-attempts/attempt-fsg319b_/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

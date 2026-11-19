@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-1b26a9be1b509396",
+      "failure_modes": [
+        {
+          "code": "MAST-7",
+          "name": "Failure to ask for clarification",
+          "evidence": "The user prompt was simply \"go\". The agent interpreted this as a signal to resume a specific, stale background job from 3.5 months prior (\"This background job is the Fable5-Review session... It blocked on 2026-07-24... Today's 'go' resumed it 3.5 months later\") and then decided not to launch it, rather than asking the user what \"go\" referred to in the current context.",
+          "confidence": "high",
+          "severity": "moderate"
+        },
+        {
+          "code": "MAST-11",
+          "name": "Premature termination",
+          "evidence": "The agent concluded the task immediately after determining the specific stale job it guessed at was no longer valid, stating: \"Recommendation: this job has no live work left; it can be deleted from the background-job list. If you meant 'go' as 'pick up current work,' say so and I'll take an assignment\". It stopped without confirming the user's actual intent or completing any current work.",
+          "confidence": "high",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795004623,
+        "warnings": []
+      }
+    }
+  ]
+}

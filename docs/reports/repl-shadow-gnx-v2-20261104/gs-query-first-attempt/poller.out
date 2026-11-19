@@ -1,0 +1,18 @@
+
+==== arm 2026-11-04T07:37:06Z
+2026-11-04T07:37:06Z [ufh12-gs-frozen-query-20261104] launcher up pid=1075799 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/STOP minwin=5400s ports=19111,19112 dryrun=0
+2026-11-04T07:37:11Z [ufh12-gs-frozen-query-20261104] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-11-04T09:29Z
+[region-lock] acquiring regions ['q3'] as role='bench' (timeout_s=6709.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --inner --id ufh12-gs-frozen-query-20261104 --class cpu --cmd /bin/bash /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/launch.sh --job --min-window 5400 --stop /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/STOP --port 19111,19112 --workdir /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query --gpu-threads 184-191
+preverified input identities unchanged
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/run.py", line 118, in <module>
+    rc=main()
+       ^^^^^^
+  File "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/run.py", line 50, in main
+    with socket.socket() as sock:sock.bind(('127.0.0.1',port))
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 98] Address already in use
+job rc=1
+2026-11-04T07:37:14Z [ufh12-gs-frozen-query-20261104] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-04T07:37:14Z [ufh12-gs-frozen-query-20261104] one window done; exiting (no --repeat)

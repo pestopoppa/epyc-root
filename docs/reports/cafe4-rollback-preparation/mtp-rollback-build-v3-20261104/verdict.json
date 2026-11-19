@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Scheduled rc0 native mode=build binds pinned v10 and exact candidate/patch/bridge, validates both compiled markers, source/artifact hashes and local library linkage. Build only: no native MTP, rollback, fault-sensitivity or numerical verdict.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T14:13:02+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T14:05:46Z reason=complete",
+ "filed_at": "2026-11-04T14:13:02+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-mtp-rollback-build-v3-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe4-v10-mtp-rollback-build-v3-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v3/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scheduled rc0 native mode=build binds pinned v10 and exact candidate/patch/bridge, validates both compiled markers, source/artifact hashes and local library linkage. Build only: no native MTP, rollback, fault-sensitivity or numerical verdict.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-v3/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe4-v10-mtp-rollback-build-v3-20261104",
+ "row_verdict": "pass",
+ "rule": "Accept only complete pinned v10 plus target-bound snapshot diagnostic and corrected load_mtp real-MTP rollback/fault candidate CPU executable, compiled CAFE4_MTP_LOAD_ENABLED and CAFE4_MTP_ROLLBACK markers, source/artifact hashes and local common linkage. Build only; native matched controls and numerical floor remain unexecuted; no CAFE-4 completion.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "dca4ddeb2b248d5c41a311cd2b74ab77e177ec2386988e51081e6d9eea9f4086",
+  "result": "pass",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,44 @@
+{
+  "builds": {
+    "release": {
+      "build": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-cuid-successor/zos22-smoke-qrdu737o/release",
+      "cache_sha256": "2b41a27082ed9d74e70d7e42513565c81f36900698aded0a9b427100496ffaf2",
+      "object_count": 9,
+      "sample_object": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/zos22-cuid-successor/zos22-smoke-qrdu737o/release/ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o",
+      "sample_object_sha256": "7f7fb3b643f1f00ac2333b1bb38efaeadcdbe0c65417eb7aa0725b23cd29ddc7"
+    }
+  },
+  "checks": {},
+  "cpus": "72-75",
+  "failure": "GateFailure: native HIP smoke object does not byte-match baseline; CUID fix unproven",
+  "files": {},
+  "finished_at": "2026-11-02T11:45:45.910912+00:00",
+  "id": "codex-gpu-serving-zos22-cuid-r3-20261102",
+  "mode": "smoke",
+  "schema": "epyc.gpu_zos22.native_build.v1",
+  "smoke_unit": "release ggml-base and one native HIP object byte comparison",
+  "source": {
+    "at": "2026-11-02T11:42:53.713350+00:00",
+    "base_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+    "feature_commit": "de708780b958eff481fd3a137704efb03ca7d495",
+    "feature_paths": [
+      "common/sampling.cpp",
+      "common/sampling.h",
+      "tests/CMakeLists.txt",
+      "tests/test-sampling-greedy-fast.cpp",
+      "tools/server/CMakeLists.txt",
+      "tools/server/server-context.cpp"
+    ],
+    "generated_ui_files": 142,
+    "schema": "epyc.gpu_zos22.source_verified.v1",
+    "source_content_manifest_sha256": "cff8775d6216a8610776aded10795d3b358e8231ff24bf5270e83fd44fee942d",
+    "source_pins_sha256": "187e7a953e151f208859cc93f7353d6ba7e43189fe58dc18f47b333184aea4dc",
+    "source_tree": "C5 full tree + six feature blobs + pinned generated UI tree equality PASS",
+    "tracked_tree_files": 3324,
+    "ui_index_sha256": "49820780c8c94185db3567abf40c67cff5c53d37839f934222726be5118f0394",
+    "ui_manifest_sha256": "98c05d2ac6bd378ee20209824428919d2e96808185d6615195641d45b860089d",
+    "ui_tree_sha256": "9777bec7dc33fe2986de16cee6a9fa3c0e5e7232e721e3c163686bb69acbe884"
+  },
+  "started_at": "2026-11-02T11:45:27.486578+00:00",
+  "status": "failed"
+}

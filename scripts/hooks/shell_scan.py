@@ -29,7 +29,10 @@ Several guards independently copied this logic before `pytest_worker_scan` first
 the shared helpers. The reusable scanner now lives here; `lex()` gives each guard the same
 ordered data stripping and command framing.
 
-USE `lex()` unless you need the pieces. Order matters and is easy to get wrong:
+USE `lex()` (alias `segments()`) unless you need the pieces. It splits the output of
+`lex_text()`, the one-pass reader; the pieces are kept for the guards that call them
+directly, but chained they still miss escapes and heredoc markers inside quotes (see
+lex_text). Order matters and is easy to get wrong:
 heredocs MUST be stripped before quotes, because a quoted heredoc marker (``<<'EOF'``)
 would otherwise have its name blanked as a quoted run, leaving ``<<''`` — no detectable
 terminator, and the body scanned as commands again.
@@ -50,6 +53,7 @@ __all__ = [
     "strip_quoted",
     "strip_heredocs",
     "strip_comments",
+    "lex_text",
     "lex",
     "segments",
 ]
@@ -121,12 +125,129 @@ def strip_comments(text: str) -> str:
     return _COMMENT.sub(" ", text)
 
 
+_PLAIN = frozenset("_./+,:=@%-")
+
+
+def _literal(c: str) -> str:
+    """A quoted or escaped character as DATA: itself when it means nothing to the
+    shell, else a private-use stand-in (U+E000 + code) that stays inside the word
+    but can never be read as syntax, a separator, or a trustworthy path character."""
+    return c if c.isalnum() or c in _PLAIN or ord(c) > 127 else chr(0xE000 + ord(c) % 128)
+
+
+def lex_text(command: str, keep_quoted: bool = False, bodies: list[str] | None = None) -> str:
+    """The command with every DATA region removed, decided in ONE pass the way bash
+    reads it — quotes, escapes, comments and heredocs each with the others in view.
+
+    The three strippers above are each right alone and wrong in sequence. Origin
+    2026-10-07 (filesystem containment review), all measured: `echo "<<EOF"` or a
+    `# <<EOF` comment opened a heredoc that blanked the real commands after it;
+    `\\"` and `$'\\''` opened quotes that hid them; `a\\ #` started a comment bash
+    does not see; a `\\`-newline split one command in two, losing its target.
+
+    Output: quoted contents blanked — or, with ``keep_quoted``, kept as _literal
+    data, so `"rm"` still reads as rm and `"a b"` stays one word; escaped characters
+    likewise data; comments and heredoc bodies removed; continuations joined.
+    `$(...)` and backticks inside double quotes are code and stay code. With
+    ``bodies``, each heredoc body is appended to it and its `<<` is followed by
+    chr(0xE080 + index) (capped at 0xE0FF), so a caller can find the body a
+    command reads.
+    """
+    text = re.sub("[\ue000-\uf8ff]", "\ufffd", command)  # input cannot forge a stand-in
+    data = _literal if keep_quoted else (lambda c: " ")
+    out: list[str] = []
+    stack: list[str] = []   # open ( (( and, returning to "...": $(" $((" `"
+    quote, last, i, n, arith = "", "\n", 0, len(text), 0   # arith: open (( in stack
+    heredocs: list[tuple[str, bool, bool]] = []   # (delimiter, <<-, quoted) pending
+    while i < n:
+        c, nxt = text[i], text[i + 1:i + 2]
+        emit, step = c, 1
+        if quote == "'":
+            quote, emit = ("", c) if c == "'" else (quote, data(c))
+        elif quote:                                   # "..." or $'...'
+            if c == "\\" and nxt:
+                emit, step = data(c) + data(nxt), 2
+            elif c == quote[-1]:
+                quote = ""
+            elif quote == '"' and (c == "`" or text.startswith("$(", i)):
+                emit = "`" if c == "`" else "$((" if text.startswith("$((", i) else "$("
+                quote, arith, step = "", arith + (emit == "$(("), len(emit)
+                stack.append(emit + '"')
+            else:
+                emit = data(c)
+        elif c == "\\":                               # \-newline is a continuation
+            emit, c = ("", last) if nxt == "\n" else (_literal(nxt) if nxt else "", "x")
+            step = 2
+        elif c == "#" and last in " \t\n;&|()":
+            end = text.find("\n", i)
+            emit, step, c = " ", (n if end < 0 else end) - i, last
+        elif c in "'\"":
+            quote = "$'" if c == "'" and last == "$" else c
+        elif c == "`" and stack[-1:] == ['`"']:
+            stack.pop()
+            quote = '"'
+        elif c == "(":
+            emit = "((" if nxt == "(" and last in " \t\n;&|($" else "("   # (( is arithmetic
+            stack.append(emit)
+            arith, step = arith + (emit == "(("), len(emit)
+        elif c == ")":
+            top = stack[-1] if stack else ""                # empty: a case pattern's `)`
+            emit = "))" if "((" in top and nxt == ")" else ")"
+            if top and top != '`"' and (emit == "))" or "((" not in top):
+                stack.pop()
+                quote, arith = '"' if top.endswith('"') else "", arith - ("((" in top)
+            step = len(emit)
+        elif text.startswith("<<<", i) or text.startswith("<<", i) and arith:
+            emit = text[i:i + 3] if text.startswith("<<<", i) else "<<"  # here-string; shift
+            step = len(emit)
+        elif text.startswith("<<", i):
+            j = k = i + 2 + (text[i + 2:i + 3] == "-")
+            while k < n and text[k] in " \t":
+                k += 1
+            word, quoted, skip = [], False, k - i          # the delimiter, unquoted
+            while k < n and text[k] not in " \t\n;&|()<>":
+                if text[k] in "'\"":
+                    end = text.find(text[k], k + 1) % (n + 1)   # -1: to the end
+                    word.append(text[k + 1:end])
+                    quoted, k = True, end + 1
+                else:
+                    escaped = text[k] == "\\"
+                    word.append(text[k + escaped:k + 1 + escaped])
+                    quoted, k = quoted or escaped, k + 1 + escaped
+            emit, step = text[i:j], skip                  # the word follows, unspaced
+            if word:
+                heredocs.append(("".join(word), j > i + 2, quoted))
+                if bodies is not None:
+                    emit += chr(0xE080 + min(len(bodies) + len(heredocs) - 1, 127))
+        elif c == "\n" and heredocs:
+            i += 1
+            for delim, tabs, quoted in heredocs:
+                start, parts = i, []
+                while i < n:
+                    end = text.find("\n", i) % (n + 1)
+                    line, i = text[i:end], end + 1
+                    if not quoted and (len(line) - len(line.rstrip("\\"))) % 2:
+                        parts.append(line[:-1])           # a continuation (unquoted only)
+                        continue
+                    line, parts = "".join(parts) + line, []
+                    if (line.lstrip("\t") if tabs else line) == delim:
+                        break
+                if bodies is not None:
+                    bodies.append(text[start:i])
+            heredocs, step = [], 0
+        out.append(emit)
+        last = c
+        i += step
+    return "".join(out)
+
+
 def lex(command: str) -> list[str]:
     """The command's invocations, with data removed. The normal entry point.
 
-    Applies the three strippers in the one order that works, then splits on separators.
+    Lexes in one pass (lex_text — the strippers above, chained, mis-order quotes
+    against heredocs and ignore escapes), then splits on separators.
     """
-    return SEPARATORS.split(strip_comments(strip_quoted(strip_heredocs(command))))
+    return SEPARATORS.split(lex_text(command))
 
 
 def segments(command: str) -> list[str]:

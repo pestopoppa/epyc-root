@@ -1,0 +1,63 @@
+
+  GitNexus Analyzer
+
+[2K
+  Skipped 25 large files (>512KB, likely generated/vendored)
+[2K
+  - benches/dgx-spark/aime25_openai__gpt-oss-120b-high_temp1.0_20251109_094547.html
+[2K
+  - benches/dgx-spark/aime25_openai__gpt-oss-120b-high_temp1.0_20251109_094547_allresults.json
+[2K
+  - ggml/src/ggml-cpu/arch/x86/repack.cpp
+[2K
+  - ggml/src/ggml-opencl/ggml-opencl.cpp
+[2K
+  - ggml/src/ggml-vulkan/ggml-vulkan.cpp
+[2K
+  - models/ggml-vocab-aquila.gguf
+[2K
+  - models/ggml-vocab-baichuan.gguf
+[2K
+  - models/ggml-vocab-bert-bge.gguf
+[2K
+  - models/ggml-vocab-command-r.gguf
+[2K
+  - models/ggml-vocab-deepseek-coder.gguf
+[2K
+  - models/ggml-vocab-deepseek-llm.gguf
+[2K
+  - models/ggml-vocab-falcon.gguf
+[2K
+  - models/ggml-vocab-gemma-4.gguf
+[2K
+  - models/ggml-vocab-gpt-2.gguf
+[2K
+  - models/ggml-vocab-gpt-neox.gguf
+[2K
+  - models/ggml-vocab-llama-bpe.gguf
+[2K
+  - models/ggml-vocab-llama-spm.gguf
+[2K
+  - models/ggml-vocab-mpt.gguf
+[2K
+  - models/ggml-vocab-nomic-bert-moe.gguf
+[2K
+  - models/ggml-vocab-phi-3.gguf
+[2K
+  - models/ggml-vocab-qwen2.gguf
+[2K
+  - models/ggml-vocab-qwen35.gguf
+[2K
+  - models/ggml-vocab-refact.gguf
+[2K
+  - models/ggml-vocab-starcoder.gguf
+[2K
+  - tests/test-backend-ops.cpp
+[2K
+  Set GITNEXUS_MAX_FILE_SIZE=<KB> to include files above the default cap.
+
+  Repository indexed successfully (1670.4s)
+
+  55,396 nodes | 130,694 edges | 1519 clusters | 300 flows
+  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-native-binding-impact-a1f0-20261105-source
+

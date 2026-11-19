@@ -1,0 +1,13 @@
+{
+  "status": "CANDIDATE_NOT_APPROVED",
+  "date": "2026-11-04",
+  "validation": "3 targeted tests passed; freeze and exact-byte source verification passed in the same claim",
+  "cpu_claim": {"cpu_list": "48-51", "role": "build", "timeout_s": 1, "exit_code": 0},
+  "dataset_sha256": "b087b5dad72b3e765a6cf93a9e7d516d8796698a0fd358abb73c6627df19f66e",
+  "source_code_sha256": {
+    "scripts/coordination/gpu-serving-tie-in/p5-gold-validation/candidate_manifest.py": "022248fb49a75449fb87b3c5ac4486902598813a8ad96a4cabb637f7fc9f38cd",
+    "scripts/coordination/gpu-serving-tie-in/p5-gold-validation/test_candidate_manifest.py": "05b21e50fe172234a2a1f00017b54061734bcca382e40479b9a0d472373e692f"
+  },
+  "scope": "40 deterministic identity-selected cases; no model exposure, inference, scorer execution, or case-level scorer-validation claim",
+  "scratch": "Test scratch removed, including task scratch directory; no full dataset or checkout copies"
+}

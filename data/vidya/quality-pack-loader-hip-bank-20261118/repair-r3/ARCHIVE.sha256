@@ -1,0 +1,15 @@
+f5a6d3b7ec2cd6cef865d35a016ea0b7b91d5c214010dbba583e5295aadc3531  ./README.md
+8ffeeb2b42f914d65c3e73024173517c18e0556511eb00cf4281db7390fbb932  ./SOURCE.sha256
+ae818f5beedd1ec0dee4f8a4f47889e8936e20b37bd297879c81bce4ae1f8679  ./failures/1/FAIL-1.json
+06ae42a1f52a1cf8dde6b5b53f9134aee0d96575ee7fa62f10364e299b4f9ebd  ./failures/1/native-result.json
+dcdcdf3e527581f8422790d7aee51cebea1bdace22a9ffac124e8c7dc8fe546e  ./failures/2/FAIL-1.json
+9fc00aac79768200525b1dee7e1900ed5c8343304b82cd4c154f8f140197d963  ./failures/2/native-result.json
+79177a1e8ad6763ddb3ff5eebdae69efdd592a594af9410ec0430edfce46dd08  ./failures/3/FAIL-1.json
+033d4efa960ca050d77bf905ed6c0ab66d4d42fcc65b635bab49d0b99e441a8a  ./failures/3/cleanup.json
+dcb4fec90544f2bf39c98ad37f11b2285e07c64d326c956d7829ca56bcc554ea  ./failures/3/native-result.json
+512cb5c83b6c2156de1c960726277be81ad8b2f12bfac995d8d74adaf9141be8  ./failures/3/server.log
+8288ba3ca7ddce9d3209e1cdd38415320312bcc462f780b0ab34690c4ea1cf2c  ./make_plan.py
+d1a2eb0ec01f0c6e9eb2035babc408834096dface177d11e1259898112edc412  ./offline-validation.txt
+9cfd386469b27ea857101c1031a85aad780f17a5b8b4e438c60470072ad578e1  ./plan.json.original-bytes.json
+b05819549ccc848842823abebaed45e48dc4aa83a89b08092cb14f3ea4699e58  ./receipt.json
+d1dc9f0cb3e849bc482f5c688846664ad2aebe82e0fa1c381b095eb35685c59f  ./row.spec.json

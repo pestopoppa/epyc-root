@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "h-heterogeneous-slot-fabric-residency",
+  "rationale": "Ended rc75. Available result is unqualified coverage (coverage_qualified=false), target_kv_b_from_log=null and healthy_sampled_max_non_kv_b=null; grant PID file points to dryrun state rather than original-run evidence. The required own-PID-minus-shape-matched-target-KV and original-run belief are absent. No KVU-16a tick or registry update.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:13:29+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-02T21:19:03Z reason=exited",
+ "filed_at": "2026-11-04T07:13:29+00:00",
+ "filed_by": "h-heterogeneous-slot-fabric-residency",
+ "handoff_task": "handoffs/active/kv-cache-program.md:KVU-16a",
+ "id": "rtg57-kvu16a-shape-load-20261102-v2",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/rtg57-kvu16a-shape-load-20261102-v2.json",
+ "native_result_path": "/mnt/raid0/llm/worktrees/kvu16a-plan-20261102/result.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "rtg57",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "Ended rc75. Available result is unqualified coverage (coverage_qualified=false), target_kv_b_from_log=null and healthy_sampled_max_non_kv_b=null; grant PID file points to dryrun state rather than original-run evidence. The required own-PID-minus-shape-matched-target-KV and original-run belief are absent. No KVU-16a tick or registry update.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/worktrees/kvu16a-plan-20261102/result.json",
+ "root_cause_family": null,
+ "row": "rtg57-kvu16a-shape-load-20261102-v2",
+ "row_verdict": "inconclusive",
+ "rule": "Sampled own-PID VRAM minus observed shape-matched target KV; qualified coverage and original-run belief required; no lifetime peak or registry update.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "50afc8290dccb2690811d2644cf9b56c3d4173e2b4a5fea8a8807e253098119d",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,62 @@
+[region-lock] acquiring gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=600.0) …
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=158s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=163s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=168s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=173s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=179s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=184s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=189s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=194s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=199s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=205s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=210s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=215s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=220s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=225s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=231s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=236s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=241s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=246s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=251s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=257s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=262s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=267s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=272s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=277s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=283s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=288s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=293s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=298s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=303s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=309s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=314s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=319s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=324s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=329s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=335s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=340s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=345s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=350s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=355s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=361s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=366s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=371s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=376s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=381s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=387s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=392s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=397s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96nomtp': held by pid 4033346 role=bench tag=local-launch-cpu-t96np1 age=402s
+[region-lock] held gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] after 245.2s wait; running: python3 /workspace/artifacts/compute/local-launch-optimization-20261106/harness.py --phase cpu --only cpu_champ_t96_nomtp_50k,cpu_champ_t96_np1_nomtp_50k --no-evict
+[15:33:10] cpu_champ_t96_np1_nomtp_50k: launching taskset ... :18074
+[15:33:21] cpu_champ_t96_np1_nomtp_50k: warmup n_predict=16
+[15:33:22] cpu_champ_t96_np1_nomtp_50k: measured request 1/2 (cache_prompt=False)
+[15:39:17] cpu_champ_t96_np1_nomtp_50k: measured request 2/2 (cache_prompt=True)
+[15:39:45] cpu_champ_t96_np1_nomtp_50k: done ok=True elapsed=395.1s
+[15:39:45] {"arm": "cpu_champ_t96_np1_nomtp_50k", "ok": true, "tok_s": [12.751716263952359], "acceptance": null}
+[15:39:45] cpu_champ_t96_nomtp_50k: launching taskset ... :18074
+[15:39:58] cpu_champ_t96_nomtp_50k: warmup n_predict=16
+[15:39:59] cpu_champ_t96_nomtp_50k: measured request 1/2 (cache_prompt=False)
+[15:45:50] cpu_champ_t96_nomtp_50k: measured request 2/2 (cache_prompt=True)
+[15:46:18] cpu_champ_t96_nomtp_50k: done ok=True elapsed=393.2s
+[15:46:18] {"arm": "cpu_champ_t96_nomtp_50k", "ok": true, "tok_s": [12.860991968310516], "acceptance": null}

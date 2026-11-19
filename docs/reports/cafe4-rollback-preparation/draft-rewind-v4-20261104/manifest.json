@@ -1,0 +1,49 @@
+{
+ "decision_rule": "Build-only: accept pinned v10 and exact target-bound CAFE4 patch plus corrected real-MTP draft-context rewind candidate/bridge; require full CPU executable, compiled CAFE4_MTP_LOAD_ENABLED, CAFE4_MTP_ROLLBACK and CAFE4_DRAFT_REWIND_V4 markers, source/artifact digests and local library linkage. No native rollback/fault or performance verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-mtp-rollback-rewind-build-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.cpp",
+  "*.hpp",
+  "*.json",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/launch.sh",
+  "sha256": "6ba971b9a3fd50d198679570f82f27c3e916fabd31a23d4f81d16cf6da4061ad"
+ },
+ "min_window_s": 1800,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:470: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "speculative-decoding.md:470: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "speculative-decoding.md:470: untestable prose prerequisite: 'prerequisite: intended Qwen3.6-35B-A3B-MTP-Q8_0 on v10 `ffc1bac82eeca6f9099e1ccd9ba49703c460a115` plus exact `CAFE4_MTP_'"
+ ],
+ "published_at": "2026-11-04T14:23:23Z",
+ "published_from": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/proof.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4"
+}

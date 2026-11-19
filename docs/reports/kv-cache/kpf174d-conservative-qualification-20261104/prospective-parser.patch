@@ -1,0 +1,16 @@
+--- a/scripts/coordination/kvfork/kpf174d-prospective/layout_witness.py
++++ b/scripts/coordination/kvfork/kpf174d-prospective/layout_witness.py
+@@ -64,7 +64,12 @@
+     if type(task)!=int or task<0 or slot not in range(4) or type(prefix)!=int or prefix<=0:raise Invalid('bad binding')
+     batches=parse(raw); hits=[]
+     for b in batches:
+-        if not any(r[0]==slot and r[1]==task and r[4]=='prefill' for r in b['rows']):continue
++        target_rows=[r for r in b['rows'] if r[0]==slot and r[1]==task and r[4]=='prefill']
++        if not target_rows:continue
++        # ITEM4 describes a whole server batch; layouts describe ubatches.
++        # This trace format has no layout-to-row-subrange binding.
++        if len(b['layouts'])>1:raise Invalid('ambiguous multi-layout target batch')
++        if min(r[2] for r in target_rows)!=prefix:continue
+         for layout in b['layouts']:
+             pairs=sorted((pos,idx) for idx,pos,mask in layout['cells'] if mask & (1<<slot) and pos<prefix)
+             if [x[0] for x in pairs]==list(range(prefix)):

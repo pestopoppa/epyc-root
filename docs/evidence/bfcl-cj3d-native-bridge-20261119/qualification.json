@@ -1,0 +1,35 @@
+{
+  "box": "CJ-3d",
+  "scope": "single-turn Python native HTTP-to-official-checker integration; software controls only",
+  "upstream": {
+    "repo": "Gorilla",
+    "commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+    "path": "berkeley-function-call-leaderboard",
+    "checkout": "/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104"
+  },
+  "dependencies": [
+    "tree-sitter==0.21.3",
+    "tree-sitter-java==0.21.0",
+    "tree-sitter-javascript==0.21.4"
+  ],
+  "tests": {
+    "integration": 9,
+    "existing_adapter": 12,
+    "positive_selected_cases": 10,
+    "result": "PASS",
+    "command": "BFCL_CHECKOUT=/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104 /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python -B -m unittest discover -s proposed/cj567 -p test_bfcl_native.py -v"
+  },
+  "bindings": {
+    "proposed/cj567/bfcl_native.py": "c3b3e28319d7f8d90b3ed22365c11bcd9b1b0f228b65d35ea8fb77f768e9e9dd",
+    "proposed/cj567/test_bfcl_native.py": "70184383f6ba4275c22381d31df6bd3b1b71443bb13b422ef4b355fcfbe2f9d0",
+    "data/benchmarks/bfcl-v3-cj3d-prep-20261104/sample-manifest.json": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0"
+  },
+  "model_runs": 0,
+  "remaining_cases": 16,
+  "limitations": [
+    "No fleet performance or representative-sample claim",
+    "Java, JavaScript, SQL and multi-turn state/execution paths still require integration",
+    "Scripted HTTP endpoint is transport control, not a live model",
+    "Prospective native outcome custody and belief projection remain VB-BFCL-NATIVE-WIRE"
+  ]
+}

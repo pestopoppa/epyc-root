@@ -12,6 +12,7 @@ checks that make removal safe:
     python3 scripts/system/worktree_gate.py remove <path>...   # remove iff the verdict is REMOVABLE
     python3 scripts/system/worktree_gate.py report [--json] [--out FILE] [--sizes] [--min-idle-days 7]
     python3 scripts/system/worktree_gate.py remove --from-report FILE --confirm TOKEN
+    python3 scripts/system/worktree_gate.py close-lane --ticket TOKEN [--apply]   # LR-11, ticket close
 
 A worktree is REMOVABLE only when ALL of these hold:
   * it is a registered LINKED worktree of a known repo (never a main clone, never a view);
@@ -19,7 +20,10 @@ A worktree is REMOVABLE only when ALL of these hold:
     (worktrees/pool/*), not a read-only view, not a canonical root;
   * it is CLEAN: `git status --porcelain` (untracked included) prints nothing;
   * it is LANDED: `git cherry <base> HEAD` has no `+` line (patch-id equivalence, so a squash or a
-    rebase that kept the patch counts as landed, and a merge commit is not mistaken for content);
+    rebase that kept the patch counts as landed, and a merge commit is not mistaken for content).
+    <base> is derived per repo (resolve_bases): origin/main, or for the llama.cpp kernel tree the
+    frozen production tip plus the ak/champion/* tips (landed in ANY of them); an unknown base is
+    UNVERIFIABLE, never removable;
   * it is not declared load-bearing. The PREFERRED declaration is git's own lock, which dirties
     nothing and which `git worktree remove` itself honours:
         git -C <repo> worktree lock --reason "load-bearing: <who uses it>" <path>
@@ -29,7 +33,7 @@ A worktree is REMOVABLE only when ALL of these hold:
   * no process visible to us has its cwd inside it, or names it in its argv or ENVIRONMENT
     (`/proc/*/environ`: a launcher that exports `EPYC_ROOT_REPO=<tree>` holds no cwd there);
   * no live launch/state file names it: shell scripts under /mnt/raid0/llm/tmp modified in the
-    last 30 days, AutoKernel campaign inputs and top-level state files, the launch manifest, the
+    last 30 days, AutoKernel campaign inputs (no age-out) and top-level state files, the launch manifest, the
     bus roster, the observer registry, the latest crontab backup (REFERENCE_SOURCES below);
   * its ignored files hold no evidence-shaped file (VERDICT*.json, *receipt*.json(l), attestations,
     ratifications, SHA256SUMS) — those are archived first, never deleted with a tree;
@@ -71,6 +75,9 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import scratch_lease  # noqa: E402  (KEEP-marker lease: an expired lease releases the marker)
+
 SCHEMA = "epyc.worktree_gate.report.v1"
 LLM = "/mnt/raid0/llm"
 DEFAULT_REPOS = [
@@ -80,6 +87,17 @@ DEFAULT_REPOS = [
     f"{LLM}/llama.cpp",
 ]
 DEFAULT_BASE = "origin/main"
+AUTO_BASE = "auto"   # the CLI default: each repo resolves its own accepted base(s), see resolve_bases()
+PROD_BRANCH_RE = re.compile(r"^refs/heads/production-consolidated-v(\d+)$")
+CHAMPION_REF_PREFIX = "refs/heads/ak/champion/"
+# LR-11: the `codex-ni*` / `ni0X` lane class. A prefix is a DISCOVERY aid only; close-lane also
+# requires the closing ticket's token, so a prefix alone never selects anything.
+LANE_CLASS_RE = re.compile(r"^(codex-ni|ni0\d)")
+MIN_TICKET_TOKEN = 4
+# close-lane --apply must keep an idle floor: a tree touched in the last couple of hours may still be
+# someone's live lane even when it is clean and landed. Dry-run and apply use the same value.
+CLOSE_LANE_MIN_IDLE_DAYS = 0.1
+_LANE_TOKEN_REFUSED_RE = re.compile(r"^-?(codex|ni)")   # case-sensitive: lane dirs are lowercase; tickets like NIB2-7 are uppercase
 PROTECTED_PARENT_DIRS = ("worktrees/mains", "worktrees/pool")
 VIEW_MARKER = ".epyc-view-readonly"
 # Same narrow pattern as autokernel_disk_sweep.EVIDENCE_RE (kept in sync by a test).
@@ -93,12 +111,28 @@ EVIDENCE_SKIP_DIRS = {
 }
 EVIDENCE_WALK_CAP = 200_000
 KEEP_MARKERS = (".epyc-keep", ".epyc-load-bearing", "KEEP", "LOAD-BEARING")
+# LOOP-39: ~67 content-safe trees stayed blocked by references that were no longer live. A reference
+# source only means "something still uses this path" while it is itself recent, so each class ages out:
+#   * backup copies (name carries `.bak`, e.g. launch.sh.bak, x.bak-20261001) are NEVER a launcher; a
+#     fresh one still counts (someone just edited the real file), a stale one is ignored;
+#   * `.env` / `.bash` files under the scratch roots count for BASH_ENV_MAX_AGE_DAYS (tighter than the
+#     root's 30-day cap for .sh: a sourced env file that nobody touched in two weeks is not a launch);
+#   * campaign files NEVER age out (inputs/ included: an input read by a long campaign must keep
+#     protecting its tree; review 2026-11-09). Campaign top-level state files and the launch manifest
+#     are the live state itself. The `.env`/`.bash` suffix cap is therefore applied ONLY to sources
+#     whose 5th tuple field (suffix_cap, default True) is true, i.e. the {LLM}/tmp scratch source.
+BAK_STALE_DAYS = 7
+BASH_ENV_MAX_AGE_DAYS = 14
+CAMPAIGN_INPUT_MAX_AGE_DAYS = None   # no age-out; kept as a name for the shipped-table test
+SUFFIX_MAX_AGE_DAYS = {".env": BASH_ENV_MAX_AGE_DAYS, ".bash": BASH_ENV_MAX_AGE_DAYS}
+_BAK_RE = re.compile(r"\.bak($|[-._])", re.IGNORECASE)
+
 # Live reference sources: (glob root, filename suffixes or None=any, maxdepth, max age days or None).
 REFERENCE_SOURCES = [
     (f"{LLM}/tmp", (".sh", ".env", ".bash"), 4, 30),
-    (f"{LLM}/autokernel/campaigns/*/inputs", None, 4, None),
-    (f"{LLM}/autokernel/campaigns/*", (".json", ".yaml", ".yml", ".sh", ".env", ".toml"), 1, None),
-    (f"{LLM}/autokernel", (".json", ".yaml", ".yml", ".sh", ".env"), 1, None),
+    (f"{LLM}/autokernel/campaigns/*/inputs", None, 4, CAMPAIGN_INPUT_MAX_AGE_DAYS, False),
+    (f"{LLM}/autokernel/campaigns/*", (".json", ".yaml", ".yml", ".sh", ".env", ".toml"), 1, None, False),
+    (f"{LLM}/autokernel", (".json", ".yaml", ".yml", ".sh", ".env"), 1, None, False),
 ]
 REFERENCE_FILES = [
     f"{LLM}/epyc-orchestrator/orchestration/launch_manifest.yaml",
@@ -246,7 +280,7 @@ class Probe:
 def _iter_reference_files(sources=None, files=None, glob_files=None):
     import glob as _glob
     now = time.time()
-    for root_glob, suffixes, maxdepth, max_age_days in (sources if sources is not None else REFERENCE_SOURCES):
+    for root_glob, suffixes, maxdepth, max_age_days, *rest in (sources if sources is not None else REFERENCE_SOURCES):
         for root in _glob.glob(root_glob):
             if not os.path.isdir(root):
                 continue
@@ -265,7 +299,14 @@ def _iter_reference_files(sources=None, files=None, glob_files=None):
                         continue
                     if st.st_size > REFERENCE_MAX_FILE_BYTES:
                         continue
-                    if max_age_days is not None and now - st.st_mtime > max_age_days * 86400:
+                    age_days = (now - st.st_mtime) / 86400
+                    if max_age_days is not None and age_days > max_age_days:
+                        continue
+                    if _BAK_RE.search(fn) and age_days > BAK_STALE_DAYS:
+                        continue
+                    cap = (next((v for k, v in SUFFIX_MAX_AGE_DAYS.items() if fn.endswith(k)), None)
+                           if (rest[0] if rest else True) else None)
+                    if cap is not None and age_days > cap:
                         continue
                     yield p
     for p in (files if files is not None else REFERENCE_FILES):
@@ -390,7 +431,9 @@ def _protected_reason(wt: Worktree, canonical_roots: list[str]) -> str | None:
         return "read-only view"
     for m in KEEP_MARKERS:
         if os.path.exists(os.path.join(wt.path, m)):
-            return f"keep marker {m}"
+            if scratch_lease.marker_blocks(wt.path):   # no lease (legacy) or unexpired lease
+                return f"keep marker {m}"
+            break                                      # expired lease: the marker no longer protects
     gd = _gitdir(wt.path)
     if gd is not None and (gd / "epyc-keep").exists():
         return f"keep marker {gd / 'epyc-keep'}"
@@ -400,16 +443,64 @@ def _protected_reason(wt: Worktree, canonical_roots: list[str]) -> str | None:
     return None
 
 
+def _quiet_host():
+    """The ONE quiet-host helper: compute-flags/bin/ when installed (this file is bin/churn/), else scripts/coordination/."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for d in (here, os.path.dirname(here), os.path.join(os.path.dirname(here), "coordination")):
+        if os.path.isfile(os.path.join(d, "quiet_host.py")) and d not in sys.path:
+            sys.path.insert(0, d)
+    import quiet_host
+    return quiet_host
+
+
 def _du_bytes(path: str) -> int | None:
+    """du of one tree under nice/ionice. From a background job (EPYC_BACKGROUND_SCAN=1, exported by the disk janitor
+    and the hygiene tick) a live quiet-host grant defers it: None == unmeasured, logged DEFER-QUIET-HOST."""
+    qh = _quiet_host()
+    if os.environ.get("EPYC_BACKGROUND_SCAN") == "1" and qh.defer(f"worktree_gate du {path}"):
+        return None
     try:
-        cp = subprocess.run(["du", "-sx", "--block-size=1", path], capture_output=True, text=True,
+        cp = subprocess.run(qh.scan_prefix() + ["du", "-sx", "--block-size=1", path], capture_output=True, text=True,
                             timeout=1800)
         return int(cp.stdout.split()[0]) if cp.stdout else None
     except (OSError, ValueError, subprocess.TimeoutExpired):
         return None
 
 
-def classify(wt: Worktree, *, base: str, min_idle_days: float, probe: Probe,
+def _ref_commit(repo: str, ref: str) -> str | None:
+    cp = _git(["rev-parse", "-q", "--verify", f"{ref}^{{commit}}"], cwd=repo)
+    return cp.stdout.strip() if cp.returncode == 0 and cp.stdout.strip() else None
+
+
+def resolve_bases(repo: str, override: str | None = None) -> tuple[list[str], str]:
+    """The accepted 'landed' base ref(s) for ONE repo, derived from the repo itself.
+
+    A tree is LANDED when `git cherry` against ANY accepted base shows no `+` line. An empty list
+    means the base is unknown, and the caller must treat every tree as UNVERIFIABLE (fail closed).
+      * explicit --base (anything but "auto"): used verbatim for every repo;
+      * kernel tree (has refs/heads/production-consolidated-v<N>): origin/main does not exist there
+        (origin is upstream ggml-org, default branch master, whose HEAD is NOT our line), so the
+        bases are the FROZEN production tip (highest local production-consolidated-v<N>, qualified
+        as refs/heads/ because a same-named tag exists) plus every local refs/heads/ak/champion/*
+        tip. Experimental work lands in a champion, never in frozen production, so "head is
+        reachable from / patch-equivalent to a champion tip" is the landed test. Champion tips come
+        from the branch namespace that docs/reference/kernel-manifests/ names as the champion;
+      * otherwise refs/remotes/origin/main when it exists; else unknown."""
+    if override and override != AUTO_BASE:
+        return [override], "explicit --base"
+    refs = _git(["for-each-ref", "--format=%(refname)", "refs/heads/"], cwd=repo)
+    heads = refs.stdout.split() if refs.returncode == 0 else []
+    prod = sorted((int(m.group(1)), h) for h in heads if (m := PROD_BRANCH_RE.match(h)))
+    if prod:
+        bases = [prod[-1][1]] + sorted(h for h in heads if h.startswith(CHAMPION_REF_PREFIX))
+        bases = [b for b in bases if _ref_commit(repo, b)]
+        return bases, "kernel tree: frozen production tip + ak/champion/* tips"
+    if _ref_commit(repo, "refs/remotes/origin/main"):
+        return ["origin/main"], "origin/main"
+    return [], "no origin/main and no recognised kernel branches: base unknown"
+
+
+def classify(wt: Worktree, *, base: str | list[str], min_idle_days: float, probe: Probe,
              canonical_roots: list[str], now: float, sizes: bool = False) -> Worktree:
     wt.reasons = []
     if not os.path.isdir(wt.path):
@@ -439,15 +530,30 @@ def classify(wt: Worktree, *, base: str, min_idle_days: float, probe: Probe,
             n = len(st.stdout.splitlines())
             wt.verdict, wt.reasons = "DIRTY", [f"{n} modified/untracked path(s)"]
             return wt
-        ch = _git(["cherry", base, "HEAD"], cwd=wt.path, timeout=300)
-        if ch.returncode != 0:
-            wt.verdict, wt.reasons = "UNVERIFIABLE", [f"git cherry {base} failed: {ch.stderr.strip()[:200]}"]
+        bases = [base] if isinstance(base, str) else list(base)
+        if not bases:
+            wt.verdict, wt.reasons = "UNVERIFIABLE", ["base unknown for this repo (fail closed)"]
             return wt
-        plus = [ln for ln in ch.stdout.splitlines() if ln.startswith("+")]
-        wt.unlanded = len(plus)
-        if plus:
-            wt.verdict, wt.reasons = "UNLANDED", [f"{len(plus)} patch(es) not in {base}"]
+        landed_in, plus_counts, errs = None, [], []
+        for b in bases:
+            ch = _git(["cherry", b, "HEAD"], cwd=wt.path, timeout=300)
+            if ch.returncode != 0:
+                errs.append(f"git cherry {b} failed: {ch.stderr.strip()[:200]}")
+                continue
+            n = len([ln for ln in ch.stdout.splitlines() if ln.startswith("+")])
+            plus_counts.append(n)
+            if n == 0 and landed_in is None:
+                landed_in = b
+        if landed_in is None and errs:
+            wt.verdict, wt.reasons = "UNVERIFIABLE", errs[:3]
             return wt
+        if landed_in is None:
+            wt.unlanded = min(plus_counts)
+            wt.verdict, wt.reasons = "UNLANDED", [
+                f"{wt.unlanded} patch(es) not in {', '.join(bases)}"]
+            return wt
+        wt.unlanded = 0
+        base = landed_in
         ev, complete = _evidence_in_ignored(wt.path)
         if ev:
             wt.verdict, wt.reasons = "EVIDENCE", [f"ignored evidence file(s): {', '.join(ev[:5])}"]
@@ -512,6 +618,7 @@ def build_report(repos: list[str], *, base: str, min_idle_days: float, sizes: bo
     rows: list[dict] = []
     errors: list[str] = []
     seen: set[str] = set()
+    resolved: dict[str, list[str]] = {}
     for repo in repos:
         if not os.path.isdir(repo):
             errors.append(f"repo not found: {repo}")
@@ -521,6 +628,8 @@ def build_report(repos: list[str], *, base: str, min_idle_days: float, sizes: bo
         except (RuntimeError, subprocess.TimeoutExpired) as exc:
             errors.append(str(exc))
             continue
+        repo_bases, _why = resolve_bases(repo, base)
+        resolved[os.path.basename(repo.rstrip("/"))] = repo_bases
         for wt in wts:
             key = os.path.realpath(wt.path)
             if key in seen:
@@ -528,7 +637,7 @@ def build_report(repos: list[str], *, base: str, min_idle_days: float, sizes: bo
             seen.add(key)
             if should_continue is not None:
                 should_continue()
-            classify(wt, base=base, min_idle_days=min_idle_days, probe=probe,
+            classify(wt, base=repo_bases, min_idle_days=min_idle_days, probe=probe,
                      canonical_roots=canon, now=now, sizes=sizes)
             d = asdict(wt)
             d["repo"] = os.path.basename(repo.rstrip("/"))
@@ -543,6 +652,7 @@ def build_report(repos: list[str], *, base: str, min_idle_days: float, sizes: bo
         "schema": SCHEMA,
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "base": base,
+        "bases": resolved,
         "min_idle_days": min_idle_days,
         "sizes_measured": sizes,
         "proc_probe": "complete" if complete else "partial",
@@ -561,10 +671,13 @@ def remove_one(path: str, *, base: str, min_idle_days: float, fetch: bool,
     wt = _find(path)
     if wt is None:
         return False, f"REFUSED {path}: not a registered linked worktree of a git repo"
+    bases, _why = resolve_bases(wt.repo, base)
     if fetch:
-        remote = base.split("/", 1)[0] if "/" in base else "origin"
-        _git(["fetch", "--quiet", remote], cwd=wt.repo, timeout=300)
-    classify(wt, base=base, min_idle_days=min_idle_days, probe=probe or gather_probe(),
+        # only remote-tracking bases need a fetch; local champion/frozen branches do not
+        for remote in sorted({b.split("/", 1)[0] for b in bases
+                              if "/" in b and not b.startswith("refs/")}):
+            _git(["fetch", "--quiet", remote], cwd=wt.repo, timeout=300)
+    classify(wt, base=bases, min_idle_days=min_idle_days, probe=probe or gather_probe(),
              canonical_roots=["/workspace", f"{LLM}/epyc-root"], now=time.time())
     if wt.verdict != REMOVABLE:
         return False, f"REFUSED {path}: {wt.verdict} — {'; '.join(wt.reasons)}"
@@ -574,10 +687,57 @@ def remove_one(path: str, *, base: str, min_idle_days: float, fetch: bool,
     return True, f"REMOVED {path} (branch {wt.branch or '(detached)'} kept; {wt.reasons[0]})"
 
 
+def close_lane(ticket: str, repos: list[str], *, base: str, apply: bool, fetch: bool,
+               min_idle_days: float = CLOSE_LANE_MIN_IDLE_DAYS) -> tuple[int, list[str]]:
+    """Ticket-close cleanup (LR-11): inventory the `codex-ni*`/`ni0X` worktrees of one ticket and
+    (with apply) remove each through remove_one, i.e. through the full gate. Retained trees are
+    listed with their verdict so the closing main can record owner and reason. Returns (rc, lines):
+    rc 0 every selected tree was removed (or, in dry-run, is REMOVABLE), 1 otherwise, 2 usage."""
+    ticket = ticket.strip()
+    if (len(ticket) < MIN_TICKET_TOKEN or _LANE_TOKEN_REFUSED_RE.match(ticket)
+            or re.fullmatch(r"(codex(-ni?)?|ni0?\d?)", ticket)):
+        return 2, [f"REFUSED: --ticket must be at least {MIN_TICKET_TOKEN} characters and "
+                   "not start with a lane prefix (codex*/ni*): a prefix never selects worktrees"]
+    if apply and min_idle_days <= 0:
+        return 2, ["REFUSED: close-lane --apply needs --min-idle-days > 0 (the idle floor is the "
+                   "protection against removing a lane that is still being touched)"]
+    # token boundary: `NIB2-7` must not select `NIB2-70`
+    tok_re = re.compile(r"(^|[^A-Za-z0-9])" + re.escape(ticket) + r"([^A-Za-z0-9]|$)")
+    lines: list[str] = []
+    probe = gather_probe()
+    selected = 0
+    rc = 0
+    for repo in repos:
+        try:
+            wts = list_worktrees(repo)
+        except (RuntimeError, OSError, subprocess.TimeoutExpired) as exc:
+            lines.append(f"UNVERIFIABLE {repo}: {exc}")
+            rc = 1
+            continue
+        for wt in wts:
+            name = os.path.basename(wt.path.rstrip("/"))
+            if not LANE_CLASS_RE.match(name) or not (tok_re.search(name) or tok_re.search(wt.branch)):
+                continue
+            selected += 1
+            if apply:
+                ok, msg = remove_one(wt.path, base=base, min_idle_days=min_idle_days, fetch=fetch, probe=probe)
+                lines.append(msg if ok else f"RETAINED {msg}")
+                rc |= 0 if ok else 1
+            else:
+                classify(wt, base=base, min_idle_days=min_idle_days, probe=probe,
+                         canonical_roots=["/workspace", f"{LLM}/epyc-root"], now=time.time())
+                lines.append(f"{'WOULD-REMOVE' if wt.verdict == REMOVABLE else 'RETAINED'} "
+                             f"{wt.path}\t{wt.verdict}\t{'; '.join(wt.reasons)}")
+                rc |= 0 if wt.verdict == REMOVABLE else 1
+    lines.append(f"close-lane ticket={ticket} selected={selected} apply={apply}")
+    return rc, lines
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0],
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--base", default=DEFAULT_BASE, help="ref a branch must have landed in")
+    ap.add_argument("--base", default=AUTO_BASE,
+                    help="ref a branch must have landed in; default 'auto' derives the accepted base(s) per repo")
     sub = ap.add_subparsers(dest="cmd", required=True)
     c = sub.add_parser("check", help="read-only verdict for each path")
     c.add_argument("paths", nargs="+")
@@ -588,6 +748,13 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--no-fetch", action="store_true")
     r.add_argument("--from-report", help="act on the REMOVABLE rows of this report")
     r.add_argument("--confirm", help="the removable_token printed by that report")
+    cl = sub.add_parser("close-lane", help="ticket-close cleanup of codex-ni*/ni0X lane worktrees")
+    cl.add_argument("--ticket", required=True, help="token in the lane dir or branch name (>=4 chars)")
+    cl.add_argument("--repo", action="append", dest="repos", help="repeatable; default: the 4 repos")
+    cl.add_argument("--apply", action="store_true", help="remove REMOVABLE trees (default: dry-run)")
+    cl.add_argument("--no-fetch", action="store_true")
+    cl.add_argument("--min-idle-days", type=float, default=CLOSE_LANE_MIN_IDLE_DAYS,
+                    help="idle floor; must be > 0 with --apply")
     p = sub.add_parser("report", help="read-only inventory of every linked worktree")
     p.add_argument("--repo", action="append", dest="repos", help="repeatable; default: the 4 repos")
     p.add_argument("--min-idle-days", type=float, default=7.0)
@@ -605,10 +772,16 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"{path}\tUNVERIFIABLE\tnot a registered linked worktree")
                 rc = 1
                 continue
-            classify(wt, base=a.base, min_idle_days=a.min_idle_days, probe=probe,
+            classify(wt, base=resolve_bases(wt.repo, a.base)[0], min_idle_days=a.min_idle_days, probe=probe,
                      canonical_roots=["/workspace", f"{LLM}/epyc-root"], now=time.time())
             print(f"{path}\t{wt.verdict}\t{'; '.join(wt.reasons)}")
             rc |= 0 if wt.verdict == REMOVABLE else 1
+        return rc
+
+    if a.cmd == "close-lane":
+        rc, lines = close_lane(a.ticket, a.repos or DEFAULT_REPOS, base=a.base, apply=a.apply,
+                               fetch=a.apply and not a.no_fetch, min_idle_days=a.min_idle_days)
+        print("\n".join(lines), file=sys.stderr if rc == 2 else sys.stdout)
         return rc
 
     if a.cmd == "remove":

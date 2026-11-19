@@ -1,0 +1,33 @@
+{
+  "id": "kpf-rs1-observer-impact-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At exact detached 8952a0f693fb923918157eb25117641b74766230 retain twelve exact source-bound native upstream impacts for the declared test helpers, recurrent clear/reuse/provenance, context synchronization/execution and backend byte-read/scheduler synchronization. Stop with OWNER_WARNING on HIGH/CRITICAL; fail closed on ambiguity, parser failure, source drift, STOP or deadline. Preserve verbose skip logs and large-file coverage. Smoke is partial only; complete requires scan_complete partial=false. No inference or skipped-file edit-safety conclusion.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-RS-1.OBS-IMPACT",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf-rs1-observer-impact-20261105",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "job.py",
+    "source_integrity.py",
+    "test_source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py",
+    "source/**"
+  ],
+  "lineage": "kpf-rs1-observer-impact-8952",
+  "kind": "compute",
+  "notes": "Additional test/observer/provenance/synchronization surfaces after completed original seven-query r6. No indexing or publication during preparation. Smoke remains partial."
+}

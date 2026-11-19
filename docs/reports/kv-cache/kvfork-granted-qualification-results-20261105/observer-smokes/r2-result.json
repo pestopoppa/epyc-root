@@ -1,0 +1,225 @@
+{
+  "status": "PASS",
+  "case_count": 2,
+  "records": [
+    {
+      "arm": "honest",
+      "expected": "RESULT PASS 2 3",
+      "native": {
+        "after": {
+          "birth": 196440348,
+          "exe_device": 2431,
+          "exe_inode": 197187433,
+          "exe_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d",
+          "maps": {
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169196
+              ],
+              "sha256": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169331
+              ],
+              "sha256": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169393
+              ],
+              "sha256": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169400
+              ],
+              "sha256": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": {
+              "identity": [
+                9,
+                127,
+                103170087
+              ],
+              "sha256": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64"
+            }
+          },
+          "pid": 3114346
+        },
+        "before": {
+          "birth": 196440348,
+          "exe_device": 2431,
+          "exe_inode": 197187433,
+          "exe_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d",
+          "maps": {
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169196
+              ],
+              "sha256": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169331
+              ],
+              "sha256": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169393
+              ],
+              "sha256": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169400
+              ],
+              "sha256": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": {
+              "identity": [
+                9,
+                127,
+                103170087
+              ],
+              "sha256": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64"
+            }
+          },
+          "pid": 3114346
+        },
+        "exit_code": 0,
+        "hits": 2
+      },
+      "cleanup_confirmed": true,
+      "gdb_rc": 0
+    },
+    {
+      "arm": "skip_apply",
+      "expected": "RESULT DETECTED 0 1",
+      "native": {
+        "after": {
+          "birth": 196440437,
+          "exe_device": 2431,
+          "exe_inode": 197187433,
+          "exe_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d",
+          "maps": {
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169196
+              ],
+              "sha256": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169331
+              ],
+              "sha256": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169393
+              ],
+              "sha256": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169400
+              ],
+              "sha256": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": {
+              "identity": [
+                9,
+                127,
+                103170087
+              ],
+              "sha256": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64"
+            }
+          },
+          "pid": 3114449
+        },
+        "before": {
+          "birth": 196440437,
+          "exe_device": 2431,
+          "exe_inode": 197187433,
+          "exe_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d",
+          "maps": {
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169196
+              ],
+              "sha256": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169331
+              ],
+              "sha256": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169393
+              ],
+              "sha256": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": {
+              "identity": [
+                9,
+                127,
+                103169400
+              ],
+              "sha256": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191"
+            },
+            "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": {
+              "identity": [
+                9,
+                127,
+                103170087
+              ],
+              "sha256": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64"
+            }
+          },
+          "pid": 3114449
+        },
+        "exit_code": 0,
+        "hits": 2
+      },
+      "cleanup_confirmed": true,
+      "gdb_rc": 0
+    }
+  ],
+  "smoke": true,
+  "scope": "model-free breakpoint observer only; no historical layout or task binding",
+  "seal_sha256": "b3f378455f46b961d6d77ccdf76b0321b49a71e22d452adb7df8f703f4ae65ed"
+}

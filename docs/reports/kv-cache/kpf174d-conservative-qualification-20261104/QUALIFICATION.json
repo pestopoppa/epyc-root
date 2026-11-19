@@ -1,0 +1,16 @@
+{
+  "schema": "kpf174d-parser-model-free-qualification/v1",
+  "candidate_status": "PATCH_ONLY_SOURCE_BOUND_IMPACT_UNAVAILABLE",
+  "tests": 16,
+  "test_exit": 0,
+  "retained_trace_regraded": false,
+  "gpu_row_prepared": false,
+  "hashes": {
+    "scripts/coordination/kvfork/kpf174d-prospective/layout_witness.py": "ad60f63fa2463a7afe37a0d79aa6f32e6f24fe18116aeb8a42555a23695a0e51",
+    "docs/reports/kv-cache/kpf174d-prefix-parser-diagnosis-20261104/layout_witness_conservative.py": "5e4fca7ee37c7e9e3279e6e7cb4162c2d8f8e068f02a906a0ac1deb400bff1f5",
+    "docs/reports/kv-cache/kpf174d-conservative-qualification-20261104/prospective-parser.patch": "a19820c324ea5d2a8e4123c863ec4a854f6efb81bbd59bada7e5bea4d052e7ac",
+    "docs/reports/kv-cache/kpf174d-conservative-qualification-20261104/test_boundary_controls.py": "3372a26a480acbd7feebcb86f5c128e588cac2709ad0133647c57b72ee4f884b",
+    "docs/reports/kv-cache/kpf174d-conservative-qualification-20261104/unittest.log": "57b7563fa0f1578c20c458756db393217091592460839da20220fb0b14d6295f",
+    "/mnt/raid0/llm/tmp/kpf174d-conservative-qualification-20261104/layout_witness.py": "7069e0cf029a165de590d99a0c389784c96b9cc35bc38f8975e5e750634897d2"
+  }
+}

@@ -1,0 +1,30 @@
+--- a/src/repl_environment/context_bundle.py
++++ b/src/repl_environment/context_bundle.py
+@@ -615,6 +615,12 @@
+                 self._search_log.append(entry)
+             else:
+                 self._search_log_dropped += 1
++        try:  # Optional online-shadow candidate; never changes displayed hits.
++            from src.repl_environment import shadow_bridge
++
++            shadow_bridge.search(self, query, k, section, hits)
++        except Exception:
++            pass
+         try:  # REPL-EMB-2.8a trace tap (flag-off no-op; never raises)
+             from src.repl_environment import trace_capture
+ 
+--- a/src/repl_environment/trace_capture.py
++++ b/src/repl_environment/trace_capture.py
+@@ -198,6 +198,12 @@
+ 
+ def record_open(bundle: Any, section: str, start: int, end: int) -> None:
+     """Tap for a span read (``ContextBundle.get`` of a whole section page). Never raises."""
++    try:
++        from src.repl_environment import shadow_bridge
++
++        shadow_bridge.opened(bundle, section, start, end)
++    except Exception:
++        pass
+     try:
+         if not enabled():
+             return

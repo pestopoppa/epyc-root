@@ -1,0 +1,14 @@
+--- docs/reports/kv-cache/kpf17-oracle-qualification-20261104/gdb_job.py	2026-11-04 20:16:13.534996048 +0000
++++ /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-exit-fix/gdb_job.py	2026-11-04 20:17:07.923088611 +0000
+@@ -27,6 +27,11 @@
+       and all(re.search(r'Test 6 PASS n_rs_seq='+str(n)+r'\b.*mutation=detected',log) for n in (0,8))
+       and 'Test 6 SKIP' not in log and 'Test 6 INVALID' not in log and not witness.get('error')
+       and [x['mode'] for x in witness.get('entries',[])]==[0,8] and points==expected)
++    events=witness.get('debug_events',[])
++    terminal=[e for e in events if e.get('kind')=='exit']
++    returned=witness.get('continue_return') or {}
++    exit_proven=(len(terminal)==1 and terminal[0].get('exit_code')==0 and returned.get('live') is False and returned.get('pid')==0 and terminal[0].get('inferior_num')==returned.get('inferior_num'))
++    valid=valid and exit_proven
+     custody_error=None
+     try:
+         runtime_witness.validate(witness,build,model,custody.validate_maps)

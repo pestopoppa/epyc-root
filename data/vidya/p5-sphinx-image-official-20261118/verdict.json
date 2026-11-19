@@ -1,0 +1,50 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Official rc=0 COMPLETE network-none build retains the exact original base config84fd7981 and Dockerfile9ff86197, derived image sha256:a5f693152c2178356658d94655f2265ae787ba662337237e48cf2945c679e82d, original log f590eb58 and grant08fb7637. Original receipts retained under data/vidya/p5-sphinx-image-official-20261118. Build custody only; scorer acceptance separate.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T19:14:47+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T19:13:02Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-p5-sphinx-image-rebuild-20261118.ended",
+ "filed_at": "2026-11-18T19:14:47+00:00",
+ "filed_by": "agent",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-P5-SPHINX-IMAGE-REBUILD",
+ "id": "vb-p5-sphinx-image-rebuild-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-p5-sphinx-image-rebuild-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official rc=0 COMPLETE network-none build retains the exact original base config84fd7981 and Dockerfile9ff86197, derived image sha256:a5f693152c2178356658d94655f2265ae787ba662337237e48cf2945c679e82d, original log f590eb58 and grant08fb7637. Original receipts retained under data/vidya/p5-sphinx-image-official-20261118. Build custody only; scorer acceptance separate.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-p5-sphinx-image-rebuild-20261118",
+ "row_verdict": "pass",
+ "rule": "Accept a successful network-disabled build from the exact digest-pinned Sphinx base and Dockerfile with inspectable derived image and an original hashed build log. Stop on answer after the image and build log are retained or on first refusal, STOP, the allocation deadline or 300 seconds. Build custody only.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 117,
+  "input": 478066587,
+  "output": 1992761,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 480059348,
+  "tokens_per_task": 4103071.3504273505
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "35763aa83b2a981c4ed85ae66b3205194ecbd19b48bdf652050f810874999be7",
+  "result": "pass",
+  "status": "filed"
+ }
+}

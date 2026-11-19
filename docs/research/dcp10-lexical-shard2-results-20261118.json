@@ -1,0 +1,165 @@
+{
+  "actual_packer": {
+    "entry_render_mode_disagreements": 0,
+    "included_files_by_budget": {
+      "2000": 0,
+      "4000": 1,
+      "8000": 3
+    }
+  },
+  "app_revision": "072d1583b3ead7456731946cd4e4595da6a9877f",
+  "arm": "task-root-lexical",
+  "audit": {
+    "full_empty_gold_tasks": 3,
+    "full_workspace_bare_path_tasks": 42,
+    "third_party_count_reverified": false,
+    "third_party_unresolvable_tasks": 88
+  },
+  "cpu_affinity": "180-183",
+  "custody": {
+    "binding": "local descriptive evidence",
+    "packer_identity_limitation": "Current c24d8421... differs from trusted 7d39ebc4... in the strict reader.",
+    "prior_exit_code": 2,
+    "prior_producer_refusal": "ValueError: capture custody ancestor is group/world writable",
+    "shard_has_accepted_receipt": false
+  },
+  "dataset_hashes": {
+    "full": "2f56535bdc73eb8a68bf4ebb49789d8e9cd4f219ea60df6290b85278aee61ca8",
+    "lite": "e9dcfd504cbfb849ac815a79040c793d0d92f94eecc9b5a4ee3e1445a2f8a791"
+  },
+  "disposition": "bounded_local_diagnostic_complete",
+  "durable_files": [
+    "scripts/experiments/dcp10-discovery/pilot.py",
+    "scripts/experiments/dcp10-discovery/verify_pilot.py",
+    "scripts/experiments/dcp10-discovery/README.md"
+  ],
+  "elapsed_seconds": 5.46932344592642,
+  "eligible_task_count": 3,
+  "hf_rev": "c2855792b006af41c67202d33883fb9d46362853",
+  "independent_check": "Verified 12 task-scope counts, six macro metrics per scope, all three actual pack budgets and rendered modes.",
+  "independent_check_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard2/verify_actual.txt",
+  "independent_check_sha256": "44398ecec0265db8556aa5b846c94fdc126f846acdceb41f08ba3699dbd279ea",
+  "independent_checker_source_sha256": "d3fdcbc50984ad1047cd6fa7a0974cf7c0c3f6419d7ab6db572b803b07a76a2c",
+  "limit": 20,
+  "macro_scopes": [
+    {
+      "budget_tokens": null,
+      "metrics": {
+        "file_f1": 0.11188811188811189,
+        "file_precision": 0.08333333333333333,
+        "file_recall": 0.17777777777777778,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "discovery"
+    },
+    {
+      "budget_tokens": 2000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 4000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 8000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    }
+  ],
+  "max_files": 8,
+  "output_sha256": {
+    "c.json": "92b5b76f8c9ecd835b87d3435ea4194c0dea3e0d32b57aeffed2ead6286a5dd0",
+    "cpp.json": "233e74cc8c2f58d7e752d931186d45d943b0c52493868895258962ae6da2f4a4",
+    "discovery.jsonl": "f97b477f250a2adb59988663f3ea061d5468579eca3192fae8e2b062187fb7e1",
+    "predictions.jsonl": "dda174fc00ad7c27539168d43d6095e35eada601c7782be80e1be6ba4507e4d1",
+    "python.json": "529ff761cc25d35c9305070ca6fafea0a6f186f53224f2462af5bb66a32910e8",
+    "score-request.json": "18ac8a2efc6bd0d88b841522c39100719e65bd78d7bc01f2549ba4e1f7f1ef9a",
+    "scored-output.json": "2c25d17095f876bb189786b2949f9763872bb4d34cf158a1d2c28d4736a477ea"
+  },
+  "packet_hashes": {
+    "dataset-audit.json": "c7fff38967f40cbde4ca8a437255820620ef18683e80bed6048d9cfc73219841",
+    "dispositions.json": "1d0434a26afcd7069fd5470c872f77a72d606591f0ae713d354876e0ac4f2644",
+    "tasks.jsonl": "fb54edf5cd0d613f2cbda86511f1cf7875e54d90c3fb45f041c79d9894ad56a7"
+  },
+  "prediction_status_counts": {
+    "ok": 3
+  },
+  "previous_request_sha256": "5a42163d7262dcbe1fa6e7ff6daf870c74070b58b9d7fc4da684981f292a37db",
+  "producer_sha256": "cf0ca0f7dec5533ed465c1cd30f6941070b5212f0335d4af0a49d023f41f0130",
+  "request_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard2/packet/request.json",
+  "request_sha256": "7b05c32712254a713b365201d2226b24ac96604e2c3756f37fbb17887c03fbae",
+  "run_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard2/pilot/run.json",
+  "run_sha256": "cdf518bccbff022243ef05dc55c6c7328e730c445f64cc63d80e37701156a615",
+  "runtime_limit_seconds": 90,
+  "selected": [
+    {
+      "base_commit": "252685092cacdd0f8b485ed6f105ec7acc29c7a4",
+      "dataset": "lite",
+      "disposition": "include",
+      "instance_id_sha256": "00971eccd1fd8835f1e0ad169f81a019a68f4bbebeb6ade1be8b06eae6528f1a",
+      "language": "python",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/ansible/ansible.git",
+      "stratum_size": 266,
+      "task_id": "SWE-Bench-Pro__python__maintenance__bugfix__739b23db"
+    },
+    {
+      "base_commit": "764110c805d8020f5202c60ffed2b2570caf792a",
+      "dataset": "full",
+      "disposition": "include",
+      "instance_id_sha256": "055746643e7184c904168fcee0267572c6e1c3cade9be246ccf008e67b8742ae",
+      "language": "c",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/ponylang/ponyc.git",
+      "stratum_size": 68,
+      "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__0dde5323"
+    },
+    {
+      "base_commit": "c03f55ec3a0511611fa7f0537f858544a0ed03bd",
+      "dataset": "full",
+      "disposition": "include",
+      "instance_id_sha256": "0119c1853830092d6d7e1110e8f75e6e448f4ca422bc1268fe0cd59d5dff6055",
+      "language": "cpp",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/fmtlib/fmt.git",
+      "stratum_size": 60,
+      "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__2c49ef99"
+    }
+  ],
+  "selection_rank": 2,
+  "selection_rule": "Ascending SHA-256 of UTF-8 instance ID within each declared stratum",
+  "source_hashes": {
+    "src/context_assembly.py": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924",
+    "src/context_discovery.py": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+    "src/contextbench_score.py": "feabbd1c29d5e236a3e81b664d05d15178faeaa7d8418306581b289705b177de",
+    "src/repl_environment/code_search.py": "2aa8a78d82ce60ba61d29b26eadd7f56bc06d1492dc5b5021731472cfce41c20",
+    "src/repl_environment/task_root.py": "7ec2dd4a97d8a8f758acdaa053234891637485383a30f4eec8a108b4f4f0769f"
+  },
+  "task": "DCP-10-P2",
+  "upstream_git_rev": "1436c28a8eb95496da4ea69ad458b9f8a8eb7d61"
+}

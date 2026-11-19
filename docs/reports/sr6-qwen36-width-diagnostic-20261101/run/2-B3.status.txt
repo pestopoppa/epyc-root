@@ -1,0 +1,61 @@
+Name:	llama-server
+Umask:	0022
+State:	S (sleeping)
+Tgid:	1657523
+Ngid:	0
+Pid:	1657523
+PPid:	1501828
+TracerPid:	0
+Uid:	1000	1000	1000	1000
+Gid:	1000	1000	1000	1000
+FDSize:	64
+Groups:	984 992 1000 
+NStgid:	1657523
+NSpid:	1657523
+NSpgid:	1468381
+NSsid:	1468381
+Kthread:	0
+VmPeak:	52533316 kB
+VmSize:	51074792 kB
+VmLck:	36904408 kB
+VmPin:	       0 kB
+VmHWM:	41564600 kB
+VmRSS:	41564600 kB
+RssAnon:	41548332 kB
+RssFile:	   16268 kB
+RssShmem:	       0 kB
+VmData:	48563156 kB
+VmStk:	     132 kB
+VmExe:	       4 kB
+VmLib:	   16536 kB
+VmPTE:	   82960 kB
+VmSwap:	       0 kB
+HugetlbPages:	       0 kB
+CoreDumping:	0
+THP_enabled:	1
+untag_mask:	0xffffffffffffffff
+Threads:	290
+SigQ:	5/4641855
+SigPnd:	[redacted-long-digit-run]
+ShdPnd:	[redacted-long-digit-run]
+SigBlk:	[redacted-long-digit-run]
+SigIgn:	[redacted-long-digit-run]
+SigCgt:	[redacted-long-digit-run]
+CapInh:	[redacted-long-digit-run]
+CapPrm:	[redacted-long-digit-run]
+CapEff:	[redacted-long-digit-run]
+CapBnd:	000001ffffffffff
+CapAmb:	[redacted-long-digit-run]
+NoNewPrivs:	0
+Seccomp:	0
+Seccomp_filters:	0
+Speculation_Store_Bypass:	thread vulnerable
+SpeculationIndirectBranch:	conditional enabled
+Cpus_allowed:	00000000,00000000,00000000,ffffffff,ffffffff,ffffffff
+Cpus_allowed_list:	0-95
+Mems_allowed:	00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,0000000f
+Mems_allowed_list:	0-3
+voluntary_ctxt_switches:	20
+nonvoluntary_ctxt_switches:	65
+x86_Thread_features:	
+x86_Thread_features_locked:	

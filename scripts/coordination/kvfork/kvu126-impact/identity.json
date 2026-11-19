@@ -1,0 +1,15 @@
+{
+  "head": "beb7b859c55e8b8c720a77ac442eec6a5b0393bf",
+  "source_worktree": "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-source-20261104",
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/job.py": "155c9b6e5fb98c504c2b306985b31188a04a960a3c674c46f1a085ce6a81931f",
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/test_source_integrity.py": "e958c360f995830d611f47a8e993fa7a9d09865713b5dac1ebf0c846ed508a12",
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/launch.sh": "bbf915173de9f84852ce352cbe0eed865d675d364abc52fa151490ffb4697fc1",
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/spec.json": "43b15e94ab24006f07564ec04684751495c60d220c562d0291d9b1b06c5d4b0b",
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-beb7-20261104/README.md": "a86e7b0f45eef4ab4c33ad20aa6673d4979d3db17b30c879eeba33cf1e07ff4a",
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-source-20261104/scripts/gitnexus-analyze.sh": "45b7b921ac66b10e9ea2235d2b6ddd766531849d67eeb09d45658e2ba91d86ed",
+    "/mnt/raid0/llm/tmp/kvfork/kvu126-impact-source-20261104/artifacts/np_context_kvu_cpu_study_20261020/driver/kvu126_compare.py": "f43120422c024d43e36b6eab6672143037a433ea9244677a887995612e4b88f5"
+  }
+}

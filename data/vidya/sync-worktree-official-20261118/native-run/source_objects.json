@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "git",
+    "rev-parse",
+    "--path-format=absolute",
+    "--git-path",
+    "objects"
+  ],
+  "cwd": "/workspace",
+  "exit": 0
+}

@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Real rc=0; 5 complete trials for each of 3 arms and 4 metric rows per trial, runtime pins and drain verified. Prefix 6542; 90% threshold 5887.8. Zero siblings meet threshold. Per trial uncached 26208 simultaneous/hold-first-token vs 21704 hold-first-end; one hold-first-end sibling reused 4504. Original write-side capture exists and hashes match, indicative co-residency only; original grant interval no longer independently authenticated. All trial counts, TTFT distributions, header and original belief sidecar preserved in docs/reports/harness-run-filings-20261104/rte.",
+  "tick_text": "**RTE-PFX2-QN-V3 \u2014 run the quarter-native same-prefix cache mechanism probe (RTE-PFX-2 lineage) on a keeper-granted window.** Evidence docs/reports/harness-run-filings-20261104/rte and review-rte-20261104.json; 15 complete arm-trials, zero >=90% sibling hits; mechanism only. [belief: cc]",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:16:58+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-03T07:35:34Z reason=complete",
+ "filed_at": "2026-11-04T07:16:58+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:RTE-PFX2-QN-V3",
+ "id": "handoff-rte-pfx2-quarter-native-v3-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-rte-pfx2-quarter-native-v3-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3/run/*/probe.json.journal.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-repl-turn-efficiency",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Real rc=0; 5 complete trials for each of 3 arms and 4 metric rows per trial, runtime pins and drain verified. Prefix 6542; 90% threshold 5887.8. Zero siblings meet threshold. Per trial uncached 26208 simultaneous/hold-first-token vs 21704 hold-first-end; one hold-first-end sibling reused 4504. Original write-side capture exists and hashes match, indicative co-residency only; original grant interval no longer independently authenticated. All trial counts, TTFT distributions, header and original belief sidecar preserved in docs/reports/harness-run-filings-20261104/rte.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3/run/*/probe.json.journal.jsonl",
+ "root_cause_family": null,
+ "row": "handoff-rte-pfx2-quarter-native-v3-20261102",
+ "row_verdict": "pass",
+ "rule": "PFX-2 cache mechanism probe only: require real-phase rc=0, 5 complete trials per arm and 4 native metric rows per trial, valid prompt/cache counts and prompt_ms, declared salted tokenized prefix, pinned server/runtime header and owned-process drain. Report uncached token totals, each sibling cache_n >= 0.9 tokenized prefix, TTFT distributions and trial counts; snapshot matches streamed id_slot to a processing slot but cannot distinguish buffering or slot reuse because native stream lacks id_task. Exclude dryrun, incomplete or failed trials, no semantic-quality or feature-promotion claim. Write-side belief adapter must be invoked with original window claim before filing any measurement warrant. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "032543c157f6588710bf7b7820e3d04f55c9902d46d4d6b9d443af6e4b9d6567",
+  "result": "pass",
+  "status": "filed"
+ }
+}

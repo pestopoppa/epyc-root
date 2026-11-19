@@ -1,0 +1,38 @@
+{
+  "schema": "kpf41-impact-runtime-seal-v1",
+  "sealed_files": {
+    "identity.json": "9613b591227136c04fe8062fdfac505e4ffe2f664d4c594beb4423fdd805ac0f",
+    "source_integrity.py": "c674b6073fbcce770ae56e68f0d86f4893b1a900e3f71ee4d0641629457f30e4",
+    "job.py": "ec78320365f82c00961052b16b05420ae06a782df2e16c7c1efa206d86b17887",
+    "gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "spec.json": "4ecf366f111411ad13911744cf05eca7840d18fa5b7a13f63c1f472ca75c9926",
+    "README.md": "6e8f83f6fd5ad6c9324f471bb274a853a38b26c12f4cdd4e6052439e26f31ee7"
+  },
+  "external_files": {
+    "python": {
+      "path": "/usr/bin/python3",
+      "sha256": "efb29ce53d36ebaeee80e3aa44fd6c7f9d71bbded5fe1665240b2ed8ecaeee0e"
+    },
+    "node": {
+      "path": "/usr/local/bin/node",
+      "sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90"
+    },
+    "gitnexus_cli": {
+      "path": "/usr/local/share/npm-global/bin/gitnexus",
+      "sha256": "c4a575f85e7c40e707f4cb8bfbe8fcded4ffeefe6e1da1241545fad6c780078d"
+    },
+    "gitnexus_package": {
+      "path": "/usr/local/share/npm-global/lib/node_modules/gitnexus/package.json",
+      "sha256": "99deb36e0705d0553fcd1baf1951e0c51c1cfd8297c0cde213c55088cb192750"
+    },
+    "rowflow": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+      "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+    }
+  },
+  "source_analyzer_wrapper_sha256": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+  "gitnexus_home": "/mnt/raid0/llm/tmp/kvfork/kpf41-impact-r5-20261104/gitnexus-home",
+  "node_version": "v22.23.4",
+  "python_version": "Python 3.13.7",
+  "gitnexus_version": "1.6.8"
+}

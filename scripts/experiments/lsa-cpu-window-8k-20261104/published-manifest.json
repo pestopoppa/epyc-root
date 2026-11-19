@@ -1,0 +1,46 @@
+{
+ "admission_class": "diagnostic",
+ "decision_rule": "One 8204-token CPU positional sink4 plus last4608 control versus preserved dense correct item: require complete response, prompt_n=8204, no reopened thinking, exact expected sixteen global layers, actual changed masks in later chunks, CPU binary/library/model identity and native evidence capture. Report retrieval_match true OR false as informative; pass means capture-validity, never assumed answer loss. No timing or population-quality claim. Stop after one completed request or first validity/operational failure; no retries.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 600,
+ "gib": 48,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1-CPU-WINDOW",
+ "id": "lsa-screen-1-cpu-window-8k-20261104",
+ "keep": [
+  "native/*",
+  "state/*",
+  "native/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/packet/launcher.sh",
+  "sha256": "93419bc5a56688f9383d5d6a1dcbd045dc481c166cf3662f941df8862b452df4"
+ },
+ "min_window_s": 300,
+ "notes": "Exact full-job workload in smoke and grant. FILLER_STATE_DIR places smoke/grant native outputs in distinct directories. First progress requires real model callback trace. No standalone compute authorized by preparation.",
+ "owner": "lsa-screen",
+ "ports": [
+  18198
+ ],
+ "priority_rank": 22.0,
+ "publish_warnings": [
+  "long-context-program.md:1810: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T07:43:32Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-triattention-kv-selection/artifacts/compute/lsa-cpu-window-8k-20261104/spec.json",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/native/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/packet/first_progress.py",
+ "stop_file": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/STOP",
+ "unit_key": "unit",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/packet"
+}

@@ -1,0 +1,7 @@
+rc=1 time=2026-11-04T12:05:29Z reason=job-rc-1:exited
+job_id=lsa-wip-cpu-compile-20261104
+owner=lsa-screen
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T12:05:26Z
+regions=0-23

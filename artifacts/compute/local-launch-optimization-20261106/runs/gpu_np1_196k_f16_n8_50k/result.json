@@ -1,0 +1,315 @@
+{
+ "arm": "gpu_np1_196k_f16_n8_50k",
+ "phase": "gpu",
+ "config": {
+  "name": "gpu_np1_196k_f16_n8_50k",
+  "phase": "gpu",
+  "kind": "gpu",
+  "store": "/mnt/raid0/llm/kernels/builds/gpu-20261106-65da39eb1-c6fold2",
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "drafter": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "port": 18083,
+  "np": 1,
+  "ctx": 196608,
+  "threads": 8,
+  "batch": 2048,
+  "ubatch": 2048,
+  "ctk": "f16",
+  "ctv": "f16",
+  "kv_unified": false,
+  "spec": "draft-dflash",
+  "draft_n_max": 8,
+  "ngld": 99,
+  "device": "ROCm0",
+  "ngl": 99,
+  "cpu_list": "184-191",
+  "interleave": false,
+  "env": {},
+  "extra_flags": [
+   "--cache-ram",
+   "32768",
+   "--ctx-checkpoints",
+   "8"
+  ],
+  "prompt": "prompts/long50k.txt",
+  "n_predict": 256,
+  "warmup": {
+   "prompt": "prompts/short100.txt",
+   "n_predict": 16
+  },
+  "repeats": 2,
+  "evict": false,
+  "health_timeout_s": 1500
+ },
+ "started_utc": "2026-11-06T14:47:40Z",
+ "ok": true,
+ "argv": [
+  "taskset",
+  "-c",
+  "184-191",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261106-65da39eb1-c6fold2/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "-np",
+  "1",
+  "-c",
+  "196608",
+  "-t",
+  "8",
+  "-tb",
+  "8",
+  "-b",
+  "2048",
+  "-ub",
+  "2048",
+  "-ctk",
+  "f16",
+  "-ctv",
+  "f16",
+  "--device",
+  "ROCm0",
+  "-ngl",
+  "99",
+  "-fa",
+  "on",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "18083",
+  "--metrics",
+  "--slots",
+  "-md",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "-ngld",
+  "99",
+  "--spec-type",
+  "draft-dflash",
+  "--spec-draft-n-max",
+  "8",
+  "--no-kv-unified",
+  "--cache-ram",
+  "32768",
+  "--ctx-checkpoints",
+  "8"
+ ],
+ "pid": 3549253,
+ "health": "ok",
+ "props": {
+  "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "build_info": "b10512-65da39eb1",
+  "total_slots": 1,
+  "n_ctx": null,
+  "default_generation_settings": {
+   "n_ctx": 196608,
+   "n_predict": null,
+   "n_batch": null,
+   "n_ubatch": null,
+   "n_parallel": null,
+   "temperature": null,
+   "top_k": null,
+   "top_p": null
+  }
+ },
+ "slots_before": [
+  {
+   "id": 0,
+   "n_ctx": 196608,
+   "speculative": true,
+   "is_processing": false
+  }
+ ],
+ "process_before": {
+  "pid": 3549253,
+  "status": {
+   "VmRSS": "5087492 kB",
+   "THP_enabled": "1",
+   "Threads": "203",
+   "Cpus_allowed_list": "184-191",
+   "Mems_allowed_list": "0-3"
+  },
+  "task_masks": {
+   "184-191": 202,
+   "0-191": 1
+  },
+  "numastat": "\nPer-node process memory usage (in MBs) for PID 3549253 (llama-server)\n                           Node 0          Node 1          Node 2          Node 3           Total\n                  --------------- --------------- --------------- --------------- ---------------\nHuge                         0.00            0.00            0.00            0.00            0.00\nHeap                         0.00            0.00            0.00          228.42          228.42\nStack                        0.00            0.00            0.00            0.45            0.45\nPrivate                     17.41         2896.39            0.07         1522.05         4435.92\n----------------  --------------- --------------- --------------- --------------- ---------------\nTotal                       17.41         2896.39            0.07         1750.92         4664.79\n"
+ },
+ "gpu_before": {
+  "kfd_pids": [
+   "3549253"
+  ],
+  "rocm_smi": "\n\n============================ ROCm System Management Interface ============================\n=============================== Current clock frequencies ================================\nGPU[0]\t\t: fclk clock level: 0: (400Mhz)\nGPU[0]\t\t: mclk clock level: 3: (1600Mhz)\nGPU[0]\t\t: sclk clock level: 1: (800Mhz)\nGPU[0]\t\t: socclk clock level: 3: (1090Mhz)\n==========================================================================================\n=================================== Power Consumption ====================================\nGPU[0]\t\t: Average Graphics Package Power (W): 52.0\n==========================================================================================\n=================================== % time GPU is busy ===================================\nGPU[0]\t\t: GPU use (%): 0\nGPU[0]\t\t: GFX Activity: 2365488333\n==========================================================================================\n=================================== Current Memory Use ===================================\nGPU[0]\t\t: GPU Memory Allocated (VRAM%): 69\nGPU[0]\t\t: GPU Memory Read/Write Activity (%): 0\nGPU[0]\t\t: Memory Activity: 3025886360\nGPU[0]\t\t: Avg. Memory Bandwidth: 0\n==========================================================================================\n================================== End of ROCm SMI Log ===================================\n"
+ },
+ "warmup": {
+  "ok": true,
+  "wall_s": 1.071,
+  "timings": {
+   "cache_n": 0,
+   "prompt_n": 127,
+   "prompt_ms": 375.661,
+   "prompt_per_token_ms": 2.95796062992126,
+   "prompt_per_second": 338.0707606059719,
+   "predicted_n": 16,
+   "predicted_ms": 693.883,
+   "predicted_per_token_ms": 43.3676875,
+   "predicted_per_second": 23.058642451248986,
+   "draft_n": 46,
+   "draft_n_accepted": 6
+  },
+  "stop_reason": null,
+  "tokens_predicted": 16,
+  "tokens_evaluated": 127,
+  "content_sha256": "a91a5ac88bac3a9f2afb120164f71861080aa469060fdcf8361028032d5dfde9",
+  "content_chars": 69
+ },
+ "requests": [
+  {
+   "ok": true,
+   "wall_s": 94.833,
+   "timings": {
+    "cache_n": 0,
+    "prompt_n": 54329,
+    "prompt_ms": 88791.159,
+    "prompt_per_token_ms": 1.6343234552448969,
+    "prompt_per_second": 611.8739817327984,
+    "predicted_n": 256,
+    "predicted_ms": 5946.922,
+    "predicted_per_token_ms": 23.2301640625,
+    "predicted_per_second": 43.04747901519475,
+    "draft_n": 436,
+    "draft_n_accepted": 192
+   },
+   "stop_reason": null,
+   "tokens_predicted": 256,
+   "tokens_evaluated": 54329,
+   "content_sha256": "1292c1121f81ad77f4cc6662fba11c54562bfb1e979c743a3efec3d10ca99f20",
+   "content_chars": 1145
+  },
+  {
+   "ok": true,
+   "wall_s": 6.072,
+   "timings": {
+    "cache_n": 54325,
+    "prompt_n": 4,
+    "prompt_ms": 106.348,
+    "prompt_per_token_ms": 26.587,
+    "prompt_per_second": 37.612366946251925,
+    "predicted_n": 256,
+    "predicted_ms": 5904.614,
+    "predicted_per_token_ms": 23.0648984375,
+    "predicted_per_second": 43.35592470566239,
+    "draft_n": 429,
+    "draft_n_accepted": 193
+   },
+   "stop_reason": null,
+   "tokens_predicted": 256,
+   "tokens_evaluated": 54329,
+   "content_sha256": "1292c1121f81ad77f4cc6662fba11c54562bfb1e979c743a3efec3d10ca99f20",
+   "content_chars": 1145
+  }
+ ],
+ "slots_after": [
+  {
+   "id": 0,
+   "n_ctx": 196608,
+   "speculative": true,
+   "is_processing": false,
+   "id_task": 105,
+   "n_prompt_tokens": 54584,
+   "n_prompt_tokens_processed": 4,
+   "n_prompt_tokens_cache": 0,
+   "params": {
+    "seed": 4294967295,
+    "temperature": 0.0,
+    "dynatemp_range": 0.0,
+    "dynatemp_exponent": 1.0,
+    "top_k": 1,
+    "top_p": 0.949999988079071,
+    "min_p": 0.05000000074505806,
+    "top_n_sigma": -1.0,
+    "xtc_probability": 0.0,
+    "xtc_threshold": 0.10000000149011612,
+    "typical_p": 1.0,
+    "repeat_last_n": 64,
+    "repeat_penalty": 1.0,
+    "presence_penalty": 0.0,
+    "frequency_penalty": 0.0,
+    "dry_multiplier": 0.0,
+    "dry_base": 1.75,
+    "dry_allowed_length": 2,
+    "dry_penalty_last_n": 196608,
+    "mirostat": 0,
+    "mirostat_tau": 5.0,
+    "mirostat_eta": 0.10000000149011612,
+    "max_tokens": 256,
+    "n_predict": 256,
+    "n_keep": 0,
+    "n_discard": 0,
+    "kv_streaming_sink": 0,
+    "kv_streaming_window": 0,
+    "ignore_eos": false,
+    "stream": false,
+    "n_probs": 0,
+    "min_keep": 0,
+    "chat_format": "Content-only",
+    "reasoning_format": "deepseek",
+    "reasoning_in_content": false,
+    "generation_prompt": "",
+    "samplers": [
+     "penalties",
+     "dry",
+     "top_n_sigma",
+     "top_k",
+     "typ_p",
+     "top_p",
+     "min_p",
+     "xtc",
+     "temperature"
+    ],
+    "speculative.types": "none,draft-dflash",
+    "speculative.n_max": 8,
+    "timings_per_token": false,
+    "post_sampling_probs": false,
+    "backend_sampling": false,
+    "rng_poskey": false,
+    "lora": []
+   },
+   "next_token": [
+    {
+     "has_next_token": false,
+     "has_new_line": false,
+     "n_remain": 0,
+     "n_decoded": 256
+    }
+   ]
+  }
+ ],
+ "metrics_after": "# HELP llamacpp:prompt_tokens_total Number of prompt tokens processed.\n# TYPE llamacpp:prompt_tokens_total counter\nllamacpp:prompt_tokens_total 54460\n# HELP llamacpp:prompt_seconds_total Prompt process time\n# TYPE llamacpp:prompt_seconds_total counter\nllamacpp:prompt_seconds_total 89.272\n# HELP llamacpp:tokens_predicted_total Number of generation tokens processed.\n# TYPE llamacpp:tokens_predicted_total counter\nllamacpp:tokens_predicted_total 528\n# HELP llamacpp:tokens_predicted_seconds_total Predict process time\n# TYPE llamacpp:tokens_predicted_seconds_total counter\nllamacpp:tokens_predicted_seconds_total 12.543\n# HELP llamacpp:n_decode_total Total number of llama_decode() calls\n# TYPE llamacpp:n_decode_total counter\nllamacpp:n_decode_total 165\n# HELP llamacpp:n_tokens_max Largest observed n_tokens.\n# TYPE llamacpp:n_tokens_max counter\nllamacpp:n_tokens_max 54584\n# HELP llamacpp:prompt_tokens_seconds Average prompt throughput in tokens/s.\n# TYPE llamacpp:prompt_tokens_seconds gauge\nllamacpp:prompt_tokens_seconds 610.046\n# HELP llamacpp:predicted_tokens_seconds Average generation throughput in tokens/s.\n# TYPE llamacpp:predicted_tokens_seconds gauge\nllamacpp:predicted_tokens_seconds 42.0952\n# HELP llamacpp:requests_processing Number of requests processing.\n# TYPE llamacpp:requests_processing gauge\nllamacpp:requests_processing 0\n# HELP llamacpp:requests_deferred Number of requests deferred.\n# TYPE llamacpp:requests_deferred gauge\nllamacpp:requests_deferred 0\n# HELP llamacpp:n_busy_slots_per_decode Average number of busy slots per llama_decode() call\n# TYPE llamacpp:n_busy_slots_per_decode gauge\nllamacpp:n_busy_slots_per_decode 1\n",
+ "process_after": {
+  "pid": 3549253,
+  "status": {
+   "VmRSS": "8355132 kB",
+   "THP_enabled": "1",
+   "Threads": "203",
+   "Cpus_allowed_list": "184-191",
+   "Mems_allowed_list": "0-3"
+  },
+  "task_masks": {
+   "184-191": 202,
+   "0-191": 1
+  },
+  "numastat": "\nPer-node process memory usage (in MBs) for PID 3549253 (llama-server)\n                           Node 0          Node 1          Node 2          Node 3           Total\n                  --------------- --------------- --------------- --------------- ---------------\nHuge                         0.00            0.00            0.00            0.00            0.00\nHeap                         0.00            0.00            0.00          312.24          312.24\nStack                        0.00            0.00            0.00            0.51            0.51\nPrivate                     27.93         5045.05            0.11         2470.01         7543.10\n----------------  --------------- --------------- --------------- --------------- ---------------\nTotal                       27.93         5045.05            0.11         2782.76         7855.84\n"
+ },
+ "gpu_after": {
+  "kfd_pids": [
+   "3549253"
+  ],
+  "rocm_smi": "\n\n============================ ROCm System Management Interface ============================\n=============================== Current clock frequencies ================================\nGPU[0]\t\t: fclk clock level: 0: (400Mhz)\nGPU[0]\t\t: mclk clock level: 3: (1600Mhz)\nGPU[0]\t\t: sclk clock level: 1: (800Mhz)\nGPU[0]\t\t: socclk clock level: 3: (1090Mhz)\n==========================================================================================\n=================================== Power Consumption ====================================\nGPU[0]\t\t: Average Graphics Package Power (W): 193.0\n==========================================================================================\n=================================== % time GPU is busy ===================================\nGPU[0]\t\t: GPU use (%): 0\nGPU[0]\t\t: GFX Activity: 2375346539\n==========================================================================================\n=================================== Current Memory Use ===================================\nGPU[0]\t\t: GPU Memory Allocated (VRAM%): 71\nGPU[0]\t\t: GPU Memory Read/Write Activity (%): 0\nGPU[0]\t\t: Memory Activity: 3028504125\nGPU[0]\t\t: Avg. Memory Bandwidth: 0\n==========================================================================================\n================================== End of ROCm SMI Log ===================================\n"
+ },
+ "acceptance": {
+  "alpha": 0.44988,
+  "accepted": 193,
+  "generated": 429
+ },
+ "exit_code": 0,
+ "elapsed_s": 110.2
+}

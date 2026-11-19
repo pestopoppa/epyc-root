@@ -1,0 +1,58 @@
+{
+ "book_s": 3600,
+ "budget_gib": 1.0,
+ "decision_rule": "Can the prospective official EXP01 writer seal native custody for the original fixed proxy workload on the four newly recovered non-MTP Qwen3.6-35B-A3B arms using reference ik_llama.cpp c04881fc0f31dae5f8ec59c1d683889f0c9dfa11 on one 24-CPU quarter with 24 native threads? Preserve the original sequence, up to three pp512/tg128 launches per arm, originally scheduled operational looks at two and three, and all 24 original items paired on Q4_K_M/IQ4_KT. The 5400-second cap and existing pair stopping rule are unchanged. Stop on source-capture answer after a complete schedule as defined by the original producer and verified custody. Stop on native, identity, STOP or deadline failure and keep partial bytes. Publisher smoke uses a separate pinned 0.6B model, one bench launch and one CLI launch on four CPUs. This fresh run records completion of prospective native capture only. Historical pilot decisions, formal gates, port authority and official projection remain separate.",
+ "declared_shape": "quarter",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 3000,
+ "first_progress_s": 300,
+ "gib": 64,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-EXP01-PROXY-WIRE",
+ "id": "vidya-exp01-proxy-official-native-20261118-r2",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "models.env",
+  "official/**",
+  "smoke/**",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/launch.sh",
+  "sha256": "17a03940732132e43256f5e5dea61711724062b6325c15bf2f56e6c3f424e7b2"
+ },
+ "lineage": "vidya-exp01-prospective-official-source",
+ "min_window_s": 3600,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 6.0,
+ "published_at": "2026-11-18T15:28:57Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T15:28:57Z",
+  "session": "01a1ef3a-0a4d-7301-99da-ee9308b2040d",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/runner.py smoke-complete",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/STOP",
+ "supersedes": "vidya-exp01-proxy-official-native-20261118",
+ "unit_key": "native_units",
+ "verdict_by": "agent",
+ "window_s": 3900,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/engine-work"
+}

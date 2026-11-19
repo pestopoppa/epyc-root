@@ -7,7 +7,7 @@ Every key name and bound in this document was read out of that file, out of
 document follows the code and says so.
 
 **Design context** (not repeated here): `docs/design/loop-owned-fleet.html` (plan of record),
-`handoffs/active/loop-owned-fleet-implementation.md` (P2-*), `coordination/session-bus/BUS_PROTOCOL.md`
+`handoffs/active/coordination-and-churn-pipeline.md` (P2-*), `coordination/session-bus/BUS_PROTOCOL.md`
 (rule 8, amended 2026-08-16 for pool workers).
 
 ---
@@ -169,10 +169,14 @@ expected deliverable paths explicitly in the assignment, for example:
 Each listed path must be a normalized relative path named in `task_text` and resolve inside the
 worktree, including through symlinks. The auditor validates every declared path, then uses the
 **first** as its single mutation-probe target; it never selects a target from the diff. An invalid
-or escaping declaration is undetermined and blocks the audit. A legacy task with one path keeps
-its existing target; one with multiple paths and no declaration is ambiguous, so the probe is
-undetermined and blocks rather than treating a reference as a failed deliverable. Supply the field
-in the assignment file; the one-row `--row-text` shortcut does not provide it.
+or escaping declaration is undetermined and blocks the audit. Without a declaration the target
+comes from the task text only in the strict direct form `Update path/to/file` (RTG-52: an action
+verb, optionally `the`/`file`/`module`, then the path, after an optional list marker or "please").
+Contextual prose such as "Fix the bug in src/x.py", co-listed paths, and negated clauses are
+ambiguous, so the probe is undetermined and blocks rather than treating a reference as a failed
+deliverable. Supply the field in the assignment file (or on `--assignment-stdin`, which the
+coordinator uses to deliver the exact resolved row); the one-row `--row-text` shortcut does not
+provide it.
 
 `--pilot-override` prints a warning to stderr, does **not** touch the daemon's gate (the daemon reads
 the config, not this flag), and does **not** bypass the rule-8 ack — a runner may not kill without

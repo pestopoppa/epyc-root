@@ -1,0 +1,19 @@
+--- a/kvu126_compare.py
++++ b/kvu126_compare.py
+@@ -101,6 +101,7 @@
+             "occupancy_source": occupancy["native_source"], "occupancy_source_sha256": occupancy["native_source_sha256"],
+             "occupancy_samples": observed, "occupancy_median": statistics.median(observed),
+             "occupancy_sample_times": times,
++            "occupancy_sample_request_start_times": [s["request_start_monotonic_s"] for s in samples],
+             "sample_pid_birth_identities": [sample.get("pid_birth_identity") for sample in samples],
+             "prompt_n": row["prompt_n"], "resume_cache_n": row["cache_n"],
+             "decode_tps_sum": row["decode_tps_sum"]}
+@@ -224,7 +225,7 @@
+                     raise ValueError(f"runtime snapshots missing or mismatched for {name}")
+             first = number(before.get("captured_monotonic_s"), "runtime snapshot start")
+             last = number(after.get("captured_monotonic_s"), "runtime snapshot end")
+-            if not first < min(observation["occupancy_sample_times"]) <= max(observation["occupancy_sample_times"]) < last:
++            if not first < min(observation["occupancy_sample_request_start_times"]) <= max(observation["occupancy_sample_times"]) < last:
+                 raise ValueError(f"runtime snapshots do not span samples for {name}")
+             for key, value in observation["identity"].items():
+                 if value != identity[key]:

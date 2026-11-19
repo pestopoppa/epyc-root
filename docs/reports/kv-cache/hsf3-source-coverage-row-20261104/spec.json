@@ -1,0 +1,20 @@
+{
+  "id": "hsf3-source-coverage-task8-20261104",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/task8/launcher.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/task8/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "At grant, run one bounded read-only aggregate census of the documented progress JSONL and checkpoint SQLite inputs; refuse missing progress inputs, incomplete or changing frontiers, database failures, and output collisions. Emit only aggregate counts, schema booleans, and custody metadata. No publication or HSF-3 completion claim; exact same-session completion-to-next-enqueue pairs meeting the two-window threshold remain required.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:HSF-3",
+  "priority_rank": 90,
+  "kind": "compute",
+  "ram_gib": 2,
+  "regions": "any-cpu-quarter",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/task8",
+  "smoke_timeout_s": 300,
+  "first_progress_s": 300,
+  "dryrun_native_result": true,
+  "unit_key": "progress.files"
+}

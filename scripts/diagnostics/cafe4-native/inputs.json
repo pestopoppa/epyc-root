@@ -1,0 +1,36 @@
+{
+  "schema": "cafe4.modes.native.inputs.v1",
+  "row": "df2-cafe4-modes-native-cpu-20261119",
+  "executable": "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/runs/build-fj8ndtm9/build/bin/cafe4-mtp-rollback",
+  "artifacts": {
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/runs/build-fj8ndtm9/build/bin/cafe4-mtp-rollback": "864bd4492e370112a5c273754b943f8f7bbe50543d76ec1bed284fdd2c600959",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/runs/build-fj8ndtm9/build/bin/libllama.so.0.0.10303": "50f19e115f034f35f7d7c04595397524d156bba9520f6b1924db6e7a3efcc358",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/runs/build-fj8ndtm9/build/bin/libllama-common.so.0.0.10303": "13e2c4743a6f889a51060ebea70ebde96d86158f98a6ddf3ed31c142270a1ff3",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/runs/build-fj8ndtm9/build/bin/libggml-base.so.0.16.0": "12c72642004f330ac4eb920f8d0ab283623909b4fdeb8297619cf3e94ad324ee",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/runs/build-fj8ndtm9/build/bin/libggml.so.0.16.0": "be9f85872f25db120401dc1f6181a7ca3b905dab9473ea891b256bcedd0bb38a",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/runs/build-fj8ndtm9/build/bin/libggml-cpu.so.0.16.0": "e1a397136422fca12f4c2f2fad36823d36234dc66e6385d801e7afedc60c68ec"
+  },
+  "runtime": {
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-cpu-20261119/runtime.py": "8e28b14cc3b40a9a4090e12c5955c5bb039b4f5f175b97f583fde70a04022dbe",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-cpu-20261119/launch.sh": "36401c6de7e0526777262329e937f8cb5770be15b34172a49d6f0f3a92fb04b9"
+  },
+  "model": {
+    "hash_mode": "reuse prior content-verified receipt with unchanged full stat; no new model hash",
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "stat": {
+      "ctime_ns": 1782411254270412235,
+      "dev": 2431,
+      "ino": 96242023,
+      "mtime_ns": 1782411254270412235,
+      "size": 37801097504
+    }
+  },
+  "build_receipt": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/RESULT.json",
+    "sha256": "8f6ed5697fa21c4bfafc1ff2903307455c26bfc13429299236e3340ae7d1b1bd",
+    "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "patch_sha256": "351a431702613a5cad8d165c6959dbcde12a928963b8833bfa4668abb743e4dd",
+    "candidate_sha256": "71ce1fb3e92098dfb586b06000a0ed4dee1e836c7c889774cb754dcde8f1b597"
+  }
+}

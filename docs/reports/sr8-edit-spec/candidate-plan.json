@@ -1,0 +1,143 @@
+{
+  "schema": "epyc.sr8.preparation.v1",
+  "corpus_source": "/mnt/raid0/llm/epyc-orchestrator/data/bep_sandbox/tasks.jsonl",
+  "corpus_sha256": "743603a49e5902ac41657ae4d8ad115f59f5bef42d1f7deb0fb8c12adb2d08b4",
+  "source_repo_head": "326f502759986c9846027f8187972969139c0089",
+  "rendering": "bep_oneshot_ablation.py build_prompt",
+  "rendering_source_sha256": "4dfb90b7e283330f7d89021484faa567032631dfb48ff93d49d15aa3ed0ca576",
+  "exclusions": [
+    "t1_create_util: no existing file to draft"
+  ],
+  "tasks": [
+    {
+      "id": "t2_add_and_use",
+      "kind": "multi_file_modify_dependency",
+      "prompt": "Two changes: (1) in `calc.py` add a function `square(x)` returning x*x. (2) in `main.py`, import `square` from calc and make it print `square(5)`. The files currently define/use `double`.",
+      "files": {
+        "calc.py": "def double(x):\n    return x * 2\n",
+        "main.py": "from calc import double\nprint(double(3))\n"
+      },
+      "verifier_cmd": "test \"$(python3 main.py)\" = \"25\" && echo PASS",
+      "rendered_prompt": "Two changes: (1) in `calc.py` add a function `square(x)` returning x*x. (2) in `main.py`, import `square` from calc and make it print `square(5)`. The files currently define/use `double`.\n\nCurrent file contents:\n\n--- calc.py ---\ndef double(x):\n    return x * 2\n\n\n--- main.py ---\nfrom calc import double\nprint(double(3))\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "tokenization": {
+        "token_count": 147,
+        "repeated_5gram_fraction": 0.0,
+        "token_ids_sha256": "9a7aafbe4fd4784779e4dbefcb74229c668335c3a0876fd263140a8f44617d64",
+        "scope": "raw full-file prompt, without role chat template; native tokenizer before publication"
+      }
+    },
+    {
+      "id": "t3_method_and_caller",
+      "kind": "multi_file_modify_dependency",
+      "prompt": "Add a method `area(self)` to the `Rect` class in `shapes.py` returning width*height. `report.py` already calls `r.area()` \u2014 make the program run correctly.",
+      "files": {
+        "shapes.py": "class Rect:\n    def __init__(self, w, h):\n        self.width = w\n        self.height = h\n",
+        "report.py": "from shapes import Rect\nr = Rect(4, 5)\nprint(r.area())\n"
+      },
+      "verifier_cmd": "test \"$(python3 report.py)\" = \"20\" && echo PASS",
+      "rendered_prompt": "Add a method `area(self)` to the `Rect` class in `shapes.py` returning width*height. `report.py` already calls `r.area()` \u2014 make the program run correctly.\n\nCurrent file contents:\n\n--- shapes.py ---\nclass Rect:\n    def __init__(self, w, h):\n        self.width = w\n        self.height = h\n\n\n--- report.py ---\nfrom shapes import Rect\nr = Rect(4, 5)\nprint(r.area())\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "tokenization": {
+        "token_count": 158,
+        "repeated_5gram_fraction": 0.0,
+        "token_ids_sha256": "932a541e31bfe940d8b54da10ee930942dd5af801b54936cd169b690040ef491",
+        "scope": "raw full-file prompt, without role chat template; native tokenizer before publication"
+      }
+    },
+    {
+      "id": "t4_rename_module",
+      "kind": "rename_and_update_import",
+      "prompt": "Rename the file `helpers.py` to `utils.py`. Update the import in `app.py` (currently `from helpers import greet`) to import from `utils` instead. `helpers.py` must no longer exist.",
+      "files": {
+        "helpers.py": "def greet():\n    return 'hi'\n",
+        "app.py": "from helpers import greet\nprint(greet())\n"
+      },
+      "verifier_cmd": "test ! -f helpers.py && test \"$(python3 app.py)\" = \"hi\" && echo PASS",
+      "rendered_prompt": "Rename the file `helpers.py` to `utils.py`. Update the import in `app.py` (currently `from helpers import greet`) to import from `utils` instead. `helpers.py` must no longer exist.\n\nCurrent file contents:\n\n--- helpers.py ---\ndef greet():\n    return 'hi'\n\n\n--- app.py ---\nfrom helpers import greet\nprint(greet())\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "tokenization": {
+        "token_count": 135,
+        "repeated_5gram_fraction": 0.0,
+        "token_ids_sha256": "e1627c7f63ee330e50b9fe231bee2604d2506f309f75844724db8c1b79ebbd87",
+        "scope": "raw full-file prompt, without role chat template; native tokenizer before publication"
+      }
+    },
+    {
+      "id": "t5_bugfix",
+      "kind": "single_file_modify",
+      "prompt": "In `tax.py`, `total(price)` should return price with 10% tax added (price * 1.1) but currently returns price * 0.1. Fix the bug.",
+      "files": {
+        "tax.py": "def total(price):\n    return price * 0.1\n"
+      },
+      "verifier_cmd": "python3 -c \"import tax; assert abs(tax.total(100)-110.0)<1e-6; print('PASS')\"",
+      "rendered_prompt": "In `tax.py`, `total(price)` should return price with 10% tax added (price * 1.1) but currently returns price * 0.1. Fix the bug.\n\nCurrent file contents:\n\n--- tax.py ---\ndef total(price):\n    return price * 0.1\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "tokenization": {
+        "token_count": 120,
+        "repeated_5gram_fraction": 0.017241379310344827,
+        "token_ids_sha256": "85f9512343a711794b4b7f1af77ea58f1dc1e94611f425805aee6895e6bdad0f",
+        "scope": "raw full-file prompt, without role chat template; native tokenizer before publication"
+      }
+    }
+  ],
+  "schedule": [
+    {
+      "rep": 1,
+      "task": "t2_add_and_use",
+      "arms": [
+        "plain",
+        "current_dflash2",
+        "prompt_lookup"
+      ]
+    },
+    {
+      "rep": 2,
+      "task": "t3_method_and_caller",
+      "arms": [
+        "prompt_lookup",
+        "current_dflash2",
+        "plain"
+      ]
+    },
+    {
+      "rep": 3,
+      "task": "t4_rename_module",
+      "arms": [
+        "current_dflash2",
+        "plain",
+        "prompt_lookup"
+      ]
+    },
+    {
+      "rep": 4,
+      "task": "t5_bugfix",
+      "arms": [
+        "prompt_lookup",
+        "plain",
+        "current_dflash2"
+      ]
+    },
+    {
+      "rep": 5,
+      "task": "t2_add_and_use",
+      "arms": [
+        "plain",
+        "current_dflash2",
+        "prompt_lookup"
+      ]
+    }
+  ],
+  "limitations": [
+    "production recipe identity and isolated process lifecycle still need native proof",
+    "candidate prompts and repetition metrics are raw text without the production chat template; rendered prompt token repetition is not yet bound",
+    "freshness audit, production recipe identity and isolated process lifecycle remain unproven",
+    "np4 server with one active request; concurrency throughput remains unmeasured"
+  ],
+  "serving_shape": {
+    "parallel_slots": 4,
+    "context_total": 16384,
+    "concurrent_requests": 1,
+    "note": "np4 configured but one request at a time; no concurrent throughput claim",
+    "target": "Qwen3.8-27B-Q8_0",
+    "backend": "v10 GPU",
+    "draft_n_max": 7,
+    "kv": "q8_0"
+  }
+}

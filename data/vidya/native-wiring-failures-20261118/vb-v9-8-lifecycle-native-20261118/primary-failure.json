@@ -1,0 +1,10 @@
+{
+  "status": "preflight_refused_before_cohorts",
+  "native_row": "vb-v9-8-lifecycle-native-20261118",
+  "primary": "Contention matrix freshness validator rejected live topology hash 560d489b or age >30 days",
+  "secondary": "Sealer missing fresh_capture key masked the preserved original preflight refusal",
+  "native_capture": "resident/capture.json",
+  "scope": "Failure attribution only; no serving launch or lifecycle parity evidence.",
+  "current_root_validator_sha256": "e9927cc509cc98d23f69ef48cdc106a26a4918a2603405b73cb04326cb4e28d7",
+  "existing_regression": "tests/test_kernel_promotion_evidence.py::test_early_admission_failure_retains_reason_and_refuses_seal"
+}

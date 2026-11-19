@@ -155,6 +155,6 @@ or activate either endpoint.
   values were emitted. These observations are transient, not hardcoded config values.
 - Active `/home/node/.codex/config.toml` has no local provider. No live config was changed.
 
-References: current source clause `handoffs/active/agentic-serving-harness-fixes.md` UFH14-B1c;
+References: current source clause `handoffs/active/harness-program.md` UFH14-B1c;
 resolver `scripts/kernel_rnd/autokernel/loop/actor_serving.py`; Codex config reference:
 https://developers.openai.com/codex/config-reference.

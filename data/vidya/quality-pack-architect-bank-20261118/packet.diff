@@ -1,0 +1,651 @@
+--- original/capture.py
++++ prospective/capture_base.py
+@@ -14,7 +14,7 @@
+ import time
+ 
+ D = Path(__file__).resolve().parent
+-PORT = 19476
++PORT = 19482
+ PROFILE = 'architect-critic-cpu-mtp'
+ 
+ 
+@@ -63,7 +63,7 @@
+     for name in ('architect_critic_model', 'smoke_model', 'architect_critic_template'):
+         entry = pins[name]
+         path = Path(entry['path'])
+-        if stat_id(path) != entry['stat']:
++        if name != 'architect_critic_template' and stat_id(path) != entry['stat']:
+             raise ValueError(f'{name} stat differs from its hash witness')
+         if name == 'architect_critic_template' and file_sha(path) != entry['sha256']:
+             raise ValueError(f'{name} hash drift: {path}')
+diff --git a/capture.py b/capture.py
+new file mode 100644
+index 0000000..50b227c
+--- /dev/null
++++ b/capture.py
+@@ -0,0 +1,164 @@
++#!/usr/bin/env python3
++"""Capture and strictly admit a prospective architect-critic production bank."""
++import argparse
++import base64
++from http.client import HTTPException
++import json
++import os
++from pathlib import Path
++import signal
++
++import capture_base as capture
++import quality_parity as parity
++
++D = Path(__file__).resolve().parent
++
++
++def validate_items(plan, records, production):
++    recipe = plan['recipes']['architect_critic_slice']
++    expected = {item['id']: item for item in plan['items']}
++    actual = {row['id']: row for row in records}
++    if len(actual) != len(records) or expected.keys() != actual.keys():
++        raise ValueError('bank response inventory differs from the pinned requests')
++    audit = {}
++    for name, item in expected.items():
++        body = item['request_body']
++        wire = parity.canonical_json(body)
++        record = {key: value for key, value in actual[name].items() if key != 'id'}
++        request = (production / f'{name}.request.json').read_bytes()
++        response = (production / f'{name}.response.json').read_bytes()
++        _, limit = parity._request(body, recipe['endpoint'])
++        problems = []
++        checks = {}
++        try:
++            if wire != request or response != base64.b64decode(record['response_b64'], validate=True):
++                raise ValueError('raw request or response differs from its capture record')
++            content, reasoning, finish, tokens, count = parity._capture(
++                record, capture.sha(request), recipe['endpoint'], None, limit,
++            )
++            checks = {
++                'expected_finish': item['expected_finish'], 'actual_finish': finish,
++                'semantic_matches': parity._semantic_matches(item['validator'], content),
++                'completion_count': count, 'output_token_count': None if tokens is None else len(tokens),
++                'content_sha256': capture.sha(content.encode()),
++                'reasoning_sha256': None if reasoning is None else capture.sha(reasoning.encode()),
++            }
++            if finish != item['expected_finish']:
++                problems.append('finish_mismatch')
++            if not checks['semantic_matches']:
++                problems.append('semantic_validation_failed')
++            if tokens is None:
++                problems.append('missing_output_token_ids')
++            if count is None:
++                problems.append('missing_completion_count')
++            if item['output_format'] == 'json' and item['validator']['id'] != 'json-object-subset.v1':
++                problems.append('json_object_validator_required')
++        except (ValueError, TypeError, KeyError) as exc:
++            problems.append(f'invalid_capture: {exc}')
++        audit[name] = {**checks, 'problems': problems}
++    return audit
++
++
++def verify_plan(plan):
++    capture.verify_files(plan)
++    original = plan['original_architect_critic']
++    if capture.file_sha(D / 'original-architect-critic-receipt.json') != original['filing_sha256']:
++        raise ValueError('original architect-critic filing changed')
++    items = plan['items']
++    if capture.sha(parity.canonical_json(items)) != plan['question_pool_sha256']:
++        raise ValueError('question pool differs from the prospective pin')
++    if len(items) != 4 or len({item['id'] for item in items}) != 4:
++        raise ValueError('expected four unique architect-critic requests')
++    endpoint = plan['recipes']['architect_critic_slice']['endpoint']
++    for item in items:
++        parity._request(item['request_body'], endpoint)
++        parity._semantic_matches(item['validator'], '')
++        if item['fixture'] is not None or item['dflash_pair'] is not None:
++            raise ValueError('unsupported fixture or DFlash declaration for this prerequisite')
++        if item['expected_finish'] not in parity.FINISHES or item['output_format'] not in parity.FORMATS:
++            raise ValueError('unsupported finishes or formats in the prospective plan')
++
++
++def run(plan, plan_pin):
++    result_path = D / 'out/RESULT.json'
++    out = result_path.parent / 'native'
++    out.parent.mkdir(parents=True, exist_ok=True)
++    out.mkdir()
++    state = {
++        'schema': 'epyc.quality_pack_architect_critic_bank.v1',
++        'status': 'incomplete',
++        'profile': plan['profile'],
++        'question_pool_sha256': plan['question_pool_sha256'],
++        'request_plan_sha256': plan_pin,
++        'validator_source_sha256': parity.VALIDATOR_SOURCE_SHA256,
++        'capture_runner_sha256': capture.file_sha(Path(capture.__file__)),
++        'bank_gate_sha256': capture.file_sha(Path(__file__)),
++        'original_architect_critic': plan['original_architect_critic'],
++        'observation_only': True,
++        'candidate_collected': False,
++        'broad_pack_status': 'incomplete',
++        'quality_transfer_authorized': False,
++        'promotion_authorized': False,
++    }
++    phase = 'preflight'
++    try:
++        verify_plan(plan)
++        deadline = capture.deadline_epoch(os.environ['FILLER_DEADLINE'])
++        stop = Path(os.environ['FILLER_STOPFILE'])
++        capture.budget(deadline, stop, 1)
++        grant = Path(os.environ['FILLER_GRANTS_DIR']) / (os.environ['FILLER_ID'] + '.grant')
++        capture.write(out / 'scheduler.grant', grant.read_bytes())
++        cpus = sorted(os.sched_getaffinity(0))
++        if len(cpus) != 24:
++            raise ValueError('requires exactly one granted 24-CPU quarter')
++        state['cpus'] = cpus
++        phase = 'production_capture'
++        recipe = plan['recipes']['architect_critic_slice']
++        rows = capture.capture_arm(
++            'production', plan['arms']['production'], recipe, plan['items'], out, cpus, deadline, stop,
++        )
++        phase = 'bank_admission'
++        capture.budget(deadline, stop, 1)
++        verify_plan(plan)
++        if capture.file_sha(D / 'plan.json') != plan_pin:
++            raise ValueError('prospective plan changed during production capture')
++        state['recipe_sha256'] = capture.sha(parity.canonical_json(recipe))
++        state['prompt_template_sha256'] = plan['architect_critic_template']['sha256']
++        state['model'] = plan['architect_critic_model']
++        state['checks'] = validate_items(plan, rows, out / 'production')
++        if any(check['problems'] for check in state['checks'].values()):
++            state['status'] = 'inadmissible_bank'
++        else:
++            state['status'] = 'bank_admitted'
++        bank = out / 'production-capture.json'
++        state['capture_sha256'] = capture.write_json(bank, {
++            'identity': state, 'runtime': plan['arms']['production'], 'items': rows,
++        })
++        capture.write(out / 'production-capture.sha256', (state['capture_sha256'] + '\n').encode())
++    except (OSError, ValueError, KeyError, TypeError, RuntimeError, HTTPException) as exc:
++        state['status'] = 'incomplete'
++        state['error'] = {'phase': phase, 'type': type(exc).__name__, 'message': str(exc)}
++        capture.write_json(result_path, state)
++        return 75 if isinstance(exc, InterruptedError) else 1
++    capture.write_json(result_path, state)
++    return 0 if state['status'] == 'bank_admitted' else 1
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument('--preflight', action='store_true')
++    args = parser.parse_args()
++    raw = (D / 'plan.json').read_bytes()
++    plan = json.loads(raw)
++    if args.preflight:
++        verify_plan(plan)
++        return 0
++    if os.getenv('FILLER_DRYRUN') == '1':
++        verify_plan(plan)
++        return capture.main()
++    signal.signal(signal.SIGTERM, capture.stop_signal)
++    return run(plan, capture.sha(raw))
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/complete.py b/complete.py
+new file mode 100644
+index 0000000..5cc2b30
+--- /dev/null
++++ b/complete.py
+@@ -0,0 +1,35 @@
++#!/usr/bin/env python3
++"""Report completion only for an admitted bank or a successful native smoke."""
++import json
++import os
++from pathlib import Path
++import sys
++
++
++def complete(record, smoke):
++    if smoke:
++        return (
++            record.get('schema') == 'epyc.quality_pack_native_slice.v1'
++            and record.get('status') == 'capture-complete'
++            and record.get('mode') == 'native-smoke-control'
++            and record.get('target_profile') == 'architect-critic-cpu-mtp'
++            and record.get('candidate_sha256') is None
++        )
++    return (
++        record.get('schema') == 'epyc.quality_pack_architect_critic_bank.v1'
++        and record.get('status') == 'bank_admitted'
++        and record.get('candidate_collected') is False
++        and 'error' not in record
++        and len(record.get('checks', {})) == 4
++        and all(not row.get('problems') for row in record['checks'].values())
++        and isinstance(record.get('capture_sha256'), str)
++    )
++
++
++if __name__ == '__main__':
++    try:
++        record = json.loads(Path(sys.argv[1]).read_bytes())
++        done = complete(record, os.getenv('FILLER_DRYRUN') == '1')
++    except (OSError, ValueError, AttributeError, TypeError, IndexError):
++        done = False
++    raise SystemExit(0 if done else 1)
+diff --git a/make_plan.py b/make_plan.py
+new file mode 100644
+index 0000000..b1a3ba5
+--- /dev/null
++++ b/make_plan.py
+@@ -0,0 +1,97 @@
++#!/usr/bin/env python3
++"""Freeze a new architect-critic semantic production bank before capture."""
++import argparse
++import copy
++import hashlib
++import json
++from pathlib import Path
++
++import quality_parity as parity
++
++D = Path(__file__).resolve().parent
++OLD = D.parent / 'architect-critic-20261118'
++OLD_PLAN_PIN = '61aa74d218b11c96a5e05626465d15e348f7988cb768713c709537eadc989244'
++ROW = 'handoff-vidya-quality-pack-architect-critic-bank-20261118'
++PORT = 19482
++
++
++def sha(raw):
++    return hashlib.sha256(raw).hexdigest()
++
++
++def load_original():
++    raw = (OLD / 'plan.json').read_bytes()
++    if sha(raw) != OLD_PLAN_PIN:
++        raise ValueError('architect-critic original plan SHA-256 changed')
++    return json.loads(raw)
++
++
++def build_plan(original):
++    plan = copy.deepcopy(original)
++    plan['scope'] = 'new production-only architect-critic semantic-bank prerequisite'
++    plan['recipes']['architect_critic_slice']['request_s'] = 240
++    for item in plan['items']:
++        item['id'] = item['id'].replace('architect-critic-', 'architect-critic-bank-', 1)
++        body = item['request_body']
++        user = body['messages'][0]
++        if item['output_format'] == 'json':
++            body['max_tokens'] = 256
++            user['content'] += ' Limit fatal_flaw to one sentence of at most 12 words. Do not use Markdown.'
++        elif item['output_format'] == 'reasoning':
++            body['max_tokens'] = 384
++            user['content'] += ' Give the final answer in two short sentences.'
++        elif item['output_format'] == 'prose':
++            body['max_tokens'] = 256
++            user['content'] += ' Write at least 1000 words, starting with the exact word Reject.'
++    plan['question_pool_sha256'] = sha(parity.canonical_json(plan['items']))
++    plan['architect_critic_model']['receipt_snapshot'] = str(D / 'model-hash-receipt.json')
++    plan['smoke_model']['receipt_snapshot'] = str(D / 'smoke-model-plan.original-bytes.json')
++    plan['prior_frontdoor_json_mismatch']['snapshot'] = str(D / 'frontdoor-full-receipt.json')
++    plan['original_architect_critic'] = {
++        'plan_sha256': OLD_PLAN_PIN,
++        'filing_sha256': sha((D / 'original-architect-critic-receipt.json').read_bytes()),
++    }
++    return plan
++
++
++def row_spec():
++    return {
++        'id': ROW, 'owner': 'handoff-vidya-belief-substrate',
++        'launcher': str(D / 'row-launch.sh'), 'lane': 'cpu', 'regions': 'any-cpu-quarter',
++        'shape': 'quarter', 'ram_gib': 48, 'result_path': str(D / 'out/RESULT.json'),
++        'result_format': 'json', 'estimate_s': 900, 'min_window_s': 1350, 'max_window_s': 1500,
++        'priority_rank': 38, 'kind': 'compute', 'scratch_root': str(D),
++        'handoff_task': 'handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-ARCHITECT-BANK',
++        'dryrun_native_result': True, 'first_progress_s': 100,
++        'smoke_predicate': f'/usr/bin/python3 -B {D}/smoke_predicate.py',
++        'decision_rule': (
++            'Capture four newly pinned architect-critic requests on the original isolated v10 24-CPU '
++            'MTP-cap-4 server and seal the production bank with the native output bytes. '
++            'Stop on answer after strict item validation and owned server cleanup. '
++            'Stop on STOP, deadline, failed identity, startup, transport or cleanup, or an inadmissible '
++            'bank, recording the disposition and original bytes. Publisher smoke uses four CPUs '
++            'and the pinned v10 no-spec small model for one native completion. '
++            'Candidate collection awaits the complete seven-profile pack pin.'
++        ),
++        'verdict_by': 'agent',
++        'keep': ['out/**', '*.py', '*.json', '*.md', '*.sh', 'SOURCE.sha256'],
++    }
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument('--check', action='store_true')
++    args = parser.parse_args()
++    for name, value in (('plan.json', build_plan(load_original())), ('row.spec.json', row_spec())):
++        path = D / name
++        generated = parity.pack_bytes(value)
++        if args.check:
++            if path.read_bytes() != generated:
++                raise ValueError(f'generated {name} differs from the sealed file')
++        else:
++            with path.open('xb') as stream:
++                stream.write(generated)
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/audit_inputs.py b/audit_inputs.py
+new file mode 100644
+index 0000000..3539724
+--- /dev/null
++++ b/audit_inputs.py
+@@ -0,0 +1,145 @@
++#!/usr/bin/env python3
++"""Read the pinned original production banks and report exact pack refusals."""
++import argparse
++import base64
++import json
++from pathlib import Path
++
++import quality_parity as parity
++
++PINS = {
++    'frontdoor-cpu-moe-mtp': ('native', 'frontdoor_slice'),
++    'worker-general-cpu-moe-mtp': ('worker-general', 'worker_general_slice'),
++    'architect-critic-cpu-mtp': ('architect-critic', 'architect_critic_slice'),
++    'ingest-long-context-recurrent-no-spec': ('ingest-long-context', 'ingest_long_context_slice'),
++    'architect-general-hip': ('architect-general-hip-smoke', 'hip_slice'),
++    'worker-vision-hip-mmproj': ('worker-vision', 'hip_slice'),
++    'dspark-dflash': ('dspark-dflash', 'cpu_slice'),
++}
++
++
++def original_bytes(path):
++    if path.is_file():
++        return path.read_bytes()
++    envelope = json.loads(path.with_suffix(path.suffix + '.original-bytes.json').read_bytes())
++    raw = base64.b64decode(envelope['bytes_b64'], validate=True)
++    if parity._sha256(raw) != envelope['sha256']:
++        raise ValueError(f'original-bytes envelope mismatch for {path}')
++    return raw
++
++
++def checked_read(path, pin):
++    raw = original_bytes(path)
++    if parity._sha256(raw) != pin:
++        raise ValueError(f'receipt hash mismatch for {path}')
++    return raw
++
++
++def audit_profile(root, profile, recipe_key):
++    plan_path = root / ('successor' if profile == 'dspark-dflash' else '') / 'plan.json'
++    plan_raw = original_bytes(plan_path)
++    plan = json.loads(plan_raw)
++    plan_pin = parity._sha256(plan_raw)
++    facts = {
++        'plan_path': str(plan_path),
++        'plan_sha256': plan_pin,
++        'item_count': len(plan['items']),
++        'fixture_tags': sorted({i['fixture'] for i in plan['items'] if i.get('fixture')}),
++        'missing_expected_finish': [i['id'] for i in plan['items'] if 'expected_finish' not in i],
++        'missing_versioned_validator': [i['id'] for i in plan['items'] if 'validator' not in i],
++        'candidate_read': False,
++    }
++    full_capture = root / 'full-capture'
++    if not (full_capture / 'receipt.json').is_file():
++        return {**facts, 'status': 'no_filed_complete_production_bank'}
++    receipt_path = full_capture / 'receipt.json'
++    receipt = json.loads(receipt_path.read_bytes())
++    if receipt['rc'] != 0 or receipt['verdict'] != 'pass':
++        raise ValueError(f'original capture did not finish successfully: {receipt_path}')
++    files = receipt.get('files_sha256', receipt.get('files'))
++    bank_key = 'native/banked-capture.json'
++    bank_pin = receipt.get('bank_sha256') or receipt['original_files_sha256'][bank_key]
++    bank = json.loads(checked_read(full_capture / bank_key, bank_pin))
++    if bank['capture_identity']['request_plan_sha256'] != plan_pin:
++        raise ValueError(f'bank refers to another plan: {receipt_path}')
++    cleanup_path = 'native/production/cleanup.json'
++    cleanup = json.loads(checked_read(full_capture / cleanup_path, files[cleanup_path]))
++    if cleanup['dead'] is not True or cleanup['port_closed'] is not True:
++        raise ValueError(f'bank cleanup failed: {receipt_path}')
++    rows = {row['id']: row for row in bank['items']}
++    if len(rows) != len(bank['items']) or rows.keys() != {item['id'] for item in plan['items']}:
++        raise ValueError(f'bank items differ from filed plan: {receipt_path}')
++    endpoint = plan['recipes'][recipe_key]['endpoint']
++    checks = {}
++    for item in plan['items']:
++        name = item['id']
++        request_path = f'native/production/{name}.request.json'
++        response_path = f'native/production/{name}.response.json'
++        request = checked_read(full_capture / request_path, files[request_path])
++        response = checked_read(full_capture / response_path, files[response_path])
++        request_body = item.get('request_body', json.loads(request))
++        if request != parity.canonical_json(request_body):
++            raise ValueError(f'original request differs from canonical plan: {request_path}')
++        record = {key: value for key, value in rows[name].items() if key != 'id'}
++        if response != base64.b64decode(record['response_b64'], validate=True):
++            raise ValueError(f'original response differs from bank: {response_path}')
++        _, limit = parity._request(request_body, endpoint)
++        content, _, finish, tokens, count = parity._capture(
++            record, parity._sha256(request), endpoint, None, limit,
++        )
++        errors = []
++        if finish != item['expected_finish']:
++            errors.append('finish_mismatch')
++        if not parity._semantic_matches(item['validator'], content):
++            errors.append('semantic_validation_failed')
++        if tokens is None:
++            errors.append('missing_output_token_ids')
++        if count is None:
++            errors.append('missing_completion_count')
++        if item['output_format'] == 'json' and item['validator']['id'] != 'json-object-subset.v1':
++            errors.append('json_object_validator_required')
++        checks[name] = {
++            'expected_finish': item['expected_finish'],
++            'actual_finish': finish,
++            'completion_count': count,
++            'output_token_count': None if tokens is None else len(tokens),
++            'validator': item['validator'],
++            'response_sha256': record['response_sha256'],
++            'response_path': str(full_capture / response_path),
++            'problems': errors,
++        }
++    return {
++        **facts,
++        'receipt_path': str(receipt_path),
++        'receipt_sha256': parity._sha256(receipt_path.read_bytes()),
++        'bank_sha256': bank_pin,
++        'status': 'inadmissible_bank' if any(c['problems'] for c in checks.values()) else 'item_checks_passed',
++        'checks': checks,
++    }
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument('--repo', type=Path, required=True)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    profiles = {
++        profile: audit_profile(args.repo / f'data/vidya/quality-pack-{leaf}-20261118', profile, recipe)
++        for profile, (leaf, recipe) in PINS.items()
++    }
++    fixtures = {fixture for p in profiles.values() for fixture in p['fixture_tags']}
++    report = {
++        'status': 'pack_blocked',
++        'pack_created': False,
++        'candidate_collected': False,
++        'validator_source_sha256': parity.VALIDATOR_SOURCE_SHA256,
++        'candidate_order': 'full production pack must be built and pinned before any new candidate launch',
++        'missing_fixture_tags': sorted(parity.FIXTURES - fixtures),
++        'profiles': profiles,
++    }
++    with args.output.open('xb') as stream:
++        stream.write(parity.pack_bytes(report))
++
++
++if __name__ == '__main__':
++    main()
+--- original/row-launch.sh
++++ prospective/row-launch.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ set -euo pipefail
+-D=/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-critic-20261118
+-ID=handoff-vidya-quality-pack-architect-critic-20261118
++D=/mnt/raid0/llm/tmp/vidya-belief-substrate/prospective-pack-20261118
++ID=handoff-vidya-quality-pack-architect-critic-bank-20261118
+ RESULT=$D/out/RESULT.json
+ cd "$D"
+ /usr/bin/sha256sum --check --status SOURCE.sha256
+@@ -9,7 +9,7 @@
+     printf -v RESULT '%q' "${FILLER_DRYRUN_RESULT_PATH:?}"
+ fi
+ exec /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh \
+-    --id "$ID" --class cpu --role bench --gpu-quiet none --min-window 1500 \
+-    --port 19476 --workdir "$D" --stop "$D/STOP" \
+-    --complete-cmd "/usr/bin/test -s $RESULT" \
+-    --cmd "/usr/bin/python3 -B $D/capture.py --threads 24"
++    --id "$ID" --class cpu --role bench --gpu-quiet none --min-window 1350 \
++    --port 19482 --workdir "$D" --stop "$D/STOP" \
++    --complete-cmd "/usr/bin/python3 -B $D/complete.py $RESULT" \
++    --cmd "/usr/bin/python3 -B $D/capture.py"
+--- original-plan.pretty.json	2026-11-18 01:57:55.844275878 +0000
++++ prospective-plan.pretty.json	2026-11-18 01:57:55.844275878 +0000
+@@ -2,7 +2,7 @@
+   "architect_critic_model": {
+     "original_hash_receipt_sha256": "be89e5e3383e051aff93b9bdad4110dc625aaef1719605ab90705b1277a0dd3a",
+     "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+-    "receipt_snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-critic-20261118/model-hash-receipt.json",
++    "receipt_snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/prospective-pack-20261118/model-hash-receipt.json",
+     "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+     "stat": [
+       2431,
+@@ -67,7 +67,7 @@
+       "dflash_pair": null,
+       "expected_finish": "stop",
+       "fixture": null,
+-      "id": "architect-critic-json",
++      "id": "architect-critic-bank-json",
+       "output_format": "json",
+       "prompt_shape": "short",
+       "request_body": {
+@@ -76,10 +76,10 @@
+           "enable_thinking": true,
+           "reasoning_effort": "medium"
+         },
+-        "max_tokens": 128,
++        "max_tokens": 256,
+         "messages": [
+           {
+-            "content": "Critique a deployment plan that migrates the only database before verifying its backup. Respond with one JSON object using exactly the keys \"verdict\" and \"fatal_flaw\". Use verdict \"reject\".",
++            "content": "Critique a deployment plan that migrates the only database before verifying its backup. Respond with one JSON object using exactly the keys \"verdict\" and \"fatal_flaw\". Use verdict \"reject\". Limit fatal_flaw to one sentence of at most 12 words. Do not use Markdown.",
+             "role": "user"
+           }
+         ],
+@@ -101,7 +101,7 @@
+       "dflash_pair": null,
+       "expected_finish": "stop",
+       "fixture": null,
+-      "id": "architect-critic-code",
++      "id": "architect-critic-bank-code",
+       "output_format": "code",
+       "prompt_shape": "short",
+       "request_body": {
+@@ -133,7 +133,7 @@
+       "dflash_pair": null,
+       "expected_finish": "stop",
+       "fixture": null,
+-      "id": "architect-critic-reasoning",
++      "id": "architect-critic-bank-reasoning",
+       "output_format": "reasoning",
+       "prompt_shape": "short",
+       "request_body": {
+@@ -142,10 +142,10 @@
+           "enable_thinking": true,
+           "reasoning_effort": "medium"
+         },
+-        "max_tokens": 128,
++        "max_tokens": 384,
+         "messages": [
+           {
+-            "content": "A deployment must keep at least 4 healthy nodes. Six nodes are healthy. A plan takes 3 nodes down at once. Identify the violated constraint and give the largest safe batch size as a digit.",
++            "content": "A deployment must keep at least 4 healthy nodes. Six nodes are healthy. A plan takes 3 nodes down at once. Identify the violated constraint and give the largest safe batch size as a digit. Give the final answer in two short sentences.",
+             "role": "user"
+           }
+         ],
+@@ -165,7 +165,7 @@
+       "dflash_pair": null,
+       "expected_finish": "length",
+       "fixture": null,
+-      "id": "architect-critic-long-prose",
++      "id": "architect-critic-bank-long-prose",
+       "output_format": "prose",
+       "prompt_shape": "long",
+       "request_body": {
+@@ -174,10 +174,10 @@
+           "enable_thinking": true,
+           "reasoning_effort": "medium"
+         },
+-        "max_tokens": 32,
++        "max_tokens": 256,
+         "messages": [
+           {
+-            "content": "Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Proposed plan: delete the existing storage before the replacement is restored. Give a detailed plain-language critique starting with Reject.",
++            "content": "Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Irrelevant appendix: tickets use a weekly triage meeting and green labels denote reviewed work. Inventory reports run monthly. Proposed plan: delete the existing storage before the replacement is restored. Give a detailed plain-language critique starting with Reject. Write at least 1000 words, starting with the exact word Reject.",
+             "role": "user"
+           }
+         ],
+@@ -194,6 +194,10 @@
+       }
+     }
+   ],
++  "original_architect_critic": {
++    "filing_sha256": "601ba9a92e70b8bea5a660191f3589507d408871d13524eb09820e15e37de7d6",
++    "plan_sha256": "61aa74d218b11c96a5e05626465d15e348f7988cb768713c709537eadc989244"
++  },
+   "prior_frontdoor_json_mismatch": {
+     "comparison": {
+       "completion_tokens": [
+@@ -206,7 +210,7 @@
+     },
+     "receipt": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-native-20261118/full-capture/receipt.json",
+     "receipt_sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+-    "snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-critic-20261118/frontdoor-full-receipt.json"
++    "snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/prospective-pack-20261118/frontdoor-full-receipt.json"
+   },
+   "profile": "architect-critic-cpu-mtp",
+   "profile_provenance": {
+@@ -256,7 +260,7 @@
+       "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/.claude/skills/kernel-promotion/scripts/quality_parity.py": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+     }
+   },
+-  "question_pool_sha256": "0d3bcde02e767b281031345fcbcd299e28de167cf5c51a50c806cad459d3da1a",
++  "question_pool_sha256": "e671e6214e660d5e14c476ca2c8fa7c1101105231911cbf2e6f3fd2aa44aa395",
+   "recipes": {
+     "architect_critic_slice": {
+       "args": [
+@@ -293,7 +297,7 @@
+       ],
+       "endpoint": "/v1/chat/completions",
+       "mtp_cap": 4,
+-      "request_s": 105,
++      "request_s": 240,
+       "startup_s": 240
+     },
+     "smoke_control": {
+@@ -324,7 +328,7 @@
+     }
+   },
+   "schema": "epyc.native_quality_architect_critic_plan.v1",
+-  "scope": "isolated bounded architect-critic CPU/MTP slice",
++  "scope": "new production-only architect-critic semantic-bank prerequisite",
+   "smoke_items": [
+     {
+       "id": "native-smoke",
+@@ -343,7 +347,7 @@
+     "original_hash_receipt": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-native-20261118/plan.json.original-bytes.json",
+     "original_hash_receipt_sha256": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+     "path": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+-    "receipt_snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-critic-20261118/smoke-model-plan.original-bytes.json",
++    "receipt_snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/prospective-pack-20261118/smoke-model-plan.original-bytes.json",
+     "sha256": "c159d1518f16bc42533d9a09f034eb598b670341adc2b08b9a9751614aea71eb",
+     "stat": [
+       2431,

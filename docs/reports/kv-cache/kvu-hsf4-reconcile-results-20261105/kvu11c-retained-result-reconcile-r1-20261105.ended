@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T02:50:11Z reason=complete
+job_id=kvu11c-retained-result-reconcile-r1-20261105
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T02:50:07Z
+regions=48-71

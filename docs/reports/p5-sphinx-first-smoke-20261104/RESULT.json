@@ -1,0 +1,31 @@
+{
+  "schema": "p5.gold-control.v1",
+  "producer_source_manifest_sha256": "3f26e8c4c4b3a0bb30a45c0350e94c20e0b8e8ff43dc1463df33264174e596b1",
+  "producer_launcher_sha256": "4c9a77a876c8e5a76f9391169d69a886eb1f6f3dcc37bf289734ba0a51d001a6",
+  "instance_id": "sphinx-doc__sphinx-8593",
+  "arms": {},
+  "image_id": "sha256:e48db103c5c1b2d13782a16375c1efb79e5d4f12ea55755d6de43b83443d3f9f",
+  "case_sha256": "0971c84ae68579da57b1a94541d5d1a600ee842db58dadd7334d3f1d89c54135",
+  "script_binding": {
+    "official_script_sha256": "a0c969ac491740a8e30386cc6b482019e4f44d976c30b3bb288527db511bc311",
+    "offline_script_sha256": "862f0badb1dce6b54be8a21aaeb448f51670709ab78e2aabb7ad6febbf2540b7",
+    "setup_index": 10,
+    "derived_image_id": "sha256:e48db103c5c1b2d13782a16375c1efb79e5d4f12ea55755d6de43b83443d3f9f",
+    "scope": "one exact setup substitution; all other generated commands unchanged"
+  },
+  "image_build_log_sha256": "5940c31cd50b35f8ad586e7b3ff4d09ca8cb9d2a7dea26eb9c2b6f6d5fa3770d",
+  "wheel_manifest_sha256": null,
+  "checkout_proofs": {
+    "6de66f7b114cac3d9c91f152f3d93b8c6eed791e7693e7dc8f3adaad60835513": {
+      "base_commit": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "base_tree": "89dc2fa0e6824d37bee997604aedfacf8291cf2d",
+      "image_head": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "tracked_content_matches_base": true,
+      "untracked_nonignored": 0,
+      "scope": "blob trees and clean index/worktree; regular executable mode ignored; ignored image files bound by image digest"
+    }
+  },
+  "status": "FAIL",
+  "error": "RuntimeError('incomplete run / missing explicit named test statuses: negative')",
+  "owned_containers_removed": true
+}

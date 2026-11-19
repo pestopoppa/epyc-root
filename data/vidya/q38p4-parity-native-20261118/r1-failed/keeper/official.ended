@@ -1,0 +1,7 @@
+rc=2 time=2026-11-18T06:48:26Z reason=job-rc-2:exited
+job_id=q38p4-greedy-parity-20261118-r1
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=420
+started=2026-11-18T06:48:21Z
+regions=mi210_0,184-191

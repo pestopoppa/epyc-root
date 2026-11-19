@@ -295,7 +295,7 @@ Decision template:
 
 `B1 frontdoor_q8 barrier-fusion tg128 delta <pct>% median decode t/s, higher-better [P-BENCH-1, n=10 reps/arm, <YYYY-MM-DD>, attest <attestation-json-sha>]`
 
-Route results to `handoffs/active/cpu-shape-specialized-gemv-decode.md` first, then the
+Route results to `handoffs/completed/cpu-shape-specialized-gemv-decode.md` first, then the
 B1 row in `handoffs/active/inference-acceleration-index.md`. If the profile notes expose
 prefill-relevant compute-bound hot ops, also cross-link the observation to
 `handoffs/active/cpu-prefill-compute-large-models.md`; do not close PC-0 from a decode-only
@@ -375,7 +375,7 @@ D3 decision rule:
   implement D3. Route as `D3.1 no-go` or `D3.1 inconclusive` with the exact reason.
 
 Route results to `handoffs/active/llama-cpp-dsa-contribution.md` D3.1 first and
-`handoffs/active/cpu-shape-specialized-gemv-decode.md` CPU26 second. If the same profile is
+`handoffs/completed/cpu-shape-specialized-gemv-decode.md` CPU26 second. If the same profile is
 used as evidence for prefill compute-bound behavior, route only a scoped observation to
 `handoffs/active/cpu-prefill-compute-large-models.md`; PC-0 still needs its own explicit
 long-context large-model prefill premise check before closure.
@@ -386,7 +386,7 @@ long-context large-model prefill premise check before closure.
 |---|---|---|---|
 | v6 live verify | `handoffs/active/v6-iqk-promotion.md` | `handoffs/active/inference-acceleration-index.md` A2 | live role table, smoke verdicts, attestation refs |
 | clean canonical bench | `handoffs/active/v6-iqk-promotion.md` | master OP-2 via main agent | P-BENCH-1 claim row or failure reason |
-| B1 barrier fusion | `handoffs/active/cpu-shape-specialized-gemv-decode.md` | `inference-acceleration-index.md` B1; maybe CPU prefill as observation | arm table, median/MAD, delta, correctness |
+| B1 barrier fusion | `handoffs/completed/cpu-shape-specialized-gemv-decode.md` | `inference-acceleration-index.md` B1; maybe CPU prefill as observation | arm table, median/MAD, delta, correctness |
 | B4 DSA-D3 profile | `handoffs/active/llama-cpp-dsa-contribution.md` | `cpu-shape-specialized-gemv-decode.md` CPU26; maybe CPU prefill as observation | profile verdict: compute-bound, BW-bound, or inconclusive |
 
 The main agent, not this sidecar, owns handoff checkbox/progress updates. Do not edit

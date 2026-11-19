@@ -1,0 +1,15 @@
+{
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet/supervise.py": "ee80ec5a4e8bf23eb42c8debc33b0c5e4516ebc7f08bd3c1cf1d374d274f86d1",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet/check.py": "2f8d5a3b1d5d61c18b9942bbfdbe4c76315861cc67da2944803dc09bddbb2698",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet/job.sh": "7c4736efeff6466fb611eef9e0412affac48291c611300442fb6df74750d4a9c",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet/proof.py": "ffa053a5dda268202f7e8ae6a2b179cbace36781cc1e402733d405e717cee927",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet/complete.py": "e4f6f51f460f4bb16070b0c1ebfafd3dd577253218e2d81865047b11f8e68f7f",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet/verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+  "/opt/rocm/llvm/bin/clang": "d7abf6eb6db27e3ead0be22aed5688b51ea4ab64831476f68434087155a68b21",
+  "/opt/rocm/llvm/bin/clang++": "d7abf6eb6db27e3ead0be22aed5688b51ea4ab64831476f68434087155a68b21",
+  "/opt/rocm/llvm/bin/clang++.cfg": "e795800978f7e1ad08f20c0b3d51b97fe34c17204f6a0a71cac55de593524e40",
+  "/opt/rocm/llvm/bin/clang-18.cfg": "e795800978f7e1ad08f20c0b3d51b97fe34c17204f6a0a71cac55de593524e40",
+  "/usr/bin/cmake": "e8e3ba5a77d694b6c85ea52c96af984b6aec172cd23454f1f55dfe468da8b6a9",
+  "/usr/bin/make": "93fc2b4bbe134f593c864748fce8a101588d0ca68577b216ae09aa08acd3e61e",
+  "/usr/bin/nm": "9a811468a6a478b28e19b3749dce7e9d7f586ee8cb6f3a3a1fe0174e4387016e"
+}

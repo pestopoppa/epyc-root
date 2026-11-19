@@ -1,0 +1,52 @@
+{
+ "decision_rule": "Build-only: pinned v10, exact target diagnostic patch, frozen-token matched-geometry V5 candidate/header and source-bound prompt provenance; full CPU executable with CAFE4_GEOMETRY_V5 and existing MTP/load/rewind markers, content hashes and local linkage. No native correctness, fault sensitivity, timing or parent CAFE-4 verdict; incomplete UNKNOWN.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-geometry-holdout-frozen-build-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.cpp",
+  "*.hpp",
+  "*.json",
+  "*.sha256",
+  "*.patch",
+  "*.md",
+  "*.txt"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/launch.sh",
+  "sha256": "62f6b9ae99fc724a96a65b7762011b13000aebd6d70a641a496d5629efff4473"
+ },
+ "min_window_s": 1800,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:473: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "speculative-decoding.md:473: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "speculative-decoding.md:473: untestable prose prerequisite: 'after adding the draft-suffix rewind and passing four-CPU object smoke. [Failure, source and qualification]. Full build '"
+ ],
+ "published_at": "2026-11-04T15:22:29Z",
+ "published_from": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/proof.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/df2/cafe4-geometry-frozen-build"
+}

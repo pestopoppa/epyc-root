@@ -1,0 +1,10 @@
+{
+ "complete": true,
+ "verdict": "PASS",
+ "index": "/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index-qd-v2",
+ "rows": 52436,
+ "convention": "qd-v2",
+ "probe_hit": true,
+ "tree_head": "e5add69fd723fe3ed8f2e9b935adedf2e2bd8130",
+ "elapsed_s": 144
+}

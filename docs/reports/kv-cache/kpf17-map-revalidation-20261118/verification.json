@@ -1,0 +1,107 @@
+{
+  "cases": {
+    "cpu-model": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    },
+    "exact-task": {
+      "claims": 1,
+      "section_sha256": "05c6a6144639fda080d7fe492cf9230650f83cffa72848ac69ee12e8754acc5b",
+      "tried": 1
+    },
+    "gpu-model": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    },
+    "lineup": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    },
+    "wrong-consumer": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    },
+    "wrong-task": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    }
+  },
+  "changed_path_sha256": {
+    "docs/reports/kv-cache/kpf17-map-revalidation-20261118/README.md": "65e8835c631f0ae8e7d5ca651dd48bdf66842dd8b91022c2a7378d7691f05cac",
+    "docs/reports/kv-cache/kpf17-map-revalidation-20261118/planning-context.json": "044e4cdce7e6a1baaed9b97c2867c8cfdcc826c3696e3f66b67faf39b197cd70",
+    "scripts/vidya/canary/kpf17_task_context.py": "ca1390abe5043384de84c551692baa936dacddc464a0235cf19175147a6dafdc",
+    "scripts/vidya/loop_beliefs.py": "937f899cd39d6998bfadba3a6d3caef08e984bdb5d665b760e533b4438acb2fc",
+    "scripts/vidya/read_counter.py": "4e478e063b9267a0910cdfb5841dc4cc50aac43730841edb0d9f3d1ec4b40797",
+    "tests/vidya/test_kpf17_task_context.py": "029209be4a772f78bfc4f61e50dd5b71b9b734d40d3096fff88a3b0a3b9eb686"
+  },
+  "changed_paths": [
+    "scripts/vidya/loop_beliefs.py",
+    "scripts/vidya/read_counter.py",
+    "scripts/vidya/canary/kpf17_task_context.py",
+    "tests/vidya/test_kpf17_task_context.py",
+    "docs/reports/kv-cache/kpf17-map-revalidation-20261118/README.md",
+    "docs/reports/kv-cache/kpf17-map-revalidation-20261118/planning-context.json"
+  ],
+  "checks": [
+    {
+      "command": "gitnexus status and impact prepare, Target, collect, render, main, _task_observation, _label, build_record and kv_prefix_fork --direction upstream",
+      "outcome": "unindexed; source inspection and focused regression coverage used"
+    },
+    {
+      "command": "scripts/gitnexus-analyze.sh --workers 1",
+      "outcome": "exit 64; CPU admission denied because cross-role global region locks are not enabled"
+    },
+    {
+      "command": "python3 -B -m pytest -q tests/vidya/test_kpf17_task_context.py tests/vidya/test_kpf17_map_revalidation.py tests/vidya/test_loop_beliefs.py tests/vidya/test_read_counter.py tests/vidya/test_q38p4_parity.py tests/vidya/test_qwen4exp_cpu_loader.py",
+      "log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz/test.log",
+      "outcome": "136 passed; 859 tuples from 15 sources checked, zero carrier violations"
+    },
+    {
+      "command": "python3 -B scripts/vidya/canary/kpf17_task_context.py data/vidya/kpf17-native-20261118 <scratch>/context",
+      "outcome": "PASS; exact consumer/task 1 claim, 1 tried; wrong task/consumer and CPU/GPU/lineup 0 claims, 0 tried"
+    },
+    {
+      "command": "python3 -B scripts/vidya/loop_beliefs.py prepare --consumer kvfork.planner --target-json exact-task --ledger <scratch>/context/ledger.jsonl --index <scratch>/context/index.yaml --as-of 2026-11-18T19:09:41Z plus isolated alarm/log paths",
+      "outcome": "PASS; current-reader check enabled and CLI evidence equals API evidence"
+    },
+    {
+      "command": "bash -n launch.sh; python3 -BI run.py verify; native SHA256SUMS; sealed reader/packet preflight; git diff --check",
+      "outcome": "PASS; 353 content-sealed reader/replay files; 15 original packet seals; six preflight dispositions match local"
+    }
+  ],
+  "exact_cli_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz/context/cli.json",
+  "ledger_frame_count": 3,
+  "ledger_head": "sha256:f45dc8e3d18004d227cf9db37a608b00ae4d9e25394bc14fa9f464d319acc27f",
+  "local_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz/context/RESULT.json",
+  "native_claim_id": "clm_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6",
+  "native_grade": "Judged/Located",
+  "reader_checkout": {
+    "behind": 1,
+    "current": true,
+    "error": null,
+    "head": "4795cb2dd93b5dc9a114889376d2ac365981b5f4",
+    "oldest_missing_age_s": 403.0,
+    "origin_main": "a6ffc6747db167b8d7a708efdd24d14c03cc32ea",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate",
+    "within_grace": true
+  },
+  "recommended_parent_tick": "Close VB-KPF17-MAP-REVALIDATION-WIRE with [belief: clm_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6]. The exact task and consumer saw the fixture observation and tried history; wrong task/consumer and model/lineup controls were empty.",
+  "row": {
+    "id": "vb-kpf17-task-context-20261118",
+    "latest_launch_sha256": "0db232f5e54864fc6f15f86285375283e552f215504f8612f661c64c48d197ee",
+    "latest_manifest_sha256": "09d2b2092e6cf8da802e75b34f6d02a63614042bb17b445b2ccec1c90865b762",
+    "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118/launch.sh",
+    "official_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118/out/RESULT.json",
+    "publication_custody": "Publisher refused before admission. Local planner and sealed preflight six-case replays passed.",
+    "publication_status": "publisher_refused_existing_non_inference_deliverable",
+    "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118/spec.json",
+    "superseded_manifest_sha256": "a49849e69aa80458ccb2562ea18dc77664f7c8a5ed74e7d880acf6b261e59535"
+  },
+  "sealed_snapshot_preflight_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz/snapshot/RESULT.json",
+  "status": "native_task_context_pass"
+}

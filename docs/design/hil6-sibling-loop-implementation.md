@@ -8,7 +8,7 @@ still in force. The HS-5b ordering also still holds: no tuning and no efficacy c
 P0.4 acceptance and freeze. Any result that cites no human-ratified protocol is an observation
 (MEASUREMENT.md).
 
-Owner handoff: [`harness-improvement-loop.md`](../../handoffs/active/harness-improvement-loop.md)
+Owner handoff: [`harness-improvement-loop.md`](../../handoffs/active/harness-program.md#track-harness-improvement-loop)
 HIL-6. Index row: UFH-08.
 
 ## Evidence pins

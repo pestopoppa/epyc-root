@@ -1,0 +1,57 @@
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -1,4 +1,5 @@
+ #include "server-context.h"
++#include "server-kpf30-admission.h"
+ #include "server-chat.h"
+ #include "server-common.h"
+ #include "server-http.h"
+@@ -26,6 +27,7 @@
+ #include <chrono>
+ #include <cstddef>
+ #include <cstring>
++#include <cstdlib>
+ #include <cinttypes>
+ #include <exception>
+ #include <memory>
+@@ -866,6 +868,11 @@
+     // returns 0 on success
+     // caller need to update prompt.tokens after a successful call to keep track of the processing progress
+     int process_mtmd_chunk(size_t idx, size_t & n_tokens_out) {
++        // Refuse before the helper can issue an unbracketed target decode.
++        if (server_kpf30_observing(std::getenv("LLAMA_KPF30_MIXED_BLOCKS"))) {
++            SLT_ERR(*this, "KPF30_UNSCOPED_TARGET reason=multimodal-target-helper\n");
++            return -1;
++        }
+         GGML_ASSERT(mctx);
+         const auto & input_tokens = task->tokens;
+         const auto & chunk = input_tokens.find_chunk(idx);
+@@ -1215,6 +1222,12 @@
+                                         params_base.speculative.types.end(),
+                                         COMMON_SPECULATIVE_TYPE_DRAFT_MTP) != params_base.speculative.types.end();
+         const bool has_spec = has_draft || spec_mtp;
++
++        // Temporary fail-closed admission until observer rows carry target-context custody.
++        if (server_kpf30_refuse_spec(std::getenv("LLAMA_KPF30_MIXED_BLOCKS"), has_spec)) {
++            SRV_ERR("KPF30_UNSCOPED_TARGET reason=target-draft-context-custody\n");
++            return false;
++        }
+ 
+         if (callback_state) {
+             std::vector<std::string> stages = {"text_model"};
+--- /dev/null
++++ b/tools/server/server-kpf30-admission.h
+@@ -0,0 +1,13 @@
++#pragma once
++
++#include <cstring>
++
++// Diagnostic-only admission. Other values retain the observer's disabled semantics.
++inline bool server_kpf30_observing(const char * value) {
++    return value != nullptr && std::strcmp(value, "1") == 0;
++}
++
++// No target-vs-draft identity is present in the current native observation schema.
++inline bool server_kpf30_refuse_spec(const char * value, bool has_spec) {
++    return server_kpf30_observing(value) && has_spec;
++}

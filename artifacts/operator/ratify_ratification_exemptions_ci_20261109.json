@@ -1,0 +1,28 @@
+{
+  "schema": "epyc.ratification_exemptions_amendment.v1",
+  "gate_id": "RATIFY-RATIFICATION-EXEMPTIONS-CI-20261109",
+  "status": "ratified",
+  "ratified_at": "2026-11-09T12:18:46Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-11-09: apply the 8 not-a-boundary-write exemption entries staged in artifacts/operator/staged/ratification-exemptions-add-20261109.json to scripts/validate/ratification_receipt_exemptions.json .exemptions"
+  },
+  "origin": "2026-11-09 CI-red review (ni/ci-red-20261109)",
+  "base_origin_main": "c8d97b56ca2802f1c7390e2f880de6852209531e",
+  "entries_added": 8,
+  "staged_entries_file": {
+    "path": "artifacts/operator/staged/ratification-exemptions-add-20261109.json",
+    "sha256": "746a79e5be900ca67d85a318fc1d0376ee0f39774970adf62d4325f0b10b1a3c"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_ratification_exemptions_ci_20261109.receipt.json",
+  "state": {
+    "scripts/validate/ratification_receipt_exemptions.json": {
+      "sha256_before": "a2306bbb077dc2768af7a18760ae5e6836c271b3ab362a72145b3a972fb8897c",
+      "sha256_after": "1ca24d8c409af038cd4805033dd446e51fa3bed8d0b674606f679080cd76b55e"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_ratification_exemptions_ci_20261109.sh",
+  "ratify_script_sha256": "077a47053a52cd7bd686434082e13f91b620f939f058e8c7b4a705ee0b22ec1f",
+  "processes_touched": []
+}

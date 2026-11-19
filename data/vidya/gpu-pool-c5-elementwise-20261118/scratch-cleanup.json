@@ -1,0 +1,90 @@
+{
+  "timestamp_utc": "2026-11-18T20:25:16.063990+00:00",
+  "removed": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/model/Qwen3-4B-Instruct-2507-BF16.gguf",
+      "bytes_before": 8051283488,
+      "bytes_after": 0,
+      "reason": "Superseded copied model; parity result filed in data/vidya/parity-native-filed-20261118."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/pytest-of-node",
+      "bytes_before": 16633858,
+      "bytes_after": 0,
+      "reason": "Obsolete pytest temporary data."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-stage-parent-review",
+      "bytes_before": 1083758,
+      "bytes_after": 0,
+      "reason": "Obsolete pytest review temporary data."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/pytest-tmp",
+      "bytes_before": 15853647,
+      "bytes_after": 0,
+      "reason": "Obsolete pytest temporary data."
+    }
+  ],
+  "bytes_removed": 8084854751,
+  "kept": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-ready/research",
+      "bytes": 1986119086,
+      "reason": "Current packet KEEP and job.py reference this locked load-bearing worktree; it has a modified source file."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current",
+      "reason": "Active row input."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready",
+      "reason": "Active row input."
+    },
+    {
+      "path": "data/vidya/parity-native-filed-20261118",
+      "reason": "Durable official filed parity evidence."
+    }
+  ],
+  "followup": {
+    "timestamp_utc": "2026-11-18T20:27:12.179211+00:00",
+    "removed": [],
+    "kept": [
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.local.H6qX1S",
+        "bytes": 41048,
+        "reason": "Local planning replay; durable filing of this specific attempt not established."
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz",
+        "bytes": 89817,
+        "reason": "Final planning replay; durable filing of this specific attempt not established."
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118",
+        "bytes": 95275,
+        "reason": "Current planning packet and retained official out/ results."
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118",
+        "bytes": 145289,
+        "reason": "Active handoff and filed row spec reference this producer path; capture remains open."
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118-repair-r2.2o7xv56j",
+        "bytes": 161238,
+        "reason": "Queued repair manifest references this producer path; current retirement not established."
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/worker-vision-20261118",
+        "bytes": 430941,
+        "reason": "Active handoff retains original producer inputs; capture remains open."
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/worker-vision-20261118-repair-r2._blwnc1p",
+        "bytes": 212931,
+        "reason": "Repair path appears in queue/dry-run records; current retirement not established."
+      }
+    ]
+  }
+}

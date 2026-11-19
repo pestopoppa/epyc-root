@@ -1,0 +1,151 @@
+{
+  "broad_pack_status": "incomplete",
+  "files": {
+    "README.md": {
+      "archive": "README.md",
+      "encoding": "raw",
+      "sha256": "50aee6d74a7f93093ce19c16a4cb09e4923c73c61312660f338f5585f7834f81"
+    },
+    "SOURCE.sha256": {
+      "archive": "SOURCE.sha256",
+      "encoding": "raw",
+      "sha256": "b2a2d4bb21ed21b3d0395b0d50ad003b36fad599894305fdab01cdf1a98051a7"
+    },
+    "capture.py": {
+      "archive": "capture.py",
+      "encoding": "raw",
+      "sha256": "1bd9b656d031a6a30ecadfa052dfd2f8d247e5b9acb47ce4b9b3624bc03f17d5"
+    },
+    "complete_predicate.py": {
+      "archive": "complete_predicate.py",
+      "encoding": "raw",
+      "sha256": "0e028017a4a0eef136651fcece12e4d9c99d8fb2d597ffa030199350406b887b"
+    },
+    "cpu-feasibility.json": {
+      "archive": "cpu-feasibility.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "522c7aed104b65837fb8aec8c544fa884fe5414b4bc61fcc083b26f380b16f64"
+    },
+    "dflash-original-admission.json": {
+      "archive": "dflash-original-admission.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "7ea47884274923aa89b5ac3864899d77ead7062e45d4fe188f5b2944c9b3ddc0"
+    },
+    "frontdoor-full-receipt.json": {
+      "archive": "frontdoor-full-receipt.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c"
+    },
+    "make_plan.py": {
+      "archive": "make_plan.py",
+      "encoding": "raw",
+      "sha256": "4ff81fcf59f107cd35b7d2c2be50bae8c2a21533c3c66469db10f564c79ac177"
+    },
+    "offline_controls.py": {
+      "archive": "offline_controls.py",
+      "encoding": "raw",
+      "sha256": "8b1d645705d2f48b3f27f38df0e2ca0636b5829ef7d10799aa2ba8ace88b045d"
+    },
+    "pair.py": {
+      "archive": "pair.py",
+      "encoding": "raw",
+      "sha256": "0ac62589f7630ed053366e2a7deb16d6f4f57840068197a09562dc282074abe2"
+    },
+    "plan.json": {
+      "archive": "plan.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "b7af2dd94e52bef1041855e9de6ee3eba97e2517ace0c1ab29dc3d9e82742b54"
+    },
+    "quality_parity.py": {
+      "archive": "quality_parity.py",
+      "encoding": "raw",
+      "sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+    },
+    "r3-owner-receipt.json": {
+      "archive": "r3-owner-receipt.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "a3bead8075d6d673772683016be28d51d2ffb40facf70f62c45a7584b2ea35a9"
+    },
+    "requests/dflash2-code-cap0.json": {
+      "archive": "requests/dflash2-code-cap0.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "9e7ef24c37adbfd2d077399e1b2f547c828a2384967b9ee6e6a8c5b8753c4f45"
+    },
+    "requests/dflash2-code-cap7.json": {
+      "archive": "requests/dflash2-code-cap7.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "c45179ddfbe304c4d0f534296e7c1ef8afe2b5ce117a9610f6352be76191dfd8"
+    },
+    "requests/dflash2-json-cap0.json": {
+      "archive": "requests/dflash2-json-cap0.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "35760ef61e1b9f36933a4fdf374bd16a4efebb0f94e8be1452a9bbb18b8efb0d"
+    },
+    "requests/dflash2-json-cap7.json": {
+      "archive": "requests/dflash2-json-cap7.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "7fd86078b30b83e389d7a3da86c66c17b034e520d552113be9f4f383757c0006"
+    },
+    "requests/dflash2-prose-cap0.json": {
+      "archive": "requests/dflash2-prose-cap0.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "b8127d72081f4e461ce709de78e23360f9f08b3f3696de75160c11725c544cd5"
+    },
+    "requests/dflash2-prose-cap7.json": {
+      "archive": "requests/dflash2-prose-cap7.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "55683c8a45b7332850d79acdbfe24fbde7121d586d4cbd04b6ae0fc6c20f79cf"
+    },
+    "requests/dflash2-reasoning-cap0.json": {
+      "archive": "requests/dflash2-reasoning-cap0.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "4e5505069120280cf86c9cd981ac57533c6128e87bc81e14152bef662787d5e1"
+    },
+    "requests/dflash2-reasoning-cap7.json": {
+      "archive": "requests/dflash2-reasoning-cap7.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "f8cbb980dd79765aae1af2f6a869e78781b72f5d1b7d6a6cbdd0db3fb91b5319"
+    },
+    "requests/native-smoke.json": {
+      "archive": "requests/native-smoke.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba"
+    },
+    "row-launch.sh": {
+      "archive": "row-launch.sh",
+      "encoding": "raw",
+      "sha256": "3af1adf4d90d1601dce1d25dd8a909735919b50814d2657007108433227d73ca"
+    },
+    "row.spec.json": {
+      "archive": "row.spec.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "65e85b445f1304f03ec9168fcf87e21847ff1e3a3247c8781e9b945047bcb1b4"
+    },
+    "smoke-PASS.json": {
+      "archive": "smoke-PASS.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "862b334b4e7e8d6f4635753e792b5900728e45f94a6af8d11808296a5125870c"
+    },
+    "smoke-model-hash-witness.json": {
+      "archive": "smoke-model-hash-witness.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "11203f1f6d7d95600e7ae35d11d272e310bf0714e466abbd75417a86d55113bc"
+    },
+    "smoke_predicate.py": {
+      "archive": "smoke_predicate.py",
+      "encoding": "raw",
+      "sha256": "82c6237545c335decd7988a2517e072a135ddccc3c6625e6faba717fe6bfc451"
+    },
+    "target-hash-witness.json": {
+      "archive": "target-hash-witness.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "b95aa1fe9507dc452b6b89057446ba4206518312c8a0c0545b293cd4b4897529"
+    }
+  },
+  "promotion_authorized": false,
+  "publisher_smoke": "PASS",
+  "quality_transfer_authorized": false,
+  "row": "handoff-vidya-quality-pack-dflash-bank-20261118",
+  "scope": "Prospective packet and native publisher readiness only; no full row or candidate parity result.",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dflash-bank-20261118"
+}

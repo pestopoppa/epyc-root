@@ -1,0 +1,19 @@
+{
+ "arm": "W8",
+ "log": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/results/server_W8.log",
+ "log_bytes": 707564,
+ "impl_stats_last_seen": {
+  "ngram-mod": {
+   "gen_drafts": 643,
+   "acc_drafts": 643,
+   "gen_tokens": 5144,
+   "acc_tokens": 4067
+  },
+  "draft-mtp": {
+   "gen_drafts": 3113,
+   "acc_drafts": 2673,
+   "gen_tokens": 12429,
+   "acc_tokens": 8036
+  }
+ }
+}

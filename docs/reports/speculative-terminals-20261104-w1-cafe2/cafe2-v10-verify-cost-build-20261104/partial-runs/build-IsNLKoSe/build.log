@@ -1,0 +1,252 @@
+[1/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o
+[2/251] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+[3/251] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+[4/251] Building CXX object ggml/src/CMakeFiles/ggml.dir/ggml-backend-dl.cpp.o
+[5/251] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/ggml/src/ggml-alloc.c:19: warning: "AT_PRINTF" redefined
+   19 | #define AT_PRINTF(...)
+      | 
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/ggml/src/ggml-alloc.c:18: note: this is the location of the previous definition
+   18 | #define AT_PRINTF(...) GGML_LOG_DEBUG(__VA_ARGS__)
+      | 
+[6/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o
+[7/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o
+[8/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o
+[9/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o
+[10/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o
+[11/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqk/iqk_quantize_min.cpp.o
+[12/251] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+[13/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqk/iqk_stubs.cpp.o
+[14/251] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+[15/251] Building CXX object CMakeFiles/cafe2-verify-cost.dir/mnt/raid0/llm/tmp/df2/cafe2-build-row/candidate.cpp.o
+[16/251] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/ggml/src/ggml-cpu/ggml-cpu.c: In function ‘ggml_compute_forward_mul_mat_one_chunk’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/ggml/src/ggml-cpu/ggml-cpu.c:1229:40: warning: unused parameter ‘params’ [-Wunused-parameter]
+ 1229 |     const struct ggml_compute_params * params,
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/ggml/src/ggml-cpu/ggml-cpu.c: In function ‘ggml_get_n_tasks’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/ggml/src/ggml-cpu/ggml-cpu.c:2912:45: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int64_t’ {aka ‘long int’} [-Wsign-compare]
+ 2912 |                 n_tasks = ggml_nbytes(node) >= ggml_get_rows_min_bytes() ? n_threads : 1;
+      |                                             ^~
+[17/251] Building CXX object ggml/src/CMakeFiles/ggml.dir/ggml-backend-reg.cpp.o
+[18/251] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o
+[19/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqk/iqk_dispatch.cpp.o
+[20/251] Building CXX object src/CMakeFiles/llama.dir/llama-cparams.cpp.o
+[21/251] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o
+[22/251] Building CXX object src/CMakeFiles/llama.dir/llama-hparams.cpp.o
+[23/251] Building CXX object src/CMakeFiles/llama.dir/llama-io.cpp.o
+[24/251] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+[25/251] Building CXX object src/CMakeFiles/llama.dir/llama-impl.cpp.o
+[26/251] Building CXX object src/CMakeFiles/llama.dir/llama.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama.cpp:11:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[27/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o
+[28/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqk/iqk_mul_mat.cpp.o
+[29/251] Building CXX object src/CMakeFiles/llama.dir/llama-arch.cpp.o
+[30/251] Building CXX object src/CMakeFiles/llama.dir/llama-adapter.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-adapter.cpp:5:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[31/251] Building CXX object src/CMakeFiles/llama.dir/llama-memory.cpp.o
+[32/251] Building CXX object src/CMakeFiles/llama.dir/llama-chat.cpp.o
+[33/251] Building CXX object src/CMakeFiles/llama.dir/llama-batch.cpp.o
+[34/251] Building CXX object src/CMakeFiles/llama.dir/llama-kv-cache-iswa.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-kv-cache-iswa.cpp:5:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[35/251] Building CXX object src/CMakeFiles/llama.dir/llama-kv-cache-dsa.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-kv-cache-dsa.cpp:5:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[36/251] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o
+[37/251] Building CXX object src/CMakeFiles/llama.dir/llama-kv-compress.cpp.o
+[38/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o
+[39/251] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+[40/251] Building CXX object src/CMakeFiles/llama.dir/llama-mmap.cpp.o
+[41/251] Building CXX object src/CMakeFiles/llama.dir/llama-memory-hybrid.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-memory-hybrid.cpp:4:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[42/251] Building CXX object src/CMakeFiles/llama.dir/llama-memory-hybrid-iswa.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-memory-hybrid-iswa.cpp:4:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[43/251] Building CXX object src/CMakeFiles/llama.dir/llama-model-saver.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model-saver.cpp:9:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[44/251] Building CXX object src/CMakeFiles/llama.dir/unicode-data.cpp.o
+[45/251] Building CXX object src/CMakeFiles/llama.dir/llama-memory-hybrid-idx.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-memory-hybrid-idx.cpp:6:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[46/251] Building CXX object src/CMakeFiles/llama.dir/llama-memory-recurrent.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-memory-recurrent.cpp:7:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[47/251] Building CXX object src/CMakeFiles/llama.dir/llama-graph.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-graph.cpp:4:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+[48/251] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/repack.cpp.o
+[49/251] Building CXX object src/CMakeFiles/llama.dir/models/afmoe.cpp.o
+In file included from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/models/models.h:3,
+                 from /mnt/raid0/llm/tmp/df2/cafe2-build-source/src/models/afmoe.cpp:1:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/./llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, int, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/./llama-model.h:724:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/./llama-model.h:724:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/./llama-model.h:724:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/./llama-model.h:724:138: warning: unused parameter ‘n_threads’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~^~~~~~~~~
+/mnt/raid0/llm/tmp/df2/cafe2-build-source/src/./llama-model.h:724:184: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  724 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, int n_threads, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+ninja: build stopped: interrupted by user.

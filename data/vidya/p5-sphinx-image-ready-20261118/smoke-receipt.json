@@ -1,0 +1,15 @@
+{
+  "id": "vb-p5-sphinx-image-rebuild-20261118",
+  "mode": "smoke",
+  "status": "COMPLETE",
+  "image_id": "sha256:43cb7ce3635bb1f7b5c73840cb79f70d5ab11202286593f5d63790bbe7ca89d7",
+  "base_image_id": "sha256:84fd7981cbcb53fe42d3f314cac61670175b9429ec51abea180f258d6e66f293",
+  "dockerfile_sha256": "9ff861978efad7f1452da229378b3e87c91f0c17089036cd903a28ca0cd919d0",
+  "build_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-p5-sphinx-image-rebuild-20261118/native-attempts/attempt-jqejaxvs/build-qc3TDL2F/build.log",
+  "build_log_sha256": "15c6fc44274ce3bc45b01cb7abc7efa6b54075451bab9bfcb0c72818939efab5",
+  "started_utc": "2026-11-18T19:10:10Z",
+  "completion_utc": "2026-11-18T19:10:13Z",
+  "actual_cpus": "116-119",
+  "grant_sha256": "373052fc529fa4e7af1090ef628cb0194132a843cd086a9e47a0313d35092171",
+  "runner_rc": 0
+}

@@ -1,0 +1,48 @@
+{
+  "base_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_dir": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/llama-champion",
+  "tracked_patch_sha256": "5704ab5f35e4def95f608fb9fa04c1e2e3d9af39e19ebbb44635555bea5ec133",
+  "source_sha256": {
+    "src/models/qwen35.cpp": "bf21b2bb8b1a2b5eff909ca300ca90be2e54d573323cf2c69fef835548080171",
+    "src/models/lsa-screen-reference.h": "9d682392308f99c6d4e1e495d8c26c5328a2d6df6da8acd233d537c84e9098dd",
+    "experiments/lsa-screen/check_logits.py": "d743c2222bffcb35ec74054e6c3bf23e2c6a1fb6d3d30bfb38d9a038e6737de1",
+    "experiments/lsa-screen/dump_logits.cpp": "ac4be1f0f891b9d9900570d6bfed21d3538e52d8a65d18bb534b28d7da90badf",
+    "experiments/lsa-screen/layout_worker.py": "d20e7d642bd654e4014da3234e8f93ba971821c91670e5871d2f1e82b8f25640",
+    "experiments/lsa-screen/mask_worker.py": "b9faba4e73cba6fdb1659cb3896467a0053b01e60cb8ab6b6547795967c8b078",
+    "experiments/lsa-screen/reference.py": "96e44dc399114e0709a0f6c0820c0ddcc2c62cb28d69f7a675389ae17db68ac2",
+    "experiments/lsa-screen/test_check_logits.py": "3eb224d311f7eceb8a93d321cb2f03916d4f3d1481cff6e441cb0811c153600e",
+    "experiments/lsa-screen/test_graph.cpp": "428c51e5559358e7dae7c711e0ebd8cadd3501389ff40354d51b763f95254e33",
+    "experiments/lsa-screen/test_reference.py": "d828a812a97015b00a2882884d002777b1f9b285458bc1596f5c8c785409c22e"
+  },
+  "build": "CPU Release gcc15, native, OpenMP; HIP OFF, CURL OFF",
+  "build_cache_sha256": "a41d5a40ae8f7dd2d0d9f13dae95bd4c6a8087d7b5107dfb28b8f8e07b5130a7",
+  "artifact_sha256": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/llama-server": "7451dd5de568a3ec302ffe5fb7765f34848a6e5f610e067ec66c1b90d509c17d",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/llama-tokenize": "ad0285718f6c7743a2fbd794d137eed945e60181b0043e59c1e18506b0e4bee7",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/lsa-dump-logits": "9ace2ab7db44b894f61d3dfc8a50df7acd25744518575b669dce3b8af386677a",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libllama.so.0.0.10419": "ca6940d77768dd81162399379cc8c18335271ff7b6abfcd47bd9ea40fd7aaf45",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libggml-base.so.0.16.0": "eb5cd450058983655ea54c11675d3138b61863564a6bfa11ce77260309926897",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libggml-cpu.so.0.16.0": "decaede0a92b5d5833f32b02dc4a7e8cf2467ca4c54491d6641a5b6948dbd3f0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libggml.so.0.16.0": "3bc4efabd8103258b03f658148e0d3a2b60d5cd64116d23481eb7dbeac987b09",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-cpu/bin/libllama-server-impl.so": "d237f88b677804a747ca5fb6f3761e707f7a0238524b7ebb99a06d9b19221873",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-gpu/bin/llama-server": "9dbba3347bf9aa276a25c1dbe68b6f65441175ab5419300ce3324532bf9401fd",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-gpu/bin/libllama.so.0.0.10419": "496c756d71e25cbb6e4a58f8dd4b84f44adff29922e05ccd91fe7867c3bb7725",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-gpu/bin/libggml-base.so.0.16.0": "eb5cd450058983655ea54c11675d3138b61863564a6bfa11ce77260309926897",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-gpu/bin/libggml-cpu.so.0.16.0": "decaede0a92b5d5833f32b02dc4a7e8cf2467ca4c54491d6641a5b6948dbd3f0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-gpu/bin/libggml.so.0.16.0": "b58424f14d5f5928f57dff0857143dcec11746ed23cc61a3bed70f61aa3cfb88",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-gpu/bin/libggml-hip.so.0.16.0": "d60bad53f308bbf0fb1a2bc3c6c62ff0869dcc799c160f11508dc050cd30ee0a",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/build-gpu/bin/libllama-server-impl.so": "7e7a0e937474df07d46e4595a09c05aad71eeb88ead8f59d5afdd14661790d31"
+  },
+  "c5_cpu_manifest_sha256": "bc272ae3b6169e6cd924f390e664dd4c3c2117992844888f8c4226faafdbe58e",
+  "c5_gpu_manifest_sha256": "33800df52d92efe54caac213ef6ef960bb2f92fc6053d7881846b4641a3b9a0e",
+  "limitations": [
+    "C5-based experimental uncommitted source",
+    "no model-output parity yet",
+    "reference recomputes all Ward blocks and uses dense attention; overhead cannot refute an optimized port"
+  ],
+  "gpu_build": "Release gfx90a; HIP, HIP_MMQ_MFMA, HIP_ROCWMMA_FATTN, NATIVE and OPENMP ON; experimental candidate uses CPU UI dist; model and GPU residency untested",
+  "gpu_build_cache_sha256": "0642ce8d6dbcf7cda739206ca7ad29112ed7a7b5552e3f82720b150745dd91ef",
+  "champion_ref": "refs/heads/ak/champion/llama-cpp-ffc1bac82eec",
+  "champion_ref_observed_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "probe_contract": "45 exact IDs; configurable LSA_PROBE_THREADS; records native model vocabulary and effective ctx/threads/affinity; paired guard requires 4 threads and publisher-selected matching four-core affinity"
+}

@@ -1,0 +1,39 @@
+{
+  "controls_expected": 6,
+  "gitnexus": "Status and impacts attempted; worktree has no available graph index. Existing production symbols were left untouched.",
+  "handoff_task": "SC18-GPU-POOL-SCOPE-CONTROL",
+  "official_capture_exclusion_command": "/usr/bin/python3 -BI /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/canary/gpu_pool_context_exclusion.py --capture <official-belief.json> --research /workspace/repos/epyc-inference-research --scratch /mnt/raid0/llm/tmp/vidya-belief-substrate/pool-canary-native-replay",
+  "official_control_result": null,
+  "publication_command": null,
+  "remaining": "Native GPU acceptance and positive exact candidate/operator planning-context visibility remain open.",
+  "row_id": "ni-gpu-pool-scope-control-20261117",
+  "schema": "epyc.vidya.gpu_pool_scope_control_preparation.v1",
+  "smoke_result": null,
+  "snapshot_file_sha256_manifest": "/mnt/raid0/llm/tmp/vidya-belief-substrate/pool-canary-ready/PINNED.sha256",
+  "sources_sha256": {
+    "scripts/vidya/canary/gpu_pool_context_exclusion.py": "8ebbde025dc49a1663048d59c647ad054b79fc58042008b5475545390b7da186",
+    "tests/vidya/test_gpu_pool_scope_control.py": "6025337ec3c596c85a5219ccf254549638bd863b9d16331e06756b5591637f61",
+    "data/vidya/gpu-pool-scope-control-20261117/PINNED.sha256": "498a9fb4c70a8eb6b2bc59f3536b9720de5487ed3d734661fe4d23adbe6fc6c5",
+    "data/vidya/gpu-pool-scope-control-20261117/validate_controls.py": "8eaabce2db5b32e29ab7dcefb01feecd30d709d4bf5b16b0314a02396d97384d"
+  },
+  "status": "validated-non-inference-controls",
+  "tests_executed": true,
+  "validation": [
+    "Python source AST parsed",
+    "launcher bash syntax checked",
+    "spec JSON parsed",
+    "all 32 bounded packet inputs verified by SHA-256"
+  ],
+  "row_published": false,
+  "validation_receipt": "validation.json",
+  "publisher_refusals": [
+    {
+      "reason": "under 5 min: run it in your turn, not as a row",
+      "exit_code": 2
+    },
+    {
+      "reason": "class non-inference (deliverable): a non-inference payload cannot be a compute row; do the work in the owner turn",
+      "exit_code": 2
+    }
+  ]
+}

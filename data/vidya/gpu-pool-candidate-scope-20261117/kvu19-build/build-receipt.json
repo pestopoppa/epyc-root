@@ -1,0 +1,36 @@
+{
+  "schema": "kvu19a2.successor-build.v1",
+  "created_at": "2026-11-17T23:51:26.934699+00:00",
+  "scope": "new prospective build; no equivalence to original build or GPU measurement",
+  "source_commit": "a0d0ae238e714aaab04e973ef4b5a4b7c9917744",
+  "source_archive_content_equals_git_tree": true,
+  "source_sha256": "87e3cdc13b1859a31dfd3ced43c596e6b9653e2194b1ebd0d5eb6772593c04c2",
+  "patch_sha256": "4147d2b65bbb416fdee1bf004d5447238933524bf3c087a69dcf6bbeca73b235",
+  "harness_source_sha256": "b9f352a91ea975c682cbe78c2f4dbf9035c6a40e309b84035bfbdaf49b420091",
+  "actual_affinity": [
+    48,
+    49,
+    50,
+    51
+  ],
+  "claim_role": "build",
+  "cmake_version": "cmake version 3.28.3",
+  "compiler_version": "g++ (Ubuntu 15.2.0-14ubuntu1~24~ppa1) 15.2.0",
+  "artifacts": {
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/harness/fa_harness": "51d4d1dc381bdc2787580c36d8d3d1cf7349158440a8dab2d5387ae602f09a65",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/base/bin/libggml-base.so.0.16.0": "57e19997fd263e7bef5eb45bccaaa627cbcfa253fdbdc08052d5d75af72ba5c9",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/base/bin/libggml-cpu.so.0.16.0": "c0897f994a95e6446a0be3d59f30a1193a6669ba5e1146e3d2c65da57ed0a4f1",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/base/bin/libggml-hip.so.0.16.0": "bd6cb2bd44ef285439449806d7cb681d45e10d21ab0fd67d869bc915a83c2e5a",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/base/bin/libggml.so.0.16.0": "069a61998e6cde6bf5506a17dabfae17c8979b6f7c7246430ad2c08d7db45bdb",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/candidate/bin/libggml-base.so.0.16.0": "b88df64bc788efa37634add413d8920ce2b023aa9bf6289089425f91b0157e7d",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/candidate/bin/libggml-cpu.so.0.16.0": "ebdc04f8d1bc6eae66d7f698b4bc7db5cf0cdb3925821de0602db34dc6b5fb3a",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/candidate/bin/libggml-hip.so.0.16.0": "720797a36abf4992d6978b58ba5ad4ff654b06cd4ceb992ece50714784e92512",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/candidate/bin/libggml.so.0.16.0": "f26408b5df1cd54579c44a99d75d134316206073f00b5387e94e9e0b2a0f1b33"
+  },
+  "logs": {
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/harness-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/region-build.log": "3b9ea37de749c64d88eaf8998d0139dfbe4266b7f3f3e2c3efd1f2cee51f9654",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/base-build.log": "276eccd0563204ef711df93e410c59be72b2b55edf5340bfffb73e03ac6a16e6",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/candidate-build.log": "1ebe4db25f28ac3d209b178e28de4cf21e3141a0fc87e522680a6b5c227756f5"
+  }
+}

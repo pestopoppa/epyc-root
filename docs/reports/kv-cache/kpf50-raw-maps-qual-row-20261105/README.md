@@ -1,0 +1,7 @@
+# KPF50 raw-maps synthetic verifier qualification preparation
+
+Distinct row: actual retained raw maps verifier, 20 sealed carriers: one synthetic positive, 18 independently specified refusal controls, one native-labelled consistent carrier that must remain UNKNOWN. The job invokes the verifier only after a real filler_run15 grant; this preparation has not executed it. It is qualification of parsing/custody rejection logic, never native certification or residency evidence.
+
+Launcher uses actual filler_run15.sh. Full completion binds the literal row ID and all 20 matched case records. Smoke selects positive/inode-mismatch/native-label, writes only the explicitly supplied separate FILLER_DRYRUN_RESULT_PATH outside out, and cannot complete the full row. unit_key=cases tracks appended actual case outcomes. Captured subprocess PIDs are waited, terminated then killed on timeout and checked absent. Output attempts and stdout/stderr persist; rerunning over an existing result is refused.
+
+Source seals are preserved in lineage.json; executable and every fixture/control are sealed in seals.json. 300-second reservation is conservative admission for <=100 seconds of serial verifier timeouts plus fixture validation/persistence/cleanup, with a 180-second job cap. No runtime padding or repeated cases. First discrepancy, STOP, deadline, drift or cleanup failure aborts. No model, GPU, live process/target sampling, production mutation, performance gate, publication or native truth claim.

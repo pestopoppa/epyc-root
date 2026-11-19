@@ -1,0 +1,5 @@
+# Architect-general native HIP publisher smoke successor
+
+The [row spec](row.spec.json) supersedes the architect-general HIP row whose queued CPU smoke could not meet the keeper's MI210 residency requirement. The successor smoke uses four granted CPUs, pinned production v10 HIP, the existing Qwen3-0.6B Q8_0 model, and one native no-spec completion. It records two distinct in-request samples of pinned libraries, the server's KFD PID and at least 64 MiB of same-PID MI210 VRAM. The predicate also checks the request and response hashes and PID, listener and KFD cleanup.
+
+The four full paired requests, frozen v10 and C13 runtime pins, three architect-general shards, and full HIP recipe match the predecessor. Its exact full recipe still uses the predecessor's pinned chat-template path. The [preparation receipt](receipt.json) records the equality checks and software preflight. The publisher queued the successor for a GPU smoke. Readiness awaits the keeper result. The predecessor queue marker still existed at publication. Native paired capture, the prior frontdoor JSON mismatch and the broad pack remain open.

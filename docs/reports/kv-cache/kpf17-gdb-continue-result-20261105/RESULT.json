@@ -1,0 +1,130 @@
+{
+  "attempt_id": "kvfork17-gdb-continue-qual-r3-20261105-attempt-a742c",
+  "attempt_nonce": "a742c-r3-qualification-20261105",
+  "control": {
+    "case": "control",
+    "cleanup_actions": [],
+    "cleanup_verified": true,
+    "elapsed_s": 0.0515,
+    "evidence_files": {
+      "control": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/control",
+        "sha256": "d33be3d3713390f9067e3f60031d54ca4daf0944450ab115672f9c40adef17ff"
+      },
+      "control-gcc.stderr": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/control-gcc.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "control-gcc.stdout": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/control-gcc.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "control-gdb.stderr": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/control-gdb.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "control-gdb.stdout": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/control-gdb.stdout",
+        "sha256": "4536de6c3005b8f160c3d6fc759c677772d38f9c37bb462f6f2d6fd3e080e069"
+      },
+      "control.c": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/control.c",
+        "sha256": "2de48721954fc019c4fc6dd8a6a473f3a00e0740386b5aa596baebf1d441c4a9"
+      }
+    },
+    "expected_exit_code": 0,
+    "gdb_exitcode": 0,
+    "gdb_nonzero_exit_marker": false,
+    "gdb_normal_exit_marker": true,
+    "gdb_rc": 0,
+    "generated_executable_sha256": "d33be3d3713390f9067e3f60031d54ca4daf0944450ab115672f9c40adef17ff",
+    "generated_source_sha256": "2de48721954fc019c4fc6dd8a6a473f3a00e0740386b5aa596baebf1d441c4a9",
+    "inferior_absent_after_gdb": true,
+    "inferior_birth": 196687350,
+    "inferior_pid": 3228308,
+    "post_continue_inferior_pid": 0,
+    "signals_sent": [],
+    "status": "PASS",
+    "timed_out": false,
+    "transcript_sha256": "1e096737d21e103ea416d46209ff3c580cef8e18210822a7aa76eb6f128ccef5",
+    "transcript_tail": "Temporary breakpoint 1 at 0x1131: file /mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/kpf17-gdb-qual-2w80ui3c/control.c, line 2.\n[Thread debugging using libthread_db enabled]\nUsing host libthread_db library \"/lib/x86_64-linux-gnu/libthread_db.so.1\".\n\nTemporary breakpoint 1, main () at /mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/kpf17-gdb-qual-2w80ui3c/control.c:2\n2\tint main(void){ volatile int x=7; return (x==7)?0:99; }\nKPF17Q_PID=3228308\nKPF17Q_BIRTH=196687350\n[Inferior 1 (process 3228308) exited normally]\nKPF17Q_POST_PID=0\nKPF17Q_EXITCODE=0\n\n"
+  },
+  "created_utc": "2026-11-05T02:06:40Z",
+  "gcc_path": "/usr/bin/gcc",
+  "gcc_sha256": "1fa7bb6439186b9f4912ad97d9072b6e0ded5b98b831a257d23d619719b74722",
+  "gdb_path": "/usr/bin/gdb",
+  "gdb_sha256": "e4602ab9111e3f6cc481933e9b80695e5f074a74039a6bb45bf55fa2498dc017",
+  "launcher_sha256": "40ba8748edd8aeea513f6ea4bab9b40f6771147f76e587619f6c2b51fe1f2002",
+  "mutation": {
+    "case": "mutation",
+    "cleanup_actions": [],
+    "cleanup_verified": true,
+    "elapsed_s": 0.0514,
+    "evidence_files": {
+      "mutation": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/mutation",
+        "sha256": "dceb466ac10427462249e396ce8d58da55cf58edc128d4c09663f7505d77c102"
+      },
+      "mutation-gcc.stderr": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/mutation-gcc.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "mutation-gcc.stdout": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/mutation-gcc.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "mutation-gdb.stderr": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/mutation-gdb.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "mutation-gdb.stdout": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/mutation-gdb.stdout",
+        "sha256": "d12143eff97e9bfbe0119bb14a359de658f494c8a702a4e53cd3df1277d5cf65"
+      },
+      "mutation.c": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.evidence/mutation.c",
+        "sha256": "f7b86672c346915ef23b61978719ff445064c7a5155b4d85b9edd48256851ea5"
+      }
+    },
+    "expected_exit_code": 23,
+    "gdb_exitcode": 23,
+    "gdb_nonzero_exit_marker": true,
+    "gdb_normal_exit_marker": false,
+    "gdb_rc": 23,
+    "generated_executable_sha256": "dceb466ac10427462249e396ce8d58da55cf58edc128d4c09663f7505d77c102",
+    "generated_source_sha256": "f7b86672c346915ef23b61978719ff445064c7a5155b4d85b9edd48256851ea5",
+    "inferior_absent_after_gdb": true,
+    "inferior_birth": 196687357,
+    "inferior_pid": 3228326,
+    "post_continue_inferior_pid": 0,
+    "signals_sent": [],
+    "status": "PASS",
+    "timed_out": false,
+    "transcript_sha256": "bb0cb6deaa2dfcb28b9bcb7aab6ac0ae3099088ead2542db16af87d04e03d8ec",
+    "transcript_tail": "Temporary breakpoint 1 at 0x1131: file /mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/kpf17-gdb-qual-2w80ui3c/mutation.c, line 2.\n[Thread debugging using libthread_db enabled]\nUsing host libthread_db library \"/lib/x86_64-linux-gnu/libthread_db.so.1\".\n\nTemporary breakpoint 1, main () at /mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/kpf17-gdb-qual-2w80ui3c/mutation.c:2\n2\tint main(void){ volatile int x=7; return (x==7)?23:99; }\nKPF17Q_PID=3228326\nKPF17Q_BIRTH=196687357\n[Inferior 1 (process 3228326) exited with code 027]\nKPF17Q_POST_PID=0\nKPF17Q_EXITCODE=23\n\n"
+  },
+  "no_kpf17_source_library_mapping_or_custody_claim": true,
+  "no_model_or_kpf17_binary_used": true,
+  "qualification_mutation": "private executable returns 23; expected as nonzero inferior exit",
+  "qualifier_sha256": "27dbe79de9d209e09cb6aa4c4f73a7f91af25a011eef4e2e1029e0f9467c9eea",
+  "schema": "kpf17.gdb-continue-qualification.v1",
+  "scope": "model-free GDB continue/inferior-exit and cleanup prerequisite only",
+  "status": "PASS",
+  "timeout_control": {
+    "birth": 196687359,
+    "child_absent": true,
+    "no_adopted_children": true,
+    "pid": 3228329,
+    "pidfd_captured": true,
+    "returncode": 0,
+    "signals": [
+      {
+        "birth": 196687359,
+        "pid": 3228329,
+        "signal": "SIGTERM"
+      }
+    ],
+    "status": "PASS",
+    "timed_out": true
+  }
+}

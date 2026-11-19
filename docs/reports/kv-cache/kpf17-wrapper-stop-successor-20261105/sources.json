@@ -1,0 +1,8 @@
+{
+  "source": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5",
+  "sha256": {
+    "filler_run15.sh": "e848a1d37e164b14ac3a95a9a51a47ed7514a120a6f5dd18b0903bcaebcaa8ad",
+    "complete.py": "3f5b85479716fe6aa1926dd5ed23d20a6f1b5539e1d429af692658632fb32d36",
+    "native_files.py": "614b7ab24b50032acb7774ab01c6ea11ed78a118092e3345c968aea3e9e104b8"
+  }
+}

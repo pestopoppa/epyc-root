@@ -1,0 +1,22 @@
+--- a/src/repl_environment/trace_capture.py
++++ b/src/repl_environment/trace_capture.py
+@@ -237,11 +237,17 @@
+         content_digest = digest(text)
+         if env._repl_trace_spills[os.path.abspath(path)] != content_digest:
+             return  # The path was overwritten outside this environment's spill writer.
+-        _write({
++        record = {
+             "v": SPILL_SCHEMA_VERSION, "kind": kind, "provenance": "trace",
+             "session": _session_id(env), "ts": _now(), "section": _safe_section(os.path.abspath(path)),
+             "content_digest": content_digest, "content_chars": len(text), **fields,
+-        })
++        }
++        if _write(record) and os.environ.get("EPYC_REPL_TRACE_BELIEF_CAPTURE") == "1":
++            try:
++                from src.repl_environment import trace_belief
++                trace_belief.record(record, source_path=__file__)
++            except Exception:
++                pass  # Coverage integration must not affect the native event path.
+     except Exception:
+         return
+ 

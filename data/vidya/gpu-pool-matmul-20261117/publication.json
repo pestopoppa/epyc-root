@@ -1,0 +1,14 @@
+{
+  "row_id": "ni-gpu-pool-matmul-20261117-v1",
+  "publisher": "scripts/coordination/rowflow/publish_row.py",
+  "result": "PUBLISHED",
+  "smoke": "PASS",
+  "smoke_regions": "mi210_0,184-191",
+  "smoke_ended_utc": "2026-11-17T20:37:40Z",
+  "smoke_end_reason": "partial-native-incomplete",
+  "smoke_rc": 75,
+  "first_progress": "smoke_predicate exited 0",
+  "official_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/RESULT.json",
+  "scope": "One native smoke invocation is readiness only; official capture acceptance is pending the row result.",
+  "review_validation": "Eight custody controls passed in isolated Python after publication; git diff --check passed."
+}

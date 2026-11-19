@@ -190,7 +190,7 @@ The structural blockers (MoE vs dense, SwiGLU vs ReGLU, no quantized baseline) c
 
 - Initial intake batch: `research/intake_index.yaml` intake-529, intake-530, intake-531 (ingested 2026-05-08).
 - Adjacent deep-dive: `research/deep-dives/kolinko-effort-engine-deep-dive.md` (intake-528, dynamic-activation-sparsity neighborhood, 2026-05-08).
-- Production handoff with this batch's Research Intake Update section: `handoffs/active/cpu-shape-specialized-gemv-decode.md`.
+- Production handoff with this batch's Research Intake Update section: `handoffs/completed/cpu-shape-specialized-gemv-decode.md`.
 - Counter-evidence anchor: NimbleEdge sparsity white paper / ICLR 2025 SLLM workshop materials (recorded in intake-528 contradicting_evidence).
 - Sakana lab cluster: intake-474 (Trinity), intake-493 (Conductor), intake-511 (KAME).
 - Block-sparse MoE prior art: intake-467 (MegaBlocks).

@@ -1,0 +1,47 @@
+{
+ "decision_rule": "At exact detached experimental arm C commit 5026470c6c5882042aa543ae54fe5410357b41ae capture native upstream impact for flash_attn_ext_f16_process_tile in ggml/src/ggml-cuda/fattn-mma-f16.cuh and verbose skipped-file coverage. Stop on HIGH/CRITICAL with OWNER_WARNING, source drift, ambiguous or missing graph binding, parser failure, STOP or deadline. A partial source-reference smoke is not impact clearance; success requires scan_complete partial=false. No model, inference or edit-safety claim for skipped files.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:V11-FA-8",
+ "id": "v11-fa8-impact-5026470-20261104",
+ "keep": [
+  "out/**",
+  "identity.json",
+  "job.py",
+  "source_integrity.py",
+  "test_source_integrity.py",
+  "launch.sh",
+  "spec.json",
+  "README.md",
+  "gitnexus-guard.py",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/launch.sh",
+  "sha256": "a44b9d6e65d890f7f49540df806f226cd1062cfbc1ebb92473d43f570d23aebd"
+ },
+ "lineage": "v11-fa8-impact-5026470",
+ "min_window_s": 300,
+ "notes": "Model-free static graph scan only; 150 GiB disk floor retained. The separate GPU overflow experiment and arm A route remain unrun. Fresh detached task worktree outside scratch root; no kernel changes.",
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "published_at": "2026-11-04T17:50:11Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/STOP",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104"
+}

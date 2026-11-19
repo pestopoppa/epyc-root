@@ -1,0 +1,1640 @@
+{
+ "question": "paired per-doc overall/nid/teds/mhs difference with CI95 across finished parser arms",
+ "method": "paired percentile bootstrap over documents, B=10000, seed=20261116; diff = a minus b, higher=better; teds/mhs paired only where both arms have the metric",
+ "sources": {
+  "docling": "/mnt/raid0/llm/tmp/parser-docling-200pdf-20261109/out/evaluation-final.json",
+  "lighton": "/mnt/raid0/llm/tmp/parser-lighton-200pdf-20261109/out/evaluation-final.json",
+  "odl_hybrid": "/mnt/raid0/llm/tmp/parser-odl-hybrid-200pdf-r2-20261109/out/evaluation-final.json",
+  "liteparse": "/mnt/raid0/llm/archives/pip04-odl013-r2-20261107/run/prediction/liteparse/evaluation.json",
+  "odl_local": "/mnt/raid0/llm/archives/pip04-odl013-r2-20261107/run/prediction/opendataloader/evaluation.json",
+  "pdftotext": "/mnt/raid0/llm/archives/pip04-odl013-r2-20261107/run/prediction/pdftotext/evaluation.json"
+ },
+ "n_common_docs": 199,
+ "missing_per_arm": {
+  "docling": 0,
+  "lighton": 0,
+  "odl_hybrid": 1,
+  "liteparse": 0,
+  "odl_local": 0,
+  "pdftotext": 0
+ },
+ "reported_overall": {
+  "docling": 0.8909837188390576,
+  "lighton": 0.8962740104343755,
+  "odl_hybrid": 0.9035022461648191,
+  "liteparse": 0.8804096686276374,
+  "odl_local": 0.8419146558851182,
+  "pdftotext": 0.5705390936797808
+ },
+ "recomputed_overall_on_common": {
+  "docling": 0.8952,
+  "lighton": 0.898,
+  "odl_hybrid": 0.9035,
+  "liteparse": 0.8824,
+  "odl_local": 0.8458,
+  "pdftotext": 0.5734
+ },
+ "marker": "withheld per handoff (one-document scoring defect unfixed)",
+ "results": [
+  {
+   "a": "docling",
+   "b": "lighton",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": -0.0028,
+   "ci95": [
+    -0.0181,
+    0.0133
+   ],
+   "excludes_zero": false,
+   "wins_a": 61,
+   "wins_b": 138,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "lighton",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": -0.0269,
+   "ci95": [
+    -0.0371,
+    -0.0177
+   ],
+   "excludes_zero": true,
+   "wins_a": 51,
+   "wins_b": 148,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "lighton",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.0541,
+   "ci95": [
+    -0.0077,
+    0.1322
+   ],
+   "excludes_zero": false,
+   "wins_a": 19,
+   "wins_b": 16,
+   "ties": 7,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "lighton",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.0439,
+   "ci95": [
+    -0.0039,
+    0.0944
+   ],
+   "excludes_zero": false,
+   "wins_a": 43,
+   "wins_b": 62,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "odl_hybrid",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": -0.0083,
+   "ci95": [
+    -0.0209,
+    0.0053
+   ],
+   "excludes_zero": false,
+   "wins_a": 65,
+   "wins_b": 133,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "odl_hybrid",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": -0.0242,
+   "ci95": [
+    -0.0347,
+    -0.0145
+   ],
+   "excludes_zero": true,
+   "wins_a": 53,
+   "wins_b": 144,
+   "ties": 2,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "odl_hybrid",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.0505,
+   "ci95": [
+    0.017,
+    0.0974
+   ],
+   "excludes_zero": true,
+   "wins_a": 30,
+   "wins_b": 3,
+   "ties": 9,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "odl_hybrid",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.0105,
+   "ci95": [
+    -0.0213,
+    0.045
+   ],
+   "excludes_zero": false,
+   "wins_a": 41,
+   "wins_b": 61,
+   "ties": 4,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "liteparse",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.0128,
+   "ci95": [
+    -0.004,
+    0.0307
+   ],
+   "excludes_zero": false,
+   "wins_a": 77,
+   "wins_b": 122,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "liteparse",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": -0.011,
+   "ci95": [
+    -0.0233,
+    0.002
+   ],
+   "excludes_zero": false,
+   "wins_a": 63,
+   "wins_b": 136,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "liteparse",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.1441,
+   "ci95": [
+    0.0786,
+    0.2158
+   ],
+   "excludes_zero": true,
+   "wins_a": 28,
+   "wins_b": 8,
+   "ties": 6,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "liteparse",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.0315,
+   "ci95": [
+    -0.0104,
+    0.0782
+   ],
+   "excludes_zero": false,
+   "wins_a": 42,
+   "wins_b": 63,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "odl_local",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.0494,
+   "ci95": [
+    0.0276,
+    0.0728
+   ],
+   "excludes_zero": true,
+   "wins_a": 76,
+   "wins_b": 123,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "odl_local",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": -0.0068,
+   "ci95": [
+    -0.0178,
+    0.0046
+   ],
+   "excludes_zero": false,
+   "wins_a": 56,
+   "wins_b": 142,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "odl_local",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.4414,
+   "ci95": [
+    0.3192,
+    0.5648
+   ],
+   "excludes_zero": true,
+   "wins_a": 29,
+   "wins_b": 9,
+   "ties": 4,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "odl_local",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.0745,
+   "ci95": [
+    0.0283,
+    0.1247
+   ],
+   "excludes_zero": true,
+   "wins_a": 48,
+   "wins_b": 57,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.3218,
+   "ci95": [
+    0.2866,
+    0.3562
+   ],
+   "excludes_zero": true,
+   "wins_a": 148,
+   "wins_b": 51,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0461,
+   "ci95": [
+    0.0245,
+    0.0677
+   ],
+   "excludes_zero": true,
+   "wins_a": 88,
+   "wins_b": 111,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.9245,
+   "ci95": [
+    0.8903,
+    0.9545
+   ],
+   "excludes_zero": true,
+   "wins_a": 42,
+   "wins_b": 0,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.8373,
+   "ci95": [
+    0.8011,
+    0.8701
+   ],
+   "excludes_zero": true,
+   "wins_a": 105,
+   "wins_b": 0,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_hybrid",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": -0.0055,
+   "ci95": [
+    -0.0236,
+    0.0114
+   ],
+   "excludes_zero": false,
+   "wins_a": 95,
+   "wins_b": 102,
+   "ties": 2,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_hybrid",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0027,
+   "ci95": [
+    -0.0062,
+    0.0114
+   ],
+   "excludes_zero": false,
+   "wins_a": 91,
+   "wins_b": 106,
+   "ties": 2,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_hybrid",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": -0.0036,
+   "ci95": [
+    -0.0906,
+    0.0761
+   ],
+   "excludes_zero": false,
+   "wins_a": 31,
+   "wins_b": 11,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_hybrid",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": -0.0334,
+   "ci95": [
+    -0.0836,
+    0.0161
+   ],
+   "excludes_zero": false,
+   "wins_a": 43,
+   "wins_b": 58,
+   "ties": 5,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "liteparse",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.0156,
+   "ci95": [
+    -0.0058,
+    0.0372
+   ],
+   "excludes_zero": false,
+   "wins_a": 105,
+   "wins_b": 94,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "liteparse",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0159,
+   "ci95": [
+    0.0033,
+    0.0292
+   ],
+   "excludes_zero": true,
+   "wins_a": 105,
+   "wins_b": 94,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "liteparse",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.09,
+   "ci95": [
+    -0.0157,
+    0.1909
+   ],
+   "excludes_zero": false,
+   "wins_a": 23,
+   "wins_b": 14,
+   "ties": 5,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "liteparse",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": -0.0123,
+   "ci95": [
+    -0.0711,
+    0.0459
+   ],
+   "excludes_zero": false,
+   "wins_a": 50,
+   "wins_b": 55,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_local",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.0522,
+   "ci95": [
+    0.0293,
+    0.0764
+   ],
+   "excludes_zero": true,
+   "wins_a": 103,
+   "wins_b": 95,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_local",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0202,
+   "ci95": [
+    0.0082,
+    0.0326
+   ],
+   "excludes_zero": true,
+   "wins_a": 95,
+   "wins_b": 103,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_local",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.3873,
+   "ci95": [
+    0.2622,
+    0.5173
+   ],
+   "excludes_zero": true,
+   "wins_a": 25,
+   "wins_b": 5,
+   "ties": 12,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_local",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.0307,
+   "ci95": [
+    -0.0272,
+    0.0905
+   ],
+   "excludes_zero": false,
+   "wins_a": 55,
+   "wins_b": 48,
+   "ties": 3,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.3246,
+   "ci95": [
+    0.2898,
+    0.3594
+   ],
+   "excludes_zero": true,
+   "wins_a": 156,
+   "wins_b": 40,
+   "ties": 3,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0731,
+   "ci95": [
+    0.0518,
+    0.0937
+   ],
+   "excludes_zero": true,
+   "wins_a": 114,
+   "wins_b": 81,
+   "ties": 4,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.8704,
+   "ci95": [
+    0.7833,
+    0.9393
+   ],
+   "excludes_zero": true,
+   "wins_a": 39,
+   "wins_b": 0,
+   "ties": 3,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "lighton",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.7934,
+   "ci95": [
+    0.7405,
+    0.8431
+   ],
+   "excludes_zero": true,
+   "wins_a": 102,
+   "wins_b": 0,
+   "ties": 4,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "liteparse",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.0211,
+   "ci95": [
+    0.0038,
+    0.0389
+   ],
+   "excludes_zero": true,
+   "wins_a": 108,
+   "wins_b": 90,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "liteparse",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0132,
+   "ci95": [
+    0.0018,
+    0.0246
+   ],
+   "excludes_zero": true,
+   "wins_a": 103,
+   "wins_b": 95,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "liteparse",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.0936,
+   "ci95": [
+    0.0038,
+    0.18
+   ],
+   "excludes_zero": true,
+   "wins_a": 26,
+   "wins_b": 16,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "liteparse",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.021,
+   "ci95": [
+    -0.0244,
+    0.0674
+   ],
+   "excludes_zero": false,
+   "wins_a": 58,
+   "wins_b": 47,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "odl_local",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.0577,
+   "ci95": [
+    0.0368,
+    0.0802
+   ],
+   "excludes_zero": true,
+   "wins_a": 76,
+   "wins_b": 43,
+   "ties": 80,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "odl_local",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0174,
+   "ci95": [
+    0.006,
+    0.0293
+   ],
+   "excludes_zero": true,
+   "wins_a": 69,
+   "wins_b": 50,
+   "ties": 80,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "odl_local",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.3909,
+   "ci95": [
+    0.2637,
+    0.519
+   ],
+   "excludes_zero": true,
+   "wins_a": 24,
+   "wins_b": 16,
+   "ties": 2,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "odl_local",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.064,
+   "ci95": [
+    0.0249,
+    0.1068
+   ],
+   "excludes_zero": true,
+   "wins_a": 44,
+   "wins_b": 19,
+   "ties": 43,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.3301,
+   "ci95": [
+    0.296,
+    0.364
+   ],
+   "excludes_zero": true,
+   "wins_a": 164,
+   "wins_b": 27,
+   "ties": 8,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0703,
+   "ci95": [
+    0.0513,
+    0.0894
+   ],
+   "excludes_zero": true,
+   "wins_a": 128,
+   "wins_b": 63,
+   "ties": 8,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.874,
+   "ci95": [
+    0.8018,
+    0.93
+   ],
+   "excludes_zero": true,
+   "wins_a": 40,
+   "wins_b": 0,
+   "ties": 2,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_hybrid",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.8268,
+   "ci95": [
+    0.7799,
+    0.8707
+   ],
+   "excludes_zero": true,
+   "wins_a": 103,
+   "wins_b": 0,
+   "ties": 3,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "liteparse",
+   "b": "odl_local",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.0366,
+   "ci95": [
+    0.0152,
+    0.0592
+   ],
+   "excludes_zero": true,
+   "wins_a": 107,
+   "wins_b": 91,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "liteparse",
+   "b": "odl_local",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0042,
+   "ci95": [
+    -0.0083,
+    0.0168
+   ],
+   "excludes_zero": false,
+   "wins_a": 105,
+   "wins_b": 93,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "liteparse",
+   "b": "odl_local",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.2973,
+   "ci95": [
+    0.1608,
+    0.4329
+   ],
+   "excludes_zero": true,
+   "wins_a": 27,
+   "wins_b": 12,
+   "ties": 3,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "liteparse",
+   "b": "odl_local",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.043,
+   "ci95": [
+    -0.0062,
+    0.093
+   ],
+   "excludes_zero": false,
+   "wins_a": 54,
+   "wins_b": 51,
+   "ties": 1,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "liteparse",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.309,
+   "ci95": [
+    0.2753,
+    0.3418
+   ],
+   "excludes_zero": true,
+   "wins_a": 171,
+   "wins_b": 28,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "liteparse",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0571,
+   "ci95": [
+    0.0382,
+    0.076
+   ],
+   "excludes_zero": true,
+   "wins_a": 124,
+   "wins_b": 75,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "liteparse",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.7804,
+   "ci95": [
+    0.7046,
+    0.8475
+   ],
+   "excludes_zero": true,
+   "wins_a": 42,
+   "wins_b": 0,
+   "ties": 0,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "liteparse",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.8058,
+   "ci95": [
+    0.7549,
+    0.852
+   ],
+   "excludes_zero": true,
+   "wins_a": 103,
+   "wins_b": 0,
+   "ties": 3,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_local",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 199,
+   "mean_diff": 0.2724,
+   "ci95": [
+    0.2391,
+    0.3054
+   ],
+   "excludes_zero": true,
+   "wins_a": 154,
+   "wins_b": 37,
+   "ties": 8,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_local",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 199,
+   "mean_diff": 0.0529,
+   "ci95": [
+    0.0337,
+    0.0724
+   ],
+   "excludes_zero": true,
+   "wins_a": 121,
+   "wins_b": 70,
+   "ties": 8,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_local",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.4831,
+   "ci95": [
+    0.343,
+    0.6234
+   ],
+   "excludes_zero": true,
+   "wins_a": 25,
+   "wins_b": 0,
+   "ties": 17,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "odl_local",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 106,
+   "mean_diff": 0.7628,
+   "ci95": [
+    0.7027,
+    0.8204
+   ],
+   "excludes_zero": true,
+   "wins_a": 100,
+   "wins_b": 0,
+   "ties": 6,
+   "docset": "common_199_all_arms"
+  },
+  {
+   "a": "docling",
+   "b": "lighton",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": -0.0053,
+   "ci95": [
+    -0.0216,
+    0.0112
+   ],
+   "excludes_zero": false,
+   "wins_a": 61,
+   "wins_b": 139,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "lighton",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": -0.0311,
+   "ci95": [
+    -0.0446,
+    -0.0196
+   ],
+   "excludes_zero": true,
+   "wins_a": 51,
+   "wins_b": 149,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "lighton",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.0541,
+   "ci95": [
+    -0.0077,
+    0.1322
+   ],
+   "excludes_zero": false,
+   "wins_a": 19,
+   "wins_b": 16,
+   "ties": 7,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "lighton",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.0422,
+   "ci95": [
+    -0.0049,
+    0.0931
+   ],
+   "excludes_zero": false,
+   "wins_a": 43,
+   "wins_b": 63,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "liteparse",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.0106,
+   "ci95": [
+    -0.0067,
+    0.029
+   ],
+   "excludes_zero": false,
+   "wins_a": 77,
+   "wins_b": 123,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "liteparse",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": -0.0137,
+   "ci95": [
+    -0.0275,
+    -0.0
+   ],
+   "excludes_zero": true,
+   "wins_a": 63,
+   "wins_b": 137,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "liteparse",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.1441,
+   "ci95": [
+    0.0786,
+    0.2158
+   ],
+   "excludes_zero": true,
+   "wins_a": 28,
+   "wins_b": 8,
+   "ties": 6,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "liteparse",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.0283,
+   "ci95": [
+    -0.0144,
+    0.0732
+   ],
+   "excludes_zero": false,
+   "wins_a": 42,
+   "wins_b": 64,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "odl_local",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.0491,
+   "ci95": [
+    0.0276,
+    0.0724
+   ],
+   "excludes_zero": true,
+   "wins_a": 76,
+   "wins_b": 124,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "odl_local",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": -0.0062,
+   "ci95": [
+    -0.0174,
+    0.0052
+   ],
+   "excludes_zero": false,
+   "wins_a": 57,
+   "wins_b": 142,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "odl_local",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.4414,
+   "ci95": [
+    0.3192,
+    0.5648
+   ],
+   "excludes_zero": true,
+   "wins_a": 29,
+   "wins_b": 9,
+   "ties": 4,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "odl_local",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.0725,
+   "ci95": [
+    0.0254,
+    0.123
+   ],
+   "excludes_zero": true,
+   "wins_a": 48,
+   "wins_b": 58,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.3204,
+   "ci95": [
+    0.285,
+    0.3549
+   ],
+   "excludes_zero": true,
+   "wins_a": 149,
+   "wins_b": 51,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": 0.0464,
+   "ci95": [
+    0.025,
+    0.0678
+   ],
+   "excludes_zero": true,
+   "wins_a": 89,
+   "wins_b": 111,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.9245,
+   "ci95": [
+    0.8903,
+    0.9545
+   ],
+   "excludes_zero": true,
+   "wins_a": 42,
+   "wins_b": 0,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "docling",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.8295,
+   "ci95": [
+    0.7905,
+    0.8647
+   ],
+   "excludes_zero": true,
+   "wins_a": 105,
+   "wins_b": 0,
+   "ties": 2,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "liteparse",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.0159,
+   "ci95": [
+    -0.0052,
+    0.0374
+   ],
+   "excludes_zero": false,
+   "wins_a": 106,
+   "wins_b": 94,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "liteparse",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": 0.0174,
+   "ci95": [
+    0.0046,
+    0.0309
+   ],
+   "excludes_zero": true,
+   "wins_a": 106,
+   "wins_b": 94,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "liteparse",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.09,
+   "ci95": [
+    -0.0157,
+    0.1909
+   ],
+   "excludes_zero": false,
+   "wins_a": 23,
+   "wins_b": 14,
+   "ties": 5,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "liteparse",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": -0.0139,
+   "ci95": [
+    -0.0743,
+    0.0444
+   ],
+   "excludes_zero": false,
+   "wins_a": 50,
+   "wins_b": 56,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_local",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.0544,
+   "ci95": [
+    0.0313,
+    0.0788
+   ],
+   "excludes_zero": true,
+   "wins_a": 104,
+   "wins_b": 95,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_local",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": 0.0249,
+   "ci95": [
+    0.0109,
+    0.0407
+   ],
+   "excludes_zero": true,
+   "wins_a": 96,
+   "wins_b": 103,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_local",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.3873,
+   "ci95": [
+    0.2622,
+    0.5173
+   ],
+   "excludes_zero": true,
+   "wins_a": 25,
+   "wins_b": 5,
+   "ties": 12,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "odl_local",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.0303,
+   "ci95": [
+    -0.0277,
+    0.0895
+   ],
+   "excludes_zero": false,
+   "wins_a": 55,
+   "wins_b": 49,
+   "ties": 3,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.3257,
+   "ci95": [
+    0.2904,
+    0.3594
+   ],
+   "excludes_zero": true,
+   "wins_a": 157,
+   "wins_b": 40,
+   "ties": 3,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": 0.0775,
+   "ci95": [
+    0.0551,
+    0.1009
+   ],
+   "excludes_zero": true,
+   "wins_a": 115,
+   "wins_b": 81,
+   "ties": 4,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.8704,
+   "ci95": [
+    0.7833,
+    0.9393
+   ],
+   "excludes_zero": true,
+   "wins_a": 39,
+   "wins_b": 0,
+   "ties": 3,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "lighton",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.7873,
+   "ci95": [
+    0.7323,
+    0.8372
+   ],
+   "excludes_zero": true,
+   "wins_a": 103,
+   "wins_b": 0,
+   "ties": 4,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "liteparse",
+   "b": "odl_local",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.0385,
+   "ci95": [
+    0.0171,
+    0.0605
+   ],
+   "excludes_zero": true,
+   "wins_a": 108,
+   "wins_b": 91,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "liteparse",
+   "b": "odl_local",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": 0.0075,
+   "ci95": [
+    -0.0061,
+    0.0215
+   ],
+   "excludes_zero": false,
+   "wins_a": 106,
+   "wins_b": 93,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "liteparse",
+   "b": "odl_local",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.2973,
+   "ci95": [
+    0.1608,
+    0.4329
+   ],
+   "excludes_zero": true,
+   "wins_a": 27,
+   "wins_b": 12,
+   "ties": 3,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "liteparse",
+   "b": "odl_local",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.0442,
+   "ci95": [
+    -0.0044,
+    0.0944
+   ],
+   "excludes_zero": false,
+   "wins_a": 55,
+   "wins_b": 51,
+   "ties": 1,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "liteparse",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.3099,
+   "ci95": [
+    0.2758,
+    0.3421
+   ],
+   "excludes_zero": true,
+   "wins_a": 172,
+   "wins_b": 28,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "liteparse",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": 0.0601,
+   "ci95": [
+    0.0406,
+    0.0801
+   ],
+   "excludes_zero": true,
+   "wins_a": 125,
+   "wins_b": 75,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "liteparse",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.7804,
+   "ci95": [
+    0.7046,
+    0.8475
+   ],
+   "excludes_zero": true,
+   "wins_a": 42,
+   "wins_b": 0,
+   "ties": 0,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "liteparse",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.8012,
+   "ci95": [
+    0.7503,
+    0.8477
+   ],
+   "excludes_zero": true,
+   "wins_a": 104,
+   "wins_b": 0,
+   "ties": 3,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "odl_local",
+   "b": "pdftotext",
+   "metric": "overall",
+   "n": 200,
+   "mean_diff": 0.2714,
+   "ci95": [
+    0.2383,
+    0.3043
+   ],
+   "excludes_zero": true,
+   "wins_a": 155,
+   "wins_b": 37,
+   "ties": 8,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "odl_local",
+   "b": "pdftotext",
+   "metric": "nid",
+   "n": 200,
+   "mean_diff": 0.0526,
+   "ci95": [
+    0.0336,
+    0.072
+   ],
+   "excludes_zero": true,
+   "wins_a": 122,
+   "wins_b": 70,
+   "ties": 8,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "odl_local",
+   "b": "pdftotext",
+   "metric": "teds",
+   "n": 42,
+   "mean_diff": 0.4831,
+   "ci95": [
+    0.343,
+    0.6234
+   ],
+   "excludes_zero": true,
+   "wins_a": 25,
+   "wins_b": 0,
+   "ties": 17,
+   "docset": "full_200_excl_odl_hybrid"
+  },
+  {
+   "a": "odl_local",
+   "b": "pdftotext",
+   "metric": "mhs",
+   "n": 107,
+   "mean_diff": 0.757,
+   "ci95": [
+    0.697,
+    0.8132
+   ],
+   "excludes_zero": true,
+   "wins_a": 101,
+   "wins_b": 0,
+   "ties": 6,
+   "docset": "full_200_excl_odl_hybrid"
+  }
+ ]
+}

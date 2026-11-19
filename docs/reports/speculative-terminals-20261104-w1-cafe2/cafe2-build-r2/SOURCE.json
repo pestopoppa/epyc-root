@@ -1,0 +1,20 @@
+{
+  "schema": "cafe2.source-preparation.v1",
+  "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "source_overlay_sha256": "86851c0e550ba543ef3ab1ccfa85c14aa18715ddff4836332c380b7d0740ad7a",
+  "files": {
+    "candidate.cpp": "d9cc5fe5e40c81caccc553ee14a8d5de2f4408c9868340a8515b9a2c81c7f41c",
+    "mtp_draft_bridge.hpp": "9688a97c3ad30e5aa008650d29a7b4d463109220b7dc48a136f9324aa2cf3919",
+    "supervise.py": "ab378fc8bd635da299c0dbe7371cfc8d42842c864473755d905fbaa9931871c2",
+    "proof.py": "3b2286a354c44d45d204c9915c02344806218a7b5aee962fc680972a48e9da2a",
+    "build.sh": "fe6901db2747260e72bca6ffd1cd9513f831a00c56ad14213bb5dd42e06c1dcd",
+    "job.sh": "f22cd5c450040504297e96ad778d4cf49d8b2ebfe0429d6d8280d7e0dbf6515f",
+    "launch.sh": "0664edd6faa604531c01ef337a3411f63ad45377a670cf48f37ac386ba552e1d",
+    "DESIGN.md": "9c20f61bd0ef9ba45010aacd3b4aebb196245a6f3532f06f24a209509d814fe4",
+    "runtime.sha256": "a94c1f0ce64b12e9b84331633c63b32d69e520cd34166edeea6a2d2ccea969cc",
+    "spec.json": "de9d013116f814710653a0c28ad7a82da8ce6f61ca8fc098e211357cd574f3b9"
+  },
+  "status": "not_built",
+  "runtime_status": "not_run",
+  "expert_union": "unknown"
+}

@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T16:24:48Z reason=disk-floor
+job_id=vb-ak-wire-canary-r3-20261104
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=900
+started=2026-11-04T16:24:46Z
+regions=0-23

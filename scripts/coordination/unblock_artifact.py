@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """unblock_artifact.py — the consolidated operator unblock artifact (rider R8).
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md §Rider R8
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md §Rider R8
 Policy:         agents/shared/MEASUREMENT_POLICY.md §Consolidated apply-time ratification
 
 THE PROBLEM. Pending operator gates accumulate while the operator is away. Handled

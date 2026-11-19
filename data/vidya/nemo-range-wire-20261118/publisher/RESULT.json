@@ -1,0 +1,44 @@
+{
+  "attempt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22",
+  "cases": {
+    "exact": {
+      "displayed": 1,
+      "recognized": 1
+    },
+    "model": {
+      "displayed": 0,
+      "recognized": 0
+    },
+    "wrong-consumer": {
+      "displayed": 0,
+      "recognized": 0
+    },
+    "wrong-task": {
+      "displayed": 0,
+      "recognized": 0
+    }
+  },
+  "controls": {
+    "missing-grant": "refused",
+    "partial": "refused",
+    "source-drift": "refused",
+    "tamper": "refused"
+  },
+  "cpus": [
+    140,
+    141,
+    142,
+    143
+  ],
+  "frames": 3,
+  "id": "vb-nemo-range-wire-20261118",
+  "joins": 480,
+  "mode": "publisher_smoke",
+  "native": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/replay.json",
+  "refusals": 0,
+  "replayed_runs": 80,
+  "rows": 1,
+  "schema": "epyc.vidya.nemo_range_wire.v1",
+  "source_manifest_sha256": "2bdffaac2dcc83891b7779bf2800f0d857a972e601853ef3b92b02b10a9c041d",
+  "status": "PASS"
+}

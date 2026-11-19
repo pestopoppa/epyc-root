@@ -1,0 +1,19 @@
+{
+  "build_complete_sha256": "e9d5a996dff6771f9a5eeafc92abeec911b4fb1de0d1caa483af392f68f4dd04",
+  "files": {
+    "bin/libggml-base.so": "94ea3ccbcafad9f8fd05ba14733cceac3b327f50a086916bd14f0093596f4c83",
+    "bin/libggml-base.so.0": "94ea3ccbcafad9f8fd05ba14733cceac3b327f50a086916bd14f0093596f4c83",
+    "bin/libggml-base.so.0.16.0": "94ea3ccbcafad9f8fd05ba14733cceac3b327f50a086916bd14f0093596f4c83",
+    "bin/libggml-cpu.so": "58dcfc833f12a4e051850044e7782f42e4b49b4158eafb6c399eed88e33c44fd",
+    "bin/libggml-cpu.so.0": "58dcfc833f12a4e051850044e7782f42e4b49b4158eafb6c399eed88e33c44fd",
+    "bin/libggml-cpu.so.0.16.0": "58dcfc833f12a4e051850044e7782f42e4b49b4158eafb6c399eed88e33c44fd",
+    "bin/libggml.so": "cee3df10b1c2f210c5e320d83fd51c4641fad25a9269b30331785402c852bcfc",
+    "bin/libggml.so.0": "cee3df10b1c2f210c5e320d83fd51c4641fad25a9269b30331785402c852bcfc",
+    "bin/libggml.so.0.16.0": "cee3df10b1c2f210c5e320d83fd51c4641fad25a9269b30331785402c852bcfc",
+    "bin/llama-server": "bfab92dffa31ad24f65ca53ec082ef8f1751b54d56efdc0f106bef797a72ee2e"
+  },
+  "original_manifest_sha256": "ed30e02336ef92a4eccc232336fa70ce3fdd7b879c074f4d6eb70a8553952b95",
+  "root": "/mnt/raid0/llm/tmp/refactor-01a16fc3/m4-fold-gates/images/c5-cpu-c72ec82f5417bb2937310326120f149b665e8400",
+  "schema": "epyc.m4.cpu.image-source-manifest.v1",
+  "source_commit": "c72ec82f5417bb2937310326120f149b665e8400"
+}

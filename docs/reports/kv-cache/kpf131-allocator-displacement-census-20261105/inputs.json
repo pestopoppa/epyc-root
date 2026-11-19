@@ -1,0 +1,14 @@
+{
+  "00-libllama.so.0.0.10348.find-slot.txt": {
+    "symbol": "_ZNK14llama_kv_cache9find_slotERK12llama_ubatchb",
+    "sha256": "fbd86d1b5371489ba10a2b44fd6e85b974d76e5c623b9ff496cec7f43d8b172e"
+  },
+  "00-libllama.so.0.0.10348.apply-ubatch.txt": {
+    "symbol": "_ZN14llama_kv_cache12apply_ubatchERKNS_9slot_infoERK12llama_ubatch",
+    "sha256": "0da598d8b77b9c310eee04f9ad757435cd2d391a3d6870bcf201df82f58b6dd3"
+  },
+  "00-libllama.so.0.0.10348.apply-ubatch-part.txt": {
+    "symbol": "_ZN14llama_kv_cache12apply_ubatchERKNS_9slot_infoERK12llama_ubatch.part.0",
+    "sha256": "44500aeca6d548b8a340fe5720f22a9a8f402ee31afee07f45525fbb5d915c19"
+  }
+}

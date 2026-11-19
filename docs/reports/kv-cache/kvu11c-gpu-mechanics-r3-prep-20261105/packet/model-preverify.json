@@ -1,0 +1,50 @@
+{
+  "created_unix_ns": 1793836113303803504,
+  "method": "single-process SHA-256 outside any grant; exact stat identity captured immediately before and after each hash",
+  "models": [
+    {
+      "historical_pin_sha256": "d54dbaf10591421fa764ed630d764efa717ae40cd959bd48c66d4eb1af226426",
+      "path": "/mnt/raid0/llm/models/Qwen3-TTS-qwentts/qwen-talker-0.6b-base-Q8_0.gguf",
+      "pin_path": "/mnt/raid0/llm/tmp/kvfork/kvu11c-gpu-mechanics-smoke-r1-20261104/pins.json",
+      "pin_record_sha256": "e4def906c359e3d2533da02f70ac30da7fc49f28bf2f9fa4e72723e2c283359f",
+      "sha256": "d54dbaf10591421fa764ed630d764efa717ae40cd959bd48c66d4eb1af226426",
+      "stat_after": {
+        "ctime_ns": 1785488569525976376,
+        "device": 2431,
+        "inode": 98072488,
+        "mtime_ns": 1785488569306102893,
+        "size": 992615488
+      },
+      "stat_before": {
+        "ctime_ns": 1785488569525976376,
+        "device": 2431,
+        "inode": 98072488,
+        "mtime_ns": 1785488569306102893,
+        "size": 992615488
+      }
+    },
+    {
+      "historical_pin_sha256": "1883beeed99348fc35e23dd225e9082f93f6f8c109330a33d935baa8acdbfd94",
+      "path": "/mnt/raid0/llm/models/Qwen3-TTS-qwentts/qwen-tokenizer-12hz-Q8_0.gguf",
+      "pin_path": "/mnt/raid0/llm/tmp/kvfork/kvu11c-gpu-mechanics-smoke-r1-20261104/pins.json",
+      "pin_record_sha256": "e4def906c359e3d2533da02f70ac30da7fc49f28bf2f9fa4e72723e2c283359f",
+      "sha256": "1883beeed99348fc35e23dd225e9082f93f6f8c109330a33d935baa8acdbfd94",
+      "stat_after": {
+        "ctime_ns": 1785488596294923577,
+        "device": 2431,
+        "inode": 98072490,
+        "mtime_ns": 1785488596173518782,
+        "size": 291150624
+      },
+      "stat_before": {
+        "ctime_ns": 1785488596294923577,
+        "device": 2431,
+        "inode": 98072490,
+        "mtime_ns": 1785488596173518782,
+        "size": 291150624
+      }
+    }
+  ],
+  "receipt_sha256": "805a3cae59ceb47677ce9d3845f9bc25cd858cd30c36e26da36ccf1de0e2f012",
+  "schema": "kvu11c.model-preverify.v1"
+}

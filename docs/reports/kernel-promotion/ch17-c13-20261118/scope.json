@@ -1,0 +1,97 @@
+{
+  "gpu": [
+    {
+      "role": "architect_critic",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 393216,
+      "spec_type": "draft-dflash"
+    },
+    {
+      "role": "coder_escalation",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 393216,
+      "spec_type": null
+    },
+    {
+      "role": "ingest_long_context",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 393216,
+      "spec_type": null
+    }
+  ],
+  "cpu": [
+    {
+      "role": "architect_general",
+      "model_path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 262144,
+      "spec_type": "draft-mtp"
+    },
+    {
+      "role": "frontdoor",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 262144,
+      "spec_type": "draft-mtp"
+    },
+    {
+      "role": "toolrunner",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 262144,
+      "spec_type": null
+    },
+    {
+      "role": "vision_escalation",
+      "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 65536,
+      "spec_type": null
+    },
+    {
+      "role": "worker",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 262144,
+      "spec_type": null
+    },
+    {
+      "role": "worker_explore",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 262144,
+      "spec_type": null
+    },
+    {
+      "role": "worker_general",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 262144,
+      "spec_type": null
+    },
+    {
+      "role": "worker_math",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 262144,
+      "spec_type": null
+    },
+    {
+      "role": "worker_summarize",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 262144,
+      "spec_type": null
+    },
+    {
+      "role": "worker_vision",
+      "model_path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+      "binary_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+      "context_tokens": 65536,
+      "spec_type": null
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "model": "vidya-seat/vidya-seat",
+  "small_model": "vidya-seat/vidya-seat",
+  "enabled_providers": ["vidya-seat"],
+  "provider": {
+    "vidya-seat": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Owned loopback actor source control",
+      "options": {"baseURL": "http://127.0.0.1:19413/v1", "apiKey": "local-actor-instrument"},
+      "models": {
+        "vidya-seat": {
+          "name": "Qwen3-0.6B Q8_0",
+          "limit": {"context": 8192, "output": 128},
+          "tool_call": false,
+          "reasoning": false
+        }
+      }
+    }
+  },
+  "permission": {"*": "deny"},
+  "autoupdate": false,
+  "share": "disabled",
+  "instructions": [],
+  "mcp": {},
+  "agent": {"build": {"steps": 1, "permission": {"*": "deny"}}, "title": {"disable": true}}
+}

@@ -1,0 +1,33 @@
+{
+  "row": "codex-ifbench-cj6a-27b-v4-20261104",
+  "box": "CJ-6a",
+  "source_commit": "1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d",
+  "files": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/worker.py": "61a0e7a2aa33a695fc62588bbec68743b7cb2b99ba5f9233579aa4651018f81e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/launch.sh": "0697265a99043b93039a0ff5eb451d74e3055c1bbad8e69d31755f8e340b36dd",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/MODEL-PREVERIFIED.json": "3f9e216947a1d8eb459b9a249b118de2c9b6d21dcdd9a820f2a4c21126672f41",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/spec.qualified.json": "391ef926da7428f53f5b441e54c5a6c35e8ea1b29ce1775c8ab45612f2a62e69",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/V3-INPUTS.sha256": "d981d8cb9cf871d2221a4a0bd2b867fc276885c6f16b835ef231dd59aeb0361e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/RUNTIME-INPUTS.sha256": "ce25532ea33f938ac0c53720b2956d7659f05259f9810773160ee585c1a1933a",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/SCORE-RUNTIME.sha256": "ab3117516f61eb09964cf17a34c7cfee0ce7366e77b971066fadcc3a51b24c70"
+  },
+  "model_preverified": {
+    "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "stat": {
+      "st_ctime_ns": 1786727071283192651,
+      "st_dev": 2431,
+      "st_ino": 96505457,
+      "st_mtime_ns": 1786727071030792493,
+      "st_size": 29047086048
+    }
+  },
+  "qualification": {
+    "verdict": "PASS",
+    "rc": 0,
+    "cpus": "140-143",
+    "pass_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ifbench-cj6a-27b-v4-20261104/PASS.json",
+    "pass_sha256": "c1bda149dac56f0091a9f48700870f173bedc9823db86cf5c574bc57f0b108e1",
+    "full_cohort": "UNRUN"
+  }
+}

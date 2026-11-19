@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "checked_utc": "2026-11-18T19:57:11.084289+00:00",
+  "original_build_id": "vb-p5-astropy-image-rebuild-20261118",
+  "image_id": "sha256:3dcf849904aa1395cff121684a80332a134cd4b34d806514f97c082bdb83b337",
+  "original_build_receipt_sha256": "3e59d1e0119328a548e1fd1abe5146dc5e32cd9aab05d5b6e173f2629f462175",
+  "source_manifest_sha256": "3340c4f84066bdf17b5b0e45f8846ad08016d98edeab15f5ab0cf873085f5357",
+  "original_source_manifest_sha256": "f4cbcf8b12ddd6063f6d185638342f9ac3c43ed834dde9760471a0734cc55443",
+  "original_pins_sha256": "37e4a77926bb2e511903c6537efda51a7858abd6628a395f6d4bed3c027d2ccd",
+  "harness_source_count": 73,
+  "dataset_sha256": "b087b5dad72b3e765a6cf93a9e7d516d8796698a0fd358abb73c6627df19f66e",
+  "sealed_input_sha256": {
+    "case.json": "ea9e936b6d002607859edadc526fbb7fa3a7342ba5f06668019504610e637382",
+    "WHEELHOUSE.sha256": "5a7ac881d1beadb4105db4a9d5041a75b0b605d604d9b3c38f780a6b117727ba",
+    "BUILD-SOURCE.sha256": "4becb58802aaa44d792030e83090dede6f97251c0bb692428d76bf643360063e",
+    "Dockerfile": "2066d6a5800a1010ed1949ff89b39e2774389a345c01460730ae5f20f631d2ff"
+  },
+  "script_binding": {
+    "official_script_sha256": "8982427832e1065d24fd44f827a6857a985d58e9da604bb0b16c2adf4f8afe82",
+    "offline_script_sha256": "c1b649c200bd0a7641175877b558b0cb2694d7f32898c35ebe24a7c7ccafa1d8",
+    "setup_index": 10,
+    "derived_image_id": "sha256:3dcf849904aa1395cff121684a80332a134cd4b34d806514f97c082bdb83b337",
+    "scope": "one exact setup substitution; all other generated commands unchanged"
+  },
+  "spec_sha256": "0e99140befdf70ddaf1badd3045d0de4f5b54c172391a7f1e6614d6ee9068dd9",
+  "scoring_arms_executed": 0
+}

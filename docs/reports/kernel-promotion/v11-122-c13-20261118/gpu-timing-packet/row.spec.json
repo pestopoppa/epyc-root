@@ -1,0 +1,39 @@
+{
+  "id": "v11-122-llg-gpu-c13-gate-20261118",
+  "owner": "v11-promotion-checklist",
+  "handoff_task": "v11-promotion-checklist.md:V11-122-GATE",
+  "launcher": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-gpu-gate/gate/launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-gpu-gate/gate",
+  "kind": "compute",
+  "lane": "gpu",
+  "shape": "gpu-q3",
+  "regions": "mi210_0,88-95,184-191",
+  "declared_threads": 8,
+  "threads_evidence": [
+    "Eight pinned GPU host threads, CPUs 184-191, for both matched llama-bench arms"
+  ],
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-gpu-gate/gate/RESULT.json",
+  "dryrun_native_result": true,
+  "timing": "bench",
+  "estimate_s": 1500,
+  "min_window_s": 1500,
+  "max_window_s": 1800,
+  "first_progress_s": 540,
+  "ram_gib": 48,
+  "budget_gib": 0.1,
+  "busy_fraction": 0.2,
+  "priority_rank": 40,
+  "baseline_ref": "C13 gfx90a bda43aa17c11b671e0e203e7eb7bf4f1303bc273. Enabled image pin 91b4466a1cd4546697cb2dd9ca90b25c1dc764caecbb8324f2e22764a11a9892 and matching disabled build row v11-122-llg-gpu-c13-nollg-build-20261118.",
+  "decision_rule": "Determine grammar-free MI210 throughput parity with LLAMA_LLGUIDANCE toggled at matched C13 source and configure identity. Qwen3.6-35B-A3B-MTP-Q8_0, llama-bench pp512/tg128 r5, ROCm0, ngl 99, fa 1 and 8 host threads. Higher t/s is better, with expected effect zero. Check each adjacent pair in AB, BA, AB (A=nollg). Stop on futility and FAIL if the same arm falls >2% below the other on any one metric in two pairs. After three pairs stop on answer, with PASS only if both absolute median paired deltas are <1% and within their repeat noise bands (median larger within-pair CV, floor 0.5%). Otherwise INCONCLUSIVE. Require each arm to have two live own-PID KFD/VRAM and local HIP mapping samples. Publisher smoke runs the pinned small GGUF on both arms using four host CPUs inside an exclusive publisher MI210 grant.",
+  "verdict_by": "agent",
+  "smoke_predicate": "/usr/bin/python3 -I -B /mnt/raid0/llm/tmp/v11-promotion-checklist/llg-gpu-gate/gate/job.py --smoke-predicate",
+  "keep": [
+    "*.json",
+    "*.py",
+    "*.sh",
+    "*.sha256",
+    "out/**",
+    "smoke/**"
+  ]
+}

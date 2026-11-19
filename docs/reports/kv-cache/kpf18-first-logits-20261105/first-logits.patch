@@ -1,0 +1,144 @@
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index 8c87b3f0d..bb59ce529 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -6,6 +6,7 @@
+ #include "server-queue.h"
+ #include "server-schema.h"
+ #include "server-stream.h"
++#include "server-kpf-raw-logits.h"
+ 
+ #include "build-info.h"
+ #include "common.h"
+@@ -2255,6 +2256,15 @@ private:
+ 
+         SLT_DBG(slot, "launching slot : %s\n", safe_json_to_str(slot.to_json()).c_str());
+ 
++        // Diagnostic capture never accepts speculative requests. The launcher
++        // must create a private regular output file and validate all records.
++        const char * kpf_raw_path = getenv("KPF18_RAW_LOGITS_PATH");
++        if (kpf_raw_path && *kpf_raw_path && task.need_sampling() && slot.can_speculate() &&
++            task.params.speculative.draft.n_max > 0) {
++            send_error(task, "KPF first-logit capture requires speculation disabled", ERROR_TYPE_INVALID_REQUEST);
++            return false;
++        }
++
+         // initialize samplers
+         if (task.need_sampling()) {
+             try {
+@@ -2270,6 +2280,8 @@ private:
+             bool backend_sampling = true;
+ 
+             backend_sampling &= task.params.sampling.backend_sampling;
++            // Backend sampling may not expose the full raw vocabulary vector.
++            backend_sampling &= !(kpf_raw_path && *kpf_raw_path);
+ 
+             // TODO: speculative decoding requires multiple samples per batch - not supported yet
+             backend_sampling &= !(slot.can_speculate());
+@@ -4824,11 +4836,26 @@ private:
+             // shifted according to the current sub-batch
+             const int tok_idx = slot.i_batch - off;
+ 
++            const char * kpf_raw_path = getenv("KPF18_RAW_LOGITS_PATH");
++            std::vector<uint32_t> kpf_raw_bits;
++            if (kpf_raw_path && *kpf_raw_path && slot.n_decoded == 0) {
++                if (!slot.task || (slot.can_speculate() && slot.task->params.speculative.draft.n_max > 0) ||
++                    tok_idx < 0 || tok_idx >= batch_view.n_tokens || !batch_view.logits ||
++                    !batch_view.pos || !batch_view.token || !batch_view.logits[tok_idx]) {
++                    throw std::runtime_error("KPF first logits: unsupported sampling state");
++                }
++                kpf_raw_bits = kpf_first_logits_snapshot(llama_get_logits_ith(slot.ctx_tgt, tok_idx),
++                                                          llama_vocab_n_tokens(vocab));
++            }
+             llama_token id;
+             {
+                 scoped_timer timer(t_sampl, n_sampl);
+                 id = common_sampler_sample(slot.smpl.get(), slot.ctx_tgt, tok_idx);
+             }
++            if (!kpf_raw_bits.empty()) {
++                kpf_first_logits_emit(kpf_raw_path, slot.id, slot.task->id, batch_view.pos[tok_idx],
++                                      batch_view.token[tok_idx], id, kpf_raw_bits);
++            }
+ 
+             slot.i_batch = -1;
+ 
+diff --git a/tools/server/server-kpf-raw-logits.h b/tools/server/server-kpf-raw-logits.h
+new file mode 100644
+index 000000000..8c1531965
+--- /dev/null
++++ b/tools/server/server-kpf-raw-logits.h
+@@ -0,0 +1,74 @@
++#pragma once
++// Diagnostic only: one full-vocabulary float32 vector at the first ordinary
++// sampling step of each request. Caller owns request/task binding and custody.
++#include <cmath>
++#include <cstdint>
++#include <cstring>
++#include <cerrno>
++#include <filesystem>
++#include <sstream>
++#if defined(__unix__) || defined(__APPLE__)
++#include <fcntl.h>
++#include <sys/stat.h>
++#include <unistd.h>
++#endif
++#include <limits>
++#include <stdexcept>
++#include <string>
++#include <vector>
++
++inline std::vector<uint32_t> kpf_first_logits_snapshot(const float * logits, int n_vocab) {
++    static_assert(sizeof(float) == sizeof(uint32_t), "float32 required");
++    static_assert(std::numeric_limits<float>::is_iec559, "IEEE-754 required");
++    if (!logits || n_vocab <= 0) throw std::runtime_error("KPF first logits: missing vector");
++    std::vector<uint32_t> bits(n_vocab);
++    for (int i = 0; i < n_vocab; ++i) {
++        if (!std::isfinite(logits[i])) throw std::runtime_error("KPF first logits: nonfinite value");
++        std::memcpy(&bits[i], logits + i, sizeof(bits[i]));
++    }
++    return bits;
++}
++
++inline void kpf_first_logits_emit(const char * path, int slot, int task, int pos, int input_token,
++                                   int selected, const std::vector<uint32_t> & bits) {
++    if (!path || !*path || !std::filesystem::path(path).is_absolute() ||
++        slot < 0 || task < 0 || pos < 0 || bits.empty())
++        throw std::runtime_error("KPF first logits: invalid output or binding");
++#if defined(__unix__) || defined(__APPLE__)
++    // Open the already-created file itself, refusing a final-component symlink.
++    // O_NONBLOCK ensures a malicious FIFO cannot hang the server before fstat.
++    const int fd = ::open(path, O_WRONLY | O_APPEND | O_CLOEXEC | O_NOFOLLOW | O_NONBLOCK);
++    if (fd < 0) throw std::runtime_error("KPF first logits: cannot open output");
++    struct fd_owner {
++        int fd;
++        ~fd_owner() { if (fd >= 0) ::close(fd); }
++    } file{fd};
++    struct stat st;
++    if (::fstat(fd, &st) != 0 || !S_ISREG(st.st_mode))
++        throw std::runtime_error("KPF first logits: output is not a regular file");
++    std::ostringstream out;
++    out << "{\"schema\":\"kpf.first_logits.v1\",\"scope\":\"first_token_speculation_disabled\",\"slot\":" << slot
++        << ",\"task\":" << task << ",\"position\":" << pos << ",\"input_token\":" << input_token
++        << ",\"selected_token\":" << selected << ",\"n_vocab\":" << bits.size() << ",\"float32_bits_u32\":[";
++    for (size_t i = 0; i < bits.size(); ++i) {
++        if (i) out << ',';
++        out << bits[i];
++    }
++    out << "]}\n";
++    if (!out) throw std::runtime_error("KPF first logits: cannot serialize output");
++    const std::string record = out.str();
++    size_t off = 0;
++    while (off < record.size()) {
++        const ssize_t n = ::write(fd, record.data() + off, record.size() - off);
++        if (n < 0 && errno == EINTR) continue;
++        if (n <= 0) throw std::runtime_error("KPF first logits: write failed");
++        off += static_cast<size_t>(n);
++    }
++    // Observe close errors as well as write errors. The caller must check that
++    // each record is complete and use a private directory and a single writer.
++    file.fd = -1;
++    if (::close(fd) != 0) throw std::runtime_error("KPF first logits: close failed");
++#else
++    throw std::runtime_error("KPF first logits: unsupported platform");
++#endif
++}

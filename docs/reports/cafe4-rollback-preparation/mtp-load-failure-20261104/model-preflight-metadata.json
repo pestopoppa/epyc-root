@@ -1,0 +1,13 @@
+{
+  "model_path": "/mnt/raid0/llm/models/unsloth/Qwen3.5-2B-MTP-GGUF/Qwen3.5-2B-Q4_K_M.gguf",
+  "model_sha256": "18c92228fc1498a02506f64593f7cc8cc02f406f732a217c6ba99ad1254d4f0b",
+  "hash_basis": "once before publisher; matches model download ledger; no weight hashing during grant",
+  "model_stat": {
+    "size": 1329851808,
+    "device": 2431,
+    "inode": 96251925,
+    "mtime_ns": 1793266471269441385
+  },
+  "representation": "Named fields for the original [size, device, inode, mtime_ns] tuple; exact original bytes retained in native-model-preflight.tar.gz.",
+  "original_record_sha256": "cd3e4917a36a877ded56a021111834e7feaa578a348478740572baff9009fc97"
+}

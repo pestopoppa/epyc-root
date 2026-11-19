@@ -1,0 +1,15 @@
+{
+  "schema": "kpf41.precondition-env-repair.v1",
+  "status": "SOFTWARE_TESTS_PASS",
+  "tests": 3,
+  "elapsed_s": 0.221,
+  "row": "kpf41-backend-gpu-qualification-r2-20261119",
+  "prior_owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-r2-20261119/launch.sh",
+  "predecessor_launcher_sha256": "113eabc430477071175f5d720c84357129f835748c21003e971ecf830db83603",
+  "repaired_launcher_sha256": "d84e1c12b683bb7bf170a69f63c1816681d8c8f54740b0024ae11fa9eafffa1b",
+  "unchanged_runtime_manifest_sha256": "61572abf6d5bc13511db5c8b14711b9f98f56aa88dd898dc06fcf5811d4cd6ac",
+  "publisher_result": "GPU busy: smoke queued",
+  "alert_acked": "21b55164dfcfe04c13d55d63",
+  "corpus_verdict": null
+}

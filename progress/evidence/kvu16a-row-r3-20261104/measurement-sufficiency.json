@@ -1,0 +1,12 @@
+{
+  "question": "Own-PID post-health sampled VRAM minus observed target KV for pinned compiled architect_critic shape; no serving traffic",
+  "expected_effect": "The new row changes no memory-shape flag; -lv4 supplies the missing allocation receipt. Two within-process samples establish the scoped observed value, not independent-run uncertainty, a lifetime peak, or a registry bound.",
+  "checkpoints": "One load; owned listener+health+HIP/KFD>=1GiB; first two post-health observations; birth/argv/env/mapped-library identity; cleanup; original-run sidecar",
+  "stop_on_answer": "Exactly the selected pair and verified cleanup; no repeats after a qualified answer",
+  "stop_on_futility": "Source, receipt, grant, residency, load, sampling, log-parse or cleanup refusal; STOP/deadline",
+  "predecessor": "rtg57-kvu16a-shape-load-20261102-v2",
+  "predecessor_refusal": "coverage_qualified false: target allocation log absent at verbosity3; startup unknown also prohibited by original whole-stream qualification",
+  "pending_row_check": "Only terminal old load row and terminal v2 (rc75) found in ready/grants; no active successor was present at preparation",
+  "native_smoke": "Real model load; four CPUs selected from actual grant+inherited affinity; server configured threads8 remains recipe-identical; only prefix affinity shrinks. Full prefix184-191. No fake native unit.",
+  "catalog_policy": "Packet source catalog pinned by launcher; independent copied lock support sources verified by private loader. No mutable shared lock import, other-row scratch dependency or checkout tree."
+}

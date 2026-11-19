@@ -1,0 +1,12 @@
+
+==== arm 2026-11-18T06:48:16Z engine-snapshot /mnt/raid0/llm/tmp/compute-flags/dryrun/q38p4-greedy-parity-20261118-r1/engine
+2026-11-18T06:48:16Z [q38p4-greedy-parity-20261118-r1] launcher up pid=2799979 class=gpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/STOP minwin=330s ports=19433,19434 dryrun=0
+2026-11-18T06:48:21Z [q38p4-greedy-parity-20261118-r1] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-11-18T07:01Z
+[region-lock] acquiring gpu-quiet exclusive as role='correctness' (timeout_s=759.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/compute-flags/dryrun/q38p4-greedy-parity-20261118-r1/engine/filler_run15.sh --inner --id q38p4-greedy-parity-20261118-r1 --class gpu --cmd /usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/runner.py --min-window 330 --stop /mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/STOP --port 19433,19434 --workdir /mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118 --gpu-threads 184-191
+2026-11-18T06:48:21Z mi210_0 flock held
+{"mode": "native", "state": "unstarted", "status": "UNKNOWN", "accepted": false, "native_unit_count": 0, "finished_ns": 1794984502065852497, "error": "ValueError: asset changed after pregrant pin: /mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/c6-ggml-linkage.txt"}
+job rc=2
+2026-11-18T06:48:26Z [q38p4-greedy-parity-20261118-r1] ended rc=2 reason=job-rc-2:exited (grant deleted)
+2026-11-18T06:48:26Z [notify] row-ended q38p4-greedy-parity-20261118-r1 [critical] bus=sent:inference:msg-20261118T064826Z-1938174236-rowflow-keeper
+2026-11-18T06:48:26Z [q38p4-greedy-parity-20261118-r1] one window done; exiting (no --repeat)

@@ -230,5 +230,209 @@ class D9HookTest(unittest.TestCase):
         self.assertEqual(self.run_hook(cmd), 0)
 
 
+
+INSTALLER = REPO_ROOT / "scripts" / "hooks" / "install_git_hooks.sh"
+ACK = "D9-ack: operator 2026-11-02 decision tool (test)"
+
+
+def _try(cwd: Path, *args: str, env: dict | None = None) -> subprocess.CompletedProcess:
+    import os
+    full = dict(os.environ)
+    full.pop("EPYC_D9_ACK", None)
+    full["EPYC_HOOK_SRC_DIR"] = str(REPO_ROOT / "scripts" / "hooks")
+    if env:
+        full.update(env)
+    return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, env=full)
+
+
+class D9GitHookModeTest(unittest.TestCase):
+    """LOOP-46 (2026-11-02): D9 judged from INSIDE the commit by the commit-msg hook.
+
+    Each case makes a REAL commit through the installer-generated commit-msg wrapper, so
+    git itself decides the index (shared, private via GIT_INDEX_FILE, pathspec temporary,
+    or a lane worktree's own). False-positive cases are paired with refusals.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        root = Path(self._tmp.name)
+        self.repo = root / "shared"
+        self.repo.mkdir()
+        _git(self.repo, "init", "-q", "-b", "main")
+        _git(self.repo, "config", "user.email", "t@t")
+        _git(self.repo, "config", "user.name", "t")
+        for rel in (GUARDED, GUARDED2, EXEMPT, DOC):
+            f = self.repo / rel
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_text("base\n", encoding="utf-8")
+        _git(self.repo, "add", "-A")
+        _git(self.repo, "commit", "-q", "-m", "base")
+        wrapper = subprocess.run(["bash", str(INSTALLER), "--emit-commit-msg"],
+                                 capture_output=True, text=True, check=True).stdout
+        hook = self.repo / ".git" / "hooks" / "commit-msg"
+        hook.write_text(wrapper, encoding="utf-8")
+        hook.chmod(0o755)
+        self.root = root
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def touch(self, rel: str, repo: Path | None = None) -> None:
+        p = (repo or self.repo) / rel
+        p.write_text(p.read_text(encoding="utf-8") + "change\n", encoding="utf-8")
+
+    def lane(self) -> Path:
+        wt = self.root / "lane"
+        _git(self.repo, "worktree", "add", "-q", "-b", "lane", str(wt), "main")
+        return wt
+
+    # ---- a peer's dirty / staged file in the shared clone ------------------
+
+    def test_peer_dirty_guarded_file_does_not_block_a_lane_worktree_commit(self):
+        """THE LOOP-46 BUG: a lane commit touching only a doc, while the SHARED clone
+        holds a peer's uncommitted (and staged) guarded file."""
+        self.touch(GUARDED)
+        _git(self.repo, "add", GUARDED)           # peer staged it in the shared index
+        self.touch(GUARDED2)                       # and left another one dirty
+        wt = self.lane()
+        self.touch(DOC, repo=wt)
+        r = _try(wt, "commit", "-q", "-m", "docs", "--", DOC)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_peer_dirty_guarded_file_does_not_block_a_shared_clone_doc_commit(self):
+        self.touch(GUARDED)                        # peer's unstaged guarded edit
+        self.touch(DOC)
+        r = _try(self.repo, "commit", "-q", "-m", "docs", "--", DOC)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_pretooluse_steps_aside_when_commit_msg_judge_is_installed(self):
+        """The PreToolUse guess no longer refuses on the shared clone's state."""
+        self.touch(GUARDED)
+        _git(self.repo, "add", GUARDED)
+        rc = subprocess.run(
+            [sys.executable, str(HOOK)],
+            input=json.dumps({"tool_name": "Bash",
+                              "tool_input": {"command": 'git commit -m "x"'},
+                              "cwd": str(self.repo)}),
+            capture_output=True, text=True, cwd=self.repo).returncode
+        self.assertEqual(rc, 0)
+
+    def test_pretooluse_still_judges_a_no_verify_commit(self):
+        """PAIRED: --no-verify skips commit-msg, so the legacy check must still run."""
+        self.touch(GUARDED)
+        _git(self.repo, "add", GUARDED)
+        for cmd in ('git commit --no-verify -m "x"', 'git commit -nm "x"'):
+            rc = subprocess.run(
+                [sys.executable, str(HOOK)],
+                input=json.dumps({"tool_name": "Bash",
+                                  "tool_input": {"command": cmd},
+                                  "cwd": str(self.repo)}),
+                capture_output=True, text=True, cwd=self.repo).returncode
+            self.assertEqual(rc, 2, cmd)
+
+    # ---- a guarded path in the commit still needs the trailer --------------
+
+    def test_guarded_path_in_commit_requires_ack(self):
+        self.touch(GUARDED)
+        r = _try(self.repo, "commit", "-q", "-m", "loop plane", "--", GUARDED)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("D9 REFUSED", r.stderr)
+        self.assertIn(GUARDED, r.stderr)
+
+    def test_guarded_path_with_ack_trailer_commits(self):
+        self.touch(GUARDED)
+        r = _try(self.repo, "commit", "-q", "-m", f"loop plane\n\n{ACK}", "--", GUARDED)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_ack_only_inside_a_comment_line_does_not_count(self):
+        self.touch(GUARDED)
+        msg = self.root / "msg.txt"
+        msg.write_text(f"loop plane\n\n# {ACK}\n", encoding="utf-8")
+        r = _try(self.repo, "commit", "-q", "-F", str(msg), "--", GUARDED)
+        self.assertNotEqual(r.returncode, 0)
+
+    def test_env_ack_commits(self):
+        self.touch(GUARDED)
+        r = _try(self.repo, "commit", "-q", "-m", "x", "--", GUARDED,
+                 env={"EPYC_D9_ACK": "operator test"})
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_guarded_rename_out_of_the_loop_plane_requires_ack(self):
+        _git(self.repo, "mv", GUARDED, "docs_moved.py")
+        r = _try(self.repo, "commit", "-q", "-m", "move")
+        self.assertNotEqual(r.returncode, 0)
+
+    def test_exempt_test_path_commits_without_ack(self):
+        self.touch(EXEMPT)
+        r = _try(self.repo, "commit", "-q", "-m", "t", "--", EXEMPT)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_lane_worktree_guarded_commit_requires_ack(self):
+        wt = self.lane()
+        self.touch(GUARDED2, repo=wt)
+        r = _try(wt, "commit", "-q", "-am", "hook edit")
+        self.assertNotEqual(r.returncode, 0)
+        r = _try(wt, "commit", "-q", "-am", f"hook edit\n\n{ACK}")
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    # ---- private index (GIT_INDEX_FILE) ------------------------------------
+
+    def _private_index(self) -> dict:
+        idx = self.root / "private.index"
+        _git(self.repo, "read-tree", "HEAD")      # shared index == HEAD before the peer stages
+        import shutil
+        shutil.copy(self.repo / ".git" / "index", idx)
+        return {"GIT_INDEX_FILE": str(idx)}
+
+    def test_private_index_doc_commit_ignores_peer_staged_guarded_file(self):
+        env = self._private_index()
+        self.touch(GUARDED)
+        _git(self.repo, "add", GUARDED)           # peer: shared index carries a guarded change
+        self.touch(DOC)
+        self.assertEqual(_try(self.repo, "add", DOC, env=env).returncode, 0)
+        r = _try(self.repo, "commit", "-q", "-m", "docs", env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        shown = subprocess.run(["git", "show", "--name-only", "--format=", "HEAD"],
+                               cwd=self.repo, capture_output=True, text=True).stdout.split()
+        self.assertEqual(shown, [DOC])
+
+    def test_private_index_guarded_commit_requires_ack(self):
+        env = self._private_index()
+        self.touch(GUARDED)
+        self.assertEqual(_try(self.repo, "add", GUARDED, env=env).returncode, 0)
+        r = _try(self.repo, "commit", "-q", "-m", "x", env=env)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn(GUARDED, r.stderr)
+        r = _try(self.repo, "commit", "-q", "-m", f"x\n\n{ACK}", env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    # ---- merges ------------------------------------------------------------
+
+    def test_merge_bringing_in_an_already_acked_guarded_change_needs_no_ack(self):
+        _git(self.repo, "checkout", "-q", "-b", "side")
+        self.touch(GUARDED)
+        self.assertEqual(_try(self.repo, "commit", "-q", "-am", f"g\n\n{ACK}").returncode, 0)
+        _git(self.repo, "checkout", "-q", "main")
+        self.touch(DOC)
+        self.assertEqual(_try(self.repo, "commit", "-q", "-am", "doc").returncode, 0)
+        r = _try(self.repo, "merge", "-q", "--no-edit", "side")
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_merge_resolution_that_changes_a_guarded_file_requires_ack(self):
+        _git(self.repo, "checkout", "-q", "-b", "side")
+        (self.repo / GUARDED).write_text("side\n", encoding="utf-8")
+        self.assertEqual(_try(self.repo, "commit", "-q", "-am", f"s\n\n{ACK}").returncode, 0)
+        _git(self.repo, "checkout", "-q", "main")
+        (self.repo / GUARDED).write_text("main\n", encoding="utf-8")
+        self.assertEqual(_try(self.repo, "commit", "-q", "-am", f"m\n\n{ACK}").returncode, 0)
+        self.assertNotEqual(_try(self.repo, "merge", "-q", "side").returncode, 0)  # conflict
+        (self.repo / GUARDED).write_text("resolved differently\n", encoding="utf-8")
+        _git(self.repo, "add", GUARDED)
+        r = _try(self.repo, "commit", "-q", "--no-edit")
+        self.assertNotEqual(r.returncode, 0)
+        r = _try(self.repo, "commit", "-q", "-m", f"merge\n\n{ACK}")
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

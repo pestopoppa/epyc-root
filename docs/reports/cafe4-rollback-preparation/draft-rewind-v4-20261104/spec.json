@@ -1,0 +1,28 @@
+{
+  "id": "cafe4-v10-mtp-rollback-rewind-build-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only: accept pinned v10 and exact target-bound CAFE4 patch plus corrected real-MTP draft-context rewind candidate/bridge; require full CPU executable, compiled CAFE4_MTP_LOAD_ENABLED, CAFE4_MTP_ROLLBACK and CAFE4_DRAFT_REWIND_V4 markers, source/artifact digests and local library linkage. No native rollback/fault or performance verdict.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.sh",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sha256"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-mtp-rollback-rewind-v4/proof.py predicate"
+}

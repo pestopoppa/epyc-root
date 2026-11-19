@@ -1,0 +1,32 @@
+{
+  "id": "kpf60-gpux-impact-8952-20261104",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At exact detached candidate 8952a0f693fb923918157eb25117641b74766230 capture six native source-bound upstream impacts and verbose skipped-file coverage. Stop immediately with OWNER_WARNING on HIGH/CRITICAL; stop on ambiguity, parser failure, source drift, missing graph binding, STOP or deadline. Partial source-reference smoke is first progress only; success requires scan_complete partial=false. No inference or edit-safety claim for skipped files.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-60.GPU-X",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "job.py",
+    "source_integrity.py",
+    "test_source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "kpf60-gpux-impact-8952",
+  "kind": "compute",
+  "notes": "Model-free static index and native impact only. Exact detached source; 150 GiB disk floor retained. No model inference or edit authorization."
+}

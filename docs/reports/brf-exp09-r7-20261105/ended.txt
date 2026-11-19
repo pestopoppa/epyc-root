@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T10:14:05Z reason=complete
+job_id=brf-exp09-resume-r7-20261104
+owner=ws58
+step=job-run
+estimated_wall_s=2400
+started=2026-11-05T09:56:22Z
+regions=24-47

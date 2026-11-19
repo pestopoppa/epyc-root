@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "Both pinned CPU arms exercised the named tensor loads and returned clean-stop replies with verified owned PID/listener cleanup, but v10 failed the unchanged fixed JSON semantic validator while C13 passed. Native status loader_exercised_response_refused; rc=1. Archive data/vidya/quality-pack-loader-reshape-20261118/full-r2/receipt.json preserves original bytes. No HIP fixture, broad-pack or promotion acceptance follows.",
+  "verdict": "fail"
+ },
+ "answer": null,
+ "at": "2026-11-18T02:45:46+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-18T02:40:10Z reason=job-rc-1:exited",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-vidya-quality-pack-loader-reshape-cpu-20261118-r2.ended",
+ "filed_at": "2026-11-18T02:45:46+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-LOADER-DIAG",
+ "id": "handoff-vidya-quality-pack-loader-reshape-cpu-20261118-r2",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-loader-reshape-cpu-20261118-r2.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-reshape-r2-20261118/out/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "Both pinned CPU arms exercised the named tensor loads and returned clean-stop replies with verified owned PID/listener cleanup, but v10 failed the unchanged fixed JSON semantic validator while C13 passed. Native status loader_exercised_response_refused; rc=1. Archive data/vidya/quality-pack-loader-reshape-20261118/full-r2/receipt.json preserves original bytes. No HIP fixture, broad-pack or promotion acceptance follows.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-reshape-r2-20261118/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-vidya-quality-pack-loader-reshape-cpu-20261118-r2",
+ "row_verdict": "fail",
+ "rule": "Does the pinned C13 CPU loader accept the same flat F32 qwen4exp norm tensors that v10 loads flat, and can both serve the fixed JSON request? One diagnostic request per runtime, with pinned source and GGUF metadata, native debug logs for the witnessed tensors within the unique mapped load phase, exact HTTP bytes, CPU/process/library evidence and verified cleanup. Seal the v10 arm before C13 starts. Stop after two captures or at STOP/deadline or the first identity/load/response/cleanup failure. Four-CPU smoke runs the pinned v10 no-spec small-model completion. CPU diagnostic scope excludes the required HIP profile and supplies no broad-pack input or promotion authority.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 44,
+  "input": 127786470,
+  "output": 560978,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 128347448,
+  "tokens_per_task": 2916987.4545454546
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "dee8f89c8d199e9232441251b48f714d2ea738992cb435ba2ae5bb2591bbf7a5",
+  "result": "fail",
+  "status": "filed"
+ }
+}

@@ -251,3 +251,33 @@ def test_frames_go_through_the_shared_emitter(tmp_path):
         assert sup["assertion"]["category"] in {"BASELINE", "CANDIDATE"}
     assert len({f["assertion"]["claim_id"] for f in frames
                 if f["frame_type"].endswith("claim_proposed/v1")}) == 4
+
+
+# --- CT21-DIRECT-WRITE: exploratory empty-protocol rows ---------------------------------------
+
+def _exploratory_sidecar(run: Path, *, bound: bool) -> Path:
+    sidecar = write_sidecar(run)
+    rows = [json.loads(line) for line in sidecar.read_text().splitlines()]
+    for row in rows:
+        row["protocol_id"] = ""
+        if bound:
+            row["extra"]["exploratory"] = {
+                "profile": "ct21-direct-exploratory-v2", "profile_sha256": "c" * 64,
+                "source_sha256": "d" * 64}
+        row["row_sha256"] = capture.row_digest(row)
+    sidecar.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows))
+    return sidecar
+
+
+def test_exploratory_empty_protocol_projects_and_is_capped_by_the_shared_ladder(tmp_path):
+    natives = reader.native_rows(_exploratory_sidecar(make_run(tmp_path), bound=True))
+    assert len(natives) == 4
+    for native in natives:
+        tup = reader.project(native)
+        assert tup.protocol_id == ""
+        q, t, reasons = ct.grade(tup)  # whatever the one ladder says; no grade asserted by us
+        assert (q, t) != ("Witnessed", "Attested")
+
+
+def test_empty_protocol_without_a_bound_exploratory_profile_is_still_refused(tmp_path):
+    assert reader.native_rows(_exploratory_sidecar(make_run(tmp_path), bound=False)) == ()

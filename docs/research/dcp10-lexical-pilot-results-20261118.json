@@ -1,0 +1,139 @@
+{
+  "actual_packer": {
+    "8000_estimated_tokens": 4269,
+    "8000_included": "fmt:doc/python-license.txt",
+    "entry_render_mode_disagreements": 0,
+    "included_files_by_budget": {
+      "2000": 0,
+      "4000": 0,
+      "8000": 1
+    }
+  },
+  "app_revision": "072d1583b3ead7456731946cd4e4595da6a9877f",
+  "audit": {
+    "full_selected_empty_gold": 3,
+    "full_workspace_bare_path_tasks": 42,
+    "third_party_count_reverified": false,
+    "third_party_unresolvable_tasks": 88
+  },
+  "capture": {
+    "accepted": false,
+    "exit_code": 2,
+    "refusal": "ValueError: capture custody ancestor is group/world writable",
+    "source_identity_limitation": "current packer c24d8421... differs from trusted 7d39ebc4...; adapter readback was not invoked on a receipt"
+  },
+  "dataset_audit_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10/packet/dataset-audit.json",
+  "dataset_audit_sha256": "c7fff38967f40cbde4ca8a437255820620ef18683e80bed6048d9cfc73219841",
+  "dataset_hashes": {
+    "full": "2f56535bdc73eb8a68bf4ebb49789d8e9cd4f219ea60df6290b85278aee61ca8",
+    "lite": "e9dcfd504cbfb849ac815a79040c793d0d92f94eecc9b5a4ee3e1445a2f8a791"
+  },
+  "discovery_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10/pilot/discovery.jsonl",
+  "discovery_sha256": "faca591d110bb7f931069811cf3d1e2f7aec812bced67d62c313622cd8491659",
+  "disposition": "bounded_local_diagnostic_complete",
+  "durable_files": [
+    "scripts/experiments/dcp10-discovery/pilot.py",
+    "scripts/experiments/dcp10-discovery/README.md"
+  ],
+  "elapsed_seconds": 2.9899852499365807,
+  "gitnexus": "No indexed repositories. Reindex refused CPU admission independently. New isolated experiment code only.",
+  "hf_rev": "c2855792b006af41c67202d33883fb9d46362853",
+  "independent_check": "All 12 task-scope counts, 24 macro metric values, output hashes and actual budget/render modes matched.",
+  "independent_check_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10/verify_actual.py",
+  "macro_scopes": [
+    {
+      "budget_tokens": null,
+      "metrics": {
+        "file_f1": 0.3212121212121212,
+        "file_precision": 0.20833333333333334,
+        "file_recall": 0.7222222222222222,
+        "line_f1": 0.03815313171519635,
+        "line_precision": 0.08829879101899828,
+        "line_recall": 0.02453447548487968
+      },
+      "scope": "discovery"
+    },
+    {
+      "budget_tokens": 2000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 4000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 8000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    }
+  ],
+  "next_bounded_action": "Preseal successive shards of Lite Python 266 plus all full C/C++ 128, preparing exact checkouts ahead of each offline lexical run. Preserve full arm coverage as a separate DCP-10 outcome.",
+  "prediction_status_counts": {
+    "ok": 3
+  },
+  "request_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10/packet/request.json",
+  "request_sha256": "5a42163d7262dcbe1fa6e7ff6daf870c74070b58b9d7fc4da684981f292a37db",
+  "run_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10/pilot/run.json",
+  "run_sha256": "da13188303882fbe2d65b9b7c38d41dfbf8174796e13f968b4c6e77f6111c892",
+  "scope": "three prospective real tasks, task-root lexical arm only, zero model decode",
+  "score_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10/pilot/scored-output.json",
+  "score_request_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10/pilot/score-request.json",
+  "score_request_sha256": "8bafa2b5591d2cbd56b8fea5509dc649c661fb353e5ee898a581d9458f62701d",
+  "score_sha256": "b49ea896fcd8cde7335af5b16a01ad8e02499e3a8623993cf42781e717f07d5c",
+  "selected": [
+    {
+      "base_commit": "51d37d1be95547059251076b3fadaa317750aab3",
+      "dataset": "lite",
+      "language": "python",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/pydata/xarray.git",
+      "stratum_size": 266,
+      "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3"
+    },
+    {
+      "base_commit": "517d8c984ce9b30792fe5b6c8c79547d3748f34d",
+      "dataset": "full",
+      "language": "c",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/facebook/zstd.git",
+      "stratum_size": 68,
+      "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4"
+    },
+    {
+      "base_commit": "8d9d528bf52c60864802844e8acf16db09dae19a",
+      "dataset": "full",
+      "language": "cpp",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/fmtlib/fmt.git",
+      "stratum_size": 60,
+      "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a"
+    }
+  ],
+  "spec_disposition": "RTG-100 non-inference; measured 2.990 seconds; owner-turn offline work",
+  "spec_path": null,
+  "targeted_test_count": 91,
+  "upstream_git_rev": "1436c28a8eb95496da4ea69ad458b9f8a8eb7d61"
+}

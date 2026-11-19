@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T00:58:48Z reason=complete
+job_id=kvfork17-wrapper-stop-successor-v2-20261105
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T00:58:45Z
+regions=48-71

@@ -1,0 +1,23 @@
+{
+  "id": "lsa-ward-cpu-oracles-088-20261104",
+  "owner": "lsa-screen",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 8,
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/launch.sh",
+  "estimate_s": 1200,
+  "first_progress_s": 300,
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Run new Ward CPU native tied oracle, native unit, frozen random and projected 5k ordered-index oracles, and PCA projection fixture; stop on first failure, retain completed tied receipt. No GPU/model.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/cpu-tests",
+  "keep": [
+    "*.log",
+    "*.receipt",
+    "results.jsonl",
+    "pins.sha256"
+  ]
+}

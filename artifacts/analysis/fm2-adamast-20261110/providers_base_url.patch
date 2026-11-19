@@ -1,0 +1,17 @@
+diff --git a/adamast/llm/providers.py b/adamast/llm/providers.py
+index 182e0f9..b63eda4 100644
+--- a/adamast/llm/providers.py
++++ b/adamast/llm/providers.py
+@@ -198,7 +198,11 @@ class OpenAIProvider(_BaseProvider):
+                 from openai import OpenAI
+             except ImportError as exc:
+                 raise _missing_dependency("openai", "openai") from exc
+-            client = OpenAI()
++            kwargs: dict[str, Any] = {}
++            base_url = os.getenv("ADAMAST_BASE_URL")  # local OpenAI-compatible endpoint
++            if base_url and base_url.strip():
++                kwargs["base_url"] = base_url.strip()
++            client = OpenAI(**kwargs)
+         self.client = client
+ 
+     def complete(

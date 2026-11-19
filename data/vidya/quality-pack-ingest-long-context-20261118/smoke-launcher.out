@@ -1,0 +1,13 @@
+
+==== dry run 2026-11-18T00:51:04Z regions=116-119 launcher_sha=1713dbfa51f34b802671fec245c79823ca572dcb79108a47cda1c9be968fbf5c units_before=0
+2026-11-18T00:51:04Z [handoff-vidya-quality-pack-ingest-long-context-20261118] launcher up pid=3209096 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-ingest-long-context-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-ingest-long-context-20261118/stop minwin=3300s ports=19477 dryrun=1
+2026-11-18T00:51:04Z [handoff-vidya-quality-pack-ingest-long-context-20261118] START regions=116-119 cpus=116-119 threads=4 gpu=0 end=2026-11-18T01:50Z
+2026-11-18T00:51:04Z [handoff-vidya-quality-pack-ingest-long-context-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+job rc=0
+2026-11-18T00:51:09Z [handoff-vidya-quality-pack-ingest-long-context-20261118] ended rc=0 reason=complete (grant deleted)
+2026-11-18T00:51:09Z [handoff-vidya-quality-pack-ingest-long-context-20261118] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-ingest-long-context-20261118/complete, row marked COMPLETE; exiting for good
+==== engine START at +5s; first-progress timer (100 s) starts now
+==== first progress at 2026-11-18T00:51:09Z (+5s): smoke_predicate exited 0
+==== NOTE [3209001] name this row but were not started by this dry run; left alone (never kill by name)
+==== dry run PASS: first progress: smoke_predicate exited 0; rc=0 time=2026-11-18T00:51:09Z reason=complete (2026-11-18T00:51:09Z)
+==== smoke completion NOT filed: dryrun_native_result: the smoke wrote an isolated per-attempt result, not the full job's artifacts

@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """session_bus_coordinator.py — the coordinator-daemon (M3: read-only advisory).
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md
 Contract:       coordination/session-bus/BUS_PROTOCOL.md
 
 WHAT THIS IS. The deterministic, always-on tier of the coordinator. It ticks,
@@ -90,6 +90,7 @@ from scripts.coordination import row_intake  # noqa: E402
 
 LOCK_PATH = Path("/tmp/session_bus_coordinator.lock")
 ADVISORY_SCHEMA = "session_bus.advisory.v1"
+WORKER_ASSIGNMENT_MAX_BYTES = 4096  # Keep pipe delivery within worker_runner's brief cap.
 
 # Statuses a row may be ASSIGNED from. STALE_REQUEUED belongs here: the stall
 # ladder writes it precisely because the row should go round again, and escalates
@@ -504,23 +505,74 @@ def _exec_worker_runner(bus_root: Path, config: dict, entry: dict, row: dict,
                  "kind": "exec-deferred", "agent": agent, "task_id": tid,
                  "reason": "no free pool lane (all worktrees hold a live worker)"}]
     cmd = [sys.executable, str(script), "--bus-root", str(bus_root), "run",
-           "--lane", lane, "--task-id", tid,
-           "--row-text", str(row.get("task_text") or "")]
-    if row.get("spec_ref"):
-        cmd += ["--row-ref", str(row["spec_ref"])]
-    if row.get("screened_by"):
-        cmd += ["--screened-by", str(row["screened_by"])]
+           "--lane", lane, "--assignment-stdin"]
+    assignment = worker_assignment_bytes(row, tid)
+    if len(assignment) > WORKER_ASSIGNMENT_MAX_BYTES:
+        return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
+                 "kind": "defect", "check": "exec-runner-assignment-size", "subject": agent,
+                 "detail": (f"resolved assignment for {tid} is {len(assignment)} bytes; "
+                            f"worker brief limit is {WORKER_ASSIGNMENT_MAX_BYTES}")}]
+    process = None
     try:
         log_dir = Path("/workspace/logs/worker_runner")
         log_dir.mkdir(parents=True, exist_ok=True)
-        log = open(log_dir / f"{tid[:60].replace('/', '_')}.log", "ab")
-        subprocess.Popen(cmd, stdout=log, stderr=log, start_new_session=True)
+        with open(log_dir / f"{tid[:60].replace('/', '_')}.log", "ab") as log:
+            process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=log, stderr=log,
+                                       start_new_session=True)
+        if process.stdin is None:
+            raise OSError("worker runner assignment pipe was not created")
+        written = process.stdin.write(assignment)
+        if written != len(assignment):
+            raise OSError(f"worker runner received only {written} of {len(assignment)} assignment bytes")
+        process.stdin.close()
     except (OSError, subprocess.SubprocessError) as exc:
+        child_exit_confirmed = process is None
+        if process is not None:
+            try:
+                if process.stdin is not None and not process.stdin.closed:
+                    process.stdin.close()
+            except OSError:
+                pass
+            try:
+                process.terminate()
+                process.wait(timeout=2)
+                child_exit_confirmed = True
+            except subprocess.TimeoutExpired:
+                try:
+                    process.kill()
+                    process.wait(timeout=2)
+                    child_exit_confirmed = True
+                except (OSError, subprocess.SubprocessError):
+                    pass
+            except (OSError, subprocess.SubprocessError):
+                try:
+                    process.kill()
+                    process.wait(timeout=2)
+                    child_exit_confirmed = True
+                except (OSError, subprocess.SubprocessError):
+                    pass
+        detail = f"could not exec {script.name} for {tid}: {exc}"
+        if not child_exit_confirmed:
+            detail += "; child exit unconfirmed after bounded terminate/kill cleanup"
         return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
                  "kind": "defect", "check": "exec-runner", "subject": agent,
-                 "detail": f"could not exec {script.name} for {tid}: {exc}"}]
+                 "detail": detail}]
     return [{"schema_version": ADVISORY_SCHEMA, "ts": _utcnow_iso(), "epoch": epoch,
              "kind": "exec-launched", "agent": agent, "task_id": tid, "lane": lane}]
+
+
+def worker_assignment_bytes(row: dict, task_id: str) -> bytes:
+    """Encode the resolved row without clipping or paraphrasing task identity."""
+    task_text = row.get("task_text")
+    payload_row = {
+        "task_id": task_id,
+        "task_text": task_text if isinstance(task_text, str) else "",
+        "row_ref": row.get("spec_ref") or row.get("row_ref"),
+        "source_handoff": row.get("source_handoff"),
+        "screened_by": row.get("screened_by"),
+    }
+    return json.dumps({"rows": [payload_row]}, ensure_ascii=False,
+                      separators=(",", ":")).encode("utf-8")
 
 
 def _looks_dead(aid: str, entry: dict, states: dict[str, dict],
@@ -1104,7 +1156,7 @@ _SPEC_BOX = re.compile(r"^\s*- \[( |x|X)\]\s*(.*)$")
 # the pointer decays with every commit.
 #
 # MEASURED, on the live queue and the real file, not hypothesised
-# (`handoffs/active/opendataloader-pipeline-integration.md`, eleven rows seeded
+# (`handoffs/active/knowledge-pipelines.md`, eleven rows seeded
 # 2026-07-27 against the file as of c942728e):
 #
 #     stored anchor   at SEED time (c942728e)          at HEAD 2026-08-12
@@ -2255,7 +2307,7 @@ def _checkpoint_path_problem(path: str, agent: str, progress_path: str) -> str |
     if path.startswith("progress/") and path != progress_path:
         return f"progress path {path!r} is not {agent}'s receipt-bound shard"
     protected_exact = {"handoffs/active/master-handoff-index.md",
-                       "handoffs/active/inference-batch-loop.md",
+                       "handoffs/active/eval-tower-program.md",
                        "handoffs/active/.index-state.json",
                        "handoffs/active/.index-graph.json",
                        "data/handoff_timeline.json", "wiki/source_manifest.json"}

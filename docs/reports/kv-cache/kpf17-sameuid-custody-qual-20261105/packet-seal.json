@@ -1,0 +1,14 @@
+{
+  "schema": "kpf17.sameuid-packet-seal.v1",
+  "retained_source_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/custody.py",
+  "retained_binding_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/binding.json",
+  "custody_sha256": "ab6d10e509d7483963a39b0da2caccab4ac8b85ee33a9e0b117107601d8d8702",
+  "files": {
+    "custody.py": "ab6d10e509d7483963a39b0da2caccab4ac8b85ee33a9e0b117107601d8d8702",
+    "binding.json": "5b56f806a39f24a2f68dafe147b5b56295a2975fea3914bca2a388e571b16b82",
+    "qualify.py": "f737efc30c48b67a038cd04b55f61255633a6fbaa9dd9d55173408cd48cfa1fb",
+    "complete.py": "6eba68b6320ed2a90936460716bedee406fc6777f7d6b6de488ab4cde04d5ec7",
+    "launch.sh": "9b484dbe69699248bc63dda53142524c678e54711dcbccdd2ab2d2629c78cad0",
+    "spec.json": "46f86fde1b52a42d0814537278b412ccb583d8b864b226ce321fea3b2573eed8"
+  }
+}

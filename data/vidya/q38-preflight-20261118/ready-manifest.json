@@ -1,0 +1,66 @@
+{
+ "book_s": 225,
+ "budget_gib": 0.01,
+ "busy_fraction": 0.25,
+ "decision_rule": "control_count == 2 and baseline_visible == 0 and candidate_visible > 0 and native_q38_acceptance_count == 0 and refusal_count == 0",
+ "declared_shape": "sub-quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-MI210-PAIRED-DIAG-WIRE",
+ "id": "vb-q38-preflight-planner-20261118",
+ "keep": [
+  "reader/**",
+  "research/**",
+  "fixture/**",
+  "launcher/**",
+  "*.py",
+  "*.json",
+  "*.patch",
+  "official/**",
+  "official-*/**",
+  "publisher-smoke-*/**",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/launcher/launch.sh",
+  "sha256": "9b6664b96aa8d8e4454aaf0c581e3f53a4a61b9856b5d6d75298ea5ab5daf06c"
+ },
+ "lineage": "vidya-q38-preflight-planner",
+ "min_window_s": 120,
+ "notes": "Software-only on four granted CPUs. The real Research runner builds two planner contexts from a pregrant synthetic file with and without the verified exact digest. Pass count is higher-is-better. Checkpoint both actor receipts. Stop on answer after both controls or on drift, refusal, STOP or the earlier of deadline and 300 seconds. Zero native model loads, GPU use, actor calls or native Q38 acceptance.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:48: untestable prose prerequisite: 'after four sealed valid launches; stop-on-futility on STOP/deadline, load/request failure, invalid in-request residency/'"
+ ],
+ "published_at": "2026-11-18T17:59:57Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T17:59:57Z",
+  "session": "01a1efc6-34bd-76d0-80f7-69def30720c6",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/STOP",
+ "total_units": 2,
+ "unit_key": "control_count",
+ "window_s": 420,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/engine-work"
+}

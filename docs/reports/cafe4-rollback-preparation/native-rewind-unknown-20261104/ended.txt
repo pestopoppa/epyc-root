@@ -1,0 +1,7 @@
+rc=2 time=2026-11-04T14:29:08Z reason=job-rc-2:exited
+job_id=cafe4-v10-native-rollback-fault-20261104
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=900
+started=2026-11-04T14:28:59Z
+regions=24-47

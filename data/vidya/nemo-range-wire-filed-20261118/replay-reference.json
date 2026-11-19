@@ -1,0 +1,6 @@
+{
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/official-carknpqi/replay.json",
+  "sha256": "2a760d95e2d2f3926fe03364c46b4d01d3bceffcc4a0c2608ff2a9dcda6a553f",
+  "bytes": 137107,
+  "reason": "Original native replay retained outside Git; commit-size guard requires path and SHA-256 for files over2000 lines."
+}

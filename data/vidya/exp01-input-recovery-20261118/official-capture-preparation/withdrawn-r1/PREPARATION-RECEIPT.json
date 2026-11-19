@@ -1,0 +1,37 @@
+{
+  "checks": {
+    "absent_smoke_completion_fails": "PASS",
+    "bash_syntax_and_python_parse": "PASS",
+    "empty_official_completion_fails": "PASS",
+    "gitnexus": "Impact CLI unavailable because lane is unindexed; scratch copies and wrappers only.",
+    "official": "pending real grant",
+    "precondition": "PASS",
+    "publisher_smoke": "pending owner publication",
+    "recovery_join": "PASS: original recovery terminal and sealed pregrant identities for all four arms and shared imatrix; no weight rehash or deleted parent dependency",
+    "window_adjustment": "Resealed from existing recovery identities without hashing weights."
+  },
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118/launch.sh",
+  "packet_source": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118/SOURCE.json",
+  "packet_source_sha256": "c19b0919aa946bff7d94c56f827df1785fa93691b652c71f5ea081c121364ca4",
+  "precondition_command": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118/runner.py check",
+  "preparation_command_already_run": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118/prepare.py /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/exp01-input-recovery-20261118/continuation/full-complete/SEALED-RECEIPT.json",
+  "publish_command": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118/spec.json",
+  "recover_seal": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/exp01-input-recovery-20261118/continuation/full-complete/SEALED-RECEIPT.json",
+  "row_id": "vidya-exp01-proxy-official-native-20261118",
+  "scope": {
+    "cpu": "one keeper-selected 24-CPU quarter, 24 threads",
+    "formal_authority": "complete-unprojected native capture only",
+    "quality": "original 24 items, paired Q4KM and IQ4KT",
+    "speed": "pp512/tg128, up to three interleaved launches/arm with original looks at n=2,3",
+    "window_s": {
+      "booking": 3600,
+      "maximum": 5400,
+      "minimum": 3600,
+      "producer_cap": 5400,
+      "window": 5400
+    }
+  },
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118/spec.json",
+  "status": "prepared-sealed-unpublished",
+  "worktree_head_at_preparation": "7dd5bd58088efc0cd96ca6fcb0a0d5262eae18fa"
+}

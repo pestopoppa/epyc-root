@@ -1,0 +1,7 @@
+{
+  "repo": "epyc-inference-research",
+  "commit": "49e776408693c5d676f2d6292e48fa15398c13a3",
+  "path": "scripts/kernel_rnd/replay_hip_cuid.py",
+  "source_sha256": "7544154cc8dbefd2b09de6b14a9a12efa7569407d1ad43f0df430fcd66673d01",
+  "private_materialized_sha256": "7544154cc8dbefd2b09de6b14a9a12efa7569407d1ad43f0df430fcd66673d01"
+}

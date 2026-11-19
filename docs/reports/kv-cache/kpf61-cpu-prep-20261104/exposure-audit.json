@@ -1,0 +1,69 @@
+{
+  "scope": "bounded KPF-61 retained-material review; not a global exposure ledger",
+  "inputs_sha256": "399a401628688e34242c6c8ea410acce5d628ad3dd76b77596e3a61494726690",
+  "fixture_id": "kpf61-permutation-cpu-new-20261104",
+  "prospective_token_ranges": [
+    [
+      12000,
+      12031
+    ],
+    [
+      12100,
+      12163
+    ],
+    [
+      12300,
+      12363
+    ],
+    [
+      12500,
+      12563
+    ],
+    [
+      12700,
+      12731
+    ],
+    [
+      12900,
+      12931
+    ]
+  ],
+  "retained_tiny_source": "/mnt/raid0/llm/tmp/kvfork/kpf62-g3-build-20261104/source/tools/server/tests/unit/test_kv_reorder.py",
+  "retained_tiny_source_sha256": "bf5108a55e934edf645fe31ce1ce9d17b6615f27f0de0ba4ce638799ff0afde1",
+  "retained_tiny_ranges": [
+    [
+      300,
+      307
+    ],
+    [
+      400,
+      423
+    ],
+    [
+      500,
+      523
+    ],
+    [
+      600,
+      623
+    ],
+    [
+      700,
+      715
+    ],
+    [
+      800,
+      815
+    ]
+  ],
+  "tiny_ranges_disjoint": true,
+  "retained_progress": "/mnt/raid0/llm/worktrees/mains/h-kvfork/progress/2026-10/2026-10-21-chunkkv-p1a.md",
+  "retained_progress_sha256": "26ca1a52effed4bc0ec61ace3214553393b51cf3dda1a559d61833c68c3efc8c",
+  "search": "rg exact initial token triplets and fixture ID in /mnt/raid0/llm/tmp/kvfork and /mnt/raid0/llm/tmp/cacheclip-port-20261021; only inputs.json and prepare.py matched. Searched KPF-61 and reorder references in lane progress and handoff.",
+  "limitations": [
+    "No complete fleet-wide exposure ledger located.",
+    "Some /mnt/raid0/llm/tmp directories returned permission denied on broader filename search.",
+    "No assertion of global unexposed status."
+  ],
+  "conclusion": "No earlier occurrence was identified within reviewed material; global exposure unknown."
+}

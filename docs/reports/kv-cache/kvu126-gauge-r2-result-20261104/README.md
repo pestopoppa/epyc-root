@@ -1,0 +1,3 @@
+# KVU-12.6 native gauge capability, r2
+
+One experimental CPU-server request on the bound Qwen3.6-35B Q8 MTP model completed with one generated token; the native unique-cell gauge increased from 0 to 45. The request-window mapping interval was strictly interior: dispatch `1926534450341324` < map start `1926534450418505` <= map end `1926534452771638` < response `1926534833535544` monotonic nanoseconds. The row records mapped library identities and cleanup; the process was reaped and `ps` confirmed it dead. This is an n=1 capability observation, not np8 occupancy attribution, speed, promotion, or a population claim. The server is from the post-failure sealed v1 build: an independent original build-time binary attestation was not made.

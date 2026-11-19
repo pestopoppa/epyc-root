@@ -1,0 +1,33 @@
+{
+  "schema": "epyc.filler-spec.v1",
+  "id": "kpf50-raw-residency-qual-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 1,
+  "priority_rank": 50,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-raw-residency-qual-20261105/launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-raw-residency-qual-20261105",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-raw-residency-qual-20261105/out/RESULT.json",
+  "result_format": "json",
+  "dryrun_native_result": true,
+  "smoke_timeout_s": 90,
+  "keep": [
+    "**"
+  ],
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-50.RAW-RESIDENCY-QUAL",
+  "decision_rule": "SYNTHETIC_RESIDENCY_QUALIFIED requires every sealed positive/negative/native-assertion fixture to execute the retained verifier, exit 3 UNKNOWN, native_verified false, gate UNRESOLVED, and exact candidate/refusal/component expectations. No native qualification.",
+  "lineage": "lineage.json",
+  "input_seals": "seals.json",
+  "reservation_rationale": "300-second scheduler admission reservation conservatively covers interpreter startup, filesystem contention, ten serial verifier invocations, artifact writes and cleanup. Work stops immediately after answer, with 180-second cap and 5-second per-child cap; no padding, sleep or repetition.",
+  "stop_on_answer": "All full cases satisfy predeclared outcomes; terminate immediately.",
+  "stop_on_futility": "First unexpected outcome, missing seal/input, drift, STOP, deadline or cleanup failure.",
+  "gate_class": "futility-only",
+  "published": false,
+  "ready": false,
+  "notes": "Prepared only; no tests or compute executed. Model-free synthetic verifier qualification, no /proc target collection, GPU, model or physical residency claim. Separate external dry-run output required.",
+  "unit_key": "cases"
+}

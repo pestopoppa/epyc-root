@@ -1,0 +1,13 @@
+{
+  "reviewed": true,
+  "source_commit": "fd25848a11cb165bddf49673a534e83d117a1c50",
+  "snapshot": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-source-fd25848-20261104",
+  "manifest_sha256": "380305bcaaaec4377274267aa9c6ce8e8aa92c6b9121dcee5bb3f1afbc8ff82e",
+  "helper_sha256": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/job.sh": "4753c6eebf99c93c891d181c54fa544f8df1a44d98737f66e7d970ca1f322582",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/launch.sh": "06221b6b7f6dce71fff75ab6db9b84b50a73cbf59d7f37e822467011afe5572d",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/spec.json": "ef76b0806ad17b774f67426d598f33b08449a83e9b80fc20675b523ab65a3458",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/openssl-dev/dependency.sha256": "77e57ae68f4486284dfa7e626e3713e0fe600597f8d89195cb16fedc85d82a9d",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+  }
+}

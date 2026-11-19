@@ -1,0 +1,64 @@
+{
+ "book_s": 675,
+ "budget_gib": 1.0,
+ "decision_rule": "One predeclared frozen trace tests prospective native capture and scoped planning-context visibility. Stop after its terminal receipt; errors and partials remain UNKNOWN. Descriptive single-judge diagnosis only; no prevalence, accuracy, faithfulness, crosswalk validation or causal fan-out conclusion.",
+ "declared_shape": "quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 900,
+ "first_progress_s": 720,
+ "gib": 48,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-FM2-ADAMAST-WIRE",
+ "id": "vb-fm2-wire-20261118",
+ "keep": [
+  "SOURCE.sha256",
+  "KERNEL.sha256",
+  "model.sha256",
+  "spec.json",
+  "code/**",
+  "inputs/**",
+  "out/**",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/packet/code/launch.sh",
+  "sha256": "0aaee9de675bab10d51518451fd9b0d39639a25a96878ffcd885a1b35833ed03"
+ },
+ "min_window_s": 600,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [
+  18712
+ ],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:10: untestable prose prerequisite: 'Require a real planning-context canary before calling this source wired. Descriptive single-judge code prevalence grants'"
+ ],
+ "published_at": "2026-11-18T16:55:43Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/packet/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T16:55:43Z",
+  "session": "01a1ef7a-285e-7a23-9322-0d8eea1ed72c",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/packet/out/results.jsonl",
+ "resumable": true,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/packet",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/packet/code/pilot.py smoke",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/packet/STOP",
+ "unit_key": "unit_id",
+ "verdict_by": "agent",
+ "width_justification": "One synchronous judge and one CPU llama-server with a width capped by the approved quarter grant.",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/packet"
+}

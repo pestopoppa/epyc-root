@@ -1,0 +1,23 @@
+{
+ "id": "cafe4-rewind-native-r2-20261107",
+ "owner": "operator-adhoc-ops-20261105",
+ "kind": "compute",
+ "draft": true,
+ "published": false,
+ "note": "DRAFT row spec, never published. launcher/result_path are placeholders until the owner builds the launcher and seals SOURCE.sha256; fields follow spec.json of c8-decode-x-sweep-20261107-r2.",
+ "lane": "cpu",
+ "shape": "cpu_quarter",
+ "regions": "one quarter",
+ "ram_gib": 48,
+ "estimate_s": 2700,
+ "first_progress_s": 900,
+ "handoff_task": "speculative-decoding.md:CAFE-4",
+ "inputs": [
+  "rewind candidate exe sha256 84921a68...54bd (cafe4-v10-mtp-rollback-rewind-build-20261104)",
+  "v3 rollback exe f8ad111b...c1b",
+  "lifecycle exe ded82680...cbc"
+ ],
+ "why": "The only native terminal (cafe4-v10-native-rollback-fault-20261104) was UNKNOWN: nonfault max error 1.78499 exceeded tolerance 1.63499 although fault witness logs were fine. The tolerance, not the harness, is unresolved.",
+ "decision_rule": "Unit 1: same-backend numerical floor = 3 identical off-mode runs of the one frozen prompt, floor = max pairwise error. Unit 2: observe/strict-partial-accept replay vs off, PASS iff error <= 2x floor. Unit 3: fault injection must FAIL (error > 10x floor), else the control is vacuous = UNKNOWN. The tolerance is derived from unit 1 and written before units 2-3. Stop-on-futility if floor itself > 1.0 (instrument unusable). Diagnostic, futility-only; box closes only on PASS plus fault-FAIL.",
+ "width_justification": "one prompt, sequential units."
+}

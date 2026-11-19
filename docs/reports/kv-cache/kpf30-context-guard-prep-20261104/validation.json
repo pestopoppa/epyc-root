@@ -1,0 +1,9 @@
+{
+  "git_apply_check": "PASS",
+  "cpp11_warning_clean_compile": "PASS",
+  "compiled_admission_controls": "PASS",
+  "consumer_refuses_both_markers": "PASS",
+  "guard_precedes_multimodal_work_and_model_loading": "PASS",
+  "native_build_or_runtime": "NOT RUN",
+  "impact": "UNKNOWN; do not apply"
+}

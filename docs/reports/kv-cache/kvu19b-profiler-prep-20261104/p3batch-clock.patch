@@ -1,0 +1,62 @@
+--- a/p3batch.cpp
++++ b/p3batch.cpp
+@@ -5,6 +5,10 @@
+ //   first_draft: draft length of sequence 0 (uneven verify batches, e.g. 1 = one sequence decodes, the others verify)
+ #include "llama.h"
+ #include "ggml.h"
++#include <hsa/hsa.h>
++#include <dlfcn.h>
++#include <time.h>
++#include <cinttypes>
+ #include <set>
+ #include <algorithm>
+ #include <chrono>
+@@ -24,6 +28,32 @@
+     return false;
+ }
+ 
++// Diagnostic only. HSA and rocprof timestamp-domain equivalence must be proven
++// by a separate calibration before using these marks to filter kernel records.
++using p3_hsa_get_info = hsa_status_t (*)(hsa_system_info_t, void *);
++static p3_hsa_get_info p3_hsa_clock = nullptr;
++static uint64_t p3_hsa_frequency = 0;
++static void p3_clock_init() {
++    void * lib = dlopen("libhsa-runtime64.so.1", RTLD_NOW | RTLD_NOLOAD);
++    if (!lib) { fprintf(stderr, "P3_CLOCK_ERROR no loaded HSA runtime\n"); exit(2); }
++    p3_hsa_clock = reinterpret_cast<p3_hsa_get_info>(dlsym(lib, "hsa_system_get_info"));
++    if (!p3_hsa_clock || p3_hsa_clock(HSA_SYSTEM_INFO_TIMESTAMP_FREQUENCY, &p3_hsa_frequency) != HSA_STATUS_SUCCESS || !p3_hsa_frequency) {
++        fprintf(stderr, "P3_CLOCK_ERROR HSA clock unavailable\n"); exit(2);
++    }
++}
++static void p3_clock_mark(const char * phase, int step) {
++    struct timespec before {}, after {};
++    uint64_t tick = 0;
++    if (clock_gettime(CLOCK_MONOTONIC, &before) ||
++        p3_hsa_clock(HSA_SYSTEM_INFO_TIMESTAMP, &tick) != HSA_STATUS_SUCCESS ||
++        clock_gettime(CLOCK_MONOTONIC, &after)) {
++        fprintf(stderr, "P3_CLOCK_ERROR read failed\n"); exit(2);
++    }
++    const uint64_t lo = uint64_t(before.tv_sec)*1000000000ull + before.tv_nsec;
++    const uint64_t hi = uint64_t(after.tv_sec)*1000000000ull + after.tv_nsec;
++    fprintf(stderr, "P3_CLOCK phase=%s step=%d hsa_tick=%" PRIu64 " hsa_hz=%" PRIu64 " mono_before_ns=%" PRIu64 " mono_after_ns=%" PRIu64 "\n", phase, step, tick, p3_hsa_frequency, lo, hi);
++}
++
+ int main(int argc, char ** argv) {
+     if (argc < 7) { fprintf(stderr, "usage: p3batch <model> <n_own> <n_act> <n_steps> <draft> <kvu> [ctk] [first_draft]\n"); return 1; }
+     const char * path = argv[1];
+@@ -96,8 +126,14 @@
+         pos += 1;
+     };
+     for (int i = 0; i < 5; ++i) step();
++    const bool profile_clock = getenv("P3_PROFILE_CLOCK") && atoi(getenv("P3_PROFILE_CLOCK")) != 0;
++    if (profile_clock) p3_clock_init();
+     const auto t0 = std::chrono::high_resolution_clock::now();
+-    for (int i = 0; i < n_steps; ++i) step();
++    for (int i = 0; i < n_steps; ++i) {
++        if (profile_clock) p3_clock_mark("begin", i);
++        step();
++        if (profile_clock) p3_clock_mark("end", i);
++    }
+     const auto t1 = std::chrono::high_resolution_clock::now();
+     if (print_hint) {
+         printf("step FA hints:"); for (int h : g_hints) printf(" %d", h); printf("\n");

@@ -1,0 +1,13 @@
+{
+  "schema": "kvu19.p5.offline-controls.v1",
+  "test_command": "python3 -m unittest -v test_job test_full_failure test_p3_lifecycle test_private_lock",
+  "passed": 19,
+  "failed": 0,
+  "bash_n": "pass",
+  "source_sha256_manifest": "pass",
+  "region_lock_input_manifest": "pass",
+  "model_inference": false,
+  "native_qualification": "not run",
+  "operator_disk_floor_gib": 150,
+  "source_manifest_sha256": "b618bc031562455e6b1eab14d730943faa8400caa1fddf490692a68a42c8367a"
+}

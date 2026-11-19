@@ -57,6 +57,24 @@ _NAV_BLOCK_RE = re.compile(r"<nav\b.*?</nav>", re.DOTALL | re.IGNORECASE)
 _PORT_8000_RE = re.compile(r":8000\s*/\s*dashboard|:\$\{?8000|8000/dashboard")
 
 
+def _canon(path: str) -> str:
+    """The hub strips one trailing slash before routing (``server.py`` do_GET:
+    ``parsed.path.rstrip("/") or "/"``), so ``/x/`` and ``/x`` are the same route.
+    A directory-style page (relative asset links) MUST be linked WITH the slash, or
+    ``styles.css`` resolves against ``/``; the registry therefore carries the slash
+    and the comparison must not."""
+    return path.rstrip("/") or "/"
+
+
+def _standalone_snapshot_routes() -> set:
+    """Routes of registry rows declared ``static-snapshot``: a published
+    publication site (epyc-web) served verbatim. It is public-facing, carries its
+    own site header, and must not embed the operator nav; the registry row (which
+    the nav links FROM the other pages) is its integration."""
+    return {_canon(e["path"]) for e in _entries()
+            if (e.get("freshness") or {}).get("kind") == "static-snapshot"}
+
+
 def _registry() -> dict:
     return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
 
@@ -127,11 +145,12 @@ class PageRegistryBidirectionalTest(unittest.TestCase):
     HUB_PORT = 8100
 
     def test_every_hub_page_has_a_registry_entry(self):
-        by_path = {e["path"]: e for e in _entries() if e["port"] == self.HUB_PORT}
+        by_path = {_canon(e["path"]): e for e in _entries()
+                   if e["port"] == self.HUB_PORT}
         for route in server.HTML_ROUTES:
             with self.subTest(route=route):
                 self.assertIn(
-                    route, by_path,
+                    _canon(route), by_path,
                     f"{route} is served by the hub but is in no registry row, so "
                     "no nav can link to it")
 
@@ -141,19 +160,30 @@ class PageRegistryBidirectionalTest(unittest.TestCase):
                 continue
             with self.subTest(entry=entry["id"]):
                 self.assertIn(
-                    entry["path"], server.HTML_ROUTES,
+                    _canon(entry["path"]), {_canon(r) for r in server.HTML_ROUTES},
                     f"registry row {entry['id']!r} points at {entry['path']}, "
                     "which this hub does not serve — a nav link to a 404")
 
-    def test_the_off_hub_entries_name_a_different_port_and_owner(self):
-        """COMPLIANT-PATH CONTROL for the two checks above: the bidirectional rule
-        is scoped to port 8100 on purpose, and the registry really does carry an
-        entry outside it (the legacy :8000 page) that neither check may reject."""
-        off = [e for e in _entries() if e["port"] != self.HUB_PORT]
-        self.assertTrue(off, "the directory has stopped describing anything but "
-                             "this hub — the cross-server case is untested")
-        for entry in off:
-            self.assertNotEqual(entry["owner_repo"], "epyc-root", entry["id"])
+    def test_the_retired_orchestrator_page_has_no_registry_row(self):
+        """Parity cutover: the :8000/dashboard page is retired (the orchestrator
+        redirects it to the hub). A row pointing at it would be a nav link into a
+        redirect. Its data routes (/dashboard/api, /dashboard/events) stay, but
+        they are not pages and never had rows."""
+        for entry in _entries():
+            with self.subTest(entry=entry["id"]):
+                self.assertFalse(
+                    entry["port"] == 8000 and entry["path"].rstrip("/") == "/dashboard",
+                    "the retired :8000/dashboard page is still in the registry")
+                self.assertNotEqual(entry["id"], "orchestrator-legacy")
+
+    def test_the_hub_scope_of_the_bidirectional_rule_is_explicit(self):
+        """With the legacy row gone every row is on the hub. The bidirectional rule
+        stays scoped to the hub port ON PURPOSE so a future cross-server row (a
+        page another process serves) is not rejected as a 404; this control
+        exercises that scoping against a synthetic off-hub row."""
+        rows = [{"id": "x", "port": 9999, "path": "/elsewhere", "owner_repo": "other"}]
+        hub_paths = {_canon(e["path"]) for e in rows if e["port"] == self.HUB_PORT}
+        self.assertEqual(hub_paths, set())
 
     def test_the_dashboards_route_is_registered_and_bound(self):
         src = panels.source("dashboards")
@@ -168,6 +198,13 @@ class PageRegistryBidirectionalTest(unittest.TestCase):
 # --------------------------------------------------------------------------- #
 def _page_paths() -> dict:
     return {route: Path(path) for route, path in server.HTML_ROUTES.items()}
+
+
+def _nav_adopting_paths() -> dict:
+    """Pages that must mount the shared nav: every hub page except the registry's
+    declared standalone static snapshots (see ``_standalone_snapshot_routes``)."""
+    skip = _standalone_snapshot_routes()
+    return {r: p for r, p in _page_paths().items() if _canon(r) not in skip}
 
 
 class SharedNavAdoptionTest(unittest.TestCase):
@@ -188,7 +225,7 @@ class SharedNavAdoptionTest(unittest.TestCase):
         self.assertGreaterEqual(len(present), 4, present)
 
     def test_every_existing_page_mounts_the_shared_nav(self):
-        for route, path in _page_paths().items():
+        for route, path in _nav_adopting_paths().items():
             with self.subTest(route=route):
                 if not path.is_file():
                     self.skipTest(f"{path.name} not written yet (RTG-47 Phase 1a "
@@ -216,7 +253,7 @@ class SharedNavAdoptionTest(unittest.TestCase):
         body are legitimate prose (the handoff board's outcome card points at the
         orchestrator dashboard in a sentence, and must keep doing so); a
         hand-built link in the NAV is the drift."""
-        for route, path in _page_paths().items():
+        for route, path in _nav_adopting_paths().items():
             with self.subTest(route=route):
                 if not path.is_file():
                     self.skipTest(f"{path.name} not written yet")
@@ -230,6 +267,16 @@ class SharedNavAdoptionTest(unittest.TestCase):
                                      f"{path.name}: the nav still contains a "
                                      "hand-authored anchor; links come from "
                                      "dashboard/registry.json")
+
+    def test_snapshot_exemption_is_exactly_the_declared_snapshots(self):
+        """Guards the exemption above against widening: only a registry row that
+        declares ``freshness.kind == static-snapshot`` may skip nav adoption, and
+        the exempt set is non-empty (/amd-ai-lab) and a subset of served pages."""
+        exempt = _standalone_snapshot_routes()
+        self.assertIn("/amd-ai-lab", exempt)
+        self.assertLessEqual(exempt, {_canon(r) for r in server.HTML_ROUTES})
+        for route in {_canon(r) for r in server.HTML_ROUTES} - exempt:
+            self.assertIn(route, {_canon(r) for r in _nav_adopting_paths()})
 
     def test_the_nav_script_is_a_real_file(self):
         self.assertTrue(NAV_JS_PATH.is_file(), NAV_JS_PATH)

@@ -1,0 +1,8 @@
+{
+  "row_id": "ni-gpu-pool-matmul-20261117-v2",
+  "publisher_exit_code": 0,
+  "status": "GPU busy; smoke queued",
+  "smoke": "PENDING",
+  "controls": "PENDING: 15 controls execute under publisher smoke grant",
+  "official_acceptance": "PENDING"
+}

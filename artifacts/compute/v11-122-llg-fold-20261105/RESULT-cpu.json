@@ -1,0 +1,26 @@
+{
+ "verdict": "PASS",
+ "kind": "cpu",
+ "arms": {
+  "nollg": {
+   "source_sha": "c061d0a126dbd13a81062030e48e95993e77c9e1",
+   "arm": "nollg",
+   "kind": "cpu",
+   "llg_matcher_strings": 0,
+   "libggml_hip": 0,
+   "inputs": "/mnt/raid0/llm/kernels/inputs/llguidance-v1.0.1-d795912/INPUTS.json",
+   "elapsed_s": 1,
+   "built": "2026-11-05T12:08:51Z"
+  },
+  "llg": {
+   "source_sha": "c061d0a126dbd13a81062030e48e95993e77c9e1",
+   "arm": "llg",
+   "kind": "cpu",
+   "llg_matcher_strings": 9,
+   "libggml_hip": 0,
+   "inputs": "/mnt/raid0/llm/kernels/inputs/llguidance-v1.0.1-d795912/INPUTS.json",
+   "elapsed_s": 185,
+   "built": "2026-11-05T12:11:57Z"
+  }
+ }
+}

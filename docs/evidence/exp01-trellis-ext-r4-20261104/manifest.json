@@ -1,0 +1,58 @@
+{
+ "decision_rule": "EXP01-EXT, operator approved extension 2026-11-04 of BRF-T4-EXP01 pilot (r3 inconclusive: IQ4_KT/Q4_K_M 0.9630 band [0.9436,0.9824]). Speed-only, IQ4_KT vs Q4_K_M only, PROXY identity Qwen3.6-35B-A3B from Q8_0 (same pinned arm shas), ik_llama.cpp reference instrument, 8 launches/arm interleaved ABAB on one CPU quarter (tg128/pp512, higher is better), fresh run-r4 output, no reuse of r3 launches. Same declared estimator and planned looks (>=2 launches/arm): stop-on-answer band wholly above 1.00; stop-on-futility band wholly below 0.95; hard cap 600 s. All speed launches must carry the keeper allocation's CPUs and native n_threads. Exploratory/decision-support: no port and no T3 gate result follow; a separately declared paired quality comparison is still required before any port.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 600,
+ "first_progress_s": 300,
+ "gib": 64,
+ "handoff_task": "quantization-and-low-bit.md:EXP01-EXT",
+ "id": "brf-exp01-trellis-ext-20261104-r4",
+ "keep": [
+  "models/**",
+  "build/**",
+  "items/**",
+  "run/**",
+  "bin/**",
+  "fixture-run/**",
+  "fixture/**",
+  "models.env",
+  "launcher.sh",
+  "build_launcher.sh",
+  "build_spec.json",
+  "pilot_spec.json",
+  "run-r3/**",
+  "launcher_r3.sh",
+  "pilot_spec_r3.json",
+  "run-r4/**",
+  "launcher_r4.sh",
+  "pilot_spec_r4.json",
+  "run-r4/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/brf-exp01/launcher_r4.sh",
+  "sha256": "38a3c18fe923711aea60a33093ed8fbe837f3c36fd0bceef880484fd3b444c80"
+ },
+ "lineage": "brf-exp01-trellis-ext",
+ "min_window_s": 600,
+ "owner": "ws58",
+ "ports": [],
+ "priority_rank": 1.0,
+ "publish_warnings": [
+  "quantization-and-low-bit.md:1143: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)"
+ ],
+ "published_at": "2026-11-04T13:08:36Z",
+ "published_from": "/mnt/raid0/llm/tmp/brf-exp01/pilot_spec_r4.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp01/run-r4/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/brf-exp01",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/brf-exp01/run-r4/STOP",
+ "window_s": 1020,
+ "workdir": "/mnt/raid0/llm/tmp/brf-exp01"
+}

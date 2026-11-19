@@ -1,0 +1,22 @@
+{
+ "decision_rule": "Full scientific result only if input/full/calibrate-summary.json exists and 24 independent A/A pairs (48 valid launches) are completed on source 49550eda5 using",
+ "estimate_s": 9000,
+ "gib": 600,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:CH-26b",
+ "id": "akagg-ch26b-1017-c2-r2-20261101",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg-ch26b-r2-20261101/launcher.sh"
+ },
+ "lineage": "akagg-ch26b-1017-c2",
+ "min_window_s": 8000,
+ "owner": "handoff-akagg",
+ "priority_rank": 20.0,
+ "published_at": "2026-11-02T03:36:03Z",
+ "regions": "0-95",
+ "schema": "epyc.row.v3",
+ "shape": "quiet-host",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg-ch26b-r2-20261101/STOP",
+ "supersedes": "akagg-ch26b-1017-c2-20261101",
+ "window_s": 11100
+}

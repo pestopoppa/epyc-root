@@ -1,0 +1,161 @@
+{
+ "claim_combined": {
+  "FLASH_ATTN_EXT": {
+   "not_supported": 2229,
+   "ok": 2978
+  },
+  "MUL_MAT": {
+   "all_fail_q4_K": true,
+   "fail": 25,
+   "not_supported": 326,
+   "ok": 1120
+  },
+  "MUL_MAT_ID_ok": 815
+ },
+ "claim_combined_matches": true,
+ "combined_ops_reparsed": {
+  "FLASH_ATTN_EXT": {
+   "counts": {
+    "not_supported": 2229,
+    "ok": 2978
+   },
+   "fail_types": {},
+   "n": 5207,
+   "native_rc": 0
+  },
+  "MUL_MAT": {
+   "counts": {
+    "fail": 25,
+    "not_supported": 326,
+    "ok": 1120
+   },
+   "fail_types": {
+    "q4_K": 25
+   },
+   "n": 1471,
+   "native_rc": 1
+  },
+  "MUL_MAT_ID": {
+   "counts": {
+    "ok": 815
+   },
+   "fail_types": {},
+   "n": 815,
+   "native_rc": 0
+  }
+ },
+ "predicates": {
+  "combined": {
+   "rc": 0,
+   "tail": ""
+  },
+  "diag-validation": {
+   "rc": 0,
+   "tail": "st_nonzero_transport_refused (__main__.Controls.test_nonzero_transport_refused) ... ok\ntest_retained (__main__.Controls.test_retained) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.776s\n\nOK"
+  },
+  "fp64-probe": {
+   "rc": 0,
+   "tail": ""
+  },
+  "mmqfix(build)": {
+   "rc": 0,
+   "tail": ""
+  },
+  "mmvq-fix": {
+   "rc": 0,
+   "tail": ""
+  },
+  "q4full": {
+   "rc": 1,
+   "tail": "INCOMPLETE [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex-c6-q4full-20261102/RESULT.json'"
+  },
+  "q4k-fix": {
+   "rc": 0,
+   "tail": ""
+  },
+  "q4k-hardened": {
+   "rc": 0,
+   "tail": ""
+  },
+  "q4k-probe": {
+   "rc": 1,
+   "tail": "INCOMPLETE [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/codex-c6-q4k-probe-20261102/RESULT.json'"
+  },
+  "remain-q4k": {
+   "rc": 0,
+   "tail": ""
+  },
+  "route-probe": {
+   "rc": 0,
+   "tail": ""
+  }
+ },
+ "schema": "brf-t3/c6-reread/1",
+ "single_case_claims_match": true,
+ "single_case_reparsed": {
+  "q4_0 baseline route-probe C6 (claim 0.0086041991310414519)": [
+   {
+    "passed": false,
+    "residual": "0.0086041991310414519",
+    "tolerance": "0.0067690994136323929"
+   }
+  ],
+  "q4_0 mmvq-fix candidate (claim 0.0045127336805609736 < 0.0067690994136323929)": [
+   {
+    "passed": true,
+    "residual": "0.0045127336805609736",
+    "tolerance": "0.0067690994136323929"
+   }
+  ],
+  "q4_K fix candidate (claim 0.0034182816219632496 < 0.0056649673550878913)": [
+   {
+    "passed": true,
+    "residual": "0.0034182816219632496",
+    "tolerance": "0.0056649673550878913"
+   }
+  ],
+  "q4_K ordinal 7045 C5/C6 hardened (claim 0.0087896484419647033 vs 0.0056649673550878913)": [
+   [
+    {
+     "passed": false,
+     "residual": "0.0087896484419647033",
+     "tolerance": "0.0056649673550878913"
+    }
+   ],
+   [
+    {
+     "passed": false,
+     "residual": "0.0087896484419647033",
+     "tolerance": "0.0056649673550878913"
+    }
+   ]
+  ],
+  "q4_K remaining n=5 ordinal 7047 baseline (claim 0.0086928737870828558 vs 0.0059480931310319316)": [
+   {
+    "passed": false,
+    "residual": "0.0086928737870828558",
+    "tolerance": "0.0059480931310319316"
+   }
+  ],
+  "q4_K remaining n=5 ordinal 7047 candidate": [
+   {
+    "passed": false,
+    "residual": "0.0086928737870828558",
+    "tolerance": "0.0059480931310319316"
+   }
+  ]
+ },
+ "verdict": {
+  "combined": "REPRODUCES",
+  "diag-validation": "REPRODUCES",
+  "fp64-probe": "REPRODUCES",
+  "mmqfix(build)": "REPRODUCES",
+  "mmvq-fix": "REPRODUCES",
+  "q4full": "NOT-RUN (no RESULT artifact)",
+  "q4k-fix": "REPRODUCES",
+  "q4k-hardened": "REPRODUCES",
+  "q4k-probe": "NOT-RUN (no RESULT artifact)",
+  "remain-q4k": "REPRODUCES",
+  "route-probe": "REPRODUCES"
+ }
+}

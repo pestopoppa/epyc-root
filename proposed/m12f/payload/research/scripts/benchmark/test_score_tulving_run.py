@@ -8,7 +8,8 @@ import pytest
 
 import score_tulving_run
 from score_tulving_run import (
-    SCORER_VERSION,
+    LEGACY_SCORER_VERSION as SCORER_VERSION,
+    CAS_V2,
     GoldIndex,
     _load_belief_capture,
     chronological_tau,
@@ -47,7 +48,8 @@ def _recorded(payload: dict, chapters: int = 20) -> dict:
 
 def _score(payload: dict, prompts: dict, chapters: int = 20) -> dict:
     """Metric tests: rows recorded as ``chapters``, graded against that gold set."""
-    return score_result_payload(_recorded(payload, chapters), _gold(prompts, chapters))
+    return score_result_payload(_recorded(payload, chapters), _gold(prompts, chapters),
+                                cas_definition=CAS_V2)
 
 
 def _gold(prompts: dict, chapters: int = 20) -> GoldIndex:
@@ -474,7 +476,7 @@ def _run_main(tmp_path, monkeypatch, prompt_text, arm):
     monkeypatch.setattr(score_tulving_run, "_load_belief_capture",
                         lambda: pytest.fail("capture must not load on an arm mismatch"))
     monkeypatch.setattr("sys.argv", [
-        "score_tulving_run.py", str(result), "--out-json", str(tmp_path / "s.json"),
+        "score_tulving_run.py", str(result), "--cas-definition", CAS_V2, "--out-json", str(tmp_path / "s.json"),
         "--belief-measurements", "--arm", arm, "--variant", "Udefault_Sdefault_seed0",
         "--chapters", "20", "--run-id", "r1"])
     return score_tulving_run.main()
@@ -493,7 +495,7 @@ def test_arm_without_recorded_prompts_is_refused(tmp_path, monkeypatch):
     monkeypatch.setattr(score_tulving_run, "build_prompt_index",
                         lambda chapters, variant=VARIANT: _gold(prompts, chapters))
     monkeypatch.setattr("sys.argv", [
-        "score_tulving_run.py", str(result), "--out-json", str(tmp_path / "s.json"),
+        "score_tulving_run.py", str(result), "--cas-definition", CAS_V2, "--out-json", str(tmp_path / "s.json"),
         "--belief-measurements", "--arm", "full", "--variant", VARIANT, "--chapters", "20",
         "--run-id", "r1"])
     with pytest.raises(SystemExit, match="unrecorded"):
@@ -509,7 +511,7 @@ def test_matching_arm_emits_through_main(tmp_path, monkeypatch):
                         lambda chapters, variant=VARIANT: _gold(prompts, chapters))
     monkeypatch.setenv("EPYC_ROOT", _root_capture_module())
     monkeypatch.setattr("sys.argv", [
-        "score_tulving_run.py", str(result), "--out-json", str(tmp_path / "s.json"),
+        "score_tulving_run.py", str(result), "--cas-definition", CAS_V2, "--out-json", str(tmp_path / "s.json"),
         "--belief-measurements", "--arm", "none", "--variant", "Udefault_Sdefault_seed0",
         "--chapters", "20", "--run-id", "r1"])
     assert score_tulving_run.main() == 0
@@ -536,7 +538,7 @@ def test_cli_comparison_gate_precedes_outputs_and_capture(tmp_path, monkeypatch,
         pytest.fail("comparison refusal must precede capture")
     if mismatch:
         monkeypatch.setattr(score_tulving_run, "_load_belief_capture", capture_forbidden)
-    argv = ["score_tulving_run.py", str(source), "--chapters", "20", "--compare-srs-to",
+    argv = ["score_tulving_run.py", str(source), "--cas-definition", CAS_V2, "--chapters", "20", "--compare-srs-to",
             str(other), "--out-json", str(out), "--out-md", str(md)]
     if mismatch:
         argv += ["--belief-measurements", "--arm", "none"]
@@ -553,7 +555,7 @@ def test_cli_comparison_gate_precedes_outputs_and_capture(tmp_path, monkeypatch,
         assert "Cross-book SRS comparison requires" in md.read_text()
 
 
-# PROPOSED M12f controls; no source application or native event authorized by preparation.
+# OP-M12F v3 controls; SC67 admission remains separate.
 def test_versioned_cas_excludes_short_gold_and_keeps_partial_retrieval_zero():
     from score_tulving_run import versioned_epyc_cas
     rows = [{"nb_gt": 0}, {"nb_gt": 1},
@@ -594,7 +596,7 @@ def test_versioned_cas_refuses_non_native_gold_denominator(count):
         versioned_epyc_cas([], [{"nb_gt": count}])
 
 
-def test_versioned_payload_preserves_default_v2_and_refuses_cross_version_srs():
+def test_versioned_payload_defaults_to_approved_v3_and_refuses_cross_version_srs():
     from score_tulving_run import CAS_V2, CAS_V3
     from tulving_srs_comparison import require_comparable_srs
     payload, prompts = _m12e_fixture()
@@ -602,6 +604,7 @@ def test_versioned_payload_preserves_default_v2_and_refuses_cross_version_srs():
     explicit = score_result_payload(payload, _gold(prompts, 20), cas_definition=CAS_V2)
     proposed = score_result_payload(payload, _gold(prompts, 20), cas_definition=CAS_V3)
     assert native == explicit
+    assert score_result_payload(payload, _gold(prompts, 20)) == proposed
     assert native["summary"]["scorer_version"] == 2
     assert proposed["summary"]["scorer_version"] == 3
     assert proposed["per_question"] == native["per_question"]
@@ -611,10 +614,12 @@ def test_versioned_payload_preserves_default_v2_and_refuses_cross_version_srs():
         require_comparable_srs(native["summary"], proposed["summary"])
 
 
-def test_versioned_cas_sc67_refusal_precedes_gold_outputs_and_writer(tmp_path, monkeypatch):
+@pytest.mark.parametrize("explicit", [False, True])
+def test_versioned_cas_sc67_refusal_precedes_gold_outputs_and_writer(tmp_path, monkeypatch, explicit):
     from score_tulving_run import CAS_V3
     monkeypatch.setattr("sys.argv", ["score_tulving_run.py", str(tmp_path / "absent-raw.json"),
-        "--cas-definition", CAS_V3, "--belief-measurements", "--arm", "none", "--out-json", str(tmp_path / "out.json")])
+        *(["--cas-definition", CAS_V3] if explicit else []),
+        "--belief-measurements", "--arm", "none", "--out-json", str(tmp_path / "out.json")])
     monkeypatch.setattr(score_tulving_run, "build_prompt_index", lambda *a: pytest.fail("gold must not load"))
     with pytest.raises(SystemExit, match="not admitted"):
         score_tulving_run.main()
@@ -641,3 +646,19 @@ def test_versioned_cas_refuses_invalid_latest_f1(f1):
     from score_tulving_run import versioned_epyc_cas
     with pytest.raises(ValueError, match="F1"):
         versioned_epyc_cas([{"f1": f1}], [])
+
+
+def test_cli_defaults_to_v3_with_population_counts(tmp_path, monkeypatch):
+    from score_tulving_run import CAS_V3
+    payload, prompts = _m12e_fixture()
+    _recorded(payload)
+    source, out = tmp_path / "raw.json", tmp_path / "score.json"
+    source.write_text(json.dumps(payload))
+    monkeypatch.setattr(score_tulving_run, "build_prompt_index", lambda *a: _gold(prompts, 20))
+    monkeypatch.setattr("sys.argv", ["score_tulving_run.py", str(source), "--out-json", str(out)])
+    assert score_tulving_run.main() == 0
+    scored = json.loads(out.read_text())
+    assert scored == score_result_payload(payload, _gold(prompts, 20))
+    assert scored["summary"]["scorer_version"] == 3
+    assert scored["summary"]["cas_definition"] == CAS_V3
+    assert "chronological_eligible_partial_coverage" in scored["summary"]

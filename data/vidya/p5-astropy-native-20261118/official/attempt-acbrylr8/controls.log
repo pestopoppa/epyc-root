@@ -1,0 +1,9 @@
+test_cleanup_failure_cannot_pass (test_native_outcome.NativeOutcome.test_cleanup_failure_cannot_pass) ... ok
+test_full_native_success (test_native_outcome.NativeOutcome.test_full_native_success) ... ok
+test_smoke_runs_full_controls (test_native_outcome.NativeOutcome.test_smoke_runs_full_controls) ... ok
+test_wrong_negative_cannot_pass_full_or_smoke (test_native_outcome.NativeOutcome.test_wrong_negative_cannot_pass_full_or_smoke) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.006s
+
+OK

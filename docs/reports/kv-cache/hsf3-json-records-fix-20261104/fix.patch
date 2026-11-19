@@ -1,0 +1,10 @@
+--- a/docs/reports/kv-cache/hsf3-census-r3-row-20261104/census.py
++++ b/docs/reports/kv-cache/hsf3-census-r3-row-20261104/census.py
+@@ -56,6 +56,7 @@
+                 if not isinstance(row, dict):
+                     total["invalid_json"] += 1
+                     continue
++                total["json_records"] += 1
+                 et = row.get("event_type") or row.get("event")
+                 if not isinstance(et, str) or et not in EVENTS:
+                     continue

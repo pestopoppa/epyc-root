@@ -10,8 +10,10 @@ import sys
 HERE = Path(__file__).absolute().parent
 
 
-def guard(repo):
-    result = subprocess.run(['/usr/bin/python3', '-I', str(HERE / 'gitnexus-guard.py'), '--repo', repo])
+def guard(repo, analyze_args):
+    # The guard sees the exact analyze argv this writer execs; `--workers 1`
+    # (and only that) selects one-quarter admission.
+    result = subprocess.run(['/usr/bin/python3', '-I', str(HERE / 'gitnexus-guard.py'), '--repo', repo, '--', *analyze_args])
     if result.returncode:
         raise Refusal('CPU admission refused')
 
@@ -60,13 +62,13 @@ def main():
         if len(sys.argv) < 4 or sys.argv[1] != '--repo' or sys.argv[2] not in {'root', 'app'} or sys.argv[3] != '--':
             raise Refusal('usage: gitnexus-writer.py --repo root|app -- [analyze arguments]')
         repo = sys.argv[2]
-        guard(repo)  # Refusal here cannot create a writer lock or invoke downstream tools.
+        guard(repo, sys.argv[4:])  # Refusal here cannot create a writer lock or invoke downstream tools.
         try:
             fd = writer_lock(repo)
         except BlockingIOError:
             print('gitnexus analyze writer lock is already held; wait for it to finish.', file=sys.stderr)
             return 75
-        guard(repo)  # Admission remains point-in-time, not parent supervision.
+        guard(repo, sys.argv[4:])  # Admission remains point-in-time, not parent supervision.
         if repo == 'root':
             patched = subprocess.run(['node', str(HERE / 'gitnexus-patch.js')], pass_fds=(fd,))
             if patched.returncode == 64:

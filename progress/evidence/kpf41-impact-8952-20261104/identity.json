@@ -1,0 +1,19 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "tree": "8772563484cd449f15188aaf6db89e84bdb6b025",
+  "detached": true,
+  "source_worktree": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-impact-scan/source",
+  "tracked_files": 3356,
+  "sha256": {
+    "ggml/src/ggml-cuda/fattn.cu": "695a1ba3d9098b0f1b6c7bc5a4304642410b6943009d679a7c51b0cc864b2ab9",
+    "ggml/src/ggml-cuda/fattn-vec.cuh": "524af4e757dc42f8262240af6ad517438b76ba827a7569194b145f72e626ce4d",
+    "tests/test-kv-rows-vec-direct.cpp": "db95cfd3bba68533d44e47654e9a2fa20940f648252487f165feaa34b050288f",
+    "scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d"
+  },
+  "packet_sha256": {
+    "job.py": "ec78320365f82c00961052b16b05420ae06a782df2e16c7c1efa206d86b17887",
+    "gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "spec.json": "49b5ee68f20021243a88e04f237e223edd93b1940b2ca296b008d76cb8c8b4b0",
+    "README.md": "3b33b281b9caaaedfda30ee0e7a162023db1a78be506e7d0291937a6645257bc"
+  }
+}

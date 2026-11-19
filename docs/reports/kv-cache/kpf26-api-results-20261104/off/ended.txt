@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T07:39:22Z reason=complete
+job_id=rtg58-kpf26-api-off-diag-20261102
+owner=rtg58-codex
+step=job-run
+estimated_wall_s=1500
+started=2026-11-04T07:36:21Z
+regions=0-23

@@ -1,0 +1,7 @@
+{
+  "original_sha256": "765536d67235df8823ba834d2c6fa35662cde45f0dd8e42a2c27e25dd295e58d",
+  "repaired_sha256": "ec694ebb267ca1f4b36fabfcdac64c88088b0ed173799c2f77122563be088b41",
+  "original": "/mnt/raid0/llm/tmp/refactor-a4a-prefix-20261031/proxy3.py",
+  "repaired": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/a4a-split-part-successor/proxy3.py",
+  "limitations": "Offline patch only, not applied to maintained source or qualified runtime."
+}

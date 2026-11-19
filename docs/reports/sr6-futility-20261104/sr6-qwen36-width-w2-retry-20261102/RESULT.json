@@ -1,0 +1,1 @@
+{"decision":"UNKNOWN","error":"cannot prove cgroup drained","error_type":"DrainError","gpu_quiet":false,"limitations":["no gpu-quiet claim: may share the host with a GPU job (pinned GPU host threads); indicative only, per operator co-residency policy 2026-10-22"],"schema":"sr6.window-result.v1","state":"PARTIAL","verdict":null,"window":"w2"}

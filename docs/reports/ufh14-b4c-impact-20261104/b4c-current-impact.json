@@ -1,0 +1,665 @@
+{
+  "target": {
+    "id": "Method:src/prompt_builders/builder.py:PromptBuilder.build_root_lm_prompt#9",
+    "name": "build_root_lm_prompt",
+    "type": "Method",
+    "filePath": "src/prompt_builders/builder.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 31,
+  "risk": "CRITICAL",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 4,
+    "processes_affected": 5,
+    "modules_affected": 8
+  },
+  "byDepthCounts": {
+    "1": 4,
+    "2": 16,
+    "3": 11
+  },
+  "affected_processes": [
+    {
+      "name": "main",
+      "type": "Function",
+      "filePath": "scripts/autopilot/recover_multitier_t2_baseline.py",
+      "affected_process_count": 12,
+      "total_hits": 21,
+      "earliest_broken_step": 1
+    },
+    {
+      "name": "run_repetition",
+      "type": "Function",
+      "filePath": "scripts/benchmark/run_e8_quality_baseline_reseed.py",
+      "affected_process_count": 7,
+      "total_hits": 12,
+      "earliest_broken_step": 1
+    },
+    {
+      "name": "run",
+      "type": "Function",
+      "filePath": "src/graph/nodes.py",
+      "affected_process_count": 3,
+      "total_hits": 5,
+      "earliest_broken_step": 1
+    },
+    {
+      "name": "run",
+      "type": "Function",
+      "filePath": "src/graph/nodes.py",
+      "affected_process_count": 3,
+      "total_hits": 5,
+      "earliest_broken_step": 1
+    },
+    {
+      "name": "main",
+      "type": "Function",
+      "filePath": "scripts/analysis/token_audit.py",
+      "affected_process_count": 1,
+      "total_hits": 1,
+      "earliest_broken_step": 1
+    }
+  ],
+  "affected_modules": [
+    {
+      "name": "Graph",
+      "hits": 9,
+      "impact": "indirect"
+    },
+    {
+      "name": "Autopilot",
+      "hits": 8,
+      "impact": "direct"
+    },
+    {
+      "name": "Integration",
+      "hits": 4,
+      "impact": "direct"
+    },
+    {
+      "name": "Analysis",
+      "hits": 3,
+      "impact": "direct"
+    },
+    {
+      "name": "Unit",
+      "hits": 2,
+      "impact": "indirect"
+    },
+    {
+      "name": "Benchmark",
+      "hits": 1,
+      "impact": "indirect"
+    },
+    {
+      "name": "Tasks",
+      "hits": 1,
+      "impact": "indirect"
+    },
+    {
+      "name": "Prompt_builders",
+      "hits": 1,
+      "impact": "direct"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Method:scripts/autopilot/eval_tower.py:EvalTower._count_instruction_tokens#1",
+        "name": "_count_instruction_tokens",
+        "filePath": "scripts/autopilot/eval_tower.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_70_main",
+            "label": "Main → _resolve_tools",
+            "processType": "cross_community",
+            "step": 3
+          },
+          {
+            "id": "proc_165_main",
+            "label": "Main → _instruction_role_from_route",
+            "processType": "cross_community",
+            "step": 3
+          },
+          {
+            "id": "proc_71_main",
+            "label": "Main → _resolve_rules",
+            "processType": "cross_community",
+            "step": 3
+          },
+          {
+            "id": "proc_255_run_repetition",
+            "label": "Run_repetition → _instruction_role_from_route",
+            "processType": "cross_community",
+            "step": 3
+          },
+          {
+            "id": "proc_145_run_repetition",
+            "label": "Run_repetition → _resolve_tools",
+            "processType": "cross_community",
+            "step": 3
+          }
+        ]
+      },
+      {
+        "depth": 1,
+        "id": "Function:scripts/analysis/token_audit.py:runtime_scaffold_breakdown",
+        "name": "runtime_scaffold_breakdown",
+        "filePath": "scripts/analysis/token_audit.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/graph/helpers.py:_execute_turn",
+        "name": "_execute_turn",
+        "filePath": "src/graph/helpers.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_218_run",
+            "label": "Run → _resolve_rules",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_214_run",
+            "label": "Run → _resolve_tools",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_217_run",
+            "label": "Run → _resolve_tools",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_215_run",
+            "label": "Run → _resolve_rules",
+            "processType": "cross_community",
+            "step": 2
+          }
+        ]
+      },
+      {
+        "depth": 1,
+        "id": "Function:src/prompt_builders/builder.py:build_root_lm_prompt",
+        "name": "build_root_lm_prompt",
+        "filePath": "src/prompt_builders/builder.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "2": [
+      {
+        "depth": 2,
+        "id": "Function:tests/unit/toc_mp2i_prompt_capture.py:capture",
+        "name": "capture",
+        "filePath": "tests/unit/toc_mp2i_prompt_capture.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:scripts/analysis/token_audit.py:load_recent_ap16_observations",
+        "name": "load_recent_ap16_observations",
+        "filePath": "scripts/analysis/token_audit.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:scripts/analysis/token_audit.py:main",
+        "name": "main",
+        "filePath": "scripts/analysis/token_audit.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_257_main",
+            "label": "Main → Word_count",
+            "processType": "intra_community",
+            "step": 1
+          }
+        ]
+      },
+      {
+        "depth": 2,
+        "id": "Function:src/graph/langgraph/nodes.py:frontdoor_node",
+        "name": "frontdoor_node",
+        "filePath": "src/graph/langgraph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:src/graph/langgraph/nodes.py:worker_node",
+        "name": "worker_node",
+        "filePath": "src/graph/langgraph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:src/graph/langgraph/nodes.py:coder_node",
+        "name": "coder_node",
+        "filePath": "src/graph/langgraph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:src/graph/langgraph/nodes.py:coder_escalation_node",
+        "name": "coder_escalation_node",
+        "filePath": "src/graph/langgraph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:src/graph/langgraph/nodes.py:ingest_node",
+        "name": "ingest_node",
+        "filePath": "src/graph/langgraph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:src/graph/langgraph/nodes.py:architect_node",
+        "name": "architect_node",
+        "filePath": "src/graph/langgraph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Method:scripts/autopilot/eval_tower.py:EvalTower._aggregate#2",
+        "name": "_aggregate",
+        "filePath": "scripts/autopilot/eval_tower.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_256_run_repetition",
+            "label": "Run_repetition → _row_disposition",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_165_main",
+            "label": "Main → _instruction_role_from_route",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_255_run_repetition",
+            "label": "Run_repetition → _instruction_role_from_route",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_284_main",
+            "label": "Main → _disposition_of",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_166_main",
+            "label": "Main → _row_disposition",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_70_main",
+            "label": "Main → _resolve_tools",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_145_run_repetition",
+            "label": "Run_repetition → _resolve_tools",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_71_main",
+            "label": "Main → _resolve_rules",
+            "processType": "cross_community",
+            "step": 2
+          },
+          {
+            "id": "proc_283_main",
+            "label": "Main → _question_sidecar_status",
+            "processType": "cross_community",
+            "step": 2
+          }
+        ]
+      },
+      {
+        "depth": 2,
+        "id": "Method:src/graph/nodes.py:FrontdoorNode.run#1",
+        "name": "run",
+        "filePath": "src/graph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Method:src/graph/nodes.py:WorkerNode.run#1",
+        "name": "run",
+        "filePath": "src/graph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Method:src/graph/nodes.py:CoderNode.run#1",
+        "name": "run",
+        "filePath": "src/graph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Method:src/graph/nodes.py:CoderEscalationNode.run#1",
+        "name": "run",
+        "filePath": "src/graph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_213_run",
+            "label": "Run → From_dict",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_215_run",
+            "label": "Run → _resolve_rules",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_214_run",
+            "label": "Run → _resolve_tools",
+            "processType": "cross_community",
+            "step": 1
+          }
+        ]
+      },
+      {
+        "depth": 2,
+        "id": "Method:src/graph/nodes.py:IngestNode.run#1",
+        "name": "run",
+        "filePath": "src/graph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_218_run",
+            "label": "Run → _resolve_rules",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_217_run",
+            "label": "Run → _resolve_tools",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_216_run",
+            "label": "Run → From_dict",
+            "processType": "cross_community",
+            "step": 1
+          }
+        ]
+      },
+      {
+        "depth": 2,
+        "id": "Method:src/graph/nodes.py:ArchitectNode.run#1",
+        "name": "run",
+        "filePath": "src/graph/nodes.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "3": [
+      {
+        "depth": 3,
+        "id": "Function:scripts/autopilot/recover_multitier_t2_baseline.py:main",
+        "name": "main",
+        "filePath": "scripts/autopilot/recover_multitier_t2_baseline.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_281_main",
+            "label": "Main → _resolve_trial_id",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_166_main",
+            "label": "Main → _row_disposition",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_165_main",
+            "label": "Main → _instruction_role_from_route",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_282_main",
+            "label": "Main → Close",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_163_main",
+            "label": "Main → _base_row",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_71_main",
+            "label": "Main → _resolve_rules",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_69_main",
+            "label": "Main → _compact_host_covariates",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_283_main",
+            "label": "Main → _question_sidecar_status",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_68_main",
+            "label": "Main → _stable_question_qid",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_70_main",
+            "label": "Main → _resolve_tools",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_284_main",
+            "label": "Main → _disposition_of",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_164_main",
+            "label": "Main → Append_row",
+            "processType": "cross_community",
+            "step": 1
+          }
+        ]
+      },
+      {
+        "depth": 3,
+        "id": "Function:scripts/benchmark/run_e8_quality_baseline_reseed.py:run_repetition",
+        "name": "run_repetition",
+        "filePath": "scripts/benchmark/run_e8_quality_baseline_reseed.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": [
+          {
+            "id": "proc_145_run_repetition",
+            "label": "Run_repetition → _resolve_tools",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_143_run_repetition",
+            "label": "Run_repetition → _stable_question_qid",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_254_run_repetition",
+            "label": "Run_repetition → Append_row",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_255_run_repetition",
+            "label": "Run_repetition → _instruction_role_from_route",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_256_run_repetition",
+            "label": "Run_repetition → _row_disposition",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_144_run_repetition",
+            "label": "Run_repetition → _compact_host_covariates",
+            "processType": "cross_community",
+            "step": 1
+          },
+          {
+            "id": "proc_253_run_repetition",
+            "label": "Run_repetition → _base_row",
+            "processType": "cross_community",
+            "step": 1
+          }
+        ]
+      },
+      {
+        "depth": 3,
+        "id": "Function:scripts/tasks/run_real_suite_v1_evaltower_window.py:run_evaltower_eval",
+        "name": "run_evaltower_eval",
+        "filePath": "scripts/tasks/run_real_suite_v1_evaltower_window.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Method:scripts/autopilot/eval_tower.py:EvalTower._aggregate_decision_partitions#4",
+        "name": "_aggregate_decision_partitions",
+        "filePath": "scripts/autopilot/eval_tower.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Method:scripts/autopilot/eval_tower.py:EvalTower.eval_t0#0",
+        "name": "eval_t0",
+        "filePath": "scripts/autopilot/eval_tower.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Method:scripts/autopilot/eval_tower.py:EvalTower.eval_t3#3",
+        "name": "eval_t3",
+        "filePath": "scripts/autopilot/eval_tower.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Method:scripts/autopilot/eval_tower.py:EvalTower.eval_math_rebaseline#6",
+        "name": "eval_math_rebaseline",
+        "filePath": "scripts/autopilot/eval_tower.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Method:scripts/autopilot/eval_tower.py:EvalTower.eval_question_subset#6",
+        "name": "eval_question_subset",
+        "filePath": "scripts/autopilot/eval_tower.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Method:scripts/autopilot/eval_tower.py:EvalTower.eval_resume_incomplete#9",
+        "name": "eval_resume_incomplete",
+        "filePath": "scripts/autopilot/eval_tower.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:tests/unit/toc_mp2i_prompt_capture.py",
+        "name": "toc_mp2i_prompt_capture.py",
+        "filePath": "tests/unit/toc_mp2i_prompt_capture.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:scripts/analysis/token_audit.py",
+        "name": "token_audit.py",
+        "filePath": "scripts/analysis/token_audit.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ]
+  }
+}

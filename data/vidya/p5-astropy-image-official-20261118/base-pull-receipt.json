@@ -1,0 +1,9 @@
+{
+  "status": "COMPLETE",
+  "platform": "linux/amd64",
+  "base_ref": "swebench/sweb.eval.x86_64.astropy_1776_astropy-12907@sha256:7485c1e3c8861efd0c6a4a78b952857592e541031039000d25e9481f045dc4a3",
+  "image_id": "sha256:9b1cabf7bcd83a28469f67e3852d8e2207e90d45aa71f436bb7e600bdee8bae2",
+  "pull_log": "base-pull.log",
+  "pull_log_sha256": "18d785c1e90f345bd969ce3af63a1db3ef348deb6e48bc6d53c809edd95f4b45",
+  "inspected_utc": "2026-11-18T19:50:30.914186+00:00"
+}

@@ -1,0 +1,310 @@
+{
+  "grant_boundary": {
+    "stopfile": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf18-g3-output-supervision-20261105/STOP",
+    "end": 1793845020,
+    "checked_at": 1793844456.1694264,
+    "stop_absent": true
+  },
+  "schema": "kpf18.g3.isolated-output-supervision.v1",
+  "status": "PASS",
+  "tests": 6,
+  "controls": [
+    {
+      "case": "normal",
+      "receipt": {
+        "reason": "normal",
+        "child_rc": 0,
+        "pid": 3239009,
+        "pid_absent": true,
+        "children_after": [],
+        "samples": [
+          {
+            "monotonic": 1966928.53426239,
+            "bytes": 0,
+            "stage": "before-launch"
+          },
+          {
+            "monotonic": 1966928.534605444,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.554734906,
+            "bytes": 4096,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.574835259,
+            "bytes": 4096,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.574914159,
+            "bytes": 4096,
+            "stage": "after-drain"
+          }
+        ],
+        "cap_bytes": 32768,
+        "sample_interval_s": 0.02,
+        "observed_sampled_peak_bytes": 4096,
+        "observed_sampled_overshoot_bytes": 0,
+        "unsampled_peak": "unknown"
+      }
+    },
+    {
+      "case": "growth",
+      "receipt": {
+        "reason": "budget",
+        "child_rc": null,
+        "pid": 3239011,
+        "pid_absent": true,
+        "children_after": [],
+        "samples": [
+          {
+            "monotonic": 1966928.614218464,
+            "bytes": 0,
+            "stage": "before-launch"
+          },
+          {
+            "monotonic": 1966928.614558948,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.634679831,
+            "bytes": 32768,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.635834963,
+            "bytes": 32768,
+            "stage": "after-drain"
+          }
+        ],
+        "cap_bytes": 32768,
+        "sample_interval_s": 0.02,
+        "observed_sampled_peak_bytes": 32768,
+        "observed_sampled_overshoot_bytes": 0,
+        "unsampled_peak": "unknown"
+      }
+    },
+    {
+      "case": "stop",
+      "receipt": {
+        "reason": "STOP",
+        "child_rc": null,
+        "pid": 3239015,
+        "pid_absent": true,
+        "children_after": [],
+        "samples": [
+          {
+            "monotonic": 1966928.674283069,
+            "bytes": 0,
+            "stage": "before-launch"
+          },
+          {
+            "monotonic": 1966928.674574392,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.694674984,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.695815886,
+            "bytes": 0,
+            "stage": "after-drain"
+          }
+        ],
+        "cap_bytes": 32768,
+        "sample_interval_s": 0.02,
+        "observed_sampled_peak_bytes": 0,
+        "observed_sampled_overshoot_bytes": 0,
+        "unsampled_peak": "unknown"
+      }
+    },
+    {
+      "case": "deadline",
+      "receipt": {
+        "reason": "deadline",
+        "child_rc": null,
+        "pid": 3239017,
+        "pid_absent": true,
+        "children_after": [],
+        "samples": [
+          {
+            "monotonic": 1966928.734779368,
+            "bytes": 0,
+            "stage": "before-launch"
+          },
+          {
+            "monotonic": 1966928.735086251,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.755184153,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.775273425,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.795389088,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.81550623,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.835624503,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.855741115,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.875858027,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.89597533,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.897110312,
+            "bytes": 0,
+            "stage": "after-drain"
+          }
+        ],
+        "cap_bytes": 32768,
+        "sample_interval_s": 0.02,
+        "observed_sampled_peak_bytes": 0,
+        "observed_sampled_overshoot_bytes": 0,
+        "unsampled_peak": "unknown"
+      }
+    },
+    {
+      "case": "failure",
+      "receipt": {
+        "reason": "child-failure",
+        "child_rc": 9,
+        "pid": 3239023,
+        "pid_absent": true,
+        "children_after": [],
+        "samples": [
+          {
+            "monotonic": 1966928.936114574,
+            "bytes": 0,
+            "stage": "before-launch"
+          },
+          {
+            "monotonic": 1966928.936433297,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.956533739,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.95660648,
+            "bytes": 0,
+            "stage": "after-drain"
+          }
+        ],
+        "cap_bytes": 32768,
+        "sample_interval_s": 0.02,
+        "observed_sampled_peak_bytes": 0,
+        "observed_sampled_overshoot_bytes": 0,
+        "unsampled_peak": "unknown"
+      }
+    },
+    {
+      "case": "detached",
+      "receipt": {
+        "reason": "normal",
+        "child_rc": 0,
+        "pid": 3239025,
+        "pid_absent": true,
+        "children_after": [],
+        "samples": [
+          {
+            "monotonic": 1966928.976632552,
+            "bytes": 0,
+            "stage": "before-launch"
+          },
+          {
+            "monotonic": 1966928.976943385,
+            "bytes": 0,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966928.997053437,
+            "bytes": 4096,
+            "stage": "running"
+          },
+          {
+            "monotonic": 1966929.398446466,
+            "bytes": 4096,
+            "stage": "after-drain"
+          }
+        ],
+        "cap_bytes": 32768,
+        "sample_interval_s": 0.02,
+        "observed_sampled_peak_bytes": 4096,
+        "observed_sampled_overshoot_bytes": 0,
+        "unsampled_peak": "unknown",
+        "detached_pid": 3239026
+      }
+    }
+  ],
+  "affinity": [
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "sources": {
+    "owned_drain.py": "6cf1d4159ee768b762ba76f911cab16b675a4b115b1fff34cf6c3e35aa461ec4",
+    "complete.py": "9f50a67755a80f62597d70b466189f127bd2b10419451053f43d7d189e19eadb",
+    "output_supervision.py": "2fa92d524e39648f2b330c9adbcd225d1a00a16829aa389871b954b13d075a28",
+    "job.py": "a9b2fbe8ab0f3a8a52d4773c96183a6a6f65e9e63c3ac2ce8f3cfc453488abf3",
+    "writer.py": "b2ec6592f8b4efda8524e1050bb683f23e55dc38aa9e37b8e19483fff8e34146"
+  },
+  "scope": "New isolated reusable supervisor only; no integrated candidate, native lifecycle, filesystem quota, bounded scan latency or unsampled-peak claim."
+}

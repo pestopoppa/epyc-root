@@ -1,0 +1,22 @@
+{
+  "schema": "yarn-e1-mem-chain-pregrant-provenance/v1",
+  "status": "PASS",
+  "captured_epoch": 1793777152.3442945,
+  "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_size_bytes": 29047086048,
+  "model_pregrant_snapshot": {
+    "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "size": 29047086048,
+    "inode": 96505457,
+    "mtime_ns": 1786727071030792493,
+    "at": 1793776923.8146467
+  },
+  "image_version": "version: 10325 (9a3f1392a)",
+  "image_version_output": "/mnt/raid0/llm/tmp/yarn-e1-mem-chain-20261104/pregrant/image-version.txt",
+  "image_version_output_sha256": "ed4dbc2d1e2b2dd177817c6b1a249961f15f97a5cdeec56ef4e0d5c238d0adfc",
+  "image_manifest_sha256": "a191cd8d079508b58a253a5bb5e4cc92fe5118b20facd4f8255e7eb1d63eabf3",
+  "source_manifest_sha256": "b148c784bc505811bf242dfc9c370f76e6ae73476cf75a0fd9453ea5aa9de602",
+  "segment_token_counts_sha256": "cdef1d023972d7de61d422ca747e055cd1fe07da191d48d64a17cbb3c9d4324b",
+  "yarn_dry_run_log": "/mnt/raid0/llm/tmp/yarn-e1-mem-chain-20261104/pregrant/yarn-dry-run.log"
+}

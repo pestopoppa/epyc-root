@@ -1,0 +1,78 @@
+{
+ "baseline_ref": "v10 ffc1bac82eeca6f9099e1ccd9ba49703c460a115; server SHA 4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c on both arms",
+ "book_s": 13500,
+ "budget_gib": 1.0,
+ "decision_rule": "QUESTION: Can the pinned v10 CPU image versus itself produce sealed resident and fresh lifecycle evidence, and does exact request, full response content and token-ID parity hold within scheduled opposite-arm pairs and across lifecycle at the same schedule key? Stop on answer when the sealed evidence and all observations are available. Stop on futility for missing input, identity, topology, cleanup or exhausted grant. Clean resident failure replays the identical plan on fresh servers and preserves the failure. Missing token IDs are diagnostic incomplete; observed differences are diagnostic mismatch. Observation only. Strict native adapter replay is required; no promotion authority.",
+ "declared_shape": "host",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 18000,
+ "first_progress_s": 240,
+ "gib": 128,
+ "gpu_fence_override": "v11-promotion-checklist 2026-11-17: shared canonical K35 module contains GPU scenarios. This row selects frontdoor_cpu_no_spec only (device=none, n_gpu_layers=0, no drafter), validate_inputs rejects other device recipes before apply, and the rowflow GPU fence remains inherited. The GPU visibility=0 return branch is never invoked.",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-LIFECYCLE-WIRE",
+ "id": "vb-v9-8-lifecycle-native-20261118",
+ "keep": [
+  "SOURCE.sha256",
+  "README.md",
+  "snapshot.py",
+  "pins.json",
+  "model.sha256",
+  "model-stat-before.txt",
+  "model-stat-after.txt",
+  "plan.json",
+  "cohorts.json",
+  "recipe.json",
+  "prompt.txt",
+  "sources/*",
+  "native_check.py",
+  "job.py",
+  "launch.sh",
+  "row.spec.json",
+  "out/*",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/launch.sh",
+  "sha256": "d0bd6ecf9469275bab221d9982c13f48573d05b71c3648de3134605619840982"
+ },
+ "min_window_s": 3600,
+ "notes": "Prospective native lifecycle observation; both arms use the same prepared v10 image and immutable K35 plan. Seal must pass strict native adapter replay; incomplete or failed resident evidence remains diagnostic without a belief claim. No promotion authority.",
+ "owner": "vidya-belief-substrate",
+ "ports": [
+  19364,
+  19365
+ ],
+ "priority_rank": 50.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:117: untestable prose prerequisite: 'after both schedules, sealing and strict adapter replay; stop-on-futility on STOP/deadline or missing identity, topology'",
+  "prep-in-grant: /mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/job.py runs `(\"model.sha256\", \"model.sha256\")):`; verify/prepare inputs once before publishing, not inside the grant (it spends grant time; publish continues)",
+  "env-clean: /mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/job.py runs `env = dict(` (no FILLER_ID passthrough); the keeper attributes the job's processes (and GPU residency) by FILLER_ID, so a child that loses it reads as not the row's. FIX: pass FILLER_ID through (env -i FILLER_ID=\"$FILLER_ID\" ..., env={..., \"FILLER_ID\": os.environ[\"FILLER_ID\"]}) and keep the child in the job's session (publish continues)"
+ ],
+ "published_at": "2026-11-18T00:24:58Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/row.spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T00:24:58Z",
+  "session": "01a1ebff-4c82-7012-8250-266535c89e2f",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "0-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/out/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native",
+ "shape": "host",
+ "smoke_predicate": "/usr/bin/python3 -I -B /mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/job.py --smoke-predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/STOP",
+ "unit_key": "unit_id",
+ "verdict_by": "agent",
+ "window_s": 21900,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native"
+}

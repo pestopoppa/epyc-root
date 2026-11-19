@@ -2,7 +2,7 @@
 
 **Purpose.** Decide whether a client (a user-facing harness, an SDK script, an IDE plugin) can
 drive, and defer to, the orchestrator's `/v1/chat/completions` + `x_*` override contract.
-**Owner of live use:** [`harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md).
+**Owner of live use:** [`harness-selection-and-integration.md`](../../../handoffs/active/harness-program.md#track-harness-selection-and-integration).
 HS-4 P0.3 re-ran this instrument on OpenCode at its current tip (2026-09-16, pin `350c726a`, source-identical to release tag `v1.18.31` = `014614d3`): [`opencode-p03-audit-20260916.md`](opencode-p03-audit-20260916.md) §3.
 **Origin:** first written in the Hermes handoff on 2026-07-04 (items N/O), extended on 2026-07-17
 (HS-1b, deference surface) and 2026-09-16 (HS-1g, call-verb check). That handoff closed on
@@ -136,7 +136,7 @@ Gap decisions from the same audit:
 ### 3.2 Per-candidate call-verb matrices (HS-1g, 2026-09-16)
 
 The full matrix for Hermes, OpenCode, oh-my-pi, deepseek-harness and pi is in
-[`harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md)
+[`harness-selection-and-integration.md`](../../../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 under HS-1g. The Hermes row and its extensions are in
 [`hermes-evaluation-20260916.md`](hermes-evaluation-20260916.md) §3. The OpenCode re-audit at
 `350c726a` (E1–E15, P0.3) is in [`opencode-p03-audit-20260916.md`](opencode-p03-audit-20260916.md) §3.
@@ -144,7 +144,7 @@ under HS-1g. The Hermes row and its extensions are in
 ## Call-verb matrix — five candidates, source-only (2026-09-16, HS-1g)
 
 Moved here 2026-09-17 from the HS-1g row in
-[`harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md):
+[`harness-selection-and-integration.md`](../../../handoffs/active/harness-program.md#track-harness-selection-and-integration):
 the instrument and its results belong together. Every **egress** (a place the harness sends an LLM
 request) x lever cell is HONOURED / SILENT-NO-OP / N/A, with `repo@sha path:line`. OpenCode was
 re-audited later at pin `350c726a`; see [`opencode-p03-audit-20260916.md`](opencode-p03-audit-20260916.md) §3.

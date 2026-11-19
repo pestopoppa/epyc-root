@@ -1,0 +1,13 @@
+{
+  "schema": "kpf18.driver-transport-composition-qualification.v1",
+  "status": "PASS",
+  "harness_tests": 5,
+  "full_import_child_tests": 15,
+  "runtime_dispatch": false,
+  "manifest_path": "/mnt/raid0/llm/tmp/kvu/driver-transport-successor-20261119/manifest.json",
+  "manifest_sha256": "5e325357a6508fd6e72ba8287e2d905b98a7349f312bfdbf375b848e9803ca33",
+  "driver_sha256": "6999b2b215c75dddd911c42f9dbeb8ddce2f9fff22f149c1f4966997ab74f47b",
+  "binding_sha256": "1f2c754369822dc09320c00f69bbb0a1fcd5937b2ae98328584c38d50a3ddc80",
+  "test_sha256": "2c53e88cc1f49764ef7c8483fc12686b30454a6b6760f73f82c3797a18900d6c",
+  "scope": "full driver import and main fakes; actual controller class binding and synthetic transport consumer; no native lifecycle or GPU"
+}

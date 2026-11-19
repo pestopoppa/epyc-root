@@ -1,0 +1,33 @@
+{
+  "schema": "codex.f2-finite-follow.v1",
+  "at": "2026-11-04T17:11:21.385609+00:00",
+  "task": "UFH14-A3A-F2",
+  "status": "SUCCESSOR_OFFLINE_QUALIFIED_PRIOR_TERMINAL_FAILED_KEEPER_OWNED",
+  "terminal": true,
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/f2-finite-successor-20261104",
+  "row_id": "ufh14-a3af2-finite-r2-20261104",
+  "source_manifest_sha256": "ff9382bad8d1ee82c4b5aa8fb42ffcab33dd2caeb5cf9bcafb843efac09b30ac",
+  "source_closure_check": "PASS: sha256sum --quiet -c SOURCES.sha256; all 87 entries verified",
+  "current_handoff": "handoffs/active/harness-program.md:2840; F2 remains unchecked; finite validation requirement recorded at line 2841",
+  "ownership_checked_once": true,
+  "ownership_evidence": {
+    "prior_row_id": "ufh14-a3af2-rowflow-r1-20261102",
+    "prior_owner": "handoff-agentic-serving-harness-fixes",
+    "queued_receipt_exists": false,
+    "prior_terminal_receipt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-a3af2-rowflow-r1-20261102/FAIL-1.json",
+    "prior_terminal_reason": "no first progress within 300 s; no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-a3af2-rowflow-r1-20261102/native-attempts/attempt-1bw8me21/native-result.json (json): no new real record; the engine never reached START (admission/precond/port refusal): fix what /mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-a3af2-rowflow-r1-20261102/launcher.out names, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=184-191; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]",
+    "unpublished_manifest_retained": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-a3af2-rowflow-r1-20261102/unpublished.json",
+    "keeper_retry_contract": "FAIL-1.json says keeper retries when prior launcher changes; prior ownership was not retired"
+  },
+  "changes": [
+    "Corrected unsealed stale NOT-READY.txt to describe implemented offline-qualified successor and current publication hold"
+  ],
+  "published_ready": false,
+  "publication_attempted": false,
+  "inference_launched": false,
+  "grants_modified": false,
+  "existing_packet_modified": false,
+  "no_publication_reason": "Owning parent explicitly instructed retaining successor unqueued while prior row remains keeper-owned. No duplicate publication or prior-row change.",
+  "successor_action": "Owning session retires prior keeper retry ownership at its own boundary; then publishes this successor through publish_row.py for bounded native smoke. Offline controls confer no READY or native inference result.",
+  "commits_created": false
+}

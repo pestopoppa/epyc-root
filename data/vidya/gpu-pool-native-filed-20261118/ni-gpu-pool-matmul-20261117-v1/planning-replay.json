@@ -1,0 +1,365 @@
+{
+  "candidate_identity": {
+    "artifacts": [
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/candidate/bin/libggml-base.so.0",
+        "sha256": "23735e6f21028356fa81657393f9c4ffeda70477e3377a4fb49fb2eda55b002a"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/candidate/bin/libggml-cpu.so.0",
+        "sha256": "a19eb802decd2c76acd7403239ecf0ec054ae4519e2b991d6bd4cfff8edb6b5e"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/candidate/bin/libggml-hip.so.0",
+        "sha256": "45bca96a11d4dbaa30470e79b24012f32504d8c0edd00710c130ad755ca0bb7c"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/candidate/bin/libggml.so.0",
+        "sha256": "9c1bcacfe8fd67b0a1ac8dab56ff6c21ca6825a5771adfd8dbee1606461fa742"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/candidate/bin/test-backend-ops",
+        "sha256": "373b44b7476e7d34cae8e1b03e1bee40c31e515ece133667d440ce4128eb745f"
+      }
+    ],
+    "shim": {
+      "SHIM_NPROCS": 2,
+      "later_recreated_source_matches_receipt": false,
+      "original_source_digest_receipt": "51080dff80b0b8a72b7a41ce878f093eff0f13e739fee93d3490421c8d1041e6",
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/candidate/nprocs_shim.so",
+      "sha256": "d3103d7ab45e0a5fe9473d7dd401e5462f39c06174b4a64109af6e387e3b3eb4"
+    },
+    "source": {
+      "commit": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+      "removed_worktree_dirty_state": "UNKNOWN",
+      "snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/candidate/test-backend-ops.cpp",
+      "snapshot_sha256": "9a017871d6354015151630af6d75fa88d77637d599a40421a38746e0f67e7239"
+    }
+  },
+  "candidate_reads": {
+    "MUL_MAT": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "7cc3be7516813d0fe4f940950915851192b7c0bad7c23db5469c9239e06ba488",
+          "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/MUL_MAT.log#sha256=25e8f861cffdcc3ead72f8d4a5aaae3fe32f842417a59c1cf1f782ecbc371572",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "MUL_MAT",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-matmul-20261117-v1",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": []
+      },
+      "section_sha256": "c1b1f00eb96271fc60e7ca48138de072618d4e9fe3790a281601d315be4e6eec",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "7cc3be7516813d0fe4f940950915851192b7c0bad7c23db5469c9239e06ba488",
+        "op": "MUL_MAT",
+        "run_id": "ni-gpu-pool-matmul-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "missing_operator": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "inapplicable_target",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "7cc3be7516813d0fe4f940950915851192b7c0bad7c23db5469c9239e06ba488",
+        "run_id": "ni-gpu-pool-matmul-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "wrong_artifact": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "80a6f74eb062c98cc6770919b4d5258dbac2a01930ee3716af8d850784c5a110",
+        "op": "MUL_MAT",
+        "run_id": "ni-gpu-pool-matmul-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "wrong_operator": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "7cc3be7516813d0fe4f940950915851192b7c0bad7c23db5469c9239e06ba488",
+        "op": "NOT_A_GPU_POOL_OPERATOR",
+        "run_id": "ni-gpu-pool-matmul-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "wrong_run": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "7cc3be7516813d0fe4f940950915851192b7c0bad7c23db5469c9239e06ba488",
+        "op": "MUL_MAT",
+        "run_id": "ni-gpu-pool-matmul-20261117-v2",
+        "scope": "candidate"
+      }
+    },
+    "wrong_shim": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "4a46cca879bbe7cadee82615846dc672cab925860e66293cba89bbb91ac2ee0e",
+        "op": "MUL_MAT",
+        "run_id": "ni-gpu-pool-matmul-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "wrong_source": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "0000000000000000000000000000000000000000",
+        "candidate_sha256": "7cc3be7516813d0fe4f940950915851192b7c0bad7c23db5469c9239e06ba488",
+        "op": "MUL_MAT",
+        "run_id": "ni-gpu-pool-matmul-20261117-v1",
+        "scope": "candidate"
+      }
+    }
+  },
+  "capture_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/belief.json",
+  "capture_sha256": "72c1ecafe71aaeebdb696186b45666d81b58a719871b3c07468338aa7cc7017f",
+  "claims": [
+    {
+      "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+      "failed": 0,
+      "observed": 201,
+      "op": "MUL_MAT",
+      "partition": "201 native supported passes, 0 unsupported and 0 failures",
+      "passed": 201,
+      "rc": 0,
+      "seed": 20261026,
+      "unsupported": 0
+    }
+  ],
+  "ingest": {
+    "adapter": "adapters/gpu_pool_native.py",
+    "adapter_id": "vidya.adapters.gpu_pool_native/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 3,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/belief.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "gpu-pool-native",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "native_grant": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/grants/ni-gpu-pool-matmul-20261117-v1.grant",
+    "record": {
+      "end": "2026-11-18T19:40Z",
+      "holds": "gpu-quiet,t184,t185,t186,t187,t188,t189,t190,t191",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-18T19:29Z"
+    },
+    "smoke": false
+  },
+  "native_planning_context": true,
+  "native_producer_result": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/RESULT.json",
+    "sha256": "2d6c054588dd220ed038addb6c0d01768440898a6aba353201bef1e740c596c7"
+  },
+  "official_native_acceptance": false,
+  "positive_planning_context": true,
+  "production_consumer_adoption": false,
+  "readers": {
+    "autokernel.planner": {
+      "checkout_checked": true,
+      "ledger_head": "sha256:628807b0e3c00648cbba38eb14054ed40e15e0c72dc2d803a311a6222d897cd2",
+      "model_target": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "visible_claims": []
+    },
+    "autopilot.planner": {
+      "checkout_checked": true,
+      "ledger_head": "sha256:628807b0e3c00648cbba38eb14054ed40e15e0c72dc2d803a311a6222d897cd2",
+      "model_target": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:b24114a2011ef0662979d92b72eba02315ec909ed9a6c78a6a1d7f77a989a308:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "visible_claims": []
+    }
+  },
+  "retry": {
+    "adapter": "adapters/gpu_pool_native.py",
+    "adapter_id": "vidya.adapters.gpu_pool_native/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 0,
+    "frames_skipped": 3,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/belief.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "gpu-pool-native",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "row_id": "ni-gpu-pool-matmul-20261117-v1",
+  "schema": "epyc.vidya.gpu_pool_candidate_scope.v1",
+  "scope": "candidate-local observations in the shared planning reader",
+  "sources_sha256": {
+    "adapter": "063650063cedab15e0218bd85648f6d89d4a32c46996167a1430e0449d451ef3",
+    "canary": "f2542455581540b8c51d87334c0c8e33ca2e4ed990e01b21c8a90d8ee36aaac9",
+    "carrier": "f540063d9a738d437476def902ef23a1e5b0420e8b0fe15d8742d53d1c67b5b5",
+    "consumer": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f",
+    "read_counter": "4e478e063b9267a0910cdfb5841dc4cc50aac43730841edb0d9f3d1ec4b40797",
+    "reader": "937f899cd39d6998bfadba3a6d3caef08e984bdb5d665b760e533b4438acb2fc"
+  },
+  "status": "passed",
+  "synthetic_control": false
+}

@@ -1,0 +1,44 @@
+{
+  "status": "OFFLINE_READY_GPU_UNAVAILABLE_UNPUBLISHED",
+  "ready": false,
+  "offline_ready": true,
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v2-20261104",
+  "id": "ufh14-b4k-guard-v2-20261104",
+  "at": "2026-11-04T16:46:08.175658+00:00",
+  "tests": {
+    "passed": 34,
+    "total": 34
+  },
+  "packet_pins_verified": true,
+  "source": {
+    "commit": "77ba24efe7f27783a3a98be5474bace26c753f12",
+    "clean": true,
+    "mechanism": "existing detached worktree; no checkout copy",
+    "closure_files_verified": 1837
+  },
+  "safety": {
+    "one_shot_kfd_pids": [
+      3941795
+    ],
+    "foreign_process_untouched": true,
+    "publisher_invoked": false,
+    "job_invoked": false,
+    "gpu_polled": false,
+    "manual_grants_created": false,
+    "pre_server_fail_closed_guard_unchanged": true
+  },
+  "fix": {
+    "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v2-20261104/out/RESULT.json",
+    "payload": "exact COMPLETE bytes; atomic rename after COMPLETE",
+    "filing": "RESULT/COMPLETE byte equality required before authoritative select_run; partial/missing/mismatch refuses",
+    "tests": "missing pair, partial temporary file, atomic exact bytes, mismatch"
+  },
+  "changed": [
+    "job.py",
+    "filing.py",
+    "spec.json",
+    "packet-pins.json",
+    "test_integration.py"
+  ],
+  "next_event": "Foreign GPU session releases GPU and reports its captured PID exited; owner may then invoke bounded publisher smoke. No polling started."
+}

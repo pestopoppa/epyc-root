@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "claude-filing-subagent",
+  "rationale": "Descriptive diagnostic completed: flag-on arm (PREFIX_INDEX/FORK/LPM all 1), collector_rc 0, status completed, HTTP 200. Scout fork tokens were 3547, 5498 and 0 across the three children; keyword outcomes true for children 1-2 and false for child 0 (keyword check only, not a quality verdict). checkpoint_witness null. Source-grounded rubric review still pending; no gate verdict.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T13:58:17+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:52:21Z reason=complete",
+ "filed_at": "2026-11-04T13:58:17+00:00",
+ "filed_by": "claude-filing-subagent",
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-26",
+ "id": "rtg58-kpf26-code-on-diag-r2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/rtg58-kpf26-code-on-diag-r2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/on-results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "rtg58-codex",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Descriptive diagnostic completed: flag-on arm (PREFIX_INDEX/FORK/LPM all 1), collector_rc 0, status completed, HTTP 200. Scout fork tokens were 3547, 5498 and 0 across the three children; keyword outcomes true for children 1-2 and false for child 0 (keyword check only, not a quality verdict). checkpoint_witness null. Source-grounded rubric review still pending; no gate verdict.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-v3-20261104/on-results.jsonl",
+ "root_cause_family": null,
+ "row": "rtg58-kpf26-code-on-diag-r2-20261104",
+ "row_verdict": "pass",
+ "rule": "Prospective three-scout fan-out over commit-pinned real code; keyword scoring diagnostic only, no historical representativeness or gate verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "107ef126fcf04c152ed70136c9afc9f013821c0db2efac9ee9a09e6eacaae4cd",
+  "result": "pass",
+  "status": "filed"
+ }
+}

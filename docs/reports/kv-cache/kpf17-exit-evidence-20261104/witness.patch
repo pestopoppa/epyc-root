@@ -1,0 +1,37 @@
+--- docs/reports/kv-cache/kpf17-oracle-qualification-20261104/witness.py	2026-11-04 20:16:13.534996048 +0000
++++ /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-exit-fix/witness.py	2026-11-04 20:17:07.922971850 +0000
+@@ -1,9 +1,12 @@
+ """Executed only by GDB: capture mapped libraries from inside Test 6."""
+ import gdb
++import sys
+ import hashlib
+ import json
+ import os
+ from pathlib import Path
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++import gdb_events
+ import time
+ 
+ C = json.loads(Path(os.environ['KPF17_WITNESS_CONFIG']).read_text())
+@@ -25,6 +28,9 @@
+     finally:os.close(fd)
+ 
+ 
++continue_return = gdb_events.install(state, save)
++
++
+ def birth(pid):
+     return int(Path(f'/proc/{pid}/stat').read_text().rsplit(')',1)[1].split()[19])
+ 
+@@ -57,7 +63,10 @@
+     state.update(pid=pid,birth_ticks=ticks,nspid=nspid,
+                  initial_stop={'pid':pid,'birth_ticks':ticks,'exe':str(exe),'time_ns':time.time_ns()})
+     save()
+-    gdb.execute('continue')
++    try:
++        gdb.execute('continue')
++    finally:
++        continue_return()
+ 
+ class Main(gdb.Breakpoint):
+     def stop(self):

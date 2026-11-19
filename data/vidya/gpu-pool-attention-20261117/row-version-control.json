@@ -1,0 +1,62 @@
+{
+  "scope": "Positive GPU pool row versions and existing adapter/ingest controls",
+  "commands": [
+    {
+      "argv": [
+        "gitnexus",
+        "impact",
+        "validate_request",
+        "--direction",
+        "upstream"
+      ],
+      "exit_code": 1,
+      "outcome": "No indexed repositories found. Callers inspected in source."
+    },
+    {
+      "argv": [
+        "/workspace/repos/epyc-orchestrator/scripts/region-lock",
+        "run",
+        "--cpu-list",
+        "72",
+        "--role",
+        "build",
+        "--timeout-s",
+        "2",
+        "--tag",
+        "vidya-gpu-pool-row-version",
+        "--",
+        "/usr/bin/pytest",
+        "-q",
+        "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/tests/vidya/test_gpu_pool_native.py",
+        "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/tests/vidya/test_gpu_pool_native_ingest.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "sha256": {
+    "scripts/vidya/adapters/gpu_pool_native.py": "e3efc68563c1131fe8b2e680fc60e807729a1d4cb0e909110e5b1edb808df90f",
+    "tests/vidya/test_gpu_pool_native.py": "57dc86af8ecad21ecb9f7888de5ba465601c554696912adc5b17d532edf8bf4b",
+    "tests/vidya/test_gpu_pool_native_ingest.py": "0b2e9c50c33bc2c280d65596fcf51a590e1c9d78d97275b8bdeb3a9bffd1b55d"
+  },
+  "tests_passed": 31,
+  "carrier_invariants": {
+    "tuples_checked": 29,
+    "source_kinds": 1,
+    "violations": 0
+  },
+  "output": [
+    "[region-lock] acquiring regions [] as role='build' (timeout_s=2.0) \u2026",
+    "[region-lock] held sub-quarter cores {q3: [72]}",
+    "...............................                                          [100%]",
+    "P1-A carrier invariants: 29 tuples from 1 source kinds checked (byte identity / grade invariance), 0 violation(s)",
+    "31 passed in 0.19s"
+  ]
+}

@@ -1,0 +1,7 @@
+rc=1 time=2026-11-04T07:29:43Z reason=job-rc-1:exited
+job_id=cafe4-v10-mtp-lifecycle-native-20261104
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=600
+started=2026-11-04T07:29:39Z
+regions=0-3

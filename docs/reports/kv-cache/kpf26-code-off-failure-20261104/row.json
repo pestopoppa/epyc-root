@@ -1,0 +1,59 @@
+{
+ "decision_rule": "Prospective three-scout fan-out over commit-pinned real code; keyword scoring diagnostic only, no historical representativeness or gate verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 64,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-26",
+ "id": "rtg58-kpf26-code-off-diag-20261102",
+ "keep": [
+  "*.json",
+  "*.jsonl",
+  "*.py",
+  "*.sh",
+  "*.sha256",
+  "*.md",
+  "scope-path.txt",
+  "source-scope/**",
+  "bin/**",
+  "*/result/**",
+  "*/packet/**",
+  "*/trace/**",
+  "*/server.log",
+  "*/api.log",
+  "off-results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104/off-launch.sh",
+  "sha256": "32637235928fcfb451054e712a861af0eefe4517b090a31522a6c37369754c21"
+ },
+ "lineage": "rtg58-kpf26-code-off-diag-20261102",
+ "min_window_s": 900,
+ "notes": "Same-ID owner-preserving requalification with isolated launcher/input copies; source and content preflight. Smoke runs one native target completion only and cannot satisfy full three-scout diagnostic. Full source/workload decision unchanged.",
+ "owner": "rtg58-codex",
+ "ports": [
+  18078,
+  18978
+ ],
+ "priority_rank": 8.0,
+ "publish_warnings": [
+  "kv-cache-program.md:858: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "prep-in-grant: /mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104/job.sh runs `for _ in {1..180}; do kill -0 \"$server_pid\" 2>/dev/null || exit 1; curl -fsS --max-time 2 \"http://127.0.0.1:$PORT/health\" >/dev/null 2>&1 && break; [[ ! -e \"$FI`; verify/prepare inputs once before publishing, not inside the grant (it spends grant time; publish continues)"
+ ],
+ "published_at": "2026-11-04T07:31:44Z",
+ "published_from": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104/off-spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104/off-results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104/off.STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104"
+}

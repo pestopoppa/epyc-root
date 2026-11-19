@@ -1,0 +1,18 @@
+{
+  "source_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-raw-maps-20261105",
+  "source_seals": {
+    "README.md": "58058a3fc9e2e2e2496a288b2b4ba877244fdff44b46dd2a4169121a352b76b5",
+    "verify_raw_maps.py": "b8a5dafba8e5f7e0da7487b74f56c1e0255d35366703b74036290a22f8748ba1",
+    "make_controls.py": "9f01d4577352625e74bf4187e0407dd8b6f6db1aeef9835424150d8897ed3a71",
+    "controls/raw-maps.json": "1356e08c09354d762d944a95504fbd3c9054337e2c155a79f3b0412dd010377a",
+    "controls/candidate-receipt.json": "7837a73d2a4b148b5a9985512a60c1bfc61baada691a996b4e12456c520c025e",
+    "controls/fstat.json": "46688272135da1a56afe6526c5df9c089107dcd556662fc98394c8ea9c612e84",
+    "controls/mutations.json": "606237256d8f3b38fb86b28d636f790cdd18f5c8f898238ae60b8f4736104542",
+    "controls/fake-lib.bin": "95a576ba1536511cb809558234aeaaadf9c43188cf50ff42e09b9c3dd23f06ee",
+    "controls/proc-maps.txt": "d790ef93682f6986ea2b32ac61b7b12fff27c6e582838da342a35d84e6cdef7b",
+    "controls/seals.json": "87f79cdafa9d75bbabbb3ae5d61ab4ef8be518133018b46ac06fd1161bf3b28b",
+    "controls/candidate-policy.json": "254e13b948da2552340070abc1055bf55ddf3f0ae65daffc25b4cc5e6bb88294",
+    "controls/proc-stat.txt": "d0156e50f36f35812eaa5665e2eebcf64896aba1ed66d3e6ef4ee038caddfc52"
+  },
+  "boundary": "Synthetic offline verifier qualification only; no native physical provenance."
+}

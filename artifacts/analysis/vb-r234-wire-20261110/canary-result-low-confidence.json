@@ -1,0 +1,38 @@
+{
+  "schema": "epyc.vb.r234.planning_canary.v1",
+  "measurement": false,
+  "model_backend_calls": 0,
+  "canonical_before": "ff69f9db515a269d800a606fe89201cc94e0dbce7d68055027fcb5bf1542f429",
+  "target": {
+    "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "quant": "Q8_0",
+    "backend": "gpu"
+  },
+  "prepare_status": "ready",
+  "refusal": null,
+  "r234_claims_in_evidence": 7,
+  "r234_claim_ids": [
+    "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:0:client_stream_events_s",
+    "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:1:acceptance_ratio",
+    "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:1:client_stream_events_s",
+    "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:2:acceptance_ratio",
+    "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:2:client_stream_events_s",
+    "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:context:0:acceptance_ratio",
+    "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:context:1:acceptance_ratio"
+  ],
+  "section_lines_mentioning_r234": [
+    "- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:0:client_stream_events_s [Judged/Located \u00b7 verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity",
+    "- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:1:acceptance_ratio [Judged/Located \u00b7 verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity",
+    "- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:1:client_stream_events_s [Judged/Located \u00b7 verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity",
+    "- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:2:acceptance_ratio [Judged/Located \u00b7 verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity",
+    "- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:2:client_stream_events_s [Judged/Located \u00b7 verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity",
+    "- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:context:0:acceptance_ratio [Judged/Located \u00b7 verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family context"
+  ],
+  "tiers": [
+    "target"
+  ],
+  "claim_ids_total": 16,
+  "canonical_after": "ff69f9db515a269d800a606fe89201cc94e0dbce7d68055027fcb5bf1542f429",
+  "canonical_unchanged": true,
+  "status": "PASS"
+}

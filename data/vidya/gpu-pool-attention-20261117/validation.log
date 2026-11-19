@@ -1,0 +1,38 @@
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='build' (timeout_s=2.0) …
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='build' tag='vidya-attention-model-free': held by pid 3723088 role=bench tag=filler-q38p1-c13-20261117-r2 age=162s
+[region-lock] TIMEOUT acquiring regions ['q0', 'q1', 'q2', 'q3']: region admission deadline exceeded (role=build, tag=vidya-attention-model-free)
+[region-lock] acquiring regions [] as role='build' (timeout_s=2.0) …
+[region-lock] held sub-quarter cores {q3: [88, 89, 90, 91]}
+E
+======================================================================
+ERROR: setUpClass (__main__.AttentionCaptureTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/test_run_attention.py", line 23, in setUpClass
+    cls.pins, cls.linkage = runner.preflight()
+                            ^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/run_attention.py", line 68, in preflight
+    pins = pinned_inputs()
+           ^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/run_attention.py", line 61, in pinned_inputs
+    require(not path.is_symlink() and sha(path) == digest, f"pinned bytes changed: {path}")
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/run_attention.py", line 48, in require
+    raise ValueError(message)
+ValueError: pinned bytes changed: /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/scripts/vidya/adapters/gpu_pool_native.py
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.057s
+
+FAILED (errors=1)
+[region-lock] acquiring regions [] as role='build' (timeout_s=2.0) …
+[region-lock] held sub-quarter cores {q3: [88, 89, 90, 91]}
+............
+----------------------------------------------------------------------
+Ran 12 tests in 0.730s
+
+OK
+[region-lock] acquiring regions [] as role='build' (timeout_s=2.0) …
+[region-lock] held sub-quarter cores {q3: [88, 89, 90, 91]}
+WARN task_lint vidya-belief-substrate-program.md:745: untestable prose prerequisite: 'after one terminal invocation and strict rederivation; stop-on-futility on STOP, deadline or invalid custody; gate-class'
+DECISION-RULE prose; verdict_by agent: owner handoff-vidya-belief-substrate files the verdict by hand after the run
+Source reconstruction, original binaries, launcher and publisher preflight passed

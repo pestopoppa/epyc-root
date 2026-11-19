@@ -1,0 +1,216 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-LOOP-CODE-BUDGET-NEW-MODULES-20261119",
+  "status": "ratified",
+  "ratified_at": "2026-11-19T09:15:00Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-11-19: prep a baseline ratify for the loop code-budget guard; AKX-ALL-29.4 recorded as no change, collect data"
+  },
+  "items": {
+    "1": "research scripts/kernel_rnd/autokernel/loop_code_budget_baseline.json: one files entry per new loop module (additions only)"
+  },
+  "modules": {
+    "a2_unit_permit.py": {
+      "ceiling": 231,
+      "box": "AKU-04f / S3-AKU-01",
+      "reason": "per-unit A2 permit records"
+    },
+    "a2_unit_transport.py": {
+      "ceiling": 52,
+      "box": "AKU-04f",
+      "reason": "v2 unit records in journal validation, opt-in selected-unit transport glue"
+    },
+    "amdahl.py": {
+      "ceiling": 127,
+      "box": "AK-AMDAHL-PRUNE",
+      "reason": "e2e ceilings for the Amdahl prune"
+    },
+    "att_mfma_efficiency.py": {
+      "ceiling": 96,
+      "box": "INF48-LIVE-6",
+      "reason": "ATT MFMA efficiency signal"
+    },
+    "build_enrollment.py": {
+      "ceiling": 321,
+      "box": "AKU-10i / AKU-06i",
+      "reason": "versioned build enrollment records"
+    },
+    "call_budget.py": {
+      "ceiling": 31,
+      "box": "OAB-32",
+      "reason": "default per-call wall budget for every role and kind"
+    },
+    "census_live.py": {
+      "ceiling": 38,
+      "box": "AKX-P1d",
+      "reason": "live census plumbing: taskset-pinned dispatch probe, census identity stamp"
+    },
+    "census_store.py": {
+      "ceiling": 94,
+      "box": "AKX-P1d",
+      "reason": "per-workload census store, freshness keys, live T0/T1 witnesses"
+    },
+    "composed_census.py": {
+      "ceiling": 91,
+      "box": "AKX-P3a",
+      "reason": "composed-census check on the ValidationBatch freeze"
+    },
+    "cpu_aa_calibration.py": {
+      "ceiling": 88,
+      "box": "AK-GH-1 (TOUCHED-only LOO)",
+      "reason": "CPU A/A calibration record"
+    },
+    "cpu_keep_bundle.py": {
+      "ceiling": 113,
+      "box": "AK-GH-1 (TOUCHED-only LOO)",
+      "reason": "CPU accumulator bundle v1"
+    },
+    "cross_lane_gate.py": {
+      "ceiling": 142,
+      "box": "cross-lane quality gate",
+      "reason": "per-lane ppl_contract acceptance at global promotion"
+    },
+    "exact_lane.py": {
+      "ceiling": 259,
+      "box": "INF06",
+      "reason": "exact-order lane and token-ID identity judge"
+    },
+    "exploration_policy_replay.py": {
+      "ceiling": 164,
+      "box": "AK-WM-3",
+      "reason": "offline exploration-policy replay (observe-only)"
+    },
+    "gcn_gym.py": {
+      "ceiling": 133,
+      "box": "INF48-LIVE-6",
+      "reason": "GCN-Gym host half"
+    },
+    "gcn_replay.py": {
+      "ceiling": 208,
+      "box": "C5-ISA-2",
+      "reason": "GCN-Gym replay driver (hipModuleLaunchKernel)"
+    },
+    "goodhart_count.py": {
+      "ceiling": 32,
+      "box": "S3-AKU-13",
+      "reason": "Goodharted-keep count"
+    },
+    "gpu_counter_signals.py": {
+      "ceiling": 272,
+      "box": "INF48-LIVE-6",
+      "reason": "counter-grounded planner signals"
+    },
+    "isa_claims.py": {
+      "ceiling": 235,
+      "box": "INF48-LIVE-6",
+      "reason": "ISA claim gate"
+    },
+    "keep_frontier.py": {
+      "ceiling": 47,
+      "box": "S3-AKU-04",
+      "reason": "keep frontier"
+    },
+    "lineage_edit_diagnostics.py": {
+      "ceiling": 110,
+      "box": "AK-WM-3 (AK-lineage)",
+      "reason": "proposal-level cycling and edit taxonomy"
+    },
+    "loo_touched.py": {
+      "ceiling": 76,
+      "box": "AK-GH-1 (TOUCHED-only LOO)",
+      "reason": "TOUCHED-only leave-one-out"
+    },
+    "native_observation_witnesses.py": {
+      "ceiling": 135,
+      "box": "AKU-07o",
+      "reason": "contention and GPU-residency witnesses from in-window observation bytes"
+    },
+    "native_server_token_evidence.py": {
+      "ceiling": 110,
+      "box": "AKU-07r",
+      "reason": "frozen-prompt v1 pin, same-server token evidence join"
+    },
+    "numerics_edge.py": {
+      "ceiling": 527,
+      "box": "AKX-ALL-31.EDGE",
+      "reason": "edge-value families and seeded-defect twins"
+    },
+    "numerics_native.py": {
+      "ceiling": 149,
+      "box": "AKX-ALL-31.NATIVE",
+      "reason": "host side of the AK_NUMERICS_V1 native producer"
+    },
+    "operation_accounting.py": {
+      "ceiling": 216,
+      "box": "AKU-06l",
+      "reason": "child accounting and operation settlement v2"
+    },
+    "pareto_retain.py": {
+      "ceiling": 88,
+      "box": "AKX-PARETO-RETAIN",
+      "reason": "census retains the per-workload Pareto front of near-misses"
+    },
+    "profile_refresh.py": {
+      "ceiling": 56,
+      "box": "AKU-10i / AKU-06i",
+      "reason": "profile refresh records"
+    },
+    "promotion_evidence.py": {
+      "ceiling": 47,
+      "box": "S3-AKU-07",
+      "reason": "held-out promotion evidence"
+    },
+    "quant_codespace.py": {
+      "ceiling": 888,
+      "box": "AKX-ALL-31.QDEC",
+      "reason": "exhaustive code-space dequant check, host side"
+    },
+    "reflexion.py": {
+      "ceiling": 106,
+      "box": "AK-PM-17",
+      "reason": "reflexion fields on the per-round attempt record"
+    },
+    "route_defaults.py": {
+      "ceiling": 102,
+      "box": "AKX-AUTO-9",
+      "reason": "generated default CPU routes by file family"
+    },
+    "serving_shares.py": {
+      "ceiling": 147,
+      "box": "AKX-ALL-16",
+      "reason": "GPU serving-shares input"
+    },
+    "stage_receipts.py": {
+      "ceiling": 187,
+      "box": "AK-RSM-1",
+      "reason": "stage-receipt stop/resume controller contract"
+    },
+    "trial_lifecycle.py": {
+      "ceiling": 116,
+      "box": "AKU-04f / S3-AKU-01",
+      "reason": "typed trial lifecycle"
+    },
+    "two_instance_floor.py": {
+      "ceiling": 149,
+      "box": "AKX-P2d",
+      "reason": "two-instance floor job (W3/W4/W6 NUMA-half recipes)"
+    },
+    "variance_input_producer.py": {
+      "ceiling": 96,
+      "box": "U3-SEED",
+      "reason": "variance_input producer from paired RUNTIME_CONFIG serving records"
+    },
+    "variance_keep.py": {
+      "ceiling": 125,
+      "box": "U3-SEED / S3-AKU-04",
+      "reason": "variance-only keep rule and keep-time wiring"
+    }
+  },
+  "base_origin_main": "9281b3dd720086e247a99cff9420251b9bcaf3f9",
+  "research_commit": "6b05adce4c4406312029ff9908503d4502e2ee12",
+  "applied_by": "scripts/operator/ratify_ak_loop_code_budget_new_modules_20261119.sh",
+  "ratify_script_sha256": "250dc08ab949630c16fde63b2fd128e49f9550103791eb8880e8c464020daf60",
+  "processes_touched": []
+}

@@ -1,0 +1,16 @@
+{
+ "ok_calls": 4,
+ "evicted_lines": 0,
+ "report": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/20261102T212621Z/REPORT.json",
+ "orch_commit": "77ba24efe7f27783a3a98be5474bace26c753f12",
+ "argv_sha256_source": "f09f466f756884301f7286f75076582ea3d2ee1a846550d3c7f392a620e66e93",
+ "ended": "2026-11-02T22:56:44.816+00:00",
+ "calls": 140,
+ "fp_coverage": 1.0,
+ "missed_prefill_share": 0.0252,
+ "hit_tok": 0.9278,
+ "cold_large_share": 0.2923,
+ "concurrent_dupes": 6,
+ "prefill_s": 2208.403,
+ "window_valid": false
+}

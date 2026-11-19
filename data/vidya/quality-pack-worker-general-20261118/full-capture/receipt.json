@@ -1,0 +1,245 @@
+{
+  "schema": "epyc.vidya.worker_general_slice_filing.v1",
+  "row": "handoff-vidya-quality-pack-worker-general-20261118",
+  "rc": 0,
+  "scheduler_end_line": "rc=0 time=2026-11-18T00:38:34Z reason=complete",
+  "verdict": "pass",
+  "original_decision_rule": "Can the isolated worker-general CPU/MTP recipe capture four distinct predetermined worker requests per arm against v10 and C13 with exact request, output, generation path and process custody? This is a finite request census. Stop after the eight responses and verified cleanup, or on STOP, deadline, or an identity, startup, response or cleanup error. Four-CPU publisher smoke captures one v10 no-spec native completion with the pinned Qwen3-0.6B Q8_0 at 45 second startup and 30 second request bounds. The earlier frontdoor JSON mismatch remains in scope for the eventual broad pack. Worker-general isolated input capture has no seven-profile parity, deployed equivalence or promotion authority.",
+  "scope": "isolated worker-general-cpu-moe-mtp input capture",
+  "arm_order": [
+    "production",
+    "candidate"
+  ],
+  "request_count_per_arm": 4,
+  "response_count": 8,
+  "cpus": [
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "scheduler_grant": "regions=72-95 start=2026-11-18T00:36Z end=2026-11-18T01:06Z holds=q3",
+  "capture_recipe": {
+    "model": "Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "chat_template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+    "recipe_sha256": "1b01b2a7d3f10aec12e0b9cef7c69f15bdd3fb377e28834c31c7ff6c41bb54ed",
+    "plan_sha256": "f01254d548176fd25fd5df29daaa29b785f597cf91e445555f5626099594e891",
+    "capture_runner_sha256": "87d0b9c000da19b0bf74bcfccf5dbbbe8c3d253d713996e5ba66b346c56c4a10",
+    "question_pool_sha256": "09208a08bbcbbbfcf90f5563099cb4d9c5ca7d3755aef367302a1080b53270ac",
+    "endpoint": "/v1/chat/completions",
+    "native_mtp_cap": 4,
+    "slots": 1,
+    "allocated_cpus": 24,
+    "compiled_serving_spec_enabled": false
+  },
+  "pinned_runtime": {
+    "production": {
+      "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "binary_sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+      "build_manifest_sha256": "ccfe57b18bc720e569c2e97e55454a27865d15dd928857d4ba3674874a1608a2",
+      "mapped_library_count": 6
+    },
+    "candidate": {
+      "kernel_commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+      "binary_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+      "build_manifest_sha256": "f77db04733a8c85d520dd09cef13c2312212a25745dcfed95978cb0e4fab384b",
+      "mapped_library_count": 6
+    }
+  },
+  "bank_sha256": "941506d787c03f4e1c65e3aa61711eb88ab43819f1a433a803a509120534d10b",
+  "candidate_sha256": "8360ef4d8b00b74e1cdbd4dae93fe0898e86022fa8f6a31c068efd63987dd764",
+  "bank_pin_order": {
+    "production_cleanup_write_utc": "2026-11-18T00:38:09.286347808Z",
+    "bank_capture_write_utc": "2026-11-18T00:38:09.293347858Z",
+    "bank_pin_write_utc": "2026-11-18T00:38:09.294347866Z",
+    "candidate_server_log_creation_utc": "2026-11-18T00:38:09.351348277Z",
+    "candidate_cleanup_write_utc": "2026-11-18T00:38:30.848504513Z",
+    "candidate_capture_write_utc": "2026-11-18T00:38:30.904504923Z",
+    "result_write_utc": "2026-11-18T00:38:30.905504930Z",
+    "runner_order": "The pinned runner fsyncs and verifies the v10 bank and pin before opening the candidate log and launching C13. It rechecks the bank and plan after C13 cleanup."
+  },
+  "raw_derived_comparisons": [
+    {
+      "id": "worker-general-json",
+      "request_bytes_equal": true,
+      "rendered_prompt_equal": true,
+      "response_bytes_equal": false,
+      "content_equal": true,
+      "token_ids_equal": true,
+      "completion_tokens": [
+        14,
+        14
+      ],
+      "finish_reason": [
+        "stop",
+        "stop"
+      ],
+      "mtp_draft_tokens": [
+        12,
+        12
+      ],
+      "mtp_accepted_draft_tokens": [
+        12,
+        12
+      ],
+      "http_fingerprints": [
+        "b10303-ffc1bac82",
+        "b0-unknown"
+      ]
+    },
+    {
+      "id": "worker-general-code",
+      "request_bytes_equal": true,
+      "rendered_prompt_equal": true,
+      "response_bytes_equal": false,
+      "content_equal": true,
+      "token_ids_equal": true,
+      "completion_tokens": [
+        19,
+        19
+      ],
+      "finish_reason": [
+        "stop",
+        "stop"
+      ],
+      "mtp_draft_tokens": [
+        16,
+        16
+      ],
+      "mtp_accepted_draft_tokens": [
+        16,
+        16
+      ],
+      "http_fingerprints": [
+        "b10303-ffc1bac82",
+        "b0-unknown"
+      ]
+    },
+    {
+      "id": "worker-general-reasoning",
+      "request_bytes_equal": true,
+      "rendered_prompt_equal": true,
+      "response_bytes_equal": false,
+      "content_equal": false,
+      "token_ids_equal": false,
+      "completion_tokens": [
+        43,
+        34
+      ],
+      "finish_reason": [
+        "stop",
+        "stop"
+      ],
+      "mtp_draft_tokens": [
+        44,
+        44
+      ],
+      "mtp_accepted_draft_tokens": [
+        34,
+        26
+      ],
+      "http_fingerprints": [
+        "b10303-ffc1bac82",
+        "b0-unknown"
+      ]
+    },
+    {
+      "id": "worker-general-long-prose",
+      "request_bytes_equal": true,
+      "rendered_prompt_equal": true,
+      "response_bytes_equal": false,
+      "content_equal": true,
+      "token_ids_equal": true,
+      "completion_tokens": [
+        16,
+        16
+      ],
+      "finish_reason": [
+        "length",
+        "length"
+      ],
+      "mtp_draft_tokens": [
+        24,
+        24
+      ],
+      "mtp_accepted_draft_tokens": [
+        8,
+        8
+      ],
+      "http_fingerprints": [
+        "b10303-ffc1bac82",
+        "b0-unknown"
+      ]
+    }
+  ],
+  "cleanup": {
+    "production": {
+      "dead": true,
+      "exit_status": 0,
+      "pid": 3076164,
+      "port_closed": true,
+      "listener": "127.0.0.1:19470"
+    },
+    "candidate": {
+      "dead": true,
+      "exit_status": 0,
+      "pid": 3077304,
+      "port_closed": true,
+      "listener": "127.0.0.1:19470"
+    }
+  },
+  "prior_frontdoor_json_mismatch": true,
+  "broad_pack_status": "incomplete",
+  "promotion_authorized": false,
+  "files_sha256": {
+    "RESULT.json": "62c1d473b631ddf2137e55998b56d995c66c5ee50c4fa3d6f1be413b8b1e5dfa",
+    "native/banked-capture.json": "941506d787c03f4e1c65e3aa61711eb88ab43819f1a433a803a509120534d10b",
+    "native/banked-capture.sha256": "0c336f0eb43ae2db2f6f3a82a7d0f0ad8c3471225263346bcad0da56e6c5170a",
+    "native/candidate/cleanup.json": "a67323ef9c5f0a9ded30a63a0ff707145f039771fda5e0cf88a116e9086a83de",
+    "native/candidate/server.json": "47b949d00799a4e6c7e8a9dd67260e320d9ea1d903f59acd9b66c1a948c76a2f",
+    "native/candidate/server.log": "999851113f06f66e7d89da840893d9eb3873fdd9721c06ded4b4648a020ad9fe",
+    "native/candidate/worker-general-code.request.json": "0cab993e8196512b6f6b47c314e79ead5ea04d8537858e024d03f1dafbe1a316",
+    "native/candidate/worker-general-code.response.json": "1fe9884aa50e784da21d108cd1df2a7c983559c165c8e957aaf3de459d33b46a",
+    "native/candidate/worker-general-json.request.json": "db0244d4d8f8a6816e47fa56c044f5b2897ae2380b1f001efa7729dc361eadd3",
+    "native/candidate/worker-general-json.response.json": "1d5f0ff0ac156a3cf78b4edfda38bec49891570deb2f1835ef012b1b4f6eb5a6",
+    "native/candidate/worker-general-long-prose.request.json": "a2d74f077256bb1f0b257870d52ff30a9f635bcd6bb2e1d48f029593ab9d4523",
+    "native/candidate/worker-general-long-prose.response.json": "cd320711d1e9708b532d867ea9ea742ab88eccf7aa811c72ae950f66c49a95ba",
+    "native/candidate/worker-general-reasoning.request.json": "119e117ac1928c0d243cf3fed1b69b4954db9ad43c875f1dabf548a4ac2c075d",
+    "native/candidate/worker-general-reasoning.response.json": "50941c545a823275e864f7b8bba2f94076f674ef837d579575106c5b5a246cad",
+    "native/candidate-capture.json": "8360ef4d8b00b74e1cdbd4dae93fe0898e86022fa8f6a31c068efd63987dd764",
+    "native/production/cleanup.json": "8c710772ac8d5f386f9233595f1962a6783b50eb4e2aae8723a0df5a6d587925",
+    "native/production/server.json": "5ae27637d66c905dc30c581d94d90a434cdfae9699c6f84e5f82c251b0aa5fe0",
+    "native/production/server.log": "795f54e0a43e36fa45e0ab7f9f9a700b5e7575836809a7bdcb8400875019cad5",
+    "native/production/worker-general-code.request.json": "0cab993e8196512b6f6b47c314e79ead5ea04d8537858e024d03f1dafbe1a316",
+    "native/production/worker-general-code.response.json": "ef95d4ef364176133bd9630ba20feb519294f48cff9e0789878a626a373748e5",
+    "native/production/worker-general-json.request.json": "db0244d4d8f8a6816e47fa56c044f5b2897ae2380b1f001efa7729dc361eadd3",
+    "native/production/worker-general-json.response.json": "bd5b7c17daf4b33563a3dc1115526cd620e2ceb62553a0e42712ea0586cdec56",
+    "native/production/worker-general-long-prose.request.json": "a2d74f077256bb1f0b257870d52ff30a9f635bcd6bb2e1d48f029593ab9d4523",
+    "native/production/worker-general-long-prose.response.json": "581ba890497cadc1e79951c846a36663b8a20a4f3db0e5bbc5bbb0a1c42a6b6e",
+    "native/production/worker-general-reasoning.request.json": "119e117ac1928c0d243cf3fed1b69b4954db9ad43c875f1dabf548a4ac2c075d",
+    "native/production/worker-general-reasoning.response.json": "fb6b69c3a57c0bc031c0a8566f61910d1a5abd2d4ddce9b964bd4ad18cd15c21",
+    "native/scheduler.grant": "8908d87f44bd18c730a689a70a64cf1af7bced5f82f6fdaac2800c477a8f38eb",
+    "scheduler.ended": "d29929582ad0af4d624b3755dc20c10c2501bffb7ae70dd79b24ecd8d95f04e6"
+  }
+}

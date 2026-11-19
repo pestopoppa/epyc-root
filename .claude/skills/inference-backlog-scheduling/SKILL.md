@@ -13,16 +13,18 @@ work is a reportable failure, not a resting state.
 
 Canonical protocol (read it once per session): `docs/guides/agent-workflows/compute-fillers.md`.
 
-> **2026-11-01 simplified row flow (operator: "remove every gate that is not indispensable").** For NEW rows the
-> owner writes TWO things: the launcher (on `filler_run15.sh`) and a small spec; `scripts/coordination/rowflow/publish_row.py`
-> derives the rest into `compute-flags/ready/<id>.json` (`epyc.row.v3`). The keeper is the qualifier: ONE deterministic
-> dry run on the REAL lane (`compute-flags/dryrun/<id>/PASS.json` | `FAIL-n.json`), and a passing row is grantable while its
-> launcher sha is unchanged. **Retired for new rows**: the 18-cell FILLERS.md row, `ready/<id>.row.md`, `epyc.ready.v2`
-> manifests, nonces/receipts, the owner-wide worker breaker, the registry-row check, `validate_fillers.py` in `grant_ok`
-> (v4). Where this file still says "FILLERS row" below, read "v3 row" for new rows; FILLERS.md stays as the legacy
-> registry of rows armed before 2026-11-01. Flow: `docs/guides/agent-workflows/backlog-churn-flow.md`.
->
-> **2026-11-01 evening: one allocator.** The two grant writers, `grant_ok*.sh`, `ram_admit.sh` and the legacy `grant_ok_launcher.py` copy are deleted from git. `rowflow.py allocate`, run by keeper v11 every 120 s tick, is the only writer of grants and dry runs, working from one snapshot per tick. Its self-healing invariants log `SNAPSHOT`, `GRANT`, `DRYRUN-START`, `IDLE-WHY`, `HEAL`, `CONFLICT`, `UNDERUSED` and `ALERT`; see `docs/guides/agent-workflows/backlog-churn-flow.md` → *The allocator*.
+> **Current state (consolidated 2026-11-07).** Rows are `epyc.row.v3` manifests: the owner writes a launcher (on
+> `filler_run15.sh`) and a small spec, `scripts/coordination/rowflow/publish_row.py` derives the rest, the keeper
+> (`rowflow.py allocate`, every 120 s, the ONLY grant writer) smokes it once on the real lane (`dryrun/<id>/PASS.json`),
+> grants it and files it. Row alerts land in the inference mailbox (`rowflow.py alerts --unacked` / `--ack`; a
+> publishing session arms the watcher in `scripts/coordination/rowflow/README.md`). Only `filler_run15.sh`
+> is **FROZEN** (needs `deploy_rowflow.sh --emergency`); `rowflow.py` and `publish_row.py` were unfrozen by the
+> operator on 2026-11-10 and deploy through the unit + replay gates with a D9-ack. rowflow2
+> (`scripts/coordination/rowflow2/`, `docs/design/rowflow2-20261105.md`) stays a read-only SHADOW. FILLERS.md, writers, `grant_ok*.sh`,
+> `ram_admit.sh` and `grant_ok_launcher.py` are retired (2026-11-01, "one allocator"); where this file still says
+> "FILLERS row" or "writer", read "v3 row" and "keeper". Flow: `docs/guides/agent-workflows/backlog-churn-flow.md`;
+> launcher contract and job-side rules: `docs/guides/agent-workflows/compute-fillers.md`.
+
 Live state lives outside the repo: queue `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md`, grants
 `compute-flags/grants/`, calendar `/mnt/raid0/llm/tmp/compute-calendar-<date>.md` (append-only
 REVISION lines). **The calendar's input is the prioritized backlog
@@ -30,7 +32,7 @@ REVISION lines). **The calendar's input is the prioritized backlog
 and the derived plan is the tracked file `coordination/compute-calendar/CALENDAR-PLAN.md` (§3 step
 0). The rows themselves live in the domain indices, e.g. `handoffs/active/inference-research-index.md`
 (routed from `handoffs/active/master-handoff-index.md`); non-compute work is
-`handoffs/active/non-inference-backlog.md`. Posture: `handoffs/active/CURRENT-CAMPAIGN.md`.
+`handoffs/active/engineering-hygiene-backlog.md`. Posture: `handoffs/active/CURRENT-CAMPAIGN.md`.
 
 ## 1. The model: bins, items, classes
 
@@ -42,7 +44,7 @@ explicit lists such as `72-95`; whole host `0-95`; the MI210 (`mi210_0`) **with 
 same filesystem frees nothing until it is swept; see `references/disk-bin.md`, bought by raid0
 reaching 100 % and an ORCH ENOSPC on 10-27).
 
-**Items** are rows: `compute-flags/ready/<id>.json` (`epyc.row.v3`, new flow) or legacy FILLERS.md rows (18 columns; `validate_fillers.py`). What the packer reads:
+**Items** are rows: `compute-flags/ready/<id>.json` (`epyc.row.v3`, new flow) or legacy FILLERS.md rows (18 columns; `validate_fillers.py`). Every measurement row's task text carries a **stop rule** (question, checkpoints, stop-on-answer / stop-on-futility; formal-gate cells futility-only) per `docs/guides/agent-workflows/measurement-sufficiency.md`; a row without one is not READY. What the packer reads:
 
 | Field | Meaning for packing |
 |---|---|
@@ -55,35 +57,52 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
 
 ## 2. Compatibility rules (what may share a bin)
 
-- **Quiet host** (gpu-quiet exclusive + all of 0-95, nothing else running) is earned only by
-  decision-grade baselines and AK keep gates. Indicative timing shares with a labelled GPU job (and
-  the GPU-on/off difference is itself a wanted measurement). Correctness shares with anything but
-  CPU timing. Builds are correctness.
-- **The q3 fold.** `region-lock --cpu-list 184-191` folds into a claim on all of q3. A folded GPU
-  job conflicts with any q3 or 0-95 CPU claim, and a q3 build makes the MI210 idle behind it. A
-  GPU-only job claims gpu-quiet with **no CPU region** and tasksets 184-191 itself (`filler_run7+
-  --class gpu --no-fold-siblings`); region-lock's own `--no-fold-siblings` on an SMT-only list is
-  refused ("maps to no regions"). Decide per GPU row: *no-fold* (co-runs with whole-CPU
-  correctness) or *folded* (needs q3 empty; keep q3 free while it runs).
-- **Co-residency cost, measured 2026-10-22 (gpu-cpu-noise):** with every GPU thread pinned to
-  184-191, CPU decode -0.7..-1.05 %, prefill -4.3..-4.8 %, variance not inflated; on the SMT
-  channel (88-95 vs 184-191) prefill -9.6 %. Whole-host CPU models eat it; partial-host models go
-  off q3 when a GPU job is live. One ROCr thread escapes `taskset`; pin with
-  `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (P1 PASS 10-23) or `taskset -a -p` after health.
-- **A correctness job that carries a cross-arm timing check** (an overhead gate, an M-vs-G ratio)
-  is timing-sensitive for that check. Book it with the GPU idle, and before booking it, check that
-  the harness compares **same-source arms in alternating order** (ABAB, not AAAA-BBBB). Quiet
-  hardware alone does not save it. akx-lb3-2 was INVALID with a GPU co-tenant on 10-24 (overhead
-  -5.79 % > 5 %) and INVALID again on a whole-host quiet run on 10-25 (-5.93/-6.30 %, M
-  consistently faster than G). The cause was the fixed arm order and the different-source arms,
-  not co-tenancy. The fix is AKX-LB32-OVERHEAD-1, a same-source control arm.
-- **RAM is a bin.** `ram_admit.sh <peak_gib> [ds41]` before every grant and every model load.
-  At most ONE DS41-class (≥200 GiB; 1017 = 739 GiB) server host-wide: `ram_admit 739 ds41`
-  refuses while any process maps a 1017 shard. Keep ≥20 min between DS41 handovers.
-- **Launcher class must match the grant shape it will receive.** `--class cpu+gpu` refuses a
-  `regions=0-95` grant (no `mi210_0` token, `.ended rc=2`, slot lost). A CPU timing job that needs
-  the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus 0-95` (filler_run8). Dry-check
-  the launcher's region parser against the exact grant line before arming.
+Owners **declare** cpus, threads and GPU use; the keeper validates and measures, it never infers from job text.
+Threads default from affinity (`job_fence.py` sets `OMP_NUM_THREADS`, `GGML_N_THREADS`, `LLAMA_ARG_THREADS`, … from
+`sched_getaffinity`, because ggml sees 192 and ignores `taskset`).
+
+| Row | Shape it gets | What stays free beside it |
+|---|---|---|
+| GPU correctness, build, qualification, production (`shape: gpu`) | MI210 + its host threads 184-191 | all of q0-q3 for CPU work (measured: GPU 100 % while 88-95 sit ~1 %) |
+| GPU timing / bench / profile / AK keep gate (`gpu-q3`, **NARROW**, operator 2026-11-05) | gpu-quiet + 184-191 + their SMT-sibling cores 88-95, **never the rest of q3** | 72-87 to any CPU row; q0-q2 unchanged. A row needing a quieter neighbourhood declares it: explicit regions (`mi210_0,72-95,184-191`) + `shape_override "operator: <who> <date>: <why>"`, honoured verbatim |
+| CPU single quarter | the declared quarter (q3 allowed for correctness) | the rest |
+| CPU multi-quarter (`multi-quarter(n)`) | **q0-q2 only** (keeper `ec6aba4b1`, rowflow2 decision 10): 88-95 are the cores behind the GPU host lane | q3 for GPU timing |
+| CPU timing | q0-q2; q3 only with gpu-quiet declared (a q3 timing grant shares 88-95 with the MI210 host lane; iqk-q8-prefill-ab-r6 ran 20-70 % slow beside a 27B reload) | — |
+| Whole host (`0-95`) | only rows that measure whole-host CPU serving (npd1-step5, `-t 48` interleaved), cite a decision-grade baseline, or carry an operator override; a 1-thread job gets a quarter at most | nothing |
+| Quiet host (gpu-quiet exclusive + 0-95) | decision-grade baselines and AK keep gates only | nothing |
+
+- **Width beyond the evidence contract (CPU rows only, operator 2026-11-06):** a `multi-quarter(n)` declaration is
+  admitted without `shape_override` when the spec carries `width_justification` (>= 20 chars naming why extra width
+  helps). A smoke footprint is never width evidence and a declared quarter is a floor. Never for GPU/timing rows.
+- **Priority.** Lower `priority_rank` = higher priority; smokes drain strictly by rank. Give a GPU correctness suite
+  (test-backend-ops etc.) a rank number STRICTLY GREATER than every waiting GPU timing row (use >= 60; a tie went to
+  the suite and four timing rows waited ~40 min behind a 2 %-busy suite, 2026-11-05), or batch suites into one row.
+  Caveat for the frozen keeper: `plan_order` orders by lane starvation before rank for ranks >= 10, so only rank < 10
+  is strictly ordered; rowflow2 ranks at grant time and a shared-class suite does not block the GPU token at all.
+- **Idle grants are told, not tolerated (operator 2026-11-05).** Frozen keeper: a grant under 10 % busy for 300 s
+  gets ONE `[warning]` to its owner (`IDLE-HELD-WARN`), then one per 15 min; GPU grants are judged by their own KFD
+  client / device busy, never CPU %. rowflow2 ends a wholly idle grant (every core < 2 %, no own KFD pid) at 900 s with
+  `rc=75`, re-queues once, then terminal (design decision 9).
+- **Containers die with the row.** `filler_run15` labels containers the job starts (`epyc.filler.row=<id>`, `docker`
+  shim) and stops + removes exactly those at STOP / hard end / exit (operator 2026-11-06). Containers carry
+  `--cpuset-cpus "$FILLER_CPUS"`.
+- **Co-residency cost, measured 2026-10-22 (gpu-cpu-noise):** with every GPU thread pinned to 184-191, CPU decode
+  -0.7..-1.05 %, prefill -4.3..-4.8 %, variance not inflated; on the SMT channel (88-95 vs 184-191) prefill -9.6 %.
+  Whole-host CPU models eat it; partial-host models go off q3 when a GPU job is live. One ROCr thread escapes
+  `taskset`; pin with `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` or `taskset -a -p` after health.
+- **A correctness job that carries a cross-arm timing check** (overhead gate, M-vs-G ratio) is timing-sensitive for
+  that check: book it with the GPU idle AND make the harness compare same-source arms in alternating order (ABAB).
+  akx-lb3-2 was INVALID twice (co-tenant and quiet host) because of fixed arm order, not co-tenancy; fix = a
+  same-source control arm (AKX-LB32-OVERHEAD-1).
+- **RAM is a bin.** `ram_gib` = private/anon peak **plus** file-mapped weights (DS41-1017 = 739); the keeper admits
+  against `MemAvailable` with a 64 GiB margin above earlyoom's 40 GiB trigger. At most ONE DS41-class (>= 200 GiB)
+  server host-wide; keep >= 20 min between DS41 handovers.
+- **Launcher class must match the grant it will receive.** `--class cpu+gpu` refuses a `regions=0-95` grant (`.ended
+  rc=2`, slot lost). A CPU timing job that needs the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus
+  0-95`. The publish smoke runs the real launcher against the real grant line, so a mismatch fails at publish, not in
+  the window.
+- Idle host with queued rows → read the keeper's `IDLE-WHY` / `DRAIN` lines and fix the over-booked row.
+- **A box commit or an alert ack is not filing; only `filing-done/<id>.FILED` is** (operator 2026-11-07): file with `file_result.py <id> --receipt <commit>:<handoff>#<BOX-ID>` (or `--verdict SUPERSEDED|WITHDRAWN`); a `-rN` publish files its earlier attempts SUPERSEDED, the janitor auto-links one-commit matches, `rowflow alerts --ack` refuses an unfiled ended row without `--force-ack`, and reclaim skips any dir a live row overlaps (`RECLAIM-SKIPPED-SHARED`).
 
 ## 3. Packing procedure
 
@@ -112,6 +131,8 @@ Run this loop at every task boundary and on every watcher event (`event-watch-ws
 
 When the operator asks to churn / work / clear the backlog, this and nothing else is meant. Canonical page: `docs/guides/agent-workflows/backlog-churn-flow.md`.
 
+**Direct path is the default when a lane is measured free or the operator is present (2026-11-03):** `scripts/coordination/rowflow/run_direct.sh <ready.json|row-id>` is the ONE command - it claims exactly the row's regions under a finite region-lock timeout, runs the job with the engine's `FILLER_*` contract, holds the row from the keeper, writes `.ended` on exit and prints measured CPU%/GPU% 30 s after start (`run_direct.sh stop <id>` / `status <id>`); the keeper's five-step flow below is the scheduler for UNATTENDED work, not a gate in front of a free lane.
+
 1. The backlog is prioritized tasks of two types: inference and non-inference.
 2. Non-inference tasks that block inference tasks are built regardless of compute usage.
 3. Once an inference task is unblocked, its launcher is prepared and dry-run in a realistic environment (= the keeper's dry run on the real lane, `DRYRUN-RESULT PASS` -> `dryrun/<id>/PASS.json`).
@@ -123,9 +144,10 @@ Each Codex worker reads ONE generated file, `compute-flags/BACKLOG-<worker>.md` 
 1. **Read the bins.** `region-lock status` (claims), `rocm-smi --showuse --showmemuse` (a held
    gpu-quiet at 0 % use is idle, not busy), `MemAvailable`, open `grants/*.grant`, live writer pids.
    Real utilisation, never the lock table alone.
-2. **Read the items.** `scripts/queue_status.py` (this skill) prints COMPLETE / RUNNING / BOOKED /
-   ARMED-UNBOOKED / BACKLOG per owner from FILLERS.md, the grants dir and the live writers. Only
-   ARMED-UNBOOKED rows are placeable. An ARMED-UNBOOKED row that cannot actually run (fix not
+2. **Read the items.** `scripts/queue_status.py` (this skill) prints RUNNING / GRANTABLE-QUEUED /
+   SMOKE-QUEUED-FAILED / PARKED-BLOCKED / IDLE (keeper IDLE-WHY) / UNFILED-ENDED from the live rowflow state
+   (`ready/`, `grants/`, `dryrun/`, `filing-done/`, keeper log); FILLERS.md is retired and not read. Only
+   GRANTABLE rows are placeable, and ended rows are not backlog. An ARMED-UNBOOKED row that cannot actually run (fix not
    pinned, held by a writer, decision pending) is a defect: demote it to BACKLOG now. Every
    BACKLOG row blocked on code gets a subagent (or a Codex assignment) **this turn**; unwritten code is never a recorded blocker, and a cleared blocker is armed and requested
    in the same turn as it clears.
@@ -152,6 +174,13 @@ Each Codex worker reads ONE generated file, `compute-flags/BACKLOG-<worker>.md` 
    night chain were reported "passed" with no verdict read.
 
 ## 4. Invariants, each bought by an incident (`references/incident-ledger.md` has dates and ids)
+
+> **Reading guide (2026-11-07).** Most items below name writer-era tools (`grant_ok.sh`, grant writers, `.wsg-granted`
+> stamps, FILLERS cells, `filler_run12`) that the 2026-11-01 "one allocator" ruling retired; the keeper's publish
+> smoke, grant and reap paths now enforce the same invariants in code (`rowflow.py`, replay gate scenarios). Read each
+> item for the *rule it bought* and treat the tool names as history. Pass 5 of the keeper-friction review proposes
+> folding this section, `references/grant-writer-pattern.md`, `scripts/queue_status.py` and the two evals into
+> `references/incident-ledger.md` once rowflow2 is cut over.
 
 **New-row launch gate (T1, 2026-10-27).** Before arming any new row, run
 `scripts/coordination/dryrun_check.py run` against that row's real launcher
@@ -245,14 +274,10 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
   quiet block) will raise a whole-host HOLD inside the new row's window, do not grant that row
   now; place it after the HOLD. Origin: 10-26 23:29Z, HSF-2 and FA4 were granted 1 min before the
   night HOLD, and both were killed.
-- **T1 launch gate: arm a row only after a same-entry-path preflight.** The PF runs the real
-  launcher → filler engine → job up to the first side effect, with a writer-format
-  (minute-precision) synthetic grant, from a non-ancestor process tree, under the normal inherited
-  env (`NODE_OPTIONS`). Every refusal is logged. The effective RLIMIT, affinity and cgroup are
-  printed and checked, `min_window + 300 ≤ window` holds, and `est_output_GiB` and `scratch_root`
-  are declared with the disk floor checked after the output. Enforcing tool: `dryrun_check.py` /
-  `filler_run12.sh` (Codex, in progress). Details and the six failures behind each check:
-  `references/launch-admission-gate.md`. Origin: six early-launch failures on 10-27.
+- **Launch gate: a row is armed only after a smoke of the REAL launcher on the real lane** (the keeper's
+  `dryrun/<id>/PASS.json`), not a fixture preflight that stops before the first model load (60 of 88 failed rows
+  had passed the old T1 PF). The nine checks the smoke must show, and the six 10-27 early-launch failures behind
+  them: `references/launch-admission-gate.md`.
   Owner watcher / quarter-lock lessons: `references/owner-watchers.md` (2026-10-27).
 - **A HOLD written by one writer and removed by another needs a keeper** when quiet blocks chain.
   The keeper is a small script that re-creates the HOLD until the last quiet job's `.ended`, then
@@ -287,6 +312,21 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
   test run; the tripwire must fail on `llama-*`/`.gguf` execs and be proven to fire on a deliberate control (10-26).
 - **A phase that fits the preflight envelope (under ~240 s, single-thread) is iterated in the standing CPU 24,25
   preflight, never booked as a row.** Booking it burns a grant window on an iteration loop (10-26).
+
+### Lessons of 10-27..10-28 (skill review LOOP-9; still valid under the v3 keeper flow)
+
+- **No `HOLD_*` while foreign grants are open.** Worker runners STOP on any HOLD: a PF1 drain killed HIL15 heavy and the
+  ATT canary (10-27 23:54Z).
+- **No `|` in a queue match regex**, not only in queue fields: the pipe corrupted `regions` (4x rc2, 10-27 21:18Z).
+- **rc75 is a partial, not a failure.** Re-arm it and file it as a result; HIL15 v5 and yarn s0-s3 partials were HELD as
+  failures while graceful stops returned rc1.
+- **Never arm a conditional row.** Its named preconditions (e.g. YaRN s0/s1) must exist first.
+- **Prep must not sync the shared venv.** A `scope.sh` `uv run` editable reinstall at 01:54:57Z killed HIL15 s1.
+- **Copy the exact region string from the smoke** (`72-73`, not `72,73`); never type it.
+- **A cgroup is not containment until its delegation is root-owned** (same-UID escape, RUN14/INF-74, 10-28).
+- **HELD-row recovery outranks tooling work**; the audit traced the tooling drift to leaving it unattended.
+- **A real-lane smoke, not a fixture preflight, makes a row ready** (`references/launch-admission-gate.md`).
+- **A re-arm reassesses; it never copies the spec.** Before republishing a row after a failed or stopped run, re-derive its shape (cores/quarters, slots), its estimate and the way the prior run failed from the prior run's own evidence. SLIDERS r3 was a verbatim copy of r2 and booked about 13 h on one quarter; its first question took 5,516 s and ended `[Error] Request timed out.` (hard-coded 200 s client timeout, up to 16 concurrent calls into 2 slots). The operator objected (2026-11-09); r4 fixed the cause, used 4 slots and two quarters, and cut the estimate from 12 h to 8 h from r3's measured first question.
 
 ## 5. Coordination protocol
 
@@ -330,10 +370,17 @@ CRITICAL PATH: <the chain whose last end is latest> → ETA <HH:MM>Z <date>; sla
 RAM ledger next 24 h: peak concurrent GiB per block (never two DS41-class items in one row)
 ```
 
-`scripts/queue_status.py [--owner X] [--json]` produces the first five sections read-only; the
+`scripts/queue_status.py [--owner X] [--json]` produces the first sections read-only (rowflow state, not FILLERS.md); the
 critical path and the RAM ledger come from the writers' chains and the row RAM figures.
 
 Add a `DECISIONS` line to the report: `python3 scripts/handoffs/verdict_count.py` (read-only) prints the DECIDED / RAN-NO-VERDICT / RAN-FAILED-ONLY / NEVER-RUN class counts and decisions per day, so the operator sees decisions/week (last 7 d vs prior 7 d), not only runs; `--json OUT` writes the full per-row table.
+
+## Shared job templates: import, never copy (operator 2026-11-06)
+
+New rows import `job_fence.py` / `gitnexus_impact.py` from `/mnt/raid0/llm/tmp/compute-flags/bin/job_templates/`
+(source and tests `scripts/coordination/job_templates/`) instead of vendoring copies; `template_lint.py <launcher>`
+warns on a vendored fence that does not import `job_fence`. Contract and flags:
+`docs/guides/agent-workflows/compute-fillers.md` → *Shared job templates*.
 
 ## When not to apply this skill
 

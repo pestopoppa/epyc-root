@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "filed_by": "handoff-vidya-belief-substrate owner",
+  "rationale": "rc=0; sixteen original cap-0/cap-7 responses preserved with native telemetry, per-request custody, sealed production bank before candidate, and both captured PIDs dead/listeners closed. All responses have 128 tokens and limit finish; code matches across runtimes at both caps, JSON/reasoning/prose differ in content and token IDs at both caps. This passes finite input capture only; complete seven-profile pack remains incomplete, no quality-transfer or promotion authority."
+}

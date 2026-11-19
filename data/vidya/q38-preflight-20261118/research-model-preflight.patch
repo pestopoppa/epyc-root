@@ -1,0 +1,260 @@
+diff --git a/scripts/kernel_rnd/autokernel/loop/belief_context.py b/scripts/kernel_rnd/autokernel/loop/belief_context.py
+index 48464f61f..a51afe153 100644
+--- a/scripts/kernel_rnd/autokernel/loop/belief_context.py
++++ b/scripts/kernel_rnd/autokernel/loop/belief_context.py
+@@ -202,7 +202,9 @@ def target_from_context(context: Mapping[str, Any]) -> dict[str, Any]:
+     regime = context.get("current_regime") or {}
+     model = regime.get("model") or {}
+     backend = str(regime.get("backend") or "").lower()
++    model_sha256 = model.get("sha256") if isinstance(model, Mapping) else None
+     return {"model_path": str(model.get("path") or "") if isinstance(model, Mapping) else "",
++            **({"model_sha256": model_sha256} if model_sha256 is not None else {}),
+             "quant": regime.get("quant") or "", "backend": backend,
+             "device": DEVICE_BY_BACKEND.get(backend, ""),
+             "surface": regime.get("measurement_surface") or "",
+diff --git a/scripts/kernel_rnd/autokernel/loop/belief_model_preflight.py b/scripts/kernel_rnd/autokernel/loop/belief_model_preflight.py
+new file mode 100644
+index 000000000..778c0848a
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/loop/belief_model_preflight.py
+@@ -0,0 +1,80 @@
++"""Verify an enrolled single-file model before a grant; recheck its identity by stat."""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import os
++from pathlib import Path
++import re
++import stat
++
++from ..controller import workload_contract
++
++SCHEMA = "epyc.autokernel.belief_model_preflight.v1"
++
++
++def _single_file(path: Path) -> Path:
++    resolved = path.resolve(strict=True)
++    for name in {path.absolute(), resolved}:
++        if workload_contract.split_shards(name) != [name]:
++            raise ValueError("split model requires a whole-model digest contract")
++    return resolved
++
++
++def _identity(info: os.stat_result) -> list[int]:
++    if not stat.S_ISREG(info.st_mode) or info.st_size <= 0:
++        raise ValueError("model must be a nonempty regular file")
++    return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
++
++
++def _receipt(path: Path, sha256: str, identity: list[int]) -> dict:
++    if not re.fullmatch(r"[a-f0-9]{64}", sha256):
++        raise ValueError("expected model SHA-256 must be 64 lowercase hex digits")
++    return {"schema": SCHEMA, "path": str(path), "sha256": sha256,
++            "identity": dict(zip(("device", "inode", "size", "mtime_ns", "ctime_ns"), identity))}
++
++
++def capture(model: Path, expected_sha256: str) -> dict:
++    """Hash once outside the grant and confirm the expected content and stable name."""
++    path = _single_file(model)
++    named = _identity(path.stat())
++    with os.fdopen(os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW), "rb") as stream:
++        before = _identity(os.fstat(stream.fileno()))
++        if before != named:
++            raise ValueError("model changed before preflight hash")
++        digest = hashlib.file_digest(stream, "sha256").hexdigest()
++        after = _identity(os.fstat(stream.fileno()))
++    if before != after or _single_file(model) != path or _identity(path.stat()) != before:
++        raise ValueError("model changed during preflight hash")
++    if digest != expected_sha256:
++        raise ValueError("model bytes differ from expected SHA-256")
++    return _receipt(path, digest, before)
++
++
++def verify(receipt: dict, model: Path, launch_model) -> str:
++    """Require the trusted preflight receipt to match the launch and current file."""
++    path = _single_file(model)
++    if _single_file(Path(launch_model.path)) != path:
++        raise ValueError("model preflight path differs from selected launch")
++    expected = _receipt(path, launch_model.sha256, _identity(path.stat()))
++    if receipt != expected:
++        raise ValueError("model preflight differs from selected launch or current file identity")
++    return expected["sha256"]
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("model", type=Path)
++    parser.add_argument("expected_sha256")
++    args = parser.parse_args()
++    try:
++        receipt = capture(args.model, args.expected_sha256)
++    except (OSError, ValueError, workload_contract.WorkloadContractError) as exc:
++        parser.error(str(exc))
++    print(json.dumps(receipt, sort_keys=True))
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/scripts/kernel_rnd/autokernel/loop/run.py b/scripts/kernel_rnd/autokernel/loop/run.py
+index 0ab3982bd..685794f9a 100644
+--- a/scripts/kernel_rnd/autokernel/loop/run.py
++++ b/scripts/kernel_rnd/autokernel/loop/run.py
+@@ -102,7 +102,7 @@ from . import exact_lane, keep_timing
+ from . import floor_selfcheck
+ from . import tail_timing
+ from . import actor_opencode_config
+-from . import belief_context, planner_only
++from . import belief_context, belief_model_preflight, planner_only
+ from . import actor_passthrough
+ from . import cross_target, kernel_coverage, blast_radius
+ from . import gpu_counter_signals, isa_claims
+@@ -2734,6 +2734,9 @@ def _main(argv: list[str] | None = None) -> int:
+                         help="selected target's canonical resolved CPU launch JSON")
+     parser.add_argument("--gpu-serving-launch", type=Path,
+                         help="explicit enrolled GPU target's canonical resolved serving launch JSON")
++    parser.add_argument("--belief-model-preflight", type=Path,
++                        help="trusted pre-grant model identity JSON from belief_model_preflight; "
++                             "requires a selected serving launch")
+     parser.add_argument("--frozen-prompts", type=Path,
+                         help="original FrozenPromptManifest for explicitly selected serving measurement")
+     parser.add_argument("--heldout-frozen-prompts", type=Path,
+@@ -3633,6 +3636,15 @@ def _main(argv: list[str] | None = None) -> int:
+           or args.experimental_branch or args.cpu_calibrate_serving
+           or args.gpu_calibrate_serving):
+         parser.error("serving options require --cpu-serving-launch or --gpu-serving-launch")
++    model_preflight = None
++    if args.belief_model_preflight is not None:
++        if direct_launch is None:
++            parser.error("--belief-model-preflight requires a selected serving launch")
++        try:
++            model_preflight = _read_cpu_document(args.belief_model_preflight)
++            belief_model_preflight.verify(model_preflight, args.model, direct_launch.model)
++        except (OSError, ValueError, workload_contract.WorkloadContractError) as exc:
++            parser.error(f"belief model preflight refused: {exc}")
+     if args.cpu_calibrate_heldout is not None:
+         if not args.cpu_serving_launch or heldout_requests is None:
+             parser.error("--cpu-calibrate-heldout requires CPU serving and --heldout-frozen-prompts")
+@@ -4399,6 +4411,12 @@ def _main(argv: list[str] | None = None) -> int:
+         source_floor_refresh[0] = True
+ 
+     def build_context() -> dict:
++        regime_model = {"path": str(args.model)}
++        if model_preflight is not None:
++            # Runtime and build rebinds must still name the original verified model.
++            # Recheck the live path here, without reading weights inside the grant.
++            regime_model["sha256"] = belief_model_preflight.verify(
++                model_preflight, args.model, direct_launch.model)
+         # Accepted hypotheses still pending authoring: the planner must not re-propose
+         # them (the next draws re-author them first). Only present when non-empty.
+         pending_view[0] = pending_hypotheses_view(args, epoch, current_anchor_commit[0],
+@@ -4502,7 +4520,7 @@ def _main(argv: list[str] | None = None) -> int:
+             **({"pending_accepted_hypotheses": list(pending_view[0])}
+                if pending_view[0] else {}),
+             "current_regime": {
+-                "model": {"path": str(args.model)}, "quant": census.quant_label,
++                "model": regime_model, "quant": census.quant_label,
+                 "backend": "cpu" if cpu_launch else "gpu",
+                 "recipe": {"build_recipe": recipe.to_dict()},
+                 "measurement_surface": args.surface},
+diff --git a/scripts/kernel_rnd/autokernel/loop/serial_run.py b/scripts/kernel_rnd/autokernel/loop/serial_run.py
+index 2f7849217..2d0551a91 100644
+--- a/scripts/kernel_rnd/autokernel/loop/serial_run.py
++++ b/scripts/kernel_rnd/autokernel/loop/serial_run.py
+@@ -33,7 +33,7 @@ SERIAL_CHILD_LOG_SCHEMA = "epyc.autokernel.serial_child_output.v1"
+ MAX_SERIAL_CHILD_LOG_BYTES_PER_STREAM = 1024 * 1024
+ _DOCUMENT_FLAGS = ("--resolved-campaign", "--cpu-serving-launch", "--gpu-serving-launch",
+                    "--frozen-prompts", "--heldout-frozen-prompts", "--serving-recipe", "--runtime-recipe-reference",
+-                   "--runtime-recovery-reference")
++                   "--runtime-recovery-reference", "--belief-model-preflight")
+ #: AKX-AUTO-6 (operator 2026-10-21, f8): a champion-advance re-anchor. `--new-anchor-epoch COMMIT`
+ #: is bound to ONE anchor commit and is meaningful only for the FIRST child of a lineage (it archives
+ #: the old bundle and starts the new epoch); `_batch_argv` therefore drops it from every continuation
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_belief_model_preflight.py b/scripts/kernel_rnd/autokernel/loop/test_belief_model_preflight.py
+new file mode 100644
+index 000000000..1ec403d5a
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/loop/test_belief_model_preflight.py
+@@ -0,0 +1,51 @@
++import hashlib
++import os
++from pathlib import Path
++
++import pytest
++
++from . import belief_model_preflight as preflight
++from .resolved_recipe import ArtifactDigest
++
++
++def test_verified_receipt_binds_bytes_and_verifies_without_hashing(tmp_path, monkeypatch):
++    model = tmp_path / "test.gguf"
++    model.write_bytes(b"fixture bytes")
++    digest = hashlib.sha256(model.read_bytes()).hexdigest()
++    wrong = "0" * 64
++    with pytest.raises(ValueError, match="differ from expected"):
++        preflight.capture(model, wrong)
++    receipt = preflight.capture(model, digest)
++
++    def refuse_hash(*_args):
++        pytest.fail("runtime verification read model bytes")
++
++    monkeypatch.setattr(preflight.hashlib, "file_digest", refuse_hash)
++    alias = tmp_path / "model-alias.gguf"
++    alias.symlink_to(model)
++    launch = ArtifactDigest("model", str(model), digest)
++    assert preflight.verify(receipt, alias, launch) == digest
++    with pytest.raises(ValueError, match="differs"):
++        preflight.verify(receipt, alias, ArtifactDigest("model", str(model), wrong))
++    with pytest.raises(ValueError, match="differs"):
++        preflight.verify({}, alias, launch)
++
++    replacement = tmp_path / "replacement.gguf"
++    replacement.write_bytes(b"fixture bytes")
++    alias.unlink()
++    alias.symlink_to(replacement)
++    with pytest.raises(ValueError, match="path differs"):
++        preflight.verify(receipt, alias, launch)
++    original = model.stat()
++    model.write_bytes(b"changed bytes")
++    os.utime(model, ns=(original.st_atime_ns, original.st_mtime_ns))
++    with pytest.raises(ValueError, match="identity"):
++        preflight.verify(receipt, model, launch)
++
++
++def test_split_shard_cannot_be_promoted_as_the_full_model(tmp_path):
++    first = tmp_path / "claimed-00001-of-00002.gguf"
++    first.write_bytes(b"first")
++    (tmp_path / "claimed-00002-of-00002.gguf").write_bytes(b"second")
++    with pytest.raises(ValueError, match="whole-model"):
++        preflight.capture(first, hashlib.sha256(b"first").hexdigest())
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py b/scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py
+index 555f8c7a7..250a22972 100644
+--- a/scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_existing_gpu_serving_run.py
+@@ -27,8 +27,9 @@ def synthetic_rocm62(monkeypatch):
+                         lambda: (True, run.build_recipe.ROCM_VERSION_REQUIRED))
+ 
+ 
+-def _inputs(fixture, *, experimental):
+-    model = fixture.root / f"{run.bench.MEASURED_FLOOR_MODEL_STEM}.gguf"
++def _inputs(fixture, *, experimental, model_artifact=None):
++    model = (Path(model_artifact.path) if model_artifact is not None else
++             fixture.root / f"{run.bench.MEASURED_FLOOR_MODEL_STEM}.gguf")
+     branch = "ak/experimental/gpu-serving" if experimental else run.champion.CANONICAL_BRANCH
+     if experimental:
+         run._git(fixture.repo, "checkout", "-b", branch)
+@@ -47,10 +48,11 @@ def _inputs(fixture, *, experimental):
+         return rr.ArtifactDigest(role, str(path), hashlib.sha256(path.read_bytes()).hexdigest()).to_dict()
+ 
+     build = fixture.startup_anchor
++    model_artifact = model_artifact.to_dict() if model_artifact else identity("model", model)
+     selected = rr.resolve_canonical_launch(
+         recipe, build_dir=build, command_argv=recipe.server_argv(build, 18311), topology_prefix=(),
+         launch_environment={"LD_LIBRARY_PATH": str(build / "bin")},
+-        artifact_identities={"model": identity("model", model), "drafter": None,
++        artifact_identities={"model": model_artifact, "drafter": None,
+             "executable": identity("executable", build / "bin/llama-server"),
+             "dsos": [identity("dso", build / "bin/libggml-hip.so")]},
+         backend="gpu", environment_policy=_policy(), port=18311,

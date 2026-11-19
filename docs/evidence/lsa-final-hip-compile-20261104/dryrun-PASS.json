@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-final-hip-compile-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-04T12:56:09Z reason=exited",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/results.jsonl (unit_key unit set)",
+ "first_progress_s": 600,
+ "first_unit_at": "2026-11-04T12:56:10Z",
+ "id": "lsa-final-hip-compile-20261104",
+ "launcher_sha256": "06221b6b7f6dce71fff75ab6db9b84b50a73cbf59d7f37e822467011afe5572d",
+ "passed_at": "2026-11-04T12:56:10Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/results.jsonl",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

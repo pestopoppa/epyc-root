@@ -1,0 +1,17 @@
+{
+ "schema": "epyc.vb_sl2_steps.result.v1",
+ "status": "COMPLETE",
+ "problems": [],
+ "wall_s": 129.4,
+ "store": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103/store",
+ "receipt": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103/store/serving-beliefs/5e835e05a215372fe5895e8122dd0807a4f4a82f5476251d12e27c0db76aa4f0.json",
+ "has_steps_block": true,
+ "anchor_tok_s": 41.513238643793116,
+ "candidate_tok_s": 30.387819208977323,
+ "code_root": "/mnt/raid0/llm/worktrees/vb-sl2-steps-r1-code",
+ "code_sha": "bb669e628d65a37beb38b63268eb1004f18b35bc",
+ "build": "/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5",
+ "execution_digest": "1ea88a68ea5702fd6bc950a830c7a5ef2e73b9cd70e7d1b62162a6bcc185ad0f",
+ "pairs": 2,
+ "recipe": "q38fn-dd6c9cdbd-cpu-t48-mtp-d4 [np1 draft-mtp aggregate_tok_s cpu=0-95 env=GGML_FA_SPLIT_KV=0,GGML_FUSED_DECODE_OFF=1,GGML_IQK=1,GGML_NOHUGEPAGE_PROCESS=1,OMP_DYNAMIC=false,OMP_PLACES=cores,OMP_PROC_BIND=spread,OMP_WAIT_POLICY=active #41c359b39eb0]"
+}

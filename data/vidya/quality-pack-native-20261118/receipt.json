@@ -1,0 +1,39 @@
+{
+  "schema": "epyc.vidya.quality_pack_native_preparation.v1",
+  "at": "2026-11-18T00:08:38.879458+00:00",
+  "task": "VB-V9-8-QUALITY-PACK-NATIVE-CONTROL",
+  "row_id": "handoff-vidya-quality-pack-frontdoor-20261118",
+  "publication": "PUBLISHED; smoke PASS on 140-143",
+  "full_job_complete": false,
+  "smoke_units": 1,
+  "smoke_kind": "one genuine Qwen3-0.6B Q8_0 no-spec v10 native completion; independent from full frontdoor MTP slice",
+  "source_prep": "Pinned immutable v10/C13 binaries and ggml library bytes against existing store manifests, C13 build identity, full frontdoor model stat against prior sealed hash receipt, smoke model prepared hash and template hash. No weight hashing in grant. Static source checks/preflight passed.",
+  "scope": "The future isolated frontdoor slice is one prerequisite; seven-profile broad quality parity, actual banked/candidate comparison and its planning-context acceptance remain open. No relabeling of deployed profiles, shared server use or promotion authority.",
+  "no_direct_inference": true,
+  "files_sha256": {
+    "smoke-result.json": "777dca98b5bf49ee7a98c1947e780a5860f98765b5a3c0d2c6c6d95bd62a4fef",
+    "plan.json": "085b3ec69b4abd2e07969fc7b9533064c47ae2dfe28a3f13a19ec323b1986f73",
+    "SOURCE.sha256": "462b4bfb169d20e69923c591db783e0fe3f60f516defb21b4292c25db2aae245",
+    "row-launch.sh": "bba93ec1570c5042938101f2a5086f5e9c710d69c3ee920e15ac5b0bd1c7b78e",
+    "smoke-launcher.out": "f1d0c9c3f4c253579b3c12df6cbaea79726d5d2b8100a0cb29504690f493b212",
+    "row.spec.json": "29346e82233b09e94c6e5d33c23c8209412a3dd1279e0a38ece174c557ce8608",
+    "smoke-PASS.json": "2ef9fe34a7e20f6cb0f429257715db87bf626078dc3e5947dcf3d40500e92b7e",
+    "make_plan.py": "7e74d2e0a8e9fa1b90caa84954007a07c7649128c858c4eab92bd6e67eeab584",
+    "capture.py": "6cc8912442e6a1ce00ee84ba342b3ad3586fde36727c2d95aaf4fd7def07ec7c",
+    "smoke_predicate.py": "6a1db94fea10d8425ad81edb90225dd02f841b12ae43408128f6c89d5b662bdd",
+    "smoke-native/scheduler.grant": "3607f5f041140113f6c1041b931acf3e46b462cb70e1f73951bf7cece214659f",
+    "smoke-native/banked-capture.sha256": "237012932beeb2aa89155f1bcb49739100ec51845ea6da0b2565f68b43056f36",
+    "smoke-native/banked-capture.json": "7b897d7faadee2a4258f5961fc54e815b24b571f0bb3013abc4eda4364d664e7",
+    "smoke-native/production/server.json": "e06bdd00487ceb0a54152fc3b2da212467e26ec23b28e9b27faff1afb5ef5a64",
+    "smoke-native/production/cleanup.json": "7c783634eb8d2b14c1a934b6fe2f7fb17808a3c0483b235b3149984beb375eff",
+    "smoke-native/production/server.log": "5382bc0aac415de6f386df820616c47b868ef560a6dbe983ffde15faa4cc75e4",
+    "smoke-native/production/native-smoke.request.json": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "smoke-native/production/native-smoke.response.json": "e2a2a8e08d9c5be714645ac3c1886f24e3ba13222266f1ab905518b7c17657e8"
+  },
+  "original_bytes_envelopes": {
+    "plan.json": "plan.json.original-bytes.json",
+    "smoke-native/banked-capture.json": "smoke-native/banked-capture.json.original-bytes.json",
+    "smoke-result.json": "smoke-result.json.original-bytes.json"
+  },
+  "archive_format_reason": "Nanosecond filesystem timestamps in original JSON triggered the account-number scanner. Exact original bytes are retained as base64 plus SHA-256; external runtime files and original content hashes are unchanged."
+}

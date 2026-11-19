@@ -1,0 +1,25 @@
+{
+  "id": "kpf41-gpu-parity-r3-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-187",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS only if both F16 and Q8_0 fixtures exit zero and report their own exact type-specific parity marker, with own PID positive VRAM and sealed HIP library mapped during the run; source-bound executable and libraries match receipt before and after; verified subreaper captures and reaps descendants with pidfd/birth identity, with no cleanup signals in a passing run. Stop on mismatch, missing residency, cleanup failure, STOP or deadline. Model-free D64 only.",
+  "estimate_s": 300,
+  "ram_gib": 2,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-41",
+  "priority_rank": 35,
+  "kind": "compute",
+  "smoke_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105",
+  "keep": [
+    "**"
+  ],
+  "unit_key": "progress",
+  "lineage": "kpf41-gpu-parity-pidfd-cleanup",
+  "notes": "Smoke checks pinned build custody and synthetic owned parent/grandchild cleanup; no GPU fixture in smoke.",
+  "supersedes": "kpf41-gpu-parity-r2-20261105"
+}

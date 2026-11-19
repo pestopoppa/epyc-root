@@ -1,0 +1,7 @@
+# KPF-18 group-3 output-reservation controls
+
+Four model-free controls passed against a retained copy of the isolated candidate's `output_reserve.py` (SHA-256 `a763c65fc953c1ec2957b0b0784e7ed94f52b63985a12a6c633422460dd5d4fe`); the test refuses a changed source. They check the 150 GiB floor plus remaining 64 GiB budget boundary, fail-closed invalid values, rejection of an output symlink, and counting a sparse file by its logical size. The test file SHA-256 is `022fda54c5b5d867554622462778e6beed7c2e51789c8f10760b6ae1f525d869`.
+
+Run with `PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-g3-output-reserve-20261104 -p 'test_*.py'` while the source-bound isolated candidate remains available. These controls do not prove periodic supervision, whole-attempt coverage, a hard quota or bounded overshoot. The launcher remains disabled and no GPU/native test was run.
+
+Four additional model-free source-manifest tests pass against `SOURCES.sha256` SHA-256 `04c0d3922939496fb100b0a7b0a0efe228ee7f3611ad025cc6d47d3c8bb684f7`: local entries are present and match; synthetic duplicate, traversal and symlink entries are refused; absolute entries are reported unchecked. This applies only to that local manifest. The separate historical `NATIVE-SOURCES.sha256` currently has four mismatched and seven unreadable external paths, so native-source custody is not established and the candidate must remain disabled.

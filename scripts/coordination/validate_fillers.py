@@ -30,7 +30,7 @@ Rules (a cell value of "-" or empty means unfilled and violates the rule for its
     col 6         "peak host RAM GiB" (header may still read "max private RAM"): a number in GiB,
                   `48` or `48 GiB` (a leading ~ and decimals are allowed).  Definition (workspace-58,
                   2026-10-22): private/anon peak PLUS file-mapped weight bytes -- mapped weights count
-                  even with mmap.  ram_admit.sh compares it with MemAvailable (margin 64 GiB).
+                  even with mmap.  rowflow/job_fence compare it with MemAvailable (margin 100 GiB).
                   Prose such as "~48 GB VRAM", a range, or "-" is a violation.
     status        first token in {ARMED, REGISTERED, NOT-ARMED, CANCELLED, COMPLETE}; trailing
                   prose after the token is a violation (keep the cell to the literal token --

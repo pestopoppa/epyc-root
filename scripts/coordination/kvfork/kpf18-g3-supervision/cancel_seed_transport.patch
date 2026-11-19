@@ -1,0 +1,51 @@
+--- a/vendor/cancel_seed_transport.py
++++ b/vendor/cancel_seed_transport.py
+@@ -15,6 +15,7 @@
+ from pathlib import Path
+ from urllib.parse import urlsplit
+ 
++from socket_deadline import SocketDeadline
+ from cancel_seed_stream import capture
+ from native_block import TraceSlice
+ from native_task_log import SLOT,CANCEL,canceled_task
+@@ -118,20 +119,27 @@
+             return identity
+         try:
+             ctx.check_boundary()
+-            connection.request('POST','/completion',body=json.dumps(body).encode(),headers={'Content-Type':'application/json'})
++            transport_budget=min(180.,ctx.deadline.remaining())
++            if transport_budget<=0:raise gate.Abort('seed transport deadline expired before connect')
++            transport_deadline=time.monotonic()+transport_budget
++            connection.timeout=transport_budget
++            connection.connect()
+             captured_socket=connection.sock
+-            response=connection.getresponse()
+-            if response.status!=200:raise gate.Abort(f'canceled seed HTTP{response.status}')
+-            with open(raw_path,'xb') as raw:
+-                def write_raw(line):raw.write(line);raw.flush()
+-                def lines():
+-                    while True:
+-                        line=response.readline()
+-                        if not line:return
+-                        yield line
+-                cap=capture(lines=lines(),close_transport=close_transport,capture_task_identity=bind_task,
+-                    write_raw=write_raw,deadline_check=ctx.check_boundary,slot_id=slot,
+-                    trigger_processed=self.trigger_processed,delay_s=self.delay_s)
++            with SocketDeadline(captured_socket,transport_deadline) as watchdog:
++                connection.request('POST','/completion',body=json.dumps(body).encode(),headers={'Content-Type':'application/json'})
++                response=connection.getresponse()
++                if response.status!=200:raise gate.Abort(f'canceled seed HTTP{response.status}')
++                with open(raw_path,'xb') as raw:
++                    def write_raw(line):raw.write(line);raw.flush()
++                    def lines():
++                        while True:
++                            line=response.readline()
++                            if not line:return
++                            yield line
++                    cap=capture(lines=lines(),close_transport=close_transport,capture_task_identity=bind_task,
++                        write_raw=write_raw,deadline_check=ctx.check_boundary,slot_id=slot,
++                        trigger_processed=self.trigger_processed,delay_s=self.delay_s)
++                watchdog.check()
+         except Exception as error:
+             client_error=f'{type(error).__name__}: {error}'
+         finally:

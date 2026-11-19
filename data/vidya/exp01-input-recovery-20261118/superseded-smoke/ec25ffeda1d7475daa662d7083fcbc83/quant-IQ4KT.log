@@ -1,0 +1,560 @@
+main: build = 4468 (c04881fc0)
+main: built with cc (Ubuntu 15.2.0-4ubuntu4) 15.2.0 for x86_64-linux-gnu
+main: quantizing '/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf' to '/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/smoke/ec25ffeda1d7475daa662d7083fcbc83/models/.partial-Qwen3-0.6B-IQ4_KT.gguf' as IQ4_KT using 4 threads
+llama_model_loader: loaded meta data with 31 key-value pairs and 311 tensors from /mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf (version GGUF V3 (latest))
+llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+llama_model_loader: - kv   0:                       general.architecture str              = qwen3
+llama_model_loader: - kv   1:                               general.type str              = model
+llama_model_loader: - kv   2:                               general.name str              = Qwen3 0.6B
+llama_model_loader: - kv   3:                           general.basename str              = Qwen3
+llama_model_loader: - kv   4:                         general.size_label str              = 0.6B
+llama_model_loader: - kv   5:                          qwen3.block_count u32              = 28
+llama_model_loader: - kv   6:                       qwen3.context_length u32              = 32768
+llama_model_loader: - kv   7:                     qwen3.embedding_length u32              = 1024
+llama_model_loader: - kv   8:                  qwen3.feed_forward_length u32              = 3072
+llama_model_loader: - kv   9:                 qwen3.attention.head_count u32              = 16
+llama_model_loader: - kv  10:              qwen3.attention.head_count_kv u32              = 8
+llama_model_loader: - kv  11:                       qwen3.rope.freq_base f32              = 1000000.000000
+llama_model_loader: - kv  12:     qwen3.attention.layer_norm_rms_epsilon f32              = 0.000001
+llama_model_loader: - kv  13:                 qwen3.attention.key_length u32              = 128
+llama_model_loader: - kv  14:               qwen3.attention.value_length u32              = 128
+llama_model_loader: - kv  15:                       tokenizer.ggml.model str              = gpt2
+llama_model_loader: - kv  16:                         tokenizer.ggml.pre str              = qwen2
+llama_model_loader: - kv  17:                      tokenizer.ggml.tokens arr[str,151936]  = ["!", "\"", "#", "$", "%", "&", "'", ...
+llama_model_loader: - kv  18:                  tokenizer.ggml.token_type arr[i32,151936]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+llama_model_loader: - kv  19:                      tokenizer.ggml.merges arr[str,151387]  = ["Ġ Ġ", "ĠĠ ĠĠ", "i n", "Ġ t",...
+llama_model_loader: - kv  20:                tokenizer.ggml.eos_token_id u32              = 151645
+llama_model_loader: - kv  21:            tokenizer.ggml.padding_token_id u32              = 151643
+llama_model_loader: - kv  22:                tokenizer.ggml.bos_token_id u32              = 151643
+llama_model_loader: - kv  23:               tokenizer.ggml.add_bos_token bool             = false
+llama_model_loader: - kv  24:                    tokenizer.chat_template str              = {%- if tools %}\n    {{- '<|im_start|>...
+llama_model_loader: - kv  25:               general.quantization_version u32              = 2
+llama_model_loader: - kv  26:                          general.file_type u32              = 7
+llama_model_loader: - kv  27:                      quantize.imatrix.file str              = /models_out/Qwen3-0.6B-GGUF/Qwen_Qwen...
+llama_model_loader: - kv  28:                   quantize.imatrix.dataset str              = /training_dir/calibration_datav3.txt
+llama_model_loader: - kv  29:             quantize.imatrix.entries_count i32              = 196
+llama_model_loader: - kv  30:              quantize.imatrix.chunks_count i32              = 137
+llama_model_loader: - type  f32:  113 tensors
+llama_model_loader: - type q8_0:  198 tensors
+================================ Have weights data with 196 entries
+[   1/ 311]                        output.weight - [ 1024, 151936,     1,     1], type =   q8_0, Using custom type q8_0 for tensor output.weight
+size =  157.648 MB
+[   2/ 311]                   output_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[   3/ 311]                    token_embd.weight - [ 1024, 151936,     1,     1], type =   q8_0, Using custom type q8_0 for tensor token_embd.weight
+size =  157.648 MB
+[   4/ 311]                  blk.0.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.0.attn_k.weight
+size =    1.062 MB
+[   5/ 311]             blk.0.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[   6/ 311]               blk.0.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[   7/ 311]             blk.0.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.0.attn_output.weight
+size =    2.125 MB
+[   8/ 311]                  blk.0.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.0.attn_q.weight
+size =    2.125 MB
+[   9/ 311]             blk.0.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  10/ 311]                  blk.0.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.0.attn_v.weight
+size =    1.062 MB
+[  11/ 311]                blk.0.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.0.ffn_down.weight
+size =    3.188 MB
+[  12/ 311]                blk.0.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.0.ffn_gate.weight
+size =    3.188 MB
+[  13/ 311]                blk.0.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  14/ 311]                  blk.0.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type iq4_kt for tensor blk.0.ffn_up.weight
+converting to iq4_kt .. Adding custom rule ^blk[.]0[.]ffn_up[.]weight$ -> iq4_kt
+Adding custom rule .* -> q8_0
+load_imatrix: imatrix dataset='/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/calib/wiki.test.raw'
+load_imatrix: loaded 196 importance matrix entries from /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/smoke/ec25ffeda1d7475daa662d7083fcbc83/imatrix.dat computed on 1 chunks
+prepare_imatrix: have 196 importance matrix entries
+size =     3.19 MiB ->     1.51 MiB
+[  15/ 311]                  blk.1.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.1.attn_k.weight
+size =    1.062 MB
+[  16/ 311]             blk.1.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  17/ 311]               blk.1.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  18/ 311]             blk.1.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.1.attn_output.weight
+size =    2.125 MB
+[  19/ 311]                  blk.1.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.1.attn_q.weight
+size =    2.125 MB
+[  20/ 311]             blk.1.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  21/ 311]                  blk.1.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.1.attn_v.weight
+size =    1.062 MB
+[  22/ 311]                blk.1.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.1.ffn_down.weight
+size =    3.188 MB
+[  23/ 311]                blk.1.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.1.ffn_gate.weight
+size =    3.188 MB
+[  24/ 311]                blk.1.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  25/ 311]                  blk.1.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.1.ffn_up.weight
+size =    3.188 MB
+[  26/ 311]                  blk.2.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.2.attn_k.weight
+size =    1.062 MB
+[  27/ 311]             blk.2.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  28/ 311]               blk.2.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  29/ 311]             blk.2.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.2.attn_output.weight
+size =    2.125 MB
+[  30/ 311]                  blk.2.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.2.attn_q.weight
+size =    2.125 MB
+[  31/ 311]             blk.2.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  32/ 311]                  blk.2.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.2.attn_v.weight
+size =    1.062 MB
+[  33/ 311]                blk.2.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.2.ffn_down.weight
+size =    3.188 MB
+[  34/ 311]                blk.2.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.2.ffn_gate.weight
+size =    3.188 MB
+[  35/ 311]                blk.2.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  36/ 311]                  blk.2.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.2.ffn_up.weight
+size =    3.188 MB
+[  37/ 311]                  blk.3.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.3.attn_k.weight
+size =    1.062 MB
+[  38/ 311]             blk.3.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  39/ 311]               blk.3.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  40/ 311]             blk.3.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.3.attn_output.weight
+size =    2.125 MB
+[  41/ 311]                  blk.3.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.3.attn_q.weight
+size =    2.125 MB
+[  42/ 311]             blk.3.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  43/ 311]                  blk.3.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.3.attn_v.weight
+size =    1.062 MB
+[  44/ 311]                blk.3.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.3.ffn_down.weight
+size =    3.188 MB
+[  45/ 311]                blk.3.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.3.ffn_gate.weight
+size =    3.188 MB
+[  46/ 311]                blk.3.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  47/ 311]                  blk.3.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.3.ffn_up.weight
+size =    3.188 MB
+[  48/ 311]                  blk.4.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.4.attn_k.weight
+size =    1.062 MB
+[  49/ 311]             blk.4.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  50/ 311]               blk.4.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  51/ 311]             blk.4.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.4.attn_output.weight
+size =    2.125 MB
+[  52/ 311]                  blk.4.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.4.attn_q.weight
+size =    2.125 MB
+[  53/ 311]             blk.4.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  54/ 311]                  blk.4.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.4.attn_v.weight
+size =    1.062 MB
+[  55/ 311]                blk.4.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.4.ffn_down.weight
+size =    3.188 MB
+[  56/ 311]                blk.4.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.4.ffn_gate.weight
+size =    3.188 MB
+[  57/ 311]                blk.4.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  58/ 311]                  blk.4.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.4.ffn_up.weight
+size =    3.188 MB
+[  59/ 311]                  blk.5.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.5.attn_k.weight
+size =    1.062 MB
+[  60/ 311]             blk.5.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  61/ 311]               blk.5.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  62/ 311]             blk.5.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.5.attn_output.weight
+size =    2.125 MB
+[  63/ 311]                  blk.5.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.5.attn_q.weight
+size =    2.125 MB
+[  64/ 311]             blk.5.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  65/ 311]                  blk.5.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.5.attn_v.weight
+size =    1.062 MB
+[  66/ 311]                blk.5.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.5.ffn_down.weight
+size =    3.188 MB
+[  67/ 311]                blk.5.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.5.ffn_gate.weight
+size =    3.188 MB
+[  68/ 311]                blk.5.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  69/ 311]                  blk.5.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.5.ffn_up.weight
+size =    3.188 MB
+[  70/ 311]                  blk.6.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.6.attn_k.weight
+size =    1.062 MB
+[  71/ 311]             blk.6.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  72/ 311]               blk.6.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  73/ 311]             blk.6.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.6.attn_output.weight
+size =    2.125 MB
+[  74/ 311]                  blk.6.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.6.attn_q.weight
+size =    2.125 MB
+[  75/ 311]             blk.6.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  76/ 311]                  blk.6.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.6.attn_v.weight
+size =    1.062 MB
+[  77/ 311]                blk.6.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.6.ffn_down.weight
+size =    3.188 MB
+[  78/ 311]                blk.6.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.6.ffn_gate.weight
+size =    3.188 MB
+[  79/ 311]                blk.6.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  80/ 311]                  blk.6.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.6.ffn_up.weight
+size =    3.188 MB
+[  81/ 311]                  blk.7.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.7.attn_k.weight
+size =    1.062 MB
+[  82/ 311]             blk.7.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  83/ 311]               blk.7.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  84/ 311]             blk.7.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.7.attn_output.weight
+size =    2.125 MB
+[  85/ 311]                  blk.7.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.7.attn_q.weight
+size =    2.125 MB
+[  86/ 311]             blk.7.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  87/ 311]                  blk.7.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.7.attn_v.weight
+size =    1.062 MB
+[  88/ 311]                blk.7.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.7.ffn_down.weight
+size =    3.188 MB
+[  89/ 311]                blk.7.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.7.ffn_gate.weight
+size =    3.188 MB
+[  90/ 311]                blk.7.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  91/ 311]                  blk.7.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.7.ffn_up.weight
+size =    3.188 MB
+[  92/ 311]                  blk.8.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.8.attn_k.weight
+size =    1.062 MB
+[  93/ 311]             blk.8.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  94/ 311]               blk.8.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[  95/ 311]             blk.8.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.8.attn_output.weight
+size =    2.125 MB
+[  96/ 311]                  blk.8.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.8.attn_q.weight
+size =    2.125 MB
+[  97/ 311]             blk.8.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[  98/ 311]                  blk.8.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.8.attn_v.weight
+size =    1.062 MB
+[  99/ 311]                blk.8.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.8.ffn_down.weight
+size =    3.188 MB
+[ 100/ 311]                blk.8.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.8.ffn_gate.weight
+size =    3.188 MB
+[ 101/ 311]                blk.8.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 102/ 311]                  blk.8.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.8.ffn_up.weight
+size =    3.188 MB
+[ 103/ 311]                  blk.9.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.9.attn_k.weight
+size =    1.062 MB
+[ 104/ 311]             blk.9.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 105/ 311]               blk.9.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 106/ 311]             blk.9.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.9.attn_output.weight
+size =    2.125 MB
+[ 107/ 311]                  blk.9.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.9.attn_q.weight
+size =    2.125 MB
+[ 108/ 311]             blk.9.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 109/ 311]                  blk.9.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.9.attn_v.weight
+size =    1.062 MB
+[ 110/ 311]                blk.9.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.9.ffn_down.weight
+size =    3.188 MB
+[ 111/ 311]                blk.9.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.9.ffn_gate.weight
+size =    3.188 MB
+[ 112/ 311]                blk.9.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 113/ 311]                  blk.9.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.9.ffn_up.weight
+size =    3.188 MB
+[ 114/ 311]                 blk.10.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.10.attn_k.weight
+size =    1.062 MB
+[ 115/ 311]            blk.10.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 116/ 311]              blk.10.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 117/ 311]            blk.10.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.10.attn_output.weight
+size =    2.125 MB
+[ 118/ 311]                 blk.10.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.10.attn_q.weight
+size =    2.125 MB
+[ 119/ 311]            blk.10.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 120/ 311]                 blk.10.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.10.attn_v.weight
+size =    1.062 MB
+[ 121/ 311]               blk.10.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.10.ffn_down.weight
+size =    3.188 MB
+[ 122/ 311]               blk.10.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.10.ffn_gate.weight
+size =    3.188 MB
+[ 123/ 311]               blk.10.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 124/ 311]                 blk.10.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.10.ffn_up.weight
+size =    3.188 MB
+[ 125/ 311]                 blk.11.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.11.attn_k.weight
+size =    1.062 MB
+[ 126/ 311]            blk.11.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 127/ 311]              blk.11.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 128/ 311]            blk.11.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.11.attn_output.weight
+size =    2.125 MB
+[ 129/ 311]                 blk.11.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.11.attn_q.weight
+size =    2.125 MB
+[ 130/ 311]            blk.11.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 131/ 311]                 blk.11.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.11.attn_v.weight
+size =    1.062 MB
+[ 132/ 311]               blk.11.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.11.ffn_down.weight
+size =    3.188 MB
+[ 133/ 311]               blk.11.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.11.ffn_gate.weight
+size =    3.188 MB
+[ 134/ 311]               blk.11.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 135/ 311]                 blk.11.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.11.ffn_up.weight
+size =    3.188 MB
+[ 136/ 311]                 blk.12.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.12.attn_k.weight
+size =    1.062 MB
+[ 137/ 311]            blk.12.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 138/ 311]              blk.12.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 139/ 311]            blk.12.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.12.attn_output.weight
+size =    2.125 MB
+[ 140/ 311]                 blk.12.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.12.attn_q.weight
+size =    2.125 MB
+[ 141/ 311]            blk.12.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 142/ 311]                 blk.12.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.12.attn_v.weight
+size =    1.062 MB
+[ 143/ 311]               blk.12.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.12.ffn_down.weight
+size =    3.188 MB
+[ 144/ 311]               blk.12.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.12.ffn_gate.weight
+size =    3.188 MB
+[ 145/ 311]               blk.12.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 146/ 311]                 blk.12.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.12.ffn_up.weight
+size =    3.188 MB
+[ 147/ 311]                 blk.13.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.13.attn_k.weight
+size =    1.062 MB
+[ 148/ 311]            blk.13.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 149/ 311]              blk.13.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 150/ 311]            blk.13.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.13.attn_output.weight
+size =    2.125 MB
+[ 151/ 311]                 blk.13.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.13.attn_q.weight
+size =    2.125 MB
+[ 152/ 311]            blk.13.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 153/ 311]                 blk.13.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.13.attn_v.weight
+size =    1.062 MB
+[ 154/ 311]               blk.13.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.13.ffn_down.weight
+size =    3.188 MB
+[ 155/ 311]               blk.13.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.13.ffn_gate.weight
+size =    3.188 MB
+[ 156/ 311]               blk.13.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 157/ 311]                 blk.13.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.13.ffn_up.weight
+size =    3.188 MB
+[ 158/ 311]                 blk.14.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.14.attn_k.weight
+size =    1.062 MB
+[ 159/ 311]            blk.14.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 160/ 311]              blk.14.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 161/ 311]            blk.14.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.14.attn_output.weight
+size =    2.125 MB
+[ 162/ 311]                 blk.14.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.14.attn_q.weight
+size =    2.125 MB
+[ 163/ 311]            blk.14.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 164/ 311]                 blk.14.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.14.attn_v.weight
+size =    1.062 MB
+[ 165/ 311]               blk.14.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.14.ffn_down.weight
+size =    3.188 MB
+[ 166/ 311]               blk.14.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.14.ffn_gate.weight
+size =    3.188 MB
+[ 167/ 311]               blk.14.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 168/ 311]                 blk.14.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.14.ffn_up.weight
+size =    3.188 MB
+[ 169/ 311]                 blk.15.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.15.attn_k.weight
+size =    1.062 MB
+[ 170/ 311]            blk.15.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 171/ 311]              blk.15.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 172/ 311]            blk.15.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.15.attn_output.weight
+size =    2.125 MB
+[ 173/ 311]                 blk.15.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.15.attn_q.weight
+size =    2.125 MB
+[ 174/ 311]            blk.15.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 175/ 311]                 blk.15.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.15.attn_v.weight
+size =    1.062 MB
+[ 176/ 311]               blk.15.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.15.ffn_down.weight
+size =    3.188 MB
+[ 177/ 311]               blk.15.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.15.ffn_gate.weight
+size =    3.188 MB
+[ 178/ 311]               blk.15.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 179/ 311]                 blk.15.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.15.ffn_up.weight
+size =    3.188 MB
+[ 180/ 311]                 blk.16.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.16.attn_k.weight
+size =    1.062 MB
+[ 181/ 311]            blk.16.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 182/ 311]              blk.16.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 183/ 311]            blk.16.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.16.attn_output.weight
+size =    2.125 MB
+[ 184/ 311]                 blk.16.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.16.attn_q.weight
+size =    2.125 MB
+[ 185/ 311]            blk.16.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 186/ 311]                 blk.16.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.16.attn_v.weight
+size =    1.062 MB
+[ 187/ 311]               blk.16.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.16.ffn_down.weight
+size =    3.188 MB
+[ 188/ 311]               blk.16.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.16.ffn_gate.weight
+size =    3.188 MB
+[ 189/ 311]               blk.16.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 190/ 311]                 blk.16.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.16.ffn_up.weight
+size =    3.188 MB
+[ 191/ 311]                 blk.17.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.17.attn_k.weight
+size =    1.062 MB
+[ 192/ 311]            blk.17.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 193/ 311]              blk.17.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 194/ 311]            blk.17.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.17.attn_output.weight
+size =    2.125 MB
+[ 195/ 311]                 blk.17.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.17.attn_q.weight
+size =    2.125 MB
+[ 196/ 311]            blk.17.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 197/ 311]                 blk.17.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.17.attn_v.weight
+size =    1.062 MB
+[ 198/ 311]               blk.17.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.17.ffn_down.weight
+size =    3.188 MB
+[ 199/ 311]               blk.17.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.17.ffn_gate.weight
+size =    3.188 MB
+[ 200/ 311]               blk.17.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 201/ 311]                 blk.17.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.17.ffn_up.weight
+size =    3.188 MB
+[ 202/ 311]                 blk.18.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.18.attn_k.weight
+size =    1.062 MB
+[ 203/ 311]            blk.18.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 204/ 311]              blk.18.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 205/ 311]            blk.18.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.18.attn_output.weight
+size =    2.125 MB
+[ 206/ 311]                 blk.18.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.18.attn_q.weight
+size =    2.125 MB
+[ 207/ 311]            blk.18.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 208/ 311]                 blk.18.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.18.attn_v.weight
+size =    1.062 MB
+[ 209/ 311]               blk.18.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.18.ffn_down.weight
+size =    3.188 MB
+[ 210/ 311]               blk.18.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.18.ffn_gate.weight
+size =    3.188 MB
+[ 211/ 311]               blk.18.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 212/ 311]                 blk.18.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.18.ffn_up.weight
+size =    3.188 MB
+[ 213/ 311]                 blk.19.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.19.attn_k.weight
+size =    1.062 MB
+[ 214/ 311]            blk.19.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 215/ 311]              blk.19.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 216/ 311]            blk.19.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.19.attn_output.weight
+size =    2.125 MB
+[ 217/ 311]                 blk.19.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.19.attn_q.weight
+size =    2.125 MB
+[ 218/ 311]            blk.19.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 219/ 311]                 blk.19.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.19.attn_v.weight
+size =    1.062 MB
+[ 220/ 311]               blk.19.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.19.ffn_down.weight
+size =    3.188 MB
+[ 221/ 311]               blk.19.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.19.ffn_gate.weight
+size =    3.188 MB
+[ 222/ 311]               blk.19.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 223/ 311]                 blk.19.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.19.ffn_up.weight
+size =    3.188 MB
+[ 224/ 311]                 blk.20.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.20.attn_k.weight
+size =    1.062 MB
+[ 225/ 311]            blk.20.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 226/ 311]              blk.20.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 227/ 311]            blk.20.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.20.attn_output.weight
+size =    2.125 MB
+[ 228/ 311]                 blk.20.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.20.attn_q.weight
+size =    2.125 MB
+[ 229/ 311]            blk.20.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 230/ 311]                 blk.20.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.20.attn_v.weight
+size =    1.062 MB
+[ 231/ 311]               blk.20.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.20.ffn_down.weight
+size =    3.188 MB
+[ 232/ 311]               blk.20.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.20.ffn_gate.weight
+size =    3.188 MB
+[ 233/ 311]               blk.20.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 234/ 311]                 blk.20.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.20.ffn_up.weight
+size =    3.188 MB
+[ 235/ 311]                 blk.21.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.21.attn_k.weight
+size =    1.062 MB
+[ 236/ 311]            blk.21.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 237/ 311]              blk.21.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 238/ 311]            blk.21.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.21.attn_output.weight
+size =    2.125 MB
+[ 239/ 311]                 blk.21.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.21.attn_q.weight
+size =    2.125 MB
+[ 240/ 311]            blk.21.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 241/ 311]                 blk.21.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.21.attn_v.weight
+size =    1.062 MB
+[ 242/ 311]               blk.21.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.21.ffn_down.weight
+size =    3.188 MB
+[ 243/ 311]               blk.21.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.21.ffn_gate.weight
+size =    3.188 MB
+[ 244/ 311]               blk.21.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 245/ 311]                 blk.21.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.21.ffn_up.weight
+size =    3.188 MB
+[ 246/ 311]                 blk.22.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.22.attn_k.weight
+size =    1.062 MB
+[ 247/ 311]            blk.22.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 248/ 311]              blk.22.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 249/ 311]            blk.22.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.22.attn_output.weight
+size =    2.125 MB
+[ 250/ 311]                 blk.22.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.22.attn_q.weight
+size =    2.125 MB
+[ 251/ 311]            blk.22.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 252/ 311]                 blk.22.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.22.attn_v.weight
+size =    1.062 MB
+[ 253/ 311]               blk.22.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.22.ffn_down.weight
+size =    3.188 MB
+[ 254/ 311]               blk.22.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.22.ffn_gate.weight
+size =    3.188 MB
+[ 255/ 311]               blk.22.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 256/ 311]                 blk.22.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.22.ffn_up.weight
+size =    3.188 MB
+[ 257/ 311]                 blk.23.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.23.attn_k.weight
+size =    1.062 MB
+[ 258/ 311]            blk.23.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 259/ 311]              blk.23.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 260/ 311]            blk.23.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.23.attn_output.weight
+size =    2.125 MB
+[ 261/ 311]                 blk.23.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.23.attn_q.weight
+size =    2.125 MB
+[ 262/ 311]            blk.23.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 263/ 311]                 blk.23.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.23.attn_v.weight
+size =    1.062 MB
+[ 264/ 311]               blk.23.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.23.ffn_down.weight
+size =    3.188 MB
+[ 265/ 311]               blk.23.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.23.ffn_gate.weight
+size =    3.188 MB
+[ 266/ 311]               blk.23.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 267/ 311]                 blk.23.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.23.ffn_up.weight
+size =    3.188 MB
+[ 268/ 311]                 blk.24.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.24.attn_k.weight
+size =    1.062 MB
+[ 269/ 311]            blk.24.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 270/ 311]              blk.24.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 271/ 311]            blk.24.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.24.attn_output.weight
+size =    2.125 MB
+[ 272/ 311]                 blk.24.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.24.attn_q.weight
+size =    2.125 MB
+[ 273/ 311]            blk.24.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 274/ 311]                 blk.24.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.24.attn_v.weight
+size =    1.062 MB
+[ 275/ 311]               blk.24.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.24.ffn_down.weight
+size =    3.188 MB
+[ 276/ 311]               blk.24.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.24.ffn_gate.weight
+size =    3.188 MB
+[ 277/ 311]               blk.24.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 278/ 311]                 blk.24.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.24.ffn_up.weight
+size =    3.188 MB
+[ 279/ 311]                 blk.25.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.25.attn_k.weight
+size =    1.062 MB
+[ 280/ 311]            blk.25.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 281/ 311]              blk.25.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 282/ 311]            blk.25.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.25.attn_output.weight
+size =    2.125 MB
+[ 283/ 311]                 blk.25.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.25.attn_q.weight
+size =    2.125 MB
+[ 284/ 311]            blk.25.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 285/ 311]                 blk.25.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.25.attn_v.weight
+size =    1.062 MB
+[ 286/ 311]               blk.25.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.25.ffn_down.weight
+size =    3.188 MB
+[ 287/ 311]               blk.25.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.25.ffn_gate.weight
+size =    3.188 MB
+[ 288/ 311]               blk.25.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 289/ 311]                 blk.25.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.25.ffn_up.weight
+size =    3.188 MB
+[ 290/ 311]                 blk.26.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.26.attn_k.weight
+size =    1.062 MB
+[ 291/ 311]            blk.26.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 292/ 311]              blk.26.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 293/ 311]            blk.26.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.26.attn_output.weight
+size =    2.125 MB
+[ 294/ 311]                 blk.26.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.26.attn_q.weight
+size =    2.125 MB
+[ 295/ 311]            blk.26.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 296/ 311]                 blk.26.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.26.attn_v.weight
+size =    1.062 MB
+[ 297/ 311]               blk.26.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.26.ffn_down.weight
+size =    3.188 MB
+[ 298/ 311]               blk.26.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.26.ffn_gate.weight
+size =    3.188 MB
+[ 299/ 311]               blk.26.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 300/ 311]                 blk.26.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.26.ffn_up.weight
+size =    3.188 MB
+[ 301/ 311]                 blk.27.attn_k.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.27.attn_k.weight
+size =    1.062 MB
+[ 302/ 311]            blk.27.attn_k_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 303/ 311]              blk.27.attn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 304/ 311]            blk.27.attn_output.weight - [ 2048,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.27.attn_output.weight
+size =    2.125 MB
+[ 305/ 311]                 blk.27.attn_q.weight - [ 1024,  2048,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.27.attn_q.weight
+size =    2.125 MB
+[ 306/ 311]            blk.27.attn_q_norm.weight - [  128,     1,     1,     1], type =    f32, size =    0.000 MB
+[ 307/ 311]                 blk.27.attn_v.weight - [ 1024,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.27.attn_v.weight
+size =    1.062 MB
+[ 308/ 311]               blk.27.ffn_down.weight - [ 3072,  1024,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.27.ffn_down.weight
+size =    3.188 MB
+[ 309/ 311]               blk.27.ffn_gate.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.27.ffn_gate.weight
+size =    3.188 MB
+[ 310/ 311]               blk.27.ffn_norm.weight - [ 1024,     1,     1,     1], type =    f32, size =    0.004 MB
+[ 311/ 311]                 blk.27.ffn_up.weight - [ 1024,  3072,     1,     1], type =   q8_0, Using custom type q8_0 for tensor blk.27.ffn_up.weight
+size =    3.188 MB
+llama_model_quantize_internal: model size  =   761.80 MB
+llama_model_quantize_internal: quant size  =   760.12 MB
+cluster_points: Oops. Cluster 4 has no points:  0 1 0 0
+cluster_points: 1 out of 625 clusters dir not have any points
+
+main: quantize time =  7878.93 ms
+main:    total time =  7878.93 ms

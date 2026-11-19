@@ -23,7 +23,7 @@ def _write(path: Path, data: bytes) -> dict:
             "sha256": hashlib.sha256(data).hexdigest()}
 
 
-def _record(root: Path) -> Path:
+def _record(root: Path, intrinsic: tuple = ()) -> Path:
     run = root / "run"
     gt = {"path": "/synthetic/corpus/gt.json", "bytes": 2,
           "sha256": hashlib.sha256(b"[]").hexdigest(), "parsed_from_hashed_bytes": True}
@@ -43,7 +43,9 @@ def _record(root: Path) -> Path:
     response = _write(response_dir / "p1.response.json", b'{"synthetic":true}')
     row_set_data = {"metric_rows": [{"engine": "unlimited_ocr", "metric_family": "speed",
                                      "metric_name": "latency_ms_median", "value": 12.5,
-                                     "n": 1, "detail": "synthetic"}],
+                                     "n": 1, "detail": "synthetic"}]
+                                   + [{"engine": "unlimited_ocr", "metric_family": "intrinsic", **r}
+                                      for r in intrinsic],
                     "run_manifests": [{"engine": "unlimited_ocr",
                                        "artifacts": [{"latency_ms": 12.5}]}]}
     row_set = _write(run / "model_gated_row_set.json",
@@ -70,7 +72,8 @@ def _record(root: Path) -> Path:
                         "direction": "lower_better", "reps": 1,
                         "reps_basis": "one positive synthetic page attempt", "claim": "synthetic fixture latency"},
         "run_metrics": [{"metric_family": "speed", "metric_name": "latency_ms_median",
-                          "value": 12.5, "n": 1, "detail": "synthetic"}],
+                          "value": 12.5, "n": 1, "detail": "synthetic"}]
+                       + [{"metric_family": "intrinsic", **r} for r in intrinsic],
         "locator": {"run_dir": str(run), "row_set": str(run / "model_gated_row_set.json"),
                     "input_manifest": str(response_dir / "producer_input_manifest.json"),
                     "inference_window": str(window_path)},
@@ -150,3 +153,54 @@ def test_identity_free_legacy_run_has_no_tuple_and_is_not_retrofitted(tmp_path: 
     legacy.parent.mkdir()
     legacy.write_text('{"engine":"unlimited_ocr","metric_rows":[]}', encoding="utf-8")
     assert odl_model_gated.native_rows(legacy.parent / "vidya_measurement_record.json") == ()
+
+
+_SHA = "c" * 64
+_INTRINSIC_ROWS = (
+    {"metric_name": "Ekimetrics.SC", "value": 0.75, "n": 4,
+     "detail": f"unweighted mean of per-page estimates; prediction_set_sha256={_SHA}"},
+    {"metric_name": "Ekimetrics.BI", "value": 0.5, "n": 8,
+     "detail": f"unweighted mean of per-page estimates; prediction_set_sha256={_SHA}"},
+    {"metric_name": "Ekimetrics.ICC", "value": None, "n": 0,
+     "detail": f"intrachunk cohesion unavailable: no embedder supplied; prediction_set_sha256={_SHA}"},
+    {"metric_name": "Ekimetrics.DCC", "value": None, "n": 0,
+     "detail": f"contextual coherence unavailable: no embedder supplied; prediction_set_sha256={_SHA}"},
+)
+
+
+def test_intrinsic_rows_project_non_null_only_and_keep_null_reasons(tmp_path: Path) -> None:
+    record = _record(tmp_path, _INTRINSIC_ROWS)
+    # the existing latency source is unchanged by intrinsic rows
+    assert len(odl_model_gated.native_rows(record)) == 1
+    rows = odl_model_gated.intrinsic_native_rows(record)
+    assert [r["intrinsic"]["metric_name"] for r in rows] == ["Ekimetrics.SC", "Ekimetrics.BI"]
+    tuples = [odl_model_gated.project_intrinsic_row(r) for r in rows]
+    sc = tuples[0]
+    assert (sc.metric, sc.value, sc.reps, sc.unit) == ("Ekimetrics.SC", 0.75, 4, "fraction")
+    assert sc.metric_direction == "higher_better" and sc.protocol_id == odl_model_gated.INTRINSIC_PROTOCOL
+    assert sc.extra["prediction_set_sha256"] == _SHA
+    assert any("unavailable" in m["detail"] for m in sc.extra["run_metrics"])
+    assert all(grade(t)[0] != "Refused" for t in tuples)
+
+
+def test_intrinsic_row_without_prediction_digest_or_count_refuses(tmp_path: Path) -> None:
+    bad = ({"metric_name": "Ekimetrics.SC", "value": 0.5, "n": 2, "detail": "no digest"},)
+    with pytest.raises(odl_model_gated.ProjectionError, match="digest"):
+        odl_model_gated.intrinsic_native_rows(_record(tmp_path / "a", bad))
+    zero = ({"metric_name": "Ekimetrics.SC", "value": 0.5, "n": 0,
+             "detail": f"prediction_set_sha256={_SHA}"},)
+    with pytest.raises(odl_model_gated.ProjectionError, match="count"):
+        odl_model_gated.intrinsic_native_rows(_record(tmp_path / "b", zero))
+    unknown = ({"metric_name": "Ekimetrics.RC", "value": 0.5, "n": 2, "detail": "x"},)
+    with pytest.raises(odl_model_gated.ProjectionError, match="unknown metric"):
+        odl_model_gated.intrinsic_native_rows(_record(tmp_path / "c", unknown))
+
+
+def test_intrinsic_ingest_dry_run_projects_two_tuples(tmp_path: Path, capsys) -> None:
+    import cli
+    _record(tmp_path, _INTRINSIC_ROWS)
+    rc = cli.main(["--ledger", str(tmp_path / "l.jsonl"), "--json", "ingest",
+                   "odl-unlimited-ocr-intrinsic", "--path", str(tmp_path),
+                   "--as-of", "2026-11-08T12:00:00Z", "--dry-run"])
+    assert rc == 0
+    assert json.loads(capsys.readouterr().out)["rows_projected"] == 2

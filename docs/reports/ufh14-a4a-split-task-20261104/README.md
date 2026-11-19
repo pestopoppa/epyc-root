@@ -1,0 +1,7 @@
+# UFH14-A4a split-part restoration replay
+
+The retained treatment wire contains two completed compaction/follow-on pairs (5→6 and 20→21), although the treatment later hit its budget. Its task-pin records are empty. The original matcher requires one content part; the observed truncated task has three input_text parts: prefix, truncation marker and suffix. The prepared patch handles that representation while retaining exact metadata, role, prefix/suffix, marker and unique-match refusals.
+
+Eleven offline controls passed against the retained native wire, including exact restoration and tamper/ambiguity refusals; see `replay-controls.json`. This is a prospective scratch patch, not an applied maintained-source fix, an inference result, or a cache-performance claim. Replay requires the hash-pinned wire and the repaired `proxy3.py` named in `source-hashes.json`; the wire is kept outside the repository. Before publication, obtain exact upstream impact for the maintained source, review the source pin and closure, and qualify a fresh launcher.
+
+An independent set of 12 additional recorded-wire edge-case controls passed, covering malformed markers, empty or non-text spans, metadata changes, volatile IDs and originals containing truncation markers. See `extra-controls.json` and `extra_controls.py`; these remain offline matcher evidence only.

@@ -1,0 +1,26 @@
+{
+  "adamast_commit": "3c83d81c85937f5e8911fd96daa2ca38c1ad2585",
+  "crosswalk_sha256": "de36ce47e779564cfd2544e765c3e4dcc598f12a67d6477d0d8f4b60666aaed6",
+  "httpx": "0.28.1",
+  "kernel_manifest_sha256": "46f6d561cae6dbfea98378d65cd4322d5f1860a4df5cff7d8ad1785455d367e7",
+  "kernel_version": "10303 (ffc1bac82)",
+  "model_bytes": 29047086048,
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "openai_sdk": "2.31.0",
+  "package_patch_sha256": "88788656cca5ad4ceca101d9d3520cfee83962a9c3f9e096304ad108eb6aeda4",
+  "prepared_at": "2026-11-18T12:14:06.074683+00:00",
+  "sample_manifest_sha256": "22db18ff41088a8ab3f461e68dbcedc5f4529413746afcc98b458136fc3d7893",
+  "sample_size": 23,
+  "sample_strata": {
+    "claude|2026-10|main": 3,
+    "claude|2026-10|subagent": 3,
+    "claude|2026-11|main": 3,
+    "claude|2026-11|subagent": 3,
+    "codex|2026-10|main": 3,
+    "codex|2026-10|subagent": 2,
+    "codex|2026-11|main": 3,
+    "codex|2026-11|subagent": 3
+  },
+  "smoke_unit": "claude-e950eb03f48fcba8",
+  "taxonomy_sha256": "3908377c9d34d810fa4ad646b5673e791ebabc1b0d8b7979e1f713b69021cb44"
+}

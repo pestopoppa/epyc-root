@@ -1,0 +1,41 @@
+{
+ "decision_rule": "Exact class-qualified methods indexed at APP origin/main 326f502759986c9846027f8187972969139c0089. PASS requires pinned source index and context plus upstream impact for all nine unique methods with verified UID/file/class/source line, LOW/MEDIUM only. HIGH/CRITICAL immediately records warning and stops before edits; missing, ambiguous, unknown or wrong UID, stale index, partial and smoke source scan are not PASS.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-packet/filler_run15.sh",
+  "sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.11-APP-IMPACT",
+ "id": "ufh12-gs-app-query-impact-20261104",
+ "keep": [
+  "**",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-packet/launch.sh",
+  "sha256": "01a70eedb4d898603ae69310be3a05699894a4e3670b51020ca24a71253715f5"
+ },
+ "min_window_s": 300,
+ "notes": "APP detached source worktree pinned to origin/main. Native smoke checks definitions only, keeper indexes under app wrapper.",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "ports": [],
+ "priority_rank": 18.0,
+ "publish_warnings": [
+  "harness-program.md:2536: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)"
+ ],
+ "published_at": "2026-11-04T14:33:53Z",
+ "published_from": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-packet/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-packet/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-packet",
+ "shape": "host",
+ "smoke_predicate": "test -s /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-packet/out/smoke.jsonl",
+ "stop_file": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-packet/STOP",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-packet"
+}

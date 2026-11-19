@@ -1,0 +1,19 @@
+
+==== dry run 2026-11-17T23:58:29Z regions=mi210_0,184-191 launcher_sha=d11641c33066a792065de46b5863d4b3983d4a5665e38783997e1acb39f67b76 units_before=0
+2026-11-17T23:58:29Z [handoff-vidya-kvu19a2-wire-20261117-r2] launcher up pid=1982186 class=gpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-kvu19a2-wire-20261117-r2/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-kvu19a2-wire-20261117-r2/stop minwin=2100s ports=none dryrun=1
+2026-11-17T23:58:29Z [handoff-vidya-kvu19a2-wire-20261117-r2] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-11-18T00:37Z
+[region-lock] dry run: no lock taken (cpus=184-191)
+2026-11-17T23:58:29Z mi210_0 flock held
+{"status": "pins-verified", "files": 289, "gpu_launched": false}
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/kvu19a2_repeat_rootbuild.py", line 217, in <module>
+    run()
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/kvu19a2_repeat_rootbuild.py", line 114, in run
+    if (stop and Path(stop).exists()) or (deadline_text and datetime.now(timezone.utc) >= datetime.fromisoformat(deadline_text.replace("Z", "+00:00"))):
+                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Invalid isoformat string: '1794962130'
+job rc=1
+2026-11-17T23:58:34Z [handoff-vidya-kvu19a2-wire-20261117-r2] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-17T23:58:34Z [handoff-vidya-kvu19a2-wire-20261117-r2] one window done; exiting (no --repeat)
+==== engine START at +5s; first-progress timer (120 s) starts now
+==== dry run FAIL: job ended rc=1 time=2026-11-17T23:58:34Z reason=job-rc-1:exited after 5s, before its first progress (smoke_predicate `/usr/bin/python3 /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packe` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-kvu19a2-wire-20261117-r2/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=184-191; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-17T23:58:34Z)

@@ -1,0 +1,12 @@
+{
+  "kind": "prospective software and source-native readiness",
+  "reviewed_writer_sha256": "08b4b8d48ec1bd5477ca596345f25a0134333351e1cf487e4bfacd0403fde9de",
+  "controls": "89 passed; 222 shared-carrier tuples, zero violations",
+  "limitations": "Private fixture at second validate_maps call only; no native loader, model, performance, full-custody or production acceptance",
+  "source_pins": {
+    "custody.py": "ab6d10e509d7483963a39b0da2caccab4ac8b85ee33a9e0b117107601d8d8702",
+    "binding.json": "5b56f806a39f24a2f68dafe147b5b56295a2975fea3914bca2a388e571b16b82",
+    "input_seal.json": "a4e6c0dc65e5e58d800e7cf52cd1285385ce027cbefb3fdbddaabf947ec14c99"
+  },
+  "GitNexus": "unindexed; direct shared-adapter branch and callers reviewed"
+}

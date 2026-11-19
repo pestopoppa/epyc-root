@@ -1,0 +1,39 @@
+--- a/scripts/benchmark/kv_quant_27b_v10_sweep.py
++++ b/scripts/benchmark/kv_quant_27b_v10_sweep.py
+@@ -36,6 +36,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++import copy
+ import json
+ import math
+ import os
+@@ -719,10 +720,26 @@
+             "direction": "higher_better", "arms": arms}
+ 
+ 
++def _binary_identity_for_witness(binary: dict[str, Any]) -> dict[str, Any]:
++    """Ignore only ASLR load addresses printed by ldd; retain all identity evidence."""
++    normalized = copy.deepcopy(binary)
++    receipt = normalized.get("linkage_receipt")
++    ldd = receipt.get("ldd") if isinstance(receipt, dict) else None
++    if isinstance(ldd, dict) and isinstance(ldd.get("stdout"), str):
++        # ldd appends process-specific mappings as ``(0x...)``. Paths, SONAMEs,
++        # return code, stderr, verifier output, and stable file identities remain exact.
++        ldd["stdout"] = re.sub(r"(?m)(\s)\(0x[0-9a-fA-F]+\)(?=\s*$)", r"\1<ASLR>", ldd["stdout"])
++    return normalized
++
++
+ def identity_witness_matches(pre: dict[str, Any], post: dict[str, Any]) -> tuple[bool, str]:
+-    """Identity drift invalidates all observations, even after a complete matrix."""
++    """Identity drift invalidates all observations, except volatile ldd addresses."""
+     for key in ("source", "binary", "target_model", "harness", "harness_snapshot", "kernel_store"):
+-        if pre.get(key) != post.get(key):
++        pre_value, post_value = pre.get(key), post.get(key)
++        if key == "binary" and isinstance(pre_value, dict) and isinstance(post_value, dict):
++            pre_value = _binary_identity_for_witness(pre_value)
++            post_value = _binary_identity_for_witness(post_value)
++        if pre_value != post_value:
+             return False, f"post-execution {key} differs from pre-execution witness"
+     return True, "ok"
+ 

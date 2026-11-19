@@ -1,0 +1,20 @@
+R5 evidence inspection — 2026-11-04
+
+Scope: read-only inspection of /mnt/raid0/llm/tmp/brf-exp09-resume-r5/out and the terminal record /mnt/raid0/llm/tmp/compute-flags/handoff-sessions/delegation-context-preassembly/2026-11-04T170949Z.jsonl.
+
+R5 execution identity: `identity.json` names row `brf-exp09-resume-r5-20261104`, port 18441, model Qwen3.6-35B-A3B-MTP-Q8_0.gguf (SHA-256 c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131), production-consolidated-v10 CPU store binary, and records `resume_of` R4. This is distinct from original native-control `exec_id=f31565b84cc2`.
+
+R5 artifacts / counts:
+- `results.jsonl`: absent.
+- `results.dryrun.r5.jsonl`: 1 cell, arm `verified_quote`, `dryrun=true`, `exec_id=9f85b39d396b`, timestamp 17:07:54Z. This is a dry-run smoke cell, not treatment evidence.
+- `run-events.r5.jsonl`: exactly 1 event, kind `preflight`, `dryrun=true`, `exec_id=9f85b39d396b`; ready probe, 24 corpus items. No non-dry-run R5 preflight/event is present.
+- `ggml-linkage-preflight.r5.txt`: reports PASS for the CPU kernel-store binary’s linked ggml libraries; this is a dry-run preflight as cross-identified by the R5 event.
+- R5 terminal record shows `rc=75`, reason `disk-floor`, step `job-run`, started 17:08:17Z, ended 17:08:18Z, regions `0-23`; terminal command reports 134G available. Thus no R5 real treatment was run. The out directory contains only the R5 dry-run result/event (plus earlier R3/R4 artifacts).
+
+Original 24-control seed:
+- Stored as `out/results.r3-native.jsonl`, SHA-256 `59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266` (92,492 bytes).
+- Exactly 26 JSONL rows: one non-dry-run preflight, 24 non-dry-run `cell` rows all `arm=control`, and one `paired_readout`; all carry original execution identity `f31565b84cc2`. They are timestamped 16:11:37Z–16:16:54Z.
+- `out/seed-pins.json` independently pins this file SHA and records `native_cell_count=24`, `control_cell_count=24`, `control_exec_ids=[f31565b84cc2]`; its own SHA-256 is `0f633a4f2ec6d134ef957dbdbbfdabad3be787918353862d1a5938f5d36dd421`.
+- Seed preflight identifies original run as 24 threads/CPUs 0–23, same corpus SHA `d69556e907a25d24a1e837a1258413791d5ad86335f389721e5a701a119f216d`, and control function SHA `e1707a1b865d7c27da0267e3b3141ef11d77ade5c6c227ab48adf786ae4a67ce` with `control_code_unchanged=true`.
+
+Conclusion limited to artifact identity/counts: R5 produced zero real treatment cells, zero real R5 preflight, and zero non-dry-run R5 execution events. It has one dry-run preflight and one dry-run smoke cell. The original 24-control seed remains separately preserved with the SHA and identity above. No inference or filing was performed.

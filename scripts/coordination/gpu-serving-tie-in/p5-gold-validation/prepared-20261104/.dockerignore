@@ -1,0 +1,7 @@
+**
+!Dockerfile
+!.dockerignore
+!WHEELHOUSE.sha256
+!requirements.txt
+!wheelhouse/
+!wheelhouse/*.whl

@@ -1,0 +1,3 @@
+WARN task_lint vidya-belief-substrate-program.md:184: untestable prose prerequisite: 'after all eight responses and cleanup; stop-on-futility on STOP, deadline or first identity/startup/response/residency/c'
+DECISION-RULE prose; verdict_by agent: owner handoff-vidya-belief-substrate files the verdict by hand after the run
+REFUSED: /mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118-repair-r2.2o7xv56j/failed-smoke.json pins the rowflow engine digest (filler_run15.sh sha256 65e2a38ef563...): the engine is redeployed under queued rows, so a sealed engine digest fails the job at start; drop the engine from the packet's seals (PASS.json records engine_sha256)

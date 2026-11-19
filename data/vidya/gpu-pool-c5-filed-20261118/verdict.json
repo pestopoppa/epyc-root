@@ -1,0 +1,56 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "answer": "C5_17_TARGETS_UNSUPPORTED_3_CONTROLS_PASS",
+  "filed_by": "handoff-vidya-belief-substrate/codex",
+  "rationale": "Official rc=0 complete; exact 17 target descriptions remain UNSUPPORTED (NORM10, SUM1, SUM_ROWS6); separate controls3/3 PASS; observed20, failed0, projected3/refused0; qualified residency14/13/14. Existing strict native exact-candidate planning canary passed with current reader; candidate scope and ordinary model-planner exclusions preserved. Finite seed2026102603 result only; no 544-case, performance, production, promotion or RVP-C2-2 conclusion.",
+  "verdict": "pass"
+ },
+ "answer": "C5_17_TARGETS_UNSUPPORTED_3_CONTROLS_PASS",
+ "at": "2026-11-18T20:37:03+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T20:35:09Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/ni-gpu-pool-elementwise-20261118-v5.ended",
+ "filed_at": "2026-11-18T20:37:03+00:00",
+ "filed_by": "handoff-vidya-belief-substrate/codex",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:SC18-GPU-POOL-C5-LIVE",
+ "id": "ni-gpu-pool-elementwise-20261118-v5",
+ "keep_tail": {
+  "reason": "no samples_a/samples_b in result",
+  "reported": false
+ },
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ni-gpu-pool-elementwise-20261118-v5.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/native/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official rc=0 complete; exact 17 target descriptions remain UNSUPPORTED (NORM10, SUM1, SUM_ROWS6); separate controls3/3 PASS; observed20, failed0, projected3/refused0; qualified residency14/13/14. Existing strict native exact-candidate planning canary passed with current reader; candidate scope and ordinary model-planner exclusions preserved. Finite seed2026102603 result only; no 544-case, performance, production, promotion or RVP-C2-2 conclusion.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/native/RESULT.json",
+ "root_cause_family": null,
+ "row": "ni-gpu-pool-elementwise-20261118-v5",
+ "row_verdict": "pass",
+ "rule": "Capture the 17 exact original unsupported target descriptions on C5 at seed 2026102603, plus one original supported control per operator for residency. Acceptance requires 17 target dispositions, all three controls PASS, three projected tuples, zero refusals, MI210 ROCm0 terminal OK or FAIL, and at least two same-PID in-window positive-VRAM KFD samples per invocation. Control results are separate from target support. Target supported, unsupported and failed dispositions are answered outcomes; missing targets or failed controls cannot pass smoke or completion. Stop on completion or futility at STOP, deadline or invalid custody; no performance or whole-family claim.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 147,
+  "input": 547331496,
+  "output": 2290785,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 549622281,
+  "tokens_per_task": 3738927.0816326533
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "489b55cd2ce78402bcf76e51d7b22616322a6efde792da27fb5aba9d4b571be3",
+  "result": "pass",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T18:24:03Z reason=complete
+job_id=kvu-kpf174-custody-r5-20261104
+owner=h-kvu
+step=job-run
+estimated_wall_s=2400
+started=2026-11-04T18:22:20Z
+regions=72-95

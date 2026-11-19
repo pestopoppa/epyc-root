@@ -1,0 +1,66 @@
+{
+ "book_s": 225,
+ "budget_gib": 0.01,
+ "busy_fraction": 0.25,
+ "decision_rule": "terminal_receipt_count >= 2 and refusal_count == 0",
+ "declared_shape": "sub-quarter",
+ "declared_threads": 4,
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-FM4-ORACLE-WIRE",
+ "id": "vb-fm4-codex-native-20261118",
+ "keep": [
+  "private/**",
+  "official/**",
+  "*.py",
+  "*.sh",
+  "*.json",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/launcher/launch.sh",
+  "sha256": "2c29aa87d115c626895b6bb48ca57830b529466725d619277f48602a28898a7b"
+ },
+ "lineage": "vidya-fm4-native-codex-dispatch",
+ "min_window_s": 120,
+ "notes": "CPU-only, model-free census of two original completed Codex rollout pairs with explicitly linked native parent metadata. Require both frozen pairs to bind the exact parent session, spawn tool call and child UUID, and record the terminal disposition. Stop on answer after two sealed receipts. Stop on futility at the first digest or identity drift, malformed input, refusal, STOP or the earlier of the engine deadline and 300 seconds. Keep sealed prior receipts in a partial UNKNOWN result if refused. Publisher smoke runs one selected native pair on four allocated CPUs and writes an isolated receipt. This is a finite structural coverage question with no statistical extrapolation, task success, or performance claim. The estimate is the publisher's 300 second admission floor.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:3: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "vidya-belief-substrate-program.md:3: untestable prose prerequisite: 'prerequisites. Require a planning-context canary before declaring wired. [no-belief: prospective source-wiring task] [in'"
+ ],
+ "published_at": "2026-11-18T16:18:54Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T16:18:54Z",
+  "session": "01a1ef6f-2959-71e0-8f5a-c19a19a7d991",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current",
+ "shape": "sub-quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/STOP",
+ "threads_evidence": [
+  "--threads 4"
+ ],
+ "total_units": 2,
+ "unit_key": "terminal_receipt_count",
+ "window_s": 420,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/engine-work"
+}

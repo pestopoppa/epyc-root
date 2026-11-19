@@ -1,0 +1,9 @@
+
+==== dry run 2026-11-05T01:25:30Z regions=0-3 launcher_sha=3e0209ed77f3d89e22f3f4a9217fe820ca0db1c10ca00a4bb5f75553f4a3d2b6 units_before=0
+2026-11-05T01:25:30Z [kvfork-kpf131-findslot-observer-r2-20261105] launcher up pid=3114245 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork-kpf131-findslot-observer-r2-20261105/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork-kpf131-findslot-observer-r2-20261105/stop minwin=300s ports=none dryrun=1
+2026-11-05T01:25:30Z [kvfork-kpf131-findslot-observer-r2-20261105] START regions=0-3 cpus=0-3 threads=4 gpu=0 end=2026-11-05T01:44Z
+OBSERVER_PASS
+job rc=0
+2026-11-05T01:25:33Z [kvfork-kpf131-findslot-observer-r2-20261105] ended rc=75 reason=partial-native-incomplete (grant deleted)
+2026-11-05T01:25:33Z [kvfork-kpf131-findslot-observer-r2-20261105] one window done; exiting (no --repeat)
+==== dry run FAIL: no first progress within 300 s: job ended rc=75 time=2026-11-05T01:25:33Z reason=partial-native-incomplete after 5s; no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork-kpf131-findslot-observer-r2-20261105/native-attempts/attempt-2ezdyps4/native-result.json (json): no new real record; 2 new record(s) ignored: unit_key case_count missing/empty; fix: make the job write its first measured record to /mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork-kpf131-findslot-observer-r2-20261105/native-attempts/attempt-2ezdyps4/native-result.json within first_progress_s=300 (a numeric field outside the bookkeeping keys, no qualification_only/measurement:false), or declare smoke_predicate or unit_key in the spec, then re-run publish_row.py <spec.json> (2026-11-05T01:25:35Z)

@@ -1,0 +1,9 @@
+{
+  "schema": "kvu19b.synthetic-trace-qual.v1",
+  "status": "QUALIFIED_SYNTHETIC",
+  "tests": 2,
+  "mutation_cases": 14,
+  "model": null,
+  "scope": "synthetic supplied offset only; no continuous drift, target process, inference or attribution",
+  "inputs_sha256": "824b33c90709e639e76b35937191f927d8ba69ccb140f6daf3805e2ce9ee5467"
+}

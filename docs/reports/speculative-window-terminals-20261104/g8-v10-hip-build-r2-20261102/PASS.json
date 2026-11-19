@@ -1,0 +1,16 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/g8-v10-hip-build-r2-20261102/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-02T11:54:02Z reason=exited",
+ "engine_sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79",
+ "first_unit_at": "2026-11-02T11:54:01Z",
+ "id": "g8-v10-hip-build-r2-20261102",
+ "launcher_sha256": "4ec0b8d53d319b8b0601c5aa273b87db3687234c2eb8c35578d0c1a29091c2f3",
+ "passed_at": "2026-11-02T11:54:06Z",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/g8-v10-hip-build-r2-20261102/native-attempts/attempt-9p8demz2/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

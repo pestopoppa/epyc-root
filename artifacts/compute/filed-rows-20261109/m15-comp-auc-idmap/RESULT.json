@@ -1,0 +1,15 @@
+{
+ "complete": true,
+ "verdict": "DONE",
+ "m15_decision": "REOPEN (>0.55): COMP_r routing-signal candidate",
+ "pooled_auc_idmap": 0.591291,
+ "insample_auc_idmap": 0.998513,
+ "pooled_auc_control_embedding_idx": 0.591291,
+ "tree_head": "0227696ee9c21864b49273e0f9aeb2b31ffc2854",
+ "snapshot_sha256": {
+  "episodic.db": "e4c82f6be0af52461ed91c314dbf2a5be8c0c02d55df5eaecd454a0b94cf5bbe",
+  "embeddings.faiss": "4e4eabf5fab311e17ee5d913148a42a5f902151720df770c79afdd6c1be43615",
+  "id_map.npy": "39512fd18b7d5b088eb4f50f09e6cd67037b162a22319f7a0dfce0c7dc86c6ed"
+ },
+ "elapsed_s": 16
+}

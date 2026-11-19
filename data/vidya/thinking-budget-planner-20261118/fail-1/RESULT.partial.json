@@ -1,0 +1,15 @@
+{
+  "cpus": [
+    140,
+    141,
+    142,
+    143
+  ],
+  "id": "vb-tb-semantics-native-planner-20261118",
+  "mode": "publisher-smoke",
+  "native_rows": 0,
+  "pins_sha256": "fac302e43eca1023f308b36392c161ee413f33fca13294479769d6355d420fea",
+  "refusal": "CalledProcessError: Command '['/usr/bin/python3', '-I', '-B', '-m', 'unittest', 'discover', '-s', '/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/reader/scripts/experiments/thinking-budget-semantics', '-p', 'test_protocol.py', '-v']' returned non-zero exit status 1.",
+  "refusal_count": 1,
+  "status": "UNKNOWN"
+}

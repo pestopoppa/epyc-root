@@ -1,0 +1,3 @@
+7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c  /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf
+1ba08db04c43d771a413fb1e04406a08f0afb81db3cb2959a24d83c9007f7859  /mnt/micron/rtg58-kpf62-g3-30b-aligned-20261102/final/corpus.jsonl
+a7419618d31b3491a3ec7502a997e3eabaa35ed4ebab7342f769e11be246f9d7  /mnt/raid0/llm/tmp/kv-prefix-fork/kpf62-dev-g3-30b-mixed-20261102/ids.txt

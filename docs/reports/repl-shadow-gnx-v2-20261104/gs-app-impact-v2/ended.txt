@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T15:20:13Z reason=complete
+job_id=ufh12-gs-app-query-impact-v2-20261104
+owner=handoff-agentic-serving-harness-fixes
+step=job-run
+estimated_wall_s=2400
+started=2026-11-04T15:19:49Z
+regions=0-95

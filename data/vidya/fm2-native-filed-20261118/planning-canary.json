@@ -1,0 +1,12 @@
+{
+  "claim_id": "clm_fm2-adamast:5e6848d42bb8ad0c9b500aafd3d1adc190a839f666c23176705e7484ec8ff4fa",
+  "consumer": "coordination.fm2",
+  "grade": "Judged/Located",
+  "ledger_state_digest": "sha256:33c39eeae1ef90fc66d30362d278df029d287b1bb56e00b01aaf9d8e4b77fe0b",
+  "native_receipt_sha256": "5e6848d42bb8ad0c9b500aafd3d1adc190a839f666c23176705e7484ec8ff4fa",
+  "schema": "epyc.fm2.planning-canary.v1",
+  "scope": "One judge on one selected frozen trace, descriptive code assignment only; no accuracy, faithfulness, crosswalk validation or causal fan-out conclusion.",
+  "status": "passed",
+  "tier": "harness",
+  "unrelated_consumer_excluded": true
+}

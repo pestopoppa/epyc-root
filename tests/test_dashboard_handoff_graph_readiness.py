@@ -150,8 +150,8 @@ class ExecutedReadinessTests(unittest.TestCase):
         self.assertIsNone(by["ready"]["opacity"])
         self.assertEqual(by["no_open"]["opacity"], "0.3")
         legend = " ".join(out["legend"])
-        self.assertIn("blocked", legend)
-        self.assertIn("(1)", legend)          # counts are the producer's tally
+        self.assertIn("dep-blocked", legend)
+        self.assertIn("1 dep-blocked", legend)          # counts are the producer's tally
 
     def test_mutation_v1_graph_renders_no_hatch_and_says_why(self):
         g = self._graph()
@@ -217,6 +217,13 @@ def _aligned(nodes, key) -> float:
 
 
 @unittest.skipUnless(shutil.which("node"), "node not available")
+class HoverWebTests(unittest.TestCase):
+    def test_hover_highlights_transitive_up_and_down(self):
+        html = _PAGE.read_text(encoding="utf-8")
+        for needle in ('walk("up")', 'walk("down")', "hl-up", "hl-down", ".dimmed{opacity:.15}"):
+            self.assertIn(needle, html)
+
+
 class LayoutTests(unittest.TestCase):
     """Box "Graph layout reads as a lattice". A human judges the look; the proxy asserted here is
     ALIGNMENT (nodes sharing an exact row/column) must be rare while the separation that made the
@@ -265,6 +272,21 @@ class LayoutTests(unittest.TestCase):
         # Per-id hash, not Math.random: the 2-minute refresh must not reshuffle the picture.
         self.assertEqual(self._pack(_page_jitter()), self._pack(_page_jitter()))
         self.assertNotIn("Math.random", _graph_js())
+
+
+class ProgressPieContract(unittest.TestCase):
+    def test_pie_wedge_and_tooltip_in_page(self):
+        html = (Path(__file__).resolve().parent.parent / "dashboard/static/handoffs.html").read_text()
+        for needle in ("pie-remaining", "pFrac", "done \u00b7", "faint slice = done fraction"):
+            self.assertIn(needle.replace("\\u00b7", "\u00b7"), html)
+
+    def test_every_node_part_is_inside_the_faded_group(self):
+        html = (Path(__file__).resolve().parent.parent / "dashboard/static/handoffs.html").read_text()
+        self.assertNotIn("gNode.appendChild(halo)", html)
+        self.assertIn("c.appendChild(halo)", html)
+        self.assertIn("gNode.appendChild(c); circles[n.id]=c;", html)
+        self.assertIn('cl.add("dimmed")', html)
+        self.assertIn("n.open===0&&(n.closed||0)>0", html)
 
 
 if __name__ == "__main__":

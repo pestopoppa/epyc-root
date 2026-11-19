@@ -1,0 +1,42 @@
+0.00.056.373 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.056.715 W srv  llama_server: -----------------
+0.00.056.716 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.056.716 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.056.716 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.056.717 W srv  llama_server: -----------------
+0.00.057.904 I srv    load_model: loading model '/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf'
+0.00.270.187 E llama_init_from_model: failed to initialize the context: dflash requires ctx_other to be set (this warning is normal during memory fitting)
+0.00.306.027 W srv    load_model: [spec] failed to measure draft model memory: failed to create llama_context from model
+0.00.922.819 W model has unused tensor blk.64.attn_norm.weight (size = 20480 bytes) -- ignoring
+0.00.922.825 W model has unused tensor blk.64.post_attention_norm.weight (size = 20480 bytes) -- ignoring
+0.00.922.829 W model has unused tensor blk.64.attn_q.weight (size = 66846720 bytes) -- ignoring
+0.00.922.831 W model has unused tensor blk.64.attn_k.weight (size = 5570560 bytes) -- ignoring
+0.00.922.833 W model has unused tensor blk.64.attn_v.weight (size = 5570560 bytes) -- ignoring
+0.00.922.839 W model has unused tensor blk.64.attn_output.weight (size = 33423360 bytes) -- ignoring
+0.00.922.841 W model has unused tensor blk.64.attn_q_norm.weight (size = 1024 bytes) -- ignoring
+0.00.922.843 W model has unused tensor blk.64.attn_k_norm.weight (size = 1024 bytes) -- ignoring
+0.00.922.844 W model has unused tensor blk.64.ffn_gate.weight (size = 94699520 bytes) -- ignoring
+0.00.922.846 W model has unused tensor blk.64.ffn_down.weight (size = 94699520 bytes) -- ignoring
+0.00.922.848 W model has unused tensor blk.64.ffn_up.weight (size = 94699520 bytes) -- ignoring
+0.00.922.851 W model has unused tensor blk.64.nextn.eh_proj.weight (size = 55705600 bytes) -- ignoring
+0.00.922.853 W model has unused tensor blk.64.nextn.enorm.weight (size = 20480 bytes) -- ignoring
+0.00.922.855 W model has unused tensor blk.64.nextn.hnorm.weight (size = 20480 bytes) -- ignoring
+0.00.922.860 W model has unused tensor blk.64.nextn.shared_head_norm.weight (size = 20480 bytes) -- ignoring
+0.04.727.533 W load_arch_hparams: missing target_hidden_size; using legacy draft hidden size 5120 and requiring the runtime target model to match
+0.05.324.023 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 4096, kv_unified = 'false'
+0.05.324.060 W common_speculative_impl_draft_dflash: missing dflash.target_hidden_size; using legacy draft hidden size 5120 and requiring it to match the target model
+0.05.324.067 I common_speculative_impl_draft_dflash: adding speculative implementation 'draft-dflash'
+0.05.324.070 I common_speculative_impl_draft_dflash: - n_max=7, n_min=0, p_min=0.00
+0.05.324.070 I common_speculative_impl_draft_dflash: - block_size=8, mask_token_id=248070, n_extract=5
+0.05.373.390 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.05.373.442 I srv  llama_server: model loaded
+0.05.373.446 I srv  llama_server: listening on http://127.0.0.1:18453
+0.05.744.044 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1
+0.05.744.089 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0
+0.08.063.277 I slot print_timing: id  3 | task 0 | prompt eval time =     593.71 ms /   323 tokens (    1.84 ms per token,   544.04 tokens per second)
+0.08.063.281 I slot print_timing: id  3 | task 0 |        eval time =    1725.44 ms /   152 tokens (   11.35 ms per token,    88.09 tokens per second)
+0.08.063.281 I slot print_timing: id  3 | task 0 |       total time =    2319.15 ms /   475 tokens
+0.08.063.287 I slot print_timing: id  3 | task 0 |    graphs reused =         22
+0.08.063.293 I slot print_timing: id  3 | task 0 | draft acceptance = 0.83766 (  129 accepted /   154 generated), mean len =  6.86
+0.08.063.368 I slot      release: id  3 | task 0 | stop processing: n_tokens = 474, truncated = 0
+0.08.183.564 I srv    operator(): operator(): cleaning up before exit...

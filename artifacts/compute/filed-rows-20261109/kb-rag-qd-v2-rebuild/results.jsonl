@@ -1,0 +1,7 @@
+{"unit_id": "start-1794231249", "ok": true, "pid": 412265, "affinity": 4, "note": "precond passed, build starting"}
+{"unit_id": "encode", "rc": -15, "ok": false}
+{"unit_id": "start-1794238828", "ok": true, "pid": 4140635, "affinity": 24, "note": "precond passed, build starting"}
+{"unit_id": "manifest", "chunks": 52436, "workers": 24, "ok": true, "elapsed_s": 104}
+{"unit_id": "encode", "ok": true, "workers": 24, "elapsed_s": 104}
+{"unit_id": "catalog", "ok": true}
+{"unit_id": "validate", "ok": true, "catalog_rows": 52436, "manifest_chunks": 52436, "convention": "qd-v2", "probe_hit": true, "probe_top": ["/workspace/handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md", "/workspace/handoffs/active/deepseek-v41-flash-evaluation.md", "/workspace/handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-26.md", "/workspace/wiki/hardware-optimization.md", "/workspace/research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md"]}

@@ -1,0 +1,1 @@
+{"question": "Can the prospective writer retain a complete single-trace native diagnosis and expose it through the scoped planning context?", "schema": "epyc.fm2.belief-selection.v1", "scope": "one fixed previously selected trace; no prevalence inference", "unit_ids": ["claude-e950eb03f48fcba8"]}

@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Native UNKNOWN DrainError: 0/90 complete, no request records; predeclared futility stop. No monotonicity or registry conclusion.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:14:52+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-03T07:37:11Z reason=complete",
+ "filed_at": "2026-11-04T07:14:52+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "speculative-decoding.md:SR-7",
+ "id": "sr7-qwen36-proposer-w1-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/sr7-qwen36-proposer-w1-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/sr7-qwen36-proposer-w1-20261102/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Native UNKNOWN DrainError: 0/90 complete, no request records; predeclared futility stop. No monotonicity or registry conclusion.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/sr7-qwen36-proposer-w1-20261102/RESULT.json",
+ "root_cause_family": null,
+ "row": "sr7-qwen36-proposer-w1-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "One of three prospectively sealed windows: raw proposer counts must reconcile, incomplete or interrupted capture is UNKNOWN. Apply the fixed paired stratified analysis only after all three independent windows; no registry or historical 122B claim. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "aa8ae1158dbe483e315779312000f17f2a7118996908f14e01a54721f23a2f8b",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

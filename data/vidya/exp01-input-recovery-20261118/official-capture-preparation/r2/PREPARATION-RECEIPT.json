@@ -1,0 +1,21 @@
+{
+  "capture_sha256": "143e24c690b769efbce807ca01a38358b4436ad101c4ff218964224fb14f6962",
+  "checks": {
+    "offline_controls": "Lane writer and reader: 20 tests passed as reported by owner of fix.",
+    "old_stdout_replay": "PASS for native benchmark and CLI plus archived r3 benchmark; original engine cleanup changed only ctime, and strict r2 predicate is unchanged.",
+    "precondition": "PASS",
+    "publisher_native_smoke": "pending"
+  },
+  "fixes": [
+    "Snapshot tested lane grant-custody fix. Missing raw id is allowed and the canonical row-specific grant path, raw bytes, matching CPU mask and UTC grant window are bound.",
+    "Accept historical requested n_gpu_layers=999 with pinned CPU-only executable, mapped libraries and false acceleration flags.",
+    "Isolate engine-work directory so engine's recursive post-run chmod cannot change evidence ctime before replay."
+  ],
+  "original_archive": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-withdrawn",
+  "original_smoke": "Two native children exited 0 on CPUs140\u2013143; the original smoke checker refused the reported CPU-only instrument default n_gpu_layers=999. No publisher PASS and no official run.",
+  "publication": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py --smoke-now /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/spec.json",
+  "row_id": "vidya-exp01-proxy-official-native-20261118-r2",
+  "source_sha256": "61f260b7dcaf928c01763733be765ecac72bd774c302d287ef076506ee928d44",
+  "status": "prepared-sealed-unpublished",
+  "supersedes": "vidya-exp01-proxy-official-native-20261118"
+}

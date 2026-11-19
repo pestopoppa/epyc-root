@@ -1,0 +1,21 @@
+{
+  "scope": "disposable native main commit, installer, ordinary push, reference transaction and automatic origin/main fold",
+  "manual_sync": false,
+  "production_acceptance": false,
+  "postpush_status": {
+    "cc_fresh": true,
+    "cc_register_sha256": null,
+    "fresh": true,
+    "index": "origin/main",
+    "index_entries": 3,
+    "index_max_id": 3,
+    "index_sha256": "8b13025550c846931610c5e49acbbedfb0ac166ffd801c9cb3d62b5ffc2b9ae1",
+    "intake_fresh": true,
+    "lag_entries": 0,
+    "last_sync": "2026-11-18T18:38:33Z",
+    "ledger": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/publisher-smoke-oh7500o1/native-run/state/ledger.jsonl",
+    "ledger_exists": true,
+    "ledger_mtime": "2026-11-18T18:38:33Z",
+    "synced_max_id": 3
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "epyc.filed.verdict.v1",
+  "id": "yarn-jetlong-framing2048-cpu-20261102-v1",
+  "row": "yarn-jetlong-framing2048-cpu-20261102-v1",
+  "owner": "yarn",
+  "filed_at": "2026-11-04T07:07:59+00:00",
+  "at": "2026-11-04T07:07:59+00:00",
+  "outcome_class": "DIAGNOSTIC-RESULT",
+  "phase": "filing",
+  "compute_burned": true,
+  "verdict": {
+    "status": "filed",
+    "kind": "diagnostic",
+    "native_result_sha256": "717de6c7e1d7c812afcb9ad6d79db0a47f7a6ff24d2ce9914474948b846a1f78",
+    "result": "pass"
+  },
+  "native_result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/yarn-jetlong-framing2048-cpu-20261102-v1/native-attempts/attempt-xvu8f9lx/native-result.json",
+  "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/yarn-jetlong-framing2048-cpu-20261102-v1/native-attempts/attempt-xvu8f9lx/native-result.json",
+  "result_format": "json",
+  "result_exists": true,
+  "row_verdict": "pass",
+  "rule": "One native numeric /completion request with exactly 2048 source-bound tokens at ctx=4096; PASS requires prompt_n=tokens_evaluated=2048, cache_n=0, truncated=false, and ECHILD cleanup before durable result unit. Qualifies short framing only.",
+  "manifest": "/mnt/raid0/llm/tmp/compute-flags/dryrun/yarn-jetlong-framing2048-cpu-20261102-v1/unpublished.json",
+  "manifest_sha256": "6296bfa77cc0379aff295e40fffaae5c8378ccf1f1e2743254e6a83d35dffd4a",
+  "values": {
+    "verdict": "PASS",
+    "expected": 2048,
+    "prompt_n": 2048,
+    "cache_n": 0,
+    "tokens_evaluated": 2048,
+    "truncated": false
+  },
+  "rc": 0,
+  "scope": "2048-token numeric /completion framing at ctx=4096 only; no recall, 300K/524K framing, or scientific campaign claim",
+  "campaign_complete": false,
+  "filed_by": "codex-gen",
+  "reason": "Recovered original publication rule and native result. Short framing and ECHILD cleanup satisfy the declared diagnostic gate; parent long-context campaign remains open.",
+  "handoff_task": "yarn-context-extension-research.md:JETLONG-LONGCTX-RUN",
+  "checkbox_disposition": "No parent checkbox tick: this result qualifies a prerequisite only; owner already recorded qualification in /mnt/raid0/llm/tmp/yarn/wrap-framing-ready.json."
+}

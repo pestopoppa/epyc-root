@@ -1,0 +1,8 @@
+{
+  "owner": "handoff-vidya-belief-substrate",
+  "batch_sha256": "8c64e05a1120627b651de47f85305c648f1685ff23c533cfb4447cf25d77dfed",
+  "before_rows": 30,
+  "rows_appended": 53,
+  "after_rows": 83,
+  "canonical_ledger_written": false
+}

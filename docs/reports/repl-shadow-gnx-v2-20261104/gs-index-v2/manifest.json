@@ -1,0 +1,44 @@
+{
+ "decision_rule": "Pin detached root commit 981ef5ba9ad1476bdb0d7feb84067f4fac074776, run wrapper index with four-quadrant admission, record context and upstream impact for emit, validate, rederive in frozen capture and project in coverage adapter. PASS requires all exact target identities and LOW/MEDIUM. HIGH/CRITICAL immediately recorded stop and warning; no edits. Unknown, ambiguity, mismatched target/index or partial is not PASS; smoke scan is not verdict.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2/filler_run15.sh",
+  "sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.11",
+ "id": "ufh12-gs-frozen-gnx-v2-20261104",
+ "keep": [
+  "**",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2/launch.sh",
+  "sha256": "4466e01fa75233418d96dc79aefe90fa244af54e7f798be9cf2e4fde78a945f9"
+ },
+ "min_window_s": 300,
+ "notes": "Reuses the single clean detached source at pinned commit; wrapper handles any partial index. Prior attempt ended disk-floor. Smoke scans source only.",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "ports": [],
+ "priority_rank": 18.0,
+ "publish_warnings": [
+  "harness-program.md:2531: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "harness-program.md:2531: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "harness-program.md:2531: untestable prose prerequisite: 'need VB-UFH12-PARITY first. (filed 2026-10-20)\\n  - 2026-11-04: bounded private-copy rehearsal PASS (64,514 episodic and '"
+ ],
+ "published_at": "2026-11-04T14:22:22Z",
+ "published_from": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2",
+ "shape": "host",
+ "smoke_predicate": "test -s /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2/out/smoke.jsonl",
+ "stop_file": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2/STOP",
+ "supersedes": "ufh12-gs-frozen-gnx-20261104",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2"
+}

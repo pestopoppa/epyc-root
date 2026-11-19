@@ -24,7 +24,7 @@ drain-at-boundary safety.
   the bus like every other consumer (D4 as amended 2026-08-15/16 — the daemon grants them
   deterministically against `compute_policy.yaml`; no session grants a window).
 - Emit the typed graded `compute-window` event (grade, eligible devices, VRAM, budget, safe
-  drain) as the compatibility judgment for admitted compute-ready candidates (RTG-51 contract).
+  drain) as the compatibility judgment for admitted compute-ready candidates (RTG-34 contract).
 - Delegated GPU grants stay disabled until `resource_claims.gpu` names and enables a general
   physical-claim provider. A provider-qualified open and close receipt is mandatory after that.
   The Inference Main can still execute its own GPU work under the existing inference rules.

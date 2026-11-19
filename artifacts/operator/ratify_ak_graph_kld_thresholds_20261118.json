@@ -1,0 +1,28 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-GRAPH-KLD-THRESHOLDS-20261118",
+  "status": "ratified",
+  "ratified_at": "2026-11-19T08:48:54Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-11-18 AK-FUSE-GRAPH-KLD-1: today's 27B-anchored gate as the thresholds (GPU: 27B Q8_0 KLD <= 0.003, |dPPL| <= 0.5%; Q38FN KLD/dPPL report-only. CPU: same plus Q38FN |dPPL| <= 0.5%, top-1 >= 93%)",
+    "2": "2026-11-19 amendment: GPU additionally refuses if Q38FN (hybrid --n-cpu-moe 48 test vehicle) same-top < 93.0%; the known-bad H13b replay is clean on the 27B and caught only by Q38FN"
+  },
+  "items": {
+    "1": "research scripts/kernel_rnd/autokernel/loop/graph_kld_policy.json (the only threshold input of gates.graph_kld_keep_check)",
+    "2": "measurement/protocols/kernel-research.md section P-AK-SEARCH-1-A5a (additions only)"
+  },
+  "base_origin_main": "2f416e26e6ac1c74b14b523494beec50ab222273",
+  "research_commit": "6012917c0015b5e0e79a36f5c8fbec54dce9d627",
+  "consolidated_receipt": "artifacts/operator/ratify_ak_graph_kld_thresholds_20261118.receipt.json",
+  "state": {
+    "measurement/protocols/kernel-research.md": {
+      "sha256_before": "c5bd00d760bb70e1f300930268913b0cb002c6d05fe3712937ae320d5175dc4e",
+      "sha256_after": "3665781ed9331bea1acf556d8750cfad571fd2a1c8283b9c44f652eed6638b58"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_ak_graph_kld_thresholds_20261118.sh",
+  "ratify_script_sha256": "c0b5990b9936d7196b0a3dbf8c6b24f186222bbaa8c37a3f8ec52d12cc4b43cc",
+  "processes_touched": []
+}

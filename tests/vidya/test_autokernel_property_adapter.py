@@ -87,3 +87,59 @@ def test_project_refuses_mutated_intermediate_measurement_or_digest():
     forged["event_sha256"] = "a" * 64
     with pytest.raises(ct.ProjectionError, match="mutated event_sha256"):
         akp.project(forged)
+
+
+def test_diagnostic_marker_projects_observation_and_refuses_claim_warrant():
+    source = envelope()
+    event = source["payload"]
+    event.update({"backend": "llama_cpu", "device_state": None, "status": "inconclusive", "tier": "T0",
+                  "quality": {}, "stability": {}, "mechanism": {}})
+    event["correctness"] = {akp.GATE_ID: event["correctness"][akp.GATE_ID]}
+    event["claim_grammar"].update({"protocol_id": akp.DIAGNOSTIC_RECIPE_ID, "category": "CANDIDATE"})
+    event["correctness"][akp.GATE_ID]["requires_anchor"] = False
+    event["performance"].update({"raw_samples": [], "paired_blocks": 0, "estimate": None})
+    event["performance"]["search_discipline"].update({
+        "record_class": akp.DIAGNOSTIC_RECORD_CLASS, "speed_rank_admissible": False})
+    assert (rows := akp.native_rows(source))
+    tup = akp.project(rows[0])
+    assert tup.category == "CANDIDATE"
+    assert tup.protocol_id == ""
+    assert ct.grade(tup)[:2] == ("Judged", "Located")
+    for path, value in (
+        (("status",), "pass"),
+        (("claim_grammar", "protocol_id"), "other/v1"),
+        (("claim_grammar", "category"), "BASELINE"),
+        (("quality",), {"gate": "PASS"}),
+    ):
+        assert akp.native_rows(mutated(source, ("payload", *path), value)) == ()
+
+
+def test_explicit_cli_accepts_journal_retry_and_counts_invalid_prospective_vector(tmp_path):
+    import json
+    import subprocess
+
+    sample = tmp_path / "journal"
+    sample.mkdir()
+    journal_path = sample / "events.jsonl"
+    journal_path.write_text(json.dumps(envelope()) + "\n")
+    args = [sys.executable, "-B", str(ROOT / "scripts/vidya/cli.py"), "--json",
+            "ingest", "autokernel-property", "--root", str(sample),
+            "--ledger", str(tmp_path / "local-ledger.jsonl"),
+            "--only-new", "--as-of", "2026-11-18T09:00:00Z"]
+
+    def ingest():
+        return json.loads(subprocess.check_output(args, text=True))
+
+    first = ingest()
+    assert first["by_adapter"] == {"autokernel_property": 1}
+    assert first["rows_projected"] == 1 and first["refused"] == 0
+    assert first["frames_emitted"] == 3
+    retry = ingest()
+    assert retry["frames_emitted"] == 0 and retry["refused"] == 0
+
+    bad = mutated(envelope(), ("payload", "correctness", akp.GATE_ID,
+                               "measurements", 0, "suite_seed"), 19)
+    journal_path.write_text(json.dumps(bad) + "\n" + json.dumps(envelope(properties=False)) + "\n")
+    invalid = ingest()
+    assert invalid["refused"] == 1 and invalid["rows_projected"] == invalid["frames_emitted"] == 0
+    assert invalid["documents_yielding_no_rows"] == 1

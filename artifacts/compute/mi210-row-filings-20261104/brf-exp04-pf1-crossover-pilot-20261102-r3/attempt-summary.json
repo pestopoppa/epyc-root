@@ -1,0 +1,127 @@
+{
+ "best_gpu_arm_median_ratio": {
+  "2048": {
+   "arm": "A1",
+   "clears_1.10": false,
+   "ratio": 0
+  },
+  "8192": {
+   "arm": "A1",
+   "clears_1.10": false,
+   "ratio": 0
+  }
+ },
+ "cap_s": 3600,
+ "capture_completeness": 0.75,
+ "consumer_coverage": {
+  "HSF": "not covered: needs the full L set (1K..32K)",
+  "NPD": "not covered: needs the full L set",
+  "PF1": "not yet testable (cells < 2 valid)",
+  "cells_valid": {
+   "A0@2048": 1,
+   "A0@8192": 1,
+   "A1-disabled@2048": 1,
+   "A1-disabled@8192": 1,
+   "A1@2048": 0,
+   "A1@8192": 0,
+   "A2@2048": 0,
+   "A2@8192": 0
+  }
+ },
+ "control_A1disabled_over_A0_median": {
+  "2048": 0.8591,
+  "8192": 0.9588
+ },
+ "cumulative_wall_s": 505.4,
+ "decision_suggestion": "REVISE",
+ "duration_per_cell_s": {
+  "A0@2048": {
+   "max": 50.14,
+   "median": 50.14,
+   "n": 1
+  },
+  "A0@8192": {
+   "max": 107.73,
+   "median": 107.73,
+   "n": 1
+  },
+  "A1-disabled@2048": {
+   "max": 69.13,
+   "median": 69.13,
+   "n": 1
+  },
+  "A1-disabled@8192": {
+   "max": 129.25,
+   "median": 129.25,
+   "n": 1
+  },
+  "A1@2048": {
+   "max": 57.54,
+   "median": 57.54,
+   "n": 1
+  },
+  "A1@8192": {
+   "max": 84.62,
+   "median": 84.62,
+   "n": 1
+  },
+  "A2@2048": {
+   "max": 3.5,
+   "median": 3.5,
+   "n": 1
+  },
+  "A2@8192": {
+   "max": 3.5,
+   "median": 3.5,
+   "n": 1
+  }
+ },
+ "label": "exploratory/decision-support; owner (PF1) reviews; never a PF1 gate result; the 2K/8K screen never yields a negative PF1 verdict",
+ "paired_ratio_vs_A0_by_block": {
+  "A1-disabled@2048": [
+   0.8591
+  ],
+  "A1-disabled@8192": [
+   0.9588
+  ]
+ },
+ "residency_failures": [
+  "b0-L2048-A2",
+  "b0-L8192-A2"
+ ],
+ "schema": "brf-exp04-summary.v1",
+ "stop_reason": "futility: HIP residency not proven on >= 2 GPU units (REVISE)",
+ "units_total": 8,
+ "units_valid": 4,
+ "updated_at": "2026-11-02T23:07:38Z",
+ "variance_per_arm": {
+  "A0@2048": {
+   "cv": null,
+   "mean": 238.600147,
+   "median": 238.600147,
+   "n": 1,
+   "sd": null
+  },
+  "A0@8192": {
+   "cv": null,
+   "mean": 213.537736,
+   "median": 213.537736,
+   "n": 1,
+   "sd": null
+  },
+  "A1-disabled@2048": {
+   "cv": null,
+   "mean": 204.972124,
+   "median": 204.972124,
+   "n": 1,
+   "sd": null
+  },
+  "A1-disabled@8192": {
+   "cv": null,
+   "mean": 204.750568,
+   "median": 204.750568,
+   "n": 1,
+   "sd": null
+  }
+ }
+}

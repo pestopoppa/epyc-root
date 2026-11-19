@@ -1,0 +1,12 @@
+{
+  "gitnexus": "repository unindexed; impact unavailable",
+  "id": "vb-sync-worktree-control-20261118",
+  "launcher_sha256": "34aff6a8966665ad6b7ee36463dcf0bf72ac776933300a2c86d24817149fb10c",
+  "official_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official/RESULT.json",
+  "scope": "software control only",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current",
+  "source_commit": "fcc89b474a0b9d906df5ea8e7cb9d4708ffeaeee",
+  "source_pins_sha256": "1832dc0efcbd93f9060a703cb9ec082086c1e1609bf591391960de1880c88f06",
+  "source_repo": "/workspace",
+  "status": "successor_source_prepared"
+}

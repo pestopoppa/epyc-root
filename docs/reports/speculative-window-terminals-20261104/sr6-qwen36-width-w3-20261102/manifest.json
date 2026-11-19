@@ -1,0 +1,41 @@
+{
+ "decision_rule": "Predeclared window 3 of three independent windows; capture into the exact shared W1 exposure root and isolate W3 server identities under output/servers-w3. Preserve every exposure, response, placement and terminal; interrupted, incomplete, or missing provenance is UNKNOWN. Analyze only after all three windows under the sealed decision rule; no registry change or performance claim from this row alone. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 14400,
+ "gib": 128,
+ "handoff_task": "speculative-decoding.md:SR-6",
+ "id": "sr6-qwen36-width-w3-20261102",
+ "keep": [
+  "sr6-qwen36-width-w3-20261102/**",
+  "output/**",
+  "smoke/w3/**",
+  "sr6-qwen36-width-w3-20261102/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w3-20261102/launch.sh",
+  "sha256": "70f81baf187b3c19ce44620397a1b54e303a1773d5a685f0df1025d1030398fc"
+ },
+ "min_window_s": 10800,
+ "owner": "handoff-speculative-decoding-mtp",
+ "ports": [
+  18979
+ ],
+ "priority_rank": 30.0,
+ "published_at": "2026-11-03T07:24:25Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w3-20261102/spec.json",
+ "regions": "0-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w3-20261102/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w3-20261102/STOP",
+ "window_s": 17580,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w3-20261102"
+}

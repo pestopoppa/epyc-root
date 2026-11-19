@@ -1,0 +1,18 @@
+{
+  "source": "nemo-range-join",
+  "adapter": "adapters/nemo_range_join.py",
+  "adapter_id": "vidya.adapters.nemo_range_join/v1",
+  "paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/replay.json"
+  ],
+  "units_matched": 1,
+  "units_projected": 1,
+  "declined": [],
+  "refused": [],
+  "missing": [],
+  "rows_projected": 1,
+  "frames_emitted": 3,
+  "dry_run": false,
+  "only_new": true,
+  "frames_skipped": 0
+}

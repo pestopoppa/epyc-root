@@ -1,0 +1,46 @@
+{
+ "decision_rule": "Complete only when source-bound CPU binary on the preflighted Qwen3.5-2B-Q4-MTP model records a real MTP_LIFECYCLE proposal/accept count, and explicit UNKNOWN rollback/fault terminal outcome; native rc2 is expected, no rollback, fault, quality or throughput conclusion. Missing marker, source/model identity or interrupted execution is inconclusive.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 600,
+ "first_progress_s": 900,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-mtp-lifecycle-native-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.json",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-lifecycle-native-20261104/launch.sh",
+  "sha256": "d4e6ee1116e87858cded6144d25622acc9716c39ed7102b4a9f7413f3fc5259b"
+ },
+ "min_window_s": 600,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:461: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "speculative-decoding.md:461: identity fields incomplete: ['metric', 'region'] \u2014 add metric: what is measured, with direction (e.g. decode t/s, higher is better); region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)"
+ ],
+ "published_at": "2026-11-04T07:29:39Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-lifecycle-native-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-lifecycle-native-20261104/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-lifecycle-native-20261104",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-lifecycle-native-20261104/proof.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-lifecycle-native-20261104/STOP",
+ "window_s": 1020,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-lifecycle-native-20261104"
+}

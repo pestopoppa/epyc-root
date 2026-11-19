@@ -1,0 +1,69 @@
+{
+ "book_s": 420,
+ "budget_gib": 1.0,
+ "decision_rule": "Capture C5 dispositions for the 544 exact historical target and seed pairs across seeds 2026102600 through 2026102631. Each of the 96 operator and seed invocations adds one separately reported original supported control. Official completion requires 544 target dispositions, all 96 controls PASS, 640 observations, 96 shared projections with zero refusals, and two or more distinct same-PID in-window positive-VRAM KFD samples tying every invocation to the pinned HIP candidate on MI210 ROCm0. Native supported, unsupported, and failed are valid target outcomes. Missing cases, failed controls, or invalid custody cannot complete the official row. Publisher smoke runs only seed 2026102603 and requires all 17 target dispositions and three passing controls with the same custody checks. Stop on completed finite coverage or on STOP, deadline or invalid custody. Finite candidate-local support and correctness only.",
+ "declared_shape": "gpu",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 330,
+ "first_progress_s": 60,
+ "gib": 8,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:SC18-GPU-POOL-C5-HISTORICAL544",
+ "id": "ni-gpu-pool-elementwise-20261118-v6",
+ "keep": [
+  "native/**",
+  "PINNED.sha256",
+  "candidate/**",
+  "scripts/vidya/**",
+  "run_elementwise.py",
+  "verify_ggml_linkage.sh",
+  "source/**",
+  "test_run_elementwise.py",
+  "case-plan.tsv",
+  "README.md",
+  "control-plan.tsv",
+  "historical-reference.json",
+  "prepare_historical_reference.py",
+  "report.json",
+  "launch.sh",
+  "spec.json",
+  "native/RESULT.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/launch.sh",
+  "sha256": "36c2659d8091171f2ef422d1d077bf1c28fd50497b838b264bb1d0bbff7fda82"
+ },
+ "lineage": "ni-gpu-pool-c5-historical544",
+ "min_window_s": 420,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:990: untestable prose prerequisite: 'Require prospective sealed capture, exact seed/description/artifact custody, zero strict projection refusals, all contro'"
+ ],
+ "published_at": "2026-11-18T21:12:32Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T21:12:32Z",
+  "session": "01a1f07f-24bd-72b0-b143-e602bdb9207a",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/native/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544",
+ "shape": "gpu",
+ "smoke_predicate": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/run_elementwise.py smoke",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/STOP",
+ "verdict_by": "agent",
+ "window_s": 720,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544"
+}

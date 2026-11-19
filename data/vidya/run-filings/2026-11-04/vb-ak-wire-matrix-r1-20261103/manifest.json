@@ -1,0 +1,38 @@
+{
+ "admission_class": "block-correctness",
+ "decision_rule": "Correctness only, no timing: does a live native actor_wire matrix finalization write a sealed actor-wire-final.json that cli.py ingest ak-actor-wire projects with refused=0. Verifier finding, not a model-quality measurement. Shares host with a GPU job.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 300,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 900,
+ "gib": 48,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-AK-WIRE-MATRIX-LIVE",
+ "id": "vb-ak-wire-matrix-r1-20261103",
+ "keep": [
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103/launch.sh",
+  "sha256": "65b15101d8195cbd0cdffb291b700950410d355a3f9a68476b0159380f148a80"
+ },
+ "lineage": "vb-ak-wire-matrix",
+ "min_window_s": 1200,
+ "owner": "vidya-fanout",
+ "ports": [],
+ "priority_rank": 100.0,
+ "published_at": "2026-11-04T00:05:30Z",
+ "published_from": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103/row-spec.json",
+ "regions": "48-71",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103/STOP",
+ "window_s": 1500,
+ "workdir": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103"
+}

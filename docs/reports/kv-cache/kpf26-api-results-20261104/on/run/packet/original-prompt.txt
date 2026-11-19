@@ -1,0 +1,1 @@
+Use the task tool exactly once, with subagent_type "general", to delegate this read-only lookup to a subagent: find the file in this repository that sets RELEASE_CODENAME and report its value. Do not search for it yourself and do not modify any file. When the subagent has answered, reply with exactly one line: CODENAME=<value>

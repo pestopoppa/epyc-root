@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate owner",
+  "rationale": "rc=1 at 2026-11-18T01:50:55Z; declared RESULT.json absent. Four original production responses retained; fifth long reasoning cap0 timed out before response and no candidate launched. Native log task314 shows 54.15s prefill and 100 decoded before cancellation. Captured PID236289 cleanup reports dead=true, exit_status=0, port_closed=true. Decision rule requires sixteen responses and completed custody: not satisfied. No parity or broad-pack acceptance. Preserve partial archive and prepare timeout-only successor; do not tick full-capture box.",
+  "verdict": "fail"
+ },
+ "answer": null,
+ "at": "2026-11-18T01:53:05+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-18T01:50:55Z reason=job-rc-1:exited",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-vidya-quality-pack-dspark-dflash-20261118-r2.ended",
+ "filed_at": "2026-11-18T01:53:05+00:00",
+ "filed_by": "handoff-vidya-belief-substrate owner",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-DSPARK-DFLASH",
+ "id": "handoff-vidya-quality-pack-dspark-dflash-20261118-r2",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-dspark-dflash-20261118-r2.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-r2-20261118/out/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "rc=1 at 2026-11-18T01:50:55Z; declared RESULT.json absent. Four original production responses retained; fifth long reasoning cap0 timed out before response and no candidate launched. Native log task314 shows 54.15s prefill and 100 decoded before cancellation. Captured PID236289 cleanup reports dead=true, exit_status=0, port_closed=true. Decision rule requires sixteen responses and completed custody: not satisfied. No parity or broad-pack acceptance. Preserve partial archive and prepare timeout-only successor; do not tick full-capture box.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-r2-20261118/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-vidya-quality-pack-dspark-dflash-20261118-r2",
+ "row_verdict": "fail",
+ "rule": "Capture four fixed native /completion cap-0/cap-7 pairs per runtime against v10 and C13 on one allocator-selected 24-CPU quarter with Qwen3.8-27B-Q8_0 and its matching Q8_0 DFlash2 sidecar. Require eight raw requests per single-slot runtime, echoed caps, native draft and accept counters, split f16 KV, pinned runtime/model identities, live same-PID CPU affinity and mapped runtime custody per request, sealed production bytes before candidate launch and captured-PID, listener cleanup. Stop after sixteen raw responses and verified cleanup or at STOP, deadline or first identity, startup, response, telemetry or cleanup error. The v10 small-model CPU no-spec smoke proves native publisher custody only. Preserve retirement of historical DeepSeek 0731 DSpark, earlier frontdoor mismatch and incomplete broad coverage.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 23,
+  "input": 85367075,
+  "output": 376272,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 85743347,
+  "tokens_per_task": 3727971.6086956523
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "fail",
+  "status": "filed"
+ }
+}

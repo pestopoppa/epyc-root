@@ -71,7 +71,8 @@ assert result.returncode == 0 and "guarded child ok" in result.stdout, result.st
 print("PASS trusted Python child rewrapped")
 
 for path in ("/mnt/raid0/llm/state/vidya/ledger.jsonl",
-             "/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl"):
+             "/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl",
+             "/mnt/raid0/llm/epyc-orchestrator/orchestration/seeding_batch_telemetry.jsonl"):
     try:
         open(path, "a")
     except PermissionError:
@@ -85,3 +86,23 @@ except PermissionError:
 else:
     raise AssertionError("socket allowed")
 print("PASS live ledger/telemetry writes and socket refused")
+
+# LOOP-SAFETY C1: the reader pin's exact read-only git forms pass; anything else stays refused.
+repo = str(here)
+z = "0" * 40
+for tail in (["rev-parse", "--verify", "HEAD^{commit}"],
+             ["merge-base", "--is-ancestor", z, z],
+             ["rev-list", "--format=%ct", "--no-commit-header", f"{z}..{z}"]):
+    subprocess.run(["git", "-C", repo, *tail], capture_output=True)  # may exit non-zero; allowed
+for tail in (["fetch", "origin"], ["merge-base", "--is-ancestor", "origin/main", "HEAD"],
+             ["rev-list", "--format=%ct", "--no-commit-header", "HEAD..origin/main"],
+             ["rev-list", "--format=%ct", "--no-commit-header", f"{z}...{z}"],
+             ["rev-list", "--count", f"{z}..{z}"],
+             ["update-ref", "refs/remotes/origin/main", z]):
+    try:
+        subprocess.run(["git", "-C", repo, *tail], capture_output=True)
+    except PermissionError:
+        pass
+    else:
+        raise AssertionError("git form accepted: " + " ".join(tail))
+print("PASS reader-pin git reads allowed; fetch/update-ref/symbolic forms refused")

@@ -1,0 +1,18 @@
+[
+  {
+    "device": "SYNTHETIC-GPU",
+    "host_ns": 250,
+    "kfd": true,
+    "pid": 123,
+    "pid_birth": "SYNTHETIC-BIRTH",
+    "vram_bytes": 1
+  },
+  {
+    "device": "SYNTHETIC-GPU",
+    "host_ns": 300,
+    "kfd": true,
+    "pid": 123,
+    "pid_birth": "SYNTHETIC-BIRTH",
+    "vram_bytes": 1
+  }
+]

@@ -1,0 +1,197 @@
+--- a/scripts/kernel_rnd/autokernel/loop/actors.py
++++ b/scripts/kernel_rnd/autokernel/loop/actors.py
+@@ -995,6 +995,8 @@
+         # before-listing that failed (locked store) cannot hand the call an older
+         # session that merely sits in the same lane directory.
+         started_at = time.time()
++    campaign = (_begin_vidya_campaign(backend, env) if collect_metrics and _safe_role(schema)
++                and os.environ.get("AK_VIDYA_CAMPAIGN_CAPTURE") == "1" else None)
+     # Capture to FILES, not pipes. The reply is the LAST thing the CLI prints, and
+     # opencode (Bun) exits without draining a pipe: `opencode export` read through a
+     # pipe stopped at exactly 98,304 bytes (DS41 seat A/B, 2026-09-24) while the same
+@@ -1104,17 +1106,22 @@
+                      else done.stdout)
+     else:
+         final_text = None   # about to raise below; nothing to hand `_parse_reply`
++    finished = time.time()
++    wall_s = time.monotonic() - started
++    if campaign is not None:
++        wall_s = max(0.001, time.monotonic() - campaign["started_monotonic"])
++        campaign["finished"] = finished
+     recorded_class = _record_metrics(
+         workspace, backend, role=_safe_role(schema), returncode=done.returncode,
+-        wall_s=time.monotonic() - started, timed_out=False,
++        wall_s=wall_s, timed_out=False,
+         before_ids=before_session_ids, arm=arm, env=env, collect_metrics=collect_metrics,
+         schema=schema, final_text=final_text, salvaged=salvage_text is not None,
+         started_at=started_at, budget_s=budget_s,
+         failure_class=OpencodeStoreError.failure_class if store_error else None,
+         empty_reply=salvage_text is None and not (done.stdout or "").strip(),
+-        continued_session=continued)
++        continued_session=continued, campaign=campaign)
+     _record_call(workspace, backend, prompt, returncode=done.returncode,
+-                 wall_s=time.monotonic() - started, env=env, schema=schema, reply=reply)
++                 wall_s=wall_s, env=env, schema=schema, reply=reply, campaign=campaign)
+     if salvage_text is not None:
+         return salvage_text
+     if store_error:
+@@ -1244,10 +1251,47 @@
+ ACTOR_CALL_LOG = actor_metrics.CALL_LOG_NAME
+ 
+ 
++def _begin_vidya_campaign(backend: Backend, env):
++    """Take direct-server and offered context bytes while the owning call has them."""
++    import uuid
++    import urllib.request
++    from . import actor_serving
++
++    campaign = {"call_id": uuid.uuid4().hex, "metrics": None}
++    try:
++        endpoint = _provider_base_url(backend.model)
++        if not endpoint or not actor_serving.is_local(endpoint):
++            raise ValueError("direct actor endpoint must be loopback")
++        url = actor_serving.server_root(endpoint) + "/props"
++        # A native actor slot is local. Follow neither a system proxy nor a redirect.
++        class DirectProps(urllib.request.HTTPRedirectHandler):
++            def redirect_request(self, req, fp, code, msg, headers, newurl):
++                return None
++
++        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), DirectProps())
++        with opener.open(url, timeout=4) as response:
++            raw = response.read(1024 * 1024 + 1)
++            if not 0 < len(raw) <= 1024 * 1024:
++                raise ValueError("/props response exceeded the capture bound")
++        campaign["props_raw"] = raw
++        campaign["props_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
++        campaign["endpoint"] = endpoint
++        manifest = (env or {}).get(SEAT_ENV_BUNDLE_MANIFEST)
++        if manifest:
++            with Path(manifest).open("rb") as stream:
++                campaign["bundle_raw"] = stream.read(1024 * 1024 + 1)
++    except (OSError, TypeError, ValueError) as exc:
++        campaign["capture_error"] = f"{type(exc).__name__}: {exc}"
++    campaign["started"] = time.time()
++    campaign["started_monotonic"] = time.monotonic()
++    return campaign
++
++
+ def _record_call(workspace: Path, backend: Backend, prompt: str, *, returncode: int,
+                  wall_s: float, env: Mapping[str, str] | None,
+                  schema: Mapping[str, Any] | None = None,
+-                 reply: Mapping[str, Any] | None = None, timed_out: bool = False) -> None:
++                 reply: Mapping[str, Any] | None = None, timed_out: bool = False,
++                 campaign: dict[str, Any] | None = None) -> None:
+     """One line per actor call: wall time and prompt size, the numbers the seat A/B
+     compares (per-step tokens come from `opencode export` of the lane's session).
+ 
+@@ -1257,7 +1301,8 @@
+     the contract cannot be met (ROOT checkout missing, opencode version unreadable,
+     ...) the line keeps the pre-hook shape plus `v1_refused: <why>` -- it then
+     projects no claim, and says why, instead of inventing a field."""
+-    finished = time.time()
++    finished = campaign["finished"] if campaign is not None else time.time()
++    metric_row = campaign["metrics"] if campaign is not None else None
+     legacy = {"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(finished)),
+               "backend": backend.describe(), "agent": backend.agent or None,
+               "returncode": returncode, "wall_s": round(wall_s, 1),
+@@ -1266,7 +1311,9 @@
+     try:
+         row = _call_record_v1(workspace, backend, prompt, returncode=returncode,
+                               wall_s=wall_s, finished=finished, env=env, schema=schema,
+-                              reply=reply, timed_out=timed_out)
++                              reply=reply, timed_out=timed_out, campaign=campaign)
++        if campaign is not None:
++            metric_row, row = row
+     except Exception as exc:     # noqa: BLE001 -- evidence, never a reason to fail the call
+         row = {**legacy, "v1_refused": f"{type(exc).__name__}: {exc}"[:500]}
+     try:
+@@ -1278,7 +1325,8 @@
+             raise RunAborted("actor call has no retained reply paths")
+         if row.get("reply") != reply:
+             raise RunAborted("actor call row did not bind its retained reply paths")
+-        append_rows(target / ACTOR_CALL_LOG, json.dumps(row, sort_keys=True) + "\n")
++        rows = [metric_row, row] if metric_row is not None else [row]
++        append_rows(target / ACTOR_CALL_LOG, "".join(json.dumps(item, sort_keys=True) + "\n" for item in rows))
+         state = _reply_custody.get()
+         if state is not None:
+             state["recorded"] = True
+@@ -1308,7 +1356,8 @@
+                     budget_exhausted: bool = False,
+                     empty_reply: bool = False,
+                     continued_session: str | None = None,
+-                    stats_out: dict[str, Any] | None = None) -> str | None:
++                    stats_out: dict[str, Any] | None = None,
++                    campaign: dict[str, Any] | None = None) -> str | None:
+     """A sibling line in `actor-calls.jsonl`, ahead of the `_record_call` line so a
+     reader taking "the last line" for the v1 record (as the existing tests and any
+     VB-AK-SEAT consumer do) is unaffected by this addition: the per-call
+@@ -1417,6 +1466,12 @@
+         history_fields.note_call(role, wall_s, failure_class, record.get("opencode"))
+     except Exception:   # noqa: BLE001 -- observe-only, never a reason to fail the call
+         pass
++    if campaign is not None:
++        record["call_id"] = campaign["call_id"]
++        if record.get("seat_arm") is None:
++            record["seat_arm"] = "plain"
++        campaign["metrics"] = record
++        return failure_class
+     try:
+         target = Path(workspace).parent / ACTOR_REPLY_DIR
+         target.mkdir(parents=True, exist_ok=True)
+@@ -1506,6 +1561,7 @@
+ #: Marks an OPENCODE_CONFIG that belongs to the PLAIN seat (OAB-10/11 permission block
+ #: only), so the VB-AK-SEAT record does not mistake it for a bounded seat's config.
+ SEAT_ENV_PLAIN_CONFIG = "AK_ACTOR_SEAT_PLAIN_CONFIG"
++SEAT_ENV_BUNDLE_MANIFEST = "AK_ACTOR_SEAT_BUNDLE_MANIFEST"
+ #: OAB-22/23: the limits a call's per-call config applied, as JSON, for the metrics row.
+ SEAT_ENV_BUDGETS = "AK_ACTOR_SEAT_BUDGETS"
+ #: UFH14-B1: what `actor_serving` derived for the call (F1 params, thinking budget), as
+@@ -1610,7 +1666,7 @@
+ def _call_record_v1(workspace: Path, backend: Backend, prompt: str, *, returncode: int,
+                     wall_s: float, finished: float, env: Mapping[str, str] | None,
+                     schema: Mapping[str, Any] | None, reply: Mapping[str, Any] | None,
+-                    timed_out: bool) -> dict[str, Any]:
++                    timed_out: bool, campaign: dict[str, Any] | None = None):
+     capture = _seat_capture()
+     env = env or {}
+     stamp = lambda t: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))  # noqa: E731
+@@ -1640,17 +1696,26 @@
+     endpoint = ((_provider_base_url(backend.model) if opencode else getattr(backend, "url", None))
+                 or f"hosted:{backend.kind}")
+     import uuid
+-    return capture.build_call_record(
+-        call_id=uuid.uuid4().hex, role=_role_of(schema), workspace=str(workspace),
++    kwargs = dict(
++        call_id=campaign["call_id"] if campaign is not None else uuid.uuid4().hex,
++        role=_role_of(schema), workspace=str(workspace),
+         producer={"repo": "epyc-inference-research", "commit": _producer_commit(),
+                   "module": PRODUCER_MODULE},
+         seat=seat,
+         backend={"kind": backend.kind, "model": backend.model, "effort": backend.effort,
+                  "agent": backend.agent or None},
+         server={"endpoint": endpoint, "served_model": None, "build_info": None},
+-        prompt=prompt, started_at=stamp(finished - wall_s), finished_at=stamp(finished),
++        prompt=prompt, started_at=stamp(campaign["started"] if campaign else finished - wall_s),
++        finished_at=stamp(finished),
+         wall_s=round(max(wall_s, 0.001), 3), returncode=returncode, timed_out=timed_out,
+         recorded_at=stamp(time.time()), reply=dict(reply) if reply else None)
++    if campaign is None:
++        return capture.build_call_record(**kwargs)
++    if campaign.get("capture_error") or endpoint != campaign.get("endpoint"):
++        raise ValueError(campaign.get("capture_error") or "direct actor endpoint changed during the call")
++    return capture.build_campaign_call_records(
++        props_raw=campaign["props_raw"], props_at=campaign["props_at"],
++        bundle_raw=campaign.get("bundle_raw"), metrics=campaign["metrics"], **kwargs)
+ 
+ 
+ def _captured(stream_value, handle) -> str:
+@@ -3939,7 +4004,8 @@
+             return {**(env or {}), SEAT_ENV_ARM: arm + actor_context.ORCH_ARM_SUFFIX}
+         bundle.seal(prompt)
+         arm = (env or {}).get(SEAT_ENV_ARM) or "plain"
+-        return {**(env or {}), SEAT_ENV_ARM: arm + actor_context.ARM_SUFFIX}
++        return {**(env or {}), SEAT_ENV_ARM: arm + actor_context.ARM_SUFFIX,
++                SEAT_ENV_BUNDLE_MANIFEST: str(bundle.directory / "manifest.json")}
+ 
+     @_in_call_scope("planner")
+     def propose(self, context: Mapping[str, Any]) -> Hypothesis | Abstain:

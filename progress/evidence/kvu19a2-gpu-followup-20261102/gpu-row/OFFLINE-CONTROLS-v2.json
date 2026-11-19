@@ -1,0 +1,14 @@
+{
+  "schema": "kvu19a2.offline-controls.v2",
+  "status": "offline_controls_only_not_gpu_qualification",
+  "tests": 13,
+  "tests_passed": true,
+  "launcher_offline_control": "inconclusive",
+  "custody_mutation_launcher_returncode": 65,
+  "gpu_executed": false,
+  "benchmark_executed": false,
+  "compiled": false,
+  "published": false,
+  "source_manifest_sha256": "bf8c82de6c93da420f568d0b4ceab3ac806c3556054b01dfb4a09c00ba3cd6f4",
+  "runtime_manifest_sha256": "e6a9cc7856da8ddaa972a97049ddbfdb7a91fb1151bd04c45bd6b569836d05db"
+}

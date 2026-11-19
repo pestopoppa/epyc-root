@@ -459,6 +459,35 @@ def _hip_receipt_identity(receipt: dict) -> str:
     return claimed
 
 
+
+def _hip_sign_e_process(speedups, threshold):
+    """Re-derive the sign-martingale (predictable lambda) from per-block speedups.
+
+    Mirrors evaluator.statistics._log_wealth for sign_martingale_predictable_lambda/v1
+    (lambda_init 0.1, cap 0.5, tie scored -1). Returns (signs, first_crossing_block
+    or None); any crossing block in 1..n and any sign vector is admissible.
+    """
+    log_threshold = math.log(threshold)
+    log_w, count, total, total_sq = 0.0, 0, 0.0, 0.0
+    signs, crossing = [], None
+    for value in speedups:
+        if count <= 0:
+            lam = 0.1
+        else:
+            mean = total / count
+            denom = max(total_sq / count - mean * mean, 0.0) + mean * mean
+            lam = (0.5 if mean > 0.0 else 0.0) if denom <= 0.0 else mean / denom
+            lam = min(max(lam, 0.0), 0.5)
+        sign = 1.0 if value > 1.0 else -1.0
+        log_w += math.log1p(lam * sign)
+        count += 1
+        total += sign
+        total_sq += sign * sign
+        signs.append(sign)
+        if crossing is None and log_w >= log_threshold:
+            crossing = count
+    return signs, crossing
+
 def _hip_decision_receipt_identity(receipt: dict) -> str:
     """Strictly rederive the sealed HIP task-local decision receipt."""
     if (receipt.get("status") != "complete"
@@ -583,10 +612,14 @@ def _hip_decision_receipt_identity(receipt: dict) -> str:
     if (not isinstance(e_process, dict)
             or e_process.get("construction_id") != "sign_martingale_predictable_lambda/v1"
             or e_process.get("threshold") != 20.0
-            or e_process.get("first_crossing_block") != 9
-            or e_process.get("signs") != [1.0] * 20
             or timing.get("candidate_beats_exact_provider") is not True):
         raise ProjectionError("HIP decision e-process/rank conclusion is incomplete")
+    derived_signs, derived_crossing = _hip_sign_e_process(speedups, e_process["threshold"])
+    if derived_crossing is None:
+        raise ProjectionError("HIP decision e-process never crosses its threshold")
+    if (e_process.get("signs") != derived_signs
+            or e_process.get("first_crossing_block") != derived_crossing):
+        raise ProjectionError("HIP decision e-process signs/crossing do not rederive from blocks")
     decision = receipt.get("decision")
     constraints = receipt.get("constraints")
     if (not isinstance(decision, dict)

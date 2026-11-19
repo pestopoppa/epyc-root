@@ -43,15 +43,235 @@ that one predicate, so if it drifts, everything drifts.
 from __future__ import annotations
 
 import os
+import json
+import inspect
 import shutil
 import stat
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import mock_open, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import session_bus_coordinator as C  # noqa: E402
+
+
+def test_resolved_worker_assignment_keeps_full_task_text() -> None:
+    task_text = "- [ ] " + ("café review exact row text; " * 18)
+    payload = json.loads(C.worker_assignment_bytes(
+        {"task_text": task_text, "spec_ref": "handoffs/active/x.md:12",
+         "source_handoff": "handoffs/active/x.md", "screened_by": "brc@abc"}, "RTG-52"
+    ).decode("utf-8"))
+    assert payload["rows"] == [{
+        "task_id": "RTG-52", "task_text": task_text,
+        "row_ref": "handoffs/active/x.md:12", "source_handoff": "handoffs/active/x.md",
+        "screened_by": "brc@abc",
+    }]
+    source = inspect.getsource(C._exec_worker_runner)
+    assert '"--assignment-stdin"' in source
+    assert "stdin=subprocess.PIPE" in source
+    assert "worker_assignment_bytes(row, tid)" in source
+    assert "--row-text" not in source
+    assert "[:4000]" not in source
+
+
+def test_oversized_resolved_assignment_is_refused_before_spawning() -> None:
+    row = {"task_text": "x" * 5000, "spec_ref": "handoffs/active/x.md:12",
+           "source_handoff": "handoffs/active/x.md", "screened_by": "brc@test"}
+    with (
+        patch.object(C, "_note_spawn_attempt"),
+        patch.object(C, "_free_pool_lane", return_value="lane0"),
+        patch.object(C.subprocess, "Popen", side_effect=AssertionError("must not spawn")),
+    ):
+        events = C._exec_worker_runner(
+            Path("/tmp/test-bus"), {}, {"endpoint": "exec:worker_runner"},
+            row, "RTG-52-large", "workerpool", 1,
+        )
+    assert len(C.worker_assignment_bytes(row, "RTG-52-large")) > C.WORKER_ASSIGNMENT_MAX_BYTES
+    assert events[0]["kind"] == "defect"
+    assert events[0]["check"] == "exec-runner-assignment-size"
+    assert str(len(C.worker_assignment_bytes(row, "RTG-52-large"))) in events[0]["detail"]
+
+
+def test_worker_runner_delivers_exact_assignment_json_over_stdin() -> None:
+    class Pipe:
+        def __init__(self):
+            self.data = bytearray()
+            self.closed = False
+
+        def write(self, data):
+            self.data.extend(data)
+            return len(data)
+
+        def close(self):
+            self.closed = True
+
+    class Process:
+        def __init__(self):
+            self.stdin = Pipe()
+            self.terminated = False
+            self.waited = False
+
+        def terminate(self):
+            self.terminated = True
+
+        def wait(self, timeout=None):
+            self.waited = True
+            return 0
+
+    row = {"task_text": "- [ ] Review café row verbatim", "spec_ref": "handoffs/x.md:12",
+           "source_handoff": "handoffs/x.md", "screened_by": "screen@abc"}
+    process = Process()
+    with (
+        patch.object(C, "_note_spawn_attempt"),
+        patch.object(C, "_free_pool_lane", return_value="lane0"),
+        patch.object(C.Path, "mkdir"),
+        patch("builtins.open", mock_open()),
+        patch.object(C.subprocess, "Popen", return_value=process) as popen,
+    ):
+        events = C._exec_worker_runner(
+            Path("/tmp/test-bus"), {}, {"endpoint": "exec:worker_runner"},
+            row, "RTG-52-exact", "workerpool", 1,
+        )
+
+    args, kwargs = popen.call_args
+    assert "--assignment-stdin" in args[0]
+    assert "--row-text" not in args[0]
+    assert kwargs["stdin"] is C.subprocess.PIPE
+    assert process.stdin.closed
+    assert json.loads(process.stdin.data.decode("utf-8")) == {
+        "rows": [{"task_id": "RTG-52-exact", "task_text": "- [ ] Review café row verbatim",
+                  "row_ref": "handoffs/x.md:12", "source_handoff": "handoffs/x.md",
+                  "screened_by": "screen@abc"}]
+    }
+    assert events[0]["kind"] == "exec-launched"
+
+
+def test_worker_runner_refuses_partial_stdin_write_and_reaps_child() -> None:
+    class Pipe:
+        def __init__(self):
+            self.closed = False
+
+        def write(self, data):
+            return len(data) - 1
+
+        def close(self):
+            self.closed = True
+
+    class Process:
+        def __init__(self):
+            self.stdin = Pipe()
+            self.terminated = False
+            self.waited = False
+
+        def terminate(self):
+            self.terminated = True
+
+        def wait(self, timeout=None):
+            self.waited = True
+            return 0
+
+    process = Process()
+    row = {"task_text": "Exact task", "spec_ref": "handoffs/x.md:12",
+           "source_handoff": "handoffs/x.md", "screened_by": "screen@abc"}
+    with (
+        patch.object(C, "_note_spawn_attempt"),
+        patch.object(C, "_free_pool_lane", return_value="lane0"),
+        patch.object(C.Path, "mkdir"),
+        patch("builtins.open", mock_open()),
+        patch.object(C.subprocess, "Popen", return_value=process),
+    ):
+        events = C._exec_worker_runner(
+            Path("/tmp/test-bus"), {}, {"endpoint": "exec:worker_runner"},
+            row, "RTG-52-partial", "workerpool", 1,
+        )
+
+    assert events[0]["kind"] == "defect"
+    assert events[0]["check"] == "exec-runner"
+    assert process.stdin.closed
+    assert process.terminated and process.waited
+
+
+def test_worker_runner_reports_unconfirmed_child_after_bounded_kill() -> None:
+    class Pipe:
+        closed = False
+
+        def write(self, data):
+            return len(data) - 1
+
+        def close(self):
+            self.closed = True
+
+    class Process:
+        def __init__(self):
+            self.stdin = Pipe()
+            self.terminated = False
+            self.killed = False
+            self.wait_calls = 0
+
+        def terminate(self):
+            self.terminated = True
+
+        def kill(self):
+            self.killed = True
+
+        def wait(self, timeout=None):
+            self.wait_calls += 1
+            raise C.subprocess.TimeoutExpired("worker_runner", timeout)
+
+    process = Process()
+    with (
+        patch.object(C, "_note_spawn_attempt"),
+        patch.object(C, "_free_pool_lane", return_value="lane0"),
+        patch.object(C.Path, "mkdir"),
+        patch("builtins.open", mock_open()),
+        patch.object(C.subprocess, "Popen", return_value=process),
+    ):
+        events = C._exec_worker_runner(
+            Path("/tmp/test-bus"), {}, {"endpoint": "exec:worker_runner"},
+            {"task_text": "Exact task"}, "RTG-52-timeout", "workerpool", 1,
+        )
+
+    assert process.terminated and process.killed
+    assert process.wait_calls == 2
+    assert "child exit unconfirmed" in events[0]["detail"]
+
+
+def test_rtg52_controls_land_dormant_under_the_committed_config() -> None:
+    """RTG52-D9-SOURCE lands DORMANT (operator D9 acknowledgement, 2026-11-02).
+
+    The stdin delivery and its bounded child cleanup run only inside
+    `_exec_worker_runner`. That function has exactly one call site, the daemon
+    tick's assignment pass, and the tick marks an exec endpoint DEAD (never
+    assignable) whenever `_exec_endpoint_ready` names a reason. The COMMITTED
+    config ships `worker_pool.enabled: false`, so the pool is refused before any
+    row can reach the runner, independently of the second layer: the daemon
+    itself only runs under bus_supervisor, which stays down by ruling.
+    """
+    import yaml
+
+    repo = Path(__file__).resolve().parents[3]
+    cfg = yaml.safe_load((repo / "coordination/session-bus/config.yaml")
+                         .read_text(encoding="utf-8"))
+    assert cfg["worker_pool"]["enabled"] is False
+    entry = next(r for r in cfg["roster"] if str(r.get("id", "")).strip() == "workerpool")
+    assert C._is_exec_endpoint(entry)
+    why = C._exec_endpoint_ready(entry, cfg)
+    assert why and "worker_pool.enabled is false" in why
+
+    src = inspect.getsource(C)
+    call_sites = [line for line in src.splitlines()
+                  if "_exec_worker_runner(" in line
+                  and not line.lstrip().startswith(("def ", "#"))
+                  and "`" not in line]
+    assert len(call_sites) == 1, call_sites
+    # The one call site is the assignment write path, and the recipient filter that
+    # feeds it treats a not-ready exec endpoint as dead (never assigned).
+    assert "_exec_worker_runner(" in inspect.getsource(C.apply_assignment)
+    advice_src = inspect.getsource(C.compute_advice)
+    assert "_exec_endpoint_ready(_entry, config)" in advice_src
+    assert "if aid in dead_agents:" in advice_src
 
 
 def _roster(*ids, role="main", session="testsess"):

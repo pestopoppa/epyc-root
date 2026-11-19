@@ -29,6 +29,7 @@ ADAPTER_ID = "vidya.adapters.kv_quant_27b_v10/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "kv-quant-27b-v10-measurement"
 RESEARCH_ROOT = Path("/workspace/repos/epyc-inference-research")
+SCRATCH_ROOT = Path("/mnt/raid0/llm/tmp")
 PRODUCER_PATH = RESEARCH_ROOT / "scripts/benchmark/kv_quant_27b_v10_sweep.py"
 PRODUCER_SHA256 = "b268e3067fb576f05915310b0df1b29ca0507442c87d6e3fb0a2be209c390cb5"
 
@@ -126,13 +127,40 @@ def _check_row(row: Any, producer: ModuleType) -> None:
         raise ProjectionError("KV-quant P-GPU-1 route lacks production kernel evidence")
 
 
-def _scored_path(row: dict) -> Path:
-    supplied = Path(row["scored_path"])
+def _scored_path(row: dict, sidecar_path: str | Path = "") -> tuple[Path, bool]:
+    """Return the score path and whether it uses the producer's scratch layout."""
+    raw = row["scored_path"]
+    if not isinstance(raw, str) or not raw or "\0" in raw or ".." in Path(raw).parts:
+        raise ProjectionError("KV-quant scored artifact path is malformed or traverses directories")
+    if not isinstance(sidecar_path, (str, Path)):
+        raise ProjectionError("KV-quant native sidecar path is malformed")
+    supplied = Path(raw)
     candidate = supplied if supplied.is_absolute() else RESEARCH_ROOT / supplied
-    resolved = candidate.resolve()
-    if not resolved.is_relative_to(RESEARCH_ROOT.resolve()):
-        raise ProjectionError("KV-quant scored artifact escapes research repository")
-    return resolved
+    try:
+        resolved = candidate.resolve()
+        research_root = RESEARCH_ROOT.resolve()
+        sidecar = Path(sidecar_path) if sidecar_path else None
+        run_dir = sidecar.parent.resolve() if sidecar is not None else None
+        scratch = (run_dir is not None and run_dir.is_relative_to(SCRATCH_ROOT.resolve())
+                   and not run_dir.is_relative_to(research_root))
+        if not scratch and resolved.is_relative_to(research_root):
+            return resolved, False
+        if not scratch or not supplied.is_absolute():
+            raise ProjectionError("KV-quant scratch score requires an absolute path and native scratch sidecar")
+
+        expected = run_dir / "summary.json"
+        if (run_dir.name != row["run_id"]
+                or sidecar.name != "belief_measurements.jsonl"
+                or sidecar.is_symlink()
+                or not sidecar.is_file()
+                or supplied != expected or resolved != expected):
+            raise ProjectionError("KV-quant scratch score must be the native run's sibling summary.json")
+        metadata = expected.lstat()
+        if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
+            raise ProjectionError("KV-quant scratch summary must be a regular single-link file")
+        return expected, True
+    except (OSError, RuntimeError) as exc:
+        raise ProjectionError(f"KV-quant scored artifact cannot be resolved: {exc}") from exc
 
 
 def native_rows(sidecar_path: str | Path) -> tuple[dict, ...]:
@@ -155,7 +183,7 @@ def native_rows(sidecar_path: str | Path) -> tuple[dict, ...]:
             raise ProjectionError("KV-quant sidecar duplicates a measurement")
         identities.add(row["measurement_id"])
         locators.add(row["extra"]["locator"])
-        _scored_path(row)
+        _scored_path(row, path)
     if len({(row["run_id"], row["scored_path"], row["scored_sha256"])
             for row in rows}) != 1:
         raise ProjectionError("KV-quant sidecar mixes runs or scored artifacts")
@@ -168,9 +196,14 @@ def project(native: Any) -> ClaimTuple:
         raise ProjectionError("KV-quant native capture row missing")
     row = native["row"]
     _check_row(row, _producer())
-    artifact = _scored_path(row)
+    artifact, scratch = _scored_path(row, native.get("sidecar_path", ""))
     present = artifact.is_file()
-    verified = present and _sha256(artifact) == row["scored_sha256"]
+    try:
+        verified = present and _sha256(artifact) == row["scored_sha256"]
+    except OSError as exc:
+        raise ProjectionError(f"KV-quant scored artifact cannot be read: {exc}") from exc
+    if scratch and not verified:
+        raise ProjectionError("KV-quant scratch summary differs from sealed scored_sha256")
     extra = row["extra"]
     scope = {"context_tokens": extra["arm"]["context"],
              "kernel": extra["kernel"], "run_id": row["run_id"]}

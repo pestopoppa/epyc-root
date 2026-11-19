@@ -1,0 +1,120 @@
+--- a/job.py
++++ b/job.py
+@@ -3,6 +3,8 @@
+ import hashlib, json, os, signal, socket, statistics, subprocess, sys, time, urllib.request
+ D = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, D)
+ import gpuproof as gp
++sys.path.insert(0, os.environ["MI210_BELIEF_ROOT"])
++from scripts.vidya.producers.mi210_native_run import NativeRun, identity, grant, build_identity, model_identities
+ 
+ OUT = os.path.join(D, 'smoke-out' if os.environ.get('FILLER_SMOKE') == '1' else 'out'); RES = os.path.join(OUT, 'results.jsonl'); SUM = os.path.join(OUT, 'summary.json')
+ DONE = os.path.join(OUT, 'STAGE1-COMPLETE.json')
+@@ -192,7 +194,7 @@
+                 t_start, t_end, t = stream_decode(p)
+                 check_affinity()
+                 results['decode'].append({'start':t_start, 'end':t_end, 'predicted_per_second': t.get('predicted_per_second'), 'prompt_per_second': t.get('prompt_per_second'),
+-                                          'predicted_n': t.get('predicted_n'), 'draft_n': t.get('draft_n'), 'draft_n_accepted': t.get('draft_n_accepted')})
++                                          'timings': t, 'predicted_n': t.get('predicted_n'), 'draft_n': t.get('draft_n'), 'draft_n_accepted': t.get('draft_n_accepted')})
+         except Exception as e:
+             results['errors'].append(repr(e))
+         finally:
+@@ -219,42 +221,64 @@
+ 
+ def main_specoff():
+     os.makedirs(OUT, exist_ok=True)
+-    if not gate_dependency()[0]:
+-        print('REFUSED: ROCm window probe is not PASS', flush=True); return 2
+     order = [('p1','C'),('p1','B'),('p2','B'),('p2','C')]
+-    for pair, arm in order:
+-        if os.path.exists(STOPF): return 75
+-        if time.time() + 240 >= DEADLINE: return 75
+-        cdir = os.path.join(OUT, 'cells', ('smoke-' if PLUMB else '') + pair + '-' + arm)
+-        os.makedirs(cdir, exist_ok=True)
+-        # Stale client-done and STOP-SERVER files must never terminate this launch.
+-        for name in ('client.done', 'STOP-SERVER'):
+-            try: os.unlink(os.path.join(cdir, name))
+-            except FileNotFoundError: pass
+-        x = serve_phase(arm, cdir, min(DEADLINE - 30, time.time() + 1200))
+-        proof = x.get('proof') or {}; own = max(proof.get('kfd_pids_ours', {}).values(), default=0)
+-        lk, seen = linkage(proof, arm) if proof else (False, [])
+-        rel = release(proof.get('pid'))
+-        ds = x.get('decode') or []; vals = [v.get('predicted_per_second') for v in ds]
+-        def overlap(v):
+-            for ob in proof.get('observations', []):
+-                libs = ob['libs']; hip = [f for f in libs if 'libggml-hip' in f]; rt = [f for f in libs if 'libamdhip64' in f]
+-                if v['start'] <= ob['time'] <= v['end'] and ob['vram'] >= OWN_VRAM_MIN and hip and rt and all(sha(f)==ARMS[arm]['libggml_hip_sha256'] for f in hip) and all(f.startswith(os.path.realpath(ARMS[arm]['hip_prefix'])) for f in rt): return True
+-            return False
+-        checks = {'in_request_own_residency_and_linkage': bool(ds) and all(overlap(v) for v in ds), 'requests': len(ds) == (1 if PLUMB else len(DECODE)) and all(isinstance(v,(int,float)) and v > 0 for v in vals),
+-                  'no_draft': all(not v.get('draft_n') for v in ds), 'no_error': not x.get('error') and not x.get('errors'),
+-                  'own_vram': own >= OWN_VRAM_MIN, 'no_foreign_kfd': not proof.get('kfd_foreign'),
+-                  'linkage': lk, 'released': rel['ok']}
+-        u = {'unit_id': pair+'-'+arm, 'mode': 'smoke' if PLUMB else 'measurement', 'pair': pair, 'arm':arm,
+-             'decode_tps_median': med(vals) if checks['requests'] else None, 'checks':checks, 'valid':all(checks.values()),
+-             'decode': ds, 'affinity':x.get('affinity'), 'parity_text': x.get('parity'), 'proof':proof, 'linkage_seen':seen, 'release':rel,
+-             'server_argv':server_argv(arm), 'ld':ARMS[arm]['ld']}
+-        if not u['valid']:
+-            print(json.dumps(u), flush=True); return 3
+-        append(u)
+-        if PLUMB: return 0
+-    atomic(os.path.join(OUT,'COMPLETE.json'), {'order':order,'complete':True})
+-    return 0
++    if PLUMB: order = order[:1]
++    declaration = {'source':'Q38P-3a', 'mode':'smoke' if PLUMB else 'measurement',
++                   'native_producer':identity(__file__), 'model':model_identities(IDENT['model']),
++                   'builds':{a:dict(build_identity(v['bin']), declared_identity=v) for a,v in ARMS.items()},
++                   'recipe':{'argv':{a:server_argv(a) for a in ARMS}, 'prompts':DECODE,
++                             'chat_template':identity(IDENT['chat_template']), 'arm_categories':{'C':'BASELINE','B':'CANDIDATE'}},
++                   'order':[list(x) for x in order], 'grant':grant()}
++    with NativeRun(OUT, declaration) as capture:
++        if not gate_dependency()[0]:
++            print('REFUSED: ROCm window probe is not PASS', flush=True); return 2
++        for pair, arm in order:
++            if os.path.exists(STOPF):
++                capture.stop = 'STOP before launch'
++                return 75
++            if time.time() + 240 >= DEADLINE:
++                capture.stop = 'deadline before launch'
++                return 75
++            cdir = os.path.join(OUT, 'cells', ('smoke-' if PLUMB else '') + pair + '-' + arm)
++            os.makedirs(cdir, exist_ok=True)
++            # Stale client-done and STOP-SERVER files must never terminate this launch.
++            for name in ('client.done', 'STOP-SERVER'):
++                try: os.unlink(os.path.join(cdir, name))
++                except FileNotFoundError: pass
++            capture.start(pair, arm)
++            x = serve_phase(arm, cdir, min(DEADLINE - 30, time.time() + 1200))
++            capture.update(requests=x.get('decode', []), actual_placement=x.get('affinity'),
++                        residency_linkage=x.get('proof'), errors=x.get('errors'), stop=x.get('error'))
++            proof = x.get('proof') or {}; own = max(proof.get('kfd_pids_ours', {}).values(), default=0)
++            lk, seen = linkage(proof, arm) if proof else (False, [])
++            rel = release(proof.get('pid'))
++            capture.update(release=rel)
++            ds = x.get('decode') or []; vals = [v.get('predicted_per_second') for v in ds]
++            def overlap(v):
++                for ob in proof.get('observations', []):
++                    libs = ob['libs']; hip = [f for f in libs if 'libggml-hip' in f]; rt = [f for f in libs if 'libamdhip64' in f]
++                    if v['start'] <= ob['time'] <= v['end'] and ob['vram'] >= OWN_VRAM_MIN and hip and rt and all(sha(f)==ARMS[arm]['libggml_hip_sha256'] for f in hip) and all(f.startswith(os.path.realpath(ARMS[arm]['hip_prefix'])) for f in rt): return True
++                return False
++            checks = {'in_request_own_residency_and_linkage': bool(ds) and all(overlap(v) for v in ds), 'requests': len(ds) == (1 if PLUMB else len(DECODE)) and all(isinstance(v,(int,float)) and v > 0 for v in vals),
++                   'no_draft': all(not v.get('draft_n') for v in ds), 'no_error': not x.get('error') and not x.get('errors'),
++                   'own_vram': own >= OWN_VRAM_MIN, 'no_foreign_kfd': not proof.get('kfd_foreign'),
++                   'linkage': lk, 'released': rel['ok']}
++            u = {'unit_id': pair+'-'+arm, 'mode': 'smoke' if PLUMB else 'measurement', 'pair': pair, 'arm':arm,
++              'decode_tps_median': med(vals) if checks['requests'] else None, 'checks':checks, 'valid':all(checks.values()),
++              'decode': ds, 'affinity':x.get('affinity'), 'parity_text': x.get('parity'), 'proof':proof, 'linkage_seen':seen, 'release':rel,
++              'server_argv':server_argv(arm), 'ld':ARMS[arm]['ld']}
++            append(u)
++            capture.update(checks=checks, native_unit=u)
++            capture.record('complete' if u['valid'] else 'failed')
++            if not u['valid']:
++                print(json.dumps(u), flush=True); return 3
++            if PLUMB:
++                capture.complete()
++                return 0
++        capture.complete()
++        atomic(os.path.join(OUT,'COMPLETE.json'), {'order':order,'complete':True})
++        return 0
++
+ 
+ if __name__ == '__main__':
+     sys.exit(main_specoff())

@@ -214,7 +214,8 @@ def _carry_verification(tuples, native: dict, digest: str):
 
 def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
                   dry_run: bool = False,
-                  on_refusal: Callable[[Path, str], None] | None = None) -> dict:
+                  on_refusal: Callable[[Path, str], None] | None = None,
+                  property_only: bool = False) -> dict:
     """Project every admissible AutoKernel record under `root` into the ledger.
 
     A `ProjectionError` is a REFUSAL, not a crash: the strict readers exist to reject
@@ -236,12 +237,30 @@ def ingest_corpus(ledger, *, root: Path, as_of: str, limit: int | None = None,
 
     for path, document, digest in iter_documents(root):
         dispatch = _dispatch_schema(document)
-        if dispatch not in SCHEMA_TO_ADAPTER:
-            continue
+        if property_only:
+            event_schema = autokernel_evaluation_event.CURRENT_EVENT_SCHEMA
+            source = document
+            if dispatch == autokernel_evaluation_event.JOURNAL_SCHEMA:
+                if document.get("kind") != autokernel_evaluation_event.JOURNAL_KIND:
+                    continue
+                source = document.get("payload")
+            if not isinstance(source, dict) or source.get("schema") != event_schema:
+                continue
+            module = autokernel_property
+        else:
+            if dispatch not in SCHEMA_TO_ADAPTER:
+                continue
+            module = SCHEMA_TO_ADAPTER[dispatch]
         seen += 1
-        module = SCHEMA_TO_ADAPTER[dispatch]
         try:
-            natives = rows_for_document(path, document, digest, corpus_root=root)
+            if property_only:
+                natives = module.native_rows(document)
+                correctness = source.get("correctness")
+                gate = correctness.get(module.GATE_ID) if isinstance(correctness, dict) else None
+                if not natives and isinstance(gate, dict) and "measurements" in gate:
+                    raise ProjectionError("property measurements did not rederive from the current event")
+            else:
+                natives = rows_for_document(path, document, digest, corpus_root=root)
         except ProjectionError as exc:
             # A reader saying "unsupported schema" is this dispatcher's mapping being
             # imprecise -- the schema constant exists on the module but names an inner

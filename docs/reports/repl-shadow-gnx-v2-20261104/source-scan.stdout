@@ -1,0 +1,8 @@
+f58d0bf7668147b5aa142ade921b7b86ece35ec0:scripts/vidya/cli.py:801:def cmd_ingest(args) -> int:
+f58d0bf7668147b5aa142ade921b7b86ece35ec0:scripts/vidya/cli.py:815:        return _cmd_ingest(args)
+f58d0bf7668147b5aa142ade921b7b86ece35ec0:scripts/vidya/cli.py:821:        return _cmd_ingest(args)
+f58d0bf7668147b5aa142ade921b7b86ece35ec0:scripts/vidya/cli.py:823:        return _cmd_ingest(args)
+f58d0bf7668147b5aa142ade921b7b86ece35ec0:scripts/vidya/cli.py:826:def _cmd_ingest(args) -> int:
+f58d0bf7668147b5aa142ade921b7b86ece35ec0:scripts/vidya/cli.py:1076:    i.set_defaults(func=cmd_ingest)
+f58d0bf7668147b5aa142ade921b7b86ece35ec0:scripts/vidya/producers/repl_shadow_sink.py:33:class ShadowSink:
+f58d0bf7668147b5aa142ade921b7b86ece35ec0:scripts/vidya/producers/repl_shadow_validate.py:50:def validate_shadow_stream(path, *, expected_source_sha256=None):

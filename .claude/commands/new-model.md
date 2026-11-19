@@ -181,6 +181,8 @@ print(f"✓ {role}: {len(configs)} configs validated")
 EOF
 ```
 
+If the candidate role runs on the GPU (ROCm0): **HIP FA gate:** if a GPU role uses a head size outside {40,64,72,80,96,112,128,256}, or K/V cache types that differ or are not f16/q8_0/q4_0/bf16, run the one-step detection (grep the server log for `missing support|not supported, set to disabled`) before serving; see `docs/reference/hip-fa-unsupported-shapes.md`.
+
 ### Step 6: Offer Benchmark
 
 Ask the user:
@@ -214,7 +216,7 @@ done
 
 ### Step 6.5: Compression-Tolerance Probe (Deployment Gate)
 
-After benchmark validates speed + quality, probe the model's tolerance for compressed agent files. Models with `operating_point: none` cannot be deployed to roles that consume agent files — the orchestrator routes the model to the highest compression level it can faithfully follow.
+After benchmark validates speed + quality, probe the model's tolerance for compressed agent files. Models with `operating_point: none` cannot be deployed to roles that consume agent files — the measured level is recorded per role as `agent_file_compression_operating_point` in `model_registry.yaml`. It is applied to prompts only when the orchestrator's `agent_file_injection` flag is on (`ORCHESTRATOR_AGENT_FILE_INJECTION=1`, default OFF; roles in `ORCHESTRATOR_AGENT_FILE_ROLES`, default `worker_general,architect_general`). With the flag off, no local model receives an agent file.
 
 ```bash
 # Run the live compliance suite against the new model at each level.
@@ -253,7 +255,7 @@ roles:
 
 If `none`: do NOT add to `worker_pool` / `escalation_chains` until the source agent file is shortened or a different (smaller) model is chosen.
 
-Per `handoffs/active/agent-file-prose-compression.md` Phase 4 + `.claude/skills/agent-file-compress/SKILL.md`.
+Per `handoffs/active/frontier-lab-automation.md` Phase 4 + `.claude/skills/agent-file-compress/SKILL.md`.
 
 ## Error Handling
 

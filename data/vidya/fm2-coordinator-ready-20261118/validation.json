@@ -1,0 +1,19 @@
+{
+  "focused_tests": {
+    "passed": 6,
+    "failed": 0,
+    "seconds": 2.972,
+    "runtime": "epyc-inference-research/.venv/bin/python3",
+    "cpus": "4-7",
+    "controls": [
+      "exact coordinator entrypoint",
+      "read audit",
+      "reliance exclusion",
+      "unrelated consumer exclusion",
+      "corrupt ledger refuses with exit3",
+      "native source, diagnosis, request and partial refusals"
+    ]
+  },
+  "scope": "Software controls and retained-native row readiness only; actual coordinator invocation remains unproven.",
+  "gitnexus": "Unindexed lane; status/impact unavailable. Manual scope: one opt-in coordinator CLI, role entry, existing FM2 canary and focused tests."
+}

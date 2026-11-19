@@ -1,0 +1,14 @@
+EXP-09 R3 exact failed-ID recall companion (2026-11-04)
+
+Added report-only exact failed-ID recall to each native cell record in `/mnt/raid0/llm/tmp/brf-exp09-expand-r3/job.py`. Existing `score()` implementation, primary accuracy, retention metrics, and futility inputs are unchanged. The supplemental metric trims only surrounding whitespace, requires list-valued answer.failed_ids and string IDs, and counts exact string equality against the first 10 capped gold references. Each cell records:
+- `exact_failed_id_reference_count`
+- `exact_failed_id_hits`
+- `exact_failed_id_recall` (null if reference count is zero)
+- `exact_failed_id_reference_cap` (10)
+
+Offline tests verify whitespace-trimmed exact IDs receive credit; one-character and substring variants receive zero; malformed parse output and non-list failed_ids receive zero; reference count is capped at 10; actual mocked `job.run_cell` persists the companion fields while retaining the existing accuracy=1.0 example. `test_run_cell.py`, `test_summary_flags.py`, and py_compile passed. No inference, corpus edit, or spec edit.
+
+Refreshed launcher pins:
+- `job.py`: `378f73d3c0d9a250540f504628b08dd166210a8dff57d562d6e1f3917ee6ef1b`
+- `summary_flags.py`: `a49cbb3fccf9772cd407c6a4598d80290767f95eb786e80ba5d554e8b05eada3`
+- `identity.json`: `6ffa4ec43dd75653987975572c4d1e07a9914d0565e450dc1ff940d5b4b4b744`

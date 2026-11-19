@@ -1,0 +1,12 @@
+{
+  "verdict": "inconclusive",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Original archived summary: REVISE harness; 2/8 valid units despite all capture records, six GPU/control RUN failures. No valid control ratios or expansion gate. Later shared result not attributable; no negative PF1 verdict.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r4/attempt-summary.json": "2ce67412cc40c92ca9147312ed788f4731058d14aff4fb14c0d23ff1f4d3550b",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r4/native-result.json": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r4/end.txt": "84065be7a3237823c59df2c6be24f76db75ab51d55232e88365a8427c9c416e5",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r4/manifest.json": "bba06945ee9ad884a7aa760fb4e7b54c1600af446cfd8569d07a057d4347e774"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-a645f10621688836",
+      "failure_modes": [
+        {
+          "code": "MAST-1",
+          "name": "Disobedient to task specification",
+          "evidence": "The task explicitly asks to 'swap out the model weights... with these new ones' and 'Make sure that the quantization is the same'. The trace shows the agent instead performing 'disk reclaim' by deleting unrelated models (DeepSeek-R1-Distill-Qwen-14B, gemma-4-e4b-it, hy3-angelslim) and updating a 'graveyard' registry, without evidence of downloading or swapping the DeepSeek-V4.1-Flash-1017 weights.",
+          "confidence": "high",
+          "severity": "major"
+        },
+        {
+          "code": "MAST-8",
+          "name": "Task derailment",
+          "evidence": "The agent's actions focus on 'Operator-approved 2026-10-20 disk reclaim (DS41-1017 swap prep)' and managing 'deprecated_models' in the registry, which is a tangential cleanup task rather than the primary objective of swapping the model weights.",
+          "confidence": "high",
+          "severity": "moderate"
+        },
+        {
+          "code": "MAST-11",
+          "name": "Premature termination",
+          "evidence": "The trace ends with the agent validating the registry changes ('vrc=0', '0 error(s)') after deleting old models, but there is no evidence that the new weights were downloaded or that the swap was completed, yet the work appears to conclude on the cleanup aspect.",
+          "confidence": "medium",
+          "severity": "major"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795005649,
+        "warnings": []
+      }
+    }
+  ]
+}

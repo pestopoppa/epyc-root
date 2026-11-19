@@ -1,0 +1,30 @@
+{
+  "id": "vidya-r234-native-sweep-20261104",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vb-r234-wire-20261104/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,0-23,184-191",
+  "result_path": "/mnt/raid0/llm/tmp/vb-r234-wire-20261104/runs/*/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "Require all 63 valid requests across 7 ordered fresh-server arms, 3 prompts and 3 repetitions; otherwise INCOMPLETE. For each factor and prompt separately, take median of 3 acceptance ratios and of 3 client stream-event rates for intervention and each adjacent baseline; label outside-observed-baseline only if intervention median is strictly below both or strictly above both adjacent baseline medians, else within-observed-baseline. Report all medians and raw repetitions, no p-value, causal or generalization claim; missing, ambiguous, nonresident or window-only acceptance association remains UNKNOWN for response-ID attribution. V10 reproduction, not historical binary identity. Native post-hook comparison rederives original SSE, raw acceptance and timed residency; response-ID attribution UNKNOWN. Smoke is one baseline request only, separate allocator result and SMOKE_COMPLETE, never full-sweep evidence.",
+  "estimate_s": 21600,
+  "ram_gib": 96,
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R23-4-SWEEP-WIRE",
+  "priority_rank": 6,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/vb-r234-wire-20261104",
+  "keep": [
+    "runs/**",
+    "*.json",
+    "*.py",
+    "*.sh",
+    "COMPLETE",
+    "smoke-runs/**",
+    "SMOKE_COMPLETE",
+    "SHA256SUMS",
+    "root-code-pin.json"
+  ],
+  "dryrun_timeout_s": 1800,
+  "dryrun_whole_host": true,
+  "supersedes": "autokernel-r23-4-v10-sweep-20261102"
+}

@@ -1,0 +1,468 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence": "/mnt/raid0/llm/tmp/vb-r234-wire-20261104/runs/dc2079b32cce475a9f4e62d782cb09ca",
+  "labels": {
+   "affinity/p0/acceptance_ratio": "within-observed-baseline",
+   "affinity/p0/client_stream_events_s": "outside-observed-baseline",
+   "affinity/p1/acceptance_ratio": "outside-observed-baseline",
+   "affinity/p1/client_stream_events_s": "outside-observed-baseline",
+   "affinity/p2/acceptance_ratio": "outside-observed-baseline",
+   "affinity/p2/client_stream_events_s": "outside-observed-baseline",
+   "context/p0/acceptance_ratio": "outside-observed-baseline",
+   "context/p0/client_stream_events_s": "within-observed-baseline",
+   "context/p1/acceptance_ratio": "outside-observed-baseline",
+   "context/p1/client_stream_events_s": "outside-observed-baseline",
+   "context/p2/acceptance_ratio": "within-observed-baseline",
+   "context/p2/client_stream_events_s": "outside-observed-baseline",
+   "kv/p0/acceptance_ratio": "outside-observed-baseline",
+   "kv/p0/client_stream_events_s": "outside-observed-baseline",
+   "kv/p1/acceptance_ratio": "within-observed-baseline",
+   "kv/p1/client_stream_events_s": "outside-observed-baseline",
+   "kv/p2/acceptance_ratio": "outside-observed-baseline",
+   "kv/p2/client_stream_events_s": "outside-observed-baseline"
+  },
+  "medians": {
+   "affinity/p0/acceptance_ratio": {
+    "baseline_after": 0.83538,
+    "baseline_before": 0.85714,
+    "intervention": 0.8484,
+    "raw_repetitions": [
+     [
+      0.88889,
+      0.85714,
+      0.79529
+     ],
+     [
+      0.92063,
+      0.8484,
+      0.82324
+     ],
+     [
+      0.83538,
+      0.79157,
+      0.84406
+     ]
+    ]
+   },
+   "affinity/p0/client_stream_events_s": {
+    "baseline_after": 89.04965868745461,
+    "baseline_before": 91.33610597169363,
+    "intervention": 83.52877108048251,
+    "raw_repetitions": [
+     [
+      95.31351449158295,
+      91.33610597169363,
+      86.3944138399169
+     ],
+     [
+      90.99701313712885,
+      76.21321429916834,
+      83.52877108048251
+     ],
+     [
+      89.04965868745461,
+      85.9177998755997,
+      89.35067002879403
+     ]
+    ]
+   },
+   "affinity/p1/acceptance_ratio": {
+    "baseline_after": 0.24824,
+    "baseline_before": 0.27013,
+    "intervention": 0.28132,
+    "raw_repetitions": [
+     [
+      0.31536,
+      0.22857,
+      0.27013
+     ],
+     [
+      0.24762,
+      0.28822,
+      0.28132
+     ],
+     [
+      0.24824,
+      0.26932,
+      0.24451
+     ]
+    ]
+   },
+   "affinity/p1/client_stream_events_s": {
+    "baseline_after": 36.521161854995874,
+    "baseline_before": 38.196706820356354,
+    "intervention": 35.901197109882,
+    "raw_repetitions": [
+     [
+      42.236817361146386,
+      34.21548109035091,
+      38.196706820356354
+     ],
+     [
+      34.593700670006065,
+      37.994835623837034,
+      35.901197109882
+     ],
+     [
+      36.521161854995874,
+      38.31387961565115,
+      35.791826459982275
+     ]
+    ]
+   },
+   "affinity/p2/acceptance_ratio": {
+    "baseline_after": 0.48428,
+    "baseline_before": 0.48776,
+    "intervention": 0.5132,
+    "raw_repetitions": [
+     [
+      0.54217,
+      0.47819,
+      0.48776
+     ],
+     [
+      0.44511,
+      0.5132,
+      0.54404
+     ],
+     [
+      0.45156,
+      0.50871,
+      0.48428
+     ]
+    ]
+   },
+   "affinity/p2/client_stream_events_s": {
+    "baseline_after": 57.950239029703745,
+    "baseline_before": 57.27737267678216,
+    "intervention": 58.2020049821943,
+    "raw_repetitions": [
+     [
+      63.572939233758355,
+      57.12009060083785,
+      57.27737267678216
+     ],
+     [
+      51.84646907367294,
+      58.2020049821943,
+      59.82335952424923
+     ],
+     [
+      52.73868898318638,
+      59.22344078118589,
+      57.950239029703745
+     ]
+    ]
+   },
+   "context/p0/acceptance_ratio": {
+    "baseline_after": 0.83459,
+    "baseline_before": 0.78413,
+    "intervention": 0.84314,
+    "raw_repetitions": [
+     [
+      0.72381,
+      0.80495,
+      0.78413
+     ],
+     [
+      0.85714,
+      0.84314,
+      0.82597
+     ],
+     [
+      0.85429,
+      0.83459,
+      0.7619
+     ]
+    ]
+   },
+   "context/p0/client_stream_events_s": {
+    "baseline_after": 90.0373510388213,
+    "baseline_before": 84.34304339655598,
+    "intervention": 89.44336647753045,
+    "raw_repetitions": [
+     [
+      80.24064321839093,
+      86.23371594152835,
+      84.34304339655598
+     ],
+     [
+      95.79166787184202,
+      89.44336647753045,
+      88.79840075128403
+     ],
+     [
+      92.4349412631927,
+      90.0373510388213,
+      83.86883447858877
+     ]
+    ]
+   },
+   "context/p1/acceptance_ratio": {
+    "baseline_after": 0.28103,
+    "baseline_before": 0.2765,
+    "intervention": 0.21652,
+    "raw_repetitions": [
+     [
+      0.1981,
+      0.2765,
+      0.29286
+     ],
+     [
+      0.28571,
+      0.17927,
+      0.21652
+     ],
+     [
+      0.26498,
+      0.28103,
+      0.28132
+     ]
+    ]
+   },
+   "context/p1/client_stream_events_s": {
+    "baseline_after": 39.1071192323953,
+    "baseline_before": 38.09232638651156,
+    "intervention": 33.24272016739744,
+    "raw_repetitions": [
+     [
+      31.30100171806141,
+      38.09232638651156,
+      40.375672480722116
+     ],
+     [
+      39.594434649569635,
+      29.657115088359618,
+      33.24272016739744
+     ],
+     [
+      37.586940807077816,
+      39.24693850046739,
+      39.1071192323953
+     ]
+    ]
+   },
+   "context/p2/acceptance_ratio": {
+    "baseline_after": 0.53584,
+    "baseline_before": 0.54241,
+    "intervention": 0.53968,
+    "raw_repetitions": [
+     [
+      0.57869,
+      0.54241,
+      0.53221
+     ],
+     [
+      0.5636,
+      0.46771,
+      0.53968
+     ],
+     [
+      0.44053,
+      0.53584,
+      0.63763
+     ]
+    ]
+   },
+   "context/p2/client_stream_events_s": {
+    "baseline_after": 62.598881232007784,
+    "baseline_before": 63.25426932448404,
+    "intervention": 62.2392747396803,
+    "raw_repetitions": [
+     [
+      66.76025075156082,
+      63.1654707736017,
+      63.25426932448404
+     ],
+     [
+      65.09976588681725,
+      56.984351366151174,
+      62.2392747396803
+     ],
+     [
+      53.882210897346766,
+      62.598881232007784,
+      72.13712500636642
+     ]
+    ]
+   },
+   "kv/p0/acceptance_ratio": {
+    "baseline_after": 0.85714,
+    "baseline_before": 0.83459,
+    "intervention": 0.87879,
+    "raw_repetitions": [
+     [
+      0.85429,
+      0.83459,
+      0.7619
+     ],
+     [
+      0.87879,
+      0.88095,
+      0.85423
+     ],
+     [
+      0.88889,
+      0.85714,
+      0.79529
+     ]
+    ]
+   },
+   "kv/p0/client_stream_events_s": {
+    "baseline_after": 91.33610597169363,
+    "baseline_before": 90.0373510388213,
+    "intervention": 93.02921940051462,
+    "raw_repetitions": [
+     [
+      92.4349412631927,
+      90.0373510388213,
+      83.86883447858877
+     ],
+     [
+      93.02921940051462,
+      93.56793123653688,
+      91.27138892772226
+     ],
+     [
+      95.31351449158295,
+      91.33610597169363,
+      86.3944138399169
+     ]
+    ]
+   },
+   "kv/p1/acceptance_ratio": {
+    "baseline_after": 0.27013,
+    "baseline_before": 0.28103,
+    "intervention": 0.27988,
+    "raw_repetitions": [
+     [
+      0.26498,
+      0.28103,
+      0.28132
+     ],
+     [
+      0.2963,
+      0.2316,
+      0.27988
+     ],
+     [
+      0.31536,
+      0.22857,
+      0.27013
+     ]
+    ]
+   },
+   "kv/p1/client_stream_events_s": {
+    "baseline_after": 38.196706820356354,
+    "baseline_before": 39.1071192323953,
+    "intervention": 39.320801141542454,
+    "raw_repetitions": [
+     [
+      37.586940807077816,
+      39.24693850046739,
+      39.1071192323953
+     ],
+     [
+      40.40414103454856,
+      34.885097592074175,
+      39.320801141542454
+     ],
+     [
+      42.236817361146386,
+      34.21548109035091,
+      38.196706820356354
+     ]
+    ]
+   },
+   "kv/p2/acceptance_ratio": {
+    "baseline_after": 0.48776,
+    "baseline_before": 0.53584,
+    "intervention": 0.55482,
+    "raw_repetitions": [
+     [
+      0.44053,
+      0.53584,
+      0.63763
+     ],
+     [
+      0.55482,
+      0.53432,
+      0.62434
+     ],
+     [
+      0.54217,
+      0.47819,
+      0.48776
+     ]
+    ]
+   },
+   "kv/p2/client_stream_events_s": {
+    "baseline_after": 57.27737267678216,
+    "baseline_before": 62.598881232007784,
+    "intervention": 63.630591874389594,
+    "raw_repetitions": [
+     [
+      53.882210897346766,
+      62.598881232007784,
+      72.13712500636642
+     ],
+     [
+      63.630591874389594,
+      62.6080840743687,
+      69.93757207054571
+     ],
+     [
+      63.572939233758355,
+      57.12009060083785,
+      57.27737267678216
+     ]
+    ]
+   }
+  },
+  "summary": "All 63 valid requests across 7 ordered fresh-server arms (3 prompts x 3 reps), all disposition=complete, KFD-resident, run on designed broad set 0-23,184-191 (no design_deviation); affinity arm host_affinity strictly 184-191, broad arms 0-23,184-191. Descriptive labels only: 14/18 outside-observed-baseline, 4/18 within. No p-value, causal or generalization claim; response-ID attribution UNKNOWN (window-correlated acceptance); v10 reproduction, not historical binary identity.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-10T17:02:27+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-10T16:37:08Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vidya-r234-native-sweep-20261104h.ended",
+ "filed_at": "2026-11-10T17:02:27+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R23-4-SWEEP-WIRE",
+ "id": "vidya-r234-native-sweep-20261104h",
+ "keep_tail": {
+  "reason": "no samples_a/samples_b in result",
+  "reported": false
+ },
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-r234-native-sweep-20261104h.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-r234-wire-20261104/runs/*/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/vb-r234-wire-20261104/runs/*/results.jsonl",
+ "root_cause_family": null,
+ "row": "vidya-r234-native-sweep-20261104h",
+ "row_verdict": "pass",
+ "rule": "Require all 63 valid requests across 7 ordered fresh-server arms, 3 prompts and 3 repetitions; otherwise INCOMPLETE. For each factor and prompt separately, take median of 3 acceptance ratios and of 3 client stream-event rates for intervention and each adjacent baseline; label outside-observed-baseline only if intervention median is strictly below both or strictly above both adjacent baseline medians, else within-observed-baseline. Report all medians and raw repetitions, no p-value, causal or generalization claim; missing, ambiguous, nonresident or window-only acceptance association remains UNKNOWN for response-ID attribution. V10 reproduction, not historical binary identity. Native post-hook comparison rederives original SSE, raw acceptance and timed residency; response-ID attribution UNKNOWN. Smoke is one baseline request only, separate allocator result and SMOKE_COMPLETE, never full-sweep evidence.",
+ "source": "grant",
+ "tokens": {
+  "available": false,
+  "owner_slug": "vidya-belief-substrate",
+  "reason": "no rollout tokens attributed to the owner session today"
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "243defee857efda6c97f834781b485910e33503f2f589e95db27445a523817ca",
+  "result": "pass",
+  "status": "filed"
+ }
+}

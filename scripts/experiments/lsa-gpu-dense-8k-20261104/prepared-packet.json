@@ -1,0 +1,11 @@
+{
+  "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/packet",
+  "sha256": {
+    "first_progress.py": "f7ba55c1a374b675c17debfe4b328bcbb4df04b426ada3ef14ad828c0572d925",
+    "ids.json": "056563f23d3191f5ca9a37ca7684131daacb3210586af1d95ebfea00507209be",
+    "job.py": "14c21dccfd1401470d7a1b6210509cf00366d097b9a0376af5de4c3a60762b49",
+    "launcher.sh": "3171f3a7d30f97f86fbbf5ff025ee46fd323850f8b73a0a004713fa0dc5fe8d7",
+    "plan.json": "2f8dbfb36c59df62dcafe62b5941265df21977a7cedd048f41f8db3610becc60",
+    "spec.json": "e546790b92e99d2d9e349889999a293f3eaca908f6c9287dc210244f046a42f4"
+  }
+}

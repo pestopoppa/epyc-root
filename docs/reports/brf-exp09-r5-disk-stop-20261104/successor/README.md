@@ -1,0 +1,7 @@
+R6 preserves the byte-exact R3 24-control seed separately from new treatment output. R5 had no non-dry-run treatment cells. The frozen R4 corpus-manifest bytes are retained; R6 resolves those historical item names to its own corpus and verifies each hash. The source checkout is the existing pinned R5 detached worktree, retained under R5’s `orch/**` keep rule, referenced by an absolute symlink to avoid another checkout on the constrained filesystem.
+
+The owner ran the actual R6 input check and seed loader offline: 24 unique control cells, no duplicates or malformed records. Future filing must reconcile seed and R6 treatment rows with matching non-dry-run preflight and valid terminal events from `out/run-events.r6.jsonl`. Controls and treatments use separate executions and scratch-pointer roots; no served-latency or single-execution claim follows.
+
+R6 leaves rowflow’s 150 GiB production disk floor unchanged. The standard smoke policy is distinct from the long run; a smoke is not science evidence.
+
+Published as `brf-exp09-resume-r6-20261104` after a fresh-treatment-cell four-CPU smoke PASS. The R5 source worktree is retained by the R5 manifest; the 150 GiB real-run floor is unchanged. The installed allocator has no disk-aware hold, so publication does not guarantee that a grant will wait for capacity. R6’s manifest note that R5 had “no new treatment cell” refers to native cells: R5 did produce one separately labeled dry-run quote cell.

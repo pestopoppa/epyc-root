@@ -1,0 +1,7 @@
+R3 candidate source and inputs for the expanded exploratory screen. The runner returns full emitted cell records and requires the complete manifest-sized item/arm grid, each planted mismatch rejection, captured views and answers, parsed results, and no answer cap hits before COMPLETE. Malformed or duplicate native cells fail closed. It preserves the primary substring scorer and records strict exact failed-ID recall separately.
+
+The frozen corpus has 24 distinct-content cases: the original 12 plus 12 cases from nine provenance groups. The gold-smoke campaign contributes three additions and swe-eval-A1 two; item-24 is an intentional negative control. The corpus is nonrepresentative and campaign cases are correlated. Exact source paths, source/decompressed hashes, gold and overlap notes are in corpus-manifest.json and r3-corpus-extended.txt. Original data files remain in the row scratch under the keeper keep policy.
+
+check_run_cell.py exercises actual job.run_cell with mocked transport; check_summary_flags.py covers valid and invalid 24-item grids and exact ID matching. Test paths point to original scratch custody. Source and corpus are pinned by the launcher. A publication smoke is not an experiment outcome.
+
+Published as `brf-exp09-expanded-r3-20261104` after the four-CPU smoke wrote a real cell and stopped cleanly. The qualification receipt and published manifest are preserved here. Smoke does not constitute an experiment verdict.

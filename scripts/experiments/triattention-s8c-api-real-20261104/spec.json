@@ -1,0 +1,26 @@
+{
+  "id": "triattention-s8c-api-real-20261104",
+  "owner": "triattention",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "gib": 8,
+  "estimate_s": 1800,
+  "min_window_s": 600,
+  "first_progress_s": 600,
+  "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104",
+  "launcher": "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/packet/launcher.sh",
+  "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/native/RESULT.json",
+  "result_format": "json",
+  "unit_key": "unit",
+  "decision_rule": "On isolated Qwen3-1.7B-Q8_0 CPU candidate, prefill 128 frozen token IDs, perform one recency compaction, then repeat it on the resulting gapped cache. Pass when the first operation removes at least one entry and the repeat is rejected with the expected server error. Zero removals is inconclusive. Stop after the two responses, infrastructure failure, stop or deadline. HTTP/cache guard diagnostic only; no physical-state continuity, quality or performance claim.",
+  "handoff_task": "long-context-program.md:S8-C-API-REAL",
+  "priority_rank": 18,
+  "keep": [
+    "native/**",
+    "plan.json",
+    "packet/**",
+    "packet-pin.json",
+    "pinned-build/**"
+  ],
+  "kind": "compute"
+}

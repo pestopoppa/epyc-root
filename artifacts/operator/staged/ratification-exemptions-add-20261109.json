@@ -1,0 +1,61 @@
+{
+  "add_to": "scripts/validate/ratification_receipt_exemptions.json .exemptions (HUMAN-ONLY path: operator applies, emitting the MEASUREMENT.md section-5 receipt)",
+  "entries": [
+    {
+      "script": "artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/adapters/confidence_source_capture.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "779c5d3f20ed51846674ef3de398130b6da3efe3fe6fb14b0f09724343cc0cdf",
+      "evidence": "2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose",
+      "reason": "Archived vidya adapter source copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted."
+    },
+    {
+      "script": "artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/adapters/fanout_outcome.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "769d3ed25370efd1f0d0df8cc105622133433439660914986728fa391e3c339b",
+      "evidence": "2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose",
+      "reason": "Archived vidya adapter source copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted."
+    },
+    {
+      "script": "artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/adapters/review_f1_capture.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "f2eab90767b04ba93c5ef339cc6381eb20b7b6fbb6c8915b9fe9f363668bb5b9",
+      "evidence": "2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose",
+      "reason": "Archived vidya adapter source copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted."
+    },
+    {
+      "script": "artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/adapters/tale_budget_capture.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "cc8f570198c9b83cb8afe4f2fc5d14fdd86549e6b249d89dd7f81d596f463cdb",
+      "evidence": "2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose",
+      "reason": "Archived vidya adapter source copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted."
+    },
+    {
+      "script": "artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/claim_tuple.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+      "evidence": "2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose",
+      "reason": "Archived pure ClaimTuple module copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted."
+    },
+    {
+      "script": "artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/measurement_record.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "3cdd96a72df3de6ac2fd941a23ac6e94debd5a1fb32214aff6764a395692b945",
+      "evidence": "2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose",
+      "reason": "Archived vidya measurement-record module copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted."
+    },
+    {
+      "script": "artifacts/compute/vidya-host-attest-20261101/source/server_np_sweep.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "915915174c0410a938c3159dcf355d6861984b52c163b7f4ad5c889981223a2d",
+      "evidence": "2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose",
+      "reason": "Archived host-attestation source copy of the M4 sweep: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted."
+    },
+    {
+      "script": "artifacts/compute/vidya-r18-gfx-source-20261101/run.py",
+      "kind": "not-a-boundary-write",
+      "script_sha256": "08248535958d83edfcbb53153b8646739d4039edeac6b1d580912af39fd06095",
+      "evidence": "2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose",
+      "reason": "Archived R18 gfx capture driver: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted."
+    }
+  ]
+}

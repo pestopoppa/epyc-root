@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/mi210-independent-cpu-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-04T15:06:15Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/mi210-independent-cpu-20261104/native-attempts/attempt-ntlv7blq/native-result.json (unit_key tps set)",
+ "first_progress_s": 1500,
+ "first_unit_at": "2026-11-04T15:06:16Z",
+ "id": "mi210-independent-cpu-20261104",
+ "launcher_sha256": "7455a57f513baa34798b6d13fdf11cdc5f6b9467a89b62804c336c09c6644093",
+ "passed_at": "2026-11-04T15:06:16Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/mi210-independent-cpu-20261104/native-attempts/attempt-ntlv7blq/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

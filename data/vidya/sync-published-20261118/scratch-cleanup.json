@@ -1,0 +1,56 @@
+{
+  "timestamp_utc": "2026-11-18T18:27:31.196958+00:00",
+  "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate",
+  "ready_armed_grant_held_booking_claim_files_checked": 8776,
+  "ch18_queue_references": [
+    "ready/vb-mi210-q38-planner-control-20261118.json"
+  ],
+  "ch18_filing_receipt": "/mnt/raid0/llm/tmp/compute-flags/filing-done/vb-mi210-q38-planner-control-20261118.FILED",
+  "ch18_archive": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/mi210-q38-planner-control-20261118",
+  "ch18_later_control_filing_receipt": "/mnt/raid0/llm/tmp/compute-flags/filing-done/vb-q38-preflight-planner-20261118.FILED",
+  "byte_basis": "du -sx -B1 for each removed path before deletion. Filesystem-wide free space also recorded; it is affected by concurrent activity.",
+  "removed": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/reader",
+      "allocated_bytes": 361250816,
+      "method": "git worktree remove --force (only untracked file is archived in Git)",
+      "reason": "Detached reader for filed CH18 structural control. The only extra file matches the committed canary. The reader commit remains in Git and subsequent Q38 preflight has its own packet."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/research-base",
+      "allocated_bytes": 56766464,
+      "method": "remove generated source snapshot",
+      "reason": "Generated baseline source snapshot for filed CH18 structural control. Baseline commit and hash manifest are retained."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/research-candidate",
+      "allocated_bytes": 56766464,
+      "method": "remove generated source snapshot",
+      "reason": "Generated patched source snapshot for filed CH18 structural control. Baseline commit, candidate patch and hash manifest are retained."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/prior-snapshots",
+      "allocated_bytes": 35975168,
+      "method": "remove superseded generated attempt directory",
+      "reason": "Generated plain-copy source trees for the first stopped qualification. All 1,247 file digests match the committed fail-1 source pins, and the current candidate has its own detached source worktrees."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/publisher-smoke-47k2iohj",
+      "allocated_bytes": 151552,
+      "method": "remove superseded generated attempt directory",
+      "reason": "Stopped third publisher qualification superseded by the sealed repaired candidate. Its original partial result, error log, producer protocol log and actor receipts are byte-identical to the committed fail-3 evidence."
+    }
+  ],
+  "reclaimed_bytes": 510910464,
+  "retained": {
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-ready/research": "Locked prepublication research source used directly by /mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2/job.py; no successor filing.",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2": "Active row; preserve pinned model and entire packet.",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current": "Retained packet metadata, launcher, pinned inputs manifest, original smoke and official synthetic output and run logs.",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current": "Retained current repaired candidate, sealed launcher/spec/pins, and the detached reader and Research worktrees. Prior qualification evidence is archived in Git.",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/publisher-smoke-8b7mk8vz": "The committed publisher result pins the original smoke probe and both actor receipts. The actor files committed at the archive top level have different digests, so the original smoke receipt bytes remain in scratch."
+  },
+  "filesystem_free_bytes_before": 437338902528,
+  "filesystem_free_bytes_after": 437819842560,
+  "verified_worktree_deregistration": true,
+  "followup_timestamp_utc": "2026-11-18T18:29:01.902026+00:00"
+}

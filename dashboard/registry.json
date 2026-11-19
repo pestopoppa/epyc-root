@@ -92,16 +92,6 @@
       }
     },
     {
-      "id": "orchestrator-legacy",
-      "title": "Legacy (:8000)",
-      "chip": "legacy",
-      "port": 8000,
-      "path": "/dashboard",
-      "owner_repo": "epyc-orchestrator",
-      "health_path": "/health",
-      "blurb": "legacy combined page — deprecation pending (RTG-47 Phase 1b); data APIs stay"
-    },
-    {
       "id": "loop-spec",
       "title": "Loop spec",
       "port": 8100,

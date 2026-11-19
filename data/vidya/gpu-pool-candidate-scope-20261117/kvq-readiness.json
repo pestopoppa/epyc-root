@@ -1,0 +1,12 @@
+{
+  "row_id": "vidya-kvq-v10-sweep-20261117-r2",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2/spec.json",
+  "reviewed_row_spec": "data/vidya/kvq-linkage-fix-20261117/row/spec.json",
+  "guard_command": "/usr/bin/python3 -I /mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2/job.py --guard",
+  "guard_working_directory": "/mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2",
+  "guard_exit_code": 5,
+  "guard_stdout": "process blocker: llama-server\n",
+  "guard_stderr": "",
+  "publication": "not attempted; guard refused",
+  "next_action": "At a later authorized clean-host boundary, rerun the original guard and publish the external spec with --smoke-now only if it passes."
+}

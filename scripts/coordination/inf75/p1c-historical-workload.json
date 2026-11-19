@@ -1,0 +1,98 @@
+{
+  "schema": "epyc.inf75.p1c_historical_workload_reference.v1",
+  "status": "REFERENCE_ONLY_NOT_A_ROW_OR_EXECUTION_WITNESS",
+  "historical_session": "S20_FIX1",
+  "source_commits": {
+    "parent": "ef81196d5bdd4190b46dff4ae7eecc333a46c8ce",
+    "candidate": "2516c9807b8a92d472c8e75a0a1ce8558d2e34a7"
+  },
+  "scope": "Historical CPU FIX-1/FIX-3 regression session; not the later shim-on adopted champion launch recipe. The new default-state replay requires an independently reviewed, sealed recipe and coverage evidence.",
+  "source_evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/inf70/agents/retest1/campaign6.sh",
+      "sha256": "5b2b0203a2c8e7471b7a48aeda47f7533c55a3098a85d85b2fbb8239b73a5be8"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/inf70/agents/retest1/session2.sh",
+      "sha256": "790259863b454de0fc0ae82b931a5f55315a682304cd6d63339656cea3e2f4ef"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/inf70/agents/retest1/campaign6.nohup.log",
+      "sha256": "2a84c921c72a114a1809160d82161f5b918afd3f42071433da8d658442558bdc"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/inf70/agents/retest1/PREREGISTRATION.md",
+      "sha256": "6fe2529ab89f75a704bf1d1e3a836d47fb84023f7edf83ede84402cc8f83a2cb"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/inf70/agents/retest1/PREREG-FINAL.md",
+      "sha256": "1d8f4ddc4567a9df45222330adf18e1f665a9544f6e9c8bea17539f4b97c82c9"
+    }
+  ],
+  "inputs": {
+    "prompts": {
+      "path": "/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/prompts.json",
+      "sha256": "ea154096eb110850ab5be5e4f574e995e5dbf17540dcbb9461b8cc38c0855783"
+    },
+    "client": {
+      "path": "/mnt/raid0/llm/tmp/inf70/agents/harness1/client.py",
+      "sha256": "ebc74836b0008e30d8f725f4f6f27923939f9648ac46031985c7a1c6aa2a9ddb"
+    },
+    "model_path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/IQ4_XS-uniform/Qwen3.8-Flash-Next-IQ4_XS-uniform.gguf",
+    "model_sha256": null
+  },
+  "session": {
+    "threads": 48,
+    "cpus": "0-95",
+    "numa": "interleave=all",
+    "context": 8192,
+    "parallel": 1,
+    "no_mmap": true,
+    "server_extra": [
+      "-fa",
+      "on",
+      "-ctk",
+      "f16",
+      "-ctv",
+      "f16"
+    ],
+    "env": {
+      "OMP_PROC_BIND": "spread",
+      "OMP_PLACES": "cores",
+      "OMP_WAIT_POLICY": "active",
+      "OMP_DYNAMIC": "false",
+      "GGML_IQK": "1",
+      "GGML_FUSED_DECODE_OFF": "1",
+      "GGML_FA_SPLIT_KV": "0"
+    },
+    "session_env": "",
+    "request": {
+      "max_tokens": 200,
+      "cache_prompt": false,
+      "enable_thinking": false
+    }
+  },
+  "historical_arm_controls": {
+    "C": {
+      "GGML_SOLO_YIELD_ROWCOL": 0,
+      "GGML_SCALE_SPLIT": 0,
+      "GGML_TINY_SOLO_CLAMP": 1
+    },
+    "F": {
+      "GGML_SOLO_YIELD_ROWCOL": 1,
+      "GGML_SCALE_SPLIT": 1,
+      "GGML_TINY_SOLO_CLAMP": 1
+    },
+    "P": {
+      "GGML_SOLO_YIELD_ROWCOL": 1,
+      "GGML_SCALE_SPLIT": 0,
+      "GGML_TINY_SOLO_CLAMP": 1
+    }
+  },
+  "not_proven": [
+    "model bytes and historical binary build provenance",
+    "full workload shape envelope",
+    "current workload or T1 coverage",
+    "recipe parity or performance"
+  ]
+}

@@ -1,0 +1,5 @@
+ggml_cuda_init: found 1 ROCm devices (Total VRAM: 65520 MiB):
+  Device 0: AMD Instinct MI210, gfx90a:sramecc+:xnack- (0x90a), VMM: no, Wave Size: 64, VRAM: 65520 MiB
+load_backend: failed to find ggml_backend_init in /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build/candidate/bin/libggml-hip.so.0.16.0
+case 78 hs=576/512 nh=1 nr2=16 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hash=a7e0f31934b10ecc nan=0
+ALL 38b9a2a3efda9d3d

@@ -1,0 +1,48 @@
+{
+  "box": "CJ-6a",
+  "row": "codex-ifbench-cj6a-27b-v5-20261119",
+  "root_cause": "env -i explicitly passed an empty FILLER_GRANTS_DIR; os.getenv(key, default) returned the empty value, making the grant path relative to the job working directory. The engine computes its default GRANTS internally but does not export FILLER_GRANTS_DIR.",
+  "regression_tests": {
+    "command": "python3 docs/evidence/ifbench-grant-repair-20261119/test_preflight.py",
+    "result": "PASS: two tests, both arms; 16 full-mode lookup cases and eight launcher bridge cases; no cohort/model/network code executed"
+  },
+  "changes": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/worker.py": {
+      "before": "61a0e7a2aa33a695fc62588bbec68743b7cb2b99ba5f9233579aa4651018f81e",
+      "after": "430beb40735527ed9a0a31ed802cccf25241bbd83bb8f296012b5410fe788292"
+    },
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/launch.sh": {
+      "before": "0697265a99043b93039a0ff5eb451d74e3055c1bbad8e69d31755f8e340b36dd",
+      "after": "863a9c12f36fbaab61cb964c886a15c38b6cf54207b24688a11103bac4a82b3e"
+    },
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/worker.py": {
+      "before": "f8c2fc6627718cf2afa3ad27ee25e2edf9e40ce3de367455f69cde89758dc490",
+      "after": "9b9bafc8a8b97f9e03924b4c1802ee93e75a6a96c7fe716af12a8a4e13dfe715"
+    },
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/launch.sh": {
+      "before": "bad9761db13e9905b41c7f3878bdefdff589511eb061fb6d9bbe6db2101d392e",
+      "after": "fd31a2572f0eba3159d938c12ac2b843be6b8048111adce586250198369c2082"
+    }
+  },
+  "bindings": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/worker.py": "430beb40735527ed9a0a31ed802cccf25241bbd83bb8f296012b5410fe788292",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/launch.sh": "863a9c12f36fbaab61cb964c886a15c38b6cf54207b24688a11103bac4a82b3e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/V3-INPUTS.sha256": "05c8ee23240e0d4e3f5d40b76f31760afe5bbec696d403b771330f25d4219833",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/RUNTIME-INPUTS.sha256": "7280d606703870331a0ec2966f804ec41fa6dc6f6d475bf91d7f8dfd900a51d6",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/worker.py": "9b9bafc8a8b97f9e03924b4c1802ee93e75a6a96c7fe716af12a8a4e13dfe715",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/launch.sh": "fd31a2572f0eba3159d938c12ac2b843be6b8048111adce586250198369c2082",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/V3-INPUTS.sha256": "8aca106baa73e6742dbbdc05762424d506ba26e1418fb989a7570a63810e2aee",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/RUNTIME-INPUTS.sha256": "7f42005b59d21cdae683037ad99af487ba9ed18ba133382588d0b1495a112bd4",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/spec.grant-repaired.json": "5a09e28f0689c4cb75faf7c8c7e9581085444c27e7750397d223eaa87326798e"
+  },
+  "benchmark_verdict": "UNKNOWN; successor qualification only",
+  "smoke": {
+    "verdict": "PASS",
+    "cpus": "140-143",
+    "rc": 0,
+    "ended": "2026-11-19T10:54:15Z",
+    "receipt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ifbench-cj6a-27b-v5-20261119/PASS.json",
+    "sha256": "a6479e422383217a8ed2d200767efbec02ebba78ff66f4a099cb58fc9dba799c",
+    "cohort_exposure": false
+  }
+}

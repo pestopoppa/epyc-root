@@ -1,0 +1,715 @@
+import importlib.util
+import json
+import os
+import subprocess
+from types import ModuleType
+
+import pytest
+import runner as cpu_runner
+from runner import (
+    BOUNDARY_TURN_TERMINAL,
+    ENDPOINT,
+    HERE,
+    PYTHON,
+    SOURCE,
+    graph_env,
+    smoke_predicate,
+    split_kv_observed,
+    summarize_ledger,
+    trajectory_metrics,
+    trial_metrics,
+)
+
+
+def row():
+    return {
+        "point_id": "item@2", "arm": "summary_only", "repeat": 0,
+        "env": {"ORCHESTRATOR_CONTEXT_FORCE_TURNS": "2", "ORCHESTRATOR_CONTEXT_BUDGET_TOKENS": "16384",
+                "ORCHESTRATOR_CONTEXT_TRIGGER_FRACTION": "0.5"},
+    }
+
+
+def final():
+    return {
+        "event": "final", "arm": "summary_only", "trial_index": 0,
+        "context_budget_tokens": 16384, "effective_context_budget_tokens": 16384,
+        "trigger_fraction": 0.5, "history_valid": True, "terminal_state": "solved",
+    }
+
+
+def turn(turn_no, *, blocked=False, error=False, reads=0, mixed=False):
+    return {"event": "turn", "turn": turn_no, "blocked": blocked, "outcome": "error" if error else "ok",
+            "log_follows": [{}] * reads, "log_follow_attempts": [{}] * reads,
+            "tool_calls": {"retrieval": reads, "execution": int(mixed)}}
+
+
+def test_uses_numeric_turns_b_plus_one_through_b_plus_five():
+    events = [turn(1, blocked=True), {"event": "boundary", "turn": 2},
+              turn(2, blocked=True), turn(3, reads=1, blocked=True), turn(4, reads=1, error=True, mixed=True),
+              turn(5), turn(6), turn(7, blocked=True), turn(8, blocked=True), final()]
+    observed = trajectory_metrics(events, row())
+    assert observed["actions"] == 5
+    assert observed["baps"] == 2 / 5
+    assert observed["log_follows"] == 2
+    assert observed["deliberate_rereads"] == 1
+
+
+def test_no_boundary_and_incorrect_boundary_are_distinct():
+    missing = trajectory_metrics([turn(1), final()], row())
+    assert missing["boundary_reached"] is False
+    assert missing["baps"] is None
+    with pytest.raises(ValueError, match="exactly the assigned boundary"):
+        trajectory_metrics([turn(1), {"event": "boundary", "turn": 3}, turn(3), final()], row())
+    with pytest.raises(ValueError, match="missing post-boundary"):
+        trajectory_metrics([turn(1), {"event": "boundary", "turn": 2}, final()], row())
+    smoke = trajectory_metrics([turn(1), {"event": "boundary", "turn": 2}, turn(2), final()], row(), smoke=True)
+    assert smoke["boundary_reached"] is True
+    assert smoke["baps"] is None
+
+
+def test_final_artifact_must_report_assigned_trial_and_budget():
+    with pytest.raises(ValueError, match="trial_index"):
+        trajectory_metrics([turn(1), {**final(), "trial_index": 1}], row())
+    with pytest.raises(ValueError, match="effective_context_budget_tokens"):
+        trajectory_metrics([turn(1), {**final(), "effective_context_budget_tokens": 4096}], row())
+
+
+def boundary_terminal_events(terminal_state="finished"):
+    finished = terminal_state == "finished"
+    return [turn(1, error=True), {"event": "boundary", "turn": 2},
+            {**turn(2), "outcome": "final" if finished else "error"},
+            {**final(), "terminal_state": terminal_state, "solved": finished, "turns": 2}]
+
+
+@pytest.mark.parametrize("terminal_state", ["finished", "killed"])
+def test_verified_boundary_turn_terminal_has_unknown_baps(terminal_state):
+    events = boundary_terminal_events(terminal_state)
+    assert trajectory_metrics(events, row()) == {
+        "boundary_reached": True, "actions": 0, "baps": None,
+        "baps_unknown_reason": BOUNDARY_TURN_TERMINAL,
+        "boundary": events[1], "terminal_state": terminal_state,
+    }
+
+
+@pytest.mark.parametrize("malformation", ["no_boundary_action", "wrong_terminal_state", "wrong_outcome",
+                                           "wrong_final_turn", "wrong_finish_flag", "later_turn",
+                                           "missing_prior_turn", "misordered_boundary"])
+def test_missing_post_boundary_turns_require_consistent_terminal_evidence(malformation):
+    events = boundary_terminal_events()
+    if malformation == "no_boundary_action":
+        events.pop(2)
+    elif malformation == "wrong_terminal_state":
+        events[-1]["terminal_state"] = "context-exhausted"
+    elif malformation == "wrong_outcome":
+        events[2]["outcome"] = "ok"
+    elif malformation == "wrong_final_turn":
+        events[-1]["turns"] = 3
+    elif malformation == "wrong_finish_flag":
+        events[-1]["solved"] = False
+    elif malformation == "later_turn":
+        events.insert(-1, turn(8))
+    elif malformation == "missing_prior_turn":
+        events.pop(0)
+    else:
+        events[0], events[1] = events[1], events[0]
+    with pytest.raises(ValueError, match="without a boundary-turn terminal record"):
+        trajectory_metrics(events, row())
+
+
+@pytest.mark.parametrize("invalid_fields", [
+    {"http_status": 503}, {"response_complete": False}, {"response_sse_done": False},
+    {"response_sha256": None}, {"response_error": "ReadError"},
+])
+def test_invalid_wire_on_any_call_prevents_unknown_classification(invalid_fields):
+    response = {"http_status": 200, "stream_requested": True, "response_complete": True,
+                "response_sse_done": True, "response_sha256": "a" * 64}
+    graph = {"pre_generation_budget_exhausted": False, "wire": [response, response]}
+    events = boundary_terminal_events()
+    assert trial_metrics(graph, events, row())["baps_unknown_reason"] == BOUNDARY_TURN_TERMINAL
+    graph["wire"][0] = {**response, **invalid_fields}
+    with pytest.raises(ValueError, match="incomplete or failed generation transport"):
+        trial_metrics(graph, events, row())
+
+
+@pytest.mark.parametrize(("message", "expected"), [
+    ("srv load_model: initializing, n_slots = 4, n_ctx_slot = 65536, kv_unified = 'false'", True),
+    ("llama_context: kv_unified    = false", True),
+    ("srv load_model: kv_unified = 'true'", False),
+    ("srv load_model: kv_unified = falsehood", False),
+])
+def test_v10_split_kv_startup_witness(message, expected):
+    assert split_kv_observed(message) is expected
+
+
+@pytest.mark.parametrize(("started", "expected"), [
+    (None, 1), ("0", 1), ("-1", 1), ("nan", 1), ("inf", 1), ("invalid", 1),
+    ("1001", 1), ("1000", 0), ("999", 0),
+])
+def test_smoke_receipt_requires_a_valid_current_launch_timestamp(tmp_path, monkeypatch, started, expected):
+    receipt = tmp_path / "cmp4-native/SMOKE.json"
+    receipt.parent.mkdir()
+    receipt.write_text(json.dumps({"transport_and_graph": True, "server_exited": True,
+                                   "budget_probe": {"boundary_reached": False, "terminal_state": "context-exhausted"}}))
+    os.utime(receipt, (1000, 1000))
+    monkeypatch.setenv("FILLER_DRYRUN_DIR", str(tmp_path))
+    if started is None:
+        monkeypatch.delenv("FILLER_SMOKE_T0", raising=False)
+    else:
+        monkeypatch.setenv("FILLER_SMOKE_T0", started)
+    assert smoke_predicate() == expected
+
+
+def test_smoke_receipt_requires_the_frozen_budget_probe(tmp_path, monkeypatch):
+    receipt = tmp_path / "cmp4-native/SMOKE.json"
+    receipt.parent.mkdir()
+    receipt.write_text(json.dumps({"transport_and_graph": True, "server_exited": True}))
+    monkeypatch.setenv("FILLER_DRYRUN_DIR", str(tmp_path))
+    monkeypatch.setenv("FILLER_SMOKE_T0", str(receipt.stat().st_mtime))
+    assert smoke_predicate() == 1
+
+
+def test_graph_child_initializes_from_isolated_trial_dir(tmp_path):
+    if not PYTHON.is_file() or not SOURCE.is_dir():
+        pytest.skip("pinned orchestrator trial worktree and venv required")
+    trial = row()
+    trial["env"].update({"ORCHESTRATOR_CONTEXT_ARM": trial["arm"],
+                         "ORCHESTRATOR_CONTEXT_TRIAL_INDEX": "0"})
+    trial["sampling_seed"] = 1372
+    (tmp_path / "INPUT.json").write_text(json.dumps({
+        "row": trial, "case": {"prompt": "Compute 12."}, "source": str(SOURCE), "endpoint": ENDPOINT,
+        "temperature": 0.3, "smoke": True,
+    }))
+    # The exact child entry point exercises imports, constructors and coroutine
+    # argument binding. Stop just before the actual graph is advanced.
+    script = """
+import asyncio
+import runpy
+import socket
+import sys
+from pathlib import Path
+
+class GraphInitialized(Exception):
+    pass
+
+def reject_network(*_args, **_kwargs):
+    raise AssertionError("offline initialization attempted network I/O")
+
+def inspect_graph(coroutine):
+    try:
+        assert Path(coroutine.cr_code.co_filename).is_relative_to(Path(sys.argv[3]))
+        state = coroutine.cr_frame.f_locals["state"]
+        deps = coroutine.cr_frame.f_locals["deps"]
+        assert state.task_id == "trial"
+        assert deps.primitives.mock_mode is False
+        assert set(deps.primitives.server_urls.values()) == {sys.argv[4]}
+        assert deps.config.max_escalations == 0
+        from scripts.benchmark.seeding_scoring import score_answer_or_error
+        assert score_answer_or_error("12", "12") == (True, None)
+    finally:
+        coroutine.close()
+    raise GraphInitialized
+
+asyncio.run = inspect_graph
+socket.socket.connect = reject_network
+try:
+    runpy.run_path(sys.argv.pop(1), run_name="__main__")
+except GraphInitialized:
+    pass
+else:
+    raise AssertionError("child did not initialize the real graph")
+"""
+    process = subprocess.run([str(PYTHON), "-B", "-c", script, str(HERE / "graph_trial.py"),
+                              str(tmp_path), str(tmp_path), str(SOURCE), ENDPOINT],
+                             cwd=tmp_path, env=graph_env(trial, tmp_path, "offline-test"), text=True,
+                             capture_output=True, timeout=20, check=False)
+    assert process.returncode == 0, process.stderr
+
+
+@pytest.mark.parametrize("mode", ["native", "without_opt_in", "unrelated", "tokenizer_fallback"])
+def test_frozen_first_point_exhaustion_uses_the_reserve_path(tmp_path, mode):
+    if not PYTHON.is_file() or not SOURCE.is_dir():
+        pytest.skip("pinned orchestrator trial worktree and venv required")
+    script = """
+import json
+import os
+import socket
+import sys
+from pathlib import Path
+
+import httpx
+
+source, repo, attempt = map(Path, sys.argv[1:4])
+mode = sys.argv[4]
+sys.path[:0] = [str(repo), str(source)]
+from graph_trial import main
+from runner import graph_env, read_json, read_jsonl, trajectory_metrics
+from scripts.benchmark import toc_cmp4_runner as scheduler
+
+draw = read_json(source / "benchmarks/toc_cmp4/points-20261109.json")
+schedule = scheduler.build_schedule(draw["points"][:1], repeats=1, seed=draw["seed"])
+first = schedule[0]
+assert first["task_id"] == "longbench_671b3fa1bb02136c067d5353"
+cases = read_jsonl(source / "benchmarks/prompts/core_v2.jsonl")
+case = next(case for case in cases if case.get("id") == first["task_id"])
+config = {"row": first, "case": case, "source": str(source), "temperature": 0.3,
+          "endpoint": "http://127.0.0.1:19359", "smoke": False,
+          "allow_pre_generation_exhaustion": mode != "without_opt_in"}
+(attempt / "INPUT.json").write_text(json.dumps(config))
+os.environ.update(graph_env(first, attempt, "fixture-key"))
+sys.argv[1] = str(attempt)
+
+def reject_network(*_args, **_kwargs):
+    raise AssertionError("offline budget replay attempted network I/O")
+
+def tokenize(request):
+    assert request.url.path == "/tokenize", request.url
+    assert request.headers["authorization"] == "Bearer fixture-key"
+    if mode == "tokenizer_fallback":
+        return httpx.Response(503)
+    text = json.loads(request.content)["content"]
+    return httpx.Response(200, json={"tokens": [1] * (16385 if len(text) > 100000 else 1)})
+
+socket.socket.connect = reject_network
+httpx.Client._transport_for_url = lambda *_args: httpx.MockTransport(tokenize)
+if mode == "unrelated":
+    from src.graph import graph
+    from src.graph.state import TaskResult
+
+    async def unrelated_exit(state, deps):
+        state.turns = 1
+        deps.primitives._tokenizer.count_tokens("one token")
+        return TaskResult("unrelated early exit", False)
+
+    graph.run_task = unrelated_exit
+
+try:
+    main()
+except ValueError as exc:
+    assert mode != "native" and "live transport/tokenizer pin incomplete" in str(exc), exc
+    assert not (attempt / "GRAPH.json").exists()
+else:
+    assert mode == "native", mode
+    graph_result = read_json(attempt / "GRAPH.json")
+    assert graph_result["pre_generation_budget_exhausted"] is True
+    assert graph_result["wire"] == [] and graph_result["correct"] is None
+    assert graph_result["context_counter"]["fallback_count"] == 0
+    events = read_jsonl(attempt / "trial.trajectory.jsonl")
+    metrics = trajectory_metrics(events, first, pre_generation_budget_exhausted=True)
+    assert metrics == {"boundary_reached": False, "baps": None, "terminal_state": "context-exhausted"}
+    pins = dict.fromkeys(scheduler.REQUIRED_PINS, "fixture")
+    pins.update(sampling_config=[], prompt_hashes=[])
+    dispatched = []
+
+    def submit(row):
+        dispatched.append(row["point_id"])
+        return {"pins": pins, "boundary_reached": row["point_id"] != first["point_id"]}
+
+    summary = scheduler.run_schedule(schedule, submit, attempt / "ledger.jsonl",
+                                     reserves=draw["reserves"], repeats=1, seed=draw["seed"])
+    reserve = draw["reserves"][first["stratum"]][0]["point_id"]
+    assert dispatched == [first["point_id"], reserve, reserve, reserve]
+    assert summary["rerun"] == summary["dropped"] == 0
+    assert summary["voided_points"] == [first["point_id"]]
+    assert summary["ok"] == 3
+"""
+    process = subprocess.run([str(PYTHON), "-B", "-c", script, str(SOURCE), str(HERE), str(tmp_path), mode],
+                             cwd=tmp_path, text=True, capture_output=True, timeout=20, check=False)
+    assert process.returncode == 0, process.stderr
+
+
+def test_sync_wire_capture_preserves_exact_bodies_and_errors(tmp_path):
+    if not PYTHON.is_file():
+        pytest.skip("orchestrator venv with HTTPX required")
+    script = r"""
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+import httpx
+
+sys.path.insert(0, sys.argv[1])
+from graph_trial import wire_hooks
+
+root = Path(sys.argv[2])
+original = b'{ "seed": 42, "prompt": "caf\\u00e9", "cache_prompt": true }\n'
+sent = b'{"seed":42,"prompt":"caf\xc3\xa9","cache_prompt":false}'
+replies = [(200, b'{ "content": "ok" }\n'), (502, b'{ "error": "transport" }\n')]
+errors, wire = [], []
+request_hook, response_hook = wire_hooks(root, 42, errors, wire)
+
+def transport(req):
+    assert req.content == req.read() == b"".join(req.stream) == sent
+    assert req.headers["content-length"] == str(len(sent))
+    assert req.headers["authorization"] == "Bearer auth-test-secret"
+    if not replies:
+        raise httpx.ConnectError("test connection failed", request=req)
+    status, payload = replies.pop(0)
+    return httpx.Response(status, stream=httpx.ByteStream(payload))
+
+with httpx.Client(base_url="http://localhost", transport=httpx.MockTransport(transport),
+                  event_hooks={"request": [request_hook], "response": [response_hook]},
+                  headers={"Authorization": "Bearer auth-test-secret"}) as client:
+    good = client.post("/completion", content=original)
+    rejected = client.post("/v1/chat/completions", content=original)
+    assert good.json() == {"content": "ok"}
+    assert rejected.json() == {"error": "transport"}
+    try:
+        client.post("/completion", content=original)
+    except httpx.ConnectError:
+        pass
+    else:
+        raise AssertionError("expected transport failure")
+
+assert errors == ["/v1/chat/completions: HTTP 502"]
+for index, record in enumerate(wire):
+    observed = json.loads((root / "wire" / f"{index:04}" / "record.json").read_bytes())
+    assert observed == record
+    for prefix, payload in (("original_request", original), ("request", sent)):
+        assert (root / record[prefix + "_file"]).read_bytes() == payload
+        assert record[prefix + "_sha256"] == hashlib.sha256(payload).hexdigest()
+    if index < 2:
+        response = (good, rejected)[index]
+        assert record["http_status"] == response.status_code
+        assert (root / record["response_file"]).read_bytes() == response.content
+        assert record["response_sha256"] == hashlib.sha256(response.content).hexdigest()
+    else:
+        assert record["http_status"] is None
+        assert "response_file" not in record
+assert len(wire) == 3
+assert all(b"auth-test-secret" not in path.read_bytes() for path in root.rglob("*") if path.is_file())
+"""
+    subprocess.run([str(PYTHON), "-B", "-c", script, str(HERE), str(tmp_path)], cwd=tmp_path,
+                   check=True, timeout=20)
+
+
+def test_wire_capture_tees_native_sse_parser_and_preserves_partial_bodies(tmp_path):
+    if not PYTHON.is_file() or not SOURCE.is_dir():
+        pytest.skip("pinned orchestrator trial worktree and venv required")
+    script = r"""
+import hashlib
+import json
+import sys
+import time
+from pathlib import Path
+
+import httpx
+
+sys.path[:0] = sys.argv[1:3]
+from graph_trial import wire_hooks
+from src.backends.llama_server import LlamaServerBackend
+from src.model_server import InferenceRequest
+from src.registry.registry_loader import RegistryLoader
+
+root = Path(sys.argv[3])
+errors, wire = [], []
+request_hook, response_hook = wire_hooks(root, 42, errors, wire)
+first = b'data: {"choices":[{"delta":{"content":"A"}}]}\r\n\r\n'
+last = b'data: {"choices":[{"delta":{"content":"B"},"finish_reason":"stop"}]}\n\n'
+done_left, done_right = b'data: [DO', b'NE]\r\n\r\n'
+received = []
+
+class Chunks(httpx.SyncByteStream):
+    def __init__(self, mode):
+        self.mode = mode
+        self.closed = False
+
+    def __iter__(self):
+        yield first
+        if self.mode == "backend":
+            assert received == ["A"], "first delta was buffered"
+            yield last
+            assert received == ["A", "B"], "second delta was buffered"
+            yield done_left
+            yield done_right
+            raise AssertionError("capture must not drain after the backend sees DONE")
+        if self.mode == "failure":
+            raise httpx.ReadError("truncated test SSE stream")
+        if self.mode == "early":
+            raise AssertionError("capture must not drain an early close")
+
+    def close(self):
+        self.closed = True
+
+def test_result(record, expected, *, complete, exhausted, done, error=None):
+    assert record["http_status"] == 200
+    assert record["response_complete"] is complete
+    assert record["response_transport_exhausted"] is exhausted
+    assert record["response_sse_done"] is done
+    assert record.get("response_error") == error
+    assert (root / record["response_file"]).read_bytes() == expected
+    assert record["response_sha256"] == hashlib.sha256(expected).hexdigest()
+
+streams = [Chunks(mode) for mode in ("backend", "eof", "early", "failure")]
+remaining = iter(streams)
+
+def transport(req):
+    assert req.url.path == "/v1/chat/completions"
+    payload = json.loads(req.read())
+    assert payload["cache_prompt"] is False and payload["stream"] is True and payload["seed"] == 42
+    assert req.headers["authorization"] == "Bearer auth-test-secret"
+    return httpx.Response(200, stream=next(remaining), headers={"Content-Type": "text/event-stream"})
+
+with httpx.Client(base_url="http://localhost", transport=httpx.MockTransport(transport),
+                  event_hooks={"request": [request_hook], "response": [response_hook]},
+                  headers={"Authorization": "Bearer auth-test-secret"}) as client:
+    backend = LlamaServerBackend(base_url="http://localhost")
+    backend.client.close()
+    backend.client = client
+    registry = RegistryLoader(Path(sys.argv[2]) / "orchestration/model_registry.yaml", validate_paths=False)
+    result = backend._infer_stream_text_chat_completions(
+        registry.get_role("frontdoor"), InferenceRequest(role="frontdoor", prompt="REPL", n_tokens=64, seed=42),
+        received.append, time.time())
+    assert result.success and result.output == "AB"
+    test_result(wire[0], first + last + done_left + done_right, complete=True, exhausted=False, done=True)
+
+    req = {"seed": 42, "stream": True}
+    with client.stream("POST", "/v1/chat/completions", json=req) as response:
+        assert wire[1]["http_status"] == 200
+        assert (root / wire[1]["response_file"]).read_bytes() == b"", "read before the consumer"
+        assert b"".join(response.iter_raw()) == first
+    test_result(wire[1], first, complete=True, exhausted=True, done=False)
+
+    with client.stream("POST", "/v1/chat/completions", json=req) as response:
+        iterator = response.iter_raw()
+        assert next(iterator) == first
+    test_result(wire[2], first, complete=False, exhausted=False, done=False)
+    iterator.close()
+
+    try:
+        with client.stream("POST", "/v1/chat/completions", json=req) as response:
+            list(response.iter_raw())
+    except httpx.ReadError:
+        pass
+    else:
+        raise AssertionError("expected SSE read failure")
+    test_result(wire[3], first, complete=False, exhausted=False, done=False, error="ReadError")
+
+assert all(stream.closed for stream in streams)
+assert errors == ["/v1/chat/completions response capture: ReadError"]
+assert all(b"auth-test-secret" not in path.read_bytes() for path in root.rglob("*") if path.is_file())
+for index, record in enumerate(wire):
+    assert json.loads((root / "wire" / f"{index:04}" / "record.json").read_bytes()) == record
+"""
+    subprocess.run([str(PYTHON), "-B", "-c", script, str(HERE), str(SOURCE), str(tmp_path)],
+                   cwd=tmp_path, check=True, timeout=20)
+
+
+def test_prior_runs_of_voided_points_are_kept_and_made_ineligible(tmp_path):
+    points = [{"point_id": "item@2", "stratum": "early"}]
+    reserves = {"early": [{"point_id": "next@2", "stratum": "early"}]}
+    records = [
+        {"run_id": "item@2|summary_only|r0", "point_id": "item@2", "status": "ok",
+         "result": {"correct": True, "wall_s": 1.5, "baps": 0.2}},
+        {"run_id": "item@2|summary_only|r1", "point_id": "item@2", "status": "void_point"},
+        {"status": "replacement", "void": "item@2", "replacement": "next@2", "stratum": "early"},
+        {"run_id": "next@2|summary_only|r0", "point_id": "next@2", "status": "ok",
+         "result": {"correct": None, "wall_s": 2.5, "baps": 0.4}},
+    ]
+    (tmp_path / "ledger.jsonl").write_text("".join(json.dumps(rec) + "\n" for rec in records))
+    summary = summarize_ledger(tmp_path, [row()], {"points": points, "reserves": reserves})
+    runs = [json.loads(line) for line in (tmp_path / "RUNS.jsonl").read_text().splitlines()]
+    assert summary["completed"] == 1
+    assert summary["active_points"] == ["next@2"]
+    assert summary["points_voided"] == ["item@2"]
+    assert runs[0]["valid"] is False
+    assert runs[0]["void_point"] is True
+    assert runs[0]["baps"] is None
+    assert runs[-1]["correct"] is None
+    assert runs[-1]["valid"] is True
+    assert summary["coverage_complete"] is False
+
+
+def test_boundary_terminal_keeps_grade_without_counting_baps_coverage(tmp_path, monkeypatch):
+    monkeypatch.setattr(cpu_runner, "PILOT_POINTS", 1)
+    monkeypatch.setattr(cpu_runner, "PLANNED", 2)
+    schedule = [row(), {**row(), "repeat": 1}]
+    draw = {"points": [{"point_id": "item@2", "stratum": "early"}], "reserves": {}}
+    records = [
+        {"run_id": "item@2|summary_only|r0", "status": "ok", "attempts": 1,
+         "result": {**trajectory_metrics(boundary_terminal_events(), row()), "correct": True}},
+        {"run_id": "item@2|summary_only|r1", "status": "ok", "attempts": 1,
+         "result": {"boundary_reached": True, "baps": 0, "correct": False}},
+    ]
+    (tmp_path / "ledger.jsonl").write_text("".join(json.dumps(record) + "\n" for record in records))
+    summary = summarize_ledger(tmp_path, schedule, draw)
+    unknown, zero = cpu_runner.read_jsonl(tmp_path / "RUNS.jsonl")
+    assert summary["processed"] == 2 and summary["schedule_exhausted"] is True
+    assert summary["completed"] == summary["baps_unknown"] == 1
+    assert summary["dropped"] == 0 and summary["replacements"] == summary["points_voided"] == []
+    assert summary["coverage_complete"] is False
+    assert unknown["valid"] is False and unknown["correct"] is True and unknown["baps"] is None
+    assert unknown["baps_unknown_reason"] == BOUNDARY_TURN_TERMINAL
+    assert zero["valid"] is True and zero["correct"] is False and zero["baps"] == 0
+
+
+@pytest.fixture
+def candidate_scheduler(tmp_path):
+    repo = PYTHON.parents[2]
+    pinned = subprocess.run(
+        ["git", "-C", str(repo), "show", f"{cpu_runner.SOURCE_SHA}:{cpu_runner.SCHEDULER_PATH}"],
+        capture_output=True, check=False,
+    )
+    if pinned.returncode != 0:
+        pytest.skip("pinned orchestrator scheduler source required")
+    path = tmp_path / cpu_runner.SCHEDULER_PATH
+    path.parent.mkdir(parents=True)
+    path.write_bytes(pinned.stdout)
+    subprocess.run(["git", "apply", str(HERE / "terminal-boundary-scheduler.patch")], cwd=tmp_path, check=True)
+    assert cpu_runner.digest(path) == cpu_runner.TERMINAL_SCHEDULER_SHA256
+    spec = importlib.util.spec_from_file_location("candidate_cmp4_scheduler", path)
+    scheduler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(scheduler)
+    return scheduler
+
+
+def test_candidate_replaces_whole_point_and_resumes_with_accuracy_custody(candidate_scheduler, tmp_path, monkeypatch):
+    scheduler = candidate_scheduler
+    point = {"point_id": "item@2", "task_id": "item", "boundary_turn": 2, "stratum": "early"}
+    next_point = {**point, "point_id": "next@2", "task_id": "next"}
+    later = {**point, "point_id": "later@2", "task_id": "later"}
+    middle = {**point, "point_id": "middle@4", "boundary_turn": 4, "stratum": "middle"}
+    draw = {"points": [point], "reserves": {"middle": [middle], "early": [next_point, later]}}
+    schedule = scheduler.build_schedule([point], repeats=1, budget_tokens=20000, trigger_fraction=0.4)
+    replacement = scheduler.build_schedule([next_point], repeats=1, budget_tokens=20000, trigger_fraction=0.4)
+    monkeypatch.setattr(cpu_runner, "PILOT_POINTS", 1)
+    monkeypatch.setattr(cpu_runner, "PLANNED", len(schedule))
+    ledger = tmp_path / "ledger.jsonl"
+    pins = dict.fromkeys(scheduler.REQUIRED_PINS, "offline")
+    valid = {"pins": pins, "boundary_reached": True, "baps": 0, "correct": False, "grade_reason": "fixture"}
+    terminal = {**valid, **trajectory_metrics(boundary_terminal_events(), row()), "correct": True}
+    dispatched = []
+
+    def submit(row):
+        dispatched.append(row)
+        if row == schedule[1]:
+            return terminal
+        if row == replacement[0]:
+            raise cpu_runner.WindowEnded("offline stop")
+        return valid
+
+    with pytest.raises(cpu_runner.WindowEnded):
+        scheduler.run_schedule(schedule, submit, ledger, reserves=draw["reserves"], repeats=1,
+                               replace_boundary_terminal=True)
+    assert dispatched == [*schedule[:2], replacement[0]]
+    earlier, void = cpu_runner.read_jsonl(ledger)
+    assert earlier["result"] == valid
+    assert void["result"] == terminal and void["reason"] == BOUNDARY_TURN_TERMINAL
+    assert void["reserve"]["replacement"] == next_point["point_id"]
+
+    resumed = []
+
+    def resume(row):
+        resumed.append(row)
+        return valid
+
+    scheduler.run_schedule(schedule, resume, ledger, reserves=draw["reserves"], repeats=1,
+                           replace_boundary_terminal=True)
+    assert resumed == replacement
+    summary = summarize_ledger(tmp_path, schedule, draw)
+    assert summary["coverage_complete"] is True and summary["dropped"] == 0
+    assert summary["active_points"] == [next_point["point_id"]]
+    assert summary["void_reasons"] == {point["point_id"]: BOUNDARY_TURN_TERMINAL}
+    assert summary["terminal_voids_by_stratum_and_arm"] == {"early": {schedule[1]["arm"]: 1}}
+    earlier, void, *_ = cpu_runner.read_jsonl(tmp_path / "RUNS.jsonl")
+    assert earlier["observed_correct"] is False and void["observed_correct"] is True
+    assert all(r["correct"] is None and r["valid"] is False and r["void_point"] is True
+               and r["grade_reason"] == "fixture" for r in (earlier, void))
+
+
+@pytest.mark.parametrize(("mode", "status"), [
+    ("default", "ok"), ("malformed", "dropped"), ("exhausted", "void_point"), ("no_boundary", "void_point"),
+])
+def test_candidate_default_retry_exhaustion_and_legacy_rule(candidate_scheduler, tmp_path, mode, status):
+    scheduler = candidate_scheduler
+    point = {"point_id": "item@2", "task_id": "item", "boundary_turn": 2, "stratum": "early"}
+    trial = row()
+    native = {"http_status": 200, "stream_requested": True, "response_complete": True,
+              "response_sse_done": mode != "malformed", "response_sha256": "a" * 64}
+    pins = dict.fromkeys(scheduler.REQUIRED_PINS, "offline")
+
+    def submit(_):
+        if mode == "no_boundary":
+            return {"pins": pins, "boundary_reached": False}
+        metrics = trial_metrics({"pre_generation_budget_exhausted": False, "wire": [native]},
+                                boundary_terminal_events(), trial)
+        return {"pins": pins, **metrics}
+
+    ledger = tmp_path / "ledger.jsonl"
+    policy = {"replace_boundary_terminal": True} if mode != "default" else {}
+    summary = scheduler.run_schedule(scheduler.build_schedule([point], repeats=1)[:1], submit, ledger, **policy)
+    record, = cpu_runner.read_jsonl(ledger)
+    assert record["status"] == status
+    assert summary["rerun"] == summary["dropped"] == int(mode == "malformed")
+    assert summary["reserve_exhausted"] == int(status == "void_point")
+    assert summary["replacements"] == []
+    if mode == "exhausted":
+        assert record["reason"] == BOUNDARY_TURN_TERMINAL and record["reserve"] is None
+    if mode == "no_boundary":
+        assert record["reason"] == "boundary_not_reached" and "reserve" not in record
+
+
+def test_run_rejects_policy_different_from_prepared_inputs(tmp_path, monkeypatch):
+    monkeypatch.setenv("FILLER_ID", cpu_runner.ROW)
+    monkeypatch.setattr(cpu_runner, "HERE", tmp_path)
+    (tmp_path / "inputs.json").write_text("{}")
+    with pytest.raises(ValueError, match="policy differs"):
+        cpu_runner.run(replace_boundary_terminal=True)
+    (tmp_path / "inputs.json").write_text('{"replace_boundary_terminal": true}')
+    with pytest.raises(ValueError, match="policy differs"):
+        cpu_runner.run()
+
+
+@pytest.mark.parametrize(("opted", "alteration", "allowed"), [
+    (False, "clean", True), (False, "scheduler", False), (True, "scheduler", True),
+    (True, "extra_path", False), (True, "bad_digest", False), (True, "staged", False),
+    (True, "bad_head", False),
+])
+def test_source_verification_pins_base_and_opted_scheduler(tmp_path, monkeypatch, opted, alteration, allowed):
+    monkeypatch.setattr(cpu_runner, "SOURCE", tmp_path)
+    path = cpu_runner.SCHEDULER_PATH
+    outputs = {
+        ("rev-parse", "HEAD"): "wrong-head" if alteration == "bad_head" else cpu_runner.SOURCE_SHA,
+        ("status", "--porcelain", "--untracked-files=no"): "" if alteration == "clean" else f" M {path}",
+        ("diff", "--cached", "--name-only"): "other.py" if alteration == "staged" else "",
+        ("diff", "--name-only", "--no-renames"): f"{path}\nother.py" if alteration == "extra_path" else path,
+    }
+    monkeypatch.setattr(cpu_runner.subprocess, "check_output", lambda command, **_: outputs[tuple(command[3:])])
+    digest = "wrong-digest" if alteration == "bad_digest" else cpu_runner.TERMINAL_SCHEDULER_SHA256
+    monkeypatch.setattr(cpu_runner, "digest", lambda _: digest)
+    benchmark = ModuleType("scripts.benchmark")
+    benchmark.toc_cmp4_runner = object()
+    benchmark.own_port_proof = object()
+    monkeypatch.setitem(cpu_runner.sys.modules, "scripts.benchmark", benchmark)
+    monkeypatch.setattr(cpu_runner.sys, "path", list(cpu_runner.sys.path))
+    if allowed:
+        assert cpu_runner.verify_source(replace_boundary_terminal=opted) == (
+            benchmark.toc_cmp4_runner, benchmark.own_port_proof,
+        )
+    else:
+        with pytest.raises(ValueError, match="orchestrator"):
+            cpu_runner.verify_source(replace_boundary_terminal=opted)
+
+
+@pytest.mark.parametrize("allocated,threads,expected", [
+    ({0, 1, 2, 3, 96, 97, 98, 99}, "4", [0, 1, 2, 3]),
+    ({0, 1, 2, 3}, "4", [0, 1, 2, 3]),
+    ({96, 97, 98, 99}, "4", [96, 97, 98, 99]),
+    ({0, 1, 2, 96, 97, 98}, "4", None),
+    ({0, 1, 2, 3}, "3", None),
+])
+def test_grant_affinity_binding(monkeypatch, allocated, threads, expected):
+    current = set(allocated)
+    def bind(_pid, cpus):
+        nonlocal current
+        assert set(cpus) <= current
+        current = set(cpus)
+    monkeypatch.setenv("FILLER_THREADS", threads)
+    monkeypatch.setattr(cpu_runner.os, "sched_getaffinity", lambda _: current)
+    monkeypatch.setattr(cpu_runner.os, "sched_setaffinity", bind)
+    if expected is None:
+        with pytest.raises(ValueError):
+            cpu_runner.bind_four_cores()
+    else:
+        assert cpu_runner.bind_four_cores() == expected
+        assert current == set(expected)

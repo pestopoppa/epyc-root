@@ -1,0 +1,40 @@
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.021.358 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.021.659 W srv  llama_server: -----------------
+0.00.021.660 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.021.660 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.021.660 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.021.660 W srv  llama_server: -----------------
+0.00.022.898 I srv    load_model: loading model '/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf'
+0.14.319.656 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 65536, kv_unified = 'false'
+0.14.454.729 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.14.454.789 I srv  llama_server: model loaded
+0.14.454.796 I srv  llama_server: listening on http://127.0.0.1:43289
+0.14.805.122 I slot get_availabl: id  3 | task -1 | selected slot by LRU, t_last = -1
+0.14.805.182 I slot launch_slot_: id  3 | task 0 | processing task, is_child = 0
+0.19.491.423 I slot print_timing: id  3 | task 0 | prompt eval time =    1831.40 ms /   863 tokens (    2.12 ms per token,   471.23 tokens per second)
+0.19.491.431 I slot print_timing: id  3 | task 0 |        eval time =    2854.75 ms /   128 tokens (   22.30 ms per token,    44.84 tokens per second)
+0.19.491.431 I slot print_timing: id  3 | task 0 |       total time =    4686.14 ms /   991 tokens
+0.19.491.437 I slot print_timing: id  3 | task 0 |    graphs reused =         31
+0.19.491.442 I slot print_timing: id  3 | task 0 | draft acceptance = 0.75397 (   95 accepted /   126 generated), mean len =  3.97
+0.19.491.548 I slot      release: id  3 | task 0 | stop processing: n_tokens = 990, truncated = 0
+0.19.516.111 I slot get_availabl: id  3 | task -1 | selected slot by LCP similarity, sim_best = 0.350 (> 0.100 thold), f_keep = 0.159
+0.19.530.741 I slot launch_slot_: id  3 | task 35 | processing task, is_child = 0
+0.23.178.908 I slot print_timing: id  3 | task 35 | prompt eval time =     950.91 ms /   448 tokens (    2.12 ms per token,   471.13 tokens per second)
+0.23.178.923 I slot print_timing: id  3 | task 35 |        eval time =    2697.17 ms /   128 tokens (   21.07 ms per token,    47.46 tokens per second)
+0.23.178.924 I slot print_timing: id  3 | task 35 |       total time =    3648.08 ms /   576 tokens
+0.23.178.925 I slot print_timing: id  3 | task 35 |    graphs reused =         60
+0.23.178.930 I slot print_timing: id  3 | task 35 | draft acceptance = 0.74016 (   94 accepted /   127 generated), mean len =  3.85
+0.23.178.990 I slot      release: id  3 | task 35 | stop processing: n_tokens = 575, truncated = 0
+0.23.201.991 I slot get_availabl: id  3 | task -1 | selected slot by LCP similarity, sim_best = 0.415 (> 0.100 thold), f_keep = 0.273
+0.23.216.103 I slot launch_slot_: id  3 | task 71 | processing task, is_child = 0
+0.27.292.854 I slot print_timing: id  3 | task 71 | n_decoded =    100, tg =  30.54 t/s, tg_3s =  30.54 t/s
+0.28.047.601 I slot print_timing: id  3 | task 71 | prompt eval time =     802.27 ms /   378 tokens (    2.12 ms per token,   471.17 tokens per second)
+0.28.047.656 I slot print_timing: id  3 | task 71 |        eval time =    4029.15 ms /   128 tokens (   31.48 ms per token,    31.77 tokens per second)
+0.28.047.662 I slot print_timing: id  3 | task 71 |       total time =    4831.41 ms /   506 tokens
+0.28.047.668 I slot print_timing: id  3 | task 71 |    graphs reused =        107
+0.28.047.677 I slot print_timing: id  3 | task 71 | draft acceptance = 0.39086 (   77 accepted /   197 generated), mean len =  2.54
+0.28.047.739 I slot      release: id  3 | task 71 | stop processing: n_tokens = 505, truncated = 0
+0.28.052.742 I srv    operator(): operator(): cleaning up before exit...

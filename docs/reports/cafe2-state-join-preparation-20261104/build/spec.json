@@ -1,0 +1,31 @@
+{
+  "id": "cafe2-v10-expert-state-build-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe2-expert-state-build/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe2-expert-state-build/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only: require pinned v10, exact CAFE2 expert-union/frozen-token source and CMake overlay, SHA-256 algorithm source/header pins and candidate/bridge/prompt hashes, full CPU executable with CAFE2_STATE_SHA256_V1, CAFE2_VERIFY_RAW, CAFE2_EFFECTIVE_THREADS and census markers plus local linkage. No model execution, state match, expert-union observation, timing or cost verdict.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-2",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe2-expert-state-build",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.sh",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sha256",
+    "*.patch",
+    "*.md",
+    "tokenizer-linkage.txt"
+  ],
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe2-expert-state-build/proof.py predicate",
+  "first_progress_s": 300
+}

@@ -37,6 +37,7 @@ class ResultRow:
     action: str
     review_decision: str = ""
     review_reason: str = ""
+    note: str = ""
 
 
 @dataclass(frozen=True)
@@ -288,6 +289,19 @@ def pick_metrics(row: dict[str, str]) -> str:
     return "; ".join(metric_parts)
 
 
+def extract_caveat(lines: list[str], table_start: int) -> str:
+    """Return a `*Caveat: ...*` line placed just above a table, scrubbed, else ''."""
+    for line in lines[max(0, table_start - 4): table_start]:
+        m = re.match(r"^\*Caveat:\s*(.+?)\*\s*$", line.strip())
+        if m:
+            return public_scrub_text(strip_markdown(m.group(1)))
+    return ""
+
+
+def metrics_with_note(row: "ResultRow") -> str:
+    return f"{row.metrics} (Caveat: {row.note})" if row.note else row.metrics
+
+
 def collect_rows(text: str) -> list[ResultRow]:
     lines = text.splitlines()
     headings: dict[int, str] = {}
@@ -340,6 +354,7 @@ def collect_rows(text: str) -> list[ResultRow]:
                             protocol_status=protocol_status,
                             scrub_status=scrub,
                             action=apply_scrub_gate(action, scrub),
+                            note=extract_caveat(lines, table_start),
                         )
                     )
                 j += 1
@@ -517,6 +532,7 @@ def apply_review_decisions(rows: list[ResultRow], decisions: dict[str, object]) 
                 action=review_decision,
                 review_decision=review_decision,
                 review_reason=review_reason,
+                note=row.note,
             )
         )
     return decisioned
@@ -628,7 +644,7 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
                     row.section,
                     row.entity,
                     row.quant_or_size,
-                    row.metrics,
+                    metrics_with_note(row),
                     row.protocol_status,
                     row.scrub_status,
                     row.action,
@@ -692,7 +708,7 @@ def render_review_queue(rows: list[ResultRow], source: Path) -> str:
                         str(row.source_line),
                         row.section,
                         row.entity,
-                        row.metrics,
+                        metrics_with_note(row),
                         row.protocol_status,
                         row.action if not row.review_reason else f"{row.action} ({row.review_reason})",
                     )

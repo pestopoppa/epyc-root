@@ -42,6 +42,8 @@ mixed (belief redesign 2026-10-21, §7.1):
                sharing their budget. Lines print the claim's `varied` and fixed `knobs`.
   * lineup  -- (§12.3) a lineup target `{scope: "lineup", stack_regime}` matches only claims
                declaring the same `stack_regime`; else "No beliefs at this regime".
+  * task targets use the target tier for native observations selected by an exact planner
+    task ID and a reviewed source contract.
   The declared scope table (`SOURCE_SCOPES`) covers sources written before VB-APPLICABILITY whose
   producer contract pins the whole scope; it is tiered by the same rule.
 
@@ -77,7 +79,9 @@ import json
 import math
 import os
 import re
+import subprocess
 import sys
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path, PurePath
@@ -100,6 +104,9 @@ LEDGER_STATE_SCHEMA = "epyc.vidya.ledger_state.v1"
 CANONICAL_LEDGER = Path("/mnt/raid0/llm/state/vidya/ledger.jsonl")
 ALARM_MODULE = REPO_ROOT / "scripts" / "coordination" / "alarm_channel.py"
 ALARM_KEY = "belief-ledger-not-current"
+#: LOOP-SAFETY C2: a `ready` read that returns an empty model/lineup tier for a target the
+#: previous ready read of the same consumer served non-empty. Warning only; never a refusal.
+TIER_EMPTIED_KEY = "belief-target-tier-emptied"
 ESCALATED_KEY = "belief-ledger-not-current-escalated"
 DEFAULT_ESCALATE_AFTER_S = 3600.0
 EXIT_READY, EXIT_USAGE, EXIT_REFUSED = 0, 2, 3
@@ -107,20 +114,53 @@ EXIT_READY, EXIT_USAGE, EXIT_REFUSED = 0, 2, 3
 SECTION_HEADER = "## Belief-kernel evidence (Vidya ledger, read-only)"
 #: Section budget (belief redesign §7.3): target 16 + sibling 8 + host 3 detailed claims, an
 #: 80-id tried-mechanisms index, 14 KB in all.
-DEFAULT_MAX_CLAIMS = 27
+DEFAULT_MAX_CLAIMS = 30
 DEFAULT_MAX_BYTES = 14000
 #: Tiers in rank order. `knob` (belief redesign §12.3) is a target-model match whose
 #: `knob_family` is one the target can change; it shares the target budget and ranks above plain
 #: target lines. `lineup` matches a lineup target by `stack_regime` (AutoPilot's own trials).
-TIERS = ("knob", "target", "lineup", "sibling", "host")
-TIER_CAPS = {"knob": 16, "target": 16, "lineup": 8, "sibling": 8, "host": 3}
+#: `harness` (VB-AK-WIRE-PLANNER-TIER) is consumer-scoped, not model- or device-scoped: a
+#: loop-infrastructure finding or source dependency whose source frame declares
+#: `applicability.consumer`. It reaches only the consumer it names, is never evidence about a
+#: model, and is excluded from reliance-eligible `claim_ids` exactly like the host tier.
+TIERS = ("knob", "target", "lineup", "sibling", "host", "harness")
+TIER_CAPS = {"knob": 16, "target": 16, "lineup": 8, "sibling": 8, "host": 3, "harness": 3}
 #: Knob share of the shared knob+target budget while any target-tier claim exists (operator
 #: option A, 2026-10-24, P1 AC9): a large knob family (e.g. the 10 kv_profile retrofit claims)
 #: may take at most half of the 16 model slots, so it can never displace the target's own
 #: claims from the rendered section. With no target-tier claim the knob tier keeps all 16.
 KNOB_CAP_WITH_TARGET = 8
+#: Slots of the shared model budget held for no-outcome kernel route-share rows keyed to the
+#: target's focus symbols. Outcome rows otherwise fill all 16 and the profile evidence that says
+#: which route carries the time can never appear. A slot with no eligible row goes back to the
+#: ordinary ranking; a target with no focus symbols reserves nothing.
+ROUTE_SHARE_SLOTS = 3
+#: `<route>_kernel_share_<window>` and friends: the share of device time one route takes. Not
+#: every `_share` metric: `moe_skew_top10_share` is expert load skew, not a route's cost.
+_ROUTE_SHARE_RE = re.compile(r"^(?P<route>[a-z0-9_]+?)_(?:core_)?(?:kernel|route|op|time)_share(?:_|$)")
 #: Tiers whose ids are planner evidence for the target (reliance-eligible); host is not.
 _MODEL_TIERS = ("knob", "target")
+#: Tiers shown as context only: never reliance-eligible, never planner evidence.
+NOT_EVIDENCE_TIERS = ("host", "harness")
+_NPD1_SOURCE = "mi210-paired-raw"
+_NPD1_ADAPTER = "vidya.adapters.mi210_paired_raw/v1"
+_NPD1_METRIC = "native_request_tpot_ms"
+_NPD1_CONSUMER = "autokernel.planner"
+_TASK_ID_RE = re.compile(r"[A-Z][A-Z0-9]*(?:[-_][A-Z0-9]+)+")
+_KPF17_TASK = "VB-KPF17-MAP-REVALIDATION-WIRE"
+_KPF17_CONSUMER = "kvfork.planner"
+_KPF17_METRIC = "kpf17_map_revalidation_fixture_refused"
+_KPF17_ID_RE = re.compile(r"kpf17-map-[0-9a-f]{64}")
+_KPF17_LOCATOR_RE = re.compile(r".+/attempts/[0-9a-f]{48}/native\.json#sha256=[0-9a-f]{64}")
+_P5_TASK = ("p5.scorer_controls", "VB-P5-SCORER-CONTROLS-WIRE")
+_P5_TASK_SOURCES = {
+    "p5-sphinx-scorer": ("p5_sphinx_scorer_status", "vidya.adapters.p5_sphinx_scorer/v1",
+                         re.compile(r"tests/\S+")),
+    "p5-astropy-scorer": ("p5_astropy_scorer_status", "vidya.adapters.p5_astropy_scorer/v1",
+                          re.compile(r"astropy/modeling/tests/test_separable\.py::\S+")),
+}
+_P5_OBSERVATION_ID_RE = re.compile(r"[0-9a-f]{64}")
+_P5_LOCATOR_RE = re.compile(r".+/official/RESULT\.json#(?:gold|negative):(?:FAIL_TO_PASS|PASS_TO_PASS):(?P<test>\S+)")
 #: AutoPilot knob families (belief redesign §12.1). A target may only name these; a claim's
 #: unknown family never reaches the knob tier.
 KNOB_FAMILIES = frozenset({"spec_draft", "kv_profile", "kv_compaction", "placement", "routing",
@@ -139,6 +179,12 @@ OMITTED_CAP = 24
 POLICY = {"use": "planner-context", "floor": "Judged/Located", "standard": "DV"}
 DEVICE_BY_BACKEND = {"gpu": "gfx90a", "cpu": "epyc-9655"}
 #: Dimensions compared after the model identity (model_file / model_sha256) is settled.
+_LOADER_DIAG_RUN = "handoff-vidya-quality-pack-loader-diag-wire-20261118"
+_LOADER_DIAG_OP = "QWEN4EXP_CPU_LOADER"
+_LOADER_DIAG_KIND = "qwen4exp-cpu-loader-diagnostic"
+_Q38P4_PARITY_KIND = "q38p4-greedy-parity"
+_Q38P4_PARITY_OP = "Q38P4_GREEDY_PARITY"
+_Q38P4_PARITY_RUN = re.compile(r"q38p4-greedy-parity-[0-9]{8}-r[1-9][0-9]*")
 _MATCH_KEYS = ("quant", "backend", "device", "context_tokens")
 #: Gate reasons that mean "the evidence disagrees or is under review", not merely "too weak".
 _CONTESTED_MARKERS = ("conflict", "oppos", "correction", "review", "dependency")
@@ -150,7 +196,7 @@ OUTCOMES = frozenset({"improved", "null", "regressed", "refused_correctness", "r
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 REFUSAL_REASONS = ("ledger_missing", "sync_unavailable", "ingest_failed", "still_stale",
-                   "chain_broken", "reader_error")
+                   "chain_broken", "reader_stale", "reader_error")
 
 
 class LedgerNotCurrent(Exception):
@@ -259,6 +305,60 @@ def _ingest_sources(ledger_path: Path, source_roots: Iterable[str | Path], *,
     return reports
 
 
+#: How old the oldest origin/main commit missing from the reader's checkout may be before the
+#: checkout counts as stale. The freshness check fetches origin on every read and pushes land
+#: several times an hour, so a hub view refreshed seconds ago is routinely a commit or two
+#: behind; the 2026-10-25 failure was 466 commits / days behind. 900 s separates the two.
+DEFAULT_READER_STALE_GRACE_S = 900.0
+
+
+def reader_checkout(root: str | Path | None = None, *,
+                    grace_s: float = DEFAULT_READER_STALE_GRACE_S) -> dict[str, Any]:
+    """LOOP-SAFETY C1 reader pin: is the ROOT checkout this reader runs from current?
+
+    Current = its HEAD contains the local `origin/main` ref (`git merge-base --is-ancestor`), or
+    every origin/main commit it lacks was committed less than `grace_s` ago (refresh lag). A
+    checkout AHEAD of origin/main (unpushed lane commits) is current; one that LACKS older
+    origin/main commits is stale, because a lagging checkout reads a lagging ledger, index and
+    reader (2026-10-25 canary D-A4/D-B3: the default `/workspace` was the stale ROOT). Any
+    git failure is `current: None`, which the caller treats as not current (fail closed)."""
+    root = Path(root) if root is not None else REPO_ROOT
+    out: dict[str, Any] = {"root": str(root), "head": None, "origin_main": None,
+                           "current": None, "error": None}
+
+    def git(*args: str) -> subprocess.CompletedProcess:
+        return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True,
+                              timeout=30)
+    try:
+        head = git("rev-parse", "--verify", "HEAD^{commit}")
+        origin = git("rev-parse", "--verify", "refs/remotes/origin/main^{commit}")
+        if head.returncode or origin.returncode:
+            out["error"] = (head.stderr or origin.stderr or "rev-parse failed").strip()[:300]
+            return out
+        out["head"], out["origin_main"] = head.stdout.strip(), origin.stdout.strip()
+        anc = git("merge-base", "--is-ancestor", out["origin_main"], out["head"])
+        if anc.returncode not in (0, 1):
+            out["error"] = (anc.stderr or "merge-base failed").strip()[:300]
+            return out
+        out["current"] = anc.returncode == 0
+        if not out["current"]:
+            missing = git("rev-list", "--format=%ct", "--no-commit-header",
+                          f"{out['head']}..{out['origin_main']}")
+            if missing.returncode:
+                out["current"] = None
+                out["error"] = (missing.stderr or "rev-list failed").strip()[:300]
+                return out
+            stamps = [int(x) for x in missing.stdout.split()]
+            out["behind"] = len(stamps)
+            age = (datetime.now(timezone.utc).timestamp() - min(stamps)) if stamps else 0.0
+            out["oldest_missing_age_s"] = round(age, 1)
+            out["current"] = age < grace_s
+            out["within_grace"] = out["current"]
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        out["error"] = f"{type(exc).__name__}: {exc}"[:300]
+    return out
+
+
 def ensure_current(ledger_path: str | Path, *, index_path: str | Path | None = None,
                    sync_module: Any = None, source_roots: Iterable[str | Path] = (),
                    source_memo_dir: str | Path | None = None, scoped_module: Any = None,
@@ -354,7 +454,10 @@ class Target:
     `model_sha256`, `recipe` and `focus_symbols` are optional (belief redesign §7.5). The sha
     identifies the weights even when the file name differs. `recipe` and `focus_symbols` only
     change the ORDER of target-tier lines (same recipe first, then claims on a focus symbol);
-    they never filter. A consumer that passes none of them is read exactly as before."""
+    they never filter. A consumer that passes none of them is read exactly as before.
+
+    `kernel_only` declares a target whose loop changes kernel code and cannot act on a serving
+    knob, so `knob_family`/knob-sweep rows rank last on it. Order only, never a filter."""
 
     model_file: str
     quant: str
@@ -369,6 +472,13 @@ class Target:
     knob_families: tuple[str, ...] = ()
     stack_regime: str = ""
     scope: str = "model"
+    build_sha: str = ""
+    build_surface: str = ""
+    kernel_only: bool = False
+    candidate_sha256: str = ""
+    op: str = ""
+    run_id: str = ""
+    task_id: str = ""
 
     @property
     def is_lineup(self) -> bool:
@@ -377,6 +487,12 @@ class Target:
     @property
     def key(self) -> tuple[str, ...]:
         """Identity of this target inside one answer (several roles may share one model)."""
+        if self.scope == "task":
+            return ("task", self.task_id)
+        if self.scope == "build":
+            return ("build", self.build_sha, self.build_surface)
+        if self.scope == "candidate":
+            return ("candidate", self.build_sha, self.candidate_sha256, self.op, self.run_id)
         if self.is_lineup:
             return ("lineup", self.stack_regime)
         return (self.model_file, self.backend, self.role)
@@ -386,9 +502,36 @@ class Target:
         """`model_file`, or `model_path` reduced to its basename. An incomplete target raises:
         it is not a wildcard. `device` defaults from the backend on this host. `recipe` is taken
         as given, else from an AutoKernel `surface` of the form `serving:<recipe>`."""
+        if raw.get("scope") == "task" or "task_id" in raw:
+            task_id = raw.get("task_id")
+            if (set(raw) != {"scope", "task_id"} or raw["scope"] != "task"
+                    or not isinstance(task_id, str) or not _TASK_ID_RE.fullmatch(task_id)):
+                raise ValueError("task target requires only an exact task_id")
+            return cls(model_file="", quant="", backend="", device="", scope="task", task_id=task_id)
         families = _target_families(raw)
         role = str(raw.get("role") or "").strip()
         regime = str(raw.get("stack_regime") or "").strip()
+        if str(raw.get("scope") or "").strip().lower() == "candidate" or "candidate_sha256" in raw:
+            head, candidate, op, run = (raw.get(key) for key in ("build_sha", "candidate_sha256", "op", "run_id"))
+            if (set(raw) != {"scope", "build_sha", "candidate_sha256", "op", "run_id"}
+                    or raw["scope"] != "candidate"
+                    or not isinstance(head, str) or not re.fullmatch(r"[0-9a-f]{40}", head)
+                    or not isinstance(candidate, str) or not _SHA256_RE.fullmatch(candidate)
+                    or not isinstance(op, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", op)
+                    or not isinstance(run, str)
+                    or not (re.fullmatch(r"ni-gpu-pool-(matmul|attention|elementwise)-[0-9]{8}-v[1-9][0-9]*", run)
+                               or (run == _LOADER_DIAG_RUN and op == _LOADER_DIAG_OP)
+                               or (op == _Q38P4_PARITY_OP and _Q38P4_PARITY_RUN.fullmatch(run)))):
+                raise ValueError("candidate target requires exact source commit, candidate digest, native operator and run id")
+            return cls(model_file="", quant="", backend="", device="", scope="candidate",
+                       build_sha=head, candidate_sha256=candidate, op=op, run_id=run)
+        if str(raw.get("scope") or "").strip().lower() == "build":
+            head = str(raw.get("build_sha") or "").strip().lower()
+            surface = str(raw.get("surface") or "").strip()
+            if not re.fullmatch(r"[0-9a-f]{40}", head) or surface not in ("autokernel-r18-symbols", "autokernel-r18-symbols-synthetic"):
+                raise ValueError("build target requires full source commit and R18 symbol surface")
+            return cls(model_file="", quant="", backend="", device="", scope="build",
+                       build_sha=head, build_surface=surface, label=str(raw.get("label") or ""))
         if str(raw.get("scope") or "").strip().lower() == "lineup":
             # The lineup target (belief redesign §12.3): AutoPilot's lineup-wide knobs, matched
             # only by stack_regime. No model, so no target/sibling/host tier can reach it.
@@ -427,15 +570,22 @@ class Target:
         symbols = tuple(sorted({str(s).strip() for s in focus if str(s).strip()}))
         return cls(context_tokens=depth, label=str(raw.get("label") or ""), model_sha256=sha,
                    recipe=recipe, focus_symbols=symbols, role=role, knob_families=families,
-                   stack_regime=regime, **values)
+                   stack_regime=regime, kernel_only=raw.get("kernel_only") is True, **values)
 
     def as_dict(self) -> dict[str, Any]:
+        if self.scope == "task":
+            return {"scope": "task", "task_id": self.task_id}
+        if self.scope == "build":
+            return {"scope": "build", "build_sha": self.build_sha, "surface": self.build_surface, "label": self.label}
+        if self.scope == "candidate":
+            return {"scope": "candidate", "build_sha": self.build_sha,
+                    "candidate_sha256": self.candidate_sha256, "op": self.op, "run_id": self.run_id}
         return {"model_file": self.model_file, "quant": self.quant, "backend": self.backend,
                 "device": self.device, "context_tokens": self.context_tokens,
                 "label": self.label, "model_sha256": self.model_sha256, "recipe": self.recipe,
                 "focus_symbols": list(self.focus_symbols), "role": self.role,
                 "knob_families": list(self.knob_families), "stack_regime": self.stack_regime,
-                "scope": self.scope}
+                "scope": self.scope, **({"kernel_only": True} if self.kernel_only else {})}
 
 
 def _target_families(raw: Mapping[str, Any]) -> tuple[str, ...]:
@@ -582,6 +732,22 @@ def lineup_matches(scope: Mapping[str, Any], target: Target) -> bool:
 
 
 def tier_of(scope: Mapping[str, Any], target: Target) -> str | None:
+    if target.scope == "task":
+        return None
+    if target.scope == "candidate":
+        exact = (isinstance(scope, Mapping)
+                 and set(scope) == {"build_sha", "candidate_sha256", "op", "run_id", "scope_basis"}
+                 and scope["scope_basis"] == "native"
+                 and bool(target.candidate_sha256) and bool(target.run_id)
+                 and (scope["build_sha"], scope["candidate_sha256"], scope["op"], scope["run_id"])
+                 == (target.build_sha, target.candidate_sha256, target.op, target.run_id))
+        return "target" if exact else None
+    if isinstance(scope, Mapping) and "candidate_sha256" in scope:
+        return None
+    if target.scope == "build":
+        return "target" if (isinstance(scope, Mapping) and scope.get("surface") == target.build_surface
+                            and scope.get("build_sha") == target.build_sha
+                            and not scope.get("model_file") and not scope.get("model_sha256")) else None
     if target.is_lineup:
         return "lineup" if lineup_matches(scope, target) else None
     if applicability_matches(scope, target):
@@ -782,9 +948,22 @@ def _table_scope(table: SourceScope) -> dict[str, Any]:
             "device": table.device}
 
 
-def _tier(scope: Mapping[str, Any], targets: list[Target]) -> tuple[str | None, list[Target]]:
+def _tier(scope: Mapping[str, Any], targets: list[Target],
+          consumer: str = "") -> tuple[str | None, list[Target]]:
     """The best tier this claim reaches for any target (target > sibling > host), and the
-    targets it reaches it for. A claim lands in exactly one tier."""
+    targets it reaches it for. A claim lands in exactly one tier. A scope that names a
+    `consumer` is a harness fact: it reaches the harness tier for that consumer and nothing
+    else (never a model tier, whatever else the scope says)."""
+    if "candidate_sha256" in scope:
+        if len(targets) == 1 and tier_of(scope, targets[0]) == "target":
+            return "target", targets
+        return None, []
+    if isinstance(scope, Mapping) and scope.get("consumer"):
+        if consumer and str(scope["consumer"]) == consumer:
+            hits = [target for target in targets if target.scope not in ("candidate", "task")]
+            if hits:
+                return "harness", hits
+        return None, []
     hits: dict[str, list[Target]] = {}
     for target in targets:
         tier = tier_of(scope, target)
@@ -882,12 +1061,55 @@ def _mark_stale_epochs(rows: list[dict[str, Any]]) -> None:
         row["stale_epoch"] = bool(row["epoch"]) and current[key][2] != row["epoch"]
 
 
+def _task_observation(consumer: str, task_id: str, source: Mapping[str, Any],
+                      provenance: Mapping[str, Any], evidence: Mapping[str, Any],
+                      claim_id: str) -> dict[str, Any] | None:
+    """Select existing native observations for an exact task without changing ledger scope."""
+    identity = _str(provenance.get("about"))
+    if (provenance.get("retrofit") is not False
+            or claim_id != f"clm_{identity}"
+            or source.get("source_id") != f"src_{identity}"
+            or evidence.get("source_id") != source.get("source_id")
+            or source.get("applicability") is not None
+            or evidence.get("protocol_id") != ""
+            or evidence.get("category") != "CANDIDATE"):
+        return None
+    if ((consumer, task_id) == (_KPF17_CONSUMER, _KPF17_TASK)
+            and source.get("source_kind") == "kv-prefix-fork-measurement"
+            and source.get("title") == _KPF17_METRIC
+            and provenance.get("method") == "vidya.adapters.kv_prefix_fork/v1"
+            and _KPF17_ID_RE.fullmatch(identity)
+            and _KPF17_LOCATOR_RE.fullmatch(_str(source.get("locator")))):
+        return {"mechanism_id": _KPF17_METRIC}
+    if ((consumer, task_id) == ("autokernel.nemo_fixture_range_join", "VB-NEMO-RANGE-JOIN-WIRE")
+            and source.get("source_kind") == "nemo-range-join"
+            and source.get("title") == evidence.get("metric") == "fixture_range_join_replay"
+            and provenance.get("method") == "vidya.adapters.nemo_range_join/v1"
+            and re.fullmatch(r"nemo-range-join:[0-9a-f]{64}", identity)
+            and re.fullmatch(r"/.+#sha256=[0-9a-f]{64}", _str(source.get("locator")))
+            and _str(source.get("locator")).endswith("#sha256=" + identity.rsplit(":", 1)[1])):
+        return {}
+    if (consumer, task_id) == _P5_TASK:
+        kind = _str(source.get("source_kind"))
+        route = _P5_TASK_SOURCES.get(kind)
+        if route is not None:
+            metric, method, test_pattern = route
+            locator = _P5_LOCATOR_RE.fullmatch(_str(source.get("locator")))
+            if (source.get("title") == evidence.get("metric") == metric
+                    and provenance.get("method") == method and identity.startswith(kind + ":")
+                    and _P5_OBSERVATION_ID_RE.fullmatch(identity.removeprefix(kind + ":"))
+                    and locator and test_pattern.fullmatch(locator["test"])):
+                return {}  # This adapter already carries its native observation fields.
+    return None
+
+
 def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of: str,
-            fold_result: Any = None) -> dict[str, Any]:
+            fold_result: Any = None, consumer: str = "") -> dict[str, Any]:
     """Every claim that applies to the targets, tiered and gated, before any cap. Usable rows
     (gate ALLOW, newest complete run per source) are `rows`; refused-but-decision-relevant ones
     are in `flagged`. Public so acceptance checks can count what the caps hide."""
     targets = list(targets)
+    task = targets[0] if len(targets) == 1 and targets[0].scope == "task" else None
     visible = visible_frames(frames, as_of)
     result = fold_result if fold_result is not None else fold(visible, as_of=as_of)
     policy = _policy()
@@ -924,7 +1146,22 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
         kind = str(source.get("source_kind", ""))
         scope_raw = source.get("applicability")
         table = SOURCE_SCOPES.get(kind)
-        if scope_raw:
+        evidence = support.get(raw_id) or {}
+        task_observation = _task_observation(consumer, task.task_id, source, source_prov[sid],
+                                             evidence, raw_id) if task else None
+        if task and task_observation is None:
+            continue
+        if (scope_raw is None and kind == _NPD1_SOURCE and consumer == _NPD1_CONSUMER
+                and source_prov[sid].get("method") == _NPD1_ADAPTER
+                and source.get("title") == evidence.get("metric") == _NPD1_METRIC
+                and evidence.get("metric_direction") == "lower_better"
+                and evidence.get("unit") == "ms/token" and evidence.get("reps") == 1
+                and evidence.get("protocol_id") == ""):
+            # Consumer routing only. The measurement frames stay unscoped.
+            scope_raw = {"consumer": _NPD1_CONSUMER}
+        if task:
+            scope = {}
+        elif scope_raw:
             if not isinstance(scope_raw, Mapping):
                 continue
             scope: Mapping[str, Any] = scope_raw
@@ -932,7 +1169,17 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
             scope = _table_scope(table)
         else:
             continue
-        tier, hits = _tier(scope, targets)
+        if kind == _LOADER_DIAG_KIND:
+            if ("candidate_sha256" not in scope
+                    or (scope.get("run_id"), scope.get("op")) != (_LOADER_DIAG_RUN, _LOADER_DIAG_OP)):
+                continue
+        elif kind == _Q38P4_PARITY_KIND:
+            if ("candidate_sha256" not in scope or scope.get("op") != _Q38P4_PARITY_OP
+                    or not _Q38P4_PARITY_RUN.fullmatch(str(scope.get("run_id", "")))):
+                continue
+        elif "candidate_sha256" in scope and kind != "gpu-pool-native":
+            continue
+        tier, hits = ("target", [task]) if task else _tier(scope, targets, consumer)
         if tier is None:
             continue
         matched_any = True
@@ -941,7 +1188,9 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
             continue
         seen.add(claim_id)
         locator = str(source.get("locator", ""))
-        if scope_raw:
+        if task:
+            run, key, depth = None, (locator,), None
+        elif scope_raw:
             run = scope_raw.get("run_id")
             run_keys = scope_raw.get("run_expected_keys")
             key = (locator.split("|", 1)[0],)
@@ -959,8 +1208,9 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                 expected[(kind, run)] = table.expected_keys
         verdict = evaluate(claim_id, result, policy)
         belief = result.beliefs.get(claim_id)
-        evidence = support.get(raw_id) or {}
         obs = read_observation(evidence)
+        if task_observation:
+            obs.update(task_observation)
         model_file = PurePath(str(scope.get("model_file") or "")).name if scope.get(
             "model_file") else ""
         pro = getattr(belief, "pro", None)
@@ -976,7 +1226,8 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                "reps": evidence.get("reps"),
                "text": str(claim.get("display_text", "")),
                "grade_reasons": reasons.get(raw_id, ()),
-               "targets": sorted({t.model_file for t in hits}),
+               "targets": sorted({_target_label(t) if t.scope in ("candidate", "task")
+                                  else t.model_file for t in hits}),
                "target_keys": sorted({t.key for t in hits}),
                "knob_family": ",".join(claim_families(scope)),
                "knobs": dict(scope["knobs"]) if isinstance(scope.get("knobs"), Mapping) else {},
@@ -988,11 +1239,14 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                "backend": str(scope.get("backend") or hits[0].backend).strip().lower(),
                "recipe": _str(scope.get("recipe")), "epoch": _str(scope.get("epoch")),
                "build_sha": _str(scope.get("build_sha")),
+               "candidate_sha256": _str(scope.get("candidate_sha256")),
+               "task_id": task.task_id if task else "",
                "np": np_value if isinstance(np_value, int) and not isinstance(np_value, bool)
                else None,
                "symbol": _str(scope.get("symbol")), "op": _str(scope.get("op")),
                "hit_recipes": sorted({t.recipe for t in hits if t.recipe}),
                "hit_focus": sorted({s for t in hits for s in t.focus_symbols}),
+               "hit_kernel_only": bool(hits) and all(t.kernel_only for t in hits),
                "stale_epoch": False, "earlier": [], "linked_claim_ids": [], **obs}
         row["retrofit"] = bool(obs["retrofit"] or source_prov.get(sid, {}).get("retrofit") is True)
         if not isinstance(row["reps"], int) or isinstance(row["reps"], bool):
@@ -1083,12 +1337,43 @@ _OUTCOME_GROUP = {"improved": 1, "regressed": 1, "refused_correctness": 2, "refu
                   "divergence": 2, "null": 3, "anchor": 4, "floor": 4}
 
 
+def _knob_row(row: Mapping[str, Any]) -> bool:
+    """Evidence about a serving knob rather than a kernel: a declared knob family, or a sweep
+    (`varied`) that names no mechanism."""
+    return bool(row.get("knob_family")) or (bool(row.get("varied")) and not row.get("mechanism_id"))
+
+
+def _route_keyed(row: Mapping[str, Any]) -> bool:
+    """A verified, current-epoch, no-outcome route-share value on one of the target's focus
+    symbols. The share metric names its route by a stem (`gdn_core_kernel_share_pp2048`) and
+    the profile by a symbol (`gated_delta_net_cuda`), so the stem matches a focus symbol
+    literally, or as the leading initials of its underscore-separated words."""
+    if row["tier"] != "target" or row["status"] != "verified" or row["stale_epoch"] \
+            or row["outcome"] or row["value"] is None:
+        return False
+    match = _ROUTE_SHARE_RE.match(row["metric"] or "")
+    if match is None:
+        return False
+    focus = row.get("hit_focus") or ()
+    if row["symbol"] and row["symbol"] in focus:
+        return True
+    stem = match["route"]
+    for symbol in focus:
+        name = symbol.rsplit("::", 1)[-1].lower()
+        initials = "".join(word[0] for word in name.split("_") if word)
+        if stem in name or (len(stem) >= 2 and initials.startswith(stem)):
+            return True
+    return False
+
+
 def _group(row: Mapping[str, Any]) -> int:
     """0 flagged · 1 current-epoch decisive (improved/regressed) · 2 correctness/scope refusals
     and divergences · 3 nulls · 4 anchors/floors · 5 claims with no outcome (pre-observation
-    frames) · 6 older epochs."""
+    frames) · 6 older epochs · 7 knob rows on a kernel-only target."""
     if row["status"] != "verified":
         return 0
+    if _knob_row(row) and row.get("hit_kernel_only"):
+        return 7
     if row["stale_epoch"]:
         return 6
     return _OUTCOME_GROUP.get(row["outcome"], 5)
@@ -1102,6 +1387,15 @@ def _rank_key(row: Mapping[str, Any]) -> tuple:
     grade = (-row["grade_rank"][0], -row["grade_rank"][1])
     inner = ((-row["recency"],) + grade) if group in (1, 4) else (grade + (-row["recency"],))
     return (group, flag_order, recipe_boost, focus_boost) + inner + (row["claim_id"],)
+
+
+def _harness_rank_key(row: Mapping[str, Any]) -> tuple:
+    """Harness rows tie on everything a verifier finding carries (no value, grade, mechanism),
+    so the claim id decided ties and a matrix's per-seat findings outranked the matrix's own
+    decided proposition. Among otherwise-equal rows the aggregate (fewest id segments, e.g.
+    `...:<run>:matrix` vs `...:<run>:<seat>:<check>`) ranks first."""
+    key = _rank_key(row)
+    return key[:-1] + (str(row["claim_id"]).count(":"), key[-1])
 
 
 def _mechanism_key(row: Mapping[str, Any]) -> tuple | None:
@@ -1175,6 +1469,10 @@ def _forced(unit: list[dict[str, Any]]) -> bool:
     return any(r["outcome"] == "floor" and r["status"] == "verified" for r in unit)
 
 
+def _reserved(unit: list[dict[str, Any]]) -> bool:
+    return all(_route_keyed(row) for row in unit)
+
+
 def _select(units: list[list[dict[str, Any]]], cap: int, *, force: bool,
             flagged_cap: int = FLAGGED_CAP) -> list[list[dict[str, Any]]]:
     chosen: set[int] = set()
@@ -1184,6 +1482,13 @@ def _select(units: list[list[dict[str, Any]]], cap: int, *, force: bool,
             if _forced(unit):
                 chosen.add(i)
                 count += len(unit)
+        reserved = 0
+        for i, unit in enumerate(units):
+            if i not in chosen and _reserved(unit) and reserved + len(unit) <= ROUTE_SHARE_SLOTS \
+                    and count + len(unit) <= cap:
+                chosen.add(i)
+                count += len(unit)
+                reserved += len(unit)
     per_bucket: dict[str, int] = {}
     for i, unit in enumerate(units):
         if i in chosen or count + len(unit) > cap:
@@ -1195,6 +1500,39 @@ def _select(units: list[list[dict[str, Any]]], cap: int, *, force: bool,
             per_bucket[status] = per_bucket.get(status, 0) + 1
         chosen.add(i)
         count += len(unit)
+    return [units[i] for i in sorted(chosen)]
+
+
+def _spread_target_observations(units: list[list[dict[str, Any]]],
+                                selected: list[list[dict[str, Any]]]) -> list[list[dict[str, Any]]]:
+    """Give a missing source a slot held by a repeat of an equally graded advisory source."""
+    def cohort(unit):
+        row = unit[0]
+        if (len(unit) != 1 or row["tier"] != "target" or row["status"] != "verified"
+                or row["grade"] != "Judged/Located" or row["protocol_id"] or row["value"] is None
+                or row["stale_epoch"] or _knob_row(row) or _forced(unit) or _reserved(unit)
+                or _group(row) == 2 or _rank_key(row)[2:4] != (1, 1)):
+            return None
+        return tuple(row["target_keys"])
+
+    selected_ids = {id(unit) for unit in selected}
+    comparable = [(i, unit, key) for i, unit in enumerate(units) if (key := cohort(unit))]
+    chosen = {i for i, unit in enumerate(units) if id(unit) in selected_ids}
+    incumbents = [(i, unit, key) for i, unit, key in comparable if i in chosen]
+    covered = Counter((key, unit[0]["source_kind"]) for _, unit, key in incumbents)
+    for i, unit, key in comparable:
+        source = (key, unit[0]["source_kind"])
+        if i in chosen or covered[source]:
+            continue
+        # `comparable` is in ordinary rank order. Trade the weakest duplicate first.
+        for j, incumbent, incumbent_key in reversed(incumbents):
+            incumbent_source = (incumbent_key, incumbent[0]["source_kind"])
+            if j in chosen and incumbent_key == key and covered[incumbent_source] > 1:
+                chosen.remove(j)
+                chosen.add(i)
+                covered[incumbent_source] -= 1
+                covered[source] += 1
+                break
     return [units[i] for i in sorted(chosen)]
 
 
@@ -1212,7 +1550,7 @@ def tried_index(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     best: dict[tuple, dict[str, Any]] = {}
     counts: dict[tuple, int] = {}
     for row in rows:
-        if row["tier"] in ("host", "lineup") or not row["mechanism_id"] or row["outcome"] in (
+        if row["tier"] in ("host", "harness", "lineup") or not row["mechanism_id"] or row["outcome"] in (
                 "anchor", "floor"):
             continue
         tier = "target" if row["tier"] in _MODEL_TIERS else row["tier"]
@@ -1266,8 +1604,10 @@ TIER_TITLES = {
                "(lineup-wide knobs)"),
     "sibling": ("### Usable, sibling tier -- measured on a sibling file of the same lineage "
                 "(other weights, quant or recipe); transfer unproven, never target evidence"),
-    "host": ("### Host tier -- host ceiling, not about this model; not evidence for a "
-             "proposal"),
+    "harness": ("### Loop-infrastructure facts (harness tier) -- tooling and source-dependency "
+                "context for this consumer; not evidence about any model or for a proposal"),
+    "host": ("### Device-scope claims (host tier) -- scoped by device only, no model: host "
+             "ceiling, not about this model; not evidence for a proposal"),
 }
 FLAG_TITLES = {
     "contested": ("### Contested -- the evidence disagrees or is under review; do not build on "
@@ -1310,6 +1650,10 @@ def _value_text(value: float | None, unit: str) -> str:
 
 
 def _where(row: Mapping[str, Any], tier: str) -> str:
+    if row.get("task_id"):
+        return f"task {row['task_id']}"
+    if row.get("candidate_sha256"):
+        return f"candidate {row['candidate_sha256'][:12]} / {row['op']}"
     extras = []
     if row["build_sha"]:
         extras.append(f"build {row['build_sha'][:8]}")
@@ -1330,7 +1674,11 @@ def _where(row: Mapping[str, Any], tier: str) -> str:
     if tier == "lineup":
         return f"lineup regime {row['stack_regime'][:12]}{tail}"
     if tier == "host":
-        return "host ceiling, not about this model"
+        return "device-scope: host ceiling, not about this model"
+    if tier == "harness":
+        if row["source_kind"] == _NPD1_SOURCE and row["metric"] == _NPD1_METRIC:
+            return "native serving diagnostic: lower TPOT is better; no model scope"
+        return "harness fact: loop infrastructure, not about any model"
     if tier == "sibling":
         recipe = f", recipe {row['recipe']}" if row["recipe"] else ""
         return (f"sibling: measured on {row['model_file'] or row['locator']}{recipe}; "
@@ -1350,8 +1698,9 @@ def _what(row: Mapping[str, Any]) -> str:
     """The value-bearing second line, or "" when the frame carries no value and no outcome."""
     outcome, unit = row["outcome"], row["unit"]
     value, anchor = row["value"], row["anchor_value"]
+    metric = row["metric"]
     if outcome in _WORD:
-        detail = []
+        detail = [f"metric {metric}"] if metric else []
         if value is not None:
             detail.append(_value_text(value, unit)
                           + (f" vs anchor {_value_text(anchor, unit)}" if anchor is not None
@@ -1372,20 +1721,25 @@ def _what(row: Mapping[str, Any]) -> str:
         return text
     if outcome in ("refused_correctness", "refused_scope"):
         gate = "correctness" if outcome == "refused_correctness" else "scope"
-        metric = f" ({row['metric']})" if row["metric"] and ":" in row["metric"] else ""
+        shown = f" ({metric})" if metric and ":" in metric else ""
         reason = f': "{_cap(row["outcome_reason"], REASON_CAP)}"' if row["outcome_reason"] else ""
-        return f"{_subject(row)}: REFUSED by the {gate} gate{metric}{reason}"
+        return f"{_subject(row)}: REFUSED by the {gate} gate{shown}{reason}"
+    # _subject() falls back to the metric when there is no mechanism or symbol: no second copy.
+    named = f"metric {metric}; " if metric and metric != _subject(row) else ""
     if outcome == "floor":
-        parts = [f"median {_value_text(value, unit)}" if value is not None else "",
+        parts = [f"metric {metric}" if metric else "",
+                 f"median {_value_text(value, unit)}" if value is not None else "",
                  f"floor {_pct(row['noise_floor_rel'], False)}"
                  if row["noise_floor_rel"] is not None else "",
                  _n_text(row, pairs_first=False)]
         return "serving floor: " + "; ".join(p for p in parts if p)
     if outcome == "anchor":
         return (f"{_subject(row)}: ANCHOR {_value_text(value, unit)} "
-                f"({_n_text(row, pairs_first=False)})").replace("  ", " ")
+                f"({named}{_n_text(row, pairs_first=False)})").replace("  ", " ")
     if value is not None:
-        return f"{_subject(row)}: {_value_text(value, unit)} ({_n_text(row, pairs_first=False)})"
+        limits = f". {_cap(row['outcome_reason'], REASON_CAP)}" if row["outcome_reason"] else ""
+        return (f"{_subject(row)}: {_value_text(value, unit)} "
+                f"({named}{_n_text(row, pairs_first=False)}){limits}")
     return ""
 
 
@@ -1396,6 +1750,8 @@ def _earlier_text(row: Mapping[str, Any]) -> str:
     bits = []
     for other in earlier[:EARLIER_CAP]:
         label = other["outcome"] or "recorded"
+        if other["metric"] and other["metric"] != row["metric"]:
+            label += f" [{other['metric']}]"     # the parent line names its own metric
         eff = f" {_pct(other['effect_rel'])}" if other["effect_rel"] is not None else (
             f" {_value_text(other['value'], other['unit'])}" if other["value"] is not None
             else "")
@@ -1421,12 +1777,14 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
     if what:
         lines.append(head)
         lines.append(f"  {what}{_earlier_text(row)}")
+        if (tier == "harness" or row.get("task_id")) and row["text"]:
+            lines.append(f"  {row['locator']}: {_cap(row['text'], CLAIM_TEXT_CAP)}")
         if tier in _MODEL_TIERS and row["statement"]:
             falsifier = (f"; falsifier: {_cap(row['falsifier'], STATEMENT_CAP // 2)}"
                          if row["falsifier"] else "")
             lines.append(f"  mechanism: {_cap(row['statement'], STATEMENT_CAP)}{falsifier}")
     else:
-        if first_of_source and tier != "host":
+        if first_of_source and tier not in ("host", "harness"):
             scope = SOURCE_SCOPES.get(row["source_kind"])
             run = f", run {row['run']}" if row["run"] else ""
             limits = f" Limits: {scope.limits}." if scope else ""
@@ -1437,7 +1795,9 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
             facts.insert(0, f"context {row['context_tokens']}")
         if row["revision"]:
             facts.append(row["revision"])
-        cap = CLAIM_TEXT_CAP if tier in _MODEL_TIERS + ("lineup",) else CONTEXT_TEXT_CAP
+        # A harness fact's text IS the decided proposition (no value/grade carries it), so it
+        # gets the full claim cap; the 220 context cap elided the verdict mid-sentence.
+        cap = CLAIM_TEXT_CAP if tier in _MODEL_TIERS + ("lineup", "harness") else CONTEXT_TEXT_CAP
         lines.append(f"{head}: {row['locator']} ({'; '.join(facts)}): {_cap(row['text'], cap)}")
         if tier in _MODEL_TIERS and row["grade_reasons"]:
             lines.append(f"  grade notes: {_cap(row['grade_reasons'][0], REASON_CAP)}")
@@ -1447,11 +1807,18 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
 
 
 def _target_label(target: Target) -> str:
+    if target.scope in ("candidate", "task"):
+        return ":".join(target.key)
     return f"lineup:{target.stack_regime or 'unrecorded'}" if target.is_lineup \
         else target.model_file
 
 
 def _target_name(target: Target) -> str:
+    if target.scope == "task":
+        return f"task {target.task_id}"
+    if target.scope == "candidate":
+        return (f"source {target.build_sha} / candidate {target.candidate_sha256} / "
+                f"{target.op} / {target.run_id}")
     role = f", role {target.role}" if target.role else ""
     return f"{target.model_file} ({target.backend}{role})"
 
@@ -1470,7 +1837,7 @@ def banner_text(targets: list[Target], empty: list[Target]) -> str | None:
         regimes = ", ".join(t.stack_regime or "regime unrecorded" for t in lineups)
         parts.append(f"No beliefs at this regime ({regimes}).")
     text = " ".join(parts)
-    if len(empty) == len(targets):
+    if len(empty) == len(targets) and any(t.scope not in ("candidate", "task") for t in targets):
         text += " The lines below are sibling/host context only."
     return text
 
@@ -1498,37 +1865,50 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
     has_target = any(row["tier"] == "target" for row in list(rows) + flagged_rows)
     for tier in TIERS:
         pool = [row for row in list(rows) + flagged_rows if row["tier"] == tier]
-        ranked, folded = _fold_mechanisms(sorted(pool, key=_rank_key))
+        ranked, folded = _fold_mechanisms(sorted(
+            pool, key=_harness_rank_key if tier == "harness" else _rank_key))
         info["folded"].extend(folded)
         tier_cap = (KNOB_CAP_WITH_TARGET if tier == "knob" and has_target
                     else TIER_CAPS[tier])
         cap = max(0, min(tier_cap, remaining,
                          model_budget if tier in _MODEL_TIERS else TIER_CAPS[tier]))
-        selected[tier] = _select(_units(ranked, whole), cap, force=(tier in _MODEL_TIERS))
+        units = _units(ranked, whole)
+        selected[tier] = _select(units, cap, force=(tier in _MODEL_TIERS))
+        if tier == "target":
+            selected[tier] = _spread_target_observations(units, selected[tier])
         used = sum(len(unit) for unit in selected[tier])
         remaining -= used
         if tier in _MODEL_TIERS:
             model_budget -= used
     entries = list((tried or [])[:INDEX_CAP])
     names = "; ".join(
-        (f"lineup / regime {t.stack_regime or 'unrecorded'}" if t.is_lineup else
+        (_target_name(t) if t.scope in ("candidate", "task") else
+         f"lineup / regime {t.stack_regime or 'unrecorded'}" if t.is_lineup else
          f"{t.model_file} / {t.quant or 'quant unstated'} / {t.backend} / {t.device}")
         + (f" / context {t.context_tokens}" if t.context_tokens else "")
         + (f" / recipe {t.recipe}" if t.recipe else "")
         + (f" / role {t.role}" if t.role else "")
         + (f" / knob families {','.join(t.knob_families)}" if t.knob_families else "")
         for t in targets)
-    head = [SECTION_HEADER] + ([banner] if banner else []) + [
-        f"Target(s): {names}.",
+    has_candidate = any(t.scope == "candidate" for t in targets)
+    has_task = any(t.scope == "task" for t in targets)
+    model_context = any(t.scope not in ("candidate", "task") for t in targets)
+    applicability = (
         "Claims are tiered by declared applicability: knob (the target's own weights and a "
         "knob family it can change), target (the target's own weights), lineup (this stack "
-        "regime), "
-        "sibling (same declared lineage, other weights or recipe; transfer unproven), host "
-        "(device-only scope; a ceiling, not about this model). Grade is the folded "
+        "regime), sibling (same declared lineage, other weights or recipe; transfer unproven), "
+        "then a separate device-scope group (host tier: device-only scope, no model; a ceiling, "
+        "not about this model, never target evidence). " if model_context else "")
+    if has_candidate:
+        applicability += "Candidate claims apply to the exact captured source, artifacts, shim and operator. "
+    if has_task:
+        applicability += "Task observations apply only to the requested task and the scope stated in each claim. "
+    head = [SECTION_HEADER] + ([banner] if banner else []) + [
+        f"Target(s): {names}.",
+        f"{applicability}Grade is the folded "
         f"claim_tuple.grade() Q/T at ledger frontier {frontier}, as of {as_of}."]
     tail = [f"Optional reply field {reply_field}: a list of the knob-, target-, lineup- or "
-            "sibling-tier claim ids above that the proposal depends on; omit it when it depends "
-            "on none. Host-tier "
+            "sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) "
             "lines and contested, withdrawn or refuted claims are not evidence for a proposal."]
 
     def compose() -> str:
@@ -1546,7 +1926,10 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
             usable = [row for row in chosen[tier] if row["status"] == "verified"]
             if not usable:
                 continue
-            body.append(TIER_TITLES[tier])
+            title = TIER_TITLES[tier]
+            if tier == "target" and (has_candidate or has_task):
+                title = "### Usable, target tier -- claims scoped to the requested target"
+            body.append(title)
             described: set[tuple[str, str | None]] = set()
             stale_noted = False
             for row in usable:
@@ -1565,8 +1948,11 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
                     _index_text(entry))
             for (tier, model_file), texts in groups.items():
                 label = model_label(model_file) or model_file
-                prefix = (f"Tried on {label}:" if tier in _MODEL_TIERS
-                          else f"Tried on {label} (sibling; transfer unproven):")
+                if has_task:
+                    prefix = f"Tried for task {targets[0].task_id}:"
+                else:
+                    prefix = (f"Tried on {label}:" if tier in _MODEL_TIERS
+                              else f"Tried on {label} (sibling; transfer unproven):")
                 line = prefix
                 for text in texts:
                     if len(line) + len(text) + 2 > 220 and line != prefix:
@@ -1582,7 +1968,8 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
                  f"{shown_counts['target']} of {total['target']} target, "
                  f"{shown_counts['lineup']} of {total['lineup']} lineup, "
                  f"{shown_counts['sibling']} of {total['sibling']} sibling, "
-                 f"{shown_counts['host']} of {total['host']} host claim(s) "
+                 f"{shown_counts['host']} of {total['host']} device-scope (host) claim(s), "
+                 f"{shown_counts['harness']} of {total['harness']} harness claim(s) "
                  f"({flags['contested']} contested, {flags['withdrawn']} withdrawn, "
                  f"{flags['refuted']} refuted); tried index {len(entries)} of "
                  f"{len(tried or [])} mechanism(s); bounded at {max_claims} claims / "
@@ -1592,6 +1979,15 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         return "\n".join(head + body + [count] + tail)
 
     def trim_once() -> bool:
+        # The harness tier keeps its best unit per source kind until only FORCED model-tier
+        # lines are left:
+        # it is consumer-scoped and reaches no other reader, so trimming it first made the
+        # actor-wire matrix finding unreachable whenever the target tier filled the byte budget
+        # (VB-AK-WIRE-PLANNER-TIER offline canary 2026-11-07: harness 35 rows, 0 shown).
+        harness_sources = {u[0]["source_kind"] for u in selected["harness"] if u}
+        if len(selected["harness"]) > max(1, len(harness_sources)):
+            selected["harness"].pop()           # extras; units are round-robin by source kind
+            return True
         for tier in ("host", "sibling"):
             if selected[tier]:
                 selected[tier].pop()
@@ -1605,9 +2001,12 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         for tier in ("target", "knob"):
             units = selected[tier]
             for i in range(len(units) - 1, -1, -1):
-                if not _forced(units[i]):
+                if not _forced(units[i]) and not _reserved(units[i]):
                     units.pop(i)
                     return True
+        if selected["harness"]:
+            selected["harness"].pop()
+            return True
         for tier in ("target", "knob"):
             if selected[tier]:
                 selected[tier].pop()
@@ -1650,16 +2049,21 @@ def _claim_view(row: Mapping[str, Any]) -> dict[str, Any]:
             "knob_family": row["knob_family"], "role": row["role"],
             "varied": list(row["varied"]), "knobs": dict(row["knobs"]),
             "stack_regime": row["stack_regime"],
-            "not_evidence": row["tier"] == "host"}
+            **({k: row[k] for k in ("build_sha", "candidate_sha256", "op")} if row["candidate_sha256"] else {}),
+            **({"task_id": row["task_id"]} if row.get("task_id") else {}),
+            "not_evidence": row["tier"] in NOT_EVIDENCE_TIERS}
 
 
 def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of: str,
                     max_claims: int = DEFAULT_MAX_CLAIMS, max_bytes: int = DEFAULT_MAX_BYTES,
                     fold_result: Any = None, reply_field: str = "relies_on_claims",
-                    ) -> dict[str, Any]:
+                    consumer: str = "") -> dict[str, Any]:
     """The evidence half of a `ready` answer, from frames already verified."""
     targets = list(targets)
-    col = collect(frames, targets, as_of=as_of, fold_result=fold_result)
+    if len(targets) > 1 and any(target.scope == "task" for target in targets):
+        return _evidence_empty("inapplicable_target", as_of=as_of, targets=targets,
+                               error="task target must be the only target")
+    col = collect(frames, targets, as_of=as_of, fold_result=fold_result, consumer=consumer)
     if not col["matched_any"]:
         return _evidence_empty("no_applicable_claims", as_of=as_of, frontier=col["frontier"],
                                targets=targets)
@@ -1693,7 +2097,7 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
                      presented_runs.items(), key=lambda item: (item[0][0], str(item[0][1])))] \
         + col["run_rows"]
     flagged_ids = {b: [r["claim_id"] for r in rows_b] for b, rows_b in shown_flagged.items()}
-    host_ids = [row["claim_id"] for row in shown if row["tier"] == "host"]
+    host_ids = [row["claim_id"] for row in shown if row["tier"] in NOT_EVIDENCE_TIERS]
     in_section = {(e["tier"], e["model_file"], e["mechanism_id"])
                   for e in tried[:info["index_shown"]]}
     in_section |= {(r["tier"], r["model_file"], r["mechanism_id"]) for r in info["selected"]
@@ -1706,7 +2110,7 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
         "status": status, "reasons": sorted({o["reason"] for o in omitted}),
         "frontier": col["frontier"], "as_of": as_of,
         # Reliance-eligible ids: usable target- and sibling-tier claims shown in the section.
-        "claim_ids": [cid for row in shown if row["tier"] != "host"
+        "claim_ids": [cid for row in shown if row["tier"] not in NOT_EVIDENCE_TIERS
                       for cid in [row["claim_id"], *row["linked_claim_ids"]]],
         "contested_claim_ids": flagged_ids["contested"],
         "withdrawn_claim_ids": flagged_ids["withdrawn"],
@@ -1842,14 +2246,56 @@ def global_flags(result: Any) -> dict[str, list[str]]:
 
 
 def write_known_good(path: Path, consumer: str, state: Mapping[str, Any],
-                     flags: Mapping[str, Any], *, frontier: int | None, as_of: str) -> None:
+                     flags: Mapping[str, Any], *, frontier: int | None, as_of: str,
+                     nonempty_targets: Iterable[str] | None = None) -> None:
     body = {"schema": KNOWN_GOOD_SCHEMA, "consumer": consumer, "as_of": as_of,
             "frontier": frontier, "ledger_state": dict(state),
             "ledger_state_digest": state_digest(state), **flags}
+    if nonempty_targets is not None:
+        body["nonempty_targets"] = sorted(set(nonempty_targets))
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + f".tmp{os.getpid()}")
     tmp.write_text(json.dumps(body, sort_keys=True))
     os.replace(tmp, path)
+
+
+def _tier_emptied(previous: Mapping[str, Any] | None, targets: Iterable[Target],
+                  evidence: Mapping[str, Any]) -> list[str]:
+    """Targets the previous ready read served with a non-empty model/lineup tier that this read
+    returns empty (LOOP-SAFETY C2). Silent-empty input -- a lost store, a dropped scope -- looks
+    exactly like "no applicable claims", so a regression from usable claims to none is alarmed.
+    A previous snapshot without `nonempty_targets` (pre-C2) compares as nothing."""
+    before = set((previous or {}).get("nonempty_targets") or ())
+    empty = set(evidence.get("empty_targets") or ())
+    return sorted(_target_label(t) for t in targets
+                  if _target_label(t) in before and _target_label(t) in empty)
+
+
+def tier_emptied_alarm(consumer: str, emptied: list[str], *,
+                       alarm_state: str | Path | None = None,
+                       alarm_config: str | Path | None = None,
+                       api: Any = None) -> dict[str, Any]:
+    """Raise `belief-target-tier-emptied.<consumer>` (warning) when `emptied` is non-empty, clear
+    it otherwise. Never raises and never refuses: the read is still a plan WITH belief context."""
+    key = f"{TIER_EMPTIED_KEY}.{consumer}"
+    out: dict[str, Any] = {"key": key, "action": None}
+    try:
+        api = api or _alarm_api()
+        cfg = api.load_config(Path(alarm_config)) if alarm_config else None
+        state = Path(alarm_state) if alarm_state else None
+        with contextlib.redirect_stdout(sys.stderr):
+            if emptied:
+                res = api.raise_alarm(
+                    key, "warning",
+                    f"{consumer}: belief read returned NO model/lineup-tier claims for "
+                    f"{', '.join(emptied)}, which had usable claims at the previous ready read",
+                    {"consumer": consumer, "targets": emptied}, cfg=cfg, state_file=state)
+            else:
+                res = api.clear_alarm(key, cfg=cfg, state_file=state)
+        out["action"] = res.get("action")
+    except Exception as exc:  # noqa: BLE001
+        out["error"] = f"{type(exc).__name__}: {exc}"[:300]
+    return out
 
 
 def read_known_good(path: Path) -> dict[str, Any] | None:
@@ -1930,12 +2376,21 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
             known_good: str | Path | None = None, reply_field: str = "relies_on_claims",
             source_roots: Iterable[str | Path] = (), source_memo_dir: str | Path | None = None,
             sync_module: Any = None, scoped_module: Any = None,
-            alarm_api: Any = None) -> dict[str, Any]:
+            alarm_api: Any = None, check_reader_checkout: bool = False,
+            reader_root: str | Path | None = None) -> dict[str, Any]:
     """The one call before every planning step. Never raises.
 
     `ready`: ledger current + verified; `ledger_state` and `evidence` set (evidence may be empty
     when no claim applies -- that is still a plan WITH belief context). `refused`: the consumer
-    must not plan; the alarm has been raised."""
+    must not plan; the alarm has been raised.
+
+    `as_of` (D-A1, 2026-10-25 canary): an EXPLICIT `as_of` is a replay cutoff and is kept. When
+    omitted, the cutoff is taken AFTER `ensure_current`, so frames the producer-time scoped ingest
+    (`source_roots`) just appended are visible to the very plan that ingested them.
+
+    `check_reader_checkout` (C1 reader pin; the CLI turns it on unless `--allow-stale-reader`):
+    refuse `reader_stale` when the ROOT checkout the reader runs from lacks origin/main commits."""
+    explicit_as_of = as_of
     as_of = as_of or datetime.now(timezone.utc).isoformat()
     if isinstance(targets, Mapping):
         targets = [targets]
@@ -1955,21 +2410,42 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
                                        source_roots=source_roots,
                                        source_memo_dir=source_memo_dir,
                                        scoped_module=scoped_module)
+        if check_reader_checkout:
+            checkout = reader_checkout(reader_root)
+            base["reader_checkout"] = checkout
+            if checkout.get("current") is not True:
+                raise LedgerNotCurrent("reader_stale", (
+                    f"ROOT checkout {checkout['root']} HEAD {checkout.get('head')} does not "
+                    f"contain origin/main {checkout.get('origin_main')}"
+                    + (f" ({checkout['behind']} commits behind)" if checkout.get("behind")
+                       else "") + (f": {checkout['error']}" if checkout.get("error") else "")
+                    + "; read from a current checkout (e.g. the hub view "
+                      "/mnt/raid0/llm/views/epyc-root-main) or pass --allow-stale-reader "
+                      "for a pinned historical replay"))
+        if explicit_as_of is None:
+            as_of = datetime.now(timezone.utc).isoformat()
+            base["as_of"] = as_of
         result = fold(visible_frames(frames, as_of), as_of=as_of)
-        if parsed:
+        if target_errors and any(target.scope == "task" for target in parsed):
+            evidence = _evidence_empty("inapplicable_target", as_of=as_of, targets=parsed,
+                                       error="task target must be the only target")
+        elif parsed:
             evidence = evaluate_frames(frames, parsed, as_of=as_of, max_claims=max_claims,
                                        max_bytes=max_bytes, fold_result=result,
-                                       reply_field=reply_field)
+                                       reply_field=reply_field, consumer=consumer)
         else:
             evidence = _evidence_empty("inapplicable_target", as_of=as_of,
                                        error="; ".join(target_errors) or "no target")
         if target_errors and parsed:
             evidence["target_errors"] = target_errors
         flags = global_flags(result)
+        tier_emptied = _tier_emptied(read_known_good(kg_path), parsed, evidence)
+        nonempty_now = sorted({_target_label(t) for t in parsed}
+                              - set(evidence.get("empty_targets") or ()))
         kg_error = None
         try:
             write_known_good(kg_path, consumer, state, flags, frontier=result.frontier,
-                             as_of=as_of)
+                             as_of=as_of, nonempty_targets=nonempty_now)
         except OSError as exc:  # the plan still has belief context; degraded mode will not
             kg_error = f"{type(exc).__name__}: {exc}"[:300]
     except LedgerNotCurrent as exc:
@@ -1989,7 +2465,10 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
                 "last_known_good": _known_good_summary(kg_path)}
     cleared = clear_refusal_alarm(consumer, alarm_state=alarm_state, alarm_config=alarm_config,
                                   api=alarm_api)
+    tier_alarm = tier_emptied_alarm(consumer, tier_emptied, alarm_state=alarm_state,
+                                    alarm_config=alarm_config, api=alarm_api)
     return {**base, "status": "ready", "reason": None, "detail": "",
+            "tier_emptied": tier_emptied, "tier_emptied_alarm": tier_alarm,
             "targets": [t.as_dict() for t in parsed], "ledger_state": state,
             "ledger_state_digest": state_digest(state), "evidence": evidence,
             "banner": evidence.get("banner"),
@@ -2044,6 +2523,9 @@ def main(argv: list[str] | None = None) -> int:
                         "receipts are ingested before planning (repeatable)")
     p.add_argument("--source-memo-dir", default=None,
                    help="refusal memo dir for --source-root (default <ledger dir>/loop-memo)")
+    p.add_argument("--allow-stale-reader", action="store_true",
+                   help="skip the reader pin (C1) for a pinned historical replay; the answer "
+                        "records reader_checkout_check=false")
     p.add_argument("--reply-field", default="relies_on_claims",
                    help="the consumer's reply field for declared reliance (AutoPilot: vidya_claim_ids)")
     sub.add_parser("read-counter", add_help=False,
@@ -2096,7 +2578,9 @@ def main(argv: list[str] | None = None) -> int:
                      alarm_state=args.alarm_state, alarm_config=args.alarm_config,
                      max_claims=args.max_claims, max_bytes=args.max_bytes,
                      known_good=args.known_good, reply_field=args.reply_field,
-                     source_roots=args.source_root, source_memo_dir=args.source_memo_dir)
+                     source_roots=args.source_root, source_memo_dir=args.source_memo_dir,
+                     check_reader_checkout=not args.allow_stale_reader)
+    answer["reader_checkout_check"] = not args.allow_stale_reader
     print(json.dumps(answer, sort_keys=True, default=str))
     return EXIT_READY if answer["status"] == "ready" else EXIT_REFUSED
 

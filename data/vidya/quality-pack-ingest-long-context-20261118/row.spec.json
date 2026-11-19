@@ -1,0 +1,23 @@
+{
+  "id": "handoff-vidya-quality-pack-ingest-long-context-20261118",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118/row-launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "ram_gib": 48,
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118/out/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 2400,
+  "min_window_s": 3300,
+  "priority_rank": 38,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-INGEST-LONG-CONTEXT",
+  "dryrun_native_result": true,
+  "first_progress_s": 100,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118/smoke_predicate.py",
+  "decision_rule": "Can the isolated Qwen3.8-27B hybrid GDN CPU no-spec recipe produce four fixed native captures per arm against v10 and C13? Stop after eight raw responses with zero draft, consistent token counts, content and finish, intact prefill, and verified cleanup. Stop on STOP, deadline, or first identity, startup, response or cleanup failure. The four-CPU publisher smoke captures one v10 small-model no-spec completion. The isolated 16384-token one-slot split KV recipe does not qualify the shared MI210 393216-token four-slot unified q8_0 KV DFlash2 host. Retain the prior frontdoor JSON mismatch.",
+  "verdict_by": "agent",
+  "keep": ["out/**", "requests/**", "*.py", "*.json", "*.md", "*.sh", "SOURCE.sha256"]
+}

@@ -1,0 +1,190 @@
+CAFE-4 modes HIP build row
+=========================
+
+Row `df2-cafe4-modes-hip-build-20261119` passed publish's four-CPU smoke
+on 2026-11-19 (cores 116–119, compiled-object predicate, STOP rc75).
+Receipt: `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-hip-build-20261119/PASS.json`; SHA-256 `7bfb12aadb4db5070aacbe9e708b732d08421db64438538e7c4659cbe0177400`.
+The full HIP executable is not built by this smoke. Native GPU execution,
+rollback, fault sensitivity and performance remain untested by this row.
+
+The CPU-scheduled build enables HIP for gfx90a in a fresh run build directory
+under `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119`.
+It uses the unchanged detached experimental checkout
+`/mnt/raid0/llm/tmp/df2/cafe4-modes-source`, pinned v10 commit
+`ffc1bac82eeca6f9099e1ccd9ba49703c460a115` plus diagnostic patch
+`351a431702613a5cad8d165c6959dbcde12a928963b8833bfa4668abb743e4dd`.
+Production and the existing published CPU row are unchanged.
+
+The [input manifest](inputs.json) binds the generated candidate, modes header,
+bridge, supervisor and this driver. Source generation and provenance are in
+[the CPU row](../cafe4-build/README.md). The full-build validator requires
+compiled MTP load/rollback/rewind and verify-batch/fault markers, HIP enabled
+and gfx90a in CMakeCache, a hash-bound libggml-hip with HIP registration symbol
+and gfx90a image string, and all required llama/ggml libraries resolving locally.
+The child environment retains FILLER_ID. These are build-content checks;
+GPU residency must be measured during a separate native row.
+
+Stop on a validated full receipt, or on source/input mismatch, build/linkage
+failure, STOP or deadline. Result:
+`/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/RESULT.json`.
+Next: file each CPU/HIP full-build result when it lands, then schedule native
+CPU/GPU rollback and explicit rc1 injected-fault controls. CAFE-4 stays open.
+
+Full HIP build verdict (2026-11-19)
+----------------------------------
+
+`df2-cafe4-modes-hip-build-20261119` ended rc1 at 04:14:59Z;
+**FAIL** under its build-only rule, filed by `file_result.py`.
+No `RESULT.json` was produced. The native build log records Clang
+`-Wenum-constexpr-conversion` errors in `ggml/src/ggml-cpu/iqk/iqk_mul_mat.cpp`
+(starting at line 320): enum constants exceed the declared `ggml_type` range.
+The HIP shared-library target completed, but the full executable did not.
+This is a compiler/build failure and supplies no native rollback/fault verdict.
+
+Existing evidence (referenced in place):
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/runs/build-mhtk29uz/build.log`,
+  SHA-256 `a0477b0abb3a16642b1da131fb9c7eb35e242f1b1a05992798c1990d508c064e`.
+- `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-hip-build-20261119.ended`,
+  SHA-256 `bbe95a8b8f66841b05f1eb06992ca30d188390adddb5706d6ff831caacd8ba3a`.
+- Filing receipt: `/mnt/raid0/llm/tmp/compute-flags/filing-done/df2-cafe4-modes-hip-build-20261119.verdict.json`.
+
+Next: repair the experimental HIP build compiler configuration, preserving IQK
+and production source, then publish a replacement build row. After qualification,
+schedule CPU/GPU rollback and exact rc1 injected-fault controls. Parent CAFE-4
+remains open. [no-belief: build failure only; no native measurement]
+
+R2 compiler compatibility repair (2026-11-19)
+--------------------------------------------
+
+Published replacement `df2-cafe4-modes-hip-build-r2-20261119`.
+The publisher queued its four-CPU smoke for the keeper; no PASS or full-build
+verdict is claimed at this boundary. The existing CPU result was already filed
+and pushed before this resume and has not been re-filed.
+
+The R2 driver uses Clang's `-Wno-enum-constexpr-conversion` in the experimental
+C++ configuration to permit the existing IQK extended enum constants. This is
+a build compatibility setting, not a kernel source change or numerical fix.
+IQK stays compiled and the full-build validator additionally requires its
+`iqk_convert_repack` symbol in the hash-bound CPU library. Production source
+and the exact diagnostic patch are unchanged.
+
+The smoke now syntax-checks the actual failing `iqk_mul_mat.cpp` with ROCm
+Clang: it must first reproduce `enum-constexpr-conversion` without the flag,
+then pass with the flag. Both logs are hash-bound into the smoke record. It
+also compiles the modes candidate with the same Clang and compatibility flag
+and checks all six compiled option/control markers. Full-build validation
+retains HIP/gfx90a content and local-linkage requirements.
+
+R2 runtime directory: `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119`.
+Only small runtime inputs were prepared there; the existing detached source
+checkout is reused. The original failed run remains referenced above.
+Next: consume the queued R2 smoke result; repair a failure or file the full
+HIP build verdict after a PASS and scheduled completion. Native CPU/GPU
+rollback and exact rc1 fault controls remain in CAFE-4.
+
+R2 smoke subsequently PASSed on cores 116–119 at 04:44:08Z, clean STOP rc75,
+including the unfixed/fixed IQK regression and Clang modes object. Receipt
+`/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-hip-build-r2-20261119/PASS.json`; SHA-256 `be8b840486700e1056881439b1f78492749a6ec54681aacb99789247e7874c32`.
+This supersedes the queued-smoke checkpoint above; full-build and native verdicts
+remain separate.
+
+R2 full-build verdict (2026-11-19)
+----------------------------------
+
+`df2-cafe4-modes-hip-build-r2-20261119`: **FAIL** under its published
+build-only rule; scheduled rc1 at 04:47:51Z, no `RESULT.json`.
+The executable reached 100% build completion; all six modes/control markers
+and local llama/ggml linkage are present. The validator requires
+`iqk_convert_repack` in `nm -D`, but that symbol is not exported (other IQK
+implementation symbols are). It also requires `ggml_backend_hip_reg`, whereas
+this HIP library exports `ggml_backend_cuda_reg` and contains `gfx90a`.
+These incompatible symbol checks prevent qualification; they do not establish
+a missing kernel implementation. Next repair: use actual compiled IQK and
+HIP registration exports, with regression coverage for both checks, then
+publish replacement qualification before GPU native controls. Production stays
+frozen. No native rollback, fault, residency or performance verdict.
+
+Existing evidence, referenced in place:
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/runs/build-u1p_cu6z/build.log`, SHA-256 `95540dc26a66124daa50758d9063c36d3bfe7c2f0178ffdced1f3c46cdb2a447`.
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/runs/build-u1p_cu6z/linkage.log`, SHA-256 `a31777c88fb0e6b46dcf11f90cef0d4c763a6f89b031dc7b4127604481f91a54`.
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/runs/build-u1p_cu6z/build/bin/libggml-cpu.so.0.16.0`, SHA-256 `85be7fe5eece79b06cd4bf663dacebaae06aab1024f5d31bd460b2ab187e25ef`.
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/runs/build-u1p_cu6z/build/bin/libggml-hip.so.0.16.0`, SHA-256 `a62bb2bd2bafe9e2dc21d2499ba03987cc5accb547f1c0b11a9b11334d9b7836`.
+- `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-hip-build-r2-20261119.ended`, SHA-256 `ce9047e174ba7d0ede9b061ef8e73a1d1a17ca81e01a70e51a0bfec824a9f632`.
+
+Filing record: `/mnt/raid0/llm/tmp/compute-flags/filing-done/df2-cafe4-modes-hip-build-r2-20261119.verdict.json`.
+[no-belief: build qualification failure only; no native measurement]
+
+R3 export-validator repair (2026-11-19)
+--------------------------------------
+
+The driver now requires exact defined text exports `iqk_mul_mat` and
+`ggml_iqk_try_mul_mat` in the hash-bound CPU library, and
+`ggml_backend_cuda_reg` in the hash-bound HIP library. `nm -D --defined-only
+--format=posix` excludes undefined imports; exact symbol names exclude substring
+false positives. Existing local linkage, artifact hashes, Clang compatibility,
+HIP configuration and gfx90a image checks remain required. The digest reader
+now closes its input stream. No kernel or numerical threshold changes.
+
+Eight regression tests PASS via
+`python3 -m unittest discover -s scripts/diagnostics/cafe4-hip-build -p test_driver.py -v`.
+Tests compile small ELF fixtures and exercise the full receipt validator with
+controlled input bindings: actual export names pass; undefined IQK imports,
+similarly named HIP exports, the old incorrect HIP name, either unbound
+library, missing gfx90a and nonlocal linkage fail. These fixtures establish
+validator behavior only, not full-build or GPU qualification.
+
+Driver SHA-256 `4df295a2f19413d2abe2cfc4cef9df48ebcdb0f24559fba056710f02c186b2aa`.
+Regression source SHA-256 `502b47a1466d78d27ec3fe4da0d4b1ce290a649cfa040c7c4af62fa98425b15e`.
+
+The checked-in spec, launcher and input bindings now describe R3
+`df2-cafe4-modes-hip-build-r3-20261119`; it is **not published**.
+Next: materialize its small runtime inputs under
+`/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r3-20261119` from the retained R2
+candidate/header/supervisor (verify existing bindings), then run
+`publish_row.py` on this spec and consume its smoke result. Keep the original
+CPU numerical threshold while diagnosing cold-prefix/reference geometry.
+[no-belief: validator code and model-free regression tests only]
+
+R3 publication (2026-11-19)
+---------------------------
+
+`df2-cafe4-modes-hip-build-r3-20261119` is now **PUBLISHED** after publisher's four-CPU
+smoke **PASS** on cores 140–143 at 06:42:20Z, clean STOP rc75. This
+supersedes the unpublished checkpoint above. Five small runtime inputs were
+hash-verified before publication; no model weights or builds were copied.
+Smoke requires the original/fixed Clang IQK syntax checks and all six compiled
+modes/control markers. The full HIP build and its exact-export validator run
+only under a scheduled grant.
+
+Receipt: `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-hip-build-r3-20261119/PASS.json`;
+SHA-256 `4dbdb2bafe74cdcd8baeef33e2b19b5cd44bba8fbdb6f94c83c02059dd676bc9`.
+Result path: `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r3-20261119/RESULT.json`.
+
+Next: file the full-build verdict when it lands; independently diagnose the
+CPU cold-prefix/reference geometry without changing its numerical threshold.
+No native GPU residency, rollback, fault or performance verdict is supplied
+by the smoke. Parent CAFE-4 remains open.
+[no-belief: compiled-object smoke and publication only]
+
+R3 scheduled build verdict (2026-11-19)
+---------------------------------------
+
+`df2-cafe4-modes-hip-build-r3-20261119` **PASS**, scheduled rc0,
+07:13:06–07:14:28Z. Existing `driver.validate` accepted pinned v10/patch,
+exact original source/header inputs and all artifact hashes, six compiled
+modes markers, six local llama/ggml libraries, the Clang IQK compatibility
+configuration, GGML_HIP ON/gfx90a binding and compiled gfx90a marker.
+Exact defined text exports passed: CPU `iqk_mul_mat`, `ggml_iqk_try_mul_mat`;
+HIP `ggml_backend_cuda_reg`, each from its hash-bound library.
+Executable SHA-256 `40b70b435c551b256ba2b845a595d1364d5c7ca5afa2b897ad4da2755c9ef84c`.
+Existing result `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r3-20261119/RESULT.json`,
+SHA-256 `4ae18818ec58b8fe5886a684deabeefb51ac4087b447d7f952cd397e099938b2`.
+End record `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-hip-build-r3-20261119.ended`,
+SHA-256 `2a69c378119937f63b924f78998d9464f18b9e0b1daa521db965865275c97c7e`.
+`file_result.py` recorded PASS and wrote FILED. This qualifies only original
+candidate SHA-256 `71ce1fb3e92098dfb586b06000a0ed4dee1e836c7c889774cb754dcde8f1b597`;
+corrected cold-reference source is covered by the separate R4 row.
+No native model, GPU residency, rollback, fault sensitivity or performance
+verdict follows. Native error gate **0.743863867** remains unchanged and
+unevaluated; CAFE-4 stays open.
+[no-belief: build qualification only; no native numerical measurement]

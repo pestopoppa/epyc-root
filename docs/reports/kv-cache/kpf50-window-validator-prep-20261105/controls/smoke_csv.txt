@@ -1,0 +1,2 @@
+KernelName,BeginNs,EndNs
+kpf50_clock_witness,30,60

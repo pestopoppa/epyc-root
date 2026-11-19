@@ -1,0 +1,29 @@
+{
+  "id": "kpf50-child-evidence-main-impact-20261104",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/impact6/launch.sh",
+  "lane": "cpu",
+  "regions": "0-3",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/impact6/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At exact source HEAD 3796423904552652f4b3614d5a6b1497e84266e2, capture native GitNexus upstream impact for main bound to docs/reports/kv-cache/kpf50-child-evidence-20261104/child_evidence.py. Stop immediately with OWNER_WARNING on HIGH/CRITICAL. Stop on source drift, ambiguous/missing target, parser failure, stale/missing exact-source graph, or partial/truncated impact. The 4-CPU smoke only verifies pinned source identity and committed source references; it is not impact clearance. Full indexing and the native impact query happen only under the granted full row. Source-only analysis; no edits, inference, or edit-safety claim.",
+  "estimate_s": 3600,
+  "ram_gib": 16,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-50.CHILD-EVIDENCE-OUTPUT",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/impact6",
+  "keep": [
+    "out/**",
+    "source/.gitnexus/**",
+    "job.py",
+    "launch.sh",
+    "spec.json",
+    "README.md"
+  ],
+  "lineage": "kpf50-child-evidence-main-impact",
+  "notes": "Prepared only; do not publish or index during smoke. Create and use detached source worktree at source/ pinned to the exact commit before any full grant. The 4-CPU smoke emits numeric committed-reference progress only; it is not impact clearance. Full indexing and native impact query run against that detached checkout. Preserve analyzer/query stdout, stderr, exit codes, and GitNexus coverage metadata, including skipped/oversized file records; do not clear skipped-file coverage. Source-only analysis; no source edits, inference, or edit-safety claim.",
+  "unit_key": "committed_main_reference_lines"
+}

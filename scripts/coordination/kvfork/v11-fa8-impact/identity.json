@@ -1,0 +1,15 @@
+{
+  "head": "5026470c6c5882042aa543ae54fe5410357b41ae",
+  "source_worktree": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-source-20261104",
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/test_source_integrity.py": "e958c360f995830d611f47a8e993fa7a9d09865713b5dac1ebf0c846ed508a12",
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/job.py": "b57bb80761bdafc55220b4be16965c90079659b64eb74cf6d9318337f8490ed2",
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/launch.sh": "a44b9d6e65d890f7f49540df806f226cd1062cfbc1ebb92473d43f570d23aebd",
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/spec.json": "834a188668020c1ab80aa1f1c15f8fd5a25fbf5de7e5fb5fe34b690b91f2be0d",
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/README.md": "0b85a1d8a4690b65bb15548398b977b959c719bbdd88db8a5e49c1e4fb01abe7",
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-source-20261104/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-source-20261104/ggml/src/ggml-cuda/fattn-mma-f16.cuh": "ca71142306b427fead04a1e708daad53f43ab3cd426587c23dee2be316855af1"
+  }
+}

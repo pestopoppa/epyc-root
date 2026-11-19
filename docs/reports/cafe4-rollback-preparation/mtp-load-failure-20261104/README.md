@@ -1,0 +1,9 @@
+# CAFE-4 MTP lifecycle smoke failure
+
+The uncorrected lifecycle diagnostic smoke `cafe4-v10-mtp-lifecycle-native-20261104` failed on 2026-11-04 before its first progress; the row was not published. The native log shows the model loader skipped the NextN `eh_proj`, `enorm`, and `hnorm` tensors, then the first MTP context hit the `qwen35.cpp` assertion `MTP block missing nextn.eh_proj`. The launcher finished rc1 after the proof wrapper refused the missing lifecycle marker. This is a failed smoke, not an MTP, rollback or fault verdict.
+
+The verified source-bound build receipt, native log, smoke failure/launcher evidence, model preflight and model download ledger are retained here. The model was Qwen3.5-2B Q4_K_M; the SHA-256 in the preflight matches the download ledger. Frozen v10 `qwen35.cpp` selects `TENSOR_SKIP` for MTP tensors when `load_mtp` is false, and `common/common.cpp` enables that flag for draft-mtp. The original lifecycle candidate used the default model parameters without enabling it. The original rollback candidate used the same default.
+
+Separate corrected lifecycle and rollback candidates set `mp.load_mtp = true` before loading; `test_mtp_load_enabled.py` checks both and rejects missing, false and commented-out assignments. The check is source-level, not a native model-load verdict. Corrected builds require their `MTP_LOAD_ENABLED` / `CAFE4_MTP_LOAD_ENABLED` markers in compiled artifacts; the actual model-load and other native controls remain pending.
+
+The exact original preflight is retained in `native-model-preflight.tar.gz`; `model-preflight-metadata.json` names its filesystem fields and binds the original record hash. This representation preserves the ns timestamp precisely under the current metadata-scanning contract. A tested narrow scanner proposal remains outside the commit because changing hooks requires D9 operator acknowledgment; no guard was bypassed.

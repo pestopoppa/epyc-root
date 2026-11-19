@@ -1,0 +1,13 @@
+{
+  "schema": "kernel_build_input.v1",
+  "name": "llguidance-v1.0.1-d795912",
+  "purpose": "Offline, pinned build inputs for -DLLAMA_LLGUIDANCE=ON champion builds (V11-122)",
+  "llguidance": {"repo": "https://github.com/guidance-ai/llguidance", "commit": "d795912fedc7d393de740177ea9ea761e7905774", "tag": "v1.0.1"},
+  "src": {"path": "src", "contents": "git archive of the commit + cargo vendor (313 crates, Cargo.lock --locked) + .cargo/config.toml redirecting crates-io to vendor/",
+          "tar_sha256": "2fcf26b938384ef5a0a6051bb9fdcff49d881b48191b4b27aa77a074459fbc1f"},
+  "rust": {"path": "rust-1.99.1", "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)", "target": "x86_64-unknown-linux-gnu", "origin": "rustup stable toolchain, copied standalone (no rustup needed)",
+           "tar_sha256": "a014d2fb436d66ebf1f719ee0a0f93345d188016221dab4d524441dd88c0a420"},
+  "hash_recipe": "tar --sort=name --owner=0 --group=0 --numeric-owner --mtime=@0 -cf - -C <this dir> <path> | sha256sum",
+  "build_use": "cmake -DLLAMA_LLGUIDANCE=ON -DLLAMA_LLGUIDANCE_SOURCE_DIR=<this>/src, PATH=<this>/rust-1.99.1/bin first, empty CARGO_HOME; cargo runs --offline --locked",
+  "created": "2026-11-05", "owner": "operator-adhoc-takeover-20261105", "immutable": true
+}

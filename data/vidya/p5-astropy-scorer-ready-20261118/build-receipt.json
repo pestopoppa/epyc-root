@@ -1,0 +1,23 @@
+{
+  "schema": "epyc.p5.image-build-capture.v1",
+  "status": "COMPLETE",
+  "id": "vb-p5-astropy-image-rebuild-20261118",
+  "mode": "official",
+  "started_utc": "2026-11-18T19:54:56.572239+00:00",
+  "base_image_id": "sha256:9b1cabf7bcd83a28469f67e3852d8e2207e90d45aa71f436bb7e600bdee8bae2",
+  "base_ref": "swebench/sweb.eval.x86_64.astropy_1776_astropy-12907@sha256:7485c1e3c8861efd0c6a4a78b952857592e541031039000d25e9481f045dc4a3",
+  "dockerfile_sha256": "2066d6a5800a1010ed1949ff89b39e2774389a345c01460730ae5f20f631d2ff",
+  "context_sha256": "4becb58802aaa44d792030e83090dede6f97251c0bb692428d76bf643360063e",
+  "launcher_sha256": "ffca012e3f7dadad343db568dfa9c0a4a0ad0ac7ae37cc301c4ccc19351b57c3",
+  "source_manifest_sha256": "52a4537b140e0f440690d68a23750205e17dfe9afaceb2d93c6a13c8b1cc491a",
+  "grant_sha256": "3cbedaa283657b50497008ce5454d730080dc47930e35a2ef0a638655dbc2560",
+  "grant_start_epoch": 1795031580.0,
+  "deadline_epoch": 1795032270.0,
+  "actual_cpus": "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23",
+  "build_cpus": "0,1,2,3",
+  "image_id": "sha256:3dcf849904aa1395cff121684a80332a134cd4b34d806514f97c082bdb83b337",
+  "build_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-astropy-scorer-r1-20261118/official/build-vj_kqts8/build.log",
+  "build_log_sha256": "1e0e1d02f4ca5653571b6587a92a4ce157718474d8f27730f130b6f42819b3da",
+  "runner_rc": 0,
+  "completion_utc": "2026-11-18T19:55:46.005380+00:00"
+}

@@ -1,0 +1,44 @@
+[region-lock] acquiring regions [] as role='build' (timeout_s=2.0) …
+[region-lock] held sub-quarter cores {q3: [88, 89, 90, 91]}
+E......F.
+======================================================================
+ERROR: test_accepts_two_ordered_native_tuples_through_shared_grade (__main__.AttentionRestTest.test_accepts_two_ordered_native_tuples_through_shared_grade)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/test_run_attention_rest.py", line 91, in test_accepts_two_ordered_native_tuples_through_shared_grade
+    frames = runner.capture.emit(self.receipt, as_of=runner.capture.now())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/scripts/vidya/adapters/gpu_pool_native.py", line 227, in emit
+    for frame in to_frames(claim, as_of=as_of, adapter_id=ADAPTER_ID, authority=AUTHORITY)]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/scripts/vidya/claim_tuple.py", line 857, in to_frames
+    from frames import make_frame  # local import: keeps this module importable without the ledger
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'frames'
+
+======================================================================
+FAIL: test_refuses_second_run_selection_drift_at_write (__main__.AttentionRestTest.test_refuses_second_run_selection_drift_at_write)
+----------------------------------------------------------------------
+claim_tuple.ProjectionError: log argv does not bind native invocation
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/test_run_attention_rest.py", line 139, in test_refuses_second_run_selection_drift_at_write
+    with self.assertRaisesRegex(ValueError, "native FLASH_ATTN_EXT case outside the original selection"):
+AssertionError: "native FLASH_ATTN_EXT case outside the original selection" does not match "log argv does not bind native invocation"
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.938s
+
+FAILED (failures=1, errors=1)
+[region-lock] acquiring regions [] as role='build' (timeout_s=2.0) …
+[region-lock] held sub-quarter cores {q3: [88, 89, 90, 91]}
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 1.216s
+
+OK
+WARN task_lint vidya-belief-substrate-program.md:746: untestable prose prerequisite: 'after both terminal invocations and strict rederivation; stop-on-futility on STOP, deadline or invalid custody; gate-cla'
+DECISION-RULE prose; verdict_by agent: owner handoff-vidya-belief-substrate files the verdict by hand after the run
+Launcher and publisher preflight passed

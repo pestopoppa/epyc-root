@@ -1,0 +1,2 @@
+{"as_of":"2026-11-18T17:35:57.387810+00:00","consumer":"coordination.fm4","nonempty_target":false,"reason":null,"schema":"epyc.vidya.read_record.v1","status":"ready","target_key":"unknown","tier_counts":{"harness":1,"host":0,"knob":0,"lineup":0,"sibling":0,"target":0},"usable_count":0}
+{"as_of":"2026-11-18T17:35:57.395949+00:00","consumer":"autokernel.planner","nonempty_target":false,"reason":null,"schema":"epyc.vidya.read_record.v1","status":"ready","target_key":"unknown","tier_counts":{"harness":0,"host":0,"knob":0,"lineup":0,"sibling":0,"target":0},"usable_count":0}

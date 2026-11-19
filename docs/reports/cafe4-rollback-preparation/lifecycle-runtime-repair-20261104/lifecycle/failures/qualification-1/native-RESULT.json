@@ -1,0 +1,55 @@
+{
+  "accepted": 0,
+  "affinity": [
+    72,
+    73,
+    74,
+    75
+  ],
+  "attempt": "d3ed8313ac3c413cbf86e10020be0f69",
+  "child_rc": -6,
+  "child_reaped": true,
+  "cutoff": null,
+  "draft_width": 0,
+  "ended_utc": "2026-11-04T07:31:55.110521+00:00",
+  "expected_libraries": [
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libggml.so.0.16.0",
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libllama-common.so.0.0.10303",
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libllama.so.0.0.10303"
+  ],
+  "inputs_sha256": "5b479495a8ffc0f6fe94584b0e7902116ff95b2dda82e81bf291cf6e484f18ab",
+  "limitations": [
+    "fixed one-prompt lifecycle prerequisite",
+    "return code 2 is expected explicit unimplemented rollback/fault, not parent PASS",
+    "no rollback, fault sensitivity, parity or performance verdict"
+  ],
+  "loaded_libraries": {
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libggml-base.so.0.16.0": "7e0030e08742b474e311db6c19ca3422ffd41d96ba91ec93eea7c209f33ae800",
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libggml-cpu.so.0.16.0": "5ad5afa4a0b7678b380a3008579a778e341c0bc68d06ab6f54758253dfae5d16",
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libggml.so.0.16.0": "88e2ea8c8d7af9858a00fd63c67f841d63602bade07f473d906108110e3be80b",
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libllama-common.so.0.0.10303": "e0d2378a04bd17d8877e874219c1e6eb07482af861d624a2fcbb65085d0917b7",
+    "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/bin/libllama.so.0.0.10303": "7431a09e0d824ebc25e62c7b883d4856581d8f9b6742edec9491c3034ffacac9"
+  },
+  "mode": "qualification",
+  "model": {
+    "hash_mode": "reuse prior content-verified receipt with unchanged full stat; no new model hash",
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "stat": {
+      "ctime_ns": 1782411254270412235,
+      "dev": 2431,
+      "ino": 96242023,
+      "mtime_ns": 1782411254270412235,
+      "size": 37801097504
+    }
+  },
+  "pid": 997002,
+  "raw_log_sha256": "8db271d92ee5e528aebf0520efa442e338acf817b734ef4a0ea2287635d650ca",
+  "run": "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/runs/d3ed8313ac3c413cbf86e10020be0f69",
+  "schema": "cafe4.lifecycle.result.v1",
+  "scope": "lifecycle only; rollback/fault UNKNOWN",
+  "started_utc": "2026-11-04T07:31:52.363357+00:00",
+  "status": "UNKNOWN"
+}

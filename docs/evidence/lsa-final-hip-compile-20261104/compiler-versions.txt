@@ -1,0 +1,18 @@
+cmake version 3.31.6
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+gcc-15 (Ubuntu 15.2.0-4ubuntu4) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+g++-15 (Ubuntu 15.2.0-4ubuntu4) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+AMD clang version 18.0.0git (https://github.com/RadeonOpenCompute/llvm-project roc-6.2.0 24292 26466ce804ac523b398608f17388eb6d605a3f09)
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /opt/rocm/lib/llvm/bin
+Configuration file: /opt/rocm/lib/llvm/bin/clang++.cfg

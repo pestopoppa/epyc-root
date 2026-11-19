@@ -1,6 +1,6 @@
 # KV prefix fork: the radix lesson, vLLM copy-vs-share by path, and the junction-checkpoint lesson
 
-**Task**: KPF-04 in [`handoffs/active/kv-prefix-fork-and-paged-attention.md`](../../handoffs/active/kv-prefix-fork-and-paged-attention.md).
+**Task**: KPF-04 in [`handoffs/active/kv-cache-program.md`](../../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention).
 **Status**: staging text for `wiki/kv-cache.md`. KPF-04 says the wiki compile happens at the first wiki sweep after KPF-18 closes, and wiki compilation waits for an operator-invoked `/wrap-up`, so this page holds the compiled content under `docs/reference/` until then. The sweep lifts it into the wiki and adds the KPF-18 result in the last section.
 **Confidence**: every vLLM statement is **external** (read from vLLM source on disk at the commits named, one reader plus an independent second reader per wave, nothing run on our hardware). The radix history is verified from our own tree and the wiki.
 

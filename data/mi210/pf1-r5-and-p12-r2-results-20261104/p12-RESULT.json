@@ -1,0 +1,34 @@
+{
+ "schema": "p12.e5stageb.result.v1",
+ "status": "INCOMPLETE",
+ "kernel_store": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt",
+ "cells": [
+  {
+   "cell": "qwen36_q8_0-C1-np1-a7full",
+   "harness_rc": 1,
+   "wall_s": 5,
+   "placement_threshold": 40,
+   "placement_rcs": {},
+   "placement_failure": "placement not sampled: server exited at T=5s",
+   "request_intervals": 0,
+   "successful_slots_samples": 0,
+   "busy_samples_overlapping_requests": 0,
+   "ports_with_busy_overlap": [],
+   "busy_proof": "FAIL_MISSING_OVERLAP",
+   "first_busy_overlap_utc": null,
+   "clock": "time.perf_counter; full GET interval contained in successful same-cell same-port request",
+   "aborted": null,
+   "cache_reset_proof": "FAIL_MISSING_COLD_CACHE_WITNESS",
+   "cache_reset": {},
+   "aggregate_decode_tps": null,
+   "decision_grade_harness": null,
+   "placement_proof": "FAIL_NOT_SAMPLED",
+   "status": "INCOMPLETE_EVIDENCE"
+  }
+ ],
+ "planned": 3,
+ "scope": "SCOUT_ONLY_NON_GATING",
+ "host_health_warning_override": true,
+ "decision_grade_claim": false,
+ "note": "descriptive scout only; host-health warning waived; never decision-grade"
+}

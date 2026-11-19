@@ -1,0 +1,30 @@
+test_first_transport_failure_preserves_unknown_and_prevents_later_calls (test_protocol.ThinkingProbeTests.test_first_transport_failure_preserves_unknown_and_prevents_later_calls) ... ok
+test_fixed_prompt_with_only_registered_differences (test_protocol.ThinkingProbeTests.test_fixed_prompt_with_only_registered_differences) ... ok
+test_headroom_profile_changes_only_request_cap_and_isolates_row (test_protocol.ThinkingProbeTests.test_headroom_profile_changes_only_request_cap_and_isolates_row) ... ERROR
+test_length_finish_is_captured_for_descriptive_comparison (test_protocol.ThinkingProbeTests.test_length_finish_is_captured_for_descriptive_comparison) ... ok
+test_smoke_predicate_requires_fresh_unmodified_native_pair (test_protocol.ThinkingProbeTests.test_smoke_predicate_requires_fresh_unmodified_native_pair) ... ok
+test_terminal_distinguishes_omitted_and_empty_reasoning (test_protocol.ThinkingProbeTests.test_terminal_distinguishes_omitted_and_empty_reasoning) ... ok
+test_terminal_rejects_missing_end_and_excess_completion (test_protocol.ThinkingProbeTests.test_terminal_rejects_missing_end_and_excess_completion) ... ok
+
+======================================================================
+ERROR: test_headroom_profile_changes_only_request_cap_and_isolates_row (test_protocol.ThinkingProbeTests.test_headroom_profile_changes_only_request_cap_and_isolates_row)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/reader/scripts/experiments/thinking-budget-semantics/test_protocol.py", line 64, in test_headroom_profile_changes_only_request_cap_and_isolates_row
+    files = prepare.profile_files(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/reader/scripts/experiments/thinking-budget-semantics/prepare.py", line 130, in profile_files
+    launcher = (HERE / "launcher.sh").read_text()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1029, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/reader/scripts/experiments/thinking-budget-semantics/launcher.sh'
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.007s
+
+FAILED (errors=1)

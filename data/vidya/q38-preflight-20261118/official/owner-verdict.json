@@ -1,0 +1,14 @@
+{
+  "row": "vb-q38-preflight-planner-20261118",
+  "verdict": "pass",
+  "rc": 0,
+  "values": {
+    "control_count": 2,
+    "baseline_visible": 0,
+    "candidate_visible": 16,
+    "native_q38_acceptance_count": 0,
+    "refusal_count": 0
+  },
+  "result_sha256": "fa670b15f3f79038a6ef38539142669d020c47341c6cdd173ba013f09e681ec7",
+  "scope": "Original official synthetic runner/preflight/shared-planner software control only. No native Q38 or live Research adoption. Initial publisher failure retained separately; successful official source not relabeled."
+}

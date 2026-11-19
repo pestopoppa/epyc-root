@@ -1,0 +1,60 @@
+{
+  "schema": "epyc.measurement.protocol_amendment.v1",
+  "decision": "CREATE-PROTOCOL-P-SERVE-1",
+  "gate_id": "RATIFY-P-SERVE-1-20261119",
+  "operator_decision": "ratify P-SERVE-1 (kernel-champion serving A/B instrument) so the serving floor, serving gate and headline cite a section-2 protocol instead of being observations",
+  "ratified_at": "2026-11-19T08:36:11Z",
+  "applied_at": "2026-11-19T08:36:11Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "protocol_id": "P-SERVE-1",
+  "annex": "K",
+  "annex_path": "measurement/protocols/kernel-research.md",
+  "amendment_class": "new protocol (append to the owning annex; no new annex)",
+  "registry_status": "✅ 2026-11-19",
+  "protocol_summary": {
+    "scope": "kernel/build/runtime-config effect on served decode throughput under the registered production recipe; fresh llama-server launch per sample; instrument_class=serving; unit = process; distinct from P-SERVE-SEL-1 (Annex Q)",
+    "primary_metric": "aggregate decode tok/s = sum over np slots of predicted_per_second (higher-better); effect = median(candidate)/median(anchor) - 1",
+    "recipe": "recipe_hash, launch argv, resolved-recipe build digests, paired ABBA order (matched_process_v2, 1-64 pairs), np/slots, frozen request digest",
+    "residency": "R23-60: sampled across the whole launch; proven needs the window to contain the request phase and >= 1 GiB VRAM; refuted raises ServingNotResident; unsampled is unproven (recorded, not refused)",
+    "floor": "unit process; matched floor n in 24-256 with a descriptive interval; legacy v1 floor n not enforced (listed in the enforcement state)",
+    "headline": "independent process launches, >= 14 per arm (28 total) at sd 2.793%, MDE 3.0%, alpha .05 two-sided, power .80",
+    "gate": "unit mismatch refuses; decisive = |effect| >= floor; PROMOTE only for a decisive, positive, non-regressing effect"
+  },
+  "provenance": "AutoKernel box RATIFY-MEAS-2 (left out of RATIFY-MEAS-1, 2026-09-08); bundle prepared by an agent from epyc-inference-research main a794f5b54",
+  "not_granted": "no measurement, compute window, threshold change, code change or re-verdict of an earlier serving number",
+  "patch": {
+    "path": "artifacts/operator/p-serve-1-20261119.patch",
+    "sha256": "a63ca5e4e30a03cba1f209ceee94ec1895301916dbb4de7c79f86c4fc17dd73b"
+  },
+  "staged_text": {
+    "annex": {
+      "path": "artifacts/operator/staged/p-serve-1-20261119.md",
+      "sha256": "e48cfbb5c6420d153cb1c81a6235475fa5b4ac095a0c7662dec3729f22a4d364"
+    },
+    "measurement_md_snippets": {
+      "path": "artifacts/operator/staged/p-serve-1-20261119.measurement-md.md",
+      "sha256": "9210c1a7765970b0dea1df02f1d466b80117b07a6c5dfe48066a3209047b7ad9"
+    }
+  },
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "bd9f2762be78557a14fa6097f748476b3f6cb3eb155aaa888116abf51ddb02a8",
+      "sha256_after": "92199cbbfa3500da8a41cd6803fe7ba99165365f96b4a5b15183a16a2f580152"
+    },
+    "measurement/protocols/kernel-research.md": {
+      "sha256_before": "c086e4ee9f7bffd3e25f6f88636a780ca0aa1827589bc115a5ddafe749559315",
+      "sha256_after": "c5bd00d760bb70e1f300930268913b0cb002c6d05fe3712937ae320d5175dc4e"
+    }
+  },
+  "tracking": {
+    "autokernel_box": "RATIFY-MEAS-2",
+    "parent": "RATIFY-MEAS-1",
+    "decision_package": "artifacts/operator/p-serve-1-decision-20261119.md"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_p_serve_1_20261119.receipt.json",
+  "applied_by": {
+    "path": "scripts/operator/ratify_p_serve_1_20261119.sh",
+    "sha256": "7b0d107b277a961ac21a87995bf224d68f59f347c7b9dc5d40cd5f1a23c459b0"
+  }
+}

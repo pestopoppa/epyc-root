@@ -1,0 +1,132 @@
+{
+  "schema": "epyc.vidya.ingest_slice_filing.v1",
+  "row": "handoff-vidya-quality-pack-ingest-long-context-20261118",
+  "rc": 0,
+  "verdict": "pass",
+  "scope": "isolated native input capture only; no parity or deployed equivalence",
+  "response_count": 8,
+  "comparisons": [
+    {
+      "id": "ingest-short-summary",
+      "content_equal": false,
+      "tokens_equal": false,
+      "completion_tokens": [
+        38,
+        39
+      ],
+      "prompt_tokens": [
+        218,
+        218
+      ],
+      "finish": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "ingest-early-lookup",
+      "content_equal": true,
+      "tokens_equal": true,
+      "completion_tokens": [
+        4,
+        4
+      ],
+      "prompt_tokens": [
+        4767,
+        4767
+      ],
+      "finish": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "ingest-recurrent-state",
+      "content_equal": true,
+      "tokens_equal": true,
+      "completion_tokens": [
+        21,
+        21
+      ],
+      "prompt_tokens": [
+        4892,
+        4892
+      ],
+      "finish": [
+        "stop",
+        "stop"
+      ]
+    },
+    {
+      "id": "ingest-document-reconciliation",
+      "content_equal": false,
+      "tokens_equal": false,
+      "completion_tokens": [
+        34,
+        36
+      ],
+      "prompt_tokens": [
+        5439,
+        5439
+      ],
+      "finish": [
+        "stop",
+        "stop"
+      ]
+    }
+  ],
+  "broad_pack_status": "incomplete",
+  "prior_frontdoor_json_mismatch": true,
+  "promotion_authorized": false,
+  "quality_transfer_authorized": false,
+  "cleanup": {
+    "production": {
+      "dead": true,
+      "exit_status": 0,
+      "pid": 3254491,
+      "port_closed": true
+    },
+    "candidate": {
+      "dead": true,
+      "exit_status": 0,
+      "pid": 3354375,
+      "port_closed": true
+    }
+  },
+  "files": {
+    "RESULT.json.original-bytes.json": "47502b080d7542eb09fbdbf81e823e5349ce2184376a9fea1608ee9b1201641f",
+    "native/banked-capture.json.original-bytes.json": "e3f0de2e07e704b3e47558d094add8f1ab9e5afda171d18f3bcbd1966927d544",
+    "native/banked-capture.sha256": "c08eca1d2adfa9f87d80de79f9baa91b27cb73d2c26ccad2747ffc8c996f914e",
+    "native/candidate-capture.json.original-bytes.json": "8d76cebaaa720c65bb128e3fbe49c00e5ae140a2c02c5ba10357aac52685f783",
+    "native/candidate/cleanup.json": "0bbefca0eb0a7ce36219f6a074f1ee6f0b31af0810a53f8c76f8ff5a0c470282",
+    "native/candidate/ingest-document-reconciliation.request.json": "2bf817b432f9459498a37e627cfacca4034e95dec62721de15d630724e202afb",
+    "native/candidate/ingest-document-reconciliation.response.json": "833d7b27d83ed7a9541d7aaf42ebd2451976b0aca28d217d78d9caada60598ad",
+    "native/candidate/ingest-early-lookup.request.json": "18c0e2688033889dbd8871a1e09417b645793dbfb29c7a341538469c7b05e688",
+    "native/candidate/ingest-early-lookup.response.json": "32e26d414fb5f4465e8e978b8b471faac80e3e37f5a0cfd56d269e383f69ceba",
+    "native/candidate/ingest-recurrent-state.request.json": "6dc2db51370d8e175ebd521e302d9b53771049e7924c878442c03d794f291f12",
+    "native/candidate/ingest-recurrent-state.response.json": "a11c2b8add6309051733145fab40716c2fdb289e6b0eeeaeaa7ff8e2e1b4cdcd",
+    "native/candidate/ingest-short-summary.request.json": "7812c70b1c22f747a6a678f45b1cb654b1501c77d12094a24680e8dc6389b273",
+    "native/candidate/ingest-short-summary.response.json": "06002489f76bbfb0e5021ce749664c9efda4479fe1a729a6100b524f7f0a5efa",
+    "native/candidate/server.json": "881d4f24844713587f22058419686cdf27cba2e9b15db62d6ba9581acc71dd00",
+    "native/candidate/server.log": "3865f43cba02dee8f58a9a58fd98dd917ab53b922b8731943ffad57274d8c351",
+    "native/production/cleanup.json": "f34ae23ab31c6976f550d6d51e134e3258188a151f76674c98a7b9c2862fb018",
+    "native/production/ingest-document-reconciliation.request.json": "2bf817b432f9459498a37e627cfacca4034e95dec62721de15d630724e202afb",
+    "native/production/ingest-document-reconciliation.response.json": "837c93fd5c15e932fdac7f0425482021099d9de63e4eea882e5f22ed9a3c488b",
+    "native/production/ingest-early-lookup.request.json": "18c0e2688033889dbd8871a1e09417b645793dbfb29c7a341538469c7b05e688",
+    "native/production/ingest-early-lookup.response.json": "8e79054089d9628e8b1a04a0682995aa32dc690898d5a1b59621459bb954596c",
+    "native/production/ingest-recurrent-state.request.json": "6dc2db51370d8e175ebd521e302d9b53771049e7924c878442c03d794f291f12",
+    "native/production/ingest-recurrent-state.response.json": "1e48217039550a1ab684cdd399ce8f967796c35333843a3896fc2e58c5db8ebe",
+    "native/production/ingest-short-summary.request.json": "7812c70b1c22f747a6a678f45b1cb654b1501c77d12094a24680e8dc6389b273",
+    "native/production/ingest-short-summary.response.json": "765b5374b69f45446f70af12eb4e82050bd56cd9cf63f505573924f3fd03013b",
+    "native/production/server.json": "71c6e67223a6759a1700b34a838080cae6ce2b36c245097577fcba256c642d3f",
+    "native/production/server.log": "21dd2241cc2389b336f480e3324bbc5481794afb4b361616e84480688df14756",
+    "native/scheduler.grant": "e8fb9473cf4aa0b3b1e1bf99d6cbd02a8471b796154fac1c4bf08bec3af8e503",
+    "scheduler.ended": "eda35e05268a20bd10806a77b3649388ccb671d2b933fa41cf11fbed07142fab",
+    "verdict.json": "100b64343a1d2f3c3cbb29aa9527479b6447d357a90dc7cfdca653fe63341f71"
+  },
+  "original_files_sha256": {
+    "RESULT.json": "09b2c853297fe605d4614e8de0f0adf8a41930b478436b267e6c90a8041df3c1",
+    "native/banked-capture.json": "66233d997e6758bfc67d7a2f0be2c600962b55137aa1c59cec3a601d0e8f15cf",
+    "native/candidate-capture.json": "5298350982d7707290f46e101c211b67f6cb38db150d2e2cdfefb58a8891116d"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "handled_at": "2026-11-17T11:03:29.223965+00:00",
+  "alerts": [
+    {
+      "key": "311e0c743b2cf77622c0fd06",
+      "row": "vb-canary-b-r2-20261107",
+      "original_alert": "2026-11-07T18:18:05Z OPEN  warning  311e0c743b2cf77622c0fd06 vb-canary-b-r2-20261107 owner=operator-adhoc-ops-20261105 row vb-canary-b-r2-20261107 smoke FAIL (FAIL-1.json): no first progress within 300 s of engine START; no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-canary-b-r2-20261107/native-attempts/attempt-ypd5lr8l/native-result.json (json): no new real record; 1 new record(s) ignored: placeholder (measurement: false); fix: make the job write its first meas",
+      "ack_output": "ACKED 311e0c743b2cf77622c0fd06"
+    },
+    {
+      "key": "01b42ad1c4a799042e3d0f68",
+      "row": "vb-canary-b-r2-20261107",
+      "original_alert": "2026-11-07T18:29:47Z OPEN  info     01b42ad1c4a799042e3d0f68 vb-canary-b-r2-20261107 owner=operator-adhoc-ops-20261105 row vb-canary-b-r2-20261107 ended rc=0 reason=complete [COMPLETE]",
+      "ack_output": "ACKED 01b42ad1c4a799042e3d0f68"
+    },
+    {
+      "key": "6d553c1fdcf91f4ad106dd92",
+      "row": "vidya-r234-native-sweep-20261104b",
+      "original_alert": "2026-11-08T10:57:10Z OPEN  warning  6d553c1fdcf91f4ad106dd92 vidya-r234-native-sweep-20261104b owner=handoff-vidya-belief-substrate row vidya-r234-native-sweep-20261104b smoke FAIL (FAIL-1.json): job ended rc=? (no ended record) after 8s, before its first progress (no unit in /mnt/raid0/llm/tmp/vb-r234-wire-20261104/runs/*/results.jsonl (jsonl): no new real record); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r234-native-sweep-20261104b/launcher.out; fix it, ",
+      "ack_output": "ACKED 6d553c1fdcf91f4ad106dd92"
+    },
+    {
+      "key": "61f258ada77a5aad054aeec3",
+      "row": "vidya-kvq-v10-sweep-20261107",
+      "original_alert": "2026-11-08T15:04:54Z OPEN  warning  61f258ada77a5aad054aeec3 vidya-kvq-v10-sweep-20261107 owner=operator-adhoc-ops-20261105 row vidya-kvq-v10-sweep-20261107 smoke FAIL (FAIL-1.json): job ended rc=1 time=2026-11-08T15:04:53Z reason=job-rc-1:exited after 59s, before its first progress (smoke_predicate `f=\"$FILLER_DRYRUN_DIR/native/SMOKE-DONE.json\"; [ -f \"$f\" ] && [ \"$(stat -c %Y \"$` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-kvq-v",
+      "ack_output": "ACKED 61f258ada77a5aad054aeec3"
+    },
+    {
+      "key": "0b3b73e43f1135c17f5b8914",
+      "row": "vidya-kvq-v10-sweep-20261107",
+      "original_alert": "2026-11-08T17:57:40Z OPEN  critical 0b3b73e43f1135c17f5b8914 vidya-kvq-v10-sweep-20261107 owner=operator-adhoc-ops-20261105 row vidya-kvq-v10-sweep-20261107 ended rc=1 reason=job-rc-1:exited [NOT COMPLETE]",
+      "ack_output": "ACKED 0b3b73e43f1135c17f5b8914"
+    },
+    {
+      "key": "65335e70b7725b3f726d0414",
+      "row": "vidya-kvq-v10-sweep-20261107",
+      "original_alert": "2026-11-08T18:17:49Z OPEN  warning  65335e70b7725b3f726d0414 vidya-kvq-v10-sweep-20261107 owner=operator-adhoc-ops-20261105 FILING DUE: row vidya-kvq-v10-sweep-20261107 ended (rc=1 time=2026-11-08T17:57:40Z reason=job-rc-1:exited) with no filing-done/vidya-kvq-v10-sweep-20261107.FILED. Record the verdict with `file_result.py vidya-kvq-v10-sweep-20261107 --receipt <commit>:<handoff>#<BOX-ID>` (a pushed box commit is not filing) or `--verdict-json`.",
+      "ack_output": "ACKED 65335e70b7725b3f726d0414"
+    },
+    {
+      "key": "aae22f30051d008e100c218e",
+      "row": "vidya-r18d-aa-wire-20261109-r3",
+      "original_alert": "2026-11-09T17:08:29Z OPEN  warning  aae22f30051d008e100c218e vidya-r18d-aa-wire-20261109-r3 owner=operator-adhoc-ops-20261105 FILING DUE: row vidya-r18d-aa-wire-20261109-r3 ended (rc=0 time=2026-11-09T16:48:20Z reason=complete) with no filing-done/vidya-r18d-aa-wire-20261109-r3.FILED. Record the verdict with `file_result.py vidya-r18d-aa-wire-20261109-r3 --receipt <commit>:<handoff>#<BOX-ID>` (a pushed box commit is not filing) or `--verdict-json`.",
+      "ack_output": "ACKED aae22f30051d008e100c218e"
+    },
+    {
+      "key": "190324aca5e6c6aa2453838a",
+      "row": "vidya-r18d-aa-wire-20261109-r4",
+      "original_alert": "2026-11-09T21:09:16Z OPEN  warning  190324aca5e6c6aa2453838a vidya-r18d-aa-wire-20261109-r4 owner=operator-adhoc-ops-20261105 row vidya-r18d-aa-wire-20261109-r4 smoke FAIL (FAIL-1.json): GPU row produced a unit but VRAM never showed residency (max None B sampled during the run) [dry run held ONE quarter, WS58_REGIONS=184-191; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]",
+      "ack_output": "ACKED 190324aca5e6c6aa2453838a"
+    },
+    {
+      "key": "49587a23c9dc3e34ac7d9ae5",
+      "row": "vidya-r234-native-sweep-20261104c",
+      "original_alert": "2026-11-09T23:51:57Z OPEN  warning  49587a23c9dc3e34ac7d9ae5 vidya-r234-native-sweep-20261104c owner=handoff-vidya-belief-substrate row vidya-r234-native-sweep-20261104c smoke FAIL (FAIL-1.json): job ended rc=1 time=2026-11-09T23:51:55Z reason=job-rc-1:exited after 170s, before its first progress (smoke_predicate `f=/mnt/raid0/llm/tmp/vb-r234-wire-20261104/SMOKE_COMPLETE; [ -f \"$f\" ] && [ \"$(s` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r234",
+      "ack_output": "ACKED 49587a23c9dc3e34ac7d9ae5"
+    },
+    {
+      "key": "82797a587fe841445ac14feb",
+      "row": "vidya-r18d-aa-wire-20261109-r4",
+      "original_alert": "2026-11-10T04:47:05Z OPEN  warning  82797a587fe841445ac14feb vidya-r18d-aa-wire-20261109-r4 owner=operator-adhoc-ops-20261105 FILING DUE: row vidya-r18d-aa-wire-20261109-r4 ended (rc=0 time=2026-11-10T04:26:31Z reason=complete) with no filing-done/vidya-r18d-aa-wire-20261109-r4.FILED. Record the verdict with `file_result.py vidya-r18d-aa-wire-20261109-r4 --receipt <commit>:<handoff>#<BOX-ID>` (a pushed box commit is not filing) or `--verdict-json`.",
+      "ack_output": "ACKED 82797a587fe841445ac14feb"
+    },
+    {
+      "key": "97e81fbfb0e76d635faa1f6f",
+      "row": "vidya-r234-native-sweep-20261104c",
+      "original_alert": "2026-11-10T07:31:47Z OPEN  warning  97e81fbfb0e76d635faa1f6f vidya-r234-native-sweep-20261104c owner=handoff-vidya-belief-substrate FILING DUE: row vidya-r234-native-sweep-20261104c ended (rc=1 time=2026-11-10T07:11:38Z reason=job-rc-1:exited) with no filing-done/vidya-r234-native-sweep-20261104c.FILED. Record the verdict with `file_result.py vidya-r234-native-sweep-20261104c --receipt <commit>:<handoff>#<BOX-ID>` (a pushed box commit is not filing) or `--verdict-json`.",
+      "ack_output": "ACKED 97e81fbfb0e76d635faa1f6f"
+    },
+    {
+      "key": "4a2ef7afc2d7f2740b3869da",
+      "row": "vidya-r234-native-sweep-20261104d",
+      "original_alert": "2026-11-10T09:34:40Z OPEN  warning  4a2ef7afc2d7f2740b3869da vidya-r234-native-sweep-20261104d owner=handoff-vidya-belief-substrate FILING DUE: row vidya-r234-native-sweep-20261104d ended (rc=1 time=2026-11-10T09:14:25Z reason=job-rc-1:exited) with no filing-done/vidya-r234-native-sweep-20261104d.FILED. Record the verdict with `file_result.py vidya-r234-native-sweep-20261104d --receipt <commit>:<handoff>#<BOX-ID>` (a pushed box commit is not filing) or `--verdict-json`.",
+      "ack_output": "ACKED 4a2ef7afc2d7f2740b3869da"
+    },
+    {
+      "key": "2d3d6e6cc7aa69109c6b5bfb",
+      "row": "vidya-r234-native-sweep-20261104e",
+      "original_alert": "2026-11-10T15:36:04Z OPEN  warning  2d3d6e6cc7aa69109c6b5bfb vidya-r234-native-sweep-20261104e owner=handoff-vidya-belief-substrate row vidya-r234-native-sweep-20261104e queued GPU smoke WAIT: queued GPU smoke ended WAIT with no FAIL record: the engine did not reach START within 1800 s (waiting on its region lock, a held host or admission; see /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r234-native-sweep-20261104e/launcher.out); requeued, no FAIL recorded",
+      "ack_output": "ACKED 2d3d6e6cc7aa69109c6b5bfb"
+    },
+    {
+      "key": "8f8e12ea829a74780ef929d5",
+      "row": "vidya-r234-native-sweep-20261104f",
+      "original_alert": "2026-11-10T16:07:02Z OPEN  warning  8f8e12ea829a74780ef929d5 vidya-r234-native-sweep-20261104f owner=handoff-vidya-belief-substrate row vidya-r234-native-sweep-20261104f queued GPU smoke WAIT: queued GPU smoke ended WAIT with no FAIL record: the engine did not reach START within 1800 s (waiting on its region lock, a held host or admission; see /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r234-native-sweep-20261104f/launcher.out); requeued, no FAIL recorded",
+      "ack_output": "ACKED 8f8e12ea829a74780ef929d5"
+    },
+    {
+      "key": "ab63964082ba220ae0480349",
+      "row": "vidya-r234-native-sweep-20261104h",
+      "original_alert": "2026-11-10T16:57:13Z OPEN  warning  ab63964082ba220ae0480349 vidya-r234-native-sweep-20261104h owner=handoff-vidya-belief-substrate FILING DUE: row vidya-r234-native-sweep-20261104h ended (rc=0 time=2026-11-10T16:37:08Z reason=complete) with no filing-done/vidya-r234-native-sweep-20261104h.FILED. Record the verdict with `file_result.py vidya-r234-native-sweep-20261104h --receipt <commit>:<handoff>#<BOX-ID>` (a pushed box commit is not filing) or `--verdict-json`.",
+      "ack_output": "ACKED ab63964082ba220ae0480349"
+    }
+  ]
+}

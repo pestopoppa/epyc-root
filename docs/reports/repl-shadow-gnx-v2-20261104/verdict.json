@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=0, pinned f58d0bf source; complete context and exact upstream impact receipts for ShadowSink (1 impacted, LOW), validate_shadow_stream (0, LOW), ingest (8 total/4 direct, LOW), cmd_ingest (0, LOW). All four exact path identities captured with terminal complete record. Evidence docs/reports/repl-shadow-gnx-v2-20261104. Scope is the pinned analysis prerequisite only; online shadow remains open.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:27:23+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:17:05Z reason=complete",
+ "filed_at": "2026-11-04T07:27:23+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3",
+ "id": "codex-ufh12-shadow-gnx-v2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ufh12-shadow-gnx-v2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-repl-embedding-retrieval",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc=0, pinned f58d0bf source; complete context and exact upstream impact receipts for ShadowSink (1 impacted, LOW), validate_shadow_stream (0, LOW), ingest (8 total/4 direct, LOW), cmd_ingest (0, LOW). All four exact path identities captured with terminal complete record. Evidence docs/reports/repl-shadow-gnx-v2-20261104. Scope is the pinned analysis prerequisite only; online shadow remains open.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "codex-ufh12-shadow-gnx-v2-20261104",
+ "row_verdict": "pass",
+ "rule": "Read-only pinned f58d0bf source context and upstream impact for four targets. PASS requires all four exact path identities and known LOW/MEDIUM risks. HIGH/CRITICAL records a warning and stops immediately: no edits. Partial, unknown, ambiguous, stale index or wrong target is not PASS. Smoke source scan is not a verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "98507c35f50f5be07116009c046d43b28fa23ce3a45b375edd4ea1883541877d",
+  "result": "pass",
+  "status": "filed"
+ }
+}

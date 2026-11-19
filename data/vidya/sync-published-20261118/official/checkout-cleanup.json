@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-18T18:44:56.266561+00:00",
+  "operator_requested_paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/publisher-smoke-oh7500o1/native-run/primary",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/primary"
+  ],
+  "all_absent": true,
+  "method": "Removed exactly the two named generated checkout copies; native receipts archived separately. New source trees must use git worktree add --detach."
+}

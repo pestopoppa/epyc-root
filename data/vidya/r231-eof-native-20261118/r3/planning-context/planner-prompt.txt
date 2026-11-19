@@ -1,0 +1,32 @@
+You are proposing ONE kernel optimisation for llama.cpp on an AMD MI210 (gfx90a, ROCm 6.2).
+
+## Where the device time actually goes (rocprofv3, current champion)
+(no profile yet — say so rather than guessing a target)
+
+## Already tried
+(nothing yet)
+
+## Belief-kernel evidence (Vidya ledger, read-only)
+No beliefs are scoped to Qwen3.6-35B-A3B-Q4_K_M.gguf (cpu). The lines below are sibling/host context only.
+Target(s): Qwen3.6-35B-A3B-Q4_K_M.gguf / Q4_K_M / cpu / epyc-9655.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 3, as of 2026-11-18T14:59:12.536989+00:00.
+### Loop-infrastructure facts (harness tier) -- tooling and source-dependency context for this consumer; not evidence about any model or for a proposal
+- clm_r231-eof:235753b3c7b24784a34b2fe20af8496b [Judged/Located · verified] harness fact: loop infrastructure, not about any model
+  r231_eof_verified_behavior_cases: 9 cases (n=1)
+  data/vidya/r231-eof-native-20261118/r3/full/NATIVE.json: Pinned R23-1 Linux CLI and linked console verified nine model-free behavior cases, including loopback model-selection EOF and simple/PTY EOF, blank, slash and text. Scope is CLI/console behavior only.
+Shown 0 of 0 knob, 0 of 0 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 1 of 1 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.
+
+Propose exactly one hypothesis. Reply with ONE json object and nothing else:
+{"mechanism_id": "akm-<short-slug>",
+  "statement": "<what changes, mechanically, and why it should be faster>",
+  "falsifier": "<the measurement that would prove this wrong>",
+  "target_surface": "<one path under ggml/src/ggml-cuda/>",
+  "target_symbol": "<the function you will change>",
+  "relies_on_claims": ["<belief-section claim id your mechanism depends on>"]}
+
+"relies_on_claims" lists the claim ids (clm_...) from the belief-kernel evidence section that your mechanism depends on; [] if none. Only target- and sibling-scoped claims count; host-ceiling lines are background and are not accepted as reliance.
+
+Rules: attack a route near the top of the profile; name a MECHANISM, not a wish; state a falsifier that could actually fail. The loop itself owns source inspection, authoring, correctness gates and matched A/B measurement. Do not make an unsupported trace or counter a prerequisite that this loop cannot collect. After a rejection for missing evidence, either use an available diagnostic named in the context or choose the smallest source-consistent change whose payoff the existing matched A/B can test. If no honest, feasible hypothesis satisfies these constraints, abstaining is a correct science result; reply instead with {"abstain": "<specific reason>"}. If the reason is that a mechanism you considered is ALREADY IMPLEMENTED, name what you found so it is not re-proposed: {"abstain": "<specific reason>", "mechanism_id": "<its id/slug>", "mechanism_family": "<short family, e.g. local quant/dot kernel>", "target_surface": "<path>", "target_symbol": "<function>"} -- all four identity fields are optional; include only what you actually found, omit the rest.
+
+Do not cache outputs by input identity or pointer, reuse buffers across repetitions, or use workload-specific shortcuts. If a deployable cache is proposed, declare it and report its cold and warm effects separately. This advisory complements R24-1/2; it never substitutes for those checks.

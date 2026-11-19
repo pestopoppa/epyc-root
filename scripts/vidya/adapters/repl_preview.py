@@ -6,7 +6,8 @@ the correct-rate with the class counts (correct / blind_rule_fit / retyping_loss
 no_answer, summing to n), ``reps`` = samples STARTED (no_answer stays in the denominator, as the
 frozen spec requires). Locator = GGUF x rendering x fixture sha256.
 
-REFUSES a ``mock`` result and a partial one (``complete`` false, or a cell short of ``n_per_cell``).
+REFUSES mock, partial, legacy validity-unknown, and invalid comparator results. A cell with more
+than 20% ``no_answer`` invalidates the whole run, independently of the producer's validity flag.
 The result file names roles but not their GGUF, and does not hash the fixture: the caller passes
 ``role_pins`` (role -> ``{"gguf_path": ...}``) and ``fixture_sha256`` (:func:`fixture_sha256` over
 the driver's fixture dict); a missing one refuses the write, nothing is guessed. Rows are a report,
@@ -65,6 +66,8 @@ def validate_row(row: Any) -> list[str]:
     else:
         if sum(counts.values()) != n:
             p.append("class counts must sum to extra.n")
+        if 5 * counts["no_answer"] > n:
+            p.append("no_answer exceeds 20% of extra.n")
         if ns.finite(row.get("value")) and abs(row["value"] - counts["correct"] / n) > 1e-9:
             p.append("value does not re-derive from correct / n")
         if row.get("reps") != n or row.get("reps_basis") != "started:samples":
@@ -99,11 +102,34 @@ def write_belief_measurements(
         raise CaptureError("refusing: mock result (plumbing only, never a finding)")
     if res.get("complete") is not True:
         raise CaptureError("refusing: partial result (complete is not true); rerun resumes from --cell-dir")
+    if res.get("valid") is not True:
+        raise CaptureError("refusing: result is invalid or lacks an explicit validity decision")
     if not ns.SHA256.match(str(fixture_sha256)):
         raise CaptureError("fixture_sha256 must be a 64-hex digest")
-    counts_all = res.get("counts") or {}
-    if not counts_all:
+    counts_all = res.get("counts")
+    if not isinstance(counts_all, dict) or not counts_all:
         raise CaptureError("result has no counts")
+    roles, renderings = res.get("roles"), res.get("renderings")
+    for name, values in (("roles", roles), ("renderings", renderings)):
+        if (not isinstance(values, list) or not values
+                or any(not ns.text(v) or "|" in v for v in values)
+                or len(set(values)) != len(values)):
+            raise CaptureError(f"{name} must be a nonempty list of unique, nonempty names without '|'")
+    expected_cells = {f"{role}|{rendering}" for role in roles for rendering in renderings}
+    if set(counts_all) != expected_cells:
+        raise CaptureError("counts must cover exactly the declared role × rendering cells")
+    expected_n = res.get("n_per_cell")
+    if not ns.nonneg_int(expected_n) or expected_n == 0:
+        raise CaptureError("n_per_cell must be a positive integer")
+    # Check every cell before constructing or writing any sidecar row. Do not
+    # trust a producer's validity flag when the native counts contradict it.
+    for key, c in counts_all.items():
+        if (not isinstance(c, dict) or c.get("n") != expected_n
+                or not all(ns.nonneg_int(c.get(k)) for k in CLASSES)
+                or sum(c[k] for k in CLASSES) != expected_n):
+            raise CaptureError(f"cell {key}: malformed or incomplete counts")
+        if 5 * c["no_answer"] > expected_n:
+            raise CaptureError(f"cell {key}: no_answer exceeds 20%")
     digest = ns.file_sha256(path)
     when = emitted_at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     rows = []

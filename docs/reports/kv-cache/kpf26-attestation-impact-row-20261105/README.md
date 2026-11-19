@@ -1,0 +1,5 @@
+Runnable unqualified source-impact prerequisite for KPF-26 native flag/checkpoint attestation. Source is the exact retained diagnostic commit 868275acb64ef3d490ecac6952518ae187fe74d3, in a fresh detached worktree. Six scout/checkpoint/capability producer impacts precede instrumentation. The existing KPF27d scan targets 326f502 and shadow-status symbols and cannot supply this source-bound result. Original diagnostics are immutable; no diagnostic replay is included.
+
+Full launch claims CPUs 0-95, 48 GiB, 7200 seconds with 150 GiB disk floor. FILLER_SMOKE=1 claims CPUs 0-3 and requires a distinct FILLER_DRYRUN_RESULT_PATH, returning only partial source references. Both paths preserve pidfd/birth-bound own descendants, subreaper adoption, TERM/KILL escalation and verified drain inherited from the reviewed KPF27d packet. HIGH/CRITICAL writes OWNER_WARNING then stops. Full success requires all six complete native queries and count-checked verbose skip coverage. No skipped-file edit clearance follows.
+
+No tests, compute, smoke or publication performed. Owning session must review and qualify before publishing.

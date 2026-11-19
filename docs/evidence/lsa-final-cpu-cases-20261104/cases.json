@@ -1,0 +1,17 @@
+{
+  "schema": "lsa.graph.synthetic.cases.v1",
+  "fixture": {"seed": 20261104, "positions": [0, 64], "chunks": [32, 32, 1], "kv_type": "Q8_0", "mask": "causal", "values": "deterministic bounded finite values generated from seed; identical bytes shared by sparse and original flash graphs"},
+  "cases": [
+    {"id":"disabled-default", "expect":"unchanged dense graph topology and output; zero native dispatches"},
+    {"id":"q8-sparse-chunks", "expect":"32/32/1 contiguous-prefix graph execution; valid selected indices and output match independent scalar attention on selected Q8-decoded K/V under original mask; no dense invocation"},
+    {"id":"missing-callback", "expect":"original C5 flash function invoked, identical sources and op parameters, output equals independent original C5 flash graph"},
+    {"id":"stale-callback", "expect":"same original flash fallback and no sparse publication"},
+    {"id":"late-selector-failure", "expect":"after partial staging force failure; no sparse publication, original C5 flash output matches independently constructed original flash graph"},
+    {"id":"late-attention-failure", "expect":"after partial staging force failure; no sparse publication, original C5 flash output matches independently constructed original flash graph"},
+    {"id":"causal-partial-clusters", "expect":"no future position selected or contributing; partial final cluster and exact mask honored"},
+    {"id":"context-slot-epoch", "expect":"contexts and slots isolated; newer position-zero epoch resets; stale epoch rejected"},
+    {"id":"suffix-truncate", "expect":"truncate across layers and append yields fresh-equivalent state; failure poisons until new epoch"},
+    {"id":"clear-copy-restore-reuse", "expect":"clear, seq_cp, seq_keep, non-suffix removal, shift, restore and slot reuse invalidate prior epoch; dense until new position-zero epoch"},
+    {"id":"hip-stream-lease", "backend":"hip", "expect":"same backend stream queues device copy before mutation/invalidation; synchronize and verify output; no use after lease, plus late-failure original flash fallback"}
+  ]
+}

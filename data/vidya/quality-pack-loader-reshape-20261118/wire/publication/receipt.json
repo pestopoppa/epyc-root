@@ -1,0 +1,19 @@
+{
+  "row": "handoff-vidya-quality-pack-loader-diag-wire-20261118",
+  "status": "native_smoke_pass_published",
+  "files": {
+    "smoke-PASS.json": {
+      "archive": "smoke-PASS.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "4be207de05864c3586e123e756a2ff579107462ad8d7d0512b62f7b0711a6a60"
+    },
+    "row-manifest.json": {
+      "archive": "row-manifest.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "d1d11cc64fb3b026678b885a60fbda59c28ab2b92cf1df6607e9669b8bd4ccb3"
+    }
+  },
+  "native_canary_pending": true,
+  "quality_transfer_authorized": false,
+  "promotion_authorized": false
+}

@@ -1,0 +1,32 @@
+{
+  "row_id": "kpf623-byte-alignment-exploratory-20261105",
+  "status": "EXPLORATORY_COMPLETE",
+  "input_seals": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/vocab-1.stdout": "eb5fd6df478ec11aac079681da399661d3670e0abae5db60d72d5434eb9393a6",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/KEEP": "4aac9889724d8306cf6022b774ed375fabb5d8e5d707d0e49914d5fd2eb4eddd",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/vocab-0.tsv.maps": "e951ec4845b35a595be6575d2f4ed09a47bec81fd51d0a5c857deafe6c575a8e",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/vocab-0.stdout": "eb5fd6df478ec11aac079681da399661d3670e0abae5db60d72d5434eb9393a6",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/vocab-0.tsv": "902ea571177dd0f5092b82e0aa39d562ede8d47efdd7fdde173ef9bf45227b1c",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/RESULT.json": "47a215bcbe529d610e8d1b5fb9db65a58df76ae140a3c4dfaa8d7308a431abc5",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/vocab-1.stderr": "234ec196bd95e3d501a6e0efd12ac3f4e5b77b443161d65262d909eacf58e082",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/vocab-0.stderr": "09a4c6d3ca2553646aec971d4973af091de95076e554d9f3b4ea9f587f5ff32e",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/vocab-1.tsv": "c2eb2f9537c5cd877d040f5dacc33ca87dba48c4aac0aa75cc6cd843cf7930af",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-census-retained-20261105/vocab-1.tsv.maps": "fe35a217b23d31a1a08e2520a5dbd1d5777824cd1af6aa39963532fdd3696826"
+  },
+  "counts": {
+    "unique": 256,
+    "ambiguous": 151413,
+    "unrepresentable": 0,
+    "empty_target": 267
+  },
+  "records": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf623-byte-alignment-exploratory-prep-20261105/out/RESULT.pieces.json",
+  "records_sha256": "777b546d6f630ef6420e20c57520e513f894a5cbbdf10346aee39c5bba0b1c59",
+  "prior_rc": 75,
+  "original_census_verdict": "INCONCLUSIVE",
+  "tokenizer_compatibility": "UNKNOWN",
+  "span_alignment": "UNKNOWN",
+  "budget_readmission": "UNKNOWN",
+  "scope": "byte-inventory decomposition only; special token semantics not inferred; empty auxiliary pieces excluded; no model/context/tokenizer execution"
+}

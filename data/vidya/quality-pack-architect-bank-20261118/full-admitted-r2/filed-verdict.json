@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "Four strict item checks pass with stop/stop/stop/length finishes and 227/82/160/768 output tokens. Captured PID881683 exited and listener closed; no candidate collected.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T02:35:49+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T02:21:08Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-vidya-quality-pack-architect-critic-bank-r2-20261118.ended",
+ "filed_at": "2026-11-18T02:35:49+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-ARCHITECT-BANK",
+ "id": "handoff-vidya-quality-pack-architect-critic-bank-r2-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-architect-critic-bank-r2-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-bank-r2-20261118/out/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Four strict item checks pass with stop/stop/stop/length finishes and 227/82/160/768 output tokens. Captured PID881683 exited and listener closed; no candidate collected.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-bank-r2-20261118/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-vidya-quality-pack-architect-critic-bank-r2-20261118",
+ "row_verdict": "pass",
+ "rule": "Capture four newly pinned architect-critic requests on the original isolated v10 24-CPU MTP-cap-4 server and seal the production bank with the native output bytes. The long-prose successor request retains medium thinking and sets 768 total completion tokens and a 384-token reasoning budget. Stop on answer after strict item validation and owned server cleanup. Stop on STOP, deadline, failed identity, startup, transport or cleanup, or an inadmissible bank, recording the disposition and original bytes. Publisher smoke uses four CPUs and the pinned v10 no-spec small model for one native completion. Candidate collection awaits the complete seven-profile pack pin.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 37,
+  "input": 119098637,
+  "output": 516488,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 119615125,
+  "tokens_per_task": 3232841.2162162163
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e1afec69b1fe53ffc85a33eca6285030688bfcba986400b2fb76ce59af32b47b",
+  "result": "pass",
+  "status": "filed"
+ }
+}

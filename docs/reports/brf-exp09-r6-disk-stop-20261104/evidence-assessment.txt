@@ -1,0 +1,13 @@
+R6 evidence (single inspection)
+
+Requested result file: /mnt/raid0/llm/tmp/brf-exp09-resume-r6/out/results.jsonl — absent.
+
+Artifacts present:
+- run-events.r6.jsonl: 1 row, one preflight, dryrun=true; zero non-dry rows. exec_id=778ef02546d7.
+- results.r3-native.jsonl: 26 rows total: 1 preflight (dryrun=false), 24 cell rows (dryrun=false, arm=control), and 1 paired_readout (dryrun=false). exec_id=f31565b84cc2.
+
+Counts of non-dry work in the available artifacts: 1 preflight; 24 control treatment/cell rows. No non-dry execution is recorded in run-events.r6.jsonl. The native results file is from exec f31565b84cc2 and appears to be an earlier/native run, not an R6 results.jsonl output.
+
+Seed/corpus SHA-256 recorded by both available preflight records: d69556e907a25d24a1e837a1258413791d5ad86335f389721e5a701a119f216d. No distinct seed_sha256 field was present.
+
+Grant ended marker: rc=75, reason=disk-floor, time=2026-11-04T17:15:56Z; job_id=brf-exp09-resume-r6-20261104. This records that the R6 job ended before a results.jsonl was produced.

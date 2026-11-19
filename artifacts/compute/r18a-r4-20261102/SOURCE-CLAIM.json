@@ -1,0 +1,18 @@
+{
+  "owner": "codex-refactor-01a16fc3",
+  "task": "R18-A independent immutable v10 symbol proof",
+  "state": "consumed-read-only-do-not-remove",
+  "source": "/dev/shm/historical-ffc1-source-20261030",
+  "head": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "tree": "a7c564ffbac0a86ce648ef6f11c1748c81a6560d",
+  "branch": "experimental/historical-ffc1-instrument-20261030",
+  "status": "",
+  "authorization": "parent approved existing exact-FFC source reuse; no new checkout",
+  "created_at": "2026-10-30T19:53:41.646297+00:00",
+  "producer_container_source_view": "read-only bind of existing host worktree at same /dev/shm path; no checkout/copy",
+  "after_head": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "after_tree": "a7c564ffbac0a86ce648ef6f11c1748c81a6560d",
+  "after_status": "",
+  "cleanup_protection": "git worktree lock; worktree_gate PROTECTED locked worktree; only admin metadata changed",
+  "release_condition": "Owning main releases worktree lock after all READY/armed/running consumers ended and evidence retained."
+}

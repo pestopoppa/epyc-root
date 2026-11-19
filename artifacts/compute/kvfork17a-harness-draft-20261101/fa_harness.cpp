@@ -52,8 +52,48 @@ static void set_tensor_data(ggml_tensor * t, std::mt19937 & gen, int64_t n_f32) 
     }
 }
 
+enum class kv_perturbation { none, invisible_kv, visible_v };
+
+// Rewrite complete physical cache rows: quantization blocks never straddle a
+// selected/unselected cell. Preserve the original bytes of every other row,
+// including the allocation padding beyond c.kv. No random draws are consumed.
+static void replace_cache_rows(ggml_tensor * t, const std::vector<bool> & selected, float value) {
+    const int64_t width = t->ne[0];
+    const size_t row_bytes = ggml_row_size(t->type, width);
+    std::vector<uint8_t> bytes(ggml_nbytes(t));
+    ggml_backend_tensor_get(t, bytes.data(), 0, bytes.size());
+    std::vector<float> row(width, value);
+    std::vector<uint8_t> encoded(row_bytes);
+    if (t->type == GGML_TYPE_F32) {
+        memcpy(encoded.data(), row.data(), row_bytes);
+    } else if (t->type == GGML_TYPE_F16) {
+        std::vector<ggml_fp16_t> h(width);
+        ggml_fp32_to_fp16_row(row.data(), h.data(), width);
+        memcpy(encoded.data(), h.data(), row_bytes);
+    } else if (t->type == GGML_TYPE_BF16) {
+        std::vector<ggml_bf16_t> h(width);
+        ggml_fp32_to_bf16_row(row.data(), h.data(), width);
+        memcpy(encoded.data(), h.data(), row_bytes);
+    } else {
+        ggml_quantize_chunk(t->type, row.data(), encoded.data(), 0, 1, width, nullptr);
+    }
+    size_t changed = 0;
+    for (size_t j = 0; j < selected.size(); ++j) {
+        if (!selected[j]) continue;
+        uint8_t * dst = bytes.data() + j*row_bytes;
+        if (memcmp(dst, encoded.data(), row_bytes) != 0) ++changed;
+        memcpy(dst, encoded.data(), row_bytes);
+    }
+    if (!changed) {
+        fprintf(stderr, "KV perturbation control is vacuous: no encoded cache rows changed\n");
+        exit(2);
+    }
+    ggml_backend_tensor_set(t, bytes.data(), 0, bytes.size());
+}
+
 // returns output floats; if reps > 0 also measures mean time per compute in us
-static std::vector<float> run_case(ggml_backend_t backend, const fa_case & c, int reps, double * us) {
+static std::vector<float> run_case(ggml_backend_t backend, const fa_case & c, int reps, double * us,
+        bool reveal_masked_cells = false, kv_perturbation perturb = kv_perturbation::none) {
     const int64_t kv_size = c.kv + 256;
     ggml_init_params ip = { 64*ggml_tensor_overhead() + ggml_graph_overhead(), nullptr, true };
     ggml_context * ctx = ggml_init(ip);
@@ -173,7 +213,47 @@ static std::vector<float> run_case(ggml_backend_t backend, const fa_case & c, in
                         (int)visible, (int)should_be_visible);
                 exit(2);
             }
-            mf[i*c.kv + j] = visible ? dis(gen) : -INFINITY;
+            // The guard-removal control turns every independently classified
+            // masked cell into an ordinary score.  The normal run still gets
+            // -inf for these cells.  Since this only changes the mask, the
+            // paired run isolates whether the backend actually honors it.
+            mf[i*c.kv + j] = visible ? dis(gen) : (reveal_masked_cells ? 0.0f : -INFINITY);
+        }
+    }
+    // Derive the union of visible cells from the actual mask, independently
+    // of owner/position bookkeeping. Only its complement may change in the
+    // isolation control: a cell masked for one query may serve another query.
+    if (perturb != kv_perturbation::none) {
+        if (reveal_masked_cells) {
+            fprintf(stderr, "KV perturbation control requires the original mask\n");
+            exit(2);
+        }
+        std::vector<bool> selected(c.kv, false);
+        size_t count = 0;
+        for (int64_t j = 0; j < c.kv; ++j) {
+            bool visible_anywhere = false;
+            for (int64_t i = 0; i < c.nb; ++i) {
+                visible_anywhere = visible_anywhere || std::isfinite(mf[i*c.kv + j]);
+            }
+            selected[j] = perturb == kv_perturbation::invisible_kv ? !visible_anywhere : visible_anywhere;
+            count += selected[j];
+        }
+        if (!count) {
+            fprintf(stderr, "KV perturbation control is vacuous: no %s cells\n",
+                    perturb == kv_perturbation::invisible_kv ? "globally invisible" : "visible");
+            exit(2);
+        }
+        if (perturb == kv_perturbation::invisible_kv) {
+            replace_cache_rows(k_cache, selected, 16.0f);
+            if (v_cache) replace_cache_rows(v_cache, selected, -16.0f);
+        } else {
+            // Holding K fixed while setting every visible V to +8 guarantees
+            // a strong sensitivity control for the shared F16/Q8_0 cases.
+            if (!v_cache) {
+                fprintf(stderr, "visible-V control requires a separate V cache\n");
+                exit(2);
+            }
+            replace_cache_rows(v_cache, selected, 8.0f);
         }
     }
     std::vector<ggml_fp16_t> mh(mf.size());
@@ -261,6 +341,46 @@ int main(int argc, char ** argv) {
             if (getenv("FA_CASE") && atoi(getenv("FA_CASE")) != (int) i) continue;
             std::vector<float> r = run_case(backend, c, 0, nullptr);
             if (r.empty()) { printf("case %2zu unsupported\n", i); continue; }
+            if (c.n_shared > 0) {
+                const std::vector<float> masked_kv = run_case(backend, c, 0, nullptr, false,
+                        kv_perturbation::invisible_kv);
+                const std::vector<float> visible_v = run_case(backend, c, 0, nullptr, false,
+                        kv_perturbation::visible_v);
+                if (masked_kv.size() != r.size() || visible_v.size() != r.size()) {
+                    fprintf(stderr, "case %zu KV perturbation control output size mismatch\n", i);
+                    return 2;
+                }
+                for (size_t j = 0; j < r.size(); ++j) {
+                    if (!std::isfinite(r[j]) || !std::isfinite(masked_kv[j]) || !std::isfinite(visible_v[j])) {
+                        fprintf(stderr, "case %zu KV perturbation control returned non-finite output\n", i);
+                        return 2;
+                    }
+                }
+                if (memcmp(r.data(), masked_kv.data(), r.size()*sizeof(float)) != 0) {
+                    fprintf(stderr, "case %zu masked K/V perturbation changed output\n", i);
+                    return 2;
+                }
+                if (memcmp(r.data(), visible_v.data(), r.size()*sizeof(float)) == 0) {
+                    fprintf(stderr, "case %zu visible V perturbation had no effect; control is vacuous\n", i);
+                    return 2;
+                }
+                const std::vector<float> unguarded = run_case(backend, c, 0, nullptr, true);
+                if (unguarded.size() != r.size()) {
+                    fprintf(stderr, "case %zu mask negative control returned %zu outputs, expected %zu\n",
+                            i, unguarded.size(), r.size());
+                    return 2;
+                }
+                for (float value : unguarded) {
+                    if (!std::isfinite(value)) {
+                        fprintf(stderr, "case %zu mask negative control returned non-finite output\n", i);
+                        return 2;
+                    }
+                }
+                if (memcmp(r.data(), unguarded.data(), r.size()*sizeof(float)) == 0) {
+                    fprintf(stderr, "case %zu mask negative control had no effect; masked cells may be ignored\n", i);
+                    return 2;
+                }
+            }
             int nan = 0; for (float x : r) nan += std::isnan(x);
             const uint64_t h = fnv1a(r.data(), r.size()*sizeof(float));
             all ^= h; all *= 1099511628211ull;

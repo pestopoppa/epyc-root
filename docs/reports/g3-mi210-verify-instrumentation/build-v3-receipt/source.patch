@@ -1,0 +1,220 @@
+diff --git a/ggml/include/ggml-backend.h b/ggml/include/ggml-backend.h
+index 2924fdbe98..b5e820a8f0 100644
+--- a/ggml/include/ggml-backend.h
++++ b/ggml/include/ggml-backend.h
+@@ -21,6 +21,10 @@
+ extern "C" {
+ #endif
+ 
++    // G3 diagnostic scope. Zero means attribution is unavailable on this host thread.
++    GGML_API uint64_t ggml_g3_trace_set_invocation(uint64_t invocation_id);
++    GGML_API uint64_t ggml_g3_trace_get_invocation(void);
++
+     typedef struct ggml_backend_buffer_type * ggml_backend_buffer_type_t;
+     typedef struct ggml_backend_buffer * ggml_backend_buffer_t;
+     typedef struct ggml_backend_event * ggml_backend_event_t;
+diff --git a/ggml/src/ggml-backend.cpp b/ggml/src/ggml-backend.cpp
+index 7f4e252dca..1f8471ffdb 100644
+--- a/ggml/src/ggml-backend.cpp
++++ b/ggml/src/ggml-backend.cpp
+@@ -28,6 +28,20 @@
+ #endif
+ 
+ 
++// Diagnostic-only host-thread scope. Backend callbacks on another thread see 0
++// and remain uncorrelated instead of inheriting a process-global ID.
++static thread_local uint64_t ggml_g3_trace_invocation_id = 0;
++
++uint64_t ggml_g3_trace_set_invocation(uint64_t invocation_id) {
++    const uint64_t previous = ggml_g3_trace_invocation_id;
++    ggml_g3_trace_invocation_id = invocation_id;
++    return previous;
++}
++
++uint64_t ggml_g3_trace_get_invocation(void) {
++    return ggml_g3_trace_invocation_id;
++}
++
+ // backend buffer type
+ 
+ const char * ggml_backend_buft_name(ggml_backend_buffer_type_t buft) {
+diff --git a/ggml/src/ggml-cuda/fattn.cu b/ggml/src/ggml-cuda/fattn.cu
+index f0661dc651..acc8a3c711 100644
+--- a/ggml/src/ggml-cuda/fattn.cu
++++ b/ggml/src/ggml-cuda/fattn.cu
+@@ -3,6 +3,11 @@
+ #include "fattn-mma-f16.cuh"
+ #include "fattn-tile.cuh"
+ 
++#include <climits>
++#include <cstring>
++#include <cstdio>
++#include <cstdlib>
++
+ template <int DV, int ncols1, int ncols2>
+ static void launch_fattn_vec(
+     ggml_backend_cuda_context & ctx, ggml_tensor * dst, fattn_kernel_t fattn_kernel, const int nwarps, const size_t nbytes_shared,
+@@ -642,7 +647,34 @@ size_t ggml_cuda_flash_attn_ext_get_alloc_size(int device, const ggml_tensor * d
+ 
+ void ggml_cuda_flash_attn_ext(ggml_backend_cuda_context & ctx, ggml_tensor * dst) {
+     ggml_cuda_set_device(ctx.device);
+-    switch (ggml_cuda_get_best_fattn_kernel(ggml_cuda_get_device(), dst)) {
++    const auto selected = ggml_cuda_get_best_fattn_kernel(ggml_cuda_get_device(), dst);
++    const char * g3_trace = std::getenv("GGML_G3_FATTN_TRACE");
++    if (g3_trace && g3_trace[0] == '1' && g3_trace[1] == '\0') {
++        const uint64_t invocation_id = ggml_g3_trace_get_invocation();
++        const ggml_tensor * q = dst->src[0];
++        const ggml_tensor * k = dst->src[1];
++        const ggml_tensor * v = dst->src[2];
++        const char * name = ggml_get_name(dst);
++        const char * prefix = "g3_fattn_layer_";
++        int layer = -1;
++        if (std::strncmp(name, prefix, std::strlen(prefix)) == 0) {
++            const char * number = name + std::strlen(prefix);
++            char * end = nullptr;
++            const long parsed = std::strtol(number, &end, 10);
++            if (number[0] >= '0' && number[0] <= '9' && end && *end == '\0' && parsed >= 0 && parsed <= INT_MAX) {
++                layer = (int) parsed;
++            }
++        }
++        std::fprintf(stderr,
++            "G3_FATTN_DISPATCH_V3 invocation=%llu correlation=%s device=%d kernel=%d layer=%d tensor=%p q=%lld,%lld,%lld,%lld k_type=%s k=%lld,%lld,%lld,%lld v_type=%s v=%lld,%lld,%lld,%lld\n",
++            (unsigned long long) invocation_id, invocation_id ? "host_scope" : "unknown",
++            ctx.device, (int) selected, layer, (void *) dst,
++            (long long) q->ne[0], (long long) q->ne[1], (long long) q->ne[2], (long long) q->ne[3],
++            ggml_type_name(k->type), (long long) k->ne[0], (long long) k->ne[1], (long long) k->ne[2], (long long) k->ne[3],
++            ggml_type_name(v->type), (long long) v->ne[0], (long long) v->ne[1], (long long) v->ne[2], (long long) v->ne[3]);
++        std::fflush(stderr);
++    }
++    switch (selected) {
+         case BEST_FATTN_KERNEL_NONE:
+             GGML_ABORT("fatal error");
+         case BEST_FATTN_KERNEL_TILE:
+diff --git a/ggml/src/ggml-cuda/ggml-cuda.cu b/ggml/src/ggml-cuda/ggml-cuda.cu
+index fe46521258..216c2082a2 100644
+--- a/ggml/src/ggml-cuda/ggml-cuda.cu
++++ b/ggml/src/ggml-cuda/ggml-cuda.cu
+@@ -4168,6 +4168,13 @@ static bool ggml_cuda_graph_set_enabled(ggml_backend_cuda_context * cuda_ctx, co
+ }
+ #endif // USE_CUDA_GRAPH
+ 
++// G3 diagnostic: graph replay skips per-node dispatch tracing. This changes
++// execution mode and must be disclosed; it does not establish correlation.
++static bool ggml_g3_trace_direct_dispatch() {
++    const char * value = std::getenv("GGML_G3_FATTN_TRACE");
++    return value && value[0] == '1' && value[1] == '\0';
++}
++
+ static enum ggml_status ggml_backend_cuda_graph_compute(ggml_backend_t backend, ggml_cgraph * cgraph) {
+     ggml_backend_cuda_context * cuda_ctx = (ggml_backend_cuda_context *) backend->context;
+ 
+@@ -4212,6 +4219,11 @@ static enum ggml_status ggml_backend_cuda_graph_compute(ggml_backend_t backend,
+     }
+ #endif // USE_CUDA_GRAPH
+ 
++    if (ggml_g3_trace_direct_dispatch()) {
++        use_cuda_graph = false;
++        cuda_graph_update_required = false;
++    }
++
+     if (use_cuda_graph && cuda_graph_update_required) {
+         // Start CUDA graph capture
+         {
+@@ -4257,7 +4269,7 @@ static void ggml_backend_cuda_graph_optimize(ggml_backend_t backend, ggml_cgraph
+ 
+ #ifdef USE_CUDA_GRAPH
+     const void * graph_key = ggml_cuda_graph_get_key(cgraph);
+-    const bool use_cuda_graph = ggml_cuda_graph_set_enabled(cuda_ctx, graph_key);
++    const bool use_cuda_graph = !ggml_g3_trace_direct_dispatch() && ggml_cuda_graph_set_enabled(cuda_ctx, graph_key);
+ #else
+     const bool use_cuda_graph = false;
+     GGML_UNUSED(cuda_ctx);
+diff --git a/src/llama-graph.cpp b/src/llama-graph.cpp
+index fb1b4c7a63..f6b6b09542 100644
+--- a/src/llama-graph.cpp
++++ b/src/llama-graph.cpp
+@@ -2572,6 +2572,9 @@ ggml_tensor * llm_graph_context::build_attn_mha(
+ 
+         cur = ggml_flash_attn_ext(ctx0, q, k, v, kq_mask, kq_scale, hparams.f_max_alibi_bias,
+                                   hparams.attn_soft_cap ? hparams.f_attn_logit_softcapping : 0.0f);
++        // Preserve the graph builder's layer identity on the actual dispatch node.
++        // Other construction paths remain unnamed and therefore unclassified.
++        ggml_format_name(cur, "g3_fattn_layer_%d", il);
+         res->add_fused_node({LLM_FUSED_OP_FLASH_ATTN, cur, il});
+ 
+         ggml_flash_attn_ext_add_sinks(cur, sinks);
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index 07544da91b..5a99e40a4e 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -17,8 +17,12 @@
+ #include "speculative.h"
+ #include "mtmd.h"
+ #include "mtmd-helper.h"
++#include "ggml-backend.h"
+ 
+ #include <algorithm>
++#include <atomic>
++#include <cstdio>
++#include <cstdlib>
+ #include <cstddef>
+ #include <cstring>
+ #include <cinttypes>
+@@ -3750,7 +3754,56 @@ private:
+             n_empty_consecutive = 0;
+         }
+ 
+-        const int ret = llama_decode(ctx_tgt, batch_view);
++        const char * g3_value = std::getenv("GGML_G3_FATTN_TRACE");
++        const bool g3_enabled = g3_value && g3_value[0] == '1' && g3_value[1] == '\0';
++        static std::atomic<uint64_t> g3_sequence{0};
++        uint64_t g3_id = 0;
++        bool g3_verify_candidate = slots.size() == 1;
++        int32_t g3_slot = -1;
++        size_t g3_drafts = 0;
++        if (g3_verify_candidate) {
++            const auto & slot = slots.front();
++            g3_slot = slot.id;
++            g3_drafts = slot.spec_draft.size();
++            g3_verify_candidate = slot.state == SLOT_STATE_GENERATING && slot.can_speculate() &&
++                g3_drafts > 0 && !use_serial_speculative_verify(slot) &&
++                slot.spec_i_batch.size() == g3_drafts + 1 &&
++                batch_view.n_tokens == (int32_t) slot.spec_i_batch.size();
++            for (size_t i = 0; g3_verify_candidate && i < slot.spec_i_batch.size(); ++i) {
++                g3_verify_candidate = slot.spec_i_batch[i] == off + (int32_t) i;
++            }
++        }
++        uint64_t g3_previous = 0;
++        if (g3_enabled) {
++            g3_id = ++g3_sequence;
++            g3_previous = ggml_g3_trace_set_invocation(g3_id);
++            std::string g3_indices;
++            if (slots.size() == 1) {
++                for (const auto index : slots.front().spec_i_batch) {
++                    if (!g3_indices.empty()) g3_indices += ',';
++                    g3_indices += std::to_string(index);
++                }
++            }
++            if (g3_indices.empty()) g3_indices = "none";
++            std::fprintf(stderr,
++                "G3_TARGET_BEGIN_V3 invocation=%llu class=%s slot=%d off=%d tokens=%d drafts=%zu indices=%s correlation=host_scope\n",
++                (unsigned long long) g3_id, g3_verify_candidate ? "parallel_verify_candidate" : "unclassified",
++                g3_slot, off, batch_view.n_tokens, g3_drafts, g3_indices.c_str());
++            std::fflush(stderr);
++        }
++        int ret;
++        try {
++            ret = llama_decode(ctx_tgt, batch_view);
++        } catch (...) {
++            if (g3_enabled) ggml_g3_trace_set_invocation(g3_previous);
++            throw;
++        }
++        if (g3_enabled) {
++            ggml_g3_trace_set_invocation(g3_previous);
++            std::fprintf(stderr, "G3_TARGET_END_V3 invocation=%llu rc=%d correlation=host_scope\n",
++                (unsigned long long) g3_id, ret);
++            std::fflush(stderr);
++        }
+ 
+         metrics.on_decoded(slots);
+ 

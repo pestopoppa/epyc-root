@@ -1,0 +1,23 @@
+EXP09 partial result analysis
+
+Source: /mnt/raid0/llm/tmp/brf-exp09/out/results.jsonl
+Scope: descriptive analysis of non-dryrun cell records in results.jsonl; job semantics read from job.py.
+
+Observed 37 cells across 12 distinct items. No results for unrun cells are imputed.
+
+By arm (means are per observed cell):
+- control: n=12; accuracy=0.810; retention=0.417; parsed=12/12 (parse failures=0); answer completion tokens mean=81.8, median=73.0.
+- verified_quote: n=9; accuracy=0.732; retention=0.730; parsed=8/9 (parse failures=1); answer completion tokens mean=186.7, median=196.
+- shape_header: n=8; accuracy=0.500; retention=1.000; parsed=4/8 (parse failures=4); answer completion tokens mean=194.0, median=232.0.
+- pointer_only: n=8; accuracy=0.271; retention=0.000; parsed=8/8 (parse failures=0); answer completion tokens mean=66.2, median=69.0.
+
+Exact matched parsed-answer comparison against control (shared observed item, both parsed; strict equality across exit_status, n_failed, failed_ids, first_exception, need_fetch):
+- verified_quote: 1/8 exact; field matches {'exit_status': 8, 'n_failed': 8, 'failed_ids': 2, 'first_exception': 7, 'need_fetch': 3}.
+- shape_header: 1/4 exact; field matches {'exit_status': 4, 'n_failed': 4, 'failed_ids': 2, 'first_exception': 3, 'need_fetch': 2}.
+- pointer_only: 0/8 exact; field matches {'exit_status': 8, 'n_failed': 0, 'failed_ids': 1, 'first_exception': 1, 'need_fetch': 0}.
+
+Planted mismatch mechanism: for each verified_quote cell, job.py takes a real FAILED line (or last line fallback), changes its final byte, and checks it with the same substring verifier. A planted mismatch is counted rejected when verification reports an unverified quote. It fired in 9/9 observed verified_quote cells. This validates that byte mismatch rejection branch executed in these records; it does not establish broader correctness.
+
+Futility: after at least four verified_quote cells, job.py checks whether current verified_quote accuracy sum plus one point for every remaining corpus item is strictly below the control accuracy total. The logged stop occurred after 9 verified_quote cells: sum 6.592 + 3 remaining = 9.592 < control total 9.716999999999999. This is the script’s operational futility decision, explicitly labeled not a gate result.
+
+Partial-run caveats: different arms have different observed cell counts; control was complete (12), while verified_quote stopped at 9 and the later arms have 8 records each. Accuracy and retention means are descriptive over those observed cells and are not balanced paired estimates. Completion-token lengths are the answer-generation call’s usage, not worker-summary generation tokens. Shape-header has four unparseable answer records.
