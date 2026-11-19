@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T09:23:51Z",
+  "generated_at": "2026-11-19T09:30:11Z",
   "nodes": [
     {
       "age_days": 9,
@@ -2292,7 +2292,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 210,
+          "line": 211,
           "name": "iqk-iquant-enablement",
           "open": 5,
           "readiness": "ready"
@@ -2301,7 +2301,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 656,
+          "line": 657,
           "name": "tq3-quantization-evaluation",
           "open": 3,
           "readiness": "ready"
@@ -3181,20 +3181,20 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 74,
-      "dispatchable": 25,
+      "closed": 80,
+      "dispatchable": 26,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
-      "last_advanced": "2026-11-18",
+      "last_advanced": "2026-11-19",
       "next_action": "Make PROD-KERNEL-HOOK-NOT-LIVE live in /workspace, then AUTONOMY-DIGEST-REVIEW and the HITL-R4/R6/R8 D9 package",
-      "open": 25,
+      "open": 26,
       "priority": 0.041,
       "priority_basis": {
         "campaign": 1,
