@@ -1,0 +1,5 @@
+# 2026-11-19 — handoff triattention-kv-selection
+
+## 03:44Z — Consume duplicate PCA r9 run-end: inconclusive result already filed
+
+LSA-QUALITY-32K: duplicate run-end for `lsa-quality-32k-20261106-r9-pca` (rc=75, operator STOP). `file_result.py --verdict-json ... --no-reclaim` returned NOOP: already FILED; no new filing or quality verdict is claimed. Existing verdict is inconclusive. PCA ledger `/mnt/raid0/llm/tmp/lsa-quality-screen-20261106/r3/out/arms-nothink/pca.jsonl`, SHA-256 `ce5b8ddfdb720cc4602276302fac43549649a0b4c414d65cffa2fb0bf09bcac9`: A 6/8 pass, B 17/24 pass, C 12/20 pass (20/32 heldout complete). Dense has 23/24 B cells and no heldout; no combined RESULT.json exists. KEEP-QUALITY/FUTILE remains unresolved and the parent box stays open. Earlier verdict SHA-256 `d254a212e2f284c698d782f0fa57999d611cbd71204be83cba1f34948ed5b1e7`. r9 mask worker used torch 2.6.0+cpu in llama-gguf-convert; earlier cells used the old research environment. PCA end and filing-due alerts acknowledged. No republish, scratch reclaim, or new boxes. [no-belief: duplicate event; no new scientific conclusion]
