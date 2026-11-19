@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 518
+      "open": 519
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1457,7 +1457,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1038,
+          "line": 1039,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1467,7 +1467,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1654,
+          "line": 1655,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1477,7 +1477,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1801,
+          "line": 1802,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
@@ -2339,7 +2339,7 @@
       "closed": 147,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 39,
+      "open": 40,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2348,7 +2348,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 188,
+      "total": 189,
       "tracks": [
         {
           "blocked": 1,
@@ -2368,10 +2368,10 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 799,
+          "line": 800,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 29
+          "open": 30
         }
       ]
     },
