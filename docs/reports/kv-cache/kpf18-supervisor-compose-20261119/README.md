@@ -1149,3 +1149,69 @@ Broader validation: all 86 unittest tests outside historical `test_supervisor.py
 PASS; its previously documented unavailable R9 inputs remain excluded.
 `git diff --check` PASS. Session-bus drain refuses the unregistered kvu slug;
 no other session outbox was used.
+
+
+### 2026-11-19 — seal and check the native application DSO closure
+
+Actual ELF inspection exposed a publication prerequisite defect: the accepted
+server path is a 17,984-byte wrapper. `readelf -d` names
+`libllama-server-impl.so` as DT_NEEDED; that implementation names
+`libllama-common.so.0`, `libmtmd.so.0`, `libllama.so.0` and ggml libraries.
+The previous eight-role execution inventory required none of those four
+application libraries. Replaying HEAD's pre-fix `custody()` in memory against
+an eight-role private inventory returned success. No native binary was run.
+
+`execution_admission.ROLES` now requires twelve roles: Python, shell, flock,
+server, the four ggml libraries, server implementation, llama, llama-common
+and mtmd. Old incomplete execution inventories refuse before driver import.
+After retained `read_back()` succeeds, the current Server startup additionally
+requires all eight application DSOs in the captured child's `/proc/PID/maps`.
+Each role must have a distinct device/inode, the expected resolved path and
+sealed SHA-256. Missing, deleted, replaced, aliased, drifted and extra
+application mappings refuse. Birth ticks bracket the read; zombies refuse.
+The readback records the proved paths, hashes, devices and inodes. A mapping
+failure latches native-context Abort before client exposure or residency
+continuation and leaves the captured server registered for existing cleanup.
+
+Seven new model-free tests cover the complete closure and duplicate mapping
+segments, each of eight missing mappings and content mutations, replacement
+inode, deleted and extra application mapping, aliased roles, absent pin,
+changed birth and legacy inventory rejection. Installed startup controls now
+include mapping refusal in both admission modes (18 isolated startup controls);
+24 existing native-context controls and actual-input read-only preflight also
+pass. Native peers and mapping callback in those installed startup tests are
+explicit private fixtures; the seven mapping tests exercise the real verifier
+against synthetic proc files and distinct artifacts.
+
+Validation: `python3 -B -m unittest discover -s
+ docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p 'test_native*.py' -v`
+(10 tests); the other scoped test files excluding historical
+`test_supervisor.py` pass (83 tests), 93 total. The historical exclusion remains
+its documented unavailable R9 source, not a claimed pass. No model content was
+hashed or loaded. System/ROCm library custody is outside this application DSO
+closure; no persistent installation, native cleanup, GPU residency, publisher
+smoke, cancellation or layout verdict is established. Parent KPF-18.0d remains
+open and no row was published. Next seal actual provider/artifact inputs using
+the twelve-role contract, install the R7 successor, implement its lifecycle
+launcher and publish through `publish_row.py`.
+
+Actual ELF identities, existing files under
+`/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/` (SHA-256):
+
+- `llama-server`: `2be7a16ed6d3712d82a36c668417b4dcec8d9cadd13a682e069cb4d57b9d0635`
+- `libllama-server-impl.so`: `58e8905f269b9e6f6f38354f826ea83cbaf9b7f9a9d76e502ec54840394f9269`
+- `libllama.so.0`: `33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64`
+- `libllama-common.so.0`: `c02f4c9f8c051c7ec314179d52436d13f97dd873d6a0316f616f8789f16d3989`
+- `libmtmd.so.0`: `e823b5ec2bb280e2fb74d68acbcfb5a19c2ba530e9af9292e3cf9b0fc0ee92e2`
+
+Source identities (SHA-256):
+
+- `execution_admission.py`: `4911a561b6eaaece01d3eeec1276d78850bd25d7fa23e5802e9c397a2d5653eb`
+- `execution_binding.py`: `87ed7b50b9ebe0453cb74c8fd6ac76f38b697e098b0839f48721434c06757aea`
+- `test_native_custody.py`: `88e0b08f8bde6edb7bcf42f999e73175b90fb412d649056abdc38c50fa3916b4`
+- `test_native_context.py`: `86b53074044a7ead996e35870bfd125db0b717630a4e5a290bc43b3bce8ce1db`
+
+GitNexus status and upstream impact both refused in this unindexed sparse lane;
+manual review bounds changes to current execution custody, opt-in native
+startup and tests. Session-bus drain refused unregistered roster id `kvu`;
+no other outbox was used. [no-belief: model-free software regression tests]

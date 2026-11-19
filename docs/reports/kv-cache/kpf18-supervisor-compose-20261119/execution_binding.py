@@ -234,6 +234,12 @@ def prepare(seal, admission, captured):
                     ctx.check_boundary()
                     self.readback = self.read_back()
                     ctx.check_boundary()
+                    try:
+                        self.readback['sealed_native_mappings'] = admission.native_mappings(seal, self.proc.pid)
+                    except Exception as error:
+                        ctx._current_terminal_refusal = f'native mapping custody refusal: {error}'
+                        raise gate.Abort(ctx._current_terminal_refusal) from error
+                    ctx.check_boundary()
                     ctx.client = client
                     if not gate.CPU_MODE:
                         gate.time.sleep(2.5)

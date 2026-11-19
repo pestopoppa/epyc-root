@@ -16,7 +16,9 @@ import sys
 import time
 
 FLAGS = Path('/mnt/raid0/llm/tmp/compute-flags')
-ROLES = {'python', 'shell', 'flock', 'server', 'ggml', 'ggml_base', 'ggml_cpu', 'ggml_hip'}
+NATIVE_ROLES = {'ggml', 'ggml_base', 'ggml_cpu', 'ggml_hip',
+                'server_impl', 'llama', 'llama_common', 'mtmd'}
+ROLES = {'python', 'shell', 'flock', 'server'} | NATIVE_ROLES
 
 
 def regular(path):
@@ -194,3 +196,61 @@ def recheck(seal, captured):
     if contract(config) != grant:
         raise ValueError('grant changed before driver main')
     provider.recheck(witness)
+
+
+def native_mappings(seal, pid, proc_root=Path('/proc')):
+    """Bind application DSOs to the owned child's mappings, not just its wrapper.
+
+    System/ROCm libraries are outside this application-library closure. No
+    library is loaded here, and neither model files nor process names are read.
+    """
+    if type(pid) is not int or pid <= 0:
+        raise ValueError('captured native PID required')
+    root = proc_root / str(pid)
+    def birth():
+        fields = (root / 'stat').read_text().rsplit(') ', 1)[1].split()
+        if fields[0] == 'Z':
+            raise ValueError('native child is zombie')
+        return fields[19]
+    started = birth()
+    expected = {role: Path(seal['execution']['artifacts'][role]) for role in NATIVE_ROLES}
+    # Keep the exact map spelling/device/inode. resolve()/samefile() alone can
+    # silently attest a replacement file while an older inode remains mapped.
+    mapped = {}
+    for line in (root / 'maps').read_text().splitlines():
+        fields = line.split(None, 5)
+        if len(fields) != 6:
+            continue
+        name = fields[5]
+        if not name.startswith('/') or not any(
+                Path(name).name.startswith(prefix) for prefix in ('libllama', 'libggml', 'libmtmd')):
+            continue
+        if name.endswith(' (deleted)'):
+            raise ValueError('deleted native application mapping')
+        major, minor = (int(x, 16) for x in fields[3].split(':'))
+        identity = (major, minor, int(fields[4]))
+        if name in mapped and mapped[name] != identity:
+            raise ValueError('ambiguous native application mapping')
+        mapped[name] = identity
+    identities = {}
+    result = {}
+    for role, path in expected.items():
+        st = path.stat()
+        identity = (os.major(st.st_dev), os.minor(st.st_dev), st.st_ino)
+        # Every application-library role must identify its own sealed artifact.
+        if identity in identities:
+            raise ValueError('aliased native application roles')
+        identities[identity] = role
+        names = [name for name, observed in mapped.items() if observed == identity]
+        if len(names) != 1 or Path(names[0]).resolve() != path.resolve():
+            raise ValueError('missing or mismatched native application mapping: ' + role)
+        expected_sha = seal['sources'].get(str(path))
+        if expected_sha is None or hashlib.sha256(path.read_bytes()).hexdigest() != expected_sha:
+            raise ValueError('native mapped artifact drift: ' + role)
+        result[role] = {'path': names[0], 'sha256': expected_sha,
+                        'device': [identity[0], identity[1]], 'inode': identity[2]}
+    if set(mapped.values()) != set(identities):
+        raise ValueError('unsealed native application mapping')
+    if birth() != started:
+        raise ValueError('native child changed during mapping check')
+    return result

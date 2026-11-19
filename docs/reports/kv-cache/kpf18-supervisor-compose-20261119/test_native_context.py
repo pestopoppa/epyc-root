@@ -24,7 +24,7 @@ class NativeContext(unittest.TestCase):
     def test_installed_startup_interruptions(self):
         for mode in ('official', 'publisher-smoke'):
             for event in ('valid', 'linkage', 'prelaunch', 'health', 'healthy',
-                          'readback', 'residency', 'provider'):
+                          'readback', 'residency', 'provider', 'mappings'):
                 with self.subTest(mode=mode, event=event):
                     result = subprocess.run(
                         [sys.executable, '-I', '-B', __file__, '--worker', mode, 'startup-' + event],
@@ -84,6 +84,7 @@ def worker(admission_mode, mutation):
             def __getattribute__(self, name):
                 if name == 'capture':
                     self.__dict__['FLAGS'] = fixture.flags
+                    captured['admission'] = self
                     original = super().__getattribute__(name)
                     def capture(seal):
                         result = original(seal)
@@ -148,6 +149,10 @@ def worker(admission_mode, mutation):
                             seen.append('readback')
                             if event == 'readback': stop()
                             return {'checked': True}
+                        def mappings(*args):
+                            seen.append('mappings')
+                            if event == 'mappings': raise ValueError('private mapping drift')
+                            return {'private': True}
                         def residency():
                             seen.append('residency')
                             if event == 'residency': stop()
@@ -166,6 +171,7 @@ def worker(admission_mode, mutation):
                                 (gate, 'Client', {'return_value': NS(health=health)}),
                                 (gate.threading, 'Thread', {'return_value': NS(start=lambda: None)}),
                                 (gate.time, 'sleep', {'side_effect': sleep}),
+                                (captured['admission'], 'native_mappings', {'side_effect': mappings}),
                                 (srv, 'run_linkage', {'side_effect': linkage}),
                                 (srv, 'full_cmd', {'return_value': ['/inert/server']}),
                                 (srv, 'read_back', {'side_effect': readback}),
@@ -175,10 +181,11 @@ def worker(admission_mode, mutation):
                             launch = stack.enter_context(patch.object(gate.subprocess, 'Popen', return_value=proc))
                             if event == 'valid':
                                 srv.start()
-                                assert srv.readback == {'checked': True}
+                                assert srv.readback == {'checked': True, 'sealed_native_mappings': {'private': True}}
                                 assert ctx.client is not None
                             else:
-                                with self_test.assertRaisesRegex(gate.Abort, 'provider lost' if event == 'provider' else 'STOP'):
+                                reason = {'provider': 'provider lost', 'mappings': 'mapping drift'}.get(event, 'STOP')
+                                with self_test.assertRaisesRegex(gate.Abort, reason):
                                     srv.start()
                             if event in ('linkage', 'prelaunch'):
                                 launch.assert_not_called()
@@ -192,6 +199,8 @@ def worker(admission_mode, mutation):
                             if event in ('health', 'healthy', 'provider'):
                                 assert seen.count('health') == 1
                                 assert 'readback' not in seen
+                            if event == 'mappings':
+                                assert ctx.client is None, 'unqualified client escaped startup'
                             if event != 'valid' and event != 'residency':
                                 assert 'residency' not in seen
                             if event != 'valid':
