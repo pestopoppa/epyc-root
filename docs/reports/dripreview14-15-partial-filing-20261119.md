@@ -67,3 +67,50 @@ Existing prospective VB-REPL-COMPOSITE-WRITE covers the comparator native source
 no new source class or measurement warrant is created.
 
 M-12k smoke evidence SHA-256: `5accda020487bac59928419d7354069468f0aba0225ffc056fc9223b9562ca96`.
+
+## Upfront second window, ended 23:06Z
+
+This is a new run-end event, not a duplicate of the 21:50Z interruption.
+`dripreview15-upfront-20261119` resumed at 21:52:17Z on regions 0-23 and
+ended at 23:06:06Z with rc=75, reason=hard-end (4,429 seconds). Alert key
+`22f208a7a70e2954d52bebb1` is acknowledged. The earlier empty FILED marker
+predates this window end; the owner correction files the new checkpoint as
+**INCOMPLETE / INCONCLUSIVE** and preserves the earlier marker.
+
+Cumulative retained episodes are indices 0 through 4 in every cell: **n=5
+fully paired**, all-seven-fields exact-correct **current 0/5, bounded_k3 0/5,
+half_first25 0/5**. Current and half_first25 each have five no_answer records;
+bounded_k3 has one wrong, three no_answer and one partial. No bad_final record
+is retained. Every retained record matches the native contract-binding.json,
+variant upfront-dependent-research-v1 and producer commit
+`fe2c0b9e3b5c127aef300229a66a9e5197a8a93a`; indices are unique per cell.
+
+The first frozen look is n=10. Zero correct at n=5 does not authorize a floor
+stop, separation, equivalence or comparator-unseparability claim. The native
+result.json is still absent; launcher progress contains two server-ready
+records, neither an accuracy result. D-RI-PREVIEW-1.2 stays open. Resume only
+missing episodes under the existing binding and frozen n=10/20/30 stops;
+retain the original n=30 cap. The continuation must declare checkpoint-aware
+resumability and account for repeated short windows; this is a hard-end
+interruption, not a failed model qualification.
+
+Native evidence at filing (SHA-256; no source, logs or cells copied):
+
+- `/mnt/raid0/llm/tmp/compute-flags/grants/dripreview15-upfront-20261119.ended`:
+  `0bb5543f522fefd2e0f1d54dfe0fed3036aa298d84914962368f0f54c6787b0d`.
+- `/mnt/raid0/llm/tmp/episodic-memory-integrity/dripreview15-upfront-20261119/out/results.jsonl`:
+  `cc9c1f6f95c412157daf5eb5515a88a8ffc103331ef12f7309f2270964aeeca4`.
+- `/mnt/raid0/llm/tmp/episodic-memory-integrity/dripreview15-upfront-out-20261119/cells/contract-binding.json`:
+  `a886e09ef93a3230220e0f84cb17ee3837350ee9f706ac376018da5256c17290`.
+- Same cells directory, `worker_general__current.jsonl`:
+  `24db64008dcffa9b1512e71ca8d5042169e8832368890167a41799d2918fb8ff`.
+- Same cells directory, `worker_general__bounded_k3.jsonl`:
+  `0fc69fbc04452a18252d640ead11cedc9b4d5ade1e2b117a3c15030bb5a3f3b9`.
+- Same cells directory, `worker_general__half_first25.jsonl`:
+  `c820415dea601ba6f7c5e3b4974612b5606b71b84ffe496d6d39903d8f67b046`.
+
+This supersedes only the earlier upfront checkpoint counts, not the contract-v2
+filing or any frozen decision rule. Existing VB-REPL-COMPOSITE-WRITE covers
+the producer; these are retained observations, not reconstructed measurement
+warrants. GitNexus status/impact found no index and the prescribed wrapper was
+denied CPU admission; changed surface is report/handoff prose only.
