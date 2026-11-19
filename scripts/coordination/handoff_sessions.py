@@ -1696,6 +1696,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 log(flags, f"NOOP {slug}: turn completed nothing (no landed tick, no row published, no filing) [{e['noop_turns']} consecutive]")
             else:
                 e["noop_turns"], e["last_effect"] = 0, effect
+                tg.note_auto_unpark_progress(e)  # a productive turn clears the fruitless-unpark count (D9 2026-11-19)
             netprog_record(flags, slug, e, gc)
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True

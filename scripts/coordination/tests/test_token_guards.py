@@ -291,3 +291,15 @@ def test_operator_gate_blocks_resume_and_auto_unpark():
     assert not tg.auto_unpark_eligible(e, 0)
     ok, why = tg.resume_verdict(e, 0)
     assert not ok and why.startswith("operator-gate:")
+
+
+def test_productive_turn_resets_auto_unpark_cap():
+    r = "no progress evidence: x"
+    e = {"parked": {"reason": r, "at": "x"}}
+    tg.auto_unpark(e, 0)
+    e["parked"] = {"reason": r, "at": "x"}
+    tg.auto_unpark(e, 1)
+    e["parked"] = {"reason": r, "at": "x"}
+    assert not tg.auto_unpark_eligible(e, 2), "2 fruitless unparks hit the cap"
+    tg.note_auto_unpark_progress(e)
+    assert tg.auto_unpark_eligible(e, 3), "a productive turn clears the count"
