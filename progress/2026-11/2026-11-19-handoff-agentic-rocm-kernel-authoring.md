@@ -43,3 +43,7 @@ Filed the previously recorded C6-26 re-pin result: rc=0, 26/26 runtime behaviour
 ## 02:37Z — File rock-aiter-prebuild-r4-20261105 verdict
 
 Filed ROCK-AITER prebuild r4: rc=0, RESULT complete; 41 final modules built or cached, five build failures and one 7200 s timeout. Its ops_ready gate lists fused_moe_ck2stage, mha_varlen_ck and moe_sorting; build readiness alone does not establish runtime correctness. RESULT.json SHA-256 8373d0ad17643b98b2ba4c4ab620bf2d8c39eae7f9d765b093bc1e5baef66721; results.jsonl SHA-256 7a361491c365a628578198440d6668c6b9ebd655c6521cc1304e8fbd39261e36, under /mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-prebuild-20261105/out/. The existing ROCK-AITER-GFX90A box already records later runtime and timing verdicts and is closed. [belief: cc]
+
+## 02:38Z — Inspect the dispatched AITER run-end and the C6 controller fix checkpoint
+
+The dispatched vllm-aiter-gfx90a-gpu-20261111-r3 event was already filed on 2026-11-12 with its receipt and ROCK-AITER-GFX90A-VLLM tick. The existing verdict records attention KEEP (prefill 1.109x/1.103x), GEMM and RMS NO_GAIN; result SHA-256 cb663f174e9e7c98c538c088ebed0b1d6cfb8763b3ce4f82bbf11b051baeb52c. The operator parked the vLLM track. INF48-LIVE-1's typed EvidenceProducerError fix resides in epyc-inference-research; this dispatch limits edits and commits to the epyc-root lane, so that fix cannot be implemented under the current lane restriction.
