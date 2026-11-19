@@ -218,6 +218,35 @@ def ratification(flags: str, slug: str) -> tuple[bool, str]:
     return True, f"ratified by {d['by']} at {d['at']}: {d['reason']}"
 
 
+def ratification_doc(flags: str, slug: str) -> dict:
+    """The parsed release file (only meaningful after ratification() returned ok), else {}."""
+    try:
+        with open(os.path.join(ratify_dir(flags), f"{slug}.json")) as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def release_covers_row(d: dict, rid: str) -> tuple[bool, str]:
+    """D9 2026-11-19 scoped releases: a release with `rows` (exact ids or id-prefixes) admits only matching rows; one
+    without `rows` admits every row but is UNSCOPED (the caller warns)."""
+    rows = d.get("rows")
+    if rows is None:
+        return True, "UNSCOPED"
+    if not isinstance(rows, list):
+        return False, "release `rows` is not a list"
+    for r in rows:
+        if isinstance(r, str) and r and (rid == r or rid.startswith(r)):
+            return True, f"row matches release scope {r!r}"
+    return False, f"row {rid!r} is outside the release scope {rows}"
+
+
+def release_allows_unpark(d: dict) -> bool:
+    """A release unparks the gated session only with an explicit `allow_unpark: true` (default false)."""
+    return d.get("allow_unpark") is True
+
+
 def unpark(e: dict) -> None:
     e.pop("parked", None)
     e["resume_ts"], e["noop_turns"] = [], 0

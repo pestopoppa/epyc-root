@@ -2305,6 +2305,12 @@ def unpark_cmd(flags, reg, slug) -> int:
             log(flags, f"UNPARK-REFUSED {slug}: operator gate ({e['operator_gate'].get('reason')}); {why}")
             print(f"REFUSED: {slug} is operator-gated ({e['operator_gate'].get('reason')}); {why}", file=sys.stderr)
             return 3
+        if not tg.release_allows_unpark(tg.ratification_doc(flags, slug)):
+            msg = (f"release file for {slug} does not set \"allow_unpark\": true - it releases rows only, never the held "
+                   f"session (D9 2026-11-19)")
+            log(flags, f"UNPARK-REFUSED {slug}: {msg}")
+            print(f"REFUSED: {msg}", file=sys.stderr)
+            return 3
         e.pop("operator_gate", None)
         log(flags, f"GATE-LIFTED {slug}: {why}")
     tg.unpark(e)

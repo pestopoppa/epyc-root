@@ -79,3 +79,24 @@ def test_champion_row_is_never_gated(tmp_path):
     (tmp_path / "handoff-sessions.json").write_text(json.dumps({"sessions": {}}))
     for rid in ("c14-fold-build-20261118", "promote-c15-keep", "promotion-c13-gate"):
         pr.check_operator_gate({"id": rid, "handoff_task": "kernel-champion-and-promotion.md:C14"}, str(tmp_path))
+
+
+def test_scoped_release_admits_only_listed_rows(flags):
+    ratify(flags, "kp", rows=["kp-meas-", "kp-exact-1"])
+    pr.check_operator_gate({"id": "kp-meas-r2", "handoff_task": "kernel-promotion.md:T1"}, flags)
+    pr.check_operator_gate({"id": "kp-exact-1", "handoff_task": "kernel-promotion.md:T1"}, flags)
+    with pytest.raises(rf.Refused, match="outside the operator release scope"):
+        pr.check_operator_gate({"id": "kp-loop-r1", "handoff_task": "kernel-promotion.md:T1"}, flags)
+
+
+def test_unscoped_release_warns(flags, capsys):
+    ratify(flags, "kp")
+    pr.check_operator_gate({"id": "kp-r1", "handoff_task": "kernel-promotion.md:T1"}, flags)
+    assert "UNSCOPED" in capsys.readouterr().err
+
+
+def test_scoped_rowprefix_release(flags):
+    ratify(flags, "rowprefix-v11-", rows=["v11-meas-"])
+    pr.check_operator_gate({"id": "v11-meas-1", "handoff_task": "other.md:T1"}, flags)
+    with pytest.raises(rf.Refused, match="outside"):
+        pr.check_operator_gate({"id": "v11-bench", "handoff_task": "other.md:T1"}, flags)

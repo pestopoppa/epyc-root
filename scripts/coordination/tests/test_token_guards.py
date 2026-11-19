@@ -323,3 +323,25 @@ def test_purge_filed_events_drops_only_filed_and_referenced(tmp_path, monkeypatc
     assert hs.purge_filed_events(flags, st, S) == 1
     assert [x["rid"] for x in st["queue"]] == ["row-b", "row-c", "aw-1"]
     assert "row-a" in st["delivered"]
+
+
+def test_unpark_needs_allow_unpark(tmp_path, monkeypatch):
+    flags = str(tmp_path)
+    d = tmp_path / "operator-ratify"
+    d.mkdir()
+    monkeypatch.setattr(hs, "log", lambda *a, **k: None)
+    rel = {"slug": "g", "by": "operator", "at": "x", "reason": "measurement rows only"}
+    (d / "g.json").write_text(json.dumps(rel))
+    reg = {"sessions": {"g": {"operator_gate": {"reason": "hold"}, "parked": {"reason": "operator-gate: hold"}}}}
+    assert hs.unpark_cmd(flags, reg, "g") == 3, "a rows-only release never unparks"
+    assert reg["sessions"]["g"].get("operator_gate")
+    (d / "g.json").write_text(json.dumps(dict(rel, allow_unpark=True)))
+    assert hs.unpark_cmd(flags, reg, "g") == 0
+    assert not reg["sessions"]["g"].get("operator_gate")
+
+
+def test_release_covers_row():
+    assert tg.release_covers_row({}, "x") == (True, "UNSCOPED")
+    assert tg.release_covers_row({"rows": ["a-"]}, "a-1")[0]
+    assert not tg.release_covers_row({"rows": ["a-"]}, "b-1")[0]
+    assert not tg.release_covers_row({"rows": "a-"}, "a-1")[0]

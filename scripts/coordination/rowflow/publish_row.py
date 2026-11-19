@@ -307,6 +307,18 @@ def ratified(flags, name):
     return True, f"ratified by {d['by']} at {d['at']}"
 
 
+def check_release_scope(flags, name, rid):
+    """D9 2026-11-19: a release with `rows` admits only matching row ids; an unscoped one admits all, with a WARN."""
+    d = rf.load_json(os.path.join(flags, RATIFY_SUBDIR, f"{name}.json")) or {}
+    rows = d.get("rows")
+    if rows is None:
+        print(f"WARN: operator release {name}.json is UNSCOPED (no `rows`): it admits every row of its handoff; "
+              f"write scoped releases with \"rows\": [ids or id-prefixes]", file=sys.stderr)
+        return
+    rf.need(isinstance(rows, list) and any(isinstance(r, str) and r and (rid == r or rid.startswith(r)) for r in rows),
+            f"OPERATOR-GATED: row {rid!r} is outside the operator release scope {name}.json rows={rows}")
+
+
 def check_operator_gate(spec, flags):
     """Operator gate (2026-11-18): refuse a row owned by an operator-gated session's handoff, or whose id starts with a
     registry operator_gated_row_prefixes entry, unless operator-ratify/<slug>.json (rowprefix-<prefix>.json) exists."""
@@ -317,6 +329,7 @@ def check_operator_gate(spec, flags):
         if pre and rid.startswith(pre):
             ok, why = ratified(flags, f"rowprefix-{pre}")
             rf.need(ok, f"OPERATOR-GATED: row {rid!r} matches gated prefix {pre!r}; only the operator may release it ({why})")
+            check_release_scope(flags, f"rowprefix-{pre}", rid)
     f = os.path.basename(handoff_ref.file_of(str(spec.get("handoff_task") or "").strip()) or "")
     if not f:
         return
@@ -324,11 +337,13 @@ def check_operator_gate(spec, flags):
     if m:  # a production promotion handoff: released by the same version-prefix ratification
         ok, why = ratified(flags, f"rowprefix-{m.group(1)}")
         rf.need(ok, f"OPERATOR-GATED: handoff {f} is production kernel promotion; only the operator may release it ({why})")
+        check_release_scope(flags, f"rowprefix-{m.group(1)}", rid)
     for slug, e in (reg.get("sessions") or {}).items():
         if isinstance(e, dict) and e.get("operator_gate") and os.path.basename(str(e.get("handoff") or "")) == f:
             ok, why = ratified(flags, slug)
             rf.need(ok, f"OPERATOR-GATED: handoff {f} is owned by operator-gated session {slug!r} "
                         f"({e['operator_gate'].get('reason')}); only the operator may release it ({why})")
+            check_release_scope(flags, slug, rid)
 
 
 def check_handoff(spec, repo=None):
