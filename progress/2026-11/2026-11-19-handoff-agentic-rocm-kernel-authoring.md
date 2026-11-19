@@ -115,3 +115,7 @@ RKA-VERIFY-TILE-A3B-GPU-E2E was already ticked and filed on 2026-11-18, includin
 ## 04:29Z — Resolve duplicate run-end event for already filed gate/up CPU profile
 
 INF48-GATEUP-PROBE was already ticked and filed on 2026-11-18 with receipt present. NO_CANDIDATE: CPU paired-launch upper bound 1.52% at depth 0 and 1.25% at 8192, below 2%; proxy profiler and perf caveats are recorded in the verdict. Native result SHA-256 6e12809eb65ad3af378a720975f8e8935f8457471ea936da86f897283ceb1dfe. No duplicate tick.
+
+## 04:31Z — File completed RKA-A3B-N4-STEP GPU result
+
+Filed rka-a3b-n4-step-gpu-20261118 (rc=0): FUTILITY under the preregistered rule. At 32k n=4, B4R2/UNSET ratios by round were 0.9604, 1.0076, 0.9880; median 0.9880 (1.2% reduction, below 5% threshold). All four correctness processes passed; all timing processes proved HIP residency. Result SHA-256 0e923c1c55ebac4976c07fa6fefe7f3613df72613e84124669507b4b8c6cd42d. The handoff already records this result, its subsequent attribution and the completed box; filed the missing receipt. [belief: cc]
