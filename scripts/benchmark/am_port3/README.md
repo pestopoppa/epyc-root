@@ -71,8 +71,9 @@ attention output, and measure cache quantization effects explicitly.
 The solver holds N×T full attention and N×t least-squares matrices for one shard;
 capture must bound N before scheduling. No 32K model run, 36 GiB memory proof,
 16-layer cosine verdict, or default-off throughput/KLD comparison has been run.
-AM-PORT-3 remains open for the model capture driver, per-layer/head graph bias,
-C2 cache loading and a published calibration/decode row. This code does not alter
+AM-PORT-3 remains open for the model capture driver, linked patched-kernel
+validation and a published calibration/decode row; experimental graph/C2 hooks
+are supplied below. This code does not alter
 the existing per-cell beta implementation.
 
 ## Bounded native attention capture
@@ -147,14 +148,14 @@ used the AM-PORT-2 BUILD.json source pin above and verified its CPU-library dige
 before linking. Original evidence remains in
 `/mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-native/`; no binaries or
 source trees are vendored here. Real-model capture, NPZ conversion with original
-position/query IDs, shared selection, fitted carrier loading and decode remain
-unimplemented.
+position/query IDs, shared selection, end-to-end fitted carrier loading and
+decode remain unimplemented.
 
 ## Native beta mask and C2 loading primitives
 
 `native_carrier.h` is an explicit, standalone ggml interface, tested against the
-same approved header blobs and CPU-library digest above. It is not yet installed
-in `llama-graph.cpp` or the server. A driver/integration must:
+same approved header blobs and CPU-library digest above. The experimental patch below installs it
+in `llama-graph.cpp`; no serving kernel or server has been deployed. A driver/integration must:
 
 1. Assemble one complete `layer_fit` per global layer, pooling the fitted shards
    into head-major beta/C2 arrays; call `validate_layers` to require a single
@@ -200,5 +201,75 @@ diagnostics, not real-model quality evidence.
 
 Compile with the native-capture command above, substituting
 `test_native_carrier.cpp` and a scratch executable name; it takes no arguments.
-The native context/graph-input hook, raw-cache binding to actual cells, capture
-driver/NPZ conversion and bounded GPU row still remain. AM-PORT-3 stays open.
+The experimental context/graph-input hook and raw-cache binding are supplied
+below. Capture driver/NPZ conversion and a bounded GPU row remain. AM-PORT-3 stays open.
+
+
+## Experimental context and graph integration
+
+`integration.patch` applies only to detached scratch worktrees at
+`c9f2e34cea7a0e9ddac5ad7b2088bf06b56ee1db`. `apply_integration.py` refuses any
+other source commit, attached branch, main checkout or dirty tree, and installs
+the two lane-owned headers alongside the patch. It never edits a serving tree.
+
+```bash
+python3 scripts/benchmark/am_port3/apply_integration.py --source <detached-scratch-worktree>
+python3 scripts/benchmark/am_port3/check_integration.py \
+  --source <detached-scratch-worktree> --manifest <approved-CPU-build>/BUILD.json \
+  --out <new-empty-scratch-output>
+```
+
+The internal C++ API is `ctx->am_install(std::move(layer_fits), 0)`. Install once,
+after synchronizing and pruning the original cache to the COMMON original
+retained positions; do not reposition keys. The integration independently
+synchronizes, validates native model head geometry and exact coverage of every
+attention layer, resolves original positions through `llama_kv_cells`, and
+prepares every layer's C2 encoding before writing any layer. A late invalid
+layer therefore leaves all cache bytes unchanged. Backend transfer failures
+remain fatal, not recoverable transactions. `attention_cache()` resolves the
+hybrid's attention member, never its recurrent state. The driver must preserve
+the recurrent state corresponding to the original prompt.
+
+Context-owned state reaches graph parameters explicitly. Enabling it clears
+cached graph results, and graph reuse compares its identity. Each global layer
+registers its own `llm_graph_input_i`; its `set_input()` re-resolves current native
+cells and uploads head-specific beta on every evaluation, including reuse of an
+already allocated graph. Contiguous GQA groups, original causal/padding masks,
+and zero beta on newly appended rows are preserved. The fused CPU decode path
+is bypassed while active so it cannot silently ignore the graph carrier.
+
+This first integration permits ordinary causal FA on Qwen35, sequence zero,
+`n_seq_max=1`, single-stream untransposed storage and append-only queries beyond
+the installed frozen cache. It refuses DCA, SWA, sinks, ALiBi/softcap, shared
+cells, missing/duplicate positions, inconsistent head geometry and PORT-1 beta.
+Quantized K/V normally enables Hadamard rotations in this kernel; use F16 K/V
+for the first model run, or disable rotations **before original capture** and
+prove those coordinates. Loading unrotated C2 into a rotated cache is refused.
+F16 C2 conversion error must still enter the native quality verdict.
+
+A cache mutation epoch invalidates active fits after sequence removal/copy/keep,
+position changes, scalar-beta changes, clear, shift, stream copy, chunk injection
+or state restore. Even restoring the same positions invalidates the fit, because
+the restored V may be the original values. Conservative invalidation also applies
+to attempted mutations. Make a fresh context and repeat capture/prune/install
+after invalidation; installation is one-shot. Direct writes through raw tensor
+access are outside this API and forbidden while active. Saving an active cache
+does not serialize the fit and cannot yield a resumable fitted context.
+
+`check_integration.py` checks the exact tracked patch, installed header bytes,
+source pin and approved CPU-library digest, syntax-checks the three modified
+translation units, and runs native carrier/runtime tests. The runtime test uses
+actual native cell metadata and an already allocated CPU scheduler graph for two
+layers (4 query / 2 KV heads); it changes physical bindings between evaluations
+and verifies refreshed beta, mask holes and new-row zeros. This tests the input
+primitive's refresh; the active context deliberately refuses actual cache
+movement via its epoch. The carrier test also refuses a late-layer overflow
+without writing an earlier valid layer. Test evidence remains at
+`/mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-integration/check/TEST.json`.
+
+These checks do not link or execute a complete patched model kernel. The original
+CPU library supplies unchanged ggml operations only. Full patched CPU/HIP build,
+context-install/default-off decode checks, calibration driver/NPZ conversion,
+native compact-output quality, 36 GiB residency and 32K decode still require a
+published row. Multi-head HIP FA support and default-off throughput/KLD remain
+unmeasured; syntax and model-free tests cannot close those gates.

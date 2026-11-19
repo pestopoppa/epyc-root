@@ -129,7 +129,25 @@ inline graph_mask build_mask(ggml_context * ctx, ggml_tensor * base, int query_h
 // Prepare EVERY row before the first backend write. Invalid inputs, unsupported
 // layouts or quantization overflow therefore leave the cache bytes unchanged.
 // Backend transfer failure is fatal in ggml, not a recoverable transaction.
-inline void load_values(ggml_tensor * cache, int actual_layer,
+struct value_plan {
+    ggml_tensor * cache;
+    std::vector<int64_t> rows;
+    size_t head_bytes;
+    int heads;
+    std::vector<uint8_t> packed;
+
+    void write() const {
+        for (size_t h = 0; h < size_t(heads); ++h) {
+            for (size_t i = 0; i < rows.size(); ++i) {
+                const size_t offset = size_t(rows[i])*cache->nb[1] + h*head_bytes;
+                ggml_backend_tensor_set(cache, packed.data() + (h*rows.size() + i)*head_bytes,
+                                        offset, head_bytes);
+            }
+        }
+    }
+};
+
+inline value_plan prepare_values(ggml_tensor * cache, int actual_layer,
                         const layer_fit & fit, const row_binding & binding) {
     fit.validate();
     require(cache && cache->buffer && actual_layer == fit.layer,
@@ -160,12 +178,12 @@ inline void load_values(ggml_tensor * cache, int actual_layer,
             }
         }
     }
-    for (size_t h = 0; h < size_t(fit.kv_heads); ++h) {
-        for (size_t i = 0; i < n; ++i) {
-            const size_t offset = size_t(binding.rows[i])*cache->nb[1] + h*head_bytes;
-            ggml_backend_tensor_set(cache, packed.data() + (h*n + i)*head_bytes, offset, head_bytes);
-        }
-    }
+    return {cache, binding.rows, head_bytes, fit.kv_heads, std::move(packed)};
+}
+
+inline void load_values(ggml_tensor * cache, int actual_layer,
+                        const layer_fit & fit, const row_binding & binding) {
+    prepare_values(cache, actual_layer, fit, binding).write();
 }
 
 } // namespace am_carrier

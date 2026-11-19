@@ -1,0 +1,274 @@
+diff --git a/src/llama-context.cpp b/src/llama-context.cpp
+index 6f4fac217..d89fdb95e 100644
+--- a/src/llama-context.cpp
++++ b/src/llama-context.cpp
+@@ -1,4 +1,5 @@
+ #include "llama-context.h"
++#include "native_runtime.h"
+ 
+ #include "ggml.h"
+ #include "llama-arch.h"
+@@ -1402,6 +1403,10 @@ llm_graph_result * llama_context::process_ubatch(const llama_ubatch & ubatch, ll
+ #ifdef GGML_CPU_PROF
+     const int64_t t_phase0 = ggml_time_us();
+ #endif
++    if (am_fit) {
++        am_fit->validate_batch(ubatch);
++        for (const auto & fit : am_fit->layers) am_fit->bind(fit.layer, am_fit->cache->get_size());
++    }
+     if (mctx && !mctx->apply()) {
+         LLAMA_LOG_ERROR("%s: failed to apply memory context\n", __func__);
+         ret = GGML_STATUS_FAILED;
+@@ -1427,7 +1432,7 @@ llm_graph_result * llama_context::process_ubatch(const llama_ubatch & ubatch, ll
+     // EXL3 weights need the matrix executor's aux sources; the fused path calls vec_dot directly
+     // it also needs a previous graph with a logits row to write into, which a
+     // zero-output ubatch does not leave behind; that case takes the graph path
+-    if (llama_fused_decode_env_enabled() && model.supports_fused_decode() && model.exl3_aux.empty() &&
++    if (!am_fit && llama_fused_decode_env_enabled() && model.supports_fused_decode() && model.exl3_aux.empty() &&
+             gtype == LLM_GRAPH_TYPE_DEFAULT && !cparams.embeddings_nextn &&
+             ubatch.n_tokens == 1 && ubatch.n_seqs == 1 && ubatch.token != nullptr &&
+             llama_fused_decode_prev_logits_ok(res->get_logits(), model.vocab.n_tokens())) {
+@@ -2842,6 +2847,28 @@ ggml_cgraph * llama_context::graph_reserve(
+     return gf;
+ }
+ 
++void llama_context::am_install(std::vector<am_carrier::layer_fit> fits, llama_seq_id seq) {
++    synchronize();
++    am_carrier::require(!am_fit, "AM install is one-shot; use a fresh context for another fit");
++    am_carrier::require(model.arch == LLM_ARCH_QWEN35 && cparams.n_seq_max == 1 &&
++                        cparams.flash_attn && cparams.causal_attn && cparams.ctx_type == LLAMA_CONTEXT_TYPE_DEFAULT &&
++                        cparams.dca_chunk_size == 0 &&
++                        model.hparams.swa_type == LLAMA_SWA_TYPE_NONE &&
++                        model.hparams.f_max_alibi_bias == 0 && !model.hparams.attn_soft_cap,
++                        "AM install currently supports single-sequence Qwen35 ordinary FA only");
++    for (const auto & fit : fits) {
++        am_carrier::require(fit.layer >= 0 && uint32_t(fit.layer) < model.hparams.n_layer() &&
++                            fit.kv_heads == int(model.hparams.n_head_kv(fit.layer)) &&
++                            fit.value_width == int(model.hparams.n_embd_head_v(fit.layer)),
++                            "AM fit dimensions differ from native layer head geometry");
++    }
++    auto candidate = std::make_unique<am_carrier::context_state>(
++        am_carrier::attention_cache(memory.get()), seq, std::move(fits));
++    gf_res_prev->reset();
++    gf_res_reserve->reset();
++    am_fit = std::move(candidate);
++}
++
+ llm_graph_params llama_context::graph_params(
+                         llm_graph_result * res,
+                       const llama_ubatch & ubatch,
+@@ -2864,6 +2891,7 @@ llm_graph_params llama_context::graph_params(
+         /*.cb          =*/ graph_get_cb(),
+         /*.res         =*/ res,
+         /*.exl3_aux    =*/ &model.exl3_aux,
++        /*.am_fit      =*/ am_fit.get(),
+     };
+ }
+ 
+diff --git a/src/llama-context.h b/src/llama-context.h
+index c6ea6440d..2ce88ebe7 100644
+--- a/src/llama-context.h
++++ b/src/llama-context.h
+@@ -4,6 +4,7 @@
+ #include "llama-ext.h"
+ #include "llama-cparams.h"
+ #include "llama-graph.h"
++#include "native_carrier.h"
+ #include "llama-adapter.h"
+ #include "llama-impl.h"
+ #include "llama-memory.h"
+@@ -62,6 +63,10 @@ struct llama_context {
+ 
+     void synchronize();
+ 
++    // Experimental one-shot install; call after common-position pruning.
++    // Use a fresh context to return to the original cache; C2 is destructive.
++    void am_install(std::vector<am_carrier::layer_fit> fits, llama_seq_id seq = 0);
++
+     const llama_model   & get_model()   const;
+     const llama_cparams & get_cparams() const;
+ 
+@@ -309,6 +314,7 @@ private:
+     llama_cross cross; // TODO: tmp for handling cross-attention - need something better probably
+ 
+     llama_memory_ptr memory;
++    std::unique_ptr<am_carrier::context_state> am_fit;
+ 
+     // decode output (2-dimensional array: [n_outputs][n_vocab])
+     buffer_view<float> logits = {nullptr, 0};
+diff --git a/src/llama-graph.cpp b/src/llama-graph.cpp
+index c199fc356..2a7fd9a5a 100644
+--- a/src/llama-graph.cpp
++++ b/src/llama-graph.cpp
+@@ -1,4 +1,5 @@
+ #include "llama-graph.h"
++#include "native_runtime.h"
+ 
+ #include "llama-impl.h"
+ #include "llama-model.h"
+@@ -1653,6 +1654,7 @@ llm_graph_context::llm_graph_context(const llm_graph_params & params) :
+     mctx             (params.mctx),
+     cross            (params.cross),
+     exl3_aux         (params.exl3_aux),
++    am_fit           (params.am_fit),
+     samplers         (params.samplers),
+     cb_func          (params.cb),
+     res              (params.res),
+@@ -3095,7 +3097,17 @@ ggml_tensor * llm_graph_context::build_attn(
+         ggml_build_forward_expand(gf, mctx_cur->cpy_v(ctx0, v_cur, v_idxs, il));
+     }
+ 
+-    const auto & kq_mask = inp->get_kq_mask();
++    auto * kq_mask = inp->get_kq_mask();
++    if (am_fit) {
++        am_carrier::require(cparams.flash_attn && !kq_b && !sinks && !inp->self_k_rot && !inp->self_v_rot,
++                            "AM requires ordinary unrotated flash attention");
++        auto beta = std::make_unique<am_carrier::graph_input>(
++            ctx0, kq_mask, hparams.n_head(il), am_fit->layer(il),
++            [state = am_fit, il](int64_t capacity) { return state->bind(il, capacity); },
++            [state = am_fit](const llama_ubatch & batch) { state->validate_batch(batch); });
++        kq_mask = beta->mask.mask;
++        res->add_input(std::move(beta));
++    }
+ 
+     ggml_tensor * q = q_cur;
+     ggml_tensor * k = mctx_cur->get_k(ctx0, il);
+diff --git a/src/llama-graph.h b/src/llama-graph.h
+index 2cc064ae5..3040232e3 100644
+--- a/src/llama-graph.h
++++ b/src/llama-graph.h
+@@ -13,6 +13,8 @@
+ #include <map>
+ #include <unordered_map>
+ 
++namespace am_carrier { struct context_state; }
++
+ struct ggml_cgraph;
+ struct ggml_context;
+ struct ggml_tensor;
+@@ -801,10 +803,12 @@ struct llm_graph_params {
+     llm_graph_result * res;
+ 
+     const llama_exl3_aux_map * exl3_aux = nullptr;
++    const am_carrier::context_state * am_fit = nullptr;
+ 
+     // return true if the "other" params would result in a graph with the same topology as with the current params
+     //   having the same topology allows us to reuse the graph in some cases
+     bool allow_reuse(const llm_graph_params & other) const {
++        if (am_fit != other.am_fit) return false;
+         // first check the ubatch
+         bool can_reuse_ubatch =
+             ubatch.equal_seqs() == other.ubatch.equal_seqs() &&
+@@ -1020,6 +1024,7 @@ struct llm_graph_context {
+     const llama_memory_context_i * mctx;
+     const llama_cross            * cross;
+     const llama_exl3_aux_map     * exl3_aux = nullptr;
++    const am_carrier::context_state * am_fit = nullptr;
+ 
+     std::map<llama_seq_id, llama_sampler *> samplers;
+ 
+diff --git a/src/llama-kv-cache.cpp b/src/llama-kv-cache.cpp
+index a14d178c4..60492273e 100644
+--- a/src/llama-kv-cache.cpp
++++ b/src/llama-kv-cache.cpp
+@@ -368,6 +368,7 @@ llama_kv_cache::llama_kv_cache(
+ }
+ 
+ void llama_kv_cache::clear(bool data) {
++    ++am_mutation_epoch;
+     for (uint32_t s = 0; s < n_stream; ++s) {
+         v_cells[s].reset();
+         v_heads[s] = 0;
+@@ -384,6 +385,7 @@ void llama_kv_cache::clear(bool data) {
+ }
+ 
+ bool llama_kv_cache::seq_rm(llama_seq_id seq_id, llama_pos p0, llama_pos p1) {
++    ++am_mutation_epoch;
+     // TODO: refactor [TAG_KV_CACHE_SHARE_CELLS]
+     if (other) {
+         return true;
+@@ -452,6 +454,7 @@ bool llama_kv_cache::seq_rm(llama_seq_id seq_id, llama_pos p0, llama_pos p1) {
+ }
+ 
+ void llama_kv_cache::seq_cp(llama_seq_id seq_id_src, llama_seq_id seq_id_dst, llama_pos p0, llama_pos p1) {
++    ++am_mutation_epoch;
+     // TODO: refactor [TAG_KV_CACHE_SHARE_CELLS]
+     if (other) {
+         return;
+@@ -544,6 +547,7 @@ void llama_kv_cache::seq_cp(llama_seq_id seq_id_src, llama_seq_id seq_id_dst, ll
+ }
+ 
+ void llama_kv_cache::seq_keep(llama_seq_id seq_id) {
++    ++am_mutation_epoch;
+     // TODO: refactor [TAG_KV_CACHE_SHARE_CELLS]
+     if (other) {
+         return;
+@@ -571,6 +575,7 @@ void llama_kv_cache::seq_keep(llama_seq_id seq_id) {
+ }
+ 
+ void llama_kv_cache::seq_add(llama_seq_id seq_id, llama_pos p0, llama_pos p1, llama_pos shift) {
++    ++am_mutation_epoch;
+     // TODO: refactor [TAG_KV_CACHE_SHARE_CELLS]
+     if (other) {
+         return;
+@@ -624,6 +629,7 @@ void llama_kv_cache::seq_add(llama_seq_id seq_id, llama_pos p0, llama_pos p1, ll
+ }
+ 
+ void llama_kv_cache::seq_div(llama_seq_id seq_id, llama_pos p0, llama_pos p1, int d) {
++    ++am_mutation_epoch;
+     // TODO: refactor [TAG_KV_CACHE_SHARE_CELLS]
+     if (other) {
+         return;
+@@ -690,6 +696,7 @@ llama_pos llama_kv_cache::seq_pos_max(llama_seq_id seq_id) const {
+ }
+ 
+ bool llama_kv_cache::set_beta(llama_seq_id seq_id, llama_pos pos, float beta) {
++    ++am_mutation_epoch;
+     GGML_ASSERT(seq_id >= 0 && (size_t) seq_id < seq_to_stream.size());
+ 
+     auto & cells = v_cells[seq_to_stream[seq_id]];
+@@ -841,6 +848,7 @@ llama_kv_cache::slot_info_vec_t llama_kv_cache::prepare(const std::vector<llama_
+ }
+ 
+ bool llama_kv_cache::update(llama_context * lctx, bool do_shift, const stream_copy_info & sc_info) {
++    if (do_shift || !sc_info.empty()) ++am_mutation_epoch;
+     // TODO: refactor [TAG_KV_CACHE_SHARE_CELLS]
+     if (other) {
+         return true;
+@@ -2309,6 +2317,7 @@ bool llama_kv_cache::chunk_export(llama_io_write_i & io, llama_seq_id seq_id, ll
+ }
+ 
+ bool llama_kv_cache::chunk_inject(llama_io_read_i & io, llama_seq_id seq_id, llama_pos delta) {
++    ++am_mutation_epoch;
+     std::string why;
+     if (!chunk_supported(&why)) {
+         LLAMA_LOG_WARN("%s: chunk inject refused: %s\n", __func__, why.c_str());
+@@ -2748,6 +2757,7 @@ void llama_kv_cache::state_read_sinfo(
+   llama_state_seq_flags   flags,
+       slot_info_vec_t *   sinfos_out,
+ const slot_info_vec_t *   sinfos_in) {
++    ++am_mutation_epoch;
+     // TODO: refactor [TAG_KV_CACHE_SHARE_CELLS]
+     if (other) {
+         return;
+diff --git a/src/llama-kv-cache.h b/src/llama-kv-cache.h
+index 90ed08b07..af323fd30 100644
+--- a/src/llama-kv-cache.h
++++ b/src/llama-kv-cache.h
+@@ -161,6 +161,8 @@ public:
+     uint32_t get_n_stream() const;
+ 
+     bool get_has_shift() const;
++    uint64_t am_epoch() const { return am_mutation_epoch; }
++    bool am_has_rotation() const { return attn_rot_k || attn_rot_v; }
+ 
+     ggml_type type_k() const;
+     ggml_type type_v() const;
+@@ -305,6 +307,7 @@ public:
+     void get_prev_tokens(const llama_ubatch & ubatch, uint32_t n, std::vector<llama_token> & res) const;
+ 
+ private:
++    uint64_t am_mutation_epoch = 0;
+     const llama_model & model;
+     const llama_hparams & hparams;
+ 

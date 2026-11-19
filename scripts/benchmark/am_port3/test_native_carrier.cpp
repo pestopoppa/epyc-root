@@ -167,6 +167,14 @@ int main() {
         ggml_backend_buffer_clear(buf, 0);
         const auto zero = bytes(f16);
         bad = fit; bad.values.back() = 1.e10f;
+        refuses([&] {
+            std::vector<am_carrier::value_plan> plans;
+            plans.push_back(am_carrier::prepare_values(f32, 3, fit, binding));
+            check(bytes(f32) == std::vector<uint8_t>(ggml_nbytes(f32), 0), "prepare wrote first layer");
+            plans.push_back(am_carrier::prepare_values(f16, 3, bad, binding));
+            for (const auto & plan : plans) plan.write();
+        }, "late layer overflow accepted");
+        check(bytes(f32) == std::vector<uint8_t>(ggml_nbytes(f32), 0), "late layer failure wrote first layer");
         refuses([&] { am_carrier::load_values(f16, 3, bad, binding); }, "F16 overflow accepted");
         check(bytes(f16) == zero, "overflow wrote earlier valid C2 rows");
         for (auto * target : {f16, f32}) am_carrier::load_values(target, 3, fit, binding);
