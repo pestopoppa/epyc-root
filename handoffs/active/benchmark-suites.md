@@ -310,6 +310,17 @@ fleet models.** No inference runs without the standing region claim; no at-scale
         preserves ordered structured calls and distinguishes parse errors; its twelve synthetic tests pass,
         but the adapter is not wired to the upstream checker or a live transport. No benchmark result
         follows from this manifest.
+      2026-11-19: [single-turn Python bridge](../../proposed/cj567/bfcl_native.py)
+      binds the original official checker at Gorilla `70b6a4a2144597b1f99d1f4d3185d35d7ee532a4`,
+      uses its OpenAI tool converter with collision-checked exact reverse name mapping,
+      and posts input-only native HTTP requests. **9 integration tests + 12 adapter tests PASS**;
+      positive controls cover all 10 selected Python single-turn cases, with negative
+      argument/count controls, parser UNKNOWN and scripted HTTP-to-checker coverage.
+      [Validation and source bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/qualification.json).
+      This is software-control evidence, not fleet scoring or representativeness.
+      Parent remains open: implement official Java/JavaScript/SQL and multi-turn
+      state/execution paths for the remaining 16 cases, then ready live fleet capture.
+      Prospective custody task: `VB-BFCL-NATIVE-WIRE`. [no-belief: model-free software controls]
   - [x] **CJ-3d-ADAPTER — Prepare the native tool-call response adapter.** Convert ordered OpenAI-compatible function calls into the upstream V3 checker input shape, retain absent/malformed calls as parse errors, and validate malformed JSON, duplicate keys and ordering without invoking a model or defining scoring. The parent remains open until the pinned official checker and live transport are integrated. [Proposed adapter](../../proposed/cj567/openai_tool_calls.py). ✅ 2026-11-04 [belief: cc]
 - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the
       set: the published BFCL evidence is **unrankable today** (122B reports `bfcl_v4` 0.722,
