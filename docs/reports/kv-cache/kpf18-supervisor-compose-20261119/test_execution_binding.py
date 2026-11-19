@@ -25,8 +25,11 @@ class CurrentGuard(unittest.TestCase):
         self.guard_path.write_text('# inert retained guard\n')
         self.seal['sources'][str(self.guard_path)] = sha(self.guard_path)
         self.guard = NS(__file__=str(self.guard_path), BIN=Path('/historical/server'),
-                        boundary=object(), tests_and_enrollment=object())
-        self.driver = NS(guard=self.guard, OUT=self.result.parent)
+                        boundary=object(), tests_and_enrollment=object(),
+                        output_reserve=NS(check=lambda *a: True, owned_bytes=lambda p: 0),
+                        shutil=NS(disk_usage=lambda p: NS(free=1024**4)))
+        self.driver = NS(guard=self.guard, OUT=self.result.parent,
+                         item3=object(), item3_smoke=object())
         self.captured = self.gate.capture(self.seal)
         argv = patch.object(sys, 'argv', ['driver.py', '--out', str(self.result.parent)])
         argv.start(); self.addCleanup(argv.stop)
@@ -35,16 +38,35 @@ class CurrentGuard(unittest.TestCase):
         return self.binding.prepare(self.seal, self.gate, self.captured)
 
     def test_current_sources_attempt_root_server_and_preserved_checks(self):
-        boundary, enrollment = self.guard.boundary, self.guard.tests_and_enrollment
+        enrollment = self.guard.tests_and_enrollment
         output, bind = self.prepare()
         bind(self.driver)
         self.guard.sources()
         self.assertEqual(self.guard.attempt_root(), self.result.parent)
         self.assertEqual(output(), self.driver.OUT)
         self.assertEqual(self.guard.BIN, self.native)
-        self.assertIs(self.guard.boundary, boundary)
+        self.assertEqual(self.guard.boundary(), int(os.environ["FILLER_END"]))
+        self.assertIs(self.driver.item3, self.driver.item3_smoke)
         self.assertIs(self.guard.tests_and_enrollment, enrollment)
         with self.assertRaisesRegex(ValueError, 'already bound'): bind(self.driver)
+
+    def test_boundary_rechecks_admission_and_preserves_reserve_failure(self):
+        _, bind = self.prepare(); bind(self.driver)
+        with patch.object(self.guard.output_reserve, 'check', side_effect=RuntimeError('reserve exhausted')):
+            with self.assertRaisesRegex(RuntimeError, 'reserve exhausted'): self.guard.boundary()
+        with patch.object(self.captured[0], 'recheck', side_effect=ValueError('provider lost')):
+            with self.assertRaisesRegex(ValueError, 'provider lost'): self.guard.boundary()
+        Path(self.config['stop_file']).touch()
+        with self.assertRaisesRegex(ValueError, 'STOP'): self.guard.boundary()
+
+    def test_official_mode_keeps_full_item_selection(self):
+        # Selection is sealed configuration, never an environment switch.
+        original = self.driver.item3
+        self.config['mode'] = 'official'
+        with patch.object(self.gate, 'recheck'):
+            self.config['output_root'] = str(self.result.parent)
+            _, bind = self.prepare(); bind(self.driver)
+        self.assertIs(self.driver.item3, original)
 
     def test_source_drift_and_provider_loss_refuse_guard_checks(self):
         _, bind = self.prepare(); bind(self.driver)
@@ -160,9 +182,22 @@ def worker():
                     assert driver.guard.BIN == fixture.native
                     import gpu_witness
                     with patch.object(gpu_witness, 'install'), \
-                         patch.object(driver.gate, 'main', return_value=19):
+                         patch.object(driver.gate, 'main', side_effect=lambda: (
+                             19 if driver.gate.ITEMS[3] is driver.item3_smoke else 99)), \
+                         patch.object(driver.guard.shutil, 'disk_usage', return_value=NS(free=1024**4)):
                         # guard.sources is real current admission, not patched.
                         assert original() == 19
+                    # Real retained ContextBoundary must reach current admission,
+                    # preserve the underlying check and enforce its HWM limit.
+                    checks = []
+                    context = NS(own_children=[], check_boundary=lambda: checks.append(True))
+                    with patch.object(driver.guard.shutil, 'disk_usage', return_value=NS(free=1024**4)):
+                        driver.guard.ContextBoundary(context).check_boundary()
+                        assert checks == [True]
+                        with patch.object(driver.guard.resource, 'getrusage', return_value=NS(ru_maxrss=177*1024**2)):
+                            try: driver.guard.ContextBoundary(context).check_boundary()
+                            except ValueError as error: assert 'HWM' in str(error)
+                            else: raise AssertionError('lost HWM limit')
                     srv = NS(sampler=NS(n_own_nonzero=1))
                     ctx = NS(client=NS(_req=lambda *a, **kw: (200, {'tokens': [7]})),
                              check_boundary=lambda: None)
@@ -170,7 +205,7 @@ def worker():
                          patch.object(driver.gate, 'start_steps', return_value=[]), \
                          patch.object(driver.gate, 'stop_step', return_value=None), \
                          patch.object(driver.gate, 'G', return_value={'trunk': list(range(40))}), \
-                         patch.object(driver.guard, 'boundary'):
+                         patch.object(driver.guard.shutil, 'disk_usage', return_value=NS(free=1024**4)):
                         steps = driver.item3_smoke(ctx)
                         action = next(v for v in vars(steps[0]).values() if callable(v))
                         action()
@@ -180,6 +215,9 @@ def worker():
                         except FileExistsError: pass
                         else: raise AssertionError('overwrote output')
                     Path(fixture.config['stop_file']).touch()
+                    try: driver.guard.ContextBoundary(context).check_boundary()
+                    except ValueError as error: assert 'STOP' in str(error)
+                    else: raise AssertionError('context accepted STOP')
                     try: driver.guard.sources()
                     except ValueError: pass
                     else: raise AssertionError('accepted STOP')

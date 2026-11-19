@@ -52,9 +52,21 @@ def prepare(seal, admission, captured):
             raise ValueError('driver output differs from admitted output')
         def sources():
             admission.recheck(seal, captured)
-        # The executing server is now the explicitly sealed artifact. Other
-        # historical checks remain intact and can still refuse native entry.
+        def boundary():
+            # Current admission replaces historical row/lock authority. Retain
+            # the existing sampled reserve policy on the admitted filesystem.
+            root = output_root()
+            guard.output_reserve.check(guard.shutil.disk_usage(root).free,
+                                       guard.output_reserve.owned_bytes(root))
+            return int(os.environ['FILLER_END'])
+        # ContextBoundary resolves boundary/attempt_root through the retained
+        # guard globals, so its original context checks and HWM cap survive.
+        # Select the existing smoke function before main selects gate.ITEMS.
+        # No environment flag is created and no driver bytes are rewritten.
+        if config.get('mode', 'official') == 'publisher-smoke':
+            driver.item3 = driver.item3_smoke
         guard.BIN = Path(config['artifacts']['server'])
+        guard.boundary = boundary
         guard.sources = sources
         guard.attempt_root = output_root
         guard._current_guard_bound = True

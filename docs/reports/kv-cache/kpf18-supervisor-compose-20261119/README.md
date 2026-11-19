@@ -362,3 +362,41 @@ Next implement current grant/provider boundary and admitted smoke selection,
 then qualify real publisher smoke. No model/GPU execution, native lifecycle,
 mapped-DSO custody or KPF-18 parent verdict follows from these software tests.
 [no-belief: model-free software regression tests]
+
+
+## 2026-11-19 — current per-work boundary and sealed smoke selection
+
+The opt-in v3 binding now replaces retained `guard.boundary()` with captured
+current admission/provider recheck and the existing sampled output-reserve
+policy on the admitted output filesystem. The retained `ContextBoundary`
+resolves this new boundary through its module globals; its underlying context
+checks, conservative own-process HWM limit and output accounting remain active.
+Historical lock/grant checks no longer supply authority at this boundary.
+In sealed publisher-smoke mode the driver’s existing `item3` binding points to
+its existing `item3_smoke` before main selects the gate item. Official mode
+retains the full item. No environment switch or driver source rewrite is used.
+
+Thirteen binding tests, 25 admission tests, six supervisor binding regressions
+and twelve retained-successor tests PASS (56 total). The installed-driver child
+traverses actual supervisor capture/import/bind/main/cleanup, checks main’s smoke
+selection, calls the real retained ContextBoundary, verifies underlying context
+checks and HWM refusal, runs the real smoke request closure, and checks context
+STOP refusal. Added boundary controls cover provider loss and reserve refusal;
+official selection remains unchanged. The fixture uses private grant/provider
+inputs, inert server/request peers and controlled disk-free readings.
+
+Commands: the preceding four unittest discovery commands, using patterns
+`test_execution_binding.py`, `test_execution_admission.py`, `test_supervisor.py`
+with `-k Binding`, and `test_successor.py`. No model, GPU, actual publisher smoke,
+mapped-DSO custody or native lifecycle verdict is established. Direct entry
+remains disabled; no persistent installation or historical seal was changed.
+KPF-18 remains open. Full-run driver RowflowContext still carries its historical
+rowflow adapter and needs current-admission integration before native full-run
+qualification; gate-level admission/output containment also needs review before
+real publisher smoke. Next: inspect and qualify the real publisher-smoke gate
+entry and output routing using explicit current execution identities.
+
+Revision identities (SHA-256):
+- `execution_binding.py`: `62dc983a38fcb28c0ec0be9cc11f6e5429c550d29b7e67ec5e67a35b7c56042e`
+- `test_execution_binding.py`: `b2c869ebfb01e2ddbef86e249ee649c0cc80c204613ad1227468235e96f8dff5`
+- `install.py`: `2684eed635727f9ccfa03ccad6a02932bfb1d5c15c74a6bdfa9dac767445c6a4`

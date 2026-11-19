@@ -120,7 +120,7 @@ def install(destination, *, execution=None, binding_revision=None, guard_revisio
         sources[str(path)] = digest(path)
         seal.update(schema='kpf18.disabled-supervisor.v3', guard_revision=guard_revision,
                     guard_binding=str(path),
-                    qualification_scope='current guard/output software integration only; native boundary unchanged')
+                    qualification_scope='current admission/resource boundary and output software integration only; no native qualification')
     (destination / 'manifest.json').write_text(json.dumps(seal, indent=2) + '\n')
     marker.unlink()
     return seal
