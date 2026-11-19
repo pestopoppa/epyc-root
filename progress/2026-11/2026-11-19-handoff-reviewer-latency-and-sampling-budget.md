@@ -1,0 +1,5 @@
+# 2026-11-19 — handoff reviewer-latency-and-sampling-budget
+
+## 12:54Z — GC-4b residency sizing verdict attempted; no result-bearing task possible under existing prerequisites
+
+No result-bearing task available; no boxes completed or rows published. GC-1a/GC-2a/GC-3a require the DeepSeek port/load/sparse-attention gates and approved P-REV-1; GC-4b needs measured Engram residency/page-fault behavior (DS41-B3/B7c remain open). The owning DS41 handoff records the operator hold on DS41-1017 tests other than the noise floor until AutoKernel kernel work is done. The ~276 GiB anonymous repack is not by itself a reviewer residency measurement. HG-1 requires H4/H5 calibration evidence and protocol approval; HG-2/HG-3 depend on HG-1; HG-4 requires the operator's sampling-rate/cadence decision. External prerequisites, not pending owned rows: blocked_by is empty deliberately. Evidence: handoffs/active/reviewer-control-plane.md git blob 78ecc1f2685f07bb62d247d56b9fa59596ce70b5; handoffs/active/deepseek-v41-flash-evaluation.md git blob 704fa20bb0439342f901cf3bd797c039746c3529. No claim of fresh measurement or completed sizing.
