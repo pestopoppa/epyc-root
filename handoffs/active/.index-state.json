@@ -2368,7 +2368,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 772,
+          "line": 780,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29
@@ -2406,7 +2406,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1010,
+          "line": 1015,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5

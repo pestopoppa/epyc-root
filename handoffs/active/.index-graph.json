@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T20:34:33Z",
+  "generated_at": "2026-11-19T21:11:05Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 772,
+          "line": 780,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 30,
           "readiness": "blocked"
@@ -2220,7 +2220,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1010,
+          "line": 1015,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
