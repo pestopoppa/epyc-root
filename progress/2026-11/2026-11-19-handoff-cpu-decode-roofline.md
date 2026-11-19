@@ -11,3 +11,7 @@ WRAP-5 event was already filed and receipted on 2026-11-17; verdict record SHA-2
 ## 04:21Z — Handle duplicate Q38P-1 C12 run-end event
 
 Q38P-1 C12 run-end was already filed and receipted on 2026-11-17 as inconclusive: UI asset download failed before profiling. Existing verdict SHA-256 73af427df911b7206ee22e0322f62a0db86ef0b82be08975af330c57a2a81ddf; handoff already records the verdict and subsequent attempts. No new result was filed.
+
+## 04:23Z — Record the already-filed Q38P-1 r4 inconclusive result in the handoff
+
+Recorded q38p1-c13-20261117-r4 in Q38P-1: the 2.05% node/eval reconciliation missed the preregistered 2% gate, so the observed 160–163 GB/s streaming and 259.8 GB/s read-sum do not establish a lever verdict. The row was already receipted; the three-failure r2–r4 lineage is parked. Verdict SHA-256 1b2bfa9b4101cb732c0c5619c4a4d9b4e36212c39f27b77f75e33d51e17e1c15, raw results SHA-256 66bfff3f3a952cf6d6b6628b0c8370df3d4ed5b330fef7d695eee80fdb866985.
