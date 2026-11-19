@@ -7572,7 +7572,8 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       ne11 → H1 dies, the 1536-specialization half remains. H2 rider: after the falsifier, one
       run with ne11∈{2,4,8} in the seed surface — a disjoint winner set proves the search was
       half-blind. Provenance: peer msg 2fa07724 + our own commit titles.
-- [ ] **R23-6 — H6 prompt-class ranking stability** (cheap, piggybacks R23-3's instrument work):
+- [x] **R23-6 — H6 prompt-class ranking stability** (cheap, piggybacks R23-3's instrument work):
+  - *(2026-11-19, OPERATOR DECISION via decision tool)* DECLINED and closed: its premise R23-3 was declined 2026-11-03. [no-belief: operator decision]
       score one candidate pair on code-heavy vs prose-heavy prompt sets; stable ranking →
       stratification unnecessary, only the span (2.4x measured) needs reporting. H5 (calibratable
       ~13% instrument gap) folds into R23-3: measure 3-4 arms on both instruments; wide ratio
@@ -7595,6 +7596,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       Two independent instruments on the same arms; standing numbers to beat: DFlash2 70.4 t/s
       c1 (server-side), native MTP 46.8 median n-max 8 (probe.py). Schedule at a future boundary.
 - [ ] **R23-1 — Admit the llama-cli EOF fix at the run-23→24 boundary (manual path).** Peer
+  - *(2026-11-19, OPERATOR DECISION via decision tool)* fold upstream EOF fix b04642061 (#29722) into the NEXT composite after C16 (port-as-hypothesis: this box is the reason); gated with that composite. [no-belief: operator decision]
       patch (epyc-root `b9607cd3`, operator-approved): `ui::read_input` discards EOF so
       `llama-cli` re-prompts forever on closed stdin — the root cause of the 2026-09-01
       funsafe-harness hang (worked around with `-st`) and of a peer's 322 GB/11 h runaway that
@@ -14818,6 +14820,7 @@ Not measured:
   - PARKED 2026-09-27 (operator): `PREFIX_STABLE_ORDER` is still OFF in production (`src/features.py`, `prefix_stable_order` defaults to False). The only data is the `88e22777` DS41 control-prompt measurement quoted above. No scoped OAB-4 call and no REPL-suite reply check has run; resume by enabling the flag for scoped REPL calls and verifying per-turn uncached prefill and unchanged REPL-suite replies.
   - 2026-11-19 OAB-18: needs the run: enable `prefix_stable_order` for scoped REPL calls, run one scoped OAB-4 call to read per-turn uncached prefill, and compare the REPL-suite replies flag-on vs off. No code is missing; the flag exists in `src/features.py`.
 - [ ] **OAB-19 — the compaction worker summarizes text no prompt shows.** Compaction measures and summarizes
+  - *(2026-11-19, OPERATOR DECISION via decision tool)* compaction target = RETIRE compaction for REPL turns (REPL turns keep full context). Implementation is orchestrator code, so it is ROUTED to the autopilot session (bb) per operator 2026-11-18 ("orchestrator work belongs to bb"). [no-belief: operator decision]
   `TaskState.context`, which no turn prompt renders (the same root cause as the schema-preamble bug fixed in
   `1d0ab2f5`). Point it at what the root prompt actually carries, or retire it for REPL turns. Acceptance: a test
   where compaction fires changes the next root prompt.
