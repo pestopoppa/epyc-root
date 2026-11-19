@@ -79,3 +79,32 @@ trials and failures. No MCP tools are activated by this change. P6's shared-tool
 integration and live catalog acceptance remain open. Existing SC86 projection is
 reused; the source extension is registered under VB-PARK-HARNESS-EVAL, with the
 planning-context canary still required before calling the loop wired.
+
+## Isolated file-tool adapter
+
+`scripts/harness/hs4_p6_candidate_mcp.py` is an explicit candidate launcher,
+not an active-server registration. It loads the declared orchestrator checkout,
+then registers `read_range`, `peek`, `grep`, `peek_grep` and `outline` against its
+shared `exploration_core`. Supply `--orchestrator-root` and one or more
+`--read-root` arguments. Every call must provide an absolute root within those
+admitted directories; path resolution and bounded reads remain in the shared
+core. The session stamp is accepted but grants no read scope.
+
+This stage is incomplete for the full P6 comparison: `code_search` has not moved
+to the shared core. Do not freeze the trial catalogs until root-bound search is
+implemented and qualified. Existing actor catalog/config and production MCP
+registration remain unchanged. The adapter's structured grep result and
+character-page peek are explicit candidate contracts, not proof of actor output
+compatibility; actor migration still needs its seat tests. No catalog-growth
+acceptance follows from these controls.
+
+The focused tests exercise actual FastMCP tools/list, stamped tool calls,
+unknown-argument refusal, read-root admission, traversal and symlink escapes,
+4 MiB file limits, bounded grep output, shared read/outline behavior and
+unbounded peek refusal. They require FastMCP and the orchestrator checkout via
+`HS4_P6_ORCHESTRATOR_ROOT` (default: the canonical local checkout). A missing
+checkout or dependency skips the suite and must never be reported as a pass.
+The tested core is `epyc-orchestrator` commit
+`a6f65249f4ca2190efbca897b2a6d506c7441799`, path
+`src/repl_environment/exploration_core.py`, blob
+`faecdb52803243a7076c2b3dedfa5e847253f14a`.
