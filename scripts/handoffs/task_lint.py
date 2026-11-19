@@ -7,7 +7,11 @@ execution-type validation against the deliverable wins.
                                            NEEDS-OPERATOR / NEEDS-DECOMPOSITION; NEEDS-OPERATOR is never itself a failure;
                                            an already-issued authorization is not an operator decision; exit 1 only on
                                            an UNTAGGED failure
-  task_lint_v2.py publish  FILE.md:LINE    rowflow publish gate for ONE box (operator 2026-11-03: relaxed). REFUSES (exit 1) only when
+  task_lint_v2.py dispatch FILE.md ... [--json]  report rubric + handoff-standard §2.2 box grammar (parsed fields, state,
+                                           g-* grammar fails only on boxes that use the `· field:` grammar); exit 0
+  task_lint_v2.py diff [--base=REF] [--mode=default|warn|enforce|off]  diff-scoped gate on OPEN boxes the staged (or REF) diff
+                                           touches: rule a FAILS, rule f WARNS (operator decision 5); $HANDOFF_BOX_GATE overrides
+  task_lint_v2.py publish  FILE.md:LINE   rowflow publish gate for ONE box (operator 2026-11-03: relaxed). REFUSES (exit 1) only when
                                            the box names no model/build identity (check c: model, quant_build) or states no
                                            stop rule (check s). Everything else (NEEDS-*, pending choice, non-inference
                                            payload, roll-up, prose prerequisite, standing hold, metric/rule/region/estimate
@@ -210,7 +214,199 @@ def run_publish(spec):
     for w in warn: print(f"{spec}: WARN — {w}")
     return 1 if why else 0
 
+# ---------------------------------------------------------------------------------------------------------------------
+# DISPATCH mode (handoff standard Rev 1 §2.2, Stage A, 2026-11-19).
+#
+#   - [ ] **<ID>** [<class>] <imperative task text, one sentence>
+#         · done when: <...>
+#         · gate: <ID, ID | none>        · inputs: `<path>` `<path>`
+#         · tier: <tier> (optional)      · owner: <track|session> (optional)
+#
+# Verdict = the REPORT rubric (score2) plus grammar checks that apply ONLY to a box that opts into the grammar (carries
+# at least one `· <field>:`). A legacy box is judged exactly as `report` judges it, so the grammar never makes an
+# untouched legacy box fail. States: open, frozen (`❄ frozen until:` field, or the legacy `❄ FROZEN` prefix), rollup,
+# needs-owner. `[~] [>] [!]` stay accepted (retiring them is open operator question §7 Q1).
+# ---------------------------------------------------------------------------------------------------------------------
+# Size limits (operator decision 4, 2026-11-19). Reported as warnings by box_index / dispatch; never a verdict input.
+MAX_OPEN_PER_TRACK = 60
+MAX_CONTINUATION_LINES = 24
+MAX_HANDOFF_LINES = 4000
+SPLIT_HANDOFF_LINES = 6000
+CLASSES = ('non-inference', 'inference', 'operator-decision', 'roll-up', 'blocked-external')
+TIERS = ('luna', 'terra', 'sol', 'haiku', 'sonnet', 'opus')
+DONE_WHEN_REQUIRED = ('non-inference', 'inference')     # classes whose standard-grammar box must state `done when`
+FIELD_KEYS = ('done when', 'gate', 'inputs', 'inputs-missing', 'tier', 'owner', 'stop rule', 'model', 'build', 'harness',
+              'metric', 'rule', 'region', 'est', 'frozen until', 'previous_task_text', 'supersedes', 'superseded by',
+              'roll-up')
+FIELD_RE = re.compile(r'·\s*(?:❄\s*)?(' + '|'.join(re.escape(k) for k in sorted(FIELD_KEYS, key=len, reverse=True))
+                      + r')\s*:\s*')
+BOX_ID = re.compile(r'^\s*[-*] \[[ xX~>!]\]\s*\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*')
+CLASS_TAG = re.compile(r'\[(' + '|'.join(CLASSES) + r')\]')
+GATE_REF = re.compile(r'^[A-Za-z][A-Za-z0-9._#-]*$')
+LEGACY_FROZEN = re.compile(r'❄\s*FROZEN', re.I)
+INPUT_PATH = re.compile(r'`([^`\s]+)`')
+
+
+def parse_fields(txt):
+    """{field: value} from the box's OWN block (first line included). Only known keys after a `·` count."""
+    own = own_block(txt)
+    out, ms = {}, list(FIELD_RE.finditer(own))
+    for i, m in enumerate(ms):
+        end = ms[i + 1].start() if i + 1 < len(ms) else len(own)
+        out.setdefault(m.group(1), ' '.join(own[m.end():end].split()).strip())
+    return out
+
+
+def split_refs(v):
+    return [] if not v or v.strip().lower() == 'none' else [r.strip() for r in v.split(',') if r.strip()]
+
+
+def box_state(txt, fields=None):
+    fields = parse_fields(txt) if fields is None else fields
+    head = txt.split('\n')[0]
+    m = L1.CHECKBOX.match(head)
+    if m and m.group(2) in 'xX': return 'done'
+    if 'frozen until' in fields or LEGACY_FROZEN.search(head): return 'frozen'
+    if ROLLUP.search(head) or 'roll-up' in fields: return 'rollup'
+    if 'NEEDS-OWNER' in own_block(txt): return 'needs-owner'
+    return 'open'
+
+
+def dispatch_result(txt, ch=0):
+    """Report rubric + parsed §2.2 fields + grammar fails (g-*) for opted-in boxes."""
+    r = score2(txt, ch)
+    f = parse_fields(txt)
+    head = txt.split('\n')[0]
+    idm, tag = BOX_ID.match(head), CLASS_TAG.search(head)
+    standard, gram = bool(f), []
+    cls = tag.group(1) if tag else r['class']
+    if standard:
+        if not idm: gram.append('g-id')
+        if not tag: gram.append('g-class')
+        if cls in DONE_WHEN_REQUIRED and not f.get('done when') and 'NEEDS-OWNER' not in txt: gram.append('g-done-when')
+        if f.get('gate') and not all(GATE_REF.match(x) for x in split_refs(f['gate'])): gram.append('g-gate-prose')
+        if f.get('tier') and f['tier'].split()[0].lower() not in TIERS: gram.append('g-tier')
+    inputs = INPUT_PATH.findall(f.get('inputs', ''))
+    missing = [p for p in inputs if L1.path_exists(p) is False]
+    if missing and 'f' not in r['fails']: gram.append('g-inputs')
+    fails = r['fails'] + gram
+    return {'id': idm.group(1) if idm else None, 'class': cls, 'class_basis': 'explicit' if tag else r['class_basis'],
+            'standard': standard, 'fields': f, 'done_when': f.get('done when'), 'gate': split_refs(f.get('gate', '')),
+            'inputs': inputs, 'inputs_missing': missing, 'tier': f['tier'].split()[0] if f.get('tier') else None,
+            'owner': f.get('owner'), 'frozen_until': f.get('frozen until'), 'state': box_state(txt, f),
+            'ok': not fails, 'fails': fails, 'report_fails': r['fails'], 'tags': r['tags']}
+
+
+def run_dispatch(paths, as_json=False):
+    """Advisory like report: exit 0 always. One line per open box (JSONL with --json)."""
+    for p in paths:
+        for ln, txt, ch in boxes(p):
+            r = dispatch_result(txt, ch)
+            if as_json: print(json.dumps({'file': p, 'line': ln, **r}, sort_keys=True)); continue
+            print(f"{p}:{ln}: {'OK' if r['ok'] else 'FAIL ' + ','.join(r['fails'])} [{r['class']}/{r['state']}/"
+                  f"{'standard' if r['standard'] else 'legacy'}]" + (f" gate={r['gate']}" if r['gate'] else '')
+                  + (f" inputs_missing={r['inputs_missing']}" if r['inputs_missing'] else ''))
+    return 0
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# DIFF-SCOPED GATE (spec §5/§6 step 1; operator decision 5, 2026-11-19). Judges ONLY open boxes the diff touches.
+#   rule a (no done-condition; includes g-done-when): FAILS by default — `done when` is required on new/touched boxes.
+#   rule f (dangling inputs; includes g-inputs):      WARN only.
+# Untouched legacy boxes are never judged here (they surface only in the warn-only TASK-LINT column).
+# HANDOFF_BOX_GATE overrides: default (per-rule table below) | warn (everything warns) | off | enforce (a and f fail).
+# ---------------------------------------------------------------------------------------------------------------------
+DIFF_GATE_ENV = 'HANDOFF_BOX_GATE'
+DIFF_GATE_DEFAULT = 'default'
+DIFF_GATE_RULE_MODES = {'a': 'enforce', 'f': 'warn'}      # per-rule severity in `default` mode
+DIFF_GATE_RULES = {'a': 'a', 'g-done-when': 'a', 'f': 'f', 'g-inputs': 'f'}
+DIFF_GATE_PATHS = ('handoffs/active/', 'handoffs/blocked/')
+DONE_WHEN_TEXT = re.compile(r'done[- ]when', re.I)
+DIFF_GATE_EXEMPT_A = ('rollup', 'frozen', 'needs-owner')   # states that legitimately carry no done-condition
+DIFF_GATE_HINT = {
+    'a': ("add a done-condition as a continuation line directly under the box, indented deeper than the `- [ ]`:\n"
+          "        · done when: <test command | file+field | tick verdict text | row PASS>\n"
+          "      or run `python3 scripts/handoffs/handoff_box.py add --file F --track T --id ID --class C --text ... "
+          "--done-when ...`; a draft without one may carry `NEEDS-OWNER` instead"),
+    'f': "fix or remove the backticked path(s) that do not exist: {missing}",
+}
+
+
+def diff_gate_mode(explicit=None):
+    m = (explicit or os.environ.get(DIFF_GATE_ENV) or DIFF_GATE_DEFAULT).strip().lower()
+    return m if m in ('off', 'warn', 'enforce', 'default') else DIFF_GATE_DEFAULT
+
+
+def _rule_severity(mode, rule):
+    return {'off': 'off', 'warn': 'warn', 'enforce': 'enforce'}.get(mode) or DIFF_GATE_RULE_MODES.get(rule, 'warn')
+
+
+def added_lines(repo, base=None):
+    """{relpath: {new-file line numbers added/changed}} for handoff .md files. base=None -> staged diff."""
+    import subprocess
+    cmd = ['git', '-C', str(repo), 'diff', '-U0', '--no-color', '--no-ext-diff', base or '--cached', '--', *DIFF_GATE_PATHS]
+    env = {k: v for k, v in os.environ.items() if k not in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE')}
+    out = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=120).stdout
+    res, cur = {}, None
+    for l in out.split('\n'):
+        if l.startswith('+++ '):
+            cur = l[6:] if l.startswith('+++ b/') and l.endswith('.md') else None
+            if cur: res.setdefault(cur, set())
+        elif l.startswith('@@') and cur:
+            m = re.search(r'\+(\d+)(?:,(\d+))?', l)
+            st, n = int(m.group(1)), int(m.group(2) if m.group(2) is not None else 1)
+            res[cur].update(range(st, st + n))
+    return res
+
+
+def touched_box_findings(repo, base=None):
+    """[(relpath, line, [rule, ...], dispatch_result)] for every OPEN box whose block intersects the diff."""
+    out = []
+    for rel, added in sorted(added_lines(repo, base).items()):
+        p = os.path.join(str(repo), rel)
+        if not added or not os.path.exists(p): continue
+        for ln, txt, ch in boxes(p):
+            if not set(range(ln, ln + len(txt.split('\n')))) & added: continue
+            r = dispatch_result(txt, ch)
+            bad = {DIFF_GATE_RULES[k] for k in r['fails'] if k in DIFF_GATE_RULES}
+            if not DONE_WHEN_TEXT.search(own_block(txt)): bad.add('a')   # decision 5: an explicit `done when` is required
+            bad = sorted(bad)
+            if r['state'] in DIFF_GATE_EXEMPT_A or 'OWNER' in r['tags']: bad = [k for k in bad if k != 'a']
+            out.append((rel, ln, bad, r))
+    return out
+
+
+def diff_gate(repo, base=None, mode=None):
+    """(lines, n_errors). n_errors counts touched-box rule failures whose severity is `enforce`."""
+    mode = diff_gate_mode(mode)
+    if mode == 'off': return ['DIFF-GATE: off'], 0
+    finds = touched_box_findings(repo, base)
+    lines, nerr = [], 0
+    for rel, ln, bad, r in finds:
+        for rule in bad:
+            sev = _rule_severity(mode, rule)
+            if sev == 'off': continue
+            nerr += sev == 'enforce'
+            hint = DIFF_GATE_HINT[rule].format(missing=' '.join(r['inputs_missing'] or r.get('fails', [])))
+            lines.append(f"{'ERROR' if sev == 'enforce' else 'WARN'} DIFF-GATE {rel}:{ln}: touched open box fails rule {rule} — {hint}")
+    nbad = sum(1 for f in finds if f[2])
+    lines.append(f"DIFF-GATE ({mode}; {DIFF_GATE_ENV}=off|warn|enforce|default): {len(finds)} touched open box(es), "
+                 f"{nbad} failing a/f, {nerr} error(s)")
+    return lines, nerr
+
+
+def run_diff(args):
+    base = next((a.split('=', 1)[1] for a in args if a.startswith('--base=')), None)
+    mode = next((a.split('=', 1)[1] for a in args if a.startswith('--mode=')), None)
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    lines, n = diff_gate(repo, base, mode)
+    print('\n'.join(lines))
+    return 1 if n else 0
+
+
 if __name__ == '__main__':
     a = sys.argv[1:]
-    if not a or a[0] not in ('report', 'migrate', 'publish'): print(__doc__); sys.exit(2)
-    sys.exit({'report': lambda: run_report(a[1:]), 'migrate': lambda: run_migrate(a[1:]), 'publish': lambda: run_publish(a[1])}[a[0]]())
+    if not a or a[0] not in ('report', 'migrate', 'publish', 'dispatch', 'diff'): print(__doc__); sys.exit(2)
+    sys.exit({'report': lambda: run_report(a[1:]), 'migrate': lambda: run_migrate(a[1:]), 'publish': lambda: run_publish(a[1]),
+              'dispatch': lambda: run_dispatch([x for x in a[1:] if x != '--json'], '--json' in a[1:]),
+              'diff': lambda: run_diff(a[1:])}[a[0]]())

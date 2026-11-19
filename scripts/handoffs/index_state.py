@@ -75,6 +75,7 @@ ACTIVE = REPO_ROOT / "handoffs" / "active"
 BLOCKED = REPO_ROOT / "handoffs" / "blocked"
 SIDECAR = ACTIVE / ".index-state.json"
 GRAPH = ACTIVE / ".index-graph.json"
+BOX_INDEX = ACTIVE / ".box-index.json"   # epyc.box-index.v1 (handoff standard §4), built by box_index.py
 MASTER = ACTIVE / "master-handoff-index.md"
 #: Generated priority data (tracked) and the operator's hand-edited overrides (tracked).
 #: Precedence for a node's graph priority: override > file > derived heuristic.
@@ -1408,6 +1409,41 @@ def task_lint_column(state: dict) -> list[str]:
         return [f"TASK-LINT (warn-only): lint unavailable ({type(exc).__name__}: {exc})"]
 
 
+def box_index_doc(state: dict) -> dict:
+    """The `.box-index.json` document for the current tree (handoff standard Rev 1 §4)."""
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+    try:
+        import box_index
+    finally:
+        sys.path.pop(0)
+    hs = state["handoffs"]
+    row_open = {rid: bool(hs.get(r["handoff"], {}).get("open", 0) + hs.get(r["handoff"], {}).get("blocked", 0))
+                for rid, r in state["rows"].items() if r.get("handoff")}
+    prio, _ = load_priority_file(PRIORITY_FILE)
+    return box_index.build(REPO_ROOT, handoff_paths(), {n: h.get("row_id") for n, h in hs.items()}, row_open, prio)
+
+
+def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -> tuple[list[str], list[str]]:
+    """(warnings, errors) for `--check`: staleness of `.box-index.json` (warn-only) + the diff-scoped a/f gate
+    (`task_lint.diff_gate`: rule a fails, rule f warns; HANDOFF_BOX_GATE / --box-gate override)."""
+    warns, errs = [], []
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+        try:
+            import box_index
+            import task_lint
+        finally:
+            sys.path.pop(0)
+        cur = box_index.dumps(box_index_doc(state))
+        if not BOX_INDEX.exists() or BOX_INDEX.read_text(encoding="utf-8") != cur:
+            warns.append(f"BOX-INDEX: {BOX_INDEX.relative_to(REPO_ROOT)} is stale or missing — run index_state.py")
+        lines, n = task_lint.diff_gate(REPO_ROOT, diff_base, gate_mode)
+        (errs if n else warns).extend(lines)
+    except Exception as exc:  # noqa: BLE001 — advisory surface must never crash --check
+        warns.append(f"BOX-INDEX/DIFF-GATE unavailable ({type(exc).__name__}: {exc})")
+    return warns, errs
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true",
@@ -1416,6 +1452,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", action="store_true", help="dump full state to stdout")
     ap.add_argument("--no-task-lint", action="store_true",
                     help="--check: skip the warn-only task_lint column (it never affects the exit code)")
+    ap.add_argument("--box-gate", choices=("default", "off", "warn", "enforce"), default=None,
+                    help="--check: diff-scoped task_lint gate on TOUCHED open boxes: rule a (no `done when`) fails, "
+                         "rule f (dangling inputs) warns (operator decision 5, 2026-11-19); default $HANDOFF_BOX_GATE "
+                         "or `default`")
+    ap.add_argument("--diff-base", default=None,
+                    help="--check: judge boxes touched since this ref instead of the staged diff")
     args = ap.parse_args(argv)
 
     state = collect()
@@ -1439,6 +1481,10 @@ def main(argv: list[str] | None = None) -> int:
         for warning in priority_file_warnings(state):
             print(f"ADVISORY WARNING: {warning}", file=sys.stderr)
         errs += citation_check()
+        bwarn, berr = box_index_check(state, args.diff_base, args.box_gate)
+        errs += berr
+        for w in bwarn:
+            print(f"ADVISORY WARNING: {w}", file=sys.stderr)
         for e in errs:
             print(e)
         for w in scratch_warnings(state):
@@ -1460,6 +1506,14 @@ def main(argv: list[str] | None = None) -> int:
     SIDECAR.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     graph = build_graph(state)
     GRAPH.write_text(json.dumps(graph, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+    try:
+        import box_index
+    finally:
+        sys.path.pop(0)
+    bdoc = box_index_doc(state)
+    BOX_INDEX.write_text(box_index.dumps(bdoc), encoding="utf-8")
+    print(f"wrote {BOX_INDEX.relative_to(REPO_ROOT)} ({bdoc['counts']['total']} boxes)")
     changed = write_block(state)
     print(f"wrote {SIDECAR.relative_to(REPO_ROOT)}")
     rc = graph["readiness_counts"]
