@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T22:24:32Z",
+  "generated_at": "2026-11-19T22:39:07Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1378,14 +1378,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 877,
-      "dispatchable": 112,
+      "dispatchable": 120,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-19",
       "next_action": "AK-GAP-1-SAMPLE/IDSORT step-1 row; AK-PROF-SCLK-CAPT; AITER C13 ports; H10b dense defect; AA-bisect r4; GDN-SHARE-1",
-      "open": 114,
+      "open": 122,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1514,7 +1514,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 11,
+          "dispatchable": 19,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1532,7 +1532,7 @@
           ],
           "line": 14343,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 11,
+          "open": 19,
           "readiness": "blocked"
         }
       ]
@@ -1772,7 +1772,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 142,
+      "closed": 143,
       "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 789,
+          "line": 792,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 30,
           "readiness": "blocked"
