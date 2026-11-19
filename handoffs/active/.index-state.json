@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 967,
+          "line": 968,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 48
@@ -1922,7 +1922,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1703,
+          "line": 1727,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
@@ -1932,7 +1932,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2797,
+          "line": 2821,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1942,7 +1942,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4345,
+          "line": 4369,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1963,7 +1963,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4978,
+          "line": 5002,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -1979,7 +1979,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 5511,
+          "line": 5535,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0

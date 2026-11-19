@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T12:40:36Z",
+  "generated_at": "2026-11-19T12:57:25Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1574,7 +1574,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1703,
+          "line": 1727,
           "name": "batched-decode-measurement",
           "open": 3,
           "readiness": "ready"
@@ -1583,7 +1583,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2797,
+          "line": 2821,
           "name": "numa-placement-defect-20260730",
           "open": 3,
           "readiness": "ready"
@@ -1592,7 +1592,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 4345,
+          "line": 4369,
           "name": "shape-keyed-contention-gating",
           "open": 0,
           "readiness": "no_open"
@@ -1618,7 +1618,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 4978,
+          "line": 5002,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1638,7 +1638,7 @@
             "INF-45#shape-keyed-contention-gating",
             "UFH-01"
           ],
-          "line": 5511,
+          "line": 5535,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"
@@ -2360,7 +2360,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 967,
+          "line": 968,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 49,
           "readiness": "blocked"
