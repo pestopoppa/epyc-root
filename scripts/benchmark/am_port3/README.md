@@ -406,3 +406,70 @@ capture enabled/disabled byte parity and preserves failure guards. Driver syntax
 passes against the exact patch. These establish code behavior, not a full patched
 link, model/GPU quality, default-off throughput/KLD or residency verdict. The full
 CPU/HIP build and bounded capture/fit/reload/stability row remain to publish.
+
+## Default-off controls (row execution only)
+
+`control.cpp` is a separate public-API executable. Compile the SAME file against
+the baseline and patched libraries; it includes no AM internal headers, installs
+no fit or callback, and makes no cache mutations. This permits a baseline link
+without the experimental `am_install` symbol. Use C++17 and the pinned source's
+`include`, `ggml/include`, and `vendor` include directories, linking `llama`,
+`ggml`, and `ggml-base` from each build's own `bin` directory. Keep the executable
+beside its own backend libraries. The model and token arrays must already be
+prepared before publishing. The comparison uses identical teacher-forced tokens
+so a greedy divergence cannot silently change the workload.
+
+Control config fields are `mode: "control"`, new `out`, `model`,
+`model_identity`, `source_commit`, `prefix_tokens` (2..32768), `warmup_tokens`
+(1..256), `probe_tokens` (1..256), `n_ctx` (<=36864, accommodating all tokens),
+`threads`, and nonnegative `n_gpu_layers`. The context uses ordinary FA, F16 K/V,
+one sequence, batch/ubatch 512. Prefix prefill and teacher-forced warm-up precede
+the measured append steps. Each measured step times synchronized native decode;
+logit reads, finite checks and trace I/O follow outside the timer. Fixed-length
+teacher forcing does not stop at EOS. The bounded little-endian float32 trace
+contains the logits AFTER each probe token (steps x actual vocabulary), capped
+at 512 MiB. This is decode performance, not prefill or end-to-end latency.
+
+Invoke only from an admitted row:
+
+```bash
+python scripts/benchmark/am_port3/controls.py run --driver <build>/bin/am-control \
+  --library-dir <build>/bin --config <prepared-control-config.json>
+python scripts/benchmark/am_port3/controls.py compare \
+  --baseline <baseline-run-1> <baseline-run-2> <baseline-run-3> \
+  --patched <patched-run-1> <patched-run-2> <patched-run-3> \
+  --min-throughput-ratio <predeclared-threshold>
+```
+
+The wrapper clears `LLAMA_KV_AM_BETA`, sets that build's `LD_LIBRARY_PATH`, binds
+executable/all llama+ggml shared-library bytes before AND after execution, and
+requires actual `/proc/self/maps` llama/ggml paths to belong to that inventory.
+This covers dlopened ggml backends, which executable `ldd` misses. A wrong or
+changed library/config, partial trace, nonfinite logits, invalid timing or wrong
+geometry refuses the completion `SEAL.json`. The seal also binds config identity,
+trace/result bytes, current control-source digest, affinity and relevant
+LLAMA/GGML/HIP/HSA/ROCR/CUDA/OMP/BLAS environment. These digests establish runtime
+file identity; they do **not** establish that the executable was compiled from
+the recorded source. Full CPU/HIP build manifests must independently bind the
+exact patch/headers/control source and compiled artifacts before row admission.
+Mapped HIP library paths also do not prove GPU residency; sample VRAM/KFD during
+the model run separately.
+
+Before publishing, predeclare the question (does the default-off patch change
+decode logits/performance?), minimum meaningful slowdown, sample count and
+throughput threshold; choose replicates relative to observed host noise. Run at
+least three fresh contexts per variant in interleaved order with the same CPU
+affinity and model offload, saving every completed run. Use a fixed sample count
+without interim pass decisions; stop on a confirmed logit difference or invalid
+runtime binding, otherwise finish that count. The comparator refuses repeated
+directories, mismatched inputs/environment/source/affinity and artifact changes
+within a variant. It reports baseline-to-patched KL (lower is better), exact
+logit bytes, maximum logit error, greedy equality, per-run tokens/s, relative
+median absolute deviation and patched/baseline median throughput ratio (higher
+is better). Baseline repeat nondeterminism fails the exact-logit screen too.
+An additive logit shift can have KL=0 while failing exact bytes. The explicit
+throughput threshold is a screen within the measured noise, never proof of
+literally zero throughput change. It cannot silently satisfy AM-PORT-3's
+default-off futility rule; the model-row verdict must interpret these controls
+under its predeclared decision rule. No real-model control verdict is supplied
+by the synthetic tests or the baseline executable link.
