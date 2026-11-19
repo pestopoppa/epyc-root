@@ -128,3 +128,28 @@ bind the repaired driver and use a fresh explicit smoke attempt directory before
 republishing through publish_row.py. Keep original validation exposures unchanged.
 This is a tested code correction; no repaired model run, smoke PASS, parity,
 validation, WER, rate or promotion is claimed.
+
+## Repaired r2 publication checkpoint
+
+Republished `stt5-voxtral-public-parity-r1-20261119` through
+`publish_row.py .../r2/spec.json --smoke-now`, binding the committed trace-environment
+repair. Input preflight passes, without rehashing weights. Original failed
+smoke directories, executed scripts and config are preserved. The r2 config
+uses fresh `smoke-output-r2` and `r2/output` directories. The first native-token
+progress predicate is unchanged; no PASS or row admission is inferred merely
+from submission. The synchronous publisher was still active at checkpoint;
+PASS/FAIL-2 terminal events are registered for dispatcher resumption.
+
+Executed small-script snapshots and prepared configuration are in
+`/mnt/raid0/llm/tmp/stt5/voxtral-parity-20261119/r2/`:
+
+- `config.json` SHA-256 `87b1f0128b152a47b878a3f8fcdd0a0498e4a0881cf15e0a3d9d5095a0e4d7de`.
+- `spec.json` SHA-256 `05ae8283768ce2dc289ae95c1b5cabc4598a2d5afd50cedc6b04c7f91dd2816f`.
+- `launch.sh` SHA-256 `ad2cbeecc8ddc4f6fea7c8ad6fbd3be9371a600b27a675ef8c38b2cd4e381adb`.
+- `smoke_check.py` SHA-256 `3b47ea19b6d1bdf303f8fbaf17f5b16d8f8513aa295d76d987a49efdbe861b3f`.
+- `stt5_voxtral_parity.py` SHA-256 `4348569a08ac3b865282d29f4925402f16235be823af3c56132e2b3b5a110ad1`.
+- `stt5_voxtral_tokens.py` SHA-256 `28382a292d5d060bbd4c27d561973a55a60ef58d1d763bb8f607fc3726677063`.
+
+No validation exposure, WER, rate or promotion is claimed. Existing validation
+UNKNOWN remains unchanged. CS-8.STT5 stays open. GitNexus status and impact
+have no index in this lane; this checkpoint changes documentation only.
