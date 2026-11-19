@@ -1,0 +1,14 @@
+{
+  "schema": "kpf18.driver-terminal-composition-qualification.v1",
+  "status": "PASS",
+  "harness_tests": 4,
+  "full_import_child_tests": 11,
+  "installed_child_tests": 11,
+  "runtime_dispatch": false,
+  "manifest_path": "/mnt/raid0/llm/tmp/kvu/driver-terminal-successor-20261119/manifest.json",
+  "manifest_sha256": "b990727e5bc09cebc7784e15d6b5c8a55f0c45ae1da04e5d43e9d2bc983ab104",
+  "driver_sha256": "875b3432b06278ca14bda1ac98cf484ea5a31496627315da904efa2d254db650",
+  "binding_sha256": "6efed85b5b4fd44ff2e1382db97c18f4ccfe25914a7ee416ac397dfa0da4a6b5",
+  "test_sha256": "2a7700938e25b8508e571bf4419adc2b3163a6bb394c31d853420cebd1f3d057",
+  "scope": "actual full imported driver item3 cell/controller/gate with synthetic peers; no native lifecycle or current admission"
+}
