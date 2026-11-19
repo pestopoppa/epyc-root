@@ -18,7 +18,7 @@ production tree; arm builds are read from /mnt/raid0/llm/kernels/builds.
 """
 from __future__ import annotations
 
-import argparse, hashlib, json, os, re, shlex, signal, statistics, subprocess, sys, threading, time
+import argparse, hashlib, json, math, os, re, shlex, signal, statistics, subprocess, sys, threading, time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -618,21 +618,49 @@ LB1C_TYPES = ["q4_K", "q6_K", "iq4_xs", "iq4_nl", "iq3_s"]
 def run_lb1c(ctx, A, B, launches=3):
     """EXL3-LB1c per-type ne11 4..9 sweep on MUL_MAT cases via tbo perf (both arms alternating). Model-independent: the served ne00/ne01 shapes are in tbo's case list."""
     out = {}
+    receipts = ctx.res.setdefault("lb1c_launches", {})
     for t in LB1C_TYPES:
-        byn: dict = {}
+        runs = []
+        receipts[t] = []
         for i in range(launches):
             for nm, b in (("A", A), ("B", B)):
                 if ctx.should_stop(): break
                 r = tbo(ctx, f"lb1c_{t}_{nm}{i}", b, b, "gpu", "ROCm0", "MUL_MAT", timeout=600, perf_filter=f"type_a={t},type_b=f32")
-                for k, us in (r.get("perf") or {}).items():
+                receipts[t].append({"arm": nm, "launch": i, "result": r})
+                ctx.save()
+                runs.append((nm, r))
+        # Failed/partial launches cannot supply timings to a crossover. Retain
+        # their receipts, but require every scheduled launch to finish cleanly.
+        out[t] = {}
+        if len(runs) != 2 * launches or any(r.get("rc") != 0 for _, r in runs):
+            continue
+        per_launch = []
+        malformed = False
+        for nm, r in runs:
+            cells = {}
+            for k, us in (r.get("perf") or {}).items():
+                try:
                     ty, n, m, kk = k.split("|")
-                    if 4 <= int(n) <= 9: byn.setdefault((int(n), m, kk), {}).setdefault(nm, []).append(us)
-        # collapse shapes: per n, per launch, mean over served shapes
-        per_n: dict = {}
-        for (n, m, kk), d in byn.items():
-            for nm, v in d.items():
-                per_n.setdefault(n, {}).setdefault(nm, []).append(v)
-        out[t] = {n: {nm: [statistics.mean(col) for col in zip(*v)] for nm, v in d.items() if v and all(len(x) == len(v[0]) for x in v)} for n, d in per_n.items()}
+                    n = int(n)
+                    if ty != t or not math.isfinite(us) or us <= 0:
+                        raise ValueError("invalid perf cell")
+                except (TypeError, ValueError):
+                    malformed = True
+                    break
+                if 4 <= n <= 9:
+                    cells.setdefault(n, {})[(m, kk)] = us
+            per_launch.append((nm, cells))
+        if malformed:
+            continue
+        for n in range(4, 10):
+            shapes = set(per_launch[0][1].get(n, {}))
+            # The same shapes must occur in EVERY arm and launch. Averaging
+            # unmatched shapes can make a slower kernel appear faster.
+            if not shapes or any(set(cells.get(n, {})) != shapes for _, cells in per_launch):
+                continue
+            out[t][n] = {nm: [statistics.mean(cells[n].values())
+                             for arm, cells in per_launch if arm == nm]
+                         for nm in ("A", "B")}
     return out
 
 def run_050(ctx: Ctx, dry: bool):
