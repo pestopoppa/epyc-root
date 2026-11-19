@@ -29,7 +29,7 @@ class CurrentGuard(unittest.TestCase):
                         output_reserve=NS(check=lambda *a: True, owned_bytes=lambda p: 0),
                         shutil=NS(disk_usage=lambda p: NS(free=1024**4)))
         self.driver = NS(guard=self.guard, OUT=self.result.parent,
-                         item3=object(), item3_smoke=object(), gate=NS(main=lambda: 23))
+                         item3=object(), item3_smoke=object(), gate=NS(main=lambda: 23, PROD_ENV={}))
         self.captured = self.gate.capture(self.seal)
         argv = patch.object(sys, 'argv', ['driver.py', '--out', str(self.result.parent)])
         argv.start(); self.addCleanup(argv.stop)

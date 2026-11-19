@@ -13,6 +13,8 @@ sys.path.insert(0, str(HERE))
 
 def combined_main(driver, original, fixture, output, mode, preload, witness,
                   expected_receipt, calls):
+    from test_fullrun_gate import check_server_environment
+    real_server = driver.gate.Server
     visited, requests, stopped = [], [], []
     identity = output / 'PRELOAD-MODEL-IDENTITY.json'
     request_path = output / 'SMOKE-REQUEST.json'
@@ -38,6 +40,7 @@ def combined_main(driver, original, fixture, output, mode, preload, witness,
         assert driver.gate.ITEMS[3] is driver.item3_smoke is driver.item3
         assert driver.guard.attempt_root() == fixture.result.parent == driver.OUT
         assert args.no_device_claim == 'current captured keeper GPU writer; rechecked before gate entry'
+        check_server_environment(real_server, args, output, fixture.native)
         return NS(args=args, own_children=[], open_runs=[], preempted=False,
                   client=NS(_req=request), check_boundary=driver.guard.boundary), [], []
 

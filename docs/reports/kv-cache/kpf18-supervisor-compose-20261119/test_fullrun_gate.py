@@ -15,6 +15,24 @@ import test_execution_admission as fixtures
 from test_execution_admission import load, sha
 
 
+def check_server_environment(server_type, args, output, binary):
+    """Construct the real retained Server; never start a process or load a model."""
+    key = 'HSA_OVERRIDE_CPU_AFFINITY_DEBUG'
+    ctx = NS(args=args, out=output, gate_argv=[], prefix=[])
+    for ambient in (None, '0', '1'):
+        with patch.dict(os.environ):
+            if ambient is None: os.environ.pop(key, None)
+            else: os.environ[key] = ambient
+            server = server_type(ctx, 'environment-control', binary, 1024)
+            assert server.env.get(key) == '0', (ambient, server.env.get(key))
+            assert server.env_note['set'].get(key) == '0', server.env_note
+            assert server.env['LLAMA_KV_CACHE_DEBUG'] == '3'
+            assert server.env['LD_LIBRARY_PATH'].split(':')[0] == str(binary.parent)
+            assert server.full_cmd() == server.argv and server.argv[0] == str(binary)
+            assert os.environ.get(key) == ambient, 'changed caller environment'
+    assert not server.log.exists(), 'environment control launched native work'
+
+
 class FullrunGate(unittest.TestCase):
     def test_installed_official_gate_routing(self):
         for mode in ('valid', 'empty-prefix', 'prefix', 'command', 'write', 'out',
@@ -68,6 +86,7 @@ def worker(mode):
                         assert args.fork_bin == str(fixture.native) and args.launch_prefix == ''
                         assert driver.gate.ITEMS[3] is driver.item3
                         assert args.no_device_claim == 'current captured keeper GPU writer; rechecked before gate entry'
+                        check_server_environment(driver.gate.Server, args, output, fixture.native)
                         return NS(args=args, own_children=[], open_runs=[], preempted=False), [], []
                     def item3(ctx):
                         def work():

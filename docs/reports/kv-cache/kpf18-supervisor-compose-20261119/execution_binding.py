@@ -185,6 +185,11 @@ def prepare(seal, admission, captured):
             if values.get('--launch-prefix', '') != '':
                 raise ValueError(label + ' launch prefix must be empty')
             boundary()
+            # Admission preserves inherited affinity with an empty launch prefix.
+            # The retained helper sets HSA0 only for explicit taskset prefixes;
+            # bind it as recipe data so native build_env overrides ambient HSA
+            # and records the same value actually passed to Popen.
+            driver.gate.PROD_ENV['HSA_OVERRIDE_CPU_AFFINITY_DEBUG'] = '0'
             original_argv = sys.argv
             try:
                 sys.argv = list(original_argv)

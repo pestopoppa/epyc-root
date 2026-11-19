@@ -953,3 +953,48 @@ Validation: all 82 unittest tests outside historical `test_supervisor.py` PASS
 (`python3 -B` unittest discovery per `test_*.py`, excluding that one module).
 That historical suite was not rerun; its previously documented unavailable R9
 inputs remain outside this successor's qualification. `git diff --check` PASS.
+
+
+## 2026-11-19 — HSA affinity preservation with inherited placement
+
+The retained `Server.build_env()` calls `apply_pinned_launch_env()` with its
+launch prefix. That helper sets `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` only when
+the prefix contains `taskset`. The current admitted entry requires an empty
+prefix to inherit the publisher/keeper CPU placement. Consequently an absent
+or conflicting ambient HSA value was preserved, permitting ROCr to widen the
+server's CPU affinity; the required launch metadata also omitted the HSA value.
+The new real-Server construction control reproduced the absent case before
+this fix (`AssertionError: (None, None)`). Earlier controls mocked Server.
+
+After current boundary/provider recheck, the admitted gate wrapper now supplies
+HSA0 as fixed `PROD_ENV` recipe data. The unchanged retained Server overrides
+ambient values and records HSA0 in `env_note["set"]`. No caller environment,
+launch prefix, native lifecycle method or historical source is modified.
+
+Both installed official routing and installed non-dry retained-R7 smoke routing
+now construct the actual Server with an empty prefix. Each checks ambient HSA
+unset, zero and one, requiring effective/recorded HSA0, retained grids3 debug,
+binary-local LD_LIBRARY_PATH, prefix-free command and unchanged caller env.
+Construction performs no Popen, model load, request or native GPU work.
+The official suite passes 15 isolated cases; the smoke suite passes 15 isolated
+cases. The broader 82-test successor suite excludes the historical
+`test_supervisor.py` module with previously documented unavailable R9 inputs.
+
+Reproduce with unittest discovery for `test_fullrun_gate.py` and
+`test_retained_r7_smoke.py` in this directory. Source SHA-256 identities:
+
+- `execution_binding.py`: `a63c1e6fadf17392f325bfeade23bf6630e8af778ac018853fbc23f718de1c4e`
+- `test_fullrun_gate.py`: `b42af1cf2b3c75c0a2999b99b0469d2cbab5dc6a18849cb4572e9f70d75fa287`
+- `test_retained_r7_smoke.py`: `afe5676efb173def96ea27ef497dae9a40697d973afba130241a1696b2d25cef`
+- `test_execution_binding.py`: `a826392a633dd0491c4235bdab2fe194a7e692f05cd7c0701182031d8aa4ec65`
+
+This is model-free software qualification. Actual post-launch thread affinity,
+provider admission, mapped DSOs, cancellation/release and GPU residency remain
+for the scheduled native row; no publisher invocation or smoke-PASS receipt is
+claimed. Persistent installations, production and historical manifests remain
+unchanged. Next seal the successor using the actual inputs above and current
+artifact/provider identities, then publish its owned-native lifecycle row.
+GitNexus status/impact are unavailable in this unindexed sparse lane; manual
+review limits the runtime change to the admitted gate's recipe environment.
+Bus drain refuses the unregistered kvu slug; no other outbox was used.
+[no-belief: model-free software regression tests]
