@@ -231,3 +231,7 @@ The r12 typed `C6SplitPolicyRefusal` was raised while evaluating candidate outpu
 ## 18:05Z — Assess authorization boundary for C6-26 content-hash-memo corpus implementation
 
 INF48-LIVE-1 C6-26 implementation cannot be performed under the current lane-only edit and commit restriction: reward_hack_corpus.py belongs to the separate epyc-inference-research repository and is absent from this root lane. The prior checkpoint requests a permitted research worktree, but the current dispatch explicitly permits edits and commits only in the root lane. No corpus or re-pin change was made. [no-belief: scope constraint]
+
+## 23:53Z — Assess and file c6-admission-live-proof-r13
+
+INF48-C6-CONTROLLER-PROOF: r13 inconclusive, FUTILITY_CARRIER. Trace and validation passed, but the controller exited with untyped EvidenceProducerError (C6 oracle stdout must not be empty), no admission records and no sealed refusals. Result SHA-256 ce10993b518a1c4104d3e87ea448d759adbcb6399294b05086d359693230ee94. Filing invoked; inspect receipt before retry. [no-belief: row verdict]
