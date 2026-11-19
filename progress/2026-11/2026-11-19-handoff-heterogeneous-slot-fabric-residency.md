@@ -209,3 +209,7 @@ KPF-18-ITEM4-RAW-BUILD: full row `kvu-kpf18-item4-raw-build-20261105` PASS rc=0,
 ## 04:18Z — Consume duplicate decoder run-end event; result already filed
 
 Duplicate run-end for `kpf131-cells-abi-decoder-r4-20261105`: existing verdict is pass; handoff box is already checked and FILED receipt exists. No new result-bearing task is possible for this event; no compute replay, duplicate tick or evidence copy. Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf131-cells-abi-decoder-r4-20261105.verdict.json`, SHA-256 `aab18cd1e4ec7d8e0c465db098399a92acaa5879457b558a280b35f423a100e9`. Retain prior next action. [no-belief: duplicate event acknowledgement only]
+
+## 04:20Z — Replace stale pending supervisor controls with the existing filed full PASS
+
+KPF-18-G3-SUPERVISOR: corrected stale full-controls-pending text using the existing `h-kvu` filing from 2026-11-05. Full row `kvu-kpf18-g3-supervisor-integrated-20261105` rc=0, PASS, 4/4 source-sealed synthetic controls. Native result `/mnt/raid0/llm/tmp/kvu/kpf18-g3-supervisor-integrated-20261105/out/full-attempt/RESULT.json`, SHA-256 `5ffa37777142ddae40846d775503027ff776ee808113004200f44929add7df5e`; existing verdict and FILED receipt preserved. No replay, new tick or evidence copy. Candidate remains disabled; no native lifecycle, GPU admission or hard-quota conclusion. Validation: exact stale sentence replaced once; native result digest matches filed verdict. [no-belief: build and synthetic qualification only]
