@@ -92,52 +92,55 @@ def prepare(seal, admission, captured):
         # No environment flag is created and no driver bytes are rewritten.
         if config.get('mode', 'official') == 'publisher-smoke':
             driver.item3 = driver.item3_smoke
-            gate_main = driver.gate.main
-            def smoke_main():
-                # The retained parser accepts other commands and write targets.
-                # Admit only the smoke recipe, before any parser side effects.
-                args = sys.argv[1:]
-                if not args or args[0] != 'item3':
-                    raise ValueError('publisher smoke requires item3')
-                values = {}
-                allowed = {'--out', '--argv-file', '--prompt-set', '--fork-bin',
-                           '--window-id', '--gpu-window-id', '--port', '--budget-min',
-                           '--load-timeout-s', '--launch-prefix', '--card'}
-                i = 1
-                while i < len(args):
-                    option = args[i]
-                    if option == '--dry-run' and option not in values:
-                        values[option] = True
-                        i += 1
-                        continue
-                    if (option not in allowed or option in values or i + 1 >= len(args)
-                            or args[i + 1].startswith('--')):
-                        raise ValueError('unsupported publisher smoke argument')
-                    values[option] = args[i + 1]
-                    i += 2
-                if values.get('--out') != str(output_root()) or driver.OUT != root:
-                    raise ValueError('publisher smoke output changed')
-                if values.get('--fork-bin') != config['artifacts']['server']:
-                    raise ValueError('publisher smoke server mismatch')
-                for option in ('--argv-file', '--prompt-set'):
-                    name = values.get(option)
-                    if name not in seal['sources'] or not Path(name).is_file():
-                        raise ValueError('publisher smoke requires sealed prepared inputs')
-                # Retained DEFAULT_PREFIX pins CPUs 184-191. A publisher
-                # smoke must inherit its admitted four-CPU mask; even a sealed
-                # server path does not constrain an arbitrary prefix executable.
-                if values.get('--launch-prefix', '') != '':
-                    raise ValueError('publisher smoke launch prefix must be empty')
-                boundary()
-                original_argv = sys.argv
-                try:
-                    sys.argv = list(original_argv)
-                    if '--launch-prefix' not in values:
-                        sys.argv.extend(['--launch-prefix', ''])
-                    return gate_main()
-                finally:
-                    sys.argv = original_argv
-            driver.gate.main = smoke_main
+        gate_main = driver.gate.main
+        def gate_entry():
+            label = "publisher smoke" if config.get("mode", "official") == "publisher-smoke" else "current official gate"
+            if config.get("mode", "official") == "official" and os.environ.get("KPF_SMOKE") == "1":
+                raise ValueError("official gate refuses smoke selection")
+            # The retained parser accepts other commands and write targets.
+            # Admit only the sealed item3 recipe, before parser side effects.
+            args = sys.argv[1:]
+            if not args or args[0] != 'item3':
+                raise ValueError(label + ' requires item3')
+            values = {}
+            allowed = {'--out', '--argv-file', '--prompt-set', '--fork-bin',
+                       '--window-id', '--gpu-window-id', '--port', '--budget-min',
+                       '--load-timeout-s', '--launch-prefix', '--card'}
+            i = 1
+            while i < len(args):
+                option = args[i]
+                if option == '--dry-run' and option not in values:
+                    values[option] = True
+                    i += 1
+                    continue
+                if (option not in allowed or option in values or i + 1 >= len(args)
+                        or args[i + 1].startswith('--')):
+                    raise ValueError('unsupported ' + label + ' argument')
+                values[option] = args[i + 1]
+                i += 2
+            if values.get('--out') != str(output_root()) or driver.OUT != root:
+                raise ValueError(label + ' output changed')
+            if values.get('--fork-bin') != config['artifacts']['server']:
+                raise ValueError(label + ' server mismatch')
+            for option in ('--argv-file', '--prompt-set'):
+                name = values.get(option)
+                if name not in seal['sources'] or not Path(name).is_file():
+                    raise ValueError(label + ' requires sealed prepared inputs')
+            # Retained DEFAULT_PREFIX pins CPUs 184-191. Each admitted
+            # run must inherit its admitted CPU mask; even a sealed
+            # server path does not constrain an arbitrary prefix executable.
+            if values.get('--launch-prefix', '') != '':
+                raise ValueError(label + ' launch prefix must be empty')
+            boundary()
+            original_argv = sys.argv
+            try:
+                sys.argv = list(original_argv)
+                if '--launch-prefix' not in values:
+                    sys.argv.extend(['--launch-prefix', ''])
+                return gate_main()
+            finally:
+                sys.argv = original_argv
+        driver.gate.main = gate_entry
         def sealed_input(name, expected=None):
             path = Path(name)
             if (not path.is_absolute() or not path.is_file()

@@ -636,3 +636,56 @@ Evidence SHA-256:
 - `execution_binding.py`: `bfee63924c5675536bf8a9d9874386f8daf6f17494ff9ce26dfda29875905810`
 - `test_execution_binding.py`: `1bd9cb6aa8f4348dbe9a0b9616a992ceb9d987fd5f33af922e07ce9d34e98f8d`
 - `test_fullrun_context.py`: `115e8fa1486dac03da99f724ae41e0d8d925b375166907090428cd4a4964335f`
+
+
+### 2026-11-19 — Current official gate command and launch routing
+
+Extended the opt-in current-guard-v3 gate-entry wrapper to official execution.
+Previously official entry left the retained parser unrestricted, including its
+fixed CPU 184-191 launch prefix and alternate commands/write targets. Both
+modes now require item3, the admitted output, the sealed server and sealed
+prepared argv/prompt inputs; duplicate, unknown and write-producing options
+refuse before parser entry. Every nonempty launch prefix refuses; omission
+becomes an explicit empty prefix so server children inherit admitted affinity.
+Official gate entry also refuses KPF_SMOKE=1 rather than silently selecting the
+smoke item. The real full-run item3 selection remains intact. Caller sys.argv
+is restored on success and failure. No historical driver or gate bytes changed.
+
+PASS: one new isolated-process test with 13 cases: valid, explicit empty prefix,
+nonempty prefix, alternate command, alternate write, redirected output, duplicate
+output, foreign server, unsealed prompt input, prepared-input drift, STOP,
+smoke-selection override, and inert execution failure. The installed real
+supervisor capture/import/bind/main path reaches the real retained parser and
+execution loop. Positive controls require item3 selection, empty parsed prefix,
+admitted run_meta.json and expected completion markers; negative controls
+require no parser-context entry, work or output. Execution failure requires rc4
+and no completion marker. Every case checks caller argv restoration.
+
+The other 75 scoped regressions also PASS: 19 binding, 25 admission,
+8 prerequisites, 4 non-dry entry, 12 successor, 6 supervisor Binding and
+1 full-run context test (11 isolated cases), for 76 unittest tests total.
+An initial aggregate command used nonexistent test_supervisor.Binding and
+reported a loader error alongside 69 passing tests; corrected discovery with
+-k Binding passes all six intended supervisor cases. Git diff --check PASS.
+
+```bash
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_fullrun_gate.py -v
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_supervisor.py -k Binding -v
+```
+
+Scope: private official-format grant/provider/artifact fixtures; inert item3,
+context and witness. Driver main intentionally takes its dry prerequisite
+branch, then the fixture removes --dry-run only at gate entry to exercise the
+real execution loop. No native work, real device claim, actual official grant,
+measured affinity, GPU, publisher smoke or full non-dry integration is claimed.
+Persistent installation and historical input pins remain unchanged. KPF-18
+remains open. Exact historical framing recovery still blocks real publication;
+next qualify combined non-dry main/prerequisite/gate routing with private
+retained-verifier controls. GitNexus status/impact unavailable: no sparse-lane
+index. Bus drain refuses the slug because no matching roster id exists.
+
+Evidence SHA-256:
+- execution_binding.py: `fd48e1424391f44421899b4c8d80fa7ffbd04e1b33a848e3dc86e73daf38d023`
+- test_fullrun_gate.py: `0d3f0f9d2ab0c7de6e7823bf877d12f398befdf8c684738bd269f4c9666b7355`
+
+[no-belief: model-free software regression tests]
