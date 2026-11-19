@@ -3,7 +3,10 @@
 #
 # WHAT YOU ARE SIGNING (operator ruling 2026-11-18, "today's 27B-anchored gate"):
 #   GPU: correctness is decided by Qwen3.8-27B Q8_0: mean KLD <= 0.003 and |dPPL| <= 0.5% for the same change.
-#        Q38FN (Qwen3.8-Flash-Next UD-IQ4_XS) KLD / PPL / top-1 are reported only.
+#        Q38FN (Qwen3.8-Flash-Next UD-IQ4_XS) KLD / PPL are reported only, BUT (operator decision 2026-11-19) the
+#        keep is also REFUSED if Q38FN same-top < 93.0%. Q38FN is not served on GPU, so the GPU gate runs it hybrid
+#        (-ngl 999 --n-cpu-moe 48, the H13b keep-run recipe) as the test vehicle. Reason: the known-bad H13b replay is
+#        clean on the 27B and caught only by Q38FN.
 #   CPU: the same 27B clause, plus Q38FN |dPPL| <= 0.5% and top-1 (same-top) >= 93%.
 #   |dPPL| = |PPL(cand)/PPL(champion) - 1|, read from llama-perplexity's Mean ln(PPL(Q)/PPL(base)).
 #   Corpus wikitext-2 (/mnt/raid0/llm/data/wiki.test.raw), -c 4096 --chunks 16, f16 KV, base logits saved once per champion.
@@ -143,7 +146,7 @@ import json, os, sys
 doc = {
     "schema": "epyc.autokernel.graph_kld_policy.v1",
     "ratification": os.environ["GATE_ID"],
-    "ruling": "operator 2026-11-18: 27B-anchored gate. GPU: 27B Q8_0 KLD <= 0.003 and |dPPL| <= 0.5% decide; Q38FN reported only. CPU: same 27B clause plus Q38FN |dPPL| <= 0.5% and top-1 >= 93%.",
+    "ruling": "operator 2026-11-18, amended 2026-11-19: 27B-anchored gate. GPU: 27B Q8_0 KLD <= 0.003 and |dPPL| <= 0.5% decide; Q38FN (run hybrid --n-cpu-moe 48 as the GPU test vehicle) KLD/dPPL reported only but same-top >= 93.0% refuses. CPU: same 27B clause plus Q38FN |dPPL| <= 0.5% and top-1 >= 93%.",
     "protocol": "measurement/protocols/kernel-research.md P-AK-SEARCH-1-A5 / A5a",
     "corpus": "/mnt/raid0/llm/data/wiki.test.raw",
     "chunks": 16,
@@ -154,7 +157,7 @@ doc = {
     "backends": {
         "gpu": [
             {"model": "q38_27b", "decisive": True, "max_mean_kld": 0.003, "max_abs_dppl_pct": 0.5},
-            {"model": "q38fn", "decisive": False},
+            {"model": "q38fn", "decisive": True, "min_same_top_pct": 93.0, "n_cpu_moe": 48},
         ],
         "cpu": [
             {"model": "q38_27b", "decisive": True, "max_mean_kld": 0.003, "max_abs_dppl_pct": 0.5},
@@ -179,13 +182,17 @@ if [ "$ITEM2" != "already" ]; then
     || die "could not snapshot the pre-amendment state"
   cat >>"$WT/$TARGET" <<'AMENDEOF'
 
-## P-AK-SEARCH-1-A5a — graph-level KLD thresholds, 27B-anchored (AK-FUSE-GRAPH-KLD-1, RATIFIED 2026-11-18)
+## P-AK-SEARCH-1-A5a — graph-level KLD thresholds, 27B-anchored (AK-FUSE-GRAPH-KLD-1, RATIFIED 2026-11-18; GPU Q38FN top-1 clause 2026-11-19)
 
-Operator ruling 2026-11-18 sets the values A5 left unset. A keep candidate that touches graph-fusion,
+Operator ruling 2026-11-18 (amended 2026-11-19: GPU Q38FN-hybrid top-1 clause) sets the values A5 left unset. A keep candidate that touches graph-fusion,
 ggml-alloc or graph-matcher files (`gates.touches_graph_fusion`) passes the graph-level gate only if:
 
 - **GPU:** Qwen3.8-27B Q8_0 decides: mean KLD <= 0.003 and |dPPL| <= 0.5% for the same change.
-  Q38FN (Qwen3.8-Flash-Next UD-IQ4_XS) KLD, PPL and top-1 are reported only.
+  Q38FN (Qwen3.8-Flash-Next UD-IQ4_XS) KLD and PPL are reported only; **amended by operator decision
+  2026-11-19:** the keep is also refused if Q38FN top-1 (same-top) < 93.0%. Q38FN is not served on GPU, so
+  the GPU gate runs it hybrid (`-ngl 999 --n-cpu-moe 48`, the H13b keep-run recipe) as the test vehicle.
+  Reason: the known-bad H13b replay is clean on the 27B and caught only by Q38FN. The 27B still decides
+  KLD and dPPL.
 - **CPU:** the same 27B clause, plus Q38FN |dPPL| <= 0.5% and top-1 (same-top) >= 93%.
 
 |dPPL| is |PPL(candidate)/PPL(champion) - 1|, from llama-perplexity's mean ln(PPL(Q)/PPL(base)). The
@@ -196,7 +203,7 @@ The values live in research `scripts/kernel_rnd/autokernel/loop/graph_kld_policy
 ratification; that file is their only input, and changing it needs a new operator amendment. A missing or
 malformed policy, an unparsed decisive metric, or a decisive clause without a limit refuses the keep
 (`threshold_unset` / `kld_unparsed`); a failed run is `oracle_unavailable`. Neither is a pass. The known-bad
-C7/H13b Q38FN replay (KLD 0.1865, same-top 88.6%) fails the CPU clause on top-1.
+C7/H13b Q38FN replay (KLD 0.1865, same-top 88.6%) fails the Q38FN top-1 clause on both CPU and GPU.
 
 Enforcement: `gates.graph_kld_keep_check` is called from the correctness gate in `loop/run.py` for every
 graph-fusion candidate on both legs, and every promoted champion builds `llama-perplexity`. This supersedes
@@ -213,7 +220,7 @@ AMENDEOF
     --protocol-id "$PROTOCOL_ID" --anchor "$ANCHOR" \
     --ratification-id "$GATE_ID" --script "$SCRIPT_PATH" \
     --operator "${RATIFY_OPERATOR:-DRY-RUN-PREVIEW}" \
-    --no-evidence-reason "operator-chosen thresholds (ruling 2026-11-18), not a measured claim; the gate's own runs are the evidence per keep" \
+    --no-evidence-reason "operator-chosen thresholds (ruling 2026-11-18, amended 2026-11-19), not a measured claim; the gate's own runs are the evidence per keep" \
     --validation "grep -qF 'P-AK-SEARCH-1-A5a' $TARGET" \
     --out "$WT/$CONSOLIDATED_REL" || die "consolidated receipt refused. Nothing committed."
   ok "consolidated receipt: $CONSOLIDATED_REL"
@@ -248,7 +255,7 @@ if [ "$ITEM1" != "already" ]; then
   g "$RWT" add -- "$POLICY_REL"
   [ "$(g "$RWT" diff --cached --name-only HEAD)" = "$POLICY_REL" ] || die "research index holds an unexpected path set"
   g "$RWT" commit -q -m "autokernel: graph_kld_policy.json, $GATE_ID (signed by $RATIFY_OPERATOR)" \
-    -m "AK-FUSE-GRAPH-KLD-1 thresholds per operator ruling 2026-11-18: GPU 27B Q8_0 KLD <= 0.003 and |dPPL| <= 0.5% decide, Q38FN report-only; CPU adds Q38FN |dPPL| <= 0.5% and top-1 >= 93%." \
+    -m "AK-FUSE-GRAPH-KLD-1 thresholds per operator ruling 2026-11-18: GPU 27B Q8_0 KLD <= 0.003 and |dPPL| <= 0.5% decide, Q38FN KLD/dPPL report-only but Q38FN hybrid same-top >= 93.0% refuses (2026-11-19); CPU adds Q38FN |dPPL| <= 0.5% and top-1 >= 93%." \
     -m "Operator-Ratified: yes" || die "research commit failed (hook?). Nothing pushed; re-run."
   RES_COMMIT="$(g "$RWT" rev-parse HEAD)"; ok "research committed ${RES_COMMIT:0:12}"
   if [ "$DO_PUSH" -eq 1 ]; then
@@ -278,7 +285,8 @@ doc = {
     "operator": e["OPERATOR"],
     "signature_channel": "operator-run script (--attest typed confirmation)",
     "operator_decisions": {
-        "1": "2026-11-18 AK-FUSE-GRAPH-KLD-1: today's 27B-anchored gate as the thresholds (GPU: 27B Q8_0 KLD <= 0.003, |dPPL| <= 0.5%; Q38FN report-only. CPU: same plus Q38FN |dPPL| <= 0.5%, top-1 >= 93%)",
+        "1": "2026-11-18 AK-FUSE-GRAPH-KLD-1: today's 27B-anchored gate as the thresholds (GPU: 27B Q8_0 KLD <= 0.003, |dPPL| <= 0.5%; Q38FN KLD/dPPL report-only. CPU: same plus Q38FN |dPPL| <= 0.5%, top-1 >= 93%)",
+        "2": "2026-11-19 amendment: GPU additionally refuses if Q38FN (hybrid --n-cpu-moe 48 test vehicle) same-top < 93.0%; the known-bad H13b replay is clean on the 27B and caught only by Q38FN",
     },
     "items": {
         "1": f"research {e['POLICY_REL']} (the only threshold input of gates.graph_kld_keep_check)",
