@@ -166,3 +166,82 @@ def test_native_actor_python_outline_definition_locations_match(seat, legacy_act
     new = call(seat, 'outline', path='sample.py').content[0].text
     assert [line for line in new.splitlines() if line.startswith('L')] == [
         line for line in old.splitlines() if line.startswith('L')]
+
+
+@pytest.mark.parametrize('tool,arguments', [
+    ('read_range', {'path': 'binary.py'}), ('outline', {'path': 'binary.py'}),
+    ('grep', {'pattern': 'needle', 'path': 'binary.py'}),
+])
+def test_actor_binary_input_refused(seat, tool, arguments):
+    (seat[1] / 'binary.py').write_bytes(b'needle\x00def secret():\n    pass\n')
+    result = call(seat, tool, **arguments)
+    assert result.is_error
+    assert 'binary' in result.content[0].text
+
+
+def test_c_family_outline_native_fixture_definitions_match(seat, legacy_actor):
+    # Native fixture is loaded in place; no source/fixture copy enters the repository.
+    from autokernel.loop.test_actor_tools_mcp import CPP_FIXTURE
+    (seat[1] / 'fixture.cpp').write_text(CPP_FIXTURE)
+    old = legacy_actor.outline(str(seat[1]), 'fixture.cpp')
+    new = call(seat, 'outline', path='fixture.cpp')
+    assert not new.is_error
+    old_rows = [line for line in old.splitlines() if line.startswith('L')]
+    new_rows = [line for line in new.content[0].text.splitlines() if line.startswith('L')]
+    assert new_rows == old_rows
+    assert any('process' in row for row in new_rows)
+    assert any('mul_mat_qX_K' in row for row in new_rows)
+    assert not any('prototype_only' in row or 'helper(' in row for row in new_rows)
+
+
+@pytest.mark.parametrize('source', [
+    'namespace n {\nstruct A {\nvoid f() {\n if (true) { other(); }\n}\n};\n}\n',
+    '#define FOO(x) ((x)+1)\nextern "C" {\nint f(int n) { return n; }\n}\n',
+    '/* fake() { */\nvoid prototype();\ntemplate <class T>\nT actual(T x)\n{ return x; }\n',
+    'struct A {\nconst char * f() { return "}"; }\nvoid g() { /* { */ }\n};\n',
+])
+def test_c_family_differential_edge_cases(seat, legacy_actor, source):
+    (seat[1] / 'edge.hpp').write_text(source)
+    old = legacy_actor.outline(str(seat[1]), 'edge.hpp')
+    new = call(seat, 'outline', path='edge.hpp').content[0].text
+    assert [line for line in new.splitlines() if line.startswith('L')] == [
+        line for line in old.splitlines() if line.startswith('L')]
+
+
+def test_candidate_composition_does_not_mutate_base_core(seat):
+    from scripts.harness.hs4_p6_shared_core import candidate_core
+    original_reader, original_parser = core._read_text, core._outline_c_heuristic
+    candidate = candidate_core(core)
+    assert candidate_core(candidate) is candidate
+    (seat[1] / 'binary.py').write_bytes(b'hello\x00')
+    assert '\x00' in core._read_text(str(seat[1]), 'binary.py')[0]
+    with pytest.raises(core.ExplorationError, match='binary'):
+        candidate._read_text(str(seat[1]), 'binary.py')
+    assert core._read_text is original_reader
+    assert core._outline_c_heuristic is original_parser
+
+
+def test_candidate_composition_reads_only_once(seat, monkeypatch):
+    from scripts.harness.hs4_p6_shared_core import candidate_core
+    original = core._read_text
+    reads = []
+    def counted(*args, **kwargs):
+        reads.append(args)
+        return original(*args, **kwargs)
+    monkeypatch.setattr(core, '_read_text', counted)
+    candidate = candidate_core(core)
+    candidate.read_range(str(seat[1]), 'sample.py')
+    assert len(reads) == 1
+    candidate.outline_file(str(seat[1]), 'sample.py')
+    assert len(reads) == 2
+
+
+def test_missing_or_different_parser_checkout_is_refused(tmp_path, legacy_actor):
+    from scripts.harness.hs4_p6_shared_core import load_actor_parser
+    with pytest.raises(ValueError, match='native actor'):
+        load_actor_parser(tmp_path)
+    alternate = tmp_path / 'scripts/kernel_rnd/autokernel/loop'
+    alternate.mkdir(parents=True)
+    (alternate / 'actor_tools_mcp.py').write_text('# wrong checkout\n')
+    with pytest.raises(RuntimeError, match='declared research'):
+        load_actor_parser(tmp_path)

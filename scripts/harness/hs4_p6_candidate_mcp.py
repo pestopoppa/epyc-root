@@ -13,10 +13,13 @@ from pathlib import Path
 import sys
 
 
-def register_exploration_tools(server, read_roots, *, core=None):
+def register_exploration_tools(server, read_roots, *, core=None, research_root=None):
     """Add bounded tools to a row-owned server, admitting only declared read roots."""
     if core is None:
         from src.repl_environment import exploration_core as core
+
+    from scripts.harness.hs4_p6_shared_core import candidate_core, DEFAULT_RESEARCH_ROOT
+    core = candidate_core(core, research_root=research_root or DEFAULT_RESEARCH_ROOT)
 
     admitted = tuple(Path(root).resolve(strict=True) for root in read_roots)
     if not admitted or any(not root.is_dir() for root in admitted):
@@ -86,6 +89,8 @@ def register_exploration_tools(server, read_roots, *, core=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--orchestrator-root", required=True, type=Path)
+    parser.add_argument("--research-root", type=Path,
+                        default=Path("/mnt/raid0/llm/epyc-inference-research"))
     roots = parser.add_mutually_exclusive_group(required=True)
     roots.add_argument("--read-root", action="append", type=Path)
     roots.add_argument("--actor-root", type=Path, help="bind actor exploration calls to this root")
@@ -99,9 +104,9 @@ def main():
         raise RuntimeError("MCP server did not load from the declared checkout")
     if args.actor_root is not None:
         from scripts.harness.hs4_p6_actor_mcp import register_actor_tools
-        register_actor_tools(mcp_server.mcp, args.actor_root)
+        register_actor_tools(mcp_server.mcp, args.actor_root, research_root=args.research_root)
     else:
-        register_exploration_tools(mcp_server.mcp, args.read_root)
+        register_exploration_tools(mcp_server.mcp, args.read_root, research_root=args.research_root)
     mcp_server._get_plugin_loader()
     mcp_server.mcp.run(transport="stdio")
 

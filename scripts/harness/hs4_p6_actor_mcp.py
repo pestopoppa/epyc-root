@@ -100,10 +100,12 @@ def grep_tree(root, pattern, path='.', max_hits=40, context=0, *, core):
     return '\n'.join(out)
 
 
-def register_actor_tools(server, root, *, core=None):
+def register_actor_tools(server, root, *, core=None, research_root=None):
     """Expose the actor's four exploration names with a launch-bound root."""
     if core is None:
         from src.repl_environment import exploration_core as core
+    from scripts.harness.hs4_p6_shared_core import candidate_core, DEFAULT_RESEARCH_ROOT
+    core = candidate_core(core, research_root=research_root or DEFAULT_RESEARCH_ROOT)
     fixed = Path(root)
     if not fixed.is_absolute() or not fixed.is_dir():
         raise ValueError('actor root must be an existing absolute directory')

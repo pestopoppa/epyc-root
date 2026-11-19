@@ -179,3 +179,18 @@ def test_search_skips_hidden_binary_large_and_special_inputs(seat):
     assert result.data["matches"][0]["start_line"] == 1
     assert result.data["matches"][0]["end_line"] == 1
     assert result.data["skipped"] >= 4
+
+
+@pytest.mark.parametrize('tool,extra', [
+    ('read_range', {}), ('peek', {}), ('outline', {}),
+    ('grep', {'pattern': 'hello'}), ('peek_grep', {'pattern': 'hello'}),
+])
+def test_explicit_root_candidate_shares_binary_refusal(seat, tool, extra):
+    (seat[1] / 'binary.py').write_bytes(b'hello\x00')
+    assert call(seat, tool, path='binary.py', **extra).is_error
+
+
+def test_explicit_root_candidate_shares_native_c_parser(seat):
+    (seat[1] / 'nested.cpp').write_text('namespace n {\nstruct A {\nvoid f() {}\n};\n}\n')
+    text = call(seat, 'outline', path='nested.cpp').content[0].text
+    assert 'void f()' in text

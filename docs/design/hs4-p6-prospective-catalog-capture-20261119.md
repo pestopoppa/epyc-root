@@ -85,7 +85,7 @@ planning-context canary still required before calling the loop wired.
 `scripts/harness/hs4_p6_candidate_mcp.py` is an explicit candidate launcher,
 not an active-server registration. It loads the declared orchestrator checkout,
 then registers `read_range`, `peek`, `grep`, `peek_grep` and `outline` against its
-shared `exploration_core`. Supply `--orchestrator-root` and one or more
+shared candidate composition over `exploration_core`. Supply `--orchestrator-root` and one or more
 `--read-root` arguments. Every call must provide an absolute root within those
 admitted directories; path resolution and bounded reads remain in the shared
 core. The session stamp is accepted but grants no read scope.
@@ -163,9 +163,47 @@ Python outline definition locations. Actor source reference: research commit
 skips, which are not a qualification pass.
 
 These controls establish the tested request/output contracts, not full actor
-migration acceptance. Shared outline parsing differs from the actor's C/C++
-heuristic; shared read/outline do not currently implement the actor's explicit
-binary-input refusal. Error transport and some clamp/continuation notices also
-differ. No claim that the entire native actor suite passes is made. Production
+migration acceptance. The candidate now shares the native actor C/C++ parser and refuses binary
+input as described below. Error transport and some clamp/continuation notices
+still differ; Python outlines retain the shared AST-first implementation. No claim that the entire native actor suite passes is made. Production
 catalogs/configs are unchanged; full actor qualification and the live catalog
 gate still precede any active integration.
+
+
+## Shared candidate reader and C-family parser
+
+Both registration modes now consume `hs4_p6_shared_core.candidate_core`.
+It composes the existing bounded exploration reader/renderers with the native
+actor C-family outline parser, using isolated function helper bindings. It does
+not change either imported module, copy their source, or perform a second read
+for binary checks. `read_range`, `peek`, `grep`, `peek_grep`, `outline` and the
+root-search reader reject NUL-containing input through the shared candidate
+reader. This checks the entire bounded read, which is stricter than the native
+actor's prefix binary check. Directory grep/search skip refused binary files and
+report incomplete coverage; explicit file operations return tool errors.
+
+C-family outline definitions now use the native actor `_outline_c` function;
+rendering, caps and path resolution remain in `exploration_core`. Native fixture
+and differential edge controls cover namespace/type nesting, member functions,
+templates, prototypes, comments, strings, macros and extern blocks. Python
+outlines continue using the shared AST-first parser. This is a shared candidate
+implementation, not a completed move of source into the production orchestrator
+or removal of actor exploration tools.
+
+The launcher accepts `--research-root` (default the canonical research checkout).
+The loader refuses a missing actor implementation or a cached actor module from
+a different checkout. It imports that declared source in place. Prospective
+launch/custody pins must therefore include the candidate composition module,
+orchestrator exploration core and native actor parser source/import dependencies
+as well as both candidate adapters. A filesystem path check is not proof of the
+loaded code's contents; row-owned live custody remains required. Parser reference
+remains the research source commit/blob above. No active catalog is changed.
+
+The focused candidate suites total 68 passing tests locally with zero skips,
+including binary refusals through both MCP modes, native C/C++ definition rows,
+base-module immutability, one-read execution, missing/different parser checkout
+refusal and prior scope/output controls. This does not establish semantic-search
+parity, the entire native actor suite, production installation or catalog-growth
+acceptance. The next result must be matched live catalog/serving capture and
+keeper-published baseline/candidate trials, with the candidate's declared lexical
+search contract preserved in the frozen inputs.
