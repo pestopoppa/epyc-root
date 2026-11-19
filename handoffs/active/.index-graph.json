@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T23:38:54Z",
+  "generated_at": "2026-11-19T23:41:39Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1377,7 +1377,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 877,
+      "closed": 879,
       "dispatchable": 121,
       "domain": "inference-research",
       "guarded": 0,
@@ -1438,7 +1438,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6100,
+          "line": 6104,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1447,7 +1447,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6180,
+          "line": 6184,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1466,7 +1466,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6478,
+          "line": 6482,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1483,7 +1483,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9718,
+          "line": 9722,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1496,7 +1496,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14130,
+          "line": 14134,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1530,7 +1530,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14343,
+          "line": 14347,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -1772,7 +1772,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 147,
+      "closed": 148,
       "dispatchable": 40,
       "domain": "inference-research",
       "guarded": 0,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 800,
+          "line": 801,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 31,
           "readiness": "blocked"
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1039,
+          "line": 1040,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1655,
+          "line": 1656,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1802,
+          "line": 1803,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
