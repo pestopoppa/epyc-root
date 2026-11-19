@@ -11,3 +11,7 @@ C6-Q4-MMVQ-FIX: acknowledged already filed `c6-targetshape-dual-build-20261105` 
 ## 02:06Z — File c15-fold-cpu-20261118-r4 against its published decision rule and correct its handoff record.
 
 C15-FAROWS-FOLD: filed c15-fold-cpu-20261118-r4 FAIL (rc=0): all eight visits valid; geomean 0.990530 < 0.995 and P2 0.841263 < 0.98; KLD 0, top-1 100%, relative PPL +0.219%. Corrected the earlier invalid-contended characterization; visit swings do not establish a FAROWS cause. RESULT.json SHA-256 0b2ff907787b79753346532bd6702cee7a9e6cc49cbaf1b1becde1511a24fef0; results.jsonl SHA-256 46504826a572eaead144cddc56cb79bb511afed426f56702ab6f09aa96d666c2. [belief: cc]
+
+## 02:09Z — Consume ch26-cpu-sched-chain-20261105 run-end event against its existing filed functional verdict.
+
+CH-26b: consumed the run-end event for `ch26-cpu-sched-chain-20261105`; the functional-only PASS was already recorded by commit `f3d73f8463f1bbf384c6f299c7c987a0682b6d40`, and file_result confirms its FILED receipt exists. The 24-window diagnostic does not establish a noise floor. [no-belief: previously filed result]
