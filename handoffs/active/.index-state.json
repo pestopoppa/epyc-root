@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 508
+      "open": 511
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1448,10 +1448,10 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 108,
+      "closed": 109,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 33,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1460,7 +1460,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 142,
+      "total": 146,
       "tracks": [
         {
           "blocked": 0,
@@ -1476,20 +1476,20 @@
         },
         {
           "blocked": 0,
-          "closed": 7,
+          "closed": 8,
           "gates": [],
           "guarded": 0,
           "line": 627,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
-          "open": 1
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1000,
+          "line": 1005,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1499,7 +1499,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1616,
+          "line": 1621,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1509,7 +1509,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1763,
+          "line": 1768,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
