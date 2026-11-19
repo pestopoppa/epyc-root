@@ -1,0 +1,26 @@
+{
+  "id": "df2-cafe3-p9-hip-20261119",
+  "owner": "handoff-df2",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/launch.sh",
+  "lane": "gpu",
+  "estimate_s": 3600,
+  "min_window_s": 3600,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "P9 PASS iff all tokens match static-0 (100%), adaptive aggregate request-wall tokens/s >=1.01 times the fastest static width 0..3, and same-request post-exploration zero-to-positive probe recovery occurs within 128 completed rounds. Missing recovery is inconclusive; late recovery or identity/speed threshold violation fails. Malformed/incomplete custody refuses assessment. Descriptive whole-arm timing only; no significance claim.",
+  "verdict_by": "agent",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-3",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119",
+  "keep": [
+    "cafe3-p9/**",
+    "cafe3-adaptive/*.py",
+    "cafe3-build/*.py",
+    "cafe3-hip-build/*.py"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/runtime.py predicate 751b336cb42b495b5a64257fb0d056ae472a7a539ca43d45f49f0e2d11b86f07",
+  "notes": "Sealed native HIP MI210 P9, full HIP R3. Smoke validates inputs and compiled CLI with devices hidden and no model load. Grant uses exclusive GPU, target/draft full offload and current per-request KFD/VRAM/local-library capture and fail-closed P9 grader. Fixed 30 requests, all five widths, no production changes."
+}

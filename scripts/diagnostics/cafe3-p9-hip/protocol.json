@@ -1,0 +1,48 @@
+{
+  "schema": "epyc.cafe3.protocol.v1",
+  "corpus": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/corpus.jsonl",
+    "sha256": "28fe6166386a25b548d5529db02df31a4b7f3e24e5180e92982f7bc69ebdcd31",
+    "identity": {
+      "device": 2431,
+      "inode": 200153164,
+      "size": 737,
+      "mtime_ns": 1795126450282859302,
+      "ctime_ns": 1795126450282859302
+    }
+  },
+  "arms": [
+    "static-0",
+    "static-1",
+    "static-2",
+    "static-3",
+    "adaptive"
+  ],
+  "repetitions": 2,
+  "question": "For this sealed HIP MI210 Qwen3.8-27B Q8/DFlash2 Q8 full-v10-based candidate, does adaptive width 0..3 meet P9 versus every static width 0..3?",
+  "decision_rule": "P9 PASS iff all tokens match static-0 (100%), adaptive aggregate request-wall tokens/s >=1.01 times the fastest static width 0..3, and same-request post-exploration zero-to-positive probe recovery occurs within 128 completed rounds. Missing recovery is inconclusive; late recovery or identity/speed threshold violation fails. Malformed/incomplete custody refuses assessment. Descriptive whole-arm timing only; no significance claim.",
+  "checkpoints": "Persist each request and completed arm. Assess once after all 30 declared requests; preserve partial records on failure. No interim positive performance decisions.",
+  "stop_on_answer": "Stop after this fixed 5-arm x 2-repetition x 3-prompt schedule and one offline P9 assessment. No automatic reruns or extra samples.",
+  "stop_on_futility": "Stop immediately on invalid inputs, failed request/arm, journal/custody failure, STOP, grant termination or deadline. Missing recovery at the fixed endpoint is inconclusive; no post-hoc extension.",
+  "sufficiency": "Expected decision margin +1%; timing noise may exceed it at two repetitions. Report descriptive scoped P9 only, not statistical significance or production promotion. Fixed maximum 7680 generated tokens; no optional stopping for positive speed.",
+  "request_settings": {
+    "n_predict": 256,
+    "seed": 42,
+    "timeout_s": 600,
+    "arm_widths": {
+      "static-0": 0,
+      "static-1": 1,
+      "static-2": 2,
+      "static-3": 3,
+      "adaptive": 3
+    }
+  },
+  "p9_policy": {
+    "schema": "epyc.cafe3.p9-policy.v1",
+    "metric": "aggregate-request-wall-tokens-per-second",
+    "minimum_gain_percent": 1,
+    "identity": "all-tokens-vs-static-0",
+    "recovery": "post-exploration-zero-to-positive-probe",
+    "recovery_max_rounds": 128
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "epyc.cafe3.p9-inputs.v1",
+  "row": "df2-cafe3-p9-hip-20261119",
+  "port": 18794,
+  "prepared": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/prepared.json",
+    "sha256": "7fea19f1074fa5596f501ba00badf61d60ce1715abedc48ebd0cea4c2eb1cc78"
+  },
+  "protocol": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/protocol.json",
+    "sha256": "86f118bae1066a657ca38d51b318b0dc10f4ae393dcfae875272a0b815068b18"
+  },
+  "build": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-r3-20261119/RESULT.json",
+    "sha256": "47b32712726fbb47f332185744f1fd7f70c984a1db2bfec03afbba6966cfff30"
+  },
+  "runtime": {
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-adaptive/launch_context.py": "68540c853cc9ecf73a69712f7848ad301b49d06e2b34f73eca77e39af61a7938",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-adaptive/multi_arm.py": "1ff9ad1b4a0823770ba99a61afedf750c65e7a28f9a01a8090ac9aada055878e",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-adaptive/native_runner.py": "9232e161c79cd6766150d0f6e7b5e97b32c901822eea39b8b6fe97828641f681",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-adaptive/p9_grade.py": "6da58c79bc11a4c1949677b675f13254f2ea98499533ce2937799e67d4e9a8d2",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-adaptive/protocol_requests.py": "ebbf8a18c9862986f0d74af4e2ef3a6d5106e3d57474bb98fc5548722834984c",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-build/driver.py": "4205a4af38aee964aa20ca217cf4897095144922d5c5b1bb319d1f5f33dc89b0",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-hip-build/driver.py": "6d209ff939a063c2a0746040e9e84d43da37987be5b83617f5f514645b6d2b7e",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/runtime.py": "67c79b94b86ffe274e3b3b11552aa7d11d76fd663a216fcf94c4c87aa3b1fd7a"
+  }
+}
