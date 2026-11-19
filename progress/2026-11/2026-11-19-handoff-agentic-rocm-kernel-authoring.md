@@ -187,3 +187,7 @@ RKA-A3B-ROUTER-WIDE: filed rka-a3b-router-wide-gpu-20261119-r2 inconclusive (rc=
 ## 13:04Z — Repair router-wide timing parser; publisher refused moved handoff box
 
 RKA-A3B-ROUTER-WIDE moved to handoffs/active/autokernel-loop.md (rocm-kernel-authoring.md records the move). Publisher refused successor r3 because its box is no longer in this handoff; no row was published. Prepared scratch parser /mnt/raid0/llm/tmp/agentic-rocm-kernel-authoring/router-wide-r3/job.py SHA-256 06084c07cfbd1acc95619beba4d909ce73ae02168f95bf42df95d7751c7c9062: captured timing log SHA-256 bb4ed960b54658412b25ee7802ae2c5ea8c9522f4f1d5b54b117ab1792bb057d parses 16/16 unique cells, rejecting missing, duplicate and zero timings. Accidental import started an ungranted build; stopped its captured process group, verified exit, removed its worktree and build output. [no-belief: instrument repair; no measurement verdict]
+
+## 13:06Z — File owned r6 result as inconclusive
+
+Filed rka-a3b48-d-remeasure-20261119-r6 INCONCLUSIVE (rc 75, no RESULT.json). Five cells recorded foreign-busy p95 28.976%, 30.904%, 95.654%, 37.880%, 28.927%, all above the registered 25% threshold despite VALID labels; investigate grant/sampler accounting and validity before continuation. results.jsonl SHA-256 9f734f39169d7a5e41cfab32465f0f1619b2e37c259d2ba1b15660707d800f5d; filing receipt exists; scratch retained. Box resides in autokernel-loop.md. [no-belief: incomplete run and instrument discrepancy]
