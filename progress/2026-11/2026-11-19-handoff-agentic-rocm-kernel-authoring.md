@@ -11,3 +11,7 @@ Filed rka-a3b-router-wide-gpu-20261118 INCONCLUSIVE: native FUTILITY_CORRECTNESS
 ## 02:05Z — File C16 top-k staging GPU result
 
 C16-TOPK-STAGE: DROP(FUTILITY_OP), rc=0: no engagement witness in either enabled visit, even though n=4 A/B was 1.0440; TOPK_MOE passed 320/320 in each arm, 27B did not engage. End-to-end was not run. RESULT.json SHA-256 7fa8dc2a242242a42cba61659f1caf0617f9f5438b56ec3d7a569a3792d10eff. The notified ak-gpu-signals-ctr-20261116-r2 was already filed and ticked (PASS 10/10).
+
+## 02:07Z — File interrupted CPU draft-depth row
+
+rka-a3b48-d-remeasure-20261118-r4 ended rc=75, no final verdict: five valid cells, two rounds complete and round 3 D4 only. Continue the preregistered measurement; no depth recommendation. results.jsonl SHA-256 71ccc863d8462f18a361f286ccfbe444ab19ddf7e870cc545a3b2a6978cb5cc3; manifest keep retains the partial data and launcher. The notified tsanfix-numeric-cpu-r2-20261110 was already filed and ticked.
