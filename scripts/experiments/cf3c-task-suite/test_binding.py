@@ -110,8 +110,9 @@ def test_archive_refuses_oracle_and_geometry_changes(mutation):
         validate_archive(archive)
 
 
+@pytest.mark.parametrize("probe", [False, True])
 def test_real_trial_installs_archive_and_native_peek_recovers_hidden_receipt(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, probe
 ):
     from graph_trial import ENDPOINT, SOURCE
     from src.config import get_config
@@ -136,9 +137,25 @@ def test_real_trial_installs_archive_and_native_peek_recovers_hidden_receipt(
                 "row": row,
                 "prompt": case["prompt"],
                 "initial_history": case["initial_history"],
+                "recovery_probe_v1": probe,
             }
         )
     )
+
+    captures = []
+    if probe:
+        from contextlib import contextmanager
+        monkeypatch.syspath_prepend(str(Path(__file__).resolve().parent.parent / "cf3c-binding"))
+        import recovery_probe
+        original_capture = recovery_probe.capture_peeks
+
+        @contextmanager
+        def capture(*args):
+            with original_capture(*args) as evidence:
+                captures.append(evidence)
+                yield evidence
+
+        monkeypatch.setattr(recovery_probe, "capture_peeks", capture)
 
     async def check_native_inputs(state, deps):
         assert len(state.history_turns) == 10 and state.turns == 0
@@ -147,6 +164,12 @@ def test_real_trial_installs_archive_and_native_peek_recovers_hidden_receipt(
         assert case["expected"] not in state.context
         recovered = deps.repl._peek(n=99999, file_path=state.history_log_path)
         assert case["expected"] in recovered
+        if probe:
+            assert captures[0]["log_path"] == state.history_log_path
+            assert captures[0]["events"][-1]["recovered_observation"] is True
+            assert captures[0]["events"][-1]["source_log_sha256"]
+            # The tool namespace must have bound the wrapper before REPL construction.
+            assert deps.repl._globals["peek"].__func__ is deps.repl._peek.__func__
         assert deps.repl._peek(n=99, file_path=str(oracle)).startswith("[ERROR:")
         raise BeforeGeneration
 
@@ -165,3 +188,16 @@ def test_real_trial_installs_archive_and_native_peek_recovers_hidden_receipt(
     finally:
         set_features(prior)
         get_config.cache_clear()
+
+
+def test_recovery_control_row_builds_real_child_environment(tmp_path, monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parent.parent / "cf3c-binding"))
+    from recovery_probe import PROBE_SEED, compile_probe
+
+    probe = compile_probe(compile_cohort())
+    row = test_suite.suite_runner.recovery_control_row(probe)
+    env = test_suite.suite_runner.child_env(tmp_path, row, "offline-key")
+    assert env["ORCHESTRATOR_CONTEXT_TRIAL_INDEX"] == "0"
+    assert row["case"] == "native_recovery_control_v1"
+    assert row["seed"] == PROBE_SEED
+    assert probe["grade_cohort"] is False
