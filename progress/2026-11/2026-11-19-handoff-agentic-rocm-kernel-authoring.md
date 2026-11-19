@@ -191,3 +191,7 @@ RKA-A3B-ROUTER-WIDE moved to handoffs/active/autokernel-loop.md (rocm-kernel-aut
 ## 13:06Z — File owned r6 result as inconclusive
 
 Filed rka-a3b48-d-remeasure-20261119-r6 INCONCLUSIVE (rc 75, no RESULT.json). Five cells recorded foreign-busy p95 28.976%, 30.904%, 95.654%, 37.880%, 28.927%, all above the registered 25% threshold despite VALID labels; investigate grant/sampler accounting and validity before continuation. results.jsonl SHA-256 9f734f39169d7a5e41cfab32465f0f1619b2e37c259d2ba1b15660707d800f5d; filing receipt exists; scratch retained. Box resides in autokernel-loop.md. [no-belief: incomplete run and instrument discrepancy]
+
+## 13:08Z — Assess C6-26 content-hash-memo implementation under lane-only worktree restriction
+
+INF48-LIVE-1: C6-26 executable corpus change is in the separate epyc-inference-research repository, outside the only authorized lane worktree; implementation and corpus re-pin were not performed. C6 controller proof r9 is grantable after smoke PASS. The r6 A3B result was already filed inconclusive (receipt at filing-done/rka-a3b48-d-remeasure-20261119-r6.FILED); its five cells exceeded the pre-registered contention threshold despite VALID labels.
