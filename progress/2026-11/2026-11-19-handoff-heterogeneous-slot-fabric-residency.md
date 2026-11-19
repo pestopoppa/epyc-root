@@ -329,3 +329,7 @@ Duplicate run-end event for `kpf625-server-impact-8952-20261105-r2-q`: existing 
 ## 05:04Z — Consume duplicate already-filed KPF-62.5 successor run-end
 
 Duplicate run-end `kpf625-server-impact-8952-20261105-r2-q2-sq3` already has PASS verdict and FILED receipt from 2026-11-05; handoff already records the three LOW impacts and nonpartial scan. No new result-bearing task from this event; no tick, repeat filing or compute. Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf625-server-impact-8952-20261105-r2-q2-sq3.verdict.json`, SHA-256 `6fcd9bfdb4a8f86105a7d8966f523d8a5895d7d416962108c6ab7b4414d152a2`. KPF-62.5 remains open for server wiring. [no-belief: duplicate event acknowledgment, no new finding]
+
+## 05:05Z — Consume duplicate already-filed KPF-41 direct-vector impact run-end
+
+Duplicate run-end `kpf41-direct-vec-impact-8952a0f-20261104-r5-q2` already has INCONCLUSIVE verdict and FILED receipt from 2026-11-05 (rc143, operator-stopped for sub-quarter reshape, superseded). Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf41-direct-vec-impact-8952a0f-20261104-r5-q2.verdict.json`, SHA-256 `48cb11bcc441799634038eb14e20dc1b46fcfb7d3326552a3c3140f7409c0a85`. Handoff already records later r10 PASS. No new result-bearing task in this event, repeat filing, tick or row replay. [no-belief: duplicate event acknowledgment, no new finding]
