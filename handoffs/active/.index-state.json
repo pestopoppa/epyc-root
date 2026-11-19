@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 15,
       "oldest_advance": "2026-11-07",
-      "open": 508
+      "open": 509
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 460
+      "open": 461
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9677,
+          "line": 9678,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 48
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14081,
+          "line": 14082,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14294,
+          "line": 14295,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11
@@ -222,7 +222,7 @@
       "closed": 296,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 80,
+      "open": 81,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -231,7 +231,7 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 378,
+      "total": 379,
       "tracks": [
         {
           "blocked": 1,
@@ -241,7 +241,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 46
+          "open": 47
         },
         {
           "blocked": 0,
@@ -258,7 +258,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1056,
+          "line": 1058,
           "markers": 1,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 1
@@ -268,7 +268,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1466,
+          "line": 1468,
           "markers": 1,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1
@@ -278,7 +278,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2164,
+          "line": 2166,
           "markers": 1,
           "name": "batched-edit-parallel-apply",
           "open": 2
@@ -288,7 +288,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2301,
+          "line": 2303,
           "markers": 1,
           "name": "bep-dcp-falsification-harness",
           "open": 1
@@ -298,7 +298,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2371,
+          "line": 2373,
           "markers": 1,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2
@@ -308,7 +308,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2565,
+          "line": 2567,
           "markers": 1,
           "name": "evidence-plane-instrument-repair",
           "open": 3
@@ -318,7 +318,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 2725,
+          "line": 2727,
           "markers": 1,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1
@@ -328,7 +328,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 3110,
+          "line": 3112,
           "markers": 1,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1
@@ -338,7 +338,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 3502,
+          "line": 3504,
           "markers": 1,
           "name": "objective-task-rate-goodput",
           "open": 5
@@ -348,7 +348,7 @@
           "closed": 47,
           "gates": [],
           "guarded": 0,
-          "line": 3847,
+          "line": 3849,
           "markers": 1,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4
@@ -358,7 +358,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 4102,
+          "line": 4104,
           "markers": 1,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7
@@ -381,7 +381,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4336,
+          "line": 4338,
           "markers": 1,
           "name": "autopilot-sequential-allocation",
           "open": 4
@@ -404,7 +404,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4799,
+          "line": 4801,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 1
@@ -414,7 +414,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 5076,
+          "line": 5078,
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1
@@ -1066,7 +1066,7 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 250,
+      "closed": 255,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 92,
@@ -1078,11 +1078,11 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 357,
+      "total": 362,
       "tracks": [
         {
           "blocked": 12,
-          "closed": 29,
+          "closed": 34,
           "gates": [
             "RTG-09#routing-program",
             "RTG-09#internal-interaction-lifecycle",
@@ -1104,7 +1104,7 @@
           "closed": 35,
           "gates": [],
           "guarded": 0,
-          "line": 398,
+          "line": 403,
           "markers": 1,
           "name": "repl-turn-efficiency",
           "open": 15
@@ -1114,7 +1114,7 @@
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 808,
+          "line": 813,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1126,7 +1126,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1574,
+          "line": 1579,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 15
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2255,
+          "line": 2260,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2338,
+          "line": 2343,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2788,
+          "line": 2793,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3658,
+          "line": 3663,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1205,7 +1205,7 @@
       "closed": 229,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 23,
+      "open": 24,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1214,7 +1214,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 254,
+      "total": 255,
       "tracks": [
         {
           "blocked": 2,
@@ -1229,14 +1229,14 @@
           "line": 20,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 21
+          "open": 22
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1767,
+          "line": 1769,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1891,
+          "line": 1893,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2223,
+          "line": 2225,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2362,
+          "line": 2364,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2924,
+          "line": 2926,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3062,
+          "line": 3064,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3069,
+          "line": 3071,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1426,7 +1426,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1766,
+          "line": 1770,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1439,7 +1439,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2189,
+          "line": 2193,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
