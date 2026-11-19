@@ -139,3 +139,7 @@ Filed rka-a3b-router-wide-gpu-20261118 (rc=0): job reports FUTILITY_CORRECTNESS 
 ## 04:36Z — File A3B GPU D and concurrency sweep result
 
 Filed rka-a3b-gpu-d-np-sweep-20261118-r3 (rc=0): RECOMMEND_D2 at np4/8/16, with D2 aggregate throughput 10.15–13.91% above D4 in each unset-arm round; DROP_MULTI because D2 knob gains were +0.91%, -0.72%, -0.18%. All 36 cells present. Completed handoff box already records the result. results.jsonl SHA-256 4a6ecaa9e1c8e47707af75b19549d2fa19c55410122e0b79fcb3ae170fbab8b0. [belief: cc]
+
+## 04:37Z — File C16 topk staging result under the registered futility rule
+
+C16-TOPK-STAGE: confirmed the already-filed DROP(FUTILITY_OP) verdict and existing filing receipt for c16-topk-stage-gpu-20261118 (rc=0). Both knob-on op visits lacked the required engagement witness; n=4 A/B was 1.0440, and 320/320 TOPK_MOE cases passed in each arm. No end-to-end verdict was reached. RESULT.json SHA-256 7fa8dc2a242242a42cba61659f1caf0617f9f5438b56ec3d7a569a3792d10eff; handoff already records the result.
