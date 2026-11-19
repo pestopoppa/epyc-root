@@ -3,6 +3,8 @@
 **Scratch**: `/mnt/raid0/llm/tmp/ds41-1017-swap/` (DS41-W; KEEP-marked until W7 lands)
 
 **Status**: active. The port is built and the AutoKernel CPU campaign runs on it on anchor `00d118d44` (DS41 port
+**Row**: INF-77
+**Domain**: inference-research
 - **2026-10-22 08:4xZ operator directive: every DS41-1017 test except the noise floor is DISREGARDED until AutoKernel kernel work is done** ("not meaningful until kernel research work has been performed first"). The 06:30Z 24-pair floor (DS41-W5b-floor, 2.862%) stands. These are deferred and their runs cancelled, none ticked: W5b-compare, W6.2, W6.1, W5.1a (+ qdq build-test), W5.1a-floor (until the operator launches AK on a changed anchor), W8a, T3.2, T3.3c, T5.1.1, C7.2, CONF.1, T7.1a. Still live: W8c (done), W8d, the floor registration, and W7.2 (Sept DSpark rm, pending operator).
 + champion `90c12df42` fast loader).
 - Run 10h launched 2026-09-26 ~10:57Z on research `d643d794`, after six AK lanes were merged (§C,

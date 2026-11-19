@@ -23,6 +23,8 @@
 > forced by a pre-commit gate. Your job is to unblock and land it.
 
 **Status**: ACTIVE — applied-uncommitted; P0 blocks the commit
+**Row**: INF-45
+**Domain**: inference-research
 **Created**: 2026-07-30
 **Owner**: pipeline-mgmt (assigned 2026-11-10; was "whichever session holds the CPU lane")
 **Parent index**: [`master-handoff-index.md`](master-handoff-index.md) (row N25)

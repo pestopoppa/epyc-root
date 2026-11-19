@@ -1,4 +1,6 @@
 # Thesis Experiment — does the orchestrator beat the strongest model alone?
+**Row**: UFH-13
+**Domain**: user-facing-harness
 
 **Status:** **ACTIVE 2026-10-29** (operator 2026-10-29: run the UFH-13 thesis experiment now (unparked); previously PARKED 2026-09-28, in chat, session
 https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ).

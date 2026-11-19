@@ -6,6 +6,8 @@
 
 Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retirement-20261030`; original heads, patches and exact dirty bytes remain preserved there.
 **Status**: refreshed 2026-11-09 (RTG-08 audit; see the audit-refresh section). Core context-folding phases landed; open work is the CF-3c instrument decision, the compaction A/B, and the folded tracks below. The 2026-06-19 alpha sweep is decision-scoped: promote the dual-objective score into the Phase 2b design variant, but do not change production compaction behavior without live/held-out validation. Original 2026-07-14 status text superseded.
+**Row**: RTG-08
+**Domain**: routing-and-optimization
 **Created**: 2026-03-17
 **Updated**: 2026-11-09
 **Priority**: HIGH

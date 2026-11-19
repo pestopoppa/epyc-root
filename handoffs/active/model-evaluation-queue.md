@@ -3,6 +3,8 @@
 > **Fold destination** (BRF-T7-F8, BRF-T7-1, route 1b, 2026-11-03): every former handoff of this plan target is a `## Track:` with its own gate marker: `model-evaluation-queue`, `gpu-candidates-surface-qwen38-update`, `paw-compiled-specialists` (rows INF-61, INF-76 retired into EVL-02). The former `model-evaluation-queue.md` body is `## Track: model-evaluation-queue`; tracks those handoffs already had are lifted verbatim after their owner.
 
 **Status**: ACTIVE — the model-evaluation queue (backlog refactor 2026-11, BRF-T1-MEQ, operator D2): every candidate-model trial, bake-off and new-quant trial. Route 1a keeps it as 3 gate-homogeneous files; they merge into this file at BRF-T7-MEQ once per-track gates (route 1b) carry the gated groups.
+**Row**: EVL-02
+**Domain**: research-evaluation
 **Created**: 2026-11-02 (anchor: the former `architect-model-selection-bench.md`, row EVL-02)
 **Parent index**: [research-evaluation-index.md](research-evaluation-index.md)
 

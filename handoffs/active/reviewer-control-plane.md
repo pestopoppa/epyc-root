@@ -1,4 +1,6 @@
 # Reviewer Control Plane — GLM-5.2 Reviewer Capability Gates (H6, slim)
+**Row**: REV-02
+**Domain**: reviewer-control-plane
 
 > **Fold destination** (BRF-T7-F15, BRF-T7-1, route 1b, 2026-11-03): renamed from `glm52-reviewer-capability-gates.md`; every former handoff of this plan target is a `## Track:` with its own gate marker: `glm52-reviewer-capability-gates`, `reviewer-escalation-and-human-gate-policy`, `reviewer-latency-and-sampling-budget`, `reviewer-model-ablations` (rows REV-05, REV-06, REV-07 retired into REV-02). The former `glm52-reviewer-capability-gates.md` body is `## Track: glm52-reviewer-capability-gates`; tracks those handoffs already had are lifted verbatim after their owner.
 

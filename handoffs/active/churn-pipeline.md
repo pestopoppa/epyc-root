@@ -1,6 +1,7 @@
 # Churn Pipeline — dispatcher, backlogs, rows
 
 **Status**: ACTIVE — split out of `coordination-and-churn-pipeline.md` on 2026-11-09 (RTG-34, operator decision "Split out churn, trim rest"); the dispatcher, backlog-generator and rowflow defect list.
+**Domain**: routing-and-optimization
 **Owner**: Pipeline (Pipeline Management)
 **Scratch**: `/mnt/raid0/llm/tmp/compute-flags/` (runtime), `/mnt/raid0/llm/tmp/ws58-*` (scratch; reclaim at wrap-up)
 **Back-pointer**: split from [coordination-and-churn-pipeline.md](coordination-and-churn-pipeline.md#track-churn-pipeline) (`## Track: churn-pipeline`, folded there 2026-11-02 from the former `churn-pipeline.md`, row RTG-62). Split justification (handoff-index-authoring.md rule 5): a different owner (Pipeline, not the coordination plane) and a first screen that no longer answered "what next?". Body moved verbatim; every box kept its text and ID.

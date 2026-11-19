@@ -5,6 +5,8 @@
 > **Fold destination** (BRF-T1-F26, BRF-T1-1, route 1a, 2026-11-02): renamed from `decision-aware-routing.md`; absorbs 7 handoff(s) as `## Track:` sections at the end of this file (`internal-interaction-lifecycle.md`, `learned-routing-controller.md`, `model-capability-descriptors.md`, `retrain-routing-models.md`, `tri-role-coordinator-architecture.md`, `typed-decision-plane.md`, `x-mas-text-routing.md`). The body above the first track is the former `decision-aware-routing.md`.
 
 **Status**: ACTIVE, mostly waiting — DAR-2 contrastive is live-ON; DAR-3/DAR-6 FROZEN (fable5-02); DAR-3/4/5 re-aimed 2026-07-21 (§ RESCOPE); the reward carries the wall-clock axis since era E18 (2026-09-24); DAR-LAT is ❄ FROZEN (2026-09-27; unfreeze trigger since 2026-09-29: autopilot has trained on the swapped stack AND UFH-13 re-opened). Completed DAR-1/DAR-2/DAR-1.5 record: § Completed Scope.
+**Row**: RTG-09
+**Domain**: routing-and-optimization
 **Created**: 2026-04-14 (from deep-dive research on intake-366)
 **Updated**: 2026-07-03 (current-window DAR-1 replay; prior body updates through 2026-04)
 **Priority**: HIGH

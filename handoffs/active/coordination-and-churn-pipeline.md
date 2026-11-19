@@ -5,6 +5,8 @@
 > **Fold destination** (BRF-T1-F18, BRF-T1-1, route 1a, 2026-11-02): renamed from `session-bus-thin-dispatcher.md`; absorbs 3 handoff(s) as `## Track:` sections at the end of this file (`churn-pipeline.md`, `dashboard-architecture-restructure.md`, `handoff-index-and-backlog-graph.md`). The body above the first track is the former `session-bus-thin-dispatcher.md`.
 
 **Status**: DESIGN-RATIFIED (operator, 2026-07-27, plan-mode Q&A ×2) — build-ready; M1 skeleton is verbatim below. **Nomenclature revised 2026-07-27** (operator) — see §Nomenclature.
+**Row**: RTG-34
+**Domain**: routing-and-optimization
 **Created**: 2026-07-27
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni-ap-legacy-status-wrap-20261030/` — existing reusable ROOT lane; retain the lane and foreign work.
 **Priority**: MEDIUM — the coordinator-daemon/delivery plane it was filed for is retired; what survives is the churn-pipeline defect list (compute utilization), the fan-out measurement (FM-*) and a few bus/dashboard repairs

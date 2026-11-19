@@ -3,6 +3,8 @@
 > **Fold destination** (BRF-T1-F7, BRF-T1-1, route 1a, 2026-11-02): renamed from `canonical-judge-suite-revamp.md`; absorbs 5 handoff(s) as `## Track:` sections at the end of this file (`agent-world-env-synthesis.md`, `mathsmith-hc-formalizer-eval.md`, `multi-file-coding-completion-capability.md`, `rlm-contested-claims-self-evaluation.md`, `tool-use-eval-contract.md`). The body above the first track is the former `canonical-judge-suite-revamp.md`.
 
 **Status**: active. The CJ-1/CJ-3 corpora are acquired and CJ-1 is wired; the judge-verdict semantics (CJ-8/9/11/12) and the CJ-15 cascade fixture landed. Next: CJ-16 (§ Start here). Operator-authorised 2026-08-02.
+**Row**: EVL-08
+**Domain**: research-evaluation
 **Created**: 2026-08-03
 **Categories**: benchmark_methodology, evaluation, routing
 **Related (owns adjacent work — do NOT duplicate)**: [`scoring-infra-standardization.md`](eval-tower-program.md#track-scoring-infra-standardization) (Track 2 owns the exec-scorer + coding ladder + LCB contamination refresh), [`architect-model-selection-bench.md`](model-evaluation-queue.md) (owns the architect keep/drop verdict and its SWE/LCB arms), [`eval-tower-verification.md`](eval-tower-program.md) (owns E-era eval-pool registration)
