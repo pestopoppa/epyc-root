@@ -51,3 +51,35 @@ Launcher SHA-256: `30d7991b5abe42a0ee37c76d85ecbdfe2deb296db7037f3bb6d6f6369f3d8
 **GPU busy: smoke queued**; qualification and native numerical verdict remain
 pending. Alert `055639d1368b71ecaa53da40` acknowledged after repair.
 [no-belief: launcher repair and model-free validation only]
+
+Scheduled native verdict (2026-11-19)
+-------------------------------------
+`df2-cafe4-modes-native-hip-r4-20261119` ended **rc2 / INCONCLUSIVE
+(UNKNOWN)** at 17:22:53Z. Width2 normal exited rc2 with `controls=null` and
+`UNKNOWN lifecycle/provenance or matched-prefix control missing`. The
+stop-on-first-missing-control rule prevented the other three cases. The log
+contains draft-rewind and target-mode2 markers; it does not establish the
+complete required lifecycle, matched-prefix, mode1 or numerical/fault controls.
+The terminal message combines several predicates, so it does not identify
+which predicate failed. No numerical error or tolerance comparison is available.
+
+Model and all six expected local libraries were mapped. Two live samples
+for child PID 3689318 show KFD registration and **37,525,798,912 VRAM bytes**
+each. No cutoff occurred and the child was reaped. These residency witnesses
+do not establish rollback correctness. Fixed tolerance **0.743863867** remains
+unchanged; no performance or full CAFE-4 claim follows. The parent stays open.
+
+Evidence is referenced in place, not copied:
+
+- Result: `/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/RESULT.json`, SHA-256 `1045655f3c5f22bbd8e525eac0f26e4e3aa2ca56008200bc8c0717684fc19bf4`.
+- Native log: `/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/runs/84224bb656e942e0b69274c3ab188544/width-2-fault-0.log`, SHA-256 `d65ae64103b6bf6213c9f9ce5e91363bbd03f577a006d2c70c872c595d1628fc`.
+- End record: `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-native-hip-r4-20261119.ended`, SHA-256 `f5b4617e7a83b322f964b5fe6b765029e90f906132bf173f0fc49f6d66a0f9ec`.
+- Qualified executable SHA-256 remains
+  `1623d9e2455116944e330a8c28200a84270f0dd0833563171f48344e22dfb63a`;
+  corrected source SHA-256 remains
+  `41fc473a908b7c385d79d1941b6576cc993b985e691682d6598d6122e968fe1c`.
+
+Next: distinguish the combined native failure predicates with model-free
+regression coverage before publishing a replacement build/native row.
+CPU R2 native row remains independently queued.
+[no-belief: inconclusive single-prompt diagnostic; existing producer not belief-wired]
