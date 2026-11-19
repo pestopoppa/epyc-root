@@ -135,9 +135,16 @@ def test_missing_usage_does_not_invent_zero_token_cost():
 
 
 def test_deadline_after_reply_prevents_tool_execution():
-    times = iter([0, 0, 121, 121])
+    times = iter([0, 0, 0, 121, 121])
     result, service, *_ = run([success()[0]], clock=lambda: next(times))
     assert result["reason"] == "deadline" and not service.inspected
+
+
+def test_durable_request_capture_cannot_extend_http_deadline():
+    times = iter([0, 0, 121, 121])
+    result, service, _, requests = run([], clock=lambda: next(times))
+    assert result["reason"] == "deadline" and not service.inspected
+    assert requests == []
 
 
 def test_capture_failure_prevents_execution():

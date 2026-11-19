@@ -79,6 +79,11 @@ def run_episode(complete, environment, messages, capture, *, model, seed,
         turn = {"index": index, "request": request}
         turns.append(turn)
         capture(deepcopy({"event": "request", **turn}))
+        # Durable capture can consume time; never hand the transport the stale
+        # budget calculated before its fsync.
+        remaining = deadline - clock()
+        if remaining <= 0:
+            return finish("deadline")
         try:
             reply = complete(deepcopy(request), remaining)
         except (OSError, TimeoutError) as error:

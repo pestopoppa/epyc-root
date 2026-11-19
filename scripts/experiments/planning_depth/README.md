@@ -1,7 +1,7 @@
 # Stateful planning depth loop
 
 `episode.py` provides the bounded episode loop for the model-evaluation queue's
-Phase 2 depth probe. It has no live endpoint or server launcher. Its software
+Phase 2 depth probe. It has no server launcher. Its software
 controls reuse the existing CF-3c `OrderService` and tool schemas: inspection
 must precede release, and a final success assertion cannot replace the state
 change. They establish software behavior, not model capability.
@@ -42,8 +42,30 @@ Supply the owned endpoint transport and durable capture envelope, publish via
 rowflow and require its native smoke. The pending belief-source task is
 `VB-PLANNING-DEPTH-WIRE`; no loop-wiring claim exists yet.
 
+`native.py` supplies the callback plumbing for a row that has already established
+ownership of its endpoint. `NativeCompletion` accepts an explicit literal
+loopback HTTP `/v1` URL, posts native requests without proxies or redirects, and
+returns parsed replies without normalizing fields. Its absolute HTTP deadline
+interrupts stalled headers and bodies by shutting down its own captured socket.
+The default response bound is 8 MiB. Native response bytes (base64), status,
+headers and errors are captured before parsing; malformed JSON and incomplete
+HTTP remain transport failures. The episode loop recomputes its remaining
+deadline after durable request capture.
+
+Use one exclusive `DurableJournal(path, envelope)` context per episode. Supply
+the prospective protocol, case, arm and source/build/serving identities in the
+envelope; the helper requires a nonempty dictionary but does not verify those
+identities. Pass the journal both to `NativeCompletion` and `run_episode`.
+Each JSONL record carries the immutable envelope and a sequence number, and is
+flushed and fsynced before returning. Capture errors propagate as fatal
+`CaptureError`, preventing their conversion into model UNKNOWN results. The
+caller must journal the episode's final result before leaving the context.
+Existing journal paths are refused, preserving previous attempts. These helpers
+do not establish endpoint ownership or replace the row's launcher/custody checks.
+
 Software controls:
 
 ```bash
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q -p no:cacheprovider tests/experiments/test_planning_depth.py
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q -p no:cacheprovider tests/experiments/test_planning_depth_native.py
 ```
