@@ -8428,6 +8428,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
           same trust boundary and a decision of its own. Draft `P-SERVE-1` (recipe, residency proof
           per R23-60, `unit`, floor calibration n, gate rule) as a separate ratification. Until then
           the serving numbers are admissible only as observations by the §2 rule.
+          - 2026-11-19 (autokernel, bulk P2 pass; box stays OPEN): P-SERVE-1 package PREPARED and apply-tested (not applied): `artifacts/operator/p-serve-1-decision-20261119.md`, annex `artifacts/operator/staged/p-serve-1-20261119.md` (sha256 e48cfbb5...a4d364), scripts `scripts/operator/ratify_p_serve_1_20261119.sh` and `run_p_serve_1_ratify_20261119.sh` (root 027ce1e21). Operator step, one line: `bash /mnt/raid0/llm/epyc-root/scripts/operator/run_p_serve_1_ratify_20261119.sh --operator <name>`. The annex records five enforcement gaps for the AutoKernel owner (legacy v1 floor accepts any n; residency not a gate input; floor with no recipe_hash is used; legacy_v1 row has no binary digest; headline admissibility lives in production.py not serving_gate.py). [no-belief: ratify package prepared]
       - [x] **R23-56 — RETEST-1 CLOSE-OUT: no CPU keeps; consolidation complete** ✅ 2026-09-08. INF-70's
         final RETEST-1 report (~12:10Z) yields **zero keeps to fold**, so the consolidated champion stands at
         **`ef81196d5`** (see `autokernel-champion-aggregate.md` → *CONSOLIDATION COMPLETE*). Bookkeeping:

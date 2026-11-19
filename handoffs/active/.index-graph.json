@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T01:51:28Z",
+  "generated_at": "2026-11-19T01:53:35Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1498,7 +1498,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9675,
+          "line": 9676,
           "name": "autokernel-unified-surface-program",
           "open": 48,
           "readiness": "blocked"
@@ -1511,7 +1511,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14077,
+          "line": 14078,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1545,7 +1545,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14290,
+          "line": 14291,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11,
           "readiness": "blocked"
@@ -1904,7 +1904,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 626,
+          "line": 627,
           "name": "attention-matching-kv-compaction",
           "open": 1,
           "readiness": "ready"
@@ -1913,7 +1913,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 998,
+          "line": 1000,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1922,7 +1922,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1614,
+          "line": 1616,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1931,7 +1931,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1761,
+          "line": 1763,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
