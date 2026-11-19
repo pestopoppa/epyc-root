@@ -88,3 +88,15 @@ remain unchanged and unrun.
 Failure ledger: `/mnt/raid0/llm/tmp/compute-flags/dryrun/cf3c-binding-probe-v1-20261119/cf3c-suite-native/PARTIAL.json`, SHA-256 `760250e343b68112ba69d4570caabc570fe599447e11d2be69522037a986e184`.
 
 Failed input seal: `255cd80a1e5df9afc0820b113a621263558f53baab73579cbaef2d4dd6c21452`.
+
+## Repaired successor profile
+
+The canonical v2 preparation files now seal the repaired integration as
+`cf3c-binding-probe-v1-r2-20261119` under the distinct
+`cf3c-binding-probe-v1-r2` scratch root. The old failed sealed packet is
+unchanged. The cohort, ungraded control identity/seed, 24 official quality
+cells, serving receipts, caps and stop rules are unchanged. The successor
+uses the upstream `recovery_control_row` repair with explicit `repeat=0`.
+Focused profile/probe validation: 23 passed; shell syntax and diff checks pass.
+Input seal SHA-256: `ce33103ea5116b6cf5a93ede7f75842596c3b3de7d7c68e4592b70f0edf0c4e6`. Publisher smoke was submitted;
+qualification and native recovery remain unobserved at this checkpoint.

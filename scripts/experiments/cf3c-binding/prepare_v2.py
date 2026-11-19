@@ -7,7 +7,7 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-SCRATCH = Path('/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-binding-probe-v1')
+SCRATCH = Path('/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-binding-probe-v1-r2')
 SOURCE = SCRATCH.parent / 'cf3c-binding/source'
 COHORT = SCRATCH.parent / 'cf3c-binding/cohort.json'
 BASE = '12afe2858f9dbd4691447926d6cf1864de64348c'
@@ -18,7 +18,7 @@ RECEIPT_SHA = '3fcd6c2d01901a2a7266367b01179613ee9dd24109f6689d53e1dc183a8daaff'
 LINKAGE = Path('/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh')
 LINKAGE_SHA = '57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33'
 PYTHON = Path('/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python')
-ROW = 'cf3c-binding-probe-v1-20261119'
+ROW = 'cf3c-binding-probe-v1-r2-20261119'
 PORT = 19387
 MAX_TURNS = 18
 MAX_COMPLETION_TOKENS = 384
