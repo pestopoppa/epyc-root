@@ -701,3 +701,50 @@ class TestSmokeCompleteEndRecord(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestDeclaredNonPassAndCorrect(Base):
+    """D9 2026-11-19: c6-admission-live-proof-r12 was filed pass with a DROP(diagnostic) rationale and could not be fixed."""
+
+    def _agent(self, rid, verdict, rationale):
+        self.row(rid, "judge by eye", {"x": 1})
+        vj = Path(self.tmp.name, f"{rid}-v.json")
+        vj.write_text(json.dumps({"verdict": verdict, "rationale": rationale}))
+        return self.run_main(rid, "--verdict-json", str(vj), "--no-reclaim")
+
+    def test_pass_with_drop_rationale_files_inconclusive(self):
+        code, out, _ = self._agent("r-drop", "pass", "DROP(diagnostic: C6_ITERATION_C6SplitPolicyRefusal): zero records")
+        self.assertEqual(code, 0)
+        v = self.verdict("r-drop")
+        self.assertEqual(v["row_verdict"], "inconclusive")
+        self.assertEqual(v["agent_verdict"]["coerced_from"], "pass")
+        self.assertIn("FILED r-drop: inconclusive", out)
+
+    def test_pass_with_futility_rationale_files_inconclusive(self):
+        self._agent("r-fut", "pass", "stopped: FUTILITY_TRACE_FAILED")
+        self.assertEqual(self.verdict("r-fut")["row_verdict"], "inconclusive")
+
+    def test_plain_pass_untouched(self):
+        self._agent("r-ok", "pass", "observed 12/12, no drop in quality")
+        self.assertEqual(self.verdict("r-ok")["row_verdict"], "pass")
+
+    def test_correct_by_owner_refiles_and_keeps_old(self):
+        self._agent("r-c", "fail", "observed")
+        code, out, _ = self.run_main("r-c", "--correct", "inconclusive", "--filed-by", "t", "--reason", "rule misread")
+        self.assertEqual(code, 0)
+        v = self.verdict("r-c")
+        self.assertEqual((v["row_verdict"], v["corrected_from"], v["verdict"]["result"]), ("inconclusive", "fail", "inconclusive"))
+        line = Path(self.flags, "filing-done", "r-c.FILED").read_text()
+        self.assertTrue(line.startswith("FILED r-c: inconclusive rc="))
+        kept = [p.name for p in Path(self.flags, "filing-done").iterdir() if ".superseded-" in p.name]
+        self.assertEqual(len(kept), 2)
+
+    def test_correct_refused_for_non_owner_and_missing_reason(self):
+        self._agent("r-n", "fail", "observed")
+        self.assertEqual(self.run_main("r-n", "--correct", "pass", "--filed-by", "someone", "--reason", "x")[0], 8)
+        self.assertEqual(self.run_main("r-n", "--correct", "pass", "--filed-by", "t")[0], 2)
+        self.assertEqual(self.verdict("r-n")["row_verdict"], "fail")
+
+    def test_correct_needs_existing_filing(self):
+        self.row("r-none", "judge by eye", {"x": 1})
+        self.assertEqual(self.run_main("r-none", "--correct", "fail", "--filed-by", "t", "--reason", "x")[0], 2)

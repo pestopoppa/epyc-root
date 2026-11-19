@@ -255,6 +255,60 @@ def handoff_path(lane, hpath):
     return target
 
 
+DECLARED_NONPASS = re.compile(r"^\s*(?:DROP\b|DROP\(|FUTILITY_|diagnostic\b)|\bDROP\(diagnostic|\bFUTILITY_[A-Z]", re.I)
+
+
+def coerce_declared_nonpass(agent):
+    """D9 2026-11-19: an agent verdict of pass whose own rationale/answer declares DROP(diagnostic...) or FUTILITY_*
+    is not a pass (c6-admission-live-proof-r12 was filed pass with a DROP rationale). File it inconclusive, recorded."""
+    if not isinstance(agent, dict) or agent.get("verdict") != "pass":
+        return agent
+    text = f"{agent.get('answer') or ''}\n{agent.get('rationale') or ''}"
+    if DECLARED_NONPASS.search(text):
+        agent["coerced_from"] = "pass"
+        agent["verdict"] = "inconclusive"
+        agent["rationale"] = ("[coerced pass->inconclusive: rationale declares DROP/diagnostic/FUTILITY] "
+                              + str(agent.get("rationale") or ""))
+    return agent
+
+
+def correct_filed(flags, rid, verdict, by, reason, dry_run=False):
+    """D9 2026-11-19: the row OWNER re-files an already-FILED row. The old FILED + verdict record are kept beside the
+    new ones (<rid>.FILED.superseded-<ts>, <rid>.verdict.superseded-<ts>.json). -> exit code."""
+    if verdict not in ("pass", "fail", "inconclusive"):
+        print(f"ERROR {rid}: --correct takes pass|fail|inconclusive", file=sys.stderr); return 2
+    if not reason:
+        print(f"ERROR {rid}: --correct needs --reason", file=sys.stderr); return 2
+    if not filing.is_filed(flags, rid):
+        print(f"ERROR {rid}: --correct needs an existing FILED receipt", file=sys.stderr); return 2
+    _, m = load_manifest(flags, rid)
+    owner = str((m or {}).get("owner") or "")
+    if not owner or by != owner:
+        print(f"REFUSED {rid}: --correct only by the row owner ({owner or 'unknown'}); --filed-by {by!r}", file=sys.stderr); return 8
+    done = os.path.join(flags, "filing-done")
+    fp, vp = filing.filed_path(flags, rid), os.path.join(done, rid + ".verdict.json")
+    old_line = open(fp).read().strip()
+    old = json.load(open(vp)) if os.path.exists(vp) else {}
+    old_v = old.get("row_verdict") or (old_line.split(":", 1)[1].split()[0] if ":" in old_line else "?")
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+    rec = dict(old, row_verdict=verdict, filed_by=by, filed_at=now, at=now, reason=reason,
+               outcome_class="SCIENCE-VERDICT" if verdict in ("pass", "fail") else "PARTIAL-VERDICT",
+               corrected_from=old_v, corrected_at=now, superseded_filed_line=old_line)
+    if isinstance(rec.get("verdict"), dict):
+        rec["verdict"] = dict(rec["verdict"], result=verdict)
+    summary = f"FILED {rid}: {verdict} rc={old.get('rc', '?')} by={by} corrected_from={old_v} reason={reason!r}"
+    print(summary + (" (dry-run)" if dry_run else ""))
+    if dry_run:
+        return 0
+    ts = now.replace(":", "").replace("+0000", "Z")
+    os.replace(fp, f"{fp}.superseded-{ts}")
+    if os.path.exists(vp):
+        os.replace(vp, os.path.join(done, f"{rid}.verdict.superseded-{ts}.json"))
+    if not filing.write_filed(flags, rid, summary, rec):
+        print(f"ERROR {rid}: filed concurrently during correction; old receipt kept at {fp}.superseded-{ts}", file=sys.stderr); return 2
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("row_id")
@@ -275,8 +329,13 @@ def main(argv=None):
                     help="LEGACY row that never had a manifest: close from its .ended record (needs --owner; --verdict SUPERSEDED|"
                          "WITHDRAWN or --verdict-json; refused if a manifest or FILED exists; never reclaims)")
     ap.add_argument("--owner", help="with --no-manifest: the owner recorded on the filing")
+    ap.add_argument("--correct", metavar="VERDICT", help="re-file an already-FILED row (pass|fail|inconclusive); owner only "
+                                                          "(--filed-by must equal the manifest owner), needs --reason")
+    ap.add_argument("--reason", help="with --correct: why the filed verdict was wrong")
     a = ap.parse_args(argv)
     rid, flags = a.row_id, a.flags
+    if a.correct:
+        return correct_filed(flags, rid, a.correct, a.filed_by or "", a.reason or "", a.dry_run)
     if filing.is_filed(flags, rid):
         print(f"NOOP {rid}: already FILED ({filing.filed_path(flags, rid)})"); return 0
     if a.no_manifest:
@@ -288,6 +347,7 @@ def main(argv=None):
                 with open(a.verdict_json) as fh:
                     agent = json.load(fh)
                 assert isinstance(agent, dict) and agent.get("verdict")
+                coerce_declared_nonpass(agent)
             except (OSError, ValueError, AssertionError) as e:
                 print(f"ERROR {rid}: bad --verdict-json ({e})", file=sys.stderr); return 2
         verdict = agent.get("verdict") or a.verdict
@@ -330,6 +390,7 @@ def main(argv=None):
                                          note=str(agent.get("rationale") or ""), reclaim=not a.no_reclaim, dry_run=a.dry_run)
                 print(r); return 0 if r in ("FILED", "NOOP") else 2
             assert agent.get("verdict") in ("pass", "fail", "inconclusive")
+            coerce_declared_nonpass(agent)
         except (OSError, ValueError, AssertionError) as e:
             print(f"ERROR {rid}: bad --verdict-json ({e}); need {{verdict: pass|fail|inconclusive|SUPERSEDED|WITHDRAWN, rationale[, answer]}}", file=sys.stderr); return 2
     rule = str(m.get("decision_rule") or "")
