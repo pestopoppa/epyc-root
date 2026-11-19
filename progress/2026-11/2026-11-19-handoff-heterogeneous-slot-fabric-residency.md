@@ -205,3 +205,7 @@ HSF-4: consumed full `hsf4-cpu-save-aggregate-20261105` result, PASS rc=0: 86 to
 ## 04:16Z — Consume and record full prospective first-logit diagnostic build PASS
 
 KPF-18-ITEM4-RAW-BUILD: full row `kvu-kpf18-item4-raw-build-20261105` PASS rc=0, status built, 7 library digests, 4 compiled knobs, pinned linkage and completion reopening/custody contract. Native `/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/RESULT.json`, SHA-256 `06d73459677dd32ce6e5f36350af075064972e3bdbbc8d620bac548e392523df`; custody SHA-256 `91b2a2b73c3d2d118789ea2661b03ff04b5b1cc2fd4bfb828ff1869a2e07528e` binds that receipt. Existing FILED receipt confirmed PASS; updated packet stale full-build-pending text and added evidence to already checked box. No inference, GPU residency, live capture or historical-equivalence verdict. [no-belief: build qualification only]
+
+## 04:18Z — Consume duplicate decoder run-end event; result already filed
+
+Duplicate run-end for `kpf131-cells-abi-decoder-r4-20261105`: existing verdict is pass; handoff box is already checked and FILED receipt exists. No new result-bearing task is possible for this event; no compute replay, duplicate tick or evidence copy. Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf131-cells-abi-decoder-r4-20261105.verdict.json`, SHA-256 `aab18cd1e4ec7d8e0c465db098399a92acaa5879457b558a280b35f423a100e9`. Retain prior next action. [no-belief: duplicate event acknowledgement only]
