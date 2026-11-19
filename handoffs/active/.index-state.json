@@ -1114,7 +1114,7 @@
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 789,
+          "line": 790,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1126,7 +1126,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1555,
+          "line": 1556,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 14
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2231,
+          "line": 2232,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2314,
+          "line": 2315,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 18
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2762,
+          "line": 2763,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3630,
+          "line": 3631,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1

@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T01:06:08Z",
+  "generated_at": "2026-11-19T01:17:32Z",
   "nodes": [
     {
       "age_days": 9,
@@ -3723,7 +3723,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 789,
+          "line": 790,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3736,7 +3736,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1555,
+          "line": 1556,
           "name": "harness-improvement-loop",
           "open": 18,
           "readiness": "blocked"
@@ -3749,7 +3749,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2231,
+          "line": 2232,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3770,7 +3770,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2314,
+          "line": 2315,
           "name": "repl-embedding-retrieval",
           "open": 20,
           "readiness": "blocked"
@@ -3785,7 +3785,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2762,
+          "line": 2763,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3796,7 +3796,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3630,
+          "line": 3631,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"
