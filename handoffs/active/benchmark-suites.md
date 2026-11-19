@@ -394,7 +394,16 @@ our own harness and score offline.
       four-CPU native smoke PASS (140–143, rc=0). Restored the pinned source worktree,
       bound model verification before the grant, refreshed runtime seals, and preserved
       the required smoke environment through sudo. [Qualification hashes and patch](../../docs/evidence/ifbench-cj6a-readiness-20261104/qualification-20261119.json).
-      Full 300-prompt generation and official scoring remain unrun; parent stays open.
+      Full run `codex-ifbench-cj6a-27b-v4-20261104` ended 2026-11-19T07:12:27Z,
+      rc=1: `worker.py` raised `RuntimeError: grant missing` before generation.
+      Observed coverage: **0/300 valid responses, 0 exposure records** (`run/` empty);
+      strict/loose scores **UNKNOWN**, paired delta UNCOMPUTED, adoption UNCLAIMED.
+      Verdict: **inconclusive (infrastructure failure)**; generation-to-scorer wiring
+      remains open. Repair full-mode grant lookup/propagation before a successor row.
+      Evidence: `/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/ws58-launcher.out`
+      SHA-256 `8ac096aad1375947b344a08a3e9a6e8bdeb13b7d35dc01aab31d2029fb7eebf7`; grant end record
+      `/mnt/raid0/llm/tmp/compute-flags/grants/codex-ifbench-cj6a-27b-v4-20261104.ended`
+      SHA-256 `31fc9e6799569b3bec0bfb33022daf292f52e5ab2725ba6eccfe2695ef65f1d2`. [no-belief: failed before any benchmark exposure]
   - [x] **CJ-6a-CORPUS — Acquire and bind the original IFBench corpus.** Preserve the root `data/IFBench_test.jsonl` from `allenai/IFBench` commit `1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d`, verify its upstream blob and SHA-256, confirm 300 unique prompts / 344 constraints / 58 IDs, and retain license/source provenance and the fixed input manifest. The parent remains open for its generation-to-official-scorer wiring. [Pinned corpus](../../data/benchmarks/ifbench-1c40f0c/README.md). ✅ 2026-11-04 [belief: cc]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6b. Size on disk** and record it in the same table as CJ-1…CJ-4.
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6c. Determine execution requirement** — scoring is judge-free, network-free and
