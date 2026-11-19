@@ -33,8 +33,7 @@ requires a strictly positive partial acceptance, removes the rejected suffix
 from both contexts, and replays the target correction. Insufficient proposals
 or failed native calls remain UNKNOWN.
 
-Every run retains the off/observe/fault matched-prefix controls and the
-original numerical thresholds. Default success is rc0. `--fault-injection`
+Every run retains the off/observe/fault matched-prefix controls. Default success is rc0. `--fault-injection`
 requires the same controls and emits `RESULT FAIL injected-fault`, rc1,
 only after the injected target-snapshot divergence is demonstrated. Missing
 nonfault agreement or absent fault sensitivity yields UNKNOWN, rc2, in either
@@ -52,6 +51,42 @@ python3 -m unittest discover -s scripts/diagnostics -p test_cafe4_modes.py -v
 ```
 
 No native rollback, GPU residency, or fault verdict is asserted by these tests.
-The V4 source's original absolute numerical-floor rule is preserved; the later
-single-prompt relative-floor diagnostic is separate evidence. The parent
+The later single-prompt relative-floor diagnostic is separate evidence. The parent
 CAFE-4 task remains open until the port's scheduled native controls land.
+
+
+Cold-reference decode-boundary correction (2026-11-19)
+-----------------------------------------------------
+
+The filed width2 UNKNOWN used a reference whose second decode contained
+`boundary + accepted draft + sampled correction` together. The subject decodes
+`boundary + draft` during verification, removes the rejected suffix, and then
+decodes the sampled correction alone. Fusing that final correction into the
+reference prefix is a concrete harness geometry mismatch. The generator now
+decodes `boundary + accepted draft` and then the correction separately at
+`keep`. This aligns the final replay boundary; the accepted-only reference
+still differs from the subject's full verify batch. It does not isolate every
+batch-shape effect or prove the cause of the observed 0.907920361 error.
+
+The gate is frozen at **0.743863867** (lower error is better), preserving the
+filed width2 threshold without recalibrating it against this changed reference.
+The former dynamic reference-floor calculation is retained as a diagnostic
+`CAFE4_REFERENCE floor=... tolerance=...` line. Nonfault comparisons and the
+10x fault-sensitivity requirements are unchanged. Width3 has no prior executed
+verdict; this prospective fixed gate applies to both widths. The published CPU
+and HIP R3 artifacts are immutable and still contain the earlier source.
+Do not use their build receipts for this corrected generator output.
+
+Six model-free tests PASS. A compiled decoder spy executes the generated
+reference block for acceptance counts 1, 2 and 31, checks token partitions and
+positions, and checks early return at each failed decode. Pin/anchor tests
+reject source drift and guard the frozen tolerance. The generated candidate
+also passes C++17 syntax checking against the existing detached v10 diagnostic
+worktree. Generated SHA-256:
+`41fc473a908b7c385d79d1941b6576cc993b985e691682d6598d6122e968fe1c`.
+Historical base blob: `53035f75429327e82454f7d26f7dd67f65c80c16`.
+
+Next: prepare fresh hash-bound CPU/HIP build rows for this source, then qualify
+native width2/3 normal and explicit-fault controls under the fixed gate.
+No numerical rerun or rollback verdict was produced by this code correction.
+[no-belief: source correction and model-free tests only]
