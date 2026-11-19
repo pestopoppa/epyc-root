@@ -60,3 +60,50 @@ sealing. Model and corpus identity checks remain strict; none were relaxed.
 - `runtime.py`: `f4178535577ac5e0f95acf203c5cc5a14ef8d8e483570efe03fa2d9e4116aaea`
 - `native_smoke.py`: `e321c3444756c101899775b93741d7599dacd9c2bd9f84837cc33f8ecc1706f3`
 - `spec.json`: `3ad7c514aac6170d614fae244b06844fd27b2ab22ea7626e554853b32f751c88`
+
+## Stale queued predicate diagnosis and publication guard (2026-11-19)
+
+The third qualification attempt ended job rc0 at 22:58:28Z but **smoke FAIL**:
+its queued manifest still required inventory
+`7dfc47416fc18541139f572f45ae91ef0dfa3395066198fd5ee15e914569aadd`,
+whereas the native launcher and receipt used current inventory
+`2bf64dedf6e473f99c83c9df5f731d3e6a8e4bbdd8677ec2e0d3bfec00ca1014`.
+The original receipt records 32 generated tokens, 45 distinct in-request
+KFD/nonzero-VRAM/model/local-library samples, child reaped, rc0 and no cutoff.
+Offline validation of that receipt passes under its actual inventory; it does
+not repair the failed queued predicate or establish a P9 verdict. Preserve the
+qualification failure. Three failed qualifications park this lineage; no retry
+or new row was submitted in this repair turn. Earlier pending-smoke language
+above describes the prior submission, not current qualification.
+
+`publish.py` now checks row identity, exact inventory SHA-256 in all three
+engine commands and the publication predicate, packet directory and sealed
+launcher digest when present. It parses shell words without executing the
+launcher. Run `python3 scripts/diagnostics/cafe3-p9-hip/publish.py` for check-only;
+when a publication is authorized by the retry policy, use the same command with
+`--publish` to validate immediately before the standard `publish_row.py` call.
+No automatic resealing or retries occur. The guard is specific to this packet's
+fixed launcher grammar; it does not modify the publisher, queued manifests,
+model/build/runtime seals or P9/residency rules. It closes the manually copied
+predicate-hash submission path; it is not a concurrent-mutation lock.
+
+**9 tests PASS** (6 publication regressions plus 3 residency refusal tests).
+Check-only accepts the current packet and rejects the actual retained queued
+manifest with `predicate inventory binding mismatch`. Tests include every stale
+engine command, changed inventory/row, changed sealed launcher, wrong packet
+directory, duplicate commands and refusal before invoking the publisher.
+
+Existing evidence remains at its original paths (not copied):
+
+- `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-p9-hip-20261119/unpublished.json`, SHA-256 `18b0d62abbab238645fec5653734dc2a3a49db406cf45693d40134d3a43a62ec`.
+- `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-p9-hip-20261119/FAIL-1.json`, SHA-256 `5842d0d16b2479c9822a0fdb084d42696efbe5e2617cf50158f1759449cbf7d3` (the keeper reused FAIL-1; launcher.out retains all three attempts).
+- `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-p9-hip-20261119/native-attempts/attempt-p610jmhe/native-result.json`, SHA-256 `ca410abe9abc62f54ac7e0a9705eba772a75d027191a08cca7355e35fab44813`.
+
+GitNexus status/impact could not query an absent index; the guarded analyzer
+refused CPU admission. Direct review confines the change to this diagnostic's
+new publication entry point and tests; no shared publisher or production code
+changed.
+
+- `publish.py` SHA-256 `f79979d26d82471db3a72e259bff410fe870e705cd2e895e00adaf29d37ebedd`.
+
+- `test_publish.py` SHA-256 `88fbbd0f06721c97636af6aaf2431f81644748fe684cfdd971248cb515d8c5a5`.
