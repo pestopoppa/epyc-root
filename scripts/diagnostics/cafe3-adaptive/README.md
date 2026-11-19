@@ -255,3 +255,63 @@ write-time source and wiring task, install the factory in the full fresh
 production-based experimental builder, then publish build/P9 rows.
 
 [no-belief: compiled request/model source port and synthetic controls only]
+
+Durable journal and factory-installed source candidate (2026-11-19)
+------------------------------------------------------------------
+
+`native_sink.h` now implements `epyc.cafe3.round.v1` as an exclusive per-server
+JSONL journal, mode 0600. It syncs the parent directory at creation and uses
+complete-write/EINTR handling plus `fdatasync` for every round before lifecycle
+feedback may train the policy. Write, validation or sync failure permanently
+poisons that journal; an unsynced or partial final line must not be treated as
+an acknowledged observation. Successful records include a global ordinal and
+wall timestamp, run/context identity, request/epoch/sequence/implementation,
+round/ticket, selected/actual width, acceptance, current confidence, probe and
+full elapsed microseconds. The writer executes after the timed round; its
+synchronous IO overhead must remain included in future end-to-end P9 throughput.
+
+`prepare_candidate.py <detached-worktree>` checks a clean pinned production
+base and refuses paths outside `/mnt/raid0/llm/tmp/df2`. Create that worktree
+from the current fetched production ref using `git worktree add --detach`;
+the preparer refuses any changed production base until the port is reviewed.
+It applies both native and server ports, places the required project headers
+in `common/`, installs the native lifecycle factory on every server slot, and
+writes `cafe3-source.json` binding every generated source/header hash to the
+full production base commit. All transformation anchors are checked before
+writes. This command prepares source only; a scheduled full-build row remains
+required before executable qualification or native execution.
+
+Off requests stay unattached and do not open a journal. At the first enabled
+request, the factory requires `LLAMA_CAFE3_JOURNAL` (new path),
+`LLAMA_CAFE3_RUN` (unique server-run identity) and
+`LLAMA_CAFE3_CONTEXT_SHA256` (64 lowercase hex digits). The digest must name a
+retained predeclared context manifest binding actual source/build/library/model,
+protocol/corpus/repetitions/decision/stop rules and grant/placement identities.
+The sink validates syntax; the future row launcher must hash and verify that
+manifest and its actual launch bindings before starting native capture. No
+such launch or manifest validation is claimed here. Reusing a journal path
+fails closed. Native execution must remain blocked until that launcher exists.
+
+The source is registered prospectively in `scripts/vidya/adapters/README.md`
+with task `VB-CAFE3-ROUND-WIRE`. Projection uses the existing measurement carrier
+and shared `ClaimTuple.grade()`; a native planning-context canary is still
+required before calling the source wired.
+
+Validation: controller/lifecycle strict-warning C++17 ASan/UBSan suites pass;
+2 native-port tests, 3 server-port tests and 2 journal/preparer tests pass.
+The server syntax check now compiles the factory-installed full translation
+unit, including the real sink. Journal tests parse actual persisted JSON,
+check escaped run identity, ordinal, mode, confidence/elapsed fields and real
+factory feedback; force EINTR and short writes, a 14-byte partial-write failure
+and a sync failure; prove permanent poison and canceled/untrained feedback;
+refuse missing metadata, duplicate paths, invalid digests and production-tree
+preparation. These controls use synthetic rounds only. No full candidate build,
+native model observation, token identity, speed or P9 verdict is established.
+
+[no-belief: source implementation and model-free compiled/IO controls only]
+
+Source SHA-256 bindings for this milestone:
+
+- `native_sink.h`: `6ae785888b42922d92f4e4306289ac1528471e1d303612e66db8360652157b41`
+- `prepare_candidate.py`: `ca51e3fe2f6fa1ea36c2734f5dc82bdea5c90bc64f3b5123c6702abf433623ef`
+- `test_native_sink.py`: `cca4ee08b251e7a58e0f7cb4309bb0f7e100bc84e4f9fb433180944f967b8a25`

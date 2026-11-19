@@ -18,7 +18,9 @@ class ServerPortTest(unittest.TestCase):
 
     def test_full_server_translation_unit(self):
         import native_port
-        src = server_port.server_context(production('tools/server/server-context.cpp'))
+        import prepare_candidate
+        src = prepare_candidate.transformed(production)['tools/server/server-context.cpp']
+        self.assertIn('slots.back().cafe3_factory = cafe3::make_native_lifecycle;', src)
         # The original relative include resolves relative to the server directory.
         src = src.replace('"../../src/llama-kv-compress.h"', '"llama-kv-compress.h"')
         with tempfile.TemporaryDirectory(dir='/mnt/raid0/llm/tmp/df2', prefix='cafe3-server-tu-') as tmp:
