@@ -1,0 +1,116 @@
+{
+  "verdict": "pass",
+  "box": "SC18-GPU-POOL-C5-HISTORICAL544",
+  "receipt": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544-planning-20261119/gpu-pool-exclusion-zjf724gj/receipt.json",
+    "sha256": "6634907b3569caa5882f2c14506dd33f4a2a56cf9689a562e2ca7515209ce9b3"
+  },
+  "root_commit": "ec34c06c966ba46c4675575cc189e256e3188642",
+  "research_commit": "a794f5b54bea1a1f0752e0e3514ce07fa14c5ff2",
+  "capture": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/native/attempt-191e0fe696cc461b89f0d9a1a8dd3f07/belief.json",
+    "sha256": "b5c6776b63b45e06971faab7b38c0f9024765817bffba2080d88f149c4a71e05"
+  },
+  "producer_result": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/native/RESULT.json",
+    "sha256": "0438cef682b1d010914815e7cede152084b7923c4999f7e726c8aafc428d1df6"
+  },
+  "native_planning_context": true,
+  "ingestion": {
+    "observations": 96,
+    "frames": 288,
+    "refused": 0,
+    "retry_frames": 0
+  },
+  "candidate_reads": {
+    "NORM": {
+      "visible": 15,
+      "accepted": 15,
+      "rejected": 81,
+      "reason": "bounded",
+      "checkout_checked": true
+    },
+    "SUM": {
+      "visible": 15,
+      "accepted": 15,
+      "rejected": 81,
+      "reason": "bounded",
+      "checkout_checked": true
+    },
+    "SUM_ROWS": {
+      "visible": 15,
+      "accepted": 15,
+      "rejected": 81,
+      "reason": "bounded",
+      "checkout_checked": true
+    },
+    "missing_operator": {
+      "visible": 0,
+      "accepted": 0,
+      "rejected": 96,
+      "reason": "inapplicable_target",
+      "checkout_checked": true
+    },
+    "wrong_artifact": {
+      "visible": 0,
+      "accepted": 0,
+      "rejected": 96,
+      "reason": "no_applicable_claims",
+      "checkout_checked": true
+    },
+    "wrong_operator": {
+      "visible": 0,
+      "accepted": 0,
+      "rejected": 96,
+      "reason": "no_applicable_claims",
+      "checkout_checked": true
+    },
+    "wrong_run": {
+      "visible": 0,
+      "accepted": 0,
+      "rejected": 96,
+      "reason": "no_applicable_claims",
+      "checkout_checked": true
+    },
+    "wrong_shim": {
+      "visible": 0,
+      "accepted": 0,
+      "rejected": 96,
+      "reason": "no_applicable_claims",
+      "checkout_checked": true
+    },
+    "wrong_source": {
+      "visible": 0,
+      "accepted": 0,
+      "rejected": 96,
+      "reason": "no_applicable_claims",
+      "checkout_checked": true
+    }
+  },
+  "ordinary_planners": {
+    "autokernel.planner": {
+      "visible": 0,
+      "rejected": 96,
+      "checkout_checked": true
+    },
+    "autopilot.planner": {
+      "visible": 0,
+      "rejected": 96,
+      "checkout_checked": true
+    }
+  },
+  "sources_sha256": {
+    "adapter": "063650063cedab15e0218bd85648f6d89d4a32c46996167a1430e0449d451ef3",
+    "canary": "188e7b80297dcfb85cd29f35762890d4f8db7fb70a3a8127350eacd8632e071c",
+    "carrier": "f540063d9a738d437476def902ef23a1e5b0420e8b0fe15d8742d53d1c67b5b5",
+    "consumer": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f",
+    "read_counter": "4e478e063b9267a0910cdfb5841dc4cc50aac43730841edb0d9f3d1ec4b40797",
+    "reader": "05f3cebd7c7f531fb518ab6aed9d3fd930dc514b2d85bf31fffd8ab68a90ae09"
+  },
+  "limits": [
+    "Finite selected-case census; target UNSUPPORTED is not a correctness PASS.",
+    "Shared Judged/Located observations only; no performance, promotion, production or RVP-C2-2 conclusion.",
+    "Existing bounded reader presents 15 of 32 observations per operator.",
+    "No production consumer adoption or canonical ledger mutation."
+  ]
+}
