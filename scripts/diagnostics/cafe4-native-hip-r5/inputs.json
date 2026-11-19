@@ -1,0 +1,37 @@
+{
+  "schema": "cafe4.modes.native.inputs.v1",
+  "row": "df2-cafe4-modes-native-hip-r5-20261119",
+  "executable": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/runs/build-2owfqidt/build/bin/cafe4-mtp-rollback",
+  "artifacts": {
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/runs/build-2owfqidt/build/bin/cafe4-mtp-rollback": "c4ab059f9bdece22e8dd2f1d008c937bf54851a5201de0dd7b318bed41932ea8",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/runs/build-2owfqidt/build/bin/libllama.so.0.0.10303": "76c372f1b481e8b80072561678be5fd621ee7f420d23695a03b0f0c32a9aeebb",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/runs/build-2owfqidt/build/bin/libllama-common.so.0.0.10303": "374f95425a2b55ea5e4d588cd4035d801a2ed972dc4088817bd4b0111501987d",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/runs/build-2owfqidt/build/bin/libggml-base.so.0.16.0": "07723932ba5efae0b768e7efde22fae04e5b609ab8ceb4ea7219d61049e8f6ed",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/runs/build-2owfqidt/build/bin/libggml-hip.so.0.16.0": "471e0a6625782fa1638e02746bddf692422f31d804f447647a648da06129c56b",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/runs/build-2owfqidt/build/bin/libggml.so.0.16.0": "7031f6b8f8bf0da8ea9b7f4f1d29b1f4a2df081035b0e71a959b1e47e1f26e9c",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/runs/build-2owfqidt/build/bin/libggml-cpu.so.0.16.0": "0f46ff9dd88fe79c2441223fad1887ec7e3300c1cc963e6b5e143f07dfca2c58"
+  },
+  "runtime": {
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r5-20261119/runtime.py": "d15c917a20a8cbe8b47753031abece4afae88acf2045077d924c8b70fa71350e",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r5-20261119/launch.sh": "2bddd841caa7bbf280ad97c104a2d4d122b1a94e779b83c662b224701e504793"
+  },
+  "model": {
+    "hash_mode": "reuse prior content-verified receipt with unchanged full stat; no new model hash",
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "stat": {
+      "ctime_ns": 1782411254270412235,
+      "dev": 2431,
+      "ino": 96242023,
+      "mtime_ns": 1782411254270412235,
+      "size": 37801097504
+    }
+  },
+  "build_receipt": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/RESULT.json",
+    "sha256": "667dc2e6172db65e705f1084bd890e567615bfc97f4ea0aeda343c36d2359d75",
+    "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "patch_sha256": "351a431702613a5cad8d165c6959dbcde12a928963b8833bfa4668abb743e4dd",
+    "candidate_sha256": "e6546aa7417e40efecdd2bb03de61416bf62ae21b7c1369b7161e443201f835d"
+  }
+}
