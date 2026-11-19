@@ -95,3 +95,7 @@ Duplicate run-end event c10-c6-dispatch-reprofile-20261110-r2: verdict and FILED
 ## 04:20Z — Resolve duplicate CPU verify-tile run-end event
 
 Duplicate event rka-verify-tile-cpu-20261117: verdict and FILED receipt already exist from 2026-11-17 and RKA-VERIFY-TILE is ticked. Five-round result SHA-256 d8cccc8eec7f9b885d8e34444b3f6ea2a61a3bb0680220d809cf42b1812bcbf2; A3B 48t 32k n3 to n4 rose about 63%; the contention-controlled follow-up is already armed. No new result claimed.
+
+## 04:21Z — RKA-VERIFY-TILE-A3B48-E2E dispatch event was already filed and its handoff box completed on 2026-11-18; INF48-LIVE-1 requires changes in the separate research repository, outside the explicitly permitted root lane.
+
+Dispatched RKA-VERIFY-TILE-A3B48-E2E event was already filed on 2026-11-18 with NO_RECOMMENDATION and a filing receipt; verdict SHA-256 16d8083521592a1edb97b8664b29d246a6e4d7d4177c8317bc98377651f7a56a. No duplicate filing. INF48-LIVE-1 content-hash corpus implementation requires editing epyc-inference-research, outside the permitted lane.
