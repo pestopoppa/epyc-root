@@ -163,3 +163,7 @@ C15-EPI-Q8: source e0b5d2637858411bfb8b27609a2e7e199dc6f38c tests/test-backend-o
 ## 07:34Z — Repair router-wide correctness parser and initiate fresh GPU smoke
 
 RKA-A3B-ROUTER-WIDE: repaired split-line correctness parser in scratch job.py SHA-256 29d1456447605dc81589c9e8680e4c5fddee79efb5e4f8598553195d04d3db87; on the original tbo-test-UNSET.log it counts 16/16 and rejects absent or inconsistent summaries. Fresh row rka-a3b-router-wide-gpu-20261119-r2 submitted with unchanged decision thresholds; GPU smoke queued, qualification not yet established. C15-EPI-Q8 r2 smoke is also queued. [no-belief: instrument repair; no benchmark verdict]
+
+## 07:36Z — Triage resolved row alerts and inspect router-wide smoke
+
+RKA-A3B-ROUTER-WIDE r2 GPU smoke was running on inspection; qualification remains pending. Triaged historical alerts using filed receipts and the recorded ATT and AITER successor verdicts; ParEval r2 smoke remains unresolved and capture is partial, so its alert was not acknowledged as fixed. [no-belief: operational triage]
