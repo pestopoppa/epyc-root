@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T00:33:23Z",
+  "generated_at": "2026-11-19T00:55:25Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1392,15 +1392,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 856,
-      "dispatchable": 120,
+      "closed": 858,
+      "dispatchable": 118,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-19",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
-      "open": 121,
+      "open": 119,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1529,7 +1529,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 13,
+          "dispatchable": 11,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1547,7 +1547,7 @@
           ],
           "line": 14272,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 13,
+          "open": 11,
           "readiness": "blocked"
         }
       ]
