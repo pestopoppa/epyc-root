@@ -417,3 +417,7 @@ Duplicate completion event for `kvu16g4-overshoot-ab-20261106`. Existing filing 
 ## 05:35Z — Consume already-filed KPF-19.1 drafter-impact run-end event
 
 Duplicate run-end event for `kpf191-drafter-impact-8952-20261105-r2-q`: existing verdict and FILED receipt date 2026-11-05; handoff already records rc=1 INCONCLUSIVE (guard refused before native analysis), and successor `-q2-sq3` PASS. Native results contain only a partial source-reference scan, SHA-256 `056280c278f56734f921ddc01b528ca076f7485d5ad9ecb104e6a9e199f660f2`; neither required impact nor nonpartial scan_complete exists for this failed row. No new filing, checkbox completion, retry or qualification replay warranted. KPF-19.1 remains open for its CH-18 conformance leg. Preserve prior publisher checkpoint.
+
+## 05:37Z — Consume already-filed KPF-41 direct-vector impact run-end event
+
+Duplicate run-end event for `kpf41-direct-vec-impact-8952a0f-20261104-r5-q`: verdict and FILED receipt already exist from 2026-11-05, and the KPF-41 handoff records rc=1 INCONCLUSIVE. Guard denied before native analysis; exact denial reason was not retained. Native result contains only partial source references (SHA-256 `7312e6ccdfd070e20f9c33581bedbc7a46c7f405d73579ec605ebb364147c35e`), so the decision rule cannot PASS; no risk or edit-clearance claim follows. Successor r10 already filed all four native impacts and nonpartial scan_complete PASS. No retry, re-filing or checkbox completion warranted. Preserve pending backend GPU publisher checkpoint.
