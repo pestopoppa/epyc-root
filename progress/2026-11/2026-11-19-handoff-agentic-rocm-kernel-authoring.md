@@ -87,3 +87,7 @@ Filed historical row rock-aiter-tests-r3-20261105 (rc=0), under already-closed R
 ## 04:05Z — File c10-fold-build-20261109 verdict
 
 Filed c10-fold-build-20261109: BUILD_OK (grant rc=0), source 7f1bd044b1e49a88b33460977bd96feae3db8e5c. CPU and GPU builds and configure succeeded; all recorded content markers passed, including GGML_HIP_GEMM_DOWN_TILE (2 occurrences), all four linkage checks per store returned 0, and test-hc-fuse-plan and test-fused-decode-prev-logits returned 0 on CPU. CPU and GPU build durations 130.5 s and 206.5 s. This build-only result does not establish GPU execution or performance; AITER-PORT-1 was already closed with subsequent evidence. Evidence: /mnt/raid0/llm/tmp/c10-fold-build-20261109/out/RESULT.json SHA-256 6976d2a16d755db1add3636bfc832c9ef0cb1d34b9f40c19a101fbb6dbfbf345, results.jsonl SHA-256 5bb03d522ebf1bd56817bb8e8c2c6dcf984c16f8aba19e38da87b545c42ecead. [belief: cc]
+
+## 04:13Z — Resolve duplicate C10/C6 dispatch reprofile run-end event
+
+Duplicate run-end event c10-c6-dispatch-reprofile-20261110-r2: verdict and FILED receipt already recorded 2026-11-10; C6-C10-REPIN is already ticked. Results SHA-256 72f949e598efe40269d9e82bd5c0d2c483633ce1f9c98cfd95a48d192436d25c: zero new C10 failures vs v10, supported/passed MUL_MAT 1202/1201, FLASH_ATTN_EXT 3094/3094, ROPE 428/428, RMS_NORM 21/21, SET_ROWS 159/159. No new result claimed.
