@@ -88,6 +88,8 @@ att_mfma_efficiency.py	INF48-LIVE-6	ATT MFMA efficiency signal
 build_enrollment.py	AKU-10i / AKU-06i	versioned build enrollment records
 call_budget.py	OAB-32	default per-call wall budget for every role and kind
 composed_census.py	AKX-P3a	composed-census check on the ValidationBatch freeze
+census_live.py	AKX-P1d	live census plumbing: taskset-pinned dispatch probe, census identity stamp
+census_store.py	AKX-P1d	per-workload census store, freshness keys, live T0/T1 witnesses
 cpu_aa_calibration.py	AK-GH-1 (TOUCHED-only LOO)	CPU A/A calibration record
 cpu_keep_bundle.py	AK-GH-1 (TOUCHED-only LOO)	CPU accumulator bundle v1
 cross_lane_gate.py	cross-lane quality gate	per-lane ppl_contract acceptance at global promotion
