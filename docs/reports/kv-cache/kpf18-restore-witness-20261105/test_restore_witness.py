@@ -19,4 +19,29 @@ class TestWitness(unittest.TestCase):
         for task in (-1, True):
             with self.assertRaises(ValueError): attest(line(), task_id=task, slot=0, n_tokens=1024)
 
+    def test_malformed_attributed_restore_cannot_hide(self):
+        for broken in (line().replace('size = 1.000', 'size = BROKEN'),
+                       line().replace('1.000 MiB', '1..0 MiB'),
+                       line().replace('n_tokens = 1024', 'n_tokens = missing'),
+                       line().replace(' MiB)', ' MiB'),
+                       line().rstrip() + ' trailing garbage\n'):
+            for raw in (broken, line() + broken, broken + line()):
+                with self.subTest(raw=raw), self.assertRaises(ValueError):
+                    attest(raw, task_id=19, slot=0, n_tokens=1024)
+
+    def test_impossible_position_range(self):
+        for minimum in (-1, 1024, 2048):
+            with self.subTest(minimum=minimum), self.assertRaises(ValueError):
+                attest(line().replace('pos_min = 0', f'pos_min = {minimum}'),
+                       task_id=19, slot=0, n_tokens=1024)
+
+    def test_foreign_malformed_restore_is_not_ours(self):
+        foreign = line(task=20).replace('size = 1.000', 'size = BROKEN')
+        self.assertEqual(attest(foreign + line(), task_id=19, slot=0,
+                                n_tokens=1024)['tokens'], 1024)
+
+    def test_valid_sliding_window_range(self):
+        self.assertEqual(attest(line().replace('pos_min = 0', 'pos_min = 128'),
+                                task_id=19, slot=0, n_tokens=1024)['min'], 128)
+
 if __name__ == '__main__': unittest.main()
