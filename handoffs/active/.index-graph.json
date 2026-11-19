@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T22:08:14Z",
+  "generated_at": "2026-11-19T22:14:03Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1839,15 +1839,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 110,
-      "dispatchable": 38,
+      "closed": 111,
+      "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-19",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 39,
+      "open": 38,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1880,18 +1880,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 5,
           "gates": [],
           "line": 641,
           "name": "attention-matching-kv-compaction",
-          "open": 6,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1034,
+          "line": 1036,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1650,
+          "line": 1652,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1797,
+          "line": 1799,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
