@@ -1,3 +1,4 @@
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -300,3 +301,216 @@ def test_cli_explicit_parent(tmp_path, capsys):
     row = json.loads(capsys.readouterr().out)
     assert row["verdict"] == "success"
     assert row["signals"]["parent_result"]["path"] == str(parent)
+
+
+def _acceptance(tmp_path, *, result="pass", name="acceptance.json", **overrides):
+    gate = tmp_path / "gate.log"
+    gate.write_bytes(b"explicit gate evidence")
+    identity = {"parent_session_id": "s", "dispatch_tool_use_id": "dispatch",
+                "child_agent_id": "child", "task_id": "FM4-example"}
+    identity.update(overrides)
+    path = tmp_path / name
+    record = so.task_acceptance.write_record(
+        path, **identity, gate_result=result, evidence_path=gate,
+        evidence_sha256=hashlib.sha256(gate.read_bytes()).hexdigest())
+    return path, record
+
+
+@pytest.mark.parametrize(("gate", "verdict"), [("pass", "success"), ("fail", "failure")])
+def test_task_acceptance_applies_only_when_opted_in(tmp_path, gate, verdict):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation())
+    path, record = _acceptance(tmp_path, result=gate)
+    baseline = so.assess(child)
+    assert baseline["verdict"] == "delivered_no_outcome"
+    assert "task_acceptance" not in baseline["signals"]
+
+    row = so.assess(child, task_id="FM4-example", acceptance_paths=[path, path])
+    assert row["verdict"] == verdict
+    assert row["signals"]["local_verdict"] == "delivered_no_outcome"
+    signal = row["signals"]["task_acceptance"]
+    assert signal["disposition"] == "applied"
+    assert signal["caller_task_id"] == "FM4-example"
+    assert signal["identity"] == {identity: record[identity] for identity in so.task_acceptance.IDENTITIES}
+    assert signal["sources"] == [{"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                                  "disposition": "verified", "record": record}] * 2
+
+
+def test_task_acceptance_v11_transcript_snapshot_record_is_consumed(tmp_path):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation())
+    gate = tmp_path / "gate.log"
+    gate.write_bytes(b"explicit gate evidence")
+    path = tmp_path / "acceptance-v11.json"
+    record = so.task_acceptance.write_record(
+        path, parent_session_id="s", dispatch_tool_use_id="dispatch", child_agent_id="child",
+        task_id="FM4-example", gate_result="fail", evidence_path=gate,
+        evidence_sha256=hashlib.sha256(gate.read_bytes()).hexdigest(),
+        child_transcript=child, parent_transcript=parent)
+    assert record["schema"] == so.task_acceptance.SCHEMA_V11
+    row = so.assess(child, task_id="FM4-example", acceptance_paths=[path])
+    assert row["verdict"] == "failure"
+    assert row["signals"]["task_acceptance"]["disposition"] == "applied"
+    # Paired mutation: a tampered transcript snapshot declines the join.
+    snap = Path(record["transcripts"]["parent"]["path"])
+    snap.chmod(0o644)
+    snap.write_bytes(b"rotated and replaced")
+    snap.chmod(0o444)
+    row = so.assess(child, task_id="FM4-example", acceptance_paths=[path])
+    assert row["verdict"] == "delivered_no_outcome"
+    assert row["signals"]["task_acceptance"]["disposition"] != "applied"
+
+
+@pytest.mark.parametrize("identity", ["parent_session_id", "dispatch_tool_use_id", "child_agent_id", "task_id"])
+def test_task_acceptance_requires_every_identity(tmp_path, identity):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation())
+    path, _ = _acceptance(tmp_path, **{identity: "unrelated"})
+    row = so.assess(child, task_id="FM4-example", acceptance_paths=[path])
+    assert row["verdict"] == "delivered_no_outcome"
+    signal = row["signals"]["task_acceptance"]
+    assert signal["disposition"] == "identity_mismatch"
+    assert signal["sources"][0]["disposition"] == "identity_mismatch"
+
+
+@pytest.mark.parametrize(("mutation", "disposition"), [
+    ("no-task-id", "missing_task_identity"),
+    ("no-parent", "missing_parent_identity"),
+    ("without-join", "missing_parent_identity"),
+    ("ambiguous-parent", "ambiguous_parent"),
+    ("ambiguous-child", "ambiguous_child"),
+    ("reused-dispatch", "ambiguous_parent"),
+    ("async_launched", "nonterminal_parent"),
+    ("running", "nonterminal_parent"),
+])
+def test_task_acceptance_requires_terminal_unambiguous_join(tmp_path, mutation, disposition):
+    child, parent = _child(tmp_path)
+    delegation = _delegation(status=mutation if mutation in ("async_launched", "running") else "completed")
+    if mutation != "no-parent":
+        _write_session(parent, delegation)
+    if mutation == "ambiguous-parent":
+        _write_session(parent, [*delegation, *_delegation(tool_id="other-dispatch")])
+    if mutation == "reused-dispatch":
+        _, another_result = _delegation(agent_id="unrelated")
+        _write_session(parent, [*delegation, another_result])
+    if mutation == "ambiguous-child":
+        _write_session(child, [dict(_asst(HB), agentId="child"), dict(_asst(HB), agentId="other")])
+    path, _ = _acceptance(tmp_path)
+    baseline = so.assess(child, join_parent=mutation != "without-join")
+    row = so.assess(child, task_id=None if mutation == "no-task-id" else "FM4-example",
+                    join_parent=mutation != "without-join", acceptance_paths=[path])
+    assert row["verdict"] == "delivered_no_outcome"
+    assert row["signals"].pop("task_acceptance")["disposition"] == disposition
+    assert row == baseline
+    if mutation == "reused-dispatch":
+        assert baseline["signals"]["parent_join"] == "matched"
+
+
+def test_task_acceptance_rechecks_cached_parent_attribution(tmp_path):
+    child, parent = _child(tmp_path)
+    delegation = _delegation()
+    _write_session(parent, delegation)
+    parent_cache = {}
+    assert so.assess(child, parent_cache=parent_cache)["signals"]["parent_join"] == "matched"
+    _, another_result = _delegation(agent_id="unrelated")
+    _write_session(parent, [*delegation, another_result])
+    path, _ = _acceptance(tmp_path)
+    row = so.assess(child, task_id="FM4-example", acceptance_paths=[path], parent_cache=parent_cache)
+    assert row["verdict"] == "delivered_no_outcome"
+    assert row["signals"]["task_acceptance"]["disposition"] == "ambiguous_parent"
+
+
+@pytest.mark.parametrize("mutation", ["missing", "malformed", "duplicate-field", "extra-field", "mutated-evidence"])
+def test_task_acceptance_rejects_unverified_evidence(tmp_path, mutation):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation())
+    path, record = _acceptance(tmp_path)
+    if mutation == "missing":
+        path.unlink()
+    elif mutation == "mutated-evidence":
+        evidence = Path(record["evidence"]["path"])
+        evidence.chmod(0o644)
+        evidence.write_bytes(b"changed gate evidence")
+        evidence.chmod(0o444)
+    else:
+        if mutation == "malformed":
+            raw = "{"
+        elif mutation == "duplicate-field":
+            raw = json.dumps(record)[:-1] + ', "task_id": "FM4-example"}'
+        else:
+            raw = json.dumps(dict(record, unrecognized=True))
+        path.chmod(0o644)
+        path.write_text(raw)
+    row = so.assess(child, task_id="FM4-example", acceptance_paths=[path])
+    assert row["verdict"] == "delivered_no_outcome"
+    signal = row["signals"]["task_acceptance"]
+    assert signal["disposition"] == "invalid_record"
+    assert "record" not in signal["sources"][0]
+
+
+@pytest.mark.parametrize(("second", "disposition"), [
+    ("fail", "conflicting_records"),
+    ("mismatch", "identity_mismatch"),
+    ("missing", "invalid_record"),
+])
+def test_task_acceptance_fails_closed_when_supplied_set_disagrees(tmp_path, second, disposition):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation())
+    passing, _ = _acceptance(tmp_path)
+    if second == "missing":
+        additional = tmp_path / "missing.json"
+    elif second == "mismatch":
+        additional, _ = _acceptance(tmp_path, name="other.json", task_id="unrelated")
+    else:
+        additional, _ = _acceptance(tmp_path, name="failure.json", result=second)
+    for inputs in ([passing, additional], [additional, passing]):
+        row = so.assess(child, task_id="FM4-example", acceptance_paths=inputs)
+        assert row["verdict"] == "delivered_no_outcome"
+        assert row["signals"]["task_acceptance"]["disposition"] == disposition
+
+
+@pytest.mark.parametrize(("calls", "result", "expected"), [
+    ([PASS, COMMIT], "fail", "success"),
+    ([FAIL], "pass", "failure"),
+    ([COMMIT], "pass", "partial"),
+])
+def test_task_acceptance_preserves_local_outcome(tmp_path, calls, result, expected):
+    child, parent = _child(tmp_path)
+    records = [json.loads(line) for line in _build(tmp_path, calls).read_text().splitlines()]
+    _write_session(child, [dict(record, sessionId="s", agentId="child") for record in records])
+    _write_session(parent, _delegation())
+    path, _ = _acceptance(tmp_path, result=result)
+    row = so.assess(child, task_id="FM4-example", acceptance_paths=[path])
+    assert row["verdict"] == expected
+    assert row["signals"].pop("task_acceptance")["disposition"] == "local_outcome"
+    assert row == so.assess(child)
+
+
+@pytest.mark.parametrize(("result", "disposition"), [
+    ("pass", "corroborates_parent"), ("fail", "conflicting_parent_outcome"),
+])
+def test_task_acceptance_preserves_explicit_parent_outcome(tmp_path, result, disposition):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation(status="success"))
+    path, _ = _acceptance(tmp_path, result=result)
+    row = so.assess(child, task_id="FM4-example", acceptance_paths=[path])
+    assert row["verdict"] == "success"
+    assert row["signals"]["task_acceptance"]["disposition"] == disposition
+
+
+def test_cli_task_acceptance(tmp_path, capsys):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation())
+    path, _ = _acceptance(tmp_path)
+    files = ["--files", str(child)]
+    accepted = ["--task-acceptance", str(path)]
+    caller_identity = ["--task-id", "FM4-example"]
+    assert so.main(files + accepted + caller_identity) == 0
+    row = json.loads(capsys.readouterr().out)
+    assert row["verdict"] == "success"
+
+    for args in (files + accepted, accepted + caller_identity,
+                 files + [str(child)] + accepted + caller_identity, files + caller_identity):
+        with pytest.raises(SystemExit) as exc:
+            so.main(args)
+        assert exc.value.code == 2

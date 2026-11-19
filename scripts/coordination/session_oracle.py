@@ -55,12 +55,26 @@ delivery alone leave the local completion verdict in place. ``signals.parent_joi
 records matched, missing, or ambiguous evidence, and ``signals.parent_result``
 records the source path, session ID, tool-use ID, child ID, status, error flag,
 and explicit outcome.
+
+Prospective task acceptance is opt-in. The caller supplies the independently
+known task ID and record paths. Only an unambiguous terminal parent result
+bound to the child transcript can establish the other three identities.
+``signals.task_acceptance`` records the disposition and source provenance.
+Acceptance can fill in a missing outcome after the producer verifies the
+retained gate evidence. Existing local and explicit parent outcomes take precedence.
 """
 import argparse
+import hashlib
 import json
 import re
 import sys
 from pathlib import Path
+
+REPO_ROOT = str(Path(__file__).resolve().parents[2])
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
+from scripts.experiments.fm4 import task_acceptance  # noqa: E402
 
 SCHEMA = "session_oracle.v1"
 _LEAD = r"(?:^|[;&|\"'(]\s*)"
@@ -165,10 +179,11 @@ def _completion(records):
     return "unknown", end
 
 
-def _parent_agent_results(path):
+def _parent_agent_results(path, *, require_unique_child=False):
     """Index structured Agent/Task results by (session ID, agent ID)."""
     calls = set()
     results = {}
+    children_by_dispatch = {}
     for r in _iter_json(path, {"malformed_lines": 0}):
         if r.get("isSidechain") or r.get("agentId"):
             continue
@@ -197,6 +212,8 @@ def _parent_agent_results(path):
         tool_id = block.get("tool_use_id")
         if not isinstance(tool_id, str) or not tool_id or (sid, tool_id) not in calls:
             continue
+        if require_unique_child:
+            children_by_dispatch.setdefault((sid, tool_id), set()).add(aid)
         status = metadata.get("status")
         is_error = block.get("is_error") is True
         labels = (status, metadata.get("outcome"))
@@ -213,6 +230,10 @@ def _parent_agent_results(path):
         key = (sid, aid)
         if results.setdefault(key, evidence) != evidence:
             results[key] = None  # Conflicting evidence or multiple distinct calls for one child.
+    for (sid, _), children in children_by_dispatch.items():
+        if len(children) > 1:
+            for aid in children:
+                results[sid, aid] = None
     return results
 
 
@@ -237,6 +258,73 @@ def _join_parent(path, records, sid, parent_path, parent_cache):
         return "missing", None
     evidence = results[key]
     return ("matched", evidence) if evidence is not None else ("ambiguous", None)
+
+
+def _read_acceptance(path, identity, source):
+    """Return a validated matching record and annotate its source disposition."""
+    source["disposition"] = "invalid_record"
+    try:
+        if not path.is_file():
+            return None
+        raw = path.read_bytes()
+        source["sha256"] = hashlib.sha256(raw).hexdigest()
+        record = json.loads(raw.decode("utf-8"), object_pairs_hook=task_acceptance._unique_object)
+    except (OSError, ValueError, RecursionError):
+        return None
+    if not isinstance(record, dict):
+        return None
+    if any(record.get(key) != value for key, value in identity.items()):
+        source["disposition"] = "identity_mismatch"
+        return None
+    try:
+        record = task_acceptance.validate_record(record)
+    except (OSError, ValueError, RuntimeError):
+        return None
+    source.update(disposition="verified", record=record)
+    return record
+
+
+def _join_acceptance(paths, task_id, records, parent, parent_join, local_verdict):
+    sources = [{"path": str(path)} for path in paths]
+    signal = {"caller_task_id": task_id, "sources": sources}
+    if local_verdict in ("success", "failure", "partial"):
+        return dict(signal, disposition="local_outcome"), None
+    if not isinstance(task_id, str) or not task_id:
+        return dict(signal, disposition="missing_task_identity"), None
+    if parent is None:
+        return dict(signal, disposition="ambiguous_parent" if parent_join == "ambiguous"
+                    else "missing_parent_identity"), None
+    sid, aid = parent["session_id"], parent["agent_id"]
+    if any(r.get("sessionId") not in (None, sid) or r.get("agentId") not in (None, aid)
+           for r in records):
+        return dict(signal, disposition="ambiguous_child"), None
+    # Confirm strict attribution against the current parent, even when the regular
+    # join used a cache. A dispatch must identify exactly one child.
+    try:
+        strict_parent = _parent_agent_results(Path(parent["path"]), require_unique_child=True)
+    except OSError:
+        return dict(signal, disposition="missing_parent_identity"), None
+    if strict_parent.get((sid, aid)) != parent:
+        return dict(signal, disposition="ambiguous_parent"), None
+    if parent["status"] not in ("completed", "success", "succeeded", "failed", "failure", "error"):
+        return dict(signal, disposition="nonterminal_parent"), None
+
+    identity = dict(task_id=task_id, parent_session_id=sid,
+                    dispatch_tool_use_id=parent["tool_use_id"], child_agent_id=aid)
+    signal["identity"] = identity
+    matched = [_read_acceptance(Path(path), identity, source) for path, source in zip(paths, sources)]
+    for disposition in ("invalid_record", "identity_mismatch"):
+        if any(source["disposition"] == disposition for source in sources):
+            return dict(signal, disposition=disposition), None
+    first = matched[0]
+    if any(record != first for record in matched[1:]):
+        return dict(signal, disposition="conflicting_records"), None
+    outcome = "success" if first["gate_result"] == "pass" else "failure"
+    if parent["outcome"] is not None and parent["outcome"] != outcome:
+        return dict(signal, disposition="conflicting_parent_outcome"), None
+    if parent["outcome"] == outcome:
+        return dict(signal, disposition="corroborates_parent"), None
+    return dict(signal, disposition="applied"), outcome
 
 
 def _codex_events(records):
@@ -333,7 +421,8 @@ def _detect(path):
     return "claude", None
 
 
-def assess(path, *, parent_path=None, parent_cache=None, join_parent=True):
+def assess(path, *, parent_path=None, parent_cache=None, join_parent=True,
+           acceptance_paths=(), task_id=None):
     """Assess a transcript. Disable the parent join for a local-only replay."""
     path = Path(path)
     stats = {"malformed_lines": 0}
@@ -355,6 +444,7 @@ def assess(path, *, parent_path=None, parent_cache=None, join_parent=True):
         if can_join:
             verdict = refined
     sig["local_verdict"] = verdict
+    disposition, evidence = None, None
     if join_parent and can_join:
         disposition, evidence = _join_parent(
             path, records, sid, Path(parent_path) if parent_path is not None else None,
@@ -364,6 +454,11 @@ def assess(path, *, parent_path=None, parent_cache=None, join_parent=True):
         if evidence is not None:
             sig["parent_result"] = evidence
             verdict = evidence["outcome"] or verdict
+    if acceptance_paths := tuple(acceptance_paths):
+        acceptance, outcome = _join_acceptance(acceptance_paths, task_id, records,
+                                               evidence, disposition, sig["local_verdict"])
+        sig["task_acceptance"] = acceptance
+        verdict = outcome or verdict
     return {"session_id": sid or path.stem, "path": str(path), "harness": harness,
             "verdict": verdict, "signals": sig, "last_commit_sha": sha,
             "pushed": pushed, "schema": SCHEMA}
@@ -375,8 +470,15 @@ def main(argv=None):
     ap.add_argument("--root", default=str(Path.home() / ".claude/projects/-workspace"))
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--parent", type=Path, help="use this parent transcript for subagent joins")
+    ap.add_argument("--task-acceptance", type=Path, action="append", default=[],
+                    help="verify this prospective acceptance record (repeatable)")
+    ap.add_argument("--task-id", help="independently known task ID for the single child transcript")
     ap.add_argument("--out")
     a = ap.parse_args(argv)
+    if a.task_acceptance and (not a.task_id or not a.files or len(a.files) != 1):
+        ap.error("--task-acceptance requires --task-id and exactly one transcript via --files")
+    if a.task_id and not a.task_acceptance:
+        ap.error("--task-id requires --task-acceptance")
     if a.files:
         paths = [Path(p) for p in a.files]
     else:
@@ -388,7 +490,8 @@ def main(argv=None):
     try:
         for p in paths:
             try:
-                row = assess(p, parent_path=a.parent, parent_cache=parent_cache)
+                row = assess(p, parent_path=a.parent, parent_cache=parent_cache,
+                             acceptance_paths=a.task_acceptance, task_id=a.task_id)
             except OSError as e:
                 print(f"skip {p}: {e}", file=sys.stderr)
                 continue
