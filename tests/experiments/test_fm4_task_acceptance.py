@@ -156,3 +156,98 @@ def test_cli_duplicate_result_fields_are_ambiguous(tmp_path, capsys):
     path.write_text('{"gate_result":"pass","gate_result":"fail"}')
     assert acceptance.main(["validate", str(path)]) == 1
     assert "duplicate JSON field" in capsys.readouterr().err
+
+
+def transcripts(tmp_path):
+    child, parent = tmp_path / "child.jsonl", tmp_path / "parent.jsonl"
+    child.write_text('{"type":"assistant","n":1}\n')
+    parent.write_text('{"type":"user","n":2}\n')
+    return child, parent
+
+
+def test_v1_records_without_transcripts_are_unchanged(tmp_path):
+    record = capture(tmp_path)
+    assert record["schema"] == acceptance.SCHEMA
+    assert set(record) == acceptance.FIELDS
+
+
+@pytest.mark.parametrize("roles", [("child",), ("parent",), ("child", "parent")])
+def test_transcripts_snapshot_survives_rotation(tmp_path, roles):
+    child, parent = transcripts(tmp_path)
+    sources = {"child": child, "parent": parent}
+    record = capture(tmp_path, **{role + "_transcript": sources[role] for role in roles})
+    assert record["schema"] == acceptance.SCHEMA_V11
+    assert set(record["transcripts"]) == set(roles)
+    originals = {role: sources[role].read_bytes() for role in roles}
+    for role in roles:
+        sources[role].unlink()  # rotation of the live JSONL
+    assert acceptance.validate_record(record) == json.loads((tmp_path / "record.json").read_text())
+    for role in roles:
+        snap = record["transcripts"][role]
+        assert Path(snap["path"]).read_bytes() == originals[role]
+        assert snap["sha256"] == hashlib.sha256(originals[role]).hexdigest()
+
+
+@pytest.mark.parametrize("case", ["missing", "directory", "symlink"])
+def test_transcript_input_refusals_create_nothing(tmp_path, case):
+    child, _ = transcripts(tmp_path)
+    if case == "missing":
+        source = tmp_path / "absent.jsonl"
+    elif case == "directory":
+        source = tmp_path
+    else:
+        source = tmp_path / "link.jsonl"
+        source.symlink_to(child)
+    with pytest.raises(ValueError, match="child transcript"):
+        capture(tmp_path, child_transcript=source)
+    assert not (tmp_path / "record.json").exists()
+    assert not (tmp_path / "evidence").exists()
+
+
+@pytest.mark.parametrize("mutation", ["tampered", "writable", "missing", "renamed_role", "empty",
+                                      "v1_with_transcripts", "v11_without_transcripts"])
+def test_v11_validator_rejects_mutations(tmp_path, mutation):
+    child, parent = transcripts(tmp_path)
+    record = copy.deepcopy(capture(tmp_path, child_transcript=child, parent_transcript=parent))
+    acceptance.validate_record(record)  # paired control: the unmutated record validates
+    snap = Path(record["transcripts"]["child"]["path"])
+    if mutation in ("tampered", "writable"):
+        snap.chmod(0o644)
+        if mutation == "tampered":
+            snap.write_text("changed")
+            snap.chmod(0o444)
+    elif mutation == "missing":
+        snap.unlink()
+    elif mutation == "renamed_role":
+        record["transcripts"]["sibling"] = record["transcripts"].pop("child")
+    elif mutation == "empty":
+        record["transcripts"] = {}
+    elif mutation == "v1_with_transcripts":
+        record["schema"] = acceptance.SCHEMA
+    else:
+        del record["transcripts"]
+    with pytest.raises(ValueError):
+        acceptance.validate_record(record)
+
+
+def test_existing_transcript_snapshot_is_reverified(tmp_path):
+    child, _ = transcripts(tmp_path)
+    first = capture(tmp_path, child_transcript=child)
+    snap = Path(first["transcripts"]["child"]["path"])
+    snap.chmod(0o644)
+    snap.write_text("tampered")
+    snap.chmod(0o444)
+    with pytest.raises(ValueError, match="child transcript digest mismatch"):
+        acceptance.write_record(tmp_path / "second.json", **inputs(tmp_path), child_transcript=child)
+    assert not (tmp_path / "second.json").exists()
+
+
+def test_cli_transcript_flags(tmp_path, capsys):
+    child, parent = transcripts(tmp_path)
+    argv = ["write", "--out", str(tmp_path / "record.json"),
+            "--child-transcript", str(child), "--parent-transcript", str(parent)]
+    for key, value in inputs(tmp_path).items():
+        argv.extend(["--" + key.replace("_", "-"), str(value)])
+    assert acceptance.main(argv) == 0
+    assert json.loads(capsys.readouterr().out)["schema"] == acceptance.SCHEMA_V11
+    assert acceptance.main(["validate", str(tmp_path / "record.json")]) == 0

@@ -8,6 +8,8 @@ D9 operator acknowledgment is pending for the proposed oracle change. The patch 
 - Existing producer blob `33673af415757025255628a3c7a8b332d15c9a97` at `scripts/experiments/fm4/task_acceptance.py`.
 - Patch SHA-256 `34191d1de08fe886e72521fbcc6e47dc249b6a33ebf09664248df195f29ca69f`.
 
+Re-prepared 2026-11-19 (FM-4 Phase A): the patch still applies cleanly to the oracle and test blobs above on origin/main; the separate 2026-11-16 oracle-completion patch is already landed (commit `1d27bea1b`) and is not part of this package. The producer is now blob `46061ad0768e10683c9b1917e9b788fcbd8a6f56` (adds optional v1.1 transcript snapshots; v1 records unchanged). The D9 package actually handed to pipeline-mgmt is this patch plus one v1.1-consumption test with a paired tamper control: `/mnt/raid0/llm/tmp/pm-fm4-20261119/d9.patch` (SHA-256 `6b06a5f146966f9d0a671c3d9e31dda3688dd6b36da72f705b7f661d2bde29d8`); with it applied, oracle + replay + all `tests/experiments/test_fm4_*` pass 247/247 with zero skips.
+
 Run the check from the repository root. Apply only after D9 acknowledgment.
 
 ```bash

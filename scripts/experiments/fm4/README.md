@@ -191,3 +191,28 @@ reliance and unrelated-consumer exclusion. Its task outcome stays null. This
 path records the selected gate's exit; gate suitability and assignment provenance
 remain the caller's responsibility. It supplies no historical task-accuracy
 label and does not apply the pending Claude D9 oracle integration.
+
+### One-command prospective record for a real dispatch (FM-4 Phase A, 2026-11-19)
+
+Choose the gate BEFORE the dispatch runs (a named pytest file, a guard script).
+After the child finishes, run:
+
+```bash
+python3 -B scripts/experiments/fm4/dispatch_with_gate.py \
+  --root /mnt/raid0/llm/epyc-root/data/fm4_prospective \
+  --cwd /canonical/repo/root --timeout-s 600 \
+  --parent-session-id <sid> --dispatch-tool-use-id <toolu_...> \
+  --child-agent-id <agent-id> --task-id <independently-assigned-task-id> \
+  --child-transcript /path/child.jsonl --parent-transcript /path/parent.jsonl \
+  -- python3 -m pytest -q tests/<pre-registered gate>.py
+```
+
+It composes `run_gate.py` and `task_acceptance.py`, writes
+`<root>/<task_id, "/"→"__">/<dispatch_tool_use_id>.json`, re-validates it and
+prints only that path (exit 1 and no record on timeout, launch error, signal,
+bad identity or existing output). The transcript flags copy both JSONL files
+into the read-only content-addressed `evidence/` store at capture time
+(record schema `fm4.task_acceptance.v1.1`, field `transcripts`), so transcript
+rotation can no longer erase the inputs. Records written without transcript
+flags stay byte-compatible `fm4.task_acceptance.v1`; the validator accepts both.
+`run_gate.py` accepts the same two optional flags.

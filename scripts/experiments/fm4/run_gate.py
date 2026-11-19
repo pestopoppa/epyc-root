@@ -56,6 +56,10 @@ def _preflight(args, gate, identities):
     execution = output.with_name(output.name + ".execution.json")
     _require_new(output)
     _require_new(execution)
+    for role in ("child", "parent"):
+        source = getattr(args, role + "_transcript", None)
+        if source is not None and (source.is_symlink() or not source.is_file()):
+            raise ValueError(f"{role} transcript must be an existing regular file, not a symlink")
     if store.is_symlink() or (store.exists() and (
             not store.is_dir() or not os.access(store, os.W_OK | os.X_OK))):
         raise ValueError(f"evidence store must be a writable directory: {store}")
@@ -122,6 +126,10 @@ def main(argv=None):
     parser.add_argument("--timeout-s", required=True, type=float)
     for name in IDENTITIES:
         parser.add_argument("--" + name.replace("_", "-"), required=True)
+    parser.add_argument("--child-transcript", type=Path,
+                        help="snapshot this child transcript into the record (schema v1.1)")
+    parser.add_argument("--parent-transcript", type=Path,
+                        help="snapshot this parent transcript into the record (schema v1.1)")
     argv = list(sys.argv[1:] if argv is None else argv)
     separator = argv.index("--") if "--" in argv else len(argv)
     args = parser.parse_args(argv[:separator])
@@ -144,6 +152,7 @@ def main(argv=None):
         record = write_record(
             output, **identities, gate_result="pass" if returncode == 0 else "fail",
             evidence_path=execution, evidence_sha256=digest,
+            child_transcript=args.child_transcript, parent_transcript=args.parent_transcript,
         )
     except (OSError, RuntimeError, ValueError) as exc:
         print(str(exc), file=sys.stderr)

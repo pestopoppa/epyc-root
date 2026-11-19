@@ -167,3 +167,18 @@ def test_module_invocation_records_acceptance(tmp_path):
                             cwd=ROOT, capture_output=True, text=True, timeout=5)
     assert result.returncode == 0, result.stderr
     assert task_acceptance.validate_record(json.loads(result.stdout))["gate_result"] == "pass"
+
+
+def test_transcripts_pass_through_and_missing_transcript_refuses_before_execution(tmp_path, capsys):
+    child = tmp_path / "child.jsonl"
+    child.write_text("{}\n")
+    marker = tmp_path / "ran"
+    gate = [sys.executable, "-c", f"open({str(marker)!r}, 'w')"]
+    assert run_gate.main([*options(tmp_path), "--parent-transcript", str(tmp_path / "absent"),
+                          "--", *gate]) == 1
+    assert "parent transcript" in capsys.readouterr().err
+    assert not marker.exists() and not (tmp_path / "record.json").exists()
+    assert run_gate.main([*options(tmp_path), "--child-transcript", str(child), "--", *gate]) == 0
+    record = json.loads(capsys.readouterr().out)
+    assert record["schema"] == task_acceptance.SCHEMA_V11
+    assert set(record["transcripts"]) == {"child"}

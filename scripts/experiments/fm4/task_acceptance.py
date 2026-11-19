@@ -20,8 +20,12 @@ import sys
 
 
 SCHEMA = "fm4.task_acceptance.v1"
+# v1.1 adds only an optional transcript snapshot; records without one stay v1.
+SCHEMA_V11 = "fm4.task_acceptance.v1.1"
 IDENTITIES = ("parent_session_id", "dispatch_tool_use_id", "child_agent_id", "task_id")
 FIELDS = {"schema", *IDENTITIES, "gate_result", "timestamp", "evidence"}
+FIELDS_V11 = FIELDS | {"transcripts"}
+TRANSCRIPT_ROLES = ("child", "parent")
 IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:/-]{0,255}\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 UTC_TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z\Z")
@@ -39,12 +43,33 @@ def _read_evidence(path):
     return path.read_bytes()
 
 
+def _validate_snapshot(evidence, label):
+    """Rehash one content-addressed read-only snapshot {path, sha256}."""
+    if not isinstance(evidence, dict) or set(evidence) != {"path", "sha256"}:
+        raise ValueError(f"{label} must contain exactly path and sha256")
+    _digest(evidence["sha256"])
+    value = evidence["path"]
+    if not isinstance(value, str) or not value or "\x00" in value:
+        raise ValueError(f"invalid {label} path")
+    path = Path(value)
+    if not path.is_absolute() or str(path.resolve()) != value:
+        raise ValueError(f"{label} path must be canonical and absolute")
+    if path.name != evidence["sha256"] + ".bin":
+        raise ValueError(f"{label} path must be content-addressed")
+    raw = _read_evidence(path)
+    if path.stat().st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
+        raise ValueError(f"{label} snapshot must be read-only")
+    if hashlib.sha256(raw).hexdigest() != evidence["sha256"]:
+        raise ValueError(f"{label} digest mismatch")
+
+
 def validate_record(record):
-    """Validate the exact v1 shape and rehash its referenced evidence snapshot."""
-    if not isinstance(record, dict) or set(record) != FIELDS:
-        raise ValueError("record must contain exactly the v1 fields")
-    if record["schema"] != SCHEMA:
+    """Validate the exact v1/v1.1 shape and rehash every referenced snapshot."""
+    if not isinstance(record, dict) or record.get("schema") not in (SCHEMA, SCHEMA_V11):
         raise ValueError("unsupported schema version")
+    expected = FIELDS if record["schema"] == SCHEMA else FIELDS_V11
+    if set(record) != expected:
+        raise ValueError("record must contain exactly the " + record["schema"] + " fields")
     for name in IDENTITIES:
         value = record[name]
         if not isinstance(value, str) or not IDENTIFIER.fullmatch(value):
@@ -60,23 +85,14 @@ def validate_record(record):
         datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
     except ValueError as exc:
         raise ValueError("invalid timestamp") from exc
-    evidence = record["evidence"]
-    if not isinstance(evidence, dict) or set(evidence) != {"path", "sha256"}:
-        raise ValueError("evidence must contain exactly path and sha256")
-    _digest(evidence["sha256"])
-    value = evidence["path"]
-    if not isinstance(value, str) or not value or "\x00" in value:
-        raise ValueError("invalid evidence path")
-    path = Path(value)
-    if not path.is_absolute() or str(path.resolve()) != value:
-        raise ValueError("evidence path must be canonical and absolute")
-    if path.name != evidence["sha256"] + ".bin":
-        raise ValueError("evidence path must be content-addressed")
-    raw = _read_evidence(path)
-    if path.stat().st_mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
-        raise ValueError("evidence snapshot must be read-only")
-    if hashlib.sha256(raw).hexdigest() != evidence["sha256"]:
-        raise ValueError("evidence digest mismatch")
+    _validate_snapshot(record["evidence"], "evidence")
+    if record["schema"] == SCHEMA_V11:
+        transcripts = record["transcripts"]
+        if (not isinstance(transcripts, dict) or not transcripts
+                or not set(transcripts) <= set(TRANSCRIPT_ROLES)):
+            raise ValueError("transcripts must name child and/or parent snapshots")
+        for role, snapshot in transcripts.items():
+            _validate_snapshot(snapshot, role + " transcript")
     return record
 
 
@@ -88,12 +104,24 @@ def _write_new(path, raw):
 
 
 def write_record(output, *, parent_session_id, dispatch_tool_use_id, child_agent_id,
-                 task_id, gate_result, evidence_path, evidence_sha256):
-    """Capture a new explicit gate decision now; caller cannot backdate it."""
+                 task_id, gate_result, evidence_path, evidence_sha256,
+                 child_transcript=None, parent_transcript=None):
+    """Capture a new explicit gate decision now; caller cannot backdate it.
+
+    Optional transcripts are copied byte-for-byte into the evidence store at
+    capture time, so later rotation of the live JSONL cannot erase the inputs.
+    """
     _digest(evidence_sha256)
     raw = _read_evidence(evidence_path)
     if hashlib.sha256(raw).hexdigest() != evidence_sha256:
         raise ValueError("evidence digest mismatch")
+    transcript_bytes = {}
+    for role, source in (("child", child_transcript), ("parent", parent_transcript)):
+        if source is not None:
+            try:
+                transcript_bytes[role] = _read_evidence(source)
+            except ValueError as exc:
+                raise ValueError(f"{role} transcript: {exc}") from exc
     output = Path(output).absolute()
     if output.exists() or output.is_symlink():
         raise ValueError("output already exists")
@@ -106,6 +134,12 @@ def write_record(output, *, parent_session_id, dispatch_tool_use_id, child_agent
                   task_id=task_id, gate_result=gate_result,
                   timestamp=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                   evidence={"path": str(snapshot), "sha256": evidence_sha256})
+    if transcript_bytes:
+        record["schema"] = SCHEMA_V11
+        record["transcripts"] = {
+            role: {"path": str(store.resolve() / (hashlib.sha256(data).hexdigest() + ".bin")),
+                   "sha256": hashlib.sha256(data).hexdigest()}
+            for role, data in transcript_bytes.items()}
     # Validate scalar fields before creating any artifacts. Full validation below
     # additionally verifies the snapshot; no acceptance record exists until then.
     for name in IDENTITIES:
@@ -116,10 +150,13 @@ def write_record(output, *, parent_session_id, dispatch_tool_use_id, child_agent
     if not isinstance(gate_result, str) or gate_result not in ("pass", "fail"):
         raise ValueError("gate_result must be exactly pass or fail")
     store.mkdir(parents=True, exist_ok=True)
-    try:
-        _write_new(snapshot, raw)
-    except FileExistsError:
-        pass  # Existing snapshots must pass the same integrity checks.
+    blobs = [(snapshot, raw)] + [(Path(record["transcripts"][role]["path"]), data)
+                                 for role, data in transcript_bytes.items()]
+    for path, data in blobs:
+        try:
+            _write_new(path, data)
+        except FileExistsError:
+            pass  # Existing snapshots must pass the same integrity checks.
     validate_record(record)
     _write_new(output, (json.dumps(record, sort_keys=True, indent=2) + "\n").encode())
     return record
@@ -144,6 +181,8 @@ def main(argv=None):
     create.add_argument("--gate-result", required=True, choices=("pass", "fail"))
     create.add_argument("--evidence-path", required=True, type=Path)
     create.add_argument("--evidence-sha256", required=True)
+    create.add_argument("--child-transcript", type=Path)
+    create.add_argument("--parent-transcript", type=Path)
     check = commands.add_parser("validate")
     check.add_argument("record", type=Path)
     args = vars(parser.parse_args(argv))
