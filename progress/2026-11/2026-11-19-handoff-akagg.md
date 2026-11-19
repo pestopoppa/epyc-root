@@ -15,3 +15,7 @@ C15-FAROWS-FOLD: filed c15-fold-cpu-20261118-r4 FAIL (rc=0): all eight visits va
 ## 02:09Z — Consume ch26-cpu-sched-chain-20261105 run-end event against its existing filed functional verdict.
 
 CH-26b: consumed the run-end event for `ch26-cpu-sched-chain-20261105`; the functional-only PASS was already recorded by commit `f3d73f8463f1bbf384c6f299c7c987a0682b6d40`, and file_result confirms its FILED receipt exists. The 24-window diagnostic does not establish a noise floor. [no-belief: previously filed result]
+
+## 02:11Z — Reconcile duplicate c6-targetshape-perf-successor-20261105 run-end with its existing filed verdict and receipt.
+
+C6-Q4-MMVQ-FIX: duplicate run-end already filed inconclusive on 2026-11-05: rc 1, 8 of 20 required pairs (16 rc0 invocations); RESULT.json SHA-256 58a6f69d6f95192719e2d2d6ffd8d2cc4300c948bc0856ec5feeab3da5f4dc90. Existing handoff line records the result and the FILED receipt exists. No performance or promotion verdict. [no-belief: duplicate event reconciliation]
