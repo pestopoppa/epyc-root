@@ -204,6 +204,7 @@ def run_trial(folder, row, case, inventory, score, key, deadline):
             "row": row,
             "prompt": case["prompt"],
             "context": case.get("context"),
+            **({"recovery_probe_v1": True} if case.get("schema") == "epyc.cf3c.native-recovery-probe.v1" else {}),
             **(
                 {"initial_history": case["initial_history"]}
                 if "initial_history" in case
@@ -386,6 +387,12 @@ def smoke_history_seen(folder):
     return False
 
 
+def recovery_control_row(probe):
+    """Use the complete native trial row contract for the separate control."""
+    return {"ordinal": 1, "unit": probe["id"], "case": probe["id"],
+            "arm": probe["arm"], "seed": probe["seed"], "repeat": 0}
+
+
 def run_window(out, dry, inputs, owner, score, cases, inventory, coverage):
     cpus = live.bind_four_cores()
     if not live.file_port_available(PORT) or owner.listen_inodes(PORT):
@@ -401,6 +408,16 @@ def run_window(out, dry, inputs, owner, score, cases, inventory, coverage):
         else coverage
         )
     )
+    recovery_probe = None
+    if dry and getattr(profile, "RECOVERY_PROBE_V1", False):
+        from recovery_probe import compile_probe
+        recovery_probe = compile_probe(profile.cohort())
+        identity = recovery_probe["id"]
+        cases = {identity: recovery_probe}
+        inventory = {identity: {"id": identity, "grade_cohort": False,
+                               "scoring_method": "ungraded",
+                               "grade_reason": "separate recovery instrument control"}}
+        schedule = [recovery_control_row(recovery_probe)]
     window = Path(tempfile.mkdtemp(prefix="window-", dir=out))
     packet_hash = live.digest(HERE / "inputs.json")
     argv = live.server_argv(4, PORT)
@@ -531,6 +548,16 @@ def run_window(out, dry, inputs, owner, score, cases, inventory, coverage):
         "unit": results[-1]["unit"] if results else None,
     }
     if dry:
+        if recovery_probe is not None:
+            from recovery_probe import qualify
+            trial = results[0] if len(results) == 1 else {}
+            capture = (trial.get("native_result") or {}).get("recovery_capture") or {}
+            report["recovery_control"] = qualify(
+                recovery_probe, trial, capture, server_exited=exited, error=error)
+            report["qualified"] = report["recovery_control"]["qualified"]
+            report["quality_cells_observed"] = 0
+            live.atomic_json(out / ("SMOKE.json" if report["qualified"] else "PARTIAL.json"), report)
+            return int(not report["qualified"])
         if binding:
             trial = results[0] if len(results) == 1 else None
             native = trial["native_result"] if trial else {}

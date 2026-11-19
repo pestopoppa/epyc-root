@@ -49,3 +49,42 @@ actual returned-text/path checks, unchanged cohort input, wrong version/seed,
 quality-cell substitution, missing active custody, wrong archive/log hashes,
 missing wire/status/cost, child/server teardown and transport failure. These
 are software controls, not evidence that a model recovered the archive.
+
+## Integrated profile
+
+`cf3c-binding/prepare_v2.py`, `launcher_v2.sh` and `spec_v2.json` seal the
+new `cf3c-binding-probe-v1-20261119` row. Shared suite helpers activate the
+control only for this profile's smoke. `recovery_probe_v1` is sent to the
+private graph child only for the versioned control input; its peek receipt
+is persisted in `GRAPH.json` and the trial OUTCOME. The ordinary 24 quality
+cells carry no control flag. Wire validation completes before qualification;
+archive return receipts, grade independence and separate cost denominators
+retain the v1 contract. Source-backed offline regression covers capture
+installation before REPL namespace binding as well as native log recovery.
+
+## First integrated qualification — failed before generation
+
+The separately sealed `cf3c-binding-probe-v1-20261119` smoke ran once on
+CPUs 140–143 on 2026-11-19 and ended rc=1 at 11:58:55Z. Publisher refused
+qualification. Its only trial was UNKNOWN before child creation:
+`KeyError: 'repeat'` in the native child-environment builder. There were
+zero native wire requests, zero quality cells and no recovery observation.
+The private server exited cleanly; `child_exited=false` records that no
+child was launched, rather than claiming a successful child teardown.
+This is an integration defect, not evidence about model recovery ability.
+The failed sealed packet is unchanged and will not be retried.
+
+Repository code now builds the control with `repeat=0`, via
+`recovery_control_row`. Its regression executes the real child-environment
+builder on the prospectively compiled control. The source-backed graph
+regression also confirms the capture is installed before REPL construction,
+its bound tool uses the wrapper, and returned log content produces the
+source-log witness. Together 27 suite/binding integration checks and 27
+probe/profile checks pass; Ruff, shell syntax and diff checks pass. These
+software checks do not establish native qualification. A new sealed profile
+version is needed to execute the repaired row; the original 24 quality cells
+remain unchanged and unrun.
+
+Failure ledger: `/mnt/raid0/llm/tmp/compute-flags/dryrun/cf3c-binding-probe-v1-20261119/cf3c-suite-native/PARTIAL.json`, SHA-256 `760250e343b68112ba69d4570caabc570fe599447e11d2be69522037a986e184`.
+
+Failed input seal: `255cd80a1e5df9afc0820b113a621263558f53baab73579cbaef2d4dd6c21452`.

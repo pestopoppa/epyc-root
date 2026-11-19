@@ -6,6 +6,7 @@ import json
 import os
 import sys
 from collections import Counter
+from contextlib import ExitStack
 from contextvars import ContextVar
 from pathlib import Path
 from unittest.mock import patch
@@ -444,29 +445,37 @@ def run_trial(attempt):
         tokenizer._client.event_hooks["request"].append(validate_private_request)
         install_trial_scope(attempt)
         try:
-            repl = REPLEnvironment(
-                context,
-                llm_primitives=primitives,
-                role="frontdoor",
-                task_id="trial",
-                tool_context={"no_web": True},
-            )
-            archive_receipt = None
-            if "initial_history" in config:
-                archive_receipt = install_archive(
-                    state, repl, config["initial_history"]
+            with ExitStack() as captures:
+                recovery_capture = None
+                if config.get("recovery_probe_v1"):
+                    from recovery_probe import capture_peeks
+                    recovery_capture = captures.enter_context(
+                        capture_peeks(REPLEnvironment, config["initial_history"]))
+                repl = REPLEnvironment(
+                    context,
+                    llm_primitives=primitives,
+                    role="frontdoor",
+                    task_id="trial",
+                    tool_context={"no_web": True},
                 )
-            with patch.object(context_arm_ab, "render", renderer):
-                result = asyncio.run(
-                    run_task(
-                        state,
-                        TaskDeps(
-                            primitives=primitives,
-                            repl=repl,
-                            config=GraphConfig(max_escalations=0, max_turns=MAX_TURNS),
-                        ),
+                archive_receipt = None
+                if "initial_history" in config:
+                    archive_receipt = install_archive(
+                        state, repl, config["initial_history"]
                     )
-                )
+                if recovery_capture is not None:
+                    recovery_capture["log_path"] = state.history_log_path
+                with patch.object(context_arm_ab, "render", renderer):
+                    result = asyncio.run(
+                        run_task(
+                            state,
+                            TaskDeps(
+                                primitives=primitives,
+                                repl=repl,
+                                config=GraphConfig(max_escalations=0, max_turns=MAX_TURNS),
+                            ),
+                        )
+                    )
         finally:
             clear_request_scope()
         events = trajectory_artifact.read_events(attempt / "trial.trajectory.jsonl")
@@ -529,6 +538,7 @@ def run_trial(attempt):
             "pre_generation_budget_exhausted": bool(pregen),
             "policy_receipts": receipts,
             "initial_history_receipt": archive_receipt,
+            "recovery_capture": recovery_capture,
             "tool_calls": final["tool_calls"],
             "native_usage": usage,
             "context_counter": tokenizer.get_stats(),
