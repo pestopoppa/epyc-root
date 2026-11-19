@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T17:56:37Z",
+  "generated_at": "2026-11-19T17:58:42Z",
   "nodes": [
     {
       "age_days": 9,
@@ -2299,15 +2299,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 138,
-      "dispatchable": 55,
+      "closed": 139,
+      "dispatchable": 54,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-19",
       "next_action": "Fix C12 CPU mul_mat IQ3_XXS/Q6_K (QDEC r3) + QDEC judge; q81 r4 edge leg; EDGE-HIP-NONFINITE; LB4.9 per-route bar",
-      "open": 56,
+      "open": 55,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2357,7 +2357,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 48,
+          "dispatchable": 47,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2368,7 +2368,7 @@
           ],
           "line": 969,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 49,
+          "open": 48,
           "readiness": "blocked"
         }
       ]
