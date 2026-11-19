@@ -1,0 +1,14 @@
+{
+  "base": "/mnt/raid0/llm/tmp/kvu/g3-gpu-integrated-20261105/candidate/vendor/cancel_seed_transport.py",
+  "base_sha256": "baf70be554d79fa6b5b488d73b9947667a58a3094e06ed4510b74746d4f57a71",
+  "patched_sha256": "df5d5cc53239e4427246aaaa4dd21fdbb01138bcf1c6f19eab7b8b6574b0cd74",
+  "patch_sha256": "9623a10872196ef3d1edb46ba278fb7ddd8e50ddc20c4033ca8b86d31cbbfdb7",
+  "dependencies": {
+    "/mnt/raid0/llm/tmp/kvu/g3-gpu-integrated-20261105/candidate/vendor/socket_deadline.py": "fcc17534e69bfa080c35abb6e38ca495fe6c1a1938983a8b601d92c08f696b93",
+    "/mnt/raid0/llm/tmp/kvu/g3-gpu-integrated-20261105/candidate/vendor/cancel_seed_stream.py": "d9ae491aea9ef6f80fe60af855b5c48cb9a25c333ab726aeafc31029b2e301bf",
+    "/mnt/raid0/llm/tmp/kvu/g3-gpu-integrated-20261105/candidate/vendor/native_task_log.py": "280bd6aea3df25a51d436887710ff8872b10edfe78d188633b53df6f153c7d08",
+    "/mnt/raid0/llm/tmp/kvu/g3-gpu-integrated-20261105/candidate/vendor/native_block.py": "2703d39eef136a58f898d7c8038756ca8fdcc9efc55506b517b28856ef49c4af",
+    "/mnt/raid0/llm/tmp/kvu/g3-gpu-integrated-20261105/candidate/vendor/physical_trace.py": "d038e3cee0f117025f5b630d91ca2bb03966d889be8e4181c63efe56c3d15dc5",
+    "/mnt/raid0/llm/tmp/kvu/g3-gpu-integrated-20261105/candidate/vendor/cancel_seed_admission.py": "a07d6060f15c2e51808216e260dad5a5190ba50f38ff1b09b1b106d27b9e0308"
+  }
+}

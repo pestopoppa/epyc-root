@@ -1,0 +1,70 @@
+--- a/cancel_seed_transport.py
++++ b/cancel_seed_transport.py
+@@ -93,22 +93,32 @@
+               'stream':True,'return_progress':True}
+         started=time.time();log_start=Path(srv.log).stat().st_size
+         identity=None;binding=None;response=None;captured_socket=None;transport_closed=False;client_error=None;cap=None
++        failure=None;cleanup_error=None
+         connection=http.client.HTTPConnection(address.hostname,address.port,
+             timeout=min(180.,max(1.,ctx.deadline.remaining())))
+         def close_transport():
+-            nonlocal transport_closed
++            nonlocal transport_closed,cleanup_error
+             if transport_closed:return
+             transport_closed=True
+             # Captured own socket only. RST makes disconnect visible promptly;
+             # the server's native cancellation/release remains separate proof.
+-            if captured_socket is not None:
+-                try:captured_socket.setsockopt(socket.SOL_SOCKET,socket.SO_LINGER,struct.pack('ii',1,0))
+-                except OSError:pass
+-                try:captured_socket.shutdown(socket.SHUT_RDWR)
+-                except OSError as error:
+-                    if error.errno not in (errno.ENOTCONN,errno.EBADF):raise
+-            if response is not None:response.close()
+-            connection.close()
++            try:
++                try:
++                    if captured_socket is not None:
++                        try:captured_socket.setsockopt(socket.SOL_SOCKET,socket.SO_LINGER,struct.pack('ii',1,0))
++                        except OSError:pass
++                        try:captured_socket.shutdown(socket.SHUT_RDWR)
++                        except OSError as error:
++                            if error.errno not in (errno.ENOTCONN,errno.EBADF):raise
++                finally:
++                    try:
++                        if response is not None:response.close()
++                    finally:
++                        connection.close()
++            except Exception as error:
++                # capture() closes in its own finally. Never mask its typed
++                # refusal with a secondary transport-cleanup exception.
++                cleanup_error=error
+         def bind_task(event):
+             nonlocal identity,binding
+             ctx.check_boundary()
+@@ -141,11 +151,24 @@
+                         trigger_processed=self.trigger_processed,delay_s=self.delay_s)
+                 watchdog.check()
+         except Exception as error:
++            failure=error
+             client_error=f'{type(error).__name__}: {error}'
+         finally:
+-            close_transport()
++            try:close_transport()
++            except Exception as error:cleanup_error=error
+             # Raw capture exists on every normal path, including refusals.
+             if not raw_path.exists():raw_path.touch(exist_ok=False)
++        # A failed capture cannot establish a task to wait for. Preserve STOP
++        # and typed refusal, close our transport, and return to owned server
++        # supervision without issuing any post-failure model/slot request.
++        if failure is not None or cleanup_error is not None:
++            error=failure if failure is not None else cleanup_error
++            gate.write_json(record_path,{'body':body,'client_error':client_error,
++                'cleanup_error':None if cleanup_error is None else f'{type(cleanup_error).__name__}: {cleanup_error}',
++                'task_binding':binding,'raw_sse':str(raw_path),
++                'refusal':'capture or transport cleanup failed; native release unqualified'})
++            if isinstance(error,gate.Abort):raise error
++            raise gate.Abort(f'seed capture/cleanup failed: {type(error).__name__}: {error}') from error
+         # The socket close is NOT a release acknowledgment. No next model
+         # request is made until the same native task is observably idle.
+         until=time.monotonic()+10.;after=None
