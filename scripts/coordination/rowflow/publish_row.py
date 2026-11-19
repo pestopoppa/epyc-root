@@ -67,7 +67,7 @@ RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction",
+             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction", "handoff_task_sha",
              "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by",
              "resumable", "max_window_s")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
@@ -397,6 +397,54 @@ def task_box(spec, repo=None):
     return path, idx + 1, txt, ch
 
 
+def box_identity_findings(spec, path, txt, repo=None):
+    """Handoff standard §2.2/§5: the box's IDENTITY is text_sha (first line). Records spec["handoff_task_sha"] on first
+    publish; REFUSES a republish/repair whose box first line changed since (refine = new ID, never an edit). Cross-checks
+    `.box-index.json` (gitignored, rebuilt on read): WARN when the index knows the box as frozen / roll-up / gated /
+    held, or the ID's indexed text_sha differs from the live line. A `file.md:LINE` handoff_task WARNS (use the ID)."""
+    import sys as _sys
+    root = repo or REPO
+    _sys.path.insert(0, os.path.join(root, "scripts", "handoffs"))
+    import box_index as _bi
+    first = txt.split("\n")[0]
+    sha = _bi.text_sha(first)
+    refuse, warn = [], []
+    old = spec.get("handoff_task_sha")
+    if old and old != sha:
+        refuse.append(f"box identity changed: handoff_task_sha {old} recorded at publish, live first line hashes to "
+                      f"{sha} — a box's first line is immutable once rowflow-bound; refine it as a NEW ID "
+                      f"(handoff_box.py refine) and point handoff_task there")
+    spec["handoff_task_sha"] = sha
+    task = str(spec.get("handoff_task") or "").partition(":")[2].strip()
+    if task.isdigit():
+        warn.append("handoff_task names a LINE; write `<file>.md:<TASK-ID>` (handoff standard §5: lines are hints)")
+    try:
+        doc = _bi.load(root, regenerate=False)   # never rebuild inside the rowflow view; read what is there
+    except Exception:  # noqa: BLE001 — the index is advisory here
+        doc = {}
+    bid = _task_lint().L1.head_id(first)
+    name = os.path.basename(path)
+    rec = None
+    for k, r in (doc.get("boxes") or {}).items():
+        if os.path.basename(r.get("file", "")) == name and (r.get("text_sha") == sha or (bid and r.get("id") == bid)):
+            rec = r
+            if r.get("text_sha") == sha:
+                break
+    if doc and rec is None:
+        warn.append(f"box not found in .box-index.json ({name} sha {sha})")
+    elif rec is not None:
+        if rec.get("text_sha") != sha:
+            warn.append(f".box-index.json has {bid} with text_sha {rec.get('text_sha')} != live {sha} (index stale?)")
+        if rec.get("state") in ("frozen", "rollup", "needs-owner"):
+            warn.append(f"box state is {rec['state']} in .box-index.json"
+                        + (f" (frozen until: {rec.get('frozen_until')})" if rec.get("frozen_until") else ""))
+        if rec.get("gate_open"):
+            warn.append(f"box gate still open: {', '.join(rec.get('gate') or [])}")
+        if rec.get("holds"):
+            warn.append(f"box under operator hold(s): {', '.join(rec['holds'])}")
+    return refuse, warn
+
+
 NONINF_REFUSE_BASES = ("explicit", "deliverable")
 # launcher payloads that are never inference: a repo indexer holding a compute grant (gitnexus analyze held 96 cores).
 # Kernel builds are deliberately absent: a build-then-bench row is legitimate compute.
@@ -421,6 +469,10 @@ def check_task_lint(spec, repo=None):
     path, ln, txt, ch = task_box(spec, repo)
     tl = _task_lint()
     refuse, warn = tl.publish_findings(txt, ch)
+    refuse, warn = list(refuse), list(warn)
+    ident_refuse, ident_warn = box_identity_findings(spec, path, txt, repo)
+    refuse += ident_refuse
+    warn += ident_warn
     # RTG-100 "Rows published with a non-inference payload as compute rows" (operator 2026-11-10): a compute row whose box
     # is CONFIDENTLY non-inference (explicit [non-inference]/[operator-decision]/[blocked-external] tag, or the deliverable
     # validator) is refused; the advisory regex guess stays a warning.

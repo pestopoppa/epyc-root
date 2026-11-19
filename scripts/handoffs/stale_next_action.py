@@ -45,10 +45,24 @@ BOX_RE = re.compile(r"^[ \t]*- \[([ xX])\][ \t]*\*\*([A-Za-z0-9.\-]+)", re.M)
 
 
 def box_states(text: str) -> dict[str, set[str]]:
-    """task id -> the set of checkbox states it appears with ({'x'}, {' '} or both)."""
+    """task id -> the set of checkbox states it appears with ({'x'}, {' '} or both).
+
+    Handoff standard Stage B: ids come from THE shared rule (task_lint_core.head_id, the same one .box-index.json
+    keys on) and boxes quoted inside code fences are ignored."""
+    import sys as _sys
+    _sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+    import task_lint_core as _l1
     out: dict[str, set[str]] = collections.defaultdict(set)
-    for state, raw_id in BOX_RE.findall(text):
-        out[raw_id.rstrip(".-—")].add(state.lower())
+    lines = text.split("\n")
+    fenced = _l1.fenced_lines(lines)
+    for i, line in enumerate(lines):
+        if i in fenced:
+            continue
+        m = BOX_RE.match(line)
+        if not m:
+            continue
+        bid = _l1.head_id(line) or m.group(2).rstrip(".-—")
+        out[bid].add(m.group(1).lower())
     return out
 
 
