@@ -1066,7 +1066,7 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 256,
+      "closed": 258,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 92,
@@ -1078,11 +1078,11 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 363,
+      "total": 365,
       "tracks": [
         {
           "blocked": 12,
-          "closed": 35,
+          "closed": 37,
           "gates": [
             "RTG-09#routing-program",
             "RTG-09#internal-interaction-lifecycle",
@@ -1104,7 +1104,7 @@
           "closed": 35,
           "gates": [],
           "guarded": 0,
-          "line": 405,
+          "line": 408,
           "markers": 1,
           "name": "repl-turn-efficiency",
           "open": 15
@@ -1114,7 +1114,7 @@
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 817,
+          "line": 820,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1126,7 +1126,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1583,
+          "line": 1586,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 15
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2264,
+          "line": 2267,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2347,
+          "line": 2350,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2797,
+          "line": 2800,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3667,
+          "line": 3670,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -2582,7 +2582,7 @@
       "blocked": 1,
       "closed": 476,
       "guarded": 0,
-      "last_advanced": "2026-11-18",
+      "last_advanced": "2026-11-19",
       "open": 116,
       "owner_index": "research-evaluation-index.md",
       "prune": {
