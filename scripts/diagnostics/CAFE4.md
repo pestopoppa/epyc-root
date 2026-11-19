@@ -90,3 +90,48 @@ Next: prepare fresh hash-bound CPU/HIP build rows for this source, then qualify
 native width2/3 normal and explicit-fault controls under the fixed gate.
 No numerical rerun or rollback verdict was produced by this code correction.
 [no-belief: source correction and model-free tests only]
+
+Native failure attribution (2026-11-19)
+---------------------------------------
+
+The scheduled HIP R4 native diagnostic ended rc2 before numerical controls:
+its combined message could mean an incomplete trial or any draft/prefix
+mismatch. That record cannot identify a particular predicate retroactively.
+The generator now reports `CAFE4_TRIAL_FAILURE` at every failed trial return,
+with mode, requested width, stage, draft length, accepted count, sampled token
+and the observation's selected/faulted counters. Thirty stages cover native
+initialization, proposal, verification, strict partial acceptance, suffix
+removal, correction, counters and both cold references. Compound configure /
+prompt-process and target / draft suffix-removal calls are split in their
+original short-circuit order.
+
+`CAFE4_CONTROL_FAILURE` identifies each failed off/observe/fault lifecycle
+check and each of the four prefix/draft comparisons. Token differences include
+both lengths, first differing index and values (`-1` indicates a missing side).
+All seven checks report even if an earlier check fails. The old combined UNKNOWN
+message and rc2 remain; success is silent at these seams. No control is relaxed,
+no token prefix is forced equal, and the **0.743863867** gate and 10x fault
+requirements remain unchanged. This diagnoses a future run; it does not
+identify the prior native root cause or prove rollback correctness.
+
+**8/8 model-free tests PASS**. Compiled tests exercise each independent control
+failure and simultaneous failures, preserve the old guard's truth value, check
+trial telemetry, and execute the generated reference decodes with injected
+failures and exact stage attribution. Generator drift fails closed. The complete
+generated candidate passes C++17 syntax checking against the existing detached
+v10 diagnostic worktree. No full build or native inference ran this turn.
+
+Bindings:
+
+- Historical source blob: `53035f75429327e82454f7d26f7dd67f65c80c16`.
+- Generated scratch source: `/mnt/raid0/llm/tmp/df2/cafe4-failure-diagnostics-20261119/candidate.cpp`, SHA-256 `e6546aa7417e40efecdd2bb03de61416bf62ae21b7c1369b7161e443201f835d`.
+- `scripts/diagnostics/cafe4_port.py`, SHA-256 `4b7ad1b8b4a5460916f9fd6ea0ae72bef944c186f7b85ce466aaf971494c4b7b`.
+- `scripts/diagnostics/cafe4_modes.hpp`, SHA-256 `f544e718f34f2b7347d2ceeebf566eb575250c20760720676682512573507848`.
+- `scripts/diagnostics/test_cafe4_modes.py`, SHA-256 `f3da152274f79c513299c78f292e61045fd79e613ebc6ca32bd276763b34376f`.
+
+Existing CPU R2 and HIP R4 binaries retain their bound source and do not contain
+these diagnostic messages. Next publish a fresh HIP build qualification with
+the generated-source/header digests and compiled failure markers; only then
+publish a native GPU row under the unchanged controls. The existing CPU R2 row
+remains independent. Existing CAFE-4 source registration applies.
+[no-belief: diagnostic source change and model-free tests only]

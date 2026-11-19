@@ -101,16 +101,17 @@ int main() {
         generated = port.materialize(source)
         # Execute the actual generated reference block against a model-free
         # decoder spy. The old fused final batch fails these assertions.
-        start = generated.index(' if(!decode(batched.get(),prompt,0))return o;')
+        start = generated.index(' if(!decode(batched.get(),prompt,0))')
         end = generated.index(' o.ok=true;return o;', start)
         block = generated[start:end]
         directory = Path(self.scratch.name)
         cpp = directory / 'reference.cpp'
-        cpp.write_text('''#include <vector>
+        cpp.write_text('''#include "cafe4_modes.hpp"
+#include <vector>
 #include <cassert>
 #include <memory>
 using llama_tokens = std::vector<int>;
-struct Observation { bool ok=false; int sampled=99; llama_tokens prefix; std::vector<float> batched; };
+struct Observation { bool ok=false; int sampled=99,accepted=-1; unsigned long long selected=0,faulted=0; llama_tokens prefix,draft; std::vector<float> batched; };
 std::vector<llama_tokens> calls;
 std::vector<int> positions;
 int fail_at=0;
@@ -124,7 +125,7 @@ Observation reference(int accepted) {
  o.prefix=prompt; o.prefix.push_back(20);
  for(int i=0;i<accepted;++i)o.prefix.push_back(30+i);
  o.prefix.push_back(o.sampled);
- int keep=prompt.size()+1+accepted,n=1;
+ int keep=prompt.size()+1+accepted,n=1,mode=0,width=3;
  auto batched=std::make_unique<int>(0);
 ''' + block + '''
  o.ok=true;return o;
@@ -148,8 +149,10 @@ int main() {
 }
 ''')
         binary = directory / 'reference'
-        subprocess.run(['c++', '-std=c++17', '-Wall', '-Wextra', '-Werror', str(cpp), '-o', str(binary)], check=True)
-        subprocess.run([str(binary)], check=True)
+        subprocess.run(['c++', '-std=c++17', '-Wall', '-Wextra', '-Werror', '-I', str(HERE), str(cpp), '-o', str(binary)], check=True)
+        result = subprocess.run([str(binary)], check=True, capture_output=True, text=True)
+        for stage in ('batched-prompt-decode', 'batched-prefix-decode', 'batched-correction-decode'):
+            self.assertEqual(result.stderr.count(f'stage={stage} '), 3)
         self.assertIn('tol=0.743863867,', generated)
         self.assertNotIn('tol=base+1e-5', generated)
         self.assertIn('CAFE4_REFERENCE floor=%.9g tolerance=%.9g', generated)
@@ -157,6 +160,77 @@ int main() {
         for anchor in ('o.prefix.end());', 'tol=base+1e-5,'):
             with self.subTest(anchor=anchor), self.assertRaises(ValueError):
                 port.materialize(source.replace(anchor, 'BROKEN'))
+
+    def test_individual_control_failures_and_trial_telemetry(self):
+        directory = Path(self.scratch.name)
+        cpp = directory / 'controls.cpp'
+        cpp.write_text('''#include "cafe4_modes.hpp"
+#include <vector>
+#include <cassert>
+#include <cstdlib>
+struct Observation {
+ bool ok=true; int accepted=1,sampled=99;
+ unsigned long long selected=7,faulted=2;
+ std::vector<int> prefix{10,20},draft{30,40};
+};
+int main(int argc,char**argv) {
+ assert(argc==2); int which=std::atoi(argv[1]);
+ Observation off,observe,fault;
+ if(which==1)off.ok=false;
+ if(which==2)observe.ok=false;
+ if(which==3)fault.ok=false;
+ if(which==4)observe.prefix[1]=21;
+ if(which==5)fault.prefix.push_back(50);
+ if(which==6)observe.draft[0]=31;
+ if(which==7)fault.draft.clear();
+ if(which==8){off.ok=false;observe.ok=false;fault.ok=false;
+  observe.prefix.clear();fault.prefix.clear();
+  observe.draft.clear();fault.draft.clear();}
+ if(which==9){off.ok=false;
+  auto failed=cafe4::trial_failure(off,2,3,"correction-process");
+  assert(!failed.ok && failed.draft==off.draft && failed.accepted==off.accepted);
+  return 0;}
+ bool old=off.ok&&observe.ok&&fault.ok&&off.prefix==observe.prefix&&
+  off.prefix==fault.prefix&&off.draft==observe.draft&&off.draft==fault.draft;
+ assert(cafe4::matched_controls(off,observe,fault)==old);
+ assert(old==(which==0));
+}
+''')
+        binary = directory / 'controls'
+        subprocess.run(['c++', '-std=c++17', '-Wall', '-Wextra', '-Werror',
+                        '-I', str(HERE), str(cpp), '-o', str(binary)], check=True)
+        names = ('off-lifecycle', 'observe-lifecycle', 'fault-lifecycle',
+                 'off-observe-prefix', 'off-fault-prefix',
+                 'off-observe-draft', 'off-fault-draft')
+        for which in range(10):
+            result = subprocess.run([str(binary), str(which)], check=True, capture_output=True, text=True)
+            with self.subTest(which=which):
+                if which == 0:
+                    self.assertEqual(result.stderr, '')
+                elif which <= 7:
+                    self.assertEqual(result.stderr.count('CAFE4_CONTROL_FAILURE'), 1)
+                    self.assertIn('control='+names[which-1], result.stderr)
+                    if which >= 4:
+                        self.assertIn('first_diff=', result.stderr)
+                elif which == 8:
+                    self.assertEqual(result.stderr.count('CAFE4_CONTROL_FAILURE'), 7)
+                    for name in names:
+                        self.assertIn('control='+name, result.stderr)
+                else:
+                    self.assertEqual(result.stderr, 'CAFE4_TRIAL_FAILURE mode=2 width=3 stage=correction-process draft=2 accepted=1 sampled=99 selected=7 faulted=2\n')
+
+    def test_every_generated_trial_failure_is_labelled(self):
+        source = subprocess.check_output(['git', '-C', str(port.ROOT), 'cat-file', 'blob', port.BASE_BLOB], text=True)
+        generated = port.materialize(source)
+        trial = generated[generated.index('static Observation trial('):generated.index('static double error(')]
+        self.assertEqual(trial.count('return o;'), 1)
+        self.assertIn('o.ok=true;return o;', trial)
+        self.assertEqual(trial.count('return cafe4::trial_failure('), 30)
+        self.assertIn('if(!cafe4::matched_controls(off,observe,fault))', generated)
+        self.assertIn('ef<=10*tol||delta<=10*tol', generated)
+        self.assertIn('tol=0.743863867,', generated)
+        with self.assertRaises(ValueError):
+            port.materialize(source.replace('if(!oracle)return o;', 'if(!oracle){return o;return o;}'))
 
 
 if __name__ == '__main__':

@@ -57,6 +57,48 @@ def materialize(source):
             'const int rc=cafe4::finish(true,true,options.fault_injection);'
             'std::printf("RESULT %s nonfault rollback agrees; target snapshot fault demonstrably diverges\\n",rc==1?"FAIL injected-fault":"PASS");'
             'model.reset();llama_backend_free();return rc;')
+    # Split compound native calls so the emitted stage identifies the failed
+    # operation. Keep the same short-circuit order and UNKNOWN exit semantics.
+    replace('if(!llama_cafe4_target_configure(ctx.get(),mode)||!process(ctx.get(),spec.get(),prompt,0))return o;',
+            'if(!llama_cafe4_target_configure(ctx.get(),mode))return o;\n'
+            ' if(!process(ctx.get(),spec.get(),prompt,0))return o;')
+    replace('if(!llama_memory_seq_rm(llama_get_memory(ctx.get()),0,keep,-1)||!llama_memory_seq_rm(llama_get_memory(dft->context()),0,keep,-1))return o;',
+            'if(!llama_memory_seq_rm(llama_get_memory(ctx.get()),0,keep,-1))return o;\n'
+            ' if(!llama_memory_seq_rm(llama_get_memory(dft->context()),0,keep,-1))return o;')
+    replace('if(!cafe4_mtp_draft(spec.get(),0,prompt.size(),boundary,prompt,width,o.draft)||o.draft.size()<2)return o;',
+            'if(!cafe4_mtp_draft(spec.get(),0,prompt.size(),boundary,prompt,width,o.draft))return o;\n'
+            ' if(o.draft.size()<2)return o;')
+    replace('if(!llama_cafe4_target_counts(ctx.get(),&selected,&faulted)||selected||faulted)return o;',
+            'if(!llama_cafe4_target_counts(ctx.get(),&selected,&faulted))return o;\n'
+            ' if(selected||faulted)return o;')
+    replace('if(!decode(batched.get(),llama_tokens{o.sampled},keep)||!logits(batched.get(),n,o.batched))return o;',
+            'if(!decode(batched.get(),llama_tokens{o.sampled},keep))return o;\n'
+            ' if(!logits(batched.get(),n,o.batched))return o;')
+    replace('if(!off.ok||!observe.ok||!fault.ok||off.prefix!=observe.prefix||off.prefix!=fault.prefix||off.draft!=observe.draft||off.draft!=fault.draft)',
+            'if(!cafe4::matched_controls(off,observe,fault))')
+    stages = (
+        'target-context-or-capacity', 'draft-context', 'draft-target-alias',
+        'speculative-init-or-embedding', 'target-configure', 'prompt-process',
+        'boundary-logits', 'draft-proposal', 'draft-too-short', 'draft-rewind',
+        'preverify-counts-read', 'preverify-counts-nonzero', 'verify-process',
+        'verify-logits', 'strict-partial-acceptance', 'correction-logits',
+        'target-suffix-remove', 'draft-suffix-remove', 'correction-process',
+        'postreplay-counts-read', 'target-mode-counts', 'replay-logits',
+        'oracle-context', 'oracle-decode', 'oracle-logits', 'batched-context',
+        'batched-prompt-decode', 'batched-prefix-decode',
+        'batched-correction-decode', 'batched-logits',
+    )
+    start = source.index('static Observation trial(')
+    end = source.index('static double error(', start)
+    trial = source[start:end]
+    # The final successful return is deliberately left unchanged. The pinned
+    # blob, exact replacement anchors and count make stage drift fail closed.
+    if trial.count('return o;') != len(stages) + 1:
+        raise ValueError('trial failure-stage count changed')
+    for stage in stages:
+        trial = trial.replace('return o;',
+                              f'return cafe4::trial_failure(o,mode,width,"{stage}");', 1)
+    source = source[:start] + trial + source[end:]
     return source
 
 
