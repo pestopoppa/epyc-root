@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T21:50:02Z",
+  "generated_at": "2026-11-19T22:08:14Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1136,7 +1136,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 135,
+      "closed": 136,
       "dispatchable": 37,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -1175,7 +1175,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 939,
+          "line": 941,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
@@ -1184,7 +1184,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1414,
+          "line": 1416,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1201,7 +1201,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1881,
+          "line": 1883,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 784,
+          "line": 788,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 30,
           "readiness": "blocked"
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1033,
+          "line": 1034,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1649,
+          "line": 1650,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1796,
+          "line": 1797,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
@@ -3636,7 +3636,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 839,
+          "line": 840,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3649,7 +3649,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1605,
+          "line": 1606,
           "name": "harness-improvement-loop",
           "open": 16,
           "readiness": "blocked"
@@ -3662,7 +3662,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2286,
+          "line": 2287,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3683,7 +3683,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2369,
+          "line": 2370,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3698,7 +3698,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2819,
+          "line": 2820,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3709,7 +3709,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3689,
+          "line": 3690,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"

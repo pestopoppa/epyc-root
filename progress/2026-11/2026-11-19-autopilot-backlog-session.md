@@ -49,3 +49,19 @@ Follow-up `c1df9962`: MCP ms.* take their session from the server (`ORCHESTRATOR
 ## Row verdicts filed
 
 `codemode-ab-v2-27b-gpu-20261118-r2` pass; `codemode-ab-v2-{35b,27b}-gpu-20261118-fix` pass; `embedder-gpu-bringup-20261119` fail (stack down); `dripreview12-20261119T021331Z` FUTILITY_NO_GAP at n=20 paired (current 0/20, bounded_k3 2/20, half_first25 2/20; the model finalises after about 3.5 turns). D-RI-PREVIEW-1.2 was reopened with the note and the redesign "reveal the full question up front".
+
+## Wrap-up c: EA hybrid guard, API-only reload, M-12k GPU smoke FAIL (epyc-orchestrator main, all pushed; verified in git)
+
+Previous wrap-up pushed root `497b696c9`. Since then:
+
+| Area | Commit | Result |
+|---|---|---|
+| EA hybrid guard | orchestrator `a0d0fe05` | `kv_compress.EA_HYBRID_EXCLUDED_PORTS={8083}`, `EA_HYBRID_MIN_KEEP_RATIO=None`, `ea_hybrid_refusal()` enforced at `compress_slot`, skipped in `auto_compress_all`, refused in `slot_compact`; 6 tests in `tests/unit/test_ea_hybrid_8083_guard.py`, 173 pass. Requested by the autokernel session for box EA-HYBRID-FOLD-GUARD (kernel-champion-and-promotion.md, autokernel-owned, NOT ticked here). |
+| EA ladder verdict | orchestrator `94cd4320` | comment only: autokernel ladder `am-port-ea-ladder-gpu-20261119` found NO safe EA ratio on the hybrid 27B (keep 0.8 scored 1/32 vs FULL 60/60; 5x scored 0/60), so the guard ratio stays None. |
+| API reload | orchestrator `68c686e2` | API-only reload done (serving clone fast-forwarded); it now serves `ChatRequest.episodic_lookups` and the EA guard. Model stack still down. Item 3 of STACK-UP-RELOAD-QUEUE, recorded as a dated sub-bullet; box NOT ticked. |
+| M-12k GPU rework | root `80c5784e2` (filed earlier) | row `m12k-gpu-frontdoor-memory-ab-20261119` smoke FAIL (rc 3): all 4 smoke requests failed 502/504/429 in both arms because routing escalates the MC items past the frontdoor to unserved architect/coder roles; no answer-quality result. Custody box M-12k-CUSTODY already ticked by the memory session (writer `_store_plan_review_episode`). Verified present, no duplicate filed. |
+| Housekeeping | root `b9c86799c` | worktree `wrapup-abs2-20261119` removed after its wiki commit landed. |
+
+Verdict reading: the M-12k smoke is infra-class (routing to unserved roles), not a memory result; M-12k needs the architect and coder roles served, i.e. STACK-UP-RELOAD-QUEUE. Another API reload is still needed after `feat/codemode-rel-flip` lands.
+
+Derived actionables: one filed (M-12k UNSERVED detector must void non-200 failures, not only HTTP 200 + in-band `[ERROR`; sub-box under M-12k). Scratch header of memory-program.md extended to cover `/mnt/raid0/llm/tmp/m12k-gpu-20261119T1500Z` and `m12k-20261119T0208Z`.

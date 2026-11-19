@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 503,
+    "docs": 504,
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 377,
@@ -12,24 +12,20 @@
   "last_touch": {
     "advanced": {
       "added": 1,
-      "changed": 5,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-19T09:37:57Z",
+    "at": "2026-11-19T22:09:31Z",
     "scope_paths": [
-      "handoffs/active/autokernel-akx-program.md",
-      "handoffs/active/autokernel-loop.md",
-      "handoffs/active/kernel-champion-and-promotion.md",
-      "handoffs/active/long-context-program.md",
-      "progress/2026-11/2026-11-18-autokernel.md",
-      "progress/2026-11/2026-11-19-autokernel.md"
+      "docs/reports/m12k-plan-review-custody-20261119.md",
+      "progress/2026-11/2026-11-19-autopilot-backlog-session.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-19T09:37:57Z",
+  "scan_time": "2026-11-19T22:09:31Z",
   "schema_version": 1,
-  "source_set_hash": "c4442fa489c1c8d76a66dfaedb4708ed90ed91eac0e51e773b5d2a1a08521d64",
+  "source_set_hash": "47dc4fd0fe2bc38244aa0ee77d0599b35d86d340f17851241f5c02ecb8bf4fe9",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -112,14 +108,6 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "996d5b3075ead2e8998959db61ec11218af53f7a0d662f0455d7dd9ac2f28e3f",
-      "modified": "2026-11-18T15:37:08Z",
-      "path": "handoffs/active/dispatch-placement-telemetry.md",
-      "size": 75245,
-      "title": "Dispatch Placement Telemetry & Within-Role Selection (WP-15 line)",
-      "type": "handoff-active"
-    },
-    {
       "content_hash": "1556a6b81e3dc6dc27ac64c5b3a8791ec70da1cf316b9a4336caebfbf507b7ed",
       "modified": "2026-11-18T15:37:08Z",
       "path": "handoffs/active/engineering-hygiene-backlog.md",
@@ -141,14 +129,6 @@
       "path": "handoffs/active/harness-program.md",
       "size": 860194,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
-      "type": "handoff-active"
-    },
-    {
-      "content_hash": "41d4ceb2783f83a7f297f4f4ad0b2b0a2c1a4cb02e1fad728294635b0642f60a",
-      "modified": "2026-11-18T15:37:08Z",
-      "path": "handoffs/active/hybrid-checkpoint-prompt-reuse.md",
-      "size": 67082,
-      "title": "Hybrid-Model Checkpoint & Prompt-Reuse Exposure (+ KVCOMM fork)",
       "type": "handoff-active"
     },
     {
@@ -17240,10 +17220,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "fdf54ba2fcb540e57979878473981d3041daf91f7b74f65cf47739b0cca2dd62",
-      "modified": "2026-11-19T08:54:38Z",
+      "content_hash": "7f88b219bcdc4fc49d14fe309e603933870a071e9ffc05187fa78dd0694cc84d",
+      "modified": "2026-11-19T22:07:49Z",
       "path": "progress/2026-11/2026-11-19-autopilot-backlog-session.md",
-      "size": 5946,
+      "size": 8172,
       "title": "2026-11-19 \u2014 autopilot-backlog-session",
       "type": "progress"
     },
@@ -20816,6 +20796,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "04b030c713100f2fcc84a352943788fa57425d43acbc686f653cdc41a4e414fc",
+      "modified": "2026-11-19T22:07:08Z",
+      "path": "docs/reports/m12k-plan-review-custody-20261119.md",
+      "size": 4739,
+      "title": "M-12k smoke custody verdict, 2026-11-19",
+      "type": "docs"
+    },
+    {
       "content_hash": "f91421450f7ccf8dd65c381163a5bc9dbd6dc3584af0d9b6b60a821fe79996c7",
       "modified": "2026-11-18T15:37:08Z",
       "path": "docs/reports/ng5-provenance-audit-20261102.md",
@@ -21422,9 +21410,25 @@
       "size": 32349,
       "title": "Runbook \u2014 Deterministic `vision_escalation` \u2192 MiniCPM-o Promotion (port 8087, MI210)",
       "type": "docs"
+    },
+    {
+      "content_hash": "996d5b3075ead2e8998959db61ec11218af53f7a0d662f0455d7dd9ac2f28e3f",
+      "modified": "2026-11-18T15:37:08Z",
+      "path": "handoffs/active/dispatch-placement-telemetry.md",
+      "size": 75245,
+      "title": "Dispatch Placement Telemetry & Within-Role Selection (WP-15 line)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "41d4ceb2783f83a7f297f4f4ad0b2b0a2c1a4cb02e1fad728294635b0642f60a",
+      "modified": "2026-11-18T15:37:08Z",
+      "path": "handoffs/active/hybrid-checkpoint-prompt-reuse.md",
+      "size": 67082,
+      "title": "Hybrid-Model Checkpoint & Prompt-Reuse Exposure (+ KVCOMM fork)",
+      "type": "handoff-active"
     }
   ],
-  "total_new": 2674,
+  "total_new": 2675,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
