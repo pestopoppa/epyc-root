@@ -98,14 +98,14 @@ item2_state() { g "$ROOT" cat-file -e "origin/main:$INDEX_REL" 2>/dev/null && ec
 if [ "$MODE" = "verify" ]; then
   rc=0
   [ "$(item1_state)" = "already" ] && ok "research $POLICY_REL on origin/main" || { say "  FAIL  $POLICY_REL not on research origin/main"; rc=1; }
-  if [ "$(item2_state)" = "already" ] && g "$ROOT" show "origin/main:$TARGET" | grep -qF -- "$ANCHOR"; then ok "root $TARGET amended + receipts"
+  if [ "$(item2_state)" = "already" ] && [ "$(g "$ROOT" show "origin/main:$TARGET" | grep -cF -- "$ANCHOR" || true)" -ge 1 ]; then ok "root $TARGET amended + receipts"
   else say "  FAIL  root amendment/receipts not on origin/main"; rc=1; fi
   exit "$rc"
 fi
 
 ITEM1="$(item1_state)"; ITEM2="$(item2_state)"
 if [ "$ITEM1$ITEM2" = "alreadyalready" ]; then say "ALREADY RATIFIED: both items are on origin/main. Nothing to do."; exit 0; fi
-g "$RES" show "origin/main:$GATES_REL" | grep -qF -- "$WIRING_MARK" \
+[ "$(g "$RES" show "origin/main:$GATES_REL" | grep -cF -- "$WIRING_MARK" || true)" -ge 1 ] \
   || die "research origin/main lacks the keep-path wiring ($WIRING_MARK in $GATES_REL); the policy file would be read by nothing"
 
 # ---- stage: two detached worktrees
