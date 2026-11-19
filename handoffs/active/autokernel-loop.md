@@ -8223,7 +8223,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         Headline moved OUT of promote_anchor — follows serving-demonstrated advances only. New
         `--fire-multiple` (default 2.5). 4 new wiring tests + updated guard-order test; 414 loop tests
         pass, guard exit 0, --help shows the flags.
-      - [ ] **R23-46 (rtx6kpro intake) — does the in-window residency sampler perturb the measured
+      - [x] **R23-46 (rtx6kpro intake) — does the in-window residency sampler perturb the measured ✅ 2026-11-19 [belief: cc]
         process?** External production runbook forbids `nvidia-smi dmon` during qualification (NVML polling
         "reproduced a persistent target-cycle reduction on an unchanged control process"). Ours polls
         rocm-smi/hwmon DURING every window by doctrine. A/A on the canonical tg128 anchor: current rate vs
