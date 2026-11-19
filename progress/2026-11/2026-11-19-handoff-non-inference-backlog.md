@@ -51,3 +51,7 @@ Dispatched afc-v3-q36_35b-tools-medium-20261111 already has its 2026-11-11 verdi
 ## 03:45Z — Consume already-filed AFC v3c Q36 none event without duplicate filing
 
 Dispatched afc-v3c-q36_35b-tools-none-20261111 already has its 2026-11-11 verdict and FILED receipt; AFC-V3C-PROD-TOOLS is complete. Existing filing left unchanged. No result-bearing task available under the existing checkpoint: NIB2-77 needs original exact-path approval evidence, NIB2-94 operator rotation, NIB2-98/NIB2-102/LR-8 owner runtime actions, NIB2-83 a genuine post-E17 cohort, and GAP-POOL-1/NI-IDLE-REFILL-WATCHER keeper/gate edits prohibited to this lane. No boxes ticked or new verdict claimed.
+
+## 03:47Z — Consume previously filed AFC v3c Q36 aggressive event
+
+Dispatched afc-v3c-q36_35b-tools-aggressive-20261111 already has its 2026-11-11 verdict and FILED receipt; AFC-V3C-PROD-TOOLS is complete. Filing unchanged; no boxes ticked or new result claimed. No result-bearing task currently possible: NIB2-77 exact approved roster missing; NIB2-94 requires operator rotation; NIB2-98/NIB2-102/LR-8 require owner runtime boundaries; NIB2-83 requires qualifying post-E17 data; GAP-POOL-1/NI-IDLE-REFILL-WATCHER require forbidden keeper/gate edits.
