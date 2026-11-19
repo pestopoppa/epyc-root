@@ -61,8 +61,9 @@ class ParityTest(unittest.TestCase):
 
     def test_cpu_argv_is_fixed(self):
         cfg = dict(model='/model', audio='/public', variants={'480': dict(runner='/v480')})
-        self.assertEqual(m.command(cfg, '480'), ['/v480', '--backend', 'cpu', '--no-gpu',
-                         '--threads', '1', '-m', '/model', '-f', '/public'])
+        self.assertEqual(m.command(cfg, '480'), ['/v480', '--backend', 'voxtral4b',
+                         '--gpu-backend', 'cpu', '--no-gpu', '--threads', '1',
+                         '--no-timestamps', '-l', 'en', '-m', '/model', '-f', '/public'])
 
     def test_owned_child_timeout_escalates_and_reaps(self):
         child = mock.Mock()

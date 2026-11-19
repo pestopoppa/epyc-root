@@ -62,3 +62,40 @@ apply; no retrospective measurement warrant or new grading ladder.
 
 - `scripts/speech/stt5_voxtral_parity.py` git blob `d808c875e8b0ce3a070d9766de2eb28d5243108b`.
 - `tests/test_stt5_voxtral_parity.py` git blob `79a1b23a6c105799dbf0735289dffc3c0889f8d9`.
+
+## Public-parity row preparation and argv correction
+
+The original weight-restoration receipt now reports PASS: pinned revision,
+4,733,486,848 bytes and original Q8 digest match. Its recorded device/inode/size/mtime
+identity passes the driver preflight. No second model hash was performed.
+
+Before publication, source inspection found the driver used the independent
+transcribe CLI backend convention. CrispASR instead selects the model with
+`--backend voxtral4b`; CPU is `--gpu-backend cpu`. Corrected the driver and
+argv regression to use both, `--no-gpu`, one thread and the original reference
+recipe (`--no-timestamps -l en`). All 20 model-free Voxtral tests pass.
+GitNexus status/impact report no index; the edit is confined to this standalone
+driver and its test.
+
+Prepared public-JFK configuration binds both final rebuilt runners, three ggml
+libraries and the delay-specific Crisp library, original audio/references,
+restoration receipt and build summary. Distinct smoke/grant output directories
+retain native witnesses, exposure receipts and sampled mappings. Existing ten
+validation results and eleven exposures, including UNKNOWN, are unchanged.
+
+Inputs are referenced in place; no model, binary, log or source-tree copies
+were added to the repository. Prepared identities:
+
+- `/mnt/raid0/llm/tmp/stt5/voxtral-parity-20261119/config.json` SHA-256 `92a48ca4f7e920503f41c71e5a8a799d8bf4e31441094dae39e527ba1d2a0420`.
+- `/mnt/raid0/llm/tmp/stt5/voxtral-parity-20261119/spec.json` SHA-256 `4a208a86571a1095a0510b0c7446f78f05eed9a514a20ca0668d83cdab7f038c`.
+- `/mnt/raid0/llm/tmp/stt5/voxtral-parity-20261119/launch.sh` SHA-256 `a89afc1bb96941876df79b4593d0d43a7ae3a8b9ce8c896b75b933b7d095ef41`.
+- `/mnt/raid0/llm/tmp/stt5/voxtral-parity-20261119/stt5_voxtral_parity.py` SHA-256 `ce6a2148e744bcbce197063228cfb417cc8629f8c4dfb2b18923362d7ada7f10`.
+- `/mnt/raid0/llm/tmp/stt5/voxtral-parity-20261119/stt5_voxtral_tokens.py` SHA-256 `28382a292d5d060bbd4c27d561973a55a60ef58d1d763bb8f607fc3726677063`.
+- `/mnt/raid0/llm/tmp/stt5/voxtral-parity-20261119/smoke_check.py` SHA-256 `71369f570e4c9290cd295f77fd2ce69c72ae21cd694f13d029bccc9e3e37d8ca`.
+- `/mnt/raid0/llm/tmp/stt5/voxtral-weights-20261119/restore-result.json` SHA-256 `06dbc8cacefbbab4d57ec17bd834228ce7bceab338aede3484a1ff1f9ab365e2`.
+
+Publication invoked through `publish_row.py .../spec.json --smoke-now` for
+`stt5-voxtral-public-parity-r1-20261119`. The synchronous publisher remains active at checkpoint;
+no smoke PASS, grant parity or validation claim is made. PASS and FAIL-1 terminal
+files are registered for dispatcher resumption. The result-bearing code change
+corrects backend selection before any inference successor can be admitted.

@@ -84,8 +84,9 @@ def verify(cfg):
 
 
 def command(cfg, delay):
-    return [cfg['variants'][delay]['runner'], '--backend', 'cpu', '--no-gpu',
-            '--threads', '1', '-m', cfg['model'], '-f', cfg['audio']]
+    return [cfg['variants'][delay]['runner'], '--backend', 'voxtral4b',
+            '--gpu-backend', 'cpu', '--no-gpu', '--threads', '1',
+            '--no-timestamps', '-l', 'en', '-m', cfg['model'], '-f', cfg['audio']]
 
 
 def evaluate(stdout, stderr, reference, rc, interrupted, loaded, expected):
