@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Run native Test 6 with GDB captures made inside both test modes."""
-import json, os, re, signal, subprocess, time, uuid
+import json, os, re, subprocess, time, uuid
 from pathlib import Path
 import custody
 import cleanup
@@ -74,6 +74,25 @@ def apply_cleanup(verdict,witness,interrupted,cleanup_fn=cleanup.cleanup):
         verdict['status']='INVALID'
     return inferior
 
+def stop_debugger(proc, timeout_s=8, *, verify_absent=cleanup.absent):
+    """Reap only our captured Popen child; never signal its process group."""
+    if proc.poll() is None:
+        try:
+            proc.terminate()
+        except ProcessLookupError:
+            pass
+        try:
+            proc.wait(timeout=timeout_s)
+        except subprocess.TimeoutExpired:
+            try:
+                proc.kill()
+            except ProcessLookupError:
+                pass
+            # A failed KILL/reap must abort rather than hang or publish completion.
+            proc.wait(timeout=timeout_s)
+    if proc.poll() is None or not verify_absent(proc.pid):
+        raise RuntimeError('captured debugger death not verified')
+
 def main():
     binding=json.loads((D/'binding.json').read_text()); build=custody.build_identity(); model=custody.model_identity(D/'model.json')
     if build!=binding['build'] or model!=binding['model']: raise SystemExit('INVALID: build/model changed')
@@ -98,16 +117,12 @@ def main():
         try:
             while proc.poll() is None:
                 if stop.exists() or time.time()>=deadline:
-                    interrupted=True;os.killpg(proc.pid,signal.SIGTERM)
-                    try:proc.wait(timeout=8)
-                    except subprocess.TimeoutExpired:os.killpg(proc.pid,signal.SIGKILL);proc.wait()
+                    interrupted=True;stop_debugger(proc)
                     break
                 time.sleep(.1)
         finally:
             if proc.poll() is None:
-                os.killpg(proc.pid,signal.SIGTERM)
-                try:proc.wait(timeout=8)
-                except subprocess.TimeoutExpired:os.killpg(proc.pid,signal.SIGKILL);proc.wait()
+                stop_debugger(proc)
     try:witness=json.loads((attempt/'witness.json').read_text())
     except (OSError,ValueError):witness={'error':'missing native in-test witness'}
     verdict=judge((attempt/'test.log').read_text(errors='replace'),witness,proc.returncode)
