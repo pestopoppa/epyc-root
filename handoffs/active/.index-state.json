@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 452
+      "open": 453
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -1489,7 +1489,7 @@
       "closed": 135,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 36,
+      "open": 37,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1498,7 +1498,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 172,
+      "total": 173,
       "tracks": [
         {
           "blocked": 0,
@@ -1508,14 +1508,14 @@
           "line": 36,
           "markers": 1,
           "name": "memory-program",
-          "open": 11
+          "open": 12
         },
         {
           "blocked": 0,
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 937,
+          "line": 939,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 9
@@ -1525,7 +1525,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 1412,
+          "line": 1414,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 9
@@ -1539,7 +1539,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1879,
+          "line": 1881,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2406,7 +2406,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1004,
+          "line": 1007,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5

@@ -150,6 +150,12 @@
       "weight": 5
     },
     {
+      "from": "EVL-10",
+      "kind": "ref",
+      "to": "UFH-01",
+      "weight": 5
+    },
+    {
       "from": "EVL-14",
       "kind": "ref",
       "to": "EVL-02",
@@ -696,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T15:23:41Z",
+  "generated_at": "2026-11-19T15:38:10Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1131,14 +1137,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 135,
-      "dispatchable": 36,
+      "dispatchable": 37,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-19",
       "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
-      "open": 37,
+      "open": 38,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1158,18 +1164,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 12,
           "gates": [],
           "line": 36,
           "name": "memory-program",
-          "open": 11,
+          "open": 12,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 937,
+          "line": 939,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
@@ -1178,7 +1184,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1412,
+          "line": 1414,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1195,7 +1201,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1879,
+          "line": 1881,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -2214,7 +2220,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1004,
+          "line": 1007,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
