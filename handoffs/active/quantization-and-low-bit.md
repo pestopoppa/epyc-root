@@ -5,6 +5,8 @@
 **Scratch**: `/mnt/raid0/llm/tmp/exl3-graph-replay/` · worktrees: `/mnt/raid0/llm/worktrees/exl3-graph-*` (new graph-replay work; historical evidence paths below remain unchanged)
 
 **Status**: active experimental implementation program
+**Row**: INF-80
+**Domain**: inference-research
 **Created**: 2026-09-25 (via research intake, operator-approved 2026-09-25)
 **Categories**: quantization, hardware_optimization, inference_serving, moe_optimization, local_inference
 **Workstream**: Inference Acceleration
@@ -64,15 +66,21 @@ Production `production-consolidated-v10` is frozen. Start kernel work from a fre
   - Translate format semantics and lane ownership into wave64; do not transplant CUDA warp32 geometry. The first gfx90a milestone is native packed K4/MCG GEMV matching the scalar and EPYC full operator outputs on the same real fixture. (`intake-1756#01`, `intake-1756#02`)
   - Source, exact-target build, host truth-table, and real-fixture transport are complete in research `9e4fa162`. Research `b02b1889` adds an explicit Inference Main owner-run authority path while keeping delegated execution provider/lease gated; 13 authority and refusal tests pass. Research `48253e78` refreshes the source-bound build receipt after that launcher change. The current ROCm 6.2 code object targets `gfx90a:xnack-:sramecc+`, hashes to `7dc947dcbaa055fbac49a19f606038229289ab99f721db0e76936136be676a71`, and contains 20 wave64 kernels. G3 remains open until the same propositions execute on `mi210_0` with an exclusive physical claim and in-window residency evidence; the current owner preflight refuses live foreign KFD occupancy.
   - **First device run, 2026-10-03 (partial; G3 and G4 NOT met; attribution corrected 2026-11-02).** Inside the INF-80 X0 window, owner-run authority `owner:inference:EXL3-3`, exclusive `mi210_0` claim and in-window KFD residency were recorded for all three real fixtures (`/mnt/raid0/llm/tmp/x0-27b-quants/results/exl3/exl3-3-real-{mul1-k3,mul1-k4,mcg-k4}-20261003T151909Z/`). Each `stdout.jsonl` records `materialized_weight_fp32_fma_v1`, `compute=gemv`, `status=pass` after exact canonical full-output comparison, and saves `operator-output.gemv.f32`. The subsequent MFMA prefill comparison failed its existing abs=1e-5, rel=1e-4 envelope: mul1-k3 index 9 actual −0.0198101 vs −0.0198266; mul1-k4 index 10 −0.00217858 vs −0.00216186; mcg-k4 index 8 0.076089 vs 0.076071. The common error label did not name the mode; `snapshot/test_runtime.hip:229` establishes the test order and tolerances. Each binary returned rc 1 and the overall sealed verifier failed; the GEMV passes were not separately sealed verifier propositions. Root cause and full G3/G4 coverage remain unestablished.
+      · class: non-inference
+      · roll-up: children carry the work
   - [ ] **EXL3-3a — resolve the real-fixture oracle envelope and qualify GEMV and MFMA.** (filed 2026-10-03; corrected 2026-11-02) Preserve exact canonical wave64 GEMV equality; investigate the MFMA mismatch against its existing abs=1e-5, rel=1e-4 envelope. Declare and justify any changed MFMA envelope before a rerun, then run the three real fixtures with distinct sealed propositions and complete the remaining G3/G4 gates. [too-big: oracle arithmetic semantics and acceptance envelope require handoff-owned science]
     - **2026-11-02 correction:** The observed discrepancy above was MFMA, not GEMV. Keep the existing exact wave64 GEMV comparison and investigate MFMA against its declared envelope; if the MFMA envelope changes, declare and justify it before rerun. Run the three pinned fixtures with separately sealed propositions and finish remaining G3/G4 gates. This task remains open.
+        · class: non-inference
   - [ ] **EXL3-3b — the claimed-run teardown guard turns a passing binary into rc 2.** [too-big: source fix landed; synthetic device rerun belongs to inference owner] (filed 2026-10-03) `scripts/kernel_rnd/exl3_gfx90a/claimed_run.py` takes two teardown samples 20 ms apart and sets `code = code or 2` if the exited PID is still listed in KFD. On the synthetic run the first sample still listed PID 1670889 after the process was reaped (`pid_alive` false) and the second was empty — a KFD bookkeeping lag, not residue. Poll until the PID leaves KFD or a bounded timeout (fail only on the timeout), keep the samples in `residency.json`, add a test, then re-run the synthetic suite.
     - 2026-11-02: CPU build prerequisite row `exl3-3b-build-r2-20261102` passed rc=0; source-bound receipt `/mnt/raid0/llm/tmp/exl3-3b-build-r2-20261102/build/build.json` binds accepted research `e46b01b94e37b6c7134cb304b41863ef3677c32b`, fixed wrapper SHA-256 `833d9d8dde2bd2868ff67d8a90c595f2ca91bc2a931ba7d1aebffef405a58f7e`, runtime SHA-256 `6458c3ea6556116814ce8e404b94b121339c3487aa5b5ede2faab77f55c25dcb` and target `gfx90a:xnack-:sramecc+`. All listed hashes match; `execution=not_run`. The GPU rerun still needs a supported keeper-authority and single journaled physical-claim integration: filler and `claimed_run.py` currently contend for the same lock, and a grant is not a legacy lease. Reviewable work packet `/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/exl3-cpu-mi210/contract-route.txt`; no authority bypass or device execution is implied.
+        · class: inference
+        · inputs-missing: `/mnt/raid0/llm/tmp/exl3-3b-build-r2-20261102/build/build.json`
     - [x] **EXL3-3B-SOURCE — implement bounded teardown polling with retained samples and full synthetic source controls.** Research proposal `edcae4ac1d6e6b222c38dd1942c7acc54ba13a9c`; captured child PID only, monotonic1s/20ms bounded wait, unknown/persistent KFD census refuses. Existing carrier verification is VB-EXL3-3B-CONFORMANCE. This source slice grants no device run or physical parent acceptance. ✅ 2026-10-07 — MAIN accepted [source and original39/39](../../artifacts/ni08/exl3-teardown-source-20261007/README.md).
 
 - [ ] **EXL3-4 — Build the native gfx90a MFMA prefill path after EXL3-3 correctness.** Create a standalone FP16-input/FP32-accumulating 16×16×16 lane-map harness, decode packed trellis tiles into register or LDS fragments, apply the required transforms, and fuse them with MFMA. Compare folded and unfolded reconstruction against the same reference and record scratch, LDS, occupancy, HBM, launch, and latency data. Keep the GEMV and MFMA dispatch surfaces separate.
   - The standalone MFMA source and exact-target build are complete in research `9e4fa162`, with two emitted MFMA instructions and host-side folded/unfolded contract checks. G4 remains open until MI210 correctness and shape-regime performance execute under an exclusive physical claim.
   - 2026-10-03 first device run (with EXL3-5, `/mnt/raid0/llm/tmp/x0-27b-quants/results/exl3/exl3-45-synthetic-20261003T151909Z/`): `procedural_fp16_and_wave64_lane_map` pass (131,072 state cases, 69,632 packed cases, 1,024 MFMA cells); the standalone synthetic operator suite passes 279,967 assertions; `real_fixture_parity` not run, no performance arm. The binary passed, but the wrapper returned rc 2 from its teardown guard (EXL3-3b), so the sealed verifier row reads `fail`. G4 still needs the real-fixture MFMA comparison and the shape-regime performance data.
+      · class: non-inference
 
 - [ ] **EXL3-5 — Make mixed-K MoE dispatch total and correct.** Carry device-visible half-bit K/rate and codebook metadata, projection pointer tables, and explicit local/global expert domains. Implement unified runtime-K and grouped K-specialized policies plus named batched, small-row, and single-expert fallbacks. Centralize eligibility in one capability truth table. Count/sort arrays may use sentinel E; local compute/gather tables have exactly E entries. Preserve routing-k order, explicit top-k bounds, deterministic fixed-order FP32 gather, and a separately labeled atomic mode. Exercise BC present/absent, extension present/absent, batch and routed-row thresholds, buckets below four experts, all-local/all-nonlocal/mixed slices, and every fallback. Require full operator-output or logit comparisons; token equality is insufficient.
   - Expose `plan`, `bind`, and `run` phases. Planning fixes token, route, tile, decode, and prefill capacities; binding maps one caller-owned arena into stable views; `run` performs no allocation. Runtime identity binds model, tensor role, codebook, capacity, scratch, backend, and source digest. (`intake-1756#00`, `intake-1757#02`)
@@ -80,6 +88,7 @@ Production `production-consolidated-v10` is frozen. Start kernel work from a fre
   - Benchmark concentrated, spread, and randomized expert routing. Report the route histogram with every sparse-kernel result so a favorable routing distribution cannot stand in for general throughput. (`intake-1758#record`)
   - The total capability table, 256-expert/E+1 boundary, unified/grouped policies, named fallbacks, deterministic and atomic gather, fixed caller arena, identity binding, and 512 MiB capacity refusal are implemented in research `9e4fa162`. Main review passed 5,579 host/static checks across all 5,120 truth-table cells. G5 remains open until every path is exercised on MI210 under an exclusive physical claim.
   - 2026-10-03 first device run (same synthetic run as EXL3-4): all five named paths launched on `mi210_0` under the exclusive claim — unified 124, grouped 16, batched fallback 12, small-row fallback 200, single-expert fallback 236 — inside the 279,967 passing assertions. Not flipped: the sealed verifier row reads `fail` because of the EXL3-3b teardown false positive; re-run after EXL3-3b and flip on a clean rc 0.
+      · class: non-inference
 
 - [x] **EXL3-X0 — Bytes-elasticity and equal-bytes quality pre-gate on the production 27B (operator-approved 2026-10-03, ahead of EXL3-6).** In one exclusive :8083 window, run unsloth UD-Q4_K_M against the incumbent Q8_0 (same publisher, byte-identical) through the DFlash2-np4 serving recipe and the production shape, 3 launches per arm, ABA. Add KLD of Q4_K_M against Q8_0 on the MI210. Decision rule, fixed in advance: if Q4_K_M is under +10% serving speed, EXL3 has no speed case on the 27B; park EXL3-6/7 for it and settle VRAM with GGUF. If it is at or above +10%, fund a performance-grade wave64 kernel (EXL3-P) with a 5-agent-day kill. EXL3-3/4/5 device correctness piggybacks on the same window. turboderp `Qwen3.8-27B-exl3` 4.00bpw is on disk for real-tensor correctness and the later equal-bytes comparison. Plan: `/mnt/raid0/llm/tmp/x0-27b-quants/PLAN.md`. ROI review: [`docs/reviews/exl3-roi-20261003.md`](../../docs/reviews/exl3-roi-20261003.md).
   - ✅ 2026-10-03 — **verdict: NO SPEED CASE.** Report: `/mnt/raid0/llm/tmp/x0-27b-quants/results/report.md` (per-launch JSON beside it; `summary.json`). Same v10 kernel store, 3 fresh launches per arm, HIP residency proven every launch.
@@ -93,6 +102,7 @@ Production `production-consolidated-v10` is frozen. Start kernel work from a fre
   - [ ] **EXL3-X0b — settle the 27B's GGUF quant in the post-MI210-#2 topology.** (filed 2026-10-03) **Trigger-gated (operator 2026-10-03): no quant switch without a significant speedup — reopen only if AutoKernel unlocks big low-quant gains (EXL3-LB1a).** Was: operator decision, waiting on the second MI210's arrival: keep Q8_0, or take UD-Q4_K_M (mean KLD 0.0076, same-top-p 96.1%, +11.36 GiB free at the production shape, no decode gain at np1). Inputs: the X0 report above. Not an EXL3 task; it lands as a stack change when the topology is redrawn.
     - 2026-10-04: **the operator's trigger is met, pending confirmation.** EXL3-LB1 seed #1 (an AutoKernel-seeded low-quant kernel fix) puts UD-Q4_K_M at +30% (2k) / +13% (50k) over Q8_0 at the production shape on n=1 per arm. Do not switch on n=1: EXL3-LB1b confirms first, then EXL3-X0c re-runs the quant comparison. The master-index operator-queue row (the old OP-71 question, reworded around the new speed case) is PREPARED in the ak-ds41-main 2026-10-04 wrap-up output and is added by the owning session only after LB1b confirms. (re-scoped 2026-11-03 from Qwen3.6-27B X0 numbers (KLD 0.0076): deleted model; settle the quant for Qwen3.8-27B (fresh KLD needed))
   - [ ] **EXL3-X0c — re-run the X0 production-shape comparison (Q8_0 vs UD-Q4_K_M) on the seed #1 build, if EXL3-LB1b confirms.** (filed 2026-10-04) 3 launches per arm, ABA, temp0 and default sampling, ~2k and ~50k, plus a Q8_0-on-seed-#1 arm (the route also touches Q6_K, so Q8_0's own number must be re-measured on the same binary). KLD from X0 carries over (same files). Output: the decision package for EXL3-X0b — speed gain, KLD 0.0076, +11.36 GiB VRAM — for the operator. (re-scoped 2026-11-03 from Qwen3.6-27B X0 comparison: deleted model; re-run on Qwen3.8-27B (fresh KLD and UD-Q4_K_M needed) or fold into LB1d)
+        · class: inference
 
 - [ ] **EXL3-LB1 — Low-bit GPU decode kernels as an AutoKernel GPU target (operator discussion 2026-10-03; sequenced after X0 + KLD, preferably on MI210 #2).** Rationale: MI210 has about 14 vector ops per HBM byte against about 38 on an RTX 3090 (spec-sheet arithmetic, not measured), so low-bit decode should hit an instruction/occupancy wall well before the bandwidth roofline; llama.cpp HIP Q4_K decode sits at 35.1% of roofline against Q8_0 50.2% ([`mi210-q8-dequant-gemv-roofline.md`](rocm-kernel-authoring.md#track-mi210-q8-dequant-gemv-roofline), quant ladder). This is the same question EXL3-P would answer with a new format, asked of the GGUF formats we already serve. Seeding (absorbs LB1a): when hypotheses-fable.md lands, feed its 10-15 seeds to the AK GPU low-bit planner/critic.
   - **First measurement:** rocprof per-kernel roofline fraction (achieved bytes/s ÷ peak, per dispatch) of Q4_K versus Q8_0 `mul_mat_vec_q` (MMVQ) and small-M MMQ (ne11 in {2,4,8,16}) at the 27B's real GEMV/GEMM shapes, with VGPR count and waves/SIMD recorded per kernel. Use the X0 Q4_K_M and Q8_0 GGUFs, on a fresh experimental build from the v10 tip.
@@ -106,15 +116,22 @@ Production `production-consolidated-v10` is frozen. Start kernel work from a fre
     - *Correctness:* `test-backend-ops` 60/60 on both A and B. Not bit-exact vs the old route (int8 MFMA, different summation order): DFlash2 acceptance at ~2k temp0 0.41 → 0.40.
     - *Production shape* (X0 shape-b harness: :8083 argv from `DFLASH2_LIVE`, np4, `-c 393216 --kv-unified`, q8_0 KV, DFlash2 n_max 7 → verify ne11 = 8; 27B UD-Q4_K_M; **n = 1 launch per arm**, 2 requests per row, B ran first): ~2k temp0 38.9 → 53.4 tok/s (**+37%**); ~2k default 34.0 → 42.9; ~50k temp0 36.5 → 41.8 (**+15%**); ~50k default 32.1 → 41.8. Own-PID peak VRAM 40.7 GiB both arms, HIP residency proven.
     - *llama-bench* (A = mean of 2 runs, B = 1 run, ABA): gemma-4-31B Q4_K_M pp5 +60%, pp6 +84%, pp7 +109%, pp8 +129%, pp9/pp16 +21–22%, tg128 +1.4% → seed H1 ALIVE. 27B UD-Q4_K_M (mixed Q4_K/IQ4_XS/Q6_K): pp8 +11.8%, but pp4 −32%, pp5 −42%, pp9/pp16 −20%. pp4 is on a route the commit does not change (ne11 ≤ 4), so the single B run is perturbed at least there; a per-type cost (Q6_K or IQ4_XS losing on MMQ at ne11 5–7 where Q4_K wins) is the alternative. Both are open until LB1b/LB1c.
+      · roll-up: children carry the work
+      · inputs-missing: `/mnt/raid0/llm/tmp/kqroute-build-20261003/results/20261004T021143Z/`
   - [ ] **EXL3-LB1b — confirm seed #1 at the production shape: 3 launches per arm, ABA.** (filed 2026-10-04) Same harness and argv as the 10-04 run; re-run the 27B llama-bench pp4–pp16 with 3 B runs. Pass = the production-shape decode gain holds outside the A spread at ~2k and ~50k with 60/60 correctness.
+        · class: inference
   - [ ] **EXL3-LB1c — per-type MMVQ-vs-MMQ sweep at ne11 4–9 on gfx90a.** (filed 2026-10-04) For each of Q4_K, Q6_K, IQ4_XS, IQ4_NL, IQ3_S (and Q5_K/Q3_K for reference) time both kernels at the 27B and gemma-4-31B real shapes; set the crossover per type rather than one ne11 ≥ 5 cut for all. Read against INF-06 §22 (occupancy knee).
     - 2026-11-19 collector correction: `scripts/fillers/v11/v11_driver.py` (blob `0dab1488c2da929fc72e7cd26897a3f21c5c32a0`) now excludes nonzero/missing-rc or interrupted launch populations, requires identical `(m,k)` shape membership across every A/B launch for each width, rejects invalid timing/type records, and retains original launch receipts in `results.json:lb1c_launches`. Synthetic regression/affinity tests: 24 passed; driver self-test: 21 checks. Tests establish collector behavior only; no GPU run, crossover threshold, or serving benefit is claimed. LB1c remains open. Next: prepare a source-bound per-type sweep with the current permitted model shapes and publish through rowflow; do not infer direct MMVQ-versus-MMQ timings from unmatched routed arms.
     - 2026-11-19 timing-record refusal: `scripts/fillers/v11/v11_driver.py` (blob `ff67cabe0beb8db6f75a126d2c80035b783d6f4c`) now rejects zero/noninteger run counts, nonpositive/nonfinite/malformed timings and invalid dimensions before averaging repeats. The launch receipt retains `perf_parse_error`, empties the timing population and sets refusal rc 126 while preserving an existing child failure. Regression/affinity tests: **40 passed**; self-test: **21 checks** (test blob `549b827ae68763f4236fd05d5ddeca17aa71baf3`). Synthetic software conformance only; no crossover or GPU result. Publishing the historical 27B/gemma arm unchanged would violate the DS41/Q38FN scope above; next implement a source-bound direct MMVQ/MMQ harness for those permitted lanes, since the old routed arms do not force both kernels across widths 4–9. Parent remains open. [no-belief: synthetic software conformance only]
     - 2026-11-19 direct diagnostic source: `scripts/fillers/v11/lb1c_direct.py` (blob `3deeb8206e450e2c1cd13956df06d5755438cae8`) generates a patch bound to frozen v10 `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, without editing a kernel tree. Opt-in MMVQ/MMQ arms bypass ordinary routing on gfx90a wave64 only, refuse invalid requests, and use identical seven-type populations in correctness and perf modes (MMVQ widths 4–8, MMQ 4–9) for supplied DS41/Q38FN shapes. Host tests compile the emitted C++ dispatch and matrix: **43 new tests, 83 total relevant tests passed**; the generated patch applies to v10 through an isolated temporary index. Test blob `ce1bbcbbc4b54781389c75c1a9cec98d3effdabd`; usage/limits in `scripts/fillers/v11/LB1C-DIRECT.md`. No HIP build, device correctness, timing or crossover is established. The native v10 MMVQ limit is 8 columns: its width-9 request refuses and the manifest records that unsupported cell. Next: implement and qualify a native MMVQ width-9 extension for the original 4–9 gate; bind reviewed DS41/Q38FN shapes and publish a source-bound experimental build before GPU qualification. Diagnostic overrides must be removed and their absence proved in rebuilt libraries before promotion. [no-belief: synthetic software conformance only]
+        · class: inference
   - [ ] **EXL3-LB1d — fold the confirmed route into the AutoKernel GPU champion.** (filed 2026-10-04) After LB1b (and LB1c's per-type thresholds, if they differ), land it as a GPU champion keep via the four-step workflow; it is a v11 candidate, never a v10 patch. Then EXL3-X0c.
+        · class: non-inference
 
 - [ ] **EXL3-6 — Integrate exactly one EXL3 operator into fresh experimental llama.cpp.** *PARKED for the 27B (2026-10-03): EXL3-X0 found no speed case under its pre-registered rule (Q4_K_M under +10% at every np1 shape). Open only for a model or shape where a bytes-elasticity pre-gate shows one.* Add the canonical loader, one linear/indexed-expert operation, scalar fallback, CPU backend, and HIP backend without editing frozen v10. Keep per-expert activation and output transforms in the operator contract instead of forcing them into a generic quant trait. Progress through single tensor, one expert, one MoE layer, multi-layer logits, then complete generation; exercise `mul1` and MCG separately before mixed-K. Prove the candidate binary and ggml libraries contain and postdate the implementation, and prove HIP residency during the active window.
   - **CPU backend on Qwen3.8-Flash-Next (Q38FN), 2026-10-03.** The 27B park does not cover Q38FN on CPU, where the work proceeded. Branch `experimental/exl3-cpu-20261003` (worktree `/mnt/raid0/llm/worktrees/llama-exl3-cpu-20261003`, forked from champion `90c12df42`, not pushed), 13 commits `c02961978`..`20192b81d`; status and runbook: `EXL3-CPU-STATUS.md` in that worktree, design `EXL3-CPU-DESIGN.md`.
+      · roll-up: children carry the work
+      · inputs-missing: `/mnt/raid0/llm/worktrees/llama-exl3-cpu-20261003`
   - [x] **EXL3-6c1 — design + GGUF importer.** ✅ 2026-10-03 — `tools/exl3/exl3_import.py` (native band8 + `.exl3_suh/.exl3_svh`, or materialized F16); decode and materialized-weight hashes bit-exact vs EXL3-1 on all 10 mul1 fixtures; `--check` block correlation ≥ 0.979 (K3 experts) / ≥ 0.9988 (K5 dense).
   - [x] **EXL3-6c2 — ggml types + CPU executor.** ✅ 2026-10-03 — `GGML_TYPE_EXL3_1..8` (ids 60..67, buun convention) and EXL3M_1..8 (68..75, MCG via fp32), `ggml-cpu/exl3.cpp` on MUL_MAT / MUL_MAT_ID: int8 GEMV (VNNI/VBMI), fp32 GEMM prefill, split-K for < 32-unit ops. `test-exl3` ALL PASS: scalar ≡ VNNI ≡ VBMI and multi-thread ≡ 1-thread bit-exact; vs canonical reference GEMV rel-L2 ≤ 1.0e-2, GEMM ≤ 5e-4. Sealed as 9 `epyc.exl3.verifier.v1` rows, all pass: `/mnt/raid0/llm/tmp/exl3-cpu-20261003/evidence/verifier-20261003T190510Z/` (commit `e3e638dc9`).
   - [x] **EXL3-6c3 — llama integration.** ✅ 2026-10-03 — loader aux map, `build_lora_mm{,_id}` attach, draft heads borrowing an EXL3 tensor carry its aux, INF-64 fused decode bypassed for EXL3. 4-layer truncation, native vs materialized F16: KLD mean 9.6e-5 (ub 128) / 1.63e-4 (ub 1), same-top 97.0%; MTP draft smoke loads and returns the greedy text.
@@ -145,22 +162,28 @@ Production `production-consolidated-v10` is frozen. Start kernel work from a fre
       VERDICT, SHA256SUMS; committed `84ae00217`, on main via `237a7a789`).
     - Box stays open: the `epyc.exl3.measurement.v1` rows are still not emitted (EXL3-6c5a below).
     - 2026-10-28: smoke prefix p1 8 chars vs min 100 (FAIL; p2 102>=40, p3 148>=40 pass); PPL_E/PPL_U-1 = -3.40% vs <= +1.0% → correctness-only (smoke FAIL is the valid verdict; PPL QUALITY_NOT_WORSE, non-inferiority only, no rate read). Box NOT ticked (EXL3-6c5a/6c5b open). Evidence: /mnt/raid0/llm/tmp/cal-1025/exl3-6c5-quality/VERDICT.json. [belief: cc]
+        · class: non-inference
+        · roll-up: children carry the work
     - [ ] **EXL3-6c5a — emit the `epyc.exl3.measurement.v1` rows, then ingest (filed 2026-10-25, from the 10-24 prose "still open" line).** Run `epyc-inference-research/scripts/kernel_rnd/exl3/evidence.py` `write()` over the 10-04 durable copy (`artifacts/cpu-window2-20261004/step1_exl3_full/`) and research `data/exl3-6c5-quality/` (identities from their digests), then `cli.py ingest exl3-measurement --only-new`. No compute. Done when the rows exist and the ingest frame count is cited here; then tick EXL3-6c5.
       - 2026-10-31 bounded progress: Research `23689feccffaafe516a643963c0e93c020f81982` published `docs/research/exl3-6c5a-original-evidence-20261031.md`, inventorying the missing original E model-digest binding and 10-04 raw speed vectors. This adds no rows, frames or grade. The original smoke remains FAIL; PPL remains QUALITY_NOT_WORSE only. EXL3-6c5a and its parent stay open; no new quota.
+          · class: non-inference
     - [ ] **EXL3-6c5b — decide what the p1 smoke FAIL means (filed 2026-10-25).** Both p1 texts are coherent and agree on the answer; they diverge right after it. Read the first-divergence token's top-2 margin from the staged texts (re-run p1 with `--n-probs 2` on the same binary and quarter, about 10 min, correctness class) and record whether it is a near-tie (benign greedy divergence between two 4-bit-class files) or a real defect. Done when the margin is recorded and the smoke result is classified.
   - [x] **EXL3-6c6 — EXL3 CPU microbench re-run.** ✅ 2026-10-04 The 2026-10-03 17:46Z attempt in the CPU window refused on host load (rc 3, `ds41-scope-20260926/pause_measure.log`). Re-run in the next window.
     2026-10-04: EXL3-6c5 (full model) and this microbench are both steps of CPU window 2 (`/mnt/raid0/llm/tmp/ds41-scope-20260926/pause_measure2.sh`, output `/mnt/raid0/llm/tmp/cpu-window2-20261004/`). The window is armed and waits for DS41's measurement boundary. It holds q0–q3 for about 60–90 min, and DS41 is not stopped.
     2026-10-04 04:59Z: **refused again** (rc 3, load preflight) — workspace-ec subagents ran unlocked CPU work inside the held window (INC-20261004-subagent-unlocked-cpu-in-held-window in `docs/reference/agent-config/INCIDENT_LOG.md`). Re-scheduled as backlog item c1 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c1/run.sh`, ~10 min; `/mnt/raid0/llm/tmp/backlog-schedule-20261004.md` row 1).
     2026-10-04 07:26Z: **measured** as backlog item c1 under a 0-95 region claim (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c1/runs/20261004T072620Z/mb/REPORT.txt`; DS41 and Q38FN shapes, N=1 and N=3, DRAM regime). **EXL3 CPU GEMV streams about 2× fewer bytes per second than GGUF**: e.g. DS41 `attn_q_b` 1280×32768 at N=1, EXL3_K4 (donor VBMI native) 120.3 µs ≈ 174 GB/s-equivalent vs IQ4_XS 55.3 µs ≈ 403 GB/s and Q4_K 46.1 µs ≈ 512 GB/s; the best EXL3 variant (K2 swizzled) still trails IQ4_XS on most shapes. Our `mul1` reference GEMVs are 2–3 orders slower (correctness path, not a speed path). Read with EXL3-6c5: on CPU, EXL3 has no decode speed case at these bit widths; any case is quality per byte. MXFP4-vs-Q4_K (DS41-C114a, c2) likewise showed no speed case (×1.00 N=1, ×1.04 N=3).
   - [ ] **EXL3-6c7 — executor performance items** (before or driven by the c5 profile): fold the per-op prep barrier into the producer, merged gate|up with per-segment `suh`, VNNI tier target attributes for portable builds, prefill band decode for 9–30-row MoE groups, the K3 indexer `index_qk_proj`. Re-emit verifier rows after any executor change.
+        · class: non-inference
 
 - [ ] **EXL3-7 — Measure local policy and performance by regime.** *PARKED for the 27B with EXL3-6 (2026-10-03, EXL3-X0 rule).* On EPYC, sweep scalar/ISA tier, physical cores, NUMA placement, huge pages, layout, K, expert shape, and grouped versus runtime dispatch. On MI210, compare wave64 GEMV, MFMA, unified, grouped, and leftover-expert fallbacks across decode concurrency 1/8/16 and declared prefill shapes. Capture exact artifact/config identities, interleaved raw repetitions, dispersion, launch counts, rocprof traces, HBM traffic, full-output error, and in-window KFD/VRAM evidence. External NVIDIA rates remain context and never become EPYC/MI210 thresholds. The producer emits the versioned native measurement and verifier rows; strict adapters project eligible rows into `ClaimTuple`, and `claim_tuple.grade()` assigns the grade.
   - The mandatory serving grid is bare target plus later MTP/DFlash2 arms at decode concurrency 1/8/16, declared prefill lengths, fixed prompt and output token IDs, no accidental cache hits, and explicit cold/warm state. Report aggregate and per-request decode, full-wall throughput, TTFT, prefill, verifier steps, acceptance by position, resident memory, and context/request capacity. (`intake-1563#record`, `intake-1564#record`, `intake-1754#record`, `intake-1778#record`, `intake-1780#record`)
   - Measure standalone reconstruction, GEMV/GEMM, one layer, bare-target serving, and speculative serving as separate arms. Attribute gains among target bytes, kernel efficiency, scheduling/graph overhead, attention/KV, recurrent state, and accepted tokens per verification step. (`intake-1564#record`, `intake-1779#record`)
   - Use same-box candidate/control interleaving, hard regression floors, absolute reference checks, fail-closed path counters, and raw per-request rows. A differential pass is invalid when the baseline shares the defect. (`intake-1779#00`, `intake-1779#01`, `intake-1779#02`)
   - Preserve the published CIRU and NVIDIA numbers as workload-specific targets. Local success requires matching the reproducible workload envelope and explaining remaining gaps; no external value becomes a CPU/MI210 claim or a universal threshold. (`intake-1563#record`, `intake-1564#record`, `intake-1754#record`)
+      · class: inference
 
 - [ ] **EXL3-8 — Implement hybrid CPU/MI210 streaming only after independent parity gates pass.** Build a failure-atomic HIP registered shared arena with explicit ownership, byte-exact DMA, async copy streams, deterministic teardown, and a ROCm sustained-link probe whose complete trace sets local thresholds. Stream only selected expert blocks, leave a configurable number on CPU, and record CPU GEMV, transfer, GPU kernel, overlap, fallback, and residency timelines. Compare whole-layer CPU offload, expert-split offload, GPU-only, and CPU-only under identical model residency and prompts.
+      · class: non-inference
 
 - **[declined: ws58 2026-11-03 content-review: requires producing EXL3 and W4A16 arms from one teacher revision (a training/quantization-pipeline study) with no served-model decision attached]** **EXL3-9 — Run the controlled EXL3 versus W4A16 decision study.** Produce or obtain arms from one teacher revision with identical architecture, expert count/keep plan, non-target tensors, tokenizer, evaluation panel, and declared storage budget. Persist full-vocabulary teacher-forced logits and separate codec, pruning, and runtime effects. Report quality, resident memory, artifact size, latency, and throughput as separate directed metrics. A pruned W4A16 deployment arm may be useful, but it cannot serve as the matched codec control. Treat expert-ranking provenance as unavailable until its source becomes revision-pinned and inspectable.
   - Reject a W4A16/NVFP4 comparator until its exact module allocation, expert count, pruning plan, teacher revision, non-target precision, tokenizer, runtime, KV format, and evaluation panel are recorded. The official and community artifacts are distinct arms, not one generic “four-bit” baseline. (`intake-1753#record`, `intake-1775#00`, `intake-1776#00`, `intake-1781#00`, `intake-1782#00`)
@@ -207,9 +230,77 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 
 - [ ] **QUANT-HEAD-1 — Audit and price 4-bit `output.weight` / `token_embd` on the served GGUFs.** **Owner: AutoKernel** (2026-11-06) — seeded as AK-QH-A, AK-QH-B in research seed file 08 (`loop/seeds/hypotheses/`, cpu-quant-gdn) (ee33ddc36), anchor C7r 62cb6a6af. The head is read in full every token and never amortises, so at 4-bit blocks it is the largest remaining per-token read. Audit every served DS41/Q38FN GGUF (current type, bytes per token, expected saving), then price one Q4_K conversion arm on the same model against WikiText-2 and the six-task set at the existing floor. Accept only if bytes per token fall and no task regresses beyond its recorded sigma; otherwise record the null. (intake-2646#record) [belief: pending]
 - [ ] **QUANT-ROT-1 — Run the offline activation-rotation probe at a fixed per-32-block budget.** **Owner: AutoKernel** (2026-11-06) — seeded as AK-QR-1 in research seed file 08 (`loop/seeds/hypotheses/`, cpu-quant-gdn) (ee33ddc36), anchor C7r 62cb6a6af. On one real Q4_K row, simulate no rotation, a 32-wide Hadamard, a magnitude-sorted channel permutation, and KLT composed with Hadamard, measuring q8_K window error, block amax/clipping error and dKLD. Pre-register the MambaQuant prediction: rotation has a positive sign and its effect shrinks as scale granularity narrows. No kernel, no converter change. Stop when one arm beats the control by more than the window-error noise, else record the null. (intake-2648#record, intake-2645#record) [belief: pending]
+      · class: non-inference
 
 ## Track: iqk-iquant-enablement
 <!-- gate: none -->
+
+### Backlog
+
+- [ ] **T2 — Gate trellis in `ik_llama.cpp`, not in our tree.** `/mnt/raid0/llm/ik_llama.cpp` is already on disk and is the reference implementation. Build it in a scratch dir purely as a measurement instrument and bench IQ4_KT vs Q4_K_M and IQ2_KT vs IQ2_XXS *there*. This answers the whole question without porting anything. Needs operator inference approval; it is a bench harness, not a second serving binary.
+  - [x] **EXP01-PILOT — bounded EXP-01 pilot for T2/T3 (BRF-T4-EXP01, backlog-refactor 2026-11 manifest package EXP-01).** [inference] ✅ 2026-11-04 [belief: cc]
+    - [x] **EXP01-SMOKE-ISOLATION — isolate qualification data from official measurements.** Repair the Qwen3.6-35B-A3B EXP-01 launcher so four-CPU smoke outputs cannot become official quarter-run repetitions; reject resumed allocation and native thread-count mismatches. Acceptance: repaired `brf-exp01-trellis-pilot-20261104-r3` passes publisher smoke on 0-3 with separate native result and official `run-r3/results.jsonl`; preserve the declared estimator and stop rules. Evidence: `docs/evidence/exp01-pilot-smoke-isolation-20261104.json`. ✅ 2026-11-04 [belief: cc]
+    Route (operator decision 2026-11-02, decision tool): "proxy screen, then port". The LOW-BIT lane rule (DS41/Q38FN only) is waived for THIS pilot only:
+    the waiver covers this box and its two rows and nothing else (no other quant or trellis work, and T3's own identity is unchanged). The pilot is a futility
+    screen on a model the instrument can load. Port condition: IQ4_KT beating Q4_K_M on the screen (the tg128 ratio band clears 0.95 and the paired
+    24-item slice is not worse) triggers the `qwen4exp` port into an ik scratch worktree, plus a Q38FN requant from Q8_0; a futility result ends the screen
+    and the port is not started.
+    Proxy identity: Qwen3.6-35B-A3B (`general.architecture` `qwen35moe`, loaded by the instrument) requantized from its on-disk Q8_0
+    `/mnt/raid0/llm/models/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf` (36914690368 B, sha256 `afddb074…dbd5`; the registry carries no sha, so the pin is the HF LFS
+    etag, equal to a local `sha256sum`) by the instrument's `llama-quantize --allow-requantize` into Q4_K_M (control), IQ4_KT, IQ2_XXS and IQ2_KT. IQ3_KT is
+    not an arm of the manifest and is not built. Arm shas are pinned in `models.env` from the built files, outside any grant.
+    Shared caveat (every arm, so the screen stays relative): all arms are requantized from Q8_0 rather than from a high-precision source, and none uses an
+    imatrix of its own (r2 supersedes this: every arm shares ONE imatrix generated in the BUILD row, see the 2026-11-03 republish note; no `--ignore-imatrix-rules`). Absolute quality is not evidence; ratios and paired per-item flips are.
+    Instrument: the read-only `/mnt/raid0/llm/ik_llama.cpp` @ `c04881fc0f31dae5f8ec59c1d683889f0c9dfa11` (clean tracked state;
+    `build/ggml/src/libggml.so` sha256 `06d6cfac…8b74b` carries 21 `iq4_kt` strings; `build/bin/llama-bench` `58194ccf…af55`); linkage stays inside the ik build.
+    Metric: tg128 tokens/s (higher is better), IQ4_KT/Q4_K_M and IQ2_KT/IQ2_XXS ratios, plus paired per-item correctness flips on the 24 items.
+    Control: Q4_K_M (speed A/A spread + the same 24 items for quality). Bounds: 2 pairs × 3 launches/arm interleaved ABAB + 24 items × 2 quants;
+    one CPU quarter, ≤90 min, hard stop at grant end.
+    Stop rule (`docs/guides/agent-workflows/measurement-sufficiency.md`): planned look per launch from launch 2; stop-on-answer when the tg128 ratio band clears
+    1.00, stop-on-futility when it lies wholly below 0.95, hard cap = the 90 min grant; all are operational decisions, never a T3 gate result; the quality pass stays open.
+    - [x] **EXP01-WEIGHTS-RETENTION** — `/mnt/raid0/llm/tmp/brf-exp01` is KEEP: 4 good A3B quants remain after the failed-build Q4_K_M was trashed (2026-11-06 disk triage, operator-adhoc-ops). Reclaim them once the EXP01 pilot row is filed, or move them under `models/` if kept. [no-belief: not-a-result] 2026-11-07 DONE (operator-approved): pilot is filed (r3/r4, port HOLD); `models/` and `build/` (~58 GB) trashed via guarded_rm, scripts/logs/iqk-new.md kept; quants rebuildable from Q8_0.
+    Eval set (pinned): `/mnt/raid0/llm/tmp/brf-exp01/items/exp01-items-24.jsonl`, 24 items, sha256 `96dc98cf6b2cfdd65897f1deaf2b6f8481225d013851262cf08d6171f150fdbc`.
+    Seed 20261102 draw (`/mnt/raid0/llm/tmp/brf-exp01/bin/make_items.py`, a pure function of the pool sha) of 12 `cruxeval` (exact_match) + 12 `general` MMLU (multiple_choice) items from the canonical
+    `epyc-inference-research/benchmarks/prompts/question_pool.jsonl` (sha256 `73a2ed5a…818f8b`); ChatML user turn + empty think block, greedy 256 tokens; item hash = sha256(prompt+expect_regex).
+    Rows (both via `publish_row.py` with `ROWFLOW_REPO=/mnt/raid0/llm/views/epyc-root-main`, handoff_task `quantization-and-low-bit.md:EXP01-PILOT` (`iqk-iquant-enablement.md` is not a handoff file), scratch_root `/mnt/raid0/llm/tmp/brf-exp01`):
+    BUILD `brf-exp01-trellis-build-20261102-r2` (supersedes r1; `/mnt/raid0/llm/tmp/brf-exp01/build_launcher.sh`, one CPU quarter, role build, min-window 4500 s; arms land in `models/`, about 58 GB, 325 GB free at publish)
+    then MEASURE `brf-exp01-trellis-pilot-20261102` (`/mnt/raid0/llm/tmp/brf-exp01/launcher.sh`, one CPU quarter, role bench, min-window 5400 s, engine `filler_run15.sh`, job `/mnt/raid0/llm/tmp/brf-exp01/bin/job.sh`).
+    Dependency and smoke sequencing: the allocator has no dependency field, so `/mnt/raid0/llm/tmp/brf-exp01/bin/precond.sh` FAILS CLOSED (rc 1, first line `build row … not complete`) until
+    `/mnt/raid0/llm/tmp/brf-exp01/build/BUILD-DONE.json` exists, each arm's size/mtime matches it, every `*_SHA` is pinned and the ITEMS sha matches. The smoke IS the dry run and runs the real
+    precond, so a smoke before the build completes FAILS by design; the MEASURE row is published, and its smoke run, at the end of the BUILD row (BUILD-DONE present, arm shas pinned),
+    never before. It counts as ready only on smoke PASS.
+    est: ~3000 s (MEASURE) from `/mnt/raid0/llm/tmp/brf-exp01/fixture-run/results.jsonl` (2 s per 0.6B launch plus ~45 s model load, scaled to 35B; 12 launches + 48 llama-cli items);
+    est: ~3900 s (BUILD) from `/mnt/raid0/llm/tmp/brf-exp01/fixture/quant-IQ4_KT.log` (87 s on 8 cores for 0.6B, scaled by parameter count x58 and 24 cores = ~1700 s per KT arm; Q4_K_M ~85 s, IQ2_XXS ~250 s, 4 source reads).
+    An end-to-end self-test on a non-identity fixture (Qwen3-0.6B requantized to Q4_K_M/IQ4_KT by the instrument) passed validity, linkage, mechanism-selected,
+    looks, quality capture and summary; its numbers are not EXP-01 evidence (fixture tg128 ratio 0.64 is a plumbing check only).
+    - 2026-11-03 BRF-T4 close-out (ws58): **NO VERDICT, nothing was measured.** The BUILD row `brf-exp01-trellis-build-20261102` ended rc=4 after 3 s (22:10:33Z), although rowflow
+      shows it `done`. Its `plan-IQ2KT` unit returned rc=1 (`Missing importance matrix for tensor blk.0.attn_gate.weight in a very low-bit quantization`; `build/plan-IQ2KT.log`
+      sha256 `df3ac0336156…`). The job forced `--ignore-imatrix-rules` for IQ2_XXS only, and the smoke planned IQ4_KT only. No arm exists and BUILD-DONE is absent, so MEASURE
+      `brf-exp01-trellis-pilot-20261102` was never published and no smoke ran. The `post_build.sh` watcher is still polling and was not re-run.
+      Repaired in scratch, not run: `bin/build_job.sh` now forces IQ2_KT the same way (the shared no-imatrix caveat now covers both 2-bit arms), and resume skips only successful
+      units. Next: republish BUILD as `brf-exp01-trellis-build-20261102-r2`. [no-belief: no measurement produced]
+    - 2026-11-03 republish (ws58, BRF-T4 follow-up): BUILD `brf-exp01-trellis-build-20261102-r2` published (`priority_rank` 1, one CPU quarter, min-window 6000 s, estimate 5700 s, smoke PASS on 0-3). The earlier scratch repair (`--ignore-imatrix-rules` for IQ2_KT) is replaced, because a 2-bit trellis arm quantized without an imatrix is garbage: the row first runs unit `imatrix` (`llama-imatrix` on the Q8_0 source, calibration `/mnt/raid0/llm/tmp/brf-exp01/calib/wiki.test.raw`, a copy of `data/wiki.test.raw`, sha256 `bfe9eb16ab9987fb88bde4ea9a30a00f2a45db01dfc14bad78d05325789c4f12`, 32 chunks x 512 tokens, timeout 3000 s, about 1800 s of the estimate; preflight fails closed on the calibration sha), then `llama-quantize --imatrix` for all four arms (one shared imatrix, so the screen stays relative). The smoke plans IQ4_KT and plans IQ2_KT with the rule bypassed (dry-run shape check: 9.7 GB, rc 0); the with-imatrix plan units run in the real row and fail closed in seconds. `BUILD-DONE.json` is stamped `row=…-r2`, and `precond.sh` and `post_build.sh` refuse any other stamp. **Owner step: after the r2 build completes, run `bash /mnt/raid0/llm/tmp/brf-exp01/bin/post_build.sh` once** (pins the arm shas, runs precond, publishes MEASURE `brf-exp01-trellis-pilot-20261102`, whose smoke is its dry run). No new watcher is armed; the stale r1 watcher pid 1371548 (old script inode) is not relied on. [no-belief: no measurement produced]
+      · class: non-inference
+      · inputs-missing: `/mnt/raid0/llm/models/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf` `/mnt/raid0/llm/tmp/brf-exp01/build/BUILD-DONE.json` `bin/build_job.sh` `build/plan-IQ2KT.log`
+      · section: Adjacent: the KT/trellis family (folded in from tq3-quantization-evaluation.md)
+- [ ] **T3 — Port only if T2 wins.** Gate: IQ4_KT must reach **≥95% of Q4_K_M tg128** under the canonical protocol **and** show a measurable task-eval win (paired per-item flips vs the reference; report PPL/KLD beside it as fidelity context only — a near-baseline KLD/PPL ordering is not a quality ordering, intake-1510, intake-1519#05). Slower than 95% ⇒ **DROP permanently** — 17.5% fewer bytes that decode slower is strictly dominated.
+      · section: Adjacent: the KT/trellis family (folded in from tq3-quantization-evaluation.md)
+- [ ] **NEW-6 (prefill headroom, post-v8 riders, one bundle):** (a) `func16` 16-wide kernels
+  are `nullptr` for the plain IQ types (`iqk_gemm_iquants.cpp:2754`) — prefill capped at
+  8-column micro-kernels; (b) the large-Ny `Q8_K_R16` convert-repack path is disabled in
+  `is_dequant_better` (`iqk_mul_mat.cpp:246-254`) over an un-root-caused Zen4 correctness
+  issue — root-cause it rather than leave ik's 16-wide prefill path off; (c) fused MoE
+  up/gate exists (`iqk_mul_mat.cpp:811`) but no GGML hook calls it; (d) `iqk_flash_attn.cpp`
+  is not in the build; (e) the IQ3_XXS `n_rows>=32` NMSE gate (`iqk_dispatch.cpp:88-93`) is an
+  accuracy exclusion that was shape-gated, not root-caused — thin numerical margin by
+  admission; (f) all kernels are 256-bit ymm — no zmm variant exists (Zen5 512-bit datapath +
+  `k_x_step`/`IQK_MAX_NY` tiling inherited from ik's Zen4 tuning, unexamined). None of these
+  gate v8 promotion; they are the next iqk perf tranche.
+  - **Locator correction 2026-10-20 (factual, box text not rewritten):** the NEW-6(b) gate site is `iqk_mul_mat.cpp:297-306 @ffc1bac82` (IQ2_XXS/IQ2_XS/IQ2_S/IQ3_XXS/IQ3_S return `type` unchanged in `is_dequant_better`). The `:246-254` locator in (b) is stale: that range is the dispatch loop.
+  - **NEW-6(b) evidence correction 2026-11-02:** the blanket “un-root-caused” wording above is stale for IQ4_XS: the INF-70 node trace identified gross errors in its IQ4_XS → Q8_K_R16 repack at `nrc_y >= 32 && npt >= 16`, and `99425578d` excluded IQ4_XS; the later C9 stale-binary investigation confirmed that exclusion was absent from the binary under test. See `progress/2026-09/2026-09-03-inf70-audit.md` sections “P0 ROOT-CAUSED” and “C9 ROOT CAUSE”. Production `ffc1bac82` also excludes the five IQ2/IQ3 types, but that IQ4_XS finding alone does not establish a per-type cause or justify enabling their paths. Trace each converter, repacked layout and consumer against the reference and existing tests before designing qualification; NEW-6 remains open. [belief: cc]
+      · section: 2026-07-25 v8 audit (Claude session, operator-requested) — residual defects + new tasks
+- [ ] **K27 (P1, CPU) — x86 repack gaps**: no Q5_0/Q6_0 repack; Q8_0 still lacks a promotable optimized x86 interleave kernel (`ggml/src/ggml-cpu/repack.cpp`; iqk dir `ggml/src/ggml-cpu/iqk/`). The failed generic Q8_0 8x8 probe below is retired; any future Q8_0 work must be a real AVX2/AVX512/VNNI implementation with pinned-library canonical benches. Bit-exact checkable (lossless rearrangement); canonical bench. (re-homed here 2026-11-09 from the INF-48 drop triage of the ROCm kernel-authoring track; original text `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md` line 3833)
+      · section: Research intake 2026-10-22 — SLQ / IST-DASLab / kaitchup Qwen3.8-27B SLQ (intake-2461..2493)
 
 > Folded from `handoffs/active/iqk-iquant-enablement.md` @ `6a4026f0ab50` on 2026-11-02 (BRF-T1-F5, route 1a, operator D1/D5; retired row INF-26 → INF-80). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -368,50 +459,6 @@ Chasing the *trellis* stub is what uncovered the IQ-quant defect above, but the 
 **Sequencing (do not reorder):**
 - [x] **T1 — Do B1-B5 above first.** ✅ 2026-07-26 — satisfied by the
   frozen v8 promotion; continue with T2 only under its separate gate.
-- [ ] **T2 — Gate trellis in `ik_llama.cpp`, not in our tree.** `/mnt/raid0/llm/ik_llama.cpp` is already on disk and is the reference implementation. Build it in a scratch dir purely as a measurement instrument and bench IQ4_KT vs Q4_K_M and IQ2_KT vs IQ2_XXS *there*. This answers the whole question without porting anything. Needs operator inference approval; it is a bench harness, not a second serving binary.
-  - [x] **EXP01-PILOT — bounded EXP-01 pilot for T2/T3 (BRF-T4-EXP01, backlog-refactor 2026-11 manifest package EXP-01).** [inference] ✅ 2026-11-04 [belief: cc]
-    - [x] **EXP01-SMOKE-ISOLATION — isolate qualification data from official measurements.** Repair the Qwen3.6-35B-A3B EXP-01 launcher so four-CPU smoke outputs cannot become official quarter-run repetitions; reject resumed allocation and native thread-count mismatches. Acceptance: repaired `brf-exp01-trellis-pilot-20261104-r3` passes publisher smoke on 0-3 with separate native result and official `run-r3/results.jsonl`; preserve the declared estimator and stop rules. Evidence: `docs/evidence/exp01-pilot-smoke-isolation-20261104.json`. ✅ 2026-11-04 [belief: cc]
-    Route (operator decision 2026-11-02, decision tool): "proxy screen, then port". The LOW-BIT lane rule (DS41/Q38FN only) is waived for THIS pilot only:
-    the waiver covers this box and its two rows and nothing else (no other quant or trellis work, and T3's own identity is unchanged). The pilot is a futility
-    screen on a model the instrument can load. Port condition: IQ4_KT beating Q4_K_M on the screen (the tg128 ratio band clears 0.95 and the paired
-    24-item slice is not worse) triggers the `qwen4exp` port into an ik scratch worktree, plus a Q38FN requant from Q8_0; a futility result ends the screen
-    and the port is not started.
-    Proxy identity: Qwen3.6-35B-A3B (`general.architecture` `qwen35moe`, loaded by the instrument) requantized from its on-disk Q8_0
-    `/mnt/raid0/llm/models/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf` (36914690368 B, sha256 `afddb074…dbd5`; the registry carries no sha, so the pin is the HF LFS
-    etag, equal to a local `sha256sum`) by the instrument's `llama-quantize --allow-requantize` into Q4_K_M (control), IQ4_KT, IQ2_XXS and IQ2_KT. IQ3_KT is
-    not an arm of the manifest and is not built. Arm shas are pinned in `models.env` from the built files, outside any grant.
-    Shared caveat (every arm, so the screen stays relative): all arms are requantized from Q8_0 rather than from a high-precision source, and none uses an
-    imatrix of its own (r2 supersedes this: every arm shares ONE imatrix generated in the BUILD row, see the 2026-11-03 republish note; no `--ignore-imatrix-rules`). Absolute quality is not evidence; ratios and paired per-item flips are.
-    Instrument: the read-only `/mnt/raid0/llm/ik_llama.cpp` @ `c04881fc0f31dae5f8ec59c1d683889f0c9dfa11` (clean tracked state;
-    `build/ggml/src/libggml.so` sha256 `06d6cfac…8b74b` carries 21 `iq4_kt` strings; `build/bin/llama-bench` `58194ccf…af55`); linkage stays inside the ik build.
-    Metric: tg128 tokens/s (higher is better), IQ4_KT/Q4_K_M and IQ2_KT/IQ2_XXS ratios, plus paired per-item correctness flips on the 24 items.
-    Control: Q4_K_M (speed A/A spread + the same 24 items for quality). Bounds: 2 pairs × 3 launches/arm interleaved ABAB + 24 items × 2 quants;
-    one CPU quarter, ≤90 min, hard stop at grant end.
-    Stop rule (`docs/guides/agent-workflows/measurement-sufficiency.md`): planned look per launch from launch 2; stop-on-answer when the tg128 ratio band clears
-    1.00, stop-on-futility when it lies wholly below 0.95, hard cap = the 90 min grant; all are operational decisions, never a T3 gate result; the quality pass stays open.
-    - [x] **EXP01-WEIGHTS-RETENTION** — `/mnt/raid0/llm/tmp/brf-exp01` is KEEP: 4 good A3B quants remain after the failed-build Q4_K_M was trashed (2026-11-06 disk triage, operator-adhoc-ops). Reclaim them once the EXP01 pilot row is filed, or move them under `models/` if kept. [no-belief: not-a-result] 2026-11-07 DONE (operator-approved): pilot is filed (r3/r4, port HOLD); `models/` and `build/` (~58 GB) trashed via guarded_rm, scripts/logs/iqk-new.md kept; quants rebuildable from Q8_0.
-    Eval set (pinned): `/mnt/raid0/llm/tmp/brf-exp01/items/exp01-items-24.jsonl`, 24 items, sha256 `96dc98cf6b2cfdd65897f1deaf2b6f8481225d013851262cf08d6171f150fdbc`.
-    Seed 20261102 draw (`/mnt/raid0/llm/tmp/brf-exp01/bin/make_items.py`, a pure function of the pool sha) of 12 `cruxeval` (exact_match) + 12 `general` MMLU (multiple_choice) items from the canonical
-    `epyc-inference-research/benchmarks/prompts/question_pool.jsonl` (sha256 `73a2ed5a…818f8b`); ChatML user turn + empty think block, greedy 256 tokens; item hash = sha256(prompt+expect_regex).
-    Rows (both via `publish_row.py` with `ROWFLOW_REPO=/mnt/raid0/llm/views/epyc-root-main`, handoff_task `quantization-and-low-bit.md:EXP01-PILOT` (`iqk-iquant-enablement.md` is not a handoff file), scratch_root `/mnt/raid0/llm/tmp/brf-exp01`):
-    BUILD `brf-exp01-trellis-build-20261102-r2` (supersedes r1; `/mnt/raid0/llm/tmp/brf-exp01/build_launcher.sh`, one CPU quarter, role build, min-window 4500 s; arms land in `models/`, about 58 GB, 325 GB free at publish)
-    then MEASURE `brf-exp01-trellis-pilot-20261102` (`/mnt/raid0/llm/tmp/brf-exp01/launcher.sh`, one CPU quarter, role bench, min-window 5400 s, engine `filler_run15.sh`, job `/mnt/raid0/llm/tmp/brf-exp01/bin/job.sh`).
-    Dependency and smoke sequencing: the allocator has no dependency field, so `/mnt/raid0/llm/tmp/brf-exp01/bin/precond.sh` FAILS CLOSED (rc 1, first line `build row … not complete`) until
-    `/mnt/raid0/llm/tmp/brf-exp01/build/BUILD-DONE.json` exists, each arm's size/mtime matches it, every `*_SHA` is pinned and the ITEMS sha matches. The smoke IS the dry run and runs the real
-    precond, so a smoke before the build completes FAILS by design; the MEASURE row is published, and its smoke run, at the end of the BUILD row (BUILD-DONE present, arm shas pinned),
-    never before. It counts as ready only on smoke PASS.
-    est: ~3000 s (MEASURE) from `/mnt/raid0/llm/tmp/brf-exp01/fixture-run/results.jsonl` (2 s per 0.6B launch plus ~45 s model load, scaled to 35B; 12 launches + 48 llama-cli items);
-    est: ~3900 s (BUILD) from `/mnt/raid0/llm/tmp/brf-exp01/fixture/quant-IQ4_KT.log` (87 s on 8 cores for 0.6B, scaled by parameter count x58 and 24 cores = ~1700 s per KT arm; Q4_K_M ~85 s, IQ2_XXS ~250 s, 4 source reads).
-    An end-to-end self-test on a non-identity fixture (Qwen3-0.6B requantized to Q4_K_M/IQ4_KT by the instrument) passed validity, linkage, mechanism-selected,
-    looks, quality capture and summary; its numbers are not EXP-01 evidence (fixture tg128 ratio 0.64 is a plumbing check only).
-    - 2026-11-03 BRF-T4 close-out (ws58): **NO VERDICT, nothing was measured.** The BUILD row `brf-exp01-trellis-build-20261102` ended rc=4 after 3 s (22:10:33Z), although rowflow
-      shows it `done`. Its `plan-IQ2KT` unit returned rc=1 (`Missing importance matrix for tensor blk.0.attn_gate.weight in a very low-bit quantization`; `build/plan-IQ2KT.log`
-      sha256 `df3ac0336156…`). The job forced `--ignore-imatrix-rules` for IQ2_XXS only, and the smoke planned IQ4_KT only. No arm exists and BUILD-DONE is absent, so MEASURE
-      `brf-exp01-trellis-pilot-20261102` was never published and no smoke ran. The `post_build.sh` watcher is still polling and was not re-run.
-      Repaired in scratch, not run: `bin/build_job.sh` now forces IQ2_KT the same way (the shared no-imatrix caveat now covers both 2-bit arms), and resume skips only successful
-      units. Next: republish BUILD as `brf-exp01-trellis-build-20261102-r2`. [no-belief: no measurement produced]
-    - 2026-11-03 republish (ws58, BRF-T4 follow-up): BUILD `brf-exp01-trellis-build-20261102-r2` published (`priority_rank` 1, one CPU quarter, min-window 6000 s, estimate 5700 s, smoke PASS on 0-3). The earlier scratch repair (`--ignore-imatrix-rules` for IQ2_KT) is replaced, because a 2-bit trellis arm quantized without an imatrix is garbage: the row first runs unit `imatrix` (`llama-imatrix` on the Q8_0 source, calibration `/mnt/raid0/llm/tmp/brf-exp01/calib/wiki.test.raw`, a copy of `data/wiki.test.raw`, sha256 `bfe9eb16ab9987fb88bde4ea9a30a00f2a45db01dfc14bad78d05325789c4f12`, 32 chunks x 512 tokens, timeout 3000 s, about 1800 s of the estimate; preflight fails closed on the calibration sha), then `llama-quantize --imatrix` for all four arms (one shared imatrix, so the screen stays relative). The smoke plans IQ4_KT and plans IQ2_KT with the rule bypassed (dry-run shape check: 9.7 GB, rc 0); the with-imatrix plan units run in the real row and fail closed in seconds. `BUILD-DONE.json` is stamped `row=…-r2`, and `precond.sh` and `post_build.sh` refuse any other stamp. **Owner step: after the r2 build completes, run `bash /mnt/raid0/llm/tmp/brf-exp01/bin/post_build.sh` once** (pins the arm shas, runs precond, publishes MEASURE `brf-exp01-trellis-pilot-20261102`, whose smoke is its dry run). No new watcher is armed; the stale r1 watcher pid 1371548 (old script inode) is not relied on. [no-belief: no measurement produced]
-- [ ] **T3 — Port only if T2 wins.** Gate: IQ4_KT must reach **≥95% of Q4_K_M tg128** under the canonical protocol **and** show a measurable task-eval win (paired per-item flips vs the reference; report PPL/KLD beside it as fidelity context only — a near-baseline KLD/PPL ordering is not a quality ordering, intake-1510, intake-1519#05). Slower than 95% ⇒ **DROP permanently** — 17.5% fewer bytes that decode slower is strictly dominated.
 - NOTE: no `IQ*_KT` GGUF exists under `/mnt/raid0/llm`, and public KT producers (ubergarm, ik-community) cover giant MoEs we do not serve. Viterbi is the **encoding** cost only — at inference the trellis LCG runs forward — so self-quantising is hours on 192 cores plus an imatrix, not prohibitive, but not free.
 
 #### Key files
@@ -548,19 +595,6 @@ paths). Findings ordered by leverage:
   maddubs+VPDPWSSD. A/B the swap on the decode path (expectations modest — decode is BW-bound
   — but it is a compile-time toggle test). NOTE: this is moving OFF VNNI, i.e. NOT the killed
   "AVX-512VNNI vec_dot" ledger item.
-- [ ] **NEW-6 (prefill headroom, post-v8 riders, one bundle):** (a) `func16` 16-wide kernels
-  are `nullptr` for the plain IQ types (`iqk_gemm_iquants.cpp:2754`) — prefill capped at
-  8-column micro-kernels; (b) the large-Ny `Q8_K_R16` convert-repack path is disabled in
-  `is_dequant_better` (`iqk_mul_mat.cpp:246-254`) over an un-root-caused Zen4 correctness
-  issue — root-cause it rather than leave ik's 16-wide prefill path off; (c) fused MoE
-  up/gate exists (`iqk_mul_mat.cpp:811`) but no GGML hook calls it; (d) `iqk_flash_attn.cpp`
-  is not in the build; (e) the IQ3_XXS `n_rows>=32` NMSE gate (`iqk_dispatch.cpp:88-93`) is an
-  accuracy exclusion that was shape-gated, not root-caused — thin numerical margin by
-  admission; (f) all kernels are 256-bit ymm — no zmm variant exists (Zen5 512-bit datapath +
-  `k_x_step`/`IQK_MAX_NY` tiling inherited from ik's Zen4 tuning, unexamined). None of these
-  gate v8 promotion; they are the next iqk perf tranche.
-  - **Locator correction 2026-10-20 (factual, box text not rewritten):** the NEW-6(b) gate site is `iqk_mul_mat.cpp:297-306 @ffc1bac82` (IQ2_XXS/IQ2_XS/IQ2_S/IQ3_XXS/IQ3_S return `type` unchanged in `is_dequant_better`). The `:246-254` locator in (b) is stale: that range is the dispatch loop.
-  - **NEW-6(b) evidence correction 2026-11-02:** the blanket “un-root-caused” wording above is stale for IQ4_XS: the INF-70 node trace identified gross errors in its IQ4_XS → Q8_K_R16 repack at `nrc_y >= 32 && npt >= 16`, and `99425578d` excluded IQ4_XS; the later C9 stale-binary investigation confirmed that exclusion was absent from the binary under test. See `progress/2026-09/2026-09-03-inf70-audit.md` sections “P0 ROOT-CAUSED” and “C9 ROOT CAUSE”. Production `ffc1bac82` also excludes the five IQ2/IQ3 types, but that IQ4_XS finding alone does not establish a per-type cause or justify enabling their paths. Trace each converter, repacked layout and consumer against the reference and existing tests before designing qualification; NEW-6 remains open. [belief: cc]
 - [x] **NEW-7 (evidence hygiene, do before container restart):** ✅ 2026-07-25 — durable
   exact-tip CPU/HIP/sanitizer CTest evidence is under
   `epyc-inference-research/data/kernel-v8-candidate/{exact-tip-build,final-focused,sanitize-final}/`;
@@ -652,10 +686,40 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 
 - *NEW-12 — HELD (operator 2026-10-22: "stick to NEW-10 and then we reassess later"); no checkbox, no compute booked.* Q38FN allocation transplant plus bytes-budgeted per-tensor type allocator from the Stage-3 plan (intake-2470#record, intake-2466#record, intake-2487#record). Reassess after NEW-10's IQ3_XXS quality result. If it is ever run, use the lean form: one candidate at a time, no P0 ISTA GSQ-weights comparison, ~190 GB disk peak, and delete the Q8_0 source at the end.
 
-- [ ] **K27 (P1, CPU) — x86 repack gaps**: no Q5_0/Q6_0 repack; Q8_0 still lacks a promotable optimized x86 interleave kernel (`ggml/src/ggml-cpu/repack.cpp`; iqk dir `ggml/src/ggml-cpu/iqk/`). The failed generic Q8_0 8x8 probe below is retired; any future Q8_0 work must be a real AVX2/AVX512/VNNI implementation with pinned-library canonical benches. Bit-exact checkable (lossless rearrangement); canonical bench. (re-homed here 2026-11-09 from the INF-48 drop triage of the ROCm kernel-authoring track; original text `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md` line 3833)
 
 ## Track: tq3-quantization-evaluation
 <!-- gate: none -->
+
+### Backlog
+
+- [ ] Prototype faithful ChunkKV only on a fresh `llama.cpp-experimental` tree after an
+  operator-approved long-context measurement window; compare it with Full KV and the existing
+  Expected-Attention compactor at equal cache budgets before considering promotion.
+      · section: Action Items
+- [ ] **G3 (G) — close the instrument gap: run a multi-step generation eval against quantized KV.**
+      **This is the real finding of the KIVI dive, and it is a gap in OUR evidence, not in our code.**
+      KIVI reports **no perplexity anywhere** and explicitly rejects single-decode-step metrics as
+      unsuitable for studying compressed KV. Its data show why: on Llama-2-7B the same 2-bit damage
+      costs CoQA ~7% while collapsing GSM8K by ~57% (13.50 → 5.76). **Our entire first-party quality
+      case for quantized KV is perplexity plus needle-in-a-haystack** — exactly the instrument class
+      that survives damage which multi-step reasoning does not.
+      Protocol: GSM8K (or the canonical judge suite's reasoning subset) at f16 KV vs production
+      q8_0/q8_0 vs q4_0/q4_0, rotation ON, on one pure-attention model and one Qwen3.x GDN hybrid.
+      Paired questions, exact-match scored, **persisted per question** (each persisted unit is a drain
+      point). Production temp + seed 42 per bench defaults.
+      **Gate:** any config showing a reasoning delta outside noise **while perplexity and NIAH stay
+      flat** replicates KIVI's central instrument finding on our own stack — and would be the
+      strongest reason yet to revisit KV-quant defaults. A flat result closes the question and
+      retires the concern permanently.
+      · section: Research Intake Update — 2026-08-22 (Stage-2b, KIVI arXiv:2402.02750)
+- [ ] **(G, cheap) A/B the asymmetric quantizer against our rotation.** `-ctk q4_0` (symmetric) vs
+      `-ctk q4_1` (asymmetric), rotation ON, same group size, one pure-attention model, plus
+      `llama-bench` decode t/s to price the extra scale word.
+      **Gate:** a quality delta outside noise means the Hadamard rotation has NOT fully normalised the
+      distribution and KIVI's asymmetry is live for us. A tie — the prediction, since a rotated
+      distribution is near zero-mean — closes it permanently for one short bench.
+      · class: inference
+      · section: Research Intake Update — 2026-08-22 (Stage-2b, KIVI arXiv:2402.02750)
 
 > Folded from `handoffs/active/tq3-quantization-evaluation.md` @ `6a4026f0ab50` on 2026-11-02 (BRF-T1-F5, route 1a, operator D1/D5; retired row INF-54 → INF-80). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -751,9 +815,6 @@ during the E5 host hold.
   feasibility memo above: the required existing substrate is server-side Expected-Attention eviction,
   but a faithful ChunkKV port requires observed-prefill attention capture and ordered chunk selection;
   do not equate the two.
-- [ ] Prototype faithful ChunkKV only on a fresh `llama.cpp-experimental` tree after an
-  operator-approved long-context measurement window; compare it with Full KV and the existing
-  Expected-Attention compactor at equal cache budgets before considering promotion.
 - **[declined: ws58 2026-11-03 content-review: unbounded conditional (upstream adoption + multi-model benchmarks) with no trigger]** Revisit TQ3_1S weight quant only if: upstream adopts + multi-model benchmarks + Q4_K_M comparison + CPU kernels
 
 ---
@@ -938,27 +999,6 @@ the dispatch loss.
 
 #### Research Intake Update — 2026-08-22 (Stage-2b, KIVI arXiv:2402.02750)
 
-- [ ] **G3 (G) — close the instrument gap: run a multi-step generation eval against quantized KV.**
-      **This is the real finding of the KIVI dive, and it is a gap in OUR evidence, not in our code.**
-      KIVI reports **no perplexity anywhere** and explicitly rejects single-decode-step metrics as
-      unsuitable for studying compressed KV. Its data show why: on Llama-2-7B the same 2-bit damage
-      costs CoQA ~7% while collapsing GSM8K by ~57% (13.50 → 5.76). **Our entire first-party quality
-      case for quantized KV is perplexity plus needle-in-a-haystack** — exactly the instrument class
-      that survives damage which multi-step reasoning does not.
-      Protocol: GSM8K (or the canonical judge suite's reasoning subset) at f16 KV vs production
-      q8_0/q8_0 vs q4_0/q4_0, rotation ON, on one pure-attention model and one Qwen3.x GDN hybrid.
-      Paired questions, exact-match scored, **persisted per question** (each persisted unit is a drain
-      point). Production temp + seed 42 per bench defaults.
-      **Gate:** any config showing a reasoning delta outside noise **while perplexity and NIAH stay
-      flat** replicates KIVI's central instrument finding on our own stack — and would be the
-      strongest reason yet to revisit KV-quant defaults. A flat result closes the question and
-      retires the concern permanently.
-- [ ] **(G, cheap) A/B the asymmetric quantizer against our rotation.** `-ctk q4_0` (symmetric) vs
-      `-ctk q4_1` (asymmetric), rotation ON, same group size, one pure-attention model, plus
-      `llama-bench` decode t/s to price the extra scale word.
-      **Gate:** a quality delta outside noise means the Hadamard rotation has NOT fully normalised the
-      distribution and KIVI's asymmetry is live for us. A tie — the prediction, since a rotated
-      distribution is near zero-mean — closes it permanently for one short bench.
 - **[declined: ws58 2026-11-03 content-review: diagnostic curiosity; G3 (multi-step generation eval vs quantized KV) is the decider and stays]** **G5 (G) — reproduce KIVI's Figure 2 / Table 2 on OUR architecture.** Dump per-channel key
       magnitudes from the attention layers of a production Qwen3.x GGUF at a fixed prompt, with and
       without `LLAMA_ATTN_ROT_DISABLE=1`, and compute per-group max/RMS at G=32.
