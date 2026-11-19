@@ -147,3 +147,7 @@ C16-TOPK-STAGE: confirmed the already-filed DROP(FUTILITY_OP) verdict and existi
 ## 04:39Z — File interrupted r4 depth remeasurement result
 
 RKA-A3B48-D-REMEASURE: r4 ended rc=75 with five valid cells: rounds 1–2 complete and round 3 D4 only. The preregistered decision cannot yet be made; the handoff already records this partial result and its filing receipt exists. results.jsonl SHA-256 71ccc863d8462f18a361f286ccfbe444ab19ddf7e870cc545a3b2a6978cb5cc3. Continuation r5 is qualified and armed.
+
+## 04:41Z — Diagnose C15 epilogue test count mismatch
+
+C15-EPI-Q8: diagnosed the 14 versus 16 test count from experimental source commit e0b5d2637858411bfb8b27609a2e7e199dc6f38c, tests/test-backend-ops.cpp:14194: two weight types each instantiate four normalization and four gated cases, including a 1536-wide epilogue-off normalization control per type. The row logs show all 16 for each arm. The preregistered 14-count rule still makes the completed run FAIL(tbo); prepare a new row with the correct 16-case expectation registered before execution. RESULT.json SHA-256 edef3786d5abad18f456474fd28f61c395bae789bcf90136311bdf46f2ac41a8.
