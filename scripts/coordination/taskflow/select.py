@@ -39,8 +39,8 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DISPATCH_CLASSES = ("non-inference", "inference")
 # Operator-held tracks (Stage B brief: AutoKernel, autopilot, promotion, stack bring-up). holds.yaml supersedes this
 # once it exists; until then a held handoff yields zero boxes through this list.
-EXCLUDE_FILES = ("autokernel-loop.md", "autopilot-continuous-optimization.md", "kernel-champion-and-promotion.md",
-                 "v11-promotion-checklist.md", "stack-lifecycle-program.md")
+EXCLUDE_FILES = ("autokernel-loop.md", "autokernel-akx-program.md", "autopilot-program.md",
+                 "kernel-champion-and-promotion.md", "v11-promotion-checklist.md", "stack-lifecycle-program.md")
 
 
 def load_index(root: Path | None = None) -> dict:
