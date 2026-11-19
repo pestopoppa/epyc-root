@@ -1,5 +1,6 @@
 """Offline controls for row ownership and refusal; never loads a model."""
 import json
+import signal
 from pathlib import Path
 import subprocess
 import tempfile
@@ -10,6 +11,47 @@ import live_proof_job as job
 
 
 class LiveProofTests(unittest.TestCase):
+    def test_keeper_stop_before_launch_retains_interrupted_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            d = Path(directory)
+            (d/'INPUTS.json').write_text('{}')
+            with patch.object(job.Path, 'cwd', return_value=d), \
+                 patch.object(job, 'check_inputs', side_effect=job.RowStopped('keeper signal 15')), \
+                 patch.dict(job.os.environ, {'FILLER_SMOKE': '1'}), \
+                 patch.object(job.subprocess, 'Popen') as launch:
+                self.assertEqual(job.main(), 75)
+            result = json.loads((d/'out-smoke/RESULT.json').read_text())
+            self.assertFalse(result['ok'])
+            self.assertEqual(result['verdict'], 'PREFLIGHT_INTERRUPTED')
+            self.assertTrue(result['own_server_reaped'])
+            launch.assert_not_called()
+
+    def test_keeper_sigterm_during_startup_reaps_and_records_unknown(self):
+        with tempfile.TemporaryDirectory() as directory:
+            d = Path(directory)
+            (d/'INPUTS.json').write_text(json.dumps({'model': 'unused', 'model_sha256': 'prepared'}))
+            child = Mock(pid=123)
+            child.poll.side_effect = [None, None, -15, -15]
+            def terminate(*_args, **_kwargs):
+                job.request_stop(signal.SIGTERM, None)
+            with patch.object(job.Path, 'cwd', return_value=d), \
+                 patch.object(job, 'check_inputs'), \
+                 patch.dict(job.os.environ, {'FILLER_SMOKE': '1', 'FILLER_ID': 'unit-test'}), \
+                 patch.object(job.socket.socket, 'connect_ex', return_value=1), \
+                 patch.object(job.urllib.request, 'urlopen', side_effect=terminate), \
+                 patch.object(job.subprocess, 'Popen', return_value=child), \
+                 patch.object(job.subprocess, 'check_output') as checker:
+                self.assertEqual(job.main(), 75)
+            result = json.loads((d/'out-smoke/RESULT.json').read_text())
+            self.assertFalse(result['ok'])
+            self.assertEqual(result['verdict'], 'PREFLIGHT_INTERRUPTED')
+            self.assertIn('15', result['error'])
+            self.assertTrue(result['own_server_reaped'])
+            self.assertFalse(result['force_preflight'])
+            child.terminate.assert_called_once_with()
+            child.kill.assert_not_called()
+            checker.assert_not_called()
+
     def test_reap_escalates_only_owned_child(self):
         child = Mock()
         child.poll.side_effect = [None, -9]

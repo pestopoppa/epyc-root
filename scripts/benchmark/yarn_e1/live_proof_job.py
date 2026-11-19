@@ -21,6 +21,14 @@ ROOT_REPO = '/mnt/raid0/llm/views/epyc-root-main'
 PORT = 18761
 
 
+class RowStopped(RuntimeError):
+    """A keeper termination must retain a result after reaping our server."""
+
+
+def request_stop(signum, _frame):
+    raise RowStopped(f'keeper signal {signum}')
+
+
 def argv(model, slots, threads):
     return [str(STORE/'bin/llama-server'), '-m', model, '--host', '127.0.0.1',
             '--port', str(PORT), '-np', '1', '-t', str(threads), '-tb', str(threads),
@@ -70,6 +78,7 @@ def main():
     child = None
     result = {'unit_id': str(attempt.name), 'checker_commit': CHECKER_COMMIT,
               'force_preflight': False, 'ok': False}
+    exit_code = 3
     try:
         inputs = json.loads((d/'INPUTS.json').read_text())
         check_inputs(inputs)
@@ -124,6 +133,10 @@ def main():
             raise RuntimeError('linkage verifier refused')
         result.update(ok=True, verdict='LIVE_PREFLIGHT_PASS', diagnostic=str(diagnostic),
                       kfd_gib=live['kfd_gib'])
+        exit_code = 0
+    except RowStopped as exc:
+        result.update(ok=False, verdict='PREFLIGHT_INTERRUPTED', error=str(exc))
+        exit_code = 75
     except Exception as exc:
         result.update(verdict='PREFLIGHT_REFUSED', error=f'{type(exc).__name__}: {exc}')
     finally:
@@ -131,9 +144,9 @@ def main():
             stop_own(child)
     result['own_server_reaped'] = child is None or child.poll() is not None
     (out/'RESULT.json').write_text(json.dumps(result, indent=2)+'\n')
-    return 0 if result['ok'] else 3
+    return exit_code
 
 
 if __name__ == '__main__':
-    signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(SystemExit(75)))
+    signal.signal(signal.SIGTERM, request_stop)
     raise SystemExit(main())
