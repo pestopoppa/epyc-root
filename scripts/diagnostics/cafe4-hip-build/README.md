@@ -81,3 +81,9 @@ checkout is reused. The original failed run remains referenced above.
 Next: consume the queued R2 smoke result; repair a failure or file the full
 HIP build verdict after a PASS and scheduled completion. Native CPU/GPU
 rollback and exact rc1 fault controls remain in CAFE-4.
+
+R2 smoke subsequently PASSed on cores 116–119 at 04:44:08Z, clean STOP rc75,
+including the unfixed/fixed IQK regression and Clang modes object. Receipt
+`/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-hip-build-r2-20261119/PASS.json`; SHA-256 `be8b840486700e1056881439b1f78492749a6ec54681aacb99789247e7874c32`.
+This supersedes the queued-smoke checkpoint above; full-build and native verdicts
+remain separate.
