@@ -11,3 +11,7 @@ C15-GV-COALESCE: row c15-gv-coalesce-gpu-20261118 was previously filed fail. At 
 ## 09:09Z — Repair router-wide correctness parser and publish replacement inference row
 
 RKA-A3B-ROUTER-WIDE: replacement rka-a3b-router-wide-gpu-20261119-r2 published; GPU smoke queued because GPU busy, so no PASS or measurement yet. The revised parser associates verdicts across intervening GPU warm-up diagnostics and requires the expected unique case set; offline checks on the original log counted all 16 cases and rejected an injected FAIL. Job SHA-256 64f21cdfaf25c89ceae9bc154b335b694443ad29ecb18b11c977b1d5ff58ad2e; source is detached worktree at bb3294c71b9d02fb8040a4d71dfec75f5522b4dc. C6 controller typed-refusal fix remains outside the lane-only editing authorization. Unrelated inference-mailbox alerts were not acknowledged: their underlying rows were not repaired or otherwise resolved in this turn.
+
+## 09:11Z — Check queued router-wide replacement smoke
+
+RKA-A3B-ROUTER-WIDE: replacement rka-a3b-router-wide-gpu-20261119-r2 remains queued for a GPU smoke; publisher intentionally retains its manifest as unpublished until PASS. No measurement or smoke verdict exists yet. Registered outcome paths for PASS, FAIL, and dropped smoke. The unrelated mailbox alerts remain unacknowledged because their underlying rows have not been repaired.
