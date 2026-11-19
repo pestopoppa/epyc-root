@@ -1,12 +1,12 @@
 {
   "files": {
-    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/candidate.cpp": "71ce1fb3e92098dfb586b06000a0ed4dee1e836c7c889774cb754dcde8f1b597",
-    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/driver.py": "42c4e175fce0f3470a79456bc1176ff4b9963f6d61dbd60169c4187312d85a56",
-    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/cafe4_modes.hpp": "3c9a64da0682769184a671212b94e434a4ef56723e139c40238f6a8259fb9538",
-    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/mtp_draft_bridge.hpp": "9688a97c3ad30e5aa008650d29a7b4d463109220b7dc48a136f9324aa2cf3919",
-    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/supervise.py": "ab378fc8bd635da299c0dbe7371cfc8d42842c864473755d905fbaa9931871c2"
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/candidate.cpp": "71ce1fb3e92098dfb586b06000a0ed4dee1e836c7c889774cb754dcde8f1b597",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/driver.py": "1a7e3c9b6945dc70f52ab3678fe5dfa7b4aace91e8aa3692be8be09687d6022d",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/cafe4_modes.hpp": "3c9a64da0682769184a671212b94e434a4ef56723e139c40238f6a8259fb9538",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/mtp_draft_bridge.hpp": "9688a97c3ad30e5aa008650d29a7b4d463109220b7dc48a136f9324aa2cf3919",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/supervise.py": "ab378fc8bd635da299c0dbe7371cfc8d42842c864473755d905fbaa9931871c2"
   },
-  "supervisor": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/supervise.py",
-  "modes_include": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119",
-  "bridge_include": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119"
+  "supervisor": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/supervise.py",
+  "modes_include": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119",
+  "bridge_include": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119"
 }

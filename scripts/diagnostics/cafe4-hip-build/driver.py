@@ -9,10 +9,12 @@ import sys
 import tempfile
 import time
 
-D = Path('/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119')
+D = Path('/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119')
 S = Path('/mnt/raid0/llm/tmp/df2/cafe4-modes-source')
 COMMIT = 'ffc1bac82eeca6f9099e1ccd9ba49703c460a115'
 PATCH = '351a431702613a5cad8d165c6959dbcde12a928963b8833bfa4668abb743e4dd'
+CLANGXX = '/opt/rocm/llvm/bin/clang++'
+IQK_COMPAT = '-Wno-enum-constexpr-conversion'
 MARKERS = (b'CAFE4_MTP_LOAD_ENABLED', b'CAFE4_MTP_ROLLBACK',
            b'CAFE4_DRAFT_REWIND_V4', b'--verify-batch', b'--fault-injection',
            b'FAIL injected-fault')
@@ -65,6 +67,11 @@ def validate(record):
             if target.parent != run / 'build/bin':
                 raise ValueError(f'nonlocal library: {target}')
         cache = (run / 'build/CMakeCache.txt').read_text()
+        if IQK_COMPAT not in cache or CLANGXX not in cache:
+            raise ValueError('missing Clang IQK compatibility configuration')
+        cpu_lib = (run / 'build/bin/libggml-cpu.so').resolve(strict=True)
+        if str(cpu_lib) not in record['files'] or b'iqk_convert_repack' not in subprocess.check_output(['nm', '-D', str(cpu_lib)]):
+            raise ValueError('compiled IQK implementation missing')
         if 'GGML_HIP:BOOL=ON' not in cache or 'CMAKE_HIP_ARCHITECTURES:UNINITIALIZED=gfx90a' not in cache and 'CMAKE_HIP_ARCHITECTURES:STRING=gfx90a' not in cache:
             raise ValueError('missing HIP/gfx90a build configuration')
         hip_lib = (run / 'build/bin/libggml-hip.so').resolve(strict=True)
@@ -75,13 +82,18 @@ def validate(record):
             raise ValueError('compiled HIP backend registration missing')
         if b'gfx90a' not in subprocess.check_output(['strings', str(hip_lib)]):
             raise ValueError('compiled gfx90a image marker missing')
+    elif mode == 'smoke':
+        if 'enum-constexpr-conversion' not in (run / 'iqk-negative.log').read_text():
+            raise ValueError('missing IQK regression witness')
+        if (run / 'iqk-fixed.log').read_text().find('error:') >= 0:
+            raise ValueError('IQK compatibility syntax check failed')
     elif mode != 'smoke':
         raise ValueError('unknown qualification mode')
 
 
 def write(mode, run, out):
     native = inputs()
-    files = [run / 'candidate.o'] if mode == 'smoke' else [
+    files = [run / 'candidate.o', run / 'iqk-negative.log', run / 'iqk-fixed.log'] if mode == 'smoke' else [
         run / 'build/bin/cafe4-mtp-rollback', run / 'build/CMakeCache.txt',
         run / 'configure.log', run / 'build.log', run / 'linkage.log',
         *list((run / 'build/bin').glob('libllama*.so*')),
@@ -122,14 +134,29 @@ def build():
     includes = [str(D), native['modes_include'], native['bridge_include'],
                 str(S / 'common'), str(S / 'src'), str(S / 'include'), str(S / 'ggml/include')]
     if os.environ.get('FILLER_DRYRUN') == '1':
-        run(['c++', '-std=c++17', '-O2', *['-I' + p for p in includes],
+        # Reproduce the original Clang enum error, then require the same IQK
+        # translation unit to pass with only the compatibility diagnostic disabled.
+        iqk = [CLANGXX, '-std=c++17', '-march=native', '-DGGML_USE_IQK_MULMAT',
+               '-D_GNU_SOURCE', '-D_XOPEN_SOURCE=600',
+               *['-I' + str(S / q) for q in ('ggml/include', 'ggml/src',
+                   'ggml/src/ggml-cpu', 'ggml/src/ggml-cpu/iqk')],
+               '-fsyntax-only', str(S / 'ggml/src/ggml-cpu/iqk/iqk_mul_mat.cpp')]
+        try:
+            run(iqk, work / 'iqk-negative.log')
+        except subprocess.CalledProcessError as error:
+            if error.returncode != 1 or 'enum-constexpr-conversion' not in (work / 'iqk-negative.log').read_text():
+                raise
+        else:
+            raise ValueError('unfixed IQK unexpectedly passed')
+        run([*iqk, IQK_COMPAT], work / 'iqk-fixed.log')
+        run([CLANGXX, IQK_COMPAT, '-std=c++17', '-O2', *['-I' + p for p in includes],
              '-c', str(D / 'candidate.cpp'), '-o', str(work / 'candidate.o')])
         write('smoke', work, Path(os.environ['FILLER_DRYRUN_RESULT_PATH']))
         # First-progress checker owns STOP after validating the compiled object.
         while not stop.exists() and time.time() < deadline:
             time.sleep(0.2)
         return 75
-    flags = ' '.join('-I' + p for p in includes)
+    flags = IQK_COMPAT + ' ' + ' '.join('-I' + p for p in includes)
     run(['cmake', '-G', 'Unix Makefiles', '-S', str(S), '-B', str(work / 'build'),
          '-DCAFE4_MTP_DIR=' + str(D), '-DCMAKE_BUILD_TYPE=Release',
          '-DCMAKE_CXX_FLAGS=' + flags, '-DGGML_HIP=ON', '-DGGML_BACKEND_DL=OFF',

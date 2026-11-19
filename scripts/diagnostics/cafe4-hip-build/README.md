@@ -52,3 +52,32 @@ Next: repair the experimental HIP build compiler configuration, preserving IQK
 and production source, then publish a replacement build row. After qualification,
 schedule CPU/GPU rollback and exact rc1 injected-fault controls. Parent CAFE-4
 remains open. [no-belief: build failure only; no native measurement]
+
+R2 compiler compatibility repair (2026-11-19)
+--------------------------------------------
+
+Published replacement `df2-cafe4-modes-hip-build-r2-20261119`.
+The publisher queued its four-CPU smoke for the keeper; no PASS or full-build
+verdict is claimed at this boundary. The existing CPU result was already filed
+and pushed before this resume and has not been re-filed.
+
+The R2 driver uses Clang's `-Wno-enum-constexpr-conversion` in the experimental
+C++ configuration to permit the existing IQK extended enum constants. This is
+a build compatibility setting, not a kernel source change or numerical fix.
+IQK stays compiled and the full-build validator additionally requires its
+`iqk_convert_repack` symbol in the hash-bound CPU library. Production source
+and the exact diagnostic patch are unchanged.
+
+The smoke now syntax-checks the actual failing `iqk_mul_mat.cpp` with ROCm
+Clang: it must first reproduce `enum-constexpr-conversion` without the flag,
+then pass with the flag. Both logs are hash-bound into the smoke record. It
+also compiles the modes candidate with the same Clang and compatibility flag
+and checks all six compiled option/control markers. Full-build validation
+retains HIP/gfx90a content and local-linkage requirements.
+
+R2 runtime directory: `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119`.
+Only small runtime inputs were prepared there; the existing detached source
+checkout is reused. The original failed run remains referenced above.
+Next: consume the queued R2 smoke result; repair a failure or file the full
+HIP build verdict after a PASS and scheduled completion. Native CPU/GPU
+rollback and exact rc1 fault controls remain in CAFE-4.
