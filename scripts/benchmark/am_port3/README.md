@@ -71,6 +71,81 @@ attention output, and measure cache quantization effects explicitly.
 The solver holds N×T full attention and N×t least-squares matrices for one shard;
 capture must bound N before scheduling. No 32K model run, 36 GiB memory proof,
 16-layer cosine verdict, or default-off throughput/KLD comparison has been run.
-AM-PORT-3 remains open for native capture, per-layer/head graph bias, C2 cache
-loading and a published calibration/decode row. This code does not alter the
-existing per-cell beta implementation.
+AM-PORT-3 remains open for the model capture driver, per-layer/head graph bias,
+C2 cache loading and a published calibration/decode row. This code does not alter
+the existing per-cell beta implementation.
+
+## Bounded native attention capture
+
+`native_capture.h` provides a `ggml_backend_sched_eval_callback` for the pinned
+`c9f2e34cea7a0e9ddac5ad7b2088bf06b56ee1db` public API. A calibration driver can
+install it through `llama_context_params.cb_eval` and `cb_eval_user_data`:
+
+```cpp
+am_capture::state capture;
+params.cb_eval = am_capture::callback;
+params.cb_eval_user_data = &capture;
+// Create context, fill the original cache, then arm exactly one bounded ubatch.
+capture.begin(new_capture_directory, actual_global_attention_layer_ids);
+int rc = llama_decode(ctx, calibration_batch);
+llama_synchronize(ctx);
+if (rc != 0) { /* refuse the capture; do not call it complete */ }
+else capture.finish(); // REQUIRED: callback errors do not cancel native decode
+```
+
+The driver must preserve build/model/input identities and query positions before
+decoding; use a fresh, single-sequence, contiguous-position cache. It must provide
+the actual global-attention layer set, use FA, bound the final batch to one
+ubatch, and keep callback state alive until context evaluation finishes. The
+callback starts disabled, does not mutate tensors or add graph nodes, and records
+the flash node's actual scale. It identifies Qwen35 global layers through the
+post-RoPE `Qcur-<layer>` name and its unary view ancestors. Unknown layers,
+multiple streams, sinks, ALiBi/softcap, duplicate layer visits, missing layers,
+unsupported tensor layout and budget overruns refuse completion. DCA and other
+architectures are not silently treated as captured: missing layers refuse at
+`finish()`.
+
+Native tensor reads use backend transfers and per-type dequantizers, one row at
+a time. Files contain canonical little-endian float32 with dimensions reversed
+from ggml `ne`: Q/K/V `[stream, head, token, width]`, output
+`[stream, query_token, query_head, value_width]`, mask
+`[1, 1, padded_query_token, cache_row]`. This preserves quantized K/V as actually
+consumed by attention, noncontiguous Q, unused cache rows and padding masks.
+The default bounds are 512 query tokens, 36,864 KV rows, width 512 and 4 GiB total
+float32 output. Streaming limits host row scratch; it does not prove the
+real-model GPU memory budget. `COMPLETE.json` appears atomically only after all
+requested layers succeed. Incomplete directories are diagnostics, never inputs
+to fitting.
+
+`capture.py --check <directory>` reconstructs native attention using pooled GQA
+head mapping, captured masks and scale. It emits content hashes and relative L2 /
+maximum absolute difference. This checks capture integrity; it does not measure
+compact-cache quality. A model-free CPU scheduler test (4 query heads, 2 KV
+heads, quantized K/V, a noncontiguous Q view and padded causal mask) observed
+relative L2 `0.0001949131192` and max absolute difference `0.0005026979804`
+against the float64 numpy oracle. Capture enabled/disabled outputs were exactly
+equal in that test. These are not model throughput/KLD or GPU findings.
+
+Compile/run the native test against headers and libraries bound to the approved
+source by its BUILD.json (set `LD_LIBRARY_PATH` to that build's own `bin`):
+
+```bash
+c++ -std=c++17 -O2 -Wall -Wextra -Werror -I<source>/ggml/include \
+  scripts/benchmark/am_port3/test_native_capture.cpp -L<build>/bin \
+  -lggml-cpu -lggml-base -lggml -Wl,-rpath,<build>/bin -o <scratch>/test_capture
+LD_LIBRARY_PATH=<build>/bin <scratch>/test_capture <new-empty-scratch-directory>
+OPENBLAS_NUM_THREADS=1 /mnt/raid0/llm/epyc-inference-research/.venv/bin/python \
+  scripts/benchmark/am_port3/capture.py --check <new-empty-scratch-directory>/valid
+```
+
+The test's output parent must exist and its child names must be unused. It checks
+the actual scheduler callback, quantized row reads, output parity, missing and
+unexpected layers, duplicate ubatches, and byte-budget refusal. Python tests now
+total 11, including reader failure and GQA/output-layout checks. The native test
+used the AM-PORT-2 BUILD.json source pin above and verified its CPU-library digest
+`1cdfde8202836f92cf0ed115c37a1540cf0dc880154b8ee6a1f50d37d75b48ec`
+before linking. Original evidence remains in
+`/mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-native/`; no binaries or
+source trees are vendored here. Real-model capture, NPZ conversion with original
+position/query IDs, shared selection, fitted carrier loading and decode remain
+unimplemented.
