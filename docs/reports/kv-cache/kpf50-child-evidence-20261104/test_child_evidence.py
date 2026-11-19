@@ -1,5 +1,7 @@
 import hashlib
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -49,5 +51,59 @@ class ChildEvidenceTests(unittest.TestCase):
     def test_rejects_foreign_non_child_row(self):
         self.write([{"run_id": "other", "role": "trunk_first"}] + [row(i) for i in range(4)])
         with self.assertRaises(EvidenceError): validate(self.path, RUN)
+
+    def cli(self, *args):
+        return subprocess.run(
+            [sys.executable, str(Path(__file__).with_name("child_evidence.py")),
+             str(self.path), "--run-id", RUN, *map(str, args)],
+            capture_output=True, text=True, check=False)
+
+    def test_cli_refuses_input_aliases_without_changing_raw_bytes(self):
+        self.write([row(i) for i in range(4)])
+        raw = self.path.read_bytes()
+        symlink = self.path.with_name("symlink.jsonl")
+        symlink.symlink_to(self.path)
+        hardlink = self.path.with_name("hardlink.jsonl")
+        hardlink.hardlink_to(self.path)
+        for output in (self.path, symlink, hardlink):
+            with self.subTest(output=output):
+                result = self.cli("--out", output)
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertIn("File exists", result.stderr)
+                self.assertEqual(self.path.read_bytes(), raw)
+                self.assertEqual(output.read_bytes(), raw)
+
+    def test_cli_creates_separate_nested_output_and_preserves_input(self):
+        self.write([row(i) for i in range(4)])
+        raw = self.path.read_bytes()
+        output = self.path.parent / "nested" / "partial.json"
+        result = self.cli("--out", output)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.path.read_bytes(), raw)
+        evidence = json.loads(output.read_text())
+        self.assertEqual(evidence["source_sha256"], hashlib.sha256(raw).hexdigest())
+        self.assertFalse(evidence["complete_outcome"])
+
+    def test_cli_refuses_existing_separate_output_and_dangling_symlink(self):
+        self.write([row(i) for i in range(4)])
+        raw = self.path.read_bytes()
+        output = self.path.with_name("existing.json")
+        output.write_bytes(b"keep existing evidence")
+        dangling = self.path.with_name("dangling.json")
+        missing = self.path.with_name("missing.json")
+        dangling.symlink_to(missing)
+        for destination in (output, dangling):
+            with self.subTest(destination=destination):
+                result = self.cli("--out", destination)
+                self.assertEqual(result.returncode, 2, result.stderr)
+                self.assertEqual(self.path.read_bytes(), raw)
+                self.assertEqual(output.read_bytes(), b"keep existing evidence")
+                self.assertFalse(missing.exists())
+
+    def test_cli_stdout_still_emits_partial_evidence(self):
+        self.write([row(i) for i in range(4)])
+        result = self.cli()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["status"], "partial_structural_evidence")
 
 if __name__ == "__main__": unittest.main()

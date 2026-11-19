@@ -69,18 +69,21 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("jsonl", type=Path)
     parser.add_argument("--run-id", required=True, help="expected runner run_id")
-    parser.add_argument("--out", type=Path, help="write partial evidence JSON; stdout otherwise")
+    parser.add_argument("--out", type=Path, help="create new partial evidence JSON; refuses existing paths; stdout otherwise")
     args = parser.parse_args()
     try:
         result = validate(args.jsonl, args.run_id)
+        rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
+        if args.out:
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            # Exclusive creation refuses regular files, symlinks and hard links
+            # without a check/write race that could truncate the raw evidence.
+            with args.out.open("x", encoding="utf-8") as output:
+                output.write(rendered)
+        else:
+            print(rendered, end="")
     except (OSError, EvidenceError) as exc:
         parser.error(str(exc))
-    rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
-    if args.out:
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(rendered)
-    else:
-        print(rendered, end="")
     return 0
 
 if __name__ == "__main__":
