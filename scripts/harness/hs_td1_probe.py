@@ -10,7 +10,10 @@ import json
 import math
 import sys
 
-import hs_td2_probe as runner
+if __package__:
+    from . import hs_td2_probe as runner
+else:
+    import hs_td2_probe as runner
 
 RISKS = ('low', 'medium', 'high')
 INTENTS = ('read', 'edit', 'execute', 'external')

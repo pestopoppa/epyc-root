@@ -133,7 +133,7 @@ def main():
 
     seen = set()
     # Finite prepared snapshot only, never tail a live session or wait for captures.
-    with args.captures.open('rb') as source, args.output.open('x', opener=lambda p, f: os.open(p, f, 0o600)) as sink:
+    with args.captures.open('rb') as source, open(args.output, 'x', opener=lambda p, f: os.open(p, f, 0o600)) as sink:
         while line := source.readline(131_074):
             if len(line) > 131_073:
                 raise ValueError('capture exceeds native bound')

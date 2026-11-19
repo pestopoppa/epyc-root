@@ -121,3 +121,24 @@ def test_wire_bytes_survive_parse_failure(api):
     assert result['response'] == raw
     assert result['receipt']['selector_calls'][0]['response'] == raw
     assert result['status'] == 'unknown'
+
+
+def test_cli_writes_private_native_receipt(api, tmp_path, monkeypatch):
+    from scripts.harness import hs_td2_selfcheck as consumer
+    from io import BytesIO
+    source, output = tmp_path / 'captures', tmp_path / 'out'
+    source.write_text(json.dumps(capture()) + '\n')
+    monkeypatch.setenv('FILLER_ID', 'test-only')
+    monkeypatch.delenv('FILLER_STOPFILE', raising=False)
+    monkeypatch.delenv('FILLER_DEADLINE', raising=False)
+    monkeypatch.setattr(consumer.importlib, 'import_module', lambda _: api)
+    monkeypatch.setattr(consumer.urllib.request, 'urlopen',
+                        lambda *a, **kw: BytesIO(json.dumps(response()).encode()))
+    monkeypatch.setattr(sys, 'argv', ['consumer', '--orchestrator-repo', str(tmp_path),
+        '--captures', str(source), '--output', str(output),
+        '--endpoint', 'http://mock', '--model', 'worker'])
+    assert consumer.main() == 0
+    assert json.loads(output.read_text())['status'] == 'ok'
+    assert output.stat().st_mode & 0o777 == 0o600
+    with pytest.raises(FileExistsError):
+        consumer.main()
