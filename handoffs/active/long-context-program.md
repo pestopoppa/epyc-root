@@ -155,6 +155,16 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     workspace-ec) Resume from the turn-42 slot in the scratch `slots/` if it is still there and its build and argv
     digest match; otherwise re-prefill. At ~600+ s per 8K turn, the remaining ~24 turns need ~4.5 h or more. Done when
     CY2's needle score and decode rate at ≥ 500K are recorded beside the 323K row.
+    Continuation recipe: original Qwen3.6-35B-A3B-MTP-Q8_0, verified v10 CPU store
+    `ffc1bac82`, research runner `0e4321f24bae29355333fcf2cb712a41ce080e2f`, original CY2 fixtures;
+    whole-host physical CPUs 0-95 (smoke: four keeper CPUs); re-prefill from zero when the historical
+    slot is absent. Question: does CY2 retain ≥4/5 needles and
+    local coherence at ≥500K, and what is its 128-token decode rate (both scores higher-better)?
+    One diagnostic chain, five distances at each checkpoint; n=1 cannot estimate run-to-run error or
+    establish a speed delta against the historical 323K run. Save every call and probe incrementally.
+    Stop-on-answer when the 510K-target probe records all five needle outcomes, local coherence and
+    a valid 128-token decode timing; stop-on-futility on native proof, HTTP, prefix-reuse or slot-restore
+    failure, or keeper deadline. Gate-class = futility-only; no interim formal-gate PASS.
     - [parked: operator 2026-11-07 — re-open when C8 long-context attention decode/verify fix lands; measured 27B decode 17/12/7 tok/s at 128k/240k/500k, attention KV reads ~10% of HBM; /mnt/raid0/llm/tmp/inf22-strategy-memo-20261107/MEMO.md] [no-belief: operator decision]
   - **[declined: ws58 2026-11-03 content-review: duplicate — the finding is already the seed of kernel-champion-and-promotion.md AKX-ALL-24 and the AK CPU long-context lane (AKX-ALL-4..11), which carry the lever]** **YARN-CPU-ATTN — CPU attention cost at depth is the CPU long-context bottleneck.** (filed 2026-10-05,
     workspace-ec) The per-8K-turn append cost rises ~30× from depth 0 to 351K, and decode falls from 20.4 to 2.9
