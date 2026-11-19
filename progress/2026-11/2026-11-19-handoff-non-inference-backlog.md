@@ -23,3 +23,7 @@ Duplicate dispatch for `afc-v3-q38_flash-tools-none-r2-20261110`: verdict filed 
 ## 03:32Z — Consume duplicate Q36 v3c mild event; existing verdict retained
 
 Dispatched `afc-v3c-q36_35b-tools-mild-20261111` already filed PASS at 2026-11-11T16:54:07Z, with `.FILED` present and AFC-V3C-PROD-TOOLS closed. Existing verdict binds result SHA-256 `87f504bc5db8a7bee7e4448227d35cd5c46041c7a9a3089a5b36c88bf30f41ba`. No re-filing or completion credit; no outstanding result-bearing task in this event. Remaining-work checkpoint unchanged.
+
+## 03:34Z — Consume duplicate Q36 rewording event; preserve completed verdict and ratification
+
+Dispatched `afc-v3d-q36_35b-tools-aggressive-reword-20261112` already filed PASS at 2026-11-12T12:57:02Z; `.FILED` exists and AFC-Q36-AGENTFILE-CTX-REFUSAL is closed, including operator-ratified deployment at root `a81fc882e`. Existing verdict binds result SHA-256 `fa97805f877ae8c7029eccfb5a07f02afbc258d4e1bb258f9999661b7593ccb5`. No re-filing, remeasurement or completion credit. No outstanding result-bearing task in this event; remaining-work checkpoint retained.
