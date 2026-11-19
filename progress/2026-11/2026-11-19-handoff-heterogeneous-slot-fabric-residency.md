@@ -17,3 +17,11 @@ Duplicate event `kpf174-prefix-request-integration-20261105`: file_result.py ret
 ## 03:06Z — Consume already-filed output-supervision run-end; no new result-bearing task in this duplicate event.
 
 Duplicate event `kpf18-g3-output-supervision-qual-r2-20261105`: existing PASS verdict dated 2026-11-05T03:33:24Z and completed KPF-18-G3-OUTPUT-SUPERVISION-QUAL box already retain the six isolated controls. Native result SHA-256 from the existing receipt: `869486c3da026e9987bd7004b87f509e648ac035d96165ec5ff276ed9bf1cec9`. No new result or checkbox completion. Existing scope excludes integrated candidate, native lifecycle, GPU and unsampled peak. [no-belief: duplicate event acknowledgement]
+
+## 03:07Z — Acknowledge replayed later-slot qualification run-end; preserve the existing filed PASS and completed box.
+
+### KPF-18-G3-LATER-SLOTS-QUAL — replayed run-end acknowledged
+
+Row `kpf18-g3-later-slots-qual-20261105` ended rc0. Applied the decision rule to the existing native result: PASS, all 12 synthetic real-socket controls present across queries 2 and 3; target stalls took 0.180150–0.180189 s and STOP took 0.020251–0.020377 s, with joined peers. Query-2 timeouts were swallowed before the fixture terminal Deadline propagated; query-3 timeouts propagated directly. This is scoped software qualification, with no native lifecycle or GPU claim. Existing agent verdict already records PASS with matching result SHA-256 `9155b36b15b7707fc4383086fa2de0e198a69e7739da79495e87a84a77952a35`; the handoff box is already checked. Refreshed the FILED receipt without overwriting the verdict or reticking the box. Evidence: `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/RESULT.json` (SHA-256 above), and `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf18-g3-later-slots-qual-20261105.verdict.json`. [no-belief: duplicate receipt for scoped model-free software qualification]
+
+Next: inspect the deficit GPU lane row `kpf41-backend-gpu-qualification-20261105`, resolve its routed box and current qualification failure, and advance only if unheld and within the lineage retry limit.
