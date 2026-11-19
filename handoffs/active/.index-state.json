@@ -104,7 +104,7 @@
       "closed": 870,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 110,
+      "open": 114,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 982,
+      "total": 986,
       "tracks": [
         {
           "blocked": 2,
@@ -128,14 +128,14 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 33
+          "open": 37
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 6071,
+          "line": 6084,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6151,
+          "line": 6164,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6449,
+          "line": 6462,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 13
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9689,
+          "line": 9702,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 47
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14095,
+          "line": 14108,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14308,
+          "line": 14321,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11
@@ -2142,7 +2142,7 @@
       "closed": 372,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 7,
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2151,7 +2151,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 379,
+      "total": 375,
       "tracks": [
         {
           "blocked": 0,
@@ -2173,7 +2173,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1572,
+          "line": 1573,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2186,17 +2186,17 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2729,
+          "line": 2730,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 4
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3140,
+          "line": 3134,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2206,7 +2206,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3653,
+          "line": 3647,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2216,7 +2216,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3748,
+          "line": 3742,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
