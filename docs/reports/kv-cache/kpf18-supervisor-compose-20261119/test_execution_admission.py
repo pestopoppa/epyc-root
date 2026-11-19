@@ -222,4 +222,129 @@ class ExecutionAdmission(unittest.TestCase):
 
 
 
+class PublisherSmokeAdmission(unittest.TestCase):
+    def setUp(self):
+        ExecutionAdmission.setUp(self)
+        self.config['mode'] = 'publisher-smoke'
+        self.dry = self.flags / 'dryrun' / 'synthetic-row'
+        (self.dry / 'grants').mkdir(parents=True)
+        (self.dry / 'state').mkdir()
+        self.result = self.dry / 'native-attempts/attempt-synthetic/native-result.json'
+        self.result.parent.mkdir(parents=True)
+        self.grant = self.dry / 'grants/synthetic-row.grant'
+        self.raw = self.raw.rstrip() + (' schema=epyc.rowflow.dryrun-grant.v1'
+                                       ' id=synthetic-row kind=rowflow-dryrun'
+                                       ' admission_class=diagnostic\n')
+        self.grant.write_text(self.raw)
+        patcher = patch.dict(os.environ, {
+            'FILLER_SMOKE': '1', 'FILLER_DRYRUN': '1',
+            'FILLER_FLAGS_DIR': str(self.flags), 'FILLER_GRANTS_DIR': str(self.dry / 'grants'),
+            'FILLER_DRYRUN_DIR': str(self.dry), 'FILLER_STATE_DIR': str(self.dry / 'state'),
+            'FILLER_DRYRUN_RESULT_PATH': str(self.result)})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_capture_and_recheck_use_publisher_grant_and_same_provider(self):
+        witness = self.gate.capture(self.seal)
+        self.gate.recheck(self.seal, witness)
+        # Smoke never modifies the official grant or creates a result.
+        self.assertEqual((self.flags/'grants/synthetic-row.grant').read_text(),
+                         self.raw.split(' schema=')[0] + '\n')
+        self.assertFalse(self.result.exists())
+
+    def test_mode_cannot_be_selected_by_environment(self):
+        self.config.pop('mode')
+        with self.assertRaises(ValueError): self.gate.capture(self.seal)
+        self.config['mode'] = 'unsupported'
+        with self.assertRaisesRegex(ValueError, 'unknown sealed'): self.gate.capture(self.seal)
+
+    def test_missing_or_redirected_publisher_context_refused(self):
+        changes = [('FILLER_SMOKE', '0'), ('FILLER_DRYRUN', '0'),
+                   ('FILLER_FLAGS_DIR', '/foreign'), ('ROWFLOW_FLAGS', '/foreign'),
+                   ('FILLER_GRANTS_DIR', str(self.flags/'grants')),
+                   ('FILLER_DRYRUN_DIR', str(self.flags/'dryrun/other-row')),
+                   ('FILLER_STATE_DIR', str(self.flags/'state')),
+                   ('FILLER_ID', 'other-row'), ('FILLER_PREFLIGHT', '1'),
+                   ('FILLER_DIRECT', '1'), ('KPF_SMOKE', '1')]
+        for name, value in changes:
+            with self.subTest(name=name), patch.dict(os.environ, {name: value}):
+                with self.assertRaises(ValueError): self.gate.contract(self.config)
+        for name in ('FILLER_FLAGS_DIR', 'FILLER_GRANTS_DIR', 'FILLER_DRYRUN_DIR', 'FILLER_STATE_DIR'):
+            with self.subTest(missing=name), patch.dict(os.environ):
+                del os.environ[name]
+                with self.assertRaises(ValueError): self.gate.contract(self.config)
+
+    def test_official_or_foreign_dryrun_grant_refused(self):
+        for raw in (self.raw.split(' schema=')[0],
+                    self.raw.replace('id=synthetic-row', 'id=foreign-row'),
+                    self.raw.replace('kind=rowflow-dryrun', 'kind=official'),
+                    self.raw.replace('dryrun-grant.v1', 'dryrun-grant.v0'),
+                    self.raw + ' extra=unknown', self.raw + ' id=synthetic-row'):
+            with self.subTest(raw=raw):
+                self.grant.write_text(raw)
+                with self.assertRaises(ValueError): self.gate.contract(self.config)
+
+    def test_exact_four_affinity_and_deadline_required(self):
+        for affinity in ({184,185}, {184,185,186,188}):
+            with patch.object(self.gate.os, 'sched_getaffinity', return_value=affinity):
+                with self.assertRaisesRegex(ValueError, 'affinity'): self.gate.contract(self.config)
+        self.grant.write_text(self.raw.replace('184-187', '184-185'))
+        with patch.dict(os.environ, FILLER_CPUS='184-185', FILLER_THREADS='2'), \
+             patch.object(self.gate.os, 'sched_getaffinity', return_value={184,185}):
+            with self.assertRaisesRegex(ValueError, 'affinity'): self.gate.contract(self.config)
+        self.grant.write_text(self.raw)
+        with patch.object(self.gate.time, 'time', return_value=self.end - 90):
+            with self.assertRaisesRegex(ValueError, 'deadline'): self.gate.contract(self.config)
+
+    def test_result_isolation_and_context_drift_before_main(self):
+        for path in (self.root/'official-result.json', self.dry/'native-result.json',
+                     self.flags/'dryrun/foreign/native-attempts/attempt-x/native-result.json'):
+            with self.subTest(path=path), patch.dict(os.environ, FILLER_DRYRUN_RESULT_PATH=str(path)):
+                with self.assertRaisesRegex(ValueError, 'isolated native result'):
+                    self.gate.contract(self.config)
+        witness = self.gate.capture(self.seal)
+        new = self.result.parent.parent/'attempt-other/native-result.json'
+        new.parent.mkdir()
+        with patch.dict(os.environ, FILLER_DRYRUN_RESULT_PATH=str(new)):
+            with self.assertRaisesRegex(ValueError, 'grant changed'):
+                self.gate.recheck(self.seal, witness)
+        self.result.symlink_to(self.root/'absent')
+        with self.assertRaises(ValueError): self.gate.contract(self.config)
+
+    def test_stop_terminals_holds_symlinks_and_provider_loss_refused(self):
+        ExecutionAdmission.test_stop_terminal_and_active_hold_refused(self)
+        for name in ('stop', 'ended', 'complete'):
+            path = self.dry/name
+            path.touch()
+            try:
+                with self.assertRaises(ValueError): self.gate.contract(self.config)
+            finally: path.unlink()
+        ExecutionAdmission.test_symlinked_grant_and_dangling_stop_refused(self)
+        Path(self.config['stop_file']).unlink()
+        ExecutionAdmission.test_provider_refusal_propagates(self)
+
+    def test_provider_loss_and_symlinked_namespace_refused(self):
+        lost = self.root/'writer-lost'
+        self.provider.write_text(self.provider.read_text().replace(
+            'assert witness["row_id"] == "synthetic-row"',
+            f'assert not Path({str(lost)!r}).exists(), "writer lost"'))
+        self.seal['sources'][str(self.provider)] = sha(self.provider)
+        witness = self.gate.capture(self.seal)
+        lost.touch()
+        with self.assertRaisesRegex(AssertionError, 'writer lost'):
+            self.gate.recheck(self.seal, witness)
+        lost.unlink()
+        state = self.dry/'state'
+        state.rmdir()
+        state.symlink_to(self.root, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, 'unsafe rowflow directory'):
+            self.gate.contract(self.config)
+
+    def test_actual_supervisor_smoke_capture_import_recheck_main_and_drift(self):
+        ExecutionAdmission.test_actual_supervisor_capture_import_recheck_main_order(self)
+
+    def test_actual_supervisor_refuses_bad_context_before_import(self):
+        ExecutionAdmission.test_actual_supervisor_order_and_refusal_before_driver_import(self)
+
+
 if __name__ == '__main__': unittest.main()

@@ -1,4 +1,6 @@
-"""Read-only full-run entry checks. No grant/lock acquisition or dispatch authority.
+"""Read-only official and explicitly sealed publisher-smoke entry checks.
+
+No grant/lock acquisition or dispatch authority.
 
 The manifest supplies reviewed artifact identities, never identities learned at
 entry. Hashing excludes model weights. This binds files, not mapped native DSOs.
@@ -80,21 +82,44 @@ def contract(config):
     stop = Path(config['stop_file'])
     if not re.fullmatch('[a-zA-Z0-9_-]+', row) or not stop.is_absolute():
         raise ValueError('invalid sealed row/STOP identity')
-    for key, expected in (('FILLER_FLAGS_DIR', FLAGS), ('ROWFLOW_FLAGS', FLAGS),
-                          ('FILLER_GRANTS_DIR', FLAGS / 'grants')):
-        if env.get(key, str(expected)) != str(expected):
+    mode = config.get('mode', 'official')
+    if mode not in ('official', 'publisher-smoke'):
+        raise ValueError('unknown sealed execution mode')
+    smoke = mode == 'publisher-smoke'
+    dry = FLAGS / 'dryrun' / row
+    grants = dry / 'grants' if smoke else FLAGS / 'grants'
+    expected_env = [('FILLER_FLAGS_DIR', FLAGS), ('ROWFLOW_FLAGS', FLAGS),
+                    ('FILLER_GRANTS_DIR', grants)]
+    if smoke:
+        expected_env += [('FILLER_DRYRUN_DIR', dry), ('FILLER_STATE_DIR', dry / 'state')]
+    for key, expected in expected_env:
+        if env.get(key, '' if smoke and key != 'ROWFLOW_FLAGS' else str(expected)) != str(expected):
             raise ValueError('redirected official rowflow namespace')
-    if any(env.get(key) not in (None, '', '0') for key in
-           ('FILLER_PREFLIGHT', 'FILLER_DRYRUN', 'FILLER_SMOKE', 'KPF_SMOKE', 'FILLER_DIRECT')):
+    if smoke:
+        if env.get('FILLER_DRYRUN') != '1' or env.get('FILLER_SMOKE') != '1':
+            raise ValueError('publisher smoke context absent')
+        refused = ('FILLER_PREFLIGHT', 'FILLER_DIRECT', 'KPF_SMOKE')
+    else:
+        refused = ('FILLER_PREFLIGHT', 'FILLER_DRYRUN', 'FILLER_SMOKE', 'KPF_SMOKE', 'FILLER_DIRECT')
+    if any(env.get(key) not in (None, '', '0') for key in refused):
         raise ValueError('full-run admission refuses smoke/dryrun/direct context')
     if env.get('FILLER_ID') != row or env.get('FILLER_STOPFILE') != str(stop):
         raise ValueError('row/STOP identity mismatch')
     # Refuse symlinked namespaces, including dangling STOP leaves.
-    for path in (FLAGS / 'grants', stop.parent):
+    directories = [grants, stop.parent]
+    result = None
+    if smoke:
+        result = Path(env.get('FILLER_DRYRUN_RESULT_PATH', ''))
+        if (result.parent.parent != dry / 'native-attempts'
+                or not re.fullmatch(r'attempt-[A-Za-z0-9_-]+', result.parent.name)
+                or result.name != 'native-result.json' or result.is_symlink()):
+            raise ValueError('publisher smoke requires isolated native result')
+        directories.extend([dry / 'state', result.parent])
+    for path in directories:
         for component in (path, *path.parents):
             if component.is_symlink() or not component.is_dir():
                 raise ValueError('unsafe rowflow directory')
-    grant = FLAGS / 'grants' / (row + '.grant')
+    grant = grants / (row + '.grant')
     raw = regular(grant)
     fields = {}
     for token in raw.split():
@@ -102,8 +127,15 @@ def contract(config):
         if not sep or not value or key in fields:
             raise ValueError('malformed or duplicate grant field')
         fields[key] = value
-    if not {'regions', 'start', 'end', 'holds'} <= fields.keys() or fields.keys() - {
-            'regions', 'start', 'end', 'holds', 'cpus', 'lock'}:
+    required = {'regions', 'start', 'end', 'holds'}
+    optional = {'cpus', 'lock'}
+    if smoke:
+        required |= {'schema', 'id', 'kind'}
+        optional |= {'admission_class'}
+        if (fields.get('schema') != 'epyc.rowflow.dryrun-grant.v1'
+                or fields.get('id') != row or fields.get('kind') != 'rowflow-dryrun'):
+            raise ValueError('publisher smoke grant identity')
+    if not required <= fields.keys() or fields.keys() - required - optional:
         raise ValueError('unknown current grant schema')
     gpu, sep, host = fields['regions'].partition(',')
     if gpu != 'mi210_0' or not sep or 'gpu-quiet' not in fields['holds'].split(','):
@@ -119,16 +151,20 @@ def contract(config):
             or env.get('FILLER_THREADS') != str(len(allowed))):
         raise ValueError('grant-derived environment mismatch')
     affinity = os.sched_getaffinity(0)
-    if not affinity or not affinity <= allowed:
+    if (not affinity or not affinity <= allowed
+            or (smoke and (len(allowed) != 4 or affinity != allowed))):
         raise ValueError('CPU affinity escape')
-    for path in (stop, grant.with_suffix('.ended'), grant.with_suffix('.complete')):
+    terminals = [stop, grant.with_suffix('.ended'), grant.with_suffix('.complete')]
+    if smoke:
+        terminals += [dry / 'ended', dry / 'complete', dry / 'stop']
+    for path in terminals:
         if path.exists() or path.is_symlink():
             raise ValueError('STOP or terminal row')
     # Match current rowflow operator_holds; historical wildcard holds are obsolete.
     for path in FLAGS.glob('HOLD_*'):
         if re.fullmatch(r'HOLD_[A-Za-z0-9_-]+', path.name) and path.is_file():
             raise ValueError('operator HOLD')
-    return raw
+    return (raw, str(result)) if smoke else raw
 
 
 def capture(seal):

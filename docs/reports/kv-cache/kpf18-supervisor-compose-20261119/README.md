@@ -205,3 +205,66 @@ remain prerequisite to full installation. Next: recover those identities and
 qualify the composed installation; separately qualify a publisher-smoke path
 before publishing any native lifecycle successor. The retained driver's own
 historical guards have not been bypassed or represented as current authority.
+
+
+## 2026-11-19 — explicitly sealed publisher-smoke admission
+
+The disabled supervisor now supports `execution.mode = "publisher-smoke"`.
+The default remains `official`; environment flags cannot select the sealed
+mode. Both modes retain identical artifact custody, provider capture and
+pre-main provider/source rechecks. No launcher or persistent installation was
+enabled or updated.
+
+Smoke admission reads only the current row's canonical
+`compute-flags/dryrun/<row>/grants/<row>.grant`, requiring the publisher's
+`epyc.rowflow.dryrun-grant.v1` schema, matching `id`, and `kind=rowflow-dryrun`.
+It checks the actual inherited publisher dry-run/state/grants directories,
+exactly four assigned CPUs and equal process affinity, the sealed grant window,
+STOP identity, deadline and GPU declaration. Direct, preflight and historical
+`KPF_SMOKE` contexts fail closed. Both publisher flags must equal `1`.
+The optional `ROWFLOW_FLAGS` alias, when present, must remain canonical.
+
+The result path must name `native-attempts/attempt-*/native-result.json` under
+that same row's dry-run directory. Symlinked result leaves or directory
+components refuse entry. The grant bytes and selected result path are retained
+and compared before main; STOP, terminal receipts and active HOLDs are rechecked.
+This checks the destination at admission boundaries; it does not redirect the
+inherited driver's outputs or prove all its writes use this path. The sealed
+`window_s` must match the publisher-generated grant duration; no new window,
+grant, lock, result or environment authority is created by admission.
+
+Ten new smoke tests plus fifteen official tests PASS (25 admission tests).
+Six binding regressions also PASS (31 total). The smoke controls traverse the
+actual supervisor capture/import/recheck/main path with a synthetic driver,
+and prove import-time artifact drift prevents main. Refusal controls cover
+wrong mode/row/schema, missing or redirected publisher context, two-core or
+escaped affinity, expired deadline, output isolation and result-path drift,
+STOP/terminal/HOLD, symlinked grant/state/result, provider capture refusal and
+loss of the captured provider before main. All use private namespace, clock,
+affinity, provider and inert artifact fixtures. The supervisor ordering fixtures
+bypass the outer cleanup wrapper, whose binding controls remain separate.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
+  -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 \
+  -p test_execution_admission.py -v
+PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
+  -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 \
+  -p test_supervisor.py -k Binding -v
+```
+
+| File | SHA-256 |
+| --- | --- |
+| `execution_admission.py` | `bb34f0ebcc8c476a60b1f63093050e3196ab8b4dfb06ec19897122fc350c3a1f` |
+| `test_execution_admission.py` | `35cd7261e878c638d50037e3138afc15c7b7f3a73ec0689459e33ff57011dc7f` |
+
+This is model-free code qualification. No publisher invocation, native smoke
+PASS, real provider admission, mapped-DSO custody, inherited installation or GPU
+qualification is claimed. The original R9 seals and historical qualification
+record remain intact. The retained candidate `normalize_bridge.py` has SHA-256
+`a68c3a1e0986bcf4c8a058965bbaa78bc6592ce1172aac6e4d1831eadd9e1ad4`,
+which cannot satisfy the missing R9 identity above; its candidate has no
+`test_real_grid.py`. To avoid repeated recovery-only turns, the next integration
+step is an explicitly versioned successor using retained inputs and independent
+integration controls, preserving rather than weakening the historical seals.
+Then qualify the installed driver and output routing before native publication.
