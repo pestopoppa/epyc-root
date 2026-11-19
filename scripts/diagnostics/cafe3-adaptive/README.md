@@ -289,8 +289,9 @@ retained predeclared context manifest binding actual source/build/library/model,
 protocol/corpus/repetitions/decision/stop rules and grant/placement identities.
 The sink validates syntax; the future row launcher must hash and verify that
 manifest and its actual launch bindings before starting native capture. No
-such launch or manifest validation is claimed here. Reusing a journal path
-fails closed. Native execution must remain blocked until that launcher exists.
+native launch is claimed here. The validator below implements the manifest
+precondition; a scheduled native launcher must still call it and use its exact
+returned argv/environment. Reusing a journal path fails closed.
 
 The source is registered prospectively in `scripts/vidya/adapters/README.md`
 with task `VB-CAFE3-ROUND-WIRE`. Projection uses the existing measurement carrier
@@ -315,3 +316,60 @@ Source SHA-256 bindings for this milestone:
 - `native_sink.h`: `6ae785888b42922d92f4e4306289ac1528471e1d303612e66db8360652157b41`
 - `prepare_candidate.py`: `ca51e3fe2f6fa1ea36c2734f5dc82bdea5c90bc64f3b5123c6702abf433623ef`
 - `test_native_sink.py`: `cca4ee08b251e7a58e0f7cb4309bb0f7e100bc84e4f9fb433180944f967b8a25`
+
+### Native launch-context validator (2026-11-19)
+
+`launch_context.validate_launch_context(manifest_path, expected_sha256, argv)`
+checks the retained manifest before capture and returns an exact child argv and
+isolated environment. Its CLI takes the manifest, its externally pinned SHA-256
+and a file containing the actual intended argv JSON array; it prints the plan
+and starts no process. The future row runner must execute the returned plan
+unchanged, supervise STOP/deadline, and record actual mapped libraries and
+in-window HIP residency separately. Preserve this module and both sibling
+build-driver directories in the runner's pinned input layout.
+
+The `epyc.cafe3.launch-context.v1` manifest has these required fields:
+
+| Fields | Binding |
+| --- | --- |
+| `run`, `row`, `journal`, `backend`, `arm` | Unique retained server-run label, official row, unused absolute journal path, `cpu` or `hip`, and `adaptive` arm |
+| `argv` | Exact command array; canonical `-m`, `--model-draft`, `-t`, `-tb`, `-ngl`, `--gpu-layers-draft` each once; no competing aliases or remote model loaders |
+| `build` | `{path, sha256}` of a full matching-backend receipt; producer validation checks pinned production/source, compiled markers, cache and local libraries, plus HIP exports/gfx90a; executable/cache/linkage must themselves be hash-bound |
+| `prepared` | `{path, sha256}` of an `epyc.cafe3.prepared.v1` record prepared **before** the grant; `models` has exactly `target` and `draft`, plus a `corpus` record |
+| `corpus` | Exact prepared corpus record, also repeated in the protocol |
+| `protocol` | `{path, sha256}` of `epyc.cafe3.protocol.v1`: `corpus`, nonempty `question`, `decision_rule`, `checkpoints`, `stop_on_answer`, `stop_on_futility`, positive integer `repetitions`, unique named `arms` including `adaptive` |
+| `grant` | `{path, sha256}` of the official `grants/<row>.grant`; seal this final launch manifest after assignment and before any native observations |
+| `placement` | Exact `regions`, `holds`, CPU-list `cpus`, positive integer `threads`; match grant, filler environment and current process affinity |
+| `device_env` | CPU: `{}`; HIP: `HIP_VISIBLE_DEVICES` and `ROCR_VISIBLE_DEVICES` both `"0"`, matching actual runner environment and `gpu-quiet` grant token |
+
+Each prepared model/corpus record contains canonical absolute `path`, precomputed
+`sha256`, and `identity` with `device`, `inode`, `size`, `mtime_ns`, `ctime_ns`.
+Use `file_identity(path)` around the **outside-grant** hashing step and refuse
+preparation if the identity changes. Launch validation compares this sealed
+identity without reading model weights. It detects replacement and ordinary
+in-place modification; it is not protection against a privileged actor restoring
+filesystem metadata. Keep inputs stable between validation and child execution.
+Protocol and prepared JSON bytes are checked and parsed from the same snapshot;
+duplicate keys and nonfinite constants are refused. A protocol digest binds its
+declared rules; this validator does not decide their statistical sufficiency.
+
+Future execution must retain the manifest bytes and expected digest independently
+of the journal. The isolated child environment sets the candidate's own
+`LD_LIBRARY_PATH`, threads, `GGML_IQK=1`, adaptive/run/journal/context identities
+and GPU visibility, without inherited loader overrides. Grant expiry, STOP,
+ended/completed grants, dry-run capture, CPU/thread/GPU mismatches and existing
+journals fail closed. CPU grants with explicit region lists may omit redundant
+`cpus=` as the production allocator does.
+
+Validation: **10 tests PASS** via
+`python3 -m unittest discover -s scripts/diagnostics/cafe3-adaptive -p test_launch_context.py -v`.
+Tests exercise the real CPU build validator against model-free artifacts (mocking
+source inventory and `strings` output only), stale/smoke receipts, unbound and
+tampered artifacts, modified manifests/models/corpus/protocols, CLI overrides,
+row/deadline/STOP/affinity/GPU placement, duplicate grant fields, ended/copied
+grants, journal exclusivity and absence of weight hashing. HIP placement tests
+use a mocked build validator; they establish no native HIP execution.
+
+This is a tested launch-precondition implementation. Full builds, runner
+integration, native captures, token identity and P9 performance remain open.
+[no-belief: source implementation and model-free launch refusal controls only]
