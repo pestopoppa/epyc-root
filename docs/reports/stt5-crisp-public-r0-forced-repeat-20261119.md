@@ -19,3 +19,13 @@ Native evidence remains in task scratch; identities at publication:
 - `/mnt/raid0/llm/tmp/stt5/crisp-runtime-20261119/r0-forced-repeat/smoke_check.py` SHA-256 `55aefbc381556bda32129b5e673c267432dcf8cc397f51cbd6f7ac1b0f59f657`.
 
 Publisher qualification: `publish_row.py --smoke-now` reported SMOKE PASS on CPUs 140–143 at 2026-11-19T14:02:46Z, rc0, reason complete, via the fresh native PASS predicate. The row is published for grant execution. This records qualification only; the separately isolated grant verdict is pending.
+
+## Filed grant verdict
+
+**PASS**, under this row's separately scoped engineering rule. The grant ended rc0, reason complete, at 2026-11-19T14:03:21Z. Its one R0 forced en-US child exited rc0 and was reaped, produced 48 native tokens and nonempty parser-validated text, with zero unk tokens. All six expected libraries were sampled and no foreign ggml path was recorded. Native stdout/stderr/transcript digests and the configuration binding matched the records when filed.
+
+The grant admitted CPUs 72–75 and 168–171; the child was assigned 75,168,169 with three configured threads. The summary reports two available worker groups, but this scoped experiment had only one case and one child. These are affinity/configuration records, not measured physical-core occupancy. Smoke output is separate and contributes no grant observation. No timing or rate inference follows.
+
+Grant summary: `/mnt/raid0/llm/tmp/stt5/crisp-runtime-20261119/r0-forced-repeat/output/summary.json`, SHA-256 `78dfe29a4e99d733035df62711856fe0ff324f85cf62060d750e280fa20f2ac1`. Native output hashes remain in that summary. Config SHA-256 `cfd2a6080509e617e4194f7487f2b761c13370d777cb18a1267c9c9f44bffe9d`.
+
+The previous eight-cell r2 matrix remains INCONCLUSIVE and its R0 forced outcome remains UNKNOWN. This new public-fixture repetition demonstrates the scoped runtime check only; it neither redraws validation exposures nor completes the STT5 accuracy screen. No WER, runner parity, calibrated rate, acceptance or promotion is claimed. Existing STT5 native-source registration covers these records. [belief: cc]
