@@ -48,6 +48,58 @@ Exactly one table shape, in every domain index:
 
 A handoff checkbox that launches a measurement includes a `Stop rule:` field — question, expected effect versus sample-size error, checkpoints, stop-on-answer and stop-on-futility (formal-gate cells: futility-only). It lives in the handoff task, never in the index row. Canonical: [`measurement-sufficiency.md`](measurement-sufficiency.md).
 
+## Box grammar, placement and lifecycle (handoff standard, 2026-11-19)
+
+Rows say *which handoff*; boxes say *which task*. A box is the task record the dispatcher selects
+(`scripts/coordination/taskflow/select.py`) from the generated `handoffs/active/.box-index.json`
+(gitignored, rebuilt on read by `scripts/handoffs/box_index.load()`; `index_state.py --box-index`
+writes it). Canonical spec: `HANDOFF-STANDARD.md` of the 2026-11-19 dispatcher redesign, binding
+operator decisions 1-6.
+
+```
+- [ ] **<ID>** [<class>] <imperative task text, one sentence>
+      · done when: <test command | file+field | tick verdict text | row PASS>
+      · gate: <ID, ROW-ID, ROW#track | none>        · inputs: `<path>` `<path>`
+      · tier: haiku|sonnet|opus|luna|terra|sol (optional)   · owner: <track|session> (optional)
+      inference only: · model · build · harness · metric(dir) · rule · region · est <N s from <run>>
+      · stop rule: <question / effect vs error / checkpoints / stop-on-answer / futility>
+```
+
+- **ID** — the first token inside the leading bold, unique in the repo, never reused. Legacy
+  `**ID — title**` headlines parse the same way (`task_lint_core.head_id`, the one shared rule).
+- **class** — `non-inference | inference | operator-decision | roll-up | blocked-external`; the
+  `[class]` tag on the first line, or a `· class:` continuation on a legacy box.
+- **done when** — REQUIRED on every new or touched box. `index_state.py --check` runs the
+  diff-scoped gate: a box whose first line is new without a literal `done when` FAILS the commit;
+  an edited legacy box is judged by rubric field a; untouched legacy boxes only warn. A draft with no
+  done-condition carries `NEEDS-OWNER`. A parent whose children carry the work is a roll-up.
+- **gate** — IDs only (box, row, or `ROW#track`). Blocked is DERIVED from open gates; prose
+  prerequisites ("after X lands") are a lint failure. An unknown ref is lint `g-gate-unknown`.
+- **States** — `[ ]` open; `[x] ✅ YYYY-MM-DD [belief: …|no-belief: …] <verdict>` done (the ONE
+  suffix); frozen = `· ❄ frozen until: <event|ID>` on the box, a `❄ frozen until:` line under a
+  `## Track:` heading, or `**Status**: FROZEN` for the whole file (frozen is its own bucket, never
+  open); roll-up = `[roll-up]` or `· roll-up:`; partial = parent stays `[ ]`, `/log` adds a child.
+  `[~] [>] [!]` are being retired (Stage C ratify package); do not write them.
+- **Placement** — open boxes live ONLY under their track's `### Backlog`, in priority order (top =
+  next). A file without `## Track:` is one implicit track with its `### Backlog` after the header.
+  An open box anywhere else (History, Done, prose sections) is flagged `outside-backlog`; a box
+  inside a code fence is an example and is never indexed.
+- **Identity** — the first line's `text_sha` is the task's identity. Never edit a published first
+  line: `publish_row.py` refuses a rowflow-bound box whose first line changed.
+
+| Operation | Tool |
+|---|---|
+| add a box | `scripts/handoffs/handoff_box.py add --file F --track T --id ID --class C --text … --done-when …` |
+| split / refine / gate / freeze | `handoff_box.py split|refine|gate|freeze` (never edits a first line) |
+| tick | `scripts/coordination/churn/wrapup.py` (belief required; verdict required for a result tick); `/log` for checkpoints |
+| see the parsed view | `python3 scripts/handoffs/task_lint.py dispatch FILE.md [--json]` |
+| next dispatchable box | `python3 scripts/coordination/taskflow/select.py` |
+
+**Limits** (operator decision 4; reported by `--check` / `.box-index.json` `limits`): ≤ 60 open boxes
+per track, ≤ 24 continuation lines per box (else roll-up + children), ≤ 4,000 lines per handoff
+(compact `## History` first), split by track past 6,000 lines. These supersede the line-count bands
+below for new authoring; the bands remain the measured history of why.
+
 ## Promote or inline? (a checkbox vs its own handoff + row)
 
 Derived 2026-09-16 (RTG-46) on the *shape* of intake-1309#record's table, with **our own constants**.

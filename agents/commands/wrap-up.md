@@ -347,8 +347,17 @@ CH-26a and the night chain were reported "passed" with no verdict read.
 
 **Checklist-sync gate (required — do not skip to Step 3 until it passes).** The handoff dashboard's progress metric counts *checkbox state only*; narrative prose is invisible to it. For every handoff this session advanced:
 
-1. **Flip completed tasks**: change `- [ ]` to `- [x]` and append the completion date inline (`✅ YYYY-MM-DD`) — the timeline generator prefers these in-file dates over commit dates.
-2. **Add tasks discovered mid-flight**: any new work item that emerged this session (follow-ups, blockers-turned-tasks, scope found while implementing) gets its own `- [ ]` line in the relevant handoff's task list — even if it was also described in prose. If it was *already completed* this session, add it as `- [x] … ✅ YYYY-MM-DD` so the record stays complete.
+1. **Flip completed tasks — through the ONE tick writer.** A tick ends with the ONE suffix `✅ YYYY-MM-DD [belief: …|no-belief: …] <verdict>` (handoff standard decision 1, 2026-11-19). Write it with `scripts/coordination/churn/wrapup.py` (turn record `ticks` + `belief` + `verdict`; a result tick — `cc`/`clm_*` — must carry a verdict) or `/log` for a checkpoint; `flip_checkbox.py` is their internal primitive, not an agent tool. Never hand-write `✅ date (note)`. Ticks are resolved by the box's TEXT (its first line), never by line number. The timeline generator prefers these in-file dates over commit dates.
+2. **Add tasks discovered mid-flight — in the box grammar, under `### Backlog`.** Any new work item that emerged this session (follow-ups, blockers-turned-tasks, scope found while implementing) gets its own box in the OWNING handoff, written with:
+
+   ```bash
+   python3 scripts/handoffs/handoff_box.py add --file handoffs/active/<file>.md --track "<track>" \
+     --id <DOMAIN-n> --class non-inference|inference|operator-decision|blocked-external \
+     --text "<imperative task, one sentence>" --done-when "<test command | file+field | verdict text | row PASS>" \
+     [--gate ID,ID] [--inputs path ...] [--tier haiku|sonnet|…] [--needs-owner]
+   ```
+
+   It lands at the bottom of the track's `### Backlog` (created if missing; a file without `## Track:` is one implicit track). `· done when:` is REQUIRED on every new or touched box: `index_state.py --check` FAILS the commit otherwise (diff-scoped; legacy untouched boxes only warn). A draft you cannot give a done-condition is `--needs-owner`. Prerequisites go in `· gate: <ID>` — never as prose ("after X lands"). Never edit an existing box's first line (it is the task's identity): refine with `handoff_box.py refine`, split with `split`, block with `gate`, freeze with `freeze`. If it was *already completed* this session, add it then tick it through `wrapup.py`. Grammar and lifecycle: `docs/guides/agent-workflows/handoff-index-authoring.md` → *Box grammar*.
 3. **Prose describing task state must be accompanied by checkbox state.** "X is done/converged/deferred" in a status paragraph without the corresponding checkbox flip is a wrap-up defect.
 
 **Verify before committing** — count the checkbox flips **that are yours**:
@@ -403,7 +412,7 @@ ingest stays event-driven (Step 5b).
 
 **Derived-actionables gate (required — the flip-count gate cannot see this).** The flip-count gate catches un-flipped checkboxes; it has no counterpart for conclusions that never became checkboxes at all. Measured: the 2026-07-21 audit — appendix. Before committing, sweep the session's own output (deep-dive results, sub-agent reports, analysis sections appended to handoffs) for every "we could/should/worth X" sentence and give each one exactly one of:
 
-1. a `- [ ]` task in the owning handoff (plus an index row if it is priority-worthy or time-sensitive — a task buried at line 1400 of a long handoff is filed, not discoverable);
+1. a box in the owning handoff written with `handoff_box.py add` (class + `done when` required, or `--needs-owner`), placed under that track's `### Backlog` (plus an index row if it is priority-worthy or time-sensitive — a task buried at line 1400 of a long handoff is filed, not discoverable);
 2. an **explicit written decline** ("not filed because …") so the drop is a decision, not an accident.
 
 Watch for the three failure shapes that audit found: a conclusion stated in prose but never converted to a task; a fix landed while the flag/config that would make it *run* stays off with no enable task; and a live idea silently discarded because a *sibling* idea was falsified. Report the count of newly filed tasks and explicit declines in the wrap-up output.

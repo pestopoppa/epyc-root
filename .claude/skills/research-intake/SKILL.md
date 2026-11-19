@@ -623,8 +623,18 @@ After distillation, build ONE plan covering:
    stop/promotion rule, broader-reproduction trigger, terminal disposition, dependencies, and safe
    concurrency. Enabling primitives precede only the evaluations that depend on them; unrelated lanes
    need not be serialized.
-2. **Handoff edits** — per target file, the exact section and verbatim task lines to append, including
-   `- [x] … ✅ YYYY-MM-DD` for anything a dive already settled.
+2. **Handoff edits** — per target file and `## Track:`, the boxes to add as **handoff-standard records**
+   (box grammar: `docs/guides/agent-workflows/handoff-index-authoring.md` → *Box grammar*), each with
+   `ID`, `class` (non-inference | inference | operator-decision | blocked-external), the one-sentence task
+   text, a mechanically checkable `done when` (REQUIRED — operator decision 5, 2026-11-19; a box that
+   cannot state one is drafted `--needs-owner`), `gate` as box/row IDs (never prose prerequisites),
+   `inputs` paths, and the inference fields + stop rule for an `[inference]` box. Show each box as the
+   exact text `handoff_box.py add` renders — first line `- [ ] **<ID>** [<class>] <text>` plus its
+   `· done when:` / `· gate:` lines — so the operator reviews, and the validator later matches, the
+   bytes Stage 4 writes. Boxes land at the bottom of the track's `### Backlog`, never at an arbitrary
+   section. Refining an existing box = a NEW ID via `handoff_box.py refine` carrying
+   `previous_task_text` (the old first line is never edited). Anything a dive already settled is a box
+   added then ticked with the ONE suffix `✅ YYYY-MM-DD [belief: …|no-belief: …] <verdict>`.
 3. **New stubs** — full stub content (template below), so the operator reviews the actual text.
 4. **Index rows** — **exactly one** domain-index row per handoff, in the thin-row schema
    `| ID | Track | Handoff | Next action | Deps |` (contract:
@@ -717,6 +727,14 @@ domain/master-index write happens before approval.**
 **Status**: stub
 **Created**: {YYYY-MM-DD} (via research intake, operator-approved {plan date})
 **Categories**: {cat1}, {cat2}
+**Row**: {ROW-ID}   **Owner**: {owning session/role}   **Scratch**: {roots or none}
+
+## Track: {track name}
+<!-- gate: none -->
+
+### Backlog
+
+{boxes written by `handoff_box.py add` in Stage 4 — `- [ ] **<ID>** [<class>] <text>` + `· done when:`}
 
 ## Objective
 
@@ -754,8 +772,14 @@ silently into the diff. Then:
   `bash scripts/validate/validate_intake.sh --plan-file PATH --session-file PATH` → exit **0**,
   alongside existing index validation. The main confirms the applied filing matches the reviewed
   mappings and semantics; validator success is not approval or deployment evidence.
-- Honor checkbox discipline: every appended task is `- [ ]`; anything already done is
-  `- [x] … ✅ YYYY-MM-DD`.
+- Write every approved box with `python3 scripts/handoffs/handoff_box.py add --file … --track … --id …
+  --class … --text … --done-when … [--gate …] [--inputs …] [--needs-owner]` (it places the box under the
+  track's `### Backlog`, refuses a reused ID, and never touches another box's first line); hand edits
+  only where the tool cannot express the record, and then in the same grammar. `index_state.py --check`
+  fails a new box without `· done when:`. Anything already done is ticked through
+  `scripts/coordination/churn/wrapup.py` with the ONE suffix `✅ YYYY-MM-DD [belief: …|no-belief: …] <verdict>`.
+- A NEW handoff from a stub: the stub below plus `**Row**`/`**Owner**`/`**Scratch**` header keys and one
+  `## Track: <name>` with an empty `### Backlog`, so `handoff_box.py add` has a home for its boxes.
 - Stage only your own files. A parallel session may share this tree — never `git add` a shared
   handoff wholesale.
 - Report: files changed, checkbox flip count, new task count, explicit declines, validator status.
