@@ -127,3 +127,7 @@ Filed c6-admission-live-proof-r8 (launcher rc=0): FUTILITY_CARRIER; validate and
 ## 04:33Z — File A3B n4 trace GPU row result
 
 Filed rka-a3b-n4-trace-gpu-20261118 (rc=0): INCONCLUSIVE by preregistered coverage rule, with trace coverage 0.670 and 0.667 below 0.70 in both repetitions. Test-backend-ops passed 27 cases; trace and timing records show GPU residency. Existing handoff records the result and subsequent completed follow-up. Result SHA-256 d9494b3e2d778e240169c1514daee32d9b8a58958bbd3c11bfe2f4bb9873fb38; filed missing receipt. [belief: cc]
+
+## 04:34Z — File completed rka-a3b-mmvf8-e2e-gpu-20261118-r2 verdict and acknowledge its run end
+
+Filed rka-a3b-mmvf8-e2e-gpu-20261118-r2 (rc=0): KEEP under its preregistered rule, 16/16 valid pairs in each cell and AA-calibrated identity passed. At 32k D4 K8 reduced median latency from 12.452 to 10.761 ms/token (13.58%); D2 remained faster at 9.921 ms/token. The finding and completed box were already recorded in handoffs/active/rocm-kernel-authoring.md. Results SHA-256 aaa26d5268d57ebef9353013dcc1ecd0eb00dff070a584f79a471d72f81dfb9f. Filed receipt created. [belief: cc]
