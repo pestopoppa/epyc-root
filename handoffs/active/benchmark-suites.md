@@ -452,6 +452,13 @@ our own harness and score offline.
       SHA-256 `63fff0cb8aa43209b687ab551db6387949c664e9cacd96072361863d71ab8c19`; grant end record
       `/mnt/raid0/llm/tmp/compute-flags/grants/codex-ifbench-cj6e-35b-20261119.ended`
       SHA-256 `91d9b428120bc70e8fa46ef9cf8e6f9eee07437bd75c694c968caf03703b1e4e`. [no-belief: failed before any benchmark exposure]
+      2026-11-19 successor: `codex-ifbench-cj6e-35b-v2-20261119` published with repaired
+      grant propagation and refreshed input seals; native four-CPU smoke **PASS**, CPUs
+      140–143, rc=0 at 10:57:13Z, one synthetic noncohort result. Paired first arm is now
+      `codex-ifbench-cj6a-27b-v5-20261119`. Full coverage/scores and paired delta remain
+      UNKNOWN pending both complete captures; parent stays open.
+      [Successor bindings and smoke receipt](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/qualification-v2.json).
+      [no-belief: infrastructure qualification and synthetic smoke only]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a as preconditions]** **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases
       exist, so the name alone is not a reproducible referent. Pre-seed the NLTK data directory and
       assert no network during scoring (the only network touch is an NLTK bootstrap at import; until

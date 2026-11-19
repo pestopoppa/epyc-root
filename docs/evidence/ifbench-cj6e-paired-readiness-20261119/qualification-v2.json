@@ -1,0 +1,29 @@
+{
+  "box": "CJ-6e",
+  "row": "codex-ifbench-cj6e-35b-v2-20261119",
+  "parent_row": "codex-ifbench-cj6e-35b-20261119",
+  "runtime_repair_commit": "f088b4627600b7deb2a1c80336304981285572bc",
+  "bindings": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/launch.sh": "47f38f03ddd44e6e9b3a8c2c7c580948c51f2cd3cd6994c8fb1b78dfb614805b",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/worker.py": "9b9bafc8a8b97f9e03924b4c1802ee93e75a6a96c7fe716af12a8a4e13dfe715",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/PLAN.json": "e7a9eb2636f10560a8c3de8f315697949f670bd4ced8d14e440fd128c9e09d83",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/V3-INPUTS.sha256": "f641f63906e2967dfdd169839d83c6a08ce8f7e1fc4f0ccd37c2990183ebbfaa",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/RUNTIME-INPUTS.sha256": "7f42005b59d21cdae683037ad99af487ba9ed18ba133382588d0b1495a112bd4",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/spec.json": "36e1aca258b6f719f492c38707ac504a517fcfb4d1e27f371c1c6ca1bdd9fcdd"
+  },
+  "benchmark_verdict": "UNKNOWN; successor qualification only",
+  "paired_with": "codex-ifbench-cj6a-27b-v5-20261119",
+  "alert": {
+    "key": "850c79be8be6c49139a5ba25",
+    "resolution": "Stale first smoke failure: later CJ-6a smoke PASS rc=0 2026-11-19T10:54:15Z; acknowledged."
+  },
+  "smoke": {
+    "verdict": "PASS",
+    "cpus": "140-143",
+    "ended": "rc=0 time=2026-11-19T10:57:13Z reason=complete",
+    "receipt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ifbench-cj6e-35b-v2-20261119/PASS.json",
+    "sha256": "de700c6eb898b635ee5a97ea24bcc72ae7c05ce53b174721ea2f9bda075fa162",
+    "units": 1,
+    "cohort_exposure": false
+  }
+}
