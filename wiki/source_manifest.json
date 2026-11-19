@@ -4,58 +4,32 @@
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 377,
-    "progress": 1424,
+    "progress": 1425,
     "research": 335
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-18T15:49:03Z",
   "last_touch": {
     "advanced": {
-      "added": 29,
-      "changed": 3,
+      "added": 1,
+      "changed": 5,
       "removed": 0
     },
-    "at": "2026-11-19T08:54:40Z",
+    "at": "2026-11-19T09:37:57Z",
     "scope_paths": [
-      "docs/design/ak-win-cnt-1-annexk-path-counters-amendment-draft.md",
-      "docs/design/cf-plan-boundary-protocol-20261118.md",
-      "docs/design/cf3c-binding-continuation-protocol-20261119.md",
-      "docs/design/dcp10-colgrep-native-protocol-20261118.md",
-      "docs/design/dcp10-gitnexus-controls-protocol-20261118.md",
-      "docs/design/hs4-p6-prospective-catalog-capture-20261119.md",
-      "docs/design/prb-t4-cpu-pilot-20261118.md",
-      "docs/design/thinking-budget-headroom-protocol-20261118.md",
-      "docs/findings/fm2-native-source-control-20261118.md",
-      "docs/findings/fm4-native-dispatch-projection-20261118.md",
-      "docs/findings/vidya-native-wiring-20261118.md",
-      "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "docs/reference/tulving-scoring-validity-m12f-2026-11-09.md",
-      "docs/reports/am-port2-continuation-20261119.md",
-      "docs/reports/dripreview12-futility-20261119.md",
-      "docs/reports/hs-td1-risk-intent-20261119.md",
-      "docs/reports/hs-td2-worker-selfcheck-20261119.md",
-      "docs/reports/hs-td3-context-selection-20261119.md",
-      "docs/reports/hs4-p2-mcp-session-contract-20261119.md",
-      "docs/reports/hs9-openweight-seed-20261119.md",
-      "docs/reports/kshift-model-r1-20261119.md",
-      "docs/reports/kv-cache/kpf41-backend-gpu-custody-recovery-20261119.md",
-      "docs/reports/kv-cache/kpf41-backend-gpu-parser-repair-20261119.md",
-      "docs/reports/kv-cache/kpf41-backend-gpu-r2-result-20261119.md",
-      "docs/reports/kv-cache/kpf623-tokenizer-roundtrip-20261105/result.md",
-      "docs/research/cf3c-binding-qualification-20261119.md",
-      "progress/2026-11/2026-11-19-autopilot-backlog-session.md",
-      "progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md",
-      "progress/2026-11/2026-11-19-handoff-yarn.md",
-      "research/deep-dives/akx-all-23-q38-topk-20261118.md",
-      "research/deep-dives/champion-gain-chain-v10-to-c15-20261118.md",
-      "research/deep-dives/mi210-next-hotspots-20261118.md"
+      "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/kernel-champion-and-promotion.md",
+      "handoffs/active/long-context-program.md",
+      "progress/2026-11/2026-11-18-autokernel.md",
+      "progress/2026-11/2026-11-19-autokernel.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-19T08:54:40Z",
+  "scan_time": "2026-11-19T09:37:57Z",
   "schema_version": 1,
-  "source_set_hash": "d6e50607d5a479172464dc0278629b55d5cca583808b8c26000f1005ca59dd5d",
+  "source_set_hash": "c4442fa489c1c8d76a66dfaedb4708ed90ed91eac0e51e773b5d2a1a08521d64",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -66,18 +40,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8b358811cf7a6b4311fa582fa38f32fb7ff02fdafa79ec8cdd25f4af9dd14bd0",
-      "modified": "2026-11-18T15:40:34Z",
+      "content_hash": "e4d529892c5cd8ae869610027453339b59dfa213199db7b5ae5638f8843520f8",
+      "modified": "2026-11-19T09:29:25Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 543807,
+      "size": 575275,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
     {
-      "content_hash": "9b128b52d9659fc91f53532b8491ce5998e6e8198f93b59330bd638497633f5c",
-      "modified": "2026-11-18T15:37:08Z",
+      "content_hash": "33eaedd25a24571c92c9dc28b7d6a1704725792e9ce0c6363c8035e0b12e64dd",
+      "modified": "2026-11-19T09:37:00Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1690240,
+      "size": 1768239,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -178,10 +152,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "93d4b174185253658b63635d016e2e8deb2cf931c3b7a68a7b36d204de280d2d",
-      "modified": "2026-11-18T15:40:34Z",
+      "content_hash": "ae722e64ff70ab3400f328c71db6748e27fa64015253a761bf52e84ca6a7807d",
+      "modified": "2026-11-19T09:29:25Z",
       "path": "handoffs/active/kernel-champion-and-promotion.md",
-      "size": 708100,
+      "size": 728837,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -202,10 +176,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2297678a107284c24b0bc3fbafbfcdf5fc5fdef9ef4d551d1047ad271d991ead",
-      "modified": "2026-11-18T15:37:08Z",
+      "content_hash": "cb417cf9c2125005ee02848aa15d7216f7def0d6158c18511b35f218d177c350",
+      "modified": "2026-11-19T09:30:41Z",
       "path": "handoffs/active/long-context-program.md",
-      "size": 334200,
+      "size": 357988,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -17186,10 +17160,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "2a9ba39e07bb6e796b5a5db9e4526447ecad2891f27d64dbdb7ad91faef5efb5",
-      "modified": "2026-11-18T15:48:51Z",
+      "content_hash": "08926738bfcf3fbef815c81eae489bb652bb5db6424de114a89c8a3de7d30c98",
+      "modified": "2026-11-19T09:29:25Z",
       "path": "progress/2026-11/2026-11-18-autokernel.md",
-      "size": 7070,
+      "size": 9409,
       "title": "2026-11-18 autokernel wrap-up (since 633b2ce6b, 2026-11-17)",
       "type": "progress"
     },
@@ -17255,6 +17229,14 @@
       "path": "progress/2026-11/2026-11-18-rtg22.md",
       "size": 1330,
       "title": "2026-11-18 \u2014 RTG-22 non-inference backlog (workspace-f2)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b958551a13888f1d697b0a94d5c2861f8d302e35f8b8e295ae04d83d5105d7de",
+      "modified": "2026-11-19T09:34:15Z",
+      "path": "progress/2026-11/2026-11-19-autokernel.md",
+      "size": 5427,
+      "title": "2026-11-19 \u2014 autokernel session (roster id `autokernel`, no lane: ad-hoc session in the shared clone)",
       "type": "progress"
     },
     {
@@ -21442,7 +21424,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2673,
+  "total_new": 2674,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
