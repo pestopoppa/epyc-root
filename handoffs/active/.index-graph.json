@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T17:50:58Z",
+  "generated_at": "2026-11-19T17:53:45Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1438,7 +1438,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6092,
+          "line": 6093,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1447,7 +1447,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6172,
+          "line": 6173,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1466,7 +1466,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6470,
+          "line": 6471,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1483,7 +1483,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9710,
+          "line": 9711,
           "name": "autokernel-unified-surface-program",
           "open": 46,
           "readiness": "blocked"
@@ -1496,7 +1496,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14121,
+          "line": 14122,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1530,7 +1530,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14334,
+          "line": 14335,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11,
           "readiness": "blocked"
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 766,
+          "line": 767,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18,
           "readiness": "blocked"
