@@ -701,7 +701,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T11:10:52Z",
+  "generated_at": "2026-11-19T11:12:42Z",
   "nodes": [
     {
       "age_days": 9,
@@ -992,7 +992,6 @@
             "INF-45#numa-placement-defect-20260730",
             "INF-86",
             "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure",
             "UFH-01"
           ],
           "dispatchable": 1,
@@ -1614,7 +1613,6 @@
             "INF-45#numa-placement-defect-20260730",
             "INF-86",
             "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure",
             "UFH-01"
           ],
           "dispatchable": 1,
@@ -3268,15 +3266,15 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 354,
-      "dispatchable": 5,
+      "closed": 356,
+      "dispatchable": 3,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-18",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
-      "open": 5,
+      "open": 3,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3319,12 +3317,12 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 0,
           "gates": [],
           "line": 2469,
           "name": "dashboard-architecture-restructure",
-          "open": 2,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -3337,8 +3335,7 @@
         },
         {
           "blocked_by": [
-            "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure"
+            "RTG-34#coordination-and-churn-pipeline"
           ],
           "dispatchable": 0,
           "gates": [
@@ -3354,8 +3351,7 @@
         },
         {
           "blocked_by": [
-            "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure"
+            "RTG-34#coordination-and-churn-pipeline"
           ],
           "dispatchable": 0,
           "gates": [
@@ -3372,8 +3368,7 @@
         },
         {
           "blocked_by": [
-            "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure"
+            "RTG-34#coordination-and-churn-pipeline"
           ],
           "dispatchable": 2,
           "gates": [
@@ -3390,8 +3385,7 @@
         },
         {
           "blocked_by": [
-            "RTG-34#coordination-and-churn-pipeline",
-            "RTG-34#dashboard-architecture-restructure"
+            "RTG-34#coordination-and-churn-pipeline"
           ],
           "dispatchable": 0,
           "gates": [
@@ -3683,7 +3677,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 838,
+          "line": 839,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3696,7 +3690,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1604,
+          "line": 1605,
           "name": "harness-improvement-loop",
           "open": 16,
           "readiness": "blocked"
@@ -3709,7 +3703,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2285,
+          "line": 2286,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3730,7 +3724,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2368,
+          "line": 2369,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3745,7 +3739,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2818,
+          "line": 2819,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3756,7 +3750,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3688,
+          "line": 3689,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"

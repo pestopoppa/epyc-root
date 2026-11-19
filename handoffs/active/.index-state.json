@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 458
+      "open": 456
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -625,10 +625,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 354,
+      "closed": 356,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 5,
+      "open": 3,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -661,13 +661,13 @@
         },
         {
           "blocked": 0,
-          "closed": 25,
+          "closed": 27,
           "gates": [],
           "guarded": 0,
           "line": 2469,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
-          "open": 2
+          "open": 0
         },
         {
           "blocked": 0,
@@ -1098,7 +1098,7 @@
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 838,
+          "line": 839,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1110,7 +1110,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1604,
+          "line": 1605,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 15
@@ -1122,7 +1122,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2285,
+          "line": 2286,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2368,
+          "line": 2369,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1151,7 +1151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2818,
+          "line": 2819,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1161,7 +1161,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3688,
+          "line": 3689,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
