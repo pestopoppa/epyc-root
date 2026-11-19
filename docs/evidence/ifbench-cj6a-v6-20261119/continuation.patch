@@ -1,0 +1,96 @@
+--- a/worker.py
++++ b/worker.py
+@@ -21,6 +21,16 @@
+   with os.fdopen(fd,'w') as f:json.dump(x,f,sort_keys=True);f.write('\n');f.flush();os.fsync(f.fileno())
+   os.link(n,p)
+  finally:os.unlink(n)
++def preserved_response(ep,rp,rawp,binding):
++ e=json.loads(ep.read_text());x=json.loads(rp.read_text())
++ assert all(e.get(k)==v for k,v in binding.items()),'prior exposure binding changed'
++ assert x['exposure_sha256']==file_sha(ep),'prior exposure digest changed'
++ if x.get('status')!='ok':return x
++ assert file_sha(rawp)==x['response_file_sha256'],'prior native response digest changed'
++ native=json.loads(rawp.read_text());choice=native['native_response']['choices'][0]
++ assert native['http_status']==200 and x['response']==choice['message']['content'],'prior response content changed'
++ assert x['finish_reason']==choice['finish_reason'],'prior finish reason changed'
++ return x
+ def main():
+  mode=os.environ['IFBENCH_MODE'];assert mode in ('full','smoke');out=pathlib.Path(os.environ['IFBENCH_OUT']) if mode=='smoke' else D/'run';out.mkdir(parents=True,exist_ok=True);fid=os.getenv('FILLER_ID');gp=pathlib.Path((os.getenv('FILLER_GRANTS_DIR') or str(pathlib.Path(os.getenv('FILLER_FLAGS_DIR') or '/mnt/raid0/llm/tmp/compute-flags')/'grants')))/(fid+'.grant') if fid else None;grant=gp.read_bytes() if gp and gp.is_file() else None
+  if mode=='full' and not grant:raise RuntimeError('grant missing')
+@@ -44,7 +54,9 @@
+  else:cases=[{'id':'synthetic-engineering-only','prompt':'For this engineering smoke check, reply with the single word moon.'}]
+  plan=sha((D/'PLAN.json').read_bytes());source=sha((D/'SOURCE-SHA256SUMS').read_bytes()) if mode=='full' else None;cohort=sha((D/'COHORT.json').read_bytes()) if mode=='full' else None;counts={'ok':0,'unknown':0,'length_finish':0};model_sha=(D/'MODEL.sha256').read_text().split()[0];kernel_inputs_sha=sha((D/'KERNEL-INPUTS.sha256').read_bytes());server_sha=file_sha(server_file);kernel_build='production-consolidated-v10@ffc1bac82eeca6f9099e1ccd9ba49703c460a115';decoding={'temperature':0,'seed':20261031,'max_tokens':4096 if mode=='full' else 24,'n':1,'reasoning':'off','ctx':8192}
+  with socket.socket() as z:z.bind(('127.0.0.1',0));port=z.getsockname()[1]
+- cmd=[str(server_file),'-m',MODEL,'--host','127.0.0.1','--port',str(port),'-np','1','-c','8192','-t',str(min(8,len(os.sched_getaffinity(0)))),'-ngl','0','--no-warmup','--reasoning','off'];env=link_env
++ THREADS = '8'
++ if mode=='smoke':THREADS=str(min(4,len(os.sched_getaffinity(0))))
++ cmd=[str(server_file),'-m',MODEL,'--host','127.0.0.1','--port',str(port),'-np','1','-c','8192','-t',THREADS,'-ngl','0','--no-warmup','--reasoning','off'];env=link_env
+  log=(out/('server-'+str(time.time_ns())+'.log')).open('xb');p=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT,env=env);birth=pathlib.Path('/proc',str(p.pid),'stat').read_text().rsplit(') ',1)[1].split()[19];atom(out/('server-'+str(p.pid)+'.json'),{'pid':p.pid,'birth':birth,'argv':cmd,'mode':mode,'grant_sha256':sha(grant) if grant else None,'grant':grant.decode() if grant else None,'source_sha256':source,'plan_sha256':plan,'cohort_sha256':cohort,'model_sha256':model_sha,'model_path':MODEL,'server_binary_sha256':server_sha,'kernel_store_server_sha256':KERNEL_STORE_SHA,'ggml_linkage_verified':True,'kernel_build':kernel_build,'kernel_inputs_sha256':kernel_inputs_sha,'decoding':decoding,'cpu_affinity':sorted(os.sched_getaffinity(0))})
+  try:
+   url='http://127.0.0.1:'+str(port);ready=False;limit=time.monotonic()+(600 if mode=='smoke' else 1200)
+@@ -59,7 +71,7 @@
+   for i,case in enumerate(cases):
+    name=f'{i:03d}';ep=out/(name+'.exposure.json');rp=out/(name+'.result.json');rawp=out/(name+'.response.json');binding={'source_sha256':source,'plan_sha256':plan,'cohort_sha256':cohort,'model_sha256':model_sha,'server_binary_sha256':server_sha,'kernel_build':kernel_build,'kernel_inputs_sha256':kernel_inputs_sha,'decoding':decoding,'id':case['id'],'prompt_sha256':sha(case['prompt'].encode())}
+    if rp.exists():
+-    x=json.loads(rp.read_text());e=json.loads(ep.read_text());assert all(e.get(k)==v for k,v in binding.items())
++    x=preserved_response(ep,rp,rawp,binding)
+     if x.get('status')=='ok':assert rawp.is_file() and sha(rawp.read_bytes())==x['response_file_sha256'];counts['ok']+=1;counts['length_finish']+=int(x.get('finish_reason')=='length')
+     else:counts['unknown']+=1;partial('prior exposed attempt is UNKNOWN; stop without redraw');return 75
+     continue
+--- a/launch.sh
++++ b/launch.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ set -euo pipefail
+ D=/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104
+-ID=codex-ifbench-cj6a-27b-v5-20261119
++ID=codex-ifbench-cj6a-27b-v6-20261119
+ OWNER=codex-ifbench
+ ENGINE=/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh
+ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 RUS3_DIAGNOSTIC=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 PYTHONDONTWRITEBYTECODE=1
+@@ -11,6 +11,7 @@
+ sha256sum -c --quiet KERNEL-INPUTS.sha256
+ sha256sum -c --quiet RUNTIME-INPUTS.sha256
+ sha256sum -c --quiet SCORE-RUNTIME.sha256
++sha256sum -c --quiet CONTINUATION-INPUTS.sha256
+ case ${1:-} in
+  --job)
+    if [ "${FILLER_SMOKE:-0}" = 1 ]; then
+@@ -26,8 +27,8 @@
+    /usr/bin/python3 -c 'import pathlib; d=pathlib.Path("'"$D"'"); assert sum(1 for _ in open(d/"source/data/IFBench_test.jsonl")) == 300; print("source/runtime paths present; 300 prompts")' ;;
+  --engine)
+    export FILLER_RL=/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock
+-   export FILLER_OWNER="$OWNER" FILLER_EST_WALL_S=14400
+-   exec /bin/bash "$ENGINE" --id "$ID" --class cpu --role bench --claim-cpus "${WS58_REGIONS:?}" --min-window 1800 --stop "$D/STOP" --workdir "$D" --complete-cmd 'test -s /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/TERMINAL.json -o -s "${FILLER_DRYRUN_DIR:-/nonexistent}/ifbench-native/TERMINAL.json"' --cmd 'if [ "${FILLER_SMOKE:-0}" = 1 ]; then export IFBENCH_MODE=smoke IFBENCH_OUT="$FILLER_DRYRUN_DIR/ifbench-native"; else export IFBENCH_MODE=full IFBENCH_OUT=run; fi; env -i PATH=/usr/bin:/bin LANG=C.UTF-8 RUS3_DIAGNOSTIC=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 PYTHONDONTWRITEBYTECODE=1 IFBENCH_MODE="$IFBENCH_MODE" IFBENCH_OUT="$IFBENCH_OUT" FILLER_DRYRUN_RESULT_PATH="${FILLER_DRYRUN_RESULT_PATH:-}" FILLER_SMOKE="${FILLER_SMOKE:-0}" FILLER_DRYRUN_DIR="${FILLER_DRYRUN_DIR:-}" FILLER_ID="$FILLER_ID" FILLER_CPUS="$FILLER_CPUS" FILLER_NEEDGPU="$FILLER_NEEDGPU" FILLER_STOPFILE="$FILLER_STOPFILE" FILLER_END="$FILLER_END" FILLER_DEADLINE="$FILLER_DEADLINE" FILLER_GRANTS_DIR="${FILLER_GRANTS_DIR:-${FILLER_FLAGS_DIR:-/mnt/raid0/llm/tmp/compute-flags}/grants}" FILLER_FLAGS_DIR="${FILLER_FLAGS_DIR:-/mnt/raid0/llm/tmp/compute-flags}" FILLER_OWNER="$FILLER_OWNER" FILLER_EST_WALL_S="$FILLER_EST_WALL_S" WS58_REGIONS="$WS58_REGIONS" /bin/bash /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/launch.sh --job' ;;
++   export FILLER_OWNER="$OWNER" FILLER_EST_WALL_S=36000
++   exec /bin/bash "$ENGINE" --id "$ID" --class cpu --role bench --claim-cpus "${WS58_REGIONS:?}" --min-window 1800 --stop "$D/STOP" --workdir "$D" --complete-cmd 'test -s /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/TERMINAL.json -o -s "${FILLER_DRYRUN_DIR:-/nonexistent}/ifbench-native/TERMINAL.json"' --cmd 'if [ "${FILLER_SMOKE:-0}" = 1 ]; then export IFBENCH_MODE=smoke IFBENCH_OUT="$FILLER_DRYRUN_DIR/ifbench-native"; else export IFBENCH_MODE=full IFBENCH_OUT=run; fi; env -i PATH=/usr/bin:/bin LANG=C.UTF-8 RUS3_DIAGNOSTIC=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 PYTHONDONTWRITEBYTECODE=1 IFBENCH_MODE="$IFBENCH_MODE" IFBENCH_OUT="$IFBENCH_OUT" FILLER_DRYRUN_RESULT_PATH="${FILLER_DRYRUN_RESULT_PATH:-}" FILLER_SMOKE="${FILLER_SMOKE:-0}" FILLER_DRYRUN_DIR="${FILLER_DRYRUN_DIR:-}" FILLER_ID="$FILLER_ID" FILLER_CPUS="$FILLER_CPUS" FILLER_NEEDGPU="$FILLER_NEEDGPU" FILLER_STOPFILE="$FILLER_STOPFILE" FILLER_END="$FILLER_END" FILLER_DEADLINE="$FILLER_DEADLINE" FILLER_GRANTS_DIR="${FILLER_GRANTS_DIR:-${FILLER_FLAGS_DIR:-/mnt/raid0/llm/tmp/compute-flags}/grants}" FILLER_FLAGS_DIR="${FILLER_FLAGS_DIR:-/mnt/raid0/llm/tmp/compute-flags}" FILLER_OWNER="$FILLER_OWNER" FILLER_EST_WALL_S="$FILLER_EST_WALL_S" WS58_REGIONS="$WS58_REGIONS" taskset -c "$FILLER_CPUS" /usr/bin/python3 -B /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/worker.py' ;;
+  '')
+    exec > >(tee -a "$D/ws58-launcher.out") 2>&1
+    exec sudo -n --preserve-env=WS58_REGIONS,FILLER_CPUS,FILLER_SMOKE,FILLER_DRYRUN,FILLER_DRYRUN_DIR,FILLER_DRYRUN_RESULT_PATH,FILLER_DRYRUN_ONE_QUARTER,FILLER_GRANTS_DIR,FILLER_FLAGS_DIR /usr/bin/setpriv --reuid=1000 --regid=1000 --groups=992 /bin/bash "$D/launch.sh" --engine ;;
+--- a/V3-INPUTS.sha256
++++ b/V3-INPUTS.sha256
+@@ -1,5 +1,5 @@
+-863a9c12f36fbaab61cb964c886a15c38b6cf54207b24688a11103bac4a82b3e  launch.sh
+-430beb40735527ed9a0a31ed802cccf25241bbd83bb8f296012b5410fe788292  worker.py
++d760c7539d4f17b1b9438495b5fef994b9294e03db86f7c01d3912d4a6f5532a  launch.sh
++2a29128dfdb6282a0006369597399d12a6c57c4f80d924b845a701d4395ced62  worker.py
+ 008ec4926cd0aee271534ed5cbde329c83146ac27cf29a6553baf7a21bb4e878  ifbench_fixture.py
+ 98a92d601f7465f7691fabd46b46cf17d2908c7d71eb54c99b7cc11941a49ea2  offline_exec.py
+ ebe1cda32f49fc6a68d04920beba7cb11dba1a4e9a121d8326300454c8884ce2  log_consumer.py
+@@ -15,7 +15,7 @@
+ 4a81e7af01319ed3ee3ec8cb6c505df742535230a42d015bc7833b600634a43f  QUESTIONS-MANIFEST.json
+ 9af3c28531b012585e53076fcb191d5336b9ad007a6d0a3e720f1eca1d26e4f8  RUN-CONTRACT.md
+ 5fbeab92ec78344ab331d1c3f30d9db2823359a55ee9a2d71bb5d6907eb687b7  KERNEL-INPUTS.sha256
+-7280d606703870331a0ec2966f804ec41fa6dc6f6d475bf91d7f8dfd900a51d6  RUNTIME-INPUTS.sha256
++96675dbf51a9a0d5e0ede4aa1a634f92ebd49ca62e08a6b1a705a8537b6e05b7  RUNTIME-INPUTS.sha256
+ ab3117516f61eb09964cf17a34c7cfee0ce7366e77b971066fadcc3a51b24c70  SCORE-RUNTIME.sha256
+ 23a2cb8022e66710d8a6dd8d32965860c2e9311ee6f88a2a9fea5997febf7c18  SMOKE-CONTRACT.json
+ ba3caf45716b61e58fc2c1494879796f063a319bfb3516293b91a100b7fcc312  control/input.jsonl
+--- a/RUNTIME-INPUTS.sha256
++++ b/RUNTIME-INPUTS.sha256
+@@ -1,4 +1,4 @@
+-430beb40735527ed9a0a31ed802cccf25241bbd83bb8f296012b5410fe788292  worker.py
++2a29128dfdb6282a0006369597399d12a6c57c4f80d924b845a701d4395ced62  worker.py
+ 008ec4926cd0aee271534ed5cbde329c83146ac27cf29a6553baf7a21bb4e878  ifbench_fixture.py
+ 98a92d601f7465f7691fabd46b46cf17d2908c7d71eb54c99b7cc11941a49ea2  offline_exec.py
+ 0842325428829a6fca8698c707d0822035292463894b57169c5056663d21bf75  source/run_eval.py

@@ -456,6 +456,15 @@ our own harness and score offline.
       the worker capped generation at eight threads despite a 48-CPU allocation.
       Next: qualify a continuation with CPU allocation matched to actual usage and
       immutable original records, then publish; parent remains open. [belief: cc]
+      Continuation **codex-ifbench-cj6a-27b-v6-20261119** published with native
+      four-CPU smoke **PASS** at 2026-11-19T23:05:40Z (140–143, rc=0).
+      Eight physical cores plus SMT siblings, eight generation threads; resumable
+      window-end partials, provisional remaining budget 36000 s. Original 84 files
+      for prompts 0–27 are sealed; valid stored responses are verified and skipped.
+      One valid continuation control accepted; five corruption controls rejected.
+      [Runtime patch, hashes and qualification](../../docs/evidence/ifbench-cj6a-v6-20261119/qualification.json).
+      Full strict/loose scores remain UNKNOWN; no paired delta or adoption claimed.
+      [no-belief: synthetic qualification; full continuation not yet measured]
   - [x] **CJ-6a-CORPUS — Acquire and bind the original IFBench corpus.** Preserve the root `data/IFBench_test.jsonl` from `allenai/IFBench` commit `1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d`, verify its upstream blob and SHA-256, confirm 300 unique prompts / 344 constraints / 58 IDs, and retain license/source provenance and the fixed input manifest. The parent remains open for its generation-to-official-scorer wiring. [Pinned corpus](../../data/benchmarks/ifbench-1c40f0c/README.md). ✅ 2026-11-04 [belief: cc]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6b. Size on disk** and record it in the same table as CJ-1…CJ-4.
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6c. Determine execution requirement** — scoring is judge-free, network-free and
