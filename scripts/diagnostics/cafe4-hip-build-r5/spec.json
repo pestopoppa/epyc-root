@@ -1,0 +1,28 @@
+{
+  "id": "df2-cafe4-modes-hip-build-r5-20261119",
+  "owner": "handoff-df2",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 3600,
+  "min_window_s": 3600,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "HIP build qualification only: pinned v10 and diagnostic patch; exact generated modes source/header hashes; full executable with rollback/verify-batch/fault markers; GGML_HIP ON and gfx90a CMake binding; hashed libggml-hip with compiled HIP registration and gfx90a image marker; all llama/ggml linkage local to this build. No native model execution, rollback, residency or performance verdict. Stop on validated full receipt; futility on source mismatch, build/linkage failure, STOP or deadline. R2 additionally requires the Clang enum-constexpr compatibility flag and a compiled IQK implementation symbol; smoke must reproduce the unsuppressed IQK error then pass the identical source with the flag. R3 requires exact defined text exports iqk_mul_mat and ggml_iqk_try_mul_mat from the hash-bound CPU library, and ggml_backend_cuda_reg from the hash-bound HIP library; undefined imports and substring matches do not qualify. R4 originally bound the corrected cold-reference source; R5 replaces that binding as specified below. Native error gate 0.743863867 stays fixed and is not evaluated by this build. R5 supersedes the source binding with failure-attribution candidate e6546aa7417e40efecdd2bb03de61416bf62ae21b7c1369b7161e443201f835d and requires compiled CAFE4_TRIAL_FAILURE and CAFE4_CONTROL_FAILURE in both smoke object and full executable.",
+  "verdict_by": "agent",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sh"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r5-20261119/driver.py predicate"
+}
