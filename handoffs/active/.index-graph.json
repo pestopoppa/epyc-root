@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T01:50:07Z",
+  "generated_at": "2026-11-19T01:51:28Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1350,14 +1350,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 475,
-      "dispatchable": 113,
+      "dispatchable": 114,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-18",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 114,
+      "open": 115,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1453,7 +1453,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6059,
+          "line": 6060,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1462,7 +1462,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6139,
+          "line": 6140,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1481,7 +1481,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6437,
+          "line": 6438,
           "name": "autokernel-rebuild-program",
           "open": 14,
           "readiness": "blocked"
@@ -1498,7 +1498,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9674,
+          "line": 9675,
           "name": "autokernel-unified-surface-program",
           "open": 48,
           "readiness": "blocked"
@@ -1511,7 +1511,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14075,
+          "line": 14077,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1545,7 +1545,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14288,
+          "line": 14290,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11,
           "readiness": "blocked"
@@ -1858,18 +1858,18 @@
       ]
     },
     {
-      "age_days": 10,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 107,
-      "dispatchable": 34,
+      "closed": 108,
+      "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-19",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 35,
+      "open": 34,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1891,20 +1891,20 @@
           "blocked_by": [
             "RTG-58"
           ],
-          "dispatchable": 21,
+          "dispatchable": 20,
           "gates": [
             "RTG-58"
           ],
           "line": 17,
           "name": "yarn-context-extension-research",
-          "open": 21,
+          "open": 20,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 625,
+          "line": 626,
           "name": "attention-matching-kv-compaction",
           "open": 1,
           "readiness": "ready"
@@ -1913,7 +1913,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 997,
+          "line": 998,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1922,7 +1922,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1613,
+          "line": 1614,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1931,7 +1931,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1760,
+          "line": 1761,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
@@ -1939,18 +1939,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 226,
-      "dispatchable": 26,
+      "closed": 229,
+      "dispatchable": 23,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-18",
+      "last_advanced": "2026-11-19",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 28,
+      "open": 25,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1984,7 +1984,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 23,
+          "dispatchable": 21,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1993,14 +1993,14 @@
           ],
           "line": 20,
           "name": "autokernel-champion-aggregate",
-          "open": 25,
+          "open": 23,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1764,
+          "line": 1767,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2009,7 +2009,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1888,
+          "line": 1891,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2018,25 +2018,25 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2220,
+          "line": 2223,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
-          "line": 2359,
+          "line": 2362,
           "name": "moe-spec-cpu-spec-dec-integration",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2921,
+          "line": 2924,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2048,7 +2048,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3059,
+          "line": 3062,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2060,7 +2060,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3066,
+          "line": 3069,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"

@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 515
+      "open": 511
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 216
+      "open": 217
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 6059,
+          "line": 6060,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6139,
+          "line": 6140,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6437,
+          "line": 6438,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 14
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9674,
+          "line": 9675,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 48
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14075,
+          "line": 14077,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14288,
+          "line": 14290,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 226,
+      "closed": 229,
       "guarded": 0,
-      "last_advanced": "2026-11-18",
-      "open": 26,
+      "last_advanced": "2026-11-19",
+      "open": 23,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1218,7 +1218,7 @@
       "tracks": [
         {
           "blocked": 2,
-          "closed": 183,
+          "closed": 185,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1229,14 +1229,14 @@
           "line": 20,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 23
+          "open": 21
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1764,
+          "line": 1767,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1888,
+          "line": 1891,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,27 +1256,27 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2220,
+          "line": 2223,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
         },
         {
           "blocked": 0,
-          "closed": 6,
+          "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2359,
+          "line": 2362,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2921,
+          "line": 2924,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3059,
+          "line": 3062,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3066,
+          "line": 3069,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1448,10 +1448,10 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 107,
+      "closed": 108,
       "guarded": 0,
-      "last_advanced": "2026-11-09",
-      "open": 34,
+      "last_advanced": "2026-11-19",
+      "open": 33,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1464,7 +1464,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 59,
+          "closed": 60,
           "gates": [
             "RTG-58"
           ],
@@ -1472,14 +1472,14 @@
           "line": 17,
           "markers": 1,
           "name": "yarn-context-extension-research",
-          "open": 21
+          "open": 20
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 625,
+          "line": 626,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 1
@@ -1489,7 +1489,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 997,
+          "line": 998,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1499,7 +1499,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1613,
+          "line": 1614,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1509,7 +1509,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1760,
+          "line": 1761,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
@@ -2583,7 +2583,7 @@
       "closed": 475,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 113,
+      "open": 114,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 589
+      "total": 590
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
