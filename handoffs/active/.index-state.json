@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 499
+      "open": 500
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1361,7 +1361,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 7,
-      "closed": 429,
+      "closed": 430,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 93,
@@ -1373,11 +1373,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 529,
+      "total": 530,
       "tracks": [
         {
           "blocked": 6,
-          "closed": 265,
+          "closed": 266,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1394,7 +1394,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1780,
+          "line": 1781,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1407,7 +1407,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2203,
+          "line": 2204,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
@@ -2339,7 +2339,7 @@
       "closed": 135,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 27,
+      "open": 28,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2348,7 +2348,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 164,
+      "total": 165,
       "tracks": [
         {
           "blocked": 1,
@@ -2371,7 +2371,7 @@
           "line": 769,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 17
+          "open": 18
         }
       ]
     },

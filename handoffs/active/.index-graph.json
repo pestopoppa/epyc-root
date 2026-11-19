@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T18:14:06Z",
+  "generated_at": "2026-11-19T18:16:47Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1773,14 +1773,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 135,
-      "dispatchable": 27,
+      "dispatchable": 28,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-19",
       "next_action": "DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3",
-      "open": 29,
+      "open": 30,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1823,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 17,
+          "dispatchable": 18,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 769,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 18,
+          "open": 19,
           "readiness": "blocked"
         }
       ]
@@ -3490,7 +3490,7 @@
       "age_days": 0,
       "blocked": 7,
       "blocked_by": [],
-      "closed": 429,
+      "closed": 430,
       "dispatchable": 93,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3539,7 +3539,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1780,
+          "line": 1781,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3554,7 +3554,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2203,
+          "line": 2204,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"
