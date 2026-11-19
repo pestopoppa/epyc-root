@@ -125,6 +125,37 @@ def test_duplicate_and_malformed_raw_rows_rejected(tmp_path):
             driver.raw_record(path)
 
 
+def test_hybrid_target_placement_excludes_external_draft(tmp_path):
+    log = tmp_path / "server.log"
+    target = ("load_tensors: offloaded 24/49 layers to GPU\n"
+              "load_tensors:   CPU_Mapped model buffer size = 54000.00 MiB\n"
+              "load_tensors:        ROCm0 model buffer size = 35000.00 MiB\n")
+    draft = ("load_tensors: offloaded 2/2 layers to GPU\n"
+             "load_tensors:        ROCm0 model buffer size = 2700.00 MiB\n")
+    log.write_text(target + draft)
+    assert driver.model_placement(log, 24) == {
+        "offloaded_layers": 24, "total_layers": 49, "cpu_model_mib": 54000.0, "gpu_model_mib": 35000.0}
+    for bad in (draft, target.replace("24/49", "49/49"), target.replace("54000.00", "0.00"),
+                target.replace("35000.00", "0.00"), ""):
+        log.write_text(bad)
+        with pytest.raises(ValueError, match="hybrid weight placement"):
+            driver.model_placement(log, 24)
+
+
+def test_hybrid_checkpoint_requires_target_placement(cohort):
+    questions, config, runner, out = cohort
+    config.update(residency_mode="hybrid", gpu_layers=24)
+    value = capture(questions[0], config)
+    path = out / "accepted.json"
+    driver.atomic_json(path, value)
+    with pytest.raises(ValueError, match="hybrid weight placement"):
+        driver.checkpoint(path, questions[0], config, runner)
+    value["model_placement"] = {"offloaded_layers": 24, "total_layers": 49,
+                                "cpu_model_mib": 54000, "gpu_model_mib": 35000}
+    driver.atomic_json(path, value)
+    assert driver.checkpoint(path, questions[0], config, runner) == value
+
+
 @pytest.mark.parametrize("cutoff", ["stop", "deadline", "signal", "timeout", "observer"])
 def test_inflight_child_is_reaped_on_all_cutoffs(tmp_path, cutoff):
     stop = tmp_path / "STOP"
@@ -172,12 +203,17 @@ def test_failed_atomic_replace_preserves_checkpoint(tmp_path):
     assert not list(tmp_path.glob(".pending-*"))
 
 
-def test_execute_complete_then_resume_without_server_and_interrupted_retry(cohort, monkeypatch):
+@pytest.mark.parametrize("hybrid", [False, True])
+def test_execute_complete_then_resume_without_server_and_interrupted_retry(cohort, monkeypatch, hybrid):
     questions, config, runner, out = cohort
     config.update({"runner": "fake-runner", "binary": "fake-server", "model": "fake-weight",
                    "python": sys.executable, "kernel": "fixture", "spec_flags": [],
                    "library_dir": "/approved", "items_dir": str(out.parent / "items"),
                    "research_repo": str(out.parent)})
+    placement = {"offloaded_layers": 24, "total_layers": 49, "cpu_model_mib": 54000, "gpu_model_mib": 35000}
+    if hybrid:
+        config.update(residency_mode="hybrid", gpu_layers=24)
+    monkeypatch.setattr(driver, "model_placement", lambda log, layers: placement if layers == 24 else {})
     for i, q in enumerate(questions):
         driver.atomic_json(Path(config["items_dir"]) / f"{i:03d}.json", {"suites": {driver.SUITE: [q]}})
     monkeypatch.setattr(driver, "load_runner", lambda path: runner)
@@ -200,6 +236,8 @@ def test_execute_complete_then_resume_without_server_and_interrupted_retry(cohor
     class Server:
         pid = 123
         def __init__(self, *args, **kwargs):
+            command = args[0]
+            assert command[command.index("-ngl") + 1] == ("24" if hybrid else "99")
             self.rc = None
             children.append(self)
         def poll(self):

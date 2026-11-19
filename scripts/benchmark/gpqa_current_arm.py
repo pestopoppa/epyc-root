@@ -140,6 +140,30 @@ def context_capacity(log, expected):
     return expected
 
 
+def validate_placement(value, expected_layers):
+    if (value.get("offloaded_layers") != expected_layers
+            or not isinstance(value.get("total_layers"), int)
+            or not 0 < expected_layers < value["total_layers"]
+            or not 0 < value.get("cpu_model_mib", 0) < float("inf")
+            or not 0 < value.get("gpu_model_mib", 0) < float("inf")):
+        raise ValueError("target hybrid weight placement not established")
+    return value
+
+
+def model_placement(log, expected_layers):
+    """Bind the target's first load block, excluding the external draft's load."""
+    text = Path(log).read_text(errors="replace")
+    loads = list(re.finditer(r"load_tensors: offloaded (\d+)/(\d+) layers to GPU", text))
+    if not loads:
+        raise ValueError("target hybrid weight placement missing from runtime log")
+    target = loads[0]
+    block = text[target.end():loads[1].start() if len(loads) > 1 else len(text)]
+    buffers = re.findall(r"load_tensors:\s+(CPU(?:_Mapped)?|ROCm0) model buffer size\s*=\s*([\d.]+) MiB", block)
+    return validate_placement({"offloaded_layers": int(target[1]), "total_layers": int(target[2]),
+                               "cpu_model_mib": sum(float(n) for name, n in buffers if name.startswith("CPU")),
+                               "gpu_model_mib": sum(float(n) for name, n in buffers if name == "ROCm0")}, expected_layers)
+
+
 def load_runner(path):
     import sys
     sys.path.insert(0, str(Path(path).parent))
@@ -172,6 +196,8 @@ def checkpoint(path, question, config, runner):
     if value.get("protocol") != fingerprint(config):
         raise ValueError("checkpoint protocol/model/source fingerprint changed")
     validate_record(value["record"], question, config, runner)
+    if config.get("residency_mode") == "hybrid":
+        validate_placement(value.get("model_placement", {}), config["gpu_layers"])
     samples = value.get("device_samples", [])
     if (len(samples) < 2 or any(s.get("vram_bytes", 0) <= 0 or not s.get("hip_library") or not s.get("kfd")
                                or s.get("slot_processing") is not True for s in samples)
@@ -224,7 +250,7 @@ def execute(config, budget, out):
     server_log = out / "server.log"
     command = ["taskset", "-c", cpus, config["binary"], "--host", "127.0.0.1", "--port", str(port),
                "-m", config["model"], "-np", "1", "-c", str(config["context"]), "-t", threads, "-tb", threads,
-               "-b", "2048", "-ub", "2048", "-ctk", "f16", "-ctv", "f16", "--device", "ROCm0", "-ngl", "99",
+               "-b", "2048", "-ub", "2048", "-ctk", "f16", "-ctv", "f16", "--device", "ROCm0", "-ngl", str(config.get("gpu_layers", 99)),
                "-fa", "on", "--reasoning", "off", "--slots", *config["spec_flags"]]
     atomic_json(out / "server-command.json", {"argv": command, "LD_LIBRARY_PATH": env["LD_LIBRARY_PATH"]})
     with server_log.open("w") as log:
@@ -246,6 +272,8 @@ def execute(config, budget, out):
                     pass
                 threading.Event().wait(0.1)
             context_capacity(server_log, config["context"])
+            placement = (model_placement(server_log, config["gpu_layers"])
+                         if config.get("residency_mode") == "hybrid" else None)
             for i, question in enumerate(questions):
                 budget.check()
                 if i in completed:
@@ -285,7 +313,8 @@ def execute(config, budget, out):
                 if rc:
                     raise RuntimeError(f"native runner exited {rc}")
                 value = {"protocol": fingerprint(config), "record": raw_record(attempt / "per_question.jsonl"),
-                         "request_start": start, "request_end": time.time(), "device_samples": samples}
+                         "request_start": start, "request_end": time.time(), "device_samples": samples,
+                         "model_placement": placement}
                 # Validate before publishing a resumable, atomic item checkpoint.
                 atomic_json(attempt / "candidate.json", value)
                 checkpoint(attempt / "candidate.json", question, config, runner)

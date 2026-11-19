@@ -1,0 +1,245 @@
+{
+  "schema": "epyc.gpqa_row_preparation.v1",
+  "box": "L237",
+  "row": "meq-gpqa-flash-next-cot-20261119",
+  "status": "published_gpu_smoke_queued",
+  "readiness": "GPU busy; native smoke queued, NOT PASS and NOT ready. No inference measurement or cohort verdict.",
+  "offline_tests": "python3 -m pytest -q tests/benchmark/test_gpqa_current_arm.py: 33 passed",
+  "files": {
+    "config.json": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/config.json",
+      "sha256": "81bc5331a065359ac23054e2e18a1d75e5a5d4e052ef683425055932c985108e"
+    },
+    "row.spec.json": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/row.spec.json",
+      "sha256": "aabac15acf3e78ef5b212398dd4d9d68d53f410ff96b86b7e453ccd8d51da338"
+    },
+    "launch.sh": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/launch.sh",
+      "sha256": "98602f2e4fdb386c779f39bf9fa783f03575f2d807ca9332ce72f7f1fa979c2d"
+    },
+    "driver.py": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/driver.py",
+      "sha256": "f4c780d06c969e595e6766d6622fe4024b39ebd3db0ef22a6f87affe4df25c66"
+    },
+    "prepare.py": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/prepare.py",
+      "sha256": "d40aed105ebbc97110707f84fbcb353191b1b442f7d5a16729d05a1ed3bb5c28"
+    },
+    "publish.txt": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/publish.txt",
+      "sha256": "0761ab5535dd9220de669079c3f1c627c08dc00882b83c316b9a2db06cf14784"
+    }
+  },
+  "row_spec": {
+    "id": "meq-gpqa-flash-next-cot-20261119",
+    "owner": "handoff-architect-model-selection-bench",
+    "launcher": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/launch.sh",
+    "lane": "gpu",
+    "regions": "mi210_0",
+    "kind": "compute",
+    "result_path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/out/progress.jsonl",
+    "result_format": "jsonl",
+    "estimate_s": 72000,
+    "min_window_s": 600,
+    "max_window_s": 72000,
+    "handoff_task": "handoffs/active/model-evaluation-queue.md:237",
+    "priority_rank": 40,
+    "scratch_root": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119",
+    "first_progress_s": 900,
+    "dryrun_native_result": true,
+    "resumable": true,
+    "decision_rule": "Current Flash-Next UD-IQ4_XS (all3shards) + external shared-Q8_0 MTP cap4/pmin0.5, hybrid target24 offloaded layers, draft99; full n=198 GPQA-CoT census. Seed42, sampler0.6/0.95/20, output8192, np1/context32768, f16KV, thinking off. Accuracy higher is better; report n/correct/accuracy, parse failures and truncation. Accept a descriptive full result only from out/RESULT.json complete with exactly198 unique pinned IDs, original content/stat/source/protocol identities, canonical score validation, target CPU+ROCm model-buffer proof and two active-slot process-specific HIP/KFD/nonzero-VRAM samples per item. Partial or failed requests unknown, never a full verdict. Stop after198 validated items and own-PID cleanup; futility at first invalid input/context/placement/device/server/capture; STOP/deadline preserves accepted checkpoints and returns75. No historical-arm transfer, speed, winner, significance or production selection claim. Native first item establishes smoke readiness only.",
+    "verdict_by": "agent",
+    "keep": [
+      "out/**",
+      "items/**",
+      "*.json",
+      "*.py",
+      "*.sh",
+      "linkage.txt"
+    ]
+  },
+  "prepared_config": {
+    "schema": "epyc.gpqa_current_arm.v1",
+    "arm": "qwen38_flash_next_ud_iq4xs_mtp_hybrid24",
+    "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+    "runner": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py",
+    "python": "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "research_repo": "/mnt/raid0/llm/epyc-inference-research",
+    "binary": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+    "library_dir": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin",
+    "manifest": "/mnt/raid0/llm/epyc-inference-research/artifacts/architect-bench-gpu-20260720/questions_gpqa_diamond_cot.json",
+    "items_dir": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/items",
+    "context": 32768,
+    "max_tokens": 8192,
+    "kernel": "production-consolidated-v10/ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "spec_flags": [
+      "--spec-type",
+      "draft-mtp",
+      "-md",
+      "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+      "-ngld",
+      "99",
+      "--spec-draft-n-max",
+      "4",
+      "--spec-draft-p-min",
+      "0.5"
+    ],
+    "weights": [
+      {
+        "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+        "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+        "size_bytes": 10946624
+      },
+      {
+        "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+        "sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
+        "size_bytes": 49835229856
+      },
+      {
+        "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf",
+        "sha256": "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833",
+        "size_bytes": 43836407744
+      },
+      {
+        "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+        "sha256": "5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6",
+        "size_bytes": 2786568256
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
+        "size_bytes": 939848
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+        "size_bytes": 2982176
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+        "size_bytes": 68250624
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+        "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639",
+        "size_bytes": 59440
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so",
+        "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850",
+        "size_bytes": 44144
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-bench-impl.so",
+        "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24",
+        "size_bytes": 511656
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-cli-impl.so",
+        "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4",
+        "size_bytes": 460944
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+        "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb",
+        "size_bytes": 6067360
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-completion-impl.so",
+        "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4",
+        "size_bytes": 106880
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so",
+        "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3",
+        "size_bytes": 34824
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so",
+        "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47",
+        "size_bytes": 163688
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so",
+        "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b",
+        "size_bytes": 84048
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+        "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f",
+        "size_bytes": 7181064
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+        "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a",
+        "size_bytes": 4513808
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
+        "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05",
+        "size_bytes": 1460072
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+        "sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
+        "size_bytes": 17984
+      }
+    ],
+    "sources": [
+      {
+        "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/driver.py",
+        "sha256": "f4c780d06c969e595e6766d6622fe4024b39ebd3db0ef22a6f87affe4df25c66"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py",
+        "sha256": "20a97fbd4aecc6f3887299243362d5315b76f819aa1cbc4b8fd92f33b307b45a"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/answer_scoring.py",
+        "sha256": "4a1498cdd59c21b2e01415888b219ef529c4caf9ba24306e0285a305d298fbfd"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-inference-research/artifacts/architect-bench-gpu-20260720/questions_gpqa_diamond_cot.json",
+        "sha256": "14e807dd11736b022f337466efc0fb5c95bf6e521a4514a09d0f25916524ecee"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml",
+        "sha256": "9615682d9461ced4f3a10cfebb9c8925bd40db351d2aa9bd18a5745bed40df79"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-inference-research/scripts/lib/qwen38_flash_next_recipe.py",
+        "sha256": "0bf5c64b93f68168078e5248592325c9400989a211ad5e715f1cfa68fc4b7981"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/PROVENANCE.md",
+        "sha256": "a0e1870be9b043ac7cf0e3ca74b3835a5757c8641d5714321b512f942a9381ee"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/SHA256SUMS",
+        "sha256": "c882cd42598c3bdd6490a422ab74e5b4fb5c74bca60b5d31338077c6ebe632ff"
+      }
+    ],
+    "source_repos": {
+      "/mnt/raid0/llm/epyc-inference-research": "a794f5b54bea1a1f0752e0e3514ce07fa14c5ff2",
+      "/mnt/raid0/llm/epyc-orchestrator": "c1df9962c919562ce02bebb5608451093fe6bf6c"
+    },
+    "protocol_note": "New hybrid benchmark surface, no inherited speed claims. Target -ngl24 (includes output layer), remaining layers on CPU; external shared-Q8_0 MTP head -ngld99/cap4/pmin0.5. f16 KV, np1, context32768, output8192, seed42, sampler0.6/0.95/20, thinking off. CPU+ROCm target buffers required from first model-load block; process-specific HIP/KFD/VRAM observed during each item. Exact198 descriptive accuracy census; errors unknown, partial never full, cutoff75. CPU-only recipe environment is not imported.",
+    "gpu_layers": 24,
+    "residency_mode": "hybrid"
+  },
+  "source_blobs": {
+    "scripts/benchmark/gpqa_current_arm.py": "4ed0fd694630ab4fcbdf303877be58eb802e15c9",
+    "tests/benchmark/test_gpqa_current_arm.py": "fd30c324b3d534df8d736012634c1ab542928bdb"
+  },
+  "prepared_config_projection": "Runtime stat tuples omitted; original config is bound by files.config.json.sha256. Prepared weights were hashed once outside the grant. Kernel pins reuse the previously content-verified v10 assets after unchanged-stat checks.",
+  "placement_contract": "New hybrid surface: target -ngl24 includes output layer per frozen source semantics; remaining target layers CPU, external shared MTP head -ngld99. Require positive CPU/ROCm0 target model buffers from first load block, excluding draft buffers, plus per-item active-slot process-specific HIP/KFD/VRAM proof. No claim of measured GPU fraction, speed or an optimal placement.",
+  "limitations": [
+    "Three-arm full198 box remains open.",
+    "No production configuration edits or inherited CPU speed claim.",
+    "Prospective capture projection remains VB-GPQA-CURRENT-CENSUS-WIRE; no canary/wired claim.",
+    "Unrelated manifest test collection could not run in the sparse lane because its tracked artifacts/ source is absent; changed driver tests pass."
+  ]
+}
