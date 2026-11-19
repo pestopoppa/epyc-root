@@ -99,3 +99,7 @@ Duplicate event rka-verify-tile-cpu-20261117: verdict and FILED receipt already 
 ## 04:21Z — RKA-VERIFY-TILE-A3B48-E2E dispatch event was already filed and its handoff box completed on 2026-11-18; INF48-LIVE-1 requires changes in the separate research repository, outside the explicitly permitted root lane.
 
 Dispatched RKA-VERIFY-TILE-A3B48-E2E event was already filed on 2026-11-18 with NO_RECOMMENDATION and a filing receipt; verdict SHA-256 16d8083521592a1edb97b8664b29d246a6e4d7d4177c8317bc98377651f7a56a. No duplicate filing. INF48-LIVE-1 content-hash corpus implementation requires editing epyc-inference-research, outside the permitted lane.
+
+## 04:25Z — INF48-FAVEC-TAIL run-end was already filed and its box completed on 2026-11-18; no duplicate filing.
+
+INF48-FAVEC-TAIL run-end was already filed with receipt on 2026-11-18. The completed handoff records clean 3103/3103 correctness and no consistent useful op-level gain; identity was inconclusive because the control also diverged. Native result SHA-256 f825d7772bdd7dab040dc7879715b2571042a817d05917dbfa25608a9cb07b19.
