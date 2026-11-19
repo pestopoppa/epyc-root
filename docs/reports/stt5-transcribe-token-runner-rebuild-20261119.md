@@ -13,3 +13,16 @@ The fresh smoke predicate requires `FILLER_SMOKE_T0`, a new bound smoke start an
 Prepared config `/mnt/raid0/llm/tmp/stt5/transcribe-restore-20261119/config.json` SHA-256: `563a50278ee49e81696f4c8e1f89fdf78f6034a43a50cc3224b979d445950dca`. Prepared spec at the same root, `spec.json`, SHA-256: `a5d280ca353cd22a01a907d6f7f77bb923e0363154fb0f4490e7da85128da99c`. The config binds the permanent task-local driver, original commit and exact overlay. Grant result destination: `output/summary.json` under that root.
 
 Next: file the build result, then prepare a separate public-JFK parity row with the final built artifact/library hashes, the same Q8_0 weights and context/language mapping, native IDs and transcript checks, sampled library residency, and the already banked Crisp public witnesses. Existing public calibration remains independently pending. Preserve all historical UNKNOWNs and validation exposure ledgers; the parent accuracy screen remains open. Existing `VB-SPEECH-STT5-RAW` source registration includes prospective build provenance; adapter projection and planning-context canary remain unproven. [no-belief: build row qualification; no completed artifact or parity verdict]
+
+## Filed build verdict
+
+Row `stt5-transcribe-token-runner-rebuild-r1-20261119` ended **rc0, complete at 2026-11-19T14:18:29Z**. Verdict: **PASS** for the build engineering gate. The final non-smoke summary records the pinned source/overlay above, successful compiled native witnesses and the executable identity. `output/summary.json` SHA-256: `e4898e2dff9dfbd0669c6f56cc68815e6e652d9a77ffec3d7c0a0e7f1acfd048`. The build driver verifies source pins after compilation before emitting this summary.
+
+Executable SHA-256: `63a2cb348e86db4f490b6c6659aae45ee361369b30d685693cde0ab633007ec6`. Libraries at the original build paths:
+
+- `/mnt/raid0/llm/tmp/stt5/transcribe-restore-20261119/output/build/ggml/src/libggml-base.so.0.26.0`: `293c0abe4054f9c3a89d7043288c54b19675b7ea7f97ebb78d49781e41af95ac`.
+- `/mnt/raid0/llm/tmp/stt5/transcribe-restore-20261119/output/build/ggml/src/libggml-cpu.so.0.26.0`: `c552f3d624ec7be805ed13ef71f62bc8c75f941e0b695981f6906409d4c91e0d`.
+- `/mnt/raid0/llm/tmp/stt5/transcribe-restore-20261119/output/build/ggml/src/libggml.so.0.26.0`: `bf90b207948265ce8c2aad9e0e28b70e2cd31d8bafeb0e2815f41db510199a93`.
+- `/mnt/raid0/llm/tmp/stt5/transcribe-restore-20261119/output/build/src/libtranscribe.so.0.4.0`: `a7e7348e35992a246d3072f1e9a3172445e5daa290c673b399ba7a5ef8da0214`.
+
+No model or audio was opened; no native-token parity, WER, calibrated rate or promotion is established. Parent CS-8.STT5 remains open. The independent-runner public-JFK parity row must bind these final hashes and the banked Crisp witnesses before any Crisp validation successor. [belief: cc]
