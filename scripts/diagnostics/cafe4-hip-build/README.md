@@ -165,3 +165,26 @@ CPU cold-prefix/reference geometry without changing its numerical threshold.
 No native GPU residency, rollback, fault or performance verdict is supplied
 by the smoke. Parent CAFE-4 remains open.
 [no-belief: compiled-object smoke and publication only]
+
+R3 scheduled build verdict (2026-11-19)
+---------------------------------------
+
+`df2-cafe4-modes-hip-build-r3-20261119` **PASS**, scheduled rc0,
+07:13:06–07:14:28Z. Existing `driver.validate` accepted pinned v10/patch,
+exact original source/header inputs and all artifact hashes, six compiled
+modes markers, six local llama/ggml libraries, the Clang IQK compatibility
+configuration, GGML_HIP ON/gfx90a binding and compiled gfx90a marker.
+Exact defined text exports passed: CPU `iqk_mul_mat`, `ggml_iqk_try_mul_mat`;
+HIP `ggml_backend_cuda_reg`, each from its hash-bound library.
+Executable SHA-256 `40b70b435c551b256ba2b845a595d1364d5c7ca5afa2b897ad4da2755c9ef84c`.
+Existing result `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r3-20261119/RESULT.json`,
+SHA-256 `4ae18818ec58b8fe5886a684deabeefb51ac4087b447d7f952cd397e099938b2`.
+End record `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-hip-build-r3-20261119.ended`,
+SHA-256 `2a69c378119937f63b924f78998d9464f18b9e0b1daa521db965865275c97c7e`.
+`file_result.py` recorded PASS and wrote FILED. This qualifies only original
+candidate SHA-256 `71ce1fb3e92098dfb586b06000a0ed4dee1e836c7c889774cb754dcde8f1b597`;
+corrected cold-reference source is covered by the separate R4 row.
+No native model, GPU residency, rollback, fault sensitivity or performance
+verdict follows. Native error gate **0.743863867** remains unchanged and
+unevaluated; CAFE-4 stays open.
+[no-belief: build qualification only; no native numerical measurement]
