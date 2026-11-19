@@ -66,3 +66,20 @@ layout, and requires it in local linkage. The executable, cache and linkage
 log must also be hash-bound. UI building and prebuilt UI fetching are disabled
 and checked in CMakeCache. Full-build synthetic receipts exercise the linked
 component gate for CPU and HIP; no new full build or native P9 verdict exists.
+
+Replacement build publication (2026-11-19)
+-----------------------------------------
+
+`spec-r2.json` publishes `df2-cafe3-full-hip-build-r2-20261119` from
+a fresh scratch packet at `/mnt/raid0/llm/tmp/df2/cafe3-hip-build-r2-20261119`.
+`inputs-r2.json` retains the existing source base/diff/generated-file bindings
+and pins the relocated revised driver, launcher and supervisor with
+`supervisor_protocol: epyc.cafe3.supervisor.v1`. Original packets are unchanged.
+The revised full-build marker gate targets the linked server implementation;
+UI build/fetch are disabled. Supervisor attribution reports are artifact-bound.
+Both rows compile on CPU capacity; the HIP row builds the gfx90a backend but
+performs no GPU model execution. Full build and native P9 remain outstanding.
+
+df2-cafe3-full-hip-build-r2-20261119: publisher smoke PASS on cores 164–167, rc75 after validated first progress; /mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-full-hip-build-r2-20261119/PASS.json SHA-256 100c3f7f69ed25f7d91089cb6f7242fb6ccf013bb3b5c17f61ed90b9c1116f1d.
+
+[no-belief: compiled publisher smoke only]
