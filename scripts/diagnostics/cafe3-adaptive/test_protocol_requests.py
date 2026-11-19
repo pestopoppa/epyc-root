@@ -46,6 +46,9 @@ class ProtocolTest(unittest.TestCase):
         rows = [json.loads(line) for line in self.output.read_text().splitlines()]
         self.assertEqual([(r['repetition'], r['prompt_id']) for r in rows], [(0,'a'),(0,'b'),(1,'a'),(1,'b')])
         self.assertTrue(all(r['status'] == 'UNASSESSED' and r['context_sha256'] == 'a'*64 for r in rows))
+        for row in rows:
+            self.assertLess(row['unix_started_ns'], row['unix_ended_ns'])
+            self.assertGreater(row['elapsed_ns'], 0)
         for call in self.http.call_args_list[1:]:
             self.assertEqual(call.args[2]['speculative.n_max'], 3)
             self.assertEqual(call.args[2]['temperature'], 0)

@@ -480,3 +480,61 @@ processes are mocked; the listener parser uses synthetic proc records. No native
 inference or performance claim. Prospective captures extend the existing
 `VB-CAFE3-ROUND-WIRE` adapter task and source registration; no new grading ladder.
 [no-belief: source implementation and model-free request controls only]
+
+Offline P9 assessment (2026-11-19)
+---------------------------------
+
+`p9_grade.py` assesses retained whole-arm captures without launching a process.
+The sealed protocol must carry `p9_policy` equal to the module's `POLICY` before
+capture. It fixes aggregate request-wall tokens/s (higher is better), all-token
+identity against static-0, an inclusive +1% over the fastest static width, and
+post-exploration zero-to-positive-probe recovery within 128 completed rounds.
+The bound schedule must cover every static width from zero through the adaptive
+cap. Integer-ratio comparison preserves the exact +1% boundary. Whole-arm
+ordering and the descriptive timing limitation are retained in the assessment;
+this is not a statistical significance claim or a new Belief Kernel ladder.
+
+The grader checks schedule completion, hash-bound contexts/protocols/captures,
+cross-arm inputs and placement, prepared model identities without weight hashing,
+the full build through the trusted producer validator, archived official grant
+windows, exact process argv/env, reaped children and successful requester,
+overlapping local library mappings, and complete prompt/repetition request order.
+`protocol_requests.py` now records Unix-nanosecond request start/end alongside
+monotonic elapsed time. Those clocks must agree within max(1 ms, 1%); old captures
+without boundaries refuse. Native rounds must have contiguous journal ordinals,
+valid widths/acceptance/confidence/timing, and belong to exactly one disjoint
+request window. Request ids, epochs, sequences and round/ticket progression
+prevent cross-request recovery. Startup width exploration is not recovery;
+missing recovery is inconclusive, and observed recovery beyond the bound fails.
+A qualifying HIP result remains inconclusive until overlapping VRAM/KFD residency
+capture is implemented. Known identity/speed/recovery failures remain failures.
+
+The build consumer now binds the trusted producer's packet root to the retained
+receipt directory, allowing replacement r2/r3 packets to use their own sealed
+input inventory rather than the original packet directory. No packet code is
+executed by this consumer. Existing published packets are unchanged.
+
+Validation: **61 model-free tests PASS**: 18 grader, 11 context/build-consumer,
+9 HTTP request, 12 process-supervisor and 11 multi-arm schedule tests. The grader
+suite uses real sealed temporary file graphs and fake model/process/build
+fixtures, with producer validation mocked there; the context suite separately
+executes real producer artifact/cache/linkage validation with source inventory
+and marker extraction mocked. No native inference or P9 result is established.
+
+Run focused tests with `python3 -m unittest discover -s
+scripts/diagnostics/cafe3-adaptive -p 'test_p9_grade.py'` (command on one line).
+Use `python3 scripts/diagnostics/cafe3-adaptive/p9_grade.py <schedule> <sha256>
+<capture.jsonl> <sha256> <new-output.json>` for an exclusive assessment output.
+Malformed evidence produces no assessment. Exit 0 requires pass; valid fail or
+inconclusive writes its assessment and exits 1. Prospective projection remains
+under `VB-CAFE3-ROUND-WIRE`; no native planning-context canary has passed.
+
+Source identities:
+
+- `p9_grade.py` SHA-256 `eff6be2529472a21268dc7011e6bdd4488f92515e8ed00473632ed320a198660`.
+
+- `test_p9_grade.py` SHA-256 `270074dcbe4aac704768a5b003889050a8700bcc8f995ed4216f83298522fe9a`.
+
+- `protocol_requests.py` SHA-256 `ebbf8a18c9862986f0d74af4e2ef3a6d5106e3d57474bb98fc5548722834984c`.
+
+- `launch_context.py` SHA-256 `68540c853cc9ecf73a69712f7848ad301b49d06e2b34f73eca77e39af61a7938`.

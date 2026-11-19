@@ -94,9 +94,11 @@ def execute(plan, pid, output):
                 payload = dict(prompt=prompt['prompt'], n_predict=settings['n_predict'], seed=settings['seed'],
                                temperature=0, stream=False, return_tokens=True, cache_prompt=False,
                                **{'speculative.n_max': settings['arm_widths'][plan['arm']]})
+                unix_started_ns = time.time_ns()
                 started = time.monotonic_ns()
                 response = request(port, '/completion', payload, timeout)
                 elapsed = time.monotonic_ns() - started
+                unix_ended_ns = time.time_ns()
                 guard()
                 context.require(isinstance(response, dict) and response.get('stop') is True and
                                 response.get('truncated') is False and isinstance(response.get('tokens'), list) and
@@ -105,7 +107,8 @@ def execute(plan, pid, output):
                 record = dict(schema='epyc.cafe3.request-capture.v1', status='UNASSESSED',
                               context_sha256=plan['context_sha256'], protocol=plan['protocol'], arm=plan['arm'],
                               repetition=repetition, prompt_id=prompt['id'], payload=payload,
-                              elapsed_ns=elapsed, response=response)
+                              elapsed_ns=elapsed, unix_started_ns=unix_started_ns,
+                              unix_ended_ns=unix_ended_ns, response=response)
                 stream.write(json.dumps(record, allow_nan=False) + '\n')
                 stream.flush()
                 os.fsync(stream.fileno())

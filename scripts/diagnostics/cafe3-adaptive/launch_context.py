@@ -99,6 +99,9 @@ def build_receipt(reference, backend):
     spec = importlib.util.spec_from_file_location('cafe3_launch_build', source)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    # Replacement packets have their own retained input inventory and runs.
+    # Always execute the trusted repository validator, bound to this packet.
+    module.D = canonical(reference['path']).parent
     module.validate(receipt)
     run = Path(receipt['run']).resolve(strict=True)
     executable = canonical(str(run / 'build/bin/llama-server'))

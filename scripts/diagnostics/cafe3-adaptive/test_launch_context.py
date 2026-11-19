@@ -227,7 +227,7 @@ class BuildReceiptTest(unittest.TestCase):
             # strings mocked. Real artifact hashing, cache and linkage checks run.
             with patch.object(context.importlib.util, 'module_from_spec', return_value=driver), \
                  patch.object(context.importlib.machinery.SourceFileLoader, 'exec_module'), \
-                 patch.object(driver, 'D', root), patch.object(driver, 'inputs', return_value=record['inputs']), \
+                 patch.object(driver, 'D', root / 'obsolete-packet'), patch.object(driver, 'inputs', return_value=record['inputs']), \
                  patch.object(driver.subprocess, 'check_output', return_value=b'\n'.join(driver.MARKERS)):
                 self.assertEqual(validate()[1], exe)
                 for field, value in [('mode', 'smoke'), ('schema', 'foreign'), ('base', 'stale')]:
