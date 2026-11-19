@@ -473,3 +473,49 @@ literally zero throughput change. It cannot silently satisfy AM-PORT-3's
 default-off futility rule; the model-row verdict must interpret these controls
 under its predeclared decision rule. No real-model control verdict is supplied
 by the synthetic tests or the baseline executable link.
+
+## Fresh full-build receipts
+
+`build.py` constructs baseline or patched CPU/HIP variants from a **clean,
+real detached worktree at the pinned commit**. Create each worktree with
+`git worktree add --detach` in task scratch, outside this lane and production.
+Each build requires a new output directory outside its source worktree. The
+patched variant installs the exact integration patch and two runtime headers;
+no pre-existing build artifacts are reused. Run builds only inside an admitted
+compute row. For example (paths are placeholders):
+
+```bash
+python scripts/benchmark/am_port3/build.py build --source <clean-detached-tree> \
+  --output <new-build-root> --variant patched --backend hip --arch gfx90a --jobs 4
+python scripts/benchmark/am_port3/build.py verify <new-build-root>/BUILD.json
+```
+
+Use separate clean worktrees/output directories for `baseline`/`patched` and
+`cpu`/`hip`; CPU omits `--arch`. A failed build emits no BUILD receipt. To retry,
+remove that task's failed worktree with `git worktree remove` and recreate the
+same scratch source location at the pin; do not accumulate attempt trees.
+
+A generated CMake wrapper builds the **full kernel**, including dynamic backend
+modules, and links `am-control` in both variants plus `am-driver` in the patched
+variant. Internal includes put installed patched `src` before the lane headers.
+`BUILD.json` binds the source commit/tree/complete tracked diff, exact injected
+headers, patch, driver/control and Python runtime tooling, actual configure/build
+argv, relevant compiler environment, CMake cache/wrapper, build logs, executable
+and all llama/ggml shared-library bytes (including aliases). Verification refuses
+tracked, staged, untracked or ignored source changes beyond that exact patch and
+headers, changed tooling/configuration/logs/artifacts, missing required backend
+libraries, empty outputs and libraries resolving outside the build's bin.
+Source/tooling are checked before and after the build. Run verification at row
+admission and around execution; the runtime wrappers still provide their own
+mapped-library/content checks. This is a local reproducibility receipt, not an
+independently trusted or adversarial build attestation. It does not prove GPU
+residency, model identity, default-off equivalence or attention quality.
+
+Sixteen build-contract tests use real temporary git worktrees and a **simulated
+CMake/compiler** to exercise baseline/patched CPU/HIP receipts, full-build argv,
+include order, clean-tree/output guards, failed/mutating builds and source,
+header, tooling, cache, log, artifact and external-symlink refusals. They do not
+compile the kernel. The full Python suite has 50 passing tests and one optional
+native-reader test skipped without `AM_BUNDLE_TEST`. Actual full CPU/HIP linking,
+prepared model inputs and bounded row publication remain to do; no full-build
+or model/GPU verdict is asserted by these tests.
