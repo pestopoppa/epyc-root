@@ -177,7 +177,7 @@
    "id": "AK-DTREE-1",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1704,
+   "line": 1706,
    "lint": {
     "fails": [
      "b",
@@ -201,7 +201,7 @@
   "AK-DTREE-2": {
    "class": "non-inference",
    "class_basis": "advisory-regex",
-   "cont_lines": 9,
+   "cont_lines": 10,
    "done_when": null,
    "file": "handoffs/active/speculative-decoding.md",
    "frozen_until": null,
@@ -212,7 +212,7 @@
    "id": "AK-DTREE-2",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1706,
+   "line": 1708,
    "lint": {
     "fails": [
      "d",
@@ -933,7 +933,7 @@
    "id": "DTREE-A1",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1748,
+   "line": 1751,
    "lint": {
     "fails": [
      "a"
@@ -11192,7 +11192,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 698,
+   "line": 707,
    "lint": {
     "fails": [
      "c",
@@ -11226,7 +11226,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1177,
+   "line": 1186,
    "lint": {
     "fails": [
      "c",
@@ -11259,7 +11259,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1580,
+   "line": 1589,
    "lint": {
     "fails": [
      "a",
@@ -11292,7 +11292,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1701,
+   "line": 1710,
    "lint": {
     "fails": [],
     "ok": true
@@ -11322,7 +11322,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2463,
+   "line": 2472,
    "lint": {
     "fails": [],
     "ok": true
@@ -11385,7 +11385,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1046,
+   "line": 1055,
    "lint": {
     "fails": [
      "a",
@@ -11419,7 +11419,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 660,
+   "line": 669,
    "lint": {
     "fails": [
      "h"
@@ -11451,7 +11451,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2461,
+   "line": 2470,
    "lint": {
     "fails": [
      "d",
@@ -11484,7 +11484,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1172,
+   "line": 1181,
    "lint": {
     "fails": [
      "a"
@@ -11516,7 +11516,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1570,
+   "line": 1579,
    "lint": {
     "fails": [
      "s"
@@ -11548,7 +11548,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1047,
+   "line": 1056,
    "lint": {
     "fails": [],
     "ok": true
@@ -11578,7 +11578,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1048,
+   "line": 1057,
    "lint": {
     "fails": [
      "a",
@@ -11601,7 +11601,7 @@
   "handoffs/active/benchmark-suites.md#6e0d253978c8cc15": {
    "class": "inference",
    "class_basis": "explicit",
-   "cont_lines": 50,
+   "cont_lines": 59,
    "done_when": null,
    "file": "handoffs/active/benchmark-suites.md",
    "frozen_until": null,
@@ -11678,7 +11678,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2507,
+   "line": 2516,
    "lint": {
     "fails": [],
     "ok": true
@@ -11708,7 +11708,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1183,
+   "line": 1192,
    "lint": {
     "fails": [
      "d",
@@ -11741,7 +11741,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2511,
+   "line": 2520,
    "lint": {
     "fails": [
      "e"
@@ -11773,7 +11773,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1579,
+   "line": 1588,
    "lint": {
     "fails": [
      "s"
@@ -11805,7 +11805,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2423,
+   "line": 2432,
    "lint": {
     "fails": [],
     "ok": true
@@ -11835,7 +11835,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1045,
+   "line": 1054,
    "lint": {
     "fails": [
      "a"
@@ -11867,7 +11867,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2460,
+   "line": 2469,
    "lint": {
     "fails": [
      "d",
@@ -11900,7 +11900,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1562,
+   "line": 1571,
    "lint": {
     "fails": [
      "c",
@@ -11968,7 +11968,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 723,
+   "line": 732,
    "lint": {
     "fails": [
      "e",
@@ -12061,7 +12061,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 645,
+   "line": 654,
    "lint": {
     "fails": [],
     "ok": true
@@ -12091,7 +12091,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2491,
+   "line": 2500,
    "lint": {
     "fails": [
      "a"
@@ -12157,7 +12157,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 465,
+   "line": 474,
    "lint": {
     "fails": [
      "c",
@@ -12191,7 +12191,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1652,
+   "line": 1661,
    "lint": {
     "fails": [
      "c",
@@ -36877,7 +36877,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1374,
+   "line": 1376,
    "lint": {
     "fails": [
      "d",
@@ -36910,7 +36910,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1398,
+   "line": 1400,
    "lint": {
     "fails": [
      "d",
@@ -36944,7 +36944,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 585,
+   "line": 587,
    "lint": {
     "fails": [
      "c",
@@ -36977,7 +36977,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1690,
+   "line": 1692,
    "lint": {
     "fails": [
      "b",
@@ -37013,7 +37013,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 453,
+   "line": 454,
    "lint": {
     "fails": [
      "e",
@@ -37046,7 +37046,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 472,
+   "line": 473,
    "lint": {
     "fails": [
      "f",
@@ -37079,7 +37079,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 495,
+   "line": 496,
    "lint": {
     "fails": [
      "e",
@@ -37112,7 +37112,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1722,
+   "line": 1725,
    "lint": {
     "fails": [
      "d",
@@ -37145,7 +37145,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1728,
+   "line": 1731,
    "lint": {
     "fails": [
      "h"
@@ -37177,7 +37177,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1745,
+   "line": 1748,
    "lint": {
     "fails": [
      "e"
@@ -37209,7 +37209,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1743,
+   "line": 1746,
    "lint": {
     "fails": [
      "b",
@@ -37243,7 +37243,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 925,
+   "line": 927,
    "lint": {
     "fails": [
      "e",
@@ -37277,7 +37277,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1684,
+   "line": 1686,
    "lint": {
     "fails": [
      "h"
@@ -37309,7 +37309,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 963,
+   "line": 965,
    "lint": {
     "fails": [
      "a",
@@ -37328,6 +37328,39 @@
    "tier": null,
    "track": "dflash2-block-drafter-experimental-build"
   },
+  "handoffs/active/speculative-decoding.md#607cc50bd87366a5": {
+   "class": "inference",
+   "class_basis": "deliverable",
+   "cont_lines": 1,
+   "done_when": null,
+   "file": "handoffs/active/speculative-decoding.md",
+   "frozen_until": null,
+   "gate": [],
+   "gate_open": false,
+   "gate_unknown": [],
+   "holds": [],
+   "id": null,
+   "inputs": [],
+   "inputs_missing": [],
+   "line": 1717,
+   "lint": {
+    "fails": [
+     "d",
+     "e"
+    ],
+    "ok": false
+   },
+   "owner": null,
+   "pos_in_backlog": null,
+   "row": "INF-50",
+   "row_rank": 5,
+   "standard": false,
+   "state": "open",
+   "text": "- [ ] **AK-DTREE-2d graph/memory wiring + switch-over** (P5 kernel side). **Code:** fork `9832d0330` (wiring) + `a5ea53bbd` (`--draft-tree-mode batch` switched onto `llama_batch.parent` + `llama_memory_tree_accept`; server alternatives join",
+   "text_sha": "607cc50bd87366a5",
+   "tier": null,
+   "track": "dflash2-block-drafter-experimental-build"
+  },
   "handoffs/active/speculative-decoding.md#66ecbe02c3b2e06e": {
    "class": "inference",
    "class_basis": "deliverable",
@@ -37342,7 +37375,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1378,
+   "line": 1380,
    "lint": {
     "fails": [
      "c",
@@ -37377,7 +37410,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 460,
+   "line": 461,
    "lint": {
     "fails": [
      "f",
@@ -37397,39 +37430,6 @@
    "tier": null,
    "track": "speculative-decoding-mtp-refresh"
   },
-  "handoffs/active/speculative-decoding.md#7ccb3941c250194c": {
-   "class": "inference",
-   "class_basis": "deliverable",
-   "cont_lines": 0,
-   "done_when": null,
-   "file": "handoffs/active/speculative-decoding.md",
-   "frozen_until": null,
-   "gate": [],
-   "gate_open": false,
-   "gate_unknown": [],
-   "holds": [],
-   "id": null,
-   "inputs": [],
-   "inputs_missing": [],
-   "line": 1715,
-   "lint": {
-    "fails": [
-     "d",
-     "e"
-    ],
-    "ok": false
-   },
-   "owner": null,
-   "pos_in_backlog": null,
-   "row": "INF-50",
-   "row_rank": 5,
-   "standard": false,
-   "state": "open",
-   "text": "- [ ] **AK-DTREE-2d graph/memory wiring + switch-over** (P5 kernel side). **Code:** fork `9832d0330` (wiring) + `a5ea53bbd` (`--draft-tree-mode batch` switched onto `llama_batch.parent` + `llama_memory_tree_accept`; server alternatives join",
-   "text_sha": "7ccb3941c250194c",
-   "tier": null,
-   "track": "dflash2-block-drafter-experimental-build"
-  },
   "handoffs/active/speculative-decoding.md#8221c278c252cdaf": {
    "class": "inference",
    "class_basis": "advisory-regex-conflict",
@@ -37444,7 +37444,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1640,
+   "line": 1642,
    "lint": {
     "fails": [
      "b",
@@ -37478,7 +37478,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1749,
+   "line": 1752,
    "lint": {
     "fails": [
      "c",
@@ -37513,7 +37513,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1714,
+   "line": 1716,
    "lint": {
     "fails": [],
     "ok": true
@@ -37543,7 +37543,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1669,
+   "line": 1671,
    "lint": {
     "fails": [
      "e",
@@ -37566,7 +37566,7 @@
   "handoffs/active/speculative-decoding.md#9789ecaac7fcb0ad": {
    "class": "non-inference",
    "class_basis": "deliverable",
-   "cont_lines": 39,
+   "cont_lines": 40,
    "done_when": null,
    "file": "handoffs/active/speculative-decoding.md",
    "frozen_until": null,
@@ -37610,7 +37610,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1727,
+   "line": 1730,
    "lint": {
     "fails": [],
     "ok": true
@@ -37640,7 +37640,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1444,
+   "line": 1446,
    "lint": {
     "fails": [
      "c",
@@ -37675,7 +37675,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1726,
+   "line": 1729,
    "lint": {
     "fails": [],
     "ok": true
@@ -37705,7 +37705,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 956,
+   "line": 958,
    "lint": {
     "fails": [
      "c",
@@ -37730,7 +37730,7 @@
   "handoffs/active/speculative-decoding.md#aca360e85f33268d": {
    "class": "inference",
    "class_basis": "advisory-regex-conflict",
-   "cont_lines": 49,
+   "cont_lines": 50,
    "done_when": null,
    "file": "handoffs/active/speculative-decoding.md",
    "frozen_until": null,
@@ -37741,7 +37741,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 523,
+   "line": 524,
    "lint": {
     "fails": [
      "b",
@@ -37775,7 +37775,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 405,
+   "line": 406,
    "lint": {
     "fails": [
      "c",
@@ -37809,7 +37809,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1389,
+   "line": 1391,
    "lint": {
     "fails": [
      "e",
@@ -37842,7 +37842,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 586,
+   "line": 588,
    "lint": {
     "fails": [],
     "ok": true
@@ -37872,7 +37872,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1015,
+   "line": 1017,
    "lint": {
     "fails": [
      "c",
@@ -37906,7 +37906,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 599,
+   "line": 601,
    "lint": {
     "fails": [
      "b",
@@ -37941,7 +37941,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1403,
+   "line": 1405,
    "lint": {
     "fails": [
      "c",
@@ -37975,7 +37975,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 933,
+   "line": 935,
    "lint": {
     "fails": [
      "e",
@@ -38008,7 +38008,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1387,
+   "line": 1389,
    "lint": {
     "fails": [
      "e",
@@ -38041,7 +38041,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1635,
+   "line": 1637,
    "lint": {
     "fails": [
      "b",
@@ -38110,7 +38110,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1688,
+   "line": 1690,
    "lint": {
     "fails": [
      "c",
@@ -45970,9 +45970,9 @@
   "box handoffs/active/autopilot-program.md:3729 has 33 continuation lines > 24",
   "box handoffs/active/benchmark-suites.md:198 has 26 continuation lines > 24",
   "box handoffs/active/benchmark-suites.md:294 has 49 continuation lines > 24",
-  "box handoffs/active/benchmark-suites.md:409 has 50 continuation lines > 24",
-  "box handoffs/active/benchmark-suites.md:465 has 39 continuation lines > 24",
-  "box handoffs/active/benchmark-suites.md:1652 has 30 continuation lines > 24",
+  "box handoffs/active/benchmark-suites.md:409 has 59 continuation lines > 24",
+  "box handoffs/active/benchmark-suites.md:474 has 39 continuation lines > 24",
+  "box handoffs/active/benchmark-suites.md:1661 has 30 continuation lines > 24",
   "box handoffs/active/context-and-token-economy.md:40 has 26 continuation lines > 24",
   "box handoffs/active/context-and-token-economy.md:213 has 28 continuation lines > 24",
   "box handoffs/active/context-and-token-economy.md:2895 has 26 continuation lines > 24",
@@ -46039,10 +46039,10 @@
   "box handoffs/active/routing-program.md:3059 has 29 continuation lines > 24",
   "box handoffs/active/routing-program.md:3114 has 151 continuation lines > 24",
   "box handoffs/active/routing-program.md:3946 has 32 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:365 has 39 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:495 has 27 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:523 has 49 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:925 has 30 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:365 has 40 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:496 has 27 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:524 has 50 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:927 has 30 continuation lines > 24",
   "box handoffs/active/speech-and-multimodal.md:695 has 78 continuation lines > 24",
   "box handoffs/active/stack-lifecycle-program.md:1167 has 32 continuation lines > 24",
   "box handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md:314 has 42 continuation lines > 24",
