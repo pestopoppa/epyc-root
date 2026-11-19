@@ -361,6 +361,13 @@ def auto_unpark(e: dict, now: float) -> None:
         e["fresh_next"] = True
 
 
+def note_auto_unpark_progress(e: dict) -> None:
+    """A turn that landed a tick, row or filing clears the auto-unpark count: the per-day cap bounds only
+    CONSECUTIVE fruitless unparks, so a productive session is never capped (D9 2026-11-19)."""
+    if e.get("auto_unparks"):
+        e["auto_unparks"] = []
+
+
 def kill_pid(pid: int) -> bool:
     """SIGTERM a PID the dispatcher itself spawned; SIGKILL if it survives the next check. True if signalled."""
     try:
