@@ -1,4 +1,6 @@
 # CPU Decode Roofline Program — Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling
+**Row**: INF-70
+**Domain**: inference-research
 
 **Model**: gpt-6.1-terra
 **Effort**: high
@@ -98,11 +100,236 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 ## Track: cpu-decode-roofline-program
 <!-- gate: INF-65 -->
 
+### Backlog
+
+- [ ] **DEPTH-ENV-1 — Publish one measured context-depth throughput envelope for the models under launch-flag exploration: prefill and decode at 16K, 32K, 48K and 128K, assembled from existing runs (Q38FN depth record, KVU-12.6 and the 16k/64k exact-comparison row) with the source commit and binary per cell, adding at most one new cell where a compaction-relevant budget is missing; hand the table, not flag changes, to the OpenCode launch-flag session.**
+      · class: non-inference
+      · section: Context-depth throughput envelope — intake 2026-11-06 (2611.05306)
+- [ ] **D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**
+      B1 measured dense `mul_mat` 61.1 GB/s and `mul_mat_id` 61.8 GB/s against `lm_head` 143.9 GB/s — same
+      op, same kernel, only the size differs, so per-call ramp/imbalance is the cost; the worst single node
+      is the F32 router `ffn_moe_logits` (48 × f32 2560×512: 4.20 ms wall for 2.10 ms compute; one at
+      1,118 µs wall for 32 µs compute) — B4's router requant now has 4.2 ms/token at stake. Bucket them by weight bytes from the D0-b node dump (the
+      4-stream hyper-connection loras at 2560×320, the F32 router, indexer projections, shared expert).
+      Levers in order: cap `nchunk0` so a thread never gets fewer than ~64 rows (idle threads still hit
+      the graph barrier, so this only helps once D2 elides it); concatenate the per-stream lora weights
+      at load into one `mul_mat` per hc site (fewer nodes, same math, bit-exact if accumulation order is
+      preserved); quantize the F32 router (B4). Measure the dense-path in-function median before and after.
+      **Next (2026-11-17, hygiene): STILL LIVE, narrowed.** The sub-2 MB placement half is DONE (D6-PLACE + the adopted THP shim: residual 0.243 ms/token, 'nothing measurable remains'). What survives is the node-size bucketing and the three levers, which need a fresh C12 (`457d5fc523ba5cc687a333a588c1dc15db9346f4`) node profile; that profile is Q38P-1(c)'s window — bucket by weight bytes from it, do not take a separate window.
+      · section: Axis D — the dispatch floor (the largest term, and the least measured)
+- [ ] **PROD-3 — promote a CHAMPION artifact and retire the anchor** (this is what remains of OP-37).
+      `-gateup-r16` is the best measured (12.73 vs 12.61).
+      **⚠ RECONCILE BEFORE ANSWERING OP-37 (flagged 2026-09-07):** B4 measured **`IQ4_XS-uniform-r16` with
+      the F16 router** at +1.69% MTP / +0.63% plain, PPL null with a stated MDE of 1.041%, α up 0.8209 →
+      0.8227 — an **artifact-axis** GO that is deliberately *not* folded into the champion kernel (it is the
+      only non-bit-identical lever, and folding it would silently retire the property that makes the champion
+      promotable on a digest match). **So "the champion artifact" and "the champion kernel" are now two
+      different objects, and this row names only the older of the two candidates.** Decide which artifact
+      OP-37 is about before the 92 GB deletion is authorised. Once a champion exists the comparison basis is
+      transitive — future deltas bench against the champion, exactly as autokernel already operates — and
+      `IQ4_XS-uniform` (92 GB) becomes deletable. Precondition: confirm unsloth still publishes it (~2.8 h
+      re-download, recoverable, not a one-way door).
+      **★ G2-CONC gates this too.** A champion *artifact* promotion ships the same serving path as a kernel
+      promotion; the coherence evidence must be on the candidate pair (kernel + artifact) actually being
+      promoted. Do not close it by citing champion-3's own G2-CONC run if the artifact changes.
+      Run it with the `coherence_gate` procedure (tier 0 paired byte-identity vs the anchor first), not
+      `classify.py` (CLS-RECT, 2026-10-04).
+      **2026-10-20 — operator ruling resolves the anchor half:** *"focus on UD-IQ4 XS instead. This will allow
+      us to reclaim more space."* The anchor is now the served UD-IQ4_XS 3-shard set (RECLAIM-2's keeper). The
+      recipe `scripts/lib/qwen38_flash_next_recipe.py` (research, rev 2026-10-20) pins `TRUNK_SHARDS` = UD and
+      keeps the uniform file as `MEASURED_TRUNK`, the identity of every past headline. `IQ4_XS-uniform` is
+      **retired**, and its deletion is the operator's own action. Two corrections to the precondition above:
+      the file is **not on HF**, and it is a quant-from-quant that `llama-quantize --allow-requantize <UD
+      shard 1> … IQ4_XS` (build 10151, `requant.log`) regenerates; bit-identity of a regeneration is unproven.
+      **Consequence: the CPU-decode measurement epoch resets.** Every INF-70 headline (23.16, 33.370, 43.281 /
+      27.893) is a uniform-file number. UD streams 5.839 GB/token against 4.166 (+40%), and OP-32 measured
+      it −13% decode, so a re-bench on the served artifact is expected to read lower. That gap is an artifact
+      fact, not a regression. Remaining under this row: the champion-kernel promotion half, plus a G2-CONC and
+      speed re-baseline on the UD pair.
+      · section: ★ OPERATOR DECISION 2026-09-05 — OP-35 RESOLVED: MTP GOES TO PRODUCTION, AND THE RECIPE OWNS IT
+- [ ] **STAT-1-SWEEP — relabel every per-prompt-paired significance claim in this campaign (now LABEL-SWEEP, below).** **LABEL-SWEEP — one pass over this handoff's header and the wiki pages that quote campaign numbers (absorbs STAT-1-SWEEP, SCALE-1, CLOSE-4, WRAP-1, WRAP-9(b), WRAP-12, WRAP-13, CLS-RECT-1).** In one commit: (1) every per-prompt-paired significance claim -> INVALID METHOD, original number kept beside the label; (2) every pre-2026-09-07 cold absolute -> hot/cold scale offset +4.36% marked per row; (3) every champion-vs-pristine ratio -> "recipe-to-recipe, not knob-controlled"; (4) the two retracted framings ("2 MB THP boundary", universal /3 haircut) -> purged or marked RETRACTED; (5) 1.4993x / 1.5149x / 23.16 t/s / 1.876x / build-10221 figures -> SUPERSEDED, never swapped for another retired number; (6) PROD-1 prose recipe corrected to what /proc/PID/environ showed; (7) the headline champion arm relabelled with its two-commit instrumentation delta (bin-r1 10303 vs ef81196d5); (8) chat-path COHERENT/SALAD labels re-cited as synthetic-id labels per CLS-RECT-1. Scratch reports under /mnt/raid0/llm/tmp are out of scope (not in git). Done when `grep` for each retired figure in handoffs/ and wiki/ returns only annotated hits.
+      · section: Tasks filed from the 2026-09-08 findings
+- [ ] **★★ NOFOLD-1 — `feature/tree-draft-v6` MUST NOT FOLD. Record the no-fold list where the fold checklist reads it.** Add to `docs/reference/kernel-manifests/README.md` (presence gates) a NO-FOLD section: (a) `feature/tree-draft-v6` must not fold — the champion carries a later contradicting decision; (b) `inf70/sync17-fix2` @ 2516c9807 and `inf70/retest1-fix1` must not fold as-is — `GGML_SCALE_SPLIT` and `GGML_SOLO_YIELD_ROWCOL` default ON are the -2.136% regression and must be flipped OFF first; retest1-fix1 is a measurement instrument, not a lever. Done when the kernel-promotion skill's fold step cites that section.
+      · section: Tasks filed from the 2026-09-08 findings
+- [ ] **REGIONLOCK-1 — BUILDS THAT SKIP `region-lock` RUN STRAIGHT THROUGH A HELD BENCH LOCK. This
+      affects EVERY agent on this host, not just this campaign.** Evidence:
+      `harness1/CONTENTION-FINDING.md` — `A_OLD1` held all four regions, and a bench role blocks
+      until every region is free, so a lock-respecting build *cannot* overlap; yet `cc1plus` ran at
+      **1200% across `0-191`** for the arm's duration. CHAMPION-3's own `build3.sh` is an instance of
+      the shape (`cmake --build -j 40`, no `region-lock` wrapper). Either wrap the build path or
+      detect the bypass. **⚠ This is measurement infrastructure, not CPU-decode research — it should
+      NOT stay on the INF-70 row. Placement is the index owner's call (`pipeline-integration-index.md`
+      is the closest fit) and it needs its own id and handoff.** Operator decision 2026-11-02 (MEAS-1-DECIDE option A): serialize — every champion/candidate BUILD takes the region-lock `bench` role around compile and bench (compiles alone suffice, per the peak discriminator), and CLOSE-8's point stands: region-lock constrains only callers, so detect the bypass too. Done when `build3.sh`-class scripts and the AK build path run under `region-lock run` and a held bench lock makes an unwrapped `cc1plus` burst visible in the contention log.
+      · inputs-missing: `harness1/CONTENTION-FINDING.md`
+      · section: Tasks filed from the 2026-09-08 findings
+- [ ] **★★ CLOSE-2 — FILE THE VACUOUS-INSTRUMENT PATTERN AS ONE PATTERN, NOT FOUR INCIDENTS, AND LAND
+      THE THREE STRUCTURAL GUARDS OUT OF SCRATCH.** Four in one day across two campaigns:
+      (a) our contention screen **passed both contaminated arms** — it watched CPU while the confound
+      went through **DRAM bandwidth**; (b) our kill check reported **four live processes dead**
+      (`ps -p` false negative); (c) their FOLD-2 parser **counted zero OKs and would have reported
+      PASS**; (d) our `tools/gate.py aa` **computed over an arm its own screen had DROPPED**
+      (`pair_p95 = 4.8% / STOP` against the pre-registered `1.051% / PASS` over the 5 kept arms).
+      **★ Common form: a check that produces a verdict without verifying it had anything valid to
+      verify.** Guards adopted and **mutation-tested** in scratch: a gate **cannot PASS on zero cases**
+      (<2 usable arms ⇒ `AA_GATE=INVALID`; an empty permutation side ⇒ `PERM=INVALID`); a gate
+      **cannot compute over arms its own screen rejected** (all statistics through one `screened()`);
+      **death is verified by `/proc` existence, not `ps`.** They live in
+      `/mnt/raid0/llm/tmp/inf70/agents/retest1/tools/` and **are lost with scratch**. Land them beside
+      MEAS-5's `build_locked.sh` and PROD-1's module (WRAP-10). **The wrong `4.8%` line is KEPT in the
+      record deliberately** — a bug's output is evidence about the instrument. Narrowed to the three guards, each with a test: (a) the contention screen samples DRAM bandwidth or is labelled CPU-occupancy-only; (b) the kill check reads /proc/<pid> existence, never ps -p; (c) every FOLD/gate parser asserts an expected OK count > 0 and refuses an arm its own screen dropped. The pattern write-up is a wiki lesson, not a box.
+      · class: non-inference
+      · section: CLOSE-1..CLOSE-11 — derived actionables filed at the 2026-09-08 CLOSE-OUT wrap-up
+- [ ] **★ CLOSE-3 — `ps -p` IS NOT A DEATH TEST; `CLAUDE.md` CURRENTLY SAYS IT IS.** Root `CLAUDE.md`
+      → *Process Management* instructs "after killing a process, **verify it is dead (`ps -p <pid>`)**".
+      Measured 2026-09-08: `ps -p` reported **four live processes dead**. **`/proc/<pid>` existence is
+      authoritative.** This is a governance-file correction, not a campaign note — route it, do not
+      leave it here. Pairs with CLOSE-2.
+      · section: CLOSE-1..CLOSE-11 — derived actionables filed at the 2026-09-08 CLOSE-OUT wrap-up
+- [ ] **CLOSE-6 — SYNC-16 WAS NOT REACHED BY RETEST-1.** Its partial-selection top-k is a real
+      **10.36× kernel speedup** that read **≤ +0.04% served**, measured on the **cold** harness with the
+      **pre-fix sampler** — i.e. unresolved by INSTRUMENT, which is exactly RETEST-1's admissible scope.
+      Re-filed here rather than left inside a closed row. **Gated by the operator's stop on lever
+      research**, and by RETEST-1's own four preconditions (post-fold baseline, hot-vs-hot only, the
+      floor re-measured if the GPU loop relaunches, and the two-ping start protocol). Run it as an AK-loop CPU candidate on the current champion tip (hot-vs-hot, post-v10 baseline, the loop's own floor), not as a manual campaign; decision: >= +1.0% served above the floor over >= 5 interleaved pairs keeps it, else the lever is closed for good.
+      · section: CLOSE-1..CLOSE-11 — derived actionables filed at the 2026-09-08 CLOSE-OUT wrap-up
+- [ ] **★ CLOSE-9 — A HALT DOES NOT DRAIN AN ALREADY-QUEUED CHAIN. Structural, not careless.**
+      A `chain2.sh` queued **before** a gate proceeded on its own after the halt and ran an
+      **unannounced `-j48` build** — **the same shape as the GPU loop's unannounced build three hours
+      earlier**, in a different campaign. Two instances of one mechanism in one day is a design defect,
+      not two lapses. Task: any campaign driver that queues work must expose a **drain** that a halt
+      actually reaches, and an announced build must be announceable *at execution time*, not only at
+      queue time. Pairs with CLOSE-8 (both are "the lock cannot see this") and REGIONLOCK-1. [check: does the compute-calendar launcher / gpu_window_executor expose a drain that a halt reaches (queued rows do not start after a halt)? If yes, retire as satisfied by the calendar; if no, refile against that script]
+      · section: CLOSE-1..CLOSE-11 — derived actionables filed at the 2026-09-08 CLOSE-OUT wrap-up
+- [ ] **WRAP-6 — give two cross-campaign rules a durable home outside this handoff.** (a) *"digest the
+      OBJECTS, never the linked `.so`"* — the compiler is byte-reproducible on this host (0 of 379 objects
+      differed) and **the linker is not** (one commit, four `libggml-hip.so` digests). The session calls this
+      **binding** and it lives only in this handoff and a progress log. (b) *"queue, never poll"* for the
+      bench region — `region-lock run` already blocks in a fair queue; a poller can starve **forever** behind
+      a holder that releases and immediately re-takes under a new tag (observed, not hypothetical). Candidate
+      homes: `agents/shared/MEASUREMENT_POLICY.md` (a), the region-lock/bus protocol docs (b). Third rule (absorbs BACKUP-1): ref coverage — a backup of a clone is `git bundle --all` plus a ref count check against `git for-each-ref | wc -l`; `--branches` missed all 31 unique refs on 2026-09-08. Home: docs/guides/agent-workflows (measurement or ops section). Done when the three rules are in that doc and this handoff links them.
+      · section: WRAP-1..WRAP-8 — derived actionables filed at the 2026-09-07 wrap-up sweep
+- [ ] **WRAP-8 — `GGML_STATIC_CHUNKS`: the one separable arm SYNC-13 left on the table.** Two lines at
+      `ops.cpp:9501` (FA_EXT prefill) and `:11256` (GATED_DELTA_NET), no affinity change, no loader change —
+      the chunker subset of `ggml_is_numa()` without the affinity family that disqualifies `--numa`. Named in
+      SYNC-13's result as *"the single arm worth running if anyone wants it"* and never filed. LOW priority.
+      **Next (2026-11-17, hygiene): STILL LIVE, LOW.** `GGML_STATIC_CHUNKS` does not exist on any current tree (grep of `ggml/src` on v10 is empty) — it is an unwritten two-line patch, so the work is: write it on a `llama.cpp-experimental` branch from C12 (`457d5fc523ba5cc687a333a588c1dc15db9346f4`), then queue one prefill (pp512, FA_EXT + GATED_DELTA_NET) A/B in the autokernel loop; decode is untouched by it. **DONE 2026-11-17:** patch `8c4bcfba05f49ff53b6b75dee599f54488c0f3a0` on `llama.cpp-experimental-wrap8-static-chunks-20261117` (off C12 457d5fc52, pushed to `fork`; the old `ops.cpp:9501/:11256` anchors had drifted to 10546/12400, helper declared above both). PUBLISHED as row `wrap8-static-chunks-ab-20261117` (Q38FN UD-IQ4_XS, llama-bench pp512,2048, same binary, env-only toggle, 5 blocks of ABBA; model/build identity above). stop-on-answer when all 20 visits are valid and RESULT.json is complete (KEEP iff identity holds, geomean >= 1.010, each cell >= 1.005, >= 4/5 blocks > 1.0, A-arm CV <= 1.0%); stop-on-futility on build/identity failure or running geomean < 1.002 after block 3; gate-class = futility-only. The box stays open until the row files its verdict.
+  - 2026-11-17 `wrap8-static-chunks-ab-20261117`: **INCONCLUSIVE_NOISE**, rc=0; box stays OPEN pending the quieter rerun prescribed by the rule. Printed PPL and both chunk lines matched (final 2.7199); this is not a token/logit identity proof. Across five ABBA blocks, on/off prefill ratios were 0.9903 at 512 and 1.0417 at 2048 tokens, aggregate 1.0157, with 4/5 block geomeans above 1. The 512-token A-arm CV was 5.7245%, exceeding the 1% ceiling, so neither a keep nor a drop follows. Raw `results.jsonl` SHA-256 `ce5d81ee1a8d303b18b148b636f5904bab595c8acd236421e5182919a94a7dbe`; summary `RESULT.json` SHA-256 `d3847988539d135520e5f8671aca7e6d0a2715c2634e189fe791e78da397af7c`, both under `/mnt/raid0/llm/tmp/wrap8-static-chunks-ab-20261117/out/`. [belief: cc]
+    Archived source evidence: `/mnt/raid0/llm/archive/scratch-vault/2026-11/wrap8-static-chunks-ab-20261117.v1.tar.gz`, SHA-256 `21544af57159cec082484782fe91bb5b232c6a0f6aad6c6dcb320b820c131bf0`.
+      · section: WRAP-1..WRAP-8 — derived actionables filed at the 2026-09-07 wrap-up sweep
+- [ ] **WRAP-9 — re-derive phase R WITHIN-ARM. ⚠ PART (b) IS ITSELF SUPERSEDED — do NOT restate the
+      multiplier as `1.5149×`.**
+      **★ CORRECTED 2026-09-08.** `1.5149×` was a `champion3` / shim-OFF / old-harness figure and is
+      **SUPERSEDED** by the 18-launch characterisation (plain **2.1857×**, MTP **1.8255×**). Part (b)
+      now reads: **annotate `1.4993×` AND `1.5149×` as SUPERSEDED wherever they were propagated** —
+      do not swap one retired number for another. Part (a) (the eviction-imbalance re-derivation) is
+      unaffected and still open.
+      *Original task:*
+      Filed 2026-09-07 from HARNESS-1's backward assessment. Two separate jobs: (a) `R_C3`'s `+8.60%` is
+      inflated by ~1–3 points by an eviction imbalance (`R_C1` 125 s vs `R_C3` 74 s) and must be recomputed
+      from comparable rounds; (b) the pristine multiplier computed on 0 s rounds only is **1.5149×**, not
+      1.4993× — the champion table has been annotated but every downstream quotation still carries the old
+      figure. **Do NOT pool arms when regressing eviction cost against throughput — the pooled sign inverts.** Scope is part (a) only (the eviction-imbalance re-derivation within-arm); part (b) is LABEL-SWEEP item (5).
+      · section: WRAP-1..WRAP-8 — derived actionables filed at the 2026-09-07 wrap-up sweep
+- [ ] **WRAP-11 — decide the fate of the 21 branches carrying unique work.** `inf70/champion3` is pushed to
+      the `fork` remote as **`experimental-inf70-champion3`**. Of 44 branches, **22 are fully contained in
+      champion-3** and need no push; **21 carry unique work** and a push command for them is **pending with
+      the operator**. Until it runs, that work exists only in local clones on this host.
+      · section: WRAP-1..WRAP-8 — derived actionables filed at the 2026-09-07 wrap-up sweep
+- [ ] **METH-1 — put the per-(node,thread) OCCUPANCY census into the AK loop's CPU profile stage.** The campaign's instrument recorded per-node wall/compute from thread 0 and ranked by dead%, which hid the winning defect (453 single-task nodes read as honest compute). Build: emit the occupancy census (per node: threads with work / threads in team, from the existing per-(node,thread) dump) in the AK CPU screen's profile step and rank candidates by occupancy loss, not dead%. Done when one AK CPU screen report carries the census column and the planner reads it.
+      · class: non-inference
+      · section: ★★★★★ THE CHAMPION KERNEL — `35.407 t/s` SERVED, `1.4834×`, BIT-IDENTICAL. 2026-09-06.
+- [ ] **RES-VMAB-1 — Make all champion weights lockable.** Options, cheapest first: Acceptance also includes (absorbs RES-VMAB-2): every AK serving arm against :8074 records VMA B Locked/Rss/Swap from /proc/<pid>/smaps at arm start and end, so no arm can carry the swapped-baseline hazard unobserved.
+  - (a) `--no-repack` (`common/arg.cpp:2247`) puts every weight in the locked host buffer. Measure tg/pp first: repack feeds the iqk GEMM, so this may cost decode speed.
+  - (b) In `llama.cpp-experimental`, lock CPU extra-buffer types (repack and friends) under `--mlock`. This is a v11 candidate, never a v10 patch.
+  - (c) An operator swap-policy change (swappiness 60 today, 8 GiB `/swap.img` 5.7 GiB used, mostly the 35B servers' non-weight memory).
+  Acceptance: VMA B shows the `lo` flag and 0 swap after load, with speed within noise of today's recipe.
+      · section: Tasks filed 2026-09-23 — champion residency (VMA B)
+- [ ] **XFER-4b — iqk IQ4_NL/MXFP4 allowlist `8c4b282ae`: re-decide with a prefill A/B and a paired task-quality eval.**
+  (filed 2026-10-04, ak-ds41-main) Held out of the 2026-10-04 all-keeps fold by operator decision (ledger:
+  [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) → *all-keeps fold*, "Held out").
+  - For: c5 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c5/runs/20261004T103459Z/report.md`, 6 interleaved rounds)
+    measured **−40.6%** time [−41.7, −40.4] on the Q38FN IQ4_NL expert-down proxy at **N=256** (a microbench, not
+    serving); N=1 and gate/up are flat.
+  - Against: serving X (with it) vs Y (without), Q38FN 5 pairs: **−1.26%**, no decode gain; greedy output diverges at
+    token 17 on 1 of 3 prompts (Y ≡ champion 3/3) — `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/runs/20261004T125648Z/`.
+    XFER-4's 10-03 serving A/B was also slower.
+  - Next: a Q38FN prefill A/B at the shapes where the microbench gain lives (pp256 and larger ubatches, interleaved
+    rounds), then a paired per-item task-quality eval for the output change. Fold only if prefill gains and quality is
+    within tolerance. Done when that verdict is ledgered.
+  - 2026-11-02 operator decision: Run the prefill A/B plus a paired task-quality eval, then re-decide (decisions-batch2-4-20261102.json)
+      · class: inference
+      · section: Tasks filed 2026-10-04 — DS41 keep transfer, iqk IQ4_NL/MXFP4 allowlist (CPU window 2026-10-03 17:20–17:57Z)
+- [ ] **CAFE-5 — REBUILD R2: GDN raw gates + state-rows mode for qwen35moe, CPU, np=1.** Port fork `ggml_gated_delta_net_rows` / `_set_raw_gates`, the CPU kernel branches and `build_rs_cache_view` / `build_rs_write_rows` and wire `qwen35moe.cpp` (the fork wires only qwen35). Rows mode only for np=1 (self-documented reorder hazard, fork llama-graph.cpp:3724+). Gates: P1 unit equivalence, P4/P5 rollback harness, P6 identity 100%, P7 >= +1.0% above floor on `serving:q38fn-...-cpu-t48-mtp-d4`. Do not touch the HIP kernel here. (intake-1925 claim 4) — Owner: workspace-ec (2026-10-06). On a P6/P7 pass, seed AK-A (raw gates) and AK-B (rows mode) in the AK planner with the measured magnitude (absorbs CAFE-6).
+      · section: Tasks filed 2026-10-06 — GDN raw gates and rows mode (cafe-llama intake-1925)
+- [ ] **G2-CONC — BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an ancestor.**
+      **This gate is NOT satisfiable by inheritance: citing `10acba0ab`'s COHERENT 4/4 does not close it**,
+      and neither does the ancestry check above — the ancestry proves the fix is present, not that the
+      stacked champion still clears the trigger.
+      **INSTRUMENT (CLS-RECT, rectified 2026-10-04, operator-approved): the shared deterministic
+      `coherence_gate` library (`epyc-inference-research`, branch `feat/coherence-gate-ec`), NOT INF-70
+      `classify.py`.** classify.py's chat clients passed synthetic token ids, so its uniq/top/run rules never
+      ran, and its fixed `uniq < 0.35` false-flags coherent text above ~300–500 tokens. Its labels may be
+      quoted as history, never as this gate's verdict. The earlier repro client
+      (`/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/client.py`) scores a distinct-WORD ratio ≥ 0.35 and is not
+      reusable as the instrument; `agents/batch-envelope/conc.py` (real ids, byte-identity) is the repro shape.
+      **Arms** (on the promotion candidate binary, greedy, `cache_prompt` false):
+      (a) **`-np 4` simultaneous admission** on the production prompt mix.
+      (b) **A direct probe of the `>= 32`-row trigger**: the 48-row ubatch shape that originally broke it
+      (4 simultaneous ~12-token prompts) **and** a long-prompt arm — both cross the same threshold by
+      different routes, and the champion's row-count-changing levers could move either one independently.
+      Record the ubatch row counts actually observed, not the ones predicted from prompt length.
+      **Anchor**: every prompt is also served ALONE (one request in flight, same binary, same launch
+      recipe). That solo output is the per-prompt anchor. Also record solo-anchor identity against the
+      incumbent production binary (informational: candidate-vs-production drift).
+      **Prompt set**: at least half the items gradable (MC / exact-match / numeric with an `expected`
+      answer from `question_pool.jsonl`), and `max_tokens` large enough that gradable items reach their
+      answer; the rest open-ended at production length (≥ 40, ~90 and ≥ 200 prompt tokens).
+      **Procedure, per concurrent stream, in order:**
+      0. **Tier 0 — paired byte-identity vs the anchor** (sha256 of full text and of token ids). On a
+         **row-exact route** (OP-39 policy C) identity is REQUIRED: any mismatch FAILS the gate, because that
+         route promises reproducibility. On a full-throughput route an identical stream is CLEARED and a
+         divergent one goes to tier 1; divergence alone is expected there (G2-CONC-POLICY) and is not a failure.
+      1. **Tier 1 — ground truth, then `degeneracy.v2`.** A divergent gradable stream FAILS if its answer is
+         wrong where the anchor's is right. Every divergent stream, and every stream of the long-prompt arm,
+         runs `degeneracy.v2` on its REAL token ids (`return_tokens`; the library refuses synthetic ids) and
+         FAILS if its severity exceeds the anchor's on the same prompt. Non-OK outputs shared by stream and
+         anchor are listed as model behaviour, not failed.
+      2. **Tier 2 — judge for residual divergences.** A divergent stream with no ground truth and v2 OK goes
+         to the orchestrator-hosted judge, PAIRED (stream vs anchor, same prompt, "is either degraded,
+         off-task or corrupted relative to the other"), on a server that is not under test. FAIL if the
+         stream is judged worse. With no judge available these rows are eyeballed and listed with full
+         texts, and the gate reads INCOMPLETE, never PASS.
+      **Report by REASON, never a pass/fail count**: IDENTICAL / DIVERGENT-CLEARED(ground-truth) /
+      DIVERGENT-CLEARED(judge) / WRONG / DEGENERATE / SHORT / EMPTY / HTTP-ERROR per arm, because the
+      degenerate rounds ran *faster* per slot while producing garbage and a t/s number without an output
+      check is inflated; throughput is reported only beside this verdict. **Store** full text, token ids,
+      native `stop_type`, the anchor pairing and the classifier ids per stream, written before the verdict.
+      **PASS** = zero FAIL in every arm, 100% identity on row-exact routes, and every residual divergence
+      adjudicated.
+      Prove the binary with `strings` before believing any pass (HYG-1b). Prior evidence:
+      `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`, `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/`.
+      **Cross-links: PROD-1 (the canonical recipe must carry this gate) and PROD-3 / any champion-artifact
+      promotion. Both cross-references are drafted and handed to the coordinator — do not add them here
+      while the PROD-1 agent is running.** Absorbs G2-CONC.MP: the gate also runs a simultaneous multi-prefill arm — c in {2, 3, 5} equal-length salted prompts issued at the same instant, temp 0, speculation on and off, each output compared token for token with a solo np-1 run (the vLLM GDN-state defect only fires when >= 2 prompts prefill in one scheduler step).
+      · inputs-missing: `agents/batch-envelope/conc.py`
+      · section: Concurrency (measured on our CPU, 2026-09-03) — MTP stays a win; a prefill-corruption defect
+- [ ] **Q38P-1 — MEASURE our Q38FN MTP step: bytes, expert union, tokens/step and streaming GB/s (replaces the derived 9.1-11.6 GB and the 80-100 tok/s estimate).** For the served recipe (UD-IQ4_XS, `-t 48`, MTP d4; plain and MTP arms): (a) static bytes/step from the GGUF tensor table incl. the K+1 GDN state writes (no timing window); (b) distinct experts per layer vs verify rows R=1..6 and drafter rows from the router-id tap on a diagnostic/ID-tap build, plus tokens/step per prompt class on the held-out manifest (count measurement: CPU region lock, never overlaps a timed arm); (c) step ms and per-op-class achieved GB/s against a read-sum re-measured IN THE SAME WINDOW (`bench_readbw`; the C0 446.8 GB/s is an old epoch and is NOT inherited) from the node/PATHROW profiler in an AK CPU window, node-profile as a non-measured sibling build, knob proven compiled in (`strings`), residency proven (C1/C2/C4 apply). Controls: AK prompt manifests and GGUF/binary digests frozen; baseline = champion C12 `457d5fc523ba5cc687a333a588c1dc15db9346f4` (branch `llama.cpp-experimental-up-bundle1-20261115`) recipe, plain arm run in the same window; per-call raw ids and per-step timings retained; held-out manifest; every call counted incl. logits=0 catch-up evals; accept only if the instrument reproduces the 4.16 GB plain table (static, kernel-independent) and the same-window C12 plain-arm tok/s within between-launch noise (the old ~53 tok/s is a pre-C12 figure, kept for reference only) and node timings reconcile to step wall within 2%. Stop: if weight-path streaming is already >= 60% of the re-measured read-sum (was >=268 GB/s on C0), close the streaming lever as no-headroom. stop-on-answer when every unit is done and RESULT.json is complete (verdict CLOSE_NO_HEADROOM or LEVER_OPEN); stop-on-futility on build/proof failure, instrument rejection (profiler bytes vs static table > 5%, node-vs-step reconcile > 2%, N-vs-P greedy mismatch) or read-sum < 100 GB/s; gate-class = futility-only. PUBLISHED 2026-11-17 as row `q38p1-c12-20261117` (q2+q3); it died FUTILITY_BUILD_OR_PROOF_FAIL (offline UI dist was in the build dir, not src/tools/ui/dist, so ui-assets.cmake downloaded), republished as `q38p1-c13-20261117-r2` on C13 `bda43aa17c11b671e0e203e7eb7bf4f1303bc273` (shipped code identical to C12: its only delta, LB4.9 sinks, is under `GGML_IQK_FLASH_ATTENTION`, OFF in this config), both builds in-row, no network. `-r2` then ended FUTILITY_INSTRUMENT_REJECTED; diagnosed offline: moe-trace needs `-b` >= 8, S prompt EOSes at 165 tokens, and the profiler had accumulated the 127-token prefill eval (inflating MUL_MAT_ID bytes and wall: the 14.4% bytes and 8.8% reconcile gaps); republished as `q38p1-c13-20261117-r3` (prime + SKIP=6 + cache_prompt, host gap measured via GGML_CPU_PROF_EVAL_FILE and reconcile amended to node + inter-graph time, MTP streaming union-based). Measured already by r2 (valid regardless of the gates): read-sum 265 GB/s on the half, plain dense path 4.14 GB/eval at 186-207 GB/s, lm_head 0.52 GB at 250 GB/s. Static-table finding: the served UD-IQ4_XS recipe streams 5.84 GB/token (dense 4.15 + routed 1.16 + lm_head 0.52), not the old 4.16 GB table (a different recipe), so the 4.16 GB acceptance is replaced by profiler-bytes vs static-table agreement within 5%. (d) in the same window: a non-profiled build step-wall A/B against the profiled sibling (the profiler-overhead test; absorbs SYNC-21) and a compute- vs memory-bound classification of every node (absorbs WRAP-3), so no imbalance figure is read as recoverable capacity before it exists. (intake-1951#record) — Owner: workspace-ec (2026-10-07).
+      *Re-baselined 2026-11-17 (hygiene): the C0 and v10 baselines are replaced by C12 above; the only thing the measurement still needs is one AK CPU window (profiled and non-profiled builds, `buildverify.py symbol` to prove the knob), no other prerequisite.*
+  - 2026-11-17 q38p1-c12-20261117: inconclusive, box stays OPEN — the build tried to download the web-UI files and failed; no profile was taken. r2 queued with the UI download turned off. [no-belief: row verdict filed by agent]
+  - 2026-11-18 q38p1-c13-20261117-r3: **INCONCLUSIVE**, box stays OPEN — the instrument was rejected because the job's Landlock write fence (out/servers) denied the profiler's eval file at out/prof; the bandwidth and expert-union data were valid. r4 `q38p1-c13-20261117-r4` is queued with the file moved inside the fence and a fail-fast check. [no-belief: row verdict filed by agent]
+  - 2026-11-18 `q38p1-c13-20261117-r4`: **INCONCLUSIVE**, box stays OPEN. The eval-file fix worked, but one plain profiled visit missed the pre-registered node-to-eval reconciliation gate: 2.05% versus the 2% limit. Observed weight streaming was 160–163 GB/s (62–63% of the 259.8 GB/s same-window read-sum); those figures do not establish a lever verdict because the instrument was rejected. The filed verdict is `/mnt/raid0/llm/tmp/compute-flags/filing-done/q38p1-c13-20261117-r4.verdict.json` (SHA-256 `1b2bfa9b4101cb732c0c5619c4a4d9b4e36212c39f27b77f75e33d51e17e1c15`); raw results SHA-256 `66bfff3f3a952cf6d6b6628b0c8370df3d4ed5b330fef7d695eee80fdb866985`. The r2–r4 lineage has three failed qualifications and is parked; do not retry it. [belief: cc]
+      · section: Research Intake Update — 2026-10-07 (Q38FN on 2x DGX Spark: physics comparison; entries intake-1937#record through intake-1962#record)
+- [ ] **Q38P-2 — After Q38P-1 lands, schedule or decline B10's no-code IQ4_XS draft-head requant probe.** Requantise the MTP head to IQ4_XS into `blk.48.nextn.shared_head_head` (521 -> 338 MB; B10 expected +1.4-1.8%). Schedule only if Q38P-1 measures the draft head at >= 5% of step time, otherwise decline and record it; gates if scheduled: greedy identity 100%, alpha change <= 0.01 absolute on the held-out manifest, aggregate >= +1.0% above the window floor over >= 5 interleaved pairs, complete denominator. The reduced-vocabulary slice stays declined (B10 NO-GO). (intake-1956#record) — Owner: workspace-ec (2026-10-07).
+      · class: inference
+      · section: Research Intake Update — 2026-10-07 (Q38FN on 2x DGX Spark: physics comparison; entries intake-1937#record through intake-1962#record)
+- [ ] **INF70-TWOLINE** [non-inference first] Fit decode ms/token = a + b·weight_bytes (model sweep at fixed ctx) and = a' + c·KV_bytes (ctx sweep) on CPU from existing C13 llama-bench/served rows; report intercept a (fixed per-step charge: barriers, sync, threadpool) and slopes vs the measured STREAM ceiling. Source: intake-2669 §2.4–2.6 method (slope matches bytes/bandwidth; intercept = per-step charge). Decision: if a > 15% of token time on the serving models, prioritize barrier/threadpool candidates over byte-reduction candidates in AK seeds; else confirm bytes-first. Reuse existing rows first; new runs only for missing points (≥3 models, ≥3 ctx). Stop-on-answer when the fit residual is ≤5% on all points; stop-on-futility if residual >15% (model not linear, record and close). [no-belief: new box]
+      · class: inference
+      · section: Research Intake Update — 2026-11-17 (Exstill 2611.18859 + NVIDIA/Gimlet blogs, intake-2669..2673; operator-approved 2026-11-17)
+
 > Folded from the body of `handoffs/active/cpu-decode-roofline-program.md` (row INF-70), from its first `##` section on, @ `e424d56114f9` on 2026-11-03 (BRF-T7-F9, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
 #### Context-depth throughput envelope — intake 2026-11-06 (2611.05306)
 
-- [ ] **DEPTH-ENV-1 — Publish one measured context-depth throughput envelope for the models under launch-flag exploration: prefill and decode at 16K, 32K, 48K and 128K, assembled from existing runs (Q38FN depth record, KVU-12.6 and the 16k/64k exact-comparison row) with the source commit and binary per cell, adding at most one new cell where a compaction-relevant budget is missing; hand the table, not flag changes, to the OpenCode launch-flag session.**
 
 #### Completed scope — split out at close-out (2026-09-08)
 
@@ -481,17 +708,6 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       prof-only / d8, plus a cross-binary greedy pair) running as D8x — the first four arms confirmed: anchor 10.43, pristine 10.15, committed d8 tip 11.87, d8 with the inert "off" knob 11.88. **`inf70/d8` merged into `exp/cpu-fusion-qwen4exp-20260829` on 2026-09-03 (operator direction; merge commit `bb5bec310`, then `9e75132e3` with D7b), verification running.**
 > *(2026-10-23, workspace-f8, LBH-2: llama-bench protocol defect, V11-103; INF-70 bench logs record no `autokernel_hardened` column, protocol inferred from wall clock, see LBH-1.)* D8 / D8x. The +0.97% same-binary ABA was already inside noise; protocol mixing can only widen it, so the null stands. The D8x +14% cross-binary effect (10.15-10.43 vs 11.87-11.88) is far above the ~1.5% tg128 protocol band and its arms lean one protocol: stands. `d8` arms are mixed (3 hardened, 1 lean ordinary): no sub-2% claim from that dir is admissible.
 
-- [ ] **D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**
-      B1 measured dense `mul_mat` 61.1 GB/s and `mul_mat_id` 61.8 GB/s against `lm_head` 143.9 GB/s — same
-      op, same kernel, only the size differs, so per-call ramp/imbalance is the cost; the worst single node
-      is the F32 router `ffn_moe_logits` (48 × f32 2560×512: 4.20 ms wall for 2.10 ms compute; one at
-      1,118 µs wall for 32 µs compute) — B4's router requant now has 4.2 ms/token at stake. Bucket them by weight bytes from the D0-b node dump (the
-      4-stream hyper-connection loras at 2560×320, the F32 router, indexer projections, shared expert).
-      Levers in order: cap `nchunk0` so a thread never gets fewer than ~64 rows (idle threads still hit
-      the graph barrier, so this only helps once D2 elides it); concatenate the per-stream lora weights
-      at load into one `mul_mat` per hc site (fewer nodes, same math, bit-exact if accumulation order is
-      preserved); quantize the F32 router (B4). Measure the dense-path in-function median before and after.
-      **Next (2026-11-17, hygiene): STILL LIVE, narrowed.** The sub-2 MB placement half is DONE (D6-PLACE + the adopted THP shim: residual 0.243 ms/token, 'nothing measurable remains'). What survives is the node-size bucketing and the three levers, which need a fresh C12 (`457d5fc523ba5cc687a333a588c1dc15db9346f4`) node profile; that profile is Q38P-1(c)'s window — bucket by weight bytes from it, do not take a separate window.
 - [x] **D7 — upstream CPU-side fusion sync.** ✅ 2026-09-02, research only (subagent report
       `/mnt/raid0/llm/tmp/inf70/agents/d7/REPORT.md`). Fork point: upstream `a8dc0e326` (**b10045**,
       2026-07-16, #25076); upstream HEAD `0f3a71be1` (b10760) — 715 commits of divergence, 28 touching
@@ -762,35 +978,6 @@ argument, and it costs about a second.
       against the four-step kernel workflow in `CLAUDE.md` — pull fresh production → build → validate no
       regressions (GPU + CPU) → deploy as a NEW production version, with the full candidate benched as a
       whole, never reconciled by cherry-pick at promotion time.
-- [ ] **PROD-3 — promote a CHAMPION artifact and retire the anchor** (this is what remains of OP-37).
-      `-gateup-r16` is the best measured (12.73 vs 12.61).
-      **⚠ RECONCILE BEFORE ANSWERING OP-37 (flagged 2026-09-07):** B4 measured **`IQ4_XS-uniform-r16` with
-      the F16 router** at +1.69% MTP / +0.63% plain, PPL null with a stated MDE of 1.041%, α up 0.8209 →
-      0.8227 — an **artifact-axis** GO that is deliberately *not* folded into the champion kernel (it is the
-      only non-bit-identical lever, and folding it would silently retire the property that makes the champion
-      promotable on a digest match). **So "the champion artifact" and "the champion kernel" are now two
-      different objects, and this row names only the older of the two candidates.** Decide which artifact
-      OP-37 is about before the 92 GB deletion is authorised. Once a champion exists the comparison basis is
-      transitive — future deltas bench against the champion, exactly as autokernel already operates — and
-      `IQ4_XS-uniform` (92 GB) becomes deletable. Precondition: confirm unsloth still publishes it (~2.8 h
-      re-download, recoverable, not a one-way door).
-      **★ G2-CONC gates this too.** A champion *artifact* promotion ships the same serving path as a kernel
-      promotion; the coherence evidence must be on the candidate pair (kernel + artifact) actually being
-      promoted. Do not close it by citing champion-3's own G2-CONC run if the artifact changes.
-      Run it with the `coherence_gate` procedure (tier 0 paired byte-identity vs the anchor first), not
-      `classify.py` (CLS-RECT, 2026-10-04).
-      **2026-10-20 — operator ruling resolves the anchor half:** *"focus on UD-IQ4 XS instead. This will allow
-      us to reclaim more space."* The anchor is now the served UD-IQ4_XS 3-shard set (RECLAIM-2's keeper). The
-      recipe `scripts/lib/qwen38_flash_next_recipe.py` (research, rev 2026-10-20) pins `TRUNK_SHARDS` = UD and
-      keeps the uniform file as `MEASURED_TRUNK`, the identity of every past headline. `IQ4_XS-uniform` is
-      **retired**, and its deletion is the operator's own action. Two corrections to the precondition above:
-      the file is **not on HF**, and it is a quant-from-quant that `llama-quantize --allow-requantize <UD
-      shard 1> … IQ4_XS` (build 10151, `requant.log`) regenerates; bit-identity of a regeneration is unproven.
-      **Consequence: the CPU-decode measurement epoch resets.** Every INF-70 headline (23.16, 33.370, 43.281 /
-      27.893) is a uniform-file number. UD streams 5.839 GB/token against 4.166 (+40%), and OP-32 measured
-      it −13% decode, so a re-bench on the served artifact is expected to read lower. That gap is an artifact
-      fact, not a regression. Remaining under this row: the champion-kernel promotion half, plus a G2-CONC and
-      speed re-baseline on the UD pair.
 
 **★ SEQUENCING SETTLED BY THE OPERATOR 2026-09-05: "I'm not promoting to production any time soon —
 certainly not before we finish this optimization study thoroughly."** So there is **no promotion window to
@@ -2285,7 +2472,6 @@ most, so its weaker provenance should be stated wherever it is relied on.
       broker**, which is exactly the "tooling gets serialized" branch that moves our floor, so the
       two decisions remain one decision.
 
-- [ ] **STAT-1-SWEEP — relabel every per-prompt-paired significance claim in this campaign (now LABEL-SWEEP, below).** **LABEL-SWEEP — one pass over this handoff's header and the wiki pages that quote campaign numbers (absorbs STAT-1-SWEEP, SCALE-1, CLOSE-4, WRAP-1, WRAP-9(b), WRAP-12, WRAP-13, CLS-RECT-1).** In one commit: (1) every per-prompt-paired significance claim -> INVALID METHOD, original number kept beside the label; (2) every pre-2026-09-07 cold absolute -> hot/cold scale offset +4.36% marked per row; (3) every champion-vs-pristine ratio -> "recipe-to-recipe, not knob-controlled"; (4) the two retracted framings ("2 MB THP boundary", universal /3 haircut) -> purged or marked RETRACTED; (5) 1.4993x / 1.5149x / 23.16 t/s / 1.876x / build-10221 figures -> SUPERSEDED, never swapped for another retired number; (6) PROD-1 prose recipe corrected to what /proc/PID/environ showed; (7) the headline champion arm relabelled with its two-commit instrumentation delta (bin-r1 10303 vs ef81196d5); (8) chat-path COHERENT/SALAD labels re-cited as synthetic-id labels per CLS-RECT-1. Scratch reports under /mnt/raid0/llm/tmp are out of scope (not in git). Done when `grep` for each retired figure in handoffs/ and wiki/ returns only annotated hits.
 - **[declined: ws58 2026-11-03 content-review: merged into LABEL-SWEEP item (2)]** **SCALE-1 — annotate every pre-2026-09-07 COLD absolute with the hot/cold scale offset.**
       Hot reads **+4.36%** above cold on the same binary with byte-identical output, so a hot number
       and a cold number are **not on one scale**. Any table that will accumulate hot arms alongside
@@ -2331,7 +2517,6 @@ most, so its weaker provenance should be stated wherever it is relied on.
       2026-09-08: a `git bundle --branches` would have missed **all 31** refs that existed nowhere
       but one clone's object store; the covering bundle carries **7,556 refs**. Belongs with the
       other cross-campaign rules WRAP-6 is relocating.
-- [ ] **★★ NOFOLD-1 — `feature/tree-draft-v6` MUST NOT FOLD. Record the no-fold list where the fold checklist reads it.** Add to `docs/reference/kernel-manifests/README.md` (presence gates) a NO-FOLD section: (a) `feature/tree-draft-v6` must not fold — the champion carries a later contradicting decision; (b) `inf70/sync17-fix2` @ 2516c9807 and `inf70/retest1-fix1` must not fold as-is — `GGML_SCALE_SPLIT` and `GGML_SOLO_YIELD_ROWCOL` default ON are the -2.136% regression and must be flipped OFF first; retest1-fix1 is a measurement instrument, not a lever. Done when the kernel-promotion skill's fold step cites that section.
 - [x] **LOADAVG-1 — REMOVE the pre-arm `loadavg` gate; it costs the largest single setup item and protects nothing.** ✅ 2026-10-31 ROOT `68a4d5e9f057d0d1d639f1a7318aa7eda1cbccc2`; [verification](../../artifacts/compute/codex3-loadavg-1-20261031/VERIFY.log). [no-belief: harness source fix]
       Measured: it **passed at loadavg 11.61 and the arm then ran through 55.7**.
       Cost: mean **129 s**, up to **195 s** per arm — the largest single setup cost in the harness.
@@ -2346,15 +2531,6 @@ most, so its weaker provenance should be stated wherever it is relied on.
       (`a097dd3a9669adec…`), which is the raw material — the missing piece is the *check*.
       ✅ 2026-11-17: the check now exists as `scripts/inf70/harness1/tools/buildverify.py` (`manifest` = sha256 per `.o` plus aggregate, refuses an empty manifest; `compare` = set+digest equality; `symbol` = fix-specific string present in a lib; `--selftest` passes). Digests OBJECTS, never the linked `.so` (linker not reproducible). The ABLATE-1 receipt (2026-10-27) is its first manual demonstration; `scripts/session/verify_kernel_store.sh` covers the production store. Wired 2026-11-17 into `arm_hot.sh`/`arm_cold.sh` as an opt-in pre-arm gate (`BUILDVERIFY_SYMBOLS` = strings that must be in `$B/libggml-cpu.so`; `BUILDVERIFY_DIR` + `BUILDVERIFY_EXPECT` = object manifest must equal the recorded one; failure exits 65 before the server starts). [no-belief: tool]
 - [x] **ABLATE-1 — native build-only leave-one-out demonstration passed 2026-10-27.** Predeclared receipt `/mnt/raid0/llm/tmp/cal-1027/inf70-ablate-1/VERDICT.json`: exactly the lever TU changed and compiled; the restore build returned to the original object manifest, both binary markers matched, and the worktree was clean. Times are descriptive only. Exact-set enforcement and the restore rebuild were performed by the surrounding job. [belief: cc]
-- [ ] **REGIONLOCK-1 — BUILDS THAT SKIP `region-lock` RUN STRAIGHT THROUGH A HELD BENCH LOCK. This
-      affects EVERY agent on this host, not just this campaign.** Evidence:
-      `harness1/CONTENTION-FINDING.md` — `A_OLD1` held all four regions, and a bench role blocks
-      until every region is free, so a lock-respecting build *cannot* overlap; yet `cc1plus` ran at
-      **1200% across `0-191`** for the arm's duration. CHAMPION-3's own `build3.sh` is an instance of
-      the shape (`cmake --build -j 40`, no `region-lock` wrapper). Either wrap the build path or
-      detect the bypass. **⚠ This is measurement infrastructure, not CPU-decode research — it should
-      NOT stay on the INF-70 row. Placement is the index owner's call (`pipeline-integration-index.md`
-      is the closest fit) and it needs its own id and handoff.** Operator decision 2026-11-02 (MEAS-1-DECIDE option A): serialize — every champion/candidate BUILD takes the region-lock `bench` role around compile and bench (compiles alone suffice, per the peak discriminator), and CLOSE-8's point stands: region-lock constrains only callers, so detect the bypass too. Done when `build3.sh`-class scripts and the AK build path run under `region-lock run` and a held bench lock makes an unwrapped `cc1plus` burst visible in the contention log.
 - **[declined: ws58 2026-11-03 content-review: explicit decline, recorded as such — GGML_SOLO_YIELD_MIN_ELEMS will not be built (REPORT.md 9b: the collision band is empty for every floor >= 4096)]** **DECLINE-RECORDED — `GGML_SOLO_YIELD_MIN_ELEMS` will NOT be built.** A clean yield-floor sweep
       is impossible with the knob that exists (`GGML_ROWCOL_MIN_ELEMS` is the `ROWCOL_SPLIT` floor,
       not a yield floor) and would need a separate knob — **a rebuild**. REPORT.md §9b establishes it
@@ -2384,26 +2560,6 @@ re-issued, and `B7` was already re-pointed once.
       rules and BACKUP-1's. **The rule is already encoded in the PROD-1 draft's `FLOORS` table and its
       `test_every_floor_carries_its_unit` guard — this task is to land it where non-INF-70 sessions
       read it.**
-- [ ] **★★ CLOSE-2 — FILE THE VACUOUS-INSTRUMENT PATTERN AS ONE PATTERN, NOT FOUR INCIDENTS, AND LAND
-      THE THREE STRUCTURAL GUARDS OUT OF SCRATCH.** Four in one day across two campaigns:
-      (a) our contention screen **passed both contaminated arms** — it watched CPU while the confound
-      went through **DRAM bandwidth**; (b) our kill check reported **four live processes dead**
-      (`ps -p` false negative); (c) their FOLD-2 parser **counted zero OKs and would have reported
-      PASS**; (d) our `tools/gate.py aa` **computed over an arm its own screen had DROPPED**
-      (`pair_p95 = 4.8% / STOP` against the pre-registered `1.051% / PASS` over the 5 kept arms).
-      **★ Common form: a check that produces a verdict without verifying it had anything valid to
-      verify.** Guards adopted and **mutation-tested** in scratch: a gate **cannot PASS on zero cases**
-      (<2 usable arms ⇒ `AA_GATE=INVALID`; an empty permutation side ⇒ `PERM=INVALID`); a gate
-      **cannot compute over arms its own screen rejected** (all statistics through one `screened()`);
-      **death is verified by `/proc` existence, not `ps`.** They live in
-      `/mnt/raid0/llm/tmp/inf70/agents/retest1/tools/` and **are lost with scratch**. Land them beside
-      MEAS-5's `build_locked.sh` and PROD-1's module (WRAP-10). **The wrong `4.8%` line is KEPT in the
-      record deliberately** — a bug's output is evidence about the instrument. Narrowed to the three guards, each with a test: (a) the contention screen samples DRAM bandwidth or is labelled CPU-occupancy-only; (b) the kill check reads /proc/<pid> existence, never ps -p; (c) every FOLD/gate parser asserts an expected OK count > 0 and refuses an arm its own screen dropped. The pattern write-up is a wiki lesson, not a box.
-- [ ] **★ CLOSE-3 — `ps -p` IS NOT A DEATH TEST; `CLAUDE.md` CURRENTLY SAYS IT IS.** Root `CLAUDE.md`
-      → *Process Management* instructs "after killing a process, **verify it is dead (`ps -p <pid>`)**".
-      Measured 2026-09-08: `ps -p` reported **four live processes dead**. **`/proc/<pid>` existence is
-      authoritative.** This is a governance-file correction, not a campaign note — route it, do not
-      leave it here. Pairs with CLOSE-2.
 - **[declined: ws58 2026-11-03 content-review: merged into LABEL-SWEEP item (3)]** **★★ CLOSE-4 — SWEEP: LABEL EVERY CHAMPION-VS-PRISTINE RATIO "RECIPE-TO-RECIPE, NOT
       KNOB-CONTROLLED".** Pristine contains **neither** THP knob (0 occurrences of both, no marker), so
       equal shim state is **impossible by construction**. **★ Retroactive corollary: NO
@@ -2419,12 +2575,6 @@ re-issued, and `B7` was already re-pointed once.
       one arm of a ratio is not an explanation. Adoption explains **part** of the champion's movement and
       its instability; **it is not asserted to explain all of it.** The document lives in scratch
       (`/mnt/raid0/llm/tmp/inf70/agents/retest1/CHAMPION-DIVERGENCE.md`) and **is lost with it**.
-- [ ] **CLOSE-6 — SYNC-16 WAS NOT REACHED BY RETEST-1.** Its partial-selection top-k is a real
-      **10.36× kernel speedup** that read **≤ +0.04% served**, measured on the **cold** harness with the
-      **pre-fix sampler** — i.e. unresolved by INSTRUMENT, which is exactly RETEST-1's admissible scope.
-      Re-filed here rather than left inside a closed row. **Gated by the operator's stop on lever
-      research**, and by RETEST-1's own four preconditions (post-fold baseline, hot-vs-hot only, the
-      floor re-measured if the GPU loop relaunches, and the two-ping start protocol). Run it as an AK-loop CPU candidate on the current champion tip (hot-vs-hot, post-v10 baseline, the loop's own floor), not as a manual campaign; decision: >= +1.0% served above the floor over >= 5 interleaved pairs keeps it, else the lever is closed for good.
 - [x] ~~**CLOSE-7 — SYNC-13's `GGML_STATIC_CHUNKS` WAS NOT REACHED EITHER, AND IS ALREADY FILED TWICE.**~~ (closed 2026-10-29 audit: DUPLICATE → canonical: cpu-decode-roofline-program.md:2535 (WRAP-8); text says "WRAP-8 owns it ... delete this row rather than ticking both"; commit 36fa26ae9 records "done-pending-tick; duplicate pointer")
       It is WRAP-8's whole content and was also inside RETEST-1's scope. **Do not file it a third
       time** — WRAP-8 owns it; this row exists only so the RETEST-1 close-out is complete. **When WRAP-8
@@ -2437,13 +2587,6 @@ re-issued, and `B7` was already re-pointed once.
       row.** It is the same routing problem as REGIONLOCK-1 and belongs with it; the operator owns the
       admission-control design under **OP-41 → INF-73 §3.4**, so this row is a POINTER, not a second
       owner. **Placement is the index owner's call.**
-- [ ] **★ CLOSE-9 — A HALT DOES NOT DRAIN AN ALREADY-QUEUED CHAIN. Structural, not careless.**
-      A `chain2.sh` queued **before** a gate proceeded on its own after the halt and ran an
-      **unannounced `-j48` build** — **the same shape as the GPU loop's unannounced build three hours
-      earlier**, in a different campaign. Two instances of one mechanism in one day is a design defect,
-      not two lapses. Task: any campaign driver that queues work must expose a **drain** that a halt
-      actually reaches, and an announced build must be announceable *at execution time*, not only at
-      queue time. Pairs with CLOSE-8 (both are "the lock cannot see this") and REGIONLOCK-1. [check: does the compute-calendar launcher / gpu_window_executor expose a drain that a halt reaches (queued rows do not start after a halt)? If yes, retire as satisfied by the calendar; if no, refile against that script]
 - **[declined: ws58 2026-11-03 content-review: superseded by the MEAS-1-DECIDE decision (A): builds are serialized under the bench lock, so the per-arm sampler is no longer the control against build bursts]** **★ CLOSE-10 — THE IN-WINDOW SAMPLER ONLY COVERS WINDOWS THAT CONTAIN AN ARM.** `foreign_load.py`
       runs **per arm**, so a burst landing *between* arms — or between the eviction and the first arm —
       is **invisible to it**. On event E1 the only instrument that caught the contamination was the
@@ -2522,13 +2665,6 @@ They are filed here rather than described in prose so the dashboard can see them
       only because it ran the control. A reproducible upstream crash with a control arm, filed nowhere.
       **Next (2026-11-17, hygiene): upstream report DRAFTED, not posted.** Draft: `/mnt/raid0/llm/tmp/inf70-wrap5-upstream-issue.md`. Upstream check (`gh issue list -R ggml-org/llama.cpp`, 2026-11-17): no issue or fix matches (#18991/#19005/#19002 are different init-failure crashes; `examples/gguf/gguf.cpp` last touched 2026-03-04). The reproducer artifacts were deleted (2026-09-07 cleanup), so a minimal repro is the first step of the post. Operator decides whether to post. **Operator decision 2026-11-17: build a repro, then post.** Row `wrap5-gguf-repro-20261117` (model/build identity: C12 `457d5fc523ba5cc687a333a588c1dc15db9346f4` examples/gguf, RelWithDebInfo, input `Goedel-Code-Prover-8B-Q4_K_M.gguf`, gdb backtrace into its out/); stop-on-answer when RESULT.json is written (CRASH_REPRODUCED or NO_CRASH); stop-on-futility on build or precondition failure; gate-class = futility-only. After it reports, the draft is updated with the real repro and the owning session posts it.
   - 2026-11-17 wrap5-gguf-repro-20261117: fail to reproduce — the gguf tool does not segfault on a real model; its 'read with data check' mode aborts by design because it expects the tool's own test file. Nothing to report upstream; the drafted issue is not posted. [no-belief: row verdict filed by agent]
-- [ ] **WRAP-6 — give two cross-campaign rules a durable home outside this handoff.** (a) *"digest the
-      OBJECTS, never the linked `.so`"* — the compiler is byte-reproducible on this host (0 of 379 objects
-      differed) and **the linker is not** (one commit, four `libggml-hip.so` digests). The session calls this
-      **binding** and it lives only in this handoff and a progress log. (b) *"queue, never poll"* for the
-      bench region — `region-lock run` already blocks in a fair queue; a poller can starve **forever** behind
-      a holder that releases and immediately re-takes under a new tag (observed, not hypothetical). Candidate
-      homes: `agents/shared/MEASUREMENT_POLICY.md` (a), the region-lock/bus protocol docs (b). Third rule (absorbs BACKUP-1): ref coverage — a backup of a clone is `git bundle --all` plus a ref count check against `git for-each-ref | wc -l`; `--branches` missed all 31 unique refs on 2026-09-08. Home: docs/guides/agent-workflows (measurement or ops section). Done when the three rules are in that doc and this handoff links them.
 - [x] **WRAP-7 — CLOSED BY SUPERSESSION ✅ 2026-09-08, not by being done.** Champion-3 is **no
       longer the champion**: the folded `ef81196d5` + `GGML_NOHUGEPAGE_PROCESS=1` was characterised in
       a GPU-quiet window over **18 launches** (see the header). Re-measuring champion-3's headline
@@ -2540,26 +2676,6 @@ They are filed here rather than described in prose so the dashboard can see them
       **labelled a projection, not a measurement**, and the GPU lane was live on 184-191 throughout its
       windows (see WRAP-4). The campaign's public headline should be a measurement. Ratios (+4.27% over
       champion-1, 1.4993× pristine) are unaffected and are what to quote until this lands.
-- [ ] **WRAP-8 — `GGML_STATIC_CHUNKS`: the one separable arm SYNC-13 left on the table.** Two lines at
-      `ops.cpp:9501` (FA_EXT prefill) and `:11256` (GATED_DELTA_NET), no affinity change, no loader change —
-      the chunker subset of `ggml_is_numa()` without the affinity family that disqualifies `--numa`. Named in
-      SYNC-13's result as *"the single arm worth running if anyone wants it"* and never filed. LOW priority.
-      **Next (2026-11-17, hygiene): STILL LIVE, LOW.** `GGML_STATIC_CHUNKS` does not exist on any current tree (grep of `ggml/src` on v10 is empty) — it is an unwritten two-line patch, so the work is: write it on a `llama.cpp-experimental` branch from C12 (`457d5fc523ba5cc687a333a588c1dc15db9346f4`), then queue one prefill (pp512, FA_EXT + GATED_DELTA_NET) A/B in the autokernel loop; decode is untouched by it. **DONE 2026-11-17:** patch `8c4bcfba05f49ff53b6b75dee599f54488c0f3a0` on `llama.cpp-experimental-wrap8-static-chunks-20261117` (off C12 457d5fc52, pushed to `fork`; the old `ops.cpp:9501/:11256` anchors had drifted to 10546/12400, helper declared above both). PUBLISHED as row `wrap8-static-chunks-ab-20261117` (Q38FN UD-IQ4_XS, llama-bench pp512,2048, same binary, env-only toggle, 5 blocks of ABBA; model/build identity above). stop-on-answer when all 20 visits are valid and RESULT.json is complete (KEEP iff identity holds, geomean >= 1.010, each cell >= 1.005, >= 4/5 blocks > 1.0, A-arm CV <= 1.0%); stop-on-futility on build/identity failure or running geomean < 1.002 after block 3; gate-class = futility-only. The box stays open until the row files its verdict.
-  - 2026-11-17 `wrap8-static-chunks-ab-20261117`: **INCONCLUSIVE_NOISE**, rc=0; box stays OPEN pending the quieter rerun prescribed by the rule. Printed PPL and both chunk lines matched (final 2.7199); this is not a token/logit identity proof. Across five ABBA blocks, on/off prefill ratios were 0.9903 at 512 and 1.0417 at 2048 tokens, aggregate 1.0157, with 4/5 block geomeans above 1. The 512-token A-arm CV was 5.7245%, exceeding the 1% ceiling, so neither a keep nor a drop follows. Raw `results.jsonl` SHA-256 `ce5d81ee1a8d303b18b148b636f5904bab595c8acd236421e5182919a94a7dbe`; summary `RESULT.json` SHA-256 `d3847988539d135520e5f8671aca7e6d0a2715c2634e189fe791e78da397af7c`, both under `/mnt/raid0/llm/tmp/wrap8-static-chunks-ab-20261117/out/`. [belief: cc]
-    Archived source evidence: `/mnt/raid0/llm/archive/scratch-vault/2026-11/wrap8-static-chunks-ab-20261117.v1.tar.gz`, SHA-256 `21544af57159cec082484782fe91bb5b232c6a0f6aad6c6dcb320b820c131bf0`.
-- [ ] **WRAP-9 — re-derive phase R WITHIN-ARM. ⚠ PART (b) IS ITSELF SUPERSEDED — do NOT restate the
-      multiplier as `1.5149×`.**
-      **★ CORRECTED 2026-09-08.** `1.5149×` was a `champion3` / shim-OFF / old-harness figure and is
-      **SUPERSEDED** by the 18-launch characterisation (plain **2.1857×**, MTP **1.8255×**). Part (b)
-      now reads: **annotate `1.4993×` AND `1.5149×` as SUPERSEDED wherever they were propagated** —
-      do not swap one retired number for another. Part (a) (the eviction-imbalance re-derivation) is
-      unaffected and still open.
-      *Original task:*
-      Filed 2026-09-07 from HARNESS-1's backward assessment. Two separate jobs: (a) `R_C3`'s `+8.60%` is
-      inflated by ~1–3 points by an eviction imbalance (`R_C1` 125 s vs `R_C3` 74 s) and must be recomputed
-      from comparable rounds; (b) the pristine multiplier computed on 0 s rounds only is **1.5149×**, not
-      1.4993× — the champion table has been annotated but every downstream quotation still carries the old
-      figure. **Do NOT pool arms when regressing eviction cost against throughput — the pooled sign inverts.** Scope is part (a) only (the eviction-imbalance re-derivation within-arm); part (b) is LABEL-SWEEP item (5).
 - [x] **WRAP-10 — LANDED IN GIT 2026-09-14.** ✅ `epyc-inference-research` `fc8c44de` + `932bf5c4` +
       `45d6ecce` on `fix/noninf-wrap10` (not pushed): `scripts/lib/qwen38_flash_next_recipe.py`,
       `scripts/lib/test_qwen38_flash_next_recipe.py`, `scripts/benchmark/serve_qwen38_flash_next.sh`,
@@ -2583,10 +2699,6 @@ They are filed here rather than described in prose so the dashboard can see them
       instrumentation commits, so the headline's label is an unstated delta, not a wrong lineage.
       `CHAMPION_PIN_RESOLVED` stays False with the loud refusal the gap text demanded — closing it needs a
       MEASUREMENT on a digested `ef81196d5` CPU build, not another digest.
-- [ ] **WRAP-11 — decide the fate of the 21 branches carrying unique work.** `inf70/champion3` is pushed to
-      the `fork` remote as **`experimental-inf70-champion3`**. Of 44 branches, **22 are fully contained in
-      champion-3** and need no push; **21 carry unique work** and a push command for them is **pending with
-      the operator**. Until it runs, that work exists only in local clones on this host.
 - **[declined: ws58 2026-11-03 content-review: merged into LABEL-SWEEP item (6)]** **WRAP-12 — correct the PROD-1 hybrid recipe and the build-10221 figure wherever they were propagated.**
       Two of PROD-1's three findings are record defects with reach beyond this file: the prose recipe claimed
       `-fa on` **and** `GGML_FA_SPLIT_KV=0` and the live `/proc/PID/environ` readback shows **neither** (a
@@ -3464,7 +3576,6 @@ iqk-supported, so B12's arms are not confounded by scheduling; but the finding g
       find out** — read the paths first. Interacts with D6 (placement) and B2, which are now the campaign's
       largest remaining levers.
 
-- [ ] **METH-1 — put the per-(node,thread) OCCUPANCY census into the AK loop's CPU profile stage.** The campaign's instrument recorded per-node wall/compute from thread 0 and ranked by dead%, which hid the winning defect (453 single-task nodes read as honest compute). Build: emit the occupancy census (per node: threads with work / threads in team, from the existing per-(node,thread) dump) in the AK CPU screen's profile step and rank candidates by occupancy loss, not dead%. Done when one AK CPU screen report carries the census column and the planner reads it.
 
 - [x] **UP-1 — upstream the two ggml contributions this campaign produced.** Filed 2026-09-05.
       (a) **`ggml-cpu: vectorise sigmoid`** — `ggml_vec_sigmoid_f32` existed in `vec.h` as a **dead scalar loop
@@ -3839,11 +3950,6 @@ mlocks only host buffers (`src/llama-model.cpp:1640`) and the repack buffer type
 (`ggml/src/ggml-cpu/repack.cpp:4854`). It was 2.27 GiB swapped at ~13:53 UTC and 23 MiB at 17:50 UTC. A restart does not fix
 it. Any relaunch of `:8074` goes through the inference owner or the operator (OPERATING_CONSTRAINTS → *Inference and Benchmarks*).
 
-- [ ] **RES-VMAB-1 — Make all champion weights lockable.** Options, cheapest first: Acceptance also includes (absorbs RES-VMAB-2): every AK serving arm against :8074 records VMA B Locked/Rss/Swap from /proc/<pid>/smaps at arm start and end, so no arm can carry the swapped-baseline hazard unobserved.
-  - (a) `--no-repack` (`common/arg.cpp:2247`) puts every weight in the locked host buffer. Measure tg/pp first: repack feeds the iqk GEMM, so this may cost decode speed.
-  - (b) In `llama.cpp-experimental`, lock CPU extra-buffer types (repack and friends) under `--mlock`. This is a v11 candidate, never a v10 patch.
-  - (c) An operator swap-policy change (swappiness 60 today, 8 GiB `/swap.img` 5.7 GiB used, mostly the 35B servers' non-weight memory).
-  Acceptance: VMA B shows the `lo` flag and 0 swap after load, with speed within noise of today's recipe.
 - **[declined: ws58 2026-11-03 content-review: merged into RES-VMAB-1 acceptance; the pre-2026-09-22 arm audit is moot (campaign closed, v10 ratified separately)]** **RES-VMAB-2 — Residency receipt for every arm against `:8074`.** Record VMA B's Locked/Rss/Swap from
   `/proc/<pid>/smaps` at the start and end of each INF-70 arm. Arms since 2026-09-22 14:50 UTC without that receipt cannot be
   cleared of the swapped-baseline hazard; list them and decide re-runs.
@@ -3867,23 +3973,9 @@ _Run by ak-ds41-main in a DS41 pause window (`/mnt/raid0/llm/tmp/ds41-scope-2026
   proposal. Same window: EXL3 3.05 bpw is −3.4% PPL but −31% pp5 (INF-80 EXL3-6c5).
 - Pointer: the operator-allowed IQ\*_K/KS self-quant for this model ("exceptionally if justifiable", 2026-10-03/04) is INF-26 NEW-8 in [`iqk-iquant-enablement.md`](quantization-and-low-bit.md#track-iqk-iquant-enablement); its justification bar is measured against XFER-3's uniform file.
 - [x] **XFER-4 — iqk IQ4_NL/MXFP4 allowlist: NOT folded.** ✅ 2026-10-03 — build `cpu-20261003-8c4b282ae-iqkallow` vs champion `90c12df42` on UD-IQ4_XS, 3 rounds, all launches valid (`/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/`, log `/mnt/raid0/llm/tmp/iqk-allow-ab/run.log`): pp5 **−12.2%** [−16.9, −8.8], pp256 −3.9%, tg128 −3.2%, slower in 3/3 rounds on every metric; greedy output differs at token 45 on prompt 1. Mainline's `iq4_nl_8x8` repack path is better than routing these types into iqk. Consequence for INF-77 DS41-T8: MXFP4 experts stay on CPU_REPACK `mxfp4_8x8_q8_0`; iqk is not the fix.
-- [ ] **XFER-4b — iqk IQ4_NL/MXFP4 allowlist `8c4b282ae`: re-decide with a prefill A/B and a paired task-quality eval.**
-  (filed 2026-10-04, ak-ds41-main) Held out of the 2026-10-04 all-keeps fold by operator decision (ledger:
-  [`autokernel-champion-aggregate.md`](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) → *all-keeps fold*, "Held out").
-  - For: c5 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c5/runs/20261004T103459Z/report.md`, 6 interleaved rounds)
-    measured **−40.6%** time [−41.7, −40.4] on the Q38FN IQ4_NL expert-down proxy at **N=256** (a microbench, not
-    serving); N=1 and gate/up are flat.
-  - Against: serving X (with it) vs Y (without), Q38FN 5 pairs: **−1.26%**, no decode gain; greedy output diverges at
-    token 17 on 1 of 3 prompts (Y ≡ champion 3/3) — `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/runs/20261004T125648Z/`.
-    XFER-4's 10-03 serving A/B was also slower.
-  - Next: a Q38FN prefill A/B at the shapes where the microbench gain lives (pp256 and larger ubatches, interleaved
-    rounds), then a paired per-item task-quality eval for the output change. Fold only if prefill gains and quality is
-    within tolerance. Done when that verdict is ledgered.
-  - 2026-11-02 operator decision: Run the prefill A/B plus a paired task-quality eval, then re-decide (decisions-batch2-4-20261102.json)
 
 #### Tasks filed 2026-10-06 — GDN raw gates and rows mode (cafe-llama intake-1925)
 
-- [ ] **CAFE-5 — REBUILD R2: GDN raw gates + state-rows mode for qwen35moe, CPU, np=1.** Port fork `ggml_gated_delta_net_rows` / `_set_raw_gates`, the CPU kernel branches and `build_rs_cache_view` / `build_rs_write_rows` and wire `qwen35moe.cpp` (the fork wires only qwen35). Rows mode only for np=1 (self-documented reorder hazard, fork llama-graph.cpp:3724+). Gates: P1 unit equivalence, P4/P5 rollback harness, P6 identity 100%, P7 >= +1.0% above floor on `serving:q38fn-...-cpu-t48-mtp-d4`. Do not touch the HIP kernel here. (intake-1925 claim 4) — Owner: workspace-ec (2026-10-06). On a P6/P7 pass, seed AK-A (raw gates) and AK-B (rows mode) in the AK planner with the measured magnitude (absorbs CAFE-6).
 - **[declined: ws58 2026-11-03 content-review: merged into CAFE-5 (seed after the build passes its gates; magnitude unknown until then)]** **CAFE-6 — seeds AK-A (raw gates) and AK-B (rows mode) for the AK planner.** Knob, kernel, expected effect and measurement as in the Stage-3 plan; magnitude unknown, dispatch/barrier-bound. (intake-1925 claim 4) — Owner: workspace-ec (2026-10-06).
 
 #### Axis E — restore the MTP head (speculative decoding), LAST
@@ -4909,56 +5001,6 @@ ROW-COUNT-TRIGGERED.** *"The fix is in the tree"* and *"the champion is coherent
 admission"* are **different claims, and only the first is proven.** HYG-1b has just found every build dir in
 the shared tree stale, which is exactly why the stronger claim must not be assumed.
 
-- [ ] **G2-CONC — BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an ancestor.**
-      **This gate is NOT satisfiable by inheritance: citing `10acba0ab`'s COHERENT 4/4 does not close it**,
-      and neither does the ancestry check above — the ancestry proves the fix is present, not that the
-      stacked champion still clears the trigger.
-      **INSTRUMENT (CLS-RECT, rectified 2026-10-04, operator-approved): the shared deterministic
-      `coherence_gate` library (`epyc-inference-research`, branch `feat/coherence-gate-ec`), NOT INF-70
-      `classify.py`.** classify.py's chat clients passed synthetic token ids, so its uniq/top/run rules never
-      ran, and its fixed `uniq < 0.35` false-flags coherent text above ~300–500 tokens. Its labels may be
-      quoted as history, never as this gate's verdict. The earlier repro client
-      (`/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/client.py`) scores a distinct-WORD ratio ≥ 0.35 and is not
-      reusable as the instrument; `agents/batch-envelope/conc.py` (real ids, byte-identity) is the repro shape.
-      **Arms** (on the promotion candidate binary, greedy, `cache_prompt` false):
-      (a) **`-np 4` simultaneous admission** on the production prompt mix.
-      (b) **A direct probe of the `>= 32`-row trigger**: the 48-row ubatch shape that originally broke it
-      (4 simultaneous ~12-token prompts) **and** a long-prompt arm — both cross the same threshold by
-      different routes, and the champion's row-count-changing levers could move either one independently.
-      Record the ubatch row counts actually observed, not the ones predicted from prompt length.
-      **Anchor**: every prompt is also served ALONE (one request in flight, same binary, same launch
-      recipe). That solo output is the per-prompt anchor. Also record solo-anchor identity against the
-      incumbent production binary (informational: candidate-vs-production drift).
-      **Prompt set**: at least half the items gradable (MC / exact-match / numeric with an `expected`
-      answer from `question_pool.jsonl`), and `max_tokens` large enough that gradable items reach their
-      answer; the rest open-ended at production length (≥ 40, ~90 and ≥ 200 prompt tokens).
-      **Procedure, per concurrent stream, in order:**
-      0. **Tier 0 — paired byte-identity vs the anchor** (sha256 of full text and of token ids). On a
-         **row-exact route** (OP-39 policy C) identity is REQUIRED: any mismatch FAILS the gate, because that
-         route promises reproducibility. On a full-throughput route an identical stream is CLEARED and a
-         divergent one goes to tier 1; divergence alone is expected there (G2-CONC-POLICY) and is not a failure.
-      1. **Tier 1 — ground truth, then `degeneracy.v2`.** A divergent gradable stream FAILS if its answer is
-         wrong where the anchor's is right. Every divergent stream, and every stream of the long-prompt arm,
-         runs `degeneracy.v2` on its REAL token ids (`return_tokens`; the library refuses synthetic ids) and
-         FAILS if its severity exceeds the anchor's on the same prompt. Non-OK outputs shared by stream and
-         anchor are listed as model behaviour, not failed.
-      2. **Tier 2 — judge for residual divergences.** A divergent stream with no ground truth and v2 OK goes
-         to the orchestrator-hosted judge, PAIRED (stream vs anchor, same prompt, "is either degraded,
-         off-task or corrupted relative to the other"), on a server that is not under test. FAIL if the
-         stream is judged worse. With no judge available these rows are eyeballed and listed with full
-         texts, and the gate reads INCOMPLETE, never PASS.
-      **Report by REASON, never a pass/fail count**: IDENTICAL / DIVERGENT-CLEARED(ground-truth) /
-      DIVERGENT-CLEARED(judge) / WRONG / DEGENERATE / SHORT / EMPTY / HTTP-ERROR per arm, because the
-      degenerate rounds ran *faster* per slot while producing garbage and a t/s number without an output
-      check is inflated; throughput is reported only beside this verdict. **Store** full text, token ids,
-      native `stop_type`, the anchor pairing and the classifier ids per stream, written before the verdict.
-      **PASS** = zero FAIL in every arm, 100% identity on row-exact routes, and every residual divergence
-      adjudicated.
-      Prove the binary with `strings` before believing any pass (HYG-1b). Prior evidence:
-      `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`, `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/`.
-      **Cross-links: PROD-1 (the canonical recipe must carry this gate) and PROD-3 / any champion-artifact
-      promotion. Both cross-references are drafted and handed to the coordinator — do not add them here
-      while the PROD-1 agent is running.** Absorbs G2-CONC.MP: the gate also runs a simultaneous multi-prefill arm — c in {2, 3, 5} equal-length salted prompts issued at the same instant, temp 0, speculation on and off, each output compared token for token with a solo np-1 run (the vLLM GDN-state defect only fires when >= 2 prompts prefill in one scheduler step).
 
   - *(2026-10-24, workspace-58)* Run on champion C3 `dcc853b55` via job `/mnt/raid0/llm/tmp/ws58-g2conc-20261024/` (coherence_gate, -np 4, solo anchors). A3 (brief prompts) = supplementary only. A4 GATE (production prompts verbatim, max_tokens 4096): **FAIL as recorded** on one item (mmlu_abstract_algebra_00002), a degeneracy-detector false positive on LaTeX-dense correct math (solo "D" in 2 tokens; concurrent 904 tokens ending "D"); rows kept in `rows/a4-detector-fp/`. AMENDMENT 5: detector v2.1 (17 independent fixtures: old 6 wrong, new 0); fresh A5 re-run queued; the tier-2 judge is Fable (operator request), on `review-a5/review_pairs.json`. Trigger observed: ubatch rows up to 1797 (b2) and 113-141 (b1).
   - [x] **G2-CONC-LIB — adopt the degeneracy.v2.1 detector fix into the shared coherence_gate library (branch `feat/coherence-gate-ec`) with its fixture set (`/mnt/raid0/llm/tmp/ws58-g2conc-20261024/a5-fixtures/`) (filed 2026-10-24).** ✅ 2026-10-31 — research `e95a9d2e25c3eeedc7a6f997e608d9bd338cbc31`; `scripts/lib/coherence_gate/tests/test_g2conc_v21.py` plus 87 passing package tests, validation log `/mnt/raid0/llm/tmp/codex-ni-autopilot-s-code-20261031/lane-validation.log` (SHA-256 `c52a630c04da144bd8cf7a4490a2bdae34d7984707b7b57113b59079d7f29ae8`). Shared full-text `classify`/paired-gate path adopts amendment-5 v2.1 with original 19-case fixture set; stored-stat replay remains v2 and v1 stays frozen. No historical result regrading or live reload. [no-belief: implementation/tests only; no historical result regrading]
@@ -5045,12 +5087,6 @@ stack stated), n and reps, and — after C0 — achieved GB/s and % of the measu
 
 Verified outcome (dive-verified entries): two-Spark aggregate bandwidth (546 GB/s peak, not pooled) is within 2% of our 537.6 GB/s theoretical, and like-for-like (official 10-expert NVFP4, TP2) the independent median is 53.7 tok/s against our 52.66; the 93/177 tok/s headline is a 5-of-512-expert healed checkpoint with MTP up to K=7 and a best-window peak. The gap that remains is streaming efficiency (Sparks 80-87% of peak per kernel; ours ~31-39% of read-sum, derived). Draft-head vocab trim is NOT a CPU lever here (B10 above). Evidence: intake-1951#record (byte ledger), intake-1948#record, intake-1945#record.
 
-- [ ] **Q38P-1 — MEASURE our Q38FN MTP step: bytes, expert union, tokens/step and streaming GB/s (replaces the derived 9.1-11.6 GB and the 80-100 tok/s estimate).** For the served recipe (UD-IQ4_XS, `-t 48`, MTP d4; plain and MTP arms): (a) static bytes/step from the GGUF tensor table incl. the K+1 GDN state writes (no timing window); (b) distinct experts per layer vs verify rows R=1..6 and drafter rows from the router-id tap on a diagnostic/ID-tap build, plus tokens/step per prompt class on the held-out manifest (count measurement: CPU region lock, never overlaps a timed arm); (c) step ms and per-op-class achieved GB/s against a read-sum re-measured IN THE SAME WINDOW (`bench_readbw`; the C0 446.8 GB/s is an old epoch and is NOT inherited) from the node/PATHROW profiler in an AK CPU window, node-profile as a non-measured sibling build, knob proven compiled in (`strings`), residency proven (C1/C2/C4 apply). Controls: AK prompt manifests and GGUF/binary digests frozen; baseline = champion C12 `457d5fc523ba5cc687a333a588c1dc15db9346f4` (branch `llama.cpp-experimental-up-bundle1-20261115`) recipe, plain arm run in the same window; per-call raw ids and per-step timings retained; held-out manifest; every call counted incl. logits=0 catch-up evals; accept only if the instrument reproduces the 4.16 GB plain table (static, kernel-independent) and the same-window C12 plain-arm tok/s within between-launch noise (the old ~53 tok/s is a pre-C12 figure, kept for reference only) and node timings reconcile to step wall within 2%. Stop: if weight-path streaming is already >= 60% of the re-measured read-sum (was >=268 GB/s on C0), close the streaming lever as no-headroom. stop-on-answer when every unit is done and RESULT.json is complete (verdict CLOSE_NO_HEADROOM or LEVER_OPEN); stop-on-futility on build/proof failure, instrument rejection (profiler bytes vs static table > 5%, node-vs-step reconcile > 2%, N-vs-P greedy mismatch) or read-sum < 100 GB/s; gate-class = futility-only. PUBLISHED 2026-11-17 as row `q38p1-c12-20261117` (q2+q3); it died FUTILITY_BUILD_OR_PROOF_FAIL (offline UI dist was in the build dir, not src/tools/ui/dist, so ui-assets.cmake downloaded), republished as `q38p1-c13-20261117-r2` on C13 `bda43aa17c11b671e0e203e7eb7bf4f1303bc273` (shipped code identical to C12: its only delta, LB4.9 sinks, is under `GGML_IQK_FLASH_ATTENTION`, OFF in this config), both builds in-row, no network. `-r2` then ended FUTILITY_INSTRUMENT_REJECTED; diagnosed offline: moe-trace needs `-b` >= 8, S prompt EOSes at 165 tokens, and the profiler had accumulated the 127-token prefill eval (inflating MUL_MAT_ID bytes and wall: the 14.4% bytes and 8.8% reconcile gaps); republished as `q38p1-c13-20261117-r3` (prime + SKIP=6 + cache_prompt, host gap measured via GGML_CPU_PROF_EVAL_FILE and reconcile amended to node + inter-graph time, MTP streaming union-based). Measured already by r2 (valid regardless of the gates): read-sum 265 GB/s on the half, plain dense path 4.14 GB/eval at 186-207 GB/s, lm_head 0.52 GB at 250 GB/s. Static-table finding: the served UD-IQ4_XS recipe streams 5.84 GB/token (dense 4.15 + routed 1.16 + lm_head 0.52), not the old 4.16 GB table (a different recipe), so the 4.16 GB acceptance is replaced by profiler-bytes vs static-table agreement within 5%. (d) in the same window: a non-profiled build step-wall A/B against the profiled sibling (the profiler-overhead test; absorbs SYNC-21) and a compute- vs memory-bound classification of every node (absorbs WRAP-3), so no imbalance figure is read as recoverable capacity before it exists. (intake-1951#record) — Owner: workspace-ec (2026-10-07).
-      *Re-baselined 2026-11-17 (hygiene): the C0 and v10 baselines are replaced by C12 above; the only thing the measurement still needs is one AK CPU window (profiled and non-profiled builds, `buildverify.py symbol` to prove the knob), no other prerequisite.*
-  - 2026-11-17 q38p1-c12-20261117: inconclusive, box stays OPEN — the build tried to download the web-UI files and failed; no profile was taken. r2 queued with the UI download turned off. [no-belief: row verdict filed by agent]
-  - 2026-11-18 q38p1-c13-20261117-r3: **INCONCLUSIVE**, box stays OPEN — the instrument was rejected because the job's Landlock write fence (out/servers) denied the profiler's eval file at out/prof; the bandwidth and expert-union data were valid. r4 `q38p1-c13-20261117-r4` is queued with the file moved inside the fence and a fail-fast check. [no-belief: row verdict filed by agent]
-  - 2026-11-18 `q38p1-c13-20261117-r4`: **INCONCLUSIVE**, box stays OPEN. The eval-file fix worked, but one plain profiled visit missed the pre-registered node-to-eval reconciliation gate: 2.05% versus the 2% limit. Observed weight streaming was 160–163 GB/s (62–63% of the 259.8 GB/s same-window read-sum); those figures do not establish a lever verdict because the instrument was rejected. The filed verdict is `/mnt/raid0/llm/tmp/compute-flags/filing-done/q38p1-c13-20261117-r4.verdict.json` (SHA-256 `1b2bfa9b4101cb732c0c5619c4a4d9b4e36212c39f27b77f75e33d51e17e1c15`); raw results SHA-256 `66bfff3f3a952cf6d6b6628b0c8370df3d4ed5b330fef7d695eee80fdb866985`. The r2–r4 lineage has three failed qualifications and is parked; do not retry it. [belief: cc]
-- [ ] **Q38P-2 — After Q38P-1 lands, schedule or decline B10's no-code IQ4_XS draft-head requant probe.** Requantise the MTP head to IQ4_XS into `blk.48.nextn.shared_head_head` (521 -> 338 MB; B10 expected +1.4-1.8%). Schedule only if Q38P-1 measures the draft head at >= 5% of step time, otherwise decline and record it; gates if scheduled: greedy identity 100%, alpha change <= 0.01 absolute on the held-out manifest, aggregate >= +1.0% above the window floor over >= 5 interleaved pairs, complete denominator. The reduced-vocabulary slice stays declined (B10 NO-GO). (intake-1956#record) — Owner: workspace-ec (2026-10-07).
 
 Gated lever (durable prose, no checkbox): raise effective CPU streaming from ~140 toward 270 GB/s via the dispatch and barrier floor. Owned by the existing INF-70 axes above, CAFE-5/CAFE-6 and AKX-ALL-25 (autokernel-all-devices-all-dimensions.md); trigger = Q38P-1 shows weight-path streaming below 60% of read-sum (268 GB/s). Any lever under it keeps the CAFE-1 keep rule (>= +1.0% above the window floor, greedy identity 100%, matched-process A/B with >= 5 interleaved pairs) and reports per-op-class GB/s per row (C1).
 
@@ -5076,7 +5112,6 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 
 #### Research Intake Update — 2026-11-17 (Exstill 2611.18859 + NVIDIA/Gimlet blogs, intake-2669..2673; operator-approved 2026-11-17)
 
-- [ ] **INF70-TWOLINE** [non-inference first] Fit decode ms/token = a + b·weight_bytes (model sweep at fixed ctx) and = a' + c·KV_bytes (ctx sweep) on CPU from existing C13 llama-bench/served rows; report intercept a (fixed per-step charge: barriers, sync, threadpool) and slopes vs the measured STREAM ceiling. Source: intake-2669 §2.4–2.6 method (slope matches bytes/bandwidth; intercept = per-step charge). Decision: if a > 15% of token time on the serving models, prioritize barrier/threadpool candidates over byte-reduction candidates in AK seeds; else confirm bytes-first. Reuse existing rows first; new runs only for missing points (≥3 models, ≥3 ctx). Stop-on-answer when the fit residual is ≤5% on all points; stop-on-futility if residual >15% (model not linear, record and close). [no-belief: new box]
 
 ## Track: sarathi-serve-cpu-evaluation
 <!-- gate: none -->
@@ -5234,160 +5269,11 @@ For multi-tenant scenarios (not our current deployment): the Sarathi trade-off M
 ## Track: cpu-prefill-compute-large-models
 <!-- gate: none -->
 
-> Folded from `handoffs/active/cpu-prefill-compute-large-models.md` @ `2ef4bc374799` on 2026-11-02 (BRF-T1-F16, route 1a, operator D1/D5; retired row INF-09 → INF-49). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+### Backlog
 
-### CPU Prefill-Compute for Large Models
-
-**Status**: PROMOTED DEFAULT-OFF PACKAGE + ACTIVE RESEARCH. PC-4p's two-bank
-package is in frozen `production-consolidated-v8` at
-`67a433bf45a8a091d83b4ea0b32ff0735fd51800` (version `10107`): native GLM-MTP
-is repaired, while `GGML_CPU_CONCAT_DIM0_ROWS=1` remains default-off. This is
-not a default-on prefill claim; the remaining prefill-compute research stays
-active, and the preserved CPU matrix `promotion_decision=false` is not a veto
-of the operator freeze.
-**Owner handoff**: this file. **Parent index**: [inference-research-index.md](inference-research-index.md);
-sibling of [inference-research-index.md](inference-research-index.md).
-
-**2026-07-19 checkpoint**: PC-0 first-cell profiling is positive from both the current
-experimental CPU build observation (`1.47` IPC) and the OP-2 quiet-window production-v6 profile
-cell (`112.730698 t/s`, `1.09` IPC, `68.597` CPUs utilized). PC-3 then resolved the large
-`(deleted)` mapping as LLVM OpenMP `libomp.so.5`; the hottest offset is a worker spin/pause
-loop, not an unknown llama.cpp math kernel. The first implementation direction is therefore
-barrier-count / graph-fusion work around qwen35 prefill boundaries, with MoE math packing as
-a follow-up, not a blind dot-product rewrite.
-
-#### Thesis
-
-The CPU **decode** roofline is exhausted (Qwen3.6-27B Q8 decode @96t = 0.17 IPC, **96.6% of
-cycles memory-stalled** — DRAM-bandwidth-bound, not ALU-bound; see
-[cpu-shape-specialized-gemv-decode.md](../completed/cpu-shape-specialized-gemv-decode.md)). That roofline
-does **NOT** bound **prefill**: prefill is `M>1` GEMM, compute-bound, with a far better
-compute:BW ratio, so SIMD/fusion levers that are dead-on-arrival for decode can actually
-fire during prefill. For **large models at long context** (GLM-5.2 754B, 122B architect,
-Qwen3.6 long-context ingest), **prefill dominates wall-clock** — and prefill-compute is a
-genuinely untapped regime on this EPYC 9655.
-
-This track exists so prefill-compute is not invisible: the decode-focused handoffs
-explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-user bottleneck"
-— true for *short* prompts on *small* models, **false** for GLM/architect long-context).
-
-#### Candidate levers (all profile-first)
-
-| Lever | Source / anchor | Est. EV | Why prefill (not decode) |
-|---|---|---|---|
-| **Prefill Q8→f16 convert-skip** | findings-05c §Axis "orthogonal lever when L7 deferred" | ~+15% | Removes per-tile dequant on the compute-bound prefill GEMM |
-| **High-batch norm-tail fusion** | findings-05c ("43% of B=128 time is the norm tail") | high @ large-M | Norm tail is a serial fraction that grows with batch/prefill width |
-| **Per-op operator/graph fusion (barrier-count)** | GEMV §fusion; shared with the decode barrier-fusion lever | +10–15% | Same fusion pass; its ceiling is higher in the compute-bound regime |
-| **Chunked-prefill / MegaBlocks (CPU17/CPU18)** | GEMV CPU18 (blocked-CSR-COO); Sarathi eval | +2–5% single-user; larger multi-tenant | **Workload-gated**, NOT roofline-killed — reopens under batched / multi-tenant / prefill-heavy MoE |
-| **Prefill-decode disaggregation** | (untracked; no anchor) | latency-shape only | Only meaningful if a prefill-heavy / multi-tenant workload materializes |
-
-#### First actions (zero-inference / design)
-
-- [x] **PC-0 — profile-first premise check ✅ 2026-07-19**: `perf record` a **long-context large-model
-  prefill** shape (GLM-5.2 UD-IQ2_M and/or 122B architect at 8K/32K prompt) and confirm the
-  hot ops are **compute-bound** (high VALUBusy / low memory-stall) before any kernel work.
-  If BW-bound, this whole track collapses to the decode ledger — record and close. Bundle
-  the `perf record` into the next OP-2 quiet window (shares the AMD perf-counter preflight,
-  already green: `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/`). First
-  profile cell is now closed positive; PC-3 has selected the first implementation target as
-  OpenMP barrier/graph-fusion pressure, not a low-level dot-kernel rewrite.
-  - [x] **PC-0a observation-only first profile artifact ✅ 2026-07-18**: CPU-only
-    122B architect `p8192/n1` run completed under `perf record` at
-    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-cpu-only-20260718T174148Z/b7-pc0-prefill`.
-    It forced `-dev none -ngl 0 -nopo 1 -nkvo 1`, processed `8192` prompt tokens at
-    `107.621 t/s`, used max RSS `77,124,940 KB` (`73.55 GiB`), and produced a
-    `2988.864 MB` `perf.data` with `721,404` `cycles:u` samples. Top visible samples:
-    `libgomp` worker path `42.33%`, CPU GEMM `tinyBLAS_Q0_AVX...gemm4xN` `11.23%`,
-    IQK MoE matmul `4.21%`, CPU flash-attn tiled `3.47%`, plus Q4K dequant/matmul
-    and `iqk_convert_q4_k_q8_1_r8`. This is a useful positive-direction profile, but
-    not a compute-vs-BW verdict; PC-0 still needs the OP-2/quiet-window `perf stat`
-    memory/vector counter row before any kernel implementation.
-  - [x] **PC-0b observation-only paired counter artifact ✅ 2026-07-18**: same CPU-only
-    122B architect `p8192/n1`, `r=3` perf-stat row completed at
-    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-cpu-only-20260718T204820Z-main/b7-pc0-prefill`.
-    Experimental v7 `41ae83402`, `build-hip/bin/llama-bench`, `-dev none -ngl 0 -nopo 1 -nkvo 1`,
-    Qwen3.5-122B-A10B Q4_K_M, `96` threads. Result: `8192` prompt tokens at mean
-    `108.750 t/s` (`112.554`, `107.043`, `106.654`), `339.47s` wall, `85.168` CPUs utilized,
-    max RSS `77,118,108 KB`, `0.92` IPC, vector MAC `8.456e12`, vector all `2.264e13`,
-    scalar all `8.856e11`, demand DRAM fills `1.575e10`, and hardware-prefetch DRAM fills
-    `4.332e10`. This is a strong positive-direction counter row for the prefill-compute
-    premise, but still observation-grade because it overlapped with the Qwable MI210 replay
-    and was not a fresh OP-2 quiet-window/post-reboot run.
-  - [x] **PC-0c current-source IQ2 prefill/decode sizing artifact ✅ 2026-07-19**:
-    CPU-only Qwen3.5-122B UD-IQ2_M run completed under the experimental v7
-    CPU binary at
-    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/20260719T014801Z_qwen35_122b_iq2_cpu_prefill/summary.json`.
-    Command forced `--device none`, `-ngl 0`, `96` threads, f16 KV, and `GGML_IQK=1`;
-    `llama-bench` reported backend `CPU`, device `none`, and empty GPU info.
-    Result: `pp2048 122.31 t/s`, `pp8192 114.40 t/s`, `tg16 6.24 t/s`, max RSS
-    `40062336 KB`, wall `1:33.18`, exit `0`; pre/post `rocm-smi --showpids`
-    had no KFD PIDs. This sizes the IQ2 CPU prefill path and hybrid-placement
-    economics, but the `tg16` decode row is too slow for a primary CPU-only lane.
-  - [x] **PC-0d current experimental CPU-build profile artifact ✅ 2026-07-19**:
-    CPU-only Qwen3.5-122B Q4_K_M architect `p8192/n1` reran on the experimental
-    CPU build at
-    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-experimental-20260719T083513Z-codex/b7-pc0-prefill`.
-    Source dryrun HEAD was `6ad45fa3f`; the binary reported build commit
-    `9882c2c69`, linked `libllama*`/`libggml*` from `build-k24-cpu/bin`, and
-    forced `-dev none -ngl 0 -nopo 1 -nkvo 1` with `GGML_IQK=1`. Result:
-    `pp8192 121.963712 t/s` mean over `r=3`, `tg1 5.739871 t/s`, `1.47` IPC,
-    `92.660` CPUs utilized, vector MAC `8.456e12`, vector all `2.264e13`,
-    demand DRAM fills `1.479e10`, and hardware-prefetch DRAM fills `3.661e10`.
-    `perf record` captured a `10.323 GiB` profile with zero lost samples; top
-    children were `GOMP_barrier`/OpenMP barrier path `43.12%`,
-    `ggml_iqk_try_mul_mat_id` `22.16%`, `iqk_mul_mat_moe` `18.93%`,
-    `ggml_compute_forward_mul_mat` `16.52%`, `llamafile_sgemm` `14.75%`, and
-    CPU flash-attn `5.88%`. Summary artifact:
-    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc0_experimental_20260719.md`.
-    Interpretation: PC-0 premise is positive from observation evidence; the
-    next lever is barrier-count/operator fusion and qwen35 prefill graph fusion,
-    not a blind decode-style GEMV rewrite. It still needs OP-2-grade rerun or
-    retro-certification before decision use.
-  - [x] **PC-0e OP-2 quiet-window production-v6 profile artifact ✅ 2026-07-19**:
-    frozen production-v6 `bench_canonical.sh` cell completed at
-    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/pc0-op2-20260719T225343Z`.
-    The binary reported build commit `91745611f` / build number `9774`; the
-    production tree was observed at `production-consolidated-v6` `91a8424ea`
-    after the run. The bench reported backend `CPU`, empty `gpu_info`, and
-    postflight ROCm showed no KFD PIDs. Result: `pp8192 112.730698 t/s`
-    mean over `r=3`, `tg1 4.989817 t/s`, `1.09` IPC, `68.597` CPUs utilized,
-    vector MAC `4.410e12`, vector all `7.690e12`, demand DRAM fills
-    `1.954e10`, and hardware-prefetch DRAM fills `4.549e10`. `perf record`
-    captured `10837.601 MB` / `1,348,833` samples; bounded no-children and DSO
-    reports had `0` lost samples, with `46.47%` in `libggml-cpu.so.0.15.2` and
-    `49.57%` in an unresolved `(deleted)` main `llama-bench` mapping. Summary:
-    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc0_op2_20260719.md`.
-    Verdict: PC-0 premise closes positive, but implementation target selection
-    needs a cleaner symbolized mapping before kernel work.
-- [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
-  existing logs (zero-inference): evidence note
-  `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`
-  shows prompt/prefill already dominates the targeted long-context regimes: GLM-5.2 patch
-  review n=12 = 81.0% prompt wall, architect 6K/1024 = 46.8%, ingest 31K/1024 = 75.1%,
-  worker 12K/1024 = 83.1%. This sizes EV; PC-0 still must prove compute-bound hot ops. ✅ 2026-07-18
-- [x] **PC-2 — norm-tail + Q8→f16 convert-skip design**: scoped against
-  `qwen35.cpp` / the prefill graph builder. Verdict: do not create a separate prefill-fusion
-  framework; extend the existing CPU graph/operator fusion direction with prefill-specific
-  gates. First candidate is qwen35 `ffn_up + ffn_gate` fusion over the same normalized input,
-  then GDN projection fusion (`wqkv|wqkv_gate|ssm_beta|ssm_alpha`) because it reuses the same
-  activation packing and cuts barriers. Gated norm-tail fusion (`RMS_NORM * ssm_norm * silu(z)`)
-  is second-order and should wait until post-matmul-fusion profiles prove it remains hot.
-  PC-3 later selected barrier/graph-fusion pressure as the first implementation target;
-  low-level math rewrites remain follow-up work unless post-PC-4 profiles keep them hot. ✅ 2026-07-18
-- [x] **PC-3 — symbolized target-selection pass ✅ 2026-07-19**: resolve the OP-2 `(deleted)` main-binary
-  mapping or rerun a bounded `perf record` with stable binary/symbol capture so the first
-  kernel edit targets a proven hot path. Acceptable outputs: a no-children and children
-  report with resolved `llama-bench`/OpenMP/library symbols, or an address-resolution note
-  that maps the unresolved addresses to exact source/functions in the sampled binary.
-  Result: build-id `597017da07b7fbe219d04036e9ca30d46654951b` is
-  `/usr/lib/llvm-20/lib/libomp.so.5`; hot offset `0x7fea0` is an OpenMP worker
-  spin/pause loop (`38.36%` self), not a llama.cpp kernel. The children report
-  ranks `ggml_graph_compute_thread` at `48.30%`, `ggml_iqk_try_mul_mat_id` /
-  `iqk_mul_mat_moe` at `22.67%` / `22.51%`, `ggml_compute_forward_mul_mat` at
-  `10.37%`, CPU flash-attn at `5.59%`, and GDN/RMS/SSM at about `1-2%` each.
-  Summary:
-  `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc3_target_selection_20260719.md`.
 - [ ] **PC-4 — qwen35moe prefill barrier/graph-fusion candidate, seeded into the AK loop.** Default-off, `llama.cpp-experimental` from the current production tip (the "v7 promotion branch" reference is stale). Target: fewer graph-node/OpenMP dispatches around the frontdoor's prefill same-input compute islands before touching IQK dot kernels. Acceptance: exact-output smoke plus a repeated p8192/n1 profile showing lower libomp spin/pause share and lower wall time, judged by the AK CPU screen's floor.
+      · class: inference
+      · section: First actions (zero-inference / design)
   - [x] **PC-4a — graph-node trace scaffold prepared ✅ 2026-07-19**:
     experimental-only patch in `/mnt/raid0/llm/llama.cpp-experimental` adds
     default-off `LLAMA_QWEN35_PREFILL_TRACE=1` logging in
@@ -5627,6 +5513,160 @@ explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-use
     figures beyond observation-grade; the preserved CPU matrix
     `promotion_decision=false` is not a veto of the operator freeze.
 
+> Folded from `handoffs/active/cpu-prefill-compute-large-models.md` @ `2ef4bc374799` on 2026-11-02 (BRF-T1-F16, route 1a, operator D1/D5; retired row INF-09 → INF-49). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### CPU Prefill-Compute for Large Models
+
+**Status**: PROMOTED DEFAULT-OFF PACKAGE + ACTIVE RESEARCH. PC-4p's two-bank
+package is in frozen `production-consolidated-v8` at
+`67a433bf45a8a091d83b4ea0b32ff0735fd51800` (version `10107`): native GLM-MTP
+is repaired, while `GGML_CPU_CONCAT_DIM0_ROWS=1` remains default-off. This is
+not a default-on prefill claim; the remaining prefill-compute research stays
+active, and the preserved CPU matrix `promotion_decision=false` is not a veto
+of the operator freeze.
+**Owner handoff**: this file. **Parent index**: [inference-research-index.md](inference-research-index.md);
+sibling of [inference-research-index.md](inference-research-index.md).
+
+**2026-07-19 checkpoint**: PC-0 first-cell profiling is positive from both the current
+experimental CPU build observation (`1.47` IPC) and the OP-2 quiet-window production-v6 profile
+cell (`112.730698 t/s`, `1.09` IPC, `68.597` CPUs utilized). PC-3 then resolved the large
+`(deleted)` mapping as LLVM OpenMP `libomp.so.5`; the hottest offset is a worker spin/pause
+loop, not an unknown llama.cpp math kernel. The first implementation direction is therefore
+barrier-count / graph-fusion work around qwen35 prefill boundaries, with MoE math packing as
+a follow-up, not a blind dot-product rewrite.
+
+#### Thesis
+
+The CPU **decode** roofline is exhausted (Qwen3.6-27B Q8 decode @96t = 0.17 IPC, **96.6% of
+cycles memory-stalled** — DRAM-bandwidth-bound, not ALU-bound; see
+[cpu-shape-specialized-gemv-decode.md](../completed/cpu-shape-specialized-gemv-decode.md)). That roofline
+does **NOT** bound **prefill**: prefill is `M>1` GEMM, compute-bound, with a far better
+compute:BW ratio, so SIMD/fusion levers that are dead-on-arrival for decode can actually
+fire during prefill. For **large models at long context** (GLM-5.2 754B, 122B architect,
+Qwen3.6 long-context ingest), **prefill dominates wall-clock** — and prefill-compute is a
+genuinely untapped regime on this EPYC 9655.
+
+This track exists so prefill-compute is not invisible: the decode-focused handoffs
+explicitly de-scope it ("prefill is already 200–500 t/s, rarely the single-user bottleneck"
+— true for *short* prompts on *small* models, **false** for GLM/architect long-context).
+
+#### Candidate levers (all profile-first)
+
+| Lever | Source / anchor | Est. EV | Why prefill (not decode) |
+|---|---|---|---|
+| **Prefill Q8→f16 convert-skip** | findings-05c §Axis "orthogonal lever when L7 deferred" | ~+15% | Removes per-tile dequant on the compute-bound prefill GEMM |
+| **High-batch norm-tail fusion** | findings-05c ("43% of B=128 time is the norm tail") | high @ large-M | Norm tail is a serial fraction that grows with batch/prefill width |
+| **Per-op operator/graph fusion (barrier-count)** | GEMV §fusion; shared with the decode barrier-fusion lever | +10–15% | Same fusion pass; its ceiling is higher in the compute-bound regime |
+| **Chunked-prefill / MegaBlocks (CPU17/CPU18)** | GEMV CPU18 (blocked-CSR-COO); Sarathi eval | +2–5% single-user; larger multi-tenant | **Workload-gated**, NOT roofline-killed — reopens under batched / multi-tenant / prefill-heavy MoE |
+| **Prefill-decode disaggregation** | (untracked; no anchor) | latency-shape only | Only meaningful if a prefill-heavy / multi-tenant workload materializes |
+
+#### First actions (zero-inference / design)
+
+- [x] **PC-0 — profile-first premise check ✅ 2026-07-19**: `perf record` a **long-context large-model
+  prefill** shape (GLM-5.2 UD-IQ2_M and/or 122B architect at 8K/32K prompt) and confirm the
+  hot ops are **compute-bound** (high VALUBusy / low memory-stall) before any kernel work.
+  If BW-bound, this whole track collapses to the decode ledger — record and close. Bundle
+  the `perf record` into the next OP-2 quiet window (shares the AMD perf-counter preflight,
+  already green: `data/cpu_optimization/2026-07-03-amd-perf-counter-preflight/`). First
+  profile cell is now closed positive; PC-3 has selected the first implementation target as
+  OpenMP barrier/graph-fusion pressure, not a low-level dot-kernel rewrite.
+  - [x] **PC-0a observation-only first profile artifact ✅ 2026-07-18**: CPU-only
+    122B architect `p8192/n1` run completed under `perf record` at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-cpu-only-20260718T174148Z/b7-pc0-prefill`.
+    It forced `-dev none -ngl 0 -nopo 1 -nkvo 1`, processed `8192` prompt tokens at
+    `107.621 t/s`, used max RSS `77,124,940 KB` (`73.55 GiB`), and produced a
+    `2988.864 MB` `perf.data` with `721,404` `cycles:u` samples. Top visible samples:
+    `libgomp` worker path `42.33%`, CPU GEMM `tinyBLAS_Q0_AVX...gemm4xN` `11.23%`,
+    IQK MoE matmul `4.21%`, CPU flash-attn tiled `3.47%`, plus Q4K dequant/matmul
+    and `iqk_convert_q4_k_q8_1_r8`. This is a useful positive-direction profile, but
+    not a compute-vs-BW verdict; PC-0 still needs the OP-2/quiet-window `perf stat`
+    memory/vector counter row before any kernel implementation.
+  - [x] **PC-0b observation-only paired counter artifact ✅ 2026-07-18**: same CPU-only
+    122B architect `p8192/n1`, `r=3` perf-stat row completed at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-cpu-only-20260718T204820Z-main/b7-pc0-prefill`.
+    Experimental v7 `41ae83402`, `build-hip/bin/llama-bench`, `-dev none -ngl 0 -nopo 1 -nkvo 1`,
+    Qwen3.5-122B-A10B Q4_K_M, `96` threads. Result: `8192` prompt tokens at mean
+    `108.750 t/s` (`112.554`, `107.043`, `106.654`), `339.47s` wall, `85.168` CPUs utilized,
+    max RSS `77,118,108 KB`, `0.92` IPC, vector MAC `8.456e12`, vector all `2.264e13`,
+    scalar all `8.856e11`, demand DRAM fills `1.575e10`, and hardware-prefetch DRAM fills
+    `4.332e10`. This is a strong positive-direction counter row for the prefill-compute
+    premise, but still observation-grade because it overlapped with the Qwable MI210 replay
+    and was not a fresh OP-2 quiet-window/post-reboot run.
+  - [x] **PC-0c current-source IQ2 prefill/decode sizing artifact ✅ 2026-07-19**:
+    CPU-only Qwen3.5-122B UD-IQ2_M run completed under the experimental v7
+    CPU binary at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/20260719T014801Z_qwen35_122b_iq2_cpu_prefill/summary.json`.
+    Command forced `--device none`, `-ngl 0`, `96` threads, f16 KV, and `GGML_IQK=1`;
+    `llama-bench` reported backend `CPU`, device `none`, and empty GPU info.
+    Result: `pp2048 122.31 t/s`, `pp8192 114.40 t/s`, `tg16 6.24 t/s`, max RSS
+    `40062336 KB`, wall `1:33.18`, exit `0`; pre/post `rocm-smi --showpids`
+    had no KFD PIDs. This sizes the IQ2 CPU prefill path and hybrid-placement
+    economics, but the `tg16` decode row is too slow for a primary CPU-only lane.
+  - [x] **PC-0d current experimental CPU-build profile artifact ✅ 2026-07-19**:
+    CPU-only Qwen3.5-122B Q4_K_M architect `p8192/n1` reran on the experimental
+    CPU build at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/b7-pc0-prefill-experimental-20260719T083513Z-codex/b7-pc0-prefill`.
+    Source dryrun HEAD was `6ad45fa3f`; the binary reported build commit
+    `9882c2c69`, linked `libllama*`/`libggml*` from `build-k24-cpu/bin`, and
+    forced `-dev none -ngl 0 -nopo 1 -nkvo 1` with `GGML_IQK=1`. Result:
+    `pp8192 121.963712 t/s` mean over `r=3`, `tg1 5.739871 t/s`, `1.47` IPC,
+    `92.660` CPUs utilized, vector MAC `8.456e12`, vector all `2.264e13`,
+    demand DRAM fills `1.479e10`, and hardware-prefetch DRAM fills `3.661e10`.
+    `perf record` captured a `10.323 GiB` profile with zero lost samples; top
+    children were `GOMP_barrier`/OpenMP barrier path `43.12%`,
+    `ggml_iqk_try_mul_mat_id` `22.16%`, `iqk_mul_mat_moe` `18.93%`,
+    `ggml_compute_forward_mul_mat` `16.52%`, `llamafile_sgemm` `14.75%`, and
+    CPU flash-attn `5.88%`. Summary artifact:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc0_experimental_20260719.md`.
+    Interpretation: PC-0 premise is positive from observation evidence; the
+    next lever is barrier-count/operator fusion and qwen35 prefill graph fusion,
+    not a blind decode-style GEMV rewrite. It still needs OP-2-grade rerun or
+    retro-certification before decision use.
+  - [x] **PC-0e OP-2 quiet-window production-v6 profile artifact ✅ 2026-07-19**:
+    frozen production-v6 `bench_canonical.sh` cell completed at
+    `/mnt/raid0/llm/epyc-inference-research/data/cpu_prefill_compute/pc0-op2-20260719T225343Z`.
+    The binary reported build commit `91745611f` / build number `9774`; the
+    production tree was observed at `production-consolidated-v6` `91a8424ea`
+    after the run. The bench reported backend `CPU`, empty `gpu_info`, and
+    postflight ROCm showed no KFD PIDs. Result: `pp8192 112.730698 t/s`
+    mean over `r=3`, `tg1 4.989817 t/s`, `1.09` IPC, `68.597` CPUs utilized,
+    vector MAC `4.410e12`, vector all `7.690e12`, demand DRAM fills
+    `1.954e10`, and hardware-prefetch DRAM fills `4.549e10`. `perf record`
+    captured `10837.601 MB` / `1,348,833` samples; bounded no-children and DSO
+    reports had `0` lost samples, with `46.47%` in `libggml-cpu.so.0.15.2` and
+    `49.57%` in an unresolved `(deleted)` main `llama-bench` mapping. Summary:
+    `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc0_op2_20260719.md`.
+    Verdict: PC-0 premise closes positive, but implementation target selection
+    needs a cleaner symbolized mapping before kernel work.
+- [x] **PC-1 — quantify the prefill fraction** for GLM/architect long-context turns from
+  existing logs (zero-inference): evidence note
+  `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc1_log_sizing_20260718.md`
+  shows prompt/prefill already dominates the targeted long-context regimes: GLM-5.2 patch
+  review n=12 = 81.0% prompt wall, architect 6K/1024 = 46.8%, ingest 31K/1024 = 75.1%,
+  worker 12K/1024 = 83.1%. This sizes EV; PC-0 still must prove compute-bound hot ops. ✅ 2026-07-18
+- [x] **PC-2 — norm-tail + Q8→f16 convert-skip design**: scoped against
+  `qwen35.cpp` / the prefill graph builder. Verdict: do not create a separate prefill-fusion
+  framework; extend the existing CPU graph/operator fusion direction with prefill-specific
+  gates. First candidate is qwen35 `ffn_up + ffn_gate` fusion over the same normalized input,
+  then GDN projection fusion (`wqkv|wqkv_gate|ssm_beta|ssm_alpha`) because it reuses the same
+  activation packing and cuts barriers. Gated norm-tail fusion (`RMS_NORM * ssm_norm * silu(z)`)
+  is second-order and should wait until post-matmul-fusion profiles prove it remains hot.
+  PC-3 later selected barrier/graph-fusion pressure as the first implementation target;
+  low-level math rewrites remain follow-up work unless post-PC-4 profiles keep them hot. ✅ 2026-07-18
+- [x] **PC-3 — symbolized target-selection pass ✅ 2026-07-19**: resolve the OP-2 `(deleted)` main-binary
+  mapping or rerun a bounded `perf record` with stable binary/symbol capture so the first
+  kernel edit targets a proven hot path. Acceptable outputs: a no-children and children
+  report with resolved `llama-bench`/OpenMP/library symbols, or an address-resolution note
+  that maps the unresolved addresses to exact source/functions in the sampled binary.
+  Result: build-id `597017da07b7fbe219d04036e9ca30d46654951b` is
+  `/usr/lib/llvm-20/lib/libomp.so.5`; hot offset `0x7fea0` is an OpenMP worker
+  spin/pause loop (`38.36%` self), not a llama.cpp kernel. The children report
+  ranks `ggml_graph_compute_thread` at `48.30%`, `ggml_iqk_try_mul_mat_id` /
+  `iqk_mul_mat_moe` at `22.67%` / `22.51%`, `ggml_compute_forward_mul_mat` at
+  `10.37%`, CPU flash-attn at `5.59%`, and GDN/RMS/SSM at about `1-2%` each.
+  Summary:
+  `/mnt/raid0/llm/epyc-inference-research/docs/data/cpu_prefill_compute_pc3_target_selection_20260719.md`.
+
 #### PC-0 operator-window plan
 
 Run only inside an operator-approved OP-2 quiet window. Use the existing OP-2
@@ -5838,6 +5878,33 @@ MoE-Spec Phase 0
 ## Track: moe-routing-tap-and-locality-measurement
 <!-- gate: INF-70#cpu-decode-roofline-program -->
 
+### Backlog
+
+- [ ] **RT-2 — What it emits, plus the EOR rider and the chance baselines.** COMPUTE-GATED — FILE ONLY.
+  Per MoE layer: top-k expert-index tensor `[samples, tokens, top_k]` (SCH) plus per-expert rank/mask
+  (SRP); m ∈ {4, 16, 64, 256}; 512-token samples × 2,048 per domain sufficed. SRP needs no simulator;
+  SCH needs the incremental oracle (**201 lines**, `41_sch_calc.py:12-212` — *not* the "20-line"
+  figure, already corrected in-index). **Rider**: emit **EOR/IR_t** alongside —
+  `|E_t ∩ E_{t-1}| / K` over the same top-k tensor SRP already consumes, free once the tap exists.
+  Chance baselines, mandatory so a number is interpretable: **8/256 = 3.13%** (qwen35moe),
+  **10/512 = 1.95%** (qwen4exp), against DeepSeek-V2-Lite's 9.38% where ReMoE's baseline was already
+  2.91× chance. `intake-1338#01`.
+  *Rider 2026-09-23 (intake-1524#03; compute-gated, file only):* cross-artifact route-set agreement — run the ported tap on a
+  reference GGUF (Q8_0/BF16 experts) and a Q4_K candidate of the SAME model over the IDENTICAL token stream; emit per-layer
+  top-k Jaccard, the share of token-layers with at least one replaced expert, a repeat floor and a chance baseline, labelled
+  occurrence-only (not damage). v10 `llama-quant.cpp:304-307` never quantizes `ffn_gate_inp`, so flips come from upstream
+  perturbation. Absorbs RT-3 (BLOCKING hazard, read before writing tap code): a flat read of a strided router tensor makes every expert appear exactly k times with sub-chance reuse; read row-by-row with ggml_backend_tensor_get at offset i * t->nb[1] (ggml/src/ggml.c:5373, src/llama-graph.cpp:1987; intake-1336#00).
+      · section: Tasks
+- [ ] **RT-6 — Offline expert-placement replay on RT-1 traces, DS41 + frontdoor (intake-2116#record, intake-2134#record, intake-2138#record, intake-2141#record, intake-2142#record).** Numpy, no inference (capture is RT-1). Bins = 4 NUMA nodes and 12 CCDs; T in {1, 3} decode plus one prefill-chunk row. Arms: DeepInfer windowed per-step-peak policy (policy.py port), EPLB-global (eplb.py @ d52c72d), a zero-lag exact-load oracle (UltraEP planner logic), MoonEP rank-level greedy, and the LPLB fractional LP floor as a bound only; score every arm by per-step max/mean with the null model beside it and replication priced in copied bytes. Rule: if even the oracle/LP bound fails 1.65 / (best max/mean) >= 1.10 on >= 2 workloads, close as a negative recorded in large-moe-expert-parallelism.md.
+      · section: Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+- [ ] **RT-7 — Residency hit-rate curve h(k) and stationarity for DS41 hot experts on the MI210 (intake-2116#record, intake-2139#record).** Offline from RT-1 traces: for k in {39, 53, 63} experts/layer with greedy cross-layer allocation, the share of top-6 selections covered by a static ranking learned on domain A and scored on domain B, plus top-set overlap between consecutive 1k-step windows. Rule: open the HIP MXFP4 expert-cache work (CAFE-7) only if h(53) >= 0.30 on >= 2 workloads and the HIP resident MXFP4 MoE kernel check passes; h < 0.23 closes it. Per-step dynamic prefetch is excluded (fetch costs ~5.7 CPU reads).
+      · class: non-inference
+      · section: Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+- [ ] **RT-10 — DS41 tap hook and DS41 trace, then RT-6/RT-7 on DS41.** The Q38FN tap records `ffn_moe_topk`; in `src/models/deepseek4.cpp` the first `dsv4_hash_layer_count` layers take `selected_experts = ggml_get_rows(ffn_gate_tid2eid, tokens)` (~line 1332) with no such callback, and the 128-expert DSpark/MTP layers need a decision (RT-2.1 spec). Build task on the experimental branch (not a decline reason), then a DS41 MXFP4 trace via the same job (draft row `inf72-rt1-ds41`, BACKLOG blocker=build in `NEXT_ROWS.md`), then `placement_replay.py` / `residency_curve.py` with `--ref-experts` as shipped. RT-6 and RT-7 stay open until this lands.
+      · class: non-inference
+      · section: Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
+  - [x] Prepare RT-10 DS41 trace and RT-6/RT-7 analysis, including model-free verification ✅ 2026-10-27 [no-belief: preparation/fixture only]. Frozen C5 tool build `c72ec82f5417bb2937310326120f149b665e8400` completed 19:29:56Z; two native CTests and selftest passed. Private packet `/mnt/raid0/llm/tmp/refactor-01a16fc3/rt10-ds41-tap-ready/` seals trace manifest `91416a25024b180b56929b1e7acc5a7d7a856760723c7faf074e40665ea5e245` / PF `ef8451aed20891288d40c26af477f748a93fdd08b1de7c32` and analysis manifest `eca3cf8142692343af7bfd8c8317669bafae09121ecb7a1e236d3b9b34110dd3` / PF `ac5c7a6602831009323ca05342929ca8247aade5b56461cf`; normal admit and validator 0/0. Synthetic trace → native verification → original same-attempt binding → existing RT6/RT7 belief writer and partial/corpus/hash/missing/gap refusals passed. Capture binds raw and effective prompt hashes, including C5 `-f` removal of one trailing LF. Actual trace remains HELD pending DS41-1017 HOLD lift and a whole-host grant (739 GiB plus 64 GiB margin); analysis additionally requires a real COMPLETE trace and grant. No model, GPU or inference was used; trunk-only capture makes no DSpark/MTP or throughput claim. Prospective integration and canary remain open under VB-MOE-RT10-CAPTURE-LINK.
+
 > Folded from `handoffs/active/moe-routing-tap-and-locality-measurement.md` @ `e424d56114f9` on 2026-11-03 (BRF-T7-F9, route 1b, operator D1/D5; retired row INF-72 → INF-70). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
 ### MoE per-token routing tap and locality measurement (INF-72)
@@ -5888,20 +5955,6 @@ foreign paper's. The instrument is the deliverable; no throughput claim is licen
   rest on ~2.4-3k tokens. SELFTEST/schema/guard evidence also covers RT-2 (EOR rider, SCH rows) and RT-3 (hazard guard); those boxes are left to their owners.
   Evidence: research `data/moe-routing-rt1-q38fn-20261023/` (scripts `scripts/benchmark/moe_routing/`, commit d3db98e28); traces `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/results/`.
 
-- [ ] **RT-2 — What it emits, plus the EOR rider and the chance baselines.** COMPUTE-GATED — FILE ONLY.
-  Per MoE layer: top-k expert-index tensor `[samples, tokens, top_k]` (SCH) plus per-expert rank/mask
-  (SRP); m ∈ {4, 16, 64, 256}; 512-token samples × 2,048 per domain sufficed. SRP needs no simulator;
-  SCH needs the incremental oracle (**201 lines**, `41_sch_calc.py:12-212` — *not* the "20-line"
-  figure, already corrected in-index). **Rider**: emit **EOR/IR_t** alongside —
-  `|E_t ∩ E_{t-1}| / K` over the same top-k tensor SRP already consumes, free once the tap exists.
-  Chance baselines, mandatory so a number is interpretable: **8/256 = 3.13%** (qwen35moe),
-  **10/512 = 1.95%** (qwen4exp), against DeepSeek-V2-Lite's 9.38% where ReMoE's baseline was already
-  2.91× chance. `intake-1338#01`.
-  *Rider 2026-09-23 (intake-1524#03; compute-gated, file only):* cross-artifact route-set agreement — run the ported tap on a
-  reference GGUF (Q8_0/BF16 experts) and a Q4_K candidate of the SAME model over the IDENTICAL token stream; emit per-layer
-  top-k Jaccard, the share of token-layers with at least one replaced expert, a repeat floor and a chance baseline, labelled
-  occurrence-only (not damage). v10 `llama-quant.cpp:304-307` never quantizes `ffn_gate_inp`, so flips come from upstream
-  perturbation. Absorbs RT-3 (BLOCKING hazard, read before writing tap code): a flat read of a strided router tensor makes every expert appear exactly k times with sub-chance reuse; read row-by-row with ggml_backend_tensor_get at offset i * t->nb[1] (ggml/src/ggml.c:5373, src/llama-graph.cpp:1987; intake-1336#00).
 
 - **[declined: ws58 2026-11-03 content-review: merged into RT-2 as its implementation hazard note]** **RT-3 — The stride hazard: BLOCKING, read before writing any tap code.** COMPUTE-GATED —
   FILE ONLY. Tell-tale signature: *every expert appearing exactly k times, sub-chance reuse*. Cause:
@@ -5951,7 +6004,6 @@ foreign paper's. The instrument is the deliverable; no throughput claim is licen
 
 Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the session's stage3_filing).
 
-- [ ] **RT-6 — Offline expert-placement replay on RT-1 traces, DS41 + frontdoor (intake-2116#record, intake-2134#record, intake-2138#record, intake-2141#record, intake-2142#record).** Numpy, no inference (capture is RT-1). Bins = 4 NUMA nodes and 12 CCDs; T in {1, 3} decode plus one prefill-chunk row. Arms: DeepInfer windowed per-step-peak policy (policy.py port), EPLB-global (eplb.py @ d52c72d), a zero-lag exact-load oracle (UltraEP planner logic), MoonEP rank-level greedy, and the LPLB fractional LP floor as a bound only; score every arm by per-step max/mean with the null model beside it and replication priced in copied bytes. Rule: if even the oracle/LP bound fails 1.65 / (best max/mean) >= 1.10 on >= 2 workloads, close as a negative recorded in large-moe-expert-parallelism.md.
 
   - *(2026-10-23, 3c4ca599.)* Tooling done (`placement_replay.py`: contiguous, null-random, uniform-multinomial null, EPLB-global, DeepInfer window policy re-implemented from intake-2134's description because `policy.py` is not on this host, UltraEP-shape per-step oracle, MoonEP floor, exact Hall LP floor; DeepInfer/EPLB each at 0 and 32 (= E/16, +6.25 % expert bytes) redundant copies per layer, with idealized least-loaded and realizable random-replica dispatch), target-model run open (RT-9, RT-10). Proxy = Q38FN, 10 selections per token, 48 layers, replay on the 24 decode legs (T = 1 and 3) and 128 held-out 512-token prefill chunks, calibration on disjoint windows. Rule value 1.65 / (best realizable static arm), same-domain calibration: 4 NUMA bins T=1 1.04-1.08 (idealized dispatch 1.14-1.21), T=3 1.17-1.22, prefill 1.53-1.56; 12 CCD bins T=1 0.59-0.63, T=3 0.73-0.79, prefill 1.32-1.40. Cross-domain calibration: 4 bins T=1 1.00-1.01, T=3 1.11-1.15. The per-step oracle and MoonEP sit at the integrality floor (T=1: 1.20 at 4 and 12 bins, T=3: 1.067 / 1.20, prefill 1.00), which passes the rule trivially, so the bound never closes the item; the finding is that at T=1 contiguous placement equals the multinomial null (4 bins: 1.675 vs 1.678) and the best realizable static arm improves on it by only 6-9 % (1.53-1.59), so only T=3 at 4 NUMA bins (and prefill) clears 1.10 realizably. Static replication of 32 experts buys little at decode without exact-state dispatch. Evidence: research `data/moe-routing-rt1-q38fn-20261023/` (scripts `scripts/benchmark/moe_routing/`, commit d3db98e28); traces `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/results/`.
   - *(2026-10-23, 3c4ca599, RT-9.)* Frontdoor (Qwen3.6-35B-A3B) arm done; box stays open (DS41 arm = RT-10). Rule value 1.65 / (best realizable static arm), code / prose / reasoning, same-domain calibration: 4 NUMA bins T=1 1.01 / 0.99 / 1.02, T=3 1.18 / 1.13 / 1.16, prefill 1.54 / 1.50 / 1.54; 12 CCD bins T=1 0.56 / 0.54 / 0.57, T=3 0.73 / 0.67 / 0.72, prefill 1.32 / 1.22 / 1.34. Cross-domain calibration: 4 bins T=1 0.97 / 0.96 / 0.98, T=3 1.11 / 1.08 / 1.10, prefill 1.32 / 1.27 / 1.35; 12 bins T=1 0.52, T=3 0.62-0.66, prefill 0.85-0.99. The per-step oracle and MoonEP sit at 1.000 (bound only, passes trivially). Same picture as Q38FN (4 bins T=1 1.04-1.08, T=3 1.17-1.22, prefill 1.53-1.56): at T=1 the best realizable static arm does not beat the null (contiguous 1.768 vs uniform multinomial 1.772), only T=3 at 4 NUMA bins and prefill clear 1.10 realizably, and a placement calibrated on another workload gains little or nothing. DI-081 reading, as measured: realizable static arms meet 1.10 on 3 of 3 workloads only at 4 bins T=3 (same-domain; 2 of 3 cross-domain) and on none at T=1 or at 12 bins; so the static-placement gain is workload-specific and small at decode on both models. Evidence: `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/analysis-q36/` (`comparison/comparison.md`, `rt5_skew/`, `rt6_placement/`, `rt7_residency/`, `locality/`); traces `.../results-q36/` (job inf72-rt1-q36 done 21:06Z; analysis job inf72-rt9-analysis done 21:18Z, q3 grant); same code as the Q38FN run (research d3db98e28).
@@ -5959,15 +6011,12 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - [x] **RT-2.1 — Trace-shape rider for the replays (intake-2134#record).** The tap keeps token order and sample boundaries, tags each token prefill vs decode (and the speculative block size), and covers deepseek41 including the 128-expert DSpark layers (int16 ids), so RT-6/RT-7 can derive [steps, layers, experts] counts; an aggregate-only dump is insufficient. COMPUTE-GATED - FILE ONLY. ✅ 2026-10-24
   - *(2026-10-20, workspace-f8.)* schema + validator + 16 tests + C++ change spec on epyc-inference-research feat/rt21-20261020 @ ce1a1f4e5 (merged to research main today); the tap itself is still RT-1; evidence /mnt/raid0/llm/epyc-inference-research feat/rt21-20261020 @ ce1a1f4e5. Box left open for main review: schema, validator and C++ change spec delivered (FILE ONLY done criterion arguably met); tick once main confirms the tap itself stays under RT-1.
   - *(2026-10-24, f8 sweep.)* Ticked: FILE ONLY criterion met and confirmed. Schema, validator, 16 tests and the C++ change spec are on research main (`ce1a1f4e5` is an ancestor of origin/main). The tap itself shipped under RT-1 (ticked) and its traces carry the shape RT-6/RT-7/RT-8 consumed (prefill vs decode legs, T = 1 and 3, `validate_traces.py`). The DS41 part (hash layers, 128-expert DSpark/MTP layers, int16 ids) is owned by RT-10, which keeps RT-6 and RT-7 open.
-- [ ] **RT-7 — Residency hit-rate curve h(k) and stationarity for DS41 hot experts on the MI210 (intake-2116#record, intake-2139#record).** Offline from RT-1 traces: for k in {39, 53, 63} experts/layer with greedy cross-layer allocation, the share of top-6 selections covered by a static ranking learned on domain A and scored on domain B, plus top-set overlap between consecutive 1k-step windows. Rule: open the HIP MXFP4 expert-cache work (CAFE-7) only if h(53) >= 0.30 on >= 2 workloads and the HIP resident MXFP4 MoE kernel check passes; h < 0.23 closes it. Per-step dynamic prefetch is excluded (fetch costs ~5.7 CPU reads).
 
   - *(2026-10-23, 3c4ca599.)* Tooling done, target-model run open: `residency_curve.py` run on the Q38FN trace (512 experts, top-10, so a PROXY, not DS41 6-of-384). k rescaled to the same pool fraction as 53/384 is 71/512. Same-domain held-out static ranking: h(53) = 0.583 / 0.469 / 0.485 (code / prose / reasoning prefill; chance 0.104), h(71) = 0.667 / 0.548 / 0.568; same-domain prefill-learned ranking scored on decode h(53) = 0.568 / 0.395 / 0.428. Cross-domain (learned on A, scored on B) h(53) = 0.049-0.163 on every pair, i.e. < 0.23 on all three workloads and barely above chance, so a ranking learned on one workload does NOT carry to another: the hot set is workload-specific (top-10 % expert-set Jaccard between workloads 0.02-0.08 vs 0.054 random). Stationarity (top-53 set, consecutive 1024-row blocks): Jaccard 0.52-0.66 vs 0.055 random and 0.73-0.83 ceiling; next-block coverage 0.49-0.68. Literal gate on the proxy: same-domain >= 0.30 on 3/3, cross-domain on 0/3; which one is the right reading depends on whether the serving ranking is learned on the workload it serves, to be stated before the DS41 run. Evidence: research `data/moe-routing-rt1-q38fn-20261023/` (scripts `scripts/benchmark/moe_routing/`, commit d3db98e28); traces `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/results/`.
   - *(2026-10-23, 3c4ca599, RT-9.)* Qwen3.6-35B-A3B proxy (256 experts, top-8; k rescaled to the DS41 pool fraction, 53/384 is 36/256), box stays open (DS41 and the HIP kernel check are the gate). Same-domain held-out static ranking, code / prose / reasoning: prefill h(36) = 0.583 / 0.508 / 0.558, h(53) = 0.679 / 0.624 / 0.679 (chance 0.141 / 0.207); same-domain prefill-learned scored on decode h(36) = 0.508 / 0.394 / 0.513, h(53) = 0.605 / 0.491 / 0.629. Cross-domain (learned on A, scored on B) h(36) = 0.086-0.249 and h(53) = 0.136-0.335 across the six pairs (decode h(53) 0.139-0.325): below 0.30 on 4 of 6 pairs at h(53), near chance for code<->prose, with only reasoning scored from code/prose and code from reasoning reaching 0.29-0.34. Stationarity (top-53 set, consecutive 1024-row blocks): Jaccard 0.64 / 0.64 / 0.64 prefill (random 0.115, ceiling 0.79-0.82); next-block coverage 0.67-0.73. Versus Q38FN (h(53) same-domain 0.583 / 0.469 / 0.485, cross-domain 0.049-0.163): a hot set learned on one workload is predictive of that workload and weakly of others on both models; q36 cross-domain transfer is better (reasoning shares with code) but the hot sets are still workload-specific (top-10 % Jaccard 0.03-0.13 vs 0.054 random). The gate reading (same-domain vs cross-domain) still has to be stated before the DS41 run. Evidence: `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/analysis-q36/` (`comparison/comparison.md`, `rt5_skew/`, `rt6_placement/`, `rt7_residency/`, `locality/`); traces `.../results-q36/` (job inf72-rt1-q36 done 21:06Z; analysis job inf72-rt9-analysis done 21:18Z, q3 grant); same code as the Q38FN run (research d3db98e28).
 
 - [x] **RT-8 — Locality analysis suite on the Q38FN trace (reuse, reuse distance, co-activation, entropy, cross-workload overlap).** ✅ 2026-10-23 `locality_report.py`, `skew_report.py`, `validate_traces.py`. Adjacent-token IR_t 16.8-19.9x chance (above). Within-window LRU hit rate per layer (cache of k experts, first use = compulsory miss ~5-6 %): k = 32 0.47-0.52, k = 64 0.62-0.68, k = 128 0.80-0.88, k = 256 0.92-0.97; median stack distance 28-38 experts. Co-activation: excess over rescaled independence 0.47-0.51 of pair mass (Poisson noise floor 0.02-0.03), max pair lift 112-121, 12-14 % of pairs at lift >= 2. Cross-workload top-10 % expert-set Jaccard 0.02-0.08 (random 0.054, within-domain even/odd ceiling 0.95), Spearman of per-expert counts -0.12 to 0.31. Evidence: research `data/moe-routing-rt1-q38fn-20261023/` (scripts `scripts/benchmark/moe_routing/`, commit d3db98e28); traces `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/results/`.
 - [x] **RT-9 — Qwen3.6-35B-A3B frontdoor trace, then rerun the suite (closes RT-5 and the RT-6 frontdoor arm).** Same `trace_job.sh` with `RT1_MODEL=/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf RT1_RAM_GIB=45 RT1_OUT=.../results-q36` (qwen35moe, 256 experts, top-8, chance 3.13 %). FILLERS row draft + preflight `precond_q36.sh` (rc 0) in `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/NEXT_ROWS.md`; est. ~2 h on 24 cores. Then `validate_traces.py`, `skew_report.py`, `locality_report.py`, `placement_replay.py` on `results-q36`, tick RT-5 and record the RT-6 frontdoor numbers. ✅ 2026-10-23 — trace and suite rerun on Qwen3.6-35B-A3B (40 layers, 256 experts, top-8). Skew (top-10 % share, 25.6 experts of 256; uniform 0.104; in-sample): prefill 0.503 / 0.419 / 0.463 and decode 0.470 / 0.410 / 0.461 for code / prose / reasoning (held-out 0.503/0.418/0.463 and 0.459/0.390/0.436); layers meeting the 0.60 gate 0 of 40 on every workload and leg (per-layer max 0.58-0.59). Cross-workload top-10 % Jaccard prefill 0.028 / 0.129 / 0.084 and decode 0.046 / 0.134 / 0.053 (code|prose, code|reasoning, prose|reasoning) vs random 0.0535; within-domain even/odd ceiling 0.946 prefill, 0.629 decode. LRU within-window hit rate (k = 32/64/128/256): 0.55-0.67 / 0.75-0.81 / 0.92-0.94 / 0.96-0.99. h(k) vs Q38FN below under RT-7, placement under RT-6. Evidence: `/mnt/raid0/llm/tmp/roi-prep-20261023/INF-72-RT1/analysis-q36/` (`comparison/comparison.md`, `rt5_skew/`, `rt6_placement/`, `rt7_residency/`, `locality/`); traces `.../results-q36/` (job inf72-rt1-q36 done 21:06Z; analysis job inf72-rt9-analysis done 21:18Z, q3 grant); same code as the Q38FN run (research d3db98e28).
-- [ ] **RT-10 — DS41 tap hook and DS41 trace, then RT-6/RT-7 on DS41.** The Q38FN tap records `ffn_moe_topk`; in `src/models/deepseek4.cpp` the first `dsv4_hash_layer_count` layers take `selected_experts = ggml_get_rows(ffn_gate_tid2eid, tokens)` (~line 1332) with no such callback, and the 128-expert DSpark/MTP layers need a decision (RT-2.1 spec). Build task on the experimental branch (not a decline reason), then a DS41 MXFP4 trace via the same job (draft row `inf72-rt1-ds41`, BACKLOG blocker=build in `NEXT_ROWS.md`), then `placement_replay.py` / `residency_curve.py` with `--ref-experts` as shipped. RT-6 and RT-7 stay open until this lands.
-  - [x] Prepare RT-10 DS41 trace and RT-6/RT-7 analysis, including model-free verification ✅ 2026-10-27 [no-belief: preparation/fixture only]. Frozen C5 tool build `c72ec82f5417bb2937310326120f149b665e8400` completed 19:29:56Z; two native CTests and selftest passed. Private packet `/mnt/raid0/llm/tmp/refactor-01a16fc3/rt10-ds41-tap-ready/` seals trace manifest `91416a25024b180b56929b1e7acc5a7d7a856760723c7faf074e40665ea5e245` / PF `ef8451aed20891288d40c26af477f748a93fdd08b1de7c32` and analysis manifest `eca3cf8142692343af7bfd8c8317669bafae09121ecb7a1e236d3b9b34110dd3` / PF `ac5c7a6602831009323ca05342929ca8247aade5b56461cf`; normal admit and validator 0/0. Synthetic trace → native verification → original same-attempt binding → existing RT6/RT7 belief writer and partial/corpus/hash/missing/gap refusals passed. Capture binds raw and effective prompt hashes, including C5 `-f` removal of one trailing LF. Actual trace remains HELD pending DS41-1017 HOLD lift and a whole-host grant (739 GiB plus 64 GiB margin); analysis additionally requires a real COMPLETE trace and grant. No model, GPU or inference was used; trunk-only capture makes no DSpark/MTP or throughput claim. Prospective integration and canary remain open under VB-MOE-RT10-CAPTURE-LINK.
 - [x] **RT-6.2 — Replay fidelity items.** Diff the DeepInfer re-implementation against `policy.py` (deepseek-ai/DeepInfer @ 774ce24) once fetched, and add a calibration-lag sweep (history window vs step staleness) since the proxy shows static and cross-domain placements losing most of their gain. <!-- evidence-integrity: Research `d5e400c9010a671a0ab4ca912e4e6f9abc1ac1d3`; main `3bbeac0a1d916b6ee703abebdb48297cd77c1e2f`; artifact: artifacts/compute/refactor-rt62-source-20261031/EVIDENCE.json; ✅ 2026-10-31; [no-belief: new diagnostic writer/adapter not enrolled; no captured claim tuple] -->
 
   <!-- task-evidence-integrity:start RT-6.2 -->
