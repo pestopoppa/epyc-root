@@ -23,7 +23,9 @@ def native(profiled=30):
         tasks[task_id] = {
             "pass@1": 100 if has_score else 0,
             "results": [{"pass": has_score, "profiled": has_score,
-                         "_num_cpu_instructions": 1234}],
+                         "dps": 50 if has_score else None,
+                         "dps_norm": 40 if has_score else None,
+                         "_num_cpu_instructions": 1234 if has_score else None}],
             "dps": 50 if has_score else None,
             "dps_norm": 40 if has_score else None,
             "n_profiled": 1 if has_score else None,
@@ -50,6 +52,7 @@ def test_conditional_requires_30_profiled_tasks():
 def test_zero_is_a_valid_native_score_for_correct_code():
     data = native()
     data["eval"][IDS[0]]["dps_norm"] = 0
+    data["eval"][IDS[0]]["results"][0]["dps_norm"] = 0
     assert summary(data)["conditional_harmonic_dps_norm"] == 0
 
 
@@ -77,6 +80,54 @@ def test_incomplete_or_inconsistent_native_output_fails_closed(mutation):
 def test_task_manifest_is_an_exact_cohort():
     with pytest.raises(ValueError, match="118 unique"):
         runner.summarize(native(), IDS[:-1] + [IDS[0]], 1, 1, 1)
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda t: t["results"][0].update({"profiled": 1}),
+    lambda t: t["results"][0].pop("profiled"),
+    lambda t: t.update({"n_profiled": True}),
+    lambda t: t.update({"dps": 51}),
+    lambda t: t.update({"dps_norm": 41}),
+    lambda t: t["results"][0].update({"dps_norm": None}),
+    lambda t: t["results"][0].update({"dps": float("nan")}),
+])
+def test_profile_flags_counts_and_aggregates_must_match_native_samples(mutation):
+    data = native()
+    mutation(data["eval"][IDS[0]])
+    with pytest.raises(ValueError):
+        summary(data)
+
+
+@pytest.mark.parametrize("fields", [
+    {"profiled": True}, {"dps": 0}, {"dps_norm": 0},
+    {"_num_cpu_instructions": 1234},
+])
+def test_unscored_task_cannot_hide_profile_evidence(fields):
+    data = native()
+    data["eval"][IDS[-1]]["results"][0].update(fields)
+    with pytest.raises(ValueError):
+        summary(data)
+
+
+def test_full_native_profile_bound_and_sample_means():
+    data = native()
+    data.update(n_samples=3, min_correct=1, max_profile=2)
+    for task in data["eval"].values():
+        sample = task["results"][0]
+        task["results"] = [copy.deepcopy(sample) for _ in range(3)]
+        if sample["pass"]:
+            task["results"][1].update(dps=70, dps_norm=60)
+            task["results"][2].update(profiled=False, dps=None, dps_norm=None,
+                                      _num_cpu_instructions=None)
+            task.update(n_profiled=2, dps=60, dps_norm=50)
+    result = runner.summarize(data, IDS, 3, 1, 1)
+    assert result["conditional_harmonic_dps_norm"] == 50
+    task = data["eval"][IDS[0]]
+    task["results"][1].update(profiled=False, dps=None, dps_norm=None,
+                              _num_cpu_instructions=None)
+    task.update(n_profiled=1, dps=50, dps_norm=40)
+    with pytest.raises(ValueError, match="missing native profile evidence"):
+        runner.summarize(data, IDS, 3, 1, 1)
 
 
 @pytest.fixture

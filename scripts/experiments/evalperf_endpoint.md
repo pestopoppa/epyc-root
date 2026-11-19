@@ -37,6 +37,11 @@ Ten samples is an explicit bounded configuration, not upstream's default of 100.
 Book compute from the prepared endpoints' measured generation cost; the example
 deadline is a cap, not an ETA. Both arms use all 118 pinned tasks. No partial
 cohort, truncated process result or invalid hardware profile yields COMPLETE.
+Validation checks every sample's boolean profile flag, instruction count and
+scores, requires the configured native profile count, and recomputes each task's
+DPS means from its profiled samples. Unprofiled samples cannot carry efficiency
+scores; malformed evidence in an unscored task also rejects the result. These
+checks follow the pinned native `evalplus/evalperf.py` output contract.
 The native provider does not preserve completion finish reasons, so this runner
 cannot distinguish truncation from other correctness failures; preserve native
 raw solutions and treat correctness under the declared token cap as the scope.

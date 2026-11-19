@@ -51,22 +51,38 @@ def summarize(native, task_ids, n_samples, min_correct, temperature):
             raise ValueError("correctness summary disagrees with samples")
         passed += count
         solved += count > 0
+        good = []
+        for result in results:
+            if type(result.get("profiled")) is not bool:
+                raise ValueError("invalid native profile flag")
+            if not result["profiled"]:
+                if any(result.get(key) is not None for key in
+                       ("dps", "dps_norm", "_num_cpu_instructions")):
+                    raise ValueError("unprofiled sample contains profile evidence")
+                continue
+            if not result["pass"]:
+                raise ValueError("incorrect sample included in efficiency")
+            bounded_number(result.get("_num_cpu_instructions"), 1, float("inf"))
+            for key in ("dps", "dps_norm"):
+                bounded_number(result.get(key), 0, 100)
+            good.append(result)
         score = task.get("dps_norm")
         if score is None:
-            if task.get("dps") is not None or count >= min_correct:
+            if (task.get("dps") is not None or count >= min_correct or good
+                    or task.get("n_profiled") is not None):
                 raise ValueError("inconsistent missing efficiency")
             continue
         if count < min_correct:
             raise ValueError("efficiency scored below min_correct")
         bounded_number(score, 0, 100)
         bounded_number(task["dps"], 0, 100)
-        good = [r for r in results if r.get("profiled") is True]
-        if len(good) != task.get("n_profiled") or not good:
+        if (type(task.get("n_profiled")) is not int
+                or len(good) != task["n_profiled"]
+                or len(good) != min(count, native["max_profile"])):
             raise ValueError("missing native profile evidence")
-        for result in good:
-            if not result["pass"]:
-                raise ValueError("incorrect sample included in efficiency")
-            bounded_number(result.get("_num_cpu_instructions"), 1, float("inf"))
+        for key in ("dps", "dps_norm"):
+            if not math.isclose(task[key], statistics.mean(r[key] for r in good)):
+                raise ValueError("efficiency summary disagrees with samples")
         profiled += 1
         efficiency.append(score)
     return {
