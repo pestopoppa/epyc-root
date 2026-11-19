@@ -56,3 +56,18 @@ receipt pins for newly built libraries. Keep g0-S2-B and g1-S2-B excluded.
 Validation: the reproduction command above passes 54 model-free tests,
 including relocation, every missing attestation, altered serving artifacts,
 wrong origins, incomplete receipts and replaced mapped inodes.
+
+2026-11-19 application mapping repair: the old gate accepted omitted, replaced,
+deleted and foreign `libllama` mappings because it inspected only ggml.
+`bound_custody.py` now reopens all eight serving artifacts against the immutable
+receipt on both original and relocated paths; all seven library attestations are
+required. Runtime checks additionally require the three llama application DSOs
+by content, path, device and inode, and reject extra/deleted application mappings.
+The same 64-test reproduction command above passes, including the new refusal
+controls in original and relocated fixtures. These are model-free software tests;
+no live mapping or model verdict follows. The historical packet is not redeployed
+by this source edit; its successor must regenerate source seals.
+
+Source SHA-256:
+- `bound_custody.py`: `e560f275830b17b4d5af46181e3ceac1f3fdcd3ba766de9c93155ca396852f2b`
+- `test_bound_custody.py`: `91ed340803d598027df004b07172887384696204b3c7bc99a112f9e575c3dff7`

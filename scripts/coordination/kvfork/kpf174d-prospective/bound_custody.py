@@ -1,12 +1,37 @@
 """Fail closed on missing build-time custody before resuming a witness cell."""
 import importlib.util
 import json
+import os
+import re
 from pathlib import Path
 
 _spec = importlib.util.spec_from_file_location(
     'ggml_custody', Path(__file__).resolve().parent.parent / 'kpf174d-ggml-custody/custody.py')
 ggml = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(ggml)
+APPLICATION = ('libllama.so', 'libllama-common.so', 'libllama-server-impl.so')
+
+
+def serving_artifacts(bin_dir, receipt):
+    """Reopen every serving artifact against its original receipt entry."""
+    root = Path(bin_dir).resolve(strict=True)
+    libraries = receipt.get('libraries', {})
+    if set(libraries) != set(ggml.REQUIRED) | set(APPLICATION):
+        raise ValueError('incomplete serving library receipt')
+    # The receipt remains immutable when its original build is relocated.
+    origin = Path(receipt['run_dir']) / 'build/bin' if 'run_dir' in receipt else root
+    paths = {}
+    for name in (*ggml.REQUIRED, *APPLICATION, 'llama-server'):
+        p = (root / name).resolve(strict=True)
+        expected = receipt.get('binary_sha256') if name == 'llama-server' else libraries[name]
+        if (p.parent != root or not p.is_file()
+                or receipt.get('files', {}).get(str(origin / p.name)) != expected
+                or ggml.digest(p) != expected):
+            raise ValueError('serving artifact not attested: ' + name)
+        paths[name] = p
+    if len(set(paths.values())) != len(paths):
+        raise ValueError('distinct serving artifacts required')
+    return paths
 
 
 def relocated_manifest(bin_dir, receipt_path, receipt, original_bin):
@@ -65,6 +90,7 @@ def validate_custody(packet, bin_dir, proof):
         expected = ggml.create_manifest(bin_dir, receipt_path)
     if manifest != expected:
         raise ValueError('custody manifest differs from build receipt')
+    serving_artifacts(bin_dir, receipt)
     if (proof.get('source_commit') != ggml.SOURCE
             or proof.get('parent_source') != ggml.PARENT
             or proof.get('binary_sha256') != receipt.get('binary_sha256')
@@ -88,4 +114,33 @@ def validate_custody(packet, bin_dir, proof):
 
 def verify_mappings(packet, bin_dir, maps):
     manifest = json.loads((Path(packet) / 'GGML-CUSTODY.json').read_text())
-    return ggml.verify_maps(manifest, maps, bin_dir)
+    receipt_path = Path(packet) / 'BUILD-RECEIPT.json'
+    if ggml.digest(receipt_path) != manifest.get('build_receipt_sha256'):
+        raise ValueError('mapping receipt pin mismatch')
+    paths = serving_artifacts(bin_dir, json.loads(receipt_path.read_text()))
+    result = ggml.verify_maps(manifest, maps, bin_dir)
+    expected = {}
+    for name in APPLICATION:
+        p = paths[name]
+        st = p.stat()
+        expected[str(p)] = (os.major(st.st_dev), os.minor(st.st_dev), st.st_ino)
+    seen = set()
+    for line in maps.splitlines():
+        parts = line.split(None, 5)
+        if len(parts) < 6 or not re.search(r'/libllama(?:[-.]|\.so)', parts[5]):
+            continue
+        name = parts[5]
+        if name.endswith(' (deleted)'):
+            raise ValueError('mapped deleted application library')
+        try:
+            major, minor = (int(x, 16) for x in parts[3].split(':'))
+            inode = int(parts[4])
+            path = str(Path(name).resolve(strict=True))
+        except (OSError, ValueError) as exc:
+            raise ValueError('invalid application mapping') from exc
+        if expected.get(path) != (major, minor, inode):
+            raise ValueError('unexpected or replaced mapped application library: ' + name)
+        seen.add(path)
+    if seen != set(expected):
+        raise ValueError('not all attested application libraries are mapped')
+    return dict(result, mapped=sorted(set(result['mapped']) | seen))

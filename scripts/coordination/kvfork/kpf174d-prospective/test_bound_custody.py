@@ -15,7 +15,8 @@ class BoundCustody(unittest.TestCase):
         self.bin = self.packet / 'bin'
         self.bin.mkdir()
         self.paths = []
-        for name in (*bc.ggml.REQUIRED, 'llama-server'):
+        for name in (*bc.ggml.REQUIRED, 'libllama.so', 'libllama-common.so',
+                     'libllama-server-impl.so', 'llama-server'):
             p = self.bin / name
             p.write_text(name)
             self.paths.append(p)
@@ -25,6 +26,8 @@ class BoundCustody(unittest.TestCase):
                             source_commit=bc.ggml.SOURCE, parent_source=bc.ggml.PARENT,
                             linkage_pass=True, binary_sha256=bc.ggml.digest(self.bin / 'llama-server'),
                             linkage_verifier_sha256=bc.ggml.digest(helper),
+                            libraries={p.name: bc.ggml.digest(p) for p in self.paths
+                                       if p.name != 'llama-server'},
                             files={str(p): bc.ggml.digest(p) for p in self.paths})
         self.save_receipt()
         manifest = bc.ggml.create_manifest(self.bin, self.packet / 'BUILD-RECEIPT.json')
@@ -75,14 +78,60 @@ class BoundCustody(unittest.TestCase):
         self.assertEqual(bc.verify_mappings(self.packet, self.bin, '\n'.join(lines))['status'], 'PASS')
         with self.assertRaises(ValueError): bc.verify_mappings(self.packet, self.bin, lines[-1])
 
+    def mapping_lines(self):
+        lines = []
+        for p in self.paths:
+            if p.name == 'llama-server':
+                continue
+            st = p.stat()
+            lines.append(f'1000-2000 r-xp 0 {os.major(st.st_dev):x}:{os.minor(st.st_dev):x} {st.st_ino} {p}')
+        return lines
+
+    def test_missing_each_application_mapping_refused(self):
+        lines = self.mapping_lines()
+        for name in ('libllama.so', 'libllama-common.so', 'libllama-server-impl.so'):
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                bc.verify_mappings(self.packet, self.bin,
+                                   '\n'.join(line for line in lines if not line.endswith('/' + name)))
+
+    def test_replaced_application_mapping_refused(self):
+        maps = '\n'.join(self.mapping_lines())
+        p = self.bin / 'libllama.so'
+        p.rename(p.with_suffix('.old'))
+        p.write_text('libllama.so')
+        with self.assertRaises(ValueError): bc.verify_mappings(self.packet, self.bin, maps)
+
+    def test_deleted_or_foreign_application_mapping_refused(self):
+        lines = self.mapping_lines()
+        foreign = self.packet / 'libllama.so.1'
+        foreign.write_text('foreign')
+        st = foreign.stat()
+        extra = f'1000-2000 r-xp 0 {os.major(st.st_dev):x}:{os.minor(st.st_dev):x} {st.st_ino} {foreign}'
+        for maps in ('\n'.join(lines + [extra]), '\n'.join(lines) + ' (deleted)'):
+            with self.subTest(maps=maps), self.assertRaises(ValueError):
+                bc.verify_mappings(self.packet, self.bin, maps)
+
+    def test_changed_application_bytes_refused(self):
+        p = self.bin / 'libllama-common.so'
+        p.write_text('changed')
+        with self.assertRaises(ValueError): self.validate()
+
+    def test_missing_application_attestation_refused(self):
+        origin = Path(self.receipt['run_dir']) / 'build/bin' if 'run_dir' in self.receipt else self.bin
+        self.receipt['files'].pop(str(origin / 'libllama.so'))
+        self.save_receipt()
+        self.proof['build_receipt_sha256'] = bc.ggml.digest(self.packet / 'BUILD-RECEIPT.json')
+        manifest_path = self.packet / 'GGML-CUSTODY.json'
+        manifest = json.loads(manifest_path.read_text())
+        manifest['build_receipt_sha256'] = self.proof['build_receipt_sha256']
+        manifest_path.write_text(json.dumps(manifest))
+        self.proof['ggml_custody_sha256'] = bc.ggml.digest(manifest_path)
+        with self.assertRaises(ValueError): self.validate()
+
 
 class RelocatedCustody(BoundCustody):
     def setUp(self):
         super().setUp()
-        for name in ('libllama.so', 'libllama-common.so', 'libllama-server-impl.so'):
-            p = self.bin / name
-            p.write_text(name)
-            self.paths.append(p)
         self.origin = Path('/reclaimed/build-attempt/build/bin')
         self.receipt['run_dir'] = str(self.origin.parent.parent)
         self.receipt['libraries'] = {p.name: bc.ggml.digest(p) for p in self.paths
@@ -142,7 +191,7 @@ class RelocatedCustody(BoundCustody):
 
     def test_mapping_still_uses_retained_inode(self):
         lines = []
-        for name in bc.ggml.REQUIRED:
+        for name in self.receipt['libraries']:
             p = self.bin / name
             st = p.stat()
             lines.append(f'1000-2000 r-xp 0 {os.major(st.st_dev):x}:{os.minor(st.st_dev):x} {st.st_ino} {p}')
