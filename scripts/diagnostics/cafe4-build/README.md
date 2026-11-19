@@ -43,3 +43,16 @@ false positive.
 Next: separately qualify a HIP-enabled modes build, then schedule CPU/GPU native
 controls with the original numerical rule and exact rc1 injected-fault witness.
 The parent CAFE-4 remains open; this row does not satisfy its native criteria.
+
+Full CPU build verdict (2026-11-19)
+----------------------------------
+
+`df2-cafe4-modes-cpu-build-20261119` ended rc0 at 04:14:43Z; **PASS**
+under its build-only decision rule. `driver.py check` passed input/source binding,
+all recorded artifact hashes, six compiled load/rollback/rewind/mode/fault markers,
+and local resolution of all five required llama/ggml libraries.
+Executable SHA-256: `864bd4492e370112a5c273754b943f8f7bbe50543d76ec1bed284fdd2c600959`.
+Native receipt: `/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/RESULT.json`; SHA-256 `8f6ed5697fa21c4bfafc1ff2903307455c26bfc13429299236e3340ae7d1b1bd`.
+The receipt names and hashes the existing configure/build/linkage logs and libraries;
+no artifacts are duplicated here. Native rollback and exact rc1 fault controls
+remain unmeasured by this build, so CAFE-4 remains open.
