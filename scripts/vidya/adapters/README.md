@@ -12,6 +12,7 @@ Canonical spec: [`docs/design/vidya-pilot-spec.md` §4.7](../../../docs/design/v
 
 | Source | Native record | Projection / remaining work |
 |---|---|---|
+| P6 prospective OpenCode catalog trials (`hs4_p04_acceptance.py`) | `catalog-binding.json`, `catalog-record.json` and existing SC86 run/attempt sidecars | Extend existing SC86 capture, never a new ladder: preserve prepared arm/trial, frozen manifest/fixture/catalog/plugin/config/producer hashes, declared model/server, original session/tap window, explicit usage and unknown infrastructure failures. Catalog snapshot and serving identities are prospective declarations; row-owned live tools/list and mapped-build custody are still required. Four synthetic trials supply software controls only. VB-PARK-HARNESS-EVAL P6 capture extension; planning-context canary required before calling the loop wired. |
 | Delegation per-role/mode context-budget offline audit | `epyc.delegation.context_sizes.v1`; pinned tap hash, source commit, pairing rule, complete/truncated/unparsable/orphan strata and character counts | `VB-DELEGATION-CONTEXT-SIZES-WIRE`: project committed conclusions through the existing observation carrier; historical prompts supply descriptive character counts only, with no reconstructed token, causal, performance or measurement warrant. Require a planning-context canary before calling the loop wired. |
 
 > **An adapter PROJECTS. It never grades.**
