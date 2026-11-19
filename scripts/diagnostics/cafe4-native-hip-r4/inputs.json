@@ -13,7 +13,7 @@
   },
   "runtime": {
     "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/runtime.py": "84cc1ba4d313d82e0d99feb25441f093dc158ff86120159520cedc30941cbcec",
-    "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/launch.sh": "abbb63f18f30d97f362daee9e43dd1304b73b00776616cd8cd0616e305fb71cb"
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/launch.sh": "30d7991b5abe42a0ee37c76d85ecbdfe2deb296db7037f3bb6d6f6369f3d8af3"
   },
   "model": {
     "hash_mode": "reuse prior content-verified receipt with unchanged full stat; no new model hash",

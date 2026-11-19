@@ -38,3 +38,16 @@ or native numerical verdict is claimed. The keeper will qualify it in a GPU
 gap. CPU R2 native row was already qualified and remains pending.
 Result path: `/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/RESULT.json`.
 [no-belief: tested diagnostic runner and queued publication only]
+
+Smoke launcher repair (2026-11-19)
+----------------------------------
+The first queued smoke failed before executing the payload: the engine rejected
+exclusive GPU scheduling without an explicit CPU claim. Added
+`--claim-cpus 184-191`, matching the row's GPU host region. The engine overrides
+this with its assigned smoke CPUs under `FILLER_DRYRUN_ONE_QUARTER` / `FILLER_SMOKE`;
+no engine or grant changes were made. Updated the input manifest's launcher hash.
+Launcher SHA-256: `30d7991b5abe42a0ee37c76d85ecbdfe2deb296db7037f3bb6d6f6369f3d8af3`.
+`bash -n` and all six model-free runtime tests PASS. Republication returned
+**GPU busy: smoke queued**; qualification and native numerical verdict remain
+pending. Alert `055639d1368b71ecaa53da40` acknowledged after repair.
+[no-belief: launcher repair and model-free validation only]
