@@ -15,3 +15,11 @@ CJ-6a: filed `codex-ifbench-cj6a-27b-v4-20261104` as **inconclusive**, rc=1 (202
 ## 07:17Z — File codex-ifbench-cj6e-35b-20261119 full-run verdict: inconclusive, 0/300 responses after pre-generation grant-missing failure.
 
 CJ-6e: filed `codex-ifbench-cj6e-35b-20261119` as **inconclusive**, rc=1 at 2026-11-19T07:13:09Z. Worker raised `RuntimeError: grant missing` before generation; run directory empty, coverage **0/300 valid responses, 0 exposure records**. Strict/loose scores UNKNOWN. Both arms have zero coverage, paired overlap **0/300**, paired delta UNCOMPUTED; no discrimination or adoption claim. Predeclared uncertainty bounds are not measured repeatability. Handoff records log/end-record SHA-256 evidence. `file_result.py --no-reclaim` writes the verdict and FILED receipt; alert `5d57f45d5fa38bd79b62d5a4` acknowledged. CJ-6e stays open for full capture and paired scoring; source worktree retained for the still-owned repair. Next repair full-mode grant lookup/propagation, test that path without cohort exposure, and publish a smoke-qualified CJ-6a successor, followed by CJ-6e. [no-belief: failed before any benchmark exposure]
+
+## 10:54Z — Repair IFBench full-mode grant lookup for both workers and publish smoke-qualified CJ-6a successor
+
+### CJ-6a — grant lookup repaired; successor qualified
+
+Root cause: the launcher explicitly passed an empty FILLER_GRANTS_DIR through env -i; os.getenv returned that empty value and workers searched for a relative grant. Repaired both arms' launchers and workers, preserving explicit overrides and missing-grant rejection. Regression tests PASS: 16 full-mode grant lookups and eight clean-environment launcher cases without cohort/model access. Initial smoke stopped on an outdated worker checksum; refreshed both runtime and outer input seals.
+
+Published codex-ifbench-cj6a-27b-v5-20261119: publisher native smoke PASS, CPUs 140–143, rc=0, 2026-11-19T10:54:15Z. Evidence: docs/evidence/ifbench-grant-repair-20261119/qualification.json (runtime SHA-256 bindings and PASS receipt), repair.patch, test_preflight.py. Full benchmark scores remain UNKNOWN and CJ-6a remains open. CJ-6e runtime repaired; its successor publication is next. [no-belief: infrastructure repair and synthetic qualification only]
