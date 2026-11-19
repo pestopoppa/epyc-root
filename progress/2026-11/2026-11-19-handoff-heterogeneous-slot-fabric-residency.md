@@ -121,3 +121,7 @@ Dispatcher replay hsf4-serving-histogram-20261105 was already filed on 2026-11-0
 ## 03:42Z — Consume duplicate native-grid run-end event; result already filed and handoff box already complete.
 
 Duplicate run-end delivery for `kvu-kpf131-native-grid-20261105`: no new result-bearing task. Existing verdict and `.FILED` receipt were created 2026-11-05; KPF-13.1-NATIVE-GRID is already checked. Existing result SHA-256 `0e08b05a23fc6402a1857cb1d730bb7dd5e49708157633a72ee9b42d07e0ef94` records two grids per arm, empty initial grids, honest second cells 0,1 at positions 0,1, empty skip-apply second grid, both rc=0, stable executable and five DSOs. Existing PASS remains fixture-only; no new measurement, tick, or qualification replay. Preserve pending GPU publisher event as next action.
+
+## 03:43Z — Consume duplicate supervisor qualification run-end; existing PASS and FILED receipt already acknowledge this result.
+
+Duplicate dispatcher delivery for `kpf41-r4-supervisor-qual-20261105`; no new result to file. Existing verdict and `.FILED` receipt date to 2026-11-05T03:11Z. The filed PASS cites native result SHA-256 `32f660abc3b79b1a3e0f2dac8ea4bf2e738b0d7213e90ec1ddd52604c515a25d` and covers source-bound synthetic owned-grandchild pidfd cleanup plus four exact marker controls including wrong-type and suffix rejection. No rerun, new finding or parent KPF-41 completion; GPU/backend qualification remains separate. Next action remains consuming the pending r2 publisher smoke event.
