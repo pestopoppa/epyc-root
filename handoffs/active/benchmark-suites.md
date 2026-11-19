@@ -326,6 +326,12 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       Parent remains open: implement official SQL and multi-turn state/execution
       paths for the remaining 12 cases, then ready live fleet capture.
       Prospective custody task: `VB-BFCL-NATIVE-WIRE`. [no-belief: model-free software controls]
+      2026-11-19 SQL boundary: the pinned official evaluator explicitly skips SQL before
+      scoring (`eval_runner.py` blob `1427f13bbadf5e452a61d94e35ca1aac1b846636`, lines 446–448).
+      Routing these cases through its generic AST fallback would bypass that exclusion.
+      [Source finding](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/sql-boundary.json);
+      24 existing controls PASS, including SQL refusal. Parent remains open; advance the
+      official multi-turn execution path next. No SQL or fleet score claimed.
   - [x] **CJ-3d-ADAPTER — Prepare the native tool-call response adapter.** Convert ordered OpenAI-compatible function calls into the upstream V3 checker input shape, retain absent/malformed calls as parse errors, and validate malformed JSON, duplicate keys and ordering without invoking a model or defining scoring. The parent remains open until the pinned official checker and live transport are integrated. [Proposed adapter](../../proposed/cj567/openai_tool_calls.py). ✅ 2026-11-04 [belief: cc]
 - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the
       set: the published BFCL evidence is **unrankable today** (122B reports `bfcl_v4` 0.722,
