@@ -123,6 +123,12 @@ def assess_environment(samples, windows, *, policy, row_id, pid, device):
                 raise ValueError('invalid, unordered, foreign or unowned environment sample')
             if b - a > policy['max_gap_s']:
                 raise ValueError('environment observation too slow')
+            # Re-evaluate the retained KFD observation, even when the sampler's
+            # ownership flag claims PASS. Match its strict no-foreign-entry rule.
+            allocations = sample['allocations']
+            if (not isinstance(allocations, dict) or set(allocations) != {str(pid)}
+                    or type(allocations[str(pid)]) is not int or allocations[str(pid)] <= 0):
+                raise ValueError('missing own or present foreign MI210 allocation')
             previous = b
             if not re.fullmatch(r'[0-9a-f]{64}', sample['grant_sha256']):
                 raise ValueError('invalid grant digest')

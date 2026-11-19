@@ -14,7 +14,7 @@ DEVICE = {'gpu_id': 22, 'bdf': '0000:43:00.0'}
 def samples():
     return [dict(start=a, end=a+.1, row_id='g3-test', pid=42, gpu_id=22,
                  bdf=DEVICE['bdf'], ownership='PASS', grant_start=0, grant_end=10,
-                 grant_sha256='a'*64, sclk_mhz=1500, mclk_mhz=1600)
+                 grant_sha256='a'*64, allocations={'42': 1024}, sclk_mhz=1500, mclk_mhz=1600)
             for a in (1.1, 1.5)]
 
 
@@ -26,6 +26,17 @@ def assess(rows, policy=POLICY, windows=None):
 class EnvironmentTest(unittest.TestCase):
     def test_bounded_samples_pass(self):
         self.assertEqual(assess(samples())['status'], 'PASS')
+
+    def test_raw_allocations_override_stored_ownership_pass(self):
+        for allocations in (None, {}, {'43': 1024}, {'42': 0}, {'42': -1},
+                            {'42': True}, {'42': 1.5}, {'42': '1024'},
+                            {'42': 1024, '43': 1}, {'42': 1024, '43': 0},
+                            [1024]):
+            with self.subTest(allocations=allocations):
+                rows = samples(); rows[1]['allocations'] = allocations
+                self.assertEqual(assess(rows)['status'], 'UNKNOWN')
+        rows = samples(); del rows[1]['allocations']
+        self.assertEqual(assess(rows)['status'], 'UNKNOWN')
 
     def test_missing_sparse_duplicate_or_outside_request_samples_fail(self):
         for rows in ([], samples()[:1], [samples()[0]]*2,

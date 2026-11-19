@@ -68,6 +68,11 @@ class NativeProtocolTest(unittest.TestCase):
             # Claimed PASS remains intact; raw evidence must fail independently.
             broken[key]['result']['environment_samples'][0]['sclk_mhz'] = 0
             self.assertEqual(assess(broken)['status'], 'UNKNOWN')
+            broken = copy.deepcopy(r)
+            broken[key]['result']['environment_samples'][0]['allocations']['43'] = 1
+            verdict = assess(broken)
+            self.assertEqual(verdict['status'], 'UNKNOWN')
+            self.assertIsNone(verdict['vec_observed'])
 
     def test_plan_separates_controls_and_preserves_four_cells(self):
         b = base()
