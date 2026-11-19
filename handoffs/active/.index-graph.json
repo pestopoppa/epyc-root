@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T14:33:19Z",
+  "generated_at": "2026-11-19T14:44:05Z",
   "nodes": [
     {
       "age_days": 9,
@@ -2214,7 +2214,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 997,
+          "line": 999,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
@@ -3533,7 +3533,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1778,
+          "line": 1779,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3548,7 +3548,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2201,
+          "line": 2202,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"
