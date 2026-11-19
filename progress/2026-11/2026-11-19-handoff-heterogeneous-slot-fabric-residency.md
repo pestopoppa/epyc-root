@@ -133,3 +133,7 @@ Duplicate dispatcher event `kvu-kpf131-grid-binding-20261105`: no new result-bea
 ## 03:46Z — Consume duplicate retained-result comparator event; result already filed and box completed.
 
 Duplicate dispatcher event `kvu11c-retained-result-reconcile-r1-20261105`. Existing PASS filing and `.FILED` receipt date to 2026-11-05T02:56Z, and KVU-11c-COMPLETION-COMPARATOR is checked; no new result-bearing task. Filed native result SHA-256 `798cb3953db6c1a0a6fb82208e5ed890c3111f42e66b11ced3d0109a2c7ff583` records `reconciled_inconclusive`: retained completion predicates and original rc75 receipt match. Historical outer environment and independent execution custody remain unknown, and the original verdict remains inconclusive. No replay, promotion, new tick or finding. Preserve pending backend GPU publisher event as next action.
+
+## 03:47Z — Consume duplicate backend test build event; PASS, receipt and completed box already exist.
+
+Duplicate dispatcher event `kpf41-backend-tests-build-20261105`: existing PASS and `.FILED` receipt date to 2026-11-05T02:53Z; KPF-41.BACKEND-TESTS-BUILD is already checked. Filed native result SHA-256 `4b08e349541a0b6eb3ceedd61ec7c16be34858a065dbb8a81441d43bb736423c` is build-only for source `15caecbbf4cb27452dbd87fa1a68a0e75098388e`, linked gfx90a HIP executable and four library digests with own linkage. No new result, tick, build, GPU execution or parity claim. Pending backend GPU publisher event remains next.
