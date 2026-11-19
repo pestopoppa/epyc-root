@@ -55,3 +55,7 @@ Dispatched afc-v3c-q36_35b-tools-none-20261111 already has its 2026-11-11 verdic
 ## 03:47Z — Consume previously filed AFC v3c Q36 aggressive event
 
 Dispatched afc-v3c-q36_35b-tools-aggressive-20261111 already has its 2026-11-11 verdict and FILED receipt; AFC-V3C-PROD-TOOLS is complete. Filing unchanged; no boxes ticked or new result claimed. No result-bearing task currently possible: NIB2-77 exact approved roster missing; NIB2-94 requires operator rotation; NIB2-98/NIB2-102/LR-8 require owner runtime boundaries; NIB2-83 requires qualifying post-E17 data; GAP-POOL-1/NI-IDLE-REFILL-WATCHER require forbidden keeper/gate edits.
+
+## 03:49Z — Consume previously filed Q38 v3d reword event
+
+Dispatched afc-v3d-q38_flash-tools-aggressive-reword-20261112 already has its 2026-11-12 verdict and FILED receipt; AFC-Q36-AGENTFILE-CTX-REFUSAL is complete, including the recorded operator-ratified directive landing. Existing filing unchanged; no new result or ticks. No result-bearing task available: missing exact-path approval roster (NIB2-77), operator rotation (NIB2-94), owner runtime boundaries (NIB2-98/NIB2-102/LR-8), genuine post-E17 cohort (NIB2-83), or prohibited keeper/gate edits (GAP-POOL-1/NI-IDLE-REFILL-WATCHER).
