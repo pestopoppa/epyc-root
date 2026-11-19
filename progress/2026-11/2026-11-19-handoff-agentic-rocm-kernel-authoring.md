@@ -215,3 +215,7 @@ INF48-LIVE-1: the remaining C6-26 executable corpus change belongs to epyc-infer
 ## 16:01Z — Assess availability of the controller proof verdict
 
 INF48-C6-CONTROLLER-PROOF: r11 remains running per dispatcher state; no terminal verdict is available. INF48-LIVE-1's independent C6-26 corpus change is in the research repository outside the authorized lane; INF48-FOLD-PLAN depends on C6 completion. Acknowledged the superseded ATT canary, AITER vLLM and C6 r2 smoke alerts based on completed successor results recorded in the handoff. Other unresolved alerts remain. No result-bearing task was completed. [no-belief: operational state]
+
+## 17:22Z — Filed c6-admission-live-proof-r11 as inconclusive under its futility rule
+
+Filed `c6-admission-live-proof-r11` **inconclusive (FUTILITY_CARRIER)**: job rc=0, trace and validation passed, but the controller completed after portfolio exhaustion with zero admission records and no typed C6 refusal; the two receipt reopenings are unproved. The controller proof remains open; stop on futility, no retry. Result SHA-256 `3027bb233b5d587752b6e90000c74279f0a8a6f7b6bd1a84ac8a91534a2aa992`. [belief: cc]
