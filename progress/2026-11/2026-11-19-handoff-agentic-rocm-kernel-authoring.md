@@ -67,3 +67,7 @@ C10 GEMM-down build replayed end acknowledged: previously filed BUILD_OK, config
 ## 02:43Z — Acknowledge replayed C10 correctness result and previously accepted addendum
 
 C10 correctness replayed end acknowledged: native rc=75 and FAIL(witness); MUL_MAT 1202/1202, KLD -0.0 and top-1 99.997%. Previously filed witness-addendum re-score CORRECT was operator accepted, as recorded in AITER-PORT-1. Native results SHA-256 57f57112c99ed2ae784e07a49736c6286f2577145b6061076e7ee27ff1e14ca1. FILED receipt restored. [no-belief: previously filed and accepted result]
+
+## 02:45Z — File c15-gv-bw-gpu-20261118 as an invalid automatic futility verdict and identify the required continuation
+
+C15-GV-BW: row c15-gv-bw-gpu-20261118 ended rc=0, but its DROP(FUTILITY_OP) verdict is invalid: ratio128k is null for every arm despite complete 128k timings. All five arms passed 76/76 correctness, with variant witnesses and GPU residency. LDS alias base/variant ratios at 128k are 1.6453 (nb=1) and 1.5722 (nb=8), geometric mean 1.6083, exceeding the preregistered 1.10 futility threshold; al2 also exceeds it. End-to-end and DFlash2 were incorrectly skipped, so no KEEP/DROP conclusion and the box remains open. RESULT.json SHA-256 9ca85f68f8b5813b20373ac1f3c987fbf05e5632f6db28259a0abe07296a2fbb; results.jsonl SHA-256 980f8cf4bb27b85e8d443cc8c56f205967541d372d2af036ff9df135d184b5f6. Next: repair aggregate key selection and publish a continuation covering the missing preregistered end-to-end tests; preserve original units before any scratch reclamation. [belief: cc]
