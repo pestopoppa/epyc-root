@@ -83,3 +83,21 @@ performs no GPU model execution. Full build and native P9 remain outstanding.
 df2-cafe3-full-hip-build-r2-20261119: publisher smoke PASS on cores 164–167, rc75 after validated first progress; /mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-full-hip-build-r2-20261119/PASS.json SHA-256 100c3f7f69ed25f7d91089cb6f7242fb6ccf013bb3b5c17f61ed90b9c1116f1d.
 
 [no-belief: compiled publisher smoke only]
+
+## SONAME-repaired build publication (2026-11-19)
+
+`spec-r3.json` publishes `df2-cafe3-full-hip-build-r3-20261119` from
+`/mnt/raid0/llm/tmp/df2/cafe3-hip-build-r3-20261119`. `inputs-r3.json` retains the
+full candidate's source bindings and pins the relocated repaired validator,
+launcher and v1 supervisor. Earlier packets remain unchanged. Numeric
+SONAME versions retain exact local component, alias, SONAME and hash checks.
+
+Publisher smoke **PASS** on cores 164-167,
+rc=75 time=2026-11-19T20:59:39Z reason=exited; first progress: smoke_predicate exited 0.
+PASS record: `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-full-hip-build-r3-20261119/PASS.json`,
+SHA-256 `4de1b7bb6e4f9eeea0ff1b7ded9a49c2ae22b61c6e561a2003e417a00e84d07e`.
+The smoke compiles the transformed server translation unit and validates
+markers plus the IQK negative/fixed compatibility controls. Both rows use CPU build capacity.
+This is smoke qualification only; full builds and native P9 remain pending.
+
+[no-belief: compiled publisher smoke only]

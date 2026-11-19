@@ -1,0 +1,25 @@
+{
+  "files": {
+    "/mnt/raid0/llm/tmp/df2/cafe3-full-source-20261119/common/speculative.h": "44290101f64eb88b7155e960d28a0cdd142d2bef239e739f02a7754c5b2fdf52",
+    "/mnt/raid0/llm/tmp/df2/cafe3-full-source-20261119/common/speculative.cpp": "49d25ca19f155e71d2a48a51ba04dac2ac1a53962d512f31fa61606f96a4e80c",
+    "/mnt/raid0/llm/tmp/df2/cafe3-full-source-20261119/tools/server/server-context.cpp": "3894a418549e01e509e10b2aa52077e396c67d53c277422c4187ecae67077581",
+    "/mnt/raid0/llm/tmp/df2/cafe3-full-source-20261119/common/controller.h": "dad3f49a1950770b8e5740cc50ce649f39d33452936ee49434cfbfaac4858bdf",
+    "/mnt/raid0/llm/tmp/df2/cafe3-full-source-20261119/common/round_lifecycle.h": "4567ff02cd87c0e0b621b5337570936b857edac62528b632fed04c34f7529b1e",
+    "/mnt/raid0/llm/tmp/df2/cafe3-full-source-20261119/common/model_boundary.h": "355d0356e488a5e095ebf115c1f826cfdf99f7346675c730b8b562573b115333",
+    "/mnt/raid0/llm/tmp/df2/cafe3-full-source-20261119/common/native_sink.h": "6ae785888b42922d92f4e4306289ac1528471e1d303612e66db8360652157b41",
+    "/mnt/raid0/llm/tmp/df2/cafe3-full-source-20261119/cafe3-source.json": "6404c85554d2e7a7792016daee46d7688348b300aa9e38127ec6ee56e7e511f7",
+    "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-r3-20261119/driver.py": "da4b2d198a2cbb2e718434f4da87df4dcdfa085783b261fedadefb54fc196555",
+    "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-r3-20261119/launch.sh": "ceef25f897a3bd2f47cf192a57425de2713f33f2b574eaf62eae2d3c4c15ae05",
+    "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-r3-20261119/supervise.py": "01ec8b89571d712c2a369530bf227ee45f264235973afb7f877d7e0d5e9221ee"
+  },
+  "supervisor": "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-r3-20261119/supervise.py",
+  "diff_sha256": "30407370d7624be85d525c7961f889a24901637d3e083d6e84ff567eca03b43b",
+  "untracked": [
+    "cafe3-source.json",
+    "common/controller.h",
+    "common/model_boundary.h",
+    "common/native_sink.h",
+    "common/round_lifecycle.h"
+  ],
+  "supervisor_protocol": "epyc.cafe3.supervisor.v1"
+}

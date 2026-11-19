@@ -102,3 +102,21 @@ bind the repaired driver hashes.
 - `scripts/diagnostics/cafe3-hip-build/driver.py` SHA-256 `6d209ff939a063c2a0746040e9e84d43da37987be5b83617f5f514645b6d2b7e`
 - `scripts/diagnostics/cafe3-build/test_full_binding.py` SHA-256 `5db77f5146c06f4c7b3ccfb530a35ce000736d32f9681aa9504fd23d4488e004`
 - `scripts/diagnostics/cafe3-adaptive/test_launch_context.py` SHA-256 `b9d8e067292bc3ec07dc05d8794da67756c17b74554551bf08f3c7528ce852fb`
+
+## SONAME-repaired build publication (2026-11-19)
+
+`spec-r3.json` publishes `df2-cafe3-full-cpu-build-r3-20261119` from
+`/mnt/raid0/llm/tmp/df2/cafe3-cpu-build-r3-20261119`. `inputs-r3.json` retains the
+full candidate's source bindings and pins the relocated repaired validator,
+launcher and v1 supervisor. Earlier packets remain unchanged. Numeric
+SONAME versions retain exact local component, alias, SONAME and hash checks.
+
+Publisher smoke **PASS** on cores 164-167,
+rc=75 time=2026-11-19T20:59:19Z reason=exited; first progress: smoke_predicate exited 0.
+PASS record: `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-full-cpu-build-r3-20261119/PASS.json`,
+SHA-256 `e6815a22beccbe5ea97618f8ee794bf0171b988dd97010836fd9e1ddcea7fb80`.
+The smoke compiles the transformed server translation unit and validates
+markers. Both rows use CPU build capacity.
+This is smoke qualification only; full builds and native P9 remain pending.
+
+[no-belief: compiled publisher smoke only]
