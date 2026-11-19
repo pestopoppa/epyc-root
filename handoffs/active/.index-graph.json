@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T17:38:54Z",
+  "generated_at": "2026-11-19T17:47:54Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1438,7 +1438,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6090,
+          "line": 6092,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1447,7 +1447,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6170,
+          "line": 6172,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1466,7 +1466,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6468,
+          "line": 6470,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1483,7 +1483,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9708,
+          "line": 9710,
           "name": "autokernel-unified-surface-program",
           "open": 46,
           "readiness": "blocked"
@@ -1496,7 +1496,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14119,
+          "line": 14121,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1530,7 +1530,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14332,
+          "line": 14334,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11,
           "readiness": "blocked"
@@ -1772,7 +1772,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 131,
+      "closed": 133,
       "dispatchable": 27,
       "domain": "inference-research",
       "guarded": 0,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 763,
+          "line": 765,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18,
           "readiness": "blocked"
@@ -2299,15 +2299,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 139,
-      "dispatchable": 54,
+      "closed": 138,
+      "dispatchable": 55,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-19",
       "next_action": "Fix C12 CPU mul_mat IQ3_XXS/Q6_K (QDEC r3) + QDEC judge; q81 r4 edge leg; EDGE-HIP-NONFINITE; LB4.9 per-route bar",
-      "open": 55,
+      "open": 56,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2357,7 +2357,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 47,
+          "dispatchable": 48,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2368,7 +2368,7 @@
           ],
           "line": 969,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 48,
+          "open": 49,
           "readiness": "blocked"
         }
       ]
