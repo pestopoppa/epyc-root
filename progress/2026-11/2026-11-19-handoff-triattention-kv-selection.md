@@ -19,3 +19,7 @@ Delivered `yarn-e1-mem-c7-20261106` event is already filed: receipt commit `c35c
 ## 03:53Z — Consume duplicate s2 v39 run-end; verdict and FILED receipt already exist
 
 Duplicate `yarn-oolong-s2-import-eligible26-v39-20261105` run-end event: existing verdict filed by operator-adhoc-ops-20261105 at 2026-11-05T21:27:24Z is inconclusive; FILED receipt exists. No new completed item or matching pair; original denominator remains 120. No new result, tick, replay or republication. Historical continuation remains declined, as recorded in the handoff; next unblocked work remains YARN-E1-PROOF. [no-belief: duplicate event disposition only]
+
+## 03:56Z — Consume duplicate r7-distilled run-end: already filed SUPERSEDED; no new result available
+
+Duplicate run-end for `lsa-quality-32k-20261106-r7-distilled`: rc=75, already filed 2026-11-07 as SUPERSEDED by r8-dense, outcome NO-RESULT, with existing FILED receipt. Preserved that filing; referenced distilled.jsonl and RESULT.json are absent. No quality verdict or completion tick is warranted. Filing evidence: `/mnt/raid0/llm/tmp/compute-flags/filing-done/lsa-quality-32k-20261106-r7-distilled.verdict.json`, SHA-256 `cbaac53de25963d478391e6844f2137551aa892bf77b2007fbf9f23ae5baeaed`. This duplicate event yields no new result-bearing work. Resume the prior YARN-E1-PROOF checkpoint next.
