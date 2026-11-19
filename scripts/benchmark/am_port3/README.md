@@ -149,3 +149,56 @@ before linking. Original evidence remains in
 source trees are vendored here. Real-model capture, NPZ conversion with original
 position/query IDs, shared selection, fitted carrier loading and decode remain
 unimplemented.
+
+## Native beta mask and C2 loading primitives
+
+`native_carrier.h` is an explicit, standalone ggml interface, tested against the
+same approved header blobs and CPU-library digest above. It is not yet installed
+in `llama-graph.cpp` or the server. A driver/integration must:
+
+1. Assemble one complete `layer_fit` per global layer, pooling the fitted shards
+   into head-major beta/C2 arrays; call `validate_layers` to require a single
+   common retained-position selection and unique layer identities.
+2. Synchronize the context and resolve the original selected positions to the
+   current native physical cache rows. Supply that exact `row_binding` to every
+   operation. The binding expires after cache movement, defragmentation, state
+   restore or mutation; these primitives cannot verify caller-supplied native
+   cell identity. Do not shift retained positions or infer them from row numbers.
+3. Call `load_values` on the correct layer's raw V tensor while the context is
+   synchronized. Only untransposed single-stream `[head*width, cache_row]`
+   storage is accepted. F32, F16 and block-aligned Q8_0 are supported. All heads
+   are validated and encoded before any write; finite input that overflows F16
+   or the Q8_0 scale is refused without changing earlier rows. Backend transfer
+   failure is fatal in ggml, so this is validation atomicity, not transactional
+   recovery. Quantization changes C2 and must enter the native quality verdict.
+4. In the attention graph, pass the original causal mask to `build_mask`, with
+   the layer carrier and binding. Its explicit graph input scatters each beta
+   onto its physical row, with zero for new/unfitted rows. Original mask holes
+   and query padding remain masked. GQA uses contiguous query-head groups,
+   expanded to ALL query heads to avoid modulo-broadcast assigning the wrong
+   KV head. Pass the returned F16 mask to FA; allocate the graph, then call
+   `graph_mask.upload()` before evaluation/reuse. Its data is a snapshot, so
+   rebuild/rebind after cell movement. Do not also apply PORT-1's scalar beta.
+
+Null carrier is the default-off branch: it returns the original mask pointer
+without allocating inputs or graph nodes. Active masks are bounded to 36,864
+cache rows, 512 padded query rows, 256 heads and a default 256 MiB per-layer F32
+expanded-mask budget. This bounds each temporary, not the entire model graph.
+Head-specific masks bypass some optimized HIP FA paths; CPU correctness here
+does not establish HIP support, residency, throughput or the 36 GiB budget.
+
+`test_native_carrier.cpp` evaluates two independently biased layers through the
+real CPU scheduler, with 4 query heads/2 KV heads, sparse retained rows, original
+mask holes and a newly appended row. Its independent double-precision oracle
+uses actual dequantized Q8_0 C2 bytes and the actual rounded F16 beta mask. It
+also checks untouched cache rows, inconsistent layer selections, default-off
+tensor identity, GQA refusal, byte limits, wrong layer/position/physical-row
+bindings, nonfinite values and late F16 overflow before writes. Observed maximum
+attention absolute error `4.62855e-06`, layer-beta output difference `1.71148`,
+and maximum Q8_0 value round-trip absolute error `0.00484622` are model-free
+diagnostics, not real-model quality evidence.
+
+Compile with the native-capture command above, substituting
+`test_native_carrier.cpp` and a scratch executable name; it takes no arguments.
+The native context/graph-input hook, raw-cache binding to actual cells, capture
+driver/NPZ conversion and bounded GPU row still remain. AM-PORT-3 stays open.
