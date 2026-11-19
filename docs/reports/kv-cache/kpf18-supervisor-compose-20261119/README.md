@@ -500,3 +500,44 @@ Source identities (SHA-256):
 - `execution_binding.py`: `cd9e271c64cea01da7c4ba5c66ccb0051050e73dbfaa33b69daa45b7f887957a`
 - `test_execution_binding.py`: `a83b9702f9a8c3f628073929847e59e4164dc47e5163a79ac48e42b4125bc98c`
 - `test_execution_prerequisites.py`: `98402f795ef652b9574a9fe90d77e6dac7c60ba0f4045c316a10ae6776ef7ffe`
+
+### 2026-11-19 — Installed non-dry entry and retained preload verifier
+
+`test_nondry_entry.py` adds four isolated-process controls through the installed
+supervisor's `run_driver`, current admission and enrollment bindings, unchanged
+non-dry driver main, retained `load_preload_models`/`verify`, and both retained
+stat checks. The valid case writes the driver's identity output under the admitted
+private output and reaches witness/gate entry in order. Receipt digest mismatch,
+drafter metadata mismatch, and changed target stat each refuse before identity
+output, witness installation or gate entry. All four controls PASS. The prior
+66 scoped regressions PASS (70 total); `git diff --check` PASS.
+
+Run the new controls with:
+
+```bash
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_nondry_entry.py -v
+```
+
+The private fixtures replace framing/projection and receipt pins explicitly in
+memory, redirect the admission flags root to private grant/provider fixtures,
+and supply tiny stat files. The disk reserve is synthetic; witness and gate are
+inert. The tests do not hash model contents, execute a native runtime or touch
+production grants. Original source bytes and historical seals are unchanged.
+This qualifies software routing and refusal behavior only, not the original
+receipt/framing, current official admission, publisher smoke, native lifecycle,
+GPU inference or the historical full-run RowflowContext adapter. KPF-18 stays open.
+
+Evidence SHA-256:
+
+- `test_nondry_entry.py`: `4b3f0a27e173ae49f320a7b6430743eca8cb6bd2700a502cee6e74cb87023159`
+- `/mnt/raid0/llm/tmp/kvu/g3-preload-integrated-20261105/candidate/verify_receipt.py`: `2f820a5a215a36aa822dee4fb43cec4eb8fddb57b94b2434a85dfa63857eb506`
+- `/mnt/raid0/llm/tmp/kvu/g3-preload-integrated-20261105/candidate/preload_integration.py`: `a7958fc86664381b287c589e14f21972473336cd3df58b4f3087e375e4a4b88d`
+
+Next: recover exact framing-result bytes matching
+`9c782023a139941349fb664e79c666df5ea894a231395761053bae2dd03a3225`
+and explicitly seal their location plus the three pinned projection inputs for
+publisher smoke. Full-run RowflowContext remains historical. GitNexus
+status/impact unavailable because this sparse lane has no index; this revision
+changes only independent qualification tests and this report. No new native
+source or measurement producer was introduced. Bus drain rejected the handoff
+slug because it has no roster id; no other session's outbox was used.
