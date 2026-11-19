@@ -177,7 +177,7 @@
    "id": "AK-DTREE-1",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1709,
+   "line": 1710,
    "lint": {
     "fails": [
      "b",
@@ -212,7 +212,7 @@
    "id": "AK-DTREE-2",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1711,
+   "line": 1712,
    "lint": {
     "fails": [
      "d",
@@ -525,10 +525,43 @@
    "tier": null,
    "track": "autokernel-research-loop"
   },
+  "AK-WVSK-M10": {
+   "class": "inference",
+   "class_basis": "explicit",
+   "cont_lines": 1,
+   "done_when": null,
+   "file": "handoffs/active/speculative-decoding.md",
+   "frozen_until": null,
+   "gate": [],
+   "gate_open": false,
+   "gate_unknown": [],
+   "holds": [],
+   "id": "AK-WVSK-M10",
+   "inputs": [],
+   "inputs_missing": [],
+   "line": 1752,
+   "lint": {
+    "fails": [
+     "d",
+     "e"
+    ],
+    "ok": false
+   },
+   "owner": null,
+   "pos_in_backlog": null,
+   "row": "INF-50",
+   "row_rank": 5,
+   "standard": false,
+   "state": "open",
+   "text": "- [ ] **AK-WVSK-M10** [inference] **served-model correctness**: gfx90a wvSplitK Q8_0 GEMM at M 9..11. In P2 row `ak-dtree-27b-gpu-20261119`, arm T9 (10 verify rows, wvsk M=10) disagreed with the fresh-prefill oracle on 9/48 positions (max m",
+   "text_sha": "2ed91901bbbe65e1",
+   "tier": null,
+   "track": "dflash2-block-drafter-experimental-build"
+  },
   "AM-DECISIVE-1": {
    "class": "inference",
    "class_basis": "advisory-regex",
-   "cont_lines": 25,
+   "cont_lines": 26,
    "done_when": null,
    "file": "handoffs/active/long-context-program.md",
    "frozen_until": null,
@@ -561,7 +594,7 @@
   "AM-PORT-3": {
    "class": "inference",
    "class_basis": "explicit",
-   "cont_lines": 6,
+   "cont_lines": 7,
    "done_when": null,
    "file": "handoffs/active/long-context-program.md",
    "frozen_until": null,
@@ -606,7 +639,7 @@
    "id": "AM-PORT-4",
    "inputs": [],
    "inputs_missing": [],
-   "line": 942,
+   "line": 943,
    "lint": {
     "fails": [
      "a",
@@ -899,7 +932,7 @@
    "id": "DTREE-A1",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1754,
+   "line": 1757,
    "lint": {
     "fails": [
      "a"
@@ -1755,7 +1788,7 @@
    "id": "LSA-YARN-512K",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1938,
+   "line": 1939,
    "lint": {
     "fails": [
      "c",
@@ -29373,7 +29406,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1944,
+   "line": 1945,
    "lint": {
     "fails": [
      "e",
@@ -29406,7 +29439,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1831,
+   "line": 1832,
    "lint": {
     "fails": [
      "c",
@@ -29473,7 +29506,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1941,
+   "line": 1942,
    "lint": {
     "fails": [
      "c",
@@ -29506,7 +29539,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1849,
+   "line": 1850,
    "lint": {
     "fails": [
      "h"
@@ -29538,7 +29571,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1919,
+   "line": 1920,
    "lint": {
     "fails": [
      "e"
@@ -29604,7 +29637,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1936,
+   "line": 1937,
    "lint": {
     "fails": [
      "d",
@@ -29910,7 +29943,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1932,
+   "line": 1933,
    "lint": {
     "fails": [
      "a",
@@ -29944,7 +29977,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1917,
+   "line": 1918,
    "lint": {
     "fails": [
      "d",
@@ -30009,7 +30042,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1924,
+   "line": 1925,
    "lint": {
     "fails": [
      "d",
@@ -30043,7 +30076,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 943,
+   "line": 944,
    "lint": {
     "fails": [],
     "ok": true
@@ -30141,7 +30174,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1928,
+   "line": 1929,
    "lint": {
     "fails": [
      "c",
@@ -30209,7 +30242,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1829,
+   "line": 1830,
    "lint": {
     "fails": [
      "c",
@@ -30244,7 +30277,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1845,
+   "line": 1846,
    "lint": {
     "fails": [
      "a",
@@ -36843,7 +36876,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1379,
+   "line": 1380,
    "lint": {
     "fails": [
      "d",
@@ -36876,7 +36909,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1403,
+   "line": 1404,
    "lint": {
     "fails": [
      "d",
@@ -36910,7 +36943,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 590,
+   "line": 591,
    "lint": {
     "fails": [
      "c",
@@ -36943,7 +36976,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1695,
+   "line": 1696,
    "lint": {
     "fails": [
      "b",
@@ -37078,7 +37111,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1728,
+   "line": 1729,
    "lint": {
     "fails": [
      "d",
@@ -37111,7 +37144,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1734,
+   "line": 1735,
    "lint": {
     "fails": [
      "h"
@@ -37143,7 +37176,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1751,
+   "line": 1754,
    "lint": {
     "fails": [
      "e"
@@ -37164,7 +37197,7 @@
   "handoffs/active/speculative-decoding.md#4a5d4f381706c234": {
    "class": "inference",
    "class_basis": "advisory-regex-conflict",
-   "cont_lines": 1,
+   "cont_lines": 3,
    "done_when": null,
    "file": "handoffs/active/speculative-decoding.md",
    "frozen_until": null,
@@ -37175,7 +37208,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1749,
+   "line": 1750,
    "lint": {
     "fails": [
      "b",
@@ -37209,7 +37242,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 930,
+   "line": 931,
    "lint": {
     "fails": [
      "e",
@@ -37243,7 +37276,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1689,
+   "line": 1690,
    "lint": {
     "fails": [
      "h"
@@ -37275,7 +37308,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 968,
+   "line": 969,
    "lint": {
     "fails": [
      "a",
@@ -37308,7 +37341,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1720,
+   "line": 1721,
    "lint": {
     "fails": [
      "d",
@@ -37341,7 +37374,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1383,
+   "line": 1384,
    "lint": {
     "fails": [
      "c",
@@ -37410,7 +37443,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1645,
+   "line": 1646,
    "lint": {
     "fails": [
      "b",
@@ -37444,7 +37477,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1755,
+   "line": 1758,
    "lint": {
     "fails": [
      "c",
@@ -37479,7 +37512,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1719,
+   "line": 1720,
    "lint": {
     "fails": [],
     "ok": true
@@ -37509,7 +37542,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1674,
+   "line": 1675,
    "lint": {
     "fails": [
      "e",
@@ -37576,7 +37609,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1733,
+   "line": 1734,
    "lint": {
     "fails": [],
     "ok": true
@@ -37606,7 +37639,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1449,
+   "line": 1450,
    "lint": {
     "fails": [
      "c",
@@ -37641,7 +37674,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1732,
+   "line": 1733,
    "lint": {
     "fails": [],
     "ok": true
@@ -37671,7 +37704,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 961,
+   "line": 962,
    "lint": {
     "fails": [
      "c",
@@ -37696,7 +37729,7 @@
   "handoffs/active/speculative-decoding.md#aca360e85f33268d": {
    "class": "inference",
    "class_basis": "advisory-regex-conflict",
-   "cont_lines": 51,
+   "cont_lines": 52,
    "done_when": null,
    "file": "handoffs/active/speculative-decoding.md",
    "frozen_until": null,
@@ -37775,7 +37808,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1394,
+   "line": 1395,
    "lint": {
     "fails": [
      "e",
@@ -37808,7 +37841,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 591,
+   "line": 592,
    "lint": {
     "fails": [],
     "ok": true
@@ -37838,7 +37871,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1020,
+   "line": 1021,
    "lint": {
     "fails": [
      "c",
@@ -37872,7 +37905,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 604,
+   "line": 605,
    "lint": {
     "fails": [
      "b",
@@ -37907,7 +37940,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1408,
+   "line": 1409,
    "lint": {
     "fails": [
      "c",
@@ -37941,7 +37974,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 938,
+   "line": 939,
    "lint": {
     "fails": [
      "e",
@@ -37974,7 +38007,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1392,
+   "line": 1393,
    "lint": {
     "fails": [
      "e",
@@ -38007,7 +38040,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1640,
+   "line": 1641,
    "lint": {
     "fails": [
      "b",
@@ -38076,7 +38109,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1693,
+   "line": 1694,
    "lint": {
     "fails": [
      "c",
@@ -45898,8 +45931,8 @@
   "blocked": 0,
   "frozen": 24,
   "lint_ok": 289,
-  "open": 1385,
-  "total": 1409
+  "open": 1386,
+  "total": 1410
  },
  "holds_source": null,
  "include_done": false,
@@ -45992,8 +46025,8 @@
   "box handoffs/active/kv-cache-program.md:4008 has 30 continuation lines > 24",
   "box handoffs/active/kv-cache-program.md:4147 has 35 continuation lines > 24",
   "box handoffs/active/long-context-program.md:372 has 50 continuation lines > 24",
-  "box handoffs/active/long-context-program.md:923 has 25 continuation lines > 24",
-  "box handoffs/active/long-context-program.md:1924 has 47 continuation lines > 24",
+  "box handoffs/active/long-context-program.md:923 has 26 continuation lines > 24",
+  "box handoffs/active/long-context-program.md:1925 has 47 continuation lines > 24",
   "box handoffs/active/memory-program.md:417 has 28 continuation lines > 24",
   "box handoffs/active/numa-placement-and-contention.md:429 has 30 continuation lines > 24",
   "box handoffs/active/numa-placement-and-contention.md:4332 has 35 continuation lines > 24",
@@ -46008,8 +46041,8 @@
   "box handoffs/active/routing-program.md:3946 has 32 continuation lines > 24",
   "box handoffs/active/speculative-decoding.md:365 has 40 continuation lines > 24",
   "box handoffs/active/speculative-decoding.md:496 has 29 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:526 has 51 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:930 has 30 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:526 has 52 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:931 has 30 continuation lines > 24",
   "box handoffs/active/speech-and-multimodal.md:695 has 78 continuation lines > 24",
   "box handoffs/active/stack-lifecycle-program.md:1167 has 32 continuation lines > 24",
   "box handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md:314 has 42 continuation lines > 24",
