@@ -1,0 +1,176 @@
+#!/usr/bin/env python3
+"""runend.py — owner-side run-end triage for one rowflow row (row-owner-loop skill, step 4).
+
+  runend.py <row>                 draft <rowdir>/verdict.json from out/RESULT.json + grants/<row>.ended
+  runend.py <row> --file          after review: run file_result.py from a pinned detached origin/main
+                                  worktree, confirm filing-done/<row>.FILED, print the tick-line draft
+  runend.py --check-cc <file.md>  list `[belief: cc]` lines in <file.md> with no register row
+
+Verdict mapping (mirrors file_result.coerce_declared_nonpass, stricter): a native verdict or ended
+reason that declares DROP / FUTILITY* / STOPPED / INCONCLUSIVE / rc 75 / rc 143 / partial is NEVER
+`pass`; FAIL* / crash -> fail; PASS / KEEP -> pass only when the run ended reason=complete.
+The draft's rationale must cite at least one number (lint_verdict refuses one that doesn't).
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+
+TMP = "/mnt/raid0/llm/tmp"
+FLAGS = "/mnt/raid0/llm/tmp/compute-flags"
+ROOT = "/workspace"
+REGISTER_REL = "data/belief/committed_conclusions.jsonl"
+
+NONPASS = re.compile(r"\b(DROP|FUTILITY\w*|STOPPED|INCONCLUSIVE|NOT_ATTRIBUTED|diagnostic|partial)\b", re.I)
+FAILISH = re.compile(r"\b(FAIL\w*|crash\w*|REFUSED|ERROR)\b", re.I)
+PASSISH = re.compile(r"^\s*(PASS|KEEP|CALIBRATED)\b", re.I)
+NUMBER = re.compile(r"\d")
+
+
+def parse_ended(text: str) -> dict:
+    out = {}
+    for tok in re.split(r"\s+", text.strip()):
+        if "=" in tok:
+            k, v = tok.split("=", 1)
+            out[k] = v
+    return out
+
+
+def map_verdict(native: str, ended: dict | None = None) -> str:
+    """native RESULT verdict string (+ .ended record) -> pass | fail | inconclusive. Never pass on a non-pass."""
+    native = (native or "").strip()
+    ended = ended or {}
+    rc = str(ended.get("rc", "0"))
+    reason = ended.get("reason", "complete")
+    if rc in ("75", "143") or (reason and reason != "complete"):
+        return "fail" if FAILISH.search(native) and not NONPASS.search(native) else "inconclusive"
+    if not native:
+        return "inconclusive"
+    if FAILISH.search(native) and not NONPASS.search(native):
+        return "fail"
+    if NONPASS.search(native):
+        # DROP(futility) is a measured negative for the hypothesis, but it is not a `pass`; an
+        # explicitly declared DROP with a measured number files fail, everything else inconclusive.
+        return "fail" if re.match(r"^\s*DROP\b", native, re.I) else "inconclusive"
+    if PASSISH.match(native):
+        return "pass"
+    return "inconclusive"
+
+
+def lint_verdict(v: dict) -> list[str]:
+    errs = []
+    if v.get("verdict") not in ("pass", "fail", "inconclusive"):
+        errs.append(f"verdict must be pass|fail|inconclusive, got {v.get('verdict')!r}")
+    rat = str(v.get("rationale") or "")
+    if not NUMBER.search(rat):
+        errs.append("rationale cites no number")
+    if v.get("verdict") == "pass" and NONPASS.search(rat + " " + str(v.get("answer") or "")):
+        errs.append("pass with a DROP/FUTILITY/STOPPED/diagnostic rationale (files inconclusive)")
+    if "TODO" in rat:
+        errs.append("rationale still has TODO")
+    return errs
+
+
+def draft(row: str) -> dict:
+    d = os.path.join(TMP, row)
+    res = json.load(open(os.path.join(d, "out", "RESULT.json")))
+    ep = os.path.join(FLAGS, "grants", f"{row}.ended")
+    ended = parse_ended(open(ep).read()) if os.path.exists(ep) else {}
+    native = str(res.get("verdict") or "")
+    v = map_verdict(native, ended)
+    nums = {k: res[k] for k in res if isinstance(res[k], (int, float)) and not isinstance(res[k], bool)}
+    rat = f"RESULT {native or '(none)'}; ended rc={ended.get('rc', '?')} reason={ended.get('reason', '?')}"
+    if nums:
+        rat += "; " + ", ".join(f"{k}={nums[k]}" for k in list(nums)[:8])
+    rat += ". TODO: cite the numbers the pre-registered RULE decided on."
+    return {"verdict": v, "rationale": rat, "native_verdict": native, "answer": "TODO"}
+
+
+def tick_line(row: str, v: dict, sha: str = "<commit>") -> str:
+    tag = "[belief: cc]"
+    return (f"- [x] (YYYY-MM-DD, <owner>) row `{row}` **{v.get('native_verdict') or v['verdict'].upper()}**"
+            f" (filed {v['verdict']}): {v['rationale']} Evidence: `{TMP}/{row}/out/RESULT.json`, {sha}. {tag}")
+
+
+def file_row(row: str, owner: str) -> int:
+    vpath = os.path.join(TMP, row, "verdict.json")
+    v = json.load(open(vpath))
+    errs = lint_verdict(v)
+    if errs:
+        print("REFUSED verdict.json: " + "; ".join(errs))
+        return 2
+    subprocess.run(["git", "-C", ROOT, "fetch", "-q", "origin"], check=True)
+    wt = tempfile.mkdtemp(prefix=f"runend-{row}-", dir=os.path.join(TMP))
+    os.rmdir(wt)
+    subprocess.run(["git", "-C", ROOT, "worktree", "add", "--detach", wt, "origin/main"], check=True,
+                   stdout=subprocess.DEVNULL)
+    try:
+        rc = subprocess.run([sys.executable, os.path.join(wt, "scripts/coordination/churn/file_result.py"), row,
+                             "--verdict-json", vpath, "--filed-by", owner]).returncode
+    finally:
+        subprocess.run(["git", "-C", ROOT, "worktree", "remove", wt])
+    filed = os.path.join(FLAGS, "filing-done", f"{row}.FILED")
+    if rc != 0 or not os.path.exists(filed):
+        print(f"NOT FILED rc={rc} ({filed} missing)")
+        return 1
+    print(f"FILED {filed}")
+    print("tick draft (re-read the box's done-when first):")
+    print(tick_line(row, v))
+    print("then: register row via `python3 scripts/vidya/cli.py conclusion add …` and re-arm watch_rows.sh")
+    return 0
+
+
+def check_cc(md: str, repo: str = ROOT) -> list[tuple[int, str]]:
+    reg = os.path.join(repo, REGISTER_REL)
+    quotes = []
+    if os.path.exists(reg):
+        for line in open(reg):
+            try:
+                quotes.append(re.sub(r"\s+", " ", json.loads(line)["anchor"]["quote"]))
+            except (ValueError, KeyError):
+                pass
+    missing = []
+    for n, line in enumerate(open(md), 1):
+        if "[belief: cc]" not in line:
+            continue
+        frag = re.sub(r"\s+", " ", line).strip()[2:90]
+        if not any(frag in q for q in quotes):
+            missing.append((n, line.strip()[:120]))
+    return missing
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("row", nargs="?")
+    ap.add_argument("--file", action="store_true")
+    ap.add_argument("--owner", default="autokernel")
+    ap.add_argument("--check-cc", metavar="FILE_MD")
+    ap.add_argument("--force-draft", action="store_true", help="overwrite an existing verdict.json draft")
+    a = ap.parse_args(argv)
+    if a.check_cc:
+        miss = check_cc(a.check_cc)
+        for n, t in miss:
+            print(f"NO-REGISTER-ROW {a.check_cc}:{n} {t}")
+        return 1 if miss else 0
+    if not a.row:
+        ap.error("row required")
+    if a.file:
+        return file_row(a.row, a.owner)
+    vpath = os.path.join(TMP, a.row, "verdict.json")
+    if os.path.exists(vpath) and not a.force_draft:
+        print(f"{vpath} exists; review it or pass --force-draft")
+        return 1
+    v = draft(a.row)
+    with open(vpath, "w") as f:
+        json.dump(v, f, indent=1)
+    print(f"DRAFT {vpath}: verdict={v['verdict']} (native {v['native_verdict']!r}); edit rationale/answer, then --file")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

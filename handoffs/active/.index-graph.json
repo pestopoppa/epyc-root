@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T23:14:04Z",
+  "generated_at": "2026-11-19T23:27:46Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1772,7 +1772,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 146,
+      "closed": 147,
       "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 796,
+          "line": 799,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 30,
           "readiness": "blocked"
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1036,
+          "line": 1038,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1652,
+          "line": 1654,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1799,
+          "line": 1801,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"

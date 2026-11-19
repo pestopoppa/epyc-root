@@ -1457,7 +1457,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1036,
+          "line": 1038,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1467,7 +1467,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1652,
+          "line": 1654,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1477,7 +1477,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1799,
+          "line": 1801,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
@@ -2336,7 +2336,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 146,
+      "closed": 147,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 39,
@@ -2348,11 +2348,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 187,
+      "total": 188,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 92,
+          "closed": 93,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2368,7 +2368,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 796,
+          "line": 799,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29
