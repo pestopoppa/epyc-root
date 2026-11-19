@@ -19,3 +19,7 @@ rka-a3b48-d-remeasure-20261118-r4 ended rc=75, no final verdict: five valid cell
 ## 02:14Z — Queue r5 continuation of the interrupted A3B draft-depth measurement with the five recorded r4 cells preserved.
 
 RKA-A3B48-D-REMEASURE: queued continuation row `rka-a3b48-d-remeasure-20261119-r5` for smoke; it resumes the preregistered r4 sequence with the existing five cells (seed results SHA-256 `71ccc863d8462f18a361f286ccfbe444ab19ddf7e870cc545a3b2a6978cb5cc3`). Publisher reports queued for smoke, not yet PASS. The J64 run-end event was already filed on 2026-11-09, including its receipt and verdict; no duplicate filing.
+
+## 02:16Z — Recognize the previously filed mutant-build event; no new result is available.
+
+INF48-LIVE-6: dispatcher supplied the already filed `race-eqv-mutants-build-r3-20261109` event. Existing 2026-11-10 verdict is BUILD_OK, 19/19, source `36f024341`; the FILED receipt exists and the box is complete. A3B continuation r5 remains smoke-queued, not yet PASS.
