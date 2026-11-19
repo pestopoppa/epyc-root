@@ -118,7 +118,9 @@ def score2(text, children=0):
 
 def boxes(path):
     lines = open(path, encoding='utf-8', errors='replace').read().split('\n')
+    fenced = L1.fenced_lines(lines)          # a box quoted inside a code fence is an example, never a task
     for i, l in enumerate(lines):
+        if i in fenced: continue
         m = L1.CHECKBOX.match(l)
         if m and m.group(2) == ' ':
             txt, ch = L1.block(lines, i); yield i + 1, txt, ch
@@ -237,10 +239,20 @@ TIERS = ('luna', 'terra', 'sol', 'haiku', 'sonnet', 'opus')
 DONE_WHEN_REQUIRED = ('non-inference', 'inference')     # classes whose standard-grammar box must state `done when`
 FIELD_KEYS = ('done when', 'gate', 'inputs', 'inputs-missing', 'tier', 'owner', 'stop rule', 'model', 'build', 'harness',
               'metric', 'rule', 'region', 'est', 'frozen until', 'previous_task_text', 'supersedes', 'superseded by',
-              'roll-up')
+              'roll-up', 'class')
 FIELD_RE = re.compile(r'·\s*(?:❄\s*)?(' + '|'.join(re.escape(k) for k in sorted(FIELD_KEYS, key=len, reverse=True))
-                      + r')\s*:\s*')
+                      + r')\s*:\s*', re.I)
 BOX_ID = re.compile(r'^\s*[-*] \[[ xX~>!]\]\s*\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*')
+# Fields a mechanical migration adds as ANNOTATIONS; they never opt a legacy box into the g-* grammar checks
+# (spec §6 step 2: class / roll-up / frozen / gate-from-BLOCKED / inputs-missing marks must not change a verdict).
+MIGRATION_FIELDS = ('class', 'roll-up', 'frozen until', 'inputs-missing', 'gate', 'supersedes', 'superseded by')
+# A roll-up carries no work of its own (its children do): rubric a/b/c/e/s do not apply to it (spec §2.2/§2.3).
+ROLLUP_WAIVED = ('a', 'b', 'c', 'e', 's')
+
+
+def box_id(head):
+    """The shared id rule (task_lint_core.head_id): first token inside the leading bold span."""
+    return L1.head_id(head)
 CLASS_TAG = re.compile(r'\[(' + '|'.join(CLASSES) + r')\]')
 GATE_REF = re.compile(r'^[A-Za-z][A-Za-z0-9._#-]*$')
 LEGACY_FROZEN = re.compile(r'❄\s*FROZEN', re.I)
@@ -253,7 +265,7 @@ def parse_fields(txt):
     out, ms = {}, list(FIELD_RE.finditer(own))
     for i, m in enumerate(ms):
         end = ms[i + 1].start() if i + 1 < len(ms) else len(own)
-        out.setdefault(m.group(1), ' '.join(own[m.end():end].split()).strip())
+        out.setdefault(m.group(1).lower(), ' '.join(own[m.end():end].split()).strip())
     return out
 
 
@@ -267,7 +279,7 @@ def box_state(txt, fields=None):
     m = L1.CHECKBOX.match(head)
     if m and m.group(2) in 'xX': return 'done'
     if 'frozen until' in fields or LEGACY_FROZEN.search(head): return 'frozen'
-    if ROLLUP.search(head) or 'roll-up' in fields: return 'rollup'
+    if ROLLUP.search(head) or 'roll-up' in fields or fields.get('class') == 'roll-up': return 'rollup'
     if 'NEEDS-OWNER' in own_block(txt): return 'needs-owner'
     return 'open'
 
@@ -277,23 +289,30 @@ def dispatch_result(txt, ch=0):
     r = score2(txt, ch)
     f = parse_fields(txt)
     head = txt.split('\n')[0]
-    idm, tag = BOX_ID.match(head), CLASS_TAG.search(head)
-    standard, gram = bool(f), []
-    cls = tag.group(1) if tag else r['class']
+    bid, tag = box_id(head), CLASS_TAG.search(head)
+    fcls = (f.get('class') or '').strip('[] ').split(' ')[0]
+    fcls = fcls if fcls in CLASSES else None
+    standard, gram = bool(tag) or any(k not in MIGRATION_FIELDS for k in f), []
+    cls = tag.group(1) if tag else (fcls or r['class'])
+    explicit = bool(tag or fcls)
     if standard:
-        if not idm: gram.append('g-id')
-        if not tag: gram.append('g-class')
+        if not bid: gram.append('g-id')
+        if not explicit: gram.append('g-class')
         if cls in DONE_WHEN_REQUIRED and not f.get('done when') and 'NEEDS-OWNER' not in txt: gram.append('g-done-when')
         if f.get('gate') and not all(GATE_REF.match(x) for x in split_refs(f['gate'])): gram.append('g-gate-prose')
         if f.get('tier') and f['tier'].split()[0].lower() not in TIERS: gram.append('g-tier')
     inputs = INPUT_PATH.findall(f.get('inputs', ''))
     missing = [p for p in inputs if L1.path_exists(p) is False]
     if missing and 'f' not in r['fails']: gram.append('g-inputs')
-    fails = r['fails'] + gram
-    return {'id': idm.group(1) if idm else None, 'class': cls, 'class_basis': 'explicit' if tag else r['class_basis'],
+    state = box_state(txt, f)
+    rfails = [k for k in r['fails'] if not (state == 'rollup' and k in ROLLUP_WAIVED)]
+    if explicit and cls != 'inference': rfails = [k for k in rfails if k not in ('b', 'c', 's')]
+    elif explicit: rfails = [k for k in rfails if k != 'b']
+    fails = rfails + gram
+    return {'id': bid, 'class': cls, 'class_basis': 'explicit' if explicit else r['class_basis'],
             'standard': standard, 'fields': f, 'done_when': f.get('done when'), 'gate': split_refs(f.get('gate', '')),
             'inputs': inputs, 'inputs_missing': missing, 'tier': f['tier'].split()[0] if f.get('tier') else None,
-            'owner': f.get('owner'), 'frozen_until': f.get('frozen until'), 'state': box_state(txt, f),
+            'owner': f.get('owner'), 'frozen_until': f.get('frozen until'), 'state': state,
             'ok': not fails, 'fails': fails, 'report_fails': r['fails'], 'tags': r['tags']}
 
 
@@ -317,7 +336,7 @@ def run_dispatch(paths, as_json=False):
 # HANDOFF_BOX_GATE overrides: default (per-rule table below) | warn (everything warns) | off | enforce (a and f fail).
 # ---------------------------------------------------------------------------------------------------------------------
 DIFF_GATE_ENV = 'HANDOFF_BOX_GATE'
-DIFF_GATE_DEFAULT = 'warn'  # 2026-11-19: S1 review - gate over-matches (nested children); warn until Stage B fix, then back to 'default'
+DIFF_GATE_DEFAULT = 'default'  # restored in Stage B after the S1/S1b touched-box fix (tests: test_handoff_standard_b.py)
 DIFF_GATE_RULE_MODES = {'a': 'enforce', 'f': 'warn'}      # per-rule severity in `default` mode
 DIFF_GATE_RULES = {'a': 'a', 'g-done-when': 'a', 'f': 'f', 'g-inputs': 'f'}
 DIFF_GATE_PATHS = ('handoffs/active/', 'handoffs/blocked/')
@@ -345,7 +364,9 @@ def added_lines(repo, base=None):
     """{relpath: {new-file line numbers added/changed}} for handoff .md files. base=None -> staged diff."""
     import subprocess
     cmd = ['git', '-C', str(repo), 'diff', '-U0', '--no-color', '--no-ext-diff', base or '--cached', '--', *DIFF_GATE_PATHS]
-    env = {k: v for k, v in os.environ.items() if k not in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE')}
+    # Keep GIT_INDEX_FILE: a pathspec commit / hook runs against a temporary index and the gate must judge THAT
+    # (Fable review S3). Only GIT_DIR / GIT_WORK_TREE are dropped, because `-C repo` names the tree.
+    env = {k: v for k, v in os.environ.items() if k not in ('GIT_DIR', 'GIT_WORK_TREE')}
     out = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=120).stdout
     res, cur = {}, None
     for l in out.split('\n'):
@@ -360,16 +381,24 @@ def added_lines(repo, base=None):
 
 
 def touched_box_findings(repo, base=None):
-    """[(relpath, line, [rule, ...], dispatch_result)] for every OPEN box whose block intersects the diff."""
+    """[(relpath, line, [rule, ...], dispatch_result)] for every OPEN box the diff TOUCHES (Fable review S1/S1b):
+    touched = its FIRST line is in the added set, or it carries `· field:` lines and one of THOSE changed. Ticking or
+    adding a nested child, or appending a plain evidence line under a box, does not touch the parent. The literal
+    `done when` is demanded only of a box whose first line is NEW in the diff; an edited legacy box is judged by
+    rubric field a (the hint is still printed)."""
     out = []
     for rel, added in sorted(added_lines(repo, base).items()):
         p = os.path.join(str(repo), rel)
         if not added or not os.path.exists(p): continue
+        lines = open(p, encoding='utf-8', errors='replace').read().split('\n')
         for ln, txt, ch in boxes(p):
-            if not set(range(ln, ln + len(txt.split('\n')))) & added: continue
+            _, own_nums = L1.own_block(lines, ln - 1)
+            field_nums = {n + 1 for n in own_nums[1:] if FIELD_RE.search(lines[n])}
+            head_new = ln in added
+            if not head_new and not (field_nums & added): continue
             r = dispatch_result(txt, ch)
             bad = {DIFF_GATE_RULES[k] for k in r['fails'] if k in DIFF_GATE_RULES}
-            if not DONE_WHEN_TEXT.search(own_block(txt)): bad.add('a')   # decision 5: an explicit `done when` is required
+            if head_new and not DONE_WHEN_TEXT.search(own_block(txt)): bad.add('a')   # decision 5, new boxes only
             bad = sorted(bad)
             if r['state'] in DIFF_GATE_EXEMPT_A or 'OWNER' in r['tags']: bad = [k for k in bad if k != 'a']
             out.append((rel, ln, bad, r))

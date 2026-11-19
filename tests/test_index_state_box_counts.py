@@ -36,3 +36,14 @@ def test_node_open_includes_guarded(tmp_path):
     assert node["open"] == 3, node            # every unticked box, guarded included
     assert node["dispatchable"] == st["open"]
     assert node["dispatchable"] == 0 and node["guarded"] == 3  # the exact RTG-18 shape: open must not read 0
+
+
+def test_unified_tick_counts_closed_and_frozen_bucket(tmp_path):
+    """Unified tick suffix is a closed box; a frozen box is its own bucket (handoff standard Stage B)."""
+    p = tmp_path / "h.md"
+    p.write_text("# H\n\n- [x] **A-1** measure ✅ 2026-11-19 [belief: clm_u1] KEEP +3.1% decode\n- [ ] **A-2** next thing to do\n"
+                 "- [ ] **A-3** later thing\n      · ❄ frozen until: OP-1\n"
+                 "- [ ] **A-4** parent\n      · roll-up: children carry the work\n")
+    b = s.scan_handoff(p)
+    assert b["closed"] == 1 and b.get("frozen") == 1 and b["open"] + b["blocked"] + b["guarded"] == 1
+    assert s.prune_signal(p, dict(b, open=0, blocked=0, guarded=0))["blocker"] == "frozen-tasks"

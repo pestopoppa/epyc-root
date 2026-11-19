@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 51,
+      "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 519
+      "open": 541
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -13,10 +13,10 @@
       "open": 1
     },
     "research-evaluation-index.md": {
-      "blocked": 4,
+      "blocked": 3,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 221
+      "open": 219
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,10 +28,10 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 453
+      "open": 446
     },
     "user-facing-harness-index.md": {
-      "blocked": 15,
+      "blocked": 1,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
       "open": 101
@@ -1049,8 +1049,9 @@
       ]
     },
     "harness-program.md": {
-      "blocked": 15,
+      "blocked": 1,
       "closed": 263,
+      "frozen": 14,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 94,
@@ -1065,8 +1066,9 @@
       "total": 372,
       "tracks": [
         {
-          "blocked": 12,
+          "blocked": 0,
           "closed": 42,
+          "frozen": 12,
           "gates": [
             "RTG-09#routing-program",
             "RTG-09#internal-interaction-lifecycle",
@@ -1128,8 +1130,9 @@
           "open": 2
         },
         {
-          "blocked": 2,
+          "blocked": 0,
           "closed": 36,
+          "frozen": 2,
           "gates": [
             "RTG-08",
             "INF-06",
@@ -2207,9 +2210,10 @@
     "routing-program.md": {
       "blocked": 1,
       "closed": 183,
+      "frozen": 7,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 67,
+      "open": 60,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2233,12 +2237,13 @@
         {
           "blocked": 0,
           "closed": 44,
+          "frozen": 4,
           "gates": [],
           "guarded": 0,
           "line": 55,
           "markers": 1,
           "name": "routing-program",
-          "open": 15
+          "open": 11
         },
         {
           "blocked": 0,
@@ -2253,12 +2258,13 @@
         {
           "blocked": 1,
           "closed": 45,
+          "frozen": 2,
           "gates": [],
           "guarded": 0,
           "line": 1072,
           "markers": 1,
           "name": "learned-routing-controller",
-          "open": 7
+          "open": 5
         },
         {
           "blocked": 0,
@@ -2293,12 +2299,13 @@
         {
           "blocked": 0,
           "closed": 27,
+          "frozen": 1,
           "gates": [],
           "guarded": 0,
           "line": 2852,
           "markers": 1,
           "name": "typed-decision-plane",
-          "open": 26
+          "open": 25
         },
         {
           "blocked": 0,
@@ -2376,11 +2383,11 @@
       ]
     },
     "speech-and-multimodal.md": {
-      "blocked": 41,
+      "blocked": 19,
       "closed": 121,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 29,
+      "open": 51,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2392,14 +2399,14 @@
       "total": 191,
       "tracks": [
         {
-          "blocked": 41,
+          "blocked": 19,
           "closed": 76,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 24
+          "open": 46
         },
         {
           "blocked": 0,
@@ -2544,11 +2551,12 @@
       "total": 42
     },
     "vidya-belief-substrate-program.md": {
-      "blocked": 1,
+      "blocked": 0,
       "closed": 485,
+      "frozen": 3,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 118,
+      "open": 116,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",

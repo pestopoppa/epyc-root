@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T23:41:39Z",
+  "generated_at": "2026-11-19T23:44:02Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1332,17 +1332,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 0,
       "blocked_by": [],
       "closed": 485,
-      "dispatchable": 118,
+      "dispatchable": 116,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-19",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 119,
+      "open": 116,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2179,10 +2179,10 @@
     },
     {
       "age_days": 0,
-      "blocked": 41,
+      "blocked": 19,
       "blocked_by": [],
       "closed": 121,
-      "dispatchable": 29,
+      "dispatchable": 51,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speech-and-multimodal.md",
@@ -2209,7 +2209,7 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 24,
+          "dispatchable": 46,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
@@ -2969,14 +2969,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 183,
-      "dispatchable": 67,
+      "dispatchable": 60,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-19",
       "next_action": "DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1",
-      "open": 68,
+      "open": 61,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -3014,11 +3014,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 15,
+          "dispatchable": 11,
           "gates": [],
           "line": 55,
           "name": "routing-program",
-          "open": 15,
+          "open": 11,
           "readiness": "ready"
         },
         {
@@ -3032,11 +3032,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 5,
           "gates": [],
           "line": 1072,
           "name": "learned-routing-controller",
-          "open": 8,
+          "open": 6,
           "readiness": "ready"
         },
         {
@@ -3068,11 +3068,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 26,
+          "dispatchable": 25,
           "gates": [],
           "line": 2852,
           "name": "typed-decision-plane",
-          "open": 26,
+          "open": 25,
           "readiness": "ready"
         },
         {
@@ -3563,7 +3563,7 @@
     },
     {
       "age_days": 0,
-      "blocked": 15,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 263,
       "dispatchable": 94,
@@ -3573,7 +3573,7 @@
       "id": "UFH-01",
       "last_advanced": "2026-11-19",
       "next_action": "Land CODEMODE-AB-V2 r2 rows, then CODEMODE-REL-FLIP; measure CM-2..CM-5; then UFH-TE-2 dispatch guard, HIL-RE-1",
-      "open": 109,
+      "open": 95,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3620,7 +3620,7 @@
           ],
           "line": 16,
           "name": "harness-selection-and-integration",
-          "open": 21,
+          "open": 9,
           "readiness": "blocked"
         },
         {
@@ -3685,7 +3685,7 @@
           ],
           "line": 2370,
           "name": "repl-embedding-retrieval",
-          "open": 19,
+          "open": 17,
           "readiness": "blocked"
         },
         {

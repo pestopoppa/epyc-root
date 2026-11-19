@@ -468,7 +468,18 @@ def child_boxes(path: Path, lineno: int) -> list[tuple[int, str, str]]:
 # dispatchable rather than inventing a block.
 _ARROW = re.compile(r"→|->")
 _TASK_ID = re.compile(r"\b([A-Z]{1,6}-\d+)\b")
-_TASK_ID_PREFIX = re.compile(r"^\**\s*([A-Z]{1,6}-\d+)\b")
+_TASK_ID_PREFIX_LEGACY = re.compile(r"^\**\s*([A-Z]{1,6}-\d+)\b")
+
+
+def _lead_id(body: str) -> str | None:
+    """Box id: THE shared rule (task_lint_core.body_id, Fable review S2), else the legacy unbolded `HG-1` prefix."""
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+    import task_lint_core as _l1
+    bid = _l1.body_id(body)
+    if bid:
+        return bid
+    m = _TASK_ID_PREFIX_LEGACY.match(body)
+    return m.group(1) if m else None
 _DEP_GRAPH_HEAD = re.compile(r"^#{1,6}\s+.*dependency graph", re.I)
 
 
@@ -505,10 +516,9 @@ def dependency_prereqs(lines: list[str]) -> dict[str, set[str]]:
 
 def blocking_dependency_graph(path: Path, lineno: int, body: str):
     """(own_id, open_prereq_id, prereq_lineno) if the graph blocks this box."""
-    own = _TASK_ID_PREFIX.match(body)
-    if not own:
+    own_id = _lead_id(body)
+    if not own_id:
         return None
-    own_id = own.group(1)
     lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     prereqs = dependency_prereqs(lines).get(own_id)
     if not prereqs:
@@ -517,17 +527,91 @@ def blocking_dependency_graph(path: Path, lineno: int, body: str):
         box = _BOX.match(line)
         if not box or "]" not in line:
             continue
-        cand = _TASK_ID_PREFIX.match(line.split("]", 1)[1].strip())
-        if cand and cand.group(1) in prereqs and box.group(1) != "x":
-            return own_id, cand.group(1), i
+        cand = _lead_id(line.split("]", 1)[1].strip())
+        if cand and cand in prereqs and box.group(1) != "x":
+            return own_id, cand, i
     return None
 
 
-def classify(path: Path, lineno: int, state: str, body: str, head: str) -> tuple[int, list[str]]:
-    """(exit_code, reasons). Advisory: it explains, it does not decide for you."""
+_BOX_INDEX_NAME = ".box-index.json"
+_BOX_INDEX_CACHE: dict[str, tuple[float, dict]] = {}
+
+
+def _load_box_index(path: Path) -> dict:
+    """{(file basename, text_sha): record} from the `.box-index.json` beside `path` (mtime-cached; {} if absent)."""
+    p = path.parent / _BOX_INDEX_NAME
+    try:
+        mt = p.stat().st_mtime
+    except OSError:
+        return {}
+    hit = _BOX_INDEX_CACHE.get(str(p))
+    if hit and hit[0] == mt:
+        return hit[1]
+    try:
+        doc = json.loads(p.read_text(encoding="utf-8"))
+        idx = {(Path(r.get("file", "")).name, r.get("text_sha")): r for r in (doc.get("boxes") or {}).values()}
+    except (OSError, ValueError, AttributeError):
+        idx = {}
+    _BOX_INDEX_CACHE[str(p)] = (mt, idx)
+    return idx
+
+
+def _own_block_state(path: Path, lineno: int) -> dict | None:
+    """{state, frozen_until} from the box's OWN block via task_lint (continuation `· roll-up:` / `· frozen until:`
+    fields included; review S2) — used when no box index is available. None for a plain open box."""
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+        import task_lint as _tl
+        lines = path.read_text(encoding="utf-8", errors="replace").split("\n")
+        txt, _ = _tl.L1.own_block(lines, lineno - 1)
+        f = _tl.parse_fields(txt)
+        st = _tl.box_state(txt, f)
+        return {"state": st, "frozen_until": f.get("frozen until")} if st in ("frozen", "rollup") else None
+    except Exception:  # noqa: BLE001 — advisory
+        return None
+
+
+def box_index_record(path: Path, lineno: int, body: str = "") -> dict | None:
+    """The handoff-standard record (state, gate_open, holds, lint …) for this box, keyed by IDENTITY (text_sha
+    of the first line, spec §2.2), never by line. None when the index is absent or does not know the box (a
+    stale index then fails toward today's heuristics instead of inventing a state)."""
+    idx = _load_box_index(path)
+    if not idx:
+        return None    # absent: readers do not trigger a 4 s rebuild per box; box_index.load() is the regenerating entry
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+        import box_index as _bi
+        line = path.read_text(encoding="utf-8", errors="replace").split("\n")[lineno - 1]
+        return idx.get((path.name, _bi.text_sha(line)))
+    except Exception:  # noqa: BLE001 — advisory input only
+        return None
+
+
+def classify(path: Path, lineno: int, state: str, body: str, head: str,
+             use_box_index: bool = True) -> tuple[int, list[str]]:
+    """(exit_code, reasons). Advisory: it explains, it does not decide for you.
+
+    use_box_index=False is for index_state.py, which GENERATES `.box-index.json` from these counts and must not
+    read its own previous output (a feedback loop would make `--check` freshness flap)."""
     reasons = []
     if state == "x":
         return 2, [f"already CLOSED — the box at {path.name}:{lineno} is `- [x]`"]
+    std = box_index_record(path, lineno, body) if use_box_index else None
+    if std is None:
+        std = _own_block_state(path, lineno)
+    if std:
+        if std.get("state") == "frozen":
+            return 2, [f"FROZEN (handoff standard, .box-index.json): {path.name}:{lineno} waits on "
+                       f"`frozen until: {std.get('frozen_until') or '?'}` — not dispatchable until that event"]
+        if std.get("state") == "rollup":
+            return 2, [f"ROLL-UP (handoff standard, .box-index.json): {path.name}:{lineno} is a parent whose "
+                       f"children carry the work — take a child box instead"]
+        if std.get("gate_open"):
+            return 2, [f"BLOCKED BY ITS GATE (handoff standard, .box-index.json): `· gate:` "
+                       f"{', '.join(std.get('gate') or [])} still open"
+                       + (f" (unknown ref: {', '.join(std['gate_unknown'])})" if std.get("gate_unknown") else "")]
+        if std.get("holds"):
+            return 2, [f"HELD (handoff standard holds): {', '.join(std['holds'])} covers this box"]
     if box_is_guarded(path, lineno):
         return 2, [f"an explicit DO-NOT-DISPATCH guard covers THIS box (§ {head}) — "
                    f"this is a reusable checklist or a standing constraint, not a task"]

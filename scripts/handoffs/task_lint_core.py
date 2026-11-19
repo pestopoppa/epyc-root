@@ -112,6 +112,70 @@ def path_exists(p):
     return False
 
 
+# THE box-id regex (handoff standard §2.2; Fable review S2, 2026-11-19), shared by task_lint, box_index,
+# index_state and backlog_row_check. The id is the FIRST token inside the leading bold span, delimited by a space,
+# `—`, `:`, `(` or the closing `**`, with an optional leading `❄`: `**KPF-18.3 — text**`, `**AKX-ALL-5 (C1): …**`,
+# `**KPF-17: tests.**`, `**B5**`. The token must carry a digit or a hyphen, so a bold English word is never an id.
+BODY_ID = re.compile(r'^\*\*\s*(?:❄\s*)?([A-Za-z0-9][A-Za-z0-9._-]*?)\.?(?=\*\*|\s|—|–|:|\()')
+HEAD_PREFIX = re.compile(r'^\s*(?:[-*+]|\d+[.)]) \[[ xX~>!]\]\s*')
+
+
+def body_id(body):
+    """Box id from the text AFTER the checkbox marker, or None."""
+    m = BODY_ID.match((body or '').strip())
+    if not m:
+        return None
+    tok = m.group(1).rstrip('.-')
+    return tok if tok and re.search(r'[\d-]', tok) and not tok.startswith('-') else None
+
+
+def head_id(line):
+    """Box id from a full checkbox line, or None."""
+    m = HEAD_PREFIX.match(line or '')
+    return body_id(line[m.end():]) if m else None
+
+
+def own_block(lines, i):
+    """checkbox line i plus ITS OWN continuation lines — nested checkbox descendants and their continuations
+    excluded. Returns (text, line_numbers_0based)."""
+    m = CHECKBOX.match(lines[i])
+    ind = len(m.group(1)) if m else 0
+    out, nums, j, skip = [lines[i]], [i], i + 1, None
+    while j < len(lines):
+        l = lines[j]
+        if not l.strip():
+            break
+        cm = CHECKBOX.match(l)
+        lind = len(l) - len(l.lstrip())
+        if l.lstrip().startswith('#') or (cm and len(cm.group(1)) <= ind):
+            break
+        if not cm and lind <= ind and not l.startswith(' '):
+            break
+        if cm:
+            skip = len(cm.group(1))
+        elif skip is not None and lind > skip:
+            pass
+        else:
+            skip = None
+            out.append(l); nums.append(j)
+        j += 1
+    return '\n'.join(out), nums
+
+
+def fenced_lines(lines):
+    """Set of 0-based line numbers inside ``` / ~~~ fences (fence lines included)."""
+    out, fence = set(), None
+    for i, l in enumerate(lines):
+        f = re.match(r'^\s*(```+|~~~+)', l)
+        if f:
+            mark = f.group(1)[0]
+            out.add(i)
+            fence = mark if fence is None else (None if fence == mark else fence)
+        elif fence is not None:
+            out.add(i)
+    return out
+
+
 def block(lines, i):
     """checkbox line i plus its continuation (deeper-indented, non-checkbox) lines."""
     m = CHECKBOX.match(lines[i])

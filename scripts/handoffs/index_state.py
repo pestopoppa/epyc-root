@@ -156,12 +156,31 @@ _TRACK_HEAD = re.compile(r"^##\s+Track:\s*(.+?)\s*#*\s*$")
 _SECTION_END = re.compile(r"^#{1,2}\s")
 _FENCE = re.compile(r"^\s*(```+|~~~+)")
 _GATE_MARK = re.compile(r"^\s*<!--\s*gate:\s*(.*?)\s*-->\s*$")
-_TASK_ID = re.compile(r"^\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*")
+_TASK_ID = re.compile(r"^\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*")   # legacy strict form, kept for importers
+
 # A `[roll-up]` box is a non-dispatchable parent whose children carry the work. Counting it too
 # double-counts every decomposition; the board's `count_tasks` has always skipped it, so the
 # graph does the same (dashboard counting fix, 2026-11-03) and the two totals agree exactly.
 _ROLLUP = re.compile(r"\[roll-up\]", re.I)
 UNTRACKED = "(untracked)"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import task_lint_core as _l1  # noqa: E402  (THE shared box-id rule, body_id)
+
+
+def _box_std_state(lines: list[str], lineno: int) -> str | None:
+    """Handoff-standard state (`rollup` / `frozen` / ...) of the OPEN box at 1-based `lineno`, read from its own
+    block (first line + continuation lines) via task_lint.box_state; None for a ticked box or on any parse error."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import task_lint as _tl
+        i = lineno - 1
+        m = _tl.L1.CHECKBOX.match(lines[i])
+        if not m or m.group(2) in "xX":
+            return None
+        txt, _ = _tl.L1.block(lines, i)
+        return _tl.box_state(txt)
+    except Exception:  # noqa: BLE001 — counting must never crash on one odd box
+        return None
 
 
 def handoff_paths() -> dict[str, Path]:
@@ -337,6 +356,9 @@ def prune_signal(path: Path, boxes: dict) -> dict:
                 "evidence": "handoff carries no task boxes, so `open == 0` was never a completion signal"}
     if boxes["open"]:
         return {"candidate": False, "blocker": "open-tasks", "evidence": None}
+    if boxes.get("frozen"):
+        return {"candidate": False, "blocker": "frozen-tasks",
+                "evidence": f"{boxes['frozen']} frozen box(es) wait on their `frozen until` event despite 0 open"}
     if boxes["blocked"] or boxes["guarded"]:
         # No OPEN boxes, but boxes that classify() refused to dispatch. Not finished work:
         # a guarded/blocked box is unresolved, and archiving it would bury the reason.
@@ -436,17 +458,26 @@ def scan_handoff(path: Path) -> dict:
                         "open": 0, "closed": 0, "guarded": 0, "blocked": 0}
         return per[key]
 
-    open_n = closed_n = guarded_n = blocked_n = 0
+    open_n = closed_n = guarded_n = blocked_n = frozen_n = 0
+    lines = path.read_text(encoding="utf-8", errors="replace").split("\n")
     for lineno, state, body, head in brc._boxes(path):
-        if _ROLLUP.search(body):
-            continue                             # roll-up parent: its children are the tasks
+        std = _box_std_state(lines, lineno)
+        # roll-up parent: its children are the tasks. Read from the box's OWN block, so a `· roll-up:`
+        # continuation line (handoff_box.py split / the Stage-B migration) is skipped like a first-line tag.
+        if _ROLLUP.search(body) or std == "rollup":
+            continue
         b = bucket(lineno) if sections else None
         if state == "x":
             closed_n += 1
             if b is not None:
                 b["closed"] += 1
             continue
-        code, reasons = brc.classify(path, lineno, state, body, head)
+        if std == "frozen":                      # handoff standard §3: frozen is its own bucket, never open
+            frozen_n += 1
+            if b is not None:
+                b["frozen"] = b.get("frozen", 0) + 1
+            continue
+        code, reasons = brc.classify(path, lineno, state, body, head, use_box_index=False)
         # classify() is advisory: 0 == dispatchable, non-zero == refuse with a reason.
         if code == 0:
             open_n += 1
@@ -461,7 +492,9 @@ def scan_handoff(path: Path) -> dict:
             b[kind] += 1
     out = {"open": open_n, "closed": closed_n,
            "guarded": guarded_n, "blocked": blocked_n,
-           "total": open_n + closed_n + guarded_n + blocked_n}
+           "total": open_n + closed_n + guarded_n + blocked_n + frozen_n}
+    if frozen_n:
+        out["frozen"] = frozen_n
     if sections:
         for sec in sections:                     # declared tracks appear even when empty
             if sec["name"] not in per:
@@ -486,10 +519,10 @@ def task_box_states(refs: set[str]) -> dict[str, dict]:
     def scan(paths, wanted: set[str]) -> None:
         for p in paths:
             for lineno, state, body, _head in brc._boxes(p):
-                m = _TASK_ID.match(body.strip())
-                if not m or m.group(1) not in wanted:
+                tid = _l1.body_id(body.strip())       # THE shared box-id rule (Fable review S2)
+                if not tid or tid not in wanted:
                     continue
-                rec = out.setdefault(m.group(1), {"open": 0, "closed": 0, "where": []})
+                rec = out.setdefault(tid, {"open": 0, "closed": 0, "where": []})
                 rec["closed" if state == "x" else "open"] += 1
                 rec["where"].append(f"{p.relative_to(REPO_ROOT)}:{lineno}")
 
@@ -1420,12 +1453,19 @@ def box_index_doc(state: dict) -> dict:
     row_open = {rid: bool(hs.get(r["handoff"], {}).get("open", 0) + hs.get(r["handoff"], {}).get("blocked", 0))
                 for rid, r in state["rows"].items() if r.get("handoff")}
     prio, _ = load_priority_file(PRIORITY_FILE)
-    return box_index.build(REPO_ROOT, handoff_paths(), {n: h.get("row_id") for n, h in hs.items()}, row_open, prio)
+    track_open = {f"{rid}#{t['name']}": bool(t.get("open", 0) + t.get("blocked", 0))
+                  for rid, r in state["rows"].items() if r.get("handoff")
+                  for t in hs.get(r["handoff"], {}).get("tracks") or []}
+    return box_index.build(REPO_ROOT, handoff_paths(), {n: h.get("row_id") for n, h in hs.items()}, row_open, prio,
+                           track_open)
 
 
 def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -> tuple[list[str], list[str]]:
-    """(warnings, errors) for `--check`: staleness of `.box-index.json` (warn-only) + the diff-scoped a/f gate
-    (`task_lint.diff_gate`: rule a fails, rule f warns; HANDOFF_BOX_GATE / --box-gate override)."""
+    """(warnings, errors) for `--check`: the diff-scoped a/f gate (`task_lint.diff_gate`: rule a fails, rule f warns;
+    HANDOFF_BOX_GATE / --box-gate override) plus the size-limit findings of a fresh box index.
+
+    `.box-index.json` is GITIGNORED and regenerated on read (box_index.load), so there is no committed copy to be
+    stale; --check builds it in memory only to report limits."""
     warns, errs = [], []
     try:
         sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
@@ -1434,10 +1474,11 @@ def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -
             import task_lint
         finally:
             sys.path.pop(0)
-        cur = box_index.dumps(box_index_doc(state))
-        if not BOX_INDEX.exists() or BOX_INDEX.read_text(encoding="utf-8") != cur:
-            warns.append(f"BOX-INDEX: {BOX_INDEX.relative_to(REPO_ROOT)} is stale or missing — run index_state.py")
-        lines, n = task_lint.diff_gate(REPO_ROOT, diff_base, gate_mode)
+        doc = box_index_doc(state)
+        n_out = doc["counts"].get("outside_backlog", 0)
+        if n_out:
+            warns.append(f"BOX-INDEX: {n_out} open box(es) sit outside `### Backlog` in files that have one")
+        lines, n = task_lint.diff_gate(REPO_ROOT, diff_base or "HEAD", gate_mode)   # S3: judge what the commit lands
         (errs if n else warns).extend(lines)
     except Exception as exc:  # noqa: BLE001 — advisory surface must never crash --check
         warns.append(f"BOX-INDEX/DIFF-GATE unavailable ({type(exc).__name__}: {exc})")
@@ -1456,6 +1497,8 @@ def main(argv: list[str] | None = None) -> int:
                     help="--check: diff-scoped task_lint gate on TOUCHED open boxes: rule a (no `done when`) fails, "
                          "rule f (dangling inputs) warns (operator decision 5, 2026-11-19); default $HANDOFF_BOX_GATE "
                          "or `default`")
+    ap.add_argument("--box-index", action="store_true",
+                    help="write ONLY handoffs/active/.box-index.json (gitignored; box_index.load() calls this on read)")
     ap.add_argument("--diff-base", default=None,
                     help="--check: judge boxes touched since this ref instead of the staged diff")
     args = ap.parse_args(argv)
@@ -1464,6 +1507,14 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.json:
         print(json.dumps(state, indent=2, sort_keys=True))
+        return 0
+
+    if args.box_index:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+        import box_index
+        tmp = BOX_INDEX.with_suffix(f".json.{os.getpid()}.tmp")
+        tmp.write_text(box_index.dumps(box_index_doc(state)), encoding="utf-8")
+        os.replace(tmp, BOX_INDEX)
         return 0
 
     if args.summary:
@@ -1512,8 +1563,10 @@ def main(argv: list[str] | None = None) -> int:
     finally:
         sys.path.pop(0)
     bdoc = box_index_doc(state)
-    BOX_INDEX.write_text(box_index.dumps(bdoc), encoding="utf-8")
-    print(f"wrote {BOX_INDEX.relative_to(REPO_ROOT)} ({bdoc['counts']['total']} boxes)")
+    tmp = BOX_INDEX.with_suffix(f".json.{os.getpid()}.tmp")
+    tmp.write_text(box_index.dumps(bdoc), encoding="utf-8")
+    os.replace(tmp, BOX_INDEX)
+    print(f"wrote {BOX_INDEX.relative_to(REPO_ROOT)} ({bdoc['counts']['total']} boxes; gitignored, regenerated on read)")
     changed = write_block(state)
     print(f"wrote {SIDECAR.relative_to(REPO_ROOT)}")
     rc = graph["readiness_counts"]

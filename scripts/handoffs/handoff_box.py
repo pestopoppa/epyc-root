@@ -72,14 +72,15 @@ def all_ids(root: Path) -> set[str]:
     for d in ID_SCAN_DIRS:
         for p in sorted((root / d).glob("*.md")) if (root / d).exists() else []:
             for line in p.read_text(encoding="utf-8", errors="replace").split("\n"):
-                m = TL.BOX_ID.match(line)
+                m = L1.head_id(line)
                 if m:
-                    ids.add(m.group(1))
+                    ids.add(m)
     return ids
 
 
 def find_box(lines, box_id):
-    hits = [i for i, l in enumerate(lines) if (m := TL.BOX_ID.match(l)) and m.group(1) == box_id]
+    fenced = L1.fenced_lines(lines)
+    hits = [i for i, l in enumerate(lines) if i not in fenced and L1.head_id(l) == box_id]
     if len(hits) != 1:
         raise BoxError(f"box **{box_id}** found {len(hits)} times (need exactly 1)")
     return hits[0]
@@ -104,20 +105,56 @@ def cont_prefix(lines, i):
     return lines[i][:len(lines[i]) - len(lines[i].lstrip())] + CONT_INDENT
 
 
+def _top_ancestor(lines, i):
+    """The top-level box whose block contains line i (i itself when it is top-level)."""
+    ind = len(lines[i]) - len(lines[i].lstrip())
+    j = i
+    while ind > 0 and j > 0:
+        j -= 1
+        m = L1.CHECKBOX.match(lines[j])
+        if m and len(m.group(1)) < ind:
+            i, ind = j, len(m.group(1))
+        elif not lines[j].strip() or lines[j].lstrip().startswith("#"):
+            break
+    return i
+
+
+def _header_end(lines):
+    """Index right after the title + `**Key**:` front-matter block (implicit-track insert point)."""
+    j = 0
+    while j < len(lines) and not lines[j].startswith("# "):
+        j += 1
+    j += 1
+    while j < len(lines) and not lines[j].startswith("## "):
+        j += 1
+    return j
+
+
 def backlog_insert_point(lines, track, after=None):
-    """(lines, insert index) — creates `### Backlog` under the track when missing."""
+    """(lines, insert index) — creates `### Backlog` under the track when missing. A file with NO `## Track:`
+    is one implicit track (review S3): `--track` is then ignored and its `### Backlog` sits after the header."""
     sec = BI.sections(lines)
-    t_lines = [i for i, (t, _b, _s) in enumerate(sec) if t == track]
-    if not t_lines:
-        raise BoxError(f"no `## Track: {track}` section")
-    head = t_lines[0]
+    tracked = any(x[0] for x in sec)
+    if not tracked:
+        t_lines = [i for i, x in enumerate(sec) if x[0] is None and not x[4]]
+        head = None
+    else:
+        t_lines = [i for i, x in enumerate(sec) if x[0] == track]
+        if not t_lines:
+            raise BoxError(f"no `## Track: {track}` section")
+        head = t_lines[0]
     if after and after != "end":
         i = find_box(lines, after)
-        if sec[i][0] != track:
+        if tracked and sec[i][0] != track:
             raise BoxError(f"--after {after} is not in track {track}")
-        return lines, block_end(lines, i)
+        top = _top_ancestor(lines, i)      # review S4: a new box is top-level, so it goes after the WHOLE parent block
+        return lines, block_end(lines, top)
     bl = [i for i in t_lines if sec[i][1]]
     if not bl:
+        if head is None:
+            j = _header_end(lines)
+            lines = lines[:j] + ["### Backlog", ""] + lines[j:]
+            return lines, j + 1
         j = head + 1
         while j < len(lines) and (BI._FENCE.match(lines[j]) is None) and \
                 (re.match(r"^\s*<!--\s*(gate|frozen)", lines[j]) or lines[j].startswith("❄") or not lines[j].strip()):
@@ -212,7 +249,7 @@ def op_freeze(lines, a, root):
         return set_field(lines, find_box(lines, a.box), "frozen until", a.until)
     if a.track:
         sec = BI.sections(lines)
-        t = [i for i, (n, _b, _s) in enumerate(sec) if n == a.track]
+        t = [i for i, x in enumerate(sec) if x[0] == a.track]
         if not t:
             raise BoxError(f"no `## Track: {a.track}` section")
         j = t[0] + 1
@@ -237,13 +274,15 @@ OPS = {"add": op_add, "split": op_split, "refine": op_refine, "gate": op_gate, "
 
 
 def apply(path: Path, op: str, a, root: Path = REPO_ROOT, dry_run=False) -> str:
-    before = path.read_text(encoding="utf-8").split("\n")
+    raw = path.read_bytes().decode("utf-8", errors="surrogateescape")   # stray bytes round-trip unchanged (S4)
+    eol = "\r\n" if "\r\n" in raw else "\n"                            # CRLF files stay CRLF (S4)
+    before = raw.replace("\r\n", "\n").split("\n")
     after = OPS[op](before, a, root)
     guard_first_lines(before, after)
     diff = "\n".join(difflib.unified_diff(before, after, str(path), str(path), lineterm="", n=1))
     if not dry_run:
         tmp = path.with_suffix(path.suffix + ".tmp")
-        tmp.write_text("\n".join(after), encoding="utf-8")
+        tmp.write_bytes(eol.join(after).encode("utf-8", errors="surrogateescape"))
         os.replace(tmp, path)
     return diff
 

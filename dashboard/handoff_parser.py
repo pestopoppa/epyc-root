@@ -255,6 +255,32 @@ def parse_dates(meta: dict[str, str]) -> dict[str, str | None]:
     return {"created": created, "updated": updated}
 
 
+_ROLLUP_FIELD = re.compile(r"·\s*roll-up\s*:", re.I)
+_FROZEN_FIELD = re.compile(r"·\s*(?:❄\s*)?frozen until\s*:", re.I)
+_FROZEN_HEAD = re.compile(r"❄\s*FROZEN|❄\s*frozen until\s*:", re.I)
+
+
+def _boxes_with_continuation(text: str) -> list[tuple[str, str, str]]:
+    """(mark, first-line text, own continuation text) per checkbox; continuation = deeper-indented
+    non-checkbox lines up to the next checkbox, heading, or dedent."""
+    out: list[tuple[str, str, str]] = []
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        m = CHECKBOX_RE.match(line)
+        if not m:
+            continue
+        ind = len(line) - len(line.lstrip())
+        cont = []
+        for nxt in lines[i + 1:]:
+            if not nxt.strip():
+                continue
+            if CHECKBOX_RE.match(nxt) or nxt.lstrip().startswith("#") or len(nxt) - len(nxt.lstrip()) <= ind:
+                break
+            cont.append(nxt)
+        out.append((m.group(1), m.group(2), "\n".join(cont)))
+    return out
+
+
 def count_tasks(text: str) -> tuple[int, int, str, list[dict]]:
     """Return ``(done, total, progress_source, tasks)``.
 
@@ -267,14 +293,19 @@ def count_tasks(text: str) -> tuple[int, int, str, list[dict]]:
     each item is ``{"done": bool, "text": str}``.
 
     Boxes tagged ``[roll-up]`` (non-dispatchable parents) are skipped: their children
-    are the tracked work, so counting the parent too would double-count.
+    are the tracked work, so counting the parent too would double-count. Handoff standard
+    (2026-11-19): the roll-up mark may sit on a ``· roll-up:`` continuation line, and an OPEN
+    box marked frozen (``❄ FROZEN`` on its first line or a ``frozen until:`` continuation) is
+    not open work: it is listed with ``frozen: True`` and left out of ``total``.
     """
     tasks: list[dict] = []
     checked = 0
-    for mark, task_text in CHECKBOX_RE.findall(text):
-        if ROLLUP_RE.search(task_text):
+    for mark, task_text, cont in _boxes_with_continuation(text):
+        if ROLLUP_RE.search(task_text) or _ROLLUP_FIELD.search(cont):
             continue
         is_done = mark in ("x", "X")
+        if not is_done and (_FROZEN_HEAD.search(task_text) or _FROZEN_FIELD.search(cont)):
+            continue
         checked += 1 if is_done else 0
         tasks.append({"done": is_done, "text": task_text.strip()})
     total = len(tasks)

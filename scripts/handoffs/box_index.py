@@ -8,7 +8,16 @@ reads the filesystem and the origin/main tree, as `task_lint` does.)
 
 KEY: the box's `**ID**` when that ID names exactly one indexed box; otherwise `<file>#<text_sha>` (ids are not yet
 unique in legacy handoffs). IDENTITY: `text_sha` = sha256 of the normalised first line (checkbox marker and a trailing
-`✅ …` tick suffix removed, whitespace collapsed), truncated to TEXT_SHA_LEN hex chars.
+`✅ …` tick suffix removed, whitespace collapsed), truncated to TEXT_SHA_LEN hex chars. The tick suffix is
+`✅ <date> [belief: …|no-belief: …] <verdict>` (flip_checkbox.tick_suffix) and always comes AFTER the task text, so
+stripping from the first `✅` leaves the identity unchanged when a box is ticked. (A `✅` inside the task text itself
+would truncate the identity; the first line is immutable, so the sha stays stable either way.)
+
+Ticked boxes are omitted (INCLUDE_DONE) but their ids stay in known_ids so a gate on a finished box resolves; the
+belief-tag ratio over ticks therefore cannot come from this file — read it with flip_checkbox.parse_tick over the
+handoffs (belief_capture_check / verdict_count do).
+
+STORAGE: gitignored, rebuilt on read by load() (Stage B decision; see load()).
 
 `gate_open` = True when at least one `· gate:` ref is still unresolved, i.e. the box is BLOCKED (spec §2.2: blocked is
 derived from open gates, not a marker). A ref resolves when it names an index row whose handoff has no open/blocked
@@ -50,26 +59,49 @@ def text_sha(first_line: str) -> str:
     return hashlib.sha256(body.encode("utf-8")).hexdigest()[:TEXT_SHA_LEN]
 
 
-def sections(lines: list[str]) -> list[tuple[str | None, bool, int]]:
-    """Per line (0-based): (track name or None, under `### Backlog`?, backlog section start). Fence-aware."""
-    out, track, backlog, start, fence = [], None, False, -1, None
+_TRACK_FROZEN = re.compile(r"^\s*(?:[-*]\s*)?❄\s*frozen until\s*:\s*(.+?)\s*$", re.I)
+_FILE_FROZEN = re.compile(r"^\*\*Status\*\*:\s*FROZEN\b.*?(?:frozen until\s*:\s*(.+?))?(?:\s*\(was:.*)?$", re.I)
+
+
+def file_frozen(lines: list[str]) -> str | None:
+    """`**Status**: FROZEN …` in the header (first 60 lines) -> the until-event (or "FROZEN"), else None."""
+    for line in lines[:60]:
+        m = _FILE_FROZEN.match(line.strip())
+        if m:
+            return (m.group(1) or "FROZEN").strip()
+    return None
+
+
+def sections(lines: list[str]) -> list[tuple[str | None, bool, int, str | None, bool]]:
+    """Per line (0-based): (track or None, under `### Backlog`?, backlog section start, track frozen_until, fenced?).
+
+    Fence-aware (a box inside ``` is an example, never a task). A track-level `❄ frozen until: X` line (written by
+    `handoff_box.py freeze --track`) sits between the `## Track:` heading and its first `###`; its event is
+    inherited by every box of that track."""
+    out, track, backlog, start, fence, tfrozen, before_h3 = [], None, False, -1, None, None, False
     for i, line in enumerate(lines):
         f = _FENCE.match(line)
         if f:
             mark = f.group(1)[0]
             fence = mark if fence is None else (None if fence == mark else fence)
-        elif fence is None:
+            out.append((track, backlog, start, tfrozen, True))
+            continue
+        if fence is None:
             m = _TRACK.match(line)
             if m:
-                track, backlog = m.group(1), False
+                track, backlog, tfrozen, before_h3 = m.group(1), False, None, True
             elif _H2.match(line):
-                track, backlog = None, False
+                track, backlog, tfrozen, before_h3 = None, False, None, False
             else:
                 h = _H3.match(line)
                 if h:
                     backlog = h.group(1).strip().lower() == "backlog"
-                    start = i
-        out.append((track, backlog, start))
+                    start, before_h3 = i, False
+                elif track and before_h3:
+                    fm = _TRACK_FROZEN.match(line)
+                    if fm:
+                        tfrozen = fm.group(1)
+        out.append((track, backlog, start, tfrozen, fence is not None))
     return out
 
 
@@ -96,7 +128,7 @@ def load_holds(root: Path) -> list[dict]:
 
 
 def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None],
-          row_open: dict[str, bool], priority: dict) -> dict:
+          row_open: dict[str, bool], priority: dict, track_open: dict[str, bool] | None = None) -> dict:
     """files: {name: path}; handoff_rows: {name: row id}; row_open: {row id: has open work}; priority: backlog doc."""
     holds = load_holds(root)
     prows = priority.get("rows", {}) if isinstance(priority, dict) else {}
@@ -104,22 +136,31 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
     for name, path in sorted(files.items()):
         lines = path.read_text(encoding="utf-8", errors="replace").split("\n")
         sec = sections(lines)
+        ffrozen = file_frozen(lines)
+        has_backlog = any(s_[1] for s_ in sec)
         pos: dict[int, int] = {}
         for i, line in enumerate(lines):
+            if sec[i][4]:
+                continue                        # fenced: an example, not a box
             m = L1.CHECKBOX.match(line)
             if not m:
                 continue
-            idm = TL.BOX_ID.match(line)
-            if idm:
-                known_ids.add(idm.group(1))
+            bid = L1.head_id(line)
+            if bid:
+                known_ids.add(bid)
             st = m.group(2)
             if st in "xX" and not INCLUDE_DONE:
                 continue
             txt, ch = L1.block(lines, i)
             r = TL.dispatch_result(txt, ch)
-            if st not in "xX" and idm:
-                open_ids.add(idm.group(1))
-            track, in_backlog, bstart = sec[i]
+            if st not in "xX" and bid:
+                open_ids.add(bid)
+            track, in_backlog, bstart, tfrozen, _ = sec[i]
+            inherited = r["frozen_until"] or tfrozen or ffrozen
+            state = r["state"]
+            if inherited and state in ("open", "needs-owner"):
+                state = "frozen"                # track / whole-file freeze propagates to its boxes (review S2)
+            own_txt, _nums = L1.own_block(lines, i)
             p = None
             if in_backlog and st not in "xX" and len(m.group(1)) == 0:
                 pos[bstart] = pos.get(bstart, 0) + 1
@@ -130,29 +171,38 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
                    "id": r["id"], "class": r["class"], "class_basis": r["class_basis"], "standard": r["standard"],
                    "done_when": r["done_when"], "gate": r["gate"], "inputs": r["inputs"],
                    "inputs_missing": r["inputs_missing"], "tier": r["tier"], "owner": r["owner"],
-                   "state": r["state"], "lint": {"ok": r["ok"], "fails": r["fails"]},
+                   "state": state, "lint": {"ok": r["ok"], "fails": list(r["fails"])},
                    "row": row, "row_rank": (prows.get(row) or {}).get("rank") if row else None,
-                   "pos_in_backlog": p, "cont_lines": len(txt.split("\n")) - 1, "frozen_until": r["frozen_until"],
+                   "pos_in_backlog": p, "cont_lines": len(own_txt.split("\n")) - 1, "frozen_until": inherited,
+                   "outside_backlog": bool(has_backlog and not in_backlog and st not in "xX"),
                    "holds": sorted(h["id"] for h in holds if {name, row, r["id"]} & h["targets"])}
+            if rec["outside_backlog"]:
+                rec["lint"]["warn"] = ["outside-backlog"]
             if st in "xX":
                 t = parse_tick(line) or {}
                 rec["ticked"] = {"date": t.get("date"), "belief": t.get("belief"), "verdict": t.get("verdict") or None,
                                  "form": t.get("form")}
                 rec["state"] = "done"
             recs.append(rec)
+    topen = {k.lower(): v for k, v in (track_open or {}).items()}
     for rec in recs:
         unresolved, unknown = [], []
         for g in rec["gate"]:
-            if g in row_open:
+            if "#" in g and g.lower() in topen:          # ROW#track ref, resolved through .index-state.json tracks
+                if topen[g.lower()]:
+                    unresolved.append(g)
+            elif g in row_open:
                 if row_open[g]:
                     unresolved.append(g)
             elif g in open_ids:
                 unresolved.append(g)
             elif g not in known_ids:
-                unresolved.append(g)
-                unknown.append(g)
+                unknown.append(g)                        # review S3: a lint failure, NOT an open gate
         rec["gate_open"] = bool(unresolved)
         rec["gate_unknown"] = unknown
+        if unknown and rec["state"] != "done":
+            rec["lint"]["fails"].append("g-gate-unknown")
+            rec["lint"]["ok"] = False
     ids: dict[str, int] = {}
     for rec in recs:
         if rec["id"]:
@@ -168,6 +218,7 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
     counts["blocked"] = sum(1 for r in recs if r["gate_open"])
     counts["lint_ok"] = sum(1 for r in recs if r["lint"]["ok"])
     counts["total"] = len(recs)
+    counts["outside_backlog"] = sum(1 for r in recs if r.get("outside_backlog"))
     return {"schema": SCHEMA, "include_done": INCLUDE_DONE, "counts": counts, "limits": limit_findings(files, recs, root),
             "holds_source": next((h for h in HOLDS_CANDIDATES if (root / h).exists()), None), "boxes": boxes}
 
@@ -190,6 +241,49 @@ def limit_findings(files: dict[str, Path], recs: list[dict], root: Path) -> list
         elif n > TL.MAX_HANDOFF_LINES:
             out.append(f"file {path.relative_to(root)} has {n} lines > {TL.MAX_HANDOFF_LINES}: compact History")
     return out
+
+
+FRESHNESS_SOURCES = ("handoffs/active", "handoffs/blocked")
+FRESHNESS_FILES = ("handoffs/active/backlog-priority.json", "handoffs/active/.index-state.json") + HOLDS_CANDIDATES
+INDEX_REL = "handoffs/active/.box-index.json"
+
+
+def _newest_source_mtime(root: Path) -> float:
+    m = 0.0
+    for d in FRESHNESS_SOURCES:
+        p = root / d
+        if p.is_dir():
+            for f in p.glob("*.md"):
+                try:
+                    m = max(m, f.stat().st_mtime)
+                except OSError:
+                    pass
+    for rel in FRESHNESS_FILES:
+        try:
+            m = max(m, (root / rel).stat().st_mtime)
+        except OSError:
+            pass
+    return m
+
+
+def load(root: Path | str | None = None, regenerate: bool = True) -> dict:
+    """THE reader entry point. `.box-index.json` is gitignored (decision, Stage B: a committed 1.3 MB artefact made
+    46k-line diffs on every regen and would trip the commit-bloat guard); it is rebuilt here whenever it is missing
+    or older than any handoff / priority / state / holds source (a build is ~4 s). Returns {} if it cannot be built."""
+    import subprocess
+    root = Path(root) if root else Path(__file__).resolve().parents[2]
+    p = root / INDEX_REL
+    try:
+        fresh = p.exists() and p.stat().st_mtime >= _newest_source_mtime(root)
+    except OSError:
+        fresh = False
+    if not fresh and regenerate:
+        subprocess.run([sys.executable, str(root / "scripts/handoffs/index_state.py"), "--box-index"],
+                       cwd=str(root), capture_output=True, text=True, timeout=300)
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
 
 
 def dumps(doc: dict) -> str:

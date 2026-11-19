@@ -207,3 +207,7 @@ dev-harness-traces/
 # RTG-34: daemon-written bus state files; shape kept in the committed *.json.example beside each.
 coordination/session-bus/alarm_state.json
 coordination/session-bus/relay_state.json
+
+# Handoff standard Stage B: generated per-box index, rebuilt on read by scripts/handoffs/box_index.load() (too big to commit).
+handoffs/active/.box-index.json
+handoffs/active/.box-index.json.*.tmp
