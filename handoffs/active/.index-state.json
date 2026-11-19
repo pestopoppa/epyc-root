@@ -1361,7 +1361,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 7,
-      "closed": 437,
+      "closed": 438,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 93,
@@ -1373,11 +1373,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 537,
+      "total": 538,
       "tracks": [
         {
           "blocked": 6,
-          "closed": 273,
+          "closed": 274,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1394,7 +1394,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1795,
+          "line": 1796,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1407,7 +1407,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2218,
+          "line": 2219,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
