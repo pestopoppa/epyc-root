@@ -42,12 +42,28 @@ def run(entry):
             raise RuntimeError('owned cleanup returned with children')
 
 
+def refuse_preloaded_dependencies(seal):
+    """Source hashes cannot attest objects already present in sys.modules.
+
+    Binding modules deliberately import peers under stable public names. Refuse
+    those names before executing any binding code, including dotted aliases.
+    The supervisor is an isolated entry, so even a matching origin is refused:
+    its module globals could have changed since the file was verified.
+    """
+    names = {Path(name).stem for name in seal['sources']
+             if Path(name).suffix == '.py'} - {'__init__'}
+    names.update({'composition', '_supervised_driver'})
+    conflicts = sorted(name for name in sys.modules
+                       if name.rsplit('.', 1)[-1] in names)
+    if conflicts:
+        raise ValueError('preloaded driver binding or dependency: ' + ', '.join(conflicts))
+
+
 def run_driver():
     def entry():
         seal = verify()
         driver_path = Path(seal['driver'])
-        if 'composition' in sys.modules or '_supervised_driver' in sys.modules:
-            raise ValueError('preloaded driver binding')
+        refuse_preloaded_dependencies(seal)
         sys.path.insert(0, str(driver_path.parent))
         spec = importlib.util.spec_from_file_location('_supervised_driver', driver_path)
         driver = importlib.util.module_from_spec(spec)
