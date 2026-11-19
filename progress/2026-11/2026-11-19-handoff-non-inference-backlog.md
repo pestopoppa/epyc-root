@@ -67,3 +67,7 @@ Duplicate run-end event for `afc-v3c-q38_flash-tools-none-r2-20261111`: existing
 ## 03:54Z — Acknowledge already-filed AFC v3b Q36 baseline event without duplicate filing
 
 Duplicate event `afc-v3b-q36_35b-tools-none-20261111`: FILED receipt exists from 2026-11-11 06:27 UTC and AFC-V3B-HARNESS-RERUN is closed. No result re-filed, no new tick. No result-bearing task available: remaining boxes require missing evidence/operator or owner runtime actions, or keeper/gate changes forbidden by this brief. [no-belief: duplicate event acknowledgement only]
+
+## 03:56Z — Acknowledge already-filed AFC v3b medium-r2 event
+
+Duplicate event `afc-v3b-q36_35b-tools-medium-r2-20261111`: existing FILED receipt dated 2026-11-11 12:47 UTC; AFC-V3B-HARNESS-RERUN already closed. No duplicate filing or ticks. Remaining tasks require missing evidence, operator/owner actions, or keeper/gate edits forbidden by this brief; no result-bearing task possible this turn. [no-belief: duplicate event acknowledgement only]
