@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T12:23:58Z",
+  "generated_at": "2026-11-19T12:39:33Z",
   "nodes": [
     {
       "age_days": 9,
@@ -3019,7 +3019,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 596,
+          "line": 597,
           "name": "internal-interaction-lifecycle",
           "open": 4,
           "readiness": "ready"
@@ -3028,7 +3028,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1071,
+          "line": 1072,
           "name": "learned-routing-controller",
           "open": 8,
           "readiness": "ready"
@@ -3037,7 +3037,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2339,
+          "line": 2340,
           "name": "model-capability-descriptors",
           "open": 0,
           "readiness": "no_open"
@@ -3046,7 +3046,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2415,
+          "line": 2416,
           "name": "retrain-routing-models",
           "open": 0,
           "readiness": "no_open"
@@ -3055,7 +3055,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2548,
+          "line": 2549,
           "name": "tri-role-coordinator-architecture",
           "open": 2,
           "readiness": "ready"
@@ -3064,7 +3064,7 @@
           "blocked_by": [],
           "dispatchable": 26,
           "gates": [],
-          "line": 2851,
+          "line": 2852,
           "name": "typed-decision-plane",
           "open": 26,
           "readiness": "ready"
@@ -3073,7 +3073,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3606,
+          "line": 3607,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3086,7 +3086,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 3687,
+          "line": 3688,
           "name": "routing-intelligence",
           "open": 9,
           "readiness": "blocked"
@@ -3095,7 +3095,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": null,
-          "line": 4176,
+          "line": 4177,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2,
           "readiness": "ready"

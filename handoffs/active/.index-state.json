@@ -2245,7 +2245,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 596,
+          "line": 597,
           "markers": 1,
           "name": "internal-interaction-lifecycle",
           "open": 4
@@ -2255,7 +2255,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1071,
+          "line": 1072,
           "markers": 1,
           "name": "learned-routing-controller",
           "open": 7
@@ -2265,7 +2265,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2339,
+          "line": 2340,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 0
@@ -2275,7 +2275,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2415,
+          "line": 2416,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 0
@@ -2285,7 +2285,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2548,
+          "line": 2549,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 2
@@ -2295,7 +2295,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 2851,
+          "line": 2852,
           "markers": 1,
           "name": "typed-decision-plane",
           "open": 26
@@ -2305,7 +2305,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3606,
+          "line": 3607,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
@@ -2317,7 +2317,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3687,
+          "line": 3688,
           "markers": 1,
           "name": "routing-intelligence",
           "open": 9
@@ -2327,7 +2327,7 @@
           "closed": 1,
           "gates": null,
           "guarded": 0,
-          "line": 4176,
+          "line": 4177,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
