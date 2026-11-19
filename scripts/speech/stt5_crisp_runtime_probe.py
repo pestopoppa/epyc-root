@@ -55,8 +55,37 @@ def drain(child):
 
 
 def command(cfg, context, mode, transcript):
+    if cfg.get('runner_kind') == 'transcribe':
+        argv = [cfg['runner'], '--backend', 'cpu', '--threads', '3',
+                '--timestamps', 'token', '--raw-tokens', '--stream-chunk-ms', '80',
+                '--stream-att-right', context[1:], '-m', cfg['model'],
+                '-o', str(transcript)]
+        if mode == 'forced':
+            argv += ['--language', 'en-US']
+        return argv + [cfg['audio']]
     return [cfg['runner'], cfg['model'], cfg['audio'], str(PRESETS[context]),
             'auto' if mode == 'auto' else 'en-US', '3', str(transcript)]
+
+
+def parse_native(parser, stdout, transcript, kind):
+    if kind == 'transcribe':
+        # Native CLI interleaves timing rows. Preserve all witness lines so
+        # the shared strict parser still rejects duplicates, gaps and bad counts.
+        stdout = '\n'.join(line.replace('CS8_NEMO_', 'CS8_MATCHED_NEMO_', 1)
+                           for line in stdout.splitlines() if line.startswith('CS8_NEMO_'))
+    return parser.parse(stdout, transcript)
+
+
+def reference_agrees(value, reference):
+    return (reference.get('status') == 'PASS' and reference.get('rc') == 0
+            and reference.get('reaped') is True and value.get('status') == 'PASS'
+            and value['model_sha256'] == reference['model_sha256']
+            and value['audio_sha256'] == reference['audio_sha256']
+            and value['case'] == reference['case']
+            and value['tokens']['unk_count'] == reference['tokens']['unk_count'] == 0
+            and bool(value['tokens']['token_ids'])
+            and value['tokens']['token_ids'] == reference['tokens']['token_ids']
+            and value['tokens']['hypothesis_with_unk'] == reference['tokens']['hypothesis_with_unk'])
 
 
 def worker_groups(cpus, physical=False):
@@ -78,6 +107,10 @@ def main():
     cfg = json.loads(args.config.read_text())
     config_sha = sha(args.config)
     cases = matrix(cfg)
+    if cfg.get('references') and (cfg.get('runner_kind') != 'transcribe'
+            or set(cfg['references']) != {c + '-' + m for c, m in cases}
+            or any(path not in cfg['pins'] for path in cfg['references'].values())):
+        raise ValueError('parity requires complete pinned independent-runner references')
     # Only small source/library/public-audio pins: model bytes were checked once
     # by the owner. Retain the prepared model stat identity, not a grant-time hash.
     for path, digest in cfg['pins'].items():
@@ -94,6 +127,10 @@ def main():
     output.mkdir(exist_ok=True)
     cpus = sorted(os.sched_getaffinity(0))
     groups = worker_groups(cpus, cfg.get('distinct_physical_cores', False))
+    cap = cfg.get('max_workers', 8)
+    if not isinstance(cap, int) or not 1 <= cap <= 8:
+        raise ValueError('max_workers must be between one and eight')
+    groups = groups[:cap]
     if not groups:
         raise ValueError('requires three assigned CPUs')
     if os.environ.get('FILLER_SMOKE') != '1' and len(groups) != cfg.get('required_workers', len(groups)):
@@ -183,7 +220,8 @@ def main():
                 value.update(status='FAIL', reason='native runner error')
             else:
                 try:
-                    tokens = parser.parse((output / (key + '.stdout')).read_text(), transcript.read_text())
+                    tokens = parse_native(parser, (output / (key + '.stdout')).read_text(),
+                                          transcript.read_text(), cfg.get('runner_kind'))
                     value['tokens'] = tokens
                     missing = sorted(expected_maps - loaded)
                     foreign = sorted(p for p in loaded if 'libggml' in Path(p).name and p not in expected_maps)
@@ -191,6 +229,12 @@ def main():
                     value['status'] = 'PASS' if not missing and not foreign and tokens['hypothesis_with_unk'].strip() else 'FAIL'
                 except (ValueError, OSError, UnicodeError) as exc:
                     value.update(status='FAIL', reason='native witness invalid: ' + str(exc))
+            if cfg.get('references'):
+                reference_path = cfg['references'][key]
+                reference = json.loads(Path(reference_path).read_text())
+                value.update(reference_path=reference_path,
+                             reference_sha256=cfg['pins'][reference_path],
+                             reference_agreement=reference_agrees(value, reference))
             write_new(result, value)
             with lock:
                 with (output / 'results.jsonl').open('a') as out:
@@ -211,6 +255,12 @@ def main():
                    cases=terminal, complete=True, workers=len(groups),
                    verdict='PASS' if all(r['status'] == 'PASS' for r in terminal) else 'INCONCLUSIVE',
                    validation_exposed=False, rate_calibrated=False, parity_established=False)
+    if cfg.get('references'):
+        parity = all(r.get('reference_agreement') is True for r in terminal)
+        summary.update(verdict='PASS' if parity else 'INCONCLUSIVE',
+                       parity_established=parity and os.environ.get('FILLER_SMOKE') != '1',
+                       parity_scope='public JFK only; exact native IDs and transcript',
+                       smoke=os.environ.get('FILLER_SMOKE') == '1')
     write_new(output / 'summary.json', summary)
     return 0
 

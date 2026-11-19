@@ -24,6 +24,42 @@ class RuntimeProbeTests(unittest.TestCase):
                 self.assertEqual(probe.command(cfg, context, mode, Path('txt')),
                                  ['runner', 'model', 'audio', preset, language, '3', 'txt'])
 
+    def test_transcribe_context_language_and_native_token_request(self):
+        cfg = dict(runner='runner', model='model', audio='audio', runner_kind='transcribe')
+        for context, mode in probe.matrix():
+            argv = probe.command(cfg, context, mode, Path('txt'))
+            self.assertEqual(argv[argv.index('--stream-att-right') + 1], context[1:])
+            self.assertEqual(argv[argv.index('--backend') + 1], 'cpu')
+            self.assertIn('--raw-tokens', argv)
+            self.assertEqual('--language' in argv, mode == 'forced')
+            if mode == 'forced':
+                self.assertEqual(argv[argv.index('--language') + 1], 'en-US')
+
+    def test_native_witness_adapter_preserves_duplicate_and_malformed_rows(self):
+        parser = mock.Mock()
+        text = 'noise\nCS8_NEMO_TOKENS 1\nCS8_NEMO_TOKEN 0 8\n  timing row\nCS8_NEMO_TOKENS_END\n'
+        probe.parse_native(parser, text, 'text', 'transcribe')
+        parser.parse.assert_called_once_with('CS8_MATCHED_NEMO_TOKENS 1\nCS8_MATCHED_NEMO_TOKEN 0 8\nCS8_MATCHED_NEMO_TOKENS_END', 'text')
+        parser.reset_mock()
+        probe.parse_native(parser, text + 'CS8_NEMO_TOKEN broken\n', 'text', 'transcribe')
+        self.assertTrue(parser.parse.call_args.args[0].endswith('CS8_MATCHED_NEMO_TOKEN broken'))
+
+    def test_reference_disagreement_or_missing_evidence_cannot_pass(self):
+        import copy
+        good = dict(status='PASS', rc=0, reaped=True, case='r3-auto',
+                    model_sha256='model', audio_sha256='audio',
+                    tokens=dict(token_ids=[1, 2], unk_count=0, hypothesis_with_unk='hello'))
+        self.assertTrue(probe.reference_agrees(good, good))
+        for key, value in [('status', 'UNKNOWN'), ('rc', -15), ('reaped', False),
+                           ('case', 'r0-auto'), ('model_sha256', 'wrong'), ('audio_sha256', 'wrong')]:
+            bad = copy.deepcopy(good)
+            bad[key] = value
+            self.assertFalse(probe.reference_agrees(good, bad))
+        for key, value in [('token_ids', [2, 1]), ('unk_count', 1), ('hypothesis_with_unk', 'other')]:
+            bad = copy.deepcopy(good)
+            bad['tokens'][key] = value
+            self.assertFalse(probe.reference_agrees(good, bad))
+
     def test_scoped_repetition_rejects_invalid_or_duplicate_cases(self):
         self.assertEqual(probe.matrix({'cases': [['r0', 'forced']]}), [('r0', 'forced')])
         for cases in ([], [['r1', 'auto']], [['r0', 'forced']] * 2):
