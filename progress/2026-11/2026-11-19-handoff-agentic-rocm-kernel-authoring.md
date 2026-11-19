@@ -7,3 +7,7 @@ Row rka-a3b-gpu-d-np-sweep-20261118-r3 completed rc=0: RECOMMEND_D2 at np4/8/16,
 ## 02:03Z — File router-wide GPU instrument failure
 
 Filed rka-a3b-router-wide-gpu-20261118 INCONCLUSIVE: native FUTILITY_CORRECTNESS is a parser failure; raw test log says 16/16 baseline tests passed and rc=0, with graph warmup messages separating four case lines from OK. WIDE correctness and all performance cells were not run, so no keep/drop conclusion. RESULT.json SHA-256 c457fa71b45950a43423e9b29c6ba9c5d3fa887e2fc4a6edf88e323649d1196b. Repair parser and republish on a later turn. Acknowledged duplicate c9-gemm-tile-select event; its verdict and follow-up were already recorded.
+
+## 02:05Z — File C16 top-k staging GPU result
+
+C16-TOPK-STAGE: DROP(FUTILITY_OP), rc=0: no engagement witness in either enabled visit, even though n=4 A/B was 1.0440; TOPK_MOE passed 320/320 in each arm, 27B did not engage. End-to-end was not run. RESULT.json SHA-256 7fa8dc2a242242a42cba61659f1caf0617f9f5438b56ec3d7a569a3792d10eff. The notified ak-gpu-signals-ctr-20261116-r2 was already filed and ticked (PASS 10/10).
