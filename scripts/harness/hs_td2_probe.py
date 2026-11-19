@@ -94,7 +94,8 @@ def owns_listener(pid, port):
     return False
 
 
-def main():
+def main(*, decision_fn=decision, summarize_fn=summarize, case_payload=None,
+         reference_fields=None, runtime_path=__file__):
     parser = argparse.ArgumentParser()
     parser.add_argument('action', choices=('inputs', 'run', 'check', 'progress'))
     parser.add_argument('--job', type=Path, required=True)
@@ -114,8 +115,10 @@ def main():
     manifest = json.loads((job / 'manifest.json').read_text())
     records = manifest['prepared_inputs']
     verify(records)
-    if digest(__file__) != manifest['runtime_sha256'] or digest(job / 'cases.json') != manifest['cases_sha256']:
+    if digest(runtime_path) != manifest['runtime_sha256'] or digest(job / 'cases.json') != manifest['cases_sha256']:
         raise ValueError('source/corpus digest mismatch')
+    if runtime_path != __file__ and digest(__file__) != manifest['support_sha256']:
+        raise ValueError('support source digest mismatch')
     if args.action == 'inputs':
         return 0
     if not os.environ.get('FILLER_ID'):
@@ -174,9 +177,9 @@ def main():
                     request = {'model': 'worker-selfcheck', 'temperature': 0, 'seed': 42 + repetition,
                                'max_tokens': 128, 'chat_template_kwargs': {'enable_thinking': False},
                                'messages': [{'role': 'system', 'content': manifest['system_prompt']},
-                                            {'role': 'user', 'content': json.dumps({'task': case['task'], 'candidate_turn': case['answer']})}]}
+                                            {'role': 'user', 'content': json.dumps(case_payload(case) if case_payload else {'task': case['task'], 'candidate_turn': case['answer']})}]}
                     record = {'case_id': case['id'], 'repetition': repetition, 'phase': phase,
-                              'reference_satisfied': case['satisfied'], 'reference_reason': case['rationale'],
+                              **(reference_fields(case) if reference_fields else {'reference_satisfied': case['satisfied'], 'reference_reason': case['rationale']}),
                               'record_path': str(path), 'custody': str(attempt / 'custody.json'),
                               'request': request, 'status': 'unknown', 'response_received': False}
                     start = time.monotonic()
@@ -189,7 +192,7 @@ def main():
                         native = json.loads(record['response_raw'])
                         record['usage'] = native.get('usage')
                         record['timings'] = native.get('timings')
-                        record['judgment'] = decision(native)
+                        record['judgment'] = decision_fn(native)
                         record['status'] = 'ok'
                         errors = 0
                     except (OSError, ValueError, KeyError, IndexError, TypeError) as exc:
@@ -201,7 +204,7 @@ def main():
                     append(job / 'results.jsonl', record)
                     results.append(record)
                     if phase == 'full':
-                        (job / 'RESULT.json').write_text(json.dumps(summarize(results, expected), indent=2))
+                        (job / 'RESULT.json').write_text(json.dumps(summarize_fn(results, expected), indent=2))
                     if errors >= 2:
                         return 2
         finally:
