@@ -88,3 +88,12 @@ real trial bootstrap whose masked receipt is recovered through native `peek()`
 while a sibling grading-oracle file is refused. This establishes software
 behavior only; no model quality, token savings or native qualification result
 is claimed.
+
+## First separate-profile qualification
+
+The separate binding profile was sealed and submitted on 2026-11-19. Its
+preselected A1-k12/deep smoke had active native intervention but an incorrect
+answer and no recovery call; publisher qualification failed. No official
+24-cell result exists and no retry or task replacement is authorized by this
+protocol. Preserve this profile and its failure. See the
+[qualification verdict](../research/cf3c-binding-qualification-20261119.md).

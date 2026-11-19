@@ -17,6 +17,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import cmp4_runner as live
+import prepare as profile
 from graph_trial import ENDPOINT, completed_wire, partial_wire_usage, read_wire, sha
 from prepare import (
     ARMS,
@@ -390,10 +391,15 @@ def run_window(out, dry, inputs, owner, score, cases, inventory, coverage):
     if not live.file_port_available(PORT) or owner.listen_inodes(PORT):
         raise ValueError("private listener port is unavailable")
     smoke_cases = {COVERAGE_CASES[1], COVERAGE_CASES[-1]}
+    binding = getattr(profile, "BINDING_PROFILE", False)
     schedule = (
+        [r for r in coverage if r["arm"] == "A1-k12" and r["case"] == "binding_deep_v1"]
+        if dry and binding
+        else (
         [r for r in coverage if r["arm"] == "A0" and r["case"] in smoke_cases]
         if dry
         else coverage
+        )
     )
     window = Path(tempfile.mkdtemp(prefix="window-", dir=out))
     packet_hash = live.digest(HERE / "inputs.json")
@@ -431,7 +437,7 @@ def run_window(out, dry, inputs, owner, score, cases, inventory, coverage):
         linkage = subprocess.run(
             [
                 "bash",
-                str(HERE / "verify_ggml_linkage.sh"),
+                str(getattr(profile, "LINKAGE", HERE / "verify_ggml_linkage.sh")),
                 argv[0],
                 str(live.BIN.resolve()),
             ],
@@ -525,6 +531,23 @@ def run_window(out, dry, inputs, owner, score, cases, inventory, coverage):
         "unit": results[-1]["unit"] if results else None,
     }
     if dry:
+        if binding:
+            trial = results[0] if len(results) == 1 else None
+            native = trial["native_result"] if trial else {}
+            receipts = native.get("policy_receipts", [])
+            report["active_first_generation"] = bool(receipts and receipts[0]["active"])
+            report["native_log_recovery"] = bool(
+                trial and trial["correct"] is True
+                and native.get("tool_calls", {}).get("retrieval", 0) > 0
+                and native.get("initial_history_receipt", {}).get("observations") == 10
+            )
+            report["qualified"] = bool(
+                exited and error is None and trial and trial["child_exited"]
+                and trial["usage_complete"]["total_tokens"]
+                and report["active_first_generation"] and report["native_log_recovery"]
+            )
+            live.atomic_json(out / ("SMOKE.json" if report["qualified"] else "PARTIAL.json"), report)
+            return int(not report["qualified"])
         multi_turn = next((r for r in results if r["case"] == COVERAGE_CASES[1]), None)
         oversized = next((r for r in results if r["case"] == COVERAGE_CASES[-1]), None)
         report["selected_history_exchange_complete"] = bool(

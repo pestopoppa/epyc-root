@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.cf3c.binding-qualification-verdict.v1",
+  "row": "cf3c-binding-20261119",
+  "verdict": "FAIL_NATIVE_RECOVERY",
+  "official_cells_run": 0,
+  "smoke_cells_observed": 1,
+  "first_generation_active": true,
+  "changed_observation_turns": [
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    -4
+  ],
+  "correct": false,
+  "retrieval_calls": 0,
+  "observed_total_tokens": 3447,
+  "usage_complete": true,
+  "wall_s": 127.30660898296628,
+  "server_exited": true,
+  "cohort_sha256": "14c79e10bade5909a5406b86ea72d91e44b66f830859044639b0c9c622cb5cc3",
+  "packet_sha256": "b28aa4492a8141da9761b67c133c1b898b6048d19d95c890e3b3e62626da5cf8",
+  "evidence": {
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/cf3c-binding-20261119/cf3c-suite-native/PARTIAL.json": "48d4857997672badbb42097a414786fd62c52d727b92e0a4fa64852e7ec3057d",
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/cf3c-binding-20261119/cf3c-suite-native/window-iehukil8/task-07/GRAPH.json": "e21c04d62dc507eaa171850631cbd49645e790c585324f821baa8179d1b9cfc4",
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/cf3c-binding-20261119/cf3c-suite-native/window-iehukil8/task-07/OUTCOME.json": "81651618099a5ab1e3cbbba750c8b1f2ffc217b53c04129e689123b73a2849c2",
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/cf3c-binding-20261119/cf3c-suite-native/window-iehukil8/task-07/wire/0000/record.json": "a3a7f0cd241d3cc69040672e597cc83c8a14f6c0b36ef77a8cb2f9133e35feb6"
+  },
+  "decision": "Do not run the official 24-cell row or retry/replace its fixed task after observing this failure. Native recovery qualification is unsatisfied; no policy-quality or adoption conclusion."
+}
