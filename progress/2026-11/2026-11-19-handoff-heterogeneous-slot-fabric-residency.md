@@ -13,3 +13,7 @@ Duplicate run-end for `kvu19b-trace-analyzer-qual-20261105`: file_result.py retu
 ## 03:04Z — Acknowledge duplicate prefix integration run-end; existing PASS receipt and completed box require no new filing.
 
 Duplicate event `kpf174-prefix-request-integration-20261105`: file_result.py returned already FILED. Its retained verdict dated 2026-11-05T02:46:00Z records rc0, one positive compare and five pre-judge refusals, matching seals and worker cleanup; native result SHA-256 `81e8bf0f063093b555306dd1a459c38fa05a4728bdc3333eca4b659510506bf7`. KPF-17.4D-PREFIX-INTEGRATION-QUAL is already complete; no new result or tick claimed. No native tracing, historical replay or equivalence follows. Checkpoint correction: `kpf131-native-binding-impact-a1f0-r5-20261105` routes by manifest to KPF-17.4D-NATIVE-IMPACT-RETRY, is owned by operator-adhoc-takeover-20261105 and is STOP-held; no modification or retry performed. [no-belief: duplicate event acknowledgement]
+
+## 03:06Z — Consume already-filed output-supervision run-end; no new result-bearing task in this duplicate event.
+
+Duplicate event `kpf18-g3-output-supervision-qual-r2-20261105`: existing PASS verdict dated 2026-11-05T03:33:24Z and completed KPF-18-G3-OUTPUT-SUPERVISION-QUAL box already retain the six isolated controls. Native result SHA-256 from the existing receipt: `869486c3da026e9987bd7004b87f509e648ac035d96165ec5ff276ed9bf1cec9`. No new result or checkbox completion. Existing scope excludes integrated candidate, native lifecycle, GPU and unsampled peak. [no-belief: duplicate event acknowledgement]
