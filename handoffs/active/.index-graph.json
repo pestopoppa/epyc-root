@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T09:04:50Z",
+  "generated_at": "2026-11-19T09:06:14Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1679,15 +1679,15 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 371,
-      "dispatchable": 8,
+      "closed": 372,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-19",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 8,
+      "open": 7,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1751,14 +1751,14 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2729,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 5,
+          "open": 4,
           "readiness": "blocked"
         },
         {
