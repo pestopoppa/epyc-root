@@ -23,3 +23,7 @@ Duplicate `yarn-oolong-s2-import-eligible26-v39-20261105` run-end event: existin
 ## 03:56Z — Consume duplicate r7-distilled run-end: already filed SUPERSEDED; no new result available
 
 Duplicate run-end for `lsa-quality-32k-20261106-r7-distilled`: rc=75, already filed 2026-11-07 as SUPERSEDED by r8-dense, outcome NO-RESULT, with existing FILED receipt. Preserved that filing; referenced distilled.jsonl and RESULT.json are absent. No quality verdict or completion tick is warranted. Filing evidence: `/mnt/raid0/llm/tmp/compute-flags/filing-done/lsa-quality-32k-20261106-r7-distilled.verdict.json`, SHA-256 `cbaac53de25963d478391e6844f2137551aa892bf77b2007fbf9f23ae5baeaed`. This duplicate event yields no new result-bearing work. Resume the prior YARN-E1-PROOF checkpoint next.
+
+## 04:01Z — Consume duplicate LSA-H12 gate event; existing FUTILE filing and completed box preserved
+
+Duplicate run-end `lsa-h12-indexer-gate-20261106` (rc=0): already filed FUTILE by autokernel on 2026-11-10, with FILED receipt, and LSA-H12-INDEXER already completed. Existing verdict records correctness passing and dense/LSA op-time ratios 0.368/0.369 at 32k, below the early-futility threshold 1.00 and required 1.10; downstream conditional stages were not run. No new measurement, filing or tick performed. Evidence: `/mnt/raid0/llm/tmp/compute-flags/filing-done/lsa-h12-indexer-gate-20261106.verdict.json`, SHA-256 `c2deb958865de7d45f57b0337f6560b9e8e165980feef8c12abfb7da88e6ac75`. No result-bearing task remains for this duplicate event; retain YARN-E1-PROOF as the next task.
