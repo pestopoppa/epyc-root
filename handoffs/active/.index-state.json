@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 533
+      "open": 532
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 3,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 219
+      "open": 220
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -2343,10 +2343,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 148,
+      "closed": 149,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 40,
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2369,7 +2369,7 @@
         },
         {
           "blocked": 1,
-          "closed": 54,
+          "closed": 55,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2378,7 +2378,7 @@
           "line": 801,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 30
+          "open": 29
         }
       ]
     },
@@ -2556,7 +2556,7 @@
       "frozen": 3,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 116,
+      "open": 117,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2565,7 +2565,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 604
+      "total": 605
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
