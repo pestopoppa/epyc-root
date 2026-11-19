@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T06:58:39Z",
+  "generated_at": "2026-11-19T08:01:32Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1104,7 +1104,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 664,
+          "line": 684,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1113,7 +1113,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 976,
+          "line": 996,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1122,7 +1122,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1183,
+          "line": 1203,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1131,7 +1131,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1509,
+          "line": 1529,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1140,7 +1140,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1744,
+          "line": 1764,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1679,15 +1679,15 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 370,
-      "dispatchable": 9,
+      "closed": 371,
+      "dispatchable": 8,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-19",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 9,
+      "open": 8,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1751,14 +1751,14 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 6,
+          "dispatchable": 5,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2729,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 6,
+          "open": 5,
           "readiness": "blocked"
         },
         {
@@ -1850,7 +1850,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 751,
+          "line": 760,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18,
           "readiness": "blocked"
@@ -3577,7 +3577,7 @@
       "age_days": 0,
       "blocked": 7,
       "blocked_by": [],
-      "closed": 418,
+      "closed": 422,
       "dispatchable": 95,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3626,7 +3626,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1759,
+          "line": 1766,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3641,7 +3641,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2182,
+          "line": 2189,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"
@@ -3652,15 +3652,15 @@
       "age_days": 0,
       "blocked": 15,
       "blocked_by": [],
-      "closed": 248,
-      "dispatchable": 94,
+      "closed": 250,
+      "dispatchable": 92,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-19",
       "next_action": "Land CODEMODE-AB-V2 r2 rows, then CODEMODE-REL-FLIP; measure CM-2..CM-5; then UFH-TE-2 dispatch guard, HIL-RE-1",
-      "open": 109,
+      "open": 107,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3694,7 +3694,7 @@
             "RTG-09#tri-role-coordinator-architecture",
             "RTG-09#typed-decision-plane"
           ],
-          "dispatchable": 11,
+          "dispatchable": 9,
           "gates": [
             "RTG-09#routing-program",
             "RTG-09#internal-interaction-lifecycle",
@@ -3707,14 +3707,14 @@
           ],
           "line": 16,
           "name": "harness-selection-and-integration",
-          "open": 23,
+          "open": 21,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 15,
           "gates": [],
-          "line": 395,
+          "line": 398,
           "name": "repl-turn-efficiency",
           "open": 15,
           "readiness": "ready"
@@ -3723,7 +3723,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 805,
+          "line": 808,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3736,7 +3736,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1571,
+          "line": 1574,
           "name": "harness-improvement-loop",
           "open": 16,
           "readiness": "blocked"
@@ -3749,7 +3749,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2252,
+          "line": 2255,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3770,7 +3770,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2335,
+          "line": 2338,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3785,7 +3785,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2785,
+          "line": 2788,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3796,7 +3796,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3655,
+          "line": 3658,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"
