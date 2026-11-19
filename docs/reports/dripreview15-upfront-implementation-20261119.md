@@ -62,3 +62,28 @@ Implementation SHA-256 (existing lane files; no copied evidence):
 - `scripts/benchmark/repl_contract_variant.py`: `9411b96bb0663b3923a25d2b0e985f3b1f5f47e97094b48bc566a084d58004ff`.
 - `scripts/benchmark/repl_upfront_variant.py`: `40f7cc74b8b5d2ccc673f964065666940fcbc11553bfe7229675c2a83786c646`.
 - `tests/benchmark/test_repl_upfront_variant.py`: `1aae908306f44cdb549768303187d441a06fa5e467faca664b834afac78795bc`.
+
+Publication predeclaration for distinct row `dripreview15-upfront-20261119`:
+private port 9467; CPU quarter q0-q2, 24 physical threads under grant;
+12 ordered reads and a 16-call cap. Planning booking 36000 s uses the prior
+R5 token rates with 1600 prompt / 200 generated tokens per call and 25% margin
+(90 episodes x 16 x (1600 x .00559 + 200 x .0517) x 1.25 = 34714 s).
+This is a conservative booking, not a measured timing claim.
+
+Frozen before publication/model calls: `/mnt/raid0/llm/tmp/episodic-memory-integrity/dripreview15-upfront-20261119/PREDECLARED.md`,
+SHA-256 `82cebc39940c102fd8fdd82a72573448756cb261e277af3fab45169e6c918148`. Input manifest `/mnt/raid0/llm/tmp/episodic-memory-integrity/dripreview15-upfront-20261119/SOURCE.sha256`,
+SHA-256 `43c85057b26599619459762dadad8716cded3e9233f17c992427cb5679d58d4c`. Both wrapper inputs retained as siblings outside the lane.
+Variant binding SHA-256 `db321b764aa5012d8d049fc7ad41efb7d8bb2d40983aa59321bef9db89c262af`.
+Fresh native result: `/mnt/raid0/llm/tmp/episodic-memory-integrity/dripreview15-upfront-out-20261119/result.json`;
+fresh sibling `cells/`. The separate smoke is plumbing only.
+Full-n alpha is exactly 0.05/3. No interim success or extension after futility.
+
+GitNexus status/impact again found no index; prescribed wrapper was refused
+CPU admission (exit 64), so no graph blast-radius rating is claimed.
+
+Publication completed: `publish_row.py --smoke-now` reported **SMOKE PASS**
+on CPUs 140-143 at 2026-11-19T10:42:50Z (smoke predicate, clean partial-native
+rc=75), then PUBLISHED `dripreview15-upfront-20261119`. Derived window 43500 s,
+book 27000 s, minimum window 3000 s; requested estimate 36000 s.
+Smoke is plumbing evidence only, not a research accuracy verdict.
+D-RI-PREVIEW-1.2 stays open pending the measured result.
