@@ -107,6 +107,46 @@ class RunnerTest(unittest.TestCase):
         self.child.terminate.assert_called_once()
         self.child.wait.assert_called_once()
 
+    def test_protocol_completion_reaps_both_owned_processes(self):
+        import protocol_requests
+        requester = Mock(pid=124, returncode=0)
+        requester.poll.return_value = 0
+        requester.wait.return_value = 0
+        self.child.poll.side_effect = [None, None, 0]
+        self.spawn.side_effect = [self.child, requester]
+        with patch.object(protocol_requests, 'prepare'), patch.object(Path, 'read_text', side_effect=FileNotFoundError):
+            record = runner.run('/bound/context.json', 'a'*64, self.plan['argv'], self.log,
+                                self.result, self.log.parent / 'requests.jsonl')
+        self.assertEqual(record['cutoff'], 'protocol-complete')
+        self.assertEqual(record['request_rc'], 0)
+        self.assertTrue(record['requester_reaped'])
+        self.child.terminate.assert_called_once()
+        requester.wait.assert_called_once()
+        command = self.spawn.call_args_list[1].args[0]
+        self.assertEqual(command[-2], '123')
+        self.assertEqual(runner.exit_code(record), 0)
+
+    def test_server_exit_does_not_mask_incomplete_protocol(self):
+        import protocol_requests
+        requester = Mock(pid=124)
+        requester.poll.return_value = -15
+        requester.wait.return_value = -15
+        self.spawn.side_effect = [self.child, requester]
+        with patch.object(protocol_requests, 'prepare'):
+            record = runner.run('/bound/context.json', 'a'*64, self.plan['argv'], self.log,
+                                self.result, self.log.parent / 'requests.jsonl')
+        self.assertEqual(record['rc'], 0)
+        self.assertEqual(record['cutoff'], 'server-exited')
+        self.assertEqual(runner.exit_code(record), 1)
+
+    def test_bad_request_protocol_refuses_before_server_spawn(self):
+        import protocol_requests
+        with patch.object(protocol_requests, 'prepare', side_effect=ValueError('request settings')):
+            with self.assertRaisesRegex(ValueError, 'request settings'):
+                runner.run('/bound/context.json', 'a'*64, self.plan['argv'], self.log,
+                           self.result, self.log.parent / 'requests.jsonl')
+        self.spawn.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()

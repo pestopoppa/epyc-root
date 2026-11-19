@@ -333,7 +333,7 @@ The `epyc.cafe3.launch-context.v1` manifest has these required fields:
 
 | Fields | Binding |
 | --- | --- |
-| `run`, `row`, `journal`, `backend`, `arm` | Unique retained server-run label, official row, unused absolute journal path, `cpu` or `hip`, and `adaptive` arm |
+| `run`, `row`, `journal`, `backend`, `arm` | Unique retained server-run label, official row, unused absolute journal path, `cpu` or `hip`, and declared `adaptive` or `static-N` arm |
 | `argv` | Exact command array; canonical `-m`, `--model-draft`, `-t`, `-tb`, `-ngl`, `--gpu-layers-draft` each once; no competing aliases or remote model loaders |
 | `build` | `{path, sha256}` of a full matching-backend receipt; producer validation checks pinned production/source, compiled markers, cache and local libraries, plus HIP exports/gfx90a; executable/cache/linkage must themselves be hash-bound |
 | `prepared` | `{path, sha256}` of an `epyc.cafe3.prepared.v1` record prepared **before** the grant; `models` has exactly `target` and `draft`, plus a `corpus` record |
@@ -398,9 +398,52 @@ pre-spawn refusal, late STOP/deadline, exclusive outputs, in-run STOP/deadline,
 TERM/KILL escalation and exception cleanup. No native binary or model is run.
 Run `python3 -m unittest discover -s scripts/diagnostics/cafe3-adaptive -p test_native_runner.py -v`.
 
-The next integration is the declared request/arm driver: prepare and seal real
-model/corpus/protocol inputs outside grants, consume qualified full-build
-receipts, issue protocol requests while this server runs, verify actual mappings
-and HIP residency, then publish the P9 row with a model-free smoke. This process
-boundary alone does not execute or grade that protocol and does not close CAFE-3.
+The request driver below supplies declared single-arm execution. Real input
+sealing, qualified full-build receipts, mapping/HIP residency verification,
+multi-arm scheduling and a P9 grader remain necessary before native publication.
 [no-belief: source implementation and mocked process-boundary controls only]
+
+### Bound protocol request execution (2026-11-19)
+
+Add `--requests ABSOLUTE_JSONL_PATH` to the supervisor CLI to enable the trusted
+local `protocol_requests.py` child. The supervisor validates request settings
+before model load, supervises both captured PIDs, and reaps both on every exit.
+The requester verifies the manifest digest again. Only an explicit
+`protocol-complete` with requester rc 0 returns success; an early server exit
+cannot conceal an incomplete protocol. Success means captured requests, with
+all receipts still `UNASSESSED`; it supplies no P9 verdict.
+
+The bound protocol adds `request_settings` with exactly these fields:
+
+```json
+{"n_predict": 128, "seed": 42, "timeout_s": 120,
+ "arm_widths": {"adaptive": 3, "static-0": 0, "static-3": 3}}
+```
+
+`arm_widths` covers exactly the protocol's named arms, widths are integers 0..64,
+and `static-N` must use N. Static launch contexts set `LLAMA_CAFE3_ADAPTIVE=0`;
+adaptive contexts set it to 1. One server launch captures one declared arm;
+each launch needs its own retained context and unused journal path. The corpus
+is already prepared JSONL of unique nonempty string `id` and `prompt` records.
+Execution reads it with before/after identity checks, without rehashing weights,
+tokenizing, downloading or copying inputs. Hashing/sealing stays outside grants.
+
+The exact argv must bind `--host 127.0.0.1 --port PORT` (1024..65535). Before
+health and completion use, the client requires that the captured server PID owns
+the loopback listening socket's inode. HTTP uses no proxies or redirects.
+Readiness alone may retry; failed or ambiguous completion POSTs are never retried.
+For every repetition and corpus record, the client sends `/completion` with
+greedy sampling, the declared seed/width/length, token return and prompt cache
+disabled. Complete untruncated token/timing responses are fsynced individually
+as `epyc.cafe3.request-capture.v1`, preserving the full payload/response and
+monotonic elapsed time with arm, prompt, repetition, protocol and context.
+The parent remains responsive to STOP/deadline while the HTTP child blocks.
+
+**32 tests PASS**: 11 launch-context, 12 supervisor and 9 request-driver tests.
+Coverage includes declared static mode, exact protocol order, corrupted inputs,
+invalid settings/endpoints, listener ownership, malformed responses without
+retry, both-child cleanup and early-server-exit refusal. Transport and model
+processes are mocked; the listener parser uses synthetic proc records. No native
+inference or performance claim. Prospective captures extend the existing
+`VB-CAFE3-ROUND-WIRE` adapter task and source registration; no new grading ladder.
+[no-belief: source implementation and model-free request controls only]

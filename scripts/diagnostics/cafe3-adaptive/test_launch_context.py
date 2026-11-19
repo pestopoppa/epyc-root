@@ -89,6 +89,17 @@ class LaunchContextTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'duplicate JSON'):
             context.load(self.manifest_path)
 
+    def test_declared_static_arm_disables_adaptation(self):
+        self.manifest['arm'] = 'static-3'
+        plan = self.validate()
+        self.assertEqual(plan['env']['LLAMA_CAFE3_ADAPTIVE'], '0')
+        self.assertEqual(plan['arm'], 'static-3')
+        self.assertEqual(plan['corpus'], self.prepared['corpus'])
+        for arm in ('static-7', 'foreign', 3):
+            self.manifest['arm'] = arm
+            with self.assertRaisesRegex(ValueError, 'undeclared protocol arm'):
+                self.validate()
+
     def test_manifest_actual_command_and_models(self):
         with self.assertRaisesRegex(ValueError, 'argv mismatch'):
             self.validate(argv=self.argv + ['--model', '/other'])

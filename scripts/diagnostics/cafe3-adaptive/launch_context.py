@@ -155,7 +155,9 @@ def validate_launch_context(manifest_path, expected_sha256, argv, *, environ=Non
     require(isinstance(protocol['arms'], list) and protocol['arms'] and
             all(isinstance(arm, str) and arm for arm in protocol['arms']) and
             len(set(protocol['arms'])) == len(protocol['arms']), 'invalid protocol arms')
-    require(manifest['arm'] == 'adaptive' and manifest['arm'] in protocol['arms'], 'undeclared adaptive protocol arm')
+    arm = manifest['arm']
+    require(isinstance(arm, str) and (arm == 'adaptive' or re.fullmatch(r'static-\d+', arm))
+            and arm in protocol['arms'], 'undeclared protocol arm')
 
     row = manifest['row']
     require(isinstance(row, str) and re.fullmatch(r'[A-Za-z0-9_.-]+', row) and env.get('FILLER_ID') == row, 'row mismatch')
@@ -206,13 +208,14 @@ def validate_launch_context(manifest_path, expected_sha256, argv, *, environ=Non
     require(journal.is_absolute() and journal.parent.resolve(strict=True) == journal.parent and
             not journal.exists() and not journal.is_symlink(), 'journal must be a new canonical path')
     child = dict(LD_LIBRARY_PATH=str(executable.parent), OMP_NUM_THREADS=str(placement['threads']), GGML_IQK='1',
-                 LLAMA_CAFE3_ADAPTIVE='1', LLAMA_CAFE3_RUN=manifest['run'],
+                 LLAMA_CAFE3_ADAPTIVE='1' if arm == 'adaptive' else '0', LLAMA_CAFE3_RUN=manifest['run'],
                  LLAMA_CAFE3_CONTEXT_SHA256=expected_sha256, LLAMA_CAFE3_JOURNAL=str(journal), **device_env)
     if not gpu:
         child.update(HIP_VISIBLE_DEVICES='-1', ROCR_VISIBLE_DEVICES='-1', CUDA_VISIBLE_DEVICES='-1')
     # No inherited LD_PRELOAD, model env, loader path or extra adaptive settings.
     return dict(argv=argv, env=child, context_sha256=expected_sha256,
-                build_base=receipt['base'], models=prepared['models'], protocol=manifest['protocol'])
+                build_base=receipt['base'], models=prepared['models'], protocol=manifest['protocol'],
+                arm=arm, corpus=prepared['corpus'])
 
 
 def main():

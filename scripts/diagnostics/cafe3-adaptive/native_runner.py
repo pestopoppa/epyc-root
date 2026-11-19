@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import time
 
 import launch_context as context
@@ -21,14 +22,20 @@ def reap(child):
         return child.wait(timeout=5)
 
 
-def run(manifest_path, digest, argv, log_path, result_path):
+def run(manifest_path, digest, argv, log_path, result_path, requests_path=None):
     # Validate before creating outputs or starting a process. In particular this
     # refuses the row publisher's smoke mode; it must never load models in smoke.
     plan = context.validate_launch_context(manifest_path, digest, argv)
+    if requests_path is not None:
+        import protocol_requests
+        protocol_requests.prepare(plan)  # Refuse malformed requests before model load.
+        context.require(not Path(requests_path).exists(), 'request capture already exists')
     stop = Path(os.environ['FILLER_STOPFILE'])
     deadline = int(os.environ['FILLER_DEADLINE'])
     grant = Path('/mnt/raid0/llm/tmp/compute-flags/grants') / (os.environ['FILLER_ID'] + '.grant')
     child = None
+    requester = None
+    request_rc = None
     started = time.time()
     cutoff = None
     samples = []
@@ -43,6 +50,15 @@ def run(manifest_path, digest, argv, log_path, result_path):
             child = subprocess.Popen(plan['argv'], env=plan['env'], stdin=subprocess.DEVNULL,
                                      stdout=log, stderr=subprocess.STDOUT, close_fds=True)
             try:
+                if requests_path is not None:
+                    driver = Path(__file__).resolve().with_name('protocol_requests.py')
+                    # Local trusted driver, never a command supplied by protocol JSON.
+                    requester = subprocess.Popen([sys.executable, str(driver), str(manifest_path), digest,
+                                                  str(child.pid), str(requests_path)],
+                                                 env=dict(plan['env'], FILLER_DEADLINE=str(deadline),
+                                                          FILLER_STOPFILE=str(stop)),
+                                                 stdin=subprocess.DEVNULL, stdout=log,
+                                                 stderr=subprocess.STDOUT, close_fds=True)
                 while child.poll() is None:
                     # Samples overlap child execution. These are raw mappings,
                     # not a claim of GPU residency or complete backend coverage.
@@ -59,28 +75,52 @@ def run(manifest_path, digest, argv, log_path, result_path):
                         cutoff = 'deadline'
                     elif grant.with_suffix('.ended').exists() or grant.with_suffix('.complete').exists():
                         cutoff = 'grant-ended'
+                    elif requester is not None and requester.poll() is not None:
+                        request_rc = requester.returncode
+                        cutoff = 'protocol-complete' if request_rc == 0 else 'protocol-failed'
                     if cutoff:
                         break
                     try:
                         child.wait(timeout=min(.25, max(.001, deadline - time.time())))
                     except subprocess.TimeoutExpired:
                         pass
+                if requester is not None and cutoff is None:
+                    cutoff = 'server-exited'
             finally:
-                rc = reap(child)
+                try:
+                    if requester is not None:
+                        request_rc = reap(requester)
+                finally:
+                    rc = reap(child)
             record = dict(schema='epyc.cafe3.process-capture.v1', status='UNASSESSED',
                           context_sha256=digest, argv=plan['argv'], env=plan['env'],
                           pid=child.pid, started=started, ended=time.time(), rc=rc,
                           cutoff=cutoff, child_reaped=child.poll() is not None,
-                          mapping_samples=samples, log=str(Path(log_path).resolve()))
+                          mapping_samples=samples, log=str(Path(log_path).resolve()),
+                          requests_path=str(requests_path) if requests_path is not None else None,
+                          request_rc=request_rc,
+                          requester_reaped=requester.poll() is not None if requester is not None else None)
             json.dump(record, result, indent=2, allow_nan=False)
             result.write('\n')
             result.flush()
             os.fsync(result.fileno())
         except BaseException:
-            if child is not None and child.poll() is None:
-                reap(child)
+            try:
+                if requester is not None and requester.poll() is None:
+                    reap(requester)
+            finally:
+                if child is not None and child.poll() is None:
+                    reap(child)
             raise
     return record
+
+
+def exit_code(record):
+    if record['cutoff'] == 'protocol-complete' and record['request_rc'] == 0:
+        return 0
+    if record['cutoff'] in ('protocol-failed', 'server-exited'):
+        return 1
+    return 75 if record['cutoff'] else (0 if record['rc'] == 0 else 1)
 
 
 def main():
@@ -90,10 +130,11 @@ def main():
     parser.add_argument('argv_json')
     parser.add_argument('log')
     parser.add_argument('result')
+    parser.add_argument('--requests', help='exclusive JSONL request capture; enables bound protocol driver')
     args = parser.parse_args()
-    record = run(args.manifest, args.sha256, context.load(args.argv_json), args.log, args.result)
+    record = run(args.manifest, args.sha256, context.load(args.argv_json), args.log, args.result, args.requests)
     # A clean process exit still says nothing about identity or P9.
-    return 75 if record['cutoff'] else (0 if record['rc'] == 0 else 1)
+    return exit_code(record)
 
 
 if __name__ == '__main__':
