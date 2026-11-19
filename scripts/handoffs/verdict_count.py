@@ -17,6 +17,8 @@ import argparse, collections, datetime as dt, json, re, sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "scripts" / "coordination"))
+from flip_checkbox import parse_tick  # noqa: E402  (unified `✅ date [belief] verdict` + legacy tick forms)
 FILLERS = Path("/mnt/raid0/llm/tmp/compute-flags/FILLERS.md")
 GRANTS = Path("/mnt/raid0/llm/tmp/compute-flags/grants")
 OKRC = {0, 75}
@@ -167,10 +169,12 @@ def main():
         verdicts = []
         for h in hs:
             for i, l in enumerate(hand_lines.get(h, []), 1):
-                vd = verdict_of(l)
+                tk = parse_tick(l) if "\u2705" in l else None
+                # unified suffix: the verdict field after the belief tag is THE verdict; else scan the line
+                vd = (verdict_of(tk["verdict"]) if tk and tk["form"] == "unified" else None) or verdict_of(l)
                 if not vd:
                     continue
-                if not (TAG.search(l) or re.search(r"\[x\]", l)):
+                if not (TAG.search(l) or re.search(r"\[x\]", l) or tk):
                     continue
                 if not any(t in l for t in tokens):
                     continue

@@ -195,7 +195,7 @@ def test_completed_checkpoint_flips_logs_commits_pushes_and_is_idempotent(lane: 
     assert remote_sha(lane) == payload["commit_sha"]
     handoff = (lane / HANDOFF).read_text(encoding="utf-8")
     progress = (lane / payload["progress_path"]).read_text(encoding="utf-8")
-    assert f"- [x] {TASK} ✅ 2026-08-13" in handoff
+    assert f"- [x] {TASK} ✅ 2026-08-13 [no-belief: /log checkpoint] " in handoff   # unified suffix (decision 1)
     assert handoff.count(receipt["checkpoint_id"]) == 1
     assert progress.count(f"worker-checkpoint:{receipt['checkpoint_id']}:start") == 1
     assert f"boundary_id: `{receipt['checkpoint_id']}`" in progress
@@ -633,3 +633,16 @@ def test_cli_resume_state_flags_publish_and_pass_bus_schema(lane: Path, bus_root
     assert done.returncode == 0, done.stderr
     rs = json.loads(done.stdout)["bus_publication"]["envelope"]["payload"]["resume_state"]
     assert rs["continuation_state"] == "resumable" and rs["remaining_uncertainty"] == "one run"
+
+
+def test_done_body_unified_and_legacy_recognised() -> None:
+    req = wc.Request(agent="mainA", task_id="t", task_text="**X-1** do it", handoff="h.md", outcome="completed",
+                     summary="landed  the fix", spec_ref="", boundary_reason="", next_context="", major_checkpoint=False,
+                     validations=())
+    body = wc._done_body(req, "2026-11-19", "wcp-abc")
+    assert body == "**X-1** do it ✅ 2026-11-19 [no-belief: /log checkpoint] landed the fix <!-- worker-checkpoint:wcp-abc -->"
+    sys.path.insert(0, str(Path(wc.__file__).parent))
+    import flip_checkbox as fc
+    assert fc.parse_tick("- [x] " + body)["form"] == "unified"
+    assert wc._legacy_done_body(req, "2026-11-19", "wcp-abc").endswith("✅ 2026-11-19 <!-- worker-checkpoint:wcp-abc -->")
+

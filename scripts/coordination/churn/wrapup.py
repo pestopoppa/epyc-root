@@ -4,9 +4,10 @@
     python3 scripts/coordination/churn/wrapup.py --json <file.json> [--lane <dir>] [--flags <dir>] [--dry-run]
 
 Input = the ONE turn-record schema: {slug, state, task_text, ticks: [text], progress_md, paths: [], belief,
-message, question, rows_published, trailers?: [lines]}. Steps (one log line each; the first failure stops with rc 1):
+message, question, rows_published, trailers?: [lines], verdict?: str | [str per tick]}. Steps (one log line each; the first failure stops with rc 1):
 validate -> merge origin/main into the lane -> resolve ticks by TEXT (exactly one open box) -> progress append ->
-flip ticks (`✅ <date> [belief: ...]`, SESSION_LIFECYCLE "Two axioms") -> pathspec commit with trailers -> serialized_push.py --repo <lane> (retry while lock-held) -> cherry empty ->
+flip ticks (the ONE suffix `✅ <date> [belief: …|no-belief: …] <verdict>`, handoff standard decision 1, written via
+flip_checkbox.flip_line — this tool is its only agent-facing writer; verdict = `verdict` or the first sentence of `message`) -> pathspec commit with trailers -> serialized_push.py --repo <lane> (retry while lock-held) -> cherry empty ->
 report.json (+wrapped_sha, wrapped_at) -> `WRAPPED <sha>` as the LAST stdout line. --dry-run prints the plan and
 writes nothing. Stdlib only.
 
@@ -31,7 +32,8 @@ import time
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(_HERE))
-from flip_checkbox import CheckboxFlipError, _unified_diff  # noqa: E402  (shared refusal class + diff)
+from flip_checkbox import CheckboxFlipError, _unified_diff, flip_line  # noqa: E402  (shared primitive)
+from flip_checkbox import belief_tag as _fc_belief_tag  # noqa: E402
 
 STATES = ("progress", "ready", "blocked", "failed", "idle", "dropped")
 BELIEF_RX = re.compile(r"^(cc|clm_[A-Za-z0-9_-]+|no-belief: \S.*)$")
@@ -79,6 +81,10 @@ def validate(rec: dict) -> None:
         raise WrapupError(f"bad belief {rec['belief']!r}; expected cc | clm_<id> | 'no-belief: <reason>'")
     if not isinstance(rec["ticks"], list) or not all(isinstance(t, str) and t.strip() for t in rec["ticks"]):
         raise WrapupError("ticks must be a list of non-empty strings")
+    v = rec.get("verdict")
+    if v is not None and not (isinstance(v, str) or (isinstance(v, list) and len(v) == len(rec["ticks"])
+                                                       and all(isinstance(x, str) for x in v))):
+        raise WrapupError("verdict must be a string or a list with one string per tick")
     if not isinstance(rec["paths"], list) or not all(isinstance(p, str) and p and not p.startswith("/") for p in rec["paths"]):
         raise WrapupError("paths must be lane-relative strings")
     if not str(rec["message"]).strip():
@@ -138,18 +144,30 @@ def resolve_ticks(lane: str, ticks: list[str], extra_md: list[str]) -> list[tupl
 
 
 def belief_tag(belief: str) -> str:
-    return f"[{belief}]" if belief.startswith("no-belief:") else f"[belief: {belief}]"
+    return _fc_belief_tag(belief)
 
 
-def apply_ticks(lane: str, hits: list[tuple[str, int, str]], date: str, belief: str) -> list[str]:
+VERDICT_MAX = 160
+
+
+def tick_verdicts(rec: dict) -> list[str]:
+    """One verdict per tick: rec['verdict'] (str or list), else the first sentence of rec['message']."""
+    v = rec.get("verdict")
+    if isinstance(v, list):
+        return [" ".join(x.split())[:VERDICT_MAX] for x in v]
+    if not v:
+        msg = str(rec.get("message") or "").strip().split("\n")[0]
+        v = re.split(r"(?<=[.;])\s", msg, maxsplit=1)[0]
+    return [" ".join(str(v).split())[:VERDICT_MAX]] * len(rec.get("ticks") or [])
+
+
+def apply_ticks(lane: str, hits: list[tuple[str, int, str]], date: str, belief: str,
+                verdicts: list[str] | None = None) -> list[str]:
     touched: list[str] = []
-    for f, i, _ in hits:
+    for n, (f, i, _) in enumerate(hits):
         before = open(f, encoding="utf-8").read()
         lines = before.split("\n")
-        ln = lines[i].replace("- [ ]", "- [x]", 1).rstrip() + f" ✅ {date}"
-        if "[belief:" not in ln and "[no-belief:" not in ln:
-            ln += " " + belief_tag(belief)
-        lines[i] = ln
+        lines[i] = flip_line(lines[i], date, belief, (verdicts or [""] * len(hits))[n])
         after = "\n".join(lines)
         open(f, "w", encoding="utf-8").write(after)
         rel = os.path.relpath(f, lane)
@@ -360,7 +378,7 @@ def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
         return 0
     append_progress(lane, prog, slug, rec["task_text"], rec["progress_md"], now)
     log("progress", prog)
-    apply_ticks(lane, hits, date, rec["belief"])
+    apply_ticks(lane, hits, date, rec["belief"], tick_verdicts(rec))
     sha = commit(lane, pathspec, rec["message"], [str(t) for t in rec.get("trailers", [])])
     log("commit", f"{sha[:12]} {len(pathspec)} path(s)")
     push_with_retry(lane, slug)

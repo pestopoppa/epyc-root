@@ -17,6 +17,9 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Sequence
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from flip_checkbox import tick_suffix  # noqa: E402  (the ONE tick suffix, handoff standard decision 1)
+
 SCHEMA = "worker_checkpoint.v1"
 RECEIPT_SCHEMA = "worker_checkpoint.receipt.v1"
 PHASES = (
@@ -275,7 +278,19 @@ def _advance(path: Path, journal: dict, phase: str, fail_after: str | None) -> N
         raise InjectedCrash(f"injected crash after {phase}")
 
 
+CHECKPOINT_VERDICT_MAX = 160
+
+
 def _done_body(req: Request, day: str, checkpoint_id: str) -> str:
+    """Unified suffix `✅ <day> [no-belief: /log checkpoint] <summary>` + the idempotency marker. /log carries no
+    belief claim of its own; a result tick that needs one goes through churn/wrapup.py."""
+    verdict = " ".join(req.summary.split())[:CHECKPOINT_VERDICT_MAX]
+    return (f"{req.task_text} {tick_suffix(day, 'no-belief: /log checkpoint', verdict)} "
+            f"<!-- worker-checkpoint:{checkpoint_id} -->")
+
+
+def _legacy_done_body(req: Request, day: str, checkpoint_id: str) -> str:
+    """Pre-2026-11-19 form; still recognised so a replayed checkpoint stays idempotent."""
     return f"{req.task_text} ✅ {day} <!-- worker-checkpoint:{checkpoint_id} -->"
 
 
@@ -299,7 +314,8 @@ def _update_handoff(path: Path, req: Request, checkpoint_id: str, day: str) -> N
     marked = [(i, m) for i, m in boxes if marker in m.group("body")]
     if req.outcome == "completed":
         expected = _done_body(req, day, checkpoint_id)
-        exact_done = [(i, m) for i, m in marked if m.group("body") == expected]
+        legacy = _legacy_done_body(req, day, checkpoint_id)
+        exact_done = [(i, m) for i, m in marked if m.group("body") in (expected, legacy)]
         if len(exact_done) == 1 and not opens:
             return
         if marked and not exact_done:

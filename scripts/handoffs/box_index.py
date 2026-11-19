@@ -26,6 +26,8 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import task_lint as TL  # noqa: E402
 import task_lint_core as L1  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "coordination"))
+from flip_checkbox import parse_tick  # noqa: E402  (shared reader of the ONE tick suffix + legacy forms)
 
 SCHEMA = "epyc.box-index.v1"
 TEXT_SHA_LEN = 16          # hex chars of sha256 kept as identity
@@ -133,9 +135,9 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
                    "pos_in_backlog": p, "cont_lines": len(txt.split("\n")) - 1, "frozen_until": r["frozen_until"],
                    "holds": sorted(h["id"] for h in holds if {name, row, r["id"]} & h["targets"])}
             if st in "xX":
-                tm = re.search(r"✅\s*(\d{4}-\d{2}-\d{2})", line)
-                bm = re.search(r"\[belief:\s*([^\]]+)\]", line)
-                rec["ticked"] = {"date": tm.group(1) if tm else None, "belief": bm.group(1).strip() if bm else None}
+                t = parse_tick(line) or {}
+                rec["ticked"] = {"date": t.get("date"), "belief": t.get("belief"), "verdict": t.get("verdict") or None,
+                                 "form": t.get("form")}
                 rec["state"] = "done"
             recs.append(rec)
     for rec in recs:
