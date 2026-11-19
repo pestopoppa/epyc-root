@@ -15,7 +15,8 @@ from apply_integration import HERE, PIN, install
 OWNED = ('integration.patch', 'native_carrier.h', 'native_runtime.h',
          'native_capture.h', 'native_bundle.h', 'driver.cpp', 'control.cpp',
          'apply_integration.py', 'build.py', 'controls.py', 'run_driver.py',
-         'convert.py', 'fit.py', 'capture.py', 'compact_check.py')
+         'convert.py', 'fit.py', 'capture.py', 'compact_check.py',
+         'pipeline.py', 'residency.py')
 ENV_KEYS = ('PATH', 'CC', 'CXX', 'CFLAGS', 'CXXFLAGS', 'CPPFLAGS', 'LDFLAGS',
             'ROCM_PATH', 'HIP_PATH', 'HIPCXX', 'CMAKE_PREFIX_PATH', 'LD_LIBRARY_PATH')
 

@@ -52,7 +52,7 @@ def inventory(driver, library_dir):
     return {str(p): digest(p) for p in sorted(libs | {driver})}
 
 
-def run(driver, config_path, library_dir):
+def run(driver, config_path, library_dir, execute=None):
     """Seal actual runtime artifacts before/after a single bounded native run."""
     config_path, driver = Path(config_path).resolve(), Path(driver).resolve()
     c = json.loads(config_path.read_text())
@@ -70,7 +70,7 @@ def run(driver, config_path, library_dir):
                     if k.startswith(('LLAMA_', 'GGML_', 'HIP_', 'HSA_', 'ROCR_', 'CUDA_', 'OMP_',
                                      'OPENBLAS_', 'MKL_')) or k in ('LD_PRELOAD', 'GPU_DEVICE_ORDINAL')}
     affinity = sorted(os.sched_getaffinity(0))
-    subprocess.run([str(driver), str(config_path)], env=env, check=True)
+    (execute or subprocess.run)([str(driver), str(config_path)], env=env, check=True)
     if (inventory(driver, library_dir) != before or digest(config_path) != config_hash
             or digest(HERE / 'control.cpp') != source_hash):
         raise ValueError('control executable/libraries/config/source changed during run')

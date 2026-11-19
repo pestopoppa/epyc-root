@@ -15,7 +15,7 @@ from compact_check import check as check_compact, inputs
 from fit import digest
 
 
-def run(driver, config_path, converted=None, original=None):
+def run(driver, config_path, converted=None, original=None, execute=None):
     config = json.loads(Path(config_path).read_text())
     if config.get('source_commit') != PIN:
         raise ValueError('native driver requires approved experimental source pin')
@@ -29,7 +29,7 @@ def run(driver, config_path, converted=None, original=None):
             inputs(original, converted)
     elif config.get('mode') != 'capture':
         raise ValueError('driver mode must be capture or reload')
-    subprocess.run([str(Path(driver).resolve()), str(Path(config_path).resolve())], check=True)
+    (execute or subprocess.run)([str(Path(driver).resolve()), str(Path(config_path).resolve())], check=True)
     if config['mode'] == 'capture':
         seal_provenance(config['out'])
     elif config.get('capture_reload'):

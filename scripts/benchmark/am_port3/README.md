@@ -519,3 +519,75 @@ compile the kernel. The full Python suite has 50 passing tests and one optional
 native-reader test skipped without `AM_BUNDLE_TEST`. Actual full CPU/HIP linking,
 prepared model inputs and bounded row publication remain to do; no full-build
 or model/GPU verdict is asserted by these tests.
+
+## Bounded model pipeline (admitted row only)
+
+`pipeline.py --plan <prepared-plan.json> --out <new-result-root>` wires the
+verified builds to default-off controls, calibration capture, offline 5x fit,
+a one-token captured native reload and a separate 32,768-token stability run.
+It requires all four **already completed** full-build receipts; it does not
+compile, download, hash model weights or prepare tokens inside the model grant.
+Prepare the model identity and token file once before publishing a row.
+
+Plan schema is `epyc.am.pipeline-plan.v1`. Required fields:
+
+* `source_commit`: the pinned experimental commit; `model`: prepared local path;
+  `model_identity`: its previously verified lowercase 64-character SHA-256;
+  `model_stat`: `st_dev`, `st_ino`, `st_size`, `st_mtime_ns` from that file at
+  preparation (the `model_stat()` helper returns these). Grant-time stat checks
+  guard ordinary replacement/change; they are not a fresh content verification.
+* `tokens`: prepared JSON file; `tokens_sha256`: that small file's digest.
+  It contains integer arrays `prefix_tokens` (5..4096, length divisible by 5),
+  `calibration_tokens` (2..512), `warmup_tokens` (1..256) and `probe_tokens`
+  (1..256). The fixed context is 36,864, allowing the prefix plus 32K append.
+* `expected_layers`: the exact 16 sorted distinct attention-layer IDs from the
+  prepared model metadata; `threads`: positive integer within current affinity;
+  `n_gpu_layers`: positive offload request; `control_pairs`: fixed 3..9 per
+  backend; `phase_timeout_s`: 1..86400, set to the admitted row's planned bound.
+* `min_throughput_ratio`: predeclared screen in (0,1];
+  `native_relative_l2_limit`: predeclared native-oracle tolerance in (0,.01].
+  Higher cosine/throughput and lower error/KLD are better. A ratio threshold
+  below 1 permits a bounded slowdown screen; passing it does not establish zero
+  default-off throughput change and cannot alone close the handoff's futility rule.
+* `device_vram_path`: actual `/sys/class/drm/cardN/device/mem_info_vram_used`
+  for the booked MI210; `builds`: keys `baseline_cpu`, `patched_cpu`,
+  `baseline_hip`, `patched_hip`, each its distinct `BUILD.json` path. HIP receipts
+  must target `gfx90a`. Source, tooling, receipts, artifacts and prepared inputs
+  are checked before and after every native phase and again before completion.
+
+Controls run on CPU then HIP with paired alternating order, at least three fresh
+contexts per variant. A failed exact-logit or throughput screen records the
+measurements and stops before fitting. Otherwise capture saves the full prefix's
+hybrid state and greedy token. Conversion retains exactly one fifth of the
+original positions. The first fitted reload uses `capture_reload=true`, one
+append token, and the original **`capture/native` directory** for independent
+native-oracle checks. It requires complete layer coverage; native relative L2
+within the declared tolerance and minimum query-head prefix cosine >=.95 on at
+least 14/16 layers permit the long stability run. A failed screen stops there.
+Stability restores the same full-prefix state afresh, installs the same carrier,
+and appends exactly 32,768 tokens without the extra capture callback. This avoids
+spending the long decode after a failed reload check. Prefix quality is measured
+on compact-trajectory Q, not independent full-model hidden states/logits.
+
+The optional executor hook in `controls.run`/`run_driver.run` preserves their
+content checks while `residency.py` owns the actual native child PID. It sets the
+build's library path, clears PORT-1 beta, samples during execution every .25s,
+requires >=2 live samples with all mapped llama/ggml libraries in that build,
+and requires HIP mapping plus nonzero PID-owned KFD VRAM/device VRAM for GPU
+phases. Either sampled memory counter exceeding 36 GiB aborts; deadlines also
+abort. Only that captured child is terminated/reaped, escalating if necessary.
+Samples stream to JSONL without accumulating their history in RAM. This is
+sampled budget evidence, not a continuous memory high-water proof. A missing
+observation window refuses completion. CPU phases require native linkage samples
+without claiming GPU residency.
+
+Each completed phase keeps configs, wrapper seals, stdout/stderr and live-sample
+records. The final `RESULT.json` hashes every preceding output, records controls,
+local quality screens and the actual decoded count, and says `MEASURED` rather
+than automatically declaring the handoff passed. Exceptions leave partial outputs
+without a final completion result. Filing must interpret the predeclared screens,
+noise and scope. No model row has been published or run by the synthetic tests.
+Eighteen new model-free tests exercise orchestration, early futility, prepared
+input/build changes, layer thresholds, live linkage/KFD/budget sampling and owned
+child termination. Full Python suite: 68 PASS, one optional native-reader SKIP.
+Actual full builds, prepared model inputs and row publication are next.
