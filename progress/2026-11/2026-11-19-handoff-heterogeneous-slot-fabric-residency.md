@@ -225,3 +225,7 @@ Reconciled `kvu-kpf18-g3-full-import-20261105` under KPF-18.0d: existing full-ro
 ## 04:26Z — Consume duplicate run-end event: host-ASan build already filed PASS and both build boxes completed.
 
 Duplicate run-end event `kvu11c-host-asan-build-r4-20261105` consumed: existing verdict PASS and `.FILED` receipt present; KVU-11c-ASAN-BUILD and KVU-11c-ASAN-BUILD-R4 already completed with retained build evidence. No new result-bearing work for this event; no rerun or handoff change. [no-belief: duplicate event acknowledgement only]
+
+## 04:27Z — Consume duplicate native-custody run-end; existing INCONCLUSIVE verdict and completed R1 filing already cover it.
+
+Duplicate event `kvu19b-native-custody-qual-20261105` acknowledged. Existing filed verdict is INCONCLUSIVE despite native QUALIFIED: profiler GPU-ID/BDF and child-birth bindings were not independently established. KVU-19b-NATIVE-CUSTODY-R1 already records that verdict; parent attribution remains open. Existing result and handoff retained without rerun or new ticks. [no-belief: duplicate event acknowledgement only]
