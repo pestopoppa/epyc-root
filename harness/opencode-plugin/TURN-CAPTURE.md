@@ -37,3 +37,27 @@ No upstream source has been copied into the lane.
 
 Offline validation: `node --test harness/opencode-plugin/test/*.test.ts`.
 Focused capture and hook tests use mocked native SDK reads and perform no inference.
+
+The keeper-only consumer is now `scripts/harness/hs_td2_selfcheck.py`. It reads a
+finite, prepared capture JSONL snapshot and calls the worker completions URL
+supplied by its qualified row. It imports `src.typed_decisions.prepared_action`
+from the explicit `--orchestrator-repo`; it does not reproduce the receipt API.
+Its `hs_td2.selfcheck.v1` output embeds the original `decision_receipt.v1`,
+capture fingerprint, producer/API file hashes, raw response, confidence and
+extra-call elapsed time. Missing/error/oversize captures never enter inference;
+malformed judgments and transport failures remain unknown. Changed inputs and
+expired receipts cannot yield an accepted judgment. No action is executed.
+The model alias is a request, not verified serving identity: `resolved_model`
+stays null; the row must supply native worker/model/build/library custody.
+
+Use `python3 scripts/harness/hs_td2_selfcheck.py --help` for arguments. Execution
+requires `FILLER_ID`; the plugin does not invoke it. Inputs must be frozen and
+validated before publication; duplicates or structurally invalid JSON stop the
+snapshot, retaining earlier flushed outputs. Output creation is exclusive and
+private (0600). A new output path is required for each attempt. Per-record
+unknowns remain in the denominator; rows must retain partial attempts and the
+prepared input count. The capture's best-effort coverage limits still apply.
+This asynchronous post-turn shadow cannot measure pre-handback latency or gate
+handback. No real-session acceptance or worker qualification is implied by its
+mocked tests (`python3 -m pytest -q tests/harness/test_hs_td2_selfcheck.py`). Set
+`EPYC_ORCHESTRATOR_REPO` for that suite when the sibling repo is elsewhere.
