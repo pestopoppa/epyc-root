@@ -297,3 +297,7 @@ Duplicate run-end for `kpf623-source-custody-r2-20261105`: filing helper returne
 ## 04:51Z — Consume already-filed drafter-impact completion without replaying superseded work
 
 Duplicate event `kpf191-drafter-impact-8952-20261105`: result is partial source-reference data at `8952a0f693fb923918157eb25117641b74766230`, with neither native upstream impact nor nonpartial scan_complete. Existing operator verdict is INCONCLUSIVE, rc1; RESULT SHA-256 `056280c278f56734f921ddc01b528ca076f7485d5ad9ecb104e6a9e199f660f2`. Filing helper returned NOOP (FILED already exists). Existing handoff records the coverage-parser failure and later successor PASS; no duplicate result, new tick or retry. KPF-19.1 remains open for its CH-18 conformance leg.
+
+## 04:52Z — Consume already-filed adjacency-impact completion; successor already completed the box
+
+Duplicate event `hsf3-adjacency-impact-3a09-20261105`: rc1, partial source-reference scan only, no native impacts. Existing operator verdict is INCONCLUSIVE following GitNexus analyze crash; RESULT SHA-256 `eda76a9c0c08ba0bdbd0b4d07215b5b503a445a34ae1155e8e736f625bdbd007`. Filing helper returned NOOP because FILED exists. HSF-3-BARRIER-IMPACT is already checked from successor `hsf3-adjacency-impact-3a09-20261105-r2-sq3` (three LOW impacts, complete scan); no duplicate tick, rerun or new claim. No result-bearing work remains for this event.
