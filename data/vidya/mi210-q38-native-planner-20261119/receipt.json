@@ -1,0 +1,309 @@
+{
+  "canary": {
+    "path": "scripts/vidya/canary/mi210_q38_context.py",
+    "sha256": "ff728e280f2e3e910318ef39ecbbbfa9726cc9a98e55e948d4335950bbf98c68"
+  },
+  "candidate_belief_context_sha256": "4843cc732fcff9faad96eb843d5f8f354840bf63a0a7bd4829fd86c4f4a7a353",
+  "candidate_patch": {
+    "path": "data/vidya/mi210-q38-planner-control-20261118/research-model-sha256.patch",
+    "sha256": "4680e8ce96a8ff885cc1a1abde6ac69641f35a4846904cfccb3ec9389dc597b5"
+  },
+  "controls": {
+    "baseline-accepted": {
+      "actor_receipts": [
+        {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-native-planner-20261119/baseline-accepted/reads.jsonl",
+          "sha256": "e0d773b625a3fe8e3a808332da07b6efb97ff377e9194a48c28dd96f0fd9dd3a"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-native-planner-20261119/baseline-accepted/actor-replies/belief-receipts.jsonl",
+          "sha256": "c7edb8f2aa78398a9fce2ded9f404f557eda28ff55d5f2e43b7c5aa3bc1b271d"
+        }
+      ],
+      "original_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-native-planner-20261119/baseline-accepted/receipt.json",
+      "result": {
+        "actor_backend_called": false,
+        "actor_receipt_id": "sha256:8ca946f92b3325a9ffd44ec96270733e9b29258986a1ad9f0b178730e97b5655",
+        "authority": "verified-native-replay",
+        "baseline": true,
+        "capture_files_sha256": {
+          "attempt-00.json": "dfd54752607cded813aa0691016cdcccabd569f4641074b19fe56a83a782bf92",
+          "attempt-01.json": "53091033638b92c90c96d1ff659b684f28b557ec431af0f91e4e18fb02db823e",
+          "attempt-02.json": "bda80835c595cdc171266605159b2f564b87f1a28036c7d30b1696d66b3700ce",
+          "attempt-03.json": "d76d9246a912cfd535421f1b54837e119eb4e8f3ed0fca15afabb1398f867f8a",
+          "declaration.json": "ff2c7b14d50c00fb16311ef80ba77272fdedc5f0d833ea9ced141c63e25fd5b6",
+          "terminal.json": "57281fdc0219f26fa5c8aad3fc7a4e96a95c36bbe4c6484742ccbbb2a8e1d339"
+        },
+        "capture_run_id": "belief-bc629eba36a547669711591d1f36e686",
+        "capture_terminal_sha256": "c28c09d81499b43675612fedd57628a9bdd14cd2ad2e94d3559c598c53f5137f",
+        "entry_point": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+        "excluded": {},
+        "frames": 60,
+        "model_scope": {
+          "backend": "gpu",
+          "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+          "scope_basis": "native"
+        },
+        "reader_checkout": {
+          "current": true,
+          "error": null,
+          "head": "c2e28b3630cd38236ac599a8ab63dd5ed459a65e",
+          "origin_main": "c2e28b3630cd38236ac599a8ab63dd5ed459a65e",
+          "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate"
+        },
+        "refusal_controls": {},
+        "refused": 0,
+        "reliance": {
+          "accepted": [],
+          "declared": [
+            "clm_mi210_124edae3584498f51634db4c",
+            "clm_mi210_133fe32ea801ac2cf5aaae26",
+            "clm_mi210_1683c79178dea2baa7ad7d22",
+            "clm_mi210_2df280fca105c6dc0ba7f1d6",
+            "clm_mi210_3ca3d497ffbcff3957d3909b",
+            "clm_mi210_4620be7bd4e4017919e86e79",
+            "clm_mi210_6632d6365080f0166cf88d02",
+            "clm_mi210_722683ebf2be123dd4f2be9a",
+            "clm_mi210_76e6b201f6c9fbdbda48be98",
+            "clm_mi210_7d6e8707c39dbc0eaf6cf6e8",
+            "clm_mi210_83871fe57fb82c7852b7738d",
+            "clm_mi210_8bb3924874cec6dacbcb32d3",
+            "clm_mi210_a2649187ac1756c3d4777e96",
+            "clm_mi210_accea8ab95904a8738bb740a",
+            "clm_mi210_af3b990bb2bcd09486409f1f",
+            "clm_mi210_af48e1cab6dd989f80d80de9",
+            "clm_mi210_b139fba228fbf8d9cad39ce3",
+            "clm_mi210_bf9bbd9ac6195c46009c1d17",
+            "clm_mi210_cb6a08bc0de3051ff611b655",
+            "clm_mi210_ed3cddb12f6e85d5b691c68a"
+          ],
+          "rejected": [
+            {
+              "claim_id": "clm_mi210_124edae3584498f51634db4c",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_133fe32ea801ac2cf5aaae26",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_1683c79178dea2baa7ad7d22",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_2df280fca105c6dc0ba7f1d6",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_3ca3d497ffbcff3957d3909b",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_4620be7bd4e4017919e86e79",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_6632d6365080f0166cf88d02",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_722683ebf2be123dd4f2be9a",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_76e6b201f6c9fbdbda48be98",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_7d6e8707c39dbc0eaf6cf6e8",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_83871fe57fb82c7852b7738d",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_8bb3924874cec6dacbcb32d3",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_a2649187ac1756c3d4777e96",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_accea8ab95904a8738bb740a",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_af3b990bb2bcd09486409f1f",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_af48e1cab6dd989f80d80de9",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_b139fba228fbf8d9cad39ce3",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_bf9bbd9ac6195c46009c1d17",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_cb6a08bc0de3051ff611b655",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_ed3cddb12f6e85d5b691c68a",
+              "reason": "not_presented"
+            }
+          ]
+        },
+        "rendered_excerpt_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        "rows": 20,
+        "schema": "epyc.vidya.mi210_q38_planning_canary.v1",
+        "scratch_ledger": true,
+        "status": "passed",
+        "visible_count": 0
+      },
+      "sha256": "5c8fa6736a3a98a6638d9b45a9bf2855df8a3f8c99493dd0d5882c4d92ce1385"
+    },
+    "candidate": {
+      "actor_receipts": [
+        {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-native-planner-20261119/candidate/reads.jsonl",
+          "sha256": "012765166b9692c95b3a0add35992e94415101c7ca4ce50cd3ea8e229c6913f0"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-native-planner-20261119/candidate/alarms.jsonl",
+          "sha256": "ab18e773ef5e3f1feefa01266fd075901a7f487c5fd4dc8e2d754a9db9914a0b"
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-native-planner-20261119/candidate/actor-replies/belief-receipts.jsonl",
+          "sha256": "c38368b2a8ba6212af70a70d44cf85fa9979aacf857de3d6d5ecd955f67ba25f"
+        }
+      ],
+      "original_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-native-planner-20261119/candidate/receipt.json",
+      "result": {
+        "actor_backend_called": false,
+        "actor_receipt_id": "sha256:8e98549edb46c2f00f860ddf8b139b02a50306a6c7adad6e48ff07c05bf6ab05",
+        "authority": "verified-native-replay",
+        "baseline": false,
+        "capture_files_sha256": {
+          "attempt-00.json": "dfd54752607cded813aa0691016cdcccabd569f4641074b19fe56a83a782bf92",
+          "attempt-01.json": "53091033638b92c90c96d1ff659b684f28b557ec431af0f91e4e18fb02db823e",
+          "attempt-02.json": "bda80835c595cdc171266605159b2f564b87f1a28036c7d30b1696d66b3700ce",
+          "attempt-03.json": "d76d9246a912cfd535421f1b54837e119eb4e8f3ed0fca15afabb1398f867f8a",
+          "declaration.json": "ff2c7b14d50c00fb16311ef80ba77272fdedc5f0d833ea9ced141c63e25fd5b6",
+          "terminal.json": "57281fdc0219f26fa5c8aad3fc7a4e96a95c36bbe4c6484742ccbbb2a8e1d339"
+        },
+        "capture_run_id": "belief-bc629eba36a547669711591d1f36e686",
+        "capture_terminal_sha256": "c28c09d81499b43675612fedd57628a9bdd14cd2ad2e94d3559c598c53f5137f",
+        "entry_point": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+        "excluded": {
+          "cpu": [
+            "no_applicable_claims"
+          ],
+          "different-weight": [
+            "no_applicable_claims"
+          ],
+          "invalid-digest": [
+            "inapplicable_target"
+          ],
+          "missing-digest": [
+            "no_applicable_claims"
+          ]
+        },
+        "frames": 60,
+        "model_scope": {
+          "backend": "gpu",
+          "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+          "scope_basis": "native"
+        },
+        "reader_checkout": {
+          "current": true,
+          "error": null,
+          "head": "c2e28b3630cd38236ac599a8ab63dd5ed459a65e",
+          "origin_main": "c2e28b3630cd38236ac599a8ab63dd5ed459a65e",
+          "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate"
+        },
+        "refusal_controls": {},
+        "refused": 0,
+        "reliance": {
+          "accepted": [
+            "clm_mi210_124edae3584498f51634db4c",
+            "clm_mi210_133fe32ea801ac2cf5aaae26",
+            "clm_mi210_1683c79178dea2baa7ad7d22",
+            "clm_mi210_2df280fca105c6dc0ba7f1d6",
+            "clm_mi210_3ca3d497ffbcff3957d3909b",
+            "clm_mi210_4620be7bd4e4017919e86e79",
+            "clm_mi210_6632d6365080f0166cf88d02",
+            "clm_mi210_722683ebf2be123dd4f2be9a",
+            "clm_mi210_76e6b201f6c9fbdbda48be98",
+            "clm_mi210_7d6e8707c39dbc0eaf6cf6e8",
+            "clm_mi210_83871fe57fb82c7852b7738d",
+            "clm_mi210_8bb3924874cec6dacbcb32d3",
+            "clm_mi210_a2649187ac1756c3d4777e96",
+            "clm_mi210_accea8ab95904a8738bb740a",
+            "clm_mi210_af3b990bb2bcd09486409f1f",
+            "clm_mi210_af48e1cab6dd989f80d80de9"
+          ],
+          "declared": [
+            "clm_mi210_124edae3584498f51634db4c",
+            "clm_mi210_133fe32ea801ac2cf5aaae26",
+            "clm_mi210_1683c79178dea2baa7ad7d22",
+            "clm_mi210_2df280fca105c6dc0ba7f1d6",
+            "clm_mi210_3ca3d497ffbcff3957d3909b",
+            "clm_mi210_4620be7bd4e4017919e86e79",
+            "clm_mi210_6632d6365080f0166cf88d02",
+            "clm_mi210_722683ebf2be123dd4f2be9a",
+            "clm_mi210_76e6b201f6c9fbdbda48be98",
+            "clm_mi210_7d6e8707c39dbc0eaf6cf6e8",
+            "clm_mi210_83871fe57fb82c7852b7738d",
+            "clm_mi210_8bb3924874cec6dacbcb32d3",
+            "clm_mi210_a2649187ac1756c3d4777e96",
+            "clm_mi210_accea8ab95904a8738bb740a",
+            "clm_mi210_af3b990bb2bcd09486409f1f",
+            "clm_mi210_af48e1cab6dd989f80d80de9",
+            "clm_mi210_b139fba228fbf8d9cad39ce3",
+            "clm_mi210_bf9bbd9ac6195c46009c1d17",
+            "clm_mi210_cb6a08bc0de3051ff611b655",
+            "clm_mi210_ed3cddb12f6e85d5b691c68a"
+          ],
+          "rejected": [
+            {
+              "claim_id": "clm_mi210_b139fba228fbf8d9cad39ce3",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_bf9bbd9ac6195c46009c1d17",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_cb6a08bc0de3051ff611b655",
+              "reason": "not_presented"
+            },
+            {
+              "claim_id": "clm_mi210_ed3cddb12f6e85d5b691c68a",
+              "reason": "not_presented"
+            }
+          ]
+        },
+        "rendered_excerpt_sha256": "52abf99bd981fb80b4958b664608647f8210909f0463c20ab5af48444787474c",
+        "rows": 20,
+        "schema": "epyc.vidya.mi210_q38_planning_canary.v1",
+        "scratch_ledger": true,
+        "status": "passed",
+        "visible_count": 16
+      },
+      "sha256": "fafaea03c136b4c9d3000bb032721b11dced31a5964dc02f2ffaebb5753aee4c"
+    }
+  },
+  "original_deploy": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a",
+  "reader_commit": "c2e28b3630cd38236ac599a8ab63dd5ed459a65e",
+  "research_base_commit": "6decaeda4481a841b3a85b55b0be87a6963b3042",
+  "schema": "epyc.vidya.q38_native_planner_acceptance.v1",
+  "scope": "Original native Q38 capture; source-pinned candidate planner acceptance only. Live Research runner adoption remains open. No ratio, causal, serving or promotion verdict.",
+  "status": "passed"
+}
