@@ -2652,7 +2652,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
+      "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF r13 (smoke queued) then LIVE-1 wiring then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
       "track": "rocm verify profile backend"
     },
     "INF-50": {

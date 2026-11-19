@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T21:15:41Z",
+  "generated_at": "2026-11-19T21:17:57Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1664,7 +1664,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-19",
-      "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
+      "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF r13 (smoke queued) then LIVE-1 wiring then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
       "open": 3,
       "priority": 0.8728,
       "priority_basis": {
