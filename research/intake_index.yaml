@@ -387478,7 +387478,7 @@
     effect: unaffected
     note: ddtree.md claim table marks the matching row CONFIRMED; correction (best-of-7-budget selection,
       no B<16 data) is already carried by claims 5-6.
-  notes: "lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Read FULL from version-pinned LaTeXML html, sha256 f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be; Figures 3-4 read from arXiv SVGs; Fig. 3 digitized from marker coordinates and calibrated against Table 1 (5.56x/7.79, 7.52x/10.73). Companion repo github.com/liranringel/ddtree read at c96427a185677bf4133ed865dd1626a5041aef9b, not executed. Drafter training: none. Wave cap reached for surfaced sources. Estimates only: np1 27B + DFlash2 n7 T=0 0.90-1.01x at B=8; about 0.67-1.07x at B=16. Dive file: /mnt/raid0/llm/tmp/c10-intake-20261109/dives/ddtree.md."
+  notes: "lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Read FULL from version-pinned LaTeXML html, sha256 f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be; Figures 3-4 read from arXiv SVGs; Fig. 3 digitized from marker coordinates and calibrated against Table 1 (5.56x/7.79, 7.52x/10.73). Companion repo github.com/liranringel/ddtree read at c96427a185677bf4133ed865dd1626a5041aef9b, not executed. Drafter training: none. Wave cap reached for surfaced sources. Estimates only: np1 27B + DFlash2 n7 T=0 0.90-1.01x at B=8; about 0.67-1.07x at B=16. Dive file: /mnt/raid0/llm/tmp/c10-intake-20261109/dives/ddtree.md. 2026-11-19 re-encounter: resurfaced in the AK-DTREE tree-verification intake (sweep 3, via LumoTree/Trees-from-Marginals citations); its target-sampler walk is now cited as the P1 sampled-row acceptance default; not re-dived."
   handoffs_updated:
   - handoffs/active/speculative-decoding.md
   integration_disposition: integrated
@@ -391290,3 +391290,1162 @@
       byte_length: 360431
     verified_by: research-intake/stage2 wave (integrator, source read from disk 2026-11-19)
   dive_corrections: "2026-11-19 Stage-2b wave 2: README at 0ea1937 read from disk and from the retained repo page."
+- id: intake-2705
+  arxiv_id: null
+  url: https://github.com/Wallawalla47/Infernix
+  source_type: repo
+  title: "Infernix: tree-verified speculative decoding (docs/maintainer/tree-verification.md and kernels) @ 397f8cd"
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-19'
+  authors:
+  - "Wallawalla47"
+  key_claims:
+  - "DFlash2, DFlash and MTP rounds verify a small tree of proposals in one forward pass; greedy rounds emit the target argmax and sampled rounds emit exactly the processed target distribution."
+  - "The GDN tree walk computes each column's state once from its parent, depth first, with branch tiles in shared-memory slots; the persistent recurrent state is never modified during verification, so rejected branches need no rollback."
+  - "A tree round's main-chain columns are not bit-identical to a chain round's, because the wider block selects other GEMM tiles and attention routes."
+  - "At one request on RTX 5090 (27B NVFP4, DFlash2 K=7, sampled T=0.6), 12 / 16 columns raised decode tok/s +6.9 % / +8.6 %; the gain falls with concurrency (C=4, 9 columns: -0.9 %) and with context (loses 3-4 % at 128K)."
+  - "auto picks chain, K+5 or K+9 columns per round from same-text gain (narrower trees are prefixes of wider) over measured round time per batch size and context bucket."
+  - "Path rows (each root-to-leaf path as its own row) are used only where attention has no tree form; a tree round then costs about its path count's chains."
+  techniques:
+  - "ancestor-mask tree verification"
+  - "ReplaySSM record mode tree walk"
+  - "best-first lattice tree builder"
+  - "recursive rejection sampling tree acceptance"
+  - "post-acceptance compaction"
+  - "TreeWidthController same-text gain"
+  reported_results:
+  - "TV:L525-537 C=1: chain 208.3 tok/s, 12 cols 222.6 (+6.9 %), 16 cols 226.0 (+8.6 %); C=4 9 cols -0.9 %"
+  - "TV:L551-552 acceptance gain +11.4..+11.9 % (12 cols) and +16.8..+18.2 % (16 cols) vs round time +5.1..5.6 % / +8.8..9.3 %"
+  - "TV:L609-617 long context: +5-6 % at 16K, +1-2 % at 64K, -3-4 % at 128K"
+  - "TV:L578-582 path cap at 12 cols: 2 paths +0.8 %, 3 paths +6.4 %"
+  credibility_score: null
+  contradicting_evidence:
+  - "Single-maintainer engine; all numbers are self-measured on one RTX 5090 and Windows. No independent replication was found. TreeWY (intake-2708) itself says wide trees are not yet a throughput win in vLLM on B200."
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "AK-DTREE program plan in speculative-decoding.md amended (Intake refinements 2026-11-19; boxes DTREE-A, DTREE-B) with the builder, compaction, gate and controller design read from this source."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "docs/maintainer/tree-verification.md:L10-L11 @ 397f8cd"
+    quote: "target's argmax continuation and sampled rounds emit exactly the processed target distribution"
+    quote_sha256: 3cd9ed6b7d7c039fe2bdf6d2e5fb5cc5a55edfc0f5caf826b84db3247ea101d8
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784, found: true}
+    source_revision: https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://github.com/Wallawalla47/Infernix"
+      requested_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      effective_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      retrieved_at_utc: "2026-11-19T18:42:07.532769Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      relative_path: "sha256/80/803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784.raw"
+      raw_sha256: "803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      byte_length: 57855
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "docs/maintainer/tree-verification.md:L208-L209 @ 397f8cd"
+    quote: "is not modified by verification (ReplaySSM record mode), so rejected branches need no rollback."
+    quote_sha256: 168401091b617ce8131d2df6cfc717660f47148521fd01882d387a92e0c08f00
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784, found: true}
+    source_revision: https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://github.com/Wallawalla47/Infernix"
+      requested_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      effective_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      retrieved_at_utc: "2026-11-19T18:42:07.532769Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      relative_path: "sha256/80/803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784.raw"
+      raw_sha256: "803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      byte_length: 57855
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "docs/maintainer/tree-verification.md:L225-L227 @ 397f8cd"
+    quote: "main-chain columns of a tree round are not bit-identical to those of a chain round"
+    quote_sha256: 6fb740c4b9e513931498d87303261c5217aa54540c1f65cf1de92a10d1488936
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784, found: true}
+    source_revision: https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://github.com/Wallawalla47/Infernix"
+      requested_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      effective_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      retrieved_at_utc: "2026-11-19T18:42:07.532769Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      relative_path: "sha256/80/803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784.raw"
+      raw_sha256: "803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      byte_length: 57855
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "docs/maintainer/tree-verification.md:L617 @ 397f8cd"
+    quote: "trees gain about 5-6 % at 16K and 1-2 % at 64K, and lose 3-4 % at 128K."
+    quote_sha256: 32e278788d5326769a8f93b59f186bd526138d268c01cd6272fca3e1e97b3d46
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784, found: true}
+    source_revision: https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://github.com/Wallawalla47/Infernix"
+      requested_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      effective_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      retrieved_at_utc: "2026-11-19T18:42:07.532769Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      relative_path: "sha256/80/803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784.raw"
+      raw_sha256: "803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      byte_length: 57855
+  - claim_index: 5
+    kind: page-and-quote
+    locator: "docs/maintainer/tree-verification.md:L497-L498 @ 397f8cd"
+    quote: "so a tree round costs about its path count's chains"
+    quote_sha256: 8355f49267b0c97ad0a8b9d6033aa7555c431e0fad0c57e95af324d6ff6315ae
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784, found: true}
+    source_revision: https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://github.com/Wallawalla47/Infernix"
+      requested_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      effective_url: "https://raw.githubusercontent.com/Wallawalla47/Infernix/397f8cd1cc64f6fff8d098994add654349f07d3a/docs/maintainer/tree-verification.md"
+      retrieved_at_utc: "2026-11-19T18:42:07.532769Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      relative_path: "sha256/80/803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784.raw"
+      raw_sha256: "803ccb1d211319ce8a663e3ff98accc6cc97be6de226479a46f6d1959a3d3784"
+      byte_length: 57855
+  notes: "Cloned and pinned at 397f8cd1cc64f6fff8d098994add654349f07d3a (Apache-2.0). Read from disk: docs/maintainer/tree-verification.md (all 800 lines, by the integrator), src/product/speculative_options.h, and apps/cli/options.cpp (draft-tree flags). The opus code dive also read recurrent.cuh, the tree walk and replay_root_path at L1013-1121, candidate_selector_path.cu L313, startup.cpp L87-113 and tree_width_controller.cpp L64-98. Not read: the rest of src, bench/ code, and the replayssm-gdn.md and dflash.md bodies. Claim 4 (auto controller) is anchored by the code-dive read of TWC:L64-98; it has no quote anchor here. Claim 3's numbers are TV:L525-537. Our DFlash2 in llama.cpp (eee3da838 common/speculative.cpp:1780-1820) already exposes the same predecessor-conditional lattice, so the builder ports onto it on the host or device. Cited sources: Recursive Speculative Decoding (Jeon 2024), UniVer 2605.04543, TreeWY 2608.20961, Bole 2608.01651 (already indexed), block verification 2403.10444."
+- id: intake-2706
+  arxiv_id: null
+  url: https://github.com/Wallawalla47/Infernix/issues/30
+  source_type: blog
+  title: "Infernix issue #30: DFlash2 drafter for Orcarouter Qwen3.8 (maintainer recommends --draft-tree-nodes auto)"
+  categories:
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  expanded_from: intake-2705
+  verdict: worth_investigating
+  ingested_date: '2026-11-19'
+  authors:
+  - "ame7zdev"
+  - "Wallawalla47"
+  key_claims:
+  - "The maintainer states --draft-tree-nodes auto gives +12-17 % accepted drafts with the same output distribution on the abliterated 27B artifact."
+  - "The user reports DFlash2 acceptance around 30 % on an abliterated Qwen3.8-27B checkpoint whose drafter was not retrained."
+  techniques:
+  - "--draft-tree-nodes auto"
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence:
+  - "The +12-17 % is an accepted-draft (tokens per round) figure. The engine's own docs (intake-2705, TV:L551-552) put the matching decode tok/s gain at about +6-8.5 % at one request. The user's 'insanely fast' report is anecdotal and gives no numbers."
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Gain-is-acceptance-not-speed note in the AK-DTREE intake refinements (speculative-decoding.md)."
+  read_depth: FULL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "maintainer comment 2026-10-19"
+    quote: "+12-17 % accepted drafts with the same output distribution"
+    quote_sha256: bc9f16c6523bea3363bb2d3cfd3a881bdb6115ff9d088f13f884d4b1f182632a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2f9824ef43f444cb900f48a6caa623d3376116a48d7299c7295ad6f13f1e0851, found: true}
+    source_revision: https://github.com/Wallawalla47/Infernix/issues/30
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://github.com/Wallawalla47/Infernix/issues/30"
+      requested_url: "https://github.com/Wallawalla47/Infernix/issues/30"
+      effective_url: "https://github.com/Wallawalla47/Infernix/issues/30"
+      retrieved_at_utc: "2026-11-19T18:43:43.037949Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:2f9824ef43f444cb900f48a6caa623d3376116a48d7299c7295ad6f13f1e0851"
+      relative_path: "sha256/2f/2f9824ef43f444cb900f48a6caa623d3376116a48d7299c7295ad6f13f1e0851.raw"
+      raw_sha256: "2f9824ef43f444cb900f48a6caa623d3376116a48d7299c7295ad6f13f1e0851"
+      byte_length: 217644
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "issue body 2026-10-15"
+    quote: "acceptance is only ~30% for me"
+    quote_sha256: 268443d06267151fb0094c4b98782bfc09c3d52953b5eaa1bd68437099d6e8fa
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2f9824ef43f444cb900f48a6caa623d3376116a48d7299c7295ad6f13f1e0851, found: true}
+    source_revision: https://github.com/Wallawalla47/Infernix/issues/30
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://github.com/Wallawalla47/Infernix/issues/30"
+      requested_url: "https://github.com/Wallawalla47/Infernix/issues/30"
+      effective_url: "https://github.com/Wallawalla47/Infernix/issues/30"
+      retrieved_at_utc: "2026-11-19T18:43:43.037949Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:2f9824ef43f444cb900f48a6caa623d3376116a48d7299c7295ad6f13f1e0851"
+      relative_path: "sha256/2f/2f9824ef43f444cb900f48a6caa623d3376116a48d7299c7295ad6f13f1e0851.raw"
+      raw_sha256: "2f9824ef43f444cb900f48a6caa623d3376116a48d7299c7295ad6f13f1e0851"
+      byte_length: 217644
+  notes: "Read the issue and all comments (gh api JSON, sha256 358abff7 and eec53b32) plus the HTML page snapshot. The claim is the maintainer's, not independently measured."
+- id: intake-2707
+  arxiv_id: "2505.14969"
+  url: https://arxiv.org/html/2505.14969v2
+  source_type: paper
+  title: "STree: Speculative Tree Decoding for Hybrid State-Space Models"
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: worth_investigating
+  ingested_date: '2026-11-19'
+  authors:
+  - "Yangchao Wu"
+  - "Zongyue Qin"
+  - "Alex Wong"
+  key_claims:
+  - "Presents the first scalable tree-based speculative decoding for SSMs and SSM/Transformer hybrids."
+  - "Gain over vanilla SD depends on drafter quality: 1 % slower at an early drafter checkpoint, 9.67 % faster at step 48000."
+  techniques:
+  - "TreeScan kernel"
+  reported_results:
+  - "Mamba2-2.7B and MambaInLlama-8B targets"
+  credibility_score: 3
+  contradicting_evidence: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Mamba2 scan math does not carry over to the gated delta rule; TreeWY (intake-2708) and the Infernix walk (intake-2705) cover our GDN target. Recorded as lineage only."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "We propose the first scalable algorithm to perform tree-based speculative decoding in state-space models (SSMs) and hybrid architectures of SSMs and Transformer layers"
+    quote_sha256: eaed5e76a8b59b198f72d48d9c048076851f44baa9512ac92895b54e2955ad9d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7f92f59e794ce03d371a07f617619aeed0df162dce821c8391c822f85a91df78, found: true}
+    source_revision: https://arxiv.org/html/2505.14969v2
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2505.14969v2"
+      requested_url: "https://arxiv.org/html/2505.14969v2"
+      effective_url: "https://arxiv.org/html/2505.14969v2"
+      retrieved_at_utc: "2026-11-19T18:43:22.149827Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:7f92f59e794ce03d371a07f617619aeed0df162dce821c8391c822f85a91df78"
+      relative_path: "sha256/7f/7f92f59e794ce03d371a07f617619aeed0df162dce821c8391c822f85a91df78.raw"
+      raw_sha256: "7f92f59e794ce03d371a07f617619aeed0df162dce821c8391c822f85a91df78"
+      byte_length: 250298
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Experiments, drafter-checkpoint ablation"
+    quote: "9.67% faster at step 48000"
+    quote_sha256: d85a641ac7950943ead3ed647ec6ec4e2c4123295612a5ecf32dea761f0365e8
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7f92f59e794ce03d371a07f617619aeed0df162dce821c8391c822f85a91df78, found: true}
+    source_revision: https://arxiv.org/html/2505.14969v2
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2505.14969v2"
+      requested_url: "https://arxiv.org/html/2505.14969v2"
+      effective_url: "https://arxiv.org/html/2505.14969v2"
+      retrieved_at_utc: "2026-11-19T18:43:22.149827Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:7f92f59e794ce03d371a07f617619aeed0df162dce821c8391c822f85a91df78"
+      relative_path: "sha256/7f/7f92f59e794ce03d371a07f617619aeed0df162dce821c8391c822f85a91df78.raw"
+      raw_sha256: "7f92f59e794ce03d371a07f617619aeed0df162dce821c8391c822f85a91df78"
+      byte_length: 250298
+  notes: "v2 HTML read from disk by the sweep-1 subagent: abstract, intro, method and the experiments ablation. Not read: appendix. Gains are drafter-quality dependent."
+- id: intake-2708
+  arxiv_id: "2608.20961"
+  url: https://arxiv.org/html/2608.20961v1
+  source_type: paper
+  title: "TreeWY: Speculative Verification for Gated DeltaNet Hybrids"
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-19'
+  authors:
+  - "Sneha Murthy Ghantasala"
+  key_claims:
+  - "Per-step recurrent snapshots cannot be shared across branches of a draft tree, so wide trees become memory-infeasible."
+  - "A tree-structured WY transform verifies every draft node with one triangular solve."
+  - "Wider trees are not yet a throughput win: N+1 tokens go through the target and the tree runs piecewise rather than fused."
+  techniques:
+  - "tree-structured WY transform"
+  - "pseudo-value accepted-state reconstruction"
+  reported_results:
+  - "Evaluated on Qwen3.5-35B-A3B (TP1) and 397B-A17B (TP8) in vLLM on B200 with a depth-3 MTP chain"
+  credibility_score: 2
+  contradicting_evidence: []
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Named as the optional closed-form P4 route in the AK-DTREE intake refinements (gfx90a kernel risks bullet). Infernix ships it as gdn-tree-closed-form for rows of <=16 columns."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "those snapshots cannot be shared across branches of a draft tree"
+    quote_sha256: 6a289b60dbf10a8c7cdf6543bb7fd0f9bf0137cd74ebfdb313769d45b7663e0b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468, found: true}
+    source_revision: https://arxiv.org/html/2608.20961v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2608.20961v1"
+      requested_url: "https://arxiv.org/html/2608.20961v1"
+      effective_url: "https://arxiv.org/html/2608.20961v1"
+      retrieved_at_utc: "2026-11-19T18:43:22.337874Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468"
+      relative_path: "sha256/33/33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468.raw"
+      raw_sha256: "33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468"
+      byte_length: 206608
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec. 2/3 contributions"
+    quote: "one triangular solve verifies every draft node"
+    quote_sha256: c8aead7b09321346c3a2ac1ae01da6a2bb5a8088a9a3d8b8580c8f92f725e29a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468, found: true}
+    source_revision: https://arxiv.org/html/2608.20961v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2608.20961v1"
+      requested_url: "https://arxiv.org/html/2608.20961v1"
+      effective_url: "https://arxiv.org/html/2608.20961v1"
+      retrieved_at_utc: "2026-11-19T18:43:22.337874Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468"
+      relative_path: "sha256/33/33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468.raw"
+      raw_sha256: "33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468"
+      byte_length: 206608
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec. 5"
+    quote: "It is not yet a throughput win"
+    quote_sha256: 03854cd25b26801e74862a0c75c41d644b21a5324b51c00f97976176fbb6566a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468, found: true}
+    source_revision: https://arxiv.org/html/2608.20961v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2608.20961v1"
+      requested_url: "https://arxiv.org/html/2608.20961v1"
+      effective_url: "https://arxiv.org/html/2608.20961v1"
+      retrieved_at_utc: "2026-11-19T18:43:22.337874Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468"
+      relative_path: "sha256/33/33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468.raw"
+      raw_sha256: "33b94f4f3a2037f20b61bf78bccadf4cf8c8430f8afe8d99db6831c1db2df468"
+      byte_length: 206608
+  notes: "v1 HTML read from disk: abstract, contributions and Sec. 5. Its A3B+MTP setup is analogous to our GPU A3B. Single author, unreviewed."
+- id: intake-2709
+  arxiv_id: "2607.16673"
+  url: https://arxiv.org/html/2607.16673v1
+  source_type: paper
+  title: "SpecLA: Efficient Speculative Decoding for Linear-Attention Models"
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: worth_investigating
+  ingested_date: '2026-11-19'
+  authors:
+  - "Zhibin Wang"
+  - "Xuying Han"
+  - "Zhaohua Yang"
+  key_claims:
+  - "Tree branches force the runtime to snapshot full recurrent states, replay shared prefixes, or serialize branch verification."
+  - "Reports up to 1.70x end-to-end speedup on a GDN-1.3B target."
+  techniques:
+  - "chain-decomposed tree verification"
+  - "factor-buffer accepted-state reconstruction"
+  reported_results:
+  - "H100, GDN-1.3B (pure linear attention)"
+  credibility_score: 2
+  contradicting_evidence: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "An alternative to the Infernix walk and TreeWY for the same GDN forking problem. Evidence is a 1.3B non-hybrid target, so it does not change the P3/P4 design. Reopen only if the walk's record time dominates P4 profiles."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Intro"
+    quote: "snapshot full recurrent states, replay shared prefixes, or serialize branch verification through a shared state object"
+    quote_sha256: b15fad15ef14e35784e3db11de3fbb13cab9217ff929c200345b877c77290894
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 084c7dd1c9ba5af4354ec2d739ed8f3db8dfa6021d77672a75e0fe0d71937b02, found: true}
+    source_revision: https://arxiv.org/html/2607.16673v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2607.16673v1"
+      requested_url: "https://arxiv.org/html/2607.16673v1"
+      effective_url: "https://arxiv.org/html/2607.16673v1"
+      retrieved_at_utc: "2026-11-19T18:43:22.508118Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:084c7dd1c9ba5af4354ec2d739ed8f3db8dfa6021d77672a75e0fe0d71937b02"
+      relative_path: "sha256/08/084c7dd1c9ba5af4354ec2d739ed8f3db8dfa6021d77672a75e0fe0d71937b02.raw"
+      raw_sha256: "084c7dd1c9ba5af4354ec2d739ed8f3db8dfa6021d77672a75e0fe0d71937b02"
+      byte_length: 244106
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Abstract / Sec. 8"
+    quote: "up to 1.70"
+    quote_sha256: f344cd604db6acd27393b4c92aecc9f5fa48d572b050cc9596916784c0efb232
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 084c7dd1c9ba5af4354ec2d739ed8f3db8dfa6021d77672a75e0fe0d71937b02, found: true}
+    source_revision: https://arxiv.org/html/2607.16673v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2607.16673v1"
+      requested_url: "https://arxiv.org/html/2607.16673v1"
+      effective_url: "https://arxiv.org/html/2607.16673v1"
+      retrieved_at_utc: "2026-11-19T18:43:22.508118Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:084c7dd1c9ba5af4354ec2d739ed8f3db8dfa6021d77672a75e0fe0d71937b02"
+      relative_path: "sha256/08/084c7dd1c9ba5af4354ec2d739ed8f3db8dfa6021d77672a75e0fe0d71937b02.raw"
+      raw_sha256: "084c7dd1c9ba5af4354ec2d739ed8f3db8dfa6021d77672a75e0fe0d71937b02"
+      byte_length: 244106
+  notes: "v1 HTML read from disk: intro, abstract and Sec. 8 results."
+- id: intake-2710
+  arxiv_id: "2605.29727"
+  url: https://arxiv.org/html/2605.29727v1
+  source_type: paper
+  title: "Bastion: Budget-Aware Speculative Decoding with Tree-structured Block Diffusion Drafting"
+  categories:
+  - speculative_decoding
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-19'
+  authors:
+  - "Soowon Oh"
+  - "Nam Cao"
+  - "Yujin Kim"
+  key_claims:
+  - "Grows a query-dependent tree until marginal gains no longer justify the added verification cost."
+  - "Uses an online latency estimator that calibrates a hardware-aware roofline model."
+  - "Best-first expansion outperforms beam search under matched budgets."
+  techniques:
+  - "roofline verify-cost model"
+  - "best-first tree expansion over block-drafter marginals"
+  reported_results: []
+  credibility_score: 2
+  contradicting_evidence: []
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Calibrated latency-curve prior for the DTREE-B auto controller (speculative-decoding.md)."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "grows the tree until marginal gains no longer justify incremental verification costs"
+    quote_sha256: d1e82daeeac3ba88d88e36e6f19644d4f558b3789ec39d8b1dcb8bd56284eae0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8, found: true}
+    source_revision: https://arxiv.org/html/2605.29727v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2605.29727v1"
+      requested_url: "https://arxiv.org/html/2605.29727v1"
+      effective_url: "https://arxiv.org/html/2605.29727v1"
+      retrieved_at_utc: "2026-11-19T18:43:23.806631Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8"
+      relative_path: "sha256/6d/6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8.raw"
+      raw_sha256: "6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8"
+      byte_length: 670858
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "an online latency estimator that calibrates a hardware-aware roofline model"
+    quote_sha256: cfa23eca1727db822d378d48acc5a9fa50aae372662412c29c2f09946ff7666f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8, found: true}
+    source_revision: https://arxiv.org/html/2605.29727v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2605.29727v1"
+      requested_url: "https://arxiv.org/html/2605.29727v1"
+      effective_url: "https://arxiv.org/html/2605.29727v1"
+      retrieved_at_utc: "2026-11-19T18:43:23.806631Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8"
+      relative_path: "sha256/6d/6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8.raw"
+      raw_sha256: "6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8"
+      byte_length: 670858
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec. 4.3"
+    quote: "Best-first expansion outperforms beam search under matched budgets"
+    quote_sha256: 017e06f8c1ecd3b784549e0cbe9468085163df333135e95ea50c9898f5782196
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8, found: true}
+    source_revision: https://arxiv.org/html/2605.29727v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2605.29727v1"
+      requested_url: "https://arxiv.org/html/2605.29727v1"
+      effective_url: "https://arxiv.org/html/2605.29727v1"
+      retrieved_at_utc: "2026-11-19T18:43:23.806631Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8"
+      relative_path: "sha256/6d/6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8.raw"
+      raw_sha256: "6da2445922891d93b5b96aabe322fdbd25c7e9ea8dbcaf10967871dfd07458b8"
+      byte_length: 670858
+  notes: "v1 HTML read from disk (abstract, Sec. 4.3, Sec. 5.1). GPU list not read. Transformer targets only."
+- id: intake-2711
+  arxiv_id: "2610.00321"
+  url: https://arxiv.org/html/2610.00321v1
+  source_type: paper
+  title: "CAST: Cost-Aware Speculative Trees from One-Pass Block Drafters"
+  categories:
+  - speculative_decoding
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-19'
+  authors:
+  - "Jungseob Lee"
+  - "Sugyeong Eo"
+  key_claims:
+  - "Adds candidates while the expected gain from the next one outweighs the verification time it adds."
+  - "Width adapts to each deployment from a latency measurement, without sweeping widths."
+  - "Verification cost jumps at kernel boundaries, so the best width depends strongly on deployment."
+  techniques:
+  - "latency-measured width selection for one-pass block drafters"
+  reported_results: []
+  credibility_score: 2
+  contradicting_evidence: []
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Latency-curve prior and the warning about GEMM-tile cliffs in DTREE-B (speculative-decoding.md)."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "CAST adds candidates while the expected gain from the next one outweighs the verification time it adds"
+    quote_sha256: fbd942a3b51506931a740b7dc6cbb8c46060934a85d3ddbe40c562927bb9781e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7, found: true}
+    source_revision: https://arxiv.org/html/2610.00321v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2610.00321v1"
+      requested_url: "https://arxiv.org/html/2610.00321v1"
+      effective_url: "https://arxiv.org/html/2610.00321v1"
+      retrieved_at_utc: "2026-11-19T18:43:24.286752Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7"
+      relative_path: "sha256/96/9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7.raw"
+      raw_sha256: "9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7"
+      byte_length: 782134
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "The width therefore adapts to each deployment from a latency measurement, without sweeping over widths"
+    quote_sha256: d448d8cd48b63495325eb04b1b18cb730f7bef3209727e279cb6bc66395a9a6a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7, found: true}
+    source_revision: https://arxiv.org/html/2610.00321v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2610.00321v1"
+      requested_url: "https://arxiv.org/html/2610.00321v1"
+      effective_url: "https://arxiv.org/html/2610.00321v1"
+      retrieved_at_utc: "2026-11-19T18:43:24.286752Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7"
+      relative_path: "sha256/96/9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7.raw"
+      raw_sha256: "9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7"
+      byte_length: 782134
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "Where verification cost jumps at a kernel boundary, a 128-token tree is only 2"
+    quote_sha256: be8698933eeec7e0566acf6af9fefc50684afbe04e8632a24ef35776e18b5696
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7, found: true}
+    source_revision: https://arxiv.org/html/2610.00321v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2610.00321v1"
+      requested_url: "https://arxiv.org/html/2610.00321v1"
+      effective_url: "https://arxiv.org/html/2610.00321v1"
+      retrieved_at_utc: "2026-11-19T18:43:24.286752Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7"
+      relative_path: "sha256/96/9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7.raw"
+      raw_sha256: "9653815e69d388d652c979cf73f3e3d8480fb60d6ce464ef5b163557ed5e6dd7"
+      byte_length: 782134
+  notes: "v1 HTML read from disk (abstract, method). It is the closest fit to DFlash2 with draft_max 7. GPU generations not read. Transformer-only."
+- id: intake-2712
+  arxiv_id: "2510.26577"
+  url: https://arxiv.org/html/2510.26577v1
+  source_type: paper
+  title: "Inference-Cost-Aware Dynamic Tree Construction for Efficient Inference in Large Language Models"
+  categories:
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: superseded
+  ingested_date: '2026-11-19'
+  authors:
+  - "Yinrong Hong"
+  - "Zhiquan Tan"
+  - "Kai Hu"
+  key_claims:
+  - "Prior dynamic trees neglect system variables such as GPU device and batch size."
+  - "Beyond a critical token count, adding more tree tokens becomes inefficient."
+  techniques:
+  - "cost-aware EAGLE-2 reranking"
+  reported_results: []
+  credibility_score: 2
+  contradicting_evidence: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Superseded for our use by CAST 2610.00321 (intake-2711) and the Infernix measured controller (intake-2705), which do the same device/batch-aware sizing with measured latency."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "they often neglect the impact of crucial system variables such as GPU devices and batch sizes"
+    quote_sha256: ac9800e5062352b7f1f5bda5ec8f0b890c4fae14d671d3eda505b1e6b21d2ca1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6c65da1df03b725ff2c7899dc98f7c31aad466a0548fad0f8f1ca5b50b1c246f, found: true}
+    source_revision: https://arxiv.org/html/2510.26577v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2510.26577v1"
+      requested_url: "https://arxiv.org/html/2510.26577v1"
+      effective_url: "https://arxiv.org/html/2510.26577v1"
+      retrieved_at_utc: "2026-11-19T18:43:24.864168Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:6c65da1df03b725ff2c7899dc98f7c31aad466a0548fad0f8f1ca5b50b1c246f"
+      relative_path: "sha256/6c/6c65da1df03b725ff2c7899dc98f7c31aad466a0548fad0f8f1ca5b50b1c246f.raw"
+      raw_sha256: "6c65da1df03b725ff2c7899dc98f7c31aad466a0548fad0f8f1ca5b50b1c246f"
+      byte_length: 240420
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec. 3 motivation"
+    quote: "there exists a critical value beyond which adding more tokens becomes inefficient"
+    quote_sha256: bc24f3c377d59c1cada9f25c7b2e5b4160e3cc7c86c27530a79127dc1c6a7cac
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6c65da1df03b725ff2c7899dc98f7c31aad466a0548fad0f8f1ca5b50b1c246f, found: true}
+    source_revision: https://arxiv.org/html/2510.26577v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2510.26577v1"
+      requested_url: "https://arxiv.org/html/2510.26577v1"
+      effective_url: "https://arxiv.org/html/2510.26577v1"
+      retrieved_at_utc: "2026-11-19T18:43:24.864168Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:6c65da1df03b725ff2c7899dc98f7c31aad466a0548fad0f8f1ca5b50b1c246f"
+      relative_path: "sha256/6c/6c65da1df03b725ff2c7899dc98f7c31aad466a0548fad0f8f1ca5b50b1c246f.raw"
+      raw_sha256: "6c65da1df03b725ff2c7899dc98f7c31aad466a0548fad0f8f1ca5b50b1c246f"
+      byte_length: 240420
+  notes: "v1 HTML read from disk (abstract, Sec. 3)."
+- id: intake-2713
+  arxiv_id: "2607.06763"
+  url: https://arxiv.org/abs/2607.06763
+  source_type: paper
+  title: "Trees from Marginals: Autoregressive drafting with factorized priors"
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-19'
+  authors:
+  - "Yuma Oda"
+  - "Ryan Mathieu"
+  - "Roman Knyazhitskiy"
+  key_claims:
+  - "GDN tree verification without rollback: the recurrent state is not updated during verify; on the next iteration's commit, the selected path is replayed with a short recurrence."
+  - "The read-only tree verify reduces to an ancestor-masked triangular solve fused into one kernel."
+  - "A DFlash-TfM budget-64 tree beats a tuned DFlash chain on Qwen3.6-27B (one B200, batch 1); the headline gain was revised between v1 and v3."
+  techniques:
+  - "DFlash-TfM"
+  - "Weaver AR adapter over DFlash top-K marginals"
+  - "ancestor-masked GDN triangular solve"
+  - "commit-time path replay"
+  reported_results: []
+  credibility_score: 2
+  contradicting_evidence:
+  - "v1 and v3 differ: the gain over DFlash dropped from 24.7 % to 16.3 % with no stated reason (sweep-2 diff of the two PDFs)."
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Named in the AK-DTREE intake refinements as the commit-time-replay alternative for the P4 GDN kernel."
+  read_depth: PARTIAL
+  verification: stage1-unverified
+  notes: "PDF-only: the arXiv HTML returned 404. v1 and v3 PDFs were read from disk with pypdf by the sweep-2 subagent (lit2/tfm*.txt, §3.2-3.4, §4.2-4.3, §5.1, Table 2). The source is a PDF, so no machine anchor is possible and the entry stays stage1-unverified (read_depth PARTIAL). Quotes were checked by hand against the extracted text. Keep its numbers out of plans. Conditions per v3: one B200, batch 1, SGLang fork, Qwen3.6-27B bf16, temp 1.0 with reasoning; budget-64 tree with Traversal verification vs a block-16 DFlash chain. The +16.3 % is v3; v1 said +24.7 %. The HF card for trymirai/weaver may still quote v1 (not opened). Our DFlash2 lattice is already predecessor-conditional, so the Weaver adapter is probably not needed. The solve cost grows super-linearly with tree size (v1 Table 1)."
+- id: intake-2714
+  arxiv_id: "2402.14160"
+  url: https://arxiv.org/html/2402.14160v2
+  source_type: paper
+  title: "Recursive Speculative Decoding: Accelerating LLM Inference via Sampling Without Replacement"
+  categories:
+  - speculative_decoding
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-19'
+  authors:
+  - "Wonseok Jeon"
+  - "Mukul Gagrani"
+  - "Raghavv Goel"
+  key_claims:
+  - "RSD is a tree method that samples draft tokens without replacement, which maximizes tree diversity."
+  - "Recursive rejection sampling recovers the target distribution exactly when siblings are drawn without replacement from the draft distribution."
+  - "RSD-S beats plain SD at high target budgets."
+  techniques:
+  - "recursive rejection sampling"
+  - "Gumbel-Top-k tree (RSD-C)"
+  - "stochastic beam search tree (RSD-S)"
+  reported_results: []
+  credibility_score: 3
+  contradicting_evidence:
+  - "The A100 experiments were not memory-bound (§5.1), so token-rate conclusions may not carry over to bandwidth-bound MI210 decode."
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Sampled-row acceptance rule in the AK-DTREE intake refinements and DTREE-A (speculative-decoding.md)."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "samples draft tokens without replacement and maximizes the diversity of the tree"
+    quote_sha256: a08bac76874796858b37cf27c2c517beb8e78909fc619643ed827324f79a76fb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a895c4bdb1c99a27272b8767fee590988cc76bc0d585fa8559d7038579a4d86b, found: true}
+    source_revision: https://arxiv.org/html/2402.14160v2
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2402.14160v2"
+      requested_url: "https://arxiv.org/html/2402.14160v2"
+      effective_url: "https://arxiv.org/html/2402.14160v2"
+      retrieved_at_utc: "2026-11-19T18:46:26.303991Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:a895c4bdb1c99a27272b8767fee590988cc76bc0d585fa8559d7038579a4d86b"
+      relative_path: "sha256/a8/a895c4bdb1c99a27272b8767fee590988cc76bc0d585fa8559d7038579a4d86b.raw"
+      raw_sha256: "a895c4bdb1c99a27272b8767fee590988cc76bc0d585fa8559d7038579a4d86b"
+      byte_length: 2563330
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec. 5.2"
+    quote: "In the high budget regime, on the other hand, RSD-S beats SD"
+    quote_sha256: 3b69b916395349a767bb614cbacca52f0cdb921bf3adfeb55a07f764424292d7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a895c4bdb1c99a27272b8767fee590988cc76bc0d585fa8559d7038579a4d86b, found: true}
+    source_revision: https://arxiv.org/html/2402.14160v2
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2402.14160v2"
+      requested_url: "https://arxiv.org/html/2402.14160v2"
+      effective_url: "https://arxiv.org/html/2402.14160v2"
+      retrieved_at_utc: "2026-11-19T18:46:26.303991Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:a895c4bdb1c99a27272b8767fee590988cc76bc0d585fa8559d7038579a4d86b"
+      relative_path: "sha256/a8/a895c4bdb1c99a27272b8767fee590988cc76bc0d585fa8559d7038579a4d86b.raw"
+      raw_sha256: "a895c4bdb1c99a27272b8767fee590988cc76bc0d585fa8559d7038579a4d86b"
+      byte_length: 2563330
+  notes: "v2 read from disk (abstract, §3.1, §5); the sweep-2 subagent read the PDF and the integrator re-found the quotes in the HTML snapshot. Exactness needs siblings drawn WITHOUT REPLACEMENT from the draft law. Greedy rows are trivially exact. If sampled rows ever use deterministic top-k siblings, use UniVer's mixed rule (intake-2715) instead of RSD."
+- id: intake-2715
+  arxiv_id: "2605.04543"
+  url: https://arxiv.org/html/2605.04543v1
+  source_type: paper
+  title: "UniVer: A Unified Perspective for Multi-step and Multi-draft Speculative Decoding"
+  categories:
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2705
+  verdict: worth_investigating
+  ingested_date: '2026-11-19'
+  authors:
+  - "Yepeng Weng"
+  - "Qiao Hu"
+  - "Takehisa Yairi"
+  key_claims:
+  - "Improves acceptance length 4.2-8.5 % over recursive rejection sampling without replacement, and stays exact."
+  - "A 7.5 % acceptance gain gave about 7 % end-to-end throughput on Vicuna-7B."
+  - "There is no gain at or near temperature 0."
+  techniques:
+  - "optimal-transport tree verification"
+  reported_results: []
+  credibility_score: 2
+  contradicting_evidence:
+  - "Evidence covers only attention transformers with EAGLE drafters on A6000 at batch 1."
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "Monitor-only line in the AK-DTREE section: reopen after P5 keeps on sampled serving, since it gives nothing for greedy rows."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "improves acceptance length by 4.2% to 8.5% over standard recursive rejection sampling without replacement"
+    quote_sha256: ff27d706b25b1715f1443ea3972a521658699dded7be75d78dda861edd43624d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e, found: true}
+    source_revision: https://arxiv.org/html/2605.04543v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2605.04543v1"
+      requested_url: "https://arxiv.org/html/2605.04543v1"
+      effective_url: "https://arxiv.org/html/2605.04543v1"
+      retrieved_at_utc: "2026-11-19T18:46:26.608996Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e"
+      relative_path: "sha256/4a/4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e.raw"
+      raw_sha256: "4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e"
+      byte_length: 605853
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec. 5.2"
+    quote: "the end-to-end throughput gain is approximately 7%"
+    quote_sha256: f8a4db56b07f65bc83e235e4adacad569aa069831acc311a582c1c2e1ea53a60
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e, found: true}
+    source_revision: https://arxiv.org/html/2605.04543v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2605.04543v1"
+      requested_url: "https://arxiv.org/html/2605.04543v1"
+      effective_url: "https://arxiv.org/html/2605.04543v1"
+      retrieved_at_utc: "2026-11-19T18:46:26.608996Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e"
+      relative_path: "sha256/4a/4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e.raw"
+      raw_sha256: "4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e"
+      byte_length: 605853
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec. 7 limitations"
+    quote: "no extra performance gain under or near temperature"
+    quote_sha256: 3823524a5c4bbd9ba1171bd0cbf5bca7a0426d22b7e7587c75447dc2bf7b590c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e, found: true}
+    source_revision: https://arxiv.org/html/2605.04543v1
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2605.04543v1"
+      requested_url: "https://arxiv.org/html/2605.04543v1"
+      effective_url: "https://arxiv.org/html/2605.04543v1"
+      retrieved_at_utc: "2026-11-19T18:46:26.608996Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e"
+      relative_path: "sha256/4a/4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e.raw"
+      raw_sha256: "4a0055ccba3ca13d043acfa4b6e1e7f9e509e76f7bbe3d841bb99a4227a3483e"
+      byte_length: 605853
+  notes: "v1 read from disk (abstract, §5, §7)."
+- id: intake-2716
+  arxiv_id: "2609.23900"
+  url: https://arxiv.org/html/2609.23900v3
+  source_type: paper
+  title: "LumoTree: Path-Parallel Speculative Verification for Hybrid Language Models"
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2713
+  verdict: worth_investigating
+  ingested_date: '2026-11-19'
+  authors:
+  - "Zhiyuan Ma"
+  key_claims:
+  - "On Qwen3.8-27B with its MTP head (GB10, vLLM, T 0.6), verifying 27-candidate trees reaches the chain stack's rate; the comparison measures the cost of hosting tree verification, not a gain from it."
+  - "For GDN and conv layers a correct attention mask cannot repair a wrong recurrent parent; every candidate needs its own root-to-parent recurrent and conv state."
+  - "Path-parallel scan in two GPU launch levels that exchange only the boundary states downstream paths need."
+  techniques:
+  - "path-parallel GDN scan with cut-state export"
+  - "accepted-path replay publish"
+  - "per-path penalty history"
+  reported_results: []
+  credibility_score: 2
+  contradicting_evidence:
+  - "Single author, one geometry (28 active nodes), GB10 only."
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Breakeven caution and per-path penalty history rule in the AK-DTREE intake refinements (speculative-decoding.md)."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec. VIII"
+    quote: "so that comparison measures the cost of hosting tree verification, not a gain from it"
+    quote_sha256: e6c81a1b25b53969e30834538816c64335619f0e4b7f5797051dfd5e0d94c83e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e, found: true}
+    source_revision: https://arxiv.org/html/2609.23900v3
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2609.23900v3"
+      requested_url: "https://arxiv.org/html/2609.23900v3"
+      effective_url: "https://arxiv.org/html/2609.23900v3"
+      retrieved_at_utc: "2026-11-19T18:49:28.415159Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e"
+      relative_path: "sha256/f4/f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e.raw"
+      raw_sha256: "f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e"
+      byte_length: 375742
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec. III-B"
+    quote: "a correct attention mask cannot repair a wrong recurrent parent"
+    quote_sha256: 8b04b4835bf9aa87778d6f0c9d8411edcb96b61b46298b71aaae27575c66e2d5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e, found: true}
+    source_revision: https://arxiv.org/html/2609.23900v3
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2609.23900v3"
+      requested_url: "https://arxiv.org/html/2609.23900v3"
+      effective_url: "https://arxiv.org/html/2609.23900v3"
+      retrieved_at_utc: "2026-11-19T18:49:28.415159Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e"
+      relative_path: "sha256/f4/f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e.raw"
+      raw_sha256: "f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e"
+      byte_length: 375742
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec. IV-A"
+    quote: "The two levels execute in separate GPU launches and exchange only the boundary states required by downstream paths"
+    quote_sha256: 1561b20c7b54ad721ecd02e55ac8679fa52e9ddf95dbcb09bd9c031918334db7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e, found: true}
+    source_revision: https://arxiv.org/html/2609.23900v3
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2609.23900v3"
+      requested_url: "https://arxiv.org/html/2609.23900v3"
+      effective_url: "https://arxiv.org/html/2609.23900v3"
+      retrieved_at_utc: "2026-11-19T18:49:28.415159Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e"
+      relative_path: "sha256/f4/f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e.raw"
+      raw_sha256: "f4964ba1c702c831c9e4a534d0966967a6196fbc9a119ca943a118baaf7ebc6e"
+      byte_length: 375742
+  notes: "v3 HTML read from disk (sections III-B, IV-A, VII-F/H, VIII) by the sweep-3 subagent; quotes re-found by the integrator. Same target model family as ours. Table XIII reports that Weaver and TreeWY fail paired float64 error bounds while LumoTree has 0 failing cells. Its kernel timings exclude attention, conv and sampling, and the author says they do not predict full-model speedup."
+- id: intake-2717
+  arxiv_id: "2505.12398"
+  url: https://arxiv.org/html/2505.12398v2
+  source_type: paper
+  title: "Traversal Verification for Speculative Tree Decoding"
+  categories:
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2713
+  verdict: worth_investigating
+  ingested_date: '2026-11-19'
+  authors:
+  - "Yepeng Weng"
+  - "Qiao Hu"
+  - "Xujie Chen"
+  key_claims:
+  - "Verifies leaf to root: if a node is accepted, the entire sequence from that node to the root is accepted."
+  - "The advantage over token-level recursive rejection grows with temperature."
+  techniques:
+  - "traversal verification"
+  reported_results: []
+  credibility_score: 3
+  contradicting_evidence: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "About 1.5 % acceptance gain at T 0.6 per its Table 4. Its proof assumes siblings sampled from the draft law, which our deterministic lattice does not provide. Not planned; the AK-DTREE refinements record why."
+  read_depth: PARTIAL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Introduction"
+    quote: "If the node is accepted, the entire sequence from the current node to the root is accepted"
+    quote_sha256: 92d97ec48d44899f30f7cd37e2c782e071823635d83f24e2cfacf5fc46dd4bd6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8, found: true}
+    source_revision: https://arxiv.org/html/2505.12398v2
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2505.12398v2"
+      requested_url: "https://arxiv.org/html/2505.12398v2"
+      effective_url: "https://arxiv.org/html/2505.12398v2"
+      retrieved_at_utc: "2026-11-19T18:49:28.933362Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8"
+      relative_path: "sha256/d7/d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8.raw"
+      raw_sha256: "d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8"
+      byte_length: 581739
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec. 5"
+    quote: "The superiority of Traversal Verification increases with rising temperature"
+    quote_sha256: c8e831cd7199904e3f4f129bd3fab67ee8f51b7947ea4f4c1f0022b5bc098830
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8, found: true}
+    source_revision: https://arxiv.org/html/2505.12398v2
+    verified_by: research-intake/stage2 (autokernel intake subagent, source read from disk 2026-11-19)
+    source_artifact:
+      entry_url: "https://arxiv.org/html/2505.12398v2"
+      requested_url: "https://arxiv.org/html/2505.12398v2"
+      effective_url: "https://arxiv.org/html/2505.12398v2"
+      retrieved_at_utc: "2026-11-19T18:49:28.933362Z"
+      media_type: "text/html"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8"
+      relative_path: "sha256/d7/d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8.raw"
+      raw_sha256: "d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8"
+      byte_length: 581739
+  notes: "v2 HTML read from disk (intro, §3.3, §5, App. F-G)."
