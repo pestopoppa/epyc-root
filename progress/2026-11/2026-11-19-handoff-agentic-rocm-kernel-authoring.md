@@ -179,3 +179,7 @@ RKA-A3B-ROUTER-WIDE r2 remains in smoke; out/src is a detached worktree at bb329
 ## 08:54Z — Submit router-wide current launcher for qualification
 
 RKA-A3B-ROUTER-WIDE: rowflow reported needs-dryrun for current launcher despite earlier SMOKE_OK; submitted spec to publish_row.py for fresh qualification. Outcome pending. Historical alerts not acknowledged without resolution. [no-belief: qualification pending]
+
+## 12:59Z — File router-wide r2 inconclusive result
+
+RKA-A3B-ROUTER-WIDE: filed rka-a3b-router-wide-gpu-20261119-r2 inconclusive (rc=0). Both UNSET and WIDE correctness arms passed 16/16; performance rc=0 but parser recorded 1/16 baseline cells because graph warmup diagnostics split lines. No op gain or end-to-end decision can be made. RESULT.json SHA-256 f36b2a993115a9b46a2da8abab4d020eeed0753a4d4eb86ad4360c13d11b8d9d; perf log SHA-256 bb4ed960b54658412b25ee7802ae2c5ea8c9522f4f1d5b54b117ab1792bb057d. Repair performance parser and republish; box remains open. [no-belief: instrument failure]
