@@ -15,3 +15,7 @@ No result-bearing task completed; no boxes ticked. AFC-V3B-HARNESS-RERUN is alre
 ## 03:29Z — Consume duplicate AFC v3b mild-r2 run-end without refiling its completed verdict
 
 Dispatched row `afc-v3b-q36_35b-tools-mild-r2-20261111` already has its 2026-11-11 filed PASS verdict and `.FILED` receipt; AFC-V3B-HARNESS-RERUN is already closed. No re-filing, remeasurement, or completion credit. Existing verdict binds native result SHA-256 `8ca5aa23909e6e9bb09cb9ed89caf9861acf06255f99564866f9bf8d89aac904`. No result-bearing task completed this turn. Resume the prior NIB2-77 checkpoint: obtain the original exact 16-path approval roster before any deletion; NIB2-83 requires a genuine post-E17 cohort. Other remaining boxes require operator rotation or owning-session runtime/launch boundaries; no runtime or keeper changes attempted.
+
+## 03:31Z — Consume already-filed Flash v3 none-r2 event without duplicate filing
+
+Duplicate dispatch for `afc-v3-q38_flash-tools-none-r2-20261110`: verdict filed by workspace-f2 at 2026-11-11T01:22:38Z, PASS, `.FILED` already present; AFC-P5.E3-FLASH-TOOLS-V3 already closed. Existing verdict binds result SHA-256 `565a8e03a93180f50643f5717d088fba5f552666eea1ce0f6a11f13e138b9d88`. No verdict rewritten, no new measurement or completion credit. No result-bearing task available from this event; prior remaining-work checkpoint retained.
