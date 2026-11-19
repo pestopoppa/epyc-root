@@ -137,3 +137,7 @@ Duplicate dispatcher event `kvu11c-retained-result-reconcile-r1-20261105`. Exist
 ## 03:47Z — Consume duplicate backend test build event; PASS, receipt and completed box already exist.
 
 Duplicate dispatcher event `kpf41-backend-tests-build-20261105`: existing PASS and `.FILED` receipt date to 2026-11-05T02:53Z; KPF-41.BACKEND-TESTS-BUILD is already checked. Filed native result SHA-256 `4b08e349541a0b6eb3ceedd61ec7c16be34858a065dbb8a81441d43bb736423c` is build-only for source `15caecbbf4cb27452dbd87fa1a68a0e75098388e`, linked gfx90a HIP executable and four library digests with own linkage. No new result, tick, build, GPU execution or parity claim. Pending backend GPU publisher event remains next.
+
+## 03:48Z — Consume duplicate allocator displacement census run-end; existing verdict and receipt already complete
+
+Duplicate run-end event for kpf131-allocator-displacement-census-20261105; no new result or checkbox claimed. Existing verdict is PASS (rc=0), three bodies with 6/494/1100 instruction lines, syntactic operand census only. Existing FILED receipt consumes the event. Evidence: native RESULT.json SHA-256 a959c9213ce17f12f21a38b1711c0ea4fd63b725ed734866205a75bfa385e8ec; handoffs/active/kv-cache-program.md at git 2af27b498 already records the completed KPF-13.1-ALLOCATOR-DISPLACEMENTS box. Preserve the previous checkpoint: consume dispatcher-delivered publisher PASS/FAIL for kpf41-backend-gpu-qualification-r2-20261119; do not replay completed rows or republish queued smoke without a failure event.
