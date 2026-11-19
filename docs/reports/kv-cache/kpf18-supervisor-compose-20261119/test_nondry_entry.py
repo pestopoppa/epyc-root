@@ -82,7 +82,10 @@ def worker(mode, *, combined=False):
                     if mode == 'stat':
                         Path(models['target']['path']).write_bytes(b'changed stat fixture')
                     if combined:
-                        from test_combined_entry import combined_main
+                        if combined == 'context':
+                            from test_combined_context import combined_main
+                        else:
+                            from test_combined_entry import combined_main
                         return combined_main(driver, original, fixture, out, mode,
                                              preload_integration, gpu_witness, expected, calls)
                     def gate_main():

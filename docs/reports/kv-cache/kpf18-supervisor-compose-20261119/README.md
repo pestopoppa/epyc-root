@@ -731,3 +731,64 @@ Evidence SHA-256:
 - test_nondry_entry.py: `0928e918418320fb9ce8e2f12a6467da03c4489ec03330833efe0e4ebfe64ee3`
 
 [no-belief: model-free software regression tests]
+
+
+### 2026-11-19 — Combined non-dry entry through actual item3 boundaries
+
+PASS: 10 isolated subprocess cases connect installed supervisor capture/import/
+bind, non-dry enrollment and retained preload checks, identity output, actual
+official gate wrapper/parser/execution loop, real item3 step construction and
+retained/current RowflowContext abort handling. Unlike the earlier combined
+entry test, this test does not replace item3. Native server lifecycle/setup,
+controller work, publication and witness installation remain inert peers; parser
+context construction is a private fixture. The old rowflow_entry is replaced by
+a raising sentinel, so any use of that historical adapter fails the test.
+
+Valid execution requires two underlying boundary checks, both work markers,
+publication and four step completion markers with rc0. STOP, grant mutation,
+context-output mutation, native-source drift, deadline exhaustion, underlying
+context failure, sticky STOP after its file is removed, reserve exhaustion and
+HWM excess each require rc3, a reason-specific DIAGNOSTIC-REFUSAL record, only
+the first work marker, no publication and only the setup completion marker.
+This tests refusal propagation through the actual parser loop rather than calling
+step functions directly. Model metadata/digest/stat prerequisites remain real
+retained verifier calls over explicitly synthetic, in-memory-pinned fixtures.
+
+Validation: the new combined-context test (10 subprocess cases) PASS; four
+original non-dry entry tests, the prior combined-entry test (10 cases), and the
+prior full-run-context test (11 cases) PASS. Seven unittest tests total.
+git diff --check PASS. Run the new test with:
+
+```bash
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_combined_context.py -v
+```
+
+No native/GPU execution, actual official grant, publisher smoke, historical
+scientific-input recovery or parent-gate completion is claimed. Production and
+persistent installed runtime bytes are unchanged. Test-only blast radius was
+manually inspected; GitNexus status/impact unavailable in the unindexed lane.
+Bus drain refuses the unregistered slug; no other outbox used.
+
+Recovery attempt before this independent result: no exact R14 framing match in
+984 small reachable KPF18-named git blobs; targeted archive inventories revealed
+no R14 result, and a deterministic reconstruction from retained receipts/writer
+and a further 151 retained digest candidates failed its pinned SHA-256. These
+attempts were discarded; no replacement bytes were written or accepted and no
+pin was changed. This bounded search does not prove absence from all stores.
+Retained acceptance-record SHA-256 is
+`08300255d31647b0d99c352284058fd33eaeb6a598bc2e94f2dbdbbd37293f86`
+at `/mnt/raid0/llm/tmp/kvu/g3-preload-integrated-20261105/candidate/INTEGRATION-REPLAY-ACCEPTED.json`;
+retained replay-writer SHA-256 is
+`4c2d9ed3763fb0dae651eb697c03afdfd2530435ae31b599c69a3995165ef1a1`
+at the same candidate's `integration_replay.py`. Historical acceptance remains
+recorded in `progress/2026-10/2026-10-27-codex-ni-checkpoint-0945.md`.
+Rather than repeat this unsuccessful recovery, next assess an explicit successor
+prerequisite bound to the already accepted retained R7 framing result/source/input
+identities. Preserve the R14 contract and distinguish successor acceptance from
+recovery; no fresh replay of already accepted recorded-X1 framing is needed.
+
+Evidence SHA-256:
+- test_combined_context.py: `4872d50785452bc3520a86a27d1564d498dee670efa1b61b169a678a6eead2b4`
+- test_nondry_entry.py: `78602c4986e8503cef19f7a770f75d5b6205804e13c0f83230c22a5dd25f9313`
+
+[no-belief: model-free software regression tests]
