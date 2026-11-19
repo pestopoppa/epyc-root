@@ -1,5 +1,22 @@
 # P6 prospective catalog capture
 
+## Live catalog capture command
+
+Before binding the comparison manifest, run with the FastMCP environment:
+`scripts/harness/hs4_p6_capture_catalogs.py --baseline <launch.json>
+--candidate <launch.json> --out <new-directory>`.
+The command starts each declared stdio server, requests tools/list without tool
+calls, checks declared executable/source pins before and after capture, and
+rejects removal or any definition change of an existing baseline tool. The
+candidate must add a tool. Canonical name-sorted catalog JSON bytes and their
+SHA-256 identities are emitted alongside a receipt only after both arms succeed;
+existing output directories are refused. Startup/listing has a bounded timeout.
+This freezes catalog definitions; model-serving custody, complete dependency
+closure, full OpenCode visibility and catalog efficacy remain unproven. Live
+acceptance still requires matched OpenCode configuration and four live trials.
+
+## Prospective records
+
 The P0.4 runner can now bind the existing catalog comparator's identities before
 execution and emit its native per-trial input at verification. This is software
 support for the two-rerun gate; it does not establish live P6 acceptance.
