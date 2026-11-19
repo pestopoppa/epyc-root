@@ -47,12 +47,7 @@ Do not restart DS-6 or DS-7 from first principles. The historical ledger contain
   - Runtime backend mutation API: `add_instance(url)`, `remove_instance(url)`, `register_quarter(role, url)`, `unregister_quarter(url)`.
   - `QuarterScheduler` state machine with `HEALTHY/SUSPECT/DEAD/DRAINING/LAUNCHING/AVAILABLE`.
   - Quarter-fixed ports, liveness checks, drain protocol, idle-time tracking, and retry-compatible degradation.
-- [ ] **DS-F1 — KVCOMM feasibility fork**: after [`attention-matching-kv-compaction.md`](long-context-program.md#track-attention-matching-kv-compaction) P2 validates coding-context compaction, prototype q4_0 offset estimation. Proceed only if shared-codebase task quality remains >95%; otherwise defer KVCOMM until f16 KV or a different sharing primitive is practical.
-  - *(2026-11-17, autokernel)* Dependency re-pointed; nothing runnable from this box yet. Attention-matching P2 was superseded on
-    2026-11-07 by **AM-DECISIVE-1** (long-context-program.md, open, autokernel GPU window), and AM + q4_0 stacking (P4) is declined
-    until AM beats the deployed Expected Attention path. The q4_0 premise is also stale: production KV is q8_0 (frontdoor) and f16
-    (architect_general), so if AM-DECISIVE-1 returns its keep branch the offset-estimation prototype targets q8_0 KV. Waiting on:
-    the AM-DECISIVE-1 verdict. [no-belief: dependency note]
+- *DS-F1 moved to long-context-program.md (AM compaction track) 2026-11-19, operator.*
 - **[declined: ws58 2026-11-03 content-review: merged into DS-F1 as its conditional follow-on]** **DS-F2/F3/F4 — Cache-aware routing fork**: if DS-F1 passes, design the anchor pool, wire `ConcurrencyAwareBackend` cache-aware routing, and add `prefill_speedup_coder_pool` metrics.
 
 ##### Inherited from earlyoom-oom-protection closure (2026-06-12)
