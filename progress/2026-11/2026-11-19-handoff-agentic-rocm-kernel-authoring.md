@@ -143,3 +143,7 @@ Filed rka-a3b-gpu-d-np-sweep-20261118-r3 (rc=0): RECOMMEND_D2 at np4/8/16, with 
 ## 04:37Z — File C16 topk staging result under the registered futility rule
 
 C16-TOPK-STAGE: confirmed the already-filed DROP(FUTILITY_OP) verdict and existing filing receipt for c16-topk-stage-gpu-20261118 (rc=0). Both knob-on op visits lacked the required engagement witness; n=4 A/B was 1.0440, and 320/320 TOPK_MOE cases passed in each arm. No end-to-end verdict was reached. RESULT.json SHA-256 7fa8dc2a242242a42cba61659f1caf0617f9f5438b56ec3d7a569a3792d10eff; handoff already records the result.
+
+## 04:39Z — File interrupted r4 depth remeasurement result
+
+RKA-A3B48-D-REMEASURE: r4 ended rc=75 with five valid cells: rounds 1–2 complete and round 3 D4 only. The preregistered decision cannot yet be made; the handoff already records this partial result and its filing receipt exists. results.jsonl SHA-256 71ccc863d8462f18a361f286ccfbe444ab19ddf7e870cc545a3b2a6978cb5cc3. Continuation r5 is qualified and armed.
