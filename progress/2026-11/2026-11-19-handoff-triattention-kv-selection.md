@@ -15,3 +15,7 @@ Duplicate run-end event for `yarn-oolong-s1-import-eligible29-v39-20261105`: no 
 ## 03:51Z — Consume already-filed C7 memfit run-end and acknowledge nine resolved historical alerts
 
 Delivered `yarn-e1-mem-c7-20261106` event is already filed: receipt commit `c35c2a18cd023030bd558ef10da00bebb5298376`, `handoffs/active/long-context-program.md#YARN-512K-MEMFIT`, with FILED receipt dated 2026-11-07. No new verdict, tick, replay or measurement. Acknowledged all nine supplied alert keys after matching existing filings or documented passing successor smokes: v40 Oolong failures superseded by v41/v42 fixes; LSA r9 arms filed inconclusive under operator park; native gate r5 superseded and r6 filed NOT-FAIL; AM-PORT-2 initial failure superseded by the recorded passing GPU smoke. [no-belief: duplicate event and alert disposition only]
+
+## 03:53Z — Consume duplicate s2 v39 run-end; verdict and FILED receipt already exist
+
+Duplicate `yarn-oolong-s2-import-eligible26-v39-20261105` run-end event: existing verdict filed by operator-adhoc-ops-20261105 at 2026-11-05T21:27:24Z is inconclusive; FILED receipt exists. No new completed item or matching pair; original denominator remains 120. No new result, tick, replay or republication. Historical continuation remains declined, as recorded in the handoff; next unblocked work remains YARN-E1-PROOF. [no-belief: duplicate event disposition only]
