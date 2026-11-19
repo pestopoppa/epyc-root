@@ -63,3 +63,7 @@ Dispatched afc-v3d-q38_flash-tools-aggressive-reword-20261112 already has its 20
 ## 03:52Z — Decline duplicate AFC v3c baseline filing: existing FILED receipt and completed box
 
 Duplicate run-end event for `afc-v3c-q38_flash-tools-none-r2-20261111`: existing 2026-11-12 FILED receipt; AFC-V3C-PROD-TOOLS already complete. No new verdict, tick, or row. No result-bearing task available within this brief: NIB2-77 lacks exact approved roster; NIB2-83 lacks genuine post-E17 cohort; NIB2-94 needs operator rotation; NIB2-102/LR-8 need owner runtime boundaries; NIB2-98/GAP-POOL-1/NI-IDLE-REFILL-WATCHER require keeper/gate changes forbidden here. [no-belief: duplicate event acknowledgement only]
+
+## 03:54Z — Acknowledge already-filed AFC v3b Q36 baseline event without duplicate filing
+
+Duplicate event `afc-v3b-q36_35b-tools-none-20261111`: FILED receipt exists from 2026-11-11 06:27 UTC and AFC-V3B-HARNESS-RERUN is closed. No result re-filed, no new tick. No result-bearing task available: remaining boxes require missing evidence/operator or owner runtime actions, or keeper/gate changes forbidden by this brief. [no-belief: duplicate event acknowledgement only]
