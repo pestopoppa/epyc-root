@@ -15,11 +15,13 @@ import test_execution_admission as fixtures
 from test_execution_admission import load, sha
 
 
-def worker(mode, *, combined=False, retained=False):
-    fixture = fixtures.ExecutionAdmission(); fixture.setUp()
+def worker(mode, *, combined=False, retained=False, smoke=False):
+    fixture = (fixtures.PublisherSmokeAdmission() if smoke else fixtures.ExecutionAdmission())
+    fixture.setUp()
     try:
         root = fixture.root
-        out = root / 'output'; out.mkdir()
+        out = fixture.result.parent if smoke else root / 'output'
+        if not smoke: out.mkdir()
         base = root / 'private-base'; base.mkdir()
         verifier = load(install.RETAINED / 'verify_receipt.py', 'fixture_verifier')
         models = {}
@@ -94,7 +96,9 @@ def worker(mode, *, combined=False, retained=False):
                     if mode == 'stat':
                         Path(models['target']['path']).write_bytes(b'changed stat fixture')
                     if combined:
-                        if combined == 'context':
+                        if combined == 'smoke':
+                            from test_retained_r7_smoke import combined_main
+                        elif combined == 'context':
                             from test_combined_context import combined_main
                         else:
                             from test_combined_entry import combined_main

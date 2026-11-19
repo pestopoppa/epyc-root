@@ -848,6 +848,45 @@ Projection bytes/pins, tiny model stat files, receipt identity and current admis
 
 Validation: `python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_retained_r7_entry.py -v` (one unittest, eight isolated controls); discovery for `test_nondry_entry.py` (4), `test_retained_r7.py` (7), and `test_combined*.py` (2) also PASS. Next: qualify sealed R7 enrollment with real parser/gate routing under publisher-smoke admission, then prepare publication using actual prerequisite locations.
 
+### 2026-11-19 — Installed retained R7 enrollment through the smoke recipe
+
+`test_retained_r7_smoke.py` connects the installed supervisor and current
+publisher-smoke admission with the real non-dry driver main, retained R7
+enrollment, retained preload verifier, parser/execution loop and unchanged
+`item3_smoke` recipe. Fifteen isolated cases cover the valid control, HTTP
+failure, empty tokens, missing sampled residency, receipt/stat/metadata
+refusals, missing completion seal, wrong framing input, unknown enrollment,
+projection refusal, foreign prefix/server, late STOP and prepared-input drift.
+Only the valid control writes `SMOKE-REQUEST.json` and both done markers;
+runtime failures return rc4 without a smoke record, and entry refusals never
+reach context construction or requests. Every case asserts absence of a
+publisher native-result or group verdict.
+
+The valid control consumes the original accepted R7 metadata at the paths in
+`test_retained_r7.PATHS` without changing R7 pins. Projection identities, model
+stat/receipt inputs, admission namespace/provider, context, HTTP client, server
+and residency sampler are private fixtures. This qualifies installed software
+composition only. It does not run `publish_row.py`, load models, sample a real
+GPU, establish mapped-DSO custody, qualify native cancellation/drain, or complete
+KPF-18. Production, historical pins and persistent installations are unchanged.
+
+Reproduce the 15 controls with:
+`python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_retained_r7_smoke.py -v`.
+Source SHA-256: `test_retained_r7_smoke.py`
+`aafb48e169733937b438770d36cd4c462f28f52893006e97e0f7183b7fc8f5f3`;
+shared harness `test_nondry_entry.py`
+`3163cfaba13ace97944aa1b5f26380af40006cff77b550db69f41e6840fb5f05`.
+
+Full discovery still refuses the historical `test_supervisor.Supervisor`
+setup because the sealed R9 `evidence_view.py` is absent. That default R9
+inventory remains unchanged; its prior qualification is not claimed here.
+All other `test_*.py` modules in this directory PASS (81 unittest tests,
+including the 15 isolated smoke controls). The exclusion is by module name
+`test_supervisor`, not by individual failing assertion.
+Next prepare the actual prerequisite locations and explicit current artifact/
+provider inventory for a sealed successor, then publish the lifecycle row
+through official rowflow; this test supplies no smoke-PASS receipt for that row.
+
 SHA-256 identities:
 
 - `test_nondry_entry.py`: `0899f19d7a3f72430e1a665ebf7767007919338d1620dd639a7080791987f5b6`
