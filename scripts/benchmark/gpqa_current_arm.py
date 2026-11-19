@@ -81,8 +81,25 @@ class Budget:
             raise Cutoff("keeper cutoff: incomplete work is resumable")
 
 
-def terminate(child):
+def terminate(child, *, process_group=False):
     """Only a captured child PID is signalled; wait proves it was reaped."""
+    if process_group:
+        # run_child creates this session. Its leader can exit before a worker,
+        # so cleanup must still address the captured group after poll() != None.
+        try:
+            os.killpg(child.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        try:
+            child.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            pass
+        try:
+            os.killpg(child.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        child.wait(timeout=3)
+        return
     if child.poll() is None:
         child.terminate()
         try:
@@ -98,7 +115,8 @@ def run_child(command, output, budget, timeout, observer=None, env=None, cwd=Non
     """Cancel in-flight requests on STOP, deadline, signal or request timeout."""
     budget.check()
     with Path(output).open("w") as log:
-        child = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, env=env, cwd=cwd)
+        child = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, env=env, cwd=cwd,
+                                 start_new_session=True)
         end = time.monotonic() + timeout
         try:
             while True:
@@ -112,7 +130,7 @@ def run_child(command, output, budget, timeout, observer=None, env=None, cwd=Non
                 except subprocess.TimeoutExpired:
                     pass
         finally:
-            terminate(child)
+            terminate(child, process_group=True)
 
 
 def residency(pid, library_dir):

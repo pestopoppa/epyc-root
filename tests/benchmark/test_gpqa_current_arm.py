@@ -2,7 +2,10 @@
 import importlib.util
 import json
 import os
+import ctypes
 from pathlib import Path
+import select
+import signal
 import sys
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -192,6 +195,76 @@ def test_successful_child_and_server_failure(tmp_path):
     budget = driver.Budget(10, tmp_path / "STOP", clock=lambda: 0)
     assert driver.run_child([sys.executable, "-c", "raise SystemExit(0)"], tmp_path / "ok", budget, 5) == 0
     assert driver.run_child([sys.executable, "-c", "raise SystemExit(9)"], tmp_path / "bad", budget, 5) == 9
+
+
+@pytest.mark.parametrize("mode", ["success", "nonzero", "stop", "observer"])
+def test_owned_runner_group_reaps_term_resistant_worker(tmp_path, mode):
+    # Adopt the fixture's grandchild so waitpid proves it died, rather than
+    # mistaking a zombie or a missing leader for complete process cleanup.
+    libc = ctypes.CDLL(None, use_errno=True)
+    previous = ctypes.c_int()
+    assert libc.prctl(37, ctypes.byref(previous), 0, 0, 0) == 0  # GET_CHILD_SUBREAPER
+    assert libc.prctl(36, 1, 0, 0, 0) == 0  # SET_CHILD_SUBREAPER
+    pidfile = tmp_path / "worker.pid"
+    command = """
+import os, signal, sys
+from pathlib import Path
+r, w = os.pipe()
+pid = os.fork()
+if pid == 0:
+    os.close(r)
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    os.write(w, b'ready')
+    os.close(w)
+    while True:
+        signal.pause()
+os.close(w)
+os.read(r, 5)
+os.close(r)
+Path(sys.argv[1]).write_text(str(pid))
+if sys.argv[2] in ('stop', 'observer'):
+    signal.pause()
+raise SystemExit(9 if sys.argv[2] == 'nonzero' else 0)
+"""
+    budget = driver.Budget(10, tmp_path / "STOP", clock=lambda: 0)
+
+    def observe():
+        if pidfile.exists():
+            if mode == "stop":
+                budget.stopfile.touch()
+            elif mode == "observer":
+                raise ValueError("observer failed with worker alive")
+
+    try:
+        args = ([sys.executable, "-c", command, str(pidfile), mode],
+                tmp_path / "native.log", budget, 5, observe)
+        if mode in ("stop", "observer"):
+            with pytest.raises(driver.Cutoff if mode == "stop" else ValueError):
+                driver.run_child(*args)
+        else:
+            assert driver.run_child(*args) == (9 if mode == "nonzero" else 0)
+        worker = int(pidfile.read_text())
+        # Wait on an exit event with a bound; a surviving worker fails promptly.
+        pidfd = os.pidfd_open(worker)
+        try:
+            assert select.select([pidfd], [], [], 2)[0], "owned worker survived cleanup"
+        finally:
+            os.close(pidfd)
+        reaped, status = os.waitpid(worker, 0)
+        assert reaped == worker
+        assert os.WIFSIGNALED(status) and os.WTERMSIG(status) == signal.SIGKILL
+    finally:
+        if pidfile.exists():
+            worker = int(pidfile.read_text())
+            try:
+                os.kill(worker, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            try:
+                os.waitpid(worker, 0)
+            except ChildProcessError:
+                pass
+        assert libc.prctl(36, previous.value, 0, 0, 0) == 0
 
 
 def test_failed_atomic_replace_preserves_checkpoint(tmp_path):
