@@ -1,0 +1,31 @@
+{
+  "application_repo": "epyc-orchestrator",
+  "application_base": "c1df9962c919562ce02bebb5608451093fe6bf6c",
+  "source_blobs": {
+    "src/api/routes/chat_pipeline/stages.py": "4e3a3cc2b2718bdec0424b26ae0b793e14016b0e",
+    "src/api/routes/chat_pipeline/direct_stage.py": "be1862e6d67ccccfb84073b609effb42317051b6",
+    "src/api/routes/v1_escalation.py": "5d190615b72b59e896e5385b67f0e4c6476008e7",
+    "src/graph/observability.py": "cf4f8f5aa7dffb5cc9b9e80824229861da46472b",
+    "src/api/routes/chat.py": "f5b585c6c630d4001b279ea37be22e908fe3b54f",
+    "src/api/routes/chat_pipeline/stream_adapter.py": "7f5d9c09b1a84bb2766572c2d986bb4858a86d98"
+  },
+  "patch_sha256": "d8af8ba69de14bb67f24a373f7f2e22512507cf77d18f31f6625cebc5359d38f",
+  "application_landed": false,
+  "candidate_tests": {
+    "passed": 160,
+    "new_tests": 11,
+    "inference_calls": 0
+  },
+  "golden_suite": {
+    "candidate_failed": 8,
+    "unchanged_baseline_failed": 8
+  },
+  "checks": [
+    "ruff root settings",
+    "ruff application settings for writer and tests",
+    "8 files compiled",
+    "git apply --check"
+  ],
+  "handoff_box": "URE-2-writer",
+  "box_completed": false
+}
