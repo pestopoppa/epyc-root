@@ -120,3 +120,62 @@ SHA-256: `round_lifecycle.h`
 `1e57fefa5ccb4fc6169edfcf413536f1c0e31876e36fa3c70b2d2e9bc247fbc9`;
 `test_round_lifecycle.cpp`
 `88d70f7292815e4c7910d140cfc35fffcdd9ac9817a829e7209104df78ed068e`.
+
+Current-confidence native source port (2026-11-19)
+------------------------------------------------
+
+`native_port.py` now provides pure `header(source)` and
+`implementation(source)` transformations against the full frozen-production
+commit above. A future row builder imports these functions and applies them
+to `common/speculative.h` and `.cpp` in its fresh experimental worktree, adding
+this directory to the include path. Production is never edited. This is a
+compiled source port, still without a server caller or executable candidate.
+
+The optional per-round `cafe3_select(type, legal_cap, confidence)` callback runs
+inside the MTP first decode or DFlash first output distribution, before first
+token acceptance. Each round requires fresh draft params (`cafe3_selected`
+starts false). It bounds the selected width by both implementation and request
+caps, rejects invalid selections, and prevents chain fallback when a selected
+model produces zero tokens. Shortened proposals still require lifecycle cancel.
+Only these model implementations invoke the callback; DSpark and other
+implementations retain their paths.
+
+For MTP and generic DFlash, confidence is the first greedy candidate's mass
+from the existing sampler. For DFlash2 it is the **maximum softmax mass** in
+the first selector row: use sampling temperature when positive and T=1 for
+greedy. This is a current-position confidence statistic, not the mass of a
+possibly different stochastic draw and not a calibrated acceptance estimate.
+It queries no RNG and changes no selector state at width zero. Positive widths
+keep the original RNG/sampler operations and first proposed token. DFlash still
+decodes its full original noise block before choosing how many outputs to
+verify; this port claims no reduction of that block's drafting cost.
+
+Call `round_lifecycle::prepare(sequence, impl)` **before** that confidence decode,
+then `select` from the model callback. `prepare` retains the earlier timestamp
+through selection, so even zero width includes confidence-acquisition cost.
+Cancel on confidence-decode failure or context/replay interruption. Off/excluded
+prepare does not read the clock. The original direct `select` timing remains
+available for callers whose confidence is already available without extra work.
+The future server adapter must use `prepare`, complete target-only rounds, and
+finish after target AND draft KV rollback; none of those server hooks exists yet.
+
+`run_tests.sh` runs all three sanitizer suites plus the native-port tests. The
+ported full `speculative.cpp` passes a C++17 syntax check with production headers.
+The actual ported MTP/DFlash/DFlash2 draft methods and common dispatcher execute
+under ASan/UBSan with deterministic decoder/sampler spies: widths 0..3, independent
+sequences, first-decode confidence ordering, failed decodes, zero fallback, no
+zero RNG consumption, disabled behavior, and unchanged seeded stochastic output
+at static width. Lifecycle assertions prove that a 50-us confidence phase plus
+a 10-us target-only phase records 60 us. These are model-free code tests, not
+native model runs or P9 evidence.
+
+Current SHA-256 bindings (supersede the historical lifecycle/runner hashes):
+
+- `model_boundary.h`: `355d0356e488a5e095ebf115c1f826cfdf99f7346675c730b8b562573b115333`
+- `native_port.py`: `edcc7e7f3f0b7f77ea0b5bb2bea0cca7842fff21ef937feae841e22ffdd1ec38`
+- `round_lifecycle.h`: `4567ff02cd87c0e0b621b5337570936b857edac62528b632fed04c34f7529b1e`
+- `run_tests.sh`: `bb3849a5490557a8d58d498c7dee93bd6eabda122e536da7c5d1937ef3b4e02b`
+
+Next: connect this port to request/sequence lifecycle in a fresh full experimental
+server, add the durable write-time sink, and register that producer before any
+native execution. No native observation producer exists in this source port.

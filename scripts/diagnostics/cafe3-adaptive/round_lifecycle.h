@@ -48,10 +48,26 @@ public:
         sequences_[sequence] = std::move(fresh);
     }
 
+    // Native model boundary: call BEFORE the first confidence-producing decode,
+    // even when that round will select width zero. select() then retains this
+    // timestamp instead of hiding the cost of acquiring current confidence.
+    bool prepare(int sequence, implementation impl) {
+        auto & s = state(sequence);
+        if (s.active || s.prepared) throw std::logic_error("round already started");
+        if (!s.on || impl == implementation::other) return false;
+        const double start = now_();
+        if (!std::isfinite(start)) throw std::invalid_argument("invalid start clock");
+        s.start = start;
+        s.impl = impl;
+        s.prepared = true;
+        return true;
+    }
+
     controller::choice select(int sequence, implementation impl, int cap,
                               int static_width, double p0) {
         auto & s = state(sequence);
         if (s.active) throw std::logic_error("round already active");
+        if (s.prepared && s.impl != impl) throw std::logic_error("prepared implementation mismatch");
         auto & policy = s.policies[impl];
         if (!policy) policy = std::make_unique<controller>(max_, s.on);
         auto c = policy->select(impl, cap, static_width, p0);
@@ -59,13 +75,15 @@ public:
             // Off/excluded rounds never touch the instrumentation clock.
             double start;
             try {
-                start = now_();
+                start = s.prepared ? s.start : now_();
                 if (!std::isfinite(start)) throw std::invalid_argument("invalid start clock");
             } catch (...) {
                 policy->cancel(c);
+                s.prepared = false;
                 throw;
             }
             s.active = true;
+            s.prepared = false;
             s.impl = impl;
             s.choice = c;
             s.start = start;
@@ -117,6 +135,7 @@ public:
     // Decode error, request cancellation, context shift or partial-draft replay.
     void cancel(int sequence) {
         auto & s = state(sequence);
+        s.prepared = false;
         if (!s.active) return;
         s.policies.at(s.impl)->cancel(s.choice);
         s.active = false;
@@ -130,7 +149,7 @@ public:
 private:
     struct sequence_state {
         std::uint64_t request = 0, epoch = 0, completed = 0;
-        bool on = false, active = false;
+        bool on = false, active = false, prepared = false;
         implementation impl = implementation::other;
         controller::choice choice{};
         double start = 0, p0 = 0;

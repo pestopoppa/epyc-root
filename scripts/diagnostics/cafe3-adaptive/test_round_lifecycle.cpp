@@ -103,5 +103,24 @@ int main() {
     now += 10;
     rounds.finish(0, 0, 0);
     assert(records.back().request_epoch != records[1].request_epoch);
+    // A native confidence forward pass is part of width-zero round cost.
+    rounds.begin(2, 20, "1");
+    now = 400;
+    assert(rounds.prepare(2, mtp));
+    rejects<std::logic_error>([&] { rounds.prepare(2, mtp); });
+    rejects<std::logic_error>([&] { rounds.select(2, implementation::dflash, 3, 3, .7); });
+    now = 450; // decoder produces current confidence only now
+    assert(rounds.select(2, mtp, 3, 3, .7).width == 0);
+    now = 460;
+    assert(rounds.finish(2, 0, 0));
+    assert(records.back().elapsed_us == 60); // not merely the final 10 us
+    rounds.prepare(2, mtp);
+    rounds.cancel(2); // confidence decode failed before selection
+    assert(rounds.prepare(2, mtp));
+    rounds.cancel(2);
+    rounds.begin(3, 30, nullptr);
+    now = std::nan("");
+    assert(!rounds.prepare(3, mtp)); // off never reads instrumentation clock
+    assert(!rounds.prepare(2, implementation::other));
     std::cout << "PASS round lifecycle: isolation, zero rounds, cancellation, write failures, clocks, reset\n";
 }

@@ -10,3 +10,4 @@ for TEST_SOURCE in test_controller.cpp test_round_lifecycle.cpp; do
         -fsanitize=address,undefined -g "$HERE/$TEST_SOURCE" -o "$TEST_BIN"
     "$TEST_BIN"
 done
+python3 "$HERE/test_native_port.py"
