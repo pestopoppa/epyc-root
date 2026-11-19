@@ -87,3 +87,33 @@ Existing evidence (referenced in place, not copied):
 No code changed. GitNexus status and impact were unavailable because this lane
 has no index. The change records qualification evidence only.
 [no-belief: build qualification only]
+
+## Full-build verdict (2026-11-19)
+
+`kvu-kpf174-custody-r7-20261119`: **build-only PASS**, rc0; complete event
+14:33:25Z after start 14:26:28Z (417 seconds). The pinned launcher runs
+`v3/complete.py` as its completion hook. That hook reopens output files and
+compiler digests, checks source/input integrity and reference CMake options,
+and compares the custody manifest against the receipt. It completed successfully.
+The receipt records source `6ec877068936588b6d63dbba5842bbd540b92031`, parent
+`84d0a31603d495377dee24e1159bbbf02f1e2f21`, all eight executable/library
+hashes, pinned linkage PASS, and the three required compiled knobs. All four
+ggml DSOs are included in both the receipt and custody manifest. The b10303 UI
+archive digest and staged inventory remain in receipt integrity; the native
+smoke above supplies the required source-bound UI embedding evidence.
+
+Evidence retained in place under
+`/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-build-r7-20261119/`:
+
+- `RESULT.json`: SHA-256 `3339b687094f842b3b825dabef7a1de6172bb3d290b0f0890a25fa13a694a0f4`.
+- `CUSTODY.json`: SHA-256 `0a11fbb32b06037ebaa322320a4c8e0aff60a3eaddbfcc1365f3fec0e469e847`.
+- `runs/prepared/build/bin/llama-server`: receipt SHA-256 `f4d8b3a5cd9bcd537301e15966b4f8aace98f477cdd7c9bfc4b9b89ec2002650`.
+
+Filed verdict:
+`/mnt/raid0/llm/tmp/compute-flags/filing-done/kvu-kpf174-custody-r7-20261119.verdict.json`.
+The row's keep list retains receipts, serving artifacts, source, inputs and
+runtime scripts. This result qualifies only the prospective build. Historical
+verdicts remain unchanged and KPF-17.4d stays open. Package the prospective
+GPU successor against these receipt/manifest/helper pins, preserving the exposed
+`g0-S2-B` and `g1-S2-B` exclusions. No model load or inference verdict occurred.
+[no-belief: build verification only]
