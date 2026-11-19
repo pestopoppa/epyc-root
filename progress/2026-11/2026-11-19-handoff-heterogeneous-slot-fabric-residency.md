@@ -101,3 +101,7 @@ Dispatched kpf17-oracle-impact-8952-20261105-r2 is already filed INCONCLUSIVE by
 ## 03:36Z — Consume already-filed zero-skip qualification event; no new result possible from replay.
 
 Replay hsf1-coverage-zero-skip-qual-20261105 already has PASS verdict, FILED receipt and completed HSF-1.COVERAGE-ZERO-QUAL box dated 2026-11-05. Existing filing records 16 matched synthetic outcomes; result SHA-256 1cffbf1f78caaf8034c5fd2d9038a985fefc94c9cd3dc576d17f10f6b694b565. No native-impact or actual nonzero-skip clearance, new filing, rerun or completion claimed. No new result-bearing task is supplied by this replay. Prior checkpoint remains the queued publisher smoke for kpf41-backend-gpu-qualification-r2-20261119; consume its delivered verdict rather than polling or republishing.
+
+## 03:37Z — Consume duplicate census event; existing verdict and receipt already satisfy filing.
+
+Dispatcher replay kpf623-census-r2-20261105 is already filed: the 2026-11-05 verdict records rc0 CENSUS_COMPLETE with two inventories of 151936 sequential pieces each; FILED receipt exists and KPF-62.3.NATIVE-CENSUS-R2 is already completed. Native result SHA-256 71010a039d2349a6a821e6119a60c67a5aaeaaaee195f2889706c077f8d9b128. Existing custody limitations and UNKNOWN alignment remain unchanged. No new filing, tick, compatibility or quality claim. No result-bearing task is available from this duplicate event. The checkpointed kpf41-backend-gpu-qualification-r2-20261119 publisher smoke remains queued without a delivered PASS/FAIL; do not rerun or republish it.
