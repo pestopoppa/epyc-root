@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T14:44:05Z",
+  "generated_at": "2026-11-19T15:16:29Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1169,7 +1169,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 936,
+          "line": 937,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
@@ -1178,7 +1178,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1411,
+          "line": 1412,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1195,7 +1195,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1878,
+          "line": 1879,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1713,7 +1713,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1573,
+          "line": 1574,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1728,7 +1728,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2730,
+          "line": 2731,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1737,7 +1737,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3134,
+          "line": 3135,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1746,7 +1746,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3647,
+          "line": 3648,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1755,7 +1755,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3742,
+          "line": 3743,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -2214,7 +2214,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 999,
+          "line": 1003,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
@@ -3533,7 +3533,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1779,
+          "line": 1780,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3548,7 +3548,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2202,
+          "line": 2203,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"

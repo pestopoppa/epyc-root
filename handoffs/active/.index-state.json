@@ -1394,7 +1394,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1779,
+          "line": 1780,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1407,7 +1407,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2202,
+          "line": 2203,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
@@ -1515,7 +1515,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 936,
+          "line": 937,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 9
@@ -1525,7 +1525,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 1411,
+          "line": 1412,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 9
@@ -1539,7 +1539,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1878,
+          "line": 1879,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2154,7 +2154,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1573,
+          "line": 1574,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2167,7 +2167,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2730,
+          "line": 2731,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2177,7 +2177,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3134,
+          "line": 3135,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2187,7 +2187,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3647,
+          "line": 3648,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2197,7 +2197,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3742,
+          "line": 3743,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2406,7 +2406,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 999,
+          "line": 1003,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5
