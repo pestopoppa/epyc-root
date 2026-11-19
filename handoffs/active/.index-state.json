@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 217
+      "open": 219
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 462
+      "open": 461
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -787,7 +787,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 5079,
+          "line": 5081,
           "markers": 1,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0
@@ -797,7 +797,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 5232,
+          "line": 5234,
           "markers": 1,
           "name": "cpu-prefill-compute-large-models",
           "open": 1
@@ -807,7 +807,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 5722,
+          "line": 5724,
           "markers": 1,
           "name": "large-moe-expert-parallelism",
           "open": 0
@@ -819,7 +819,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 5836,
+          "line": 5838,
           "markers": 1,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 4
@@ -1066,7 +1066,7 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 244,
+      "closed": 246,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 96,
@@ -1078,7 +1078,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 355,
+      "total": 357,
       "tracks": [
         {
           "blocked": 12,
@@ -1121,7 +1121,7 @@
         },
         {
           "blocked": 1,
-          "closed": 39,
+          "closed": 41,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2244,
+          "line": 2248,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2327,
+          "line": 2331,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2777,
+          "line": 2781,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3647,
+          "line": 3651,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1393,10 +1393,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 8,
-      "closed": 415,
+      "closed": 416,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 97,
+      "open": 96,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1409,7 +1409,7 @@
       "tracks": [
         {
           "blocked": 7,
-          "closed": 251,
+          "closed": 252,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1419,14 +1419,14 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 48
+          "open": 47
         },
         {
           "blocked": 1,
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1753,
+          "line": 1755,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1439,7 +1439,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2176,
+          "line": 2178,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
@@ -1479,7 +1479,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 627,
+          "line": 628,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 4
@@ -1489,7 +1489,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1005,
+          "line": 1006,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1499,7 +1499,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1621,
+          "line": 1622,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1509,7 +1509,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1768,
+          "line": 1769,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
@@ -1518,7 +1518,7 @@
     },
     "memory-program.md": {
       "blocked": 1,
-      "closed": 130,
+      "closed": 131,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 37,
@@ -1530,11 +1530,11 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 168,
+      "total": 169,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 60,
+          "closed": 61,
           "gates": [],
           "guarded": 0,
           "line": 36,
@@ -1547,7 +1547,7 @@
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 923,
+          "line": 933,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 9
@@ -1557,7 +1557,7 @@
           "closed": 39,
           "gates": [],
           "guarded": 0,
-          "line": 1396,
+          "line": 1406,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 9
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1861,
+          "line": 1871,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2403,7 +2403,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 739,
+          "line": 741,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 17
@@ -2583,7 +2583,7 @@
       "closed": 475,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 114,
+      "open": 116,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 590
+      "total": 592
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
