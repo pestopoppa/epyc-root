@@ -45,8 +45,7 @@ window.epycFreshClass = function (v) {
    * — so the chip no longer disambiguates a pair. It stays because it still
    * makes a claim worth making on its own ("this row's producers are live"), and
    * because the field, not a hardcoded id, is what a future second row needs.
-   * `orchestrator-legacy` keeps its chip by carrying `"chip": "legacy"`. */
-  var LEGACY_ID = "orchestrator-legacy";
+   * (The `orchestrator-legacy` row was retired with :8000/dashboard.) */
   var MAX_CHIP = 12;
   var warned = false;
 
@@ -141,13 +140,11 @@ window.epycFreshClass = function (v) {
         a.className = "epyc-nav-link active";
         a.setAttribute("aria-current", "page");
       }
-      /* A row's own chip, falling back to the legacy row's historic one so an
-       * older registry on a cached page still renders it. Truncated, because a
-       * registry row is data and a long chip would silently reflow the header
-       * of every dashboard. */
+      /* A row's own chip. Truncated, because a registry row is data and a long
+       * chip would silently reflow the header of every dashboard. */
       var chipText = (typeof e.chip === "string" && e.chip.trim())
         ? e.chip.trim().slice(0, MAX_CHIP)
-        : (e.id === LEGACY_ID ? "legacy" : "");
+        : "";
       if (chipText) {
         var chip = document.createElement("span");
         chip.className = "epyc-nav-chip";

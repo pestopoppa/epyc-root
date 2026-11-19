@@ -37,17 +37,20 @@ autopilot page.
 
 History: the boundary used to be a *transport* rule ("needs live in-process
 state → orchestrator serves the page"), which is how the 7.6k-line combined
-page on `:8000/dashboard` accreted. That page is **legacy, pending Phase-1b
-deprecation** (`handoffs/active/dashboard-architecture-restructure.md`) — its
-data routes stay; its page is superseded by `/machine` + `/autopilot` here.
+page on `:8000/dashboard` accreted. That page is **RETIRED (Phase-1b cutover,
+operator "parity OK")**: `:8000/dashboard` redirects to this hub, `dashboard.html`
+is deleted from the orchestrator, and the `orchestrator-legacy` registry row is
+gone. Its data routes (`/dashboard/api|events/*`) stay — they are the data plane
+`/machine` + `/autopilot` read. Known parity loss: the full interactive insight
+graph (the hub renders a labelled static projection).
 **Adding a dashboard = three things, not one.** All three are load-bearing and all
 three are checkable:
 
 1. **A registry entry** in `dashboard/registry.json` — the shared nav and the
    directory strip render from it. Hand-adding cross-dashboard links to a page is
    the drift this registry exists to end.
-2. **A health probe** — the `health_path` field on that entry. All 7 current
-   entries declare one, and a surface with no probe cannot be told *down* from
+2. **A health probe** — the `health_path` field on that entry. Every
+   entry declares one, and a surface with no probe cannot be told *down* from
    *slow*. **But know what it answers.** Every entry points at `/health`, which is
    the **TRANSPORT** probe: it says *this process is serving* and nothing more, so
    it stays green while the producer behind a panel is dead. The honest question —
