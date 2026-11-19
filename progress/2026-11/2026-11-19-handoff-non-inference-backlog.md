@@ -19,3 +19,7 @@ Dispatched row `afc-v3b-q36_35b-tools-mild-r2-20261111` already has its 2026-11-
 ## 03:31Z — Consume already-filed Flash v3 none-r2 event without duplicate filing
 
 Duplicate dispatch for `afc-v3-q38_flash-tools-none-r2-20261110`: verdict filed by workspace-f2 at 2026-11-11T01:22:38Z, PASS, `.FILED` already present; AFC-P5.E3-FLASH-TOOLS-V3 already closed. Existing verdict binds result SHA-256 `565a8e03a93180f50643f5717d088fba5f552666eea1ce0f6a11f13e138b9d88`. No verdict rewritten, no new measurement or completion credit. No result-bearing task available from this event; prior remaining-work checkpoint retained.
+
+## 03:32Z — Consume duplicate Q36 v3c mild event; existing verdict retained
+
+Dispatched `afc-v3c-q36_35b-tools-mild-20261111` already filed PASS at 2026-11-11T16:54:07Z, with `.FILED` present and AFC-V3C-PROD-TOOLS closed. Existing verdict binds result SHA-256 `87f504bc5db8a7bee7e4448227d35cd5c46041c7a9a3089a5b36c88bf30f41ba`. No re-filing or completion credit; no outstanding result-bearing task in this event. Remaining-work checkpoint unchanged.
