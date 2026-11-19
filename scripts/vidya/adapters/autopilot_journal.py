@@ -795,11 +795,43 @@ def _study_slug(study_id: str) -> str:
     return hashlib.sha256(study_id.encode("utf-8")).hexdigest()[:12]
 
 
+def rotation_scope(study: dict) -> tuple[dict, str]:
+    """(applicability, reason) for a validated rotation study: ONLY what its identities recorded.
+
+    ``stack_regime`` is the producer's own ``infra_digest`` (the same ``fingerprint_digest`` the
+    journal stamps on trials), taken only when every boundary pin and pair incumbent states the
+    SAME digest; ``role_models`` is the incumbent's own ``infra_fingerprint.components.models.roles``
+    map, as for trial rows. A study whose boundaries disagree, or whose scope the carrier refuses,
+    is scoped NOTHING and says why. No regime is ever invented.
+    """
+    idents = [p.get("identity") for p in study["pins"]] + [p.get("incumbent") for p in study["pairs"]]
+    idents = [i for i in idents if isinstance(i, dict)]
+    digests = {i.get("infra_digest") for i in idents}
+    if len(digests) != 1 or not isinstance(next(iter(digests)), str) or not next(iter(digests)):
+        return {}, "rotation boundaries do not share one infra_digest: not scoped"
+    scope: dict = {"stack_regime": next(iter(digests))}
+    role_maps = []
+    for i in idents:
+        roles = (((i.get("infra_fingerprint") or {}).get("components") or {}).get("models") or {}).get("roles")
+        if isinstance(roles, dict):
+            role_maps.append({str(slot).split("@", 1)[0]: Path(str(r["model_path"])).name
+                              for slot, r in roles.items() if isinstance(r, dict) and r.get("model_path")})
+    if role_maps and all(m == role_maps[0] for m in role_maps) and role_maps[0]:
+        scope["role_models"] = dict(sorted(role_maps[0].items()))
+    try:
+        ClaimTuple(measurement_id="belief-scope-check", metric="belief_scope_check", value=0,
+                   date="", category="CANDIDATE", claim="belief_scope check", applicability=scope)
+    except ProjectionError as exc:
+        return {}, f"rotation scope refused by the carrier ({exc}): not scoped"
+    return scope, ""
+
+
 def rotation_frames(shard: Path, study: dict, *, as_of: str) -> list[dict]:
     """Source / claim / support frames for ONE validated study's summary claim."""
     plan, summary = study["plan"], study["summary"]
     study_id = plan["study_id"]
     ident = f"{shard.stem}_ap70_{_study_slug(study_id)}"
+    scope, scope_refusal = rotation_scope(study)
     complete = summary["status"] == "complete"
     mean, se = summary["mean_drop"], summary["standard_error"]
     summary_sha = hashlib.sha256(json.dumps(summary, sort_keys=True, default=str,
@@ -839,7 +871,8 @@ def rotation_frames(shard: Path, study: dict, *, as_of: str) -> list[dict]:
             assertion={"source_id": source_id, "locator": record["attestation"]["locator"],
                        "source_kind": "autopilot-core-rotation-study",
                        "title": f"AP-70 rotation study {study_id}",
-                       "revision_observed": record["date"]},
+                       "revision_observed": record["date"],
+                       **({"applicability": scope} if scope else {})},
             provenance={"method": ADAPTER_ID, "about": ident, "retrofit": False},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of),
         make_frame(
@@ -856,7 +889,8 @@ def rotation_frames(shard: Path, study: dict, *, as_of: str) -> list[dict]:
                        "rotation_study_status": summary["status"],
                        "rotation_study_json": study_json},
             provenance={"evidence": f"evd_ap70_{ident}", "about": claim_id, "method": ADAPTER_ID,
-                        "grade_reasons": reasons, "reps_basis": record["reps_basis"]},
+                        "grade_reasons": [*reasons, *([scope_refusal] if scope_refusal else [])],
+                        "reps_basis": record["reps_basis"]},
             actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of),
     ]
 
@@ -879,6 +913,18 @@ def emit_rotation(root: Path | None = None, *, as_of: str) -> tuple[list[dict], 
             except RotationRefusal as exc:
                 refusals.append({"shard": shard.name, "study_id": study_id, "reason": str(exc)})
     return frames, refusals
+
+
+def frames_for_rotation(unit: Path, *, as_of: str) -> list[dict]:
+    """Ingest-dispatch entry (`cli.py ingest autopilot-rotation`): frames, or refuse loudly.
+
+    Any study that fails the strict contract refuses the whole unit (a ProjectionError naming
+    every refused study) so a bad record is never silently dropped beside a good one.
+    """
+    frames, refusals = emit_rotation(unit, as_of=as_of)
+    if refusals:
+        raise ProjectionError("; ".join(f"{r['shard']}#{r['study_id']}: {r['reason']}" for r in refusals))
+    return frames
 
 
 if __name__ == "__main__":

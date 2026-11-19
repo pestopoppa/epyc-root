@@ -14,7 +14,10 @@ Subset discipline (M-12e): Simple Recall is computed over the ``get == "all"``
 subset ONLY, and the Kendall tau leg of Chronological Awareness fails closed
 unless the matched set covers the full ordered ground truth. See
 ``SCORER_VERSION`` below and the ``tulving_episodic_adapter`` module docstring
-for the evidence that fixes those definitions.
+for the evidence that fixes those definitions. OP-M12F (2026-11-11) selects
+EPYC v3: chronological gold count >= 2; eligible partial retrieval has zero tau.
+This is an EPYC definition, with paper equivalence unverified; SC67 emission
+remains refused for v3 pending separate protocol admission.
 
 Gold binding (M-12 B1): the 20ch and 200ch books reuse one question-index space, so
 ground truth is bound to the CHAPTER SET the run used, never to a default. The set
@@ -76,11 +79,12 @@ from tulving_episodic_adapter import (
 #:   2  2026-09-14 (M-12e): Simple Recall over the ``get == "all"`` subset only,
 #:      tau fails closed unless the matched set covers the full ground truth,
 #:      bins keyed on matching-event count (``nb_events``).
-SCORER_VERSION = 2
-# PROPOSED M12f definition: human metric-contract review is required before applying.
+LEGACY_SCORER_VERSION = 2
+#:   3  OP-M12F, 2026-11-11: gold >= 2, eligible partial retrieval zero.
+SCORER_VERSION = 3
+# Operator-approved EPYC definition; SC67 admission remains a separate gate.
 CAS_V2 = "v2_native"
 CAS_V3 = "epyc_v3_gt_ge2_partial_zero"
-PROPOSED_CAS_SCORER_VERSION = 3
 
 
 def versioned_epyc_cas(latest_results: list[dict], chronological_results: list[dict]) -> dict:
@@ -376,7 +380,7 @@ def chronological_tau(response: str, prompt_dict: dict[str, Any], *, threshold: 
 
 def score_result_payload(payload: dict[str, Any], prompt_index: dict[str, dict[str, Any]],
                          *, chapters: int | None = None,
-                         variant: str | None = None, cas_definition: str = CAS_V2) -> dict[str, Any]:
+                         variant: str | None = None, cas_definition: str = CAS_V3) -> dict[str, Any]:
     """Score one result payload against ``prompt_index``, the gold of ONE chapter set.
 
     ``prompt_index`` is normally a :class:`GoldIndex`, which carries its own chapter set,
@@ -502,7 +506,7 @@ def score_result_payload(payload: dict[str, Any], prompt_index: dict[str, dict[s
     ]
 
     summary = {
-        "scorer_version": SCORER_VERSION,
+        "scorer_version": LEGACY_SCORER_VERSION,
         # M-12 B1: which gold these numbers were graded against, and how rows were bound.
         "gold_binding": GOLD_BINDING,
         "variant": gold_variant,
@@ -541,7 +545,7 @@ def score_result_payload(payload: dict[str, Any], prompt_index: dict[str, dict[s
     }
     if cas_definition == CAS_V3:
         summary.update(versioned_epyc_cas(latest_inputs, chronological_inputs))
-        summary["scorer_version"] = PROPOSED_CAS_SCORER_VERSION
+        summary["scorer_version"] = SCORER_VERSION
     return {
         "summary": summary,
         "missing_ground_truth_ids": missing_ground_truth,
@@ -662,8 +666,8 @@ def main() -> int:
     parser.add_argument("--compare-srs-to", type=Path, default=None,
                         help="Refuse SRS comparison unless an existing scored JSON has the same "
                              "scorer, gold binding, bin basis and populated bins")
-    parser.add_argument("--cas-definition", choices=(CAS_V2, CAS_V3), default=CAS_V2,
-                        help="Native v2 default; separately versioned EPYC ordering population")
+    parser.add_argument("--cas-definition", choices=(CAS_V2, CAS_V3), default=CAS_V3,
+                        help="Approved EPYC v3 default; v2 only for explicit historical diagnostics")
     belief = parser.add_argument_group(
         "belief kernel (SC67)",
         "Emit the producer-authored claim-tuple sidecar beside --out-json. Requires the arm "
@@ -691,8 +695,7 @@ def main() -> int:
                 f"--variant {args.variant} disagrees with the rows' {recorded_variant}")
         variant = args.variant or recorded_variant or _DEFAULT_VARIANT
         gold = build_prompt_index(chapters, variant)
-        scored = (score_result_payload(payload, gold) if args.cas_definition == CAS_V2 else
-                  score_result_payload(payload, gold, cas_definition=CAS_V3))
+        scored = score_result_payload(payload, gold, cas_definition=args.cas_definition)
         if args.compare_srs_to:
             reference = _load_json(args.compare_srs_to)
             require_comparable_srs(scored["summary"], reference.get("summary", {}))

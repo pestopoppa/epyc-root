@@ -444,6 +444,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "q38p4-greedy-parity",
         "quality-pack-comparison",  # Native comparison capture and refusal controls: test_kernel_promotion_quality_parity.py.
         "kernel-promotion-lifecycle",  # Sealed fixture, strict replay refusals and CLI retry: test_kernel_promotion_evidence.py.
+        "autopilot-rotation",  # AP-70 strict reader CLI, refusals and planning-context canary: test_autopilot_rotation_canary.py.
     }
 
 

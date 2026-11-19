@@ -807,6 +807,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            default=Path("/workspace"), frames="emit",
            note="PATH is an epyc-root checkout (shards under repos/epyc-orchestrator) "
                 "or one autopilot_journal*.jsonl shard"),
+    Source("autopilot-rotation", "autopilot_journal", lambda p: [p] if p.exists() else [],
+           default=Path("/workspace"), frames="frames_for_rotation",
+           note="AP-70 producer-written rotation plan/boundary-pin/pair/summary records only "
+                "(strict; one refused study refuses the unit); declines when the journal has none",
+           task="VB-AP70-ROTATION-READ"),
     Source("autopilot-reproposal-rate", "autopilot_reproposal_rate",
            _files("autopilot_reproposal_rates*.jsonl"),
            default=ORCHESTRATOR / "orchestration" / "autopilot_reproposal_rates.jsonl",

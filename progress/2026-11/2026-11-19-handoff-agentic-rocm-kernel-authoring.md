@@ -19,3 +19,15 @@ rka-a3b48-d-remeasure-20261118-r4 ended rc=75, no final verdict: five valid cell
 ## 02:14Z — Queue r5 continuation of the interrupted A3B draft-depth measurement with the five recorded r4 cells preserved.
 
 RKA-A3B48-D-REMEASURE: queued continuation row `rka-a3b48-d-remeasure-20261119-r5` for smoke; it resumes the preregistered r4 sequence with the existing five cells (seed results SHA-256 `71ccc863d8462f18a361f286ccfbe444ab19ddf7e870cc545a3b2a6978cb5cc3`). Publisher reports queued for smoke, not yet PASS. The J64 run-end event was already filed on 2026-11-09, including its receipt and verdict; no duplicate filing.
+
+## 02:16Z — Recognize the previously filed mutant-build event; no new result is available.
+
+INF48-LIVE-6: dispatcher supplied the already filed `race-eqv-mutants-build-r3-20261109` event. Existing 2026-11-10 verdict is BUILD_OK, 19/19, source `36f024341`; the FILED receipt exists and the box is complete. A3B continuation r5 remains smoke-queued, not yet PASS.
+
+## 02:17Z — Resolve duplicate run-end for rock-aiter-timing-c9-r2-20261109; existing filed verdict and receipt already complete
+
+Duplicate run-end for rock-aiter-timing-c9-r2-20261109: previously filed PORT_CANDIDATES, 51 port cells and 7 FA recheck cells; rc=0. Existing FILED receipt dated 2026-11-09 and handoff result already recorded; AITER-PORT-1 completed. RESULT.json SHA-256 c20a7638967aa2b41edd897f4c769980b242f7a3c9e1a941e6c004fe480059f6. No duplicate tick or port task. [belief: cc]
+
+## 02:19Z — Resolve duplicate run-end for inf48-race2-fixtures-20261116-r2, already filed
+
+Duplicate run-end inf48-race2-fixtures-20261116-r2: previously filed and ticked FIXTURES_READY 7/7, rc=0; existing FILED receipt dated 2026-11-16. RESULT.json SHA-256 2a14f98c5d97c95d70eaffd554e451b1253489e8b09cc2100ebe22ce578ac1f5. Fixture capture is ungraded and is not a race measurement. [no-belief: duplicate event, existing verdict]

@@ -1,0 +1,5 @@
+# 2026-11-19 — handoff episodic-memory-integrity
+
+## 02:31Z — Apply approved EPYC CAS v3 defaults and record the historical diagnostic
+
+M-12f-V3-APPLY: operator-approved EPYC v3 now defaults in the lane-owned scorer payload API/CLI; explicit v2 remains historical-only. All 65 scorer/comparison/admission fixtures pass with EPYC_ROOT set to this lane. Stored-row diagnostic of research run 20260619_141212: CAS v3 0.07042657698264104; latest F1 0.40751982063194875 over 45; order -0.26666666666666666 over 15 eligible (7 partials at zero), excluding 15 empty and 15 singleton gold lists. SRS unchanged at 0.5684169470017096 over 366. Source path/commit/SHA-256 and scorer SHA-256 are bound in docs/reference/tulving-cas-v3-offline-2026-11-19.json. Updated scoring note and wiki CAS labels. Research installed scorer is unchanged; SC67 admission remains gated, and default/explicit v3 sidecar attempts fail before inputs or outputs. No inference, sidecar or historical tuple emitted. Repeated dripreview1-r5 event was already filed/ticked with an existing receipt; no duplicate filing. Next: implement the missing BEAM pre-run receipt writer for M-12c.

@@ -31,7 +31,7 @@
       "open": 469
     },
     "user-facing-harness-index.md": {
-      "blocked": 18,
+      "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
       "open": 104
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 963,
+          "line": 964,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 51
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 866,
+      "closed": 867,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 110,
+      "open": 109,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 6060,
+          "line": 6061,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,14 +145,14 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6140,
+          "line": 6141,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
         },
         {
           "blocked": 0,
-          "closed": 174,
+          "closed": 175,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
@@ -160,10 +160,10 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6438,
+          "line": 6439,
           "markers": 1,
           "name": "autokernel-rebuild-program",
-          "open": 14
+          "open": 13
         },
         {
           "blocked": 0,
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9676,
+          "line": 9677,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 48
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14078,
+          "line": 14081,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14291,
+          "line": 14294,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11
@@ -1065,10 +1065,10 @@
       ]
     },
     "harness-program.md": {
-      "blocked": 18,
-      "closed": 239,
+      "blocked": 15,
+      "closed": 243,
       "guarded": 0,
-      "last_advanced": "2026-11-18",
+      "last_advanced": "2026-11-19",
       "open": 97,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
@@ -1078,7 +1078,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 354,
+      "total": 355,
       "tracks": [
         {
           "blocked": 12,
@@ -1101,35 +1101,35 @@
         },
         {
           "blocked": 0,
-          "closed": 32,
+          "closed": 35,
           "gates": [],
           "guarded": 0,
           "line": 391,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 17
+          "open": 15
         },
         {
           "blocked": 0,
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 790,
+          "line": 800,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
         },
         {
-          "blocked": 4,
-          "closed": 38,
+          "blocked": 1,
+          "closed": 39,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1556,
+          "line": 1566,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 14
+          "open": 16
         },
         {
           "blocked": 0,
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2232,
+          "line": 2242,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2315,
+          "line": 2325,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 18
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2763,
+          "line": 2773,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3631,
+          "line": 3641,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1448,10 +1448,10 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 108,
+      "closed": 109,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 33,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1460,7 +1460,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 142,
+      "total": 146,
       "tracks": [
         {
           "blocked": 0,
@@ -1476,20 +1476,20 @@
         },
         {
           "blocked": 0,
-          "closed": 7,
+          "closed": 8,
           "gates": [],
           "guarded": 0,
           "line": 627,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
-          "open": 1
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1000,
+          "line": 1005,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1499,7 +1499,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1616,
+          "line": 1621,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1509,7 +1509,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1763,
+          "line": 1768,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
@@ -2155,10 +2155,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 368,
+      "closed": 370,
       "guarded": 0,
-      "last_advanced": "2026-11-18",
-      "open": 11,
+      "last_advanced": "2026-11-19",
+      "open": 9,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2196,7 +2196,7 @@
         },
         {
           "blocked": 0,
-          "closed": 28,
+          "closed": 30,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
@@ -2205,14 +2205,14 @@
           "line": 2729,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 8
+          "open": 6
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3138,
+          "line": 3139,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3651,
+          "line": 3652,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3746,
+          "line": 3747,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
