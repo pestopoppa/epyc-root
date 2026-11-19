@@ -29,3 +29,26 @@ failure, STOP or deadline. Result:
 `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/RESULT.json`.
 Next: file each CPU/HIP full-build result when it lands, then schedule native
 CPU/GPU rollback and explicit rc1 injected-fault controls. CAFE-4 stays open.
+
+Full HIP build verdict (2026-11-19)
+----------------------------------
+
+`df2-cafe4-modes-hip-build-20261119` ended rc1 at 04:14:59Z;
+**FAIL** under its build-only rule, filed by `file_result.py`.
+No `RESULT.json` was produced. The native build log records Clang
+`-Wenum-constexpr-conversion` errors in `ggml/src/ggml-cpu/iqk/iqk_mul_mat.cpp`
+(starting at line 320): enum constants exceed the declared `ggml_type` range.
+The HIP shared-library target completed, but the full executable did not.
+This is a compiler/build failure and supplies no native rollback/fault verdict.
+
+Existing evidence (referenced in place):
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-20261119/runs/build-mhtk29uz/build.log`,
+  SHA-256 `a0477b0abb3a16642b1da131fb9c7eb35e242f1b1a05992798c1990d508c064e`.
+- `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-hip-build-20261119.ended`,
+  SHA-256 `bbe95a8b8f66841b05f1eb06992ca30d188390adddb5706d6ff831caacd8ba3a`.
+- Filing receipt: `/mnt/raid0/llm/tmp/compute-flags/filing-done/df2-cafe4-modes-hip-build-20261119.verdict.json`.
+
+Next: repair the experimental HIP build compiler configuration, preserving IQK
+and production source, then publish a replacement build row. After qualification,
+schedule CPU/GPU rollback and exact rc1 injected-fault controls. Parent CAFE-4
+remains open. [no-belief: build failure only; no native measurement]
