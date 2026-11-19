@@ -212,7 +212,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "EVL-47",
-      "weight": 8
+      "weight": 9
     },
     {
       "from": "INF-06",
@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T00:05:01Z",
+  "generated_at": "2026-11-19T00:33:23Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1389,18 +1389,18 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 851,
-      "dispatchable": 124,
+      "closed": 856,
+      "dispatchable": 120,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-18",
+      "last_advanced": "2026-11-19",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
-      "open": 125,
+      "open": 121,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1437,7 +1437,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 34,
+          "dispatchable": 33,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1446,7 +1446,7 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 35,
+          "open": 34,
           "readiness": "blocked"
         },
         {
@@ -1474,7 +1474,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "dispatchable": 15,
+          "dispatchable": 14,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
@@ -1483,7 +1483,7 @@
           ],
           "line": 6431,
           "name": "autokernel-rebuild-program",
-          "open": 15,
+          "open": 14,
           "readiness": "blocked"
         },
         {
@@ -1492,15 +1492,15 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 55,
+          "dispatchable": 54,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9661,
+          "line": 9668,
           "name": "autokernel-unified-surface-program",
-          "open": 55,
+          "open": 54,
           "readiness": "blocked"
         },
         {
@@ -1511,7 +1511,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14029,
+          "line": 14059,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1529,7 +1529,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 14,
+          "dispatchable": 13,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1545,9 +1545,9 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14242,
+          "line": 14272,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 14,
+          "open": 13,
           "readiness": "blocked"
         }
       ]
@@ -2000,7 +2000,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1762,
+          "line": 1763,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2009,7 +2009,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1886,
+          "line": 1887,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2018,7 +2018,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2218,
+          "line": 2219,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2027,7 +2027,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2357,
+          "line": 2358,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2036,7 +2036,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2919,
+          "line": 2920,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2048,7 +2048,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3057,
+          "line": 3058,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2060,7 +2060,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3064,
+          "line": 3065,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2924,18 +2924,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 202,
-      "dispatchable": 38,
+      "closed": 203,
+      "dispatchable": 39,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
-      "last_advanced": "2026-11-18",
+      "last_advanced": "2026-11-19",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 40,
+      "open": 41,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2955,18 +2955,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 9,
+          "open": 10,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 369,
+          "line": 372,
           "name": "delegation-context-preassembly",
           "open": 8,
           "readiness": "ready"
@@ -2975,7 +2975,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 601,
+          "line": 604,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2984,7 +2984,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 867,
+          "line": 870,
           "name": "per-request-reasoning-budget",
           "open": 4,
           "readiness": "ready"
@@ -2993,7 +2993,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1372,
+          "line": 1375,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -3002,7 +3002,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1909,
+          "line": 1912,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3011,7 +3011,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2671,
+          "line": 2674,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3020,7 +3020,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3098,
+          "line": 3101,
           "name": "tool-output-compression",
           "open": 3,
           "readiness": "ready"
@@ -3029,7 +3029,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3755,
+          "line": 3758,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
