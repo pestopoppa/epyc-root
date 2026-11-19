@@ -73,3 +73,7 @@ Duplicate run-end event for `kpf131-typed-decoder-qual-20261105`: its KPF-13.1-T
 ## 03:20Z — Consume duplicate rebuild-diagnostic event already covered by completed box and existing FILED receipt.
 
 Duplicate event `kvu11c-rebuild-diagnostic-20261105`: KVU-11c-REBUILD-DIAGNOSTIC is already complete with an existing verdict and FILED receipt. Existing result is BUILT, prior_build_match=false (four of five artifact digests differ); this supplies no original-crash, GPU-execution or promotion conclusion. Evidence: `/mnt/raid0/llm/tmp/kvfork/kvu11c-rebuild-diagnostic-20261105/out/RESULT.json` SHA-256 `01a8f0ff7d2b7423b69b8db7cde214587aafc3f9ded4b5a85dbacffee649862b`. No new completion claimed. Next: inspect the highest-priority GPU qualification row and exact routed box, without replaying this completed build.
+
+## 03:22Z — Consume duplicate q8 HIP build event already covered by the existing filing.
+
+Duplicate event `kpf41-q8-hip-build-20261105`: existing PASS verdict and FILED receipt date from 2026-11-05, and KPF-41 already records the completed linked build. Scratch RESULT.json is absent; no evidence recreated and no new completion claimed. Durable receipt: `docs/reports/kv-cache/kpf41-q8-hip-build-result-20261105/RESULT.json` git blob `5111e952277ccb3087a0b939b33069684262bfa5`. GPU execution and correctness are separate from this build-only verdict. Next action remains qualifying the pending backend GPU row, subject to its current failure and lineage limits.
