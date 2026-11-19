@@ -1,0 +1,7 @@
+# Prospective item-4 raw-logit build packet
+
+Builds source `6ec877068936588b6d63dbba5842bbd540b92031` with the diagnostic patch `5309fb07d49eda7ecfa373f5cb3dc51294c73eef931a4b7d03d083ef0dc5f2f1`. A dedicated detached worktree holds the patch without a source commit. The source inventory describes the patched worktree; the `source.tar` digest in the runtime inputs refers only to the unpatched base archive. The first-unit smoke compiles the modified `server-context.cpp` and checks the raw-logit marker. The full receipt must bind the source and patch, compiler and seven libraries, DSO custody, pinned linkage helper and all four compiled knobs. Source content and metadata are checked at build boundaries. The output is a diagnostic build only; it is not a live capture, a GPU residency result or a historical-image-equivalence claim.
+
+The source and runtime inputs are in `/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/`; the source worktree is `/mnt/raid0/llm/tmp/kvu/kpf18-raw-logits-source-20261105`. The patch is retained separately in `../kpf18-first-logits-20261105/first-logits.patch`. The packet is prepared; publication and full build require their own recorded outcomes.
+
+The publisher smoke passed on 2026-11-05: it compiled the modified server object on four CPUs and found the capture marker; full build, linkage, DSO custody and live capture remain pending. Row: `kvu-kpf18-item4-raw-build-20261105`.

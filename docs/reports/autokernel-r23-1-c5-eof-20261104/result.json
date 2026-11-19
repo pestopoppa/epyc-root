@@ -1,0 +1,134 @@
+{
+  "row": "autokernel-r231-eof-c5-behavior-20261104",
+  "grant_rc": 0,
+  "status": "COMPLETE",
+  "model_loaded": false,
+  "inference_executed": false,
+  "scope": "Linux model-selection EOF via actual CLI plus linked console reader semantics; no chat/mtmd/Windows admission claim",
+  "cases": [
+    {
+      "case": "verify-ggml-linkage",
+      "rc": 0,
+      "elapsed_s": 0.017752730986103415,
+      "log_sha256": "29d58264021bb23d6a63a5933268ea45db8882c24956b9e8a1533287f149d57d"
+    },
+    {
+      "case": "cli-model-selection-eof",
+      "rc": 1,
+      "elapsed_s": 0.06787092005833983,
+      "log_sha256": "21e95631648480953e4347507d96b18ed555cf20b15c652fc24cde7a97ff3a0c",
+      "requests": [
+        [
+          "GET",
+          "/health"
+        ],
+        [
+          "GET",
+          "/v1/models"
+        ]
+      ]
+    },
+    {
+      "case": "compile-harness",
+      "rc": 0,
+      "elapsed_s": 0.15364093286916614,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "simple-eof",
+      "rc": 0,
+      "elapsed_s": 0.002363889943808317,
+      "log_sha256": "0eea915de7c8bb49c4f871a556dd90b1f5b2a7cbd0d9f6a6bc260e8f434707c5",
+      "expected_hex": ""
+    },
+    {
+      "case": "simple-blank",
+      "rc": 0,
+      "elapsed_s": 0.001594824017956853,
+      "log_sha256": "00c4697d5a49f190397fb8d46133782c95388b9ab10b9da29d4acd6383434ded",
+      "expected_hex": "0a"
+    },
+    {
+      "case": "simple-slash",
+      "rc": 0,
+      "elapsed_s": 0.0015461731236428022,
+      "log_sha256": "82104d36c2b158854a36526ea31d9f65d5401ae48bc09f75f5bae61cd181aec9",
+      "expected_hex": "0a"
+    },
+    {
+      "case": "simple-text",
+      "rc": 0,
+      "elapsed_s": 0.0015021329745650291,
+      "log_sha256": "c8e34df1dd1473cd724ba648c88519f347183cf2492ad1d6fc94b1feb9a21cb1",
+      "expected_hex": "68656c6c6f0a"
+    },
+    {
+      "case": "advanced-eof",
+      "rc": 0,
+      "elapsed_s": 0.0015325129497796297,
+      "log_sha256": "68c53f2d6a8ac0191e534fddaaf010389dab022413799ab88741a7857230a608",
+      "expected_hex": ""
+    },
+    {
+      "case": "advanced-blank",
+      "rc": 0,
+      "elapsed_s": 0.0015419027768075466,
+      "log_sha256": "2f98690d4cb869c18178dadde30c55934eddba84bb7b235553493bcdb6595076",
+      "expected_hex": "0a"
+    },
+    {
+      "case": "advanced-slash",
+      "rc": 0,
+      "elapsed_s": 0.0015991940163075924,
+      "log_sha256": "854d529ec4dede9e7b72b1810c2c60e290a1d8673568c505a0bfebfc736368c2",
+      "expected_hex": "0a"
+    },
+    {
+      "case": "advanced-text",
+      "rc": 0,
+      "elapsed_s": 0.0015399639960378408,
+      "log_sha256": "ecdd09d4f0dc5e98a742f00525b42f3e014c14da6bc4b677ce493221a6d65bf3",
+      "expected_hex": "68656c6c6f0a"
+    }
+  ],
+  "manifest": {
+    "custody": "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody",
+    "compiler": "/usr/bin/x86_64-linux-gnu-g++-15",
+    "files": {
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/libggml-base.so.0.16.0": "72a157e16b4f9cf8fdf85f791815bc97d2dec4b91c887932501e84ece81f9a73",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/libggml.so.0.16.0": "0646ae0cefb62ae10e9c715b0bcaa945b6b697a4335ab5a4ec8ae76b950c5bd8",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/libllama-common.so.0.0.10419": "308cb7e39cc1f44cce439cf3bc5b00f50e7742ed6fbad0f1f5d081b319e8acd0",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/libmtmd.so.0.0.10419": "aae5326e37d4c59dc71e4639ed781a9a292cbe877f874cb7e827bee378572c25",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/llama-mtmd-cli": "e6b317eb53d066115c302169ff54119259105a7b0de1b931f0c726917ab7954f",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/libggml-cpu.so.0.16.0": "6bafee2d96d6e9facb8b63d38367839823cee39f57d410ffe60be4c6934dad39",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/libllama.so.0.0.10419": "0b5cbeb62efc45f8d09c5ed234b7ac8e7a38ae7d9271c13192720cd9bd327241",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/libllama-cli-impl.so": "64c86bc134cfece052c33daf8cb5fd448ca521a3ee8e192cfb4b370109ff73a2",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/libllama-server-impl.so": "bb86e93d17d63a1bb3aa6b4ae11fb7d060323ef335fce65959522835ca6130a1",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/bin/llama-cli": "f027eb41d3e9623539abc700a3135eb7342dffa6af2c943fc7f669a43a9b22f7",
+      "/usr/bin/x86_64-linux-gnu-g++-15": "148558fc6e291be5a3a1c14adef7638c4c8bec30d085ebaff740244c0204be37",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/manifest.json": "3cdc9fe9dfc9b7e3a3a129a3667498a01187aaa8776c223627fc617cf0e13543",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/custody-manifest.json": "12c24494208efa0f57de62ae60a7d44c8367b35c77f9fd91bb7bed857ff30a1f",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/candidate.diff": "18fa6657ca15904462c44ed4cf6ac5a3f351c45359750a1e5a3565497f9bcd2f",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/results.jsonl": "711b60432e2d88e92ad36c4e0ea3c46aa0c2990e47ef93969a3bf2f17ce68c74",
+      "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-c5-v2-custody/build.log": "96657313f0a6aa0dd9fb688f82f5d28fb7401db1fc7699ebae4ce2b78e4ab93d"
+    },
+    "inputs": {
+      "job.py": "fe5b6cc569d97ffea66199394c109fc46a16f44996c5df1961fc6a65c804e4e3",
+      "harness.cpp": "1fd280bfd9fbbc0369b2f1cb006167f7fea0b0c5d7ae72e46f1ccc519926a7f0",
+      "control.py": "f5af3d6ee5881bc5161147f876bf4cc5872bfaa1fe9c7d97c257b26a75893fc6",
+      "verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+    },
+    "parent": "c72ec82f5417bb2937310326120f149b665e8400",
+    "upstream_merge": "b04642061d183dff8504127dfbee1c1a8352682c",
+    "provenance": "Pinned genuinely full C5 v2 custody closure; current source parent/diff and all full-build artifact hashes verified during custody; future runner validates exact bytes and runtime mapped DSOs. No native execution during preparation.",
+    "claim_source": "VB-AK-R23-1-EOF-WIRE",
+    "runner_mock_identity": "job.py SHA256 in inputs binds runner and in-process deterministic loopback HTTP mock",
+    "linkage_script_provenance": {
+      "source_path": "/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh",
+      "source_head": "99301fa149af86a6f9743d2b0405c9234ba39586",
+      "sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+      "identity": "exact single-file copy, no research checkout created"
+    },
+    "scope": "Linux model-free CLI model-selection EOF and linked console reader semantics on C5 v2; not chat/mtmd/Windows/performance or admission evidence"
+  }
+}

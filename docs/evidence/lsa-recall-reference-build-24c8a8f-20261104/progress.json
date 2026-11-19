@@ -1,0 +1,6 @@
+{
+  "kind": "preflight",
+  "schema": "lsa-recall-build-progress-v1",
+  "source_commit": "24c8a8f2aa7cb4800fe4637151aaa5e149a7af71",
+  "timestamp": "2026-11-04T18:23:34.089383+00:00"
+}

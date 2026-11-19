@@ -6,8 +6,11 @@ set -euo pipefail
 # Run:   pre_push_serialization_guard.sh <remote-name> <remote-url>   < <ref updates on stdin>
 # Tests: scripts/hooks/tests/test_pre_push_serialization_guard.sh
 #
-# NOT INSTALLED BY THIS FILE. Writing the guard and wiring it into .git/hooks or
-# core.hooksPath are separate decisions; this file only implements the contract.
+# NOT INSTALLED BY THIS FILE, which only implements the contract. Since 2026-11-02
+# (operator decision, decision tool: "install as-is, advisory") it is wired by
+# scripts/hooks/install_git_hooks.sh into the generated pre-push wrapper of every repo
+# that installer covers, ahead of git-lfs's pre-push. Installed-wrapper tests:
+# scripts/hooks/tests/test_pre_push_install.py.
 #
 # ─── WHY THIS EXISTS ─────────────────────────────────────────────────────────
 #

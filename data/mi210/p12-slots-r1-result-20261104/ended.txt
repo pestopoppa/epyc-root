@@ -1,0 +1,7 @@
+rc=1 time=2026-11-04T15:38:36Z reason=job-rc-1:exited
+job_id=p12-slots-followup-20261104
+owner=h-fable5-window2-findings-05c-mi210-lever
+step=job-run
+estimated_wall_s=7200
+started=2026-11-04T15:38:18Z
+regions=0-95

@@ -1,0 +1,24 @@
+{
+  "schema": "sr6.prior-prompt-inventory.v1",
+  "prompt_sha256": [
+    "503099118952d796cae9a29b4b7ae36ea317fa8feac15bb1895a0e14cdafc1cf",
+    "055e781a277ecb24980f774eab0945eec9e7f9425c5d6f62f61c216c53edc5ca",
+    "78ae4bca2b4996c19b4611682fb29324dd71f8b4a1d46783e787c27e882ac7e9",
+    "e86dcc0863fa46873c89f2f5c920e6215d1e7f2a53becd08a397a14ad0a836f5",
+    "72a2b515fda683236675263882b2ab471ae899f43ae228224563ff1cd5e24731",
+    "40200a03a1d0d03e84030eac25c1c8924b80e015b0c670f11511ca31963568ac",
+    "6e193d357357a022d49ce1b38a89e57bb8a4d32a89909617ad05169408f0a713",
+    "14715971d915d626373c8a5d4e4870165de8cd9bfa51e3c5df5b1156552a59fc",
+    "62bcdda9b4abcad388719664d89a5888552358e29c1dd5751967fcd5bc5d9687",
+    "b449e166a5b6f11302c585666ea2943f8ca32184d727baa1e0be6140f6d2a4a9",
+    "5bf92635b0eba19442d06d4e1b11aec81de3c7df291caf451b13b1853275cae6",
+    "9aad24a9fe267fedce0d33fa8aa17a71d2781042f8fdb0250bf6dade7ca084b9",
+    "0c92674b5d9a5dde74c5b0fba3f357144c80b68c20df1afa2180c6331f4bbad1",
+    "fd5710d9719d3f7d89fc2e387616afe84da354bfa606c4d85ecc6c5ea9f2d997",
+    "9a4c691ce58d1016cff3bd4fa2da5f67bfb053ea8e793a17ef311ea94d58bc34"
+  ],
+  "source_path": "/mnt/raid0/llm/tmp/sr6-qwen36-draft-width-20261101/PROMPTS.json",
+  "source_sha256": "3cda64879d67ffcf7a1960aa0b526d9f21cef8bfc3440a88c56032479cf14e2e",
+  "count": 15,
+  "scope": "Prior 2026-11-01 SR-6 diagnostic only; not a complete exposure inventory. Hashes of raw prompt UTF-8, not rendered prompts."
+}

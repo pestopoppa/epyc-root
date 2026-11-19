@@ -1,0 +1,30 @@
+{
+  "id": "handoff-vidya-quality-pack-worker-general-20261118",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack-worker-general/row-launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "ram_gib": 48,
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack-worker-general/out/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 1200,
+  "min_window_s": 1500,
+  "priority_rank": 38,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack-worker-general",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-WORKER-GENERAL",
+  "dryrun_native_result": true,
+  "first_progress_s": 100,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack-worker-general/smoke_predicate.py",
+  "decision_rule": "Can the isolated worker-general CPU/MTP recipe capture four distinct predetermined worker requests per arm against v10 and C13 with exact request, output, generation path and process custody? This is a finite request census. Stop after the eight responses and verified cleanup, or on STOP, deadline, or an identity, startup, response or cleanup error. Four-CPU publisher smoke captures one v10 no-spec native completion with the pinned Qwen3-0.6B Q8_0 at 45 second startup and 30 second request bounds. The earlier frontdoor JSON mismatch remains in scope for the eventual broad pack. Worker-general isolated input capture has no seven-profile parity, deployed equivalence or promotion authority.",
+  "verdict_by": "agent",
+  "keep": [
+    "out/**",
+    "*.py",
+    "*.json",
+    "*.md",
+    "*.sh",
+    "SOURCE.sha256"
+  ]
+}

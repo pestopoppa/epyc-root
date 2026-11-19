@@ -119,9 +119,13 @@ def size_of(full: str) -> str:
     return 'S' if n < 350 else ('M' if n < 1000 else 'L')
 
 
-def _blame_dates(path: Path) -> dict[int, str]:
+def _blame_dates(path: Path, follow_copies: bool = False) -> dict[int, str]:
+    """Author date per line. `follow_copies` (git blame -C) for a folded handoff: a route-1a fold moves boxes
+    verbatim from other files in one commit, and without -C every moved box would read as touched on the fold
+    day and gain the recency bonus. Only track-gated (folded) files pay for -C."""
     try:
-        r = subprocess.run(['git', '-C', str(REPO_ROOT), 'blame', '--line-porcelain', 'HEAD', '--', str(path.relative_to(REPO_ROOT))],
+        r = subprocess.run(['git', '-C', str(REPO_ROOT), 'blame', '--line-porcelain'] + (['-C'] if follow_copies else [])
+                           + ['HEAD', '--', str(path.relative_to(REPO_ROOT))],
                            capture_output=True, text=True, errors='replace', timeout=120).stdout
     except (OSError, subprocess.TimeoutExpired, ValueError):
         return {}
@@ -146,17 +150,19 @@ def collect_boxes(index_state) -> tuple[dict, list[dict]]:
     for h, p in paths.items():
         lines = p.read_text(encoding='utf-8', errors='replace').splitlines()
         dates = None
+        sections = index_state.scan_tracks(p)     # [] unless the file is a track-gated (folded) handoff
         for ln, st, body, head in brc._boxes(p):
             if st != 'x' and st != 'X':
                 if dates is None:
-                    dates = _blame_dates(p)
+                    dates = _blame_dates(p, bool(sections))
                 code, reasons = brc.classify(p, ln, st, body, head)
                 full = [lines[ln - 1]]
                 for l in lines[ln:ln + 30]:
                     if re.match(r'\s*[-*] \[[ xX]\]', l) or l.startswith('#'):
                         break
                     full.append(l)
-                boxes.append(dict(handoff=h, file=str(p.relative_to(REPO_ROOT)), line=ln, text=body, head=head, code=code,
+                track = next((t['name'] for t in sections if t['line'] < ln <= t['end']), None)
+                boxes.append(dict(handoff=h, file=str(p.relative_to(REPO_ROOT)), line=ln, text=body, head=head, code=code, track=track,
                                   reasons=reasons, rows=h2r.get(h, []), touched=dates.get(ln),
                                   full=' '.join(x.strip() for x in full)[:1500]))
     return state, boxes
@@ -203,6 +209,17 @@ def seed_prep(fillers: Path, nodes: dict, grants: Path = GRANTS_DIR, aliases: di
 
 
 # ---------------------------------------------------------------- the build
+def scoped(table: dict, rowid: str, track: str | None, default=None):
+    """Curated row-level value for a box: a `<ROW>#<track>` key wins over the row key when present, even when its
+    value is empty (an explicit "no hold" for a folded track whose row has one). Route-1a folds re-key a retired
+    row's weight/hold/park to `<kept-row>#<track>` so the folded boxes keep the treatment they had (BRF-T1-1)."""
+    if track:
+        k = f"{rowid}#{track}"
+        if k in table:
+            return table[k]
+    return table.get(rowid, default)
+
+
 def build(curated: dict | None = None, index_state=None, state=None, boxes=None) -> dict:
     curated = curated or json.loads(CURATED_PATH.read_text(encoding='utf-8'))
     index_state = index_state or _load('index_state', 'scripts/handoffs/index_state.py')
@@ -226,7 +243,7 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
         key = f"{rowid}@{Path(b['file']).name}:{b['line'] or 'new'}"
         it = dict(key=key, row=rowid, rows=b['rows'], file=b['file'], line=b['line'], head=b['head'],
                   text=b['text'][:260].replace('**', ''), full=b['full'], touched=b['touched'], code=b['code'],
-                  reasons=b['reasons'], source='auto', kind='N', cls='N', s=0.0, size=size_of(b['full']), unblocks='',
+                  reasons=b['reasons'], track=b.get('track'), source='auto', kind='N', cls='N', s=0.0, size=size_of(b['full']), unblocks='',
                   blocker='', why='', owner='', filler='', before='', synthetic=False, in_progress=False, done='')
         it.update(kw)
         return it
@@ -280,8 +297,10 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
         if (b['file'], b['line']) in byloc:
             continue
         rowid = b['rows'][0] if b['rows'] else b['handoff']
-        w = W.get(rowid, .2)
-        rhold = HOLD.get(rowid)
+        tr = b.get('track')
+        w = scoped(W, rowid, tr, .2)
+        rhold = scoped(HOLD, rowid, tr)
+        park = scoped(PARK, rowid, tr)
         k = auto_kind(b['text'])
         t = b['text']
         recent = bool(b['touched'] and b['touched'] >= rec_cut)
@@ -290,7 +309,7 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
         cls, blocker = 'N', ''
         if b['code'] == 2:
             cls = 'U'; blocker = (b['reasons'][0] if b['reasons'] else 'undispatchable')[:140]; s = round(w * .3, 3)
-        elif rhold or (PARK.get(rowid) and re.search(PARK[rowid], t[:300])) or HOLD_RX.search(t[:300]) or \
+        elif rhold or (park and re.search(park, t[:300])) or HOLD_RX.search(t[:300]) or \
                 (DS41_RX.search(t[:300]) and not re.search(r'noise floor', t[:300], re.I) and k == 'I'):
             cls = 'H'; blocker = rhold or 'text names a hold / freeze / park'
         elif BLK_RX.search(t[:200]):
@@ -327,33 +346,43 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
     dep_rows = collections.defaultdict(set)
     for e in EDGES:
         dep_rows[e['to']].add(e['from'])
+    # A route-1a fold repoints a Deps edge from a retired row to the kept row of the folded handoff. The curated
+    # `dep_tracks` table ("FROM>TO": [{"track": <name>|null, "next_action": <retired row's next action>}], written
+    # by the fold) keeps the inheritance landing on the box it reached before the fold: the retired row's track,
+    # matched against the retired row's own next action. Edges without an entry take the original path.
+    DT = curated.get('dep_tracks', {})
+    word = lambda s_: set(re.findall(r'[A-Za-z][A-Za-z0-9\-.]{3,}', (s_ or '').lower()))  # noqa: E731
     for D_, Rs in dep_rows.items():
         if D_ not in NODES or NODES[D_]['open'] == 0:
             continue
-        best_inf = None
-        for r_ in Rs:
-            if HOLD.get(r_) or NODES.get(r_, {}).get('open', 0) == 0:
+        plain = {r_ for r_ in Rs if f'{r_}>{D_}' not in DT}
+        groups = [(plain, 'ANY', NODES[D_].get('next_action', ''))] if plain else []
+        for r_ in sorted(Rs - plain):
+            groups += [({r_}, ent.get('track'), ent.get('next_action', '')) for ent in DT[f'{r_}>{D_}']]
+        for Rs_g, trk, na_text in groups:
+            best_inf = None
+            for r_ in Rs_g:
+                if HOLD.get(r_) or NODES.get(r_, {}).get('open', 0) == 0:
+                    continue
+                for it in rowbest.get(r_, []):
+                    if it['kind'] == 'I' and it['cls'] in ('live', 'ready') and (best_inf is None or it['s'] > best_inf['s']):
+                        best_inf = it
+            if not best_inf:
                 continue
-            for it in rowbest.get(r_, []):
-                if it['kind'] == 'I' and it['cls'] in ('live', 'ready') and (best_inf is None or it['s'] > best_inf['s']):
-                    best_inf = it
-        if not best_inf:
-            continue
-        cands = [i for i in rowbest.get(D_, []) if i['kind'] == 'N' and i['cls'] == 'N' and not i['before']
-                 and not i['synthetic'] and i['source'] == 'auto']
-        if not cands:
-            continue
-        na = set(re.findall(r'[A-Za-z][A-Za-z0-9\-.]{3,}', NODES[D_].get('next_action', '').lower()))
+            cands = [i for i in rowbest.get(D_, []) if i['kind'] == 'N' and i['cls'] == 'N' and not i['before']
+                     and not i['synthetic'] and i['source'] == 'auto' and (trk == 'ANY' or i.get('track') == trk)]
+            if not cands:
+                continue
+            na = word(na_text)
 
-        def ov(i):
-            tw = set(re.findall(r'[A-Za-z][A-Za-z0-9\-.]{3,}', i['text'].lower()))
-            return len(na & tw) + i['s']
-        top = max(cands, key=ov)
-        if ov(top) - top['s'] < 1.5:
-            continue                                            # no box matches the row's own next step: do not guess
-        top['before'] = '@' + best_inf['key']
-        top['s'] = max(top['s'], round(best_inf['s'] * .6, 3))
-        top['unblocks'] = f"row-dep (coarse Deps edge {', '.join(sorted(Rs))}) -> {best_inf['row']} {best_inf['text'][:50]}"
+            def ov(i):
+                return len(na & word(i['text'])) + i['s']
+            top = max(cands, key=ov)
+            if ov(top) - top['s'] < 1.5:
+                continue                                        # no box matches the row's own next step: do not guess
+            top['before'] = '@' + best_inf['key']
+            top['s'] = max(top['s'], round(best_inf['s'] * .6, 3))
+            top['unblocks'] = f"row-dep (coarse Deps edge {', '.join(sorted(Rs_g))}) -> {best_inf['row']} {best_inf['text'][:50]}"
 
     def resolve(ref):
         if not ref:
@@ -425,7 +454,7 @@ def build(curated: dict | None = None, index_state=None, state=None, boxes=None)
         it['tier'] = tier_of(it)
         it['lane'] = lane_of(it)
         if not it['why']:
-            w_ = W.get(it['row'], .2)
+            w_ = scoped(W, it['row'], it.get('track'), .2)
             it['why'] = f"auto: row weight {w_:g}" + (f", touched {it['touched']}" if it['touched'] else '') + (f"; {it['blocker']}" if it['blocker'] else '')
         if not it['owner']:
             f = it['full'][:900]

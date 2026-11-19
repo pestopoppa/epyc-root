@@ -1,0 +1,63 @@
+{
+  "schema": "kvu19a2.historical-case-capture.v1",
+  "source": "historical/fa_harness.cpp",
+  "source_sha256": "6dd03a07406cfe26dfd4ff52de4a4067fd7229d77ee5191bbd8e2e34956fa823",
+  "seed": 1234,
+  "cases": [
+    {
+      "id": 78,
+      "hsk": 576,
+      "hsv": 512,
+      "nh": 1,
+      "nr2": 16,
+      "kv": 8192,
+      "nb": 4,
+      "nseq": 4,
+      "run": 1024,
+      "free": 1024,
+      "type": "f16",
+      "bias": 0.0,
+      "softcap": 0.0,
+      "base_hash": "2d79f7ad85007afe",
+      "off_hash": "9d0f03b54fa04aff",
+      "on_hash": "2d79f7ad85007afe"
+    },
+    {
+      "id": 79,
+      "hsk": 576,
+      "hsv": 512,
+      "nh": 1,
+      "nr2": 16,
+      "kv": 8192,
+      "nb": 256,
+      "nseq": 4,
+      "run": 1024,
+      "free": 1024,
+      "type": "f16",
+      "bias": 0.0,
+      "softcap": 0.0,
+      "base_hash": "10cb310e27b82fd6",
+      "off_hash": "0fc9c0e3af42bc2a",
+      "on_hash": "10cb310e27b82fd6"
+    },
+    {
+      "id": 80,
+      "hsk": 512,
+      "hsv": 512,
+      "nh": 1,
+      "nr2": 8,
+      "kv": 8192,
+      "nb": 4,
+      "nseq": 4,
+      "run": 1024,
+      "free": 1024,
+      "type": "f16",
+      "bias": 0.0,
+      "softcap": 0.0,
+      "base_hash": "b071108d302d5fa8",
+      "off_hash": "70fe49f2066cdfb6",
+      "on_hash": "b071108d302d5fa8"
+    }
+  ],
+  "historical_observation_status": "cross-capture only; not a same-binary repeatability result"
+}

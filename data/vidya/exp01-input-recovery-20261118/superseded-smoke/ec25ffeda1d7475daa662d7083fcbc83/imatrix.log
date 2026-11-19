@@ -1,0 +1,191 @@
+CPU: using device CPU - 0 MiB free
+llama_model_loader: loaded meta data with 31 key-value pairs and 311 tensors from /mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf (version GGUF V3 (latest))
+llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+llama_model_loader: - kv   0:                       general.architecture str              = qwen3
+llama_model_loader: - kv   1:                               general.type str              = model
+llama_model_loader: - kv   2:                               general.name str              = Qwen3 0.6B
+llama_model_loader: - kv   3:                           general.basename str              = Qwen3
+llama_model_loader: - kv   4:                         general.size_label str              = 0.6B
+llama_model_loader: - kv   5:                          qwen3.block_count u32              = 28
+llama_model_loader: - kv   6:                       qwen3.context_length u32              = 32768
+llama_model_loader: - kv   7:                     qwen3.embedding_length u32              = 1024
+llama_model_loader: - kv   8:                  qwen3.feed_forward_length u32              = 3072
+llama_model_loader: - kv   9:                 qwen3.attention.head_count u32              = 16
+llama_model_loader: - kv  10:              qwen3.attention.head_count_kv u32              = 8
+llama_model_loader: - kv  11:                       qwen3.rope.freq_base f32              = 1000000.000000
+llama_model_loader: - kv  12:     qwen3.attention.layer_norm_rms_epsilon f32              = 0.000001
+llama_model_loader: - kv  13:                 qwen3.attention.key_length u32              = 128
+llama_model_loader: - kv  14:               qwen3.attention.value_length u32              = 128
+llama_model_loader: - kv  15:                       tokenizer.ggml.model str              = gpt2
+llama_model_loader: - kv  16:                         tokenizer.ggml.pre str              = qwen2
+llama_model_loader: - kv  17:                      tokenizer.ggml.tokens arr[str,151936]  = ["!", "\"", "#", "$", "%", "&", "'", ...
+llama_model_loader: - kv  18:                  tokenizer.ggml.token_type arr[i32,151936]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+llama_model_loader: - kv  19:                      tokenizer.ggml.merges arr[str,151387]  = ["Ġ Ġ", "ĠĠ ĠĠ", "i n", "Ġ t",...
+llama_model_loader: - kv  20:                tokenizer.ggml.eos_token_id u32              = 151645
+llama_model_loader: - kv  21:            tokenizer.ggml.padding_token_id u32              = 151643
+llama_model_loader: - kv  22:                tokenizer.ggml.bos_token_id u32              = 151643
+llama_model_loader: - kv  23:               tokenizer.ggml.add_bos_token bool             = false
+llama_model_loader: - kv  24:                    tokenizer.chat_template str              = {%- if tools %}\n    {{- '<|im_start|>...
+llama_model_loader: - kv  25:               general.quantization_version u32              = 2
+llama_model_loader: - kv  26:                          general.file_type u32              = 7
+llama_model_loader: - kv  27:                      quantize.imatrix.file str              = /models_out/Qwen3-0.6B-GGUF/Qwen_Qwen...
+llama_model_loader: - kv  28:                   quantize.imatrix.dataset str              = /training_dir/calibration_datav3.txt
+llama_model_loader: - kv  29:             quantize.imatrix.entries_count i32              = 196
+llama_model_loader: - kv  30:              quantize.imatrix.chunks_count i32              = 137
+llama_model_loader: - type  f32:  113 tensors
+llama_model_loader: - type q8_0:  198 tensors
+load: 0 unused tokens
+load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+load: printing all EOG tokens:
+load:   - 128247 ('</s>')
+load:   - 151643 ('<|endoftext|>')
+load:   - 151645 ('<|im_end|>')
+load:   - 151662 ('<|fim_pad|>')
+load:   - 151663 ('<|repo_name|>')
+load:   - 151664 ('<|file_sep|>')
+load: special tokens cache size = 27
+load: token to piece cache size = 0.9311 MB
+llm_load_print_meta: format           = GGUF V3 (latest)
+llm_load_print_meta: arch             = qwen3
+llm_load_print_meta: n_ctx_train      = 32768
+llm_load_print_meta: n_embd           = 1024
+llm_load_print_meta: n_layer          = 28
+llm_load_print_meta: n_head           = 16
+llm_load_print_meta: n_head_kv        = 8
+llm_load_print_meta: n_rot            = 128
+llm_load_print_meta: n_swa            = 0
+llm_load_print_meta: n_swa_pattern    = 1
+llm_load_print_meta: n_embd_head_k    = 128
+llm_load_print_meta: n_embd_head_v    = 128
+llm_load_print_meta: n_gqa            = 2
+llm_load_print_meta: n_embd_k_gqa     = 1024
+llm_load_print_meta: n_embd_v_gqa     = 1024
+llm_load_print_meta: f_norm_eps       = 0.0e+00
+llm_load_print_meta: f_norm_rms_eps   = 1.0e-06
+llm_load_print_meta: f_clamp_kqv      = 0.0e+00
+llm_load_print_meta: f_max_alibi_bias = 0.0e+00
+llm_load_print_meta: f_logit_scale    = 0.0e+00
+llm_load_print_meta: n_ff             = 3072
+llm_load_print_meta: n_expert         = 0
+llm_load_print_meta: n_expert_used    = 0
+llm_load_print_meta: causal attn      = 1
+llm_load_print_meta: pooling type     = -1
+llm_load_print_meta: rope type        = 2
+llm_load_print_meta: rope scaling     = linear
+llm_load_print_meta: freq_base_train  = 1000000.0
+llm_load_print_meta: freq_scale_train = 1
+llm_load_print_meta: n_ctx_orig_yarn  = 32768
+llm_load_print_meta: rope_finetuned   = unknown
+llm_load_print_meta: ssm_d_conv       = 0
+llm_load_print_meta: ssm_d_inner      = 0
+llm_load_print_meta: ssm_d_state      = 0
+llm_load_print_meta: ssm_dt_rank      = 0
+llm_load_print_meta: ssm_n_group      = 0
+llm_load_print_meta: model type       = 0.6B
+llm_load_print_meta: model ftype      = Q8_0
+llm_load_print_meta: model params     = 751.632 M
+llm_load_print_meta: model size       = 761.797 MiB (8.502 BPW) 
+llm_load_print_meta: repeating layers = 446.500 MiB (8.503 BPW, 440.467 M parameters)
+llm_load_print_meta: general.name     = Qwen3 0.6B
+print_info: vocab type            = BPE
+print_info: n_vocab               = 151936
+print_info: n_merges              = 151387
+print_info: BOS token             = 151643 '<|endoftext|>'
+print_info: EOS token             = 151645 '<|im_end|>'
+print_info: EOT token             = 151645 '<|im_end|>'
+print_info: PAD token             = 151643 '<|endoftext|>'
+print_info: LF token              = 198 'Ċ'
+print_info: FIM PRE token         = 151659 '<|fim_prefix|>'
+print_info: FIM SUF token         = 151661 '<|fim_suffix|>'
+print_info: FIM MID token         = 151660 '<|fim_middle|>'
+print_info: FIM PAD token         = 151662 '<|fim_pad|>'
+print_info: FIM REP token         = 151663 '<|repo_name|>'
+print_info: FIM SEP token         = 151664 '<|file_sep|>'
+print_info: EOG token             = 128247 '</s>'
+print_info: EOG token             = 151643 '<|endoftext|>'
+print_info: EOG token             = 151645 '<|im_end|>'
+print_info: EOG token             = 151662 '<|fim_pad|>'
+print_info: EOG token             = 151663 '<|repo_name|>'
+print_info: EOG token             = 151664 '<|file_sep|>'
+print_info: max token length      = 256
+======================================= HAVE_FANCY_SIMD is defined
+Free memory 0 MiB on device 0 is less the 1024 MiB safety margin
+------------------- Layer sizes:
+Layer  0:     15.95,      2.00,     17.95       18.00  MiB
+Layer  1:     15.95,      2.00,     17.95       18.00  MiB
+Layer  2:     15.95,      2.00,     17.95       18.00  MiB
+Layer  3:     15.95,      2.00,     17.95       18.00  MiB
+Layer  4:     15.95,      2.00,     17.95       18.00  MiB
+Layer  5:     15.95,      2.00,     17.95       18.00  MiB
+Layer  6:     15.95,      2.00,     17.95       18.00  MiB
+Layer  7:     15.95,      2.00,     17.95       18.00  MiB
+Layer  8:     15.95,      2.00,     17.95       18.00  MiB
+Layer  9:     15.95,      2.00,     17.95       18.00  MiB
+Layer 10:     15.95,      2.00,     17.95       18.00  MiB
+Layer 11:     15.95,      2.00,     17.95       18.00  MiB
+Layer 12:     15.95,      2.00,     17.95       18.00  MiB
+Layer 13:     15.95,      2.00,     17.95       18.00  MiB
+Layer 14:     15.95,      2.00,     17.95       18.00  MiB
+Layer 15:     15.95,      2.00,     17.95       18.00  MiB
+Layer 16:     15.95,      2.00,     17.95       18.00  MiB
+Layer 17:     15.95,      2.00,     17.95       18.00  MiB
+Layer 18:     15.95,      2.00,     17.95       18.00  MiB
+Layer 19:     15.95,      2.00,     17.95       18.00  MiB
+Layer 20:     15.95,      2.00,     17.95       18.00  MiB
+Layer 21:     15.95,      2.00,     17.95       18.00  MiB
+Layer 22:     15.95,      2.00,     17.95       18.00  MiB
+Layer 23:     15.95,      2.00,     17.95       18.00  MiB
+Layer 24:     15.95,      2.00,     17.95       18.00  MiB
+Layer 25:     15.95,      2.00,     17.95       18.00  MiB
+Layer 26:     15.95,      2.00,     17.95       18.00  MiB
+Layer 27:     15.95,      2.00,     17.95       18.00  MiB
+Layer 28:    157.65,    278.75,    436.40 MiB (output layer)
+--------------------------------------------------------------------------
+Total   :    446.50,    334.75,    781.25 MiB
+Free memory 0 MiB on device 0 is less the required compute buffer size 18 MiB
+Memory required for model tensors + cache: 939 MiB
+Memory available on all devices - compute: 0 MiB
+llm_load_tensors: ggml ctx size =    0.14 MiB
+llm_load_tensors:        CPU buffer size =   761.80 MiB
+.............................................................
+llama_init_from_model: n_ctx         = 512
+llama_init_from_model: n_batch       = 512
+llama_init_from_model: n_ubatch      = 512
+llama_init_from_model: flash_attn    = 1
+llama_init_from_model: attn_max_b    = 0
+llama_init_from_model: fused_moe     = 0
+llama_init_from_model: grouped er    = 0
+llama_init_from_model: fused_up_gate = 0
+llama_init_from_model: fused_mmad    = 1
+llama_init_from_model: rope_cache    = 0
+llama_init_from_model: graph_reuse   = 1
+llama_init_from_model: k_cache_hadam = 0
+llama_init_from_model: v_cache_hadam = 0
+llama_init_from_model: split_mode_graph_scheduling = 0
+llama_init_from_model: reduce_type   = f16
+llama_init_from_model: sched_async   = 0
+llama_init_from_model: ser           = -1, 0
+llama_init_from_model: freq_base     = 1000000.0
+llama_init_from_model: freq_scale    = 1
+llama_kv_cache_init:        CPU KV buffer size =    56.00 MiB
+llama_init_from_model: KV self size  =   56.00 MiB, K (f16):   28.00 MiB, V (f16):   28.00 MiB
+llama_init_from_model:        CPU  output buffer size =     0.58 MiB
+llama_init_from_model:        CPU compute buffer size =   298.75 MiB
+llama_init_from_model: graph nodes  = 761
+llama_init_from_model: graph splits = 1
+llama_init_from_model: enabling only_active_experts scheduling
+
+system_info: n_threads = 4 / 192 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 1 | FMA = 1 | NEON = 0 | SVE = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 | MATMUL_INT8 = 0 | 
+compute_imatrix: tokenizing the input ..
+compute_imatrix: tokenization took 993.51 ms
+compute_imatrix: computing over 1 chunks with batch_size 512
+compute_imatrix: 3.68 seconds per pass - ETA 0.05 minutes
+
+save_imatrix: stored collected data after 1 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/smoke/ec25ffeda1d7475daa662d7083fcbc83/imatrix.dat.partial
+
+llama_print_timings:        load time =      40.27 ms
+llama_print_timings:      sample time =       0.00 ms /     1 runs   (    0.00 ms per token,      inf tokens per second)
+llama_print_timings: prompt eval time =       0.00 ms /     0 tokens (    -nan ms per token,     -nan tokens per second)
+llama_print_timings:        eval time =       0.00 ms /     1 runs   (    0.00 ms per token,      inf tokens per second)
+llama_print_timings:       total time =    5479.14 ms /     1 tokens
+

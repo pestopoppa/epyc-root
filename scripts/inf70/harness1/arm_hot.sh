@@ -45,6 +45,19 @@ python3 "$H/tools/knobs.py" init "$KP" >/dev/null
 say "SESSION $SESS bin=$B ctx=$CTX arms=[${ARMS[*]}] extra=[${EXTRA[*]:-}] knobpage=$KP"
 VERLINE=$(LD_LIBRARY_PATH="$B:${LD_LIBRARY_PATH:-}" "$B/llama-server" --version 2>&1 | head -2 | tr "\n" " ")
 say "version: $VERLINE"
+# BUILDVERIFY-1 pre-arm gate (opt-in by env; digests OBJECTS, never the linked .so; mtime and path names prove nothing):
+#   BUILDVERIFY_SYMBOLS="STR ..."            every STR must be present in $B/libggml-cpu.so (proves a knob is compiled in)
+#   BUILDVERIFY_DIR=<cmake build dir> BUILDVERIFY_EXPECT=<manifest.json>   object manifest must equal the recorded one
+if [ -n "${BUILDVERIFY_SYMBOLS:-}" ]; then
+  python3 -I "$H/tools/buildverify.py" symbol "$B/libggml-cpu.so" $BUILDVERIFY_SYMBOLS 2>&1 | while read -r l; do say "buildverify: $l"; done
+  [ "${PIPESTATUS[0]}" -eq 0 ] || { say "FATAL buildverify: expected symbol absent from the binary"; die 65; }
+fi
+if [ -n "${BUILDVERIFY_DIR:-}" ] && [ -n "${BUILDVERIFY_EXPECT:-}" ]; then
+  BV_TMP=$(mktemp "$OUT/buildverify.XXXXXX.json")
+  python3 -I "$H/tools/buildverify.py" manifest "$BUILDVERIFY_DIR" -o "$BV_TMP" || { say "FATAL buildverify: manifest failed"; die 65; }
+  python3 -I "$H/tools/buildverify.py" compare "$BUILDVERIFY_EXPECT" "$BV_TMP" 2>&1 | while read -r l; do say "buildverify: $l"; done
+  [ "${PIPESTATUS[0]}" -eq 0 ] || { say "FATAL buildverify: object manifest differs from the recorded build"; die 65; }
+fi
 
 for try in $(seq 1 "$TRIES"); do
   bash "$H/evict_targeted.sh" "$EVICT_GIB" "${TRUNK_SHARDS[@]}" "$MTPH" > "$OUT/$SESS.evict.$try" 2>&1

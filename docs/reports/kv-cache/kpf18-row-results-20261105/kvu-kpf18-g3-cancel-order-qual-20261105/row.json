@@ -1,0 +1,42 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "PASS iff seven synthetic native-log event sequences show ordered same-task launch/cancel/release accepted and inverted/missing/ambiguous controls rejected by corrected witness, while original behavior is recorded; no native cancellation proof. Stop on mismatch, source drift, STOP or deadline.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 30,
+ "gib": 1,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18-G3-CANCEL-ORDER",
+ "id": "kvu-kpf18-g3-cancel-order-qual-20261105",
+ "keep": [
+  "**",
+  "out/full-attempt/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-cancel-order-qual-20261105/launch.sh",
+  "sha256": "d01af29834eecfa786cb643fe0824951d1c1d81bbc813801c2aa3966b996ca96"
+ },
+ "min_window_s": 300,
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 46.0,
+ "publish_warnings": [
+  "kv-cache-program.md:805: identity fields incomplete: ['metric'] \u2014 add metric: what is measured, with direction (e.g. decode t/s, higher is better)",
+  "kv-cache-program.md:805: untestable prose prerequisite: 'Require ordered same-task launch, cancel and release, and reject missing, inverted or ambiguous events; compare the orig'"
+ ],
+ "published_at": "2026-11-05T03:22:06Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-kvu/docs/reports/kv-cache/kpf18-g3-cancel-order-qual-20261105/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-cancel-order-qual-20261105/out/full-attempt/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-cancel-order-qual-20261105",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-cancel-order-qual-20261105/STOP",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-cancel-order-qual-20261105"
+}

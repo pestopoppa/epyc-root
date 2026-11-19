@@ -1,0 +1,71 @@
+{
+  "argv": [
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/llama-server",
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "19896",
+    "-np",
+    "1",
+    "-c",
+    "4096",
+    "-t",
+    "24",
+    "-ngl",
+    "0",
+    "--device",
+    "none",
+    "--metrics",
+    "--slots",
+    "--kv-unified",
+    "--cache-ram",
+    "0",
+    "--no-cache-idle-slots",
+    "--spec-type",
+    "none"
+  ],
+  "build_files": {
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/libggml-base.so.0.16.0": "60c3aebba0fc6b545f25a604693ebe91d17e6f00d967b4042a2e64f599bbe36b",
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/libggml-cpu.so.0.16.0": "7533f0331e491a26144f6fd24a5237a45308a717180b2f664e0b0db9fb60f0a9",
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/libggml.so.0.16.0": "4b42aee0055e0164a04a638946a7dbdbde22b34615a57a664fd16608d60c5ace",
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/libllama-common.so.0.0.10304": "15f1a766c790de285a2362fc1b59d2b33e9772a127fec94d6f8dbcf65014be4b",
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/libllama-server-impl.so": "0250f88fa0eabd44c74e180c4bfdbf252133c9afa8d3894927e68847e3f15b08",
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/libllama.so.0.0.10304": "90467000dfc14ca6fa40d473ca3c61e7ef8f77aa1fe9cbfe4b9b5b105fbe8edb",
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/libmtmd.so.0.0.10304": "92525f71b64b1e4e18a640abcad50daf65f2df4310687fefb3abaebbb4ad2e02",
+    "/mnt/raid0/llm/tmp/kvu126-gauge-live-v2-20261104/build-reused/bin/llama-server": "eaff3f0e53428795f605c848853d2f339eb6c8c228e657f00ee8bb5cb4ca30c7"
+  },
+  "build_inputs_sha256": {
+    "CMakeCache.txt": "1c1d1e43344ddde7504fef23c130ec884a38c12e0ebe441d952a812feea17a30",
+    "compile_commands.json": "dd382fb9a0d51f05a1b3c7a8919e06ed5c8de4317ff5d9100bfe86dfe6078b34"
+  },
+  "build_provenance": "post-failure sealed v1 build; fix-specific metric symbol verified; no independent original build-time binary attestation",
+  "cmake_flags": [
+    "CMAKE_BUILD_TYPE=Release",
+    "GGML_NATIVE=ON",
+    "GGML_HIP=OFF",
+    "LLAMA_BUILD_SERVER=ON",
+    "LLAMA_BUILD_TESTS=OFF",
+    "CMAKE_EXPORT_COMPILE_COMMANDS=ON"
+  ],
+  "cmake_version_at_reuse": "cmake version 3.31.6",
+  "compiler_environment_at_build": "not captured independently; see original build log and compile commands",
+  "grant": {
+    "FILLER_CPUS": "0-23",
+    "FILLER_DEADLINE": "1793808450",
+    "FILLER_ID": "kvu126-live-gauge-r2-20261104",
+    "FILLER_NEEDGPU": "0",
+    "FILLER_PIDFILE": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kvu126-live-gauge-r2-20261104/state/kvu126-live-gauge-r2-20261104.pids"
+  },
+  "grant_file": "/mnt/raid0/llm/tmp/compute-flags/grants/kvu126-live-gauge-r2-20261104.grant",
+  "grant_sha256": "4e9d6c80ebfc3b57c6bdce651e88f346779e330942f704403765a542fa73ba46",
+  "measurement_claim": false,
+  "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "preserved_build_custody_sha256": "14f6dec414df0c004ad4fcd1e31c283b270d2e88964c01c398f70b29a7e1a11f",
+  "schema": "kvu126.gauge.native.v1",
+  "source_commit": "cdf1532b993fe58bd57ba53d91659f4bb4ee508f",
+  "source_status_at_reuse": "clean",
+  "started_utc": "2026-11-04T14:54:18.361055+00:00",
+  "status": "incomplete"
+}

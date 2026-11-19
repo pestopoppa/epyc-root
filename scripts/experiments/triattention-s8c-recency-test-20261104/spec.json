@@ -1,0 +1,27 @@
+{
+  "id": "triattention-s8c-recency-unit-20261104",
+  "owner": "triattention",
+  "launcher": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104/packet/launcher.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "gib": 4,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "first_progress_s": 300,
+  "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-recency-test-20261104/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Exercise the actual compiled S8-c eviction function from production tip ffc1bac82eeca6f9099e1ccd9ba49703c460a115 and sealed recency patch with mock scoring and memory: all 11 deterministic cases must pass including default compatibility, sink/recent budget, ties and boundaries, physical accounting for gapped KV, and failed seq_rm propagation. Report failed cases; stop after the complete bounded case set, crash, STOP, or deadline. No model, real KV, server, performance or quality claim.",
+  "handoff_task": "long-context-program.md:S8-C-VALIDATION",
+  "priority_rank": 18,
+  "keep": [
+    "results.jsonl",
+    "output/*",
+    "candidate-pin.json",
+    "candidate-base-unit.json",
+    "candidate-artifact-sha256.txt",
+    "packet/*"
+  ],
+  "kind": "compute"
+}

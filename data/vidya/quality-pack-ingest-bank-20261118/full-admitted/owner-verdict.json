@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "rationale": "Replacement returns SOUTH/E59 with clean stop, 20 output tokens and 5549 uncached prompt tokens; three original items independently pass. Captured PID936101 exited and listener closed; no candidate collected.",
+  "filed_by": "handoff-vidya-belief-substrate"
+}

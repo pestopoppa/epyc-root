@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T17:46:13Z reason=complete
+job_id=vb-mi210-q38-planner-control-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T17:46:05Z
+regions=0-23

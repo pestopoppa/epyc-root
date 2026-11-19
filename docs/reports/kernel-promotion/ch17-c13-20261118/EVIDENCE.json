@@ -1,0 +1,158 @@
+{
+  "scope": "Original preparation and publisher evidence plus the completed descriptive quarter/np1 C13 native diagnostic. No final drafter selection, other-serving-shape transfer or promotion acceptance.",
+  "files": {
+    "PREPARE.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/PREPARE.json",
+      "sha256": "d4bc82d6ccd671b95ed4d74ec9e92a3464112f55cbfeb2b5f3ce18838fa0b250"
+    },
+    "row.spec.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/row.spec.json",
+      "sha256": "0fca3bcc0bf9000c3be837f640db95560dccac85546eb985c7931c805b5c4048"
+    },
+    "launch.sh": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/launch.sh",
+      "sha256": "cd4a8ca4ffea001b458a7181c49675c604765f8334cef8dd2fae24a67319f1da"
+    },
+    "job.py": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/job.py",
+      "sha256": "37b9ddfc7db10edbae896e3fa9cb1073a605ff797674c9c893cfb0df43b91d35"
+    },
+    "SOURCE.sha256": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/SOURCE.sha256",
+      "sha256": "19d4f7cfae7c3a2e56ca868ad39a2cf45586724091ebf9e01e3e872387c53c09"
+    },
+    "inputs.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/inputs.json",
+      "sha256": "2a74565e7d602e800fd65d1deb5d7d8f511f586d8811a804ebc33789f8f302ca"
+    },
+    "scope.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/scope.json",
+      "sha256": "19c8d66bb4786863ded846b06e422a1125159772810f4ca018db26ffc1e5a4ab"
+    },
+    "PUBLISHER-PASS.json": {
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch17-c13-frontdoor-cpu-20261118-r4/PASS.json",
+      "sha256": "5d796a26cbbb125fab77ca80c6c6ee90677d4e61fb9b085e098277f4e912c701"
+    },
+    "server_np_sweep.py": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/server_np_sweep.py",
+      "sha256": "915915174c0410a938c3159dcf355d6861984b52c163b7f4ad5c889981223a2d"
+    },
+    "verify_ggml_linkage.sh": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/verify_ggml_linkage.sh",
+      "sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+    },
+    "PACKAGE-GUARD-QUALIFICATION.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-contract-outcome.json",
+      "sha256": "e03ea56b83099f4afbab872635201d607229a24d0ae9f24d1d29b41fd7b4fa27"
+    },
+    "MATRIX-PUBLISHER-PASS.json": {
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/v9-8-contention-matrix-cpu-20261118/PASS.json",
+      "sha256": "8b4c451811428b8f7b47d6eb2ed1a0f11cf3648b0fb435ab11d910cf94eb7c3f"
+    }
+  },
+  "native_files": {
+    "NATIVE-RESULT.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/RESULT.json",
+      "original_sha256": "532d57fce3043ebf4c9d5eaef3d90f4926cde2576c3cf104eef98211895c2aa9",
+      "stored_sha256": "532d57fce3043ebf4c9d5eaef3d90f4926cde2576c3cf104eef98211895c2aa9",
+      "encoding": "identity"
+    },
+    "native/linkage.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/linkage.txt",
+      "original_sha256": "5543d6a85767672d466db0c807a2991a705348cb48fe1c6b94fd189ba44f6bf0",
+      "stored_sha256": "5543d6a85767672d466db0c807a2991a705348cb48fe1c6b94fd189ba44f6bf0",
+      "encoding": "identity"
+    },
+    "native/pair1-mtp.json.gz": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair1-mtp.json",
+      "original_sha256": "df7e3ed8e11e35cfd50b8e622d5a00d5b5fe940c25ab53a749e7ae075ccd23bb",
+      "stored_sha256": "2932e87d928abc9f9bff9ed1e727d6e57f9c50fb4163e5200fcc36dc99f1a918",
+      "encoding": "gzip"
+    },
+    "native/pair1-mtp.server.log": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair1-mtp.server.log",
+      "original_sha256": "87402f1e56389655495ee52a15959edbab4fe7550c7f7c010f2a7b5ed688a5b6",
+      "stored_sha256": "87402f1e56389655495ee52a15959edbab4fe7550c7f7c010f2a7b5ed688a5b6",
+      "encoding": "identity"
+    },
+    "native/pair1-none.json.gz": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair1-none.json",
+      "original_sha256": "4be3da9879ffa481b2e93e014b5a0d4fd2dc69bb9721667c627aa3229a2bf07e",
+      "stored_sha256": "aedb6c66e3b818d402cc17195dfc2958a40f10dcfc4e0e3e15bfb1a2133944cb",
+      "encoding": "gzip"
+    },
+    "native/pair1-none.server.log": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair1-none.server.log",
+      "original_sha256": "15194237d6496b7a6413b28ee8378c1e552eae198e2bc27a2859f03750967cda",
+      "stored_sha256": "15194237d6496b7a6413b28ee8378c1e552eae198e2bc27a2859f03750967cda",
+      "encoding": "identity"
+    },
+    "native/pair2-mtp.json.gz": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair2-mtp.json",
+      "original_sha256": "95b53d26ada163ead1900e72ff78b432a05b96c173b1df6f2d35bf58351c5900",
+      "stored_sha256": "2b9f8e4216278f74d817928d15113a790f3c99836a428d9595e1d8d817ad1991",
+      "encoding": "gzip"
+    },
+    "native/pair2-mtp.server.log": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair2-mtp.server.log",
+      "original_sha256": "c001c467c2d3089bb1860da3d0873443caa8e65f115f09047c9d975dedce7a34",
+      "stored_sha256": "c001c467c2d3089bb1860da3d0873443caa8e65f115f09047c9d975dedce7a34",
+      "encoding": "identity"
+    },
+    "native/pair2-none.json.gz": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair2-none.json",
+      "original_sha256": "186064a595a4cf812687aac47fedc6f32f5eb0a8b310693a0757d4a8bc49187f",
+      "stored_sha256": "18755db23aa3a101064a0941f019ffe241ee12137a31e34569e9116ca7157aea",
+      "encoding": "gzip"
+    },
+    "native/pair2-none.server.log": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair2-none.server.log",
+      "original_sha256": "a7a938f0a1530845af737b1ad96e49b079a1b86f309eebee0caa31862ee8c5d6",
+      "stored_sha256": "a7a938f0a1530845af737b1ad96e49b079a1b86f309eebee0caa31862ee8c5d6",
+      "encoding": "identity"
+    },
+    "native/pair3-mtp.json.gz": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair3-mtp.json",
+      "original_sha256": "3894145ce9b7f12f8bec96a2ed04ff562cb4199ea65f82f1131782514552602c",
+      "stored_sha256": "8be5265787b5cd03b83b80c76e37adfd730395a1fdd9036d1fcb69f2372374ed",
+      "encoding": "gzip"
+    },
+    "native/pair3-mtp.server.log": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair3-mtp.server.log",
+      "original_sha256": "1cc92821aa4e41160ad6325d8b74c5ca34c004af911e53aa4ffbbceb9df6b50c",
+      "stored_sha256": "1cc92821aa4e41160ad6325d8b74c5ca34c004af911e53aa4ffbbceb9df6b50c",
+      "encoding": "identity"
+    },
+    "native/pair3-none.json.gz": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair3-none.json",
+      "original_sha256": "559ae86a383e293a642f00643fbd22c95b2d16e4cff5b847c4eb9ee59eb8fbfb",
+      "stored_sha256": "f2810abd4ce4a8566368055cb479b28cba439a8f043b22f9dc2b2b6b3d3b260c",
+      "encoding": "gzip"
+    },
+    "native/pair3-none.server.log": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pair3-none.server.log",
+      "original_sha256": "e3909c233b781be1da2721b0fcfb81a590bbc9ac6507f490f5e3e8c20ec7d55a",
+      "stored_sha256": "e3909c233b781be1da2721b0fcfb81a590bbc9ac6507f490f5e3e8c20ec7d55a",
+      "encoding": "identity"
+    },
+    "native/pairs.json.gz": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85/pairs.json",
+      "original_sha256": "00db5d28f9da79697a443c74fa2b48814c7ba42a45a42165a21868d7aa5721d4",
+      "stored_sha256": "8b3e09f9dae1b7edde61f0ced531e03776665bc8cdef93ef6a9cdebeade6048d",
+      "encoding": "gzip"
+    },
+    "NATIVE-VERDICT.json": {
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/filing-done/ch17-c13-frontdoor-cpu-20261118-r4.verdict.json",
+      "original_sha256": "864d50787458c120418add0c3fabbd704257517b7643a2f832b667e7c2ee7ebb",
+      "stored_sha256": "864d50787458c120418add0c3fabbd704257517b7643a2f832b667e7c2ee7ebb",
+      "encoding": "identity"
+    }
+  },
+  "native_scope": "Completed descriptive quarter/np1 C13 MTP-versus-none diagnostic. No final selection, serving-shape transfer or promotion acceptance.",
+  "native_custody": {
+    "requests": 24,
+    "minimum_complete_in_request_samples": 7,
+    "maximum_complete_in_request_samples": 36,
+    "captured_process_cleanup": true
+  }
+}

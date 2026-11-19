@@ -207,3 +207,17 @@ def test_actual_writer_reader_cli_and_only_new_round_trip(tmp_path, monkeypatch,
     assert second["frames_emitted"] == 0
     assert len(Ledger(ledger_path).read_all()) == len(initial_ledger)
 
+
+
+@pytest.mark.parametrize("name", ["gate_cpu.v2.out", "gate_gpu.v2.out"])
+def test_real_ch28_text_outputs_are_not_ingestable_records(name):
+    """The pre-hook CH-28 text carries no store attestation or decided proposition.
+
+    The reader must decline it (no row, no invented warrant); only the structured
+    `--record-json` of the next fold-gate run ingests.
+    """
+    text = Path("/mnt/raid0/llm/tmp/ch28-fold-20261023") / name
+    if not text.is_file():
+        pytest.skip("CH-28 text output no longer on disk")
+    with pytest.raises(ProjectionError):
+        adapter.native_rows(text)  # not JSON: refused, never scraped

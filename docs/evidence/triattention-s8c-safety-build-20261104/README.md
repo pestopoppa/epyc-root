@@ -1,0 +1,3 @@
+# S8-c safety build: partial checkpoint
+
+The four-core smoke completed the ggml-base checkpoint on production tip `ffc1bac82eeca6f9099e1ccd9ba49703c460a115` plus patch `e7be5790af2d0fc132f9242473a768bdcb3e5b3991eaacef2711f5b30bbe8dca`. The later job ended rc=75 `reason=disk-floor` after one second. There is no completed server build or final library digest manifest, so the build decision is inconclusive. This is not runtime, real-cache, model, quality, or GPU evidence. The original artifact paths remain embedded in `base-unit.json`; `checkpoint-check.json` records whether their bytes were present and matched when archived.

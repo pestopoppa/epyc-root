@@ -1,0 +1,15 @@
+KPF50_ITER_BEGIN iter=1 host_ns=100 draft_context=1
+KPF50_DRAFT_BEGIN host_ns=110 slots=4
+KPF50_DRAFT_END host_ns=120 slots=4
+KPF30_PHASE call=1 index=0 seq=0 pos=79999 phase=decode
+KPF50_INPUT call=1 index=0 token=1 pos=79999
+KPF30_PHASE call=1 index=1 seq=1 pos=79999 phase=decode
+KPF50_INPUT call=1 index=1 token=2 pos=79999
+KPF30_PHASE call=1 index=2 seq=2 pos=79999 phase=decode
+KPF50_INPUT call=1 index=2 token=3 pos=79999
+KPF30_PHASE call=1 index=3 seq=3 pos=79999 phase=decode
+KPF50_INPUT call=1 index=3 token=4 pos=79999
+KPF50_STEP_BEGIN call=1 host_ns=200
+KPF50_TRUNK_MASK verified=1 masked=0 rows=4 n_kv=80000 expected=60000 layout_fnv=abcdef
+KPF50_STEP_END call=1 host_ns=400 rc=0
+KPF50_ITER_END iter=1 host_ns=500

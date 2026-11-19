@@ -1,0 +1,11 @@
+Implemented unregistered native operational subject component, with no production callers:
+- scripts/vidya/actor_wire_subject.py
+- tests/vidya/test_actor_wire_subject.py
+
+Failed canary evidence: vb-ak-wire-canary-r1-20261104 admitted31 rows with refused0 and real planner prepare ready, but proposition_visible=false. Its model target cannot express native operational actor-wire identity. No model/device applicability has been invented to repair that failure.
+
+New subject keys exactly captured producer(repo/commit/module), original full request(schema, normalized captured seats, actor_config_digest, source-digest suite), and matrix-vs-seat digest. Subject carries canonical integrity digest, deep-copies captured data and validates normalization/config/suite/seat membership. Native builder/matcher delegates source re-read and evidence validation to existing strict actor-wire adapter project/native_rows. Unknown identity fields including added model/device scope refuse. Producer/suite/seat-client/launch/timeout/config changes miss; mutated source or malformed subject refuses rather than silently dropping. Matrix and seat remain distinct. Native-provider and mocked-control evidence may share a subject but remain separate existing measurement ids.
+
+This is exact native identity validation ONLY, not a standalone ledger reader. PASS/FAIL/aborted/unvisited identity matches are deliberately outcome independent: matching does not mean admissible, passed or decision-gating. No ledger filtering, folded verification/refutation/chain rules, grade policy or planner context changed; no new grader/registry. Future actual AK planner integration must use shared folded admissibility and verification before presenting findings and must pass a real planning-context canary. Source remains NOT wired.
+
+Validation: python3 -m pytest -q tests/vidya/test_actor_wire_subject.py tests/vidya/test_autokernel_actor_wire_adapter.py =>58 passed; carrier61 tuples,0 violations. Original failed-canary native capture re-read successfully:31 native rows, exact original matrix subject matched; this is not a planning canary. No production network/backend/model calls, compute, index/handoff/registry edits or commits. GitNexus impact could not resolve this lane's unindexed root among multiple indexed roots; new component has no production callers (rg verified).

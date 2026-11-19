@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T16:03:44Z reason=complete
+job_id=vb-ak-seat-native-instrument-20261118
+owner=vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T16:03:29Z
+regions=72-95

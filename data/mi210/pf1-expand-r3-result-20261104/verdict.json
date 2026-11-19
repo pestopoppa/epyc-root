@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc0, three blocks, 48/48 valid units, capture completeness 1.0, no placement/residency/run failures, A0 node share 25%; A1-disabled/A0 median controls at L384/448/512/768 are 0.9349/0.9291/0.9258/0.9853 and pass the \u00b110% median guard. Nominal A1/A0 is 1.0009/1.1004/1.1877/1.4114 and A2/A0 is 1.1494/1.2524/1.3886/1.7084. A1 at 384 is within predeclared \u00b10.07 noise band and is at crossover, not resolved; no lower guard-passing L is included to bracket A2. PASS for the scoped three-block exploratory capture and stated at-crossover disposition only. The PF1-EXPAND-2 box requires both brackets and A0 hot-bias explanation/removal, which remain unmet. Exploratory only, never a PF1 gate or NPD conclusion. Native output archived in data/mi210/pf1-expand-r3-result-20261104/.",
+  "tick_text": "",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T14:44:29+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T14:43:25Z reason=complete",
+ "filed_at": "2026-11-04T14:44:29+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "pf1-expand-r3-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/pf1-expand-r3-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/pf1-expand-r3-20261104/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc0, three blocks, 48/48 valid units, capture completeness 1.0, no placement/residency/run failures, A0 node share 25%; A1-disabled/A0 median controls at L384/448/512/768 are 0.9349/0.9291/0.9258/0.9853 and pass the \u00b110% median guard. Nominal A1/A0 is 1.0009/1.1004/1.1877/1.4114 and A2/A0 is 1.1494/1.2524/1.3886/1.7084. A1 at 384 is within predeclared \u00b10.07 noise band and is at crossover, not resolved; no lower guard-passing L is included to bracket A2. PASS for the scoped three-block exploratory capture and stated at-crossover disposition only. The PF1-EXPAND-2 box requires both brackets and A0 hot-bias explanation/removal, which remain unmet. Exploratory only, never a PF1 gate or NPD conclusion. Native output archived in data/mi210/pf1-expand-r3-result-20261104/.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/pf1-expand-r3-20261104/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "pf1-expand-r3-20261104",
+ "row_verdict": "pass",
+ "rule": "PF1-EXPAND-2 fresh three-block r3 retry, same source pins, arms and L={384,448,512,768}, 5 timed reps per launch, cap2400s. Previous r2 ended disk-floor after two blocks with control medians 0.8975/0.8820/0.8597/0.9004; first three fail original 0.90\u20131.10 guard. A0 hot bias is unresolved, not claimed repaired. Question: reproduce guard-passing paired ratios and first L >=1.00 sustained at larger L, per A1/A2; expected crossover within grid, paired noise ~5\u20139%, within 1.00+-0.07 remains at crossover. Fresh complete three-block rerun replaces failing blocks/L without pooling or dropping r2 observations. Original A0 strict40% node cap, HIP residency, capture1.0 and disabled/A0 median within +-10% at EVERY L remain mandatory. Stop only for >=2 GPU launch RUN/residency/placement failures, >25% disabled/A0 divergence at every L after block2, cumulative2400s cap, or engine safety/window stops; never stop on answer. Report incomplete/guard-failing results as inconclusive. Exploratory, never a PF1 gate.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "13571da7a8d294efe803eb641e60d1df22435c3e6810a00aab97f6a4b8b01637",
+  "result": "pass",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T16:42:01Z reason=complete
+job_id=vb-fm4-codex-projection-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T16:41:56Z
+regions=16,17,18,19,112,113,114,115

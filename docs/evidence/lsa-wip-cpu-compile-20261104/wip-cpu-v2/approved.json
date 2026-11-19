@@ -1,0 +1,11 @@
+{
+  "reviewed": true,
+  "snapshot": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-source-cpu-20261104",
+  "manifest_sha256": "a4e4dbe0d4e6ead49770691b8f988854dba0faeb8fdfa161ff546290c01cd203",
+  "helper_sha256": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/job.sh": "4f249df56d5371fdf44bd439ae4480355a011205d7143358ee53fc878c6c9e5f",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/launch.sh": "16ecd7fb55c354a6aba4cf255f2dee889c23dca159a473ac3f93c4354a39a0ba",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/wip-cpu-v2/spec.json": "d8edc7ed010c5100a792174e183571c3677d44c01040bce7f6d0fa1b4e8e5998",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+  }
+}

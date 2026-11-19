@@ -84,15 +84,23 @@ def test_direct_file_reader_without_bus_root_keeps_legacy_contract(tmp_path, mon
     assert worker_runner.load_assignment(argparse.Namespace(assignment=str(assignment)))["rows"] == rows
 
 
-def test_coordinator_passes_long_queued_text_verbatim(tmp_path, monkeypatch):
-    full_text = "original row " + "x" * 4500 + " final words"
+class _CapturedChild:
+    """A stand-in for the spawned runner: records stdin, spawns nothing."""
+
+    def __init__(self) -> None:
+        self.stdin = io.BytesIO()
+        self.stdin.close = lambda: None  # keep the bytes readable after delivery
+
+
+def _exec_with_text(tmp_path, monkeypatch, text: str):
     captured: dict[str, object] = {}
     monkeypatch.setattr(coordinator, "_note_spawn_attempt", lambda *_: None)
     monkeypatch.setattr(coordinator, "_free_pool_lane", lambda _config: "lane0")
 
     def capture_popen(cmd, **_kwargs):
         captured["argv"] = cmd
-        return object()
+        captured["child"] = _CapturedChild()
+        return captured["child"]
 
     monkeypatch.setattr(coordinator.subprocess, "Popen", capture_popen)
     # The only file opened by this function is the worker log; keep the test
@@ -100,9 +108,27 @@ def test_coordinator_passes_long_queued_text_verbatim(tmp_path, monkeypatch):
     monkeypatch.setattr("builtins.open", lambda *_args, **_kwargs: io.BytesIO())
     result = coordinator._exec_worker_runner(
         tmp_path, {}, {"endpoint": "exec:worker_runner"},
-        {"task_text": full_text}, "T-identity", "workerpool", 1,
+        {"task_text": text}, "T-identity", "workerpool", 1,
     )
+    return result, captured
+
+
+def test_coordinator_passes_queued_text_verbatim_on_stdin(tmp_path, monkeypatch):
+    """RTG-52: the resolved row travels as exact UTF-8 JSON on stdin, never on argv."""
+    full_text = "original row — " + "x" * 3000 + " final words"
+    result, captured = _exec_with_text(tmp_path, monkeypatch, full_text)
     assert result[0]["kind"] == "exec-launched"
     argv = captured["argv"]
     assert isinstance(argv, list)
-    assert argv[argv.index("--row-text") + 1] == full_text
+    assert "--assignment-stdin" in argv and "--row-text" not in argv
+    delivered = json.loads(captured["child"].stdin.getvalue().decode("utf-8"))
+    assert delivered["rows"][0]["task_text"] == full_text
+
+
+def test_coordinator_refuses_rather_than_clips_an_oversized_assignment(tmp_path, monkeypatch):
+    """Over the worker brief cap the row is a defect, never a truncated dispatch."""
+    full_text = "original row " + "x" * 4500 + " final words"
+    result, captured = _exec_with_text(tmp_path, monkeypatch, full_text)
+    assert result[0]["kind"] == "defect"
+    assert result[0]["check"] == "exec-runner-assignment-size"
+    assert "argv" not in captured

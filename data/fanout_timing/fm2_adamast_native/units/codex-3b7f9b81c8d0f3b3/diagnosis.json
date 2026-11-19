@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "codex-3b7f9b81c8d0f3b3",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The agent concludes with 'Preparation verified the restored source twice and archived the manifest, patch, and cases byte for byte. The published packet retained its original hashes.' The trace shows hash comparisons (sha256sum) and a successful run of `prepare.py`, but no execution of the actual test cases or functional verification that the prepared context works as intended. The verification is limited to file integrity and script exit codes.",
+          "confidence": "high",
+          "severity": "moderate"
+        },
+        {
+          "code": "MAST-13",
+          "name": "Weak verification",
+          "evidence": "The agent accepts 'sha256sum' matches and successful script execution as proof of correctness. The trace shows: `sha256sum /mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-live/{packet,native/prepared}/{inputs.json,orchestrator.patch,cases.json}` followed by a conclusion that the work is done. This checks that files exist and match hashes, but does not exercise the path the task describes (i.e., that the preassembled context is actually usable by the orchestrator).",
+          "confidence": "high",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795006675,
+        "warnings": []
+      }
+    }
+  ]
+}

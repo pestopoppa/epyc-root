@@ -1,0 +1,50 @@
+[region-lock] acquiring gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=600.0) …
+[region-lock] held gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: python3 /workspace/artifacts/compute/local-launch-optimization-20261106/harness.py --phase cpu --only cpu_champ_t48_32k,cpu_champ_t96_32k,cpu_fa_t48_32k,cpu_fa_t96_32k,cpu_champ_t96_np1_32k,cpu_champ_t96_nomtp_32k,cpu_champ_t96_kvq8_32k,cpu_champ_t96_unified_32k --no-evict
+[14:18:22] cpu_champ_t48_32k: launching taskset ... :18074
+[14:18:36] cpu_champ_t48_32k: warmup n_predict=16
+[14:18:38] cpu_champ_t48_32k: measured request 1/2 (cache_prompt=False)
+[14:21:16] cpu_champ_t48_32k: measured request 2/2 (cache_prompt=True)
+[14:21:28] cpu_champ_t48_32k: done ok=True elapsed=186.7s
+[14:21:28] {"arm": "cpu_champ_t48_32k", "ok": true, "tok_s": [16.068547419005263, 13.742666016646329], "acceptance": {"alpha": 0.37097, "accepted": 23, "generated": 62}}
+[14:21:28] cpu_champ_t96_32k: launching taskset ... :18074
+[14:21:43] cpu_champ_t96_32k: warmup n_predict=16
+[14:21:45] cpu_champ_t96_32k: measured request 1/2 (cache_prompt=False)
+[14:24:33] cpu_champ_t96_32k: measured request 2/2 (cache_prompt=True)
+[14:25:00] cpu_champ_t96_32k: done ok=True elapsed=211.6s
+[14:25:00] {"arm": "cpu_champ_t96_32k", "ok": true, "tok_s": [15.189363600671868, 14.01656188191616], "acceptance": {"alpha": 0.48361, "accepted": 118, "generated": 244}}
+[14:25:00] cpu_fa_t48_32k: launching taskset ... :18074
+[14:25:13] cpu_fa_t48_32k: warmup n_predict=16
+[14:25:14] cpu_fa_t48_32k: measured request 1/2 (cache_prompt=False)
+[14:28:02] cpu_fa_t48_32k: measured request 2/2 (cache_prompt=True)
+[14:28:29] cpu_fa_t48_32k: done ok=True elapsed=209.1s
+[14:28:29] {"arm": "cpu_fa_t48_32k", "ok": true, "tok_s": [14.734592690614885, 13.481982725682993], "acceptance": {"alpha": 0.45726, "accepted": 107, "generated": 234}}
+[14:28:29] cpu_fa_t96_32k: launching taskset ... :18074
+[14:28:42] cpu_fa_t96_32k: warmup n_predict=16
+[14:28:43] cpu_fa_t96_32k: measured request 1/2 (cache_prompt=False)
+[14:31:31] cpu_fa_t96_32k: measured request 2/2 (cache_prompt=True)
+[14:31:42] cpu_fa_t96_32k: done ok=True elapsed=192.9s
+[14:31:42] {"arm": "cpu_fa_t96_32k", "ok": true, "tok_s": [15.153246976794046, 15.118552126499951], "acceptance": {"alpha": 0.60606, "accepted": 20, "generated": 33}}
+[14:31:42] cpu_champ_t96_np1_32k: launching taskset ... :18074
+[14:31:52] cpu_champ_t96_np1_32k: warmup n_predict=16
+[14:31:54] cpu_champ_t96_np1_32k: measured request 1/2 (cache_prompt=False)
+[14:34:42] cpu_champ_t96_np1_32k: measured request 2/2 (cache_prompt=True)
+[14:35:07] cpu_champ_t96_np1_32k: done ok=True elapsed=204.8s
+[14:35:07] {"arm": "cpu_champ_t96_np1_32k", "ok": true, "tok_s": [15.794283407192173, 15.533317965865896], "acceptance": {"alpha": 0.46154, "accepted": 114, "generated": 247}}
+[14:35:07] cpu_champ_t96_nomtp_32k: launching taskset ... :18074
+[14:35:20] cpu_champ_t96_nomtp_32k: warmup n_predict=16
+[14:35:21] cpu_champ_t96_nomtp_32k: measured request 1/2 (cache_prompt=False)
+[14:37:59] cpu_champ_t96_nomtp_32k: measured request 2/2 (cache_prompt=True)
+[14:38:24] cpu_champ_t96_nomtp_32k: done ok=True elapsed=197.0s
+[14:38:24] {"arm": "cpu_champ_t96_nomtp_32k", "ok": true, "tok_s": [14.950046114468416, 14.901452792692329], "acceptance": null}
+[14:38:24] cpu_champ_t96_kvq8_32k: launching taskset ... :18074
+[14:38:36] cpu_champ_t96_kvq8_32k: warmup n_predict=16
+[14:38:38] cpu_champ_t96_kvq8_32k: measured request 1/2 (cache_prompt=False)
+[14:41:14] cpu_champ_t96_kvq8_32k: measured request 2/2 (cache_prompt=True)
+[14:41:39] cpu_champ_t96_kvq8_32k: done ok=True elapsed=195.6s
+[14:41:39] {"arm": "cpu_champ_t96_kvq8_32k", "ok": true, "tok_s": [15.11547811969593, 14.957291673848308], "acceptance": {"alpha": 0.56818, "accepted": 125, "generated": 220}}
+[14:41:39] cpu_champ_t96_unified_32k: launching taskset ... :18074
+[14:41:52] cpu_champ_t96_unified_32k: warmup n_predict=16
+[14:41:54] cpu_champ_t96_unified_32k: measured request 1/2 (cache_prompt=False)
+[14:44:39] cpu_champ_t96_unified_32k: measured request 2/2 (cache_prompt=True)
+[14:45:06] cpu_champ_t96_unified_32k: done ok=True elapsed=206.8s
+[14:45:06] {"arm": "cpu_champ_t96_unified_32k", "ok": true, "tok_s": [15.23173870713835, 14.035029240009745], "acceptance": {"alpha": 0.48361, "accepted": 118, "generated": 244}}

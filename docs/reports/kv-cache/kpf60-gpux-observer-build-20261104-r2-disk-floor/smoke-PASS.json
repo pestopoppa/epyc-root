@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf60-gpux-observer-build-20261104-r2/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-04T20:56:24Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf60-gpux-observer-build-20261104-r2/native-attempts/attempt-3tv1_t40/native-result.json (measurement field)",
+ "first_progress_s": 900,
+ "first_unit_at": "2026-11-04T20:56:28Z",
+ "id": "kpf60-gpux-observer-build-20261104-r2",
+ "launcher_sha256": "a2c175003b98b4c726476bc8c00b434a3277ed8bf3a2a82161a552dfac48657d",
+ "passed_at": "2026-11-04T20:56:28Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf60-gpux-observer-build-20261104-r2/native-attempts/attempt-3tv1_t40/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

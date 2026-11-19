@@ -1,0 +1,3 @@
+# HSF-4 CPU prompt-cache update aggregate
+
+Retained CPU KPF-64 C/D log lines include prompt state MiB and enclosing prompt-cache update time. This prospective read-only census binds all four logs to pinned SHA-256 and emits per-arm counts and rates only. It selects blocks with exactly one explicit save and positive elapsed time, reporting all other blocks as excluded. Its effective state-bytes/update-time ratio includes any other operations inside that enclosing update; it is not a pure copy rate or restore rate and cannot close HSF-4. The denominator's measurement is a logged whole-update time, not a timer around a memcpy. No prompts, request IDs or raw log lines are emitted. Four-CPU smoke uses a synthetic fixture only.

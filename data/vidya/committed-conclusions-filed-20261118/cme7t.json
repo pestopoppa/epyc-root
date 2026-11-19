@@ -1,0 +1,122 @@
+{
+  "register_id": "cc:v1:e11c624695c3940c5720f091b9d61b0c",
+  "claim_id": "clm_cc:v1:e11c624695c3940c5720f091b9d61b0c:r1#m0",
+  "source": {
+    "commit_concluded": "6d7ff38908ec475e8ba8ece4b11675c717a320a8",
+    "commit_date": "2026-10-25T18:08:36Z",
+    "commit_introduced": "6d7ff38908ec475e8ba8ece4b11675c717a320a8",
+    "commit_last_touched": "6d7ff38908ec475e8ba8ece4b11675c717a320a8",
+    "head_norm": "The response emitted 6297 characters of visible JSON thinking, never reached action, ended with finish_reason=length at 2048 completion tokens, and had reasoning_content=null. The unfinished string re",
+    "line_end": 9,
+    "line_start": 9,
+    "path": "docs/reference/cme7t-inf64-accepted-findings-20261025.md",
+    "quote": "The response emitted 6297 characters of visible JSON thinking, never reached action, ended with finish_reason=length at 2048 completion tokens, and had reasoning_content=null. The unfinished string repeatedly revisits pot/blind/limp interpretation. The schema requests unbounded reasoning before action, while the prompt describes a posted big blind as an opponent having “called your bet”; this is a plausible trigger for reconsideration, not isolated causal proof. The evidence does not show failure of enable_thinking=false, nor recover the missing rejected text from the older 2026-10-22 events.",
+    "quote_norm_rule": "cc-norm/v1",
+    "quote_sha256": "d0f54a44f5b24475402daee491016cbb50c1d634cc16cf31f2107d852045304c",
+    "repo": "epyc-root"
+  },
+  "secondary_anchors": [
+    {
+      "commit": "6d7ff38908ec475e8ba8ece4b11675c717a320a8",
+      "line": 7,
+      "line_end": 7,
+      "path": "docs/reference/cme7t-inf64-accepted-findings-20261025.md",
+      "quote_sha256": "b0d879fa20b070a861bf1acde3e58675f73052d3d4bbc510e24c2e1d9d8c3e55",
+      "repo": "epyc-root"
+    },
+    {
+      "commit": "6d7ff38908ec475e8ba8ece4b11675c717a320a8",
+      "line": 11,
+      "line_end": 11,
+      "path": "docs/reference/cme7t-inf64-accepted-findings-20261025.md",
+      "quote_sha256": "5db9f3bd26f5fe43686fb703857a20f1bcd8f4c6fb4a0ed3321fbf6d37d11daa",
+      "repo": "epyc-root"
+    },
+    {
+      "commit": "6d7ff38908ec475e8ba8ece4b11675c717a320a8",
+      "line": 29,
+      "line_end": 29,
+      "path": "artifacts/cme7t-inf64-accepted-20261025/CME7T-FINDINGS.md",
+      "quote_sha256": "e6e56f1fb1f8ed1882ae5323d3cce67fb61a0c3a663203cfe196cbc4763f45d8",
+      "repo": "epyc-root"
+    }
+  ],
+  "raw_evidence": {
+    "event": "original raw reply unavailable locally; raw SHA-256 recorded in the published source; baseline trace present and independently verified",
+    "join": {
+      "locator": "instance_traces[0].interactions[0].usage.respond.events[0]",
+      "path": "/mnt/raid0/llm/tmp/clbench-epyc-repo/results/exploitable_poker/traces/2026-10-23T00-36-46.051797Z/baseline.json",
+      "response_id": "chatcmpl-6U1HOEz9UlHrOTaX4BK3gy6b51aAO5fs"
+    },
+    "paths": [
+      "/mnt/raid0/llm/tmp/cme7-poker-out-s2/run-20261023T003634Z/clbench/raw_replies.jsonl",
+      "/mnt/raid0/llm/tmp/clbench-epyc-repo/results/exploitable_poker/traces/2026-10-23T00-36-46.051797Z/baseline.json"
+    ],
+    "sha256": {
+      "/mnt/raid0/llm/tmp/clbench-epyc-repo/results/exploitable_poker/traces/2026-10-23T00-36-46.051797Z/baseline.json": "8043a498811461214e7530362680f9574d8ed317d551ebf426f1422a3799a794",
+      "/mnt/raid0/llm/tmp/cme7-poker-out-s2/run-20261023T003634Z/clbench/raw_replies.jsonl": "a9b5ee5a7495bde9ace34746318fb51f55b70dfedd5c000a04c66a4623dd3ef6"
+    },
+    "status": "lost"
+  },
+  "grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "protocol_id": "",
+  "isolated_ingest": {
+    "adapter": "adapters/committed_conclusion.py",
+    "adapter_id": "vidya.adapters.committed_conclusion/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 3,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/cme7t-cc-20261118/conclusion.jsonl"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "committed-conclusion",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "isolated_replay": {
+    "adapter": "adapters/committed_conclusion.py",
+    "adapter_id": "vidya.adapters.committed_conclusion/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 0,
+    "frames_skipped": 3,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/cme7t-cc-20261118/conclusion.jsonl"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "committed-conclusion",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "isolated_full_register_ingest": {
+    "adapter": "adapters/committed_conclusion.py",
+    "adapter_id": "vidya.adapters.committed_conclusion/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 117,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "data/belief/committed_conclusions.jsonl"
+    ],
+    "refused": [],
+    "rows_projected": 39,
+    "source": "committed-conclusion",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "canonical_sync": "Pending until the register entry lands on origin/main; only scratch-ledger ingestion executed",
+  "validation": "14 committed-conclusion tests and git diff --check passed"
+}

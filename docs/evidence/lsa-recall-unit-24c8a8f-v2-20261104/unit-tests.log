@@ -1,0 +1,9 @@
+test_aggregate_requires_all_sixteen_bound_layers (test_recall_instrument.RecallInstrumentTests.test_aggregate_requires_all_sixteen_bound_layers) ... ok
+test_attention_mass_and_top_key_are_distinct (test_recall_instrument.RecallInstrumentTests.test_attention_mass_and_top_key_are_distinct) ... ok
+test_frozen_dev_binding_uses_decompressed_ids_and_released_map (test_recall_instrument.RecallInstrumentTests.test_frozen_dev_binding_uses_decompressed_ids_and_released_map) ... ok
+test_heldout_and_unpinned_positions_rejected_before_file_read (test_recall_instrument.RecallInstrumentTests.test_heldout_and_unpinned_positions_rejected_before_file_read) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.015s
+
+OK

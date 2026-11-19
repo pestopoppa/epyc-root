@@ -1,0 +1,18 @@
+{
+  "attempt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-m7r7tzs7",
+  "cpus": [
+    116,
+    117,
+    118,
+    119
+  ],
+  "error": "adapter nemo_range_join declares no AUTHORITY",
+  "id": "vb-nemo-range-wire-20261118",
+  "joins": 480,
+  "mode": "publisher_smoke",
+  "native": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-m7r7tzs7/replay.json",
+  "replayed_runs": 80,
+  "schema": "epyc.vidya.nemo_range_wire.v1",
+  "source_manifest_sha256": "8d76d19206c977f47d57fcb111ed497d05464f006a84aaccaa5ae36366a6fcfc",
+  "status": "UNKNOWN"
+}

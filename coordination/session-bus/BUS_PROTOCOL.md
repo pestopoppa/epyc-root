@@ -32,6 +32,11 @@ Owning handoff: [`handoffs/active/session-bus-thin-dispatcher.md`](../../handoff
 4. **CURSORS.** Each consumer owns `cursors/<self>.json` (byte offsets); never rewind another's
    cursor. Rotation (coordinator-daemon, own files only) happens only past ALL cursors, into
    `archive/`.
+   **Unbounded dedup (BUS-ID-2).** Messages never expire: retention is cursor-gated (rotation only
+   past ALL cursors), and `drain --stale-after-h` (`DEFAULT_STALE_AFTER_H`, session_bus.py) only
+   *labels* old mail on stderr, never drops it. Ids are therefore deduped over the whole retained
+   history (duplicate-id refusal in `append`, session_bus.py ~L1607). A time-bounded TTL on messages
+   or on the id set MUST NOT be introduced: it would let a redelivered `nudge` (rule 3) be accepted as new.
 5. **AUTHORITY.** Reprioritize scope per `config.yaml`'s matrix; violations are rejected with a
    `defect` row. The coordinator-daemon files defect rows against coordinator-agent on
    **mechanically checkable** violations only — never on judgment.
@@ -690,3 +695,5 @@ at `session-bus-thin-dispatcher.md` → C23.)
 
 An earlier attempt mis-flagged 11 of 25 scripts, because superseded and repaired scripts never
 receive receipts.
+
+`handoff-transfer` (CTX-HO-2) is coordinator-authored and carries only a `transfer_id`; the coverage record lives in the daemon-owned append-only `transfers/ledger.jsonl` (pending -> consumed|superseded). The first dispatch consumes it lazily; a second consume of the same transfer_id is refused.

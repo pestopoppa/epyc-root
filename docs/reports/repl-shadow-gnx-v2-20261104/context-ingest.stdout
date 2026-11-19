@@ -1,0 +1,186 @@
+{
+  "status": "found",
+  "symbol": {
+    "uid": "Function:scripts/vidya/ingest_sources.py:ingest",
+    "name": "ingest",
+    "kind": "Function",
+    "filePath": "scripts/vidya/ingest_sources.py",
+    "startLine": 759,
+    "endLine": 832
+  },
+  "epistemic": "exact",
+  "incoming": {
+    "calls": [
+      {
+        "uid": "Function:tests/vidya/test_usage_provenance_adapter.py:test_writer_reader_and_planning_canary_preserve_declaration_and_scope",
+        "name": "test_writer_reader_and_planning_canary_preserve_declaration_and_scope",
+        "filePath": "tests/vidya/test_usage_provenance_adapter.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/cli.py:_ingest_file_source",
+        "name": "_ingest_file_source",
+        "filePath": "scripts/vidya/cli.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/td18_backend_pin_canary.py:main",
+        "name": "main",
+        "filePath": "scripts/vidya/td18_backend_pin_canary.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/ufh12_gs_canary.py:main",
+        "name": "main",
+        "filePath": "scripts/vidya/ufh12_gs_canary.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_autokernel_served_shape.py:test_reingest_after_recalibration_reaches_the_model_target",
+        "name": "test_reingest_after_recalibration_reaches_the_model_target",
+        "filePath": "tests/vidya/test_autokernel_served_shape.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_autokernel_served_shape.py:test_reingest_after_recalibration_reaches_the_model_target",
+        "name": "test_reingest_after_recalibration_reaches_the_model_target",
+        "filePath": "tests/vidya/test_autokernel_served_shape.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ch19_t3_screen.py:test_ingest_source_projects_the_fixture_parent_dir",
+        "name": "test_ingest_source_projects_the_fixture_parent_dir",
+        "filePath": "tests/vidya/test_ch19_t3_screen.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_df2_native_integration.py:test_producer_registry_planning_canary",
+        "name": "test_producer_registry_planning_canary",
+        "filePath": "tests/vidya/test_df2_native_integration.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_embedder_placement_gate_adapter.py:test_ingest_wires_the_source",
+        "name": "test_ingest_wires_the_source",
+        "filePath": "tests/vidya/test_embedder_placement_gate_adapter.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_embedder_placement_gate_adapter.py:test_nested_arm_projection_and_named_refusal_remain_read_only",
+        "name": "test_nested_arm_projection_and_named_refusal_remain_read_only",
+        "filePath": "tests/vidya/test_embedder_placement_gate_adapter.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_embedder_placement_gate_adapter.py:test_phase0_records_without_sidecars_yield_nothing",
+        "name": "test_phase0_records_without_sidecars_yield_nothing",
+        "filePath": "tests/vidya/test_embedder_placement_gate_adapter.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_fused_decode_div_adapter.py:test_real_receipts_dispatch_through_ingest",
+        "name": "test_real_receipts_dispatch_through_ingest",
+        "filePath": "tests/vidya/test_fused_decode_div_adapter.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_gfx90a_static_register_adapter.py:test_ingest_projects_governed_declines_pre_hook_refuses_tampered",
+        "name": "test_ingest_projects_governed_declines_pre_hook_refuses_tampered",
+        "filePath": "tests/vidya/test_gfx90a_static_register_adapter.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_gpu_cpu_noise_adapter.py:test_cli_source_dispatch_counts_projected_and_declined",
+        "name": "test_cli_source_dispatch_counts_projected_and_declined",
+        "filePath": "tests/vidya/test_gpu_cpu_noise_adapter.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_sources.py:test_only_new_duplicate_paths_append_each_claim_once",
+        "name": "test_only_new_duplicate_paths_append_each_claim_once",
+        "filePath": "tests/vidya/test_ingest_sources.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_sources.py:test_only_new_refuses_partial_bundles_before_appending",
+        "name": "test_only_new_refuses_partial_bundles_before_appending",
+        "filePath": "tests/vidya/test_ingest_sources.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_sources.py:test_only_new_accepts_new_claims_alongside_existing_ones",
+        "name": "test_only_new_accepts_new_claims_alongside_existing_ones",
+        "filePath": "tests/vidya/test_ingest_sources.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_sources.py:test_only_new_refuses_to_revive_retracted_evidence",
+        "name": "test_only_new_refuses_to_revive_retracted_evidence",
+        "filePath": "tests/vidya/test_ingest_sources.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_sources.py:test_only_new_dry_run_filters_without_writing",
+        "name": "test_only_new_dry_run_filters_without_writing",
+        "filePath": "tests/vidya/test_ingest_sources.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_sources.py:test_only_new_refuses_torn_tail_without_repairing_it",
+        "name": "test_only_new_refuses_torn_tail_without_repairing_it",
+        "filePath": "tests/vidya/test_ingest_sources.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_sources.py:test_only_new_counts_live_opposing_evidence",
+        "name": "test_only_new_counts_live_opposing_evidence",
+        "filePath": "tests/vidya/test_ingest_sources.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_sources.py:test_only_new_refuses_corrupt_chain_before_append",
+        "name": "test_only_new_refuses_corrupt_chain_before_append",
+        "filePath": "tests/vidya/test_ingest_sources.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_kv_prefix_fork_adapter.py:test_s1_sidecar_ingests_one_claim_per_record",
+        "name": "test_s1_sidecar_ingests_one_claim_per_record",
+        "filePath": "tests/vidya/test_kv_prefix_fork_adapter.py"
+      },
+      {
+        "uid": "Method:scripts/vidya/producers/lex2/tests/test_adapter.py:T.test_producer_projection#0",
+        "name": "test_producer_projection",
+        "filePath": "scripts/vidya/producers/lex2/tests/test_adapter.py"
+      },
+      {
+        "uid": "Method:tests/test_graph_profile_measurement.py:FileIngestTests.test_normal_dispatcher_dry_run_projects_closed_file#0",
+        "name": "test_normal_dispatcher_dry_run_projects_closed_file",
+        "filePath": "tests/test_graph_profile_measurement.py"
+      },
+      {
+        "uid": "Method:tests/vidya/test_evidence_durability_adapter.py:DurabilityAdapterTests.test_roundtrip_dispatch_and_unqualified_carrier#0",
+        "name": "test_roundtrip_dispatch_and_unqualified_carrier",
+        "filePath": "tests/vidya/test_evidence_durability_adapter.py"
+      },
+      {
+        "uid": "Method:tests/vidya/test_exl3_adapter.py:Exl3AdapterTests.test_dispatcher_discovers_projects_and_grades_written_files#0",
+        "name": "test_dispatcher_discovers_projects_and_grades_written_files",
+        "filePath": "tests/vidya/test_exl3_adapter.py"
+      },
+      {
+        "uid": "Method:tests/vidya/test_sc54_qwen4exp_quality_adapter.py:SC54NormalIngestControls.test_normal_ingest_projects_valid_native_receipt_through_shared_ladder#0",
+        "name": "test_normal_ingest_projects_valid_native_receipt_through_shared_ladder",
+        "filePath": "tests/vidya/test_sc54_qwen4exp_quality_adapter.py"
+      },
+      {
+        "uid": "Method:tests/vidya/test_sc54_qwen4exp_quality_adapter.py:SC54NormalIngestControls.test_normal_ingest_refuses_mutated_native_identity#0",
+        "name": "test_normal_ingest_refuses_mutated_native_identity",
+        "filePath": "tests/vidya/test_sc54_qwen4exp_quality_adapter.py"
+      },
+      {
+        "uid": "File:artifacts/coordination/meta-gpu-arch-ready-20261027/installed-source-canary.py",
+        "name": "installed-source-canary.py",
+        "filePath": "artifacts/coordination/meta-gpu-arch-ready-20261027/installed-source-canary.py"
+      }
+    ]
+  },
+  "outgoing": {
+    "calls": [
+      {
+        "uid": "Function:scripts/vidya/adapters/_llama_bench_protocol.py:refusal_code",
+        "name": "refusal_code",
+        "filePath": "scripts/vidya/adapters/_llama_bench_protocol.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/claim_tuple.py:to_frames",
+        "name": "to_frames",
+        "filePath": "scripts/vidya/claim_tuple.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/ingest_sources.py:_only_new_frames",
+        "name": "_only_new_frames",
+        "filePath": "scripts/vidya/ingest_sources.py"
+      }
+    ]
+  },
+  "processes": []
+}

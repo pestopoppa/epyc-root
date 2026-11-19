@@ -1,0 +1,48 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "answer": "CAPTURE_REFUSED_ONE_DIP_1575MHZ",
+  "rationale": "Prospective band test (r4): 135/136 invocations in band over the request phase (min>=1580, none>1700, >=8 samples, pinned high); 1 fails: SETTLED scored pair 5 candidate, droop_below_band, 62 request samples, min 1575 MHz (5 MHz under the 1580 floor), max 1700. Per the predeclared eligibility a dip below 1580 refuses the capture, never floors it. The adapter (band_verdict, fail closed) refuses ingest: matched=1 projected=0 refused=1, so no floor is ingested and no belief claim is produced. Campaign otherwise complete: 20 pairs each in SETTLED/PREHEATED/POST_BUILD, all invocations GPU-resident, A/A effect +0.036% SETTLED (null as expected). Band itself not changed.",
+  "verdict": "fail"
+ },
+ "answer": "CAPTURE_REFUSED_ONE_DIP_1575MHZ",
+ "at": "2026-11-10T14:10:17+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-10T04:26:31Z reason=complete",
+ "filed_at": "2026-11-10T14:10:17+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R18D-AA-WIRE",
+ "id": "vidya-r18d-aa-wire-20261109-r4",
+ "keep_tail": {
+  "reason": "no samples_a/samples_b in result",
+  "reported": false
+ },
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-r18d-aa-wire-20261109-r4.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261109-r4/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "operator-adhoc-ops-20261105",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Prospective band test (r4): 135/136 invocations in band over the request phase (min>=1580, none>1700, >=8 samples, pinned high); 1 fails: SETTLED scored pair 5 candidate, droop_below_band, 62 request samples, min 1575 MHz (5 MHz under the 1580 floor), max 1700. Per the predeclared eligibility a dip below 1580 refuses the capture, never floors it. The adapter (band_verdict, fail closed) refuses ingest: matched=1 projected=0 refused=1, so no floor is ingested and no belief claim is produced. Campaign otherwise complete: 20 pairs each in SETTLED/PREHEATED/POST_BUILD, all invocations GPU-resident, A/A effect +0.036% SETTLED (null as expected). Band itself not changed.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261109-r4/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "vidya-r18d-aa-wire-20261109-r4",
+ "row_verdict": "fail",
+ "rule": "QUESTION: with the MI210 sclk pinned high by the job itself (unchanged from r3: one approved sudo write, restored to auto on exit), and clocks judged by the ratified request-phase band (research clock_policy.py + gpu_clock_policy.json at eb9be38dc, 120 MHz band below 1700 nominal, RATIFY-AK-C9-2-20261109; band value NOT changed) from a per-invocation timestamped clock_trace, does the original post-hook pp512 A/A capture rederive a settled bootstrap floor (Qwen3.8-27B-Q8_0, v10 production-store closure)? PREDECLARED ELIGIBILITY (operator 2026-11-09): r4 is eligible only if EVERY invocation has a clock_trace inside the band over its request phase (>=8 samples, gap <=1 s, min >= 1580 MHz, none above 1700) and the DPM level reads high throughout; a trace that is missing or short, a level change, or a dip below 1580 refuses the capture, never floors it. Report whether any dips land in the measured phase. r1 and r3 are the calibration sets for the band, so r4 is the prospective test. Request phase = child's own-PID VRAM plateau (95% of peak) to child exit; spawn, plateau, exit and whole-window min/max are all recorded. STOP RULE (measurement-sufficiency): A/A expected effect is zero; 20 scored process pairs per condition (SETTLED, PREHEATED, successful POST_BUILD), warmups retained, no efficacy peeking. Stop-on-answer when all three conditions finish 20 pairs and the sealed capture rederives; stop-on-futility on STOP/deadline, launch failure, missing own-PID GPU residency, sudo -n unusable (rc 5), level not auto at start (rc 6), set failure (rc 7), restore failure (rc 8), or mismatched source/image/input/band-policy identity, preserving partial/UNKNOWN. Interim looks are futility-only (formal-gate class). RESULT FORMAT: capture.py sealed sidecar + project.py (ClaimTuple via claim_tuple.grade()). A calibration candidate requires a complete full-run record with 20 fresh A/A pairs in each condition, all invocations GPU-resident AND band-stable, and pp512 bootstrap floors with provenance; review calibration and re-adjudication before updating bench.MEASURED_FLOOR_PCT. Partial units and dry-run PASS are not a floor verdict. Scope: Qwen3.8-27B Q8_0 exact prepared GGUF. Inputs (source, research, identities) are read from the r1 directory vb-r18d-aa-wire-20261104; outputs go to this directory; the band policy is a job-local byte-identical copy in band/ (sha256 pinned in job.py).",
+ "tokens": {
+  "available": false,
+  "owner_slug": "operator-adhoc-ops-20261105",
+  "reason": "no rollout tokens attributed to the owner session today"
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "806c10beea16f90f27963120b2b1fbfe6e6dfd664df4341933d42714f7c8a03d",
+  "result": "fail",
+  "status": "filed"
+ }
+}

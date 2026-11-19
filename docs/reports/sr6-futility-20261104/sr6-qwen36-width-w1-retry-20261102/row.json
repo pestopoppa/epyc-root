@@ -1,0 +1,41 @@
+{
+ "decision_rule": "Retry of W1 using the exact predeclared W1 prompt/seed partition after the prior launcher failed its region-lock input checksum before worker start. Capture into the existing shared output root, with server evidence isolated under output/servers-w1-retry. Preserve every exposure, response, placement and terminal; interrupted, incomplete, or missing provenance is UNKNOWN. This row does not replace or add an independent planned window and makes no registry or performance claim. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 14400,
+ "gib": 128,
+ "handoff_task": "speculative-decoding.md:SR-6",
+ "id": "sr6-qwen36-width-w1-retry-20261102",
+ "keep": [
+  "sr6-qwen36-width-w1-retry-20261102/**",
+  "output/**",
+  "smoke/sr6-qwen36-width-w1-retry-20261102/**",
+  "sr6-qwen36-width-w1-retry-20261102/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w1-retry-20261102/launch.sh",
+  "sha256": "2a27f71de184ea6cd04c29aa845998ae83e8eb4bafc9503b38e465c43d1a4d69"
+ },
+ "min_window_s": 10800,
+ "owner": "handoff-speculative-decoding-mtp",
+ "ports": [
+  18979
+ ],
+ "priority_rank": 30.0,
+ "published_at": "2026-11-03T07:24:14Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w1-retry-20261102/spec.json",
+ "regions": "0-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w1-retry-20261102/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w1-retry-20261102/STOP",
+ "window_s": 17580,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w1-retry-20261102"
+}

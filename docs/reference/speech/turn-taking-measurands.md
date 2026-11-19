@@ -1,6 +1,6 @@
 # Turn-taking measurands (CS-45 measurand note)
 
-**Status**: frozen 2026-10-20 by CS-45 ([`handoffs/active/conversation-stack.md`](../../../handoffs/active/conversation-stack.md)).
+**Status**: frozen 2026-10-20 by CS-45 ([`handoffs/active/speech-and-multimodal.md`](../../../handoffs/active/speech-and-multimodal.md)).
 **Consumers**: CS-2 (reads this when the Annex S package is prepared; no package text is written here), CS-22, CS-23, CS-47, CS-48, CS-49.
 **Authority**: this note names and orients the quantities. It is not an amendment of `measurement/protocols/speech.md` (Annex S) and ratifies nothing; the Annex S trust boundary (human-only amendment) is untouched.
 **Evidence this note binds to** (in `epyc-inference-research`, `data/turn-taking-cs45-v1/`): `label_contract.json`, `corpus.json` + `SHA256SUMS`, `pins.json`, `measurement_era_changes.json`, `external_crosscheck.json`, `manifest/*`.

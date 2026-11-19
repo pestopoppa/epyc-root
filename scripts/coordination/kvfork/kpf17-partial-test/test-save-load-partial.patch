@@ -1,0 +1,103 @@
+--- a/tests/test-save-load-state.cpp
++++ b/tests/test-save-load-state.cpp
+@@ -3,7 +3,9 @@
+ #include "log.h"
+ #include "llama-cpp.h"
+ 
++#include <algorithm>
+ #include <clocale>
++#include <cmath>
+ #include <random>
+ #include <vector>
+ 
+@@ -347,6 +349,78 @@
+ }
+ 
+ 
++// Test 6: restore a partial hybrid checkpoint into a second live sequence.
++// The source advances both before and after the restore; no context clear or
++// source removal is permitted.  A non-hybrid model cannot exercise this case.
++static bool test_partial_restore_busy_source(
++        struct llama_model * model, const struct common_params & params, const llama_tokens & tokens) {
++    if (!llama_model_is_hybrid(model)) {
++        LOG("\n=== Test 6: SKIP (requires hybrid model) ===\n");
++        return true;
++    }
++    if (tokens.size() < 4) {
++        LOG_ERR("%s: need at least four prompt tokens\n", __func__);
++        return false;
++    }
++    auto p = common_context_params_to_llama(params);
++    p.n_ctx = 512;
++    p.n_seq_max = 2;
++    p.kv_unified = true;
++    auto ctx = llama_context_ptr{llama_init_from_model(model, p)};
++    auto ref = llama_context_ptr{llama_init_from_model(model, p)};
++    if (!ctx || !ref) return false;
++    const int n_vocab = llama_vocab_n_tokens(llama_model_get_vocab(model));
++    const int end = std::min<int>(32, int(tokens.size()) - 2);
++    if (n_vocab <= 0 || end < 1) return false;
++
++    auto decode_one = [&](llama_context * c, llama_seq_id id, int pos) {
++        llama_batch_ptr batch(1, 0, 1);
++        common_batch_add(batch.get(), tokens[pos], pos, {id}, true);
++        return llama_decode(c, batch.get()) == 0;
++    };
++    auto logits = [&](llama_context * c) {
++        const float * p_logits = llama_get_logits_ith(c, -1);
++        return p_logits ? std::vector<float>(p_logits, p_logits + n_vocab) : std::vector<float>{};
++    };
++    auto equal_logits = [&](const std::vector<float> & a, const std::vector<float> & b) {
++        if (a.size() != size_t(n_vocab) || b.size() != a.size()) return false;
++        for (size_t i = 0; i < a.size(); ++i) {
++            if (!std::isfinite(a[i]) || !std::isfinite(b[i]) || std::fabs(a[i] - b[i]) > 1e-3f) return false;
++        }
++        return std::max_element(a.begin(), a.end()) - a.begin() ==
++               std::max_element(b.begin(), b.end()) - b.begin();
++    };
++    auto state = [&](llama_seq_id id) {
++        const size_t n = llama_state_seq_get_size_ext(ctx.get(), id, LLAMA_STATE_SEQ_FLAGS_NONE);
++        std::vector<uint8_t> out(n);
++        if (!n || llama_state_seq_get_data_ext(ctx.get(), out.data(), n, id, LLAMA_STATE_SEQ_FLAGS_NONE) != n) out.clear();
++        return out;
++    };
++    for (int i = 0; i < end; ++i) {
++        if (!decode_one(ctx.get(), 0, i) || !decode_one(ref.get(), 0, i)) return false;
++    }
++    const size_t n = llama_state_seq_get_size_ext(ctx.get(), 0, LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY);
++    if (!n) return false;
++    std::vector<uint8_t> partial(n);
++    if (llama_state_seq_get_data_ext(ctx.get(), partial.data(), n, 0, LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY) != n) return false;
++    // Source moves past the checkpoint before seq 1 is constructed.
++    if (!decode_one(ctx.get(), 0, end) || !decode_one(ref.get(), 0, end)) return false;
++    const auto source_before = state(0);
++    if (source_before.empty()) return false;
++    auto mem = llama_get_memory(ctx.get());
++    if (!llama_memory_seq_cp_ext(mem, 0, 1, 0, end, LLAMA_MEMORY_SEQ_CP_FLAGS_ATTN_ONLY)) return false;
++    if (llama_state_seq_set_data_ext(ctx.get(), partial.data(), n, 1, LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY) != n) return false;
++    if (llama_memory_seq_pos_max(mem, 0) != end || llama_memory_seq_pos_max(mem, 1) != end - 1 || state(0) != source_before) return false;
++    // Child continuation equals the already-computed fresh reference.
++    const auto ref_child = logits(ref.get());
++    if (!decode_one(ctx.get(), 1, end) || !equal_logits(logits(ctx.get()), ref_child) || state(0) != source_before) return false;
++    // Source stays usable after the destination decode and matches a no-fork run.
++    if (!decode_one(ctx.get(), 0, end + 1) || !decode_one(ref.get(), 0, end + 1) ||
++        !equal_logits(logits(ctx.get()), logits(ref.get()))) return false;
++    LOG("\n=== Test 6: PARTIAL_ONLY busy-source restore PASS ===\n");
++    return true;
++}
++
+ int main(int argc, char ** argv) {
+     std::setlocale(LC_NUMERIC, "C");
+ 
+@@ -434,6 +508,11 @@
+         return 1;
+     }
+ 
++    if (!test_partial_restore_busy_source(model, params, tokens)) {
++        LOG_ERR("Test 6: PARTIAL_ONLY busy-source restore failed\n");
++        return 1;
++    }
++
+     LOG("\nAll tests passed.\n");
+ 
+     return 0;

@@ -1,0 +1,16 @@
+{
+  "adapter": "adapters/committed_conclusion.py",
+  "adapter_id": "vidya.adapters.committed_conclusion/v1",
+  "declined": [],
+  "dry_run": true,
+  "frames_emitted": 564,
+  "missing": [],
+  "paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill/combined-register.jsonl"
+  ],
+  "refused": [],
+  "rows_projected": 188,
+  "source": "committed-conclusion",
+  "units_matched": 1,
+  "units_projected": 1
+}

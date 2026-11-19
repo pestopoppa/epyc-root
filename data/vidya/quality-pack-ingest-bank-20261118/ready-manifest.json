@@ -1,0 +1,59 @@
+{
+ "book_s": 900,
+ "budget_gib": 1.0,
+ "decision_rule": "Capture one new ingest reconciliation request on the isolated v10 Qwen3.8-27B Q8_0 24-CPU no-spec server with one 16384-token split q8_0 KV slot. Revalidate three original production responses and admit only a clean stop with both correct structured values and at least 4096 uncached native prompt tokens on the replacement. Stop after the one request and owned cleanup, or on STOP, deadline, identity, capture, cleanup or strict admission failure. Publisher smoke uses the pinned four-CPU v10 small model. Candidate collection awaits a sealed seven-profile pack.",
+ "declared_shape": "quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 500,
+ "first_progress_s": 100,
+ "gib": 48,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-INGEST-BANK",
+ "id": "handoff-vidya-quality-pack-ingest-bank-20261118",
+ "keep": [
+  "out/**",
+  "requests/**",
+  "*.py",
+  "*.json",
+  "*.md",
+  "*.sh",
+  "SOURCE.sha256",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118/row-launch.sh",
+  "sha256": "50222673a5c59399c8ff4d7a365608d1c8e5d3f7fd49d7f95ccf4dc3d968a9c6"
+ },
+ "min_window_s": 900,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [
+  19485
+ ],
+ "priority_rank": 38.0,
+ "published_at": "2026-11-18T02:10:34Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118/row.spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T02:10:34Z",
+  "session": "01a1ec66-5d27-7cb1-acd1-4783bd04de75",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118/out/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118/smoke_predicate.py",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118/STOP",
+ "verdict_by": "agent",
+ "window_s": 1200,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118"
+}

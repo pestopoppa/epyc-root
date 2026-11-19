@@ -77,6 +77,8 @@ BACKENDS_DECLARED=0
 BACKENDS_RESOLVED=0
 BACKENDS_LINKAGE_PROVEN=0
 UNVERSIONED_TARGETS=0
+CUSTODY_VERIFIED=0
+CUSTODY_UNATTESTED=0
 
 # ---------------------------------------------------------------------------
 # Backend map, read from the resolver itself
@@ -152,6 +154,152 @@ provenance() {
     echo "         A rebuild or checkout there mutates production in place and there"
     echo "         is no archived predecessor to roll back to. Promote into"
     echo "         $KERNEL_ROOT/builds/<backend>-<YYYYMMDD>-<short-sha> and repoint."
+}
+
+# ---------------------------------------------------------------------------
+# Custody: the resolved kernel dir must be EXACTLY what its SHA256SUMS lists
+# ---------------------------------------------------------------------------
+# LOOP-48 / LOOP-59 (INC 2026-11-03): a stray regular-file libggml-hip.so replaced
+# the libggml-hip.so -> libggml-hip.so.0 symlink in the frozen v10 GPU build and
+# every check above passed. ggml DLOPENS libggml-hip.so by that name, so the swap
+# was the library that ran, while `-e` (presence), the sha256 of llama-server and
+# the ldd-based linkage check (libggml-hip is not DT_NEEDED, and an in-tree
+# regular file passes the prefix test) never looked at it. This closes it:
+#   1. the target (or its build root) must carry a SHA256SUMS, and every row must
+#      exist and hash-match;
+#   2. every regular file directly in the target must be a row (stray detection);
+#   3. a regular lib*.so[.N] that has a versioned sibling (lib*.so.N[.M...]) is a
+#      replaced alias and fails; every symlink must be a bare same-dir basename that
+#      resolves to a listed file.
+# Row paths are resolved against both the SHA256SUMS directory and the target dir
+# because the store holds three spellings: `bin/x`, `./x` (bin-relative) and
+# `./bin/x` (build-root-relative).
+# Read-only: it hashes files and lists the directory; nothing is written.
+# Exit codes of the helper: 0 = attested, 1 = findings, 3 = no SHA256SUMS found.
+CUSTODY_PY=$(cat <<'PY'
+import hashlib, os, re, sys
+key, target = sys.argv[1], os.path.realpath(sys.argv[2])
+fails, warns = [], []
+cands = [os.path.join(target, "SHA256SUMS")]
+if os.path.basename(target) == "bin":
+    cands.append(os.path.join(os.path.dirname(target), "SHA256SUMS"))
+sums = next((c for c in cands if os.path.isfile(c)), None)
+if sums is None:
+    sys.exit(3)
+root = os.path.dirname(sums)
+rows = []
+with open(sums, encoding="utf-8", errors="replace") as fh:
+    for ln, line in enumerate(fh, 1):
+        line = line.rstrip("\n")
+        if not line.strip() or line.startswith("#"):
+            continue
+        m = re.match(r"^([0-9a-fA-F]{64}) [ *](.+)$", line)
+        if not m:
+            fails.append("%s line %d is not '<sha256>  <path>'" % (sums, ln))
+            continue
+        rows.append((m.group(1).lower(), m.group(2)))
+if not rows:
+    fails.append("%s lists no files (an empty manifest attests nothing)" % sums)
+
+def sha256(path):
+    d = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for blk in iter(lambda: fh.read(1 << 20), b""):
+            d.update(blk)
+    return d.hexdigest()
+
+listed = set()
+verified = 0
+for want, raw in rows:
+    q = raw[2:] if raw.startswith("./") else raw
+    bases = (target, root) if "/" not in q else (root, target)
+    found = None
+    for b in bases:
+        c = os.path.normpath(os.path.join(b, q))
+        if os.path.lexists(c):
+            found = c
+            break
+    if found is None:
+        fails.append("listed but missing: %s" % raw)
+        continue
+    real = os.path.realpath(found)
+    inside = os.path.dirname(os.path.normpath(found)).startswith(target)
+    if inside:
+        listed.add(real)
+    if not os.path.isfile(real):
+        (fails if inside else warns).append("listed path is not a file: %s" % raw)
+        continue
+    got = sha256(real)
+    if got != want:
+        (fails if inside else warns).append(
+            "HASH MISMATCH %s (manifest %s.. disk %s..)" % (raw, want[:12], got[:12]))
+    elif inside:
+        verified += 1
+
+entries = sorted(os.listdir(target))
+regular = [f for f in entries if os.path.isfile(os.path.join(target, f))
+           and not os.path.islink(os.path.join(target, f))]
+for f in regular:
+    p = os.path.realpath(os.path.join(target, f))
+    if p not in listed and f != "SHA256SUMS":
+        # A dot-file cannot be loaded by any name ggml/ld.so resolves (soname or
+        # libggml-<backend>.so), so it is reported but is not a library swap.
+        (warns if f.startswith(".") else fails).append(
+            "UNLISTED regular file (not in SHA256SUMS): %s" % f)
+    if re.match(r"^lib.*\.so(\.[0-9]+)*$", f):
+        alias_of = [g for g in regular if g.startswith(f + ".")
+                    and re.match(r"^[0-9][0-9.]*$", g[len(f) + 1:])]
+        if alias_of:
+            fails.append("REGULAR FILE where a symlink alias belongs: %s (versioned sibling %s)"
+                         % (f, alias_of[0]))
+for f in entries:
+    p = os.path.join(target, f)
+    if not os.path.islink(p):
+        continue
+    t = os.readlink(p)
+    if "/" in t:
+        fails.append("symlink %s -> %s: target must be a bare same-dir basename" % (f, t))
+    elif not os.path.exists(p):
+        fails.append("symlink %s -> %s is DANGLING" % (f, t))
+    elif os.path.realpath(p) not in listed:
+        fails.append("symlink %s -> %s resolves to a file not in SHA256SUMS" % (f, t))
+for msg in fails[:20]:
+    print("  FAIL %s: custody: %s" % (key, msg))
+if len(fails) > 20:
+    print("  FAIL %s: custody: ... and %d more" % (key, len(fails) - 20))
+for msg in warns[:10]:
+    print("  WARN %s: custody: %s" % (key, msg))
+if fails:
+    sys.exit(1)
+print("  OK   %s: custody: %d listed files hash-verified, no unlisted regular file, aliases are"
+      " same-dir symlinks (%s)" % (key, verified, sums))
+PY
+)
+
+custody() {
+    local key="$1" target="$2" out st
+    set +e
+    out=$(python3 -c "$CUSTODY_PY" "$key" "$target" 2>&1)
+    st=$?
+    set -e
+    case "$st" in
+        0) printf '%s\n' "$out"; CUSTODY_VERIFIED=$((CUSTODY_VERIFIED+1)) ;;
+        3)
+            case "$target" in
+                "$KERNEL_ROOT"/builds/*|"$KERNEL_ROOT"/archive/*|"$KERNEL_ROOT"/candidates/*)
+                    echo "  FAIL $key: custody: no SHA256SUMS beside or above $target — a versioned"
+                    echo "         store build with no manifest cannot be attested (LOOP-48/59)."
+                    RC=1
+                    ;;
+                *)
+                    echo "  WARN $key: custody: no SHA256SUMS for $target (not a versioned store"
+                    echo "         dir) — contents NOT attested."
+                    CUSTODY_UNATTESTED=$((CUSTODY_UNATTESTED+1))
+                    ;;
+            esac
+            ;;
+        *) printf '%s\n' "$out"; echo "  FAIL $key: custody check FAILED (rc=$st)"; RC=1 ;;
+    esac
 }
 
 # ---------------------------------------------------------------------------
@@ -242,6 +390,7 @@ check_backend() {
     fi
 
     provenance "$key" "$target"
+    custody "$key" "$target"
     BACKENDS_RESOLVED=$((BACKENDS_RESOLVED+1))
 
     linkage "$key" "$binary" "$target" "$needs_prepend" "$vendor"
@@ -426,6 +575,10 @@ fi
 if [ "$UNVERSIONED_TARGETS" -gt 0 ]; then
     echo "NOTE: $UNVERSIONED_TARGETS backend(s) point into a live source tree rather than a versioned"
     echo "      build dir. Reported, not failed — this is the known pre-v10 state."
+fi
+if [ "$CUSTODY_UNATTESTED" -gt 0 ]; then
+    echo "NOTE: $CUSTODY_UNATTESTED backend(s) have no SHA256SUMS (target outside a versioned build dir);"
+    echo "      their file contents were NOT attested. $CUSTODY_VERIFIED backend(s) were custody-verified."
 fi
 echo "NOTE: this verifies the STORE (symlink -> target -> binary -> ggml linkage)."
 echo "      It does NOT attest kernel IDENTITY — run verify_llama_cpp.sh and"

@@ -1,0 +1,55 @@
+{
+  "row_id": "q38p4-greedy-parity-20261118-r1",
+  "status": "sealed packet pregrant-ready; no smoke or official inference executed by packet author",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/spec.json",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/launch.sh",
+  "estimate_s": 420,
+  "min_window_s": 330,
+  "first_progress_s": 115,
+  "runtime": {
+    "official": "exclusive MI210, 184-191, one request per sequential owner-started runtime, 512 identical input IDs, up to 128 generated, zero text fallback",
+    "smoke": "own 0.6B BF16 HIP llama /completion arm, four allowed threads 184-187, 4096 input IDs, up to 128 generated, two in-window owned KFD records and linkage, original IDs, cleanup and zero comparison units",
+    "ports": [
+      19433,
+      19434
+    ]
+  },
+  "recovered_model": {
+    "bytes": 8051283488,
+    "sha256": "d7934f6fa06f9781bc15540f0e2b83f89b1895e86440a4e97af4f0434311d1bd",
+    "historical_exact_match": true,
+    "source": "existing HF safetensors, local read-only C6 729599d69871181d67af715a4c2f9162d5153a2e, exact historical vLLM image with --network none, 2 CPU cgroup quota, no GPUs, no downloads or builds",
+    "tokenizer": "fresh offline output from current HF tokenizer matches all 512 original historical input IDs; prep and asset hashing bound to 4-7"
+  },
+  "runtime_source_custody": {
+    "llama": "C6 version 10500 (729599d69), ggml linkage verifier PASS, executable/store/pinned dynamic HIP libraries hashed",
+    "vllm": "RepoDigest 4fcd39b758b660c4e9c345c021e2ea8f0ccdb31e3c32507d676cc3005ae83fba; Image ID 933f693c6b3b67b39ba789fac7f276251ab017908290bd8c39d10b0f702dae52; actual installed vLLM completion protocol and serving code hashed and verified for generated IDs, prompt IDs, finish/stop; exact ROCm/Torch HIP library hashes",
+    "vllm_source_commit": null,
+    "vllm_source_commit_note": "The exact installed wheel does not identify a Git commit. Installed source bytes and image digest are exact pins; no Git commit substituted."
+  },
+  "source_changes": [
+    "scripts/vidya/producers/q38p4_parity.py",
+    "tests/vidya/test_q38p4_parity.py"
+  ],
+  "validation": [
+    "producer.py byte-equal to lane source",
+    "sha256sum --check --strict passes",
+    "both plan/receipt sets replay and all assets re-stat against pregrant pins",
+    "Bash and Python syntax",
+    "publisher static lint and launcher parsing",
+    "509 integration tests passed; 2240 carrier tuples / 78 sources / no violations",
+    "git diff --check"
+  ],
+  "native_remaining": "Parent may publish under existing authorization. Scheduled GPU readiness smoke, official comparison, and planning-context acceptance are distinct.",
+  "publish_integration": {
+    "owner": "handoff-vidya-belief-substrate",
+    "handoff_task": "vidya-belief-substrate-program.md:VB-Q38P4-PARITY-WIRE",
+    "verdict_by": "agent",
+    "grant": "Byte-exact regular cpus=/lock= extensions accepted. Dry-run identity only qualifies smoke and is refused for native.",
+    "weight_pin": "Guard adds ctime_ns to the prior content-pinned size/mtime/inode/device check. The weight files were not rehashed.",
+    "failure_capture": "Owned HTTP child reaped on interrupt. Exact vLLM full ID guarded by unique name and ownership label before cleanup. Pre-init failures write unstarted/UNKNOWN with zero native comparison units and no publisher unit key.",
+    "smoke_unit": "Publisher parser recognizes valid 0.6B qualification through unit_id; zero reports the number of comparison units.",
+    "tests": "510 integration tests passed; 2,240 carrier tuples from 78 kinds; no violations. Offline runner and publisher preflight controls passed. No native inference or publication performed.",
+    "publish_command": "ROWFLOW_REPO=$PWD TASK_LINT_DIR=$PWD/scripts/handoffs python3 /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/spec.json"
+  }
+}

@@ -1,0 +1,11 @@
+
+==== dry run 2026-11-18T03:39:18Z regions=116-119 launcher_sha=75bd688040bdfaac59a08063feea1705c734633d5739d68ff314c1a84effed4a units_before=0
+2026-11-18T03:39:18Z [vidya-r231-eof-native-wire-20261118-r2] launcher up pid=2933033 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r231-eof-native-wire-20261118-r2/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r231-eof-native-wire-20261118-r2/stop minwin=120s ports=none dryrun=1
+2026-11-18T03:39:18Z [vidya-r231-eof-native-wire-20261118-r2] START regions=116-119 cpus=116-119 threads=4 gpu=0 end=2026-11-18T03:54Z
+2026-11-18T03:39:18Z [vidya-r231-eof-native-wire-20261118-r2] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+job rc=0
+==== engine START at +5s; first-progress timer (90 s) starts now
+==== first progress at 2026-11-18T03:39:23Z (+5s): smoke_predicate exited 0
+2026-11-18T03:39:23Z [vidya-r231-eof-native-wire-20261118-r2] ended rc=75 reason=partial-native-incomplete (grant deleted)
+2026-11-18T03:39:23Z [vidya-r231-eof-native-wire-20261118-r2] one window done; exiting (no --repeat)
+==== dry run PASS: first progress: smoke_predicate exited 0; rc=75 time=2026-11-18T03:39:23Z reason=partial-native-incomplete (2026-11-18T03:39:29Z)

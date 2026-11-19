@@ -1,0 +1,37 @@
+--- a/ggml/src/ggml-cuda/ggml-cuda.cu
++++ b/ggml/src/ggml-cuda/ggml-cuda.cu
+@@ -4168,6 +4168,13 @@
+ }
+ #endif // USE_CUDA_GRAPH
+ 
++// G3 diagnostic: graph replay skips per-node dispatch tracing. This changes
++// execution mode and must be disclosed; it does not establish correlation.
++static bool ggml_g3_trace_direct_dispatch() {
++    const char * value = std::getenv("GGML_G3_FATTN_TRACE");
++    return value && value[0] == '1' && value[1] == '\0';
++}
++
+ static enum ggml_status ggml_backend_cuda_graph_compute(ggml_backend_t backend, ggml_cgraph * cgraph) {
+     ggml_backend_cuda_context * cuda_ctx = (ggml_backend_cuda_context *) backend->context;
+ 
+@@ -4212,6 +4219,11 @@
+     }
+ #endif // USE_CUDA_GRAPH
+ 
++    if (ggml_g3_trace_direct_dispatch()) {
++        use_cuda_graph = false;
++        cuda_graph_update_required = false;
++    }
++
+     if (use_cuda_graph && cuda_graph_update_required) {
+         // Start CUDA graph capture
+         {
+@@ -4257,7 +4269,7 @@
+ 
+ #ifdef USE_CUDA_GRAPH
+     const void * graph_key = ggml_cuda_graph_get_key(cgraph);
+-    const bool use_cuda_graph = ggml_cuda_graph_set_enabled(cuda_ctx, graph_key);
++    const bool use_cuda_graph = !ggml_g3_trace_direct_dispatch() && ggml_cuda_graph_set_enabled(cuda_ctx, graph_key);
+ #else
+     const bool use_cuda_graph = false;
+     GGML_UNUSED(cuda_ctx);

@@ -1,0 +1,46 @@
+{
+  "schema": "epyc.vidya.sc18_gpu_pool_matmul_id_preparation.v1",
+  "status": "prepared_for_owner_publication",
+  "row_id": "ni-gpu-pool-matmul-20261117-v2",
+  "handoff_child": "SC18-GPU-POOL-MATMUL-ID-LIVE",
+  "durable_directory": "data/vidya/gpu-pool-matmul-id-20261117",
+  "private_spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/spec.json",
+  "native_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/native/RESULT.json",
+  "native_capture": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/native/belief.json",
+  "pinned_manifest_sha256": "85226c6ae8af4cd6f592db500139d66cb51d47d72a0c77357dd57680e20701ef",
+  "source": {
+    "candidate_commit": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+    "dirty_state": "UNKNOWN",
+    "shim_recreated_source_matches_receipt": false,
+    "historical_research_commit": "9cf3c860a",
+    "historical_path": "data/gpu-pool/matmul-20261026/",
+    "historical_writer_sha256": "c7dd8496a9073c15f679ce7a20eae9a0fe9ffdf180f97357608701293ea4b41e",
+    "historical_result_sha256": "b9c93a1f14ee02f8a11433e9c9d9c2bdd676875627a5298522640013e649feb5",
+    "historical_operator_log_sha256": "7dc833ceedbad2d2e552e6becb5ea9943bb889167dd22c2e4e848c6559c303e5"
+  },
+  "scope": {
+    "op": "MUL_MAT_ID",
+    "suite_seed": 20261026,
+    "native_invocations": 1,
+    "selected_comparisons": 370,
+    "unique_case_descriptors": 368,
+    "case_multiset_sha256": "ed033c4bf7293c280739a24c214fe92698e4c655d3bfa1ccb00df84c6041eee5",
+    "regions": "mi210_0,184-191",
+    "minimum_distinct_in_window_samples": 2,
+    "compute_started_by_preparation": false,
+    "published": false
+  },
+  "checks": {
+    "manifest": "PASS (17 files, including historical controls, producer, launcher, spec and registered carrier)",
+    "launcher_bash_syntax": "PASS",
+    "fake_child_custody_controls": {
+      "status": "PENDING (runs inside publisher smoke's held grant)",
+      "count": 15,
+      "source_sha256": "d2d3e511048242db9495a9ed2562faa7f130d560cffbaffe94977bd35fb5be4b",
+      "log": "matmul-id-<FILLER_SMOKE_T0>/custody-controls.log",
+      "smoke_receipt_requires_log_and_source_sha256": true
+    },
+    "publisher_smoke": "PENDING",
+    "official_native": "PENDING"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "row": "vb-ak-wire-canary-r3-20261104",
+  "native_result": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/RESULT.json",
+  "observed": "absent at filing",
+  "rc": 75,
+  "reason": "disk-floor",
+  "decision": "inconclusive; no planner verdict"
+}

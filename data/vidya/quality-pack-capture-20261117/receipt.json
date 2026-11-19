@@ -1,0 +1,27 @@
+{
+  "task": "VB-V9-8-QUALITY-PACK-CAPTURE-CODE",
+  "outcome": "implemented and offline controls passed",
+  "files_sha256": {
+    ".claude/skills/kernel-promotion/scripts/quality_parity.py": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d",
+    "scripts/vidya/adapters/quality_pack_comparison.py": "493b508cf9c7f5522e396d39c21404cc2df6b2c3cd070b63d308529f17a763e1",
+    "scripts/vidya/ingest_sources.py": "d8afc5df43fa696e5fce7cf0ab19f6f03817e2437d6e505877f39b51d16a02b3",
+    "scripts/vidya/cli.py": "265af1fc67538cdbedb2ddd5ef8c83e26d0c813be91ec3383865da566ee916ca",
+    "tests/test_kernel_promotion_quality_parity.py": "3b06ef4b0406cb5ac6af0ec89efd710369a87f5b821b566884591f400f139768"
+  },
+  "native_entry": "quality_parity.py compare --pack PATH --pack-sha256 PIN --candidate PATH --capture NEW_PATH",
+  "registered_source": "quality-pack-comparison",
+  "capture": "Exclusive sealed native snapshot of exact original pack and candidate bytes and digests, prospective pin, completed timestamp, executing validator source digest, validated coverage, exact per-item native checks, report or invalid/incomplete diagnostic error. Pack source hash still applies.",
+  "projection": "Strict canonical replay over bound originals. Complete pass or fully evidenced fail only, as Judged/Located mismatch count scoped to exact capture pair and autokernel.planner; gap-bearing fail, incomplete, drift, and invalid inputs are retained without a claim.",
+  "verification": [
+    "taskset -c 140-143 python3 -m pytest -q tests/test_kernel_promotion_quality_parity.py: 51 passed",
+    "git diff --check on edited tracked files: passed",
+    "python3 -m py_compile on producer, reader and registration files: passed",
+    "Registered CLI synthetic software control: original producer build/compare -> isolated ledger ingest projected 1 row and 3 frames, no refusals, --only-new retry preserved ledger SHA-256."
+  ],
+  "software_control_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack/software-fixture-s5pa3s4s/software-control-receipt.json",
+  "scope_limit": "No genuine original v1 pack/candidate pair located in worktree or targeted scratch search. V9-8-QUALITY-PACK checklist records software-only implementation and live calibration pending. No genuine native comparison, genuine planning-context canary, inference, canonical ledger write or promotion decision.",
+  "gitnexus": "Parent ran status/impact; repository unindexed and upstream impact query unavailable, no reindex requested. Direct references and integration entry points reviewed.",
+  "suggested_checked_split": "VB-V9-8-QUALITY-PACK-CAPTURE-CODE \u2014 implement the prospective native capture and strict shared-grade diagnostic reader, register ingest and verify offline refusal/retry controls. [no-belief: software fixture validation only]",
+  "suggested_open_parent": "VB-V9-8-QUALITY-PACK-WIRE \u2014 run the prospective producer against an independently pinned genuine banked pack and candidate capture, then demonstrate scratch-ledger evidence at the real AutoKernel planning boundary with no accepted proposal reliance.",
+  "retained_software_control_receipt": "data/vidya/quality-pack-capture-20261117/software-control-receipt.json"
+}

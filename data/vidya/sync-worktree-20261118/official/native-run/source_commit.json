@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "git",
+    "rev-parse",
+    "--verify",
+    "fcc89b474a0b9d906df5ea8e7cb9d4708ffeaeee^{commit}"
+  ],
+  "cwd": "/workspace",
+  "exit": 0
+}

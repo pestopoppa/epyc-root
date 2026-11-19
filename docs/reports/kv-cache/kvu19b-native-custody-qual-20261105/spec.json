@@ -1,0 +1,23 @@
+{
+  "id": "kvu19b-native-custody-qual-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-187",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Qualify model-free native profiler custody for one synthetic target dispatch only: same own PID/birth, MI210 BDF, profiler GPU ID and queue as three separately bracketed witness kernels; exact HSA/host offset intersection uncertainty <=1ms and 4-6s witness spacing; positive target containment and all 11 missing/duplicate/identity/time/spacing mutation refusals pass. Target containment is conditional on the predeclared constant-offset assumption; interior drift and real target alignment remain UNKNOWN. Stop on identity, clock, source, residency, cleanup, STOP or deadline failure; futility-only. No model, attribution or target profiling.",
+  "estimate_s": 300,
+  "ram_gib": 2,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-19b-gap",
+  "priority_rank": 40,
+  "kind": "compute",
+  "smoke_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kvu19b-native-custody",
+  "notes": "Distinct synthetic target process and trace custody exercise, not evidence for interpolation or interior drift."
+}

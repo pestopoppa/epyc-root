@@ -1,0 +1,42 @@
+{
+ "decision_rule": "Accept only a complete clean v10 plus exact G8 comparison patch HIP gfx90a build, source checked before and after, compiled marker in linked libllama-common, linkage and SHA-256 receipt validated. Build-only diagnostic; no inference or agreement conclusion.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 2400,
+ "gib": 32,
+ "handoff_task": "handoffs/active/speculative-decoding.md:G8",
+ "id": "g8-v10-hip-build-r2-20261102",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.json",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g8-build-r2/launch.sh",
+  "sha256": "4ec0b8d53d319b8b0601c5aa273b87db3687234c2eb8c35578d0c1a29091c2f3"
+ },
+ "min_window_s": 2400,
+ "notes": "Native smoke compiles the instrumented sampling source object on 4 CPUs; a full successful build and compiled markers are required for the normal result. No inference. Source snapshot checks bracket compilation; concurrent mutation and restoration cannot be excluded.",
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "published_at": "2026-11-02T11:53:56Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g8-build-r2/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g8-build-r2/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g8-build-r2",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g8-build-r2/STOP",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g8-build-r2"
+}

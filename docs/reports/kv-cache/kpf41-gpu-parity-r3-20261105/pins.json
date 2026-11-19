@@ -1,0 +1,22 @@
+{
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/test-kv-rows-vec-direct": "3a8fdc442c0574743b041eb4026dcf54ca819ba4d706f220f07fa492460a351d",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-base.so": "f0dc79469153b0bd49e4513697f55b0f2bd8e3cb0b69863e36501f329d7355e1",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-base.so.0": "f0dc79469153b0bd49e4513697f55b0f2bd8e3cb0b69863e36501f329d7355e1",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-base.so.0.16.0": "f0dc79469153b0bd49e4513697f55b0f2bd8e3cb0b69863e36501f329d7355e1",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-cpu.so": "5cfd7ab9e5db3d560378364d7e7e11bd7f89cf0ec27f2ca2b3ef3229968ec8c9",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-cpu.so.0": "5cfd7ab9e5db3d560378364d7e7e11bd7f89cf0ec27f2ca2b3ef3229968ec8c9",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-cpu.so.0.16.0": "5cfd7ab9e5db3d560378364d7e7e11bd7f89cf0ec27f2ca2b3ef3229968ec8c9",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-hip.so": "3f9174788b8e2d733c15a17fc214dd9ef2f081b562ed831a68ad6a07d9beb73e",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-hip.so.0": "3f9174788b8e2d733c15a17fc214dd9ef2f081b562ed831a68ad6a07d9beb73e",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml-hip.so.0.16.0": "3f9174788b8e2d733c15a17fc214dd9ef2f081b562ed831a68ad6a07d9beb73e",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml.so": "a45f97469d05d853737f2016874be8bcd5db36e9a8a5b24f79534898e5430697",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml.so.0": "a45f97469d05d853737f2016874be8bcd5db36e9a8a5b24f79534898e5430697",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libggml.so.0.16.0": "a45f97469d05d853737f2016874be8bcd5db36e9a8a5b24f79534898e5430697",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libllama-common.so": "9766b2cd4d7c34d579414638928910404319b3c90a6b1fc51f876b443111d0f9",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libllama-common.so.0": "9766b2cd4d7c34d579414638928910404319b3c90a6b1fc51f876b443111d0f9",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libllama-common.so.0.0.10455": "9766b2cd4d7c34d579414638928910404319b3c90a6b1fc51f876b443111d0f9",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libllama.so": "8adf8cfdae0b53dd9ed7f42b8761e4a84320920fe26f264aa5fa51310be2ddb1",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libllama.so.0": "8adf8cfdae0b53dd9ed7f42b8761e4a84320920fe26f264aa5fa51310be2ddb1",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/bin/libllama.so.0.0.10455": "8adf8cfdae0b53dd9ed7f42b8761e4a84320920fe26f264aa5fa51310be2ddb1",
+  "/mnt/raid0/llm/tmp/kvfork/kpf41-gpu-parity-r3-20261105/build/out/RESULT.json": "2ca08a881968b7a4c949c57158bf8bb28bc02ca456be7bbb5ce33130346b2242"
+}

@@ -1,0 +1,19 @@
+{
+  "row": "lsa-screen-1-cpu-parity-r2-20261103",
+  "verdict": "inconclusive",
+  "cause": "all-keys native child aborted with GGML_ASSERT(ith == 0 && nth == 1) at lsa-screen-reference.h:76; /proc identity read then raised FileNotFoundError and obscured that earlier failure",
+  "all_child_exit_rc": -6,
+  "dense_logits_count": 248320,
+  "dense_all_finite": true,
+  "dense_expected_vocab": 248320,
+  "all_logits_present": false,
+  "trace_present": false,
+  "pair_checks": {
+    "max_absolute_difference": null,
+    "argmax_equality": null,
+    "sixteen_layer_mask_trace": null
+  },
+  "scope": "Dense output alone supports finite full-vocabulary baseline logits; no paired parity, timing or quality conclusion.",
+  "source_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE",
+  "source_binding": "See preserved live monitors for executed executable/library identities; current source may have been modified after this attempt."
+}

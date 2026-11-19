@@ -1,0 +1,42 @@
+{
+  "status": "pass",
+  "rc": 0,
+  "invalid_reason": null,
+  "passed": true,
+  "max_abs": 0.0,
+  "dense_argmax": 248068,
+  "oracle_argmax": 248068,
+  "native_paths": {
+    "dense": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/dense.bin",
+    "all": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/all.bin",
+    "trace": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/trace.jsonl",
+    "dense_log": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/dense.log",
+    "all_log": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/all.log",
+    "dense_monitor": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r2/ATTEMPT_FENCE/dense-monitor.jsonl",
+    "all_monitor": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/all-monitor.jsonl"
+  },
+  "owner_pid": 2814630,
+  "owner_start_ticks": 185137610,
+  "vocab": 248320,
+  "threshold": 1e-05,
+  "callback_layers": [
+    3,
+    7,
+    11,
+    15,
+    19,
+    23,
+    27,
+    31,
+    35,
+    39,
+    43,
+    47,
+    51,
+    55,
+    59,
+    63
+  ],
+  "callbacks": 16,
+  "evidence_receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity-r3/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json"
+}

@@ -34,7 +34,7 @@ Verina (intake-234) provides a benchmarking framework for verifiable code genera
 
 ## Key Findings
 
-- **RustEvo2 is now a gate benchmark for narrow-domain coder distillation claims.** The Strand-Rust-Coder-14B verification handoff scopes a single standalone RustEvo2 run to test Fortytwo's "#1 on RustEvo2" and "beats GPT-5 Codex on Rust" claims before any larger swarm-dataset effort starts. The run is intentionally isolated from the production stack, sequential across models, and requires explicit approval before inference because it is a benchmark gate, not background autopilot traffic. Source: [strand-rust-coder-rustevo2-verification.md](../handoffs/active/strand-rust-coder-rustevo2-verification.md).
+- **RustEvo2 is now a gate benchmark for narrow-domain coder distillation claims.** The Strand-Rust-Coder-14B verification handoff scopes a single standalone RustEvo2 run to test Fortytwo's "#1 on RustEvo2" and "beats GPT-5 Codex on Rust" claims before any larger swarm-dataset effort starts. The run is intentionally isolated from the production stack, sequential across models, and requires explicit approval before inference because it is a benchmark gate, not background autopilot traffic. Source: [strand-rust-coder-rustevo2-verification.md](../handoffs/active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification).
 
 - Goedel-Code-Prover-8B achieves 62.0% prove rate on 427 verification tasks, 2.6x over strongest baseline (BFS-Prover-V2, 32B) [goedel-code-prover-analysis.md]
 - All Goedel-CP innovation is in training methodology -- vanilla Qwen3-8B base with standard GGUF conversion [goedel-code-prover-analysis.md]
@@ -67,9 +67,9 @@ Verina (intake-234) provides a benchmarking framework for verifiable code genera
 
 ## Formalizer as Cost-Reduction Tool
 
-- **Formalizer reduces total pipeline cost, not just accuracy**: arxiv:2504.06514 ("Missing premise exacerbates overthinking in reasoning models") shows that missing or ambiguous premises cause solvers to explore multiple interpretations, generating excessive reasoning tokens. The MathSmith formalizer pre-fills missing structure via `[FORMAL SPECIFICATION]` blocks, causing the solver to converge with fewer tokens. The Conditional Information Bottleneck (Proposition 4.1) provides theoretical backing: formalization raises I(Z; Y | X), reducing optimal reasoning length. The HC variant's GRPO consistency reward further strengthens this effect. [mathsmith-hc-formalizer-eval.md](../handoffs/active/mathsmith-hc-formalizer-eval.md)
-- **Math-Verify for benchmark answer validation**: intake-377 (HuggingFace Math-Verify) provides robust mathematical expression comparison with LaTeX parsing, symbolic simplification, and matrix equivalence. Current exact-match scoring underestimates model capability by ~66% on math expressions. Integration caveats: `verify(gold, pred)` is NOT symmetric, NOT thread-safe (`signal.alarm()`), and open intervals `(1,2)` convert to `Tuple(1,2)`. Applicable to MathSmith S4 A/B benchmark and Goedel-CP evaluation. [mathsmith-hc-formalizer-eval.md](../handoffs/active/mathsmith-hc-formalizer-eval.md)
-- **Question quality filtering for eval**: intake-379 (MathQ-Verify) provides a 5-stage pipeline for validating question quality. Flawed questions with missing premises also waste compute by triggering solver overthinking. Stage 5 (completeness) hurts F1 by +0.57pp -- deploy stages 1-4 only. [mathsmith-hc-formalizer-eval.md](../handoffs/active/mathsmith-hc-formalizer-eval.md)
+- **Formalizer reduces total pipeline cost, not just accuracy**: arxiv:2504.06514 ("Missing premise exacerbates overthinking in reasoning models") shows that missing or ambiguous premises cause solvers to explore multiple interpretations, generating excessive reasoning tokens. The MathSmith formalizer pre-fills missing structure via `[FORMAL SPECIFICATION]` blocks, causing the solver to converge with fewer tokens. The Conditional Information Bottleneck (Proposition 4.1) provides theoretical backing: formalization raises I(Z; Y | X), reducing optimal reasoning length. The HC variant's GRPO consistency reward further strengthens this effect. [mathsmith-hc-formalizer-eval.md](../handoffs/active/benchmark-suites.md#track-mathsmith-hc-formalizer-eval)
+- **Math-Verify for benchmark answer validation**: intake-377 (HuggingFace Math-Verify) provides robust mathematical expression comparison with LaTeX parsing, symbolic simplification, and matrix equivalence. Current exact-match scoring underestimates model capability by ~66% on math expressions. Integration caveats: `verify(gold, pred)` is NOT symmetric, NOT thread-safe (`signal.alarm()`), and open intervals `(1,2)` convert to `Tuple(1,2)`. Applicable to MathSmith S4 A/B benchmark and Goedel-CP evaluation. [mathsmith-hc-formalizer-eval.md](../handoffs/active/benchmark-suites.md#track-mathsmith-hc-formalizer-eval)
+- **Question quality filtering for eval**: intake-379 (MathQ-Verify) provides a 5-stage pipeline for validating question quality. Flawed questions with missing premises also waste compute by triggering solver overthinking. Stage 5 (completeness) hurts F1 by +0.57pp -- deploy stages 1-4 only. [mathsmith-hc-formalizer-eval.md](../handoffs/active/benchmark-suites.md#track-mathsmith-hc-formalizer-eval)
 
 
 
@@ -141,7 +141,7 @@ Add to the two fail-open screens a third:
 ### Sources
 
 - `progress/2026-08/2026-08-01.md` — W1 cutover session, three instances with measured blast radius
-- `handoffs/active/numa-topology-cutover-resume-20260730.md` — NEW section, 2026-08-01
+- `handoffs/active/numa-placement-and-contention.md` — NEW section, 2026-08-01
 - epyc-orchestrator `a517793c` — all three remedies plus `stale_role_fact_table`
 - `/mnt/raid0/llm/tmp/launcher-refactor-proof/` — byte-equality snapshot proving the extraction changed no value
 
@@ -158,8 +158,8 @@ Add to the two fail-open screens a third:
 - [Lean proving pipeline handoff](/workspace/handoffs/completed/lean-proving-pipeline.md) -- Two-tier architecture design, work items S1-S5, infrastructure requirements
 - [intake-233](https://arxiv.org/abs/2603.19329) Goedel-Code-Prover intake entry -- Initial evaluation and verdict
 - [intake-235](https://mistral.ai/news/leanstral) Leanstral intake entry -- Initial evaluation and verdict
-- [MathSmith HC formalizer eval handoff](/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md) -- Formalizer-overthinking connection (arxiv:2504.06514), Math-Verify integration (intake-377), MathQ-Verify question quality (intake-379)
-- [Strand-Rust-Coder RustEvo2 verification](../handoffs/active/strand-rust-coder-rustevo2-verification.md) -- independent gate for Fortytwo's Rust specialist model and downstream dataset-distillation work
+- [MathSmith HC formalizer eval handoff](/workspace/handoffs/active/benchmark-suites.md#track-mathsmith-hc-formalizer-eval) -- Formalizer-overthinking connection (arxiv:2504.06514), Math-Verify integration (intake-377), MathQ-Verify question quality (intake-379)
+- [Strand-Rust-Coder RustEvo2 verification](../handoffs/active/model-evaluation-queue.md#track-strand-rust-coder-rustevo2-verification) -- independent gate for Fortytwo's Rust specialist model and downstream dataset-distillation work
 
 ---
 
@@ -227,7 +227,7 @@ inconsistently applied technique, not a missing one — which makes the fix smal
 
 ### Sources
 
-- `handoffs/active/numa-topology-cutover-resume-20260730.md` (W6, W7) — 2026-07-31
+- `handoffs/active/numa-placement-and-contention.md` (W6, W7) — 2026-07-31
 - `progress/2026-07/2026-07-31.md` — session 18:00–20:00Z, measured reproductions
 - `/mnt/raid0/llm/tmp/guard-audit/` — six runnable proof scripts (`prove_failopen.py`, `prove2-5.py`)
 - epyc-root `13383c49` — repair of the torn `MEASUREMENT.md` bullet whose verification passed
@@ -492,7 +492,7 @@ verification-failure-catalogue.md`), which is what makes the two records one the
 - [`vidya-belief-substrate-program.md`](../handoffs/active/vidya-belief-substrate-program.md) — the
   SC61/SC69-73 closure text (placement decisions, carried-field design, mutation companions,
   live-ledger smoke at frontier 13,141), and the SC47/48/SC56-60 context rows.
-- [`reviewer-calibration-accounting.md`](../handoffs/active/reviewer-calibration-accounting.md) —
+- [`reviewer-calibration-accounting.md`](../handoffs/active/reviewer-control-plane.md#track-reviewer-calibration-accounting) —
   RC-11/RC-12: the audit's origin in intake-1307's selection-on-the-certification-sample finding,
   the 16-threshold enumeration, the violation classes and the OK class.
 - [`progress/2026-09/2026-09-08.md`](../progress/2026-09/2026-09-08.md) — the full 16-threshold
@@ -515,9 +515,9 @@ Three conclusions must remain separate. Build success shows that the artifact co
 ### Source References
 
 - [Formal artifact reproducibility trigger record](../handoffs/archived/formal-artifact-reproducibility.md)
-- [Eval Tower verification](../handoffs/active/eval-tower-verification.md)
+- [Eval Tower verification](../handoffs/active/eval-tower-program.md)
 - [Vidya belief substrate program](../handoffs/active/vidya-belief-substrate-program.md)
-- [Reviewer typed artifacts](../handoffs/active/reviewer-typed-artifacts.md)
+- [Reviewer typed artifacts](../handoffs/active/reviewer-control-plane.md#track-reviewer-typed-artifacts)
 
 **Confidence:** verified for the repository workflow and prospective evidence contract; external theorem and benchmark claims remain unverified until FAR-1 and FAR-2 produce receipts.
 

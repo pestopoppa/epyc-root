@@ -1,0 +1,26 @@
+{
+  "id": "ufh14-repl-emb23a-private-pilot-20261104",
+  "owner": "handoff-agentic-serving-harness-fixes",
+  "launcher": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/out/*/*/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "Three-query private prospective wiring pilot, not quality or full online-shadow completion. Complete only if official real phase has 3 rows, each real BGE and Granite hybrid search in separate indexes with no fallback, exactly BGE shown to real private Qwen3.6-35B frontdoor, actual pointer open delivered to hash-chained ShadowSink, validated event stream and all owned processes dead; any no-open, invalid model selection, timeout, absent inference, failed arm or missing evidence is explicit incomplete. Hidden-arm overlap is counterfactual and missing next open is unknown. Preserve provenance separately from model identity claims; no retrospective or verified-model warrant.",
+  "estimate_s": 3300,
+  "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3a",
+  "priority_rank": 50,
+  "ram_gib": 64,
+  "scratch_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot",
+  "dryrun_timeout_s": 600,
+  "keep": [
+    "out/**/*",
+    "pilot.py",
+    "bridge.py",
+    "launch.sh",
+    "spec.json",
+    "prepared-inputs.json",
+    "scripts/vidya/producers/*.py"
+  ],
+  "notes": "GPU-independent CPU quarter private pilot; uses registered bge-large and granite-97m-r2 frozen GGUF arms and selected frontdoor kernel. Smoke imports source only; official run uses native model and independent indexes. 77ba24ef detached shared source worktree must remain available until filing."
+}

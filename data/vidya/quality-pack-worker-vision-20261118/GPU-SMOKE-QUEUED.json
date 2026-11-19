@@ -1,0 +1,41 @@
+{
+ "id": "handoff-vidya-quality-pack-worker-vision-hip-mmproj-20261118",
+ "queued_at": "2026-11-18T01:24:26Z",
+ "regions": "mi210_0,184-191",
+ "smoke_s": 120,
+ "spec": {
+  "decision_rule": "Capture four fixed inline-PNG chat responses per arm from v10 and C13 with the registered Qwen3-VL-30B-A3B-Instruct Q4_K_M weights, F16 mmproj and template on one MI210. Require full model and projector HIP offload, context 4096, split f16 KV, one slot and no speculation. Stop after eight exact captures with native per-request media decode, two distinct in-window same-PID HIP and libmtmd mappings, nonzero MI210 VRAM, a production bank sealed before candidate launch, and captured-PID, listener and KFD cleanup. Stop at STOP, deadline or the first identity, startup, response, media, residency or cleanup failure. The v10 Qwen3-0.6B no-spec text smoke on the MI210 plus four CPUs proves readiness custody only. The compiled Worker Vision deployment uses CPU. Preserve the earlier frontdoor JSON mismatch and incomplete broad coverage.",
+  "dryrun_native_result": true,
+  "estimate_s": 1600,
+  "first_progress_s": 120,
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-WORKER-VISION",
+  "id": "handoff-vidya-quality-pack-worker-vision-hip-mmproj-20261118",
+  "keep": [
+   "out/**",
+   "requests/**",
+   "images/**",
+   "*.py",
+   "*.json",
+   "*.jinja",
+   "*.sh",
+   "*.md",
+   "*-linkage.txt",
+   "SOURCE.sha256"
+  ],
+  "kind": "compute",
+  "lane": "gpu",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/worker-vision-20261118/row-launch.sh",
+  "max_window_s": 2400,
+  "min_window_s": 2100,
+  "owner": "handoff-vidya-belief-substrate",
+  "priority_rank": 39,
+  "ram_gib": 72,
+  "regions": "mi210_0,184-191",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/worker-vision-20261118/out/RESULT.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/worker-vision-20261118",
+  "shape": "gpu",
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/worker-vision-20261118/smoke_predicate.py",
+  "verdict_by": "agent"
+ }
+}

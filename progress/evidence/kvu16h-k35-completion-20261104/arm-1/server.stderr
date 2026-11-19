@@ -1,0 +1,21 @@
+0.00.068.951 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.069.278 W srv  llama_server: -----------------
+0.00.069.279 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.069.280 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.069.280 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.069.280 W srv  llama_server: -----------------
+0.00.070.472 I srv    load_model: loading model '/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf'
+0.05.772.112 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 3328, kv_unified = 'false'
+0.05.772.219 W llama_sampler_backend_support: device 'ROCm0' does not have support for op TOP_K needed for sampler 'top-k'
+0.05.788.531 I srv          init: chat template supports preserving reasoning, consider enabling it via --reasoning-preserve
+0.05.788.574 I srv  llama_server: model loaded
+0.05.788.578 I srv  llama_server: listening on http://127.0.0.1:19762
+0.08.107.835 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.08.107.904 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.08.880.504 I slot print_timing: id  0 | task 0 | prompt eval time =     651.03 ms /  1076 tokens (    0.61 ms per token,  1652.76 tokens per second)
+0.08.880.507 I slot print_timing: id  0 | task 0 |        eval time =     121.53 ms /    16 tokens (    7.60 ms per token,   131.65 tokens per second)
+0.08.880.508 I slot print_timing: id  0 | task 0 |       total time =     772.57 ms /  1092 tokens
+0.08.880.513 I slot print_timing: id  0 | task 0 |    graphs reused =          3
+0.08.880.516 I slot print_timing: id  0 | task 0 | draft acceptance = 1.00000 (   11 accepted /    11 generated), mean len =  3.75
+0.08.880.581 I slot      release: id  0 | task 0 | stop processing: n_tokens = 1091, truncated = 0
+0.11.888.912 I srv    operator(): operator(): cleaning up before exit...

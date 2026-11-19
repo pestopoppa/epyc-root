@@ -1,0 +1,78 @@
+{
+  "candidate_cpu": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/refactor-r18a-v10-independent-symbols-r4-20261102/scratch/full/buildcpu/bin/libggml-cpu.so",
+    "sha256": "2fb229482c5555275e6bcf78da715720f9abdd22381e152bf2e036fd7a224679"
+  },
+  "candidate_hip": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/refactor-r18a-v10-independent-symbols-r4-20261102/scratch/full/buildgpu/bin/libggml-hip.so",
+    "sha256": "2c9f6de57ba20d3a2a9f8e259091dee32d07bf19b3fa18bbe426ec4ccad1addc"
+  },
+  "comparator": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/compare_symbols.py",
+    "sha256": "08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61"
+  },
+  "dependency:/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/__init__.py": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/__init__.py",
+    "sha256": "b94859500275b1c19c6ec12cb357f2dd0f44ccd118fc95dc6ecfbb358ae37543"
+  },
+  "dependency:/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/__init__.py": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/__init__.py",
+    "sha256": "78741f051d83ea3d84ea60440226630889053d93b49790d12b57d7ab1b099630"
+  },
+  "dependency:/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/api.py": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/api.py",
+    "sha256": "bf7a729fb84c2a4b7a7f44c9872a7647680ee129bc07a74aa28db963c767a956"
+  },
+  "dependency:/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/devices.py": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/devices.py",
+    "sha256": "af8ee4813a4a80535f2628604bd53257259ef1aad5173c96863db68b1e990c3b"
+  },
+  "dependency:/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/integrity.py": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/integrity.py",
+    "sha256": "dfc6dbc719aab525d4ddedd53ca087b00e1e632ed8147967175676884f415f1f"
+  },
+  "dependency:/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/surface.py": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/evaluator/surface.py",
+    "sha256": "a8576e98dc6c0292bab6b4bdc08f3cc22ca6d1e1f9fdb9805d0e3bad775a7cf6"
+  },
+  "dependency:/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/schemas.py": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/schemas.py",
+    "sha256": "4dd07e2492a534029654b4bad5a2fb1062d66ddf5582bbd3bda8b7f17ea88644"
+  },
+  "dependency:/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/perl-lib/File/Which.pm": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/perl-lib/File/Which.pm",
+    "sha256": "e317605124d953a950d3d6cc7624d0e5358bb710eeaf20f3ec7889023f19dac0"
+  },
+  "dependency:/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/perl-lib/URI/Escape.pm": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-recipe-verifiability-20261030/perl-lib/URI/Escape.pm",
+    "sha256": "0bd8e615325fb77778b03ac7f025b9cc06b7e82410d39a55ebdb2ab18ae93ef6"
+  },
+  "dependency:/opt/rocm/bin/roc-obj-ls": {
+    "path": "/opt/rocm/bin/roc-obj-ls",
+    "sha256": "29445392525e6a9bbfccfb323a828ea5ebd47d676b42e2df2ae306bd84c11c08"
+  },
+  "dependency:/usr/bin/perl": {
+    "path": "/usr/bin/perl",
+    "sha256": "fa709dd80ec2ddd60b47b1a13964dcbe7c4b96fb08f91778485ae95a78685e4e"
+  },
+  "dependency:/usr/bin/python3.13": {
+    "path": "/usr/bin/python3.13",
+    "sha256": "efb29ce53d36ebaeee80e3aa44fd6c7f9d71bbded5fe1665240b2ed8ecaeee0e"
+  },
+  "private_cpu": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/verified-v10-cpu/bin/libggml-cpu.so",
+    "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+  },
+  "private_hip": {
+    "path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/verified-v10-gpu/bin/libggml-hip.so",
+    "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+  },
+  "store_cpu": {
+    "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+    "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+  },
+  "store_hip": {
+    "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+    "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+  }
+}

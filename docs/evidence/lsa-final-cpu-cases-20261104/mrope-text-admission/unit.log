@@ -1,0 +1,1 @@
+case=mrope-text-admission backend=cpu text_axes_accepted=1 image_axes_rejected=1 embedding_rejected=1 token_absent_rejected=1

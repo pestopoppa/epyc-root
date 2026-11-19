@@ -1,0 +1,44 @@
+{
+ "decision_rule": "PF1-EXPAND-2 (exploratory/decision-support refinement of pf1-expand-20261104, whose A1-disabled/A0 control was 0.869 at L=512). Question: first L in {384,448,512,768} where the median paired ratio tps(arm)/tps(A0) over 3 launches is >=1.00 and stays >=1.00 at larger L, for A1 (op-offload -ub 2048) and A2 (-ngl 99 -ncmoe 48); same C6/lbt 181483cfc packet, --load-threads 96, 5 timed reps per launch. Expected effect: predecessor A2 0.77@256 -> 1.12@512, A1 0.89@512 -> 1.44@1024, i.e. crossovers expected inside the grid; paired-ratio noise ~+-5-9% (A0 ran 7-9% hot), so a ratio within 1.00+-0.07 is reported as 'at crossover', not resolved. Valid only if every GPU unit proves HIP residency, capture completeness 1.0, A0 passes strict 40% node cap, and A1-disabled/A0 median within +-10% at EVERY L (guard; a failing L is unproven and the owner reruns that block/L, not the crossover claim). Stop rule: planned 3 blocks x 4 L complete (cap 2400 s); futility only (>=2 GPU units fail RUN/residency/placement, or A1-disabled diverges >25% from A0 at every L); never stop on answer before block 2. Never a PF1 gate.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1900,
+ "first_progress_s": 1500,
+ "gib": 160,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "pf1-expand-r2-20261104",
+ "keep": [
+  "IDENTITY.json",
+  "SOURCE.sha256",
+  "job.py",
+  "launch.sh",
+  "spec.json",
+  "out/*.json",
+  "out/*.jsonl",
+  "out/cells/**",
+  "out/plumbing/**",
+  "out/results.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/pf1-expand-r2-20261104/launch.sh",
+  "sha256": "c804783b564ee8500c3b36bddc9b6ebbef7b9e658f8319d31b121d96d4594121"
+ },
+ "min_window_s": 1800,
+ "owner": "ws58",
+ "ports": [],
+ "priority_rank": 1.0,
+ "published_at": "2026-11-04T14:05:14Z",
+ "published_from": "/mnt/raid0/llm/tmp/pf1-expand-r2-20261104/spec.json",
+ "regions": "mi210_0,0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/pf1-expand-r2-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/pf1-expand-r2-20261104",
+ "shape": "quiet-host",
+ "stop_file": "/mnt/raid0/llm/tmp/pf1-expand-r2-20261104/STOP",
+ "window_s": 2580,
+ "workdir": "/mnt/raid0/llm/tmp/pf1-expand-r2-20261104"
+}

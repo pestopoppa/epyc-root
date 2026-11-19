@@ -1,0 +1,32 @@
+{
+  "id": "sr8-bep-lookup-gpu-20261104",
+  "owner": "handoff-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-spec/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-191",
+  "ports": [
+    18431
+  ],
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-spec/live/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Five predeclared interleaved BEP edit pairs, three arms each, one fresh private server per request, greedy sampling. Require canonical fixed BEP verifier PASS, full native counts and two in-request per-PID KFD/loaded HIP samples for each arm. Paired geometric mean prompt-lookup / DFlash2 decode speed >=1.5 is a bounded candidate signal; otherwise no signal. Missing/incomplete/failed evidence is UNKNOWN. NP4 server with one active request; no concurrency throughput or automatic routing proof.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:SR-8",
+  "priority_rank": 30,
+  "kind": "compute",
+  "smoke_timeout_s": 900,
+  "dryrun_timeout_s": 1200,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr8-edit-spec",
+  "keep": [
+    "live/**",
+    "smoke/**",
+    "*.json",
+    "*.sha256",
+    "*.py",
+    "*.sh",
+    "*.txt"
+  ],
+  "unit_key": "observation.decode_tps"
+}

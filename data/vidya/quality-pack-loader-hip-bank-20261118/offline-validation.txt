@@ -1,0 +1,14 @@
+deterministic plan/spec, effective one-recipe shape pin, three unchanged requests and sole production arm: PASS
+pass: PASS
+semantic_refusal: PASS
+nonfixture_semantic_refusal: PASS
+length_refusal: PASS
+no_spec_refusal: PASS
+wrong_hip_pid: PASS
+fit_probe_only: PASS
+duplicate_phase_line: PASS
+cleanup_failure: PASS
+raw_tamper: PASS
+nonfixture_request_drift: PASS
+missing_item: PASS
+transport_failure: PASS

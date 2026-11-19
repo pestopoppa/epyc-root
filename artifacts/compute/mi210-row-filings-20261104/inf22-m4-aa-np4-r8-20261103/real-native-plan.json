@@ -1,0 +1,271 @@
+{
+  "cells": {
+    "x": {
+      "argv": [
+        "numactl",
+        "--interleave=all",
+        "--",
+        "taskset",
+        "-c",
+        "184,185,186,187,188,189,190,191",
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/llama-server",
+        "-m",
+        "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "18792",
+        "-np",
+        "4",
+        "-c",
+        "65536",
+        "-t",
+        "8",
+        "-ub",
+        "512",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0",
+        "--log-colors",
+        "off",
+        "--flash-attn",
+        "on",
+        "--jinja",
+        "-b",
+        "512",
+        "--kv-unified",
+        "--no-mmap",
+        "-ngl",
+        "99",
+        "-md",
+        "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+        "-ngld",
+        "99",
+        "--spec-type",
+        "draft-dflash",
+        "--spec-draft-n-max",
+        "7",
+        "--no-cache-idle-slots",
+        "--cache-ram",
+        "65536",
+        "--chat-template-file",
+        "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja"
+      ],
+      "arm": "BASELINE",
+      "device": "mi210_0",
+      "device_vram_path": "/sys/class/drm/card2/device/mem_info_vram_used",
+      "environment": {
+        "HIP_PATH": "/opt/rocm",
+        "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+        "KMP_BLOCKTIME": "10",
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib",
+        "OMP_DYNAMIC": "false",
+        "OMP_PLACES": "cores",
+        "OMP_PROC_BIND": "spread",
+        "OMP_WAIT_POLICY": "active"
+      },
+      "files": {
+        "binary": {
+          "path": "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/llama-server",
+          "sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4"
+        },
+        "drafter": {
+          "custody": {
+            "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/drafter-custody.json",
+            "sha256": "a03544e7150769a0021588a8a87b6e0c0b7d61eafdd10eb79655327ca918a5ff"
+          },
+          "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+          "sha256": "7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751"
+        },
+        "model": {
+          "custody": {
+            "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/target-custody.json",
+            "sha256": "ac658ca6aa8a25ec5e63e619be5b58ad8c6af0420007c876eb4163a1dd00da24"
+          },
+          "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+          "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/prompts.jsonl",
+          "sha256": "dc12f1957c152b6742814ab9783999b4fb2fa61dc6a6de143ef46e8f94606991"
+        },
+        "template": {
+          "path": "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
+        }
+      },
+      "ggml": {
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/libggml-base.so.0.16.0": "cbb8e15f8a7f891d877ebc50e546f539c19db10b16daf4061912a755752a9098",
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/libggml-cpu.so.0.16.0": "65dbb66a95b70201166846a1775aee663d10e7462f330d26ef9aa535d692e60a",
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/libggml-hip.so.0.16.0": "a09bf23e5c60932e3328e9449a2f972f0e5d63e86e275efddfd4663350ff4391",
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/libggml.so.0.16.0": "9602731df4ebd52bad536b7c7a34287fb2495e4b74b49868cb1d1b09e11baca9"
+      },
+      "grant": {
+        "id": "inf22-m4-aa-np4-r8-20261103",
+        "regions": "mi210_0,184-191",
+        "stopfile": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/STOP"
+      },
+      "kfd_vram_file": "vram_57300",
+      "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "np": 4,
+      "recipe": {
+        "draft": "dflash2",
+        "draft_max": 7,
+        "n_ctx": 65536,
+        "np": 4,
+        "qualification": false,
+        "scope": "M4 historical grid"
+      },
+      "request_count": 8,
+      "request_sha256": [
+        "dc127136c8c04835c9a32af8d4c095ad85302c0b952ea092da45eb4f49932b93",
+        "f1c2db42644fb83ef77d2446587a173422e9d601e0695316832aa70a1efac2ba",
+        "f6c84327cec109648174a663df3722e035e47b86b8141e4f7045581f197af29c",
+        "12b4eba6df49af66d23142eb62068e538330dc2acede6a876fd61867f95086c9",
+        "ea3f0096114ebafbc062f9d1e35af6e40d66af0a777464572db04812fcda0ad6",
+        "6e2ded9446ec4c089ee03f36166d7558e97956ef56529152555b2f5fddffa981",
+        "1717c0f910eabb31ee066a97fbaf9e01440a6b8b24ff67e30e3de6698259177f",
+        "0806ca6ed31aee6cebc78b30c2b349cb9d772b09de915236450d054a64deaec5"
+      ],
+      "role": "architect_critic",
+      "source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+      "vram_limit_bytes": 64424509440,
+      "watch_result_path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/captures/x/watch-result.json"
+    },
+    "y": {
+      "argv": [
+        "numactl",
+        "--interleave=all",
+        "--",
+        "taskset",
+        "-c",
+        "184,185,186,187,188,189,190,191",
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/llama-server",
+        "-m",
+        "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "18792",
+        "-np",
+        "4",
+        "-c",
+        "65536",
+        "-t",
+        "8",
+        "-ub",
+        "512",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0",
+        "--log-colors",
+        "off",
+        "--flash-attn",
+        "on",
+        "--jinja",
+        "-b",
+        "512",
+        "--kv-unified",
+        "--no-mmap",
+        "-ngl",
+        "99",
+        "-md",
+        "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+        "-ngld",
+        "99",
+        "--spec-type",
+        "draft-dflash",
+        "--spec-draft-n-max",
+        "7",
+        "--no-cache-idle-slots",
+        "--cache-ram",
+        "65536",
+        "--chat-template-file",
+        "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja"
+      ],
+      "arm": "BASELINE",
+      "device": "mi210_0",
+      "device_vram_path": "/sys/class/drm/card2/device/mem_info_vram_used",
+      "environment": {
+        "HIP_PATH": "/opt/rocm",
+        "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+        "KMP_BLOCKTIME": "10",
+        "LD_LIBRARY_PATH": "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib",
+        "OMP_DYNAMIC": "false",
+        "OMP_PLACES": "cores",
+        "OMP_PROC_BIND": "spread",
+        "OMP_WAIT_POLICY": "active"
+      },
+      "files": {
+        "binary": {
+          "path": "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/llama-server",
+          "sha256": "802a3e0c7bcfcb23c661dd879ec6b12d76048a4525ac8a2aa3b336f561bfa6f4"
+        },
+        "drafter": {
+          "custody": {
+            "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/drafter-custody.json",
+            "sha256": "a03544e7150769a0021588a8a87b6e0c0b7d61eafdd10eb79655327ca918a5ff"
+          },
+          "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+          "sha256": "7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751"
+        },
+        "model": {
+          "custody": {
+            "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/target-custody.json",
+            "sha256": "ac658ca6aa8a25ec5e63e619be5b58ad8c6af0420007c876eb4163a1dd00da24"
+          },
+          "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+          "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348"
+        },
+        "prompt": {
+          "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/prompts.jsonl",
+          "sha256": "dc12f1957c152b6742814ab9783999b4fb2fa61dc6a6de143ef46e8f94606991"
+        },
+        "template": {
+          "path": "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+          "sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
+        }
+      },
+      "ggml": {
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/libggml-base.so.0.16.0": "cbb8e15f8a7f891d877ebc50e546f539c19db10b16daf4061912a755752a9098",
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/libggml-cpu.so.0.16.0": "65dbb66a95b70201166846a1775aee663d10e7462f330d26ef9aa535d692e60a",
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/libggml-hip.so.0.16.0": "a09bf23e5c60932e3328e9449a2f972f0e5d63e86e275efddfd4663350ff4391",
+        "/mnt/raid0/llm/worktrees/inf22-aa-packet-20261102/c5-gpu/bin/libggml.so.0.16.0": "9602731df4ebd52bad536b7c7a34287fb2495e4b74b49868cb1d1b09e11baca9"
+      },
+      "grant": {
+        "id": "inf22-m4-aa-np4-r8-20261103",
+        "regions": "mi210_0,184-191",
+        "stopfile": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/STOP"
+      },
+      "kfd_vram_file": "vram_57300",
+      "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "np": 4,
+      "recipe": {
+        "draft": "dflash2",
+        "draft_max": 7,
+        "n_ctx": 65536,
+        "np": 4,
+        "qualification": false,
+        "scope": "M4 historical grid"
+      },
+      "request_count": 8,
+      "request_sha256": [
+        "dc127136c8c04835c9a32af8d4c095ad85302c0b952ea092da45eb4f49932b93",
+        "f1c2db42644fb83ef77d2446587a173422e9d601e0695316832aa70a1efac2ba",
+        "f6c84327cec109648174a663df3722e035e47b86b8141e4f7045581f197af29c",
+        "12b4eba6df49af66d23142eb62068e538330dc2acede6a876fd61867f95086c9",
+        "ea3f0096114ebafbc062f9d1e35af6e40d66af0a777464572db04812fcda0ad6",
+        "6e2ded9446ec4c089ee03f36166d7558e97956ef56529152555b2f5fddffa981",
+        "1717c0f910eabb31ee066a97fbaf9e01440a6b8b24ff67e30e3de6698259177f",
+        "0806ca6ed31aee6cebc78b30c2b349cb9d772b09de915236450d054a64deaec5"
+      ],
+      "role": "architect_critic",
+      "source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+      "vram_limit_bytes": 64424509440,
+      "watch_result_path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/captures/y/watch-result.json"
+    }
+  },
+  "schema": "epyc.m4.gpu.plan.v2"
+}

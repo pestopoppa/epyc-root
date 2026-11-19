@@ -25,6 +25,9 @@ except ImportError:
     )
     sys.exit(1)
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from folded_resolve import dedupe, load_folded, resolve_handoff_file  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[4]
 INDEX_PATH = ROOT / "research" / "intake_index.yaml"
 DEFAULT_AUDIT_PATH = (
@@ -41,6 +44,9 @@ INTAKE_REFERENCE_RE = re.compile(
 ENTRY_START_RE = re.compile(r"(?m)^- id: (intake-\d+)\n")
 
 
+# HISTORICAL routes: these are the file names as of the 2026-08-05 audit. Several handoffs
+# were folded in the 2026-11 backlog refactor, so they are NOT rewritten here; migrate()
+# resolves each one through handoffs/active/.folded.json at runtime (folded_resolve.py).
 MANUAL_INTEGRATED_ROUTES = {
     "intake-105": ["handoffs/active/autopilot-continuous-optimization.md"],
     "intake-106": ["handoffs/active/autopilot-continuous-optimization.md"],
@@ -321,7 +327,11 @@ def migrate(root: Path, apply: bool, audit_path: Path) -> dict:
             basis = "direct_handoff_citation"
         else:
             disposition = _classify_manual(intake_id)
-            routes = MANUAL_INTEGRATED_ROUTES.get(intake_id, [])
+            folded = load_folded(root)
+            routes = dedupe(
+                resolve_handoff_file(route, root, folded)
+                for route in MANUAL_INTEGRATED_ROUTES.get(intake_id, [])
+            )
             evidence = SPECIAL_EVIDENCE.get(
                 intake_id,
                 _default_evidence(

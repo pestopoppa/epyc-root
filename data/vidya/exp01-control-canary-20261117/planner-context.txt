@@ -1,0 +1,16 @@
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.6-35B-A3B-Q4_K_M.gguf / quant unstated / cpu / epyc-9655.
+- clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-Q4KM-1 [Judged/Located · verified] Qwen3.6-35B-A3B-Q4_K_M/cpu build c04881fc
+  capture_control_tg128_native_tokens_per_s: 21.78 tokens/s (n=1)
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.6-35B-A3B-IQ4_KT.gguf / quant unstated / cpu / epyc-9655.
+- clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ4KT-1 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ4_KT/cpu build c04881fc
+  capture_control_tg128_native_tokens_per_s: 13.4 tokens/s (n=1)
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.6-35B-A3B-IQ2_XXS.gguf / quant unstated / cpu / epyc-9655.
+- clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2XXS-1 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ2_XXS/cpu build c04881fc
+  capture_control_tg128_native_tokens_per_s: 23.13 tokens/s (n=1)
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.6-35B-A3B-IQ2_KT.gguf / quant unstated / cpu / epyc-9655.
+- clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2KT-1 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ2_KT/cpu build c04881fc
+  capture_control_tg128_native_tokens_per_s: 19.44 tokens/s (n=1)

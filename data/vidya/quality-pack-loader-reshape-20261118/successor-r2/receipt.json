@@ -1,0 +1,126 @@
+{
+  "broad_pack_status": "incomplete",
+  "files": {
+    "README.md": {
+      "archive": "README.md",
+      "encoding": "raw",
+      "sha256": "61ca7f2bbabc95bb07542bac840f03f21312833b07eb6a560283a969868c2f0a"
+    },
+    "SOURCE.sha256": {
+      "archive": "SOURCE.sha256",
+      "encoding": "raw",
+      "sha256": "fa218bd9e86c43b6e87aedc0937ea7e7b8023f55eb13467ef749858863e9e5da"
+    },
+    "base-plan.json": {
+      "archive": "base-plan.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "51ca3cdd63fea358a53449151f1174751ac857431663f7745791cd0f317b0e23"
+    },
+    "capture.py": {
+      "archive": "capture.py",
+      "encoding": "raw",
+      "sha256": "c180813b9170645cacfecc1f26f5d8d197f8b6abeaa9d62b937e0c60fc7a92b4"
+    },
+    "chat-template.jinja": {
+      "archive": "chat-template.jinja",
+      "encoding": "raw",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "complete.py": {
+      "archive": "complete.py",
+      "encoding": "raw",
+      "sha256": "b77a54cfb656035127bc8beffd0cc7868efd14e85cebda77c695cc5be32cd036"
+    },
+    "cpu-plan.original-bytes.json": {
+      "archive": "cpu-plan.original-bytes.json",
+      "encoding": "raw",
+      "sha256": "2fcc3042164e97cb9eef7a03dcd55719b0506a9eaf510938f3ea2bd62dc1b9bd"
+    },
+    "cpu_native.py": {
+      "archive": "cpu_native.py",
+      "encoding": "raw",
+      "sha256": "efd50344bed70378412d3271557f7922e32d01b74d9c2b7a7b5a0d8c24f07d69"
+    },
+    "frontdoor-full-receipt.json": {
+      "archive": "frontdoor-full-receipt.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c"
+    },
+    "loader-reshape-witness.json": {
+      "archive": "loader-reshape-witness.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "eb1a7ab49b75440793223b4d8bf7982577dda1c0fe37ac76d956362337b9f0e3"
+    },
+    "make_plan.py": {
+      "archive": "make_plan.py",
+      "encoding": "raw",
+      "sha256": "8c5995ddbb266e9e54a7717d74ee52c5a18d3e2158d94f107be929cef265fdad"
+    },
+    "model-hash-receipt.json": {
+      "archive": "model-hash-receipt.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "f07d999ec84134b63bc4d836a9ed038f7f046534589834c4dd5ef3e386d89163"
+    },
+    "offline-validation.log": {
+      "archive": "offline-validation.log",
+      "encoding": "raw",
+      "sha256": "4d90f71f2a08bc526eea36664e7e5c8932b82327a56697e10857ecf2dd4ab106"
+    },
+    "offline_checks.py": {
+      "archive": "offline_checks.py",
+      "encoding": "raw",
+      "sha256": "57b6469f77da391eb374de6f967cf22e73416f106b7adc881dec83e2935ff5f3"
+    },
+    "plan.json": {
+      "archive": "plan.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "320462354167cdc270420dc6a16122543764ee6e581c2fb958af1b08d14a82cd"
+    },
+    "quality_parity.py": {
+      "archive": "quality_parity.py",
+      "encoding": "raw",
+      "sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+    },
+    "requests/native-smoke.json": {
+      "archive": "requests/native-smoke.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba"
+    },
+    "requests/qwen4exp-loader-cpu-json.json": {
+      "archive": "requests/qwen4exp-loader-cpu-json.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee"
+    },
+    "row-launch.sh": {
+      "archive": "row-launch.sh",
+      "encoding": "raw",
+      "sha256": "0204d1b876a2c74aeb02cb5e4149807a9116805ee181a92f6a344bea7fce5a4a"
+    },
+    "row.spec.json": {
+      "archive": "row.spec.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "231c824b31050f361572c8751ce7f58b4ee62f6df395ee1199bac8897c2720f7"
+    },
+    "smoke-PASS.json": {
+      "archive": "smoke-PASS.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "59e14b39da90ea9b00bd663fa9ca1cba0e7e4a30a7e27b36994b1dd74ab097f2"
+    },
+    "smoke-model-plan.original-bytes.json": {
+      "archive": "smoke-model-plan.original-bytes.json",
+      "encoding": "raw",
+      "sha256": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc"
+    },
+    "smoke_predicate.py": {
+      "archive": "smoke_predicate.py",
+      "encoding": "raw",
+      "sha256": "112d33c52f55c789e39686b7322eb1dfb4333b46e32321d3543af2bf5a6899dd"
+    }
+  },
+  "promotion_authorized": false,
+  "publisher_smoke": "PASS",
+  "quality_transfer_authorized": false,
+  "row": "handoff-vidya-quality-pack-loader-reshape-cpu-20261118-r2",
+  "scope": "Prospective packet and native publisher readiness only; no full row or candidate parity result.",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-reshape-r2-20261118"
+}

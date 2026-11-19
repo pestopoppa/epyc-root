@@ -1,0 +1,6 @@
+# Prospective G3 dev scoring exercise
+
+Four SHA-256-ordered dev IDs, two each in 1k–4k and 4k–7.8k, excluding the already exposed dev example; selected from the source-bound L-Eval subset. Paired full and kdev reuse generation uses r=0.25 as a diagnostic parameter, not a frozen production selector setting. Four complete pairs are required; truncated outcomes refuse scoring. Score is normalized bag-of-words token F1 to the selected source reference, with one score per request; it is an exploratory scoring comparison, not an approved task metric, a 0.95 gate, historical B7 traffic, a quality verdict, or a performance measurement. Report all results and failures, including zero full-score denominators. Frozen gate IDs remain unexposed. CPU q1 24–31 under a region claim, co-tenant with GPU and CPU work. Binary and libraries from the previously verified 30B paired-output instrument; pre-run source/library and model/corpus hashes retained. The tested `g3_dev_retention.py` is pinned by the source commit and verified at launch.
+
+First launcher refused before inference due to source-hash cwd; corrected before this run.
+Second launcher refused before inference due to seal-check cwd; corrected before this run.

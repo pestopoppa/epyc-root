@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Scoped exploratory capture completed rc0: 48/48 valid units, 3 blocks, capture 1.0, own-PID HIP residency, CPU NUMA max 25%; GPU skew recorded under operator amendment with >=90% coverage. Controls disabled/A0 at L256/320/384/448 0.9157/0.9811/0.9508/0.9032 all pass 0.90\u20131.10. A1 ratios 0.6587/0.7908/0.8838/0.9511 and A2 ratios 0.7998/0.9176/1.0220/1.0646; no sustained above-1.07 region, so no admissible lower bracket under the predeclared band. This is successful capture but unresolved crossover, not a PF1/NPD/gate verdict. Raw outputs in data/mi210/pf1-expand-r4-result-20261104/.",
+  "tick_text": "",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T15:38:26+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T15:35:55Z reason=complete",
+ "filed_at": "2026-11-04T15:38:26+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "pf1-expand-r4-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/pf1-expand-r4-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/pf1-expand-r4-20261104/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scoped exploratory capture completed rc0: 48/48 valid units, 3 blocks, capture 1.0, own-PID HIP residency, CPU NUMA max 25%; GPU skew recorded under operator amendment with >=90% coverage. Controls disabled/A0 at L256/320/384/448 0.9157/0.9811/0.9508/0.9032 all pass 0.90\u20131.10. A1 ratios 0.6587/0.7908/0.8838/0.9511 and A2 ratios 0.7998/0.9176/1.0220/1.0646; no sustained above-1.07 region, so no admissible lower bracket under the predeclared band. This is successful capture but unresolved crossover, not a PF1/NPD/gate verdict. Raw outputs in data/mi210/pf1-expand-r4-result-20261104/.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/pf1-expand-r4-20261104/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "pf1-expand-r4-20261104",
+ "row_verdict": "pass",
+ "rule": "PF1-EXPAND-2 r4 lower-bracket successor: fresh L={256,320,384,448}, A0/A1/A2/A1-disabled, three independent blocks, five reps per launch; no pooling. Previous exact grid {384,448,512,768}: r3 L384 A1/A0=1.0009 within +/-0.07 noise, A2/A0=1.1494, no lower bracket. Question: does a lower sampled L fall below 0.93 before a sustained >1.07 region? Expected separation must exceed descriptive +/-0.07 paired noise; [0.93,1.07] remains at crossover, never proof of crossover. Same source/model pins, A0 strict40% node cap, required GPU in-window placement/residency and capture1.0. Disabled/A0 median must be within [0.90,1.10] at EVERY L; all three valid blocks required for any bracket. A0 hot bias remains unresolved, not claimed fixed. Block-end checks stop for >=2 run/residency/placement failures; after block2 stop if control divergence >25% at every L. Cumulative2400s cap and engine safety/window stops apply; never stop on answer. Incomplete or guard-failing outcomes inconclusive. Descriptive exploratory non-gate scope only; never a PF1 verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "676a7ccaf282baa538c03d6a368f2eca2bf8b15c468e675303f7aca0d61f8662",
+  "result": "pass",
+  "status": "filed"
+ }
+}

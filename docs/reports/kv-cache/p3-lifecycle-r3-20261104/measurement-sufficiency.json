@@ -1,0 +1,14 @@
+{
+  "schema": "kvu16h.p3.measurement-sufficiency.v1",
+  "question": "Does decode throughput decrease as parked foreign KV occupancy rises, separately for dedicated drafted and no-draft server lifetimes?",
+  "metric_direction": "decode_tps higher is better; loss_pct higher means greater slowdown",
+  "baseline": "mean L0_base and L0_after within each variant",
+  "reuse": "r2 full captured four drafted rows then failed L2: restore receipt99377 left observed slot2 occupancy0. Partial rows are not a full comparison. r3 uses supported direct prefill with unchanged occupancy gates.",
+  "expected_effect_vs_sample_error": "Original5% diagnostic trigger and15% split-per-slot trigger are retained as descriptive effect flags. Two repetitions per level do not establish a sampling-error bound or formal statistical equivalence; report raw per-repetition values and ABA drift, without asserting formal-gate PASS.",
+  "sample_plan": "Fixed full protocol: drafted and no-draft independent lifetimes,5levels L0/L1/L2/L3/L0,2requests each;20rows total. No interim efficacy acceptance.",
+  "checkpoints": "Save partial capture after each measurement row and arm. Refuse on missing decode-only/cache witness, <2identified-busy samples, occupancy absent/unmatched, invalid draft count, HIP/VRAM custody failure or unverified cleanup.",
+  "stop_on_answer": "Stop after exactly20valid full rows and derived report; do not expand sample size or run follow-up phases. Qualification stops after exactly2validated native lifetimes and yields no full answer.",
+  "stop_on_futility": "Stop immediately on invalid protocol evidence or cleanup; STOP/deadline aborts without completion result. No threshold-based early acceptance or adaptive extension.",
+  "qualification_scope": "4CPUs184-187,4096cells,16generated-token cap,2native lifetimes. Tests lifecycle, mapping, own-PID residency and cleanup only. Does not imply full occupied-pool equivalence or performance.",
+  "parking": "All three neighbours prefilled with existing per-slot distinct texts; slot save/restore optimization disabled for this attempt."
+}

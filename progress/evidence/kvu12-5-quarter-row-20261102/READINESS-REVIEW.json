@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-11-02T11:45:46.536668+00:00",
+  "status": "PREPARED_FOR_PUBLISHER_SMOKE",
+  "spec": "/mnt/raid0/llm/tmp/kvu/kvu12-5-quarter-r2-20261102/SPEC-DRAFT.json",
+  "model_receipt": "/mnt/raid0/llm/tmp/kvu/kvu12-5-quarter-r2-20261102/MODEL-INPUTS.json",
+  "preflight_hash_complete": true,
+  "model_count": 2,
+  "source_and_region_pins": "resealed after reviewing target lock path unchanged",
+  "offline_tests": 25,
+  "inference_run": false,
+  "published": false,
+  "committed": false,
+  "changed_files": [
+    "smoke.py",
+    "parent_exec.py",
+    "job.py",
+    "launch.sh",
+    "SPEC-DRAFT.json",
+    "REGION-LOCK-INPUTS.sha256",
+    "SOURCE-SHA256SUMS",
+    "MODEL-INPUTS.json",
+    "test_smoke.py",
+    "READINESS-REVIEW.json"
+  ]
+}

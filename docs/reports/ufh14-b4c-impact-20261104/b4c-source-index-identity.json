@@ -1,0 +1,30 @@
+{
+  "source_commit": "326f502759986c9846027f8187972969139c0089",
+  "stale_index_commit": "84f6f6f15f713d21098dbad2b153d32f8cc13624",
+  "stale_index_repo": "/mnt/raid0/llm/epyc-orchestrator",
+  "stale_indexed_at": "2026-10-24T21:20:41.074Z",
+  "original_identity_sha256": "e1994fdcc2f8b0e59eacf6ff1717ac5755bfe1978d84fbcec9c5a91b7a6ff55d",
+  "current_index_repo": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source",
+  "current_index_commit": "326f502759986c9846027f8187972969139c0089",
+  "current_exact_uid": "Method:src/prompt_builders/builder.py:PromptBuilder.build_root_lm_prompt#9",
+  "current_risk": "CRITICAL",
+  "risk_scope": "31 indexed upstream nodes, 4 direct; current pinned source only",
+  "source_hashes": {
+    "src/features.py": "1669ca6ca18ac7b792727e8e6432e37a8f7d486523d33c00004c5196f86c9dbf",
+    "src/prompt_builders/builder.py": "bafac50296e7d89f79965a7eaf53925f307e47fb9f4eb137a86732e1df0a3cce",
+    "scripts/benchmark/bench_repl_prefix_stability.py": "55e3f5d2a971c8119aaff0259c9bea25633230820791c28533cfcdb28d7c8897"
+  },
+  "flags": {
+    "prefix_stable_order": {
+      "line": 275,
+      "defaults": [
+        false,
+        false,
+        "PREFIX_STABLE_ORDER"
+      ]
+    }
+  },
+  "absent_flags": [
+    "stable_head_system_message"
+  ]
+}

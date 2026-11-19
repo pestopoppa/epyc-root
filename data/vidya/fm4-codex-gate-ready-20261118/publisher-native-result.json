@@ -1,0 +1,144 @@
+{
+  "canary": {
+    "claim": {
+      "anchor_value": null,
+      "claim_id": "clm_fm4-gate-acceptance:8deb5d5e944e0329ec0655d5d550ab13b95cb7f5c395eb9376bc385852eacee4",
+      "effect_rel": null,
+      "grade": "Judged/Located",
+      "knob_family": "",
+      "knobs": {},
+      "linked_claim_ids": [],
+      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/publisher_smoke-aw1b2526/acceptance.json#sha256=8deb5d5e944e0329ec0655d5d550ab13b95cb7f5c395eb9376bc385852eacee4",
+      "mechanism_id": "",
+      "model_file": "",
+      "n_pairs": null,
+      "noise_floor_rel": null,
+      "not_evidence": true,
+      "outcome": "",
+      "recipe": "",
+      "reps": 1,
+      "retrofit": false,
+      "role": "",
+      "run": null,
+      "source_kind": "fm4-gate-acceptance",
+      "stack_regime": "",
+      "stale_epoch": false,
+      "status": "verified",
+      "tier": "harness",
+      "unit": "gate_pass_indicator",
+      "value": 1.0,
+      "varied": []
+    },
+    "consumer": "coordination.fm4",
+    "dispatch": {
+      "binding_kind": "native_agent_path",
+      "child_turn": {
+        "final_message_present": true,
+        "start_line": 2,
+        "state": "completed",
+        "terminal_event": "task_complete",
+        "terminal_line": 152,
+        "turn_id": "01a1efb1-8733-7360-8dfd-b4c68f69f187"
+      },
+      "disposition": "terminal_child",
+      "identity": {
+        "child_agent_id": "01a1efb1-8725-78b1-a1f5-93786092ce10",
+        "dispatch_tool_use_id": "call_ca02c28604054adeb19ecc88bfcd418c",
+        "parent_session_id": "01a1efb0-b2ac-7bc2-a51a-5d7ae4dc2d39"
+      },
+      "inputs": {
+        "child": {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/private/child.jsonl",
+          "sha256": "a5e207b9af14b40f9aead8a7ccd18507a037d49bc82831e5b6d62812d7424a1a"
+        },
+        "parent": {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/private/parent.jsonl",
+          "sha256": "9d9510876fb1dbb9ccae5ade06055acac42a45abde1f155330524ca4a116fb00"
+        }
+      },
+      "lineage": {
+        "child_agent_path": "/root/fm4_oracle_acceptance",
+        "child_parent_thread_id": "01a1efb0-b2ac-7bc2-a51a-5d7ae4dc2d39",
+        "child_session_id": "01a1efb1-8725-78b1-a1f5-93786092ce10",
+        "parent_session_id": "01a1efb0-b2ac-7bc2-a51a-5d7ae4dc2d39"
+      },
+      "schema": "fm4.codex_dispatch.v1",
+      "spawn_candidates": [
+        {
+          "call_id": "call_ca02c28604054adeb19ecc88bfcd418c",
+          "call_line": 61,
+          "result_agent_id": null,
+          "result_error": false,
+          "result_line": 64,
+          "result_task_name": "/root/fm4_oracle_acceptance"
+        }
+      ],
+      "task_outcome": null
+    },
+    "excluded_consumer": "autokernel.planner",
+    "gate_result": "pass",
+    "identity": {
+      "child_agent_id": "01a1efb1-8725-78b1-a1f5-93786092ce10",
+      "dispatch_tool_use_id": "call_ca02c28604054adeb19ecc88bfcd418c",
+      "parent_session_id": "01a1efb0-b2ac-7bc2-a51a-5d7ae4dc2d39",
+      "task_id": "VB-FM4-CODEX-GATE-CANARY"
+    },
+    "inputs": {
+      "acceptance": {
+        "execution_sha256": "1e628072c88c960e1e5f27f894822af002bec37a635d706708cdc8456864c00a",
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/publisher_smoke-aw1b2526/acceptance.json",
+        "sha256": "8deb5d5e944e0329ec0655d5d550ab13b95cb7f5c395eb9376bc385852eacee4"
+      },
+      "child": {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/private/child.jsonl",
+        "sha256": "a5e207b9af14b40f9aead8a7ccd18507a037d49bc82831e5b6d62812d7424a1a"
+      },
+      "parent": {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/private/parent.jsonl",
+        "sha256": "9d9510876fb1dbb9ccae5ade06055acac42a45abde1f155330524ca4a116fb00"
+      }
+    },
+    "ledger_state": {
+      "frame_count": 3,
+      "fresh": true,
+      "freshness": {
+        "frames_emitted": 0,
+        "index_max_id": 0,
+        "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/publisher_smoke-aw1b2526/reader/intake_index.yaml",
+        "last_sync": "2026-11-18T17:33:15Z",
+        "sources": [],
+        "sync_action": "ingested",
+        "sync_seconds": 0.0,
+        "synced_max_id": 0,
+        "was_fresh": false
+      },
+      "head_hash": "sha256:03c9f16e0eb29bc3148b2f287c23132660cd8f54422390623b1d58438580ab1c",
+      "head_seq": 2,
+      "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/publisher_smoke-aw1b2526/reader/ledger.jsonl",
+      "schema": "epyc.vidya.ledger_state.v1",
+      "verified_at": "2026-11-18T17:33:15Z"
+    },
+    "ledger_state_digest": "sha256:34409895115d43872064642822f4e23ee4fda2c8b6382cfff04ce80859494d6e",
+    "schema": "fm4.codex_gate.native_canary.v1",
+    "task_id": "VB-FM4-CODEX-GATE-CANARY",
+    "task_outcome": null
+  },
+  "cpus": [
+    116,
+    117,
+    118,
+    119
+  ],
+  "gate_pass_count": 1,
+  "id": "vb-fm4-codex-gate-20261118",
+  "mode": "publisher_smoke",
+  "refusal_count": 0,
+  "run_dir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/publisher_smoke-aw1b2526",
+  "schema": "fm4.codex_gate.row.v1",
+  "selected_gate_count": 1,
+  "source_pins_sha256": "768b6575118764eb3754dee020a3b6aefe696d6058b17e882c6305b9b8427a50",
+  "status": "passed",
+  "task_outcome": null,
+  "task_outcome_claim_count": 0
+}

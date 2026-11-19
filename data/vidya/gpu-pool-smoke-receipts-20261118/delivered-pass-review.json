@@ -1,0 +1,98 @@
+{
+  "runs": {
+    "ni-gpu-pool-attention-20261117-v1": {
+      "copied_sha256": {
+        "attention-rope-PASS.json": "f09b68a2ca908af3fd177f2bb1fb26478d6d08cdb6b6d736bd5a0b6451a0ed27",
+        "attention-rope-SMOKE.json": "28d670c9df8582f2f85697a2a8edb8b4a30430a409fb42d5868e8f56d313fa3f"
+      },
+      "official_acceptance": false,
+      "official_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/native/RESULT.json",
+      "official_result_present_at_review": false,
+      "operator_counts": {
+        "failed": 0,
+        "observed": 328,
+        "passed": 328,
+        "unsupported": 0
+      },
+      "projected_operators": [
+        "ROPE"
+      ],
+      "raw_capture": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-attention-20261117-v1/attention-1794959776/native/belief.json",
+      "raw_capture_sha256": "f4547072261bd9763168464d7c78ed1a0eff78b386f6153a7acad01e553e8bee",
+      "republished": false,
+      "resident_samples_reported": 463,
+      "shim_recreated_source_matches_receipt": false,
+      "smoke_ingestion": "refused",
+      "source_dirty_state": "UNKNOWN",
+      "status": "native-smoke-confirmed"
+    },
+    "ni-gpu-pool-attention-20261117-v2": {
+      "copied_sha256": {
+        "attention-rest-PASS.json": "0a0a580755887bcb87657f0e18c1e5664811b9fc60b91173332043221f367e48",
+        "attention-rest-SMOKE.json": "8f1a965201c43758a38ce25f8ae3ca81a149294abe9658c4cbd0d043cc3816c7"
+      },
+      "official_acceptance": false,
+      "official_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/native/RESULT.json",
+      "official_result_present_at_review": false,
+      "operator_counts": {
+        "failed": 0,
+        "observed": 735,
+        "passed": 735,
+        "unsupported": 0
+      },
+      "projected_operators": [
+        "FLASH_ATTN_EXT",
+        "SOFT_MAX"
+      ],
+      "raw_capture": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-attention-20261117-v2/attention-rest-1794959792/native/belief.json",
+      "raw_capture_sha256": "93eb4f519435128bd82a5b3a41920a681d6c48625e304ca12f1760f927b2d266",
+      "republished": false,
+      "resident_samples_reported": 238,
+      "shim_recreated_source_matches_receipt": false,
+      "smoke_ingestion": "refused",
+      "source_dirty_state": "UNKNOWN",
+      "status": "native-smoke-confirmed"
+    },
+    "ni-gpu-pool-elementwise-20261117-v1": {
+      "controls": {
+        "log_and_test_source_hashes_verified": true,
+        "passed": 13,
+        "status": "PASS"
+      },
+      "copied_sha256": {
+        "elementwise-PASS.json": "c8fcf229403b8dfbb45aa025dce77c4093047c2da879d0936461e606dec56917",
+        "elementwise-SMOKE.json": "4d62786e6936a3b15a0eb1be5290f7891c5b5731efe5b3c5697d6b859d1e308a",
+        "elementwise-controls.json": "599903e0618fe4378fecc726ffdb0524b5d7eb09fadc0f486c57aa0b7bf052de",
+        "elementwise-controls.log": "641301b24a39ac6d63a65f1bd18bfccb44f3aa90dcc93d88ffab645422b32e1d"
+      },
+      "official_acceptance": false,
+      "official_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/RESULT.json",
+      "official_result_present_at_review": false,
+      "operator_counts": {
+        "failed": 0,
+        "observed": 105,
+        "passed": 88,
+        "unsupported": 17
+      },
+      "projected_operators": [
+        "ADD",
+        "MUL",
+        "NORM",
+        "RMS_NORM",
+        "SCALE",
+        "SUM",
+        "SUM_ROWS"
+      ],
+      "raw_capture": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-elementwise-20261117-v1/elementwise-1794959820/native/belief.json",
+      "raw_capture_sha256": "dac6a4f296b93ef49094a37a35b6aa469c3d1741dd667f769ca154c2bba3f0c2",
+      "republished": false,
+      "resident_samples_reported": 101,
+      "shim_recreated_source_matches_receipt": false,
+      "smoke_ingestion": "refused",
+      "source_dirty_state": "UNKNOWN",
+      "status": "native-smoke-confirmed"
+    }
+  },
+  "schema": "epyc.vidya.delivered-native-smoke-consumption.v1",
+  "verified_at": "2026-11-18T00:14:31.826189+00:00"
+}

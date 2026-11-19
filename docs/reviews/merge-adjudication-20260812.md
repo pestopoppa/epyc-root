@@ -36,7 +36,7 @@ The single most useful discriminator: `git diff --numstat` from base to each par
 
 Two cosmetic prose regressions, recorded for completeness — no fact, task, link target, or claim is lost in either:
 
-1. `handoffs/active/cpu-shape-specialized-gemv-decode.md` (lines 55, 92) — OURS wrote the cross-reference as `[inference-research-index.md](...)` ⚑ START HERE block + Prioritized Task List item CPU18` / `⚑⚑⚑⚑⚑ Lowest-Hanging Fruit block + CPU26 entry in Pickup Sequence`. The resolution kept THEIRS' generic `(the merged CPU/GPU inference index)`. Same link target, less specific anchor text. Confidence: high.
+1. `handoffs/completed/cpu-shape-specialized-gemv-decode.md` (lines 55, 92) — OURS wrote the cross-reference as `[inference-research-index.md](...)` ⚑ START HERE block + Prioritized Task List item CPU18` / `⚑⚑⚑⚑⚑ Lowest-Hanging Fruit block + CPU26 entry in Pickup Sequence`. The resolution kept THEIRS' generic `(the merged CPU/GPU inference index)`. Same link target, less specific anchor text. Confidence: high.
 2. `handoffs/active/batched-decode-measurement.md:93` — `**Related**` parenthetical: merged keeps OURS' `(CPU14/CPU17/CPU18 rows)` over THEIRS' `(merged CPU/GPU inference routing)`. Both correct. Confidence: high.
 
 Neither is worth blocking on; neither needs a fix before commit.

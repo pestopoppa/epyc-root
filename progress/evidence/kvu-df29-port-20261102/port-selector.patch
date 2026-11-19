@@ -1,0 +1,855 @@
+diff --git a/scripts/benchmark/df29/df29_client.py b/scripts/benchmark/df29/df29_client.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/benchmark/df29/df29_client.py
+@@ -0,0 +1,206 @@
++#!/usr/bin/env python3
++"""DF2-9 request driver for df29_server.sh / df2_e2e.sh (stdlib only).
++
++Modes
++  seq   send prompts one at a time; per prompt attribute the server-log lines written during
++        that request (byte window) and classify: non-finite log hits, garbage/empty text, HTTP error.
++        Exit 0 = all requested prompts done, 10 = server died (resume index in <out>/resume_at),
++        11 = deadline reached (untested prompts remain).
++  conc  fire C identical-shape requests concurrently (one per prompt in the list, C at a time),
++        report aggregate generated tok/s and acceptance (df2_e2e.sh).
++"""
++import argparse
++import concurrent.futures as cf
++import json
++import os
++import re
++import time
++import urllib.error
++import urllib.request
++
++PAT_NONFINITE = re.compile(r"non-finite target features")
++PAT_SANITIZED = re.compile(r"sanitized \d+ isolated non-finite")
++PAT_SPECFAIL = re.compile(r"failed to process speculative batch")
++PAT_NAN = re.compile(r"\b(nan|inf)\b", re.IGNORECASE)
++PAT_ERR = re.compile(r"(^| )E (?!.*this warning is normal)|GGML_ASSERT|terminate called|Aborted|error:", re.MULTILINE)
++PAT_ACC = re.compile(r"draft acceptance\s*=\s*([0-9.]+)\s*\(\s*(\d+) accepted /\s*(\d+) generated\)")
++
++
++def alive(pid: int) -> bool:
++    try:
++        os.kill(pid, 0)
++    except OSError:
++        return False
++    try:
++        with open(f"/proc/{pid}/stat") as fh:
++            return fh.read().split()[2] != "Z"
++    except OSError:
++        return False
++
++
++def log_size(path: str) -> int:
++    try:
++        return os.path.getsize(path)
++    except OSError:
++        return 0
++
++
++def log_window(path: str, a: int, b: int) -> str:
++    try:
++        with open(path, "rb") as fh:
++            fh.seek(a)
++            return fh.read(max(0, b - a)).decode("utf-8", "replace")
++    except OSError:
++        return ""
++
++
++def garbage(text: str) -> str:
++    """'' if plausible text, else a reason. NaN logits on Qwen decode to token 0 = '!'."""
++    if text is None or not text.strip():
++        return "empty"
++    t = text.strip()
++    if t.count("!") >= max(4, 0.5 * len(t)):
++        return "bang-run(NaN-logits-signature)"
++    if len(set(t)) <= 2 and len(t) >= 8:
++        return "single-char-run"
++    return ""
++
++
++def post(port: int, body: dict, timeout: float):
++    req = urllib.request.Request(f"http://127.0.0.1:{port}/v1/chat/completions",
++                                 data=json.dumps(body).encode(),
++                                 headers={"Content-Type": "application/json"})
++    t0 = time.time()
++    try:
++        with urllib.request.urlopen(req, timeout=timeout) as r:
++            return r.status, json.loads(r.read()), time.time() - t0, ""
++    except urllib.error.HTTPError as e:
++        try:
++            msg = e.read().decode("utf-8", "replace")[:400]
++        except Exception:
++            msg = ""
++        return e.code, None, time.time() - t0, msg
++    except Exception as e:  # timeout, connection reset (server died), ...
++        return 0, None, time.time() - t0, f"{type(e).__name__}: {e}"[:400]
++
++
++def make_body(item: dict, sampling: str, max_tokens: int) -> dict:
++    body = {"messages": [{"role": "user", "content": item["content"]}],
++            "max_tokens": max_tokens, "stream": False, "seed": 42,
++            "chat_template_kwargs": {"enable_thinking": False}}
++    if sampling == "orig":   # DF2-5 runner / df2_req_bisect.sh
++        body.update({"temperature": 0.6, "top_p": 0.95, "top_k": 20})
++    else:                    # greedy
++        body.update({"temperature": 0.0, "top_k": 1})
++    return body
++
++
++def run_seq(a) -> int:
++    items = json.load(open(a.prompts))
++    if a.kinds:
++        kinds = set(a.kinds.split(","))
++        items = [it for it in items if it["kind"] in kinds]
++    rows_path = os.path.join(a.out, "requests.jsonl")
++    start = a.start
++    rc = 0
++    with open(rows_path, "a") as rows:
++        for idx in range(start, len(items)):
++            it = items[idx]
++            remaining = a.deadline - time.time()
++            if remaining < 5:
++                open(os.path.join(a.out, "resume_at"), "w").write(str(idx))
++                return 11
++            if not alive(a.pid):
++                open(os.path.join(a.out, "resume_at"), "w").write(str(idx))
++                return 10
++            off0 = log_size(a.log)
++            status, d, dt, err = post(a.port, make_body(it, a.sampling, a.max_tokens), min(a.req_timeout, remaining - 2))
++            time.sleep(0.3)  # let the server flush its log lines for this task
++            off1 = log_size(a.log)
++            win = log_window(a.log, off0, off1)
++            text, t = "", {}
++            if d:
++                try:
++                    text = d["choices"][0]["message"].get("content") or ""
++                except Exception:
++                    text = ""
++                t = d.get("timings") or {}
++            acc = PAT_ACC.findall(win)
++            row = {
++                "idx": idx, "id": it["id"], "kind": it["kind"], "chars": len(it["content"]),
++                "http": status, "err": err, "wall_s": round(dt, 2),
++                "log_nonfinite": len(PAT_NONFINITE.findall(win)),
++                "log_sanitized": len(PAT_SANITIZED.findall(win)),
++                "log_specfail": len(PAT_SPECFAIL.findall(win)),
++                "log_nan_words": len(PAT_NAN.findall(win)),
++                "garbage": garbage(text) if status == 200 else "",
++                "text_head": text[:160],
++                "prompt_n": t.get("prompt_n"), "predicted_n": t.get("predicted_n"),
++                "prompt_per_second": t.get("prompt_per_second"),
++                "predicted_per_second": t.get("predicted_per_second"),
++                "draft_n": t.get("draft_n"), "draft_n_accepted": t.get("draft_n_accepted"),
++                "log_acceptance": acc[-1] if acc else None,
++                "server_alive_after": alive(a.pid),
++            }
++            bad = (row["log_nonfinite"] > 0 or row["log_specfail"] > 0 or status != 200 or row["garbage"] != "")
++            row["finite_ok"] = not bad
++            rows.write(json.dumps(row) + "\n")
++            rows.flush()
++            print(f"  [{idx:2d}] {it['kind']:7s} {it['id'][:38]:38s} http={status} nonfinite_log={row['log_nonfinite']} "
++                  f"sanitized={row['log_sanitized']} garbage={row['garbage'] or '-'} pn={row['prompt_n']} "
++                  f"tg={row['predicted_n']} tps={row['predicted_per_second']} draft={row['draft_n_accepted']}/{row['draft_n']} "
++                  f"{'OK' if not bad else 'BAD'}", flush=True)
++            if not row["server_alive_after"]:
++                open(os.path.join(a.out, "resume_at"), "w").write(str(idx + 1))
++                return 10
++    return rc
++
++
++def run_conc(a) -> int:
++    items = json.load(open(a.prompts))
++    if a.kinds:
++        kinds = set(a.kinds.split(","))
++        items = [it for it in items if it["kind"] in kinds]
++    items = (items * ((a.conc + len(items) - 1) // len(items)))[: a.conc]
++    t0 = time.time()
++    remaining = a.deadline - time.time()
++    with cf.ThreadPoolExecutor(max_workers=a.conc) as ex:
++        futs = [ex.submit(post, a.port, make_body(it, a.sampling, a.max_tokens), min(a.req_timeout, remaining - 2)) for it in items]
++        res = [f.result() for f in futs]
++    wall = time.time() - t0
++    n_gen = sum((d or {}).get("timings", {}).get("predicted_n", 0) or 0 for _, d, _, _ in res)
++    dn = sum((d or {}).get("timings", {}).get("draft_n", 0) or 0 for _, d, _, _ in res)
++    da = sum((d or {}).get("timings", {}).get("draft_n_accepted", 0) or 0 for _, d, _, _ in res)
++    ok = sum(1 for s, _, _, _ in res if s == 200)
++    bad_text = sum(1 for s, d, _, _ in res if s == 200 and garbage(((d or {}).get("choices") or [{}])[0].get("message", {}).get("content")))
++    out = {"conc": a.conc, "ok": ok, "n": len(res), "garbage": bad_text, "wall_s": round(wall, 2),
++           "gen_tokens": n_gen, "agg_tok_s": round(n_gen / wall, 2) if wall > 0 else None,
++           "draft_n": dn, "draft_accepted": da, "acceptance": round(da / dn, 4) if dn else None,
++           "per_req_tps": [round(((d or {}).get("timings") or {}).get("predicted_per_second") or 0, 2) for _, d, _, _ in res]}
++    with open(os.path.join(a.out, "conc.jsonl"), "a") as fh:
++        fh.write(json.dumps(out) + "\n")
++    print(f"  conc={a.conc} ok={ok}/{len(res)} garbage={bad_text} agg_tok_s={out['agg_tok_s']} acceptance={out['acceptance']} wall={out['wall_s']}s", flush=True)
++    return 0 if ok == len(res) else 12
++
++
++def main() -> int:
++    p = argparse.ArgumentParser()
++    p.add_argument("--mode", choices=["seq", "conc"], default="seq")
++    p.add_argument("--port", type=int, required=True)
++    p.add_argument("--pid", type=int, required=True)
++    p.add_argument("--log", required=True)
++    p.add_argument("--prompts", required=True)
++    p.add_argument("--kinds", default="")
++    p.add_argument("--out", required=True)
++    p.add_argument("--sampling", choices=["orig", "greedy"], default="greedy")
++    p.add_argument("--max-tokens", type=int, default=32)
++    p.add_argument("--req-timeout", type=float, default=60)
++    p.add_argument("--deadline", type=float, required=True, help="epoch seconds")
++    p.add_argument("--start", type=int, default=0)
++    p.add_argument("--conc", type=int, default=1)
++    a = p.parse_args()
++    return run_seq(a) if a.mode == "seq" else run_conc(a)
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/scripts/benchmark/df29/df29_lib.sh b/scripts/benchmark/df29/df29_lib.sh
+new file mode 100644
+--- /dev/null
++++ b/scripts/benchmark/df29/df29_lib.sh
+@@ -0,0 +1,174 @@
++#!/bin/bash
++# Shared helpers for df29_server.sh / df2_e2e.sh / run_probe.sh. Sourced, never executed.
++# Contract: every process this library starts is recorded by PID, and df29_cleanup kills exactly
++# those PIDs (SIGTERM -> wait -> SIGKILL -> verify with ps -p). No name-pattern kills, ever.
++
++DF29_DIR=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
++DF29_TARGET=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++DF29_DRAFTER=/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++DF29_TEMPLATE=/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
++DF29_LINKAGE=/workspace/repos/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh
++# 27B Q8_0 27.05 GiB + DFlash2 Q8_0 1.92 GiB + KV/compute/HIP context headroom.
++DF29_VRAM_NEED_GIB=${DF29_VRAM_NEED_GIB:-38}
++
++DF29_PIDS=()          # every background PID we own (server, sampler, client)
++DF29_SERVER_PID=""
++DF29_SAMPLER_PID=""
++
++df29_ts() { date -u +%FT%TZ; }
++df29_log() { echo "[$(df29_ts)] $*"; }
++
++# MI210 sysfs node: the card whose vram_total is the largest (64 GiB board).
++df29_vram_node() {
++    local best="" bestv=0 f v
++    for f in /sys/class/drm/card*/device/mem_info_vram_total; do
++        [ -r "$f" ] || continue
++        v=$(cat "$f" 2>/dev/null || echo 0)
++        if [ "$v" -gt "$bestv" ]; then bestv=$v; best=$(dirname "$f"); fi
++    done
++    echo "$best"
++}
++
++df29_vram_used() { local n; n=$(df29_vram_node); [ -n "$n" ] && cat "$n/mem_info_vram_used" 2>/dev/null || echo -1; }
++df29_vram_total() { local n; n=$(df29_vram_node); [ -n "$n" ] && cat "$n/mem_info_vram_total" 2>/dev/null || echo -1; }
++
++# KFD process list (read-only). Each /sys/class/kfd/kfd/proc/<pid> is a process holding the GPU.
++df29_kfd_procs() {
++    local d p
++    for d in /sys/class/kfd/kfd/proc/*; do
++        [ -d "$d" ] || continue
++        p=$(basename "$d")
++        printf '  kfd pid=%s %s\n' "$p" "$(tr '\0' ' ' < "/proc/$p/cmdline" 2>/dev/null | cut -c1-160)"
++    done
++}
++
++# Refuse to run if the GPU lacks room for the 27B + drafter. Prints the reason; returns 1 on refusal.
++df29_vram_preflight() {
++    local used total free_gib
++    used=$(df29_vram_used); total=$(df29_vram_total)
++    if [ "$used" -lt 0 ] || [ "$total" -le 0 ]; then echo "VRAM sysfs unreadable"; return 1; fi
++    free_gib=$(( (total - used) / 1073741824 ))
++    echo "VRAM used=$((used / 1048576)) MiB total=$((total / 1048576)) MiB free=${free_gib} GiB need=${DF29_VRAM_NEED_GIB} GiB"
++    df29_kfd_procs
++    [ "$free_gib" -ge "$DF29_VRAM_NEED_GIB" ]
++}
++
++df29_port_busy() { ss -Hltn "sport = :$1" 2>/dev/null | grep -q .; }
++
++# background VRAM sampler: one line per second "epoch used_bytes" into $1
++df29_start_sampler() {
++    local out=$1 node
++    node=$(df29_vram_node)
++    ( while :; do printf '%s %s\n' "$(date +%s)" "$(cat "$node/mem_info_vram_used" 2>/dev/null || echo -1)"; sleep 1; done ) > "$out" 2>/dev/null &
++    DF29_SAMPLER_PID=$!
++    DF29_PIDS+=("$DF29_SAMPLER_PID")
++}
++
++df29_vram_peak_gib() {  # $1 = sampler file; prints peak and baseline (first sample) in GiB
++    awk 'NR==1{b=$2} {if($2>m)m=$2} END{if(NR==0){print "peak=NA base=NA"} else printf "peak=%.2f base=%.2f\n", m/1073741824, b/1073741824}' "$1" 2>/dev/null
++}
++
++# watchdog: TERM the calling script ($$) after $1 s, but only if $$ is still that script ($2 in its cmdline),
++# so a recycled PID can never be hit. The watchdog's own sleep is killed with it.
++df29_start_watchdog() {
++    local secs=$1 marker=$2
++    ( sp=""; trap '[ -n "$sp" ] && kill "$sp" 2> /dev/null; exit 0' TERM
++      sleep "$secs" & sp=$!; wait "$sp"
++      if tr '\0' ' ' < "/proc/$$/cmdline" 2> /dev/null | grep -q -- "$marker"; then
++          echo "[watchdog] wall cap ${secs}s hit -> TERM $$"; kill -TERM $$ 2> /dev/null
++      fi ) &
++    DF29_PIDS+=($!)
++}
++
++# kill exactly one PID we own: TERM, wait up to $2 s, KILL, verify.
++df29_kill_pid() {
++    local pid=$1 grace=${2:-20} i
++    [ -n "$pid" ] || return 0
++    ps -p "$pid" > /dev/null 2>&1 || return 0
++    kill -TERM "$pid" 2>/dev/null || true
++    for ((i = 0; i < grace * 2; i++)); do ps -p "$pid" > /dev/null 2>&1 || break; sleep 0.5; done
++    if ps -p "$pid" > /dev/null 2>&1; then kill -KILL "$pid" 2>/dev/null || true; sleep 1; fi
++    wait "$pid" 2>/dev/null || true
++    if ps -p "$pid" > /dev/null 2>&1; then echo "WARNING: pid $pid survived SIGKILL"; return 1; fi
++    return 0
++}
++
++df29_stop_server() {
++    if [ -n "$DF29_SERVER_PID" ]; then
++        df29_log "stopping server pid $DF29_SERVER_PID"
++        df29_kill_pid "$DF29_SERVER_PID" 30 && df29_log "server pid $DF29_SERVER_PID confirmed dead"
++        DF29_SERVER_PID=""
++    fi
++}
++
++df29_cleanup() {
++    local p
++    df29_stop_server
++    for p in "${DF29_PIDS[@]}"; do df29_kill_pid "$p" 5 > /dev/null || true; done
++    DF29_PIDS=()
++}
++
++# flag mapping per build (champion fork vs upstream master), decided from the binaries' STRINGS — never by
++# executing them (a HIP-linked llama-server --help would initialise ROCm / open /dev/kfd).
++# Sets DF29_MMAP_FLAG (array), DF29_HAS_DFLASH (0/1), DF29_HAS_NONFINITE_CHECK (0/1).
++df29_probe_flags() {
++    local bin=$1 strs
++    local f
++    strs=$(for f in "$bin"/libllama-common.so* "$bin/llama-server" "$bin/libllama-server-impl.so"; do
++               [ -f "$f" ] && strings "$f"
++           done 2> /dev/null || true)
++    if grep -q -F -- '--no-mmap' <<< "$strs"; then DF29_MMAP_FLAG=(--no-mmap)
++    elif grep -q -F -- '--load-mode' <<< "$strs"; then DF29_MMAP_FLAG=(-lm none)   # master: --no-mmap -> --load-mode
++    else DF29_MMAP_FLAG=(); fi
++    if grep -q -F 'draft-dflash' <<< "$strs"; then DF29_HAS_DFLASH=1; else DF29_HAS_DFLASH=0; fi
++    # the reject-on-non-finite guard is a champion-fork addition (common/speculative.cpp:1542); upstream has none
++    if grep -q -F 'non-finite target features' <<< "$strs"; then DF29_HAS_NONFINITE_CHECK=1; else DF29_HAS_NONFINITE_CHECK=0; fi
++}
++
++# start llama-server: $1=bin dir, $2=log, $3=port, rest = server args (without binary/host/port).
++# Exec chain env -> numactl -> taskset -> llama-server keeps $! == server PID.
++df29_start_server() {
++    local bin=$1 log=$2 port=$3; shift 3
++    local pin=()
++    if [ "${DF29_PIN:-1}" = 1 ] && command -v numactl > /dev/null; then
++        pin=(numactl --membind=3 -- taskset -c 184-191)   # production :8083 placement (GPU host lane)
++    fi
++    env -u LD_LIBRARY_PATH -u HSA_OVERRIDE_GFX_VERSION \
++        LD_LIBRARY_PATH="$bin:/opt/rocm/lib" \
++        OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false \
++        "${pin[@]}" "$bin/llama-server" --host 127.0.0.1 --port "$port" "$@" > "$log" 2>&1 &
++    DF29_SERVER_PID=$!
++    DF29_SERVER_START_TIME=$(python3 "$DF29_DIR/port_owner.py" --pid "$DF29_SERVER_PID" || true)
++    DF29_PIDS+=("$DF29_SERVER_PID")
++    echo "$DF29_SERVER_PID" > "$log.pid"
++    printf '%s\n' "$bin/llama-server --host 127.0.0.1 --port $port $*" > "$log.argv"
++}
++
++# wait for /health == 200; returns 0 ok, 1 died, 2 timeout
++df29_wait_health() {
++    local port=$1 deadline=$2 code
++    while [ "$(date +%s)" -lt "$deadline" ]; do
++        ps -p "$DF29_SERVER_PID" > /dev/null 2>&1 || return 1
++        local owner_rc=0
++        python3 "$DF29_DIR/port_owner.py" --pid "$DF29_SERVER_PID" --port "$port" \
++            --birth "$DF29_SERVER_START_TIME" || owner_rc=$?
++        if [ "$owner_rc" = 2 ]; then return 3; fi
++        if [ "$owner_rc" = 0 ]; then
++            code=$(curl -s -m 2 -o /dev/null -w '%{http_code}' "http://127.0.0.1:$port/health" || true)
++            if [ "$code" = 200 ]; then
++                # Recheck after the response: a foreign listener must not inherit readiness.
++                python3 "$DF29_DIR/port_owner.py" --pid "$DF29_SERVER_PID" --port "$port" \
++                    --birth "$DF29_SERVER_START_TIME" || return 3
++                return 0
++            fi
++        fi
++        sleep 1
++    done
++    return 2
++}
++
++# proof of which libs the RUNNING server mapped (read-only /proc)
++df29_server_maps() {
++    local pid=$1
++    grep -o -E '/[^ ]*lib(ggml[^ /]*|llama[^ /]*)\.so[^ ]*' "/proc/$pid/maps" 2>/dev/null | sort -u
++}
+diff --git a/scripts/benchmark/df29/df29_server.sh b/scripts/benchmark/df29/df29_server.sh
+new file mode 100644
+--- /dev/null
++++ b/scripts/benchmark/df29/df29_server.sh
+@@ -0,0 +1,252 @@
++#!/bin/bash
++# DF2-9 server-based reproducer (GPU). Run ONLY inside an exclusive GPU window.
++#
++# usage: df29_server.sh <arm_build_dir> <out_dir> [--arm X] [--configs orig,prod] [--cap SEC] [--port P]
++#                       [--max-tokens N] [--n-orig N] [--no-long] [--ctx N] [--np N] [--no-pin]
++#                       [--target-only] [--restarts N]
++#   <arm_build_dir>  e.g. /mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B (needs bin/llama-server)
++#                    or  /mnt/raid0/llm/tmp/v11-fa-ab-20261004/build-master-11fe02151 (arm M)
++#
++# Two server configs per arm (each a fresh server process on a private port):
++#   orig  the 2026-08-27 DF2-9 command (df2_bisect.sh / df2_req_bisect.sh): -np 1 -c 32768 -t 8 -tb 8
++#         -b 2048 -ub 2048 -ctk f16 -ctv f16 -ngl 99 -ngld 99 -fa on, DFlash2 n-max 8, no --jinja file;
++#         prompts: 25-char control FIRST, then the 12 pinned olympiadbench prompts; sampling as the
++#         DF2-5 runner (temp 0.6, top_p 0.95, top_k 20, seed 42, enable_thinking=false).
++#   prod  the live :8083 recipe (q8_0 K/V, --kv-unified, -ub 2048, -ngl all, --no-mmap, --jinja +
++#         epyc-qwen3x-v1-terse template, DFlash2 n-max 7, both devices ROCm0, numactl/taskset 184-191)
++#         with -np 1 -c 8192 and --cache-ram 0 (no slot-save path); prompts: control, the 12, and two
++#         synthetic ~2k-token prompts; greedy (temperature 0, top_k 1).
++#
++# Signals per request (primary first): server-log "non-finite target features" (champion fork guard,
++# common/speculative.cpp:1542), "failed to process speculative batch", HTTP status, garbage text
++# ("!!!!" = NaN-logits signature, empty), drafter acceptance. Upstream master has NO non-finite guard,
++# so for arm M the garbage/acceptance signals carry the verdict (printed as guard=absent).
++#
++# Verdict line per (arm, config):
++#   DF29 arm=B config=orig mode=dflash2 guard=present verdict=FAIL k=12/13 tested=13/13 control=OK ...
++#   PASS = every planned prompt tested and finite; FAIL = k of tested prompts non-finite; ERROR = could not run.
++#
++# Hygiene: refuses a busy port; VRAM preflight; owns and kills exactly its own PIDs (trap; TERM->KILL->ps -p);
++# env -u LD_LIBRARY_PATH + LD_LIBRARY_PATH=<arm>/bin:/opt/rocm/lib; verify_ggml_linkage.sh on the binary and
++# /proc/<pid>/maps of the running server; VRAM sampled every second during the run; hard wall cap per arm.
++set -euo pipefail
++
++source "$(dirname "$(readlink -f "$0")")/df29_lib.sh"
++
++[ $# -ge 2 ] || { sed -n 2,12p "$0"; exit 2; }
++ARMDIR=$(readlink -f "$1"); OUT=$2; shift 2
++ARM=""; CONFIGS="orig,prod"; CAP=300; PORT=auto; MAXTOK=32; NORIG=12; LONG=1; CTX=8192; NP=1
++TARGET_ONLY=0; RESTARTS=2; LOAD_CAP=150; SELECT_PORT_ONLY=0
++while [ $# -gt 0 ]; do
++    case "$1" in
++        --arm) ARM=$2; shift 2 ;;
++        --configs) CONFIGS=$2; shift 2 ;;
++        --cap) CAP=$2; shift 2 ;;
++        --port) PORT=$2; shift 2 ;;
++        --select-port-only) SELECT_PORT_ONLY=1; shift ;;
++        --max-tokens) MAXTOK=$2; shift 2 ;;
++        --n-orig) NORIG=$2; shift 2 ;;
++        --no-long) LONG=0; shift ;;
++        --ctx) CTX=$2; shift 2 ;;
++        --np) NP=$2; shift 2 ;;
++        --no-pin) export DF29_PIN=0; shift ;;
++        --target-only) TARGET_ONLY=1; shift ;;
++        --restarts) RESTARTS=$2; shift 2 ;;
++        --load-cap) LOAD_CAP=$2; shift 2 ;;
++        *) echo "unknown arg $1"; exit 2 ;;
++    esac
++done
++# A probe is not a reservation; the busy check and normal startup refusal remain.
++if ! PORT=$(python3 "$DF29_DIR/port_selection.py" --port "$PORT" \
++    --first "${DF29_PORT_FIRST:-18093}" --last "${DF29_PORT_LAST:-18192}"); then
++    echo "DF29 arm=${ARM:-?} config=- verdict=ERROR reason=no-free-port" >&2
++    exit 2
++fi
++if [ "$SELECT_PORT_ONLY" = 1 ]; then printf '%s\n' "$PORT"; exit 0; fi
++BIN=$ARMDIR/bin
++[ -x "$BIN/llama-server" ] || { echo "DF29 arm=${ARM:-?} config=- verdict=ERROR reason=no-llama-server-in-$BIN"; exit 2; }
++if [ -z "$ARM" ]; then
++    case "$(basename "$ARMDIR")" in
++        build-master-*) ARM=M ;;
++        *-[A-Z]) ARM=${ARMDIR##*-} ;;
++        *) ARM=$(basename "$ARMDIR") ;;
++    esac
++fi
++mkdir -p "$OUT"
++OUT=$(readlink -f "$OUT")
++T0=$(date +%s); DEADLINE=$((T0 + CAP))
++VERDICTS="$OUT/verdicts.txt"; : > "$VERDICTS"
++
++trap 'df29_cleanup' EXIT
++trap 'echo "signal: cleaning up"; df29_cleanup; exit 130' INT TERM
++
++exec > >(tee -a "$OUT/df29_server.log") 2>&1
++df29_log "DF29 arm=$ARM dir=$ARMDIR out=$OUT cap=${CAP}s configs=$CONFIGS port=$PORT"
++
++if df29_port_busy "$PORT"; then
++    echo "DF29 arm=$ARM config=- verdict=ERROR reason=port-$PORT-busy" | tee -a "$VERDICTS"; exit 2
++fi
++if ! df29_vram_preflight > "$OUT/vram_preflight.txt"; then
++    cat "$OUT/vram_preflight.txt"
++    echo "DF29 arm=$ARM config=- verdict=ERROR reason=vram-preflight" | tee -a "$VERDICTS"; exit 2
++fi
++cat "$OUT/vram_preflight.txt"
++
++# provenance + linkage
++{
++    echo "arm=$ARM dir=$ARMDIR"
++    if [ -f "$ARMDIR/PROVENANCE.md" ]; then grep -E 'source|CMakeCache|VERDICT|version' "$ARMDIR/PROVENANCE.md" | head -12 || true; fi
++    grep -E '^GGML_HIP_ROCWMMA_FATTN:' "$ARMDIR/CMakeCache.txt" 2>/dev/null || true
++    sha256sum "$BIN/llama-server" "$BIN/libggml-hip.so" 2>/dev/null || true
++} > "$OUT/provenance.txt"
++env -u LD_LIBRARY_PATH bash "$DF29_LINKAGE" "$BIN/llama-server" "$ARMDIR" > "$OUT/linkage.txt" 2>&1 || true
++env -u LD_LIBRARY_PATH LD_LIBRARY_PATH="$BIN:/opt/rocm/lib" bash "$DF29_LINKAGE" "$BIN/llama-server" "$ARMDIR" > "$OUT/linkage_withpath.txt" 2>&1 || true
++tail -2 "$OUT/linkage.txt"
++
++DF29_MMAP_FLAG=(); DF29_HAS_DFLASH=0; DF29_HAS_NONFINITE_CHECK=0
++df29_probe_flags "$BIN"
++GUARD=$([ "$DF29_HAS_NONFINITE_CHECK" = 1 ] && echo present || echo absent)
++df29_log "flags: mmap=[${DF29_MMAP_FLAG[*]}] dflash=$DF29_HAS_DFLASH nonfinite_guard=$GUARD"
++
++PROMPTS=$DF29_DIR/prompts/server_prompts.json
++df29_start_sampler "$OUT/vram_samples.txt"
++# hard wall cap: a watchdog we own TERMs this script (-> trap -> kills the server) at CAP+60 s
++df29_start_watchdog $((CAP + 60)) df29_server.sh
++
++config_args() {  # $1=config $2=mode(dflash2|target-only)
++    local cfg=$1 mode=$2 a=()
++    if [ "$cfg" = orig ]; then
++        a=(-m "$DF29_TARGET" -np 1 -c 32768 -t 8 -tb 8 -b 2048 -ub 2048 -ctk f16 -ctv f16
++           --device ROCm0 -ngl 99 -fa on --metrics --slots)
++        [ "$mode" = dflash2 ] && a+=(-md "$DF29_DRAFTER" --spec-type draft-dflash --spec-draft-n-max 8 -ngld 99)
++    else
++        a=(-m "$DF29_TARGET" -np "$NP" -c "$CTX" -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0
++           --kv-unified "${DF29_MMAP_FLAG[@]}" -ngl all --cache-ram 0 --chat-template-file "$DF29_TEMPLATE"
++           --device ROCm0 --metrics --slots)
++        [ "$mode" = dflash2 ] && a+=(-md "$DF29_DRAFTER" -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device-draft ROCm0)
++    fi
++    printf '%s\n' "${a[@]}"
++}
++
++run_config() {  # $1 = orig|prod  $2 = this config's deadline (epoch s)
++    local cfg=$1 cdir="$OUT/$1" mode kinds sampling n_plan start=0 restarts=0 deaths=0 crc hrc log args
++    local DEADLINE=$2
++    mkdir -p "$cdir"; : > "$cdir/requests.jsonl"
++    mode=dflash2
++    { [ "$TARGET_ONLY" = 1 ] || [ "$DF29_HAS_DFLASH" = 0 ]; } && mode=target-only
++    if [ "$cfg" = orig ]; then kinds=control,orig; sampling=orig; else kinds=control,orig; sampling=greedy; fi
++    [ "$cfg" = prod ] && [ "$LONG" = 1 ] && kinds=$kinds,long2k
++    # cap the 12 orig prompts at --n-orig (keep the control and long ones)
++    python3 - "$PROMPTS" "$cdir/prompts.json" "$kinds" "$NORIG" <<'PY'
++import json, sys
++src, dst, kinds, norig = sys.argv[1], sys.argv[2], set(sys.argv[3].split(",")), int(sys.argv[4])
++items, n = [], 0
++for it in json.load(open(src)):
++    if it["kind"] not in kinds: continue
++    if it["kind"] == "orig":
++        if n >= norig: continue
++        n += 1
++    items.append(it)
++# order: control first (must pass), then the long ~2k prompts (most diagnostic), then the 12 originals
++rank = {"control": 0, "long2k": 1, "orig": 2}
++items.sort(key=lambda it: rank[it["kind"]])
++json.dump(items, open(dst, "w"), indent=1)
++PY
++    n_plan=$(python3 -c "import json,sys; print(len(json.load(open(sys.argv[1]))))" "$cdir/prompts.json")
++
++    while :; do
++        if [ $((DEADLINE - $(date +%s))) -lt 30 ]; then df29_log "$cfg: arm deadline reached before (re)start"; break; fi
++        log="$cdir/server.$restarts.log"
++        mapfile -t args < <(config_args "$cfg" "$mode")
++        df29_log "$cfg: start server ($mode) try=$restarts"
++        df29_start_server "$BIN" "$log" "$PORT" "${args[@]}"
++        local hdl=$(( $(date +%s) + LOAD_CAP )); [ "$hdl" -gt "$DEADLINE" ] && hdl=$DEADLINE
++        set +e; df29_wait_health "$PORT" "$hdl"; hrc=$?; set -e
++        if [ "$hrc" -ne 0 ]; then
++            df29_log "$cfg: server not healthy (rc=$hrc); tail of log:"; tail -15 "$log" | sed 's/^/    /'
++            df29_stop_server
++            if [ "$hrc" -ne 3 ] && [ "$mode" = dflash2 ] && [ "$ARM" = M ] && [ "$restarts" -eq 0 ]; then
++                df29_log "$cfg: arm M could not start with the DFlash2 drafter -> falling back to target-only"
++                mode=target-only; restarts=$((restarts + 1)); continue
++            fi
++            echo "DF29 arm=$ARM config=$cfg mode=$mode guard=$GUARD verdict=ERROR reason=server-start-rc$hrc" | tee -a "$VERDICTS"
++            return 0
++        fi
++        df29_log "$cfg: healthy after $(( $(date +%s) - T0 ))s since arm start; pid=$DF29_SERVER_PID"
++        df29_server_maps "$DF29_SERVER_PID" > "$cdir/server_maps.$restarts.txt" || true
++        grep -E 'libggml-hip|libllama\.so' "$cdir/server_maps.$restarts.txt" | sed 's/^/    maps: /' || true
++        echo "$(date +%s) $(df29_vram_used)" > "$cdir/vram_after_load.$restarts.txt"
++        grep -m3 -E 'DFlash|n_extract|target_layer|flash_attn|ROCm0 model buffer' "$log" | sed 's/^/    log: /' || true
++
++        set +e
++        python3 "$DF29_DIR/df29_client.py" --mode seq --port "$PORT" --pid "$DF29_SERVER_PID" --log "$log" \
++            --prompts "$cdir/prompts.json" --out "$cdir" --sampling "$sampling" --max-tokens "$MAXTOK" \
++            --req-timeout 60 --deadline "$DEADLINE" --start "$start" &
++        local cpid=$!; DF29_PIDS+=("$cpid")
++        wait "$cpid"; crc=$?
++        set -e
++        df29_stop_server
++        [ "$crc" -eq 10 ] && deaths=$((deaths + 1))
++        if [ "$crc" -eq 10 ] && [ "$restarts" -lt "$RESTARTS" ]; then
++            start=$(cat "$cdir/resume_at"); restarts=$((restarts + 1))
++            df29_log "$cfg: server died mid-run; restarting from prompt $start (restart $restarts/$RESTARTS)"
++            continue
++        fi
++        break
++    done
++
++    # verdict for this config
++    python3 - "$cdir" "$n_plan" "$ARM" "$cfg" "$mode" "$GUARD" "$VERDICTS" "$deaths" <<'PY'
++import json, sys, glob, re
++cdir, n_plan, arm, cfg, mode, guard, vfile, deaths = sys.argv[1], int(sys.argv[2]), *sys.argv[3:]
++rows = [json.loads(l) for l in open(f"{cdir}/requests.jsonl") if l.strip()]
++tested = len(rows)
++bad = [r for r in rows if not r["finite_ok"]]
++nf = sum(r["log_nonfinite"] for r in rows)
++san = sum(r["log_sanitized"] for r in rows)
++gar = sum(1 for r in rows if r["garbage"])
++http_err = sum(1 for r in rows if r["http"] != 200)
++ctrl = next((r for r in rows if r["kind"] == "control"), None)
++ctrl_s = "untested" if ctrl is None else ("OK" if ctrl["finite_ok"] else "BAD")
++long_bad = sum(1 for r in rows if r["kind"] == "long2k" and not r["finite_ok"])
++dn = sum(r["draft_n"] or 0 for r in rows); da = sum(r["draft_n_accepted"] or 0 for r in rows)
++acc = f"{da/dn:.3f}" if dn else "NA"
++tps = [r["predicted_per_second"] for r in rows if r["finite_ok"] and r["predicted_per_second"]]
++tps_s = f"{sum(tps)/len(tps):.1f}" if tps else "NA"
++logs = sorted(glob.glob(f"{cdir}/server.*.log"))
++specfail = sum(len(re.findall(r"failed to process speculative batch", open(p, errors="replace").read())) for p in logs)
++aborts = sum(len(re.findall(r"terminate called|GGML_ASSERT|GGML_ABORT|Aborted", open(p, errors="replace").read())) for p in logs)
++reason = ""
++if tested == 0:
++    verdict = "ERROR"; reason = " reason=nothing-tested(load-fail-or-deadline)"
++elif bad:
++    verdict = "FAIL"
++elif tested < n_plan:
++    verdict = "INCOMPLETE"
++else:
++    verdict = "PASS"
++line = (f"DF29 arm={arm} config={cfg} mode={mode} guard={guard} verdict={verdict} k={len(bad)}/{tested} "
++        f"tested={tested}/{n_plan} control={ctrl_s} long2k_bad={long_bad} nonfinite_log={nf} sanitized_log={san} "
++        f"garbage={gar} http_err={http_err} spec_fail_logs={specfail} abort_logs={aborts} server_deaths={deaths} "
++        f"acceptance={acc} mean_tg_tps={tps_s}{reason}"
++        + (" note=k-bounded-by-server-deaths(see-probe-for-full-N)" if int(deaths) > 0 and tested < n_plan else ""))
++print(line)
++open(vfile, "a").write(line + "\n")
++PY
++}
++
++# the arm cap is split evenly across configs so a crash-looping first config cannot starve the second
++IFS=',' read -r -a CFG_LIST <<< "$CONFIGS"
++NCFG=${#CFG_LIST[@]}; i=0
++for c in "${CFG_LIST[@]}"; do
++    i=$((i + 1))
++    case "$c" in orig|prod) run_config "$c" $((T0 + CAP * i / NCFG)) ;; *) echo "unknown config $c" ;; esac
++done
++
++df29_kill_pid "$DF29_SAMPLER_PID" 5 || true
++read -r PEAK BASE < <(awk 'NR==1{b=$2} {if($2>m)m=$2} END{if(NR==0) print "NA NA"; else printf "%.2f %.2f\n", m/1073741824, b/1073741824}' "$OUT/vram_samples.txt")
++WALL=$(( $(date +%s) - T0 ))
++df29_log "arm $ARM done in ${WALL}s; VRAM peak ${PEAK} GiB (baseline ${BASE} GiB) — residency proof: peak-baseline must be >= ~29 GiB"
++sed -i "s/\$/ vram_peak_gib=${PEAK} vram_base_gib=${BASE} arm_wall=${WALL}s/" "$VERDICTS"
++echo "== verdicts ($OUT/verdicts.txt)"
++cat "$VERDICTS"
+diff --git a/scripts/benchmark/df29/port_owner.py b/scripts/benchmark/df29/port_owner.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/benchmark/df29/port_owner.py
+@@ -0,0 +1,67 @@
++"""Read-only Linux listener ownership check for the exact captured exec-chain PID."""
++from __future__ import annotations
++
++import argparse
++import os
++from pathlib import Path
++import sys
++
++
++class OwnershipError(RuntimeError):
++    pass
++
++
++def start_time(pid: int, *, proc: Path = Path('/proc')) -> str:
++    raw = (proc / str(pid) / 'stat').read_text()
++    return raw[raw.rfind(')') + 2:].split()[19]
++
++
++def listener_owned(pid: int, port: int, birth: str, *, proc: Path = Path('/proc')) -> bool:
++    """False means no listener yet; foreign/unknown/recycled identity raises."""
++    if not birth or start_time(pid, proc=proc) != birth:
++        raise OwnershipError('captured server process identity changed')
++    owned = set()
++    for fd in (proc / str(pid) / 'fd').iterdir():
++        try:
++            target = os.readlink(fd)
++        except FileNotFoundError:
++            continue  # descriptor churn, not loss of the process
++        if target.startswith('socket:['):
++            owned.add(target[8:-1])
++    listeners = set()
++    # The server is launched with --host 127.0.0.1. Include wildcard listeners
++    # because those can also answer the IPv4 health request.
++    for name, addresses in [('tcp', {'0100007F', '00000000'}), ('tcp6', {'0' * 32})]:
++        table = proc / str(pid) / 'net' / name
++        for line in table.read_text().splitlines()[1:]:
++            fields = line.split()
++            address, number = fields[1].split(':')
++            if fields[3] == '0A' and int(number, 16) == port and address in addresses:
++                listeners.add(fields[9])
++    if start_time(pid, proc=proc) != birth:
++        raise OwnershipError('captured process changed during socket inspection')
++    if listeners and not listeners <= owned:
++        raise OwnershipError('listener is not owned by captured server PID')
++    return bool(listeners)
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--pid', type=int, required=True)
++    parser.add_argument('--port', type=int)
++    parser.add_argument('--birth')
++    args = parser.parse_args()
++    try:
++        if args.port is None:
++            print(start_time(args.pid))
++            return 0
++        if not 1 <= args.port <= 65535:
++            raise OwnershipError('invalid port')
++        return 0 if listener_owned(args.pid, args.port, args.birth or '') else 1
++    except (OSError, ValueError, IndexError, OwnershipError) as exc:
++        print(f'DF29 listener ownership refused: {exc}', file=sys.stderr)
++        return 2
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/scripts/benchmark/df29/port_selection.py b/scripts/benchmark/df29/port_selection.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/benchmark/df29/port_selection.py
+@@ -0,0 +1,48 @@
++"""Select a currently bindable private IPv4 loopback port; never reserves it."""
++from __future__ import annotations
++
++import argparse
++import socket
++import sys
++
++
++def select_port(port: str = 'auto', *, first: int = 18093, last: int = 18192) -> int:
++    if not 1024 <= first <= last <= 65535 or last - first >= 1024:
++        raise ValueError('port range must contain 1..1024 unprivileged ports')
++    if port == 'auto':
++        candidates = range(first, last + 1)
++    else:
++        try:
++            explicit = int(port)
++        except ValueError as exc:
++            raise ValueError('port must be auto or an integer') from exc
++        if not 1024 <= explicit <= 65535:
++            raise ValueError('explicit port must be unprivileged and <=65535')
++        candidates = [explicit]
++    for candidate in candidates:
++        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
++            try:
++                probe.bind(('127.0.0.1', candidate))
++            except OSError:
++                continue
++        return candidate
++    raise RuntimeError('no bindable port in requested selection')
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--port', default='auto')
++    parser.add_argument('--first', type=int, default=18093)
++    parser.add_argument('--last', type=int, default=18192)
++    args = parser.parse_args()
++    try:
++        chosen = select_port(args.port, first=args.first, last=args.last)
++    except (ValueError, RuntimeError) as exc:
++        print(f'DF29 port selection refused: {exc}', file=sys.stderr)
++        return 2
++    print(chosen)
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+diff --git a/scripts/benchmark/df29/prompts/server_prompts.json b/scripts/benchmark/df29/prompts/server_prompts.json
+new file mode 100644
+--- /dev/null
++++ b/scripts/benchmark/df29/prompts/server_prompts.json
+@@ -0,0 +1,77 @@
++[
++ {
++  "id": "control_25c",
++  "kind": "control",
++  "content": "Name three prime numbers."
++ },
++ {
++  "id": "olympiadbench_hard_combinatorics_1882",
++  "kind": "orig",
++  "content": "Let $n$ be an integer with $n \\geqslant 2$. On a slope of a mountain, $n^{2}$ checkpoints are marked, numbered from 1 to $n^{2}$ from the bottom to the top. Each of two cable car companies, $A$ and $B$, operates $k$ cable cars numbered from 1 to $k$; each cable car provides a transfer from some checkpoint to a higher one. For each company, and for any $i$ and $j$ with $1 \\leqslant i<j \\leqslant k$, the starting point of car $j$ is higher than the starting point of car $i$; similarly, the finishing point of car $j$ is higher than the finishing point of car $i$. Say that two checkpoints are linked by some company if one can start from the lower checkpoint and reach the higher one by using one or more cars of that company (no movement on foot is allowed).\n\nDetermine the smallest $k$ for which one can guarantee that there are two checkpoints that are linked by each of the two companies.\n\nSolve step by step. Give the final expression in \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_algebra_1659",
++  "kind": "orig",
++  "content": "Find all functions $f: \\mathbb{R}^{+} \\rightarrow \\mathbb{R}^{+}$ such that\n\n$$\nf(x+f(y))=f(x+y)+f(y)\\tag{1}\n$$\n\nfor all $x, y \\in \\mathbb{R}^{+}$. (Symbol $\\mathbb{R}^{+}$denotes the set of all positive real numbers.)\n\nSolve step by step. Give the final expression in \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_combinatorics_2230",
++  "kind": "orig",
++  "content": "Let $k$ be a positive integer. Lexi has a dictionary $\\mathcal{D}$ consisting of some $k$-letter strings containing only the letters $A$ and $B$. Lexi would like to write either the letter $A$ or the letter $B$ in each cell of a $k \\times k$ grid so that each column contains a string from $\\mathcal{D}$ when read from top-to-bottom and each row contains a string from $\\mathcal{D}$ when read from left-to-right.\n\nWhat is the smallest integer $m$ such that if $\\mathcal{D}$ contains at least $m$ different strings, then Lexi can fill her grid in this manner, no matter what strings are in $\\mathcal{D}$ ?\n\nSolve step by step. Give the final expression in \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_algebra_2171",
++  "kind": "orig",
++  "content": "Find all functions $f: \\mathbb{Q} \\rightarrow \\mathbb{Q}$ such that the equation\n\nholds for all rational numbers $x$ and $y$.\n\n$$\nf(x f(x)+y)=f(y)+x^{2}\n$$\n\nHere, $\\mathbb{Q}$ denotes the set of rational numbers.\n\nSolve step by step. If there are multiple solutions, give them all as a comma-separated list inside a single \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_combinatorics_2127",
++  "kind": "orig",
++  "content": "Let $n$ and $k$ be fixed positive integers of the same parity, $k \\geq n$. We are given $2 n$ lamps numbered 1 through $2 n$; each of them can be on or off. At the beginning all lamps are off. We consider sequences of $k$ steps. At each step one of the lamps is switched (from off to on or from on to off).\n\nLet $N$ be the number of $k$-step sequences ending in the state: lamps $1, \\ldots, n$ on, lamps $n+1, \\ldots, 2 n$ off.\n\nLet $M$ be the number of $k$-step sequences leading to the same state and not touching lamps $n+1, \\ldots, 2 n$ at all.\n\nFind the ratio $N / M$.\n\nSolve step by step. Give the final expression in \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_algebra_1938",
++  "kind": "orig",
++  "content": "Determine all functions $f: \\mathbb{Z} \\rightarrow \\mathbb{Z}$ with the property that\n\n$$\nf(x-f(y))=f(f(x))-f(y)-1\n\\tag{1}\n$$\n\nholds for all $x, y \\in \\mathbb{Z}$.\n\nSolve step by step. If there are multiple solutions, give them all as a comma-separated list inside a single \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_number_theory_1869",
++  "kind": "orig",
++  "content": "Denote by $\\mathbb{N}$ the set of all positive integers. Find all functions $f: \\mathbb{N} \\rightarrow \\mathbb{N}$ such that for all positive integers $m$ and $n$, the integer $f(m)+f(n)-m n$ is nonzero and divides $m f(m)+n f(n)$.\n\nSolve step by step. Give the final expression in \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_algebra_2574",
++  "kind": "orig",
++  "content": "The equation $2^{x+2} 5^{6-x}=10^{x^{2}}$ has two real solutions. Determine these two solutions.\n\nSolve step by step. If there are multiple solutions, give them all as a comma-separated list inside a single \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_combinatorics_1818",
++  "kind": "orig",
++  "content": "Let $n>1$ be an integer. An $n \\times n \\times n$ cube is composed of $n^{3}$ unit cubes. Each unit cube is painted with one color. For each $n \\times n \\times 1$ box consisting of $n^{2}$ unit cubes (of any of the three possible orientations), we consider the set of the colors present in that box (each color is listed only once). This way, we get $3 n$ sets of colors, split into three groups according to the orientation. It happens that for every set in any group, the same set appears in both of the other groups. Determine, in terms of $n$, the maximal possible number of colors that are present.\n\nSolve step by step. Give the final expression in \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_number_theory_2415",
++  "kind": "orig",
++  "content": "For every real number $x$, define $\\lfloor x\\rfloor$ to be equal to the greatest integer less than or equal to $x$. (We call this the \"floor\" of $x$.) For example, $\\lfloor 4.2\\rfloor=4,\\lfloor 5.7\\rfloor=5$, $\\lfloor-3.4\\rfloor=-4,\\lfloor 0.4\\rfloor=0$, and $\\lfloor 2\\rfloor=2$.\nDetermine a polynomial $p(x)$ so that for every positive integer $m>4$,\n\n$$\n\\lfloor p(m)\\rfloor=\\left\\lfloor\\frac{1}{3}\\right\\rfloor+\\left\\lfloor\\frac{2}{3}\\right\\rfloor+\\left\\lfloor\\frac{3}{3}\\right\\rfloor+\\ldots+\\left\\lfloor\\frac{m-2}{3}\\right\\rfloor+\\left\\lfloor\\frac{m-1}{3}\\right\\rfloor\n$$\n\n(The sum has $m-1$ terms.)\n\nA polynomial $f(x)$ is an algebraic expression of the form $f(x)=a_{n} x^{n}+a_{n-1} x^{n-1}+\\cdots+a_{1} x+a_{0}$ for some integer $n \\geq 0$ and for some real numbers $a_{n}, a_{n-1}, \\ldots, a_{1}, a_{0}$.\n\nSolve step by step. Give the final expression in \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_combinatorics_1664",
++  "kind": "orig",
++  "content": "Find all positive integers $n$, for which the numbers in the set $S=\\{1,2, \\ldots, n\\}$ can be colored red and blue, with the following condition being satisfied: the set $S \\times S \\times S$ contains exactly 2007 ordered triples $(x, y, z)$ such that (i) $x, y, z$ are of the same color and (ii) $x+y+z$ is divisible by $n$.\n\nSolve step by step. If there are multiple solutions, give them all as a comma-separated list inside a single \\boxed{}."
++ },
++ {
++  "id": "olympiadbench_hard_combinatorics_1662",
++  "kind": "orig",
++  "content": "Let $n>1$ be an integer. In the space, consider the set\n$$\nS=\\{(x, y, z) \\mid x, y, z \\in\\{0,1, \\ldots, n\\}, x+y+z>0\\}\n$$\nFind the smallest number of planes that jointly contain all $(n+1)^{3}-1$ points of $S$ but none of them passes through the origin.\n\nSolve step by step. Give the final expression in \\boxed{}."
++ },
++ {
++  "id": "long2k_a_olymp12",
++  "kind": "long2k",
++  "content": "Below are twelve olympiad problems. Read all of them carefully, then solve Problem 1 and give only the final answer.\n\nProblem 1. Let $n$ be an integer with $n \\geqslant 2$. On a slope of a mountain, $n^{2}$ checkpoints are marked, numbered from 1 to $n^{2}$ from the bottom to the top. Each of two cable car companies, $A$ and $B$, operates $k$ cable cars numbered from 1 to $k$; each cable car provides a transfer from some checkpoint to a higher one. For each company, and for any $i$ and $j$ with $1 \\leqslant i<j \\leqslant k$, the starting point of car $j$ is higher than the starting point of car $i$; similarly, the finishing point of car $j$ is higher than the finishing point of car $i$. Say that two checkpoints are linked by some company if one can start from the lower checkpoint and reach the higher one by using one or more cars of that company (no movement on foot is allowed).\n\nDetermine the smallest $k$ for which one can guarantee that there are two checkpoints that are linked by each of the two companies.\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 2. Find all functions $f: \\mathbb{R}^{+} \\rightarrow \\mathbb{R}^{+}$ such that\n\n$$\nf(x+f(y))=f(x+y)+f(y)\\tag{1}\n$$\n\nfor all $x, y \\in \\mathbb{R}^{+}$. (Symbol $\\mathbb{R}^{+}$denotes the set of all positive real numbers.)\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 3. Let $k$ be a positive integer. Lexi has a dictionary $\\mathcal{D}$ consisting of some $k$-letter strings containing only the letters $A$ and $B$. Lexi would like to write either the letter $A$ or the letter $B$ in each cell of a $k \\times k$ grid so that each column contains a string from $\\mathcal{D}$ when read from top-to-bottom and each row contains a string from $\\mathcal{D}$ when read from left-to-right.\n\nWhat is the smallest integer $m$ such that if $\\mathcal{D}$ contains at least $m$ different strings, then Lexi can fill her grid in this manner, no matter what strings are in $\\mathcal{D}$ ?\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 4. Find all functions $f: \\mathbb{Q} \\rightarrow \\mathbb{Q}$ such that the equation\n\nholds for all rational numbers $x$ and $y$.\n\n$$\nf(x f(x)+y)=f(y)+x^{2}\n$$\n\nHere, $\\mathbb{Q}$ denotes the set of rational numbers.\n\nSolve step by step. If there are multiple solutions, give them all as a comma-separated list inside a single \\boxed{}.\n\nProblem 5. Let $n$ and $k$ be fixed positive integers of the same parity, $k \\geq n$. We are given $2 n$ lamps numbered 1 through $2 n$; each of them can be on or off. At the beginning all lamps are off. We consider sequences of $k$ steps. At each step one of the lamps is switched (from off to on or from on to off).\n\nLet $N$ be the number of $k$-step sequences ending in the state: lamps $1, \\ldots, n$ on, lamps $n+1, \\ldots, 2 n$ off.\n\nLet $M$ be the number of $k$-step sequences leading to the same state and not touching lamps $n+1, \\ldots, 2 n$ at all.\n\nFind the ratio $N / M$.\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 6. Determine all functions $f: \\mathbb{Z} \\rightarrow \\mathbb{Z}$ with the property that\n\n$$\nf(x-f(y))=f(f(x))-f(y)-1\n\\tag{1}\n$$\n\nholds for all $x, y \\in \\mathbb{Z}$.\n\nSolve step by step. If there are multiple solutions, give them all as a comma-separated list inside a single \\boxed{}.\n\nProblem 7. Denote by $\\mathbb{N}$ the set of all positive integers. Find all functions $f: \\mathbb{N} \\rightarrow \\mathbb{N}$ such that for all positive integers $m$ and $n$, the integer $f(m)+f(n)-m n$ is nonzero and divides $m f(m)+n f(n)$.\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 8. The equation $2^{x+2} 5^{6-x}=10^{x^{2}}$ has two real solutions. Determine these two solutions.\n\nSolve step by step. If there are multiple solutions, give them all as a comma-separated list inside a single \\boxed{}.\n\nProblem 9. Let $n>1$ be an integer. An $n \\times n \\times n$ cube is composed of $n^{3}$ unit cubes. Each unit cube is painted with one color. For each $n \\times n \\times 1$ box consisting of $n^{2}$ unit cubes (of any of the three possible orientations), we consider the set of the colors present in that box (each color is listed only once). This way, we get $3 n$ sets of colors, split into three groups according to the orientation. It happens that for every set in any group, the same set appears in both of the other groups. Determine, in terms of $n$, the maximal possible number of colors that are present.\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 10. For every real number $x$, define $\\lfloor x\\rfloor$ to be equal to the greatest integer less than or equal to $x$. (We call this the \"floor\" of $x$.) For example, $\\lfloor 4.2\\rfloor=4,\\lfloor 5.7\\rfloor=5$, $\\lfloor-3.4\\rfloor=-4,\\lfloor 0.4\\rfloor=0$, and $\\lfloor 2\\rfloor=2$.\nDetermine a polynomial $p(x)$ so that for every positive integer $m>4$,\n\n$$\n\\lfloor p(m)\\rfloor=\\left\\lfloor\\frac{1}{3}\\right\\rfloor+\\left\\lfloor\\frac{2}{3}\\right\\rfloor+\\left\\lfloor\\frac{3}{3}\\right\\rfloor+\\ldots+\\left\\lfloor\\frac{m-2}{3}\\right\\rfloor+\\left\\lfloor\\frac{m-1}{3}\\right\\rfloor\n$$\n\n(The sum has $m-1$ terms.)\n\nA polynomial $f(x)$ is an algebraic expression of the form $f(x)=a_{n} x^{n}+a_{n-1} x^{n-1}+\\cdots+a_{1} x+a_{0}$ for some integer $n \\geq 0$ and for some real numbers $a_{n}, a_{n-1}, \\ldots, a_{1}, a_{0}$.\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 11. Find all positive integers $n$, for which the numbers in the set $S=\\{1,2, \\ldots, n\\}$ can be colored red and blue, with the following condition being satisfied: the set $S \\times S \\times S$ contains exactly 2007 ordered triples $(x, y, z)$ such that (i) $x, y, z$ are of the same color and (ii) $x+y+z$ is divisible by $n$.\n\nSolve step by step. If there are multiple solutions, give them all as a comma-separated list inside a single \\boxed{}.\n\nProblem 12. Let $n>1$ be an integer. In the space, consider the set\n$$\nS=\\{(x, y, z) \\mid x, y, z \\in\\{0,1, \\ldots, n\\}, x+y+z>0\\}\n$$\nFind the smallest number of planes that jointly contain all $(n+1)^{3}-1$ points of $S$ but none of them passes through the origin.\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 1. Let $n$ be an integer with $n \\geqslant 2$. On a slope of a mountain, $n^{2}$ checkpoints are marked, numbered from 1 to $n^{2}$ from the bottom to the top. Each of two cable car companies, $A$ and $B$, operates $k$ cable cars numbered from 1 to $k$; each cable car provides a transfer from some checkpoint to a higher one. For each company, and for any $i$ and $j$ with $1 \\leqslant i<j \\leqslant k$, the starting point of car $j$ is higher than the starting point of car $i$; similarly, the finishing point of car $j$ is higher than the finishing point of car $i$. Say that two checkpoints are linked by some company if one can start from the lower checkpoint and reach the higher one by using one or more cars of that company (no movement on foot is allowed).\n\nDetermine the smallest $k$ for which one can guarantee that there are two checkpoints that are linked by each of the two companies.\n\nSolve step by step. Give the final expression in \\boxed{}.\n\nProblem 2. Find all functions $f: \\mathbb{R}^{+} \\rightarrow \\mathbb{R}^{+}$ such that\n\n$$\nf(x+f(y))=f(x+y)+f(y)\\tag{1}\n$$\n\nfor all $x, y \\in \\mathbb{R}^{+}$. (Symbol $\\mathbb{R}^{+}$denotes the set of all positive real numbers.)\n\nS"
++ },
++ {
++  "id": "long2k_b_specdoc",
++  "kind": "long2k",
++  "content": "Summarise the following documentation in three bullet points.\n\n# Speculative Decoding\n\nllama.cpp supports speculative decoding, a technique that can significantly accelerate token generation by predicting multiple tokens ahead of the main model.\n\n[Speculative decoding](https://en.wikipedia.org/wiki/Transformer_(deep_learning)#Speculative_decoding) leverages the fact that computing n tokens in a batch (as in prompt processing) is more efficient than computing n sequentially (as in response generation). By generating draft tokens quickly and then verifying them with the target model in a single batch, this approach can achieve substantial speedups when the draft predictions are frequently correct.\n\n## Implementations\n\nThe `llama-server` application supports several implementations of speculative decoding. An implementation with draft model can be mixed with an implementation without draft model.\n\n### Draft Model (`draft`)\n\nA much smaller model (called the _draft model_) generates drafts.\nA draft model is the most used approach in speculative decoding.\n\n### EAGLE-3 (`draft-eagle3`)\n\nEAGLE-3 uses a small draft model that reads the target model's hidden states to predict the next tokens, so it\nreaches higher acceptance than a standalone draft model of the same size. The draft is a one-layer transformer\ntrained for a specific target model; it shares the target model's tokenizer and, optionally, uses a reduced draft\nvocabulary with its own `lm_head`, which is mapped back using a `d2t` table.\n\nConvert the EAGLE-3 checkpoint with `--target-model-dir` so it inherits the target's tokenizer and the layer\nindices to read. Both the SpecForge `LlamaForCausalLMEagle3` and the vLLM/AngelSlim `Eagle3LlamaForCausalLM`\ncheckpoint formats are supported (for example [`AngelSlim/Qwen3-4B_eagle3`](https://huggingface.co/AngelSlim/Qwen3-4B_eagle3)\nfor `Qwen/Qwen3-4B`):\n\n```bash\npython convert_hf_to_gguf.py AngelSlim/Qwen3-4B_eagle3 \\\n    --target-model-dir Qwen/Qwen3-4B --outtype bf16 --outfile Qwen3-4B-eagle3.gguf\n\nllama-server -m Qwen3-4B.gguf -md Qwen3-4B-eagle3.gguf --spec-type draft-eagle3\n```\n\nSupported EAGLE-3 draft models include:\n\n- [yuhuili/EAGLE3-LLaMA3.1-Instruct-8B](https://huggingface.co/yuhuili/EAGLE3-LLaMA3.1-Instruct-8B)\n- [yuhuili/EAGLE3-LLaMA3.3-Instruct-70B](https://huggingface.co/yuhuili/EAGLE3-LLaMA3.3-Instruct-70B)\n- [RedHatAI/gemma-4-31B-it-speculator.eagle3](https://huggingface.co/RedHatAI/gemma-4-31B-it-speculator.eagle3)\n- [RedHatAI/gemma-4-26B-A4B-it-speculator.eagle3](https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-speculator.eagle3)\n- [Tengyunw/qwen3_8b_eagle3](https://huggingface.co/Tengyunw/qwen3_8b_eagle3)\n- [Tengyunw/qwen3_30b_moe_eagle3](https://huggingface.co/Tengyunw/qwen3_30b_moe_eagle3)\n- [AngelSlim/Qwen3-1.7B_eagle3](https://huggingface.co/AngelSlim/Qwen3-1.7B_eagle3)\n- [AngelSlim/Qwen3-4B_eagle3](https://huggingface.co/AngelSlim/Qwen3-4B_eagle3)\n- [AngelSlim/Qwen3-8B_eagle3](https://huggingface.co/AngelSlim/Qwen3-8B_eagle3)\n- [AngelSlim/Qwen3-14B_eagle3](https://huggingface.co/AngelSlim/Qwen3-14B_eagle3)\n- [AngelSlim/Qwen3-32B_eagle3](https://huggingface.co/AngelSlim/Qwen3-32B_eagle3)\n- [AngelSlim/Qwen3-a3B_eagle3](https://huggingface.co/AngelSlim/Qwen3-a3B_eagle3)\n- [RedHatAI/gpt-oss-20b-speculator.eagle3](https://huggingface.co/RedHatAI/gpt-oss-20b-speculator.eagle3)\n- [lmsys/EAGLE3-gpt-oss-120b-bf16](https://huggingface.co/lmsys/EAGLE3-gpt-oss-120b-bf16)\n- [nvidia/gpt-oss-120b-Eagle3-long-context](https://huggingface.co/nvidia/gpt-oss-120b-Eagle3-long-context)\n\nFor the full and up-to-date list of supported models, see #18039.\n\n### DFlash (`draft-dflash`)\n\nDFlash produces an entire block of draft tokens in a single forward pass (block diffusion) and\ninjects the target model's hidden states into the draft model's attention, instead of drafting one\ntoken at a time. This keeps the draft model small while making drafting GPU-friendly. Unlike EAGLE-3\n(a single-layer autoregressive draft), the DFlash draft uses several transformer layers but emits a\nwhole block per draft step.\n\nThe draft is a small block-diffusion model trained for a specific target (for example\n`z-lab/Qwen3-4B-DFlash` for `Qwen/Qwen3-4B`). Convert it with `--target-model-dir` so it inherits the\ntarget's tokenizer and token embeddings:\n\n```bash\npython convert_hf_to_gguf.py z-lab/Qwen3-4B-DFlash \\\n    --target-model-dir Qwen/Qwen3-4B --outtype bf16 --outfile Qwen3-4B-DFlash.gguf\n\nllama-server -m Qwen3-4B.gguf -md Qwen3-4B-DFlash.gguf \\\n    --spec-type draft-dflash --spec-draft-n-max 15 -fa on --jinja\n```\n\n`--spec-draft-n-max` is clamped to the draft model's trained block size.\n\nSee:\n\n- #22105\n\n### DSpark (`draft-dspark`)\n\nDSpark extends DFlash with a semi-autoregressive _Markov head_: the draft still emits a whole\nblock per forward pass, but each block position's logits are biased by a low-rank term keyed on\nthe previous token, chained in-graph across the block. This keeps drafting at one decode per\nblock while recovering some of the left-to-right signal that pure block diffusion loses.\n\nThe draft is a small DeepSpec checkpoint trained for a specific target (for example\n[`deepseek-ai/dspark_qwen3_4b_block7`](https://huggingface.co/deepseek-ai/dspark_qwen3_4b_block7)\nfor `Qwen/Qwen3-4B`). Convert it with `--target-model-dir` so it inherits the target's tokenizer\nand token embeddings:\n\n```bash\npython convert_hf_to_gguf.py deepseek-ai/dspark_qwen3_4b_block7 \\\n    --target-model-dir Qwen/Qwen3-4B --outtype bf16 --outfile Qwen3-4B-DSpark.gguf\n\nllama-server -m Qwen3-4B.gguf -md Qwen3-4B-DSpark.gguf \\\n    --spec-type draft-dspark --spec-draft-n-max 7 -fa on --jinja\n```\n\n`--spec-draft-n-max` is clamped to the draft model's trained block size.\n\n`--spec-draft-conf-min P` truncates each drafted block at the first position whose predicted\nacceptance (from the draft's confidence head, if present) falls below `P` (default 0 = disabled).\n\nCurrently only drafts with a Qwen3 backbone are supported; support for other backbones\n(e.g. Gemma4) is planned.\n\nSee:\n\n- #25173\n\n### n-gram Cache (`ngram-cache`)\n\nAn n-gram is a sequence of n tokens. The n-gram cache implementation maintains statistics about short n-gram sequences.\nA draft is computed using probabilities derived from these statistics. External statistics can also be loaded from files for improved accuracy.\n\nSee:\n\n- #5479, #6828, #6848\n\n### n-gram Map (`ngram-simple`, `ngram-map-*`)\n\nThese implementations search the token history for patterns and use matching sequences as draft candidates.\nThey require no additional model but rely on patterns that have already appeared in the generated text.\nAn example to use this approach can be the rewriting of source code by a LLM.\n\n#### n-gram Map (`ngram-simple`)\n\nThis implementation looks for the last n-gram in history that matches the current n-gram and creates a draft using the m tokens following the matched n-gram. It is the simplest self-speculative approach with minimal overhead.\n\n```\nllama-server [...] --spec-type ngram-simple --spec-draft-n-max 64\n```\n\n#### n-gram Map Key (`ngram-map-k`)\n\nThis implementation looks for the current n-gram of size n (called the _key_) in the token history. If the key n-gram is followed by the same m tokens (called the _mgram_) multiple times, it creates a draft using these m tokens. This approach requires a minimum number of occurrences (argument `--spec-ngram-map-k-min-hits`, default is 1) before generating drafts.\n\nThe number of accepted tokens is stored for each used n-gram.\n\n**Example:**\n```\nllama-server [...] --spec-type ngram-map-k --spec-draft-n-max 64\n```\n\n#### n-gram Map Key-4-Values (`ngram-map-k4v`)\n\nThis experime"
++ }
++]
+\ No newline at end of file

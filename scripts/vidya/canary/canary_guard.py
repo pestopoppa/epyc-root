@@ -17,6 +17,7 @@ import os
 import sqlite3
 import shutil
 from urllib.parse import parse_qsl, urlsplit
+import re
 import subprocess
 import sys
 import traceback
@@ -49,6 +50,17 @@ _in_hook = False
 _installed = False
 _TRUSTED_GIT = os.path.realpath(shutil.which("git") or "")
 _TRUSTED_PYTHON = os.path.realpath(sys.executable)
+
+
+def _is_embed_endpoint(args) -> bool:
+    """Allow ONE loopback port: the canary-owned embedding server (CANARY_EMBED_URL), nothing else."""
+    url = os.environ.get("CANARY_EMBED_URL")
+    if not url:
+        return False
+    u = urlsplit(url)
+    addr = args[1] if len(args) > 1 else None
+    return (u.hostname == "127.0.0.1" and isinstance(addr, tuple) and len(addr) >= 2
+            and addr[0] == "127.0.0.1" and addr[1] == u.port and (u.port or 0) >= 10000)
 
 
 def _under(path: str, roots=ALLOWED_WRITE_ROOTS) -> bool:
@@ -122,6 +134,8 @@ def _hook(event: str, args) -> None:
         if not _under(p) and not os.path.exists(p):
             _block(event, p)
     elif event in ("socket.connect", "socket.sendto", "socket.sendmsg"):
+        if event == "socket.connect" and _is_embed_endpoint(args):
+            return
         _block(event, f"{args[1:] if len(args) > 1 else args}")
     elif event == "subprocess.Popen":
         executable, argv, cwd, env = args
@@ -140,7 +154,16 @@ def _hook(event: str, args) -> None:
             # git subcommands/options can mutate files outside Python's audit hook.
             tail = argv[3:] if len(argv) >= 4 and argv[1] == "-C" else []
             allowed = tail in (["rev-parse", "HEAD"],
-                               ["status", "--porcelain", "--untracked-files=no"])
+                               ["status", "--porcelain", "--untracked-files=no"],
+                               # loop_beliefs.reader_checkout (LOOP-SAFETY C1 reader pin):
+                               ["rev-parse", "--verify", "HEAD^{commit}"],
+                               ["rev-parse", "--verify", "refs/remotes/origin/main^{commit}"])
+            hexsha = lambda v: bool(re.fullmatch(r"[0-9a-f]{40}", v))
+            if len(tail) == 4 and tail[:2] == ["merge-base", "--is-ancestor"]:
+                allowed = hexsha(tail[2]) and hexsha(tail[3])
+            if len(tail) == 4 and tail[:3] == ["rev-list", "--format=%ct", "--no-commit-header"]:
+                parts = tail[3].split("..")
+                allowed = len(parts) == 2 and all(hexsha(x) for x in parts)
             if allowed and (env or {}).get("GIT_OPTIONAL_LOCKS") == "0":
                 return
             _block("subprocess", f"git: {argv[:8]}")

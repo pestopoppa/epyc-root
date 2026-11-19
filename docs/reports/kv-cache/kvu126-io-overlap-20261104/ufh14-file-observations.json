@@ -1,0 +1,14 @@
+{
+  "frontdoor-launch.json": {
+    "mtime_ns": 1793801880937576456,
+    "sha256": "d3b608908b66da9dc01912537a79f58eaacb9e4b4d58837b5610463f1a411de1",
+    "size": 559,
+    "source": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-successor/out/run/faac267aceda487a957cf21d3c35c6b9/frontdoor-launch.json"
+  },
+  "frontdoor.log": {
+    "mtime_ns": 1793801881546280821,
+    "sha256": "e4114b5a7f2b33e60c94d0cf2dabe4b6683cf3eebb6079fa8d1cb4270aa91301",
+    "size": 2594,
+    "source": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-successor/out/run/faac267aceda487a957cf21d3c35c6b9/frontdoor.log"
+  }
+}

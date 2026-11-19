@@ -1,0 +1,15 @@
+{
+  "delivered": {
+    "<agent-id>": [
+      "msg-<UTC-stamp>-<n>-<sender>"
+    ]
+  },
+  "flagged": [
+    [
+      "msg-<UTC-stamp>-<n>-<sender>",
+      "handler:<name>"
+    ]
+  ],
+  "schema_version": "session_bus.relay_state.v1",
+  "ts": "1970-01-01T00:00:00+00:00"
+}

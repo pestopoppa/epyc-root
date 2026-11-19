@@ -1,0 +1,41 @@
+{
+  "as_of": "2026-11-18T03:27:51Z",
+  "campaign_history_snapshot_sha256": "986ae5f15273c589098c10b74dd5d9112d6a299b12e3b6f0ec77f51b666ab3f8",
+  "campaign_store": "/mnt/raid0/llm/autokernel/proof-q38fn-r6-20261112",
+  "claims": [
+    "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-Q4KM-1",
+    "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ4KT-1",
+    "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2XXS-1",
+    "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2KT-1"
+  ],
+  "control_native_archive_sha256": "8d1f09dbe507459fffc31c4d3e31f2a51c1ccd61bfb3e605e06339b6c20dd107",
+  "control_only": true,
+  "entry": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "frames": 12,
+  "history_recalled": 3,
+  "history_rendered": {
+    "mechanism": "akm-cpu-q6k-x4t-weight-prefetch",
+    "stale": true,
+    "status": "scope_blocked"
+  },
+  "negative_targets": [
+    "GPU same model",
+    "CPU unrelated model"
+  ],
+  "official_native_acceptance": "pending",
+  "original_official_r3_pre_hook": true,
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "0883b9a4f60e6b0fa83217c668b5cbbfdbf3c561",
+    "origin_main": "0883b9a4f60e6b0fa83217c668b5cbbfdbf3c561",
+    "root": "/mnt/raid0/llm/views/epyc-root-main"
+  },
+  "refused": 0,
+  "rendered_excerpt_sha256": "1f39c4fc554faafb59141eb90b2efaa6cc26d1ad1c5c754c9609302abc8620f0",
+  "rows": 4,
+  "schema": "epyc.vidya.exp01_control_planning_canary.v2",
+  "scratch_ledger": true,
+  "status": "passed",
+  "stop": "AgentPlanner._proposal_from_agent intercepted before backend execution"
+}

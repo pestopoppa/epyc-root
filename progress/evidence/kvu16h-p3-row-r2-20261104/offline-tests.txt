@@ -1,0 +1,26 @@
+test_busy_evidence_requires_measurement_slot (test_p3_lifecycle.LifecycleTests.test_busy_evidence_requires_measurement_slot) ... ok
+test_chat_rejects_before_transport (test_p3_lifecycle.LifecycleTests.test_chat_rejects_before_transport) ... ok
+test_failed_stop_retains_handle_and_checks_port (test_p3_lifecycle.LifecycleTests.test_failed_stop_retains_handle_and_checks_port) ... ok
+test_port_probe_error_is_not_free (test_p3_lifecycle.LifecycleTests.test_port_probe_error_is_not_free) ... ok
+test_variants_require_matched_occupancy_and_cleanup (test_p3_lifecycle.LifecycleTests.test_variants_require_matched_occupancy_and_cleanup) ... ok
+test_captured_children_stay_in_engine_group (test_job.Tests.test_captured_children_stay_in_engine_group) ... ok
+test_completion_cannot_overwrite (test_job.Tests.test_completion_cannot_overwrite) ... ok
+test_explicit_draft_counts_required (test_job.Tests.test_explicit_draft_counts_required) ... ok
+test_grant_and_mode_required (test_job.Tests.test_grant_and_mode_required) ... ok
+test_grant_cannot_widen_smoke_affinity (test_job.Tests.test_grant_cannot_widen_smoke_affinity) ... ok
+test_native_result_path_and_deadline (test_job.Tests.test_native_result_path_and_deadline) ... ok
+test_non_model_spec_configuration_refused (test_job.Tests.test_non_model_spec_configuration_refused) ... ok
+test_catalog_corruption_refuses_before_import (test_private_lock.PrivateLockTests.test_catalog_corruption_refuses_before_import) ... ok
+test_dryrun_preserves_no_lock_policy_and_four_cpu_taskset (test_private_lock.PrivateLockTests.test_dryrun_preserves_no_lock_policy_and_four_cpu_taskset) ... [region-lock] dry run: no lock taken (cpus=184-187)
+ok
+test_eight_cpu_smoke_is_narrowed_to_exact_four (test_private_lock.PrivateLockTests.test_eight_cpu_smoke_is_narrowed_to_exact_four) ... ok
+test_full_eight_cpu_shape_preserved (test_private_lock.PrivateLockTests.test_full_eight_cpu_shape_preserved) ... ok
+test_full_retains_exclusive_gpu_provider_path (test_private_lock.PrivateLockTests.test_full_retains_exclusive_gpu_provider_path) ... [region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=1) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: /bin/true
+ok
+test_source_loader_excludes_shared_modules_and_bytecode (test_private_lock.PrivateLockTests.test_source_loader_excludes_shared_modules_and_bytecode) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.080s
+
+OK

@@ -1,0 +1,5 @@
+{
+  "verdict": "inconclusive",
+  "rationale": "Full rc1: retained collector result INCOMPLETE because completed API scout report missing. Raw full trace has3 scouts launched,0 completed,3 cancelled at about183\u2013191s; native180s per-call cap and240s aggregate budget cut off the600s intended diagnostic. No valid three-scout outcomes or KPF26 gate result. Earlier smoke only qualified a one-token native control and is excluded. Full attempt preserved in this packet; fresh same-lineage r2 with explicit600s private cap and corrected root timeout has smokePASS, full still pending.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

@@ -1,0 +1,9 @@
+{
+ "/mnt/raid0/llm/tmp/rtg56-td29-m0a-raw-v5-20261029/pidfd_custody_v2.py": "/workspace/artifacts/compute/yarn-s2-custody-control-20261101/host-src/pidfd_custody_v2.py",
+ "/mnt/raid0/llm/tmp/rtg56-td29-m0a-raw-v5-20261029/pidfd_subreaper_v3.py": "/workspace/artifacts/compute/yarn-s2-custody-control-20261101/host-src/pidfd_subreaper_v3.py",
+ "/mnt/raid0/llm/tmp/codex3-pip-pool0-partial-20261031-0644/R11-RETIREMENT.json": "/workspace/artifacts/compute/codex3-pip-r35-pool0-ready-20261031/R11-RETIREMENT.json",
+ "/mnt/raid0/llm/tmp/codex3-pip-pool0-recovery-20261031-0638/OLD-STOP.json": "/workspace/artifacts/compute/codex3-pip-r35-pool0-ready-20261031/R27-STOP.json",
+ "/mnt/raid0/llm/tmp/codex3-pip-pool0-recovery-20261031-0638/INVENTORY.json": "/workspace/artifacts/compute/codex3-pip-r33-pool0-ready-20261031/INVENTORY.json",
+ "/mnt/raid0/llm/tmp/codex3-pip-pool0-recovery-20261031-0638/INSPECTION.json": "/workspace/artifacts/compute/codex3-pip-r33-pool0-ready-20261031/INSPECTION.json",
+ "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-r2-20261029/region_generic.py": "/mnt/raid0/llm/tmp/codex3-pip02-paddle-parallel-owner-r4-20261029/region_generic.py"
+}

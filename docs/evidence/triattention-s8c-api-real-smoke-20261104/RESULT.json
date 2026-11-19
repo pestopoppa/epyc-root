@@ -1,0 +1,56 @@
+{
+  "unit": "s8c-real-api",
+  "status": "pass",
+  "reason": "complete API cases",
+  "cases": 2,
+  "cases_data": [
+    {
+      "case": "first_compaction",
+      "http": 200,
+      "response": {
+        "compact_positions": false,
+        "id_slot": 0,
+        "keep_ratio": 0.5,
+        "logical_context_reclaimed": false,
+        "n_evicted": 60,
+        "pos_max_after": 127,
+        "reclaim_mode": "evict_only_gapped",
+        "scorer": "expected_attention"
+      }
+    },
+    {
+      "case": "second_compaction",
+      "http": 500,
+      "response": {
+        "error": {
+          "code": 500,
+          "message": "Expected Attention compression failed",
+          "type": "server_error"
+        }
+      }
+    }
+  ],
+  "candidate": {
+    "model": "/mnt/raid0/llm/models/Qwen3-1.7B-Q8_0.gguf",
+    "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+    "model_size": 1834426016,
+    "model_inode": 96207012,
+    "model_device": 2431,
+    "server": "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/llama-server",
+    "server_sha256": "2b62285c98f28d02dde77acdbccc119acf00e6a7197335beab0fb514f27b75e6",
+    "dsos": {
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libllama.so.0.0.10303": "55eadfac8e4e9d4a81104f1944e5b118a3af6e314092812fabbd3bdb55e17028",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libggml-cpu.so.0.16.0": "26fb470b12b99d46cb857ef38aabf3e469e6db326584034fd290713cf3c44f61",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libllama-common.so.0.0.10303": "bd827dc8b93be7f7fd622cb09230e35e46691cfb1eba9ee15c59b9530ddb9b1a",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libggml.so.0.16.0": "49a360f09db3ce36856212e0950d6eab006e71c88d2ba08e54c2da7b911beca4",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libllama-server-impl.so": "3f59986f617cc18d89753bfca25b930121d156567088db8a5111b3333a899721",
+      "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/pinned-build/bin/libggml-base.so.0.16.0": "245d1f54cd3436260ba7cc573dbf81f91f468d91919b1b9e4059be05e971ceb8"
+    },
+    "base_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "patch_sha256": "7612c84004793847a77237d8881830a8f17041625be28bd409591289f62298dc",
+    "build_receipt_sha256": "55bf8d9e73e331343eef273ce21103e6d25f6554accc6464623bcec723374a8c",
+    "artifacts_sha256": "582678921ab0e8015f05766c37f567a4d1897344b338410304df5fc6008b9b7b"
+  },
+  "evidence": "/mnt/raid0/llm/tmp/triattention-s8c-api-real-20261104/native/attempt-328627",
+  "scope": "One dense Qwen3-1.7B CPU server; HTTP responses and gapped-cache rejection only; no quality, speed or physical KV continuity claim."
+}

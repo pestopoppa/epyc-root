@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T19:13:02Z reason=complete
+job_id=vb-p5-sphinx-image-rebuild-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=420
+started=2026-11-18T19:12:57Z
+regions=0-23

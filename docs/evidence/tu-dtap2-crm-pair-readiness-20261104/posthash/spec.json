@@ -1,0 +1,25 @@
+{
+  "id": "evl46-crm-posthash-20261104",
+  "owner": "codex-evl46",
+  "launcher": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/posthash/launch.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/posthash/posthash.json",
+  "result_format": "json",
+  "decision_rule": "Native posthash record binds to the completed main pair claim close and journal; live model posthash equals prepared identity. Dry branch is fixture-only schema and can only prove launcher plumbing.",
+  "estimate_s": 300,
+  "min_window_s": 120,
+  "ram_gib": 4,
+  "regions": "any-cpu-quarter",
+  "priority_rank": 51,
+  "handoff_task": "handoffs/active/benchmark-suites.md:TU-DTAP-2-CRM-POSTHASH",
+  "scratch_root": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/posthash",
+  "keep": [
+    "*.sh",
+    "*.py",
+    "*.json",
+    "*.md",
+    "posthash.json"
+  ],
+  "dryrun_native_result": true,
+  "unit_key": "fact.sha256"
+}

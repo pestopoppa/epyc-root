@@ -1,0 +1,58 @@
+{
+  "scope": "one new prospective original-pair conflict inventory; no build/inference/promotion or historical rewrite",
+  "source": "/mnt/raid0/llm/llama.cpp-experimental",
+  "clone_command": [
+    "git",
+    "clone",
+    "--no-local",
+    "--no-checkout",
+    "/mnt/raid0/llm/llama.cpp-experimental",
+    "tmp/ch18-source-20261117"
+  ],
+  "clone_exit": 0,
+  "checkout_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "checkout_exit": 0,
+  "producer_exit": 0,
+  "record_sha256": "62ef9e0f2ddec3ef31c9dbf9c70a01add60c0b14273b806e82cf269fdb017f79",
+  "native_seal": "f51819c730a975081eebcd915c8c936c3c1a3249be4c734b2efcd12c5f46f206",
+  "completed_at": "2026-11-17T19:40:31Z",
+  "state": "complete",
+  "conflict_count": 98,
+  "cleanup": {
+    "worktree_removed": true,
+    "merge_aborted": true
+  },
+  "dry_run_command": [
+    "/usr/bin/python3",
+    "scripts/vidya/cli.py",
+    "--ledger",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/ch18-trial-20261117/dry-run-unused-ledger.jsonl",
+    "ingest",
+    "ch18-merge-trial",
+    "--path",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/ch18-trial-20261117/merge_trial.json",
+    "--as-of",
+    "2026-11-17T19:40:31Z",
+    "--dry-run"
+  ],
+  "dry_run_exit": 0,
+  "frame_count": 3,
+  "clone_checks": {
+    "rev-parse HEAD": {
+      "exit": 0,
+      "stdout": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115\n",
+      "stderr": ""
+    },
+    "status --porcelain": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "worktree list --porcelain": {
+      "exit": 0,
+      "stdout": "worktree /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/tmp/ch18-source-20261117\nHEAD ffc1bac82eeca6f9099e1ccd9ba49703c460a115\ndetached\n\n",
+      "stderr": ""
+    }
+  },
+  "unused_ledger_created": false
+}

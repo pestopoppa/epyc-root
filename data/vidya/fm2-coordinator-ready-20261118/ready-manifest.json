@@ -1,0 +1,65 @@
+{
+ "book_s": 225,
+ "budget_gib": 0.01,
+ "busy_fraction": 0.25,
+ "decision_rule": "selected_count >= 1 and refusal_count == 0 and reliance_count == 0",
+ "declared_shape": "sub-quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-FM2-COORDINATOR-ENTRY-PREP",
+ "id": "vb-fm2-coordinator-context-20261118",
+ "keep": [
+  "source/**",
+  "launcher/**",
+  "official/**",
+  "official-*/**",
+  "publisher_smoke-*/**",
+  "*.py",
+  "*.json",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/coordinator-row/launcher/launch.sh",
+  "sha256": "ba7799899d4b9d54ac09bd66cf0531e929476414927a2acc923f52ce490c54a8"
+ },
+ "lineage": "vidya-fm2-coordinator-context",
+ "min_window_s": 120,
+ "notes": "Model-free structural replay. The official original FM-2 source-control judgment is read in place and checked against its filed result digest and source seal. Both publisher smoke and official run use separate isolated ledgers and execute the exact interactive coordinator context entry point on four actual allocated CPUs. Stop after one exact Judged/Located harness observation reaches the coordinator section with unrelated-consumer and reliance exclusion. Stop on drift, refusal, STOP or the earlier of the allocator deadline and 300 seconds, preserving UNKNOWN. Receipt describes context assembly and supplies no live invocation or decision result.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:11: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "vidya-belief-substrate-program.md:11: untestable prose prerequisite: 'after focused controls and publisher four-CPU retained-native smoke PASS; the official consumer canary and genuine coord'",
+  "volatile-paths: the job runs /mnt/raid0/llm/epyc-inference-research/.venv/bin/python3 from a lane/worktree path that can change or vanish before its grant; set \"snapshot\": true in the spec to freeze it (publish continues)"
+ ],
+ "published_at": "2026-11-18T17:14:16Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/coordinator-row/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T17:14:16Z",
+  "session": "01a1ef9f-ccfe-71a2-82cf-4ecaad9e291f",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/coordinator-row/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/coordinator-row",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/coordinator-row/STOP",
+ "total_units": 1,
+ "unit_key": "selected_count",
+ "window_s": 420,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/coordinator-row/engine-work"
+}

@@ -1,0 +1,1 @@
+{"existing_smoke_gguf":{"path":"/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/mi210-big-model-and-acceleration-roadmap/q38p4-v4/qwen3-0.6b-bf16.gguf","sha256":"d8fc64b781e97dcde88d1614fc091471360ef00887475a82e17a93a929954b8b"},"historical_conversion_log_sha256":"fb205d9d59a073d9f60e417433e013ee13272eb4afd09809c57ba2ced95bd7bd","scope":"small-model smoke only"}

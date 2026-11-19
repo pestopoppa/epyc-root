@@ -14,10 +14,11 @@ does not restate them:
   `/clear`, close, pre-reboot, and reading another session's liveness. (Extracted from
   `OPERATING_CONSTRAINTS.md` on 2026-07-30; that file now points here.)
 - `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks* (reload ownership).
-- `.claude/skills/inference-backlog-scheduling/SKILL.md` — how the inference backlog is packed onto
-  the host (bins, derived classes, grant-writer invariants, the STATUS/ETA report) and
-  `docs/guides/agent-workflows/compute-fillers.md`, the grant/FILLERS protocol it runs on. The
-  coordinator never writes a grant; it makes sure a calendar owner exists and routes to it.
+- `.claude/skills/inference-backlog-scheduling/SKILL.md` and
+  `docs/guides/agent-workflows/backlog-churn-flow.md` — the compute loop: the keeper
+  (`rowflow.py allocate`, the only grant writer) smokes, arms, grants and files `epyc.row.v3` rows,
+  the owner publishes and files results, workers pull prep. The coordinator never writes a grant
+  or a manifest; it checks the keeper and an owner exist.
 
 Governing principle — **BUS_PROTOCOL rule 9**: a fresh coordinator reconstructs its entire state
 from bus files alone. That is why this skill needs no arguments and no operator input to start.
@@ -111,6 +112,23 @@ disk watchers, tmux session `agent`) — cold start is ONE command**: `scripts/c
 DOWN. Runbook and expected output: `docs/guides/agent-workflows/backlog-churn-flow.md` → *Reboot / cold start*. It never
 starts an agent and never sends keys; it prints the two manual steps (Claude ws58, codex-gen).
 
+**opencode event reaper (NIB2-88) — verify, then relaunch only if the keeper did not.** The container has no cron or
+systemd, so `scripts/system/opencode_event_reaper.sh` does not survive a reboot by itself. Today the host cron re-runs
+`hub_supervisor.sh`, whose `host_hygiene_tick.py` keeper relaunches the observer-registry row marked `relaunch_if_down`
+(this reaper) — so the normal answer is "already back". Prove it by pid identity, never by a name pattern:
+
+```bash
+python3 scripts/system/host_hygiene_tick.py status | head -20          # tick heartbeat_at recent? keeper ran
+ps -o pid,lstart,args -p "$(cat /mnt/raid0/llm/tmp/opencode-reaper.pid)"   # alive AND argv is the canonical reaper `run`
+```
+
+Only if the pid is dead **and** the tick heartbeat is stale (the host cron is not re-running the hub supervisor), relaunch
+by hand, detached, from the tracked path, then re-read the pid file and `ps -p` it:
+`nohup /bin/bash /workspace/scripts/system/opencode_event_reaper.sh run >> /mnt/raid0/llm/tmp/opencode-reaper.log 2>&1 &`.
+Report a stale tick heartbeat as a live gap in Phase 4. When LR-8's event duty is handed over (registry row becomes
+`scheduler: host_hygiene_tick`, `start_argv` removed, `docs/guides/agent-workflows/opencode-event-duty-handover.md`) the
+daemon no longer exists: replace this step with a check of `logs/hygiene/opencode_event_reaper.log` freshness.
+
 **Compute-owner takeover — do this before triage, every cold start or resume.** Prove the calendar keeper, both grant
 writers and the **results-filing watcher** are alive (pid from their log, `ps -p`), clear crash residue, and file every
 `filing-due.jsonl` id that has no `filing-done/<id>.FILED` **immediately** — then arm the wake-up for new run ends.
@@ -153,7 +171,7 @@ Prefer `pause`, then let them drain.
 > them restarts automatic dispatch, nudges and window grants, which changes fleet behaviour; the
 > operator did not want that. Run the *status* and *alarm* checks below and record the answers, but
 > **do not run the two `nohup` launches without a fresh operator go** (recorded in
-> `handoffs/active/non-inference-backlog.md` → NIB2-81). While the daemon is down nothing grants
+> `handoffs/active/engineering-hygiene-backlog.md` → NIB2-81). While the daemon is down nothing grants
 > compute windows by rule: the compute-calendar owner does, under
 > `.claude/skills/inference-backlog-scheduling` (Phase 3 step 5).
 
@@ -446,29 +464,19 @@ occupancy line behind a staleness guard. Your inbox is split MUST-ACT (you are t
 a disposition is owed) from FYI (`cc`; cursor-cleared, no ack). Before this split, 83% of what sat
 in an inbox belonged to someone else.
 
-**5. The compute backlog — route it, never pack it yourself.** Since 2026-10-21 the inference
-backlog is packed by the **compute-calendar owner** (workspace-58 that week; the `inference`
-roster slot when it is staffed) under `.claude/skills/inference-backlog-scheduling`: items are
-FILLERS.md rows, windows are `grants/<id>.grant` files written by versioned writer scripts after
-`grant_ok.sh`, and the append-only calendar REVISION log is the record. What the coordinator owns
-in that loop:
+**5. The compute backlog — check the loop, never run it.** The loop is
+`docs/guides/agent-workflows/backlog-churn-flow.md`: the keeper (`rowflow.py allocate`, every
+120 s) smokes, arms and grants published `ready/*.json` rows by priority; row owners publish and
+file results; workers pull inference-prep items. What the coordinator owns:
 
-- **There is always a calendar owner.** If no session holds the duty, that is the first decision
-  package of the session, not a gap to note.
-- **Queued means armed.** A compute row is QUEUED only when its status is ARMED, `ready=y` and a
-  live launcher polls its id; everything else is BACKLOG with `blocker=<missing launcher | harness
-  fix | build | operator decision>` and an owner (operator ruling 2026-10-22). A code blocker is
-  never recorded as a blocker: dispatch a subagent for it in the same turn, and when it clears the
-  owner arms and requests a slot in that same turn.
-- **Idle bins are a reportable condition.** When `queue_status.py` or an owner receipt shows a free
-  quarter or an idle MI210 with ARMED-UNBOOKED rows, route it to the calendar owner with urgency,
-  citing the receipt. Never grant around the owner and never treat a held lock as a busy device.
-- **Owner duty on failures.** Every job owner watches its own `.ended` / FAILED flags with a
-  zero-token watcher, and on any failure finds WHY, fixes, re-queues and relays. A failure that
-  sits unnoticed overnight is a coordination defect to file, not a status line.
-- **Grant requests are typed.** A request carries `id`, regions shape, `min_window` s, `minutes`,
-  `RAM` GiB (+`ds41`), launcher `pid` and the class evidence; relay it with `SendMessage` and a
-  flag file. The coordinator never writes a grant file.
+- **The keeper is alive and there is an owner.** `scripts/coordination/churn/churn_up.sh --status`
+  is the read-only check; prove a pid with `ps -o pid,lstart,args -p <pid>`. A dead keeper or no
+  owner is the first decision package of the session.
+- **Idle is read from the keeper's `IDLE-WHY` lines and `rowflow.py alerts --unacked`**, never
+  re-derived. Idle with grantable rows is a keeper defect to report to the owner once; idle with
+  none is a priority defect.
+- **No relays, acks or nudges about compute.** Workers need no permission to smoke or publish; holds
+  and withdrawals live in the row. The coordinator never writes a grant or manifest.
 
 ### Nudging — the only safe path
 
@@ -522,7 +530,7 @@ in that loop:
 - **Never spend the main thread on focused execution work** — docs, briefs, edits, research and
   analysis go to subagents. Your scarce resource is attention to task boundaries. This is the
   **strict case of a fleet-wide default that binds every main**, not a coordinator privilege:
-  **3–5 subagents run CONCURRENTLY**, model and effort matched to the task, and **every subagent
+  fan-out width is a ceiling (canonical policy in the file below), model and effort matched to the task, and **every subagent
   result is PROPOSED work** until you have reviewed its evidence and diffs. It admits **no
   coordinator exception** — the coordinator is the tightest instance of it, never an exemption
   from it. Full rule, including when NOT to fan out:

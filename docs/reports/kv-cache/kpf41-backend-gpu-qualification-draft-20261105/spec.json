@@ -1,0 +1,49 @@
+{
+  "id": "kpf41-backend-gpu-qualification-20261105",
+  "state": "DRAFT_AWAITING_CHECKBOX_AND_PUBLISHER_SMOKE",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-41.BACKEND-GPU-QUALIFICATION",
+  "source_commit": "15caecbbf4cb27452dbd87fa1a68a0e75098388e",
+  "build_receipt": "docs/reports/kv-cache/kpf41-backend-build-result-20261105/RESULT.json",
+  "build_files_sha256": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/test-backend-ops": "e8270bb7da61cb9400f2e43ee4647840565c529ceb479026ea5dde7d52b66bfc",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/libggml.so": "85a180a2889e09f8d1c35f163aeabd1c81524ffd107ceaed28e508b114a2b568",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/libggml-base.so": "f2b9d75e8cacc0959f26c13cf5701dc9a354a181055f584fce3e170e52dbf572",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/libggml-cpu.so": "8be2828fa2ff108ec0275149293a55177476c545eb2868bdecb5849df0cffcec",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build/bin/libggml-hip.so": "172b3a22d7e41329776347f3e8e64a95baa291e069c3efb1f1143d680fb4e6cb"
+  },
+  "backend": "ROCm0",
+  "argv": [
+    "test-backend-ops",
+    "test",
+    "-b",
+    "ROCm0",
+    "-o",
+    "FLASH_ATTN_EXT"
+  ],
+  "scope": "Generic and unified/shared-trunk FLASH_ATTN_EXT backend correctness corpus, not proof of direct-row dispatch, complete KPF-41, performance, serving or promotion.",
+  "decision_rule": "PASS requires rc 0, nonzero selected and supported cases including identified unified shared-trunk cases, no failed cases, no missing/aborted summary, own-PID HIP mapping and positive VRAM/KFD sampled while running, linkage and all five hashes match build receipt before and after, source commit and clean tracked state rechecked; preserve unsupported counts and all case logs. Any unsupported required shared-trunk case is inconclusive; no silent 0/0 pass. Stop on failure, STOP or deadline.",
+  "model": "none",
+  "gate_class": "futility-only",
+  "region": "mi210_0,184-187",
+  "ram_gib": 4,
+  "estimate_s": 3600,
+  "smoke": "four-CPU synthetic parser/cleanup and publisher GPU residency witness; no target corpus",
+  "status_note": "Draft launcher prepared; publisher smoke not run and explicit open checkbox absent.",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-20261105/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-187",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-20261105/out/RESULT.json",
+  "result_format": "json",
+  "priority_rank": 35,
+  "kind": "compute",
+  "smoke_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-20261105",
+  "keep": [
+    "**"
+  ],
+  "unit_key": "progress",
+  "lineage": "kpf41-backend-gpu-qualification",
+  "notes": "Publisher smoke executes synthetic parser/cleanup and pinned bounded 192 MiB model-free GPU witness; no target corpus."
+}

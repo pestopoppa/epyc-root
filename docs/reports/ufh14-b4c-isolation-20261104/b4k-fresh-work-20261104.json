@@ -1,0 +1,24 @@
+{
+  "task": "UFH14-B4k",
+  "outcome": "PREPARED_UNPUBLISHED_DISK_FLOOR",
+  "verified_at": "2026-11-04T17:13:31.131764+00:00",
+  "disk_next_artifact_present": false,
+  "successor_packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v5-20261104",
+  "row_id": "ufh14-b4k-guard-v5-20261104",
+  "available_bytes": 143019368448,
+  "required_floor_bytes": 161061273600,
+  "shortfall_bytes": 18041905152,
+  "offline_validation": {
+    "tests_passed": 49,
+    "packet_content_pins_match": true,
+    "source_manifest_files": 1837,
+    "source_mismatches": [],
+    "identity_override": "unconditional ORCHESTRATOR_GIT_SHA assignment before producer imports",
+    "launcher_disk_floor": "unchanged native filler 150GiB default"
+  },
+  "publication_performed": false,
+  "direct_inference_performed": false,
+  "wait_or_poll_performed": false,
+  "mutations": "terminal artifact only; existing successor, keeper, grants, rows and repository untouched",
+  "next_action": "After external disk headroom restoration to >=150GiB plus expected run growth, owning session may use publish_row.py to submit v5 bounded native smoke; no inference validity claimed."
+}

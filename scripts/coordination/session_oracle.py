@@ -1,0 +1,403 @@
+#!/usr/bin/env python3
+"""FM-4 session success/failure oracle.
+
+Derives a machine-readable verdict per session from Claude Code JSONL
+transcripts (read-only) and, best-effort, Codex rollouts. Neither corpus
+carries a verdict; this reads outcome signals out of the tool traffic.
+
+Row schema ``session_oracle.v1``::
+
+    {session_id, path, harness, verdict, signals{...counts...},
+     last_commit_sha, pushed, schema}
+
+Signals (counts)
+  tool_calls, tool_errors   every shell call / non-zero exit
+  gate_pass, gate_fail      gate runs: pytest (summary line "N passed, M
+                            failed"; any failed/error => fail), ``--check``
+                            invocations and scripts/**/verify_*.py|sh (exit
+                            status decides; "Exit code N" text or is_error)
+  commits                   ``git commit`` whose output has "[branch abc1234]"
+  push_ok, push_rejected    ``git push`` / serialized_push.py outcomes
+                            (ref-update line / up-to-date = ok; "[rejected]",
+                            "failed to push", non-fast-forward, or non-zero
+                            exit = rejected)
+  malformed_lines           unparseable JSONL lines (counted, never fatal)
+
+Verdict rule (events evaluated in transcript order; G = last gate result,
+C = a commit landed, P = last push outcome):
+  1. unknown  - no gate, commit or push events at all.
+  2. failure  - G is fail and no commit landed after that failing gate.
+  3. partial  - G is fail but a commit landed after it (fixed forward
+                unverified); or the work is only half evidenced: commit with
+                no gate, gate pass with no commit, push only, or otherwise
+                successful but the last push was rejected.
+  4. success  - C and G is pass (a later pass supersedes earlier failures),
+                and the last push (if any) was not rejected.
+``pushed`` is true iff the last push outcome is ok.
+
+Completion refinement (Claude transcripts only; applied ONLY where rule 1 says
+unknown, so it never changes a success/failure/partial verdict and never asserts
+success): the session carries no outcome signal, but how it ended is observable.
+  no_work               zero tool calls of any kind and no assistant text.
+  delivered_no_outcome  ended cleanly: last assistant action is a
+                        ``SubagentHandback`` call or a final text block with
+                        no later tool call, and no API-error record after it.
+                        A report was returned; it is NOT a success label.
+  aborted               ended on a tool call/result or an API error with no
+                        final report.
+  unknown               none of the above (e.g. no assistant records at all).
+``signals.end`` records the observed ending (handback|text|tool|api_error|none).
+
+For otherwise-unknown Claude subagents, a matching parent Agent/Task result can
+supply an explicit outcome. A structured tool error or failure status means
+failure. An explicit success status means success. Launch and completion report
+delivery alone leave the local completion verdict in place. ``signals.parent_join``
+records matched, missing, or ambiguous evidence, and ``signals.parent_result``
+records the source path, session ID, tool-use ID, child ID, status, error flag,
+and explicit outcome.
+"""
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+SCHEMA = "session_oracle.v1"
+_LEAD = r"(?:^|[;&|\"'(]\s*)"
+_PYTEST_CMD = re.compile(r"-m\s+pytest\b|" + _LEAD + r"pytest\b", re.M)
+_GATE_CMD = re.compile(
+    _PYTEST_CMD.pattern + r"|(?:python3?\s+|bash\s+|\./)\S*verify_[\w-]+\.(?:py|sh)\b|"
+    r"\.py\s+(?:\S+\s+)*--check\b", re.M)
+_COUNT = re.compile(r"\b(\d+) (passed|failed|errors?)\b")
+_COMMIT_SHA = re.compile(r"(?:^|[\s\"])\[([^\]\n\"]+?) ([0-9a-f]{7,40})\]", re.M)
+_PUSH_CMD = re.compile(
+    _LEAD + r"(?:git\s+(?:-C\s+\S+\s+)?push\b|(?:python3?\s+)?\S*serialized_push\.py)", re.M)
+_PUSH_REJ = re.compile(r"\[rejected\]|remote rejected|failed to push|non-fast-forward", re.I)
+_PUSH_OK = re.compile(
+    r"^\s*[0-9a-f]{7,40}\.\.[0-9a-f]{7,40}\s+\S+\s+->|\[new (?:branch|tag)\]|Everything up-to-date",
+    re.M)
+_EXIT = re.compile(r"^Exit code (\d+)", re.M)
+
+
+def _text_of(content):
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "\n".join(b.get("text", "") for b in content
+                         if isinstance(b, dict) and b.get("type") in ("text", "input_text"))
+    return ""
+
+
+def _exit_status(text, is_error=False):
+    m = _EXIT.search(text or "")
+    if m:
+        return int(m.group(1))
+    return 1 if is_error else 0
+
+
+def _iter_json(path, stats):
+    with Path(path).open("r", encoding="utf-8", errors="replace") as fh:
+        for line in fh:
+            if not line.strip():
+                continue
+            try:
+                r = json.loads(line)
+            except json.JSONDecodeError:
+                stats["malformed_lines"] += 1
+                continue
+            if isinstance(r, dict):
+                yield r
+            else:
+                stats["malformed_lines"] += 1
+
+
+def _claude_events(records):
+    """Yield (cmd, output, exit_status) for each Bash tool call, in order."""
+    pending = {}
+    order = []
+    for r in records:
+        msg = r.get("message")
+        if not isinstance(msg, dict) or not isinstance(msg.get("content"), list):
+            continue
+        for b in msg["content"]:
+            if not isinstance(b, dict):
+                continue
+            if b.get("type") == "tool_use" and b.get("name") == "Bash":
+                cmd = (b.get("input") or {}).get("command", "")
+                pending[b.get("id")] = len(order)
+                order.append([cmd, None, None])
+            elif b.get("type") == "tool_result" and b.get("tool_use_id") in pending:
+                text = _text_of(b.get("content"))
+                ev = order[pending[b["tool_use_id"]]]
+                ev[1] = text
+                ev[2] = _exit_status(text, bool(b.get("is_error")))
+    for cmd, out, st in order:
+        if out is not None:
+            yield cmd, out, st
+
+
+def _completion(records):
+    """-> (refined verdict for an otherwise-unknown session, end kind)."""
+    any_tool = False
+    end = "none"
+    for r in records:
+        if r.get("isApiErrorMessage"):
+            end = "api_error"
+            continue
+        msg = r.get("message")
+        if not isinstance(msg, dict) or not isinstance(msg.get("content"), list):
+            continue
+        for b in msg["content"]:
+            if not isinstance(b, dict):
+                continue
+            if b.get("type") == "tool_use":
+                any_tool = True
+                end = "handback" if b.get("name") == "SubagentHandback" else "tool"
+            elif (b.get("type") == "text" and msg.get("role") == "assistant"
+                  and str(b.get("text", "")).strip()):
+                end = "text"
+    if not any_tool and end in ("none",):
+        return "no_work", end
+    if end in ("handback", "text"):
+        return "delivered_no_outcome", end
+    if end in ("tool", "api_error"):
+        return "aborted", end
+    return "unknown", end
+
+
+def _parent_agent_results(path):
+    """Index structured Agent/Task results by (session ID, agent ID)."""
+    calls = set()
+    results = {}
+    for r in _iter_json(path, {"malformed_lines": 0}):
+        if r.get("isSidechain") or r.get("agentId"):
+            continue
+        sid, msg = r.get("sessionId"), r.get("message")
+        if not isinstance(sid, str) or not sid or not isinstance(msg, dict):
+            continue
+        content = msg.get("content")
+        if not isinstance(content, list):
+            continue
+        if r.get("type") == "assistant":
+            for b in content:
+                if (isinstance(b, dict) and b.get("type") == "tool_use"
+                        and b.get("name") in ("Agent", "Task") and isinstance(b.get("id"), str)):
+                    calls.add((sid, b["id"]))
+        metadata = r.get("toolUseResult")
+        if r.get("type") != "user" or not isinstance(metadata, dict):
+            continue
+        aid = metadata.get("agentId")
+        if not isinstance(aid, str) or not aid:
+            continue
+        # Record-level metadata cannot be attributed to one of several results.
+        blocks = [b for b in content if isinstance(b, dict) and b.get("type") == "tool_result"]
+        if len(blocks) != 1:
+            continue
+        block = blocks[0]
+        tool_id = block.get("tool_use_id")
+        if not isinstance(tool_id, str) or not tool_id or (sid, tool_id) not in calls:
+            continue
+        status = metadata.get("status")
+        is_error = block.get("is_error") is True
+        labels = (status, metadata.get("outcome"))
+        if is_error or any(label in ("failed", "failure", "error") for label in labels):
+            outcome = "failure"
+        elif status not in ("async_launched", "running") and any(
+                label in ("success", "succeeded") for label in labels):
+            outcome = "success"
+        else:
+            outcome = None
+        evidence = {"path": str(path), "session_id": sid, "agent_id": aid, "tool_use_id": tool_id,
+                    "status": status if isinstance(status, str) else None, "is_error": is_error,
+                    "outcome": outcome}
+        key = (sid, aid)
+        if results.setdefault(key, evidence) != evidence:
+            results[key] = None  # Conflicting evidence or multiple distinct calls for one child.
+    return results
+
+
+def _join_parent(path, records, sid, parent_path, parent_cache):
+    if not isinstance(sid, str) or not sid or not path.stem.startswith("agent-"):
+        return None, None
+    aid = path.stem.removeprefix("agent-")
+    if not any(r.get("agentId") == aid and r.get("sessionId") == sid for r in records):
+        return None, None
+    if parent_path is None:
+        if path.parent.name != "subagents" or path.parent.parent.name != sid:
+            return "missing", None
+        parent_path = path.parent.parent.with_name(f"{sid}.jsonl")
+    if parent_path not in parent_cache:
+        try:
+            parent_cache[parent_path] = _parent_agent_results(parent_path)
+        except OSError:
+            parent_cache[parent_path] = {}
+    results = parent_cache[parent_path]
+    key = (sid, aid)
+    if key not in results:
+        return "missing", None
+    evidence = results[key]
+    return ("matched", evidence) if evidence is not None else ("ambiguous", None)
+
+
+def _codex_events(records):
+    pending = {}
+    order = []
+    for r in records:
+        p = r.get("payload")
+        if not isinstance(p, dict):
+            continue
+        t = p.get("type")
+        if t in ("custom_tool_call", "function_call"):
+            cmd = p.get("input") if isinstance(p.get("input"), str) else p.get("arguments", "")
+            pending[p.get("call_id")] = len(order)
+            order.append([str(cmd).replace("\\n", "\n"), None, None])
+        elif t in ("custom_tool_call_output", "function_call_output") and p.get("call_id") in pending:
+            text = _text_of(p.get("output")) if not isinstance(p.get("output"), str) else p["output"]
+            text = text.replace("\\n", "\n")
+            codes = [int(x) for x in re.findall(r'exit_code\\?"?\s*[:=]\s*(-?\d+)', text)]
+            ev = order[pending[p["call_id"]]]
+            ev[1] = text
+            ev[2] = max(codes, key=abs) if codes else 0
+    for cmd, out, st in order:
+        if out is not None:
+            yield cmd, out, st
+
+
+def _gate_result(cmd, out, status):
+    """'pass' | 'fail' | None (not a gate)."""
+    if not _GATE_CMD.search(cmd):
+        return None
+    if _PYTEST_CMD.search(cmd):
+        counts = {}
+        for n, kind in _COUNT.findall(out):
+            k = "failed" if kind.startswith(("failed", "error")) else "passed"
+            counts[k] = counts.get(k, 0) + int(n)
+        if counts.get("failed"):
+            return "fail"
+        if counts.get("passed"):
+            return "pass"
+    return "fail" if status else "pass"
+
+
+def judge(events):
+    """events -> (verdict, signals-without-malformed, last_sha, pushed)."""
+    sig = {"tool_calls": 0, "tool_errors": 0, "gate_pass": 0, "gate_fail": 0,
+           "commits": 0, "push_ok": 0, "push_rejected": 0}
+    last_gate = None
+    commit_after_gate = False
+    sha = None
+    last_push = None
+    for cmd, out, st in events:
+        sig["tool_calls"] += 1
+        if st:
+            sig["tool_errors"] += 1
+        g = _gate_result(cmd, out, st)
+        if g:
+            sig["gate_" + g] += 1
+            last_gate = g
+            commit_after_gate = False
+        if "git commit" in cmd and "--dry-run" not in cmd:
+            m = _COMMIT_SHA.findall(out)
+            if m:
+                sig["commits"] += 1
+                sha = m[-1][1]
+                commit_after_gate = True
+        if _PUSH_CMD.search(cmd):
+            if _PUSH_REJ.search(out) or (st and not _PUSH_OK.search(out)):
+                sig["push_rejected"] += 1
+                last_push = "rejected"
+            elif _PUSH_OK.search(out) or not st:
+                sig["push_ok"] += 1
+                last_push = "ok"
+    has_commit = sig["commits"] > 0
+    if not (last_gate or has_commit or last_push):
+        verdict = "unknown"
+    elif last_gate == "fail":
+        verdict = "partial" if commit_after_gate else "failure"
+    elif has_commit and last_gate == "pass" and last_push != "rejected":
+        verdict = "success"
+    else:
+        verdict = "partial"
+    return verdict, sig, sha, last_push == "ok"
+
+
+def _detect(path):
+    try:
+        with Path(path).open("r", encoding="utf-8", errors="replace") as fh:
+            first = fh.readline()
+        r = json.loads(first)
+        if r.get("type") == "session_meta" or "ordinal" in r:
+            return "codex", (r.get("payload") or {}).get("id")
+    except (OSError, json.JSONDecodeError, AttributeError):
+        pass
+    return "claude", None
+
+
+def assess(path, *, parent_path=None, parent_cache=None, join_parent=True):
+    """Assess a transcript. Disable the parent join for a local-only replay."""
+    path = Path(path)
+    stats = {"malformed_lines": 0}
+    harness, sid = _detect(path)
+    records = list(_iter_json(path, stats))
+    if harness == "claude":
+        for r in records:
+            if r.get("sessionId"):
+                sid = r["sessionId"]
+                break
+        events = _claude_events(records)
+    else:
+        events = _codex_events(records)
+    verdict, sig, sha, pushed = judge(events)
+    sig["malformed_lines"] = stats["malformed_lines"]
+    can_join = harness == "claude" and verdict == "unknown"
+    if harness == "claude":
+        refined, sig["end"] = _completion(records)
+        if can_join:
+            verdict = refined
+    sig["local_verdict"] = verdict
+    if join_parent and can_join:
+        disposition, evidence = _join_parent(
+            path, records, sid, Path(parent_path) if parent_path is not None else None,
+            {} if parent_cache is None else parent_cache)
+        if disposition:
+            sig["parent_join"] = disposition
+        if evidence is not None:
+            sig["parent_result"] = evidence
+            verdict = evidence["outcome"] or verdict
+    return {"session_id": sid or path.stem, "path": str(path), "harness": harness,
+            "verdict": verdict, "signals": sig, "last_commit_sha": sha,
+            "pushed": pushed, "schema": SCHEMA}
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--files", nargs="+")
+    ap.add_argument("--root", default=str(Path.home() / ".claude/projects/-workspace"))
+    ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--parent", type=Path, help="use this parent transcript for subagent joins")
+    ap.add_argument("--out")
+    a = ap.parse_args(argv)
+    if a.files:
+        paths = [Path(p) for p in a.files]
+    else:
+        paths = sorted(Path(a.root).rglob("*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if a.limit:
+        paths = paths[:a.limit]
+    out = open(a.out, "w", encoding="utf-8") if a.out else sys.stdout
+    parent_cache = {}
+    try:
+        for p in paths:
+            try:
+                row = assess(p, parent_path=a.parent, parent_cache=parent_cache)
+            except OSError as e:
+                print(f"skip {p}: {e}", file=sys.stderr)
+                continue
+            out.write(json.dumps(row, sort_keys=True) + "\n")
+    finally:
+        if a.out:
+            out.close()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

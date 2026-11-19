@@ -1,0 +1,15 @@
+{"url":"file:///install/vllm-0.33.0+rocm100-cp312-cp312-linux_x86_64.whl","archive_info":{}}169-            "that are not JSON-encodable can be identified."
+170-        ),
+171-    )
+172:    return_token_ids: bool | None = Field(
+173-        default=None,
+174-        description=(
+175-            "If specified, the result will include token IDs alongside the "
+--
+303-            truncate_prompt_tokens=self.truncate_prompt_tokens,
+304-            truncation_side=self.truncation_side,
+305-            add_special_tokens=self.add_special_tokens,
+306:            needs_detokenization=bool(self.echo and not self.return_token_ids),
+307-            max_total_tokens_param="max_model_len",
+308-            max_output_tokens_param="max_tokens",
+309-            return_token_offsets=bool(self.return_token_offsets),

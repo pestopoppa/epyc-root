@@ -1,0 +1,191 @@
+{
+  "status": "COMPLETE",
+  "diagnostic": true,
+  "historical_comparison": true,
+  "stage_group_reset": true,
+  "steps": [
+    [
+      "E1",
+      "A0",
+      "low"
+    ],
+    [
+      "W",
+      "A0",
+      "low"
+    ],
+    [
+      "E1",
+      "A1",
+      "low"
+    ],
+    [
+      "W",
+      "A1",
+      "low"
+    ],
+    [
+      "E1",
+      "A1",
+      "high"
+    ],
+    [
+      "W",
+      "A1",
+      "high"
+    ]
+  ],
+  "comparison": {
+    "A0:128k": {
+      "E1_peak_gib": 37.132,
+      "W_peak_gib": 37.132,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "rocblas": 0,
+        "ggml-hip": 0
+      },
+      "W_shim_delta_bytes": {
+        "ggml-hip": 0,
+        "rocblas": 0,
+        "ggml_cuda_pool_leg": 0
+      }
+    },
+    "A0:240k": {
+      "E1_peak_gib": 37.132,
+      "W_peak_gib": 37.132,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "rocblas": 0,
+        "ggml-hip": 0
+      },
+      "W_shim_delta_bytes": {
+        "ggml-hip": 0,
+        "rocblas": 0,
+        "ggml_cuda_pool_leg": 0
+      }
+    },
+    "A0:s1": {
+      "E1_peak_gib": 37.128,
+      "W_peak_gib": 37.128,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml_cuda_pool_leg": 300914176,
+        "rocblas": 33554432,
+        "ggml-hip": 0
+      },
+      "W_shim_delta_bytes": {
+        "ggml-hip": 4194304,
+        "rocblas": 33554432,
+        "ggml_cuda_pool_leg": 300914176
+      }
+    },
+    "A0:s2": {
+      "E1_peak_gib": 37.128,
+      "W_peak_gib": 37.128,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "rocblas": 0,
+        "ggml-hip": 0
+      },
+      "W_shim_delta_bytes": {
+        "ggml-hip": 0,
+        "rocblas": 0,
+        "ggml_cuda_pool_leg": 0
+      }
+    },
+    "A1:128k": {
+      "E1_peak_gib": 47.632,
+      "W_peak_gib": 47.632,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml-hip": 0,
+        "rocblas": 0,
+        "ggml_cuda_pool_leg": 0
+      },
+      "W_shim_delta_bytes": {
+        "ggml-hip": 0,
+        "ggml_cuda_pool_leg": 0,
+        "rocblas": 0
+      }
+    },
+    "A1:240k": {
+      "E1_peak_gib": 47.632,
+      "W_peak_gib": 47.632,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml-hip": 0,
+        "rocblas": 0,
+        "ggml_cuda_pool_leg": 0
+      },
+      "W_shim_delta_bytes": {
+        "ggml-hip": 0,
+        "ggml_cuda_pool_leg": 0,
+        "rocblas": 0
+      }
+    },
+    "A1:s1": {
+      "E1_peak_gib": 47.626,
+      "W_peak_gib": 47.628,
+      "W_minus_E1_peak_gib": 0.0020000000000024443,
+      "E1_shim_delta_bytes": {
+        "ggml_cuda_pool_leg": 300914176,
+        "ggml-hip": 0,
+        "rocblas": 33554432
+      },
+      "W_shim_delta_bytes": {
+        "rocblas": 33554432,
+        "ggml-hip": 0,
+        "ggml_cuda_pool_leg": 300914176
+      }
+    },
+    "A1:s2": {
+      "E1_peak_gib": 47.628,
+      "W_peak_gib": 47.628,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "ggml-hip": 0,
+        "rocblas": 0
+      },
+      "W_shim_delta_bytes": {
+        "rocblas": 0,
+        "ggml-hip": 0,
+        "ggml_cuda_pool_leg": 0
+      }
+    },
+    "A1:400k": {
+      "E1_peak_gib": 47.63,
+      "W_peak_gib": 47.63,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "ggml-hip": 0,
+        "rocblas": 0
+      },
+      "W_shim_delta_bytes": {
+        "rocblas": 0,
+        "ggml-hip": 0,
+        "ggml_cuda_pool_leg": 0
+      }
+    },
+    "A1:500k": {
+      "E1_peak_gib": 47.63,
+      "W_peak_gib": 47.63,
+      "W_minus_E1_peak_gib": 0.0,
+      "E1_shim_delta_bytes": {
+        "ggml_cuda_pool_leg": 0,
+        "ggml-hip": 0,
+        "rocblas": 0
+      },
+      "W_shim_delta_bytes": {
+        "rocblas": 0,
+        "ggml-hip": 0,
+        "ggml_cuda_pool_leg": 0
+      }
+    }
+  },
+  "at": 1793742011.0431435
+}

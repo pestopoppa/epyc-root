@@ -58,6 +58,11 @@ esac
 
 VALUE=$(printf '%s' "$INPUT" | jq -r --arg f "$FIELD" '.tool_input[$f] // empty')
 [[ -z "$VALUE" ]] && exit 0
+# The session's cwd from the payload, not this hook's: the Bash tool's cwd
+# persists across calls, so after `cd /outside` a later `mkdir x` resolved x
+# against the project dir (origin 2026-10-07; the codex bridge and the
+# opencode plugin already pass theirs).
+CWD=$(printf '%s' "$INPUT" | jq -r '.cwd // empty')
 
 SCAN="$(dirname "${BASH_SOURCE[0]}")/filesystem_containment_scan.py"
 
@@ -68,12 +73,15 @@ SCAN="$(dirname "${BASH_SOURCE[0]}")/filesystem_containment_scan.py"
 # skipping; it exists only so a broken python3 cannot re-open the gap.
 if ! command -v python3 >/dev/null 2>&1 || [[ ! -f "$SCAN" ]]; then
   if [[ "$MODE" == "--command" ]]; then
-    if printf '%s' "$VALUE" | grep -E \ >/dev/null
-      '(^|[;&|]|\s)(sudo[[:space:]]+)?(mount|umount|mkfs|fdisk|parted|mkswap|systemctl|modprobe|shutdown|reboot)([[:space:]]|$)' ||
-       printf '%s' "$VALUE" | grep -E \ >/dev/null
-      '(^|[;&|]|\s)(sudo[[:space:]]+)?(apt|apt-get)[[:space:]]+(install|remove|purge)' ||
-       printf '%s' "$VALUE" | grep -E \ >/dev/null
-      '(^|[;&|]|\s)(sudo[[:space:]]+)?dpkg[[:space:]]+(-i|--install|-r|--remove)'; then
+    # `>/dev/null` goes AFTER the pattern: placed before it (2026-10-23 LINT-PIPEFAIL
+    # rewrite) the `\` escaped a space instead of continuing the line, so grep
+    # searched for " " and the pattern ran as its own command.
+    if printf '%s' "$VALUE" | grep -E \
+      '(^|[;&|]|\s)(sudo[[:space:]]+)?(mount|umount|mkfs|fdisk|parted|mkswap|systemctl|modprobe|shutdown|reboot)([[:space:]]|$)' >/dev/null ||
+       printf '%s' "$VALUE" | grep -E \
+      '(^|[;&|]|\s)(sudo[[:space:]]+)?(apt|apt-get)[[:space:]]+(install|remove|purge)' >/dev/null ||
+       printf '%s' "$VALUE" | grep -E \
+      '(^|[;&|]|\s)(sudo[[:space:]]+)?dpkg[[:space:]]+(-i|--install|-r|--remove)' >/dev/null; then
       echo "BLOCKED: the filesystem-containment scanner is unavailable and this command" >&2
       echo "invokes a privileged host-level verb. Refusing rather than guessing." >&2
       exit 2
@@ -94,7 +102,7 @@ fi
 # Scanner stdout = JSON verdict (captured); scanner stderr = the human refusal
 # message (passes through to the session, untouched).
 set +e
-JSON=$(python3 "$SCAN" "$MODE" "$VALUE" 2>/dev/null)
+JSON=$(python3 "$SCAN" "$MODE" "$VALUE" ${CWD:+--cwd "$CWD"} 2>/dev/null)
 RC=$?
 set -e
 

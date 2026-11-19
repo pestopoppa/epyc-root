@@ -1,0 +1,158 @@
+{
+  "change": {
+    "delta_check": "Exact normalized plan comparison permits only long-prose messages, max_tokens, reasoning_budget_tokens, question-pool pin and relocated receipt paths. The three other request bodies, validators, finishes and model/template/server recipes are byte-identical.",
+    "expected_finish": "length",
+    "item_id": "architect-critic-bank-long-prose",
+    "long_prose_request": {
+      "cache_prompt": false,
+      "chat_template_kwargs": {
+        "enable_thinking": true,
+        "reasoning_effort": "medium"
+      },
+      "max_tokens": 768,
+      "messages": [
+        {
+          "content": "Proposed plan: delete the existing storage before the replacement is restored. Start your final answer with the exact word Reject. Write a 1,000-word plain-language critique in continuous prose explaining the risk of data loss and how to order the cutover safely.",
+          "role": "user"
+        }
+      ],
+      "model": "architect-critic-native-capture",
+      "reasoning_budget_tokens": 384,
+      "return_tokens": true,
+      "seed": 42,
+      "stream": false,
+      "temperature": 0,
+      "verbose": true
+    },
+    "question_pool_sha256": "b9814958d812e888dbea91e6750ebc01cb4e767682ed341e691ba954d21818dd",
+    "rationale": "The first response used all 256 tokens on reasoning. A simpler prompt asks for the required term at the start of a continuous 1,000-word answer. The 768-token total leaves room for answer prose after up to 384 tokens in the initial thinking block. At the previous long-prose rate of 5.49 tokens/s plus 24.92 s prefill, 768 tokens would take about 165 s against the unchanged 240 s request timeout. This is a sizing estimate from the previous run.",
+    "validator": {
+      "expected": "Reject",
+      "id": "contains-text.v1"
+    }
+  },
+  "handoff_task": "VB-V9-8-QUALITY-PACK-ARCHITECT-BANK",
+  "paths": {
+    "armed_by_this_task": false,
+    "production_run_by_this_task": false,
+    "ready": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-architect-critic-bank-r2-20261118.json",
+    "scratch": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-bank-r2-20261118"
+  },
+  "prior_attempt": {
+    "original_plan_sha256": "a8a6813dd6f11648b3a8384a2ef3e92af6fae35933af53bc5a7ccc3aef8113bf",
+    "receipt": "../full-attempt/receipt.json",
+    "receipt_sha256": "be0c062861f365eb1531a6ce43e42cb547e04af6c11c5d465c04a9d7bceb666b"
+  },
+  "publication": {
+    "candidate_collected": false,
+    "cpus": [
+      116,
+      117,
+      118,
+      119
+    ],
+    "ended": "rc=0 time=2026-11-18T02:08:44Z reason=complete",
+    "native_units": 1,
+    "passed_at": "2026-11-18T02:08:47Z",
+    "port": 19484,
+    "publisher_warning": "Task lint marks part of the existing stop-on-answer/stop-on-futility prose as an untestable prerequisite. Publication passed with agent-filed verdict.",
+    "ready_manifest_sha256": "2be1f02098f61d260cbe5b79669d9700e5a1221b159662198e96e27311cd10be",
+    "result": "PUBLISHED, SMOKE PASS",
+    "smoke_native_result_sha256": "4640c04138ca7bfb61deb25da2b20c10ead9109fc30d58434e2a87de4ca211c7",
+    "smoke_pass_sha256": "57426c5d3aeaaccd79afaea8bad62d4751b815fb69eaee2835afa8a521dd8865"
+  },
+  "reasoning_budget_source_check": {
+    "binary_strings_observed": [
+      "thinking_budget_tokens",
+      "reasoning_budget_tokens",
+      "reasoning_budget_start_tag",
+      "reasoning_budget_end_tag"
+    ],
+    "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "library": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+    "library_sha256": "64817c163bf7efdd4eb6cd46ca97749199d299949131970a9a49c36dcfd3ef57",
+    "limitation": "Offline source and content-identity check only. The native publisher smoke used the small no-spec control model and did not exercise the repaired chat request.",
+    "source_trace": [
+      "tools/server/server-common.cpp:1120 reads the per-request token budget and populates the start/end tags from the chat parser.",
+      "common/chat.cpp:2774 sets the tags from the analyzed template. The registered template renders its <think> generation prefill and uses </think> to delimit reasoning.",
+      "tools/server/server-schema.cpp:394 tokenizes the provided tag strings, with the forced sequence defaulting to the end tag when the message is empty.",
+      "common/sampling.cpp:306 activates the budget sampler from the nonnegative request cap and automatically derived tags, then prefeeds the generation prompt. Separate reasoning_control enables the live manual endpoint and is not required for the configured cap."
+    ]
+  },
+  "row": "handoff-vidya-quality-pack-architect-critic-bank-r2-20261118",
+  "schema": "epyc.vidya.quality_pack_architect_bank_repair.v1",
+  "scope": "Production-only successor readiness. Strict four-item native bank admission is pending.",
+  "source_files": {
+    "capture.py": {
+      "archive": "../capture.py",
+      "encoding": "raw",
+      "sha256": "d9b090417862781682239d645461cb7a089de6da102031bd44da2a32d9f39c3a"
+    },
+    "capture_base.py": {
+      "archive": "capture_base.py",
+      "encoding": "raw",
+      "sha256": "b2528d555355a7f90a20c0835b12171d763b37d6542d2dc898519198b09e01a4"
+    },
+    "complete.py": {
+      "archive": "../complete.py",
+      "encoding": "raw",
+      "sha256": "78b4fec9d86ff4371e49ee364c4368387dce5256aeafd96a428ecc70300942a0"
+    },
+    "frontdoor-full-receipt.json": {
+      "archive": "../frontdoor-full-receipt.json",
+      "encoding": "raw",
+      "sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c"
+    },
+    "make_plan.py": {
+      "archive": "make_plan.py",
+      "encoding": "raw",
+      "sha256": "abf24c1a30194de8a7a438d1c7b48fe3e5b2f29ac91273dfe81e8e2fe7230c70"
+    },
+    "model-hash-receipt.json": {
+      "archive": "../model-hash-receipt.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "be89e5e3383e051aff93b9bdad4110dc625aaef1719605ab90705b1277a0dd3a"
+    },
+    "original-architect-critic-receipt.json": {
+      "archive": "../original-architect-critic-receipt.json",
+      "encoding": "raw",
+      "sha256": "601ba9a92e70b8bea5a660191f3589507d408871d13524eb09820e15e37de7d6"
+    },
+    "plan.json": {
+      "archive": "plan.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "bee69b18d107d654c0c50791c4716df5e7dfd9be331c6241322d56c173934e1f"
+    },
+    "quality_parity.py": {
+      "archive": "../quality_parity.py",
+      "encoding": "raw",
+      "sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+    },
+    "row-launch.sh": {
+      "archive": "row-launch.sh",
+      "encoding": "raw",
+      "sha256": "c06a6373fc77d874edc5ca27351827c362eab3efa588b15e61daffc48cb8c8f9"
+    },
+    "row.spec.json": {
+      "archive": "row.spec.json",
+      "encoding": "raw",
+      "sha256": "9f8a75bc70b8c33380968c57975d63dc3f6356afae3392d0b28f19c3bed3567f"
+    },
+    "smoke-model-plan.original-bytes.json": {
+      "archive": "../smoke-model-plan.original-bytes.json",
+      "encoding": "raw",
+      "sha256": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc"
+    },
+    "smoke_predicate.py": {
+      "archive": "../smoke_predicate.py",
+      "encoding": "raw",
+      "sha256": "8f04d753c958c3172c50f2397fcd811daebac6d04c10aa4e44330d052719ed67"
+    }
+  },
+  "source_manifest_sha256": "f992345d22f5b3486a0978d02f1216878361c13c9c88910c8c9589f774245316",
+  "validation": [
+    "Successor SOURCE.sha256, deterministic plan regeneration, Bash syntax and pinned runtime/model/template preflight passed.",
+    "Original archive byte equality and unchanged strict validator replay passed for all four native items, including the original semantic refusal.",
+    "GitNexus status and symbol impact were unavailable because this worktree is unindexed. Direct caller review scoped the change to the isolated successor packet."
+  ]
+}

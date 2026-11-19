@@ -1,0 +1,4742 @@
+{
+  "app_revision": "072d1583b3ead7456731946cd4e4595da6a9877f",
+  "custody_limit": "Original writable-ancestor capture refusal and trusted packer identity mismatch still apply.",
+  "pilot_helpers_sha256": "cf0ca0f7dec5533ed465c1cd30f6941070b5212f0335d4af0a49d023f41f0130",
+  "producer_sha256": "c11b99685f6270560f76ca6bccf6f46a166c9da67c26355299b379a1fa39ee5d",
+  "python_executable_sha256": "ff9b2ac4362b81c68622ffb1730f7138eb269177d9846399c521a44c5daffb0e",
+  "python_version": "3.11.17",
+  "schema": "epyc.dcp10.cost-provenance.diagnostic.v1",
+  "scope": "Offline replay of retained lexical hits and sealed local evidence. No score receipt or inference.",
+  "shards": [
+    {
+      "discovery_sha256": "faca591d110bb7f931069811cf3d1e2f7aec812bced67d62c313622cd8491659",
+      "predictions_sha256": "64088e7ac17ea1f8228f69aa68465b48c171037311f1b4a14ec535b93f1d077a",
+      "request_sha256": "5a42163d7262dcbe1fa6e7ff6daf870c74070b58b9d7fc4da684981f292a37db",
+      "retained_pilot_producer_sha256": "a7f5174f825f5126d142f7b4c9003b608f9117650fe48ce437dfde6440a1ae39",
+      "shard": "dcp10",
+      "source_hashes": {
+        "src/context_assembly.py": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924",
+        "src/context_discovery.py": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+        "src/contextbench_score.py": "feabbd1c29d5e236a3e81b664d05d15178faeaa7d8418306581b289705b177de",
+        "src/repl_environment/code_search.py": "2aa8a78d82ce60ba61d29b26eadd7f56bc06d1492dc5b5021731472cfce41c20",
+        "src/repl_environment/task_root.py": "7ec2dd4a97d8a8f758acdaa053234891637485383a30f4eec8a108b4f4f0769f"
+      },
+      "tasks": [
+        {
+          "base_commit": "51d37d1be95547059251076b3fadaa317750aab3",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "8000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 7188,
+              "cost_full": 100032,
+              "cost_slices": 100032,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "xarray/core/dataset.py",
+              "priority": 32307.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "6746d7014b6d9853754d9a09654108ad015a4f05acd3c132b02bb5802eb6c7b0",
+                "full": "fa6d8bf0e418a2b2c8ad9ab63f83d167b0c7e38762ce26c8e89e9643e08c681a"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  2
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "bcd149c529d70d3e0c0e93ff6ca455b955eaad03bb083965b3ac82c39ebd1456",
+              "total_lines": 9183
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 3480,
+              "cost_full": 77106,
+              "cost_slices": 77106,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "path": "xarray/core/_aggregations.py",
+              "priority": 28034.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "4b60ee7d8e193d03fa9fd9a4d03aaba4ff5b831576e1824c553f6e5d88c27ca8",
+                "full": "2e76fcffd185b36e478a60487d005c41416856af5175fd05c68ce73dc6448eca"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  2,
+                  3,
+                  5,
+                  7,
+                  12,
+                  16,
+                  18,
+                  19,
+                  20,
+                  22
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "29b6331b3a40f1a54b7dde42ff813d2b493254c369ca7be853995087d118c27f",
+              "total_lines": 7747
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 5436,
+              "cost_full": 67472,
+              "cost_slices": 67472,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "xarray/core/dataarray.py",
+              "priority": 22878.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "c2c0099b8723e2881f866dd7b476eba63251cf565ddae431faac65a25db8a014",
+                "full": "1ad1b88b93b44aabaf5e4a5ae3033a8dfe2715e9e45e723fa7360c3ef567971c"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  2,
+                  19
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "808de75f3c58f488d1109fb9b52250ae31e27ad2d3ddbdc4222a5d6472005078",
+              "total_lines": 6452
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 4430,
+              "cost_full": 72215,
+              "cost_slices": 72215,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "xarray/tests/test_dataset.py",
+              "priority": 15624.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "c1696652bbca7462276eaa5095e777521289780c295693927fc6ee893228b813",
+                "full": "2e3c88959e857e06311bbecf9a81c98b3a26294fbf6d175470444b22c7896870"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  2,
+                  11,
+                  16
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "b3585368e4dd905ab697cd36b03202906ee65756c853ea53ad740636631b836d",
+              "total_lines": 6851
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 5715,
+              "cost_full": 64075,
+              "cost_slices": 64075,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "xarray/tests/test_backends.py",
+              "priority": 11571.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "9fc1f3f52410632a35ef2dfb421fda3f4228a7b2a4bb87b27f4928f7ad41ca6b",
+                "full": "e90cb0d1ffa689e93aae76fea3a9a782e0b1be1d52dea1b1ea41ffbb445d67d9"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  2,
+                  20
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "96fcd15408d5b877119087a70b5c80d8a5294d9f20ac71f7b66cabadfc20ba97",
+              "total_lines": 5642
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 4746,
+              "cost_full": 69514,
+              "cost_slices": 69514,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "xarray/tests/test_dataarray.py",
+              "priority": 10425.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "bfaa4557815027b7690f7f7f88799c00fabc85e35856f992c3782752732f3999",
+                "full": "15b8ccde0bfb69b5c7588d780d49939329525be677bf67bf06efa4c01eef32ff"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  2,
+                  9,
+                  14
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "b3f1ff702eff3e84c382eb6dfa41f13701b88c722df6f74327101dd29a32ada5",
+              "total_lines": 6686
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 2804,
+              "cost_full": 33683,
+              "cost_slices": 33683,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "xarray/core/variable.py",
+              "priority": 9389.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "5403d8d809c4a39e6c846d6d0be5c0412cdb6258cb88e33a32eddef0b3042a23",
+                "full": "c24605cb19e73ec2cff8c44bca6ec466033a581fb920fe6c51e4f19a77571334"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  2,
+                  20
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "e42fb2128f08e197fd01c07ebe73213daa2ec595dc8074a944ea4127a2b4ad0c",
+              "total_lines": 3209
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 6794,
+              "cost_full": 24738,
+              "cost_slices": 24738,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "xarray/plot/dataarray_plot.py",
+              "priority": 6317.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "203e0146c40a3fcc9062fa3e0a92818d3c2909c5f37a50417e682b2a2990fb6c",
+                "full": "031af966c79202cc9a0bf3665635a0dae29f8c2bc9e01fb984a9f380d9ca7a3b"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  2,
+                  16,
+                  20
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "e4ea96beb0ae32ab23581e1ac05a1a54144e9fb3c6c267938d6afb74c1096619",
+              "total_lines": 2485
+            }
+          ],
+          "language": "python",
+          "repo_url": "https://github.com/pydata/xarray.git",
+          "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3"
+        },
+        {
+          "base_commit": "517d8c984ce9b30792fe5b6c8c79547d3748f34d",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "8000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 30045,
+              "cost_full": 30045,
+              "cost_slices": 30045,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "tests/fuzzer.c",
+              "priority": 1336.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "994f95594a7d123e1c3ef88daf3de1f822d359bdc9850800803f3721719d1c2c"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "bb02c0aa7a87415c66b3b0f8e38168e6a754e6de92c1bee983e402942cf9b1af",
+              "total_lines": 2229
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 31069,
+              "cost_full": 31069,
+              "cost_slices": 31069,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "tests/zstreamtest.c",
+              "priority": 1115.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "0c15dc868d55db3d893b78bebe3cfc34ff12240804d52f86064a7fabf5c51b97"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "19477044c217a989079a7c5669fb0d3b76cce0c005f503e2786104694fb7c0ba",
+              "total_lines": 2250
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 30402,
+              "cost_full": 30402,
+              "cost_slices": 30402,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "lib/zstd.h",
+              "priority": 990.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "748b0d74e910627f9db384278acb076531d3b9d4034b4704556dc4d08d2f3d6d"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "7e8ee8d399ed7f2c97d19734e9b886dda54702de4c31cedadf45f2e2c26e3704",
+              "total_lines": 1766
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 52614,
+              "cost_full": 52614,
+              "cost_slices": 52614,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "lib/legacy/zstd_v07.c",
+              "priority": 909.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "925eb527f8b517a91205ef199bf8af2d1755020b333e499cdb4f5be2aa63660a"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "2e0132f0e58b1c267d3079bfb2ab880fb06b3ad26400e13b453828f41fe75d67",
+              "total_lines": 4504
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 47214,
+              "cost_full": 47214,
+              "cost_slices": 47214,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "lib/legacy/zstd_v06.c",
+              "priority": 902.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "9de71818580158f16f697d9aff4b379c0129c54c020de59a6e98b9001aeeab6a"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "d15c1dbbb97a021f6e9105aacc149dfd69fb22698589c652964c27c643a6a61a",
+              "total_lines": 4124
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 44428,
+              "cost_full": 44428,
+              "cost_slices": 44428,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "lib/legacy/zstd_v05.c",
+              "priority": 855.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "29131f82f13afc9f3f1d1f31788256bfd4768086ab7b662a0b5765b3ea05ba34"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "04dd016baa823472830f52eab71732a8ca68c48947b5d7767c7074e335d014d3",
+              "total_lines": 4014
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 36386,
+              "cost_full": 36386,
+              "cost_slices": 36386,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "lib/legacy/zstd_v02.c",
+              "priority": 751.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "d372825fbfdf87f2762afd230ea1215158d577f77b1bd880f412bb24ee96d05c"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "5adc38d1151183ef59b26ab96327e016ee0bf57883b05999c6efa804fcd7f773",
+              "total_lines": 3489
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 38449,
+              "cost_full": 38449,
+              "cost_slices": 38449,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "lib/legacy/zstd_v04.c",
+              "priority": 703.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "1c3d0c07146126ea51b2a74a30ab4f6daeb42d08bc2b9e8472efb8f652f37098"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "d1da757fa6e7453ed0afe6783fc4b0b771392ecef96fa7f6696ba58345bbe864",
+              "total_lines": 3614
+            }
+          ],
+          "language": "c",
+          "repo_url": "https://github.com/facebook/zstd.git",
+          "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4"
+        },
+        {
+          "base_commit": "8d9d528bf52c60864802844e8acf16db09dae19a",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "8000": {
+              "estimated_packed_tokens": 4269,
+              "included_files": [
+                "doc/python-license.txt"
+              ],
+              "included_gold_files": [],
+              "rendered_sha256": "54cb184cfdf77248c6875a467872218f866ccb3a7a68b838ae342864e5fcc71a"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 237334,
+              "cost_full": 237334,
+              "cost_slices": 237334,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "test/gtest/gtest.h",
+              "priority": 23081.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "e91ff6a09eb19552b3cbdb9ae6b7f20ce25e8394fe46ea3ed3e618c28e3fd69a"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "f7f03717b787bb8e2e5b3be012c1f3f6a9ee757d0420067625936879511cf3fa",
+              "total_lines": 20065
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 122318,
+              "cost_full": 122318,
+              "cost_slices": 122318,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "test/gmock-gtest-all.cc",
+              "priority": 20187.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "66f2e5493085bdb4bd6ddd96768de005215a76cca2e46dbd26920c18c948610f"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "e933bec374e2e7f9616cb906ab3b903be385fd9c8a0d886245f3ccb1d311456f",
+              "total_lines": 11237
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 158384,
+              "cost_full": 158384,
+              "cost_slices": 158384,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "test/gmock/gmock.h",
+              "priority": 17693.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "576257a7a45c10b56562835d657863c58f33e144945775a7d405ba075d618bdd"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "4d0f2c6222444c725e489377c1f5b5011a10ce34677034a6c2371de19eb3955a",
+              "total_lines": 14204
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 34164,
+              "cost_full": 34164,
+              "cost_slices": 34164,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "path": "include/fmt/format.h",
+              "priority": 3021.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "02d9eaae50ccc1403dd5853d0de42a4e96c138d861ded290118453a032642b1a"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "9608b74fae8d02941e0fba5c64128d4f7044574561cd29d360c2493db56554e8",
+              "total_lines": 3594
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 17663,
+              "cost_full": 17663,
+              "cost_slices": 17663,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "include/fmt/core.h",
+              "priority": 2086.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "48ed9b0dd8b69c6c0155deb6c415f08c588eb3bf451892528aedb650729df543"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "f61e3d3e627896d2cc96bffbba85bb2e219ab09121fbae210c5ead88c3f76b57",
+              "total_lines": 1839
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 27770,
+              "cost_full": 27770,
+              "cost_slices": 27770,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  26
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  26
+                ]
+              ],
+              "path": "test/format-test.cc",
+              "priority": 1450.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "d3f25fa179356ecaf478779a1d289d23543364c4c9e7a4e1dd9c368dbba5fb14"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "f122eeaf2593d9b90a810303e39f0c7bb74defb606ac5841ed3dabe4b589d3f8",
+              "total_lines": 2589
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "full",
+                  "packer_modes_fitting_remaining": [
+                    "full",
+                    "slices"
+                  ],
+                  "packer_modes_fitting_total": [
+                    "full",
+                    "slices"
+                  ],
+                  "remaining_before": 8000,
+                  "rendered_mode": "full"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 4269,
+              "cost_full": 4269,
+              "cost_slices": 4269,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "doc/python-license.txt",
+              "priority": 1293.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "54cb184cfdf77248c6875a467872218f866ccb3a7a68b838ae342864e5fcc71a"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "dcc4d9738d3e8d3b9f51286f1dc90d0c49ea8325982008ced021932a0b0b0cda",
+              "total_lines": 290
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 3731,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 14677,
+              "cost_full": 14677,
+              "cost_slices": 14677,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  26
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  26
+                ]
+              ],
+              "path": "include/fmt/format-inl.h",
+              "priority": 1229.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "9b50badf9a06b3537636ef6594c68404704a0673d8ff5e285a18948b99cf49ef"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "d9b0c3ec574c3d06e8f6a56c9153f98fb4c3f6bba87b4850b0656b3ac6edf678",
+              "total_lines": 1413
+            }
+          ],
+          "language": "cpp",
+          "repo_url": "https://github.com/fmtlib/fmt.git",
+          "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a"
+        }
+      ]
+    },
+    {
+      "discovery_sha256": "f97b477f250a2adb59988663f3ea061d5468579eca3192fae8e2b062187fb7e1",
+      "predictions_sha256": "dda174fc00ad7c27539168d43d6095e35eada601c7782be80e1be6ba4507e4d1",
+      "request_sha256": "7b05c32712254a713b365201d2226b24ac96604e2c3756f37fbb17887c03fbae",
+      "retained_pilot_producer_sha256": "cf0ca0f7dec5533ed465c1cd30f6941070b5212f0335d4af0a49d023f41f0130",
+      "shard": "dcp10-shard2",
+      "source_hashes": {
+        "src/context_assembly.py": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924",
+        "src/context_discovery.py": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+        "src/contextbench_score.py": "feabbd1c29d5e236a3e81b664d05d15178faeaa7d8418306581b289705b177de",
+        "src/repl_environment/code_search.py": "2aa8a78d82ce60ba61d29b26eadd7f56bc06d1492dc5b5021731472cfce41c20",
+        "src/repl_environment/task_root.py": "7ec2dd4a97d8a8f758acdaa053234891637485383a30f4eec8a108b4f4f0769f"
+      },
+      "tasks": [
+        {
+          "base_commit": "252685092cacdd0f8b485ed6f105ec7acc29c7a4",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "8000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 23553,
+              "cost_full": 23553,
+              "cost_slices": 23553,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "lib/ansible/config/base.yml",
+              "priority": 12458.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "3688a73547498199e04278bebf963c6fb6134292f68abec93a60225b70326fc8"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "da19a4682155f502cd014a9c121bf0b94cc18ae3fb8e1c1445367ad6c17d3bf0",
+              "total_lines": 2059
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 107008,
+              "cost_full": 107008,
+              "cost_slices": 107008,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "lib/ansible/config/ansible_builtin_runtime.yml",
+              "priority": 7763.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "a78c41a902816bb5ce4cc4d3e5edbbfcbb5761e9815c5c14139fa98b1d79e771"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "ab48214ac4f188c6f6b47f0efc19695dfc9ba7b565d907cf75db9cddf5092fe9",
+              "total_lines": 9678
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 757,
+              "cost_full": 18347,
+              "cost_slices": 18347,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "path": "lib/ansible/executor/module_common.py",
+              "priority": 7728.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "ec1e2f9add1b6b73e0a3cbde3ec09ffd9bf9b1cafbbe74a6b151997ef4047511",
+                "full": "aadfa48fa02974ae64287cc73cca670adef2f6c663b7722465ef433c11dad6ca"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  19,
+                  22
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "8a5efc5230e8648ec16d72518a9eaea6b95b564e94c22d264f445d70bce68e8f",
+              "total_lines": 1409
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 1029,
+              "cost_full": 30354,
+              "cost_slices": 30354,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  26
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  26
+                ]
+              ],
+              "path": "test/lib/ansible_test/_data/sanity/validate-modules/validate_modules/main.py",
+              "priority": 7400.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "dcb59f1900ffe73649cc5040d0f7fb7d4201251ee201656b9be197c3104ce064",
+                "full": "905835bd842841e2a959f75bbf5bd85ae16529173d32cff6664f87ff3f71655d"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  20
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "055b5b3517697953b798e682103a672dcf4218dfeaaad7d8930f18a9aa3a0585",
+              "total_lines": 2441
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 1961,
+              "cost_full": 33029,
+              "cost_slices": 33029,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "path": "lib/ansible/module_utils/basic.py",
+              "priority": 7379.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "55c554047a65c291bea72b6752cf3469b914e39342ea06f0457c2cdc1e50e917",
+                "full": "260d67147d8d4fcb4750ac7089935da5114fcd79a6b4c2a1fcc24a736b880a49"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  7
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "c1bf7f37e7e9588aca46b11cabbda43011e02d65d3d171bef0a3e3762ad92105",
+              "total_lines": 2858
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 732,
+              "cost_full": 18072,
+              "cost_slices": 18072,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "path": "lib/ansible/plugins/strategy/__init__.py",
+              "priority": 6920.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "2c7ff05da70d45b93e681ed9c7b8c50fbaf0e11728360899ba2e189f8d2128df",
+                "full": "724d8d0ac57baf9f827991714964327e82ddacae02dee1f9e85cce3bc015da98"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  21
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "720bdef1bff12ba92f01208d308efa3669e294b85bfab99b66efd53a9bcd4cb9",
+              "total_lines": 1383
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 1005,
+              "cost_full": 31398,
+              "cost_slices": 31398,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "lib/ansible/modules/user.py",
+              "priority": 6764.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "6ac682c88f29434cdc419ad11bce6c440b9cef5deadd7f278d01594dc74d0eaf",
+                "full": "b3d1f03bbbfdd87c64ef36c78aa4bac73c45e02c8a2c484246afd80693ce9441"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  9,
+                  10
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "6fff682b3d768c3bcf6e0545f856ad96984fefafa5a8bd585518ea2bb1cb0f24",
+              "total_lines": 3063
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 710,
+              "cost_full": 18696,
+              "cost_slices": 18696,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "path": "lib/ansible/plugins/action/__init__.py",
+              "priority": 6478.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "7af2603701ab253130646a2e2aaca89aee954e2da018bbbb6991563675cdb358",
+                "full": "241e97a302fe9b749cd17903c26928dc1ae27d151630886fc41f957bdf62f82f"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  9,
+                  19
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "b05e406dc2b0021ba3a210bb06bba066938e85dc8edb31f20edbde8fd7b6f1b3",
+              "total_lines": 1351
+            }
+          ],
+          "language": "python",
+          "repo_url": "https://github.com/ansible/ansible.git",
+          "task_id": "SWE-Bench-Pro__python__maintenance__bugfix__739b23db"
+        },
+        {
+          "base_commit": "764110c805d8020f5202c60ffed2b2570caf792a",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "8000": {
+              "estimated_packed_tokens": 6398,
+              "included_files": [
+                "test/libponyc/cap.cc"
+              ],
+              "included_gold_files": [],
+              "rendered_sha256": "43ae9dadb883aaf2165533d61798296d9b0622c4a5a3256d059ebdc3d28bd732"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 21270,
+              "cost_full": 21270,
+              "cost_slices": 21270,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "path": "CHANGELOG.md",
+              "priority": 380.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "fa75ab2726b5951bee77dc3bfba95df1d0ceac4a0ff2d2a60ab4a84d6d350f3e"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "4e5bc2ab51efa20bd759c73436049b0e3f3461bad902a89f21e7aa1d010cbcc0",
+              "total_lines": 1450
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "full",
+                  "packer_modes_fitting_remaining": [
+                    "full",
+                    "slices"
+                  ],
+                  "packer_modes_fitting_total": [
+                    "full",
+                    "slices"
+                  ],
+                  "remaining_before": 8000,
+                  "rendered_mode": "full"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 6398,
+              "cost_full": 6398,
+              "cost_slices": 6398,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  59,
+                  99
+                ]
+              ],
+              "line_ranges": [
+                [
+                  59,
+                  99
+                ]
+              ],
+              "path": "test/libponyc/cap.cc",
+              "priority": 320.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "43ae9dadb883aaf2165533d61798296d9b0622c4a5a3256d059ebdc3d28bd732"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "ca34b504e874fd335b1ad1217615998f2e698b70ca0b6b4237eb43c39d27bfe0",
+              "total_lines": 660
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 1602,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 56473,
+              "cost_full": 56473,
+              "cost_slices": 56473,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  166,
+                  206
+                ]
+              ],
+              "line_ranges": [
+                [
+                  166,
+                  206
+                ]
+              ],
+              "path": "lib/gtest/src/gtest.cc",
+              "priority": 276.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "4742059a8323537f8f8e957817fd03a09034fc73d793399e324508573d968eeb"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "2ea1aa5832ea3e8eeba636eec2be7103833ab30bcf4ac32e48a25e3ea8a76957",
+              "total_lines": 5431
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 1602,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 24469,
+              "cost_full": 24469,
+              "cost_slices": 24469,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  109,
+                  149
+                ]
+              ],
+              "line_ranges": [
+                [
+                  109,
+                  149
+                ]
+              ],
+              "path": "lib/gtest/gtest/gtest.h",
+              "priority": 173.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "37805f10ec6a30d541ffe85c369aa4b6f9af4967979e54c072c084d668a57e09"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "ccd35cc2d97e1869da557c425b7cd458eb3f5e40b07279aa3483dc899f4f578f",
+              "total_lines": 2240
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 1602,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 9566,
+              "cost_full": 9566,
+              "cost_slices": 9566,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  26,
+                  66
+                ]
+              ],
+              "line_ranges": [
+                [
+                  26,
+                  66
+                ]
+              ],
+              "path": "test/libponyc/type_check_subtype.cc",
+              "priority": 173.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "461479322d9b2117bcbf6dde26a50f19f5175b53c95072b23fa55d2434e71bf5"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "d10c4caf827fcb65ce4f149450edf2fcf6e7e32de3e68a31bade12eefcb4f4b9",
+              "total_lines": 1180
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 1602,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 19708,
+              "cost_full": 19708,
+              "cost_slices": 19708,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  23,
+                  63
+                ]
+              ],
+              "line_ranges": [
+                [
+                  23,
+                  63
+                ]
+              ],
+              "path": "src/libponyc/codegen/genprim.c",
+              "priority": 171.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "03e96d17b7325338868d9044af6e46392e18ca58f58df78d3b7c3c4971ca55e3"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "c5977a9a3a445c3d094f5d3a55571e326a9b0d3a9dd36a2fff192680eb8132d1",
+              "total_lines": 2103
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 1602,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 14983,
+              "cost_full": 14983,
+              "cost_slices": 14983,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  62,
+                  102
+                ]
+              ],
+              "line_ranges": [
+                [
+                  62,
+                  102
+                ]
+              ],
+              "path": "src/libponyc/type/subtype.c",
+              "priority": 126.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "e46b582c91be7d0eed33c8965ea47b8c638273fbbdb2c4124a9d3709b802c354"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "babb4e1d20e3f331bba6131dff97362aa99261cd16a75c3b7535a9ad7dea00da",
+              "total_lines": 2208
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 1602,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 13783,
+              "cost_full": 13783,
+              "cost_slices": 13783,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  49,
+                  89
+                ]
+              ],
+              "line_ranges": [
+                [
+                  49,
+                  89
+                ]
+              ],
+              "path": "lib/gtest/gtest/internal/gtest-internal.h",
+              "priority": 102.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "bc4f6a2bfcdbbdd7b3348cadd43a664a4e9b3caf11c0dbe1db4dc83698830d7e"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "7c078df2d927eaa58ff7a10f1ea5e660b123c92b798aeb8442da65d8b61dc0de",
+              "total_lines": 1264
+            }
+          ],
+          "language": "c",
+          "repo_url": "https://github.com/ponylang/ponyc.git",
+          "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__0dde5323"
+        },
+        {
+          "base_commit": "c03f55ec3a0511611fa7f0537f858544a0ed03bd",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 2854,
+              "included_files": [
+                "test/gtest/gtest-spi.h"
+              ],
+              "included_gold_files": [],
+              "rendered_sha256": "4c10bf1340f981a27ffb75ee174fd7877b257d7c5b39422773b5c2f53df00f41"
+            },
+            "8000": {
+              "estimated_packed_tokens": 7123,
+              "included_files": [
+                "doc/python-license.txt",
+                "test/gtest/gtest-spi.h"
+              ],
+              "included_gold_files": [],
+              "rendered_sha256": "acebd0c1b83194b4a44d808455b7c1b16e31db8d216adbdf7484fe704afbd5ad"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 237334,
+              "cost_full": 237334,
+              "cost_slices": 237334,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "test/gtest/gtest.h",
+              "priority": 17707.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "e91ff6a09eb19552b3cbdb9ae6b7f20ce25e8394fe46ea3ed3e618c28e3fd69a"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "f7f03717b787bb8e2e5b3be012c1f3f6a9ee757d0420067625936879511cf3fa",
+              "total_lines": 20065
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 121028,
+              "cost_full": 121028,
+              "cost_slices": 121028,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "test/gmock-gtest-all.cc",
+              "priority": 15483.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "efd2c15b570db4317b8ce17c81fd2b76ff57b0e2090570f2b1e91f7e45312b4b"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "a67f302f26cf01ace4f6a442865a2886c260c169657f7879c79d68bfe5a74ae4",
+              "total_lines": 11443
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 158381,
+              "cost_full": 158381,
+              "cost_slices": 158381,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "test/gmock/gmock.h",
+              "priority": 11464.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "61f9a2f776934c3f75e2ff85ea76247bae51d6f8b1b7ac36385af836fc2a3175"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "c8c1951c8cbe64243b1e50fd51b58de66bbb954e38bec39ec3de0e3ad1b9bb8b",
+              "total_lines": 14203
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 35165,
+              "cost_full": 35165,
+              "cost_slices": 35165,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "path": "fmt/format.h",
+              "priority": 2245.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "dc02e7525ccb2aa23e8d77a8af8c0c2e22504fb533e80d38109251ab408844a6"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "e671f0876f2aeb5f2085bab906efbd9789351c11035b1c2449a458d4ce769d9e",
+              "total_lines": 4020
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 17532,
+              "cost_full": 17532,
+              "cost_slices": 17532,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "path": "test/format-test.cc",
+              "priority": 738.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "f08d28d3138967bd819970743b5c85934ca9b4e856e48c09c222fff6ef8b904e"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "1d6f0f090e6809aff0656887f4963465e176c625fb689b72ed833259155b1c15",
+              "total_lines": 1683
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "full",
+                  "packer_modes_fitting_remaining": [
+                    "full",
+                    "slices"
+                  ],
+                  "packer_modes_fitting_total": [
+                    "full",
+                    "slices"
+                  ],
+                  "remaining_before": 8000,
+                  "rendered_mode": "full"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 4269,
+              "cost_full": 4269,
+              "cost_slices": 4269,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "doc/python-license.txt",
+              "priority": 705.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "54cb184cfdf77248c6875a467872218f866ccb3a7a68b838ae342864e5fcc71a"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "dcc4d9738d3e8d3b9f51286f1dc90d0c49ea8325982008ced021932a0b0b0cda",
+              "total_lines": 290
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 3731,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 8529,
+              "cost_full": 8529,
+              "cost_slices": 8529,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "path": "test/util-test.cc",
+              "priority": 528.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "4fed0fc6702570ed2d01af6d94b104d722941092b5f336d7187492cd43da1647"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "5b0ecba481fc2ea7dc8ca05efcf2daca358d8bbf6372843c737d28df62424c66",
+              "total_lines": 972
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "full",
+                  "packer_modes_fitting_remaining": [
+                    "full",
+                    "slices"
+                  ],
+                  "packer_modes_fitting_total": [
+                    "full",
+                    "slices"
+                  ],
+                  "remaining_before": 4000,
+                  "rendered_mode": "full"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "full",
+                  "packer_modes_fitting_remaining": [
+                    "full",
+                    "slices"
+                  ],
+                  "packer_modes_fitting_total": [
+                    "full",
+                    "slices"
+                  ],
+                  "remaining_before": 3731,
+                  "rendered_mode": "full"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 2854,
+              "cost_full": 2854,
+              "cost_slices": 2854,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "test/gtest/gtest-spi.h",
+              "priority": 448.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "4c10bf1340f981a27ffb75ee174fd7877b257d7c5b39422773b5c2f53df00f41"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "5115d5a8ced36a20b8cec034812f7b0d2ac20d511a147f9beea9b0ef27d94b56",
+              "total_lines": 232
+            }
+          ],
+          "language": "cpp",
+          "repo_url": "https://github.com/fmtlib/fmt.git",
+          "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__2c49ef99"
+        }
+      ]
+    },
+    {
+      "discovery_sha256": "67bdefca3e4677f1b3e8924910eac5443c685110087754ab8d8a5a5ce035501e",
+      "predictions_sha256": "0a4086829743008b0fcd6a06645dadc6b825608c194cbd566fb73d42761a2e7b",
+      "request_sha256": "c0fea8996fd1894af83dd7512d230dc696c6a133790472c078a4f6fb5c0a6176",
+      "retained_pilot_producer_sha256": "cf0ca0f7dec5533ed465c1cd30f6941070b5212f0335d4af0a49d023f41f0130",
+      "shard": "dcp10-shard3",
+      "source_hashes": {
+        "src/context_assembly.py": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924",
+        "src/context_discovery.py": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+        "src/contextbench_score.py": "feabbd1c29d5e236a3e81b664d05d15178faeaa7d8418306581b289705b177de",
+        "src/repl_environment/code_search.py": "2aa8a78d82ce60ba61d29b26eadd7f56bc06d1492dc5b5021731472cfce41c20",
+        "src/repl_environment/task_root.py": "7ec2dd4a97d8a8f758acdaa053234891637485383a30f4eec8a108b4f4f0769f"
+      },
+      "tasks": [
+        {
+          "base_commit": "1a4462d72eb03f30dc83a879b1dd57aac8b2c18b",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "8000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 127812,
+              "cost_full": 127812,
+              "cost_slices": 127812,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  27
+                ]
+              ],
+              "path": "astropy/extern/jquery/data/js/jquery.dataTables.js",
+              "priority": 10170.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "658e18ca1cc3ae6a2ce33e9e6ea27a92321cc8cbc630780a75239c418ab8b122"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "964fb8fa4484d8d4eb14cd211639ada59f4154abd9d4b281be92b6cad9819bfd",
+              "total_lines": 15278
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 62412,
+              "cost_full": 62412,
+              "cost_slices": 62412,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  25
+                ]
+              ],
+              "path": "cextern/cfitsio/docs/changes.txt",
+              "priority": 7702.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "a5ddef3fde3bd5d77cf0d4dd0d2605ab4221b39d5e8a9ef73c1287356a33c789"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "d8a3d401cb0569f79386f378be249c61a071bfdb6839e4128b2670dad4af14a3",
+              "total_lines": 4752
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 82469,
+              "cost_full": 82469,
+              "cost_slices": 82469,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "path": "astropy/extern/jquery/data/js/jquery-3.6.0.js",
+              "priority": 7588.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "160d91502c35cadfa38a942213664b6b16e7673d8aea1d6300da6657996a5d3b"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "1fe2bb5390a75e5d61e72c107cab528fc3c29a837d69aab7d200e1dbb5dcd239",
+              "total_lines": 10881
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 2742,
+              "cost_full": 50401,
+              "cost_slices": 50401,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "astropy/modeling/core.py",
+              "priority": 7182.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "c0f3ae07a51452eb2b5d31883565fcc12fd1ee9a374cbf1167bc6951ff6acfbb",
+                "full": "e39a0e8ccb16a50d2fce07af1572bae4fa2156995f39ee032a9c68501d0e9a4d"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  1,
+                  2,
+                  15
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "24edb7921cc9d5ac9fdda777c0fc7976fe8c0cc64f0107add564502a4995db74",
+              "total_lines": 4705
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 3984,
+              "cost_full": 38008,
+              "cost_slices": 38008,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "path": "astropy/io/votable/tree.py",
+              "priority": 6846.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "e1b25f00ca30076142d38ccf2061f8b72dc0df34dcc4f79245b2753187b84712",
+                "full": "0813c8fdcd43c929090b95d0c0a1cbce9e1fff3b0dd38ecf1f182538c0a53859"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  12,
+                  13,
+                  16,
+                  17
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "b6be6b29d08fc26446a30a40791251bf4437f25c9296edeef5c2964d43b9fe1e",
+              "total_lines": 4201
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 3295,
+              "cost_full": 40442,
+              "cost_slices": 40442,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  22
+                ]
+              ],
+              "path": "astropy/coordinates/representation.py",
+              "priority": 6463.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "44f2a7d9d3a534e0ae85b757b2d7d1cd731c3333e6cf2e6eae5d1fcfa6cc957d",
+                "full": "6cbce0be763eea5082ea28b8a68a5884f49e88d5f6f9a13a6eec2b1c8daf2acb"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  6,
+                  12,
+                  15,
+                  20
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "8e23ca29cae1e674268ccb534875360f861dc73400e0f77b0b5fcb9107870da2",
+              "total_lines": 3645
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": true,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 736,
+              "cost_full": 26105,
+              "cost_slices": 26105,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "astropy/coordinates/sky_coordinate.py",
+              "priority": 5752.0,
+              "rendered_block_sha256_by_mode": {
+                "codemap_only": "58d1273e9e6b9af243419ad59d7f0285a08e5a575ecbf690a425b918e93f418f",
+                "full": "015d3f62b4fe543c1ae28d6349c1d7773f5a6bc4434d7d03980d9a96029b2e93"
+              },
+              "slice_provenance": {
+                "hit_lines_without_ast_statement": [
+                  5,
+                  8,
+                  16
+                ],
+                "reason": "unresolved_ast_hit_lines"
+              },
+              "source_text_sha256": "4b12e7711b687b65538b89c1ee740c0db5b779d6430720f92f59f1523f1ac18f",
+              "total_lines": 2223
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 75719,
+              "cost_full": 75719,
+              "cost_slices": 75719,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "cextern/cfitsio/lib/cfileio.c",
+              "priority": 5630.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "20c50df79085e6fb1d548c76959a85fc82895d6576fc076f2f63416a911fc3c6"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "a6f6912cfe0502648c5ecc8e19a1eaa9a2b70b199ba9680088794193176685b4",
+              "total_lines": 8057
+            }
+          ],
+          "language": "python",
+          "repo_url": "https://github.com/astropy/astropy.git",
+          "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__1d90db61"
+        },
+        {
+          "base_commit": "f00f95b30dd68c7faaff0aa88508c218bc19f02b",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "8000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 52623,
+              "cost_full": 52623,
+              "cost_slices": 52623,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "lib/gtest/src/gtest.cc",
+              "priority": 3120.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "da5fa127eb6ebabe36686c62e9b97d480c47d80fb1052377b305844fed7be489"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "993c5eb5aa3d332227af91efd68fc5ff8d8e1c89bdb7c1f7bfe63adb8fc5a2a7",
+              "total_lines": 5015
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 25278,
+              "cost_full": 25278,
+              "cost_slices": 25278,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "lib/gtest/gtest/gtest.h",
+              "priority": 2046.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "125fa3cca754c2fd3e484a56e0bc3ccaeb7f3ff921f59da83d3403bb11c45b7b"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "bf152d0b68ea6c293045d04e284c5f4ce9506962f4ac09679dca923dbb82c2c3",
+              "total_lines": 2291
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 19671,
+              "cost_full": 19671,
+              "cost_slices": 19671,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "lib/gtest/gtest/internal/gtest-port.h",
+              "priority": 1597.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "5152ae95c9a18835bd1940391a77c5b03a6fdaf373382fca9efe88b4d13c7c9c"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "7142d427516d7dfeb1176c5c629a35dfc1381a8d53f3ac8f3866d87b371b6803",
+              "total_lines": 1947
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 14571,
+              "cost_full": 14571,
+              "cost_slices": 14571,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "lib/gtest/src/gtest-death-test.cc",
+              "priority": 1160.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "f110c4a74b0987498aa31edb39be031c250eb8953b27fbb2dfe6ec8c4623b473"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "3f5c98d87ababa2e73acaad7d96675da0643381636e18ff4f2f635ae1055bb00",
+              "total_lines": 1344
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 54927,
+              "cost_full": 54927,
+              "cost_slices": 54927,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "lib/gtest/gtest/internal/gtest-param-util-generated.h",
+              "priority": 1145.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "216e0c3ffc8c4059c56e9bc9a926469a7a78a2d6d404acc447486125e12c4549"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "58d92033f9afd048b0ee60f646d749c9b0cc786986b9d04eb61835499bbf5fd1",
+              "total_lines": 5143
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 13290,
+              "cost_full": 13290,
+              "cost_slices": 13290,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "lib/gtest/src/gtest-internal-inl.h",
+              "priority": 1030.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "7331c6c702fe75d57146a24c3e2707ee3e342b109fdbc3aaa75c691cd310ee11"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "c0c979c1f2b02528307e700ad48b2813393199cf1f8193111bf04a51f61c3acd",
+              "total_lines": 1218
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 12629,
+              "cost_full": 12629,
+              "cost_slices": 12629,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  24
+                ]
+              ],
+              "path": "lib/gtest/gtest/internal/gtest-internal.h",
+              "priority": 893.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "2fac22f6f4e3fb13e32a3e906bc37f946115c8f78e4ec50bfc21ca093bf39be9"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "876b0debfe9a6810bb0f478ec06e9ae7717d80a4d846784331396d2c17fc5c98",
+              "total_lines": 1158
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 8978,
+              "cost_full": 8978,
+              "cost_slices": 8978,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  21
+                ]
+              ],
+              "path": "lib/gbenchmark/include/benchmark/benchmark_api.h",
+              "priority": 760.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "a08038989bc853eeb65f53fee652c1a1981322e9dd49aab8ee999fd495ef83f5"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "2dccde92725cbe2daccabea59010c4c9f3799a323b836a8004ea4939db50fd1f",
+              "total_lines": 864
+            }
+          ],
+          "language": "c",
+          "repo_url": "https://github.com/ponylang/ponyc.git",
+          "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__1e842312"
+        },
+        {
+          "base_commit": "9294e25c98f9c09a1874842dbcaae7a91336a57e",
+          "budgets": {
+            "2000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "4000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "8000": {
+              "estimated_packed_tokens": 0,
+              "included_files": [],
+              "included_gold_files": [],
+              "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "candidates": [
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 15872765,
+              "cost_full": 15872765,
+              "cost_slices": 15872765,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "path": "benchmarks/data/jeopardy/jeopardy.json",
+              "priority": 63349.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "0aafce4c6dfc96bd2978d01d1afc26e5d4e283837a028457b3d3ffe13cbe601c"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "e93247fed3511e025b9f4c7d3a6ab3334c77546401fb1d64f4d558af09506308",
+              "total_lines": 1
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 6970904,
+              "cost_full": 6970904,
+              "cost_slices": 6970904,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  777,
+                  817
+                ]
+              ],
+              "line_ranges": [
+                [
+                  777,
+                  817
+                ]
+              ],
+              "path": "test/data/regression/unsigned_ints.json",
+              "priority": 2110.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "8c78f718717dfaaae3d00c3bfb57b99822b3b466dbde2e63288d404169813d96"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "bc765ff7580c8a7a46d104ae0846f0ecbd37617669332d299484a5083904a887",
+              "total_lines": 1000002
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 6965460,
+              "cost_full": 6965460,
+              "cost_slices": 6965460,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  140,
+                  180
+                ]
+              ],
+              "line_ranges": [
+                [
+                  140,
+                  180
+                ]
+              ],
+              "path": "test/data/regression/signed_ints.json",
+              "priority": 1670.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "c088f8555a4a449b6fd435bf4467b01691ada65a356afec5d4c83552914b34c9"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "b405987bced34153c7e304900e975cda604e57a43187c0fbdfe4dabf46bd276d",
+              "total_lines": 1000002
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 191456,
+              "cost_full": 191456,
+              "cost_slices": 191456,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "path": "single_include/nlohmann/json.hpp",
+              "priority": 1668.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "192e8eccfbbaef73890e7aece68a820508fdc7f20014619b3a0c28aa2a4ededd"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "937d4a9ef2b0951f93a7dff9a3b4bc5f7384d3866f8c0c3b29479fd6e6f41eac",
+              "total_lines": 19316
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 6477268,
+              "cost_full": 6477268,
+              "cost_slices": 6477268,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  839,
+                  879
+                ]
+              ],
+              "line_ranges": [
+                [
+                  839,
+                  879
+                ]
+              ],
+              "path": "test/data/regression/floats.json",
+              "priority": 1038.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "0bb66e89c6ee267c04e688ab861ad18f5e9e3954066846914eecf5746e395d21"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "b90f67db4b07a23b3f75370d93123d1d107f9fc66d42342d9e131d82f79edc80",
+              "total_lines": 1000002
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 121720,
+              "cost_full": 121720,
+              "cost_slices": 121720,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  48,
+                  88
+                ]
+              ],
+              "line_ranges": [
+                [
+                  48,
+                  88
+                ]
+              ],
+              "path": "test/thirdparty/catch/catch.hpp",
+              "priority": 781.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "c8dce4dd3ab3d9f2365fef63a6e7a57ce65523ce0343234b46b89c6be6cba377"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "505cb08da48a91eec41c3c1591d04d18776c8522b0d1e9e50c4133daa820c903",
+              "total_lines": 11678
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 80292,
+              "cost_full": 80292,
+              "cost_slices": 80292,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": true,
+              "hit_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "path": "include/nlohmann/json.hpp",
+              "priority": 661.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "31ee717effefa7abbfbfe23666ce4ee6f32683f886c74995f1c6c87616462c1f"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "37b533c1cbb2694bde9bbf7ae14bf3b245b0c012e640b3f57ec7e609d502f17c",
+              "total_lines": 7809
+            },
+            {
+              "ast_ranges": [],
+              "budget_eligibility": {
+                "2000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 2000,
+                  "rendered_mode": "excluded"
+                },
+                "4000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 4000,
+                  "rendered_mode": "excluded"
+                },
+                "8000": {
+                  "codemap_estimate_fits_remaining": false,
+                  "packer_mode": "excluded",
+                  "packer_modes_fitting_remaining": [],
+                  "packer_modes_fitting_total": [],
+                  "remaining_before": 8000,
+                  "rendered_mode": "excluded"
+                }
+              },
+              "codemap_blocked_for_hit_ranges": true,
+              "cost_codemap": 25271,
+              "cost_full": 25271,
+              "cost_slices": 25271,
+              "desired_mode": "full",
+              "full_slice_estimates_equal": true,
+              "gold_file": false,
+              "hit_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "line_ranges": [
+                [
+                  1,
+                  23
+                ]
+              ],
+              "path": "test/src/unit-class_parser.cpp",
+              "priority": 513.0,
+              "rendered_block_sha256_by_mode": {
+                "full": "fe02cc386c4d8c2a614c4f1bdb21a007336007c145ed209fb12312ef65375a5f"
+              },
+              "slice_provenance": {
+                "reason": "non_python"
+              },
+              "source_text_sha256": "fcb8e8e5c605751bf58ad2fd1ba69da4a1bf2e170d49c17adf7e647f97dd3717",
+              "total_lines": 1762
+            }
+          ],
+          "language": "cpp",
+          "repo_url": "https://github.com/nlohmann/json.git",
+          "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "budget_totals": {
+      "2000": {
+        "candidates_excluded_after_earlier_consumption": 0,
+        "excluded_candidates_with_blocked_fitting_codemap": 7,
+        "gold_files_with_no_mode_fitting_total": 9,
+        "included_files": 0,
+        "included_gold_files": 0
+      },
+      "4000": {
+        "candidates_excluded_after_earlier_consumption": 0,
+        "excluded_candidates_with_blocked_fitting_codemap": 12,
+        "gold_files_with_no_mode_fitting_total": 9,
+        "included_files": 1,
+        "included_gold_files": 0
+      },
+      "8000": {
+        "candidates_excluded_after_earlier_consumption": 0,
+        "excluded_candidates_with_blocked_fitting_codemap": 18,
+        "gold_files_with_no_mode_fitting_total": 9,
+        "included_files": 4,
+        "included_gold_files": 0
+      }
+    },
+    "candidates": 72,
+    "discovered_gold_files": 9,
+    "equal_full_slice_estimates": 72,
+    "rendered_block_checks_by_mode": {
+      "codemap_only": 18,
+      "full": 72
+    },
+    "replayed_entries": 216,
+    "replayed_plans": 27,
+    "slice_provenance_counts": {
+      "non_python": 54,
+      "unresolved_ast_hit_lines": 18
+    },
+    "tasks": 9
+  }
+}

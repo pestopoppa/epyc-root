@@ -1,0 +1,14 @@
+Testing 1 devices
+
+Backend 1/1: CPU
+  Device description: AMD EPYC 9655 96-Core Processor
+  Device memory: 1160617 MB (1160617 MB free)
+
+  CASCADE_REFERENCE_FA(split=0,mask_case=0): [1;32mOK[0m
+  CASCADE_REFERENCE_FA(split=256,mask_case=0): [1;32mOK[0m
+  CASCADE_REFERENCE_FA(split=97,mask_case=1): [1;32mOK[0m
+  CASCADE_REFERENCE_FA(split=97,mask_case=2): [1;32mOK[0m
+  4/4 tests passed
+  Backend CPU: [1;32mOK[0m
+1/1 backends passed
+[1;32mOK[0m

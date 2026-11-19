@@ -1,0 +1,188 @@
+{
+  "task": "TB-SEM-1",
+  "row": "thinking-budget-semantics-20261118",
+  "scope": "Official single-prompt native chat diagnostic with one request per arm.",
+  "custody": {
+    "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/thinking-probe",
+    "official_result": {
+      "path": "native/RESULT.json",
+      "sha256": "4170c0df7a03336ce5ef14fdfb839c578745246ca7f2d0a7b00c6595a6a3bfa1"
+    },
+    "window_result": {
+      "path": "native/window-rwm0hsbg/RESULT.json",
+      "sha256": "4170c0df7a03336ce5ef14fdfb839c578745246ca7f2d0a7b00c6595a6a3bfa1"
+    },
+    "window_receipt": {
+      "path": "native/window-rwm0hsbg/WINDOW.json",
+      "sha256": "921043897250b592f75a6b1b8ddf1e1a69ab79c4ffb25ea64792574784d91fa2"
+    },
+    "packet_manifest": {
+      "path": "packet/sha256.json",
+      "sha256": "7ec7fcfdef02afdda226a50ee04f71c5d6cd985cb2d9d20fea92de5b7da9fb55"
+    },
+    "native_source_receipt": {
+      "path": "packet/v10-source.json",
+      "sha256": "7897c5ff44b43ba405d0e545e70c1d661fc772355ee9d11da03c704ce204c94b"
+    },
+    "native_source_sha256": {
+      "tools/server/server-common.cpp": "2a67b239d3484fce399dfcd380088217ce33b1057d3337de7d460fdab95ef211",
+      "tools/server/server-task.cpp": "5a4ca1a76e03822fa33a23080116c0a1a573e533a41d575e39548f5515f309ad"
+    },
+    "official_result_and_window_result_identical": true,
+    "all_recorded_window_and_packet_file_hashes_verified": true,
+    "orchestrator_zero_budget_source": {
+      "commit": "52db82df557ce1ef22b7c9c05f2a0ce9e5f6c8b8",
+      "path": "src/backends/serving_params.py",
+      "sha256": "dc3d4a56e04be72bc67878c2302e9a82c552a5d1d07347b365e42b74c36e0604"
+    }
+  },
+  "runtime": {
+    "kernel": "production-consolidated-v10",
+    "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "build": 10303,
+    "response_fingerprint": "b10303-ffc1bac82",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "startup_reasoning": "off",
+    "model": "Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "model_sha256_from_retained_receipt": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
+  },
+  "coverage": {
+    "completed": 3,
+    "planned": 3,
+    "server_exited": true,
+    "unknown": [],
+    "publisher_rule": "completed >= 3",
+    "meaning": "Three native responses captured with verified server exit. The rule counts captures only."
+  },
+  "shared_request_controls": {
+    "seed": 20261118,
+    "temperature": 0.0,
+    "top_k": 1,
+    "max_tokens": 128,
+    "reasoning_format": "deepseek",
+    "cache_prompt": false
+  },
+  "arithmetic": {
+    "calculation": "42 - 14 + 9 - 5 + 10 = 42",
+    "expected_answer": 42,
+    "correct_arms": 0
+  },
+  "arms": [
+    {
+      "unit": "budget-omitted",
+      "request": {
+        "path": "native/window-rwm0hsbg/attempt-00/REQUEST.json",
+        "sha256": "3dbed35d7ea454fe859bc2b8c73191dca3e54619d0db7f5f3b57abe5656cf069",
+        "enable_thinking": true,
+        "thinking_budget_tokens": "omitted"
+      },
+      "response": {
+        "path": "native/window-rwm0hsbg/attempt-00/RESPONSE.json",
+        "sha256": "2ed92d040dbf605e852b8c6c8164babb223882e342d88c675f0e07192464b123"
+      },
+      "http_status": 200,
+      "finish_reason": "length",
+      "content": "",
+      "reasoning_field_present": true,
+      "reasoning_nonempty": true,
+      "reasoning_characters": 377,
+      "usage": {
+        "completion_tokens": 128,
+        "prompt_tokens": 212,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 340
+      },
+      "verbose_token_id_count": 128,
+      "rendered_prompt": {
+        "sha256_utf8": "a16f3df3db0f58cba76939f209d08603f995236739a416f9d9e111d1d85e6766",
+        "system_opening_line": "Answer directly, after thinking. Lead with the answer, then only what it needs to be correct and usable.",
+        "assistant_scaffold": "<|im_start|>assistant\n<think>\n"
+      }
+    },
+    {
+      "unit": "budget-8",
+      "request": {
+        "path": "native/window-rwm0hsbg/attempt-01/REQUEST.json",
+        "sha256": "20cf0558a62b9e129e9869772e52bf74acecfc8aa873e20c3fc203ea1702a93f",
+        "enable_thinking": true,
+        "thinking_budget_tokens": 8
+      },
+      "response": {
+        "path": "native/window-rwm0hsbg/attempt-01/RESPONSE.json",
+        "sha256": "651807d7d3c4d396282bd2634c3d30913a2a323d43456529c943eae0580668ff"
+      },
+      "http_status": 200,
+      "finish_reason": "stop",
+      "content": "34",
+      "reasoning_field_present": true,
+      "reasoning_nonempty": true,
+      "reasoning_characters": 22,
+      "usage": {
+        "completion_tokens": 12,
+        "prompt_tokens": 212,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 224
+      },
+      "verbose_token_id_count": 12,
+      "rendered_prompt": {
+        "sha256_utf8": "a16f3df3db0f58cba76939f209d08603f995236739a416f9d9e111d1d85e6766",
+        "system_opening_line": "Answer directly, after thinking. Lead with the answer, then only what it needs to be correct and usable.",
+        "assistant_scaffold": "<|im_start|>assistant\n<think>\n"
+      }
+    },
+    {
+      "unit": "thinking-disabled",
+      "request": {
+        "path": "native/window-rwm0hsbg/attempt-02/REQUEST.json",
+        "sha256": "e3820ff325e9c79a08c4c11a4ee1a08ed3f28de02eb31529713b1060d16a865d",
+        "enable_thinking": false,
+        "thinking_budget_tokens": "omitted"
+      },
+      "response": {
+        "path": "native/window-rwm0hsbg/attempt-02/RESPONSE.json",
+        "sha256": "9a1cc7c229447c8035d03aefac159fc974e6651bcfe61a479813b930df635d27"
+      },
+      "http_status": 200,
+      "finish_reason": "stop",
+      "content": "38",
+      "reasoning_field_present": false,
+      "reasoning_nonempty": false,
+      "reasoning_characters": null,
+      "usage": {
+        "completion_tokens": 3,
+        "prompt_tokens": 213,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 216
+      },
+      "verbose_token_id_count": 3,
+      "rendered_prompt": {
+        "sha256_utf8": "3d7e63906cc38b2d70f42883056a3e7bd37160369045a730871d159bf9ee4e0c",
+        "system_opening_line": "Answer directly and concisely. Give the answer with only what it needs to be correct and usable.",
+        "assistant_scaffold": "<|im_start|>assistant\n<think>\n\n</think>\n\n"
+      }
+    }
+  ],
+  "interpretation": [
+    "With byte-identical rendered prompts, requesting budget 8 produced a shorter returned reasoning trace and a closing think tag in raw output. The omitted-budget baseline was still returning reasoning when the 128-token generation ceiling ended the response.",
+    "With thinking disabled and budget omitted, the rendered system opening changed, the assistant scaffold contained a preclosed empty think block, and the native response omitted reasoning_content. These observations apply to the combined template change.",
+    "The captured usage and verbose token IDs count total completion. A single positive budget cannot establish exact cap accounting or general enforcement. The explicit numeric-zero native case was outside the run.",
+    "The baseline returned no final answer and the other two answers were wrong. The single-prompt diagnostic supplies no comparative quality, non-inferiority, frontdoor parity, or cross-architecture result."
+  ],
+  "historical_step_3": {
+    "disposition": "Retire the proposed zero-budget suppression fix as obsolete for the current orchestrator contract.",
+    "rationale": "thinking_budget_fields(0) intentionally omits the field. Explicit enable_thinking=false is the rendered chat-template control for disabling thinking, as exercised on v10. Historical Step 4 had already been merged into Step 3 verification.",
+    "scope": "This disposition follows the current control contract and does not adjudicate the original Qwen3.5 reproduction or establish exact hard-cap enforcement."
+  }
+}

@@ -1,0 +1,43 @@
+README.md: OK
+base-plan.json: OK
+capture.py: OK
+capture_base.py: OK
+chat-template.jinja: OK
+complete.py: OK
+cpu-diagnostic-result.original.json: OK
+frontdoor-full-receipt.json: OK
+hip-plan.original.json: OK
+hip-scoring-from-prospective-metadata.json: OK
+loader-reshape-witness.json: OK
+loader_log.py: OK
+make_plan.py: OK
+model-hash-receipt.json: OK
+offline_controls.py: OK
+plan.json: OK
+production-runtime-stat-refresh.json: OK
+quality_parity.py: OK
+requests/architect-general-hip-code.json: OK
+requests/architect-general-hip-loader-reshape-json.json: OK
+requests/architect-general-hip-prose.json: OK
+requests/architect-general-hip-reasoning.json: OK
+requests/native-smoke.json: OK
+row-launch.sh: OK
+row.spec.json: OK
+smoke-model-plan.original-bytes.json: OK
+smoke_predicate.py: OK
+row-launch.sh Bash syntax PASS
+deterministic plan/spec, effective one-recipe shape pin, three unchanged requests and sole production arm: PASS
+pass: PASS
+semantic_refusal: PASS
+nonfixture_semantic_refusal: PASS
+length_refusal: PASS
+no_spec_refusal: PASS
+wrong_hip_pid: PASS
+fit_probe_only: PASS
+duplicate_phase_line: PASS
+cleanup_failure: PASS
+raw_tamper: PASS
+nonfixture_request_drift: PASS
+missing_item: PASS
+transport_failure: PASS
+Full plan matches predecessor after adding verbosity only to the smoke args: PASS

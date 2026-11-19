@@ -24,6 +24,11 @@ def _producer():
     return module
 
 
+def _without_custody(stdout: str) -> str:
+    """Drop the lines of the post-baseline custody check (`... custody: ...`)."""
+    return "".join(ln for ln in stdout.splitlines(keepends=True) if "custody:" not in ln)
+
+
 class KernelStoreReceiptTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -66,6 +71,10 @@ class KernelStoreReceiptTests(unittest.TestCase):
                     companion = target / name
                     companion.write_text("fixture\n", encoding="utf-8")
                     companion.chmod(0o755)
+        for target in self.targets.values():
+            rows = [f"{hashlib.sha256(f.read_bytes()).hexdigest()}  ./{f.name}"
+                    for f in sorted(target.iterdir()) if f.is_file() and not f.is_symlink()]
+            (target / "SHA256SUMS").write_text("\n".join(rows) + "\n", encoding="utf-8")
         self.ambient = str(self.targets["cpu"])
 
     @staticmethod
@@ -241,8 +250,10 @@ exit 1
             before, before_env = self._run_copied_verifier(baseline, unset_ld=unset_ld)
             after, after_env = self._run_copied_verifier(current, unset_ld=unset_ld)
             self.assertEqual(before.returncode, expected, f"{case}: {before.stdout}")
-            self.assertEqual((after.returncode, after.stdout),
-                             (before.returncode, before.stdout), case)
+            # The custody check is new since the baseline: its `custody:` lines are the only
+            # intended stdout difference; rc and every other line must still match.
+            self.assertEqual((after.returncode, _without_custody(after.stdout)),
+                             (before.returncode, _without_custody(before.stdout)), case)
             self.assertEqual(after_env, before_env, f"{case}: child env observations differ")
             if case == "ambient-warning":
                 self.assertIn("ambient LD_LIBRARY_PATH mis-resolves", after.stdout)

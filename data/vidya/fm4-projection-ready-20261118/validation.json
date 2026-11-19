@@ -1,0 +1,22 @@
+{
+  "command": "python3 -m pytest -q tests/experiments/test_fm4_codex_dispatch.py tests/vidya/test_fm4_gate_acceptance.py tests/experiments/test_fm4_native_canary.py tests/experiments/test_fm4_task_acceptance.py tests/experiments/test_fm4_run_gate.py",
+  "returncode": 0,
+  "passed": 162,
+  "skipped": 2,
+  "elapsed_s": 3.02,
+  "skip_reason": "D9 oracle acceptance API is pending",
+  "carrier_invariants": {
+    "tuples": 8,
+    "source_kinds": 1,
+    "violations": 0
+  },
+  "scope": "Software and generated-input refusal controls only; original native planning-canary acceptance remains separate.",
+  "post_review_regression": {
+    "command": "python3 -m pytest -q tests/experiments/test_fm4_native_canary.py tests/vidya/test_fm4_gate_acceptance.py tests/experiments/test_fm4_codex_dispatch.py",
+    "passed": 84,
+    "skipped": 2,
+    "elapsed_s": 2.15,
+    "returncode": 0,
+    "scope": "After final gate-claim census and dispatch freshness checks; selected-gate compatibility and new replay controls."
+  }
+}

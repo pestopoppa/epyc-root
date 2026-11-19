@@ -1,0 +1,42 @@
+{
+  "row_id": "codex-ufh12-shadow-gnx-v2-20261104",
+  "verdict": "PASS for the scoped read-only context and impact analysis",
+  "rc": 0,
+  "source_commit": "f58d0bf7668147b5aa142ade921b7b86ece35ec0",
+  "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/out/results.jsonl",
+  "ended": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ufh12-shadow-gnx-v2-20261104.ended",
+  "contexts": 4,
+  "impacts": [
+    {
+      "symbol": "ShadowSink",
+      "path": "scripts/vidya/producers/repl_shadow_sink.py",
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct": 1
+    },
+    {
+      "symbol": "validate_shadow_stream",
+      "path": "scripts/vidya/producers/repl_shadow_validate.py",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0
+    },
+    {
+      "symbol": "ingest",
+      "path": "scripts/vidya/ingest_sources.py",
+      "risk": "LOW",
+      "impacted_count": 8,
+      "direct": 4
+    },
+    {
+      "symbol": "cmd_ingest",
+      "path": "scripts/vidya/cli.py",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0
+    }
+  ],
+  "complete_record": true,
+  "failure": null,
+  "follow_up": "Owner files row verdict and preserves evidence. No HIGH/CRITICAL stop or successor fix required. These receipts cover only the pinned source version and do not prove online shadow wiring or complete REPL-EMB-2.3; verify index freshness and impact again for a different source commit before editing."
+}

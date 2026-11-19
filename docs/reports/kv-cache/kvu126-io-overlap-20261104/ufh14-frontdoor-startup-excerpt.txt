@@ -1,0 +1,8 @@
+0.00.001.522 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.001.863 W srv  llama_server: -----------------
+0.00.001.865 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.001.865 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.001.865 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.001.865 W srv  llama_server: -----------------
+0.00.003.055 I srv    load_model: loading model '/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf'
+0.00.607.143 W model has unused tensor blk.40.attn_norm.weight (size = 8192 bytes) -- ignoring

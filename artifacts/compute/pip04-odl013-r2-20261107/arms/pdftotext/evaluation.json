@@ -1,0 +1,2837 @@
+{
+  "summary": {
+    "engine_name": "pdftotext",
+    "engine_version": "24.02.0",
+    "engine_pin": "system binary (unpinned)",
+    "processor": "AMD EPYC 9655 96-Core Processor",
+    "document_count": 200,
+    "total_elapsed": 2.8714609146118164,
+    "elapsed_per_doc": 0.014357304573059082,
+    "median_latency_ms": 13.609576970338821,
+    "p50_latency_ms": 13.609576970338821,
+    "p90_latency_ms": 15.331419743597507,
+    "failed_docs": 0,
+    "failed_stems": [],
+    "latency_count": 200,
+    "per_doc_latency_ms": {
+      "doc-89e9c9005a8aaa9a": 17.398787,
+      "doc-bb02f5a41a26c65b": 15.352543,
+      "doc-76dfe4b58bca422f": 16.74974,
+      "doc-a64a4d5ed962e138": 15.391963,
+      "doc-3793ac09ddc4cb0c": 13.768844,
+      "doc-17e7611a86690930": 21.642869,
+      "doc-870374e040519ada": 12.235735,
+      "doc-43899edd0f908da2": 14.815515,
+      "doc-3ec2ee9f1f56cc2e": 13.831124,
+      "doc-ecfc6501a959b8e4": 14.222689,
+      "doc-067a890d3a2f5995": 14.912237,
+      "doc-4037ba13c596c128": 14.462932,
+      "doc-9c342b204eee4c00": 14.492062,
+      "doc-50f8f7eaccc1ebcd": 15.308792,
+      "doc-a08cf80a952446be": 13.416079,
+      "doc-b026f74e52989c81": 13.883466,
+      "doc-bcb62b453d8cd92e": 12.807012,
+      "doc-491182d9c9dcd9e9": 15.226692,
+      "doc-8e7995257bb6ac2b": 13.48183,
+      "doc-d3328beeb9e91d62": 11.78589,
+      "doc-55741440e551c226": 14.582224,
+      "doc-953b3bd6bd31d3c5": 13.547501,
+      "doc-e39ff31d0d831dc6": 13.607852,
+      "doc-52435b80fb2a2692": 13.965626,
+      "doc-eece19a6bb983096": 13.43831,
+      "doc-ba7e0039caafe68d": 14.061337,
+      "doc-d920bb6bfec76442": 15.235031,
+      "doc-21ce09e0ee0cd1bf": 16.028101,
+      "doc-8afb7d33d7097ed9": 15.610406,
+      "doc-439fae5ec1907770": 15.849158,
+      "doc-6ee9896c628dc1f1": 16.441256,
+      "doc-8765c3b2e0999fdc": 16.856061,
+      "doc-b042b0d1d89ef498": 15.329073,
+      "doc-aef9c67e9308ed5b": 16.926011,
+      "doc-079b07744a03ccba": 16.692029,
+      "doc-c8f1f3522a935933": 14.382881,
+      "doc-981c1abe86ab5ff9": 12.927843,
+      "doc-5b3e8688dcea19c4": 13.574941,
+      "doc-c2860541581d40ca": 13.937436,
+      "doc-d4a4be9c76bdd864": 14.759436,
+      "doc-fc6673c2302e7ee4": 14.399562,
+      "doc-407019118dfa2440": 13.49161,
+      "doc-062172e2f40b911d": 14.893167,
+      "doc-5125e926805ffbd1": 14.812676,
+      "doc-07e74b4edd349538": 13.824175,
+      "doc-5761144b0b05badc": 14.336711,
+      "doc-e902d1a1aaf9feea": 12.893253,
+      "doc-5aceced2490a26e4": 13.711933,
+      "doc-dc79e842865d1501": 13.250438,
+      "doc-e77537832825546e": 11.973032,
+      "doc-f17f8469cac99df9": 14.30663,
+      "doc-62bca56a2e000096": 12.659281,
+      "doc-f963ffd5bf8e6d4b": 12.524319,
+      "doc-dd41734cf4802979": 14.431002,
+      "doc-95e4a5f5018eb732": 13.262548,
+      "doc-0908f7cb005a006a": 13.761293,
+      "doc-8f462788c1296c1a": 13.345569,
+      "doc-896fafa9b172054c": 12.205265,
+      "doc-1d5ff56881285ec3": 13.174247,
+      "doc-f934cb7e9fd24477": 12.044994,
+      "doc-254dfb915f1e6f4d": 13.728334,
+      "doc-782b9bffcb72ddc8": 13.881295,
+      "doc-8f7d60877faf8d11": 12.759672,
+      "doc-5fda7a1cdeaf652a": 13.838534,
+      "doc-7c1ca1d38c54b27e": 12.700301,
+      "doc-10d8f2898ea9322b": 13.929886,
+      "doc-b9a29814cacde323": 13.916936,
+      "doc-bc7970dd60310018": 15.261522,
+      "doc-ee5e7cc38effbb45": 14.063377,
+      "doc-7b5c49806c028b85": 13.718354,
+      "doc-e5f95652827696ad": 13.081915,
+      "doc-8efa6389c55d4885": 12.222455,
+      "doc-4266de19ab3e466d": 12.939174,
+      "doc-56960ae7f3793f93": 26.500996,
+      "doc-815ba8a7b1cf821f": 14.658104,
+      "doc-210d504b73deb82e": 14.062498,
+      "doc-2b75f712f506a9ec": 12.453548,
+      "doc-ed7e15d95837c942": 14.841296,
+      "doc-afe18b68c92aa31e": 12.367177,
+      "doc-2b191996d971c67e": 14.074827,
+      "doc-83b3f103ba1035d4": 13.026425,
+      "doc-afe1d14f041b74f8": 12.751892,
+      "doc-aa8c845af3466cab": 12.096404,
+      "doc-d14d7bb73a076681": 13.42711,
+      "doc-d05e6867d4e6a59f": 13.037055,
+      "doc-455b948b4941135f": 12.372298,
+      "doc-a20cc62aa75613b3": 13.43911,
+      "doc-bf59523f4ed1348e": 12.992355,
+      "doc-a861904295674722": 12.255356,
+      "doc-17ec44f7a3f9d670": 12.790952,
+      "doc-1be4fbfeee0ac7d7": 14.037407,
+      "doc-b53bf1c91a1e6f86": 14.634254,
+      "doc-cb0a3ef8ba44c304": 12.869323,
+      "doc-702622946251fd78": 12.59425,
+      "doc-5ef08da28a570056": 13.370419,
+      "doc-241fb199ac52de45": 13.267618,
+      "doc-606f28fabe1b5872": 14.177079,
+      "doc-242ff74406fdf5d9": 13.992997,
+      "doc-d8a7be4d123cc473": 12.918574,
+      "doc-2d0a44d2515622ce": 14.170459,
+      "doc-39d89f2836250ba2": 12.941804,
+      "doc-8c6489434a92bffd": 14.361751,
+      "doc-d7ae1b8b4e263b7d": 16.118232,
+      "doc-b1121f276296b3a8": 12.422358,
+      "doc-8de392ea69886d56": 12.886303,
+      "doc-9f34e3a7a57f3c3a": 12.261375,
+      "doc-7cdb7376fc34cf80": 13.581452,
+      "doc-886b5d2f9f045424": 13.534921,
+      "doc-d6b7533b6096aa80": 14.2749,
+      "doc-42b35f88e1341bd7": 11.927092,
+      "doc-a3c016bc9d3cd7b1": 13.47856,
+      "doc-b1aba640020487b8": 13.43157,
+      "doc-e3142af7225a290c": 12.750652,
+      "doc-a1acf658b5e1063d": 12.739691,
+      "doc-b11770c8f5bc5587": 14.041597,
+      "doc-5dddd7bdf7083aaf": 12.477388,
+      "doc-73afdeac7690d4e6": 12.60193,
+      "doc-03d883d24b6451a3": 12.008373,
+      "doc-03796b7874b2ddc5": 12.111224,
+      "doc-12bde5825321fbdd": 11.698579,
+      "doc-16305c318c06d2b2": 14.354671,
+      "doc-cf79d86f3ec6efe1": 13.900135,
+      "doc-fc3b270a4fc28611": 12.736131,
+      "doc-80d4680a8aabdc72": 12.392618,
+      "doc-9fb58d1c7314a880": 11.303214,
+      "doc-1fcc9d4ef75007a3": 12.956795,
+      "doc-708a7fa98f27076e": 13.611302,
+      "doc-4502a45d45b52836": 13.063716,
+      "doc-ca3f66183f9cb8bb": 14.988349,
+      "doc-efc84dc127f9c602": 12.824283,
+      "doc-39e74e059ee5dca1": 12.486039,
+      "doc-6a3de9319bcbde57": 13.678033,
+      "doc-0a530b2ae802e569": 13.38699,
+      "doc-7a34517023645d80": 12.828262,
+      "doc-d809b6e571690320": 14.142258,
+      "doc-0c656693bbab6f5f": 12.64991,
+      "doc-623e7ad94b7a6120": 11.940032,
+      "doc-4609282c8d3de755": 13.285988,
+      "doc-03cb834e0d876a8d": 13.362968,
+      "doc-448b50be6c4b2e53": 14.177789,
+      "doc-3e4c6b75c8395742": 94.873129,
+      "doc-849da0ec67c44c3f": 15.408243,
+      "doc-42cd6aea51a4ad2a": 14.265569,
+      "doc-9a596198a37f14e8": 12.472868,
+      "doc-e9470b0e9010b8a5": 14.090187,
+      "doc-4e4d5229d07bf464": 12.698571,
+      "doc-dbb2430314cf8ab5": 13.344569,
+      "doc-b3d0d14cc108b1fa": 11.613119,
+      "doc-1b849cfe207ebbbd": 12.554069,
+      "doc-7c8113158ebd80e0": 12.106044,
+      "doc-6d8ea884e39cad0d": 11.74109,
+      "doc-f2d08aa981fd8723": 12.648551,
+      "doc-826f7168712dafc3": 15.167661,
+      "doc-201d5af41ac689e3": 11.76633,
+      "doc-4168a57f3d1c41e0": 12.748501,
+      "doc-3f688595901c75fb": 14.210579,
+      "doc-e2a1f2f30384d0ab": 12.473709,
+      "doc-b0262dfcf7c49ca0": 13.784004,
+      "doc-19d0b15faba3a57f": 13.212678,
+      "doc-f0bf92bdaf277247": 12.6215,
+      "doc-02386ae28a4590a6": 12.124834,
+      "doc-9cceee9bc7e6686e": 13.992967,
+      "doc-6590dd4c164ecdf5": 15.661536,
+      "doc-e5f405788a2428e6": 13.153066,
+      "doc-ffcdabb0efd40f9e": 16.80846,
+      "doc-d7ffe0c93659bce2": 13.960616,
+      "doc-c363dc4af9874091": 14.136998,
+      "doc-57793980eee1abdc": 16.505476,
+      "doc-bca4ff111127e239": 14.542973,
+      "doc-5c6e26226df30559": 13.039495,
+      "doc-b1b126e0ff214047": 12.461999,
+      "doc-7b75b19f4f20521e": 13.491581,
+      "doc-5fe7742b33e91af0": 14.29875,
+      "doc-4dd62200aacb6c8f": 12.770732,
+      "doc-87d28ab2b90703a7": 13.243178,
+      "doc-89cac5525d2d0209": 14.152398,
+      "doc-1dcc6f768728b55c": 13.4682,
+      "doc-eb51d342f7d317e5": 13.910365,
+      "doc-dfe6a53ecc33050d": 13.872805,
+      "doc-38df5f86ea966c71": 15.069139,
+      "doc-11edeeb3f7a733ed": 13.40177,
+      "doc-aea1aaa1b9f4daea": 13.43341,
+      "doc-68df7775276c2ebc": 14.571224,
+      "doc-2836a2ea03ecbee1": 13.618202,
+      "doc-3ca1e244d5f6d499": 15.372963,
+      "doc-061f9c3530ae19af": 15.207471,
+      "doc-27b56bcbeb628e64": 13.355119,
+      "doc-e4ae00af261f0bb0": 15.257111,
+      "doc-73a398a74fe8ae47": 14.971868,
+      "doc-3d67eea69e843e89": 14.3154,
+      "doc-bf2d1e70ad54c937": 14.603624,
+      "doc-78689c16264b8479": 15.0886,
+      "doc-5b2ad7b10365365d": 12.64674,
+      "doc-7aa478cd803d7346": 14.020287,
+      "doc-08a3c656277bb87f": 13.055376,
+      "doc-b1a017e6e8bc4e1f": 14.105918,
+      "doc-20da6f90d4922272": 12.243336,
+      "doc-56423839dc9438af": 12.534339,
+      "doc-6d323699cff7d411": 14.593254,
+      "doc-d0ae8844b655177a": 14.115278
+    },
+    "date": "2026-11-07"
+  },
+  "metrics": {
+    "score": {
+      "overall_mean": 0.5705390936797808,
+      "nid_mean": 0.8588608839354037,
+      "nid_s_mean": 0.8378831008130178,
+      "teds_mean": 0.0,
+      "teds_s_mean": 0.0,
+      "mhs_mean": 0.0,
+      "mhs_s_mean": 0.0
+    },
+    "nid_count": 200,
+    "teds_count": 42,
+    "mhs_count": 107,
+    "missing_predictions": 0
+  },
+  "documents": [
+    {
+      "document_id": "doc-89e9c9005a8aaa9a",
+      "scores": {
+        "overall": 0.4955672154876063,
+        "nid": 0.9911344309752126,
+        "nid_s": 0.9911344309752126,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-bb02f5a41a26c65b",
+      "scores": {
+        "overall": 0.4940224388449513,
+        "nid": 0.9880448776899026,
+        "nid_s": 0.9880448776899026,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-76dfe4b58bca422f",
+      "scores": {
+        "overall": 0.4880952380952381,
+        "nid": 0.9761904761904762,
+        "nid_s": 0.9761904761904762,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-a64a4d5ed962e138",
+      "scores": {
+        "overall": 0.4943388596845936,
+        "nid": 0.9886777193691872,
+        "nid_s": 0.9886777193691872,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-3793ac09ddc4cb0c",
+      "scores": {
+        "overall": 0.9047619047619048,
+        "nid": 0.9047619047619048,
+        "nid_s": 0.9047619047619048,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-17e7611a86690930",
+      "scores": {
+        "overall": 0.9523809523809522,
+        "nid": 0.9523809523809522,
+        "nid_s": 0.9523809523809522,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-870374e040519ada",
+      "scores": {
+        "overall": 0.49306062819576335,
+        "nid": 0.9861212563915267,
+        "nid_s": 0.9861212563915267,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-43899edd0f908da2",
+      "scores": {
+        "overall": 0.6619078520441272,
+        "nid": 0.6619078520441272,
+        "nid_s": 0.6619078520441272,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-3ec2ee9f1f56cc2e",
+      "scores": {
+        "overall": 0.6294216732172937,
+        "nid": 0.6294216732172937,
+        "nid_s": 0.6294216732172937,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-ecfc6501a959b8e4",
+      "scores": {
+        "overall": 0.5868930750862298,
+        "nid": 0.5868930750862298,
+        "nid_s": 0.5868930750862298,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-067a890d3a2f5995",
+      "scores": {
+        "overall": 0.664775413711584,
+        "nid": 0.664775413711584,
+        "nid_s": 0.664775413711584,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-4037ba13c596c128",
+      "scores": {
+        "overall": 0.5433651344319168,
+        "nid": 0.5433651344319168,
+        "nid_s": 0.5433651344319168,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-9c342b204eee4c00",
+      "scores": {
+        "overall": 0.381354051054384,
+        "nid": 0.762708102108768,
+        "nid_s": 0.762708102108768,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-50f8f7eaccc1ebcd",
+      "scores": {
+        "overall": 0.7004477963704926,
+        "nid": 0.7004477963704926,
+        "nid_s": 0.7004477963704926,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-a08cf80a952446be",
+      "scores": {
+        "overall": 0.7450819672131148,
+        "nid": 0.7450819672131148,
+        "nid_s": 0.7450819672131148,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b026f74e52989c81",
+      "scores": {
+        "overall": 0.4995014955134597,
+        "nid": 0.9990029910269194,
+        "nid_s": 0.9990029910269194,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-bcb62b453d8cd92e",
+      "scores": {
+        "overall": 0.9816568047337279,
+        "nid": 0.9816568047337279,
+        "nid_s": 0.9816568047337279,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-491182d9c9dcd9e9",
+      "scores": {
+        "overall": 0.3902794653705953,
+        "nid": 0.7805589307411906,
+        "nid_s": 0.7805589307411906,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-8e7995257bb6ac2b",
+      "scores": {
+        "overall": 0.49891950297136684,
+        "nid": 0.9978390059427337,
+        "nid_s": 0.9978390059427337,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d3328beeb9e91d62",
+      "scores": {
+        "overall": 0.9962714392244594,
+        "nid": 0.9962714392244594,
+        "nid_s": 0.9962714392244594,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-55741440e551c226",
+      "scores": {
+        "overall": 0.4982476635514018,
+        "nid": 0.9964953271028036,
+        "nid_s": 0.9964953271028036,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-953b3bd6bd31d3c5",
+      "scores": {
+        "overall": 0.9963084495488104,
+        "nid": 0.9963084495488104,
+        "nid_s": 0.9963084495488104,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e39ff31d0d831dc6",
+      "scores": {
+        "overall": 0.9988216810683425,
+        "nid": 0.9988216810683425,
+        "nid_s": 0.9988216810683425,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-52435b80fb2a2692",
+      "scores": {
+        "overall": 0.9995910020449899,
+        "nid": 0.9995910020449899,
+        "nid_s": 0.9995910020449899,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-eece19a6bb983096",
+      "scores": {
+        "overall": 0.9990791896869244,
+        "nid": 0.9990791896869244,
+        "nid_s": 0.9990791896869244,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-ba7e0039caafe68d",
+      "scores": {
+        "overall": 0.9981412639405205,
+        "nid": 0.9981412639405205,
+        "nid_s": 0.9981412639405205,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d920bb6bfec76442",
+      "scores": {
+        "overall": 0.6302325581395349,
+        "nid": 0.6302325581395349,
+        "nid_s": 0.6302325581395349,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-21ce09e0ee0cd1bf",
+      "scores": {
+        "overall": 0.4956982131039047,
+        "nid": 0.9913964262078094,
+        "nid_s": 0.9913964262078094,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-8afb7d33d7097ed9",
+      "scores": {
+        "overall": 0.48598697167095894,
+        "nid": 0.9719739433419179,
+        "nid_s": 0.9719739433419179,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-439fae5ec1907770",
+      "scores": {
+        "overall": 0.973186119873817,
+        "nid": 0.973186119873817,
+        "nid_s": 0.973186119873817,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-6ee9896c628dc1f1",
+      "scores": {
+        "overall": 0.4764803541781959,
+        "nid": 0.9529607083563918,
+        "nid_s": 0.9529607083563918,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-8765c3b2e0999fdc",
+      "scores": {
+        "overall": 0.4863883847549909,
+        "nid": 0.9727767695099818,
+        "nid_s": 0.9727767695099818,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b042b0d1d89ef498",
+      "scores": {
+        "overall": 0.4801178203240059,
+        "nid": 0.9602356406480118,
+        "nid_s": 0.9602356406480118,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-aef9c67e9308ed5b",
+      "scores": {
+        "overall": 0.9232804232804233,
+        "nid": 0.9232804232804233,
+        "nid_s": 0.9232804232804233,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-079b07744a03ccba",
+      "scores": {
+        "overall": 0.46423639878486606,
+        "nid": 0.9284727975697321,
+        "nid_s": 0.9284727975697321,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-c8f1f3522a935933",
+      "scores": {
+        "overall": 0.30837304288631723,
+        "nid": 0.6167460857726345,
+        "nid_s": 0.6167460857726345,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-981c1abe86ab5ff9",
+      "scores": {
+        "overall": 0.33844393592677346,
+        "nid": 0.6768878718535469,
+        "nid_s": 0.6768878718535469,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5b3e8688dcea19c4",
+      "scores": {
+        "overall": 0.4117983963344788,
+        "nid": 0.8235967926689576,
+        "nid_s": 0.8235967926689576,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-c2860541581d40ca",
+      "scores": {
+        "overall": 0.3551155115511551,
+        "nid": 0.7102310231023102,
+        "nid_s": 0.7102310231023102,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d4a4be9c76bdd864",
+      "scores": {
+        "overall": 0.6051587301587302,
+        "nid": 0.6051587301587302,
+        "nid_s": 0.6051587301587302,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-fc6673c2302e7ee4",
+      "scores": {
+        "overall": 0.6066426570628252,
+        "nid": 0.6066426570628252,
+        "nid_s": 0.6066426570628252,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-407019118dfa2440",
+      "scores": {
+        "overall": 0.6531998569896318,
+        "nid": 0.6531998569896318,
+        "nid_s": 0.6531998569896318,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-062172e2f40b911d",
+      "scores": {
+        "overall": 0.5943796394485684,
+        "nid": 0.5943796394485684,
+        "nid_s": 0.5943796394485684,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5125e926805ffbd1",
+      "scores": {
+        "overall": 0.4984126984126984,
+        "nid": 0.9968253968253968,
+        "nid_s": 0.9968253968253968,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-07e74b4edd349538",
+      "scores": {
+        "overall": 0.3698005698005698,
+        "nid": 0.7396011396011396,
+        "nid_s": 0.6093264248704664,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5761144b0b05badc",
+      "scores": {
+        "overall": 0.309189534141672,
+        "nid": 0.618379068283344,
+        "nid_s": 0.4541353383458646,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e902d1a1aaf9feea",
+      "scores": {
+        "overall": 0.265370705244123,
+        "nid": 0.530741410488246,
+        "nid_s": 0.13655761024182078,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5aceced2490a26e4",
+      "scores": {
+        "overall": 0.4976754015215554,
+        "nid": 0.9953508030431109,
+        "nid_s": 0.9953508030431109,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-dc79e842865d1501",
+      "scores": {
+        "overall": 0.9910485933503836,
+        "nid": 0.9910485933503836,
+        "nid_s": 0.9910485933503836,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e77537832825546e",
+      "scores": {
+        "overall": 0.9859756097560975,
+        "nid": 0.9859756097560975,
+        "nid_s": 0.9859756097560975,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-f17f8469cac99df9",
+      "scores": {
+        "overall": 0.265141889030072,
+        "nid": 0.795425667090216,
+        "nid_s": 0.841506129597198,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-62bca56a2e000096",
+      "scores": {
+        "overall": 0.4043602387749805,
+        "nid": 0.808720477549961,
+        "nid_s": 0.8790436005625879,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-f963ffd5bf8e6d4b",
+      "scores": {
+        "overall": 0.27651735505138647,
+        "nid": 0.8295520651541594,
+        "nid_s": 0.9089563286454478,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-dd41734cf4802979",
+      "scores": {
+        "overall": 0.4995302959135744,
+        "nid": 0.9990605918271488,
+        "nid_s": 0.9990605918271488,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-95e4a5f5018eb732",
+      "scores": {
+        "overall": 0.9557894736842105,
+        "nid": 0.9557894736842105,
+        "nid_s": 0.9557894736842105,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-0908f7cb005a006a",
+      "scores": {
+        "overall": 0.9034068136272545,
+        "nid": 0.9034068136272545,
+        "nid_s": 0.9034068136272545,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-8f462788c1296c1a",
+      "scores": {
+        "overall": 0.930783242258652,
+        "nid": 0.930783242258652,
+        "nid_s": 0.930783242258652,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-896fafa9b172054c",
+      "scores": {
+        "overall": 0.4630518234165068,
+        "nid": 0.9261036468330136,
+        "nid_s": 0.9261036468330136,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-1d5ff56881285ec3",
+      "scores": {
+        "overall": 0.7554904831625183,
+        "nid": 0.7554904831625183,
+        "nid_s": 0.7554904831625183,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-f934cb7e9fd24477",
+      "scores": {
+        "overall": 0.8763666947014298,
+        "nid": 0.8763666947014298,
+        "nid_s": 0.8763666947014298,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-254dfb915f1e6f4d",
+      "scores": {
+        "overall": 0.9898682877406282,
+        "nid": 0.9898682877406282,
+        "nid_s": 0.9898682877406282,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-782b9bffcb72ddc8",
+      "scores": {
+        "overall": 0.4918082524271845,
+        "nid": 0.983616504854369,
+        "nid_s": 0.983616504854369,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-8f7d60877faf8d11",
+      "scores": {
+        "overall": 0.9842312746386334,
+        "nid": 0.9842312746386334,
+        "nid_s": 0.9842312746386334,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5fda7a1cdeaf652a",
+      "scores": {
+        "overall": 0.43944887599709936,
+        "nid": 0.8788977519941987,
+        "nid_s": 0.9405594405594405,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-7c1ca1d38c54b27e",
+      "scores": {
+        "overall": 0.49962546816479403,
+        "nid": 0.9992509363295881,
+        "nid_s": 0.9992509363295881,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-10d8f2898ea9322b",
+      "scores": {
+        "overall": 0.9707658854795844,
+        "nid": 0.9707658854795844,
+        "nid_s": 0.9707658854795844,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b9a29814cacde323",
+      "scores": {
+        "overall": 0.4972206781545303,
+        "nid": 0.9944413563090606,
+        "nid_s": 0.9944413563090606,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-bc7970dd60310018",
+      "scores": {
+        "overall": 0.9918637653736991,
+        "nid": 0.9918637653736991,
+        "nid_s": 0.9918637653736991,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-ee5e7cc38effbb45",
+      "scores": {
+        "overall": 0.4860031104199066,
+        "nid": 0.9720062208398133,
+        "nid_s": 0.9720062208398133,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-7b5c49806c028b85",
+      "scores": {
+        "overall": 0.879951980792317,
+        "nid": 0.879951980792317,
+        "nid_s": 0.879951980792317,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e5f95652827696ad",
+      "scores": {
+        "overall": 0.49528067560854444,
+        "nid": 0.9905613512170889,
+        "nid_s": 0.9905613512170889,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-8efa6389c55d4885",
+      "scores": {
+        "overall": 0.7353535353535353,
+        "nid": 0.7353535353535353,
+        "nid_s": 0.7353535353535353,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-4266de19ab3e466d",
+      "scores": {
+        "overall": 0.841633019291162,
+        "nid": 0.841633019291162,
+        "nid_s": 0.841633019291162,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-56960ae7f3793f93",
+      "scores": {
+        "overall": 0.9688995215311005,
+        "nid": 0.9688995215311005,
+        "nid_s": 0.9688995215311005,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-815ba8a7b1cf821f",
+      "scores": {
+        "overall": 0.9981953078002808,
+        "nid": 0.9981953078002808,
+        "nid_s": 0.9981953078002808,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-210d504b73deb82e",
+      "scores": {
+        "overall": 0.9955849889624724,
+        "nid": 0.9955849889624724,
+        "nid_s": 0.9955849889624724,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-2b75f712f506a9ec",
+      "scores": {
+        "overall": 0.4964234620886982,
+        "nid": 0.9928469241773964,
+        "nid_s": 0.9928469241773964,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-ed7e15d95837c942",
+      "scores": {
+        "overall": 0.3796875,
+        "nid": 0.759375,
+        "nid_s": 0.8027156549520766,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-afe18b68c92aa31e",
+      "scores": {
+        "overall": 0.48574686431014824,
+        "nid": 0.9714937286202965,
+        "nid_s": 0.9714937286202965,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-2b191996d971c67e",
+      "scores": {
+        "overall": 0.47861724875267286,
+        "nid": 0.9572344975053457,
+        "nid_s": 0.9572344975053457,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-83b3f103ba1035d4",
+      "scores": {
+        "overall": 0.3850574712643679,
+        "nid": 0.7701149425287358,
+        "nid_s": 0.6422578184591914,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-afe1d14f041b74f8",
+      "scores": {
+        "overall": 0.3183993040452371,
+        "nid": 0.6367986080904742,
+        "nid_s": 0.48484848484848486,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-aa8c845af3466cab",
+      "scores": {
+        "overall": 0.3033175355450237,
+        "nid": 0.6066350710900474,
+        "nid_s": 0.4813153961136024,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d14d7bb73a076681",
+      "scores": {
+        "overall": 0.32215568862275445,
+        "nid": 0.6443113772455089,
+        "nid_s": 0.5324324324324324,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d05e6867d4e6a59f",
+      "scores": {
+        "overall": 0.4621513944223107,
+        "nid": 0.9243027888446214,
+        "nid_s": 0.9243027888446214,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-455b948b4941135f",
+      "scores": {
+        "overall": 0.4991988606017447,
+        "nid": 0.9983977212034894,
+        "nid_s": 0.9983977212034894,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-a20cc62aa75613b3",
+      "scores": {
+        "overall": 0.9985915492957748,
+        "nid": 0.9985915492957748,
+        "nid_s": 0.9985915492957748,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-bf59523f4ed1348e",
+      "scores": {
+        "overall": 0.3943422913719943,
+        "nid": 0.7886845827439886,
+        "nid_s": 0.14937759336099588,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-a861904295674722",
+      "scores": {
+        "overall": 0.4252015527022992,
+        "nid": 0.8504031054045984,
+        "nid_s": 0.12755102040816324,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-17ec44f7a3f9d670",
+      "scores": {
+        "overall": 0.41566087724462764,
+        "nid": 0.8313217544892553,
+        "nid_s": 0.12828736369467608,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-1be4fbfeee0ac7d7",
+      "scores": {
+        "overall": 0.49539106145251405,
+        "nid": 0.9907821229050281,
+        "nid_s": 0.9907821229050281,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b53bf1c91a1e6f86",
+      "scores": {
+        "overall": 0.49872278311640916,
+        "nid": 0.9974455662328183,
+        "nid_s": 0.9974455662328183,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-cb0a3ef8ba44c304",
+      "scores": {
+        "overall": 0.9972451790633609,
+        "nid": 0.9972451790633609,
+        "nid_s": 0.9972451790633609,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-702622946251fd78",
+      "scores": {
+        "overall": 0.9755452742894911,
+        "nid": 0.9755452742894911,
+        "nid_s": 0.9755452742894911,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5ef08da28a570056",
+      "scores": {
+        "overall": 0.9658536585365853,
+        "nid": 0.9658536585365853,
+        "nid_s": 0.9658536585365853,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-241fb199ac52de45",
+      "scores": {
+        "overall": 0.9614803625377644,
+        "nid": 0.9614803625377644,
+        "nid_s": 0.9614803625377644,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-606f28fabe1b5872",
+      "scores": {
+        "overall": 0.4764372070071552,
+        "nid": 0.9528744140143104,
+        "nid_s": 0.9528744140143104,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-242ff74406fdf5d9",
+      "scores": {
+        "overall": 0.8541609447953858,
+        "nid": 0.8541609447953858,
+        "nid_s": 0.8541609447953858,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d8a7be4d123cc473",
+      "scores": {
+        "overall": 0.4675141242937853,
+        "nid": 0.9350282485875706,
+        "nid_s": 0.9350282485875706,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-2d0a44d2515622ce",
+      "scores": {
+        "overall": 0.8714568226763348,
+        "nid": 0.8714568226763348,
+        "nid_s": 0.8714568226763348,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-39d89f2836250ba2",
+      "scores": {
+        "overall": 0.4971295957005008,
+        "nid": 0.9942591914010016,
+        "nid_s": 0.9942591914010016,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-8c6489434a92bffd",
+      "scores": {
+        "overall": 0.9416652241647914,
+        "nid": 0.9416652241647914,
+        "nid_s": 0.9416652241647914,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d7ae1b8b4e263b7d",
+      "scores": {
+        "overall": 0.4926151172893136,
+        "nid": 0.9852302345786272,
+        "nid_s": 0.9852302345786272,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b1121f276296b3a8",
+      "scores": {
+        "overall": 0.48459958932238195,
+        "nid": 0.9691991786447639,
+        "nid_s": 0.9691991786447639,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-8de392ea69886d56",
+      "scores": {
+        "overall": 0.45726915520628686,
+        "nid": 0.9145383104125737,
+        "nid_s": 0.9145383104125737,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-9f34e3a7a57f3c3a",
+      "scores": {
+        "overall": 0.8285198555956679,
+        "nid": 0.8285198555956679,
+        "nid_s": 0.8285198555956679,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-7cdb7376fc34cf80",
+      "scores": {
+        "overall": 0.21906693711967545,
+        "nid": 0.4381338742393509,
+        "nid_s": 0.4381338742393509,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-886b5d2f9f045424",
+      "scores": {
+        "overall": 0.4990825688073394,
+        "nid": 0.9981651376146788,
+        "nid_s": 0.9981651376146788,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d6b7533b6096aa80",
+      "scores": {
+        "overall": 0.45467980295566496,
+        "nid": 0.9093596059113299,
+        "nid_s": 0.9093596059113299,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-42b35f88e1341bd7",
+      "scores": {
+        "overall": 0.26085078816670265,
+        "nid": 0.5217015763334053,
+        "nid_s": 0.9901639344262295,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-a3c016bc9d3cd7b1",
+      "scores": {
+        "overall": 0.45077720207253885,
+        "nid": 0.9015544041450777,
+        "nid_s": 0.9015544041450777,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b1aba640020487b8",
+      "scores": {
+        "overall": 0.9889682024659312,
+        "nid": 0.9889682024659312,
+        "nid_s": 0.9889682024659312,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e3142af7225a290c",
+      "scores": {
+        "overall": 0.48666114333057164,
+        "nid": 0.9733222866611433,
+        "nid_s": 0.9733222866611433,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-a1acf658b5e1063d",
+      "scores": {
+        "overall": 0.9990925589836661,
+        "nid": 0.9990925589836661,
+        "nid_s": 0.9990925589836661,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b11770c8f5bc5587",
+      "scores": {
+        "overall": 0.49777777777777776,
+        "nid": 0.9955555555555555,
+        "nid_s": 0.9955555555555555,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5dddd7bdf7083aaf",
+      "scores": {
+        "overall": 0.3837270341207349,
+        "nid": 0.7674540682414698,
+        "nid_s": 0.814756671899529,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-73afdeac7690d4e6",
+      "scores": {
+        "overall": 0.2962962962962963,
+        "nid": 0.8888888888888888,
+        "nid_s": 0.9125475285171103,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-03d883d24b6451a3",
+      "scores": {
+        "overall": 0.42360549717057394,
+        "nid": 0.8472109943411479,
+        "nid_s": 0.8472109943411479,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-03796b7874b2ddc5",
+      "scores": {
+        "overall": 0.444205238607822,
+        "nid": 0.888410477215644,
+        "nid_s": 0.918060918060918,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-12bde5825321fbdd",
+      "scores": {
+        "overall": 0.4088433194488946,
+        "nid": 0.8176866388977893,
+        "nid_s": 0.7426597582037996,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-16305c318c06d2b2",
+      "scores": {
+        "overall": 0.3012956874879133,
+        "nid": 0.90388706246374,
+        "nid_s": 0.8844396082698586,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-cf79d86f3ec6efe1",
+      "scores": {
+        "overall": 0.27038796516231195,
+        "nid": 0.8111638954869359,
+        "nid_s": 0.9750178443968593,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-fc3b270a4fc28611",
+      "scores": {
+        "overall": 0.4435564435564436,
+        "nid": 0.8871128871128872,
+        "nid_s": 0.8871128871128872,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-80d4680a8aabdc72",
+      "scores": {
+        "overall": 0.46717971933001357,
+        "nid": 0.9343594386600271,
+        "nid_s": 0.9343594386600271,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-9fb58d1c7314a880",
+      "scores": {
+        "overall": 0.9979770734996627,
+        "nid": 0.9979770734996627,
+        "nid_s": 0.9979770734996627,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-1fcc9d4ef75007a3",
+      "scores": {
+        "overall": 0.4537861915367483,
+        "nid": 0.9075723830734966,
+        "nid_s": 0.9075723830734966,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-708a7fa98f27076e",
+      "scores": {
+        "overall": 0.38392171910974665,
+        "nid": 0.7678434382194933,
+        "nid_s": 0.826455955516535,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-4502a45d45b52836",
+      "scores": {
+        "overall": 0.2607227288078352,
+        "nid": 0.5214454576156704,
+        "nid_s": 0.6865227103499627,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-ca3f66183f9cb8bb",
+      "scores": {
+        "overall": 0.9253301320528212,
+        "nid": 0.9253301320528212,
+        "nid_s": 0.9253301320528212,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-efc84dc127f9c602",
+      "scores": {
+        "overall": 0.39241549876339654,
+        "nid": 0.7848309975267931,
+        "nid_s": 0.8169301376848547,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-39e74e059ee5dca1",
+      "scores": {
+        "overall": 0.8625792811839323,
+        "nid": 0.8625792811839323,
+        "nid_s": 0.8625792811839323,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-6a3de9319bcbde57",
+      "scores": {
+        "overall": 0.45408163265306123,
+        "nid": 0.9081632653061225,
+        "nid_s": 0.9021686746987951,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-0a530b2ae802e569",
+      "scores": {
+        "overall": 0.4785064323815501,
+        "nid": 0.9570128647631002,
+        "nid_s": 0.9570128647631002,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-7a34517023645d80",
+      "scores": {
+        "overall": 0.8250517598343685,
+        "nid": 0.8250517598343685,
+        "nid_s": 0.8250517598343685,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d809b6e571690320",
+      "scores": {
+        "overall": 0.9956379498364231,
+        "nid": 0.9956379498364231,
+        "nid_s": 0.9956379498364231,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-0c656693bbab6f5f",
+      "scores": {
+        "overall": 0.8422339991846718,
+        "nid": 0.8422339991846718,
+        "nid_s": 0.8422339991846718,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-623e7ad94b7a6120",
+      "scores": {
+        "overall": 0.9762455328988858,
+        "nid": 0.9762455328988858,
+        "nid_s": 0.9762455328988858,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-4609282c8d3de755",
+      "scores": {
+        "overall": 0.9992841803865425,
+        "nid": 0.9992841803865425,
+        "nid_s": 0.9992841803865425,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-03cb834e0d876a8d",
+      "scores": {
+        "overall": 0.9579701723803989,
+        "nid": 0.9579701723803989,
+        "nid_s": 0.9579701723803989,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-448b50be6c4b2e53",
+      "scores": {
+        "overall": 0.8708118019669945,
+        "nid": 0.8708118019669945,
+        "nid_s": 0.8708118019669945,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-3e4c6b75c8395742",
+      "scores": {
+        "overall": 0.0034071550255536653,
+        "nid": 0.006814310051107331,
+        "nid_s": 0.006814310051107331,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-849da0ec67c44c3f",
+      "scores": {
+        "overall": 0.4864626250735727,
+        "nid": 0.9729252501471454,
+        "nid_s": 0.9729252501471454,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-42cd6aea51a4ad2a",
+      "scores": {
+        "overall": 0.48521400778210116,
+        "nid": 0.9704280155642023,
+        "nid_s": 0.9704280155642023,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-9a596198a37f14e8",
+      "scores": {
+        "overall": 0.4389010989010989,
+        "nid": 0.8778021978021978,
+        "nid_s": 0.8778021978021978,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e9470b0e9010b8a5",
+      "scores": {
+        "overall": 0.45014925373134335,
+        "nid": 0.9002985074626867,
+        "nid_s": 0.9002985074626867,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-4e4d5229d07bf464",
+      "scores": {
+        "overall": 0.30927298738457537,
+        "nid": 0.9278189621537262,
+        "nid_s": 0.9222958057395144,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-dbb2430314cf8ab5",
+      "scores": {
+        "overall": 0.2411038489469862,
+        "nid": 0.7233115468409586,
+        "nid_s": 0.3747228381374723,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b3d0d14cc108b1fa",
+      "scores": {
+        "overall": 0.42610652663165793,
+        "nid": 0.8522130532633159,
+        "nid_s": 0.8522130532633159,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-1b849cfe207ebbbd",
+      "scores": {
+        "overall": 0.42899761336515513,
+        "nid": 0.8579952267303103,
+        "nid_s": 0.6973572037510656,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-7c8113158ebd80e0",
+      "scores": {
+        "overall": 0.29653080068592536,
+        "nid": 0.889592402057776,
+        "nid_s": 0.4463690872751499,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-6d8ea884e39cad0d",
+      "scores": {
+        "overall": 0.4968017057569296,
+        "nid": 0.9936034115138592,
+        "nid_s": 0.9936034115138592,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-f2d08aa981fd8723",
+      "scores": {
+        "overall": 0.9092878418629841,
+        "nid": 0.9092878418629841,
+        "nid_s": 0.9092878418629841,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-826f7168712dafc3",
+      "scores": {
+        "overall": 0.4980237154150198,
+        "nid": 0.9960474308300395,
+        "nid_s": 0.9960474308300395,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-201d5af41ac689e3",
+      "scores": {
+        "overall": 0.46983311938382544,
+        "nid": 0.9396662387676509,
+        "nid_s": 0.9396662387676509,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-4168a57f3d1c41e0",
+      "scores": {
+        "overall": 0.4983164983164983,
+        "nid": 0.9966329966329966,
+        "nid_s": 0.9966329966329966,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-3f688595901c75fb",
+      "scores": {
+        "overall": 0.382664647993944,
+        "nid": 0.765329295987888,
+        "nid_s": 0.765329295987888,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e2a1f2f30384d0ab",
+      "scores": {
+        "overall": 0.37191934279312927,
+        "nid": 0.7438386855862585,
+        "nid_s": 0.7438386855862585,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b0262dfcf7c49ca0",
+      "scores": {
+        "overall": 0.49707602339181295,
+        "nid": 0.9941520467836259,
+        "nid_s": 0.9941520467836259,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-19d0b15faba3a57f",
+      "scores": {
+        "overall": 0.49629629629629624,
+        "nid": 0.9925925925925925,
+        "nid_s": 0.9925925925925925,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-f0bf92bdaf277247",
+      "scores": {
+        "overall": 0.9918851435705368,
+        "nid": 0.9918851435705368,
+        "nid_s": 0.9918851435705368,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-02386ae28a4590a6",
+      "scores": {
+        "overall": 0.995492594977463,
+        "nid": 0.995492594977463,
+        "nid_s": 0.995492594977463,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-9cceee9bc7e6686e",
+      "scores": {
+        "overall": 0.9942897930049965,
+        "nid": 0.9942897930049965,
+        "nid_s": 0.9942897930049965,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-6590dd4c164ecdf5",
+      "scores": {
+        "overall": 0.40688575899843504,
+        "nid": 0.8137715179968701,
+        "nid_s": 0.8137715179968701,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e5f405788a2428e6",
+      "scores": {
+        "overall": 0.9984578100903283,
+        "nid": 0.9984578100903283,
+        "nid_s": 0.9984578100903283,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-ffcdabb0efd40f9e",
+      "scores": {
+        "overall": 0.27770930901322816,
+        "nid": 0.8331279270396845,
+        "nid_s": 0.8573709419904205,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d7ffe0c93659bce2",
+      "scores": {
+        "overall": 0.289237668161435,
+        "nid": 0.867713004484305,
+        "nid_s": 0.8886798369394795,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-c363dc4af9874091",
+      "scores": {
+        "overall": 0.49136,
+        "nid": 0.98272,
+        "nid_s": 0.98272,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-57793980eee1abdc",
+      "scores": {
+        "overall": 0.46463780540077154,
+        "nid": 0.9292756108015431,
+        "nid_s": 0.9292756108015431,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-bca4ff111127e239",
+      "scores": {
+        "overall": 0.4780367548184671,
+        "nid": 0.9560735096369342,
+        "nid_s": 0.9560735096369342,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5c6e26226df30559",
+      "scores": {
+        "overall": 0.35881528917350414,
+        "nid": 0.7176305783470083,
+        "nid_s": 0.7677481529071635,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b1b126e0ff214047",
+      "scores": {
+        "overall": 0.499597747385358,
+        "nid": 0.999195494770716,
+        "nid_s": 0.999195494770716,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-7b75b19f4f20521e",
+      "scores": {
+        "overall": 0.998110661268556,
+        "nid": 0.998110661268556,
+        "nid_s": 0.998110661268556,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5fe7742b33e91af0",
+      "scores": {
+        "overall": 0.4957310565635005,
+        "nid": 0.991462113127001,
+        "nid_s": 0.991462113127001,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-4dd62200aacb6c8f",
+      "scores": {
+        "overall": 0.49079143852663015,
+        "nid": 0.9815828770532603,
+        "nid_s": 0.9815828770532603,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-87d28ab2b90703a7",
+      "scores": {
+        "overall": 0.49630872483221483,
+        "nid": 0.9926174496644297,
+        "nid_s": 0.9926174496644297,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-89cac5525d2d0209",
+      "scores": {
+        "overall": 0.49269243260798956,
+        "nid": 0.9853848652159791,
+        "nid_s": 0.9853848652159791,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-1dcc6f768728b55c",
+      "scores": {
+        "overall": 0.4568860820986155,
+        "nid": 0.913772164197231,
+        "nid_s": 0.913772164197231,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-eb51d342f7d317e5",
+      "scores": {
+        "overall": 0.3015260158117301,
+        "nid": 0.9045780474351903,
+        "nid_s": 0.8752466564349923,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-dfe6a53ecc33050d",
+      "scores": {
+        "overall": 0.4980268350434096,
+        "nid": 0.9960536700868192,
+        "nid_s": 0.9960536700868192,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-38df5f86ea966c71",
+      "scores": {
+        "overall": 0.29170383586083853,
+        "nid": 0.8751115075825155,
+        "nid_s": 0.8903225806451612,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-11edeeb3f7a733ed",
+      "scores": {
+        "overall": 0.454070981210856,
+        "nid": 0.908141962421712,
+        "nid_s": 0.908141962421712,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-aea1aaa1b9f4daea",
+      "scores": {
+        "overall": 0.2095538057742782,
+        "nid": 0.6286614173228346,
+        "nid_s": 0.1578947368421053,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-68df7775276c2ebc",
+      "scores": {
+        "overall": 0.30823293172690763,
+        "nid": 0.6164658634538153,
+        "nid_s": 0.6164658634538153,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-2836a2ea03ecbee1",
+      "scores": {
+        "overall": 0.33726003490401396,
+        "nid": 0.6745200698080279,
+        "nid_s": 0.6745200698080279,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-3ca1e244d5f6d499",
+      "scores": {
+        "overall": 0.2961578885904473,
+        "nid": 0.5923157771808946,
+        "nid_s": 0.5923157771808946,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-061f9c3530ae19af",
+      "scores": {
+        "overall": 0.27748190632254544,
+        "nid": 0.5549638126450909,
+        "nid_s": 0.5549638126450909,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-27b56bcbeb628e64",
+      "scores": {
+        "overall": 0.2090055209005521,
+        "nid": 0.6270165627016563,
+        "nid_s": 0.6188582124473561,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-e4ae00af261f0bb0",
+      "scores": {
+        "overall": 0.203801826073941,
+        "nid": 0.611405478221823,
+        "nid_s": 0.5648435634105564,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-73a398a74fe8ae47",
+      "scores": {
+        "overall": 0.20691201434931616,
+        "nid": 0.6207360430479485,
+        "nid_s": 0.604150847886611,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-3d67eea69e843e89",
+      "scores": {
+        "overall": 0.19757952973720608,
+        "nid": 0.5927385892116183,
+        "nid_s": 0.5699055003634601,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-bf2d1e70ad54c937",
+      "scores": {
+        "overall": 0.2747866053841103,
+        "nid": 0.5495732107682206,
+        "nid_s": 0.5495732107682206,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-78689c16264b8479",
+      "scores": {
+        "overall": 0.5578011317704124,
+        "nid": 0.5578011317704124,
+        "nid_s": 0.5578011317704124,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-5b2ad7b10365365d",
+      "scores": {
+        "overall": 0.5536677179774138,
+        "nid": 0.5536677179774138,
+        "nid_s": 0.5536677179774138,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-7aa478cd803d7346",
+      "scores": {
+        "overall": 0.689082723691615,
+        "nid": 0.689082723691615,
+        "nid_s": 0.689082723691615,
+        "teds": null,
+        "teds_s": null,
+        "mhs": null,
+        "mhs_s": null
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-08a3c656277bb87f",
+      "scores": {
+        "overall": 0.28081881927165797,
+        "nid": 0.5616376385433159,
+        "nid_s": 0.5616376385433159,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-b1a017e6e8bc4e1f",
+      "scores": {
+        "overall": 0.2767391304347826,
+        "nid": 0.5534782608695652,
+        "nid_s": 0.5534782608695652,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-20da6f90d4922272",
+      "scores": {
+        "overall": 0.3095612105979684,
+        "nid": 0.9286836317939051,
+        "nid_s": 0.881688018085908,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-56423839dc9438af",
+      "scores": {
+        "overall": 0.4774193548387097,
+        "nid": 0.9548387096774194,
+        "nid_s": 0.9548387096774194,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-6d323699cff7d411",
+      "scores": {
+        "overall": 0.3085399449035813,
+        "nid": 0.6170798898071626,
+        "nid_s": 0.6170798898071626,
+        "teds": null,
+        "teds_s": null,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    },
+    {
+      "document_id": "doc-d0ae8844b655177a",
+      "scores": {
+        "overall": 0.22737274460906556,
+        "nid": 0.6821182338271967,
+        "nid_s": 0.05707196029776673,
+        "teds": 0.0,
+        "teds_s": 0.0,
+        "mhs": 0.0,
+        "mhs_s": 0.0
+      },
+      "prediction_available": true
+    }
+  ]
+}

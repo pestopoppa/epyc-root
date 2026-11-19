@@ -1,0 +1,112 @@
+{
+ "wall_s": 299,
+ "validity_ok": true,
+ "why": [],
+ "fixture": false,
+ "duration_per_launch_s": {
+  "Q4KM": [
+   5.39,
+   5.35,
+   8.54
+  ],
+  "IQ4KT": [
+   5.52,
+   5.51,
+   5.49
+  ],
+  "IQ2XXS": [
+   5.76,
+   4.43,
+   4.5
+  ],
+  "IQ2KT": [
+   7.02,
+   5.72,
+   5.55
+  ]
+ },
+ "variance_sd_tg": {
+  "Q4KM": 0.224,
+  "IQ4KT": 0.559,
+  "IQ2XXS": 0.594,
+  "IQ2KT": 0.517
+ },
+ "aa_spread_control_Q4KM": [
+  35.868468,
+  35.566424,
+  36.00382
+ ],
+ "capture_completeness": {
+  "Q4KM": [
+   3,
+   3
+  ],
+  "IQ4KT": [
+   3,
+   3
+  ],
+  "IQ2XXS": [
+   3,
+   3
+  ],
+  "IQ2KT": [
+   3,
+   3
+  ]
+ },
+ "quality_items_scored": 48,
+ "mechanism_selected": true,
+ "looks": {
+  "Q4KM:IQ4KT": {
+   "pair": "IQ4KT/Q4KM",
+   "n": [
+    3,
+    3
+   ],
+   "ratio": 0.963,
+   "band": [
+    0.9436,
+    0.9824
+   ],
+   "sd": [
+    0.224,
+    0.559
+   ],
+   "mean": [
+    35.813,
+    34.489
+   ],
+   "rule": ">=0.95 tg128 ratio (STEP3/T3; decided only by the full paired set)",
+   "stop": "continue",
+   "label": "operational pilot look (exploratory/decision-support), never a gate result"
+  },
+  "IQ2XXS:IQ2KT": {
+   "pair": "IQ2KT/IQ2XXS",
+   "n": [
+    3,
+    3
+   ],
+   "ratio": 0.961,
+   "band": [
+    0.9392,
+    0.9828
+   ],
+   "sd": [
+    0.594,
+    0.517
+   ],
+   "mean": [
+    41.624,
+    40.001
+   ],
+   "rule": ">=0.95 tg128 ratio (STEP3/T3; decided only by the full paired set)",
+   "stop": "continue",
+   "label": "operational pilot look (exploratory/decision-support), never a gate result"
+  }
+ },
+ "consumer_coverage": {
+  "STEP2/T2 (report)": "partial: speed slice",
+  "STEP3/T3 (>=0.95 AND paired flips)": "not answerable by pilot (needs full paired set + quality pass)"
+ },
+ "decision_hint": "owner review: EXPAND with n from observed sd"
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T01:25:47Z reason=complete
+job_id=npd1-step2-a1-tpot-r2-20261104
+owner=ws58
+step=job-run
+estimated_wall_s=2100
+started=2026-11-05T01:02:45Z
+regions=mi210_0,0-95

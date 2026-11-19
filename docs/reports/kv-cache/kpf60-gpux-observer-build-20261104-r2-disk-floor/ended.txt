@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T20:56:44Z reason=disk-floor
+job_id=kpf60-gpux-observer-build-20261104-r2
+owner=h-kvfork
+step=job-run
+estimated_wall_s=2400
+started=2026-11-04T20:56:43Z
+regions=24-47

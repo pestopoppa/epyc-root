@@ -1,0 +1,25 @@
+
+  GitNexus Analyzer
+
+[2K
+  Skipped 58 large files (>512KB, likely generated/vendored)
+[2K
+  - benchmarks/results/orchestrator/seeding_20260305_192034.json
+[2K
+  - benchmarks/results/orchestrator/seeding_20260305_192809.json
+[2K
+  - data/repl_retrieval_eval/repl-emb-22-20261020/analysis.json
+[2K
+  - data/repl_retrieval_eval/repl-emb-22-20261020/repl-emb-22-20261020.belief_measurements.jsonl
+[2K
+  - data/repl_retrieval_eval/repl-emb-22-20261020/repl-emb-22-20261020.record.json
+[2K
+  ...and 53 more (set GITNEXUS_VERBOSE=1 to list them all)
+[2K
+  Set GITNEXUS_MAX_FILE_SIZE=<KB> to include files above the default cap.
+
+  Repository indexed successfully (65.2s)
+
+  89,617 nodes | 167,554 edges | 3609 clusters | 300 flows
+  /mnt/raid0/llm/tmp/kvfork/kpf20-v3/source
+

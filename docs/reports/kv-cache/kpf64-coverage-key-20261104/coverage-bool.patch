@@ -1,0 +1,11 @@
+--- /mnt/raid0/llm/tmp/kv-prefix-fork/kpf64-successor-20261102/scripts/benchmark/kpf64_replay/cohort_audit.py	2026-11-02 12:52:49.278489450 +0000
++++ cohort_audit.py	2026-11-04 21:48:56.378137887 +0000
+@@ -90,7 +90,7 @@
+             try:
+                 rec = json.loads(line)
+                 key = (rec['session'], rec['k'])
+-                if not isinstance(key[0], str) or not isinstance(key[1], int):
++                if not isinstance(key[0], str) or isinstance(key[1], bool) or not isinstance(key[1], int):
+                     raise ValueError('invalid key')
+                 counts[key] += 1
+                 if 'error' in rec:

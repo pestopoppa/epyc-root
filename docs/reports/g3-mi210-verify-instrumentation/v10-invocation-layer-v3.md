@@ -1,0 +1,7 @@
+# G3 v10 invocation and layer instrumentation candidate
+
+The source-only [patch](v10-invocation-layer-v3.patch) targets v10 commit `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`; its SHA-256 is `a222fd35d3766288353d17186abb6aeed1842bba455687e1d596c368d3d96a94`. It was prepared in a detached scratch worktree, not the frozen production tree. It has not been built or run.
+
+With `GGML_G3_FATTN_TRACE=1`, the patch emits `G3_TARGET_BEGIN_V3`, `G3_TARGET_END_V3` and `G3_FATTN_DISPATCH_V3`. It carries a host-thread invocation ID around target decode, records the actual speculative batch indices, labels the normal flash-attention graph node with its builder layer index, and reports the layer and selected kernel at the dispatch. Other construction paths report layer `-1`; another host thread reports invocation `0` and unknown correlation. Trace mode disables CUDA/HIP graph replay and its graph optimizer to expose each dispatch, changing execution mode.
+
+The patch applies cleanly to the exact v10 index (`git apply --cached --check`) and passes `git diff --check` and reverse-application checking in the detached checkout. These are source checks only. A V3 reader and runtime controls must establish correct verify attribution, node-name preservation, complete layer coverage and event delivery, source-to-binary identity, in-run HIP residency, and output correctness before drawing a G3 conclusion. Partial, unknown, duplicate, split, or missing observations cannot establish no VEC. This patch does not itself establish any measurement.

@@ -1,0 +1,64 @@
+{
+ "book_s": 300,
+ "budget_gib": 1.0,
+ "decision_rule": "Capture the 17 exact original unsupported target descriptions on C5 at seed 2026102603, plus one original supported control per operator for residency. Acceptance requires 17 target dispositions, all three controls PASS, three projected tuples, zero refusals, MI210 ROCm0 terminal OK or FAIL, and at least two same-PID in-window positive-VRAM KFD samples per invocation. Control results are separate from target support. Target supported, unsupported and failed dispositions are answered outcomes; missing targets or failed controls cannot pass smoke or completion. Stop on completion or futility at STOP, deadline or invalid custody; no performance or whole-family claim.",
+ "declared_shape": "gpu",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 60,
+ "gib": 8,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:SC18-GPU-POOL-C5-LIVE",
+ "id": "ni-gpu-pool-elementwise-20261118-v5",
+ "keep": [
+  "native/**",
+  "PINNED.sha256",
+  "candidate/**",
+  "scripts/vidya/**",
+  "run_elementwise.py",
+  "verify_ggml_linkage.sh",
+  "source/**",
+  "test_run_elementwise.py",
+  "case-plan.tsv",
+  "README.md",
+  "preparation-report.json",
+  "control-plan.tsv",
+  "native/RESULT.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/launch.sh",
+  "sha256": "d9ec8dc2ab2367a080cea23c82e2eaab6b1fc7499e97a52a58a02f768b7be7ae"
+ },
+ "min_window_s": 300,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:981: untestable prose prerequisite: 'after all selected descriptions have terminal native dispositions and strict readback; stop on futility at STOP, deadlin'"
+ ],
+ "published_at": "2026-11-18T20:33:11Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T20:33:11Z",
+  "session": "01a1f054-5c0d-7261-a021-c19c32b6f7cb",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/native/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current",
+ "shape": "gpu",
+ "smoke_predicate": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/run_elementwise.py smoke",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/STOP",
+ "verdict_by": "agent",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current"
+}

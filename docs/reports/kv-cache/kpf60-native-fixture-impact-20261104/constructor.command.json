@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "gitnexus",
+    "impact",
+    "llama_kv_cache",
+    "--direction",
+    "upstream",
+    "--repo",
+    "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104",
+    "--file",
+    "src/llama-kv-cache.cpp",
+    "--summary-only"
+  ],
+  "cwd": "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104",
+  "rc": 0
+}

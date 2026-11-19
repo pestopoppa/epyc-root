@@ -1,0 +1,49 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "Q38P-3 stage 1 (decision support; the binding gate is Stage 2 in the v11 window after the operator reboot). Question: does building champion c72ec82f5 against ROCm 10.1.0 (TheRock gfx90a tarball, AMD clang 24, -fno-offload-lto, --amdgpu-unroll-threshold-local=600; /mnt/raid0/llm/rocm-10.1.0-q38p/build-nolto-u600, libggml-hip sha256 559677a8...) speed up the MI210 serving path versus the same commit on ROCm 6.2 (kernels/builds/gpu-20261024-c72ec82f5-c5, libggml-hip sha256 fcd3bf0c...)? Arms C (6.2), B (10.1), Bp (10.1 + HSA_NO_SCRATCH_RECLAIM=1). Model Qwen3.8-27B-Q8_0 + DFlash2-Q8_0 drafter, llama-server np 1 ctx 65536 production :8083 argv shape on port 18931, --load-threads 8; decode = median timings.predicted_per_second over 5 fixed greedy prompts (n_predict 256); prefill = llama-bench pp512, pp2048 (depth 0) and pp512 at depth 16384 (FA-heavy), -fa 1, q8_0 KV, 3 reps. Unit = one arm launch; 5 blocks, order C,B,Bp / Bp,B,C alternating; ratio arm/C per block. Launch valid only if rc 0, own KFD pid with own VRAM >= 20 GiB sampled during both phases, no foreign KFD pid, mapped libggml-hip sha256 = the arm's and libamdhip64 under the arm's HIP prefix, and greedy parity vs the block's C launch not gross (>= 64 common chars on at least 2 of 3 prompts; exact-match count reported). KEEP-CANDIDATE if for B or Bp, with >= 3 valid blocks, median decode ratio >= 1.05 AND median pp512 and pp2048 ratios >= 0.98; NO-GO otherwise; INCONCLUSIVE if < 3 valid blocks. Stage-0 static audit (stage0-audit-compare.txt): VGPR-spilling kernels 145 -> 96, FA-MMA 53 -> 2, Q8_0 MMVQ neutral, so zero new hot-kernel spills holds. Prefill and FA-at-depth ratios are reported descriptively whatever the decode verdict. Stop rule: planned 5 blocks; futility stop after 3 valid blocks if every per-block decode ratio is < 1.02 for both B and Bp; stop at the STOP file or window deadline (resumable, completed valid launches are kept). Refuses (exit 2) unless /mnt/raid0/llm/tmp/q38p-window-probe-20261104/out/RESULT.json verdict is PASS.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+ },
+ "estimate_s": 4200,
+ "first_progress_s": 900,
+ "gib": 64,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:Q38P-3",
+ "id": "q38p3-stage1-r2-20261104",
+ "keep": [
+  "IDENTITY.json",
+  "SOURCE.sha256",
+  "job.py",
+  "gpuproof.py",
+  "launch.sh",
+  "spec.json",
+  "stage0-audit-compare.txt",
+  "out/*.json",
+  "out/*.jsonl",
+  "out/cells/**",
+  "out/results.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/q38p3-stage1-20261104/launch.sh",
+  "sha256": "1c378cb92f45d184fc3ed83c425871e04344c5548083387d06f4ef57d68d9ec8"
+ },
+ "min_window_s": 3600,
+ "owner": "workspace-ec",
+ "ports": [],
+ "priority_rank": 50.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:2245: untestable prose prerequisite: 'only if paired serving-gate decode >= +5.0% (median of >= 5 interleaved launch pairs), prefill no worse than -2.0%, zero'"
+ ],
+ "published_at": "2026-11-04T23:53:11Z",
+ "published_from": "/mnt/raid0/llm/tmp/q38p3-stage1-20261104/spec.json",
+ "regions": "mi210_0,184-191",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/q38p3-stage1-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/q38p3-stage1-20261104",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/q38p3-stage1-20261104/STOP",
+ "window_s": 5340,
+ "workdir": "/mnt/raid0/llm/tmp/q38p3-stage1-20261104"
+}

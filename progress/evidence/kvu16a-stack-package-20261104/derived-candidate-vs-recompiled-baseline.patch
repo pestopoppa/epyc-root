@@ -1,0 +1,93 @@
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,9 +9,9 @@
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `3c119e7fe723e0015c830d9dc9f3db2deb3b2eccbdc686f3cf63e75a16350d1e`
+-- orchestration/model_registry.yaml: `2bfa3f80774382fa5f60352c132050b16fea2059a0da14d6cb86f42e5bc0a419`
+-- orchestration/model_descriptors.yaml: `2b0b6d48d9b53e38fbeba59dacc0d6b39eaed9066c9887266e4b47ccd546c87f`
++- orchestration/derived/stack_priors.yaml: `0fa4cf87ab29e6e466d749f53d23909fa5f7ae8a267814f6f50e02a9d53df948`
++- orchestration/model_registry.yaml: `af7741ecf3e69362cf9364acd1ad516320573d00206a10cb5212467dab9a707d`
++- orchestration/model_descriptors.yaml: `42d3a21dfbfced75b16ffa4f056a146b0a7892a0cab40c6adfd98e66f334b1bd`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,18 +48,18 @@
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-11-04T16:02:00Z'
++compiled_at: '2026-11-04T16:01:15Z'
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: 2bfa3f80774382fa5f60352c132050b16fea2059a0da14d6cb86f42e5bc0a419
++    sha256: af7741ecf3e69362cf9364acd1ad516320573d00206a10cb5212467dab9a707d
+     repo_commit: 326f5027
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: 2b0b6d48d9b53e38fbeba59dacc0d6b39eaed9066c9887266e4b47ccd546c87f
++    sha256: 42d3a21dfbfced75b16ffa4f056a146b0a7892a0cab40c6adfd98e66f334b1bd
+     repo_commit: 326f5027
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-11-04T16:02:00Z'
++compiled_at: '2026-11-04T16:01:14Z'
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+     repo_commit: 326f5027
+-    sha256: 2bfa3f80774382fa5f60352c132050b16fea2059a0da14d6cb86f42e5bc0a419
++    sha256: af7741ecf3e69362cf9364acd1ad516320573d00206a10cb5212467dab9a707d
+   research:
+     path: /mnt/raid0/llm/tmp/kvu/kvu16a-stack-package-20261104/research/orchestration/model_registry.yaml
+     repo_commit: 1dae4bac8
+-    sha256: f57c52c20d3f2259cef563ebab3c7dafcdebf0f1004f59b78420d7d2a7b76d90
++    sha256: dde12e87cbe68417310590cd1a961914de173a064fab89398ca71da8e243e626
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -13,8 +13,8 @@
+ # To temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-11-04T16:01:59+00:00
+-# Cache key:   d2beef95de52fa0a...
++# Compiled at: 2026-11-04T16:01:14+00:00
++# Cache key:   3635a41e15145594...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -2012,7 +2012,17 @@
+         k: q8_0
+         v: q8_0
+       kv_kib_per_token_f16: 64.0
+-      vram_non_kv_gib: 38.03
++      vram_non_kv_gib: 35.06255340576172
++      vram_non_kv_measurement:
++        statistic: sampled_post_health_maximum_minus_target_kv
++        own_vram_bytes: 51338338304
++        target_kv_bytes: 13690208256
++        non_kv_bytes: 37648130048
++        sample_count: 2
++        peak_claim: false
++        whole_load_coverage_qualified: false
++        evidence: evidence/kv-cache/kvu16a-shape-load-r3-20261104/result.json
++        evidence_sha256: 0330c5682d316ceeac7c39afb27f2946cf23c2fc9fe410faad1a9edcfe479e11
+       vram_non_kv_drafter: dflash2
+       vram_non_kv_ubatch: 512
+     chat_template_kwargs:

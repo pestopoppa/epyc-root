@@ -1,0 +1,1 @@
+{"cache_prompt":false,"chat_template_kwargs":{"enable_thinking":false},"max_tokens":80,"messages":[{"content":"Return only a JSON object with keys route, enabled and replicas. Use the values \"amber\", true, and 3 respectively.","role":"user"}],"model":"architect-general-hip","return_tokens":true,"seed":35,"stream":false,"temperature":0,"verbose":true}

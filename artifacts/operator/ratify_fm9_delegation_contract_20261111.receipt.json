@@ -1,0 +1,129 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-11T14:53:53Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "4bc33590dd2a632305b2a6072ee364d5146e2180",
+  "git_head_before": "4bc33590dd2a632305b2a6072ee364d5146e2180",
+  "operator": "Daniele",
+  "protocol_id": "RTG34-FM9-DELEGATION-CONTRACT",
+  "ratification_id": "RATIFY-FM9-DELEGATION-CONTRACT-20261111",
+  "ratify_script": {
+    "exists": true,
+    "path": "artifacts/operator/ratify_fm9_delegation_contract_20261111.sh",
+    "sha256": "b84f74e719fc66a2e202f8a752706c325e4503e4226b448cc22bdedb54fa61b9"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/worktrees/op-fm9-ratify-20261111",
+  "sections": {
+    "coherence": {
+      "data": {
+        "agents/shared/OPERATING_CONSTRAINTS.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: workflow doctrine amendment; source is RTG-34 FM-9, agents/README.md at ab1f1d38d and data/fanout_timing/delegation_accounting_report.v1.json"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id RTG34-FM9-DELEGATION-CONTRACT is a clause reference, not a registered protocol name; verified via 1 anchor(s) instead",
+        "anchor present in agents/shared/OPERATING_CONSTRAINTS.md: - **Codex sub-delegation contract (FM-9; mirrors `agents/README.md` \u2192 "
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 20,
+      "lines_after": 817,
+      "lines_before": 797,
+      "lines_removed": 0,
+      "path": "agents/shared/OPERATING_CONSTRAINTS.md",
+      "sha256_after": "b6ff16c9f66eea35dbbfc72de3704f56f499578a2edaaf558464f0939650c0d4",
+      "sha256_before": "776a484e859bcf3cfe684190a0be488b17e60471984dc340c6631d19b7321a18",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/agents/shared/OPERATING_CONSTRAINTS.md",
+        "+++ b/agents/shared/OPERATING_CONSTRAINTS.md",
+        "@@ -617,6 +617,26 @@",
+        "   or `gpt-5.6-luna` agent at the lowest adequate effort (`low`/`medium`/`high`/`xhigh`).",
+        " - Every sub-agent result is PROPOSED work: review its evidence and diffs and run validation",
+        "   before accepting.",
+        "+- **Codex sub-delegation contract (FM-9; mirrors `agents/README.md` \u2192 *Codex sub-agent routing*",
+        "+  at `ab1f1d38d`).** Measured basis: FM-7, `data/fanout_timing/delegation_accounting_report.v1.json`",
+        "+  (commit `8a1ca9227`). The README section is the full text; these four rules bind here:",
+        "+  - *Tier ladder* (`CODEX_TIERS` in `scripts/coordination/delegation_accounting.py`): `luna` for",
+        "+    clerical, search, mechanical transforms and wrap-up writing (a luna reader returns",
+        "+    `path:start-end` citations, never a summary the main acts on); `terra` for code reading,",
+        "+    implementation, routine fixes, tests and execution; `sol` for hard design or hard debugging",
+        "+    only, or after a checkable terra failure that a higher-effort terra re-run did not fix;",
+        "+    `astra` only on explicit operator request. Set model and effort explicitly on every spawn.",
+        "+  - *Effort before tier*: on a checkable failure, re-run the same tier at higher effort",
+        "+    (`low` \u2192 `medium` \u2192 `high` \u2192 `xhigh`), then escalate exactly one tier (luna \u2192 terra \u2192 sol).",
+        "+  - *Bounded length*: one unit of work per sub-agent, with a stop condition in the brief. Codex",
+        "+    spend follows request count, not tier (FM-7: luna 21.7% of Codex tokens at 259 mean requests",
+        "+    per sub-agent, terra 31.2% at 310), and the fixed load F = 21.8k tokens (Claude: 49.9k) is",
+        "+    resent on every request, so a three-request sub-agent costs at least 65k tokens (Claude:",
+        "+    150k); a known-target lookup that fits in one main request stays inline. On Claude the lever",
+        "+    is Opus subagents (35.9% of Claude spend) versus Haiku (0.65%), not more Haiku.",
+        "+  - *Shared contracts*: the brief, return and main+subagent+total accounting contracts in",
+        "+    `agents/README.md` \u2192 *Delegation brief and report contract* bind Codex sub-agents unchanged;",
+        "+    a Codex claim about read volume uses the tool-output proxy and says so.",
+        " - **Auditor exception:** for implementation discovered during an audit, the Auditor Main uses",
+        "   `gpt-5.6-terra` subagents for the focused work and keeps its main thread available for audit",
+        "   intake, subagent control, and acceptance. This is a role-specific floor, not a model identity."
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "git diff --check -- agents/shared/OPERATING_CONSTRAINTS.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    },
+    {
+      "command": "test \"$(grep -cF -- '- **Codex sub-delegation contract (FM-9; mirrors `agents/README.md` \u2192 *Codex sub-agent routing*' 'agents/shared/OPERATING_CONSTRAINTS.md')\" = 1",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

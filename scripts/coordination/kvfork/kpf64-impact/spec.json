@@ -1,0 +1,32 @@
+{
+  "id": "kpf64-impact-4f4f-20261104",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At detached research 4f4f1443dba949c9d83d98cd37fe31210b6fb087 capture native upstream impact for audit_coverage and verbose skipped-file coverage. Stop-on-answer: the unambiguous source-bound native impact and nonpartial scan completion are captured. Stop-on-futility: source drift, missing graph binding or coverage, ambiguous symbol, HIGH/CRITICAL impact, parser error, STOP or deadline; interim gate futility-only. Source reference smoke is partial only; skipped files have no edit-safety claim.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-64.3",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf64-impact-4f4f-20261104",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "job.py",
+    "source_integrity.py",
+    "test_source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "kpf64-impact-4f4f",
+  "kind": "compute",
+  "notes": "Model-free static source impact; unchanged 150 GiB floor. No source edit clearance or inference verdict."
+}

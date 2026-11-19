@@ -1,0 +1,3 @@
+# KVU-16a shape-matched r3 load result
+
+One load completed rc0. The two selected post-health samples were 0.502 s apart and observed up to 51,338,338,304 bytes own-PID VRAM; subtracting the logged target KV allocation of 13,690,208,256 bytes yields 37,648,130,048 bytes (35.0626 GiB). Selected-pair coverage qualified; whole-load coverage did not, startup remains unqualified, and the figure is a sampled maximum rather than a lifetime or runtime peak. Captured server cleanup was verified. Original-run belief sidecar, plan, raw startup samples, selected pair and log are preserved. This run does not ratify or update a registry.

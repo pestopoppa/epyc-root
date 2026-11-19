@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T07:11:34Z reason=complete
+job_id=vb-sl2-steps-r1-20261103
+owner=vidya-belief-substrate-program
+step=job-run
+estimated_wall_s=5400
+started=2026-11-04T07:09:22Z
+regions=0-95

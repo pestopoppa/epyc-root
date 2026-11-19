@@ -1,0 +1,3 @@
+# R18-B build-completion timestamp — 2026-11-02
+
+Research `5afd1ae089c3` publishes the prepared timestamp repair on `origin/main`: successful fresh promotion builds record UTC build-command completion, while continuation builds retain an unknown `built_at` for reused build directories and separately record command completion. The focused anchor, promotion-target and timestamp tests passed (66) under CPU region q3. The additional champion suite had two watchdog-related failures, reproduced on the unmodified base `f4e0b529d` (25 passed, four subtests). No kernel build or inference was run. This does not prove binary freshness or answer the historical run-18 binary identity and −9.5% mechanism; R18-B remains open. [no-belief: source repair and test validation]

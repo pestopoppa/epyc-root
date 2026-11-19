@@ -1,0 +1,113 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-09T11:00:42Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "87336043ab344ed64d54a887469a6998f01cf1b8",
+  "git_head_before": "87336043ab344ed64d54a887469a6998f01cf1b8",
+  "operator": "Daniele",
+  "protocol_id": "P-BENCH-PLACEMENT-1",
+  "ratification_id": "RATIFY-INF45-P23-20261109",
+  "ratify_script": {
+    "exists": true,
+    "path": "/mnt/raid0/llm/tmp/inf45-p23-ratify-20261109/ratify.sh",
+    "sha256": "d7410955ca51e43baf74c42a5e5c618300aed137bf800c9eaf944294916699e3"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/worktrees/ratify-inf45-20261109",
+  "sections": {
+    "coherence": {
+      "data": {
+        "measurement/protocols/bench-cpu.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: thresholds derived from untracked-by-this-bundle measurements cited inline per item (locverify_results.txt etc.); see decisions.json"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-BENCH-PLACEMENT-1 present in MEASUREMENT.md",
+        "anchor present in measurement/protocols/bench-cpu.md: <!-- RATIFY-INF45-P23-20261109 BEGIN -->"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 12,
+      "lines_after": 266,
+      "lines_before": 254,
+      "lines_removed": 0,
+      "path": "measurement/protocols/bench-cpu.md",
+      "sha256_after": "fd2745fdb4c9cb8d49a0c1660d58483a0838b883d604f4a508f7ad741dcb3bcc",
+      "sha256_before": "a7e27f50c6690d588a6c66d575e1d5b7453f3e78835d47a4ddda35ba15f8e4e2",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/measurement/protocols/bench-cpu.md",
+        "+++ b/measurement/protocols/bench-cpu.md",
+        "@@ -249,6 +249,18 @@",
+        " A run missing measured locality is observation-grade at best and can never gate a decision.",
+        " No pre-ratification placement artifact may be retro-certified under this protocol.",
+        " ",
+        "+<!-- RATIFY-INF45-P23-20261109 BEGIN -->",
+        "+**Ratified values (RATIFY-INF45-P23-20261109).** Fixes the TBDs of protocol section 7 / MRG-1 section 5; pre-registered, binding on every conforming run.",
+        "+",
+        "+- TBD 1 `LOCALITY_THRESHOLD` = **0.95**. single-node instance: measured local_fraction >= 0.95, else the arm is REJECTED. Evidence: epyc-inference-research/data/numa_placement/20260730-P-BENCH-PLACEMENT-1/locverify_results.txt (nommap 1.00 vs shared-mmap 0.242-0.269).",
+        "+- TBD 2 `INTERLEAVE_TOLERANCE` = **+/-25% relative**. interleaved arm: every node page share within [0.75/n_nodes, 1.25/n_nodes]; outside = REJECT. Evidence: same locverify_results.txt (interleave shares 0.235-0.269 vs ideal 0.25, max 7.6% relative).",
+        "+- TBD 6 `ANCHOR_BAND_POLICY` = **median +/-10%, n>=50**. a role anchor = median of >=50 production-traffic samples, band = median +/-10%. Evidence: frontdoor anchor median 35.7 n=154 (+/-7%), P-BENCH-PLACEMENT-1 protocol 2.1.",
+        "+- TBD 12 `REGISTRATION_SIGN_OFF` = **operator only, separate executor**. only the operator signs REGISTRATION.md, and the run must have been executed by a session other than the one requesting sign-off. Evidence: operator decision 2026-11-09 (decision tool).",
+        "+",
+        "+Not fixed here (still TBD): 3, 4, 5, 7, 8, 9, 10, 13, 14.",
+        "+<!-- RATIFY-INF45-P23-20261109 END -->",
+        "+",
+        "+",
+        " **Claim grammar.**",
+        " `<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`",
+        " "
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "grep -cF '<!-- RATIFY-INF45-P23-20261109 BEGIN -->' measurement/protocols/bench-cpu.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "1"
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

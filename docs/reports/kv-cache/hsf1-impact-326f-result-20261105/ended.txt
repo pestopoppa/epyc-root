@@ -1,0 +1,7 @@
+rc=1 time=2026-11-05T02:16:02Z reason=job-rc-1:exited
+job_id=hsf1-impact-326f-20261105
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=7200
+started=2026-11-05T02:13:40Z
+regions=0-95

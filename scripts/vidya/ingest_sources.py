@@ -8,9 +8,10 @@ every adapter whose native input is a file or a run directory.
 It is a DISPATCHER, not a grader. Each source names its adapter's own reader
 (``native_rows``) and its registered projection (``project``); frames go out through
 ``claim_tuple.to_frames``, so ``claim_tuple.grade()`` decides every tuple. No source here
-carries a ladder, a grade or a fallback value. (``autopilot-journal`` and
-``sealed-manifest`` predate the shared carrier and emit through their own frame builders,
-which also delegate grading; they are dispatched at frame level for that reason only.)
+carries a ladder, a grade or a fallback value. ``autopilot-journal`` and
+``sealed-manifest`` predate the shared carrier and delegate grading from their frame builders.
+``mi210-paired-raw`` validates the whole run once and delegates its per-request frames to
+``claim_tuple.to_frames``.
 
 Every matched unit ends in exactly one of four outcomes, counted separately because a
 single reassuring number hides the one that needs a fix:
@@ -101,10 +102,10 @@ def _np_ctx_kvu_units(path: Path) -> list[Path]:
     """A directory holding ``summary.jsonl`` or ``requests.jsonl`` is one unit, else its children that do are; a
     named ``requests.jsonl`` file is its own unit."""
     if path.is_file():
-        return [path] if path.name == "requests.jsonl" else []
+        return [path] if path.name in ("requests.jsonl", "belief_measurements.jsonl") else []
     if not path.is_dir():
         return []
-    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file()  # noqa: E731
+    held = lambda p: (p / "summary.jsonl").is_file() or (p / "requests.jsonl").is_file() or (p / "belief_measurements.jsonl").is_file()  # noqa: E731
     if held(path):
         return [path]
     return sorted(p for p in path.iterdir() if p.is_dir() and held(p))
@@ -162,6 +163,9 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("inf34-a2-raw-prefill", "inf34_a2_raw", _files("raw-a2.observation.json"),
            task="VB-INF34-A2-DIAG-WIRE", note="prospective exact original A2 observation; paired producer/source/view epoch; controls/partials decline; no crossover or protocol claim"),
     Source("ufh12-gs-coverage", "ufh12_gs_coverage", _files("*.belief_measurements.jsonl"), task="VB-UFH12-GS", note="prospective proxy-query and stored-token record coverage; explicit --path only"),
+    Source("repl-trace-coverage", "repl_trace_coverage", _files("*.belief_measurements.jsonl"), task="VB-UFH12-TRACE-WRITE", note="prospective trace event coverage only; explicit --path only"),
+    Source("repl-trace-facts", "repl_trace_facts", lambda path: [path] if path.is_file() else [], task="VB-UFH12-REPL-TRACE-CUSTODY", note="prospective sealed event observations, explicit file only; originals custody unknown"),
+    Source("repl-shadow-observation", "repl_shadow_observation", lambda path: [path] if path.is_file() else [], task="VB-UFH12-SHADOW-WRITE", note="explicit completed shadow streams only; producer-declared identities, unknown outcomes and counterfactual hidden-arm matches retained"),
     Source("rtg57-vkq-comparison", "rtg57_vkq_comparison", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="prospective scoped T48/T96 timing; no adoption"),
     Source("rtg57-vkq-oracle", "rtg57_vkq_oracle", _files("native-receipt.json"), task="VB-RTG57-VKQ-WIRE", note="one model-free C5 numerical shape; no serving or adoption warrant"),
     Source("df2-row-exact-akx", "df2_row_exact", _files("belief-native.json", "*/belief-native.json"), task="VB-DF2-ROW-EXACT-WRITE", note="producer-time DF2 output and diagnostic observations; explicit --path only"),
@@ -175,6 +179,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            project="project_dtap_timeout_report", task="VB-DTAP-TIMEOUT-REPORT-WIRE",
            report_path="public_locator",
            note="explicit private original timeout-component integrity receipt; no default/body export"),
+    Source("dtap-crm-pair", "dtap_crm_pair", _files("*.json"),
+           task="VB-DTAP-CRM-PILOT-WRITE",
+           note="explicit prospective producer-reported CRM pair only; fixture and unbound custody refused; no authority or efficacy warrant"),
+    Source("dtap-finance-pair", "dtap_finance_pair", _files("native-record.json"),
+           task="VB-DTAP-FINANCE-PAIRED-WRITE",
+           note="explicit finance paired native record only; baseline task success projected, attack delivery informational; no security or efficacy warrant"),
     Source("pii-staged-gate", "pii_staged_gate", _files("receipt.json"),
            task="VB-PII-STAGED-WIRE",
            note="explicit private original PII sub-gate receipt only; no default or public body export"),
@@ -199,6 +209,25 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                   "**/vidya_measurement_record.json"),
            project="project_unlimited_ocr_run", task="SC42 / VB-ODL-P2",
            note="prospective run-time Unlimited-OCR records only; old demo JSON is identityless and is never upgraded"),
+    Source("odl-unlimited-ocr-intrinsic", "odl_model_gated",
+           _files("vidya_measurement_record.json", "*/vidya_measurement_record.json",
+                  "**/vidya_measurement_record.json"),
+           natives="intrinsic_native_rows", project="project_intrinsic_row",
+           task="VB-ODL-INTRINSIC-PROJECTION",
+           note="non-null SC/BI/ICC/DCC diagnostic rows of verified Unlimited-OCR run records; null reasons stay in extra"),
+    Source("cj7a-inverse-mutation", "cj7a_inverse_mutation",
+           _files("native_control_proof.json", "**/native_control_proof.json"),
+           default=Path("/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/inverse_mutation_v1/fixtures"),
+           note="CJ-7a native control outcome documents (cj7a_native_control_proof.v1); verifier class: "
+                "decided_proposition re-derived from the record, undecided/out-of-coverage and "
+                "non-control (model-evaluation) records refuse; no efficacy claim",
+           task="VB-CJ7A-INVERSE-MUTATION-WRITE"),
+    Source("dar-join-coverage", "dar_join_coverage",
+           _files("*dar_join*receipt*.json", "**/*dar_join*receipt*.json"),
+           note="DAR task-ID join coverage receipts (`dar_join_coverage.py --receipt-out`, "
+                "epyc.dar_join_coverage.receipt.v1): self-hash and count invariants re-derived; "
+                "stdout-only historical audits decline; no real run yet (awaiting first run)",
+           task="VB-DAR-JOIN-COVERAGE-WIRE"),
     Source("managed-tooling-check", "managed_tooling_check",
            _files("receipt.json", "*/receipt.json", "**/receipt.json"),
            project="project_managed_tooling_check", task="VB-MANAGED-TOOLING-WIRE",
@@ -369,6 +398,13 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "instrument offline_speed, written by `SpeedRun.finalize()`); every row carries its "
                 "timing context and its A/A noise floor",
            task="VB-UFH12-EMBSPEED"),
+    Source("committed-conclusion", "committed_conclusion",
+           lambda path: [path] if path.is_file() else sorted(path.glob("committed_conclusions.jsonl")),
+           default=Path(__file__).resolve().parents[2] / "data" / "belief" / "committed_conclusions.jsonl",
+           note="committed-conclusion register (epyc.vidya.committed_conclusion.v1): quote re-hashed "
+                "against git; Judged/Located only (protocol_id empty, no reps, no run_id); "
+                "decision and covered_by rows decline",
+           task="VB-CC-1 / VB-CC-PILOT"),
     Source("gfx90a-static-register", "gfx90a_static_register",
            _files("audit_*.json", "audit_*.json.gz", "*isa_audit*.json", "*isa_audit*.json.gz"),
            note="gfx90a static register/ISA audits (research `gfx90a_isa_audit.py audit --json`, "
@@ -413,6 +449,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("beliefs.jsonl", "*/beliefs.jsonl"),
            note="Prospective LB4.9 native diagnostic OBSERVATION only; strict process/output custody; no historical warrant",
            task="VB-LB49-COMBINED-DIAGNOSTIC-WRITE"),
+    Source("thinking-budget-semantics", "thinking_budget_semantics", _files("RESULT.json"),
+           note="One observation per complete native request; original official results require their published digests; "
+                "partial/UNKNOWN, smoke, and custody mismatches refuse",
+           task="VB-TB-SEMANTICS-WIRE"),
     Source("gpu-leak-probe", "gpu_leak_probe",
            _files("gpu_leak_probe.beliefs.jsonl", "*/gpu_leak_probe.beliefs.jsonl"),
            note="GPU-LEAK-1/1d own-PID VRAM slope per arm (slopes re-derived from the recorded series), "
@@ -423,6 +463,18 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V11-086 FP32-oracle rerun pass fraction per arm (value = passed/total of the same row), scorer "
                 "clause verdicts verbatim, OBSERVATION only",
            task="VB-V11-ORACLE-WRITE"),
+    Source("kvu16a-sampled-load", "kvu16a_projection",
+           _files("kvu16a_sampled_load.beliefs.jsonl", "*/kvu16a_sampled_load.beliefs.jsonl"), frames="emit",
+           note="Prospective original-run sampled healthy load, not a peak; unknown coverage does not project",
+           task="VB-KVU-16A-LOAD"),
+    Source("kvu19b-gap", "kvu19b_gap",
+           _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
+           note="Prospective KVU-19b same-binary p3batch child records; synthetic microbenchmark observation, no protocol",
+           task="VB-FA-MASKSKIP"),
+    Source("kvu19a2-native", "kvu19a2_native",
+           _files("kvu19a2_native.beliefs.jsonl", "*/kvu19a2_native.beliefs.jsonl"),
+           note="Prospective per-launch GPU FA output NaN counts; original pre-hook observations do not project",
+           task="VB-KVU19A2-NATIVE-WRITE"),
     Source("repl-embedder-parity", "repl_embedder_parity",
            _files("repl_embedder_parity.beliefs.jsonl", "*/repl_embedder_parity.beliefs.jsonl"),
            note="EmbeddingGemma-2 vector-parity gate (REPL-EMB-2.5/2.6): per gated lane cos_min / cos_mean / "
@@ -505,6 +557,30 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
            note="OCC-1 run dirs (`run_occ1.py report` sidecars); VOID/pre-hook runs decline",
            task="SC85"),
+    Source("ak-gfx-observation", "autokernel_gfx_observation",
+           _files("observation.json", "*/observation.json"),
+           note="Prospective source-pinned original GFX boundary-read observations; UNKNOWN and partial captures refuse",
+           task="VB-AK-R18-GFX-OBSERVATION"),
+    Source("ak-r18-symbols", "autokernel_r18_symbols", _files("terminal.json", "*/terminal.json"),
+           note="Prospective guarded independent CPU/HIP symbol comparison capture; partial and historical runs decline",
+           task="VB-AK-R18-INDEPENDENT-SYMBOL-FINDINGS"),
+    Source("ak-r18d-aa", "autokernel_r18d_aa",
+           _files("r18d-capture-*.jsonl", "*/r18d-capture-*.jsonl"),
+           default=Path("/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/out"),
+           note="R18-D pp512 A/A prospective native capture (`r18d-capture-<run_id>.jsonl`, hash-chained); the "
+                "SETTLED bootstrap floor is re-derived from the original eligible samples and refused on any "
+                "pre-hook, partial, retried, unbound, unwitnessed or clock-unstable unit; BASELINE observation, "
+                "shared grade() only",
+           task="VB-AK-R18D-AA-WIRE"),
+    Source("ak-r234-sweep", "autokernel_r234_sweep",
+           _run_dirs_any("native-comparisons.json", sidecar="results.jsonl"),
+           default=Path("/mnt/raid0/llm/tmp/vb-r234-wire-20261104/runs"),
+           note="R23-4 one-factor DFlash serving sweep prospective native capture (`results.jsonl` with the "
+                "producer's `native-comparisons.json`, 63 requests over seven fresh server arms); every "
+                "request's stream rate and acceptance counts and each adjacent-baseline comparison are "
+                "re-derived and refused on any mismatch, partial, mixed-identity or unwitnessed unit; "
+                "window acceptance is never response-ID proof; measurement, shared grade() only",
+           task="VB-AK-R23-4-SWEEP-WIRE"),
     Source("ak-width-dimension", "autokernel_width_dimension",
            _files("width_dimension.json", "*/width_dimension.json"),
            note="AKX-ALL-27 HIP width-invariance dimension records (`width_dimension.json` beside "
@@ -540,6 +616,85 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "self-hash + re-derived escapes) and the pre-hook diag/probe task dumps "
                 "(retrofit, no binary sha256); a reading with no readable task declines",
            task="VB-LAUNCH-AFFINITY-WIRE"),
+    Source("exp01-proxy-capture", "exp01_proxy_capture",
+           lambda p: importlib.import_module("adapters.exp01_proxy_capture").units(p),
+           frames="emit",
+           note="filed original EXP01 source controls and prospective official CPU proxy pilots; "
+                "original custody, native vectors, ordered looks and paired output replayed; no formal protocol",
+           task="VB-EXP01-PROXY-WIRE"),
+    Source("r231-eof-capture", "r231_eof_capture",
+           lambda p: importlib.import_module("adapters.r231_eof_capture").units(p), frames="frames_for_path",
+           note="complete prospective model-free CLI EOF and simple/PTY cases; pinned grants, process "
+                "scopes, outputs and exact binary custody replayed; smoke and UNKNOWN refused",
+           task="VB-AK-R23-1-EOF-WIRE"),
+    Source("mi210-paired-raw", "mi210_paired_raw", lambda p: [p], frames="emit",
+           note="explicit original MI210 raw capture directory; completed measurement requests only; "
+                "diagnostic observations through the shared grade",
+           task="VB-MI210-PAIRED-DIAG-WIRE"),
+    Source("gpu-pool-native", "gpu_pool_native", _files("belief.json"), frames="emit",
+           note="sealed prospective model-free native captures with explicit non-smoke grants; "
+                "raw case counts re-derived, with candidate-local scope",
+           task="SC18"),
+    Source("quality-pack-comparison", "quality_pack_comparison",
+           lambda p: importlib.import_module("adapters.quality_pack_comparison").units(p),
+           note="V9-8 native sealed original-byte comparisons; coverage and outcomes replayed "
+                "under the bound validator source; complete comparisons are diagnostic observations",
+           task="VB-V9-8-QUALITY-PACK-WIRE"),
+    Source("q38p4-greedy-parity", "q38p4_parity",
+           lambda p: importlib.import_module("adapters.q38p4_parity").units(p), frames="frames_for_path",
+           note="prospective native cross-engine token/stop comparison under an exclusive MI210 grant",
+           task="VB-Q38P4-PARITY-WIRE"),
+    Source("qwen4exp-cpu-loader-diagnostic", "qwen4exp_cpu_loader",
+           lambda p: importlib.import_module("adapters.qwen4exp_cpu_loader").units(p), frames="frames_for_path",
+           note="prospective native CPU loader seals; replay raw scope, custody and both semantic dispositions",
+           task="VB-V9-8-QUALITY-PACK-LOADER-DIAG-WIRE"),
+    Source("kernel-promotion-lifecycle", "kernel_promotion_lifecycle",
+           lambda p: importlib.import_module("adapters.kernel_promotion_lifecycle").units(p),
+           frames="frames_for_path",
+           note="Sealed prospective V9-8 diagnostics with original HTTP, source and resident validity "
+                "replay. Incomplete and failed resident comparisons yield no claims.",
+           task="VB-V9-8-LIFECYCLE-WIRE"),
+    Source("ch18-merge-trial", "ch18_merge_trial",
+           lambda p: importlib.import_module("adapters.ch18_merge_trial").units(p),
+           note="CH-18 fresh-production merge trial: sealed epyc.ch18_merge_trial.v1 (base/upstream commits, "
+                "strategy, tool, cleanup, conflict paths re-derived); pre-hook conflicts.json refused "
+                "(committed conclusion only); incomplete/failed trials project nothing; conflict inventory "
+                "is not a build or promotion verdict",
+           task="VB-CH18-MERGE-TRIAL-WIRE"),
+    Source("p5-sphinx-scorer", "p5_sphinx_scorer",
+           lambda p: importlib.import_module("adapters.p5_sphinx_scorer").units(p),
+           note="Original pinned prospective Sphinx scorer controls; individual native status observations only",
+           task="VB-P5-SCORER-CONTROLS-WIRE"),
+    Source("p5-astropy-scorer", "p5_astropy_scorer",
+           lambda p: importlib.import_module("adapters.p5_astropy_scorer").units(p),
+           note="Original pinned prospective Astropy scorer controls; individual native status observations only",
+           task="VB-P5-SCORER-CONTROLS-WIRE"),
+    Source("tool-selector-events", "tool_selector_events",
+           lambda p: importlib.import_module("adapters.tool_selector_events").units(p),
+           note="orchestrator tool-picker event log (selection/outcome/shadow rows) joined by request_id; "
+                "per-stratum PROXY recall and p95 latency; explicit file only; unsealed producer log, "
+                "no true-recall or promotion warrant",
+           task="VB-TOOL-SELECTOR-WIRE"),
+    Source("monty-lane", "monty_lane",
+           lambda p: importlib.import_module("adapters.monty_lane").units(p),
+           note="orchestrator Monty REPL lane telemetry (one row per cell); per-role route share, fallback share of "
+                "screened-in cells and p95 total_ms; explicit file only; unsealed producer log, diagnostic of the "
+                "lane not task success",
+           task="VB-MONTY-LANE-WIRE"),
+    Source("fm2-adamast", "fm2_adamast",
+           lambda p: importlib.import_module("adapters.fm2_adamast").units(p),
+           note="Prospective single-judge native diagnostic; explicit receipt only",
+           task="VB-FM2-ADAMAST-WIRE"),
+    Source("nemo-range-join", "nemo_range_join",
+           lambda p: importlib.import_module("adapters.nemo_range_join").units(p),
+           frames="emit", note="Current retained fixture replay only; historical custody unknown",
+           task="VB-NEMO-RANGE-JOIN-WIRE"),
+    Source("fm4-gate-acceptance", "fm4_gate_acceptance",
+           lambda p: importlib.import_module("adapters.fm4_gate_acceptance").units(p),
+           frames="emit",
+           note="FM-4 diagnostic observations from revalidated selected gates or filed Codex "
+                "dispatch receipts replayed against private snapshots; task acceptance is separate",
+           task="VB-FM4-ORACLE-WIRE"),
     Source("fused-decode-div", "fused_decode_div",
            lambda p: importlib.import_module("adapters.fused_decode_div").units(p),
            note="FD-DIV-1a epyc.fd_div_1a.smoke_receipt.v1 (one claim per decided smoke, byte identity "
@@ -547,6 +702,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "FD-DIV-1b epyc.fd_div_1b.result.v1 (one claim per fixture cell, class re-derived); "
                 "skipped smokes and void controls decline; decode ms/token is observation only",
            task="VB-FUSED-DECODE-DIV-WIRE"),
+    Source("inf66-r2364", "inf66_r2364", lambda p: importlib.import_module("adapters.inf66_r2364").units(p),
+           default=Path("/workspace/repos/epyc-inference-research/data/inf66/r23-64-thread-sweep-20261025"),
+           task="VB-R2364-SWEEP-WIRE",
+           note="INF-66 R23-64 CPU decode thread sweep (ANALYSIS.json + runs/*.rows.jsonl, SHA256SUMS-sealed): per-arm mean t/s "
+                "and per-arm effect vs t48, launch-unit floor sd 0.609%; per-launch t/s re-derived from rows; "
+                "RESOLVED/UNRESOLVED carried verbatim from RESULT.txt, never re-derived"),
     Source("m4-cpu-recipe-speed", "m4_cpu_speed", _files("**/process-captures/*.json"),
            note="prospective M4 process captures only, source-sealed and partial-safe",
            task="VB-M4-FOLD-SPEED-WRITE"),
@@ -561,6 +722,14 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            default=Path("/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/runs"),
            note="C6 Q4 diagnostic component timing native run bundles only; exact Q4_K 27B cases plus synthetic DS41 shape reference; strict input/image/run-seal rehash and raw timing re-derivation; unknown generated-input byte identity and co-tenancy remain explicit; empty protocol means observations only, no keep/serving grade",
            task="VB-C6-Q4-MICROBENCH-WIRE"),
+    Source("v11-gate-bench", "v11_gate_bench",
+           lambda p: importlib.import_module("adapters.v11_gate_bench").units(p),
+           default=Path("/mnt/raid0/llm/tmp/v11-runs"),
+           note="V11 GPU gate llama-bench A/B alternating-launch timing (v11-050/051/052 run dirs: COMPLETE + DECISION.json + "
+                "PREDECLARED.md + bench_*-<arm><n>.json): effect, base/arm spread and n re-derived from the raw rows and "
+                "refused on any difference from DECISION.json; predeclared sha256 re-hashed; hardened-protocol rows refused; "
+                "empty protocol = observations only",
+           task="VB-HARVEST-1022.a"),
     Source("hsf5p-microbench", "hsf5p_microbench",
            lambda p: importlib.import_module("adapters.hsf5p_microbench").units(p),
            default=Path("/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p"),
@@ -606,6 +775,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "(timeout/signal) sessions decline; every tuple is an OBSERVATION (n=1, no "
                 "codified protocol)",
            task="VB-AK-SEAT"),
+    Source("ak-actor-wire", "autokernel_actor_wire",
+           _files("actor-wire-final.json", "**/actor-wire-final.json", "*.actor-wire-final.json"),
+           note="AutoKernel native actor-wire matrix finalization (epyc.autokernel.actor_wire_final.v1); "
+                "verifier findings: PASS/FAIL/aborted/unvisited verbatim, native-provider checks and mocked "
+                "controls separate; legacy actor-wire-pass.json / matrix-results.json decline",
+           task="VB-AK-NATIVE-WIRE-WRITE"),
     Source("memento-lora", "memento_lora",
            _files("stage*_belief_measurements.json", "**/stage*_belief_measurements.json"),
            task="SC20"),

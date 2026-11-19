@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "Wiring rc=0: original sealed native capture projects one claim, refused=0, Judged/Located; exact candidate planning reader sees it, changed source/binary/model/recipe/run and ordinary CPU/HIP requests see none; retry emits zero frames. Native rc=1 loader_exercised_response_refused is retained: production JSON refused, candidate matched, neither broad-pack admission nor HIP/promotion authority.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T03:16:24+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T03:14:16Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-vidya-quality-pack-loader-diag-wire-20261118.ended",
+ "filed_at": "2026-11-18T03:16:24+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-LOADER-DIAG-WIRE",
+ "id": "handoff-vidya-quality-pack-loader-diag-wire-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-loader-diag-wire-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-diag-wire-20261118/out/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Wiring rc=0: original sealed native capture projects one claim, refused=0, Judged/Located; exact candidate planning reader sees it, changed source/binary/model/recipe/run and ordinary CPU/HIP requests see none; retry emits zero frames. Native rc=1 loader_exercised_response_refused is retained: production JSON refused, candidate matched, neither broad-pack admission nor HIP/promotion authority.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-diag-wire-20261118/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-vidya-quality-pack-loader-diag-wire-20261118",
+ "row_verdict": "pass",
+ "rule": "Can the fresh native qwen4exp CPU diagnostic reach the exact planning context through the shared carrier while retaining either semantic disposition? Capture one unchanged request per pinned v10/C13 CPU runtime. Stop after capture, verified cleanup and the planning canary, or on STOP/deadline or first identity/load/transport/custody/cleanup failure. A four-CPU smoke runs the pinned small-model v10 control.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 48,
+  "input": 149167136,
+  "output": 658940,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 149826076,
+  "tokens_per_task": 3121376.5833333335
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "b5883f01e41bf101a8801b6c821a48ffdd7d6cb613934b10f01c3e377ca48cda",
+  "result": "pass",
+  "status": "filed"
+ }
+}

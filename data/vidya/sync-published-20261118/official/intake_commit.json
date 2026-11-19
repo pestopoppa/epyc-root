@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "git",
+    "commit",
+    "-m",
+    "native intake update"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/primary",
+  "exit": 0
+}

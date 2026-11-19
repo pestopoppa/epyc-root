@@ -1,0 +1,21 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kvu-kpf174-custody-r3-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=0 time=2026-11-04T16:23:39Z reason=complete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/kvu-kpf174-custody-r3-20261104/native-attempts/attempt-h_eaemmh/native-result.json (unit_key files set)",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T16:23:43Z",
+ "id": "kvu-kpf174-custody-r3-20261104",
+ "job_complete": false,
+ "job_complete_reason": "dryrun_native_result: the smoke wrote an isolated per-attempt result, not the full job's artifacts",
+ "launcher_sha256": "b4f0691f2711530b22bed4d05d3952890dda76fb28a77047d767ea1a7753a6bb",
+ "passed_at": "2026-11-04T16:23:43Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kvu-kpf174-custody-r3-20261104/native-attempts/attempt-h_eaemmh/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

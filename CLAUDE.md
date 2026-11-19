@@ -55,6 +55,8 @@ Coupling edges: `.claude/dependency-map.json`.
 
 Champion contents and promotion presence gates: [`docs/reference/kernel-manifests/`](docs/reference/kernel-manifests/README.md).
 
+**Forward-port rule (V6R-4b / OP-58).** Forward-port one feature per commit. Before reverting a bundled commit, split it and revert only the gated-out parts. A feature's test travels with it through every consolidation (enforced in code by the DS41-C116 kernel-preservation gate, `kernel_coverage.py`). Origin: INC-20260925, our own OpenMP parallel repack (`52ddd3200`) lost in the bundled v6 Stage 1a revert (`docs/reference/agent-config/INCIDENT_LOG.md`).
+
 ## Working-tree identity
 
 **Single source of truth**: `/workspace/repos/<name>` is a symlink to `/mnt/raid0/llm/<name>` (`/mnt/raid0/llm/llama.cpp` for `epyc-llama`) — parallel sessions on either path share one clone, branch, and staging area. Identity check: `stat -c %i /workspace/repos/<name>/.git` equals the target's. `scripts/clone-repos.sh` (idempotent, `DRY_RUN=1` to preview) creates/repairs the symlinks and backs up divergent clones — if the two paths ever show divergent commits, push unique commits from both sides first, then re-run it.
@@ -101,12 +103,15 @@ Audit trail in `logs/agent_audit.log`; analysis via `scripts/utils/agent_log_ana
 
 The [measurement constitution](MEASUREMENT.md) is authoritative (protocol annexes in `measurement/protocols/`); use its agent digest, [MEASUREMENT_POLICY.md](agents/shared/MEASUREMENT_POLICY.md), for claim grammar, era handling, codified recipes, deterministic replay, and consolidated ratification. The measurement trust boundary is human-amendment-only.
 
+**Measurement sufficiency:** every measurement states its question, expected effect versus sample-size error, checkpoints, and stop-on-answer / stop-on-futility rules; reuse valid evidence first, save incremental results, and stop when the scoped question is answered. Formal-gate cells stay futility-only at interim looks until OP-ABSEQ / OP-PQP / OP-ALPHAWIN are decided. Canonical: [`measurement-sufficiency.md`](docs/guides/agent-workflows/measurement-sufficiency.md).
+
 ## Session Management
 
 - `scripts/session/session_init.sh` — discover models, verify llama.cpp
 - `scripts/session/health_check.sh` — system health
 - `scripts/session/verify_llama_cpp.sh` — branch safety
 - `scripts/nightshift/` — autonomous overnight runs
+- **Never stop readying inference tasks** while any un-readied one exists; no gate (park, stuck rule, target, cooldown) may override it — [backlog-churn-flow.md → *The one rule no gate may break*](docs/guides/agent-workflows/backlog-churn-flow.md).
 - **Inference backlog piling up / compute idle while rows are queued?** The packing discipline (bins, derived
   booking class, grant-writer invariants, the operator STATUS/ETA report) is the project skill
   `.claude/skills/inference-backlog-scheduling/` on top of `docs/guides/agent-workflows/compute-fillers.md`;
@@ -197,8 +202,9 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
 
 ## Agents & Automation
 
-- **Fan out subagents by default — always, not only when a dispatch says so.** Your own thread is for
-  review, integration and task boundaries; execution goes to **3–5 subagents running concurrently**.
+- **Fan out subagents when the work is genuinely parallel — width is a ceiling, not a floor.** Your own thread is for
+  review, integration and task boundaries; execution goes to subagents, **up to 3–5 concurrently as a ceiling, never a floor**, on the cheapest capable
+  model and lowest adequate effort, set explicitly.
   The width, the model/effort matching, the PROPOSED-work review gate **and the ratified
   *When NOT to fan out* exceptions** (sequential phases, tightly coupled components, shared state,
   and decomposition by ROLE — a measured anti-pattern) are canonical in [Parallel Subagent

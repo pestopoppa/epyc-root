@@ -1,0 +1,51 @@
+{
+  "schema": "p5.preparation-review.v2",
+  "status": "PREPARED_NOT_EXECUTED",
+  "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2a",
+  "image_id": "sha256:e3cb199d0e50c97db515de04b01be65e1d7fd6390b047a00da90655ed9b6002e",
+  "case_base_commit": "d16bfe05a744909de4b27f5875fe0d4ed41ce607",
+  "files": {
+    ".dockerignore": "a72f83e4e8f093696705b33a25a99f8b1f742f8436c1ea98c652dabdf4057f57",
+    "BUILD-SOURCE.sha256": "4becb58802aaa44d792030e83090dede6f97251c0bb692428d76bf643360063e",
+    "Dockerfile": "2066d6a5800a1010ed1949ff89b39e2774389a345c01460730ae5f20f631d2ff",
+    "WHEELHOUSE.sha256": "5a7ac881d1beadb4105db4a9d5041a75b0b605d604d9b3c38f780a6b117727ba",
+    "build-input-receipt.json": "babefa246d570e21f972f17a6232b240eafd2789f01f1f21212bc7b2c2d951a7",
+    "build-sealed.log": "c8e85113399a5c9472db181cedf813166bf4d6d9ee2ef17bc512fc399c9790da",
+    "build-sealed.py": "4b0eff9aa09d6c1c00ac31392966454e17d3243c856b2442ebc2073e71a40019",
+    "case.json": "ea9e936b6d002607859edadc526fbb7fa3a7342ba5f06668019504610e637382",
+    "complete.py": "5dfcc06a08f668012e8c97c6f473013ec18979876756c4e710939f00980d2815",
+    "diagnosis.json": "c6276b622c28e846ed8765ac802b7e5b842ff33b057243001ee0cba80bbe1abe",
+    "guard-proof.json": "192dadb4c448a2b6614f35b6a7f5595bd7d29816ac3448184d8fff0f394850b4",
+    "guard-proof.py": "34be1e4ad7d0165feeca782e7ca614de4ba4a97351808fc96efb5503c91c6ed1",
+    "inspect_tree.py": "43ef18a474f54886a1a623c27a8f717f5ad1eb0e55984a9e66b8db754052a65e",
+    "job.py": "c603803f13ff1133e98890da46c89b70bfc02275260633cfec3476341d05e00e",
+    "offline_eval.py": "29362b9237cdd02311f198612b451fb2ddc404f9cf8493537362acc841dd604e",
+    "pins.json": "37e4a77926bb2e511903c6537efda51a7858abd6628a395f6d4bed3c027d2ccd",
+    "requirements.txt": "924171a456d09bd4368d86692ff1fff9706de088dfb767a150ccddc2c73b9d58",
+    "source_guard.py": "4ee06a3364b5dbf6e4bdd5efcf76719d6e736cecfaf06e759b83e3984c8663e0",
+    "spec.json": "c0ac38efc644a0a3b564ca73b2380f1bdd502edc502e8280f9e948ecb9a4951e",
+    "test_native_outcome.py": "1ca3e3de59791332068d4def8d655a3dd711169524bf18eea9f83d17b4dec362",
+    "tree-difference.json": "fca60d8db77c1032a9713b1aebfd28d555b5e2003d88c77c94fc9c5a7f76c31b",
+    "SOURCE.sha256": "f4cbcf8b12ddd6063f6d185638342f9ac3c43ed834dde9760471a0734cc55443",
+    "launch.sh": "4821dc0e6557b202b18a51b1871fc2442f74ea385004d6855377fb9c48f37cbf"
+  },
+  "question": "Does official selected Astropy scorer distinguish the bound gold patch from a valid no-op negative without regressions?",
+  "preparation_fix": "Actual upstream HEAD changed pyproject.toml setuptools requirement. New offline Dockerfile resets repository to exact case base and git clean -ffdx BEFORE editable installation. Source guard unchanged.",
+  "build_proof": {
+    "context_sha256": "4becb58802aaa44d792030e83090dede6f97251c0bb692428d76bf643360063e",
+    "receipt": "build-input-receipt.json",
+    "log": "build-sealed.log",
+    "cpu_claim": "region-lock CPUs 24-27 role build plus Docker cpuset24-27",
+    "network": "none",
+    "before_after_input_hashes_equal": true,
+    "exit_code": 0
+  },
+  "checks": {
+    "unchanged_source_guard_on_new_readonly_image": "PASS, image HEAD exact base; tracked tree matches, clean index/worktree, zero nonignored untracked files",
+    "native_control_loop_synthetic_tests": "4 passed under q2 claim after full-control smoke changes",
+    "scorer_source_hashes": "checked all match pins before successor finalization"
+  },
+  "scope": "Preparation only. Native gold and negative tests require publisher smoke. No scorer correctness claim. Old unsealed build diagnostic only; old sealed image rejected by unchanged source guard.",
+  "stop_rule": "Exactly one fresh negative arm and one fresh gold arm; fail immediately on incomplete named statuses, incorrect native verdict, or cleanup failure. Smoke uses same strict full-control predicate.",
+  "reproduce": "Dockerfile, requirements, wheel manifest and BUILD-SOURCE hashes retained. Supply exact hashed wheels under wheelhouse before network-disabled build; wheels deliberately excluded from durable lane packet."
+}

@@ -1,0 +1,72 @@
+{
+  "generic": {
+    "binary": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105/images/generic/bin/test-backend-ops",
+    "library_dir": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105/images/generic/bin",
+    "binary_sha256": "dac632872d9404f89b5cfe7c58fd4e6a367d65c9cf50a1599cbfd62badaf339b",
+    "hip_library_sha256": "c0eabd8ba6e73c26fb675c586ee12bfcc97e59adf01bf968766d9eb4016d3333",
+    "ggml_libraries_sha256": {
+      "libggml-hip.so.0.16.0": "c0eabd8ba6e73c26fb675c586ee12bfcc97e59adf01bf968766d9eb4016d3333",
+      "libggml-cpu.so.0.16.0": "729c12ef07070aa5ec8f02c2e8aa1ab0fd788cce01b8be9d19208483a2f95b6a",
+      "libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+      "libggml-base.so.0.16.0": "9a094f637450ca347e2b97daacfe1f561ec15fc6a1746cd52da3de034ea3816a"
+    },
+    "files": {
+      "test-backend-ops": "dac632872d9404f89b5cfe7c58fd4e6a367d65c9cf50a1599cbfd62badaf339b",
+      "libggml-hip.so.0.16.0": "c0eabd8ba6e73c26fb675c586ee12bfcc97e59adf01bf968766d9eb4016d3333",
+      "libllama-common.so.0.0.10500": "44cc2cf6e1b0101eee0eda37853196385a193ee31515115a9a8a65a3b6ff1f64",
+      "libggml-cpu.so.0.16.0": "729c12ef07070aa5ec8f02c2e8aa1ab0fd788cce01b8be9d19208483a2f95b6a",
+      "libllama.so.0.0.10500": "dfb13d6c8c5c7198ebbea3fbfa571b077c007e1d187c3659370c69f8bd50490a",
+      "libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+      "libggml-base.so.0.16.0": "9a094f637450ca347e2b97daacfe1f561ec15fc6a1746cd52da3de034ea3816a"
+    },
+    "symlinks": {
+      "libggml-base.so.0": "libggml-base.so.0.16.0",
+      "libggml-hip.so": "libggml-hip.so.0",
+      "libggml.so.0": "libggml.so.0.16.0",
+      "libggml-base.so": "libggml-base.so.0",
+      "libggml.so": "libggml.so.0",
+      "libggml-cpu.so.0": "libggml-cpu.so.0.16.0",
+      "libggml-hip.so.0": "libggml-hip.so.0.16.0",
+      "libllama.so.0": "libllama.so.0.0.10500",
+      "libllama-common.so": "libllama-common.so.0",
+      "libllama.so": "libllama.so.0",
+      "libllama-common.so.0": "libllama-common.so.0.0.10500",
+      "libggml-cpu.so": "libggml-cpu.so.0"
+    }
+  },
+  "candidate": {
+    "binary": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105/images/candidate/bin/test-backend-ops",
+    "library_dir": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-generic-pair-fresh-20261105/images/candidate/bin",
+    "binary_sha256": "dac632872d9404f89b5cfe7c58fd4e6a367d65c9cf50a1599cbfd62badaf339b",
+    "hip_library_sha256": "50e50fdeeb21c9ddfaa65eaa1cbcd3a55f1fce16fe2a9260fe98e093491784b3",
+    "ggml_libraries_sha256": {
+      "libggml-hip.so.0.16.0": "50e50fdeeb21c9ddfaa65eaa1cbcd3a55f1fce16fe2a9260fe98e093491784b3",
+      "libggml-cpu.so.0.16.0": "729c12ef07070aa5ec8f02c2e8aa1ab0fd788cce01b8be9d19208483a2f95b6a",
+      "libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+      "libggml-base.so.0.16.0": "ecec7feb6180339acbbf09279bc697226be247fc1a57c1b8fdb62a9ee461d9f7"
+    },
+    "files": {
+      "test-backend-ops": "dac632872d9404f89b5cfe7c58fd4e6a367d65c9cf50a1599cbfd62badaf339b",
+      "libggml-hip.so.0.16.0": "50e50fdeeb21c9ddfaa65eaa1cbcd3a55f1fce16fe2a9260fe98e093491784b3",
+      "libggml-cpu.so.0.16.0": "729c12ef07070aa5ec8f02c2e8aa1ab0fd788cce01b8be9d19208483a2f95b6a",
+      "libllama-common.so.0.0.0": "36ab486ad9a4fa5dda427d90ca77e7309a86cb21607d333afa5ce34913ccaff1",
+      "libllama.so.0.0.0": "dfb13d6c8c5c7198ebbea3fbfa571b077c007e1d187c3659370c69f8bd50490a",
+      "libggml.so.0.16.0": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a",
+      "libggml-base.so.0.16.0": "ecec7feb6180339acbbf09279bc697226be247fc1a57c1b8fdb62a9ee461d9f7"
+    },
+    "symlinks": {
+      "libggml-base.so.0": "libggml-base.so.0.16.0",
+      "libggml-hip.so": "libggml-hip.so.0",
+      "libggml.so.0": "libggml.so.0.16.0",
+      "libggml-base.so": "libggml-base.so.0",
+      "libggml.so": "libggml.so.0",
+      "libggml-cpu.so.0": "libggml-cpu.so.0.16.0",
+      "libggml-hip.so.0": "libggml-hip.so.0.16.0",
+      "libllama.so.0": "libllama.so.0.0.0",
+      "libllama-common.so": "libllama-common.so.0",
+      "libllama.so": "libllama.so.0",
+      "libllama-common.so.0": "libllama-common.so.0.0.0",
+      "libggml-cpu.so": "libggml-cpu.so.0"
+    }
+  }
+}

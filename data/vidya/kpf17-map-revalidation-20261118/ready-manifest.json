@@ -1,0 +1,65 @@
+{
+ "book_s": 300,
+ "budget_gib": 0.01,
+ "busy_fraction": 0.25,
+ "decision_rule": "case_count == 1 and rc == 0",
+ "declared_shape": "sub-quarter",
+ "declared_threads": 4,
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-KPF17-MAP-REVALIDATION-NATIVE",
+ "id": "vb-kpf17-map-revalidation-20261118",
+ "keep": [
+  "source/**",
+  "out/**",
+  "spec.json",
+  "launch.sh",
+  "run.py",
+  "README.md",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-map-revalidation-20261118/launch.sh",
+  "sha256": "92188f0db443f1a589108bc4fbcc51bc842035302fbe7e58f89b740094c44d1a"
+ },
+ "min_window_s": 300,
+ "notes": "Does the retained source-sealed custody.validate_maps accept all five original private fixture inputs and refuse exactly the second call following the synchronized selected fixture overwrite? The one-case result is deterministic, with no population estimate. Checkpoints are full baseline, barrier/inode/byte witnesses, exact refusal, and cleanup. Stop after one terminal case, first invalid control, STOP, or deadline. Smoke uses an isolated receipt and cannot project. Full sub-quarter grants may contain SMT siblings; the fixture narrows to four allocated CPUs. The launcher executes one model-free Python fixture and the original validator, with an external-exec tripwire. Scope ends at the second call. The estimate is the publisher admission floor.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:4686: untestable prose prerequisite: 'after the one terminal case, first invalid control, STOP or deadline. Use the existing KV-prefix-fork carrier; scope end'"
+ ],
+ "published_at": "2026-11-18T19:04:34Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-map-revalidation-20261118/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T19:04:34Z",
+  "session": "01a1effd-2baf-7982-808e-8378c76f245c",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-map-revalidation-20261118/out/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-map-revalidation-20261118",
+ "shape": "sub-quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-map-revalidation-20261118/STOP",
+ "threads_evidence": [
+  "--threads 4"
+ ],
+ "total_units": 1,
+ "unit_key": "case_count",
+ "window_s": 600,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-map-revalidation-20261118"
+}

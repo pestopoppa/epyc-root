@@ -249,7 +249,11 @@ run_lab_shadow_if_quiet() {
   if [[ ! -d "$WORKTREE" ]]; then
     echo "[wrapper] Worktree missing at $WORKTREE. Attempting self-heal..."
     # Clear stale worktree metadata entries first.
-    git -C "$PROJECT_ROOT" worktree prune 2>/dev/null || true
+    # (no `git worktree prune`: it is hook-blocked) remove entries whose directory is missing.
+    while IFS= read -r wt_path; do
+      [[ -n "$wt_path" && ! -d "$wt_path" ]] &&
+        git -C "$PROJECT_ROOT" worktree remove --force "$wt_path" 2>/dev/null || true
+    done < <(git -C "$PROJECT_ROOT" worktree list --porcelain 2>/dev/null | sed -n 's/^worktree //p')
 
     # Try origin/main first, then local main, then HEAD.
     git -C "$PROJECT_ROOT" fetch origin main 2>/dev/null || true
@@ -260,7 +264,7 @@ run_lab_shadow_if_quiet() {
 
   if [[ ! -d "$WORKTREE" ]]; then
     echo "[wrapper] ERROR: could not create worktree at $WORKTREE"
-    echo "[wrapper] Manual fix: git -C $PROJECT_ROOT worktree prune && git -C $PROJECT_ROOT worktree add --detach $WORKTREE HEAD"
+    echo "[wrapper] Manual fix: git -C $PROJECT_ROOT worktree remove --force <missing-dir> && git -C $PROJECT_ROOT worktree add --detach $WORKTREE HEAD"
     exit 1
   fi
 

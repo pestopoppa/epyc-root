@@ -1,0 +1,92 @@
+{
+  "checks": {
+    "bash_syntax": "passed",
+    "deployed_publish_preflight": "passed; FM-2 lint advisory class warning only",
+    "full_model_hash": "verified outside grant, no rehash required in keeper job",
+    "gitnexus": "status and impact unavailable; worktree has no indexed repository. New isolated scripts and pinned-vendor patch only.",
+    "kernel_precondition": "entry/server-impl/template content hashes, version, own-store ggml linkage passed",
+    "normalizer_pytest": "9 passed",
+    "real_cli_mock": "one successful and one malformed loopback fixture, no retry; exact bytes; isolated smoke; interrupted receipt; owns listener; Wilson/futility"
+  },
+  "inference_run": false,
+  "launcher": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/launch.sh",
+  "pins": {
+    "adamast_commit": "3c83d81c85937f5e8911fd96daa2ca38c1ad2585",
+    "crosswalk_sha256": "de36ce47e779564cfd2544e765c3e4dcc598f12a67d6477d0d8f4b60666aaed6",
+    "httpx": "0.28.1",
+    "kernel_manifest_sha256": "46f6d561cae6dbfea98378d65cd4322d5f1860a4df5cff7d8ad1785455d367e7",
+    "kernel_version": "10303 (ffc1bac82)",
+    "model_bytes": 29047086048,
+    "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "openai_sdk": "2.31.0",
+    "package_patch_sha256": "88788656cca5ad4ceca101d9d3520cfee83962a9c3f9e096304ad108eb6aeda4",
+    "prepared_at": "2026-11-18T12:14:06.074683+00:00",
+    "sample_manifest_sha256": "22db18ff41088a8ab3f461e68dbcedc5f4529413746afcc98b458136fc3d7893",
+    "sample_size": 23,
+    "sample_strata": {
+      "claude|2026-10|main": 3,
+      "claude|2026-10|subagent": 3,
+      "claude|2026-11|main": 3,
+      "claude|2026-11|subagent": 3,
+      "codex|2026-10|main": 3,
+      "codex|2026-10|subagent": 2,
+      "codex|2026-11|main": 3,
+      "codex|2026-11|subagent": 3
+    },
+    "smoke_unit": "claude-e950eb03f48fcba8",
+    "taxonomy_sha256": "3908377c9d34d810fa4ad646b5673e791ebabc1b0d8b7979e1f713b69021cb44"
+  },
+  "prepared_at": "2026-11-18T12:15:13.822575+00:00",
+  "published": false,
+  "result_path": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/out/results.jsonl",
+  "sample_scope": "Eligible, present local JSONL files, stratified by harness, month and main/subagent using committed FM-2 sampler. Rotated transcripts and non-enumerated sessions are outside the sample frame.",
+  "source_checksum_manifest_sha256": "0ecd10f354abd9e647c8ef48d40df7b8c49d0393164a2bafa5f9298208240678",
+  "source_files": [
+    "scripts/experiments/fm2-adamast/adamast_local.patch",
+    "scripts/experiments/fm2-adamast/fm2_transport.py",
+    "scripts/experiments/fm2-adamast/job.sh",
+    "scripts/experiments/fm2-adamast/launch.sh",
+    "scripts/experiments/fm2-adamast/mast_fseries_crosswalk.json",
+    "scripts/experiments/fm2-adamast/own_port_proof.py",
+    "scripts/experiments/fm2-adamast/pilot.py",
+    "scripts/experiments/fm2-adamast/precond.sh",
+    "scripts/experiments/fm2-adamast/prepare.sh",
+    "scripts/experiments/fm2-adamast/spec.json"
+  ],
+  "spec": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/spec.json",
+  "status": "prepared",
+  "strata": {
+    "claude|2026-10|main": {
+      "picked": 3,
+      "population": 5
+    },
+    "claude|2026-10|subagent": {
+      "picked": 3,
+      "population": 1555
+    },
+    "claude|2026-11|main": {
+      "picked": 3,
+      "population": 11
+    },
+    "claude|2026-11|subagent": {
+      "picked": 3,
+      "population": 1604
+    },
+    "codex|2026-10|main": {
+      "picked": 3,
+      "population": 3
+    },
+    "codex|2026-10|subagent": {
+      "picked": 2,
+      "population": 2
+    },
+    "codex|2026-11|main": {
+      "picked": 3,
+      "population": 159
+    },
+    "codex|2026-11|subagent": {
+      "picked": 3,
+      "population": 193
+    }
+  }
+}

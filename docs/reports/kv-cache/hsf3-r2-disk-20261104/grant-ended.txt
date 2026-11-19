@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T22:44:16Z reason=disk-floor
+job_id=kvu-hsf3-source-coverage-r2-20261104
+owner=h-kvu
+step=job-run
+estimated_wall_s=300
+started=2026-11-04T22:44:15Z
+regions=0-23

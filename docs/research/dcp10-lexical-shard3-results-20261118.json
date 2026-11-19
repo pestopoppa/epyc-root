@@ -1,0 +1,361 @@
+{
+  "actual_packer": {
+    "entries_checked": 72,
+    "entry_render_mode_disagreements": 0,
+    "included_files_by_budget": {
+      "2000": 0,
+      "4000": 0,
+      "8000": 0
+    },
+    "total_estimated_packed_tokens_by_budget": {
+      "2000": 0,
+      "4000": 0,
+      "8000": 0
+    }
+  },
+  "app_revision": "072d1583b3ead7456731946cd4e4595da6a9877f",
+  "arm": "task-root-lexical",
+  "audit": {
+    "full_empty_gold_tasks": 3,
+    "full_workspace_bare_path_tasks": 42,
+    "third_party_count_reverified": false,
+    "third_party_unresolvable_tasks": 88
+  },
+  "budgets": [
+    2000,
+    4000,
+    8000
+  ],
+  "cpu_affinity": "180-183",
+  "custody": {
+    "binding": "local descriptive evidence",
+    "packer_identity_limitation": "Current c24d8421... differs from trusted 7d39ebc4... in the strict reader.",
+    "prior_exit_code": 2,
+    "prior_producer_refusal": "ValueError: capture custody ancestor is group/world writable",
+    "scratch_ancestor": "/mnt/raid0/llm/tmp",
+    "scratch_ancestor_mode": "0777",
+    "shard_capture_attempted": false,
+    "shard_has_accepted_receipt": false
+  },
+  "dataset_hashes": {
+    "full": "2f56535bdc73eb8a68bf4ebb49789d8e9cd4f219ea60df6290b85278aee61ca8",
+    "lite": "e9dcfd504cbfb849ac815a79040c793d0d92f94eecc9b5a4ee3e1445a2f8a791"
+  },
+  "discovered_files_by_task": {
+    "Multi-SWE-Bench__c__maintenance__bugfix__1e842312": 8,
+    "Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a": 8,
+    "SWE-Bench-Verified__python__maintenance__bugfix__1d90db61": 8
+  },
+  "disposition": "bounded_local_diagnostic_complete",
+  "elapsed_seconds": 8.938654943020083,
+  "eligible_task_count": 3,
+  "hf_rev": "c2855792b006af41c67202d33883fb9d46362853",
+  "independent_check": "Verified 12 task-scope counts, six macro metrics per scope, all three actual pack budgets and rendered modes.",
+  "independent_check_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard3/verify_actual.txt",
+  "independent_check_sha256": "44398ecec0265db8556aa5b846c94fdc126f846acdceb41f08ba3699dbd279ea",
+  "independent_checker_source_sha256": "d3fdcbc50984ad1047cd6fa7a0974cf7c0c3f6419d7ab6db572b803b07a76a2c",
+  "limit": 20,
+  "macro_scopes": [
+    {
+      "budget_tokens": null,
+      "metrics": {
+        "file_f1": 0.12962962962962962,
+        "file_precision": 0.08333333333333333,
+        "file_recall": 0.4166666666666667,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "discovery"
+    },
+    {
+      "budget_tokens": 2000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 4000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 8000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    }
+  ],
+  "max_files": 8,
+  "measurement_scope": {
+    "maximum_unit_change_in_macro_fraction": 0.3333333333333333,
+    "model_decodes": 0,
+    "planned_attempts": 3,
+    "question": "Does instrumentation reconcile and does zero packed overlap recur on the next three preselected tasks?",
+    "replacements": 0,
+    "stop_rule": "Stop after the three selected attempts or at 90 seconds."
+  },
+  "output_sha256": {
+    "c.json": "57087dbb6b0532f817c0e40d69a966cfbc4443654c3e48ae4d20b1d1f6ec4493",
+    "cpp.json": "263ff1fd2348976551ddccfdab148e62f4894f6aaeab8d5ce1e20ae26fb0a025",
+    "discovery.jsonl": "67bdefca3e4677f1b3e8924910eac5443c685110087754ab8d8a5a5ce035501e",
+    "predictions.jsonl": "0a4086829743008b0fcd6a06645dadc6b825608c194cbd566fb73d42761a2e7b",
+    "python.json": "6398151621b23f3c8ef31c10c9374571000cff6186570810e81cd17c4b5d9fd6",
+    "score-request.json": "9e831b7f2fbf1c62aaae08189f957092548d85ef221afe0e947a732cc75c1e08",
+    "scored-output.json": "2f41eaae37ba4b585cfdc432bebcdbf84ac6bf3eedfdacc7db2c9a72d3014451"
+  },
+  "packet_hashes": {
+    "dataset-audit.json": "c7fff38967f40cbde4ca8a437255820620ef18683e80bed6048d9cfc73219841",
+    "dispositions.json": "c6892a35bc6b2d0ed7013fc9e0244bdfe6cdc52cd25d2c1ec46fc8286741d673",
+    "tasks.jsonl": "a2e0833113d3a6bb4fb3954bc56f7307bca497c826a9fdeb05c618db53257a6b"
+  },
+  "per_task_scope_counts": [
+    {
+      "budget_tokens": null,
+      "counts_by_task": {
+        "Multi-SWE-Bench__c__maintenance__bugfix__1e842312": {
+          "file": {
+            "fn": 4,
+            "fp": 8,
+            "tp": 0
+          },
+          "line": {
+            "fn": 294,
+            "fp": 186,
+            "tp": 0
+          }
+        },
+        "Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a": {
+          "file": {
+            "fn": 3,
+            "fp": 7,
+            "tp": 1
+          },
+          "line": {
+            "fn": 682,
+            "fp": 234,
+            "tp": 0
+          }
+        },
+        "SWE-Bench-Verified__python__maintenance__bugfix__1d90db61": {
+          "file": {
+            "fn": 0,
+            "fp": 7,
+            "tp": 1
+          },
+          "line": {
+            "fn": 52,
+            "fp": 184,
+            "tp": 0
+          }
+        }
+      },
+      "scope": "discovery"
+    },
+    {
+      "budget_tokens": 2000,
+      "counts_by_task": {
+        "Multi-SWE-Bench__c__maintenance__bugfix__1e842312": {
+          "file": {
+            "fn": 4,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 294,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a": {
+          "file": {
+            "fn": 4,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 682,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "SWE-Bench-Verified__python__maintenance__bugfix__1d90db61": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 52,
+            "fp": 0,
+            "tp": 0
+          }
+        }
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 4000,
+      "counts_by_task": {
+        "Multi-SWE-Bench__c__maintenance__bugfix__1e842312": {
+          "file": {
+            "fn": 4,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 294,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a": {
+          "file": {
+            "fn": 4,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 682,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "SWE-Bench-Verified__python__maintenance__bugfix__1d90db61": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 52,
+            "fp": 0,
+            "tp": 0
+          }
+        }
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 8000,
+      "counts_by_task": {
+        "Multi-SWE-Bench__c__maintenance__bugfix__1e842312": {
+          "file": {
+            "fn": 4,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 294,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a": {
+          "file": {
+            "fn": 4,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 682,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "SWE-Bench-Verified__python__maintenance__bugfix__1d90db61": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 52,
+            "fp": 0,
+            "tp": 0
+          }
+        }
+      },
+      "scope": "packed"
+    }
+  ],
+  "prediction_status_counts": {
+    "ok": 3
+  },
+  "previous_request_sha256": "7b05c32712254a713b365201d2226b24ac96604e2c3756f37fbb17887c03fbae",
+  "producer_sha256": "cf0ca0f7dec5533ed465c1cd30f6941070b5212f0335d4af0a49d023f41f0130",
+  "request_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard3/packet/request.json",
+  "request_seal_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard3/REQUEST.sha256",
+  "request_seal_sha256": "1094af8920a196de2b2e7b8ac943938a507093f11883e14ab86f19615e0adb68",
+  "request_sha256": "c0fea8996fd1894af83dd7512d230dc696c6a133790472c078a4f6fb5c0a6176",
+  "run_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard3/pilot/run.json",
+  "run_sha256": "9481db61cf1e2c9374a3ece88639c66da50009183f9619d6414858ea2b68ba54",
+  "runtime_limit_seconds": 90,
+  "selected": [
+    {
+      "base_commit": "1a4462d72eb03f30dc83a879b1dd57aac8b2c18b",
+      "dataset": "lite",
+      "disposition": "include",
+      "instance_id_sha256": "009e894bfa29f9d943a660e2b9862824c3f9d837bf7114b282e35e042775a3eb",
+      "language": "python",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/astropy/astropy.git",
+      "stratum_size": 266,
+      "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__1d90db61"
+    },
+    {
+      "base_commit": "f00f95b30dd68c7faaff0aa88508c218bc19f02b",
+      "dataset": "full",
+      "disposition": "include",
+      "instance_id_sha256": "0860f61bf0da02ffe4661f37023484176517ab1869dca9b53aa0a4b6db6c2880",
+      "language": "c",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/ponylang/ponyc.git",
+      "stratum_size": 68,
+      "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__1e842312"
+    },
+    {
+      "base_commit": "9294e25c98f9c09a1874842dbcaae7a91336a57e",
+      "dataset": "full",
+      "disposition": "include",
+      "instance_id_sha256": "06883a066662e07fa0fd982ca6f3ce3a037616255c41fdcb517404fda1e44dc7",
+      "language": "cpp",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/nlohmann/json.git",
+      "stratum_size": 60,
+      "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a"
+    }
+  ],
+  "selection_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard3/selected.tsv",
+  "selection_rank": 3,
+  "selection_rule": "Ascending SHA-256 of UTF-8 instance ID within each declared stratum",
+  "selection_sha256": "f5af4e55d9a3e2d683d36a5721c7bf46824e4d4d28f0b464a3cee64251a8d4c1",
+  "source_hashes": {
+    "src/context_assembly.py": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924",
+    "src/context_discovery.py": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+    "src/contextbench_score.py": "feabbd1c29d5e236a3e81b664d05d15178faeaa7d8418306581b289705b177de",
+    "src/repl_environment/code_search.py": "2aa8a78d82ce60ba61d29b26eadd7f56bc06d1492dc5b5021731472cfce41c20",
+    "src/repl_environment/task_root.py": "7ec2dd4a97d8a8f758acdaa053234891637485383a30f4eec8a108b4f4f0769f"
+  },
+  "task": "DCP-10-P3",
+  "upstream_git_rev": "1436c28a8eb95496da4ea69ad458b9f8a8eb7d61"
+}

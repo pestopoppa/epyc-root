@@ -1,0 +1,3 @@
+# CAFE-4 draft rewind correction, build only
+
+Native v3 smoke failed before first verdict: draft context position max 13 and verify catch-up started at 11. The proposed fix removes its draft tail at prompt.size() before target verification/catch-up, matching v10 server-context.cpp:3153–3161 for a partial-removal-capable draft context. Unsupported removal returns UNKNOWN. One prompt, strict partial acceptance and exact server target/fault controls remain unexecuted. A full source-bound CPU build with three marker strings and local library linkage is a prerequisite, not proof of runtime rollback or fault sensitivity. Keep existing native lineage and its one failed smoke; do not rerun native until the changed binary is built and bound.

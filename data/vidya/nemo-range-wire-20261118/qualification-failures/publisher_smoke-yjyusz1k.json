@@ -1,0 +1,18 @@
+{
+  "attempt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-yjyusz1k",
+  "cpus": [
+    116,
+    117,
+    118,
+    119
+  ],
+  "error": "isolated ingest refused",
+  "id": "vb-nemo-range-wire-20261118",
+  "joins": 480,
+  "mode": "publisher_smoke",
+  "native": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-yjyusz1k/replay.json",
+  "replayed_runs": 80,
+  "schema": "epyc.vidya.nemo_range_wire.v1",
+  "source_manifest_sha256": "ddb8fd460d961a0e2ae4450509938bd1006b8fe434d6b42a0c95b0c828461773",
+  "status": "UNKNOWN"
+}

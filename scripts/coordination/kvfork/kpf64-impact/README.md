@@ -1,0 +1,1 @@
+KPF-64.3 audit_coverage source-bound impact prerequisite. Exact detached research source 4f4f1443dba949c9d83d98cd37fe31210b6fb087. Smoke is partial source-reference only; full graph risk and skipped-file coverage remain pending. No model read, inference, or gate verdict. HIGH/CRITICAL stops before source edits.

@@ -1,0 +1,28 @@
+{
+  "native_result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-fm2-wire-20261118/native-attempts/attempt-0oxc9n4v/native-result.json",
+  "native_result_sha256": "3c6e3d794372e19942ca0ec7c8c62017772dc4a50cba4a4a3ead93f34332af08",
+  "scope": "smoke",
+  "unit_id": "claude-e950eb03f48fcba8",
+  "status": "valid",
+  "ok": true,
+  "started_at": "2026-11-18T16:55:49.012701+00:00",
+  "finished_at": "2026-11-18T16:59:54.212256+00:00",
+  "trace_sha256": "5eabbddf6bb9a806602896a99b1ae5a4c1dead08332eca9de90773d9148ec1e3",
+  "source_sha256": "4d412c89d40ad7e17b9a20c545eca21d992a86317b17280b7caee618f488a71a",
+  "artifacts": {
+    "cli.log": "11f87aa7f8d35172d42bb5acb587823f6c26868006103c9039c7e2a70176a364",
+    "diagnosis.json": "57ae43f34693dab6a0279e063df8d14fafcb7576f284bc98f83f971b8123cafa",
+    "request.json": "d69f3bd7d3cb362001a6386813474ecc026e16db8432191470891f3858280a5c",
+    "response.json": "95354189b7be9f4f6f181ea459a41c5ed6111215d3ea920179e9a88c21168b4b"
+  },
+  "precall_marker_sha256": "fdac53e642d93bfba28671f63f9509b7441837e2fba61c81073041a2503deb16",
+  "precall_marker": {
+    "schema": "epyc.fm2.belief-begin.v1",
+    "scope": "smoke",
+    "unit_id": "claude-e950eb03f48fcba8",
+    "started_at": "2026-11-18T16:55:49.011485+00:00",
+    "trace_sha256": "5eabbddf6bb9a806602896a99b1ae5a4c1dead08332eca9de90773d9148ec1e3",
+    "packet_sha256": "a2aa77d5fad9a442a38e90dd6bb2b9cf49ab67ebee76cd1793373548ab862739"
+  },
+  "limitation": "Publisher readiness only; original private bytes retained at native_result_path. Official projection and coordinator acceptance remain pending."
+}

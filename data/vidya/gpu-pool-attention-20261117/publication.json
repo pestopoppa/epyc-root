@@ -1,0 +1,10 @@
+{
+  "row_id": "ni-gpu-pool-attention-20261117-v1",
+  "publisher": "scripts/coordination/rowflow/publish_row.py",
+  "publisher_exit_code": 0,
+  "status": "GPU busy; smoke queued",
+  "smoke": "PENDING",
+  "official_acceptance": "PENDING",
+  "qualification": "12 model-free controls passed; smoke pending is not readiness or native acceptance",
+  "initial_refusal": "Precondition initially found stale adapter pin; agent refreshed the prospective private closure before successful publisher retry."
+}

@@ -1,0 +1,25 @@
+{
+  "status": "PREPARED_IN_SEPARATE_SCRATCH",
+  "source_packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-successor-20261104",
+  "patch_directory": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-identity-patch-20261104",
+  "patch_file": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-identity-patch-20261104/identity.patch",
+  "reason": "Published/queued status was not established; queue inspection prohibited. Original packet, hashes and spec left untouched.",
+  "change": "Unconditionally assign ORCHESTRATOR_GIT_SHA = ORCH_COMMIT before producer/backend imports.",
+  "regression": "AST-extract actual pre-import identity assignment; seed foreign inherited SHA, execute only assignment, require pinned SHA. No job import or execution.",
+  "validation": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest test_safety test_integration",
+    "tests_passed": 31,
+    "runtime_s": 0.038
+  },
+  "first_progress": {
+    "first_progress_s": 300,
+    "decision": "Leave unchanged pending actual native smoke. No passing replacement bound inferred."
+  },
+  "file_sha256": {
+    "job.py": "1b1b998f7d4cfdd4fc4baecd3daa927afc630326d25fa73d566ca840954c67d7",
+    "test_integration.py": "a2c93d0044fdbca62e5e58d5200a24849e0745738a6f62ec231be7055359a031",
+    "identity.patch": "6039e43e08a9465f2c867b6e28245dc635234499390a3c2cce10b633fc9f3ab6"
+  },
+  "applied_to_original": false,
+  "publication_required_action": "Owning session confirms publication state before applying identity.patch and refreshing packet-pins.json job.py digest. Published/queued packet requires a new successor under its governing workflow."
+}

@@ -1,0 +1,59 @@
+{
+  "api_request": {
+    "path": "api-request.json",
+    "sha256": "1fa4a71b94ace19839a4b5d5b67f8ae11a1dbf545711cfe1bef4f78336f799c2"
+  },
+  "arm_order": [
+    "off",
+    "on"
+  ],
+  "arm_timeout_s": 900,
+  "max_occupancy_sample_gap_s": 2,
+  "pins": {
+    "argv": "/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 --port 18978 -np 4 -c 98304 -t 8 -tb 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap --cache-ram 0 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type draft-mtp --spec-draft-n-max 4 --reasoning off --device none --device-draft none --kv-unified --no-cache-idle-slots --slot-fork-min-tokens 1024 --metrics --slot-save-path /mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-code-requal-20261104/off.BH5qxC/slots",
+    "executor_sha256": "9fdb6c8fe67d4a09ddc20ad2b12a86e713299d4b58a4e68018a339c901d2fcc3",
+    "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "server_binary_sha256": "a62c3ab1835b8eb8ce33722f67d5e8eac6674576fcf2b0b15eb6ba44e4b0fa30",
+    "source_commit": "868275acb64ef3d490ecac6952518ae187fe74d3"
+  },
+  "provenance": {
+    "cohort_sha256": "5b35fce4416971ccbb3a07ee9393d9c182322717713ef8aaaac7d3158ad60755",
+    "interpretation": "Newly constructed tasks over real pinned source with a synthetic long root. Required-term scoring is a keyword diagnostic only. Not historical traffic or a KPF-26 gate.",
+    "kind": "prospective-real-code-three-scout-diagnostic",
+    "source_commit": "868275acb64ef3d490ecac6952518ae187fe74d3"
+  },
+  "runtime": {
+    "off": {
+      "grant_id": "rtg58-kpf26-code-off-diag-20261102",
+      "role": "frontdoor",
+      "sample_interval_s": 0.5,
+      "server_pid": 1001029,
+      "url": "http://127.0.0.1:18978",
+      "window_id": "rtg58-kpf26-code-off-diag-20261102-off"
+    },
+    "on": {
+      "grant_id": "rtg58-kpf26-code-off-diag-20261102",
+      "role": "frontdoor",
+      "sample_interval_s": 0.5,
+      "server_pid": 1001029,
+      "url": "http://127.0.0.1:18978",
+      "window_id": "rtg58-kpf26-code-off-diag-20261102-on"
+    }
+  },
+  "schema": "epyc.kpf26.paired.v1",
+  "tasks": [
+    {
+      "expected": {
+        "path": "expected.json",
+        "sha256": "e20cc96608880369370545796acc80c656daf056d81d3545a6d33a7501e0324b"
+      },
+      "id": "prospective-real-code-fanout",
+      "request": {
+        "path": "request.json",
+        "sha256": "70707329d308bf66813dcd08e12058ffdc6ce36875048cbbfd5a836a000b30ee"
+      },
+      "siblings": 3
+    }
+  ]
+}

@@ -36,6 +36,10 @@ REQUIRED_FIELDS = {
     "novelty", "relevance", "discovered_via", "verdict", "ingested_date",
 }
 READ_DEPTH_ENFORCED_FROM = "2026-10-07"
+# ID-RI-ANCHOR-GATE: dive-verified entries ingested on/after this date need a script-written
+# anchor_mark (found: true). Earlier entries are grandfathered.
+ANCHOR_MARK_ENFORCED_FROM = "2026-11-08"
+ANCHOR_VERIFIER_ID = "validate_intake.py/check-anchors/v1"
 SOURCE_TYPES = {"paper", "blog", "repo"}
 NOVELTY_VALUES = {"high", "medium", "low", "duplicate"}
 RELEVANCE_VALUES = {"high", "medium", "low", "none"}
@@ -241,6 +245,181 @@ def _absorbed_ids(entries: list[dict]) -> set[str]:
     return out
 
 
+HANDOFF_STATUSES: tuple[str, ...] = ("active", "completed", "archived", "blocked")
+
+
+class _HandoffReferences:
+    """Resolve current files and the committed 1a/1b folds, never guessed stems.
+
+    A fold's member tracks are lifted intact by later folds. Keep the first
+    track encountered while following file redirects, rather than replacing it
+    with the intermediate owner's track.
+
+    A fold is authored while its destination is active, but the destination can
+    be archived later — with its tracks intact. That fold is then TERMINAL
+    HISTORY, not a live owner: it must still exist under
+    ``handoffs/<status>/`` and must still carry the named track, so citations
+    resolve, but nothing may infer that the final owner is active from it.
+    Accepting only ``handoffs/active/`` made every reference through such a fold
+    unresolvable the moment the owner was archived (2026-11-05 mi210 archive:
+    5,877 validator errors from one entry in each route list).
+    """
+
+    def __init__(self, root: Path, directories: list[Path]):
+        self.root = root
+        self.directories = directories
+        self.redirects: dict[str, set[tuple[str, str | None]]] = {}
+        self.body_tracks: dict[str, set[str]] = {}
+        self.tracks: dict[Path, list[str]] = {}
+        self.mapping_error: str | None = None
+        try:
+            meq_sources = set()
+            for route in ("1a", "1b"):
+                path = root / "docs/design/backlog-refactor-2026-11" / f"fold-list-{route}.json"
+                if not path.exists():
+                    continue
+                data = json.loads(path.read_text(), object_pairs_hook=_unique_json_object)
+                if data.get("schema") != f"brf-fold-list-{route}.v1":
+                    raise ValueError(f"unsupported fold schema in {path.name}")
+                if route == "1a":
+                    meq_sources.update(data.get("excluded", {}).get(
+                        "model_evaluation_queue_BRF-T1-MEQ", []))
+                for fold in data["folds"]:
+                    destination = fold["destination"]
+                    dest_path = Path(destination)
+                    if (len(dest_path.parts) != 3
+                            or dest_path.parts[0] != "handoffs"
+                            or dest_path.parts[1] not in HANDOFF_STATUSES
+                            or dest_path.suffix != ".md"):
+                        raise ValueError(f"invalid fold destination {destination!r}")
+                    for source, target in fold["redirects"]["files"].items():
+                        target_file, track = self._split(target)
+                        if (Path(source).name != source or not source.endswith(".md")
+                                or target_file != dest_path.name):
+                            raise ValueError(f"invalid fold redirect {source!r} -> {target!r}")
+                        self.redirects.setdefault(source, set()).add((destination, track))
+                    for body in fold.get("tracks", []):
+                        if (body.get("kind") == "anchor body -> track"
+                                and body["from_file"] == dest_path.name):
+                            track = body["track"]
+                            if not isinstance(track, str) or not track.strip():
+                                raise ValueError("invalid anchor body track")
+                            self.body_tracks.setdefault(dest_path.name, set()).add(track)
+            # BRF-T1-MEQ ran separately from the 1a folds. Its anchor rename
+            # and member folds are recorded in the committed fold registry.
+            # Only consume the sources explicitly carved out of the 1a list.
+            registry = root / "handoffs/active/.folded.json"
+            if meq_sources and registry.exists():
+                files = json.loads(registry.read_text(), object_pairs_hook=_unique_json_object)["files"]
+                for source in meq_sources:
+                    if source not in files:
+                        continue
+                    target, track = files[source]["target"], files[source]["track"]
+                    if (Path(source).name != source or not source.endswith(".md")
+                            or not isinstance(target, str) or Path(target).name != target
+                            or not target.endswith(".md")
+                            or (track is not None and (not isinstance(track, str) or not track.strip()))):
+                        raise ValueError(f"invalid MEQ fold redirect for {source!r}")
+                    located = self._locate_handoff(target)
+                    if located is None:
+                        raise ValueError(f"dangling MEQ fold target {target!r}")
+                    self.redirects.setdefault(source, set()).add((located, track))
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
+            self.mapping_error = f"invalid committed fold mapping: {exc}"
+
+    def _locate_handoff(self, name: str) -> str | None:
+        """Find one handoff basename under any status directory.
+
+        A fold registry target may itself have been archived after the fold; it
+        is still the file the redirect names. More than one match is ambiguous
+        and refused rather than picked by directory order.
+        """
+        found = [
+            f"handoffs/{status}/{name}"
+            for status in HANDOFF_STATUSES
+            if (self.root / "handoffs" / status / name).is_file()
+        ]
+        if len(found) > 1:
+            raise ValueError(f"ambiguous handoff {name!r} across status directories")
+        return found[0] if found else None
+
+    @staticmethod
+    def _split(ref: str) -> tuple[str, str | None]:
+        if not isinstance(ref, str) or not ref:
+            raise ValueError("handoff reference must be non-empty text")
+        filename, sep, fragment = ref.partition("#")
+        if sep and (not fragment.startswith(("track:", "track-")) or not fragment[6:].strip()):
+            raise ValueError("handoff fragment must name '#track:<name>' or '#track-<name>'")
+        return filename, fragment[6:] if sep else None
+
+    def resolve(self, ref: str) -> tuple[Path, str | None]:
+        if self.mapping_error:
+            raise ValueError(self.mapping_error)
+        filename, track = self._split(ref)
+        path = Path(filename)
+        statuses = {"active", "completed", "archived", "blocked"}
+        if (path.is_absolute() or ".." in path.parts or path.suffix != ".md"
+                or not (len(path.parts) == 1
+                        or (len(path.parts) == 2 and path.parts[0] in statuses)
+                        or (len(path.parts) == 3 and path.parts[0] == "handoffs"
+                            and path.parts[1] in statuses))):
+            raise ValueError("not found (unsupported handoff path)")
+        visited = set()
+        mapped = False
+        while path.name in self.redirects:
+            if path.name in visited:
+                raise ValueError("cyclic committed fold mapping")
+            visited.add(path.name)
+            targets = self.redirects[path.name]
+            if len(targets) != 1:
+                raise ValueError("ambiguous committed fold mapping")
+            destination, inherited_track = next(iter(targets))
+            path = Path(destination)
+            track = track or inherited_track
+            mapped = True
+        if mapped and track is None and path.name in self.body_tracks:
+            tracks = self.body_tracks[path.name]
+            if len(tracks) != 1:
+                raise ValueError("ambiguous committed anchor body track")
+            track = next(iter(tracks))
+        if mapped or len(path.parts) == 3:
+            candidates = [self.root / path]
+        elif len(path.parts) == 2:
+            candidates = [self.root / "handoffs" / path]
+        else:
+            candidates = [directory / path for directory in self.directories]
+        found = {candidate.resolve() for candidate in candidates if candidate.is_file()}
+        if not found:
+            raise ValueError("not found" + (" (dangling committed fold target)" if mapped else ""))
+        if len(found) != 1:
+            raise ValueError("ambiguous handoff basename")
+        owner = found.pop()
+        if track is not None:
+            if owner not in self.tracks:
+                headings = []
+                fence = None
+                for line in owner.read_text().splitlines():
+                    marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+                    if marker:
+                        run = marker.group(1)
+                        if fence is None:
+                            fence = run
+                        elif (run[0] == fence[0] and len(run) >= len(fence)
+                              and not marker.group(2).strip()):
+                            fence = None
+                        continue
+                    if fence is None:
+                        heading = re.fullmatch(r"##\s+Track:\s*(.+?)\s*#*\s*", line)
+                        if heading:
+                            headings.append(heading.group(1))
+                self.tracks[owner] = headings
+            count = self.tracks[owner].count(track)
+            if count != 1:
+                reason = "missing" if count == 0 else "ambiguous"
+                raise ValueError(f"{reason} '## Track: {track}' in {owner.name}")
+        return owner, track
+
+
 def validate_index(entries: list[dict], valid_categories: set[str],
                    crossref_dirs: dict | None = None) -> list[str]:
     errors = []
@@ -248,6 +427,7 @@ def validate_index(entries: list[dict], valid_categories: set[str],
     seen_arxiv = set()
     prev_num = 0
     absorbed_ids = _absorbed_ids(entries)
+    handoff_refs = _HandoffReferences(ROOT, crossref_dirs.get("handoffs", [])) if crossref_dirs else None
 
     for i, entry in enumerate(entries):
         eid = entry.get("id", f"<missing at index {i}>")
@@ -439,6 +619,13 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                                   "DIGEST/WebFetch reads stay stage1-unverified")
                 if not entry.get("claim_anchors"):
                     errors.append(f"{eid}: {entry.get('verification')} requires non-empty claim_anchors")
+                elif str(entry.get("ingested_date") or "") >= ANCHOR_MARK_ENFORCED_FROM:
+                    for ai, anc in enumerate(entry["claim_anchors"]):
+                        mark = anc.get("anchor_mark") if isinstance(anc, dict) else None
+                        if not isinstance(mark, dict) or mark.get("found") is not True:
+                            errors.append(
+                                f"{eid}: claim_anchors[{ai}] has no passing anchor_mark; run "
+                                "validate_intake.py --check-anchors --write-marks (only the script writes it)")
 
         # depends_on: the evidential edge (schema § depends_on). Shape-checked here because a
         # malformed dependency is worse than an absent one -- it looks like propagation coverage
@@ -469,7 +656,7 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                     if ci is not None and not isinstance(ci, int):
                         errors.append(f"{eid}: depends_on[{j}].claim_index must be an integer")
 
-        # Cross-reference file existence (warn, don't error)
+        # Cross-reference files, including historical folds and their lifted tracks.
         xrefs = entry.get("cross_references", {})
         if isinstance(xrefs, dict) and crossref_dirs:
             for ref_type, ref_list in xrefs.items():
@@ -481,11 +668,10 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                         if not path.exists():
                             errors.append(f"{eid}: cross-ref chapter '{ref_file}' not found")
                     elif ref_type == "handoffs" and "handoffs" in crossref_dirs:
-                        found = any(
-                            (d / ref_file).exists() for d in crossref_dirs["handoffs"]
-                        )
-                        if not found:
-                            errors.append(f"{eid}: cross-ref handoff '{ref_file}' not found")
+                        try:
+                            handoff_refs.resolve(ref_file)
+                        except ValueError as exc:
+                            errors.append(f"{eid}: cross-ref handoff '{ref_file}' {exc}")
                     elif ref_type == "experiments" and "experiments" in crossref_dirs:
                         path = crossref_dirs["experiments"] / ref_file
                         if not path.exists():
@@ -495,6 +681,198 @@ def validate_index(entries: list[dict], valid_categories: set[str],
 
 
 _ARXIV_URL_RE = re.compile(r"arxiv\.org/(?:abs|pdf)/([0-9v.]+)", re.I)
+
+
+# ---------------------------------------------------------------------------
+# ID-RI-ANCHOR-GATE: quote re-find as a gate the author cannot satisfy by assertion.
+# ---------------------------------------------------------------------------
+def _anchor_quote_sha(quote: str) -> str:
+    from canonical import normalized_quote
+    return hashlib.sha256(normalized_quote(quote).encode("utf-8")).hexdigest()
+
+
+def check_anchors(entries: list[dict]) -> tuple[list[dict], list[str]]:
+    """Verify every claim_anchor. Returns (findings, errors); each finding is
+    {entry, index, verdict, detail, anchor_mark}. Verdicts: verified, quote_sha_mismatch,
+    quote_not_found, no_retained_source, cross_pasted. Passing proves containment, not entailment.
+    """
+    from machine_anchor import verify_source_anchor
+    findings: list[dict] = []
+    owners: dict[str, list[tuple[str, int]]] = {}
+    for e in entries:
+        for i, a in enumerate(e.get("claim_anchors") or []):
+            if isinstance(a, dict) and isinstance(a.get("quote"), str) and a.get("quote_sha256"):
+                owners.setdefault(str(a["quote_sha256"]), []).append((str(e.get("id")), i))
+    for e in entries:
+        eid = str(e.get("id"))
+        for i, a in enumerate(e.get("claim_anchors") or []):
+            if not isinstance(a, dict):
+                continue
+            quote = a.get("quote")
+            f = {"entry": eid, "index": i, "verdict": None, "detail": "", "anchor_mark": None}
+            findings.append(f)
+            if not isinstance(quote, str) or not quote:
+                f.update(verdict="no_quote", detail="anchor carries no quote text (hash-only/legacy); nothing to re-find")
+                continue
+            if not a.get("quote_sha256"):
+                f.update(verdict="no_quote_sha", detail="anchor has a quote but no quote_sha256 (legacy)")
+                continue
+            if _anchor_quote_sha(quote) != a.get("quote_sha256"):
+                if hashlib.sha256(quote.encode("utf-8")).hexdigest() == a.get("quote_sha256"):
+                    f.update(verdict="legacy_raw_sha",
+                             detail="hash of the raw (un-normalised) quote; accepted for legacy entries")
+                else:
+                    f.update(verdict="quote_sha_mismatch", detail="recomputed quote_sha256 differs")
+                    continue
+                if not isinstance(a.get("source_artifact"), dict):
+                    continue
+            ids = {o[0] for o in owners.get(str(a["quote_sha256"]), [])}
+            if len(ids) > 1:
+                f.update(verdict="cross_pasted",
+                         detail="same quote_sha256 under " + ", ".join(sorted(ids)))
+                continue
+            if not isinstance(a.get("source_artifact"), dict):
+                f.update(verdict="no_retained_source",
+                         detail="no source_artifact; containment cannot be re-found (legacy/unretained)")
+                continue
+            ok, why = verify_source_anchor(a, entry_url=e.get("url") if isinstance(e.get("url"), str) else None)
+            art = a["source_artifact"]
+            # Only a quote actually re-read and not found may write found:false. Any other failure means
+            # the original could not be checked here (root holds other sources, extractor changed), and
+            # must not overwrite an existing mark.
+            if not ok and why not in ANCHOR_CHECKED_NOT_FOUND:
+                f.update(verdict="source_unavailable", detail=why)
+                continue
+            f["anchor_mark"] = {"verifier": ANCHOR_VERIFIER_ID,
+                                "source_raw_sha256": art.get("raw_sha256"), "found": bool(ok)}
+            f.update(verdict="verified" if ok else "quote_not_found", detail=why)
+    errs = []
+    dates = {str(e.get("id")): str(e.get("ingested_date") or "") for e in entries}
+    for f in findings:
+        if f["verdict"] in ("quote_sha_mismatch", "quote_not_found", "cross_pasted"):
+            f["grandfathered"] = dates.get(f["entry"], "") < ANCHOR_MARK_ENFORCED_FROM
+            if not f["grandfathered"]:
+                errs.append(f"{f['entry']}: claim_anchors[{f['index']}] {f['verdict']}: {f['detail']}")
+    return findings, errs
+
+
+ANCHOR_CHECKED_NOT_FOUND = ("unknown: quoted span is absent from the extracted original",
+                            "unknown: normalized quote digest does not match")
+
+
+def write_anchor_marks(index_path: Path, findings: list[dict]) -> int:
+    """Insert `anchor_mark` after the anchor's quote_sha256 line (textual, so the 90k-line index is
+    not re-serialised). Only this function emits marks; the author never does."""
+    text = index_path.read_text(encoding="utf-8")
+    lines = text.split("\n")
+    n = 0
+    for f in findings:
+        mark = f.get("anchor_mark")
+        if not mark:
+            continue
+        sha = _find_sha_for(f)
+        hits = [k for k, ln in enumerate(lines)
+                if re.match(r"^\s*(- )?quote_sha256:\s*['\"]?" + re.escape(sha) + r"['\"]?\s*$", ln)]
+        if len(hits) != 1:
+            continue
+        ln = lines[hits[0]]
+        indent = len(ln) - len(ln.lstrip(" "))
+        if ln.lstrip(" ").startswith("- "):
+            indent += 2
+        if hits[0] + 1 < len(lines) and lines[hits[0] + 1].lstrip().startswith("anchor_mark:"):
+            del lines[hits[0] + 1]
+        raw = mark["source_raw_sha256"]
+        lines.insert(hits[0] + 1, " " * indent + "anchor_mark: {verifier: %s, source_raw_sha256: %s, found: %s}" % (
+            mark["verifier"], raw if raw else "null", "true" if mark["found"] else "false"))
+        n += 1
+    if n:
+        index_path.write_text("\n".join(lines), encoding="utf-8")
+    return n
+
+
+def _find_sha_for(f: dict) -> str:
+    return f.get("quote_sha256", "")
+
+
+def check_anchor_marks(entries: list[dict], findings: list[dict]) -> list[str]:
+    """A recorded anchor_mark must equal what the script recomputes (a hand-written mark is a forgery)."""
+    by = {(f["entry"], f["index"]): f for f in findings}
+    errs = []
+    for e in entries:
+        for i, a in enumerate(e.get("claim_anchors") or []):
+            if isinstance(a, dict) and "anchor_mark" in a:
+                f = by.get((str(e.get("id")), i))
+                got = f["anchor_mark"] if f else None
+                if got is None or a["anchor_mark"] != got:
+                    errs.append(f"{e.get('id')}: claim_anchors[{i}] anchor_mark does not match script recomputation")
+    return errs
+
+
+# ---------------------------------------------------------------------------
+# ID-RI-LANE-HEAD: pin the revision in-house citations were read at; refuse stale ones.
+# ---------------------------------------------------------------------------
+_LANE_LOC = re.compile(
+    r"^(?P<path>[\w./-]+?):L?\d+(?:-L?\d+)?\b.*@\s*(?P<sha>[0-9a-f]{7,40})\s*$")
+
+
+def _git(root: Path, *args: str) -> tuple[int, str]:
+    import subprocess
+    r = subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True)
+    return r.returncode, r.stdout
+
+
+def _squash(t: str) -> str:
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def _quote_in(blob: str, quote: str) -> bool:
+    hay = _squash(blob)
+    frags = [_squash(x) for x in re.split(r"\s*(?:\.\.\.|…|\s\|\s)\s*", quote) if _squash(x)]
+    pos = 0
+    for fr in frags:
+        k = hay.find(fr, pos)
+        if k < 0:
+            return False
+        pos = k + len(fr)
+    return bool(frags)
+
+
+def check_lane_anchors(entries: list[dict], root: Path | None = None,
+                       upstream: str = "origin/main") -> list[dict]:
+    """Findings for in-house `path:Lx-Ly @ sha7` anchors. A locator is in-house when its sha resolves
+    as a commit in this repo. Verdicts: ok, stale_epoch (path changed/moved/removed since sha7),
+    quote_not_at_sha, path_absent_at_sha. Anchors whose sha is not in this repo are skipped
+    (external-repo locators)."""
+    root = root or ROOT
+    out = []
+    for e in entries:
+        for i, a in enumerate(e.get("claim_anchors") or []):
+            if not isinstance(a, dict):
+                continue
+            m = _LANE_LOC.match(str(a.get("locator", "")).strip().split(" (")[0].strip()) or \
+                _LANE_LOC.match(str(a.get("locator", "")).strip())
+            if not m:
+                continue
+            sha, path = m["sha"], m["path"]
+            rc, _ = _git(root, "cat-file", "-e", f"{sha}^{{commit}}")
+            if rc != 0:
+                continue
+            f = {"entry": str(e.get("id")), "index": i, "path": path, "sha": sha, "verdict": "ok", "detail": ""}
+            out.append(f)
+            rc, blob = _git(root, "show", f"{sha}:{path}")
+            if rc != 0:
+                f.update(verdict="path_absent_at_sha", detail=f"{path} not present at {sha}")
+                continue
+            if not _quote_in(blob, str(a.get("quote", ""))):
+                f.update(verdict="quote_not_at_sha", detail="quote not found in git show output")
+                continue
+            rc, names = _git(root, "diff", "--name-only", f"{sha}..{upstream}", "--", path)
+            if rc != 0:
+                f.update(verdict="stale_epoch", detail=f"cannot diff {sha}..{upstream}")
+            elif names.strip():
+                f.update(verdict="stale_epoch",
+                         detail=f"{path} changed since {sha} (re-read before Stage-3 citation)")
+    return out
 
 
 def _locator_key(entry: dict) -> str:
@@ -628,8 +1006,8 @@ def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[st
 
     Only Category-to-File Mapping rows are inspected.  The File Locations section
     is documentation about directories, not a source of references.  The map has
-    historically used both bare handoff names and ``completed/name.md`` forms, so
-    both are resolved against the configured handoff roots.
+    historically used bare names and ``completed/name.md`` forms. Both use the
+    same strict file/fold/track resolver as intake-index cross-references.
     """
     if not map_path.exists():
         return [f"cross-reference-map: not found at {map_path}"]
@@ -638,7 +1016,8 @@ def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[st
     row_pattern = re.compile(
         r"^\s*-\s+\*\*(Chapters|Handoffs|Experiments)\*\*:\s*(.*)$"
     )
-    reference_pattern = re.compile(r"`([^`]+\.md)`")
+    reference_pattern = re.compile(r"`([^`]+\.md(?:#[^`]+)?)`")
+    handoff_refs = _HandoffReferences(ROOT, crossref_dirs["handoffs"])
 
     in_category_mapping = False
     for line in map_path.read_text().splitlines():
@@ -659,14 +1038,11 @@ def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[st
             elif ref_type == "Experiments":
                 found = (crossref_dirs["experiments"] / ref).is_file()
             else:
-                ref_path = Path(ref)
-                if ref_path.parts and ref_path.parts[0] in {
-                    "active", "completed", "archived"
-                }:
-                    found = (ROOT / "handoffs" / ref_path).is_file()
-                else:
-                    found = any((directory / ref_path).is_file()
-                                for directory in crossref_dirs["handoffs"])
+                try:
+                    handoff_refs.resolve(ref)
+                except ValueError as exc:
+                    errors.append(f"cross-reference-map: handoffs '{ref}' {exc}")
+                continue
             if not found:
                 errors.append(
                     f"cross-reference-map: {ref_type.lower()} '{ref}' not found"
@@ -1282,7 +1658,40 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan-file", type=Path)
     parser.add_argument("--session-file", type=Path)
+    parser.add_argument("--check-anchors", action="store_true",
+                        help="re-find every claim_anchors quote, flag cross-pasted quotes (ID-RI-ANCHOR-GATE)")
+    parser.add_argument("--write-marks", action="store_true",
+                        help="with --check-anchors: script-write anchor_mark into the index")
+    parser.add_argument("--check-lane-anchors", action="store_true",
+                        help="validate in-house path:Lx-Ly @ sha7 anchors; stale_epoch on changed path (ID-RI-LANE-HEAD)")
     args = parser.parse_args()
+    if args.check_anchors or args.check_lane_anchors:
+        raw = load_yaml(INDEX_PATH)
+        ents = raw if isinstance(raw, list) else raw.get("entries", [])
+        rc = 0
+        if args.check_anchors:
+            findings, errs = check_anchors(ents)
+            errs += check_anchor_marks(ents, findings)
+            for f in findings:
+                f["quote_sha256"] = next((a.get("quote_sha256") for e in ents if str(e.get("id")) == f["entry"]
+                                          for j, a in enumerate(e.get("claim_anchors") or []) if j == f["index"]), "")
+            if args.write_marks:
+                print(f"anchor_marks written: {write_anchor_marks(INDEX_PATH, findings)}")
+            from collections import Counter
+            print("anchor verdicts:", dict(Counter(f["verdict"] for f in findings)))
+            print("legacy-grandfathered flags (warning only):",
+                  sum(1 for f in findings if f.get("grandfathered")))
+            for e in errs:
+                print(f"  ERROR: {e}")
+            rc |= 1 if errs else 0
+        if args.check_lane_anchors:
+            lf = check_lane_anchors(ents)
+            bad = [f for f in lf if f["verdict"] != "ok"]
+            print(f"lane anchors checked: {len(lf)}, flagged: {len(bad)}")
+            for f in bad:
+                print(f"  {f['verdict']}: {f['entry']}[{f['index']}] {f['path']} @ {f['sha']}: {f['detail']}")
+            rc |= 1 if bad else 0
+        return rc
     if (args.plan_file is None) != (args.session_file is None):
         parser.error("--plan-file and --session-file must be supplied together")
     errors = []

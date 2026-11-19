@@ -1,0 +1,10 @@
+{
+  "row_id": "ni-gpu-pool-elementwise-20261117-v1",
+  "publisher_exit_code": 0,
+  "status": "GPU busy; smoke queued",
+  "smoke": "PENDING",
+  "controls": "PENDING: execute under publisher smoke grant",
+  "official_acceptance": "PENDING",
+  "initial_refusal": "Default publisher REPO lacked new lane task; ROWFLOW_REPO explicitly set to owning lane and retry succeeded.",
+  "changed_packet_republication": "Synthetic grant fixture gained timestamp-rounding margin; test digest/pins refreshed before one changed-packet retry, rc0 smoke queued."
+}

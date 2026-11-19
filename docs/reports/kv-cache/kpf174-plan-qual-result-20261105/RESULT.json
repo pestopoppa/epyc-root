@@ -1,0 +1,115 @@
+{
+  "classification": "MODEL_FREE_QUALIFICATION",
+  "rc": 0,
+  "failure": null,
+  "own_pid_dead": true,
+  "elapsed_s": 0.12824643193744123,
+  "workload_limit_s": 120,
+  "cleanup_budget_s": 7,
+  "run_dir": "/mnt/raid0/llm/tmp/kvfork/kpf174-plan-qual-20261105/out/full-20261105T005745Z-e24c16fed8bf40caaaa24dc70fb22841",
+  "inference": false,
+  "pre_seal": {
+    "manifest_sha256": "a5f299054128f07414de82061beb356ab1e977c84e5ade88cb76789dc614fefc",
+    "files": {
+      "README.md": "c8c17413e79297dc210de4e8c137d932742261ea1972863ababbb4629ae40b9e",
+      "adapter.py": "419fcc229f0766a99f55ad3af927cfbffeaed742a0729ea785396f9d9ebdb9c0",
+      "complete.py": "acd48294efc5863f8eced93fb00533a4e3a32449c4960cbd7b84c6d5d161ddfa",
+      "fixture.json": "698326dbef3a0ff4b71500e58f7e6deede4914b0b944953fa90d9678da72bc1f",
+      "launch.sh": "f70c890d22ea3ee0bd1d2b030b07d81ede153d18cfa6d63bd90432e931e4c404",
+      "native/kpf13/kpf13_restore_ab.py": "2683c46d8cb46ebd0d35d66c40c6cf970e6a181a6b8704f41ab1af6f3debba98",
+      "native/kpf174/kpf174_swa_drafter.py": "d008fc6bd0e2541b92f1cc7ef1acb72931332d59743c3d11615a3cf8c3d85725",
+      "plan.json": "6494735f60936e4d69f8269f7a4ce999243e01bbe256d9ebd21e676b01b61db2",
+      "preflight.py": "4ab26a15efeea7ec1ee7d9e35db04156e59495c2cbf7e6a0b1d8f7c573925df5",
+      "smoke.py": "72a4986bc418e7a41f6e5f81d83f4b4d58b7f70e6f62140dda71d612fc1ac3ed",
+      "smoke.sh": "a127210d43f41757f8fd3b751e22af23666102de3579d2e64678f38946928f3e",
+      "spec.json": "d1e6e2a72e2f7b4ba377f108d55e17152b702d78b9f82bdb2f855ac56c217615"
+    }
+  },
+  "post_seal": {
+    "manifest_sha256": "a5f299054128f07414de82061beb356ab1e977c84e5ade88cb76789dc614fefc",
+    "files": {
+      "README.md": "c8c17413e79297dc210de4e8c137d932742261ea1972863ababbb4629ae40b9e",
+      "adapter.py": "419fcc229f0766a99f55ad3af927cfbffeaed742a0729ea785396f9d9ebdb9c0",
+      "complete.py": "acd48294efc5863f8eced93fb00533a4e3a32449c4960cbd7b84c6d5d161ddfa",
+      "fixture.json": "698326dbef3a0ff4b71500e58f7e6deede4914b0b944953fa90d9678da72bc1f",
+      "launch.sh": "f70c890d22ea3ee0bd1d2b030b07d81ede153d18cfa6d63bd90432e931e4c404",
+      "native/kpf13/kpf13_restore_ab.py": "2683c46d8cb46ebd0d35d66c40c6cf970e6a181a6b8704f41ab1af6f3debba98",
+      "native/kpf174/kpf174_swa_drafter.py": "d008fc6bd0e2541b92f1cc7ef1acb72931332d59743c3d11615a3cf8c3d85725",
+      "plan.json": "6494735f60936e4d69f8269f7a4ce999243e01bbe256d9ebd21e676b01b61db2",
+      "preflight.py": "4ab26a15efeea7ec1ee7d9e35db04156e59495c2cbf7e6a0b1d8f7c573925df5",
+      "smoke.py": "72a4986bc418e7a41f6e5f81d83f4b4d58b7f70e6f62140dda71d612fc1ac3ed",
+      "smoke.sh": "a127210d43f41757f8fd3b751e22af23666102de3579d2e64678f38946928f3e",
+      "spec.json": "d1e6e2a72e2f7b4ba377f108d55e17152b702d78b9f82bdb2f855ac56c217615"
+    }
+  },
+  "status": "PASS",
+  "native_equality": true,
+  "cases": [
+    {
+      "case": "missing_launch",
+      "refused": true,
+      "native_entries": [],
+      "reason": "launch set differs from sealed plan"
+    },
+    {
+      "case": "extra_launch",
+      "refused": true,
+      "native_entries": [],
+      "reason": "launch set differs from sealed plan"
+    },
+    {
+      "case": "rename_id",
+      "refused": true,
+      "native_entries": [],
+      "reason": "cell set differs from sealed plan"
+    },
+    {
+      "case": "geometry_group",
+      "refused": true,
+      "native_entries": [],
+      "reason": "cell identity/geometry differs from sealed plan"
+    },
+    {
+      "case": "geometry_junction",
+      "refused": true,
+      "native_entries": [],
+      "reason": "cell identity/geometry differs from sealed plan"
+    },
+    {
+      "case": "geometry_suffix",
+      "refused": true,
+      "native_entries": [],
+      "reason": "cell identity/geometry differs from sealed plan"
+    },
+    {
+      "case": "incomplete_later_launch",
+      "refused": true,
+      "native_entries": [],
+      "reason": "synthetic-g901-c17: expected exactly two arms"
+    },
+    {
+      "case": "unknown_source",
+      "refused": true,
+      "native_entries": [],
+      "reason": "synthetic-g901-c17: fork source must be slot 0"
+    },
+    {
+      "case": "wrong_pruning",
+      "refused": true,
+      "native_entries": [],
+      "reason": "synthetic-g901-c17: missing or inconsistent pruning scope"
+    },
+    {
+      "case": "missing_control",
+      "refused": true,
+      "native_entries": [],
+      "reason": "synthetic-g901-c17: expected at least three controls"
+    }
+  ],
+  "launch_verdicts": {
+    "honest": "PASS",
+    "flag_on": "PASS",
+    "mut_no_transfer": "DETECTED",
+    "mut_partial_noop": "DETECTED"
+  }
+}

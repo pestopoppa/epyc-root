@@ -1,0 +1,85 @@
+{
+  "box": "DCP-10-GITNEXUS-PREP",
+  "evidence": {
+    "adjacent_and_focused_controls": "18 passed",
+    "app_revision": "072d1583b3ead7456731946cd4e4595da6a9877f",
+    "fixture_task_arm_rows": 9,
+    "focused_controls": 10,
+    "git_diff_check": "passed",
+    "gitnexus_impact": "Unavailable. gitnexus status and upstream impact found no index for this lane. Static scope is two new fixture-only Python files and a README section.",
+    "gitnexus_source": {
+      "package": "gitnexus",
+      "source_sha256": {
+        "dist/core/lbug/pool-adapter.js": "d37f8605286d8eb63c40e6fe49675c750395bac32507d8ffc9c27cdcda5a4b24",
+        "dist/core/lbug/schema.js": "2d91d17c6ed60fbaf6841a3c0dbbe0d713fe7c7cff2661a224c80a55b4f49dd9",
+        "dist/core/run-analyze.js": "caf4c8b8b33578892ee2fbb458d1d04f3deb7da9ea49b64a882f3ac705226c2c",
+        "dist/mcp/local/local-backend.js": "756d29b6b81ef35495385a5d394d0f101def333f51a976d05a4d2472a2a9bc4a",
+        "dist/storage/repo-manager.js": "f57bbf8c027ac1eab62c065e1c7ff4dd52e1c50d89f6e0209ccd006ed87a40a2",
+        "package.json": "5c246850e33ab06f149d92c880557e8fad590c3c3679dab2fe50a272529a4e7c"
+      },
+      "version": "1.6.1"
+    },
+    "graph_query_sha256": "5a6d59b75fa280651f74143e075b285caf5c1cbaec086a7fe492317b7d26b6df",
+    "lexical_predictions_sha256": "64088e7ac17ea1f8228f69aa68465b48c171037311f1b4a14ec535b93f1d077a",
+    "pilot_request_sha256": "5a42163d7262dcbe1fa6e7ff6daf870c74070b58b9d7fc4da684981f292a37db",
+    "producer_sha256": {
+      "colgrep_compare.py": "b8f9be363702f5b51ad4c06211cf22da1d06affbd36cf0aa3ce96d45eff11d78",
+      "gitnexus_compare.py": "a1fd3de04e26f7d7f69d539bdcb4b538b7686b3b09e3a085ea2f61ade0c1d25b",
+      "pilot.py": "cf0ca0f7dec5533ed465c1cd30f6941070b5212f0335d4af0a49d023f41f0130"
+    },
+    "ruff": "passed",
+    "tasks": [
+      {
+        "graph_status": "ok",
+        "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3"
+      },
+      {
+        "graph_status": "empty",
+        "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4"
+      },
+      {
+        "graph_status": "error",
+        "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "scripts/experiments/dcp10-discovery/gitnexus_compare.py",
+      "sha256": "a1fd3de04e26f7d7f69d539bdcb4b538b7686b3b09e3a085ea2f61ade0c1d25b"
+    },
+    {
+      "path": "scripts/experiments/dcp10-discovery/test_gitnexus_compare.py",
+      "sha256": "f4676ad07aa8c4e09718e4bb1139927fe95585950e482749c231e2036c2066ef"
+    },
+    {
+      "path": "scripts/experiments/dcp10-discovery/README.md",
+      "sha256": "c683de1a8ba569bcfa39dc15ff6f3dad2215083597651564d4ec56dc3ec9b843"
+    }
+  ],
+  "fixture_artifacts": [
+    {
+      "path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/gitnexus-prep/fixture.UVVlkV/capture.json",
+      "sha256": "d09f90cde7fa7e2e7c3a6740fe8b5442fb245c87605f2649482736cb3121c62b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/gitnexus-prep/fixture.UVVlkV/result.json",
+      "sha256": "4e8ca63c465c57db871f094aa0f75eedad952e670664072a439b271b6fad567a"
+    }
+  ],
+  "limits": [
+    "Native graph capture requires a separately validated, prospective snapshot/build/source/query binding to actual sealed ColGREP outputs.",
+    "No GitNexus index opened or built, no graph query or model inference executed, and no official DCP-10 arm scored.",
+    "Append preserves original rank, so a full eight-file seed set has zero spare capacity. Rerank uses qualifying seed-to-seed cross-file confidence.",
+    "Graph neighbors contribute file-only discovery evidence. The fixture's packed scores replay pinned candidate costs. Actual graph-arm render provenance belongs in validated native capture.",
+    "Fixture checks provide policy conformance only. Existing writable-ancestor and trusted-packer limitations continue to govern native result custody."
+  ],
+  "main_review": {
+    "fixture_hashes_and_producer_map": "independently reconciled",
+    "focused_controls": "10 passed independently after producer binding fix",
+    "native_execution": "disabled",
+    "ruff": "passed independently after producer binding fix",
+    "source_review": "Read-only raw Cypher, stored confidence schema, impact confidence fallback and zero-based parser rows reviewed against installed bytes."
+  },
+  "status": "completed_source_only"
+}

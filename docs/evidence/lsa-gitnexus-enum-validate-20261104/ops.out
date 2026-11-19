@@ -1,0 +1,6 @@
+MESSAGE {"type":"ready"}
+MESSAGE {"type":"starting-file","path":"/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/llama-native-c5/ggml/src/ggml-cpu/ops.cpp"}
+MESSAGE {"type":"progress","filesProcessed":1}
+MESSAGE {"type":"sub-batch-done"}
+MESSAGE {"type":"result","fileCount":1,"nodes":3148,"relationships":3148,"symbols":3148,"calls":3936,"parsedFiles":1}
+EXIT 1

@@ -1,0 +1,51 @@
+{
+  "schema": "kvu19a2.gpu-repeat-assets.v1",
+  "capture_build": {
+    "row_id": "handoff-kvu-kvu19a2-capture-build-20261102",
+    "verdict": "inconclusive",
+    "reason": "source-bound harness compiled in qualification; publisher rejected qualification as satisfying declared full-build rule",
+    "native_result_sha256": "c7214d22e185e0be68c1411c97d4426d28ee6837437591fcc5db7c5e1292f82f",
+    "harness_source_sha256": "6dd03a07406cfe26dfd4ff52de4a4067fd7229d77ee5191bbd8e2e34956fa823",
+    "harness_binary_sha256": "6bb3b80930695241498cd7e1513ec903886dcb3a8a1301d5df13214d0ee64c8a",
+    "input_catalog_sha256": "3d4fb5dd755c70ad6805731188d64cc8356600e774954f8e4de850ac3d61cfc9"
+  },
+  "preserved_root": "/mnt/raid0/llm/tmp/kvu/kvu19a2-gpu-repeat-20261104/artifacts",
+  "harness": "/mnt/raid0/llm/tmp/kvu/kvu19a2-gpu-repeat-20261104/artifacts/fa_harness",
+  "harness_sha256": "6bb3b80930695241498cd7e1513ec903886dcb3a8a1301d5df13214d0ee64c8a",
+  "source_pair": {
+    "row_id": "handoff-kvu-kvu19a2-build-20261102",
+    "status": "built",
+    "source_commit": "a0d0ae238e714aaab04e973ef4b5a4b7c9917744",
+    "source_tree": "507ee1a6b1c5f09d56a337232f99eb82c1aeea55",
+    "source_metadata_sha256": "e12644bb0e52317135204ad8df43cdcbcae9636197a302f4776d5166231b39e5",
+    "tile_sha256": {
+      "base": "878a3640f685e68c6c3d3102c331c43054bfb0bce81f68c3224ad271b8d9d844",
+      "candidate": "3f79373e68603691630c7dc38703411456cdf5fa12348d07812323568cdb1e82"
+    },
+    "branch_transition_patch_sha256": "4147d2b65bbb416fdee1bf004d5447238933524bf3c087a69dcf6bbeca73b235"
+  },
+  "case_set_sha256": "1fdab350555f3e3b316b40853578e779185f628432cd5a893562542499a0a354",
+  "arms": {
+    "base": {
+      "directory": "/mnt/raid0/llm/tmp/kvu/kvu19a2-gpu-repeat-20261104/artifacts/base/bin",
+      "libraries": {
+        "libggml.so.0.16.0": "007c78c0fb65f8a6c8f344128e05d811d42ce0fd4e2409ddadcb706337c3a092",
+        "libggml-base.so.0.16.0": "0ed8d5830355515469a8da5c5a16c31be7082275e30dc5041c728a602dbf6d77",
+        "libggml-cpu.so.0.16.0": "be1ffb885941931ed57b08e95eaf1dc0f2eb3af8714abba21a663df500222111",
+        "libggml-hip.so.0.16.0": "1970ea22b7045312b904604df4d50d06ace6f1c8fd8d493925807905462c07c1"
+      },
+      "test_backend_ops_sha256": "d08aff217ad2ba33a8a4d815ecc3f6f3ef3161f0bde8fd2a9b190a2d4ea2a4ac"
+    },
+    "candidate": {
+      "directory": "/mnt/raid0/llm/tmp/kvu/kvu19a2-gpu-repeat-20261104/artifacts/candidate/bin",
+      "libraries": {
+        "libggml.so.0.16.0": "f53dadeb8d338b756422a4e34507e0b7b2edd3f2cbee16659c3255106a020cf6",
+        "libggml-base.so.0.16.0": "41f560dafa707240ef3629456d65a0bae17e4b4bd64fc0cf281d89a21d8cb174",
+        "libggml-cpu.so.0.16.0": "462593efcd4e0299fdf0dce3ce797ab2251c7f5280c409ef0dc56697a49fdfad",
+        "libggml-hip.so.0.16.0": "ba4c98dacbb3c1b90f360131cd1e50450f022b95fc9c02e833e857127a5a6e8c"
+      },
+      "test_backend_ops_sha256": "1f8f19d278f10bacad7c47f89151c6634fe86b3a4291ee8a40a96f7e0e2a6710"
+    }
+  },
+  "same_uid_mutation_caveat": true
+}

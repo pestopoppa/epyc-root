@@ -1,6 +1,6 @@
 # Status note — `session-bus-task-flow.html` was design-ahead-of-runtime
 
-**Written**: 2026-08-16 · **Task**: P1-5, [`handoffs/active/loop-owned-fleet-implementation.md`](../../handoffs/active/loop-owned-fleet-implementation.md)
+**Written**: 2026-08-16 · **Task**: P1-5, [`handoffs/active/coordination-and-churn-pipeline.md`](../../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
 · **Plan of record**: `docs/design/loop-owned-fleet.html`
 
 ## What this note is about
@@ -61,7 +61,7 @@ finishing it:
 - Plan of record: `docs/design/loop-owned-fleet.html` — **untracked in git as of 2026-08-16**
   (`git ls-files --error-unmatch` fails on it). It exists only in this working tree until it is
   committed. Commit it before citing it as the authority from another clone or worktree.
-- Implementation tasks: [`handoffs/active/loop-owned-fleet-implementation.md`](../../handoffs/active/loop-owned-fleet-implementation.md)
+- Implementation tasks: [`handoffs/active/coordination-and-churn-pipeline.md`](../../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation)
   — Phase 2 (`worker_runner` MVP: claim → typed brief → report) is the replacement for the amber
   dispatch/compute path, and the wrap-cadence ruling in P1-3(a) plus the per-task wrap rule govern
   the wrap path.

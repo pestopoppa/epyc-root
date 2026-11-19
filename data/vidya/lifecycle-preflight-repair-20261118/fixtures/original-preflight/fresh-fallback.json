@@ -1,0 +1,220 @@
+{
+  "cleanup_proved": true,
+  "fresh_attempted": false,
+  "fresh_complete": false,
+  "lifecycle_mode": "fresh_server",
+  "plan": {
+    "cohorts": [
+      {
+        "nominal_context": 2048,
+        "reps_per_arm": 10,
+        "request_body": {
+          "cache_prompt": false,
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          },
+          "max_tokens": 128,
+          "messages": [
+            {
+              "content": "You are serving a throughput benchmark. Preserve the instruction at the end.\n\nContext block (2048 nominal tokens):\nbenchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark benchmark\n\nNow write exactly 128 lowercase words. Use the word benchmark repeated, separated by spaces. Do not add bullets, numbering, or commentary.",
+              "role": "user"
+            }
+          ],
+          "model": "k35-local",
+          "seed": 35,
+          "stream": false,
+          "temperature": 0
+        },
+        "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+        "requests": [
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 0,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 0
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 0,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 1
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 1,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 2
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 1,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 3
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 2,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 4
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 2,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 5
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 3,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 6
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 3,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 7
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 4,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 8
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 4,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 9
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 5,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 10
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 5,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 11
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 6,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 12
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 6,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 13
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 7,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 14
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 7,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 15
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 8,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 16
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 8,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 17
+          },
+          {
+            "arm": "candidate",
+            "nominal_context": 2048,
+            "pair_index": 9,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 18
+          },
+          {
+            "arm": "production",
+            "nominal_context": 2048,
+            "pair_index": 9,
+            "request_sha256": "00bd1f6caf3d5885a942f1ccf38d5b7275c99617bd1ac6cdb643e63236c5d03c",
+            "scenario": "frontdoor_cpu_no_spec",
+            "schedule_position": 19
+          }
+        ],
+        "scenario": "frontdoor_cpu_no_spec",
+        "warmups": [
+          {
+            "arm": "production",
+            "excluded": true,
+            "request_overrides": {
+              "max_tokens": 64
+            }
+          },
+          {
+            "arm": "candidate",
+            "excluded": true,
+            "request_overrides": {
+              "max_tokens": 64
+            }
+          }
+        ]
+      }
+    ],
+    "lifecycle_mode": "paired_resident",
+    "schedule_sha256": "5f87fd24edebfe20dd78ddc0f0354ad3c83f7f26eb53012a06822e8904d17f24",
+    "schema": "epyc.kernel_promotion_resident_plan.v1",
+    "status": "observation_only"
+  },
+  "reason": "CalledProcessError(2, ['/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python', '/mnt/raid0/llm/epyc-orchestrator/scripts/validate/check_contention_matrix_fresh.py', '--matrix-path', '/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/out/.capture-3f1ea83fa7b64591b4ed923ed07b6fc3/resident/contention-matrix.yaml'], '', 'FAIL: contention matrix is STALE (live topology hash=560d489b or file age > 30 days).\\n      Run: python scripts/server/contention_matrix.py\\n')",
+  "requires_fresh_execution": true,
+  "resident_rows_valid": false,
+  "schema": "epyc.kernel_promotion_fresh_fallback.v1",
+  "status": "observation_only"
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "kvu16h.p3.durable-source-copy.v1",
+  "scratch_original": "/mnt/raid0/llm/tmp/kvu/p3-row-20261102",
+  "path_policy": "launcher/spec/source manifest retain original absolute scratch pins; durable directory is evidence, not a relocated launcher",
+  "excluded": [
+    "model-receipt.json",
+    "server-argv.txt",
+    "contexts/**",
+    "qualification-*/**",
+    "run-*/**",
+    "result.json"
+  ],
+  "excluded_reason": "No weight receipt, prompt/context input or runtime capture copied; preflight.json and original source.sha256 preserve provenance hashes and required source paths.",
+  "validation": "12 offline tests passed before queue; copy byte identity verified; no queued scratch mutation",
+  "files": [
+    {
+      "path": "launch.sh",
+      "sha256": "789b3798e16a0ec901da3c0c67073cb3040897779f95f1aa2567c7b4531d8073",
+      "size": 2385
+    },
+    {
+      "path": "spec.json",
+      "sha256": "ffe6a6e1147eea59f2210bad7908ff7a21a5602efc58835f4e58eb852fb65a22",
+      "size": 1546
+    },
+    {
+      "path": "job.py",
+      "sha256": "9324ff88966244d3a23f370e5f07da325f85f4b31f4691c7a219f8b047cb98ee",
+      "size": 6009
+    },
+    {
+      "path": "p3_kvu_probe.py",
+      "sha256": "af5c950a09b63d46317c9d6f90db18701874d72e4b801f371c6592aeacffcb7a",
+      "size": 39241
+    },
+    {
+      "path": "draft_guard.py",
+      "sha256": "0632b01982121ec1a8b7182571419a7212438e9805503dbf4d1abfb05d04f844",
+      "size": 1709
+    },
+    {
+      "path": "x0_common.py",
+      "sha256": "0a2cad87e35033cc10f09b4f9f1a3135319c22e0d1fb58be05e8144e6ae2cf8e",
+      "size": 8668
+    },
+    {
+      "path": "x0_shape_b.py",
+      "sha256": "96d285d35ae362890b98f9860e5e6808bc2e4f1751ebb821bacd593a245bea27",
+      "size": 14229
+    },
+    {
+      "path": "identity.py",
+      "sha256": "53d84f6dc3ca622278955047484353366b70075ac140b38cf161896091066379",
+      "size": 797
+    },
+    {
+      "path": "parent_death.py",
+      "sha256": "5b85692696e309f36a2a533f79ef0566c9da18823def3b9454e894529e4f8a11",
+      "size": 533
+    },
+    {
+      "path": "pdeath_exec.py",
+      "sha256": "18fcc18b990dd5e1570b6c87a861b0f570264444624454f95fe2cb06f21716f2",
+      "size": 352
+    },
+    {
+      "path": "test_job.py",
+      "sha256": "acbe2d879dd241dcdf8f1ccb332e13788f996cb237ea9f532323cc7f48ace52b",
+      "size": 2730
+    },
+    {
+      "path": "test_p3_lifecycle.py",
+      "sha256": "4200182cd555774e397df8a6656058441f93e88531b362145c6330a04a0ee93d",
+      "size": 3736
+    },
+    {
+      "path": "source.sha256",
+      "sha256": "9f4e62f0870ad911f4e89f36e7b331c1d291b185c1aec9917133e301c3f88848",
+      "size": 3003
+    },
+    {
+      "path": "runtime.sha256",
+      "sha256": "3cb7242f993ab0347503f28e9bb28465bc3ea84019fd74f6d01c036f3ea28811",
+      "size": 995
+    },
+    {
+      "path": "region-lock",
+      "sha256": "c8ee8991be3eb6d4ed0e16ced319f7cb98d4bfcefcb44937e9d91b790c742bbc",
+      "size": 394
+    },
+    {
+      "path": "REGION-LOCK-INPUTS.sha256",
+      "sha256": "fac2f7b1fc26de2e0941f7081beb99b171a91148a49b9e290be943d388613e3f",
+      "size": 646
+    },
+    {
+      "path": "REGION-LOCK-PYTHON-ALLOW.txt",
+      "sha256": "f169fc8f65912c4995fa1a011fe9a4e596f664575e2c76fcf65d635d51cdd043",
+      "size": 130
+    },
+    {
+      "path": "preflight.json",
+      "sha256": "d2e97825e5809e06886e94bada00595662604ff8ab360121cdeb766653844049",
+      "size": 490
+    },
+    {
+      "path": "offline-tests.txt",
+      "sha256": "70e31e86acb74f342909cbc491cce7a6ac6cbe986eadc4ab503cdadfb4951a6c",
+      "size": 1425
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Harness Cards — EPYC layer-B disclosure
 
-**Promoted 2026-09-17** out of [`handoffs/active/harness-selection-and-integration.md`](../../../handoffs/active/harness-selection-and-integration.md)
+**Promoted 2026-09-17** out of [`handoffs/active/harness-program.md`](../../../handoffs/active/harness-program.md#track-harness-selection-and-integration)
 (rows HS-6, HS-6b, HS-6c), which is where they were written and ticked. They are standing
 disclosure artifacts, not campaign history, and they have a consumer outside that handoff:
 [`agents/shared/HARNESS_RUN_POLICY.md`](../../../agents/shared/HARNESS_RUN_POLICY.md) requires a run

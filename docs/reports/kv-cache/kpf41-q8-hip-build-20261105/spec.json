@@ -1,0 +1,21 @@
+{
+ "id":"kpf41-q8-hip-build-20261105",
+ "owner":"h-kvfork",
+ "launcher":"/mnt/raid0/llm/tmp/kvfork/kpf41-q8-build-20261105/launch.sh",
+ "lane":"cpu",
+ "regions":"any-cpu-quarter",
+ "result_path":"/mnt/raid0/llm/tmp/kvfork/kpf41-q8-build-20261105/out/RESULT.json",
+ "result_format":"json",
+ "decision_rule":"Build-only PASS requires clean detached 15caecbbf candidate, gfx90a HIP linked direct-row test, own ggml linkage, source recheck and binary/library hashes. Smoke configures actual HIP project and compiles only its direct-row test source object. Stop on completed linked build or on source drift, compile, linkage, STOP or deadline failure. GPU execution and correctness remain a separate follow-up.",
+ "estimate_s":3600,
+ "ram_gib":32,
+ "handoff_task":"handoffs/active/kv-cache-program.md:KPF-41",
+ "priority_rank":35,
+ "kind":"compute",
+ "smoke_timeout_s":900,
+ "dryrun_native_result":true,
+ "scratch_root":"/mnt/raid0/llm/tmp/kvfork/kpf41-q8-build-20261105",
+ "keep":["**"],
+ "unit_key":"object_size_bytes",
+ "notes":"Fresh detached worktree; original 2026-11-02 GPU watcher exited rc143 without fixture logs. Separate successor must bind this build receipt before Q8/F16 GPU parity."
+}

@@ -1,0 +1,18 @@
+{
+  "cpu_region_lock.py": {
+    "source": "/mnt/raid0/llm/tmp/ni08-audit-next-20261007/s49/app-child/src/runtime/cpu_region_lock.py",
+    "sha256": "24a4a377fe5050e0f34514294e7d14bcc94db4c99fe89b91881d68ae81ece56c"
+  },
+  "region_lock_cli.py": {
+    "source": "/mnt/raid0/llm/tmp/ni08-audit-next-20261007/s49/app-child/src/runtime/region_lock_cli.py",
+    "sha256": "58c2ea675db751f7403222ebbb3d6e52a4ce151ade86035e00fddda411b69940"
+  },
+  "grant_ok.sh": {
+    "source": "/mnt/raid0/llm/tmp/codex-ni-20261026-launch-admission-gate/baseline/grant_ok.sh",
+    "sha256": "6a2467d67da413bf12a702a731b0b11f5715e01a5143584dc6df47761788ebba"
+  },
+  "grant_ok_launcher.py": {
+    "source": "/mnt/raid0/llm/tmp/codex-ni-20261026-launch-admission-gate/baseline/grant_ok_launcher.py",
+    "sha256": "ba15f29581e75d74926d0ba687a9b798b1cb4527633aef1a03810268b16d3b5d"
+  }
+}

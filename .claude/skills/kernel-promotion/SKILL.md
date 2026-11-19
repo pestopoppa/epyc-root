@@ -111,6 +111,20 @@ found it before the window opened.
 `--apply` starts one server at a time and stops **the PID it captured**: SIGTERM, confirm
 dead, escalate to SIGKILL. It never matches a process name.
 
+## Step 3b' — fold gate record (Vidya)
+
+Every fold-gate launch (once for `cpu`, once for `gpu`) passes `--record-json` and is ingested
+afterwards; the text log alone is not ingestable. Tool: research `scripts/kernel_rnd/fold_gate/fold_gate.py`.
+
+```bash
+RUN=<run-dir>
+python3 /mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/fold_gate/fold_gate.py \
+  --base-image $STORE/<kind>-<old>/bin --new-image $STORE/<kind>-<new>/bin \
+  --src-repo /mnt/raid0/llm/llama.cpp --base-commit <old sha> --cand-commit <new sha> \
+  --record-json $RUN/fold_gate_record_<kind>.json
+python3 scripts/vidya/cli.py ingest champion-fold-gate --path $RUN --as-of <ts> --only-new
+```
+
 ## Step 3c — gfx90a ISA audit, BEFORE any GPU timing (INF03-REGAUDIT-2)
 
 Zero-GPU and static: it reads the two `libggml-hip.so` files and never builds or launches
@@ -140,6 +154,41 @@ with `status` (`pass`, or `waived` plus `accepted_fails`), the FAIL/WARN counts 
 flags let the audits project SC84 claims, and an audit without them projects none.
 
 ## Step 4 — gates
+
+### Resident CPU request-plan preparation (V9-8)
+
+`scripts/resident_plan.py --cohorts <cohorts.json> --out <plan.json>` prepares a
+deterministic schedule; it does not launch servers or produce gate evidence. The input
+is an ordered JSON array of `{scenario, nominal_context, request_body}` objects. Each
+request body explicitly sets `cache_prompt: false`, `temperature: 0`, and a fixed `seed`,
+with either native completion or chat-completion prompt and token-limit fields.
+
+The plan contains five ABBA quartets (ten measured requests per arm), alternates the
+first arm across cohorts, and declares one excluded 64-token warmup per arm. Request
+keys, bodies, and the schedule are hashed and validated before output. Its
+`observation_only` status grants no measurement authority. V9-8 still requires the
+resident lifecycle runner, sealed evidence and comparator, incumbent-vs-itself
+calibration with fresh-server fallback, isolated hot stack, parity pack, and prospective
+human ratification before resident results can replace existing promotion gates.
+
+`scripts/benchmark/kernel_promotion_resident_runner.py` (from the root repository)
+implements the observation-only CPU lifecycle. Without `--apply` it validates the
+canonical plan, pinned binaries and K35 recipe without launching a server. Live
+execution requires a provider-authored `region-lock` open receipt for CPUs 0-95,
+matching live parent flocks, isolated ports and an explicit split/unified KV mode.
+It loads the arms sequentially, records excluded warmups and each scheduled request,
+and verifies captured-PID cleanup. Resident failure exits 78 and preserves the
+unchanged plan in `fresh-fallback.json`. Automatic fresh replay requires proved
+resident cleanup and renewed live admission; it captures its results separately
+and preserves the resident failure verdict. Each fresh measured request gets a new
+server and an excluded warmup, retaining its original body and schedule key.
+`--fresh-only` exercises this observation-only path directly. Capture schemas are
+deliberately distinct from sealed promotion evidence. Fixture tests live in
+`tests/test_kernel_promotion_resident_runner.py` and
+`tests/test_kernel_promotion_fresh_replay.py`; run these and the plan tests under
+an available region claim or the diagnostic row's reserved publisher smoke before
+using the instrument for any decision. Sealing, the parity/comparison pack and
+prospective human ratification remain required.
 
 Speed per derived model, candidate vs incumbent, **each at its own best recipe** (recipe-to-recipe;
 never force one kernel through the other's configuration). Quality per the incumbent's recorded

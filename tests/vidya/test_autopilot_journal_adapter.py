@@ -766,3 +766,240 @@ def test_belief_scope_wins_over_the_fingerprint_fallback(tmp_path):
     r["measurement"]["attestation"]["sha256"] = _entry_digest(r)
     src, _, _ = _split(_frames(tmp_path, r))
     assert src["applicability"]["config_key"] == SCOPE["config_key"]
+
+
+# --- VB-AP-JOURNAL-CARRY ---------------------------------------------------------------------
+
+_WARRANT = {"schema": "accepted_warrant_telemetry.v1", "acceptance_effect": "none",
+            "cited_trial_ids": [7], "verified_failure_trial_ids": [7], "status": "verified"}
+_CARRY_KEYS = ("accepted_warrant_telemetry_json", "request_source_json", "reward_provenance_json")
+
+
+def _carry_frames(tmp_path, r, events=None):
+    root = write_journal(tmp_path, [r])
+    return list(apj.emit(root, as_of="2026-11-03T00:00:00Z", progress_events=events))
+
+
+def test_accepted_warrant_telemetry_positive_and_absent(tmp_path):
+    pos = _carry_frames(tmp_path, row(eval_details={"details": {"accepted_warrant_telemetry": _WARRANT}}))
+    neg = _carry_frames(tmp_path / "b", row(eval_details={"details": {}}))
+    legacy = _carry_frames(tmp_path / "c", row())
+    assert json.loads(pos[2]["assertion"]["accepted_warrant_telemetry_json"]) == _WARRANT
+    for f in (neg, legacy):
+        assert "accepted_warrant_telemetry_json" not in f[2]["assertion"]
+    assert pos[2]["assertion"]["grade"] == neg[2]["assertion"]["grade"] == legacy[2]["assertion"]["grade"]
+
+
+def test_request_source_positive_and_absent(tmp_path):
+    ev = [{"event_type": "task_started", "task_id": "t1", "data": {"request_source": "smoke"}},
+          {"event_type": "task_started", "task_id": "t2", "data": {"request_source": "user"}}]
+    pos = _carry_frames(tmp_path, row(), ev)
+    neg = _carry_frames(tmp_path / "b", row(),
+                        [{"event_type": "task_started", "task_id": "t3", "data": {"task_type": "x"}}])
+    assert json.loads(pos[2]["assertion"]["request_source_json"]) == [
+        {"task_id": "t1", "request_source": "smoke"}]
+    assert "request_source_json" not in neg[2]["assertion"]
+    assert pos[2]["assertion"]["grade"] == neg[2]["assertion"]["grade"]
+
+
+@pytest.mark.parametrize("kind", ["memory_stored", "q_value_updated"])
+def test_reward_metadata_positive_and_absent(tmp_path, kind):
+    prov = {"disposition": "ok", "http_status": 200, "action": "route"}
+    pos = _carry_frames(tmp_path, row(), [
+        {"event_type": kind, "task_id": "external", "memory_id": "m1",
+         "data": {"reward_provenance": prov}}])
+    neg = _carry_frames(tmp_path / "b", row(), [
+        {"event_type": kind, "task_id": "external", "memory_id": "m1", "data": {"old_q": 0.1}}])
+    assert json.loads(pos[2]["assertion"]["reward_provenance_json"]) == [
+        {"event_type": kind, "memory_id": "m1", "reward_provenance": prov}]
+    assert "reward_provenance_json" not in neg[2]["assertion"]
+    assert pos[2]["assertion"]["grade"] == neg[2]["assertion"]["grade"]
+
+
+def test_carry_off_is_byte_identical(tmp_path):
+    plain = _carry_frames(tmp_path, row())
+    off = _carry_frames(tmp_path / "b", row(), [])
+    assert [f["frame_id"] for f in plain] == [f["frame_id"] for f in off]
+    assert not any(k in plain[2]["assertion"] for k in _CARRY_KEYS)
+
+
+# --- VB-AP70-ROTATION-READ -------------------------------------------------------------------
+# Fixtures follow the orchestrator producer schema (scripts/autopilot/core_rotation_observation.py,
+# schema_version 1, read from origin/main) -- shape only; no value here is a real measurement.
+import copy  # noqa: E402
+import math  # noqa: E402
+
+H = "a1" * 32
+RSTUDY = "ap70-unit-study"
+
+
+def _rplan(k=2, period=10, first=10):
+    bounds = [{"boundary_trial_id": first + i * period,
+               "outgoing_rotation_index": (first + i * period) // period - 1,
+               "incoming_rotation_index": (first + i * period) // period} for i in range(k)]
+    return {"type": apj.ROTATION_PLAN, "schema_version": 1, "study_id": RSTUDY, "planned_k": k,
+            "rotation_period_trials": period, "planned_boundaries": bounds,
+            "metric": "eval_result.quality", "metric_direction": "higher_is_better",
+            "drop_definition": "q_outgoing_rotation - q_incoming_rotation",
+            "authority": "observe_only", "timestamp": "2026-11-03T00:00:00+00:00"}
+
+
+def _rident():
+    return {"trial_id": 3, "config_fingerprint": "cf", "config_snapshot": {
+                "type": "prompt_mutation", "file": "x.md", "mutation": "m", "description": "d"},
+            "checkpoint_target": "/ckpt/production_best", "checkpoint_metadata_sha256": H,
+            "prompt_tree_sha256": H, "request_prompt_tree_sha256": H, "prompt_file_count": 1,
+            "feature_flags": {"a": True}, "infra_fingerprint": {"c": 1}, "infra_digest": "d1",
+            "evaluation_environment_identity": {"AUTOPILOT_X": H},
+            "served_runtime_identity": {"status": "observed", "identity_sha256": H}}
+
+
+def _rside(rot, q):
+    return {"rotation_index": rot, "quality": q, "core_id": "core", "dataset_sha256": H,
+            "n_questions": 4, "n_questions_completed": 4, "quality_denominator": 4,
+            "question_sidecar_persistence": {"archive_complete": True},
+            "eval_wall_s": 5.0, "sum_request_elapsed_s": 9.0}
+
+
+def _rbundle(k=2, drops=((0.75, 0.5), (0.5, 0.5))):
+    plan = _rplan(k)
+    evs = [plan]
+    pairs = []
+    for b, (qo, qi) in zip(plan["planned_boundaries"], drops):
+        bid = b["boundary_trial_id"]
+        evs.append({"type": apj.ROTATION_PIN, "schema_version": 1, "study_id": RSTUDY,
+                    "boundary_trial_id": bid, "outgoing_rotation_index": b["outgoing_rotation_index"],
+                    "incoming_rotation_index": b["incoming_rotation_index"], "planned_k": k,
+                    "rotation_period_trials": 10, "boundary_identity_status": "verified",
+                    "identity": _rident(), "timestamp": "2026-11-03T00:01:00+00:00"})
+        pair = {"type": apj.ROTATION_PAIR, "schema_version": 1, "study_id": RSTUDY,
+                "boundary_trial_id": bid, "outgoing_rotation_index": b["outgoing_rotation_index"],
+                "incoming_rotation_index": b["incoming_rotation_index"], "status": "complete",
+                "metric": "eval_result.quality", "metric_direction": "higher_is_better",
+                "incumbent": _rident(), "question_result_artifacts": ["/s/o.jsonl", "/s/i.jsonl"],
+                "outgoing": _rside(b["outgoing_rotation_index"], qo),
+                "incoming": _rside(b["incoming_rotation_index"], qi),
+                "q_outgoing": qo, "q_incoming": qi, "drop": qo - qi,
+                "timing_cost": {"outgoing_eval_wall_s": 5.0, "incoming_eval_wall_s": 5.0,
+                                "sum_request_elapsed_s": 18.0, "n_questions": 8},
+                "timestamp": "2026-11-03T00:02:00+00:00"}
+        evs.append(pair)
+        pairs.append(pair)
+    drops_ = [p["drop"] for p in pairs]
+    mean = sum(drops_) / k
+    se = (math.sqrt(sum((d - mean) ** 2 for d in drops_) / (k - 1)) / math.sqrt(k)) if k > 1 else None
+    evs.append({"type": apj.ROTATION_SUMMARY, "schema_version": 1, "study_id": RSTUDY,
+                "status": "complete", "planned_k": k, "pairs_recorded": k, "pairs_complete": k,
+                "pairs_incomplete": 0,
+                "planned_boundary_trial_ids": [b["boundary_trial_id"] for b in plan["planned_boundaries"]],
+                "missing_boundary_trial_ids": [], "failures": [], "mean_drop": mean,
+                "standard_error": se, "timestamp": "2026-11-03T00:03:00+00:00"})
+    return evs
+
+
+def _rwrite(tmp_path, evs):
+    d = tmp_path / apj.ORCH_REL / "orchestration"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "autopilot_journal.jsonl").write_text("".join(json.dumps(e) + "\n" for e in evs))
+    return tmp_path
+
+
+def test_rotation_set_projects_with_zero_refusals(tmp_path):
+    root = _rwrite(tmp_path, _rbundle())
+    frames, refusals = apj.emit_rotation(root, as_of="2026-11-03T00:00:00Z")
+    assert refusals == [] and len(frames) == 3
+    sup = frames[2]["assertion"]
+    assert sup["rotation_study_status"] == "complete" and sup["grade"]["Q"]
+    assert "mean drop" in frames[1]["assertion"]["display_text"]
+    study = json.loads(sup["rotation_study_json"])
+    assert study["summary"]["planned_boundary_trial_ids"] == [10, 20]
+
+
+def test_rotation_k1_has_null_se_and_unmet_k_has_no_mean(tmp_path):
+    ev = _rbundle(k=1, drops=((0.75, 0.5),))
+    study = apj.read_rotation_study(ev, RSTUDY)
+    assert study["summary"]["standard_error"] is None and study["summary"]["mean_drop"] == 0.25
+    inc = _rbundle()
+    inc[-2]["status"] = "incomplete"          # second pair becomes incomplete
+    inc[-2].update(reason="eval failed", q_outgoing=None, q_incoming=None, drop=None,
+                   outgoing=None, incoming=None, timing_cost=None)
+    inc[-1].update(status="incomplete", pairs_complete=1, mean_drop=None, standard_error=None,
+                   pairs_incomplete=1, missing_boundary_trial_ids=[20])
+    s = apj.read_rotation_study(inc, RSTUDY)["summary"]
+    assert s["mean_drop"] is None
+    frames, refusals = apj.emit_rotation(_rwrite(tmp_path, inc), as_of="2026-11-03T00:00:00Z")
+    assert refusals == []
+    assert json.loads(frames[2]["assertion"]["rotation_study_json"])["summary"]["mean_drop"] is None
+    assert "INCOMPLETE" in frames[1]["assertion"]["display_text"]
+
+
+def test_rotation_grade_is_the_shared_ladder_and_default_emit_is_unchanged(tmp_path):
+    root = _rwrite(tmp_path, _rbundle())
+    assert list(apj.emit(root, as_of="2026-11-03T00:00:00Z")) == []   # off by default
+    frames, _ = apj.emit_rotation(root, as_of="2026-11-03T00:00:00Z")
+    q, t, _r = apj.grade({"measurement_id": "x", "date": "2026-11-03", "metric": "m", "value": 1,
+                          "category": "CANDIDATE", "claim": "c",
+                          "attestation": {"path": "x.jsonl", "sha256": H, "locator": "x#y"}})
+    assert (frames[2]["assertion"]["grade"]["Q"], frames[2]["assertion"]["grade"]["T"]) == (q, t)
+
+
+def _mut(fn):
+    ev = copy.deepcopy(_rbundle())
+    fn(ev)
+    return ev
+
+
+def _pair(ev, i=0):
+    return [e for e in ev if e["type"] == apj.ROTATION_PAIR][i]
+
+
+def _pin(ev, i=0):
+    return [e for e in ev if e["type"] == apj.ROTATION_PIN][i]
+
+
+REFUSALS = {
+    "identity_drift": lambda ev: _pair(ev)["incumbent"].update(infra_digest="other"),
+    "missing_identity": lambda ev: _pair(ev).pop("incumbent"),
+    "ambiguous_pin": lambda ev: ev.insert(2, copy.deepcopy(_pin(ev))),
+    "nonprompt_incumbent": lambda ev: (_pair(ev)["incumbent"]["config_snapshot"].update(type="numeric_trial"),
+                                       _pin(ev)["identity"]["config_snapshot"].update(type="numeric_trial")),
+    "missing_sidecar": lambda ev: _pair(ev)["outgoing"]["question_sidecar_persistence"].update(archive_complete=False),
+    "no_sidecar_paths": lambda ev: _pair(ev).update(question_result_artifacts=[]),
+    "nonfinite_q": lambda ev: _pair(ev).update(q_outgoing=None),
+    "nan_drop": lambda ev: _pair(ev).update(drop=float("nan")),
+    "wrong_rotation_index": lambda ev: _pair(ev).update(incoming_rotation_index=99),
+    "unplanned_boundary_synthetic": lambda ev: _pair(ev).update(boundary_trial_id=15),
+    "denominator_mismatch": lambda ev: _pair(ev)["incoming"].update(
+        n_questions=3, n_questions_completed=3, quality_denominator=3),
+    "historical_pair": lambda ev: _pair(ev).update(timestamp="2026-10-01T00:00:00+00:00"),
+    "pair_before_plan": lambda ev: ev.insert(0, ev.pop(2)),
+    "summary_mean_wrong": lambda ev: ev[-1].update(mean_drop=0.9),
+    "summary_se_missing": lambda ev: ev[-1].update(standard_error=None),
+    "summary_k_changed": lambda ev: ev[-1].update(planned_k=3),
+    "no_summary": lambda ev: ev.pop(),
+    "second_plan": lambda ev: ev.append(copy.deepcopy(ev[0])),
+    "metric_direction": lambda ev: _pair(ev).update(metric_direction="lower_is_better"),
+    "served_identity_unobserved": lambda ev: (_pair(ev)["incumbent"]["served_runtime_identity"].update(status="x"),
+                                               _pin(ev)["identity"]["served_runtime_identity"].update(status="x")),
+}
+
+
+@pytest.mark.parametrize("name", sorted(REFUSALS))
+def test_rotation_refusal_fixtures(tmp_path, name):
+    ev = _mut(REFUSALS[name])
+    with pytest.raises(apj.RotationRefusal):
+        apj.read_rotation_study(ev, RSTUDY)
+    frames, refusals = apj.emit_rotation(_rwrite(tmp_path, ev), as_of="2026-11-03T00:00:00Z")
+    assert frames == [] and len(refusals) == 1
+
+
+def test_k1_summary_with_se_is_refused():
+    ev = _rbundle(k=1, drops=((0.75, 0.5),))
+    ev[-1]["standard_error"] = 0.1
+    with pytest.raises(apj.RotationRefusal):
+        apj.read_rotation_study(ev, RSTUDY)
+
+
+def test_rotation_records_are_not_trials(tmp_path):
+    root = _rwrite(tmp_path, _rbundle())
+    assert list(apj.iter_measured_rows(root)) == []

@@ -1,0 +1,39 @@
+{
+  "schema": "epyc.gs-frozen-v2-publication.v1",
+  "id": "ufh12-gs-frozen-query-v2-20261104",
+  "published": true,
+  "ready": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh12-gs-frozen-query-v2-20261104.json",
+  "smoke": {
+    "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh12-gs-frozen-query-v2-20261104/launcher.out",
+    "elapsed_s": 5,
+    "ended": "rc=75 time=2026-11-04T07:44:06Z reason=partial-native-incomplete",
+    "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+    "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/ufh12-gs-frozen-query-v2-20261104/native-attempts/attempt-41yg6vkp/native-result.json (measurement field)",
+    "first_progress_s": 1800,
+    "first_unit_at": "2026-11-04T07:44:08Z",
+    "id": "ufh12-gs-frozen-query-v2-20261104",
+    "launcher_sha256": "ed51224d3336d3922434d809152142bfe09ccc23266a94cc98d57737b55d7e0c",
+    "passed_at": "2026-11-04T07:44:08Z",
+    "progress_rule": "record",
+    "regions": "48-51",
+    "result_format": "json",
+    "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh12-gs-frozen-query-v2-20261104/native-attempts/attempt-41yg6vkp/native-result.json",
+    "units": 1,
+    "vram_used_max_bytes": null,
+    "warning": null
+  },
+  "scope": "500 pinned 2.2 code/docs queries on private episodic/strategy stores, not full G-S, retrieval quality, or production representativeness",
+  "original_failure": "v1 poller.out traceback: OSError Errno 98 Address already in use during pre-server bind at run.py line 50; actual TIME_WAIT vs another listener not established",
+  "socket_controls": "actual listening socket rejects SO_REUSEADDR probe and closed-listener port accepts it",
+  "source_directory": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query-v2",
+  "producer": "frozen_capture.py + gs_contract.py embedded in run.py, self-hashed coverage sidecar emitted per official record; run-context captures original grant bytes, start/deadline/affinity, content-pin and cohort/source hashes, mapped-library and listener witnesses plus server argv",
+  "adapter": "ufh12_gs_coverage.py prepared overlay extension keeps same source kind ufh12-gs-coverage and existing ClaimTuple.grade; stored-proxy original dispatch preserved",
+  "fixture_tests": "3 native custody controls, one socket control, one new adapter projection+tamper overlay = 5 passed; existing original stored-proxy/token canary sidecars 2/2 project and grade Judged/Located on overlay",
+  "runtime_pins": "18 content-pinned inputs include six shared libraries matching previous receipt and independently hashed libmtmd; process maps checked against pinned set.",
+  "limitations": [
+    "Publisher smoke validated one native result and context on 4 CPUs; no official coverage verdict.",
+    "Extended adapter is scratch-prepared, not yet installed in maintained tree; owner must apply and run installed-root planning-context canary.",
+    "Reader validates hashes, schema, native query membership, flags and structural scores but does not independently reproduce frozen sample from original 582-row source or fully rederive process witness contents."
+  ],
+  "source_table_task": "Use drafted source and VB-UFH12-GS-FROZEN-QUERY text in gs-frozen-query-writer.json; extend existing source ladder, no second grading rule."
+}

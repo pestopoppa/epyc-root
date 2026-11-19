@@ -1,0 +1,38 @@
+--- a/job.py
++++ b/job.py
+@@ -163,7 +163,7 @@
+ def run(run_dir: Path) -> int:
+     sys.path.insert(0, str(SRC))
+     os.environ["ORCHESTRATOR_SERVING_CALLS_LOG"] = str(run_dir / "serving_calls.jsonl")
+-    os.environ.setdefault("ORCHESTRATOR_GIT_SHA", ORCH_COMMIT)
++    os.environ["ORCHESTRATOR_GIT_SHA"] = ORCH_COMMIT
+     from src.backends.llama_server import LlamaServerBackend, ServerConfig
+     from src.backends import serving_calls
+     from src.model_server import InferenceRequest
+--- a/test_integration.py
++++ b/test_integration.py
+@@ -66,6 +66,24 @@
+         with self.assertRaises(ValueError): verify_consumed(b)
+     def test_naive_or_expired_clock(self):
+         with self.assertRaises(ValueError): consumed_grant(self.root,self.env,datetime(2026,11,4,16,9,tzinfo=timezone.utc))
++    def test_inherited_producer_identity_is_overridden_before_import(self):
++        # Execute only actual environment setup AST, never import/run the job.
++        import os
++        from unittest.mock import patch
++        tree = ast.parse((Path(__file__).parent/'job.py').read_text())
++        run = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'run')
++        setup = []
++        for node in run.body:
++            if isinstance(node, ast.ImportFrom):
++                break
++            if isinstance(node, (ast.Assign, ast.Expr)) and 'ORCHESTRATOR_GIT_SHA' in ast.unparse(node):
++                setup.append(node)
++        self.assertEqual(len(setup), 1)
++        scope = {'os': os, 'ORCH_COMMIT': '77ba24efe7f27783a3a98be5474bace26c753f12'}
++        with patch.dict(os.environ, {'ORCHESTRATOR_GIT_SHA': 'foreign-inherited-commit'}):
++            exec(compile(ast.fix_missing_locations(ast.Module(body=setup, type_ignores=[])), '<identity-setup>', 'exec'), scope)
++            self.assertEqual(os.environ['ORCHESTRATOR_GIT_SHA'], scope['ORCH_COMMIT'])
++
+     def test_producer_structure(self):
+         tree=ast.parse((Path(__file__).parent/'job.py').read_text())
+         main=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')

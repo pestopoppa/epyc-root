@@ -5,30 +5,135 @@ publish   LINT the spec, then rowflow.publish derives the rest. The lint rewrite
           run plus an agent turn (CAF-4): a result_path that is a completion marker (.complete/.ended/.done/.FILED,
           grants/, COMPLETE*/TERMINAL*) becomes the declared results file in the same run dir (result_format json ->
           RESULT.json, jsonl -> results.jsonl; no declared format -> refused in one line), and the derivable fields
-          lane (launcher --class), scratch_root (the launcher's job dir), keep (result_path relative to scratch_root) and
-          kind=compute are filled when missing. Every rewrite is printed as one LINT line.
+          lane (launcher --class), scratch_root (the launcher's job dir) and kind=compute are filled when missing. keep is
+          left as the owner wrote it: empty = inputs + result (the reaper never deletes a file older than the row's first
+          job start and always keeps result_path; keep globs only add). Every rewrite is printed as one LINT line.
 --repair  after a dry-run FAIL of a known class: rebuild the spec from ready/<id>.json, apply the fix, lint, republish
           under the SAME id (a spec change makes the keeper re-dry-run it; the keeper starts that run, not this tool).
           Known: (1) "no unit in <p>" / "before writing a unit to <p>" where <p> is a completion marker or a results file
           (RESULT.json|results.jsonl) was written in its run dir during the run; (2) a publish refusal naming a
-          lint-derivable field. Anything else: exit 3 `UNKNOWN-FAILURE-CLASS <reason>` and nothing changes."""
+          lint-derivable field. Anything else: exit 3 `UNKNOWN-FAILURE-CLASS <reason>` and nothing changes.
+
+Ownership (operator 2026-11-02): handoff_task must name an existing handoffs/active/<file>.md (`file.md:ROW` or
+`file.md`); the row belongs to that HANDOFF and its PASS/FAIL/run-end events reach that handoff's session.
+Task lint (BRF-T6-1, D6 staged, operator 2026-11-02): handoff_task must also name the TASK (`file.md:<TASK-ID>` or
+`file.md:<LINE>`); that open box is linted with `scripts/handoffs/task_lint.py publish`. RELAXED (operator 2026-11-03):
+the row is REFUSED only when the box names no model/build identity (field c), states no stop rule (field s), or
+handoff_task does not resolve to a real open task box (file-only, or not found), or (RTG-100, 2026-11-10) a compute row's
+box is confidently non-inference / its launcher runs a known non-inference payload. Every other finding (NEEDS-*, pending
+operator choice, roll-up, prose prerequisite, standing hold, metric/rule/region/estimate
+fields) is a WARNING, printed and recorded in the row's `publish_warnings`; the smoke still gates every row. The lint
+runs before the smoke, so a refused row costs no compute.
+Preflight (pipeline audit 2026-11-10 #4, operator scope "Publish-time checks"; `preflight`): before anything is published,
+each bounded to PREFLIGHT_TIMEOUT_S and run in the engine's --workdir with the smoke env minus FILLER_SMOKE*. REFUSED: a
+prose decision_rule (file_result/auto_file cannot parse it) unless the spec says "verdict_by": "agent" with an owner;
+a smoke_predicate that already exits 0; an engine --complete-cmd that already exits 0 ("nothing to do; already
+complete", `--rerun` overrides); an engine --precond-cmd that exits non-0 (the gate would park the row). WARNED: a check
+that timed out; job files (the smoke_branch_files set) that clean the environment without passing FILLER_ID through
+(`env -i`, `env={`, `env=dict(`) or use start_new_session=True. rowflow.publish separately refuses a launcher whose
+--claim-cpus/--gpu-quiet claim is wider than the contract's grant (CLAIM-WIDER-THAN-CONTRACT, the rc=13 class).
+Smoke = THE dry run (operator 2026-11-05: a KEEPER-SCHEDULED filler): a CPU row's smoke is QUEUED
+(dryrun/<id>/SMOKE-QUEUED.json) and this tool returns at once; the keeper's allocate places it first, on 4 genuinely
+free cores, in the next free slot. Waiting is never a failure. `--smoke-now` runs it here, at once, on free cores of the
+keeper's snapshot (queued if none). (GPU rows: on their own regions, VRAM residency checked, and only while the GPU is free - otherwise QUEUED as
+dryrun/<id>/GPU-SMOKE-QUEUED.json and run by the allocator in the next GPU gap, or by `rowflow.py gpu-batch` from any
+session; never refused). PASS (operator 2026-11-03) = the job's FIRST REAL PROGRESS within first_progress_s (300; the spec
+may set it): spec.smoke_predicate exits 0, or a NEW non-placeholder record appears in result_path (rowflow.FirstProgress),
+then a clean stop -> dryrun/<id>/PASS.json: ready at once. FAIL writes the FAIL memo and prints ONE line (cause + fix +
+the log path); the allocator grants only PASSed rows."""
 import argparse
+import contextlib
 import datetime as dt
+import glob
+import hashlib
+import json
 import os
 import re
+import shutil
+import subprocess
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import rowflow as rf  # noqa: E402
+try:
+    import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
+except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    import handoff_ref  # noqa: E402
 
 _MARKER = re.compile(r"\.(complete|ended|done|FILED)$|/grants/|/(RUN_)?(COMPLETE|TERMINAL)[^/]*$", re.I)
 RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
 RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
-             "notes", "row", "snapshot", "admission_class", "dryrun_whole_host", "dryrun_native_result")
-DERIVABLE = ("lane", "scratch_root", "keep", "kind")
+             "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction",
+             "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by",
+             "resumable", "max_window_s")
+REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
+SMOKE_TIMEOUT_S = 300
+MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
+DERIVABLE = ("lane", "scratch_root", "kind")
 _UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
+
+
+HUB_VIEW = "/mnt/raid0/llm/views/epyc-root-main"
+VIEW_REFRESH_TIMEOUT_S = 60
+
+
+def _refresh_script():
+    """refresh_hub_view.sh to run: $ROWFLOW_VIEW_REFRESH_SCRIPT, else this checkout's copy, else the view's own."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for c in (os.environ.get("ROWFLOW_VIEW_REFRESH_SCRIPT"),
+              os.path.join(here, "..", "..", "dashboard", "refresh_hub_view.sh"),
+              os.path.join(REPO, "scripts", "dashboard", "refresh_hub_view.sh")):
+        if c and os.path.isfile(c):
+            return os.path.abspath(c)
+    return None
+
+
+def refresh_view(repo=None, timeout=VIEW_REFRESH_TIMEOUT_S):
+    """Advance the hub view to origin/main ONCE before its boxes are read (publish refused "no checkbox" for boxes
+    already on origin/main whenever hub_supervisor.sh was down). Reuses refresh_hub_view.sh as is, including its own
+    flock. Only when REPO is the hub view; ROWFLOW_NO_VIEW_REFRESH=1 opts out. Best-effort: any failure is a WARN
+    and the existing view is used. Returns True only when the refresh ran and exited 0."""
+    repo = repo or REPO
+    if os.environ.get("ROWFLOW_NO_VIEW_REFRESH") == "1":
+        return False
+    view = os.environ.get("ROWFLOW_HUB_VIEW", HUB_VIEW)
+    if os.path.realpath(repo) != os.path.realpath(view):
+        return False
+    script = _refresh_script()
+    if not script:
+        print("WARN view refresh skipped: refresh_hub_view.sh not found; using the existing view", file=sys.stderr)
+        return False
+    # Run a private copy: the script force-checks-out the view, which may rewrite the very file bash is reading.
+    # Its gate/quiet-host helpers resolve from the script's dir, so pin them to the source copy's siblings.
+    sdir = os.path.dirname(script)
+    env = dict(os.environ)
+    env.setdefault("HUB_VIEW_REGEN_GATE", os.path.join(sdir, "..", "coordination", "index_regen.py"))
+    env.setdefault("HUB_VIEW_QUIET_HOST", os.path.join(sdir, "..", "coordination", "quiet_host.py"))
+    tmp = None
+    try:
+        import tempfile
+        fd, tmp = tempfile.mkstemp(prefix="refresh_hub_view.", suffix=".sh")
+        os.close(fd)
+        shutil.copyfile(script, tmp)
+        r = subprocess.run(["bash", tmp, repo], env=env, capture_output=True, text=True, timeout=timeout)
+        if r.returncode != 0:
+            print(f"WARN view refresh failed rc={r.returncode}: {(r.stderr or r.stdout).strip()[-800:]}; "
+                  "using the existing view", file=sys.stderr)
+            return False
+        return True
+    except subprocess.TimeoutExpired:
+        print(f"WARN view refresh timed out after {timeout}s; using the existing view", file=sys.stderr)
+    except Exception as e:  # never fail a publish because the view could not be refreshed
+        print(f"WARN view refresh error: {e}; using the existing view", file=sys.stderr)
+    finally:
+        if tmp:
+            with contextlib.suppress(OSError):
+                os.unlink(tmp)
+    return False
 
 
 def is_marker(p):
@@ -36,13 +141,14 @@ def is_marker(p):
 
 
 # Operator 2026-11-01 23:55Z "DO BETTER" (third occurrence: inf70, kvu-vkq3 tokenize, sr6 `sha256sum -c FULL-MODEL.sha256` on one
-# core inside a whole-host quiet grant): hashing model weights or single-core prep inside the grant is refused at publish.
+# core inside a whole-host quiet grant): hashing model weights or single-core prep inside the grant is flagged at publish.
+# Operator 2026-11-03 (session review §5 item 8): a WARNING (printed + publish_warnings), never a refusal.
 PREP_RX = re.compile(r"(?:sha256sum|sha256|shasum|md5sum|b2sum|hashlib\.sha256)\b[^\n]*(?:\.gguf|FULL-MODEL|\bMODEL[^\s]*\.sha256|/models?/|weights?)"
                      r"|\b(?:tokeni[sz]e|tokenizer\.encode|pretokeni[sz]e)\b"
                      r"|\b(?:wget|curl|aria2c|rsync|huggingface-cli download|hf_hub_download|snapshot_download)\b"
                      r"|\bcp\b[^\n]*\.gguf", re.I)
 # small source/packet checksum lists (SOURCE-SHA256SUMS, PACKET-SHA256SUMS, INPUT.sha256 over scripts) are cheap integrity
-# checks and stay allowed; only WEIGHT hashing (gguf / FULL-MODEL / models dir) and single-core prep are refused.
+# checks and are not flagged; only WEIGHT hashing (gguf / FULL-MODEL / models dir) and single-core prep are warned about.
 PREP_MSG = "verify/prepare inputs once before publishing, not inside the grant"
 
 
@@ -81,13 +187,75 @@ def prep_in_grant(launcher):
     return None
 
 
+# AKX-ALL-15 item 4 (operator 2026-11-07 "Guard into live keeper"; ported from rowflow2.gpu_quiet_guard_conflicts, 83edc1cc2).
+# Incident: c6-w3-halfb-census-20261105 died rc1 six seconds after grant ("exclusive GPU-quiet ancestor required") because a
+# launcher/job.py that demands the MI210 quiet lock was published as a CPU row. Refuse at publish unless the row books the GPU.
+_GPUQ_GUARD = re.compile(r"(gpu.?quiet[^\n]{0,80}ancestor|ancestor[^\n]{0,80}gpu.?quiet)", re.I)
+
+
+def books_gpu(spec, launcher_info=None):
+    """True when the row books the GPU: spec gpu exclusive/quiet, lane gpu, or engine --class gpu|cpu+gpu."""
+    if spec.get("gpu") in ("exclusive", "quiet") or spec.get("quiet") or spec.get("lane") == "gpu":
+        return True
+    return bool(launcher_info and launcher_info.get("class") in ("gpu", "cpu+gpu"))
+
+
+def gpu_quiet_guard_conflicts(spec, read=None, info=None):
+    """Refusal reasons ([] = ok). Reads only the launcher + sibling job.py (<=256 KiB each); an unreadable file never blocks."""
+    launcher = str(spec.get("launcher") or "")
+    if info is None:
+        try:
+            info = rf.parse_launcher(launcher)
+        except Exception:  # noqa: BLE001 - publish reports a launcher defect itself
+            info = None
+    if books_gpu(spec, info):
+        return []
+    read = read or (lambda f: open(f, errors="replace").read(262144))
+    d = os.path.dirname(os.path.abspath(launcher))
+    for f in dict.fromkeys([launcher, os.path.join(d, "job.py")]):
+        try:
+            m = _GPUQ_GUARD.search(read(f))
+        except (OSError, TypeError, ValueError):
+            continue
+        if m:
+            return [f"{os.path.basename(f)} requires an exclusive GPU-quiet ancestor ({m.group(0)[:60]!r}) but the row does not "
+                    f"book the GPU (lane={spec.get('lane')!r} gpu={spec.get('gpu')!r}): FIX: publish it as a GPU row "
+                    "(engine --class cpu+gpu --gpu-quiet exclusive, or spec gpu \"exclusive\"), or remove the guard from the job"]
+    return []
+
+
 def lint(spec):
     """Rewrite the known spec defects in place; returns the LINT notes. Everything else is rowflow.publish's job."""
     notes = []
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
     if os.path.isfile(launcher):
+        errs = gpu_quiet_guard_conflicts(dict(spec, launcher=launcher))
+        if errs:
+            raise rf.Refused("gpu-quiet guard: " + "; ".join(errs))
+        if str(spec.get("kind") or "compute") == "compute":
+            bad = noninference_payload(launcher)
+            if bad:
+                raise rf.Refused(f"non-inference payload as a compute row: {bad[0]} runs `{bad[1]}`; run it in the owner's "
+                                 "turn, not on a compute grant (RTG-100)")
         hit = prep_in_grant(launcher)
-        rf.need(hit is None, f"{PREP_MSG}: {hit[0]} runs `{hit[1]}`" if hit else "")
+        if hit:  # operator 2026-11-03 (session review §5 item 8): WARN, never refuse; recorded in the row's publish_warnings
+            w = f"prep-in-grant: {hit[0]} runs `{hit[1]}`; {PREP_MSG} (it spends grant time; publish continues)"
+            print(f"WARN {w}")
+            pw = list(spec.get("publish_warnings") or [])
+            if w not in pw:
+                spec["publish_warnings"] = pw + [w]
+        if spec.get("snapshot") is not True:  # operator 2026-11-03: snapshot is opt-in; say what is NOT frozen
+            try:
+                vol = [p for p in rf.referenced_paths(rf.parse_launcher(launcher)) if rf.volatile_root(p)]
+            except Exception:  # noqa: BLE001 - publish reports a launcher defect itself
+                vol = []
+            if vol:
+                w = (f"volatile-paths: the job runs {', '.join(vol[:3])} from a lane/worktree path that can change or vanish "
+                     "before its grant; set \"snapshot\": true in the spec to freeze it (publish continues)")
+                print(f"WARN {w}")
+                pw = list(spec.get("publish_warnings") or [])
+                if w not in pw:
+                    spec["publish_warnings"] = pw + [w]
         if not spec.get("lane"):
             try:
                 cls = rf.parse_launcher(launcher)["class"]
@@ -107,14 +275,745 @@ def lint(spec):
         rf.need(rundir, f"result_path {rp} is a grants/ marker and the spec has no scratch_root to place {fn} in")
         spec["result_path"] = rp = os.path.join(rundir, fn)
         notes.append(f"result_path={rp} (was a completion marker)")
-    sr = str(spec.get("scratch_root") or "").rstrip("/")
-    if not spec.get("keep") and sr and rp.startswith(sr + "/"):
-        spec["keep"] = [os.path.relpath(rp, sr)]
-        notes.append(f"keep={spec['keep']}")
+    # keep is not linted (operator 2026-11-03, session review 3.1): an empty keep = every input (older than the first job
+    # start) + the result; the keeper's reaper protects both and keep globs only add to them.
+    rf.check_busy_fraction(spec)   # before the smoke: a bad value costs no compute
     if not spec.get("kind"):
         spec["kind"] = "compute"
         notes.append("kind=compute")
     return notes
+
+
+SESSIONS_NAME = "handoff-sessions.json"  # same registry the dispatcher reads, under the rowflow flags dir
+RATIFY_SUBDIR = "operator-ratify"         # mirrors token_guards.RATIFY_SUBDIR (publish_row is installed without it)
+# PRODUCTION kernel promotion only (operator 2026-11-18): champion work (C13/C14/... fold/build/gate/keep rows,
+# kernel-champion-and-promotion.md, llama.cpp-experimental) is never gated. Used when the registry has no
+# operator_gated_row_prefixes key; the registry key, when present, replaces it.
+DEFAULT_GATED_ROW_PREFIXES = ("v11-", "v12-", "v13-", "v14-")
+PROMOTION_HANDOFF_RX = re.compile(r"^(v1\d+-)promotion[^/]*\.md$")  # handoffs/active/v1N-promotion*.md
+
+
+def ratified(flags, name):
+    """(ok, why) for <flags>/operator-ratify/<name>.json: slug/by/at/reason present and slug == name."""
+    p = os.path.join(flags, RATIFY_SUBDIR, f"{name}.json")
+    d = rf.load_json(p)
+    if d is None:
+        return False, f"no valid ratification file {p}"
+    missing = [k for k in ("slug", "by", "at", "reason") if not str(d.get(k) or "").strip()]
+    if missing:
+        return False, f"ratification file {p} lacks {', '.join(missing)}"
+    if d["slug"] != name:
+        return False, f"ratification file {p} names slug {d['slug']!r}, not {name!r}"
+    return True, f"ratified by {d['by']} at {d['at']}"
+
+
+def check_operator_gate(spec, flags):
+    """Operator gate (2026-11-18): refuse a row owned by an operator-gated session's handoff, or whose id starts with a
+    registry operator_gated_row_prefixes entry, unless operator-ratify/<slug>.json (rowprefix-<prefix>.json) exists."""
+    reg = rf.load_json(os.path.join(flags, SESSIONS_NAME)) or {}
+    rid = str(spec.get("id") or "")
+    prefixes = reg["operator_gated_row_prefixes"] if "operator_gated_row_prefixes" in reg else DEFAULT_GATED_ROW_PREFIXES
+    for pre in prefixes or []:
+        if pre and rid.startswith(pre):
+            ok, why = ratified(flags, f"rowprefix-{pre}")
+            rf.need(ok, f"OPERATOR-GATED: row {rid!r} matches gated prefix {pre!r}; only the operator may release it ({why})")
+    f = os.path.basename(handoff_ref.file_of(str(spec.get("handoff_task") or "").strip()) or "")
+    if not f:
+        return
+    m = PROMOTION_HANDOFF_RX.match(f)
+    if m:  # a production promotion handoff: released by the same version-prefix ratification
+        ok, why = ratified(flags, f"rowprefix-{m.group(1)}")
+        rf.need(ok, f"OPERATOR-GATED: handoff {f} is production kernel promotion; only the operator may release it ({why})")
+    for slug, e in (reg.get("sessions") or {}).items():
+        if isinstance(e, dict) and e.get("operator_gate") and os.path.basename(str(e.get("handoff") or "")) == f:
+            ok, why = ratified(flags, slug)
+            rf.need(ok, f"OPERATOR-GATED: handoff {f} is owned by operator-gated session {slug!r} "
+                        f"({e['operator_gate'].get('reason')}); only the operator may release it ({why})")
+
+
+def check_handoff(spec, repo=None):
+    """The row belongs to a handoff: handoff_task must name an existing handoffs/active/<file>.md."""
+    ht = str(spec.get("handoff_task") or "").strip()
+    f = handoff_ref.file_of(ht) or ""
+    rf.need(f.endswith(".md") and os.path.isfile(os.path.join(repo or REPO, "handoffs", "active", f)),
+            f"handoff_task {ht!r} names no handoffs/active/<file>.md; write \"handoff_task\": \"<file>.md:<ROW-ID>\" (or "
+            f"\"<file>.md\") for the handoff whose task this row serves - the row belongs to that handoff, and its "
+            f"dry-run FAIL/PASS and run-end reach that handoff's session (FILLERS, session pids and engines are not owners)")
+
+
+def _task_lint():
+    """task_lint.py: TASK_LINT_DIR, else a copy installed beside this file (compute-flags/bin/rowflow), else the checkout
+    this file lives in, else the repo's scripts/handoffs (ROWFLOW_REPO)."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    # the checkout this file lives in wins over ROWFLOW_REPO, so a checkout's tests lint with that checkout's lint
+    for d in (os.environ.get("TASK_LINT_DIR"), here, os.path.join(os.path.dirname(os.path.dirname(here)), "handoffs"),
+              os.path.join(REPO, "scripts", "handoffs")):
+        if d and os.path.isfile(os.path.join(d, "task_lint.py")):
+            if d not in sys.path:
+                sys.path.insert(0, d)
+            import task_lint  # noqa: E402
+            return task_lint
+    raise rf.Refused("task_lint.py not found (set TASK_LINT_DIR or ROWFLOW_REPO); publish cannot lint the task box")
+
+
+def task_box(spec, repo=None):
+    """(file, line, box text, children) of the OPEN box handoff_task names: `<file>.md:<TASK-ID>` matches the bold ID at
+    the start of a checkbox; `<file>.md:<N>` is a 1-based line number."""
+    tl = _task_lint()
+    ht = str(spec.get("handoff_task") or "").strip()
+    f, _, task = ht.partition(":")
+    path = os.path.join(repo or REPO, "handoffs", "active", os.path.basename(f))
+    rf.need(task.strip(), f"handoff_task {ht!r} names no task: write \"<file>.md:<TASK-ID>\" so the publish gate can lint "
+                          f"the box this row serves (BRF-T6-1)")
+    task = task.strip()
+    rf.need(os.path.isfile(path), f"handoff_task {ht!r}: {path} does not exist")
+    lines = open(path, encoding="utf-8", errors="replace").read().split("\n")
+    idx = None
+    if task.isdigit():
+        idx = int(task) - 1
+        rf.need(0 <= idx < len(lines) and tl.L1.CHECKBOX.match(lines[idx]), f"handoff_task {ht!r}: line {task} is not a checkbox")
+    else:
+        rx = re.compile(r"^\s*[-*] \[.\]\s*\*\*" + re.escape(task) + r"(?![A-Za-z0-9.-])")
+        idx = next((i for i, l in enumerate(lines) if rx.match(l)), None)
+        rf.need(idx is not None, f"handoff_task {ht!r}: no checkbox **{task}** in {os.path.basename(f)}")
+    state = tl.L1.CHECKBOX.match(lines[idx]).group(2)
+    rf.need(state == " ", f"handoff_task {ht!r}: the box is [{state}], not open; a row serves an open task")
+    txt, ch = tl.L1.block(lines, idx)
+    return path, idx + 1, txt, ch
+
+
+NONINF_REFUSE_BASES = ("explicit", "deliverable")
+# launcher payloads that are never inference: a repo indexer holding a compute grant (gitnexus analyze held 96 cores).
+# Kernel builds are deliberately absent: a build-then-bench row is legitimate compute.
+NONINF_PAYLOAD_RX = re.compile(r"(?:^|[\s;&|/(])(?:gitnexus\s+analyze|gitnexus-analyze\.sh)\b", re.I)
+
+
+def noninference_payload(launcher):
+    """(file, line) when the launcher or a script it runs is a known non-inference payload (indexer, install, build)."""
+    for f, txt in executed_texts(launcher).items():
+        for ln in txt.splitlines():
+            if ln.lstrip().startswith("#"):
+                continue
+            if NONINF_PAYLOAD_RX.search(ln):
+                return f, ln.strip()[:160]
+    return None
+
+
+def check_task_lint(spec, repo=None):
+    """BRF-T6-1, relaxed (operator 2026-11-03): refuse only (1) a box that does not resolve to a real open task (task_box),
+    (2) a box with no model/build identity, (3) a box with no stop rule. Every other finding is a WARNING: printed, and
+    recorded in the row's publish record as spec["publish_warnings"] (-> ready/<id>.json). Returns the warnings."""
+    path, ln, txt, ch = task_box(spec, repo)
+    tl = _task_lint()
+    refuse, warn = tl.publish_findings(txt, ch)
+    # RTG-100 "Rows published with a non-inference payload as compute rows" (operator 2026-11-10): a compute row whose box
+    # is CONFIDENTLY non-inference (explicit [non-inference]/[operator-decision]/[blocked-external] tag, or the deliverable
+    # validator) is refused; the advisory regex guess stays a warning.
+    if str(spec.get("kind") or "compute") == "compute":
+        sc = tl.score2(txt, ch)
+        cls, basis = sc["class"], sc["class_basis"]
+        if cls != "inference" and basis in NONINF_REFUSE_BASES:
+            refuse = list(refuse) + [f"class {cls} ({basis}): a non-inference payload cannot be a compute row; do the work "
+                                     f"in the owner's turn, or tag the box [inference] if it really measures something"]
+            warn = [w for w in warn if not w.startswith("class ")]
+    rf.need(not refuse, f"task_lint publish REFUSED {os.path.basename(path)}:{ln} ({spec.get('handoff_task')}):\n  - "
+            + "\n  - ".join(refuse) + f"\nFIX: edit the box at {path}:{ln} as listed above, then re-run publish_row.py")
+    warn = [f"{os.path.basename(path)}:{ln}: {w}" for w in warn]
+    for w in warn:
+        print(f"WARN task_lint {w}")
+    if warn:
+        spec["publish_warnings"] = warn
+    else:
+        spec.pop("publish_warnings", None)
+    return warn
+
+
+# ---------------------------------------------------------------- publish preflight (pipeline audit 2026-11-10 #4)
+# Each trip-up below cost a published, queued, placed smoke (or a whole run) plus an agent round-trip; each is decidable
+# before the smoke by running a command the row already declares, once, bounded. Operator 2026-11-10 scope "Publish-time
+# checks". Refusals raise rf.Refused (publish exits 2, nothing published, no compute spent); warnings are printed and
+# recorded in publish_warnings.
+PREFLIGHT_TIMEOUT_S = 30
+ENV_CLEAN_RX = re.compile(r"\benv\s+-i\b|\benv\s*=\s*\{|\benv\s*=\s*dict\(")
+NEW_SESSION_RX = re.compile(r"\bstart_new_session\s*=\s*True\b")
+VERDICT_BY = ("agent",)
+
+
+def _churn_mod(name):
+    """A bin/churn module: installed beside bin/rowflow (compute-flags/bin/churn) or in the checkout (scripts/coordination/churn)."""
+    d = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "churn")
+    if d not in sys.path:
+        sys.path.insert(0, d)
+    return __import__(name)
+
+
+def _warn(spec, w):
+    print(f"WARN {w}")
+    pw = list(spec.get("publish_warnings") or [])
+    if w not in pw:
+        spec["publish_warnings"] = pw + [w]
+
+
+def _rule_metrics(ast, out=None):
+    out = [] if out is None else out
+    if ast and ast[0] == "cmp":
+        out.append(f"{ast[1]} {ast[2]} {ast[3]:g}")
+    elif ast:
+        for sub in ast[1:]:
+            _rule_metrics(sub, out)
+    return out
+
+
+def check_decision_rule(spec):
+    """A rule auto_file can check (file_result.parse, as auto_file.machine_checkable) files itself; prose needs a
+    hand-written verdict, so the author must say so up front: "verdict_by": "agent" plus an owner. Returns the parsed
+    checks ([] = prose with verdict_by agent)."""
+    fr = _churn_mod("file_result")
+    rule = str(spec.get("decision_rule") or "")
+    try:
+        checks = _rule_metrics(fr.parse(rule))
+    except fr.RuleError as e:
+        vb = str(spec.get("verdict_by") or "").strip()
+        rf.need(vb in VERDICT_BY and str(spec.get("owner") or "").strip(),
+                f"decision_rule is prose, not machine-checkable ({e}): auto_file cannot file this run and it would wait as "
+                f"NEEDS-AGENT-VERDICT. FIX: write it as `<metric> <op> <number>` joined by and/or (e.g. `tps >= 10 and "
+                f"ppl_delta <= 0.01`, metrics read from result_path), or add \"verdict_by\": \"agent\" to the spec - then the "
+                f"owner ({spec.get('owner') or 'set spec.owner'}) files the verdict after the run with "
+                f"`file_result.py {spec.get('id')} --verdict-json <verdict>`")
+        print(f"DECISION-RULE prose; verdict_by agent: owner {spec.get('owner')} files the verdict by hand after the run")
+        return []
+    print(f"DECISION-RULE machine-checkable; auto_file will check: {'; '.join(checks)} (read from {spec.get('result_path')})")
+    return checks
+
+
+def preflight_env(spec, flags):
+    """The smoke's environment (rowflow.dryrun_run) for this row, minus every FILLER_SMOKE* variable: the commands are
+    asked about the job as it stands, not about a smoke."""
+    rid = str(spec.get("id") or "")
+    dd = rf.dry_dir(flags, rid)
+    regions = str(spec.get("regions") or ("mi210_0,184-191" if spec.get("lane") == "gpu" else "any-cpu-quarter"))
+    try:
+        ws = rf.ws58_cpus(regions)
+    except Exception:  # noqa: BLE001 - abstract regions have no cpu list yet
+        ws = ""
+    env = dict(os.environ, FILLER_DRYRUN="1", FILLER_DRYRUN_DIR=dd, FILLER_STATE_DIR=os.path.join(dd, "state"),
+               FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=os.path.join(dd, "grants"), FILLER_POLL="5",
+               FILLER_OWNER=str(spec.get("owner") or ""), FILLER_EST_WALL_S=str(spec.get("estimate_s") or ""),
+               FILLER_DRYRUN_ONE_QUARTER="0", WS58_REGIONS=ws or "", FILLER_ID=rid,
+               FILLER_RESIDENCY_FILE=os.path.join(dd, rf.SMOKE_RESIDENCY_FILE))
+    return {k: v for k, v in env.items() if not k.startswith("FILLER_SMOKE")}
+
+
+def run_bounded(cmd, cwd, env, timeout=None):
+    """(rc, first output line); rc None = could not be judged (timeout / unrunnable). Never reads stdin."""
+    timeout = timeout or PREFLIGHT_TIMEOUT_S
+    try:
+        r = subprocess.run(["bash", "-c", cmd], cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return None, f"timed out after {timeout}s"
+    except OSError as e:
+        return None, f"could not run: {e}"
+    first = next((ln.strip() for ln in r.stdout.decode(errors="replace").splitlines() if ln.strip()), "")
+    return r.returncode, first[:160]
+
+
+def env_clean_hits(spec):
+    """(file, what) for each job file smoke_branch_files scans (rowflow.smoke_scan_files) that cleans the environment
+    without passing FILLER_ID on, or starts a new session."""
+    launcher = os.path.abspath(str(spec.get("launcher") or ""))
+    try:
+        files = rf.smoke_scan_files({"launcher": {"path": launcher}})
+    except Exception:  # noqa: BLE001 - publish reports a launcher defect itself
+        return []
+    hits = []
+    for f in files:
+        try:
+            if os.path.getsize(f) > rf.SMOKE_SCAN_MAX_BYTES:
+                continue
+            txt = "\n".join(ln for ln in open(f, errors="replace").read().splitlines() if not ln.lstrip().startswith("#"))
+        except OSError:
+            continue
+        m = ENV_CLEAN_RX.search(txt)
+        if m and "FILLER_ID" not in txt:
+            hits.append((f, f"`{m.group(0)}` (no FILLER_ID passthrough)"))
+        m = NEW_SESSION_RX.search(txt)
+        if m:
+            hits.append((f, f"`{m.group(0)}`"))
+    return hits
+
+
+def preflight(spec, flags, rerun=False):
+    """Run once each, bounded (PREFLIGHT_TIMEOUT_S), before anything is published: the decision-rule parse, the smoke
+    predicate, the engine's --complete-cmd and --precond-cmd (in the engine's --workdir, with preflight_env), and the
+    env-cleaning scan. Refuses: a prose rule without verdict_by agent; a smoke_predicate that already exits 0; a
+    --complete-cmd that already exits 0 (unless rerun); a --precond-cmd that exits non-0. Warns: a check that could not be
+    judged (timeout), env cleaning without FILLER_ID / start_new_session in the job files."""
+    check_decision_rule(spec)
+    launcher = os.path.abspath(str(spec.get("launcher") or ""))
+    try:
+        o = rf.parse_launcher(launcher)
+    except Exception:  # noqa: BLE001 - rowflow.publish reports the launcher defect in its own words
+        return
+    wd = o.get("workdir") or "/"
+    for f, what in env_clean_hits(spec):
+        _warn(spec, f"env-clean: {f} runs {what}; the keeper attributes the job's processes (and GPU residency) by "
+                    "FILLER_ID, so a child that loses it reads as not the row's. FIX: pass FILLER_ID through (env -i "
+                    "FILLER_ID=\"$FILLER_ID\" ..., env={..., \"FILLER_ID\": os.environ[\"FILLER_ID\"]}) and keep the child in "
+                    "the job's session (publish continues)")
+    if not os.path.isdir(wd):
+        _warn(spec, f"preflight: engine --workdir {wd} does not exist; smoke_predicate/--complete-cmd/--precond-cmd not run "
+                    "(the engine's `cd` would fail too)")
+        return
+    env = preflight_env(spec, flags)
+    fmt = str(spec.get("result_format") or "")
+    pred = spec.get("smoke_predicate") or (fmt[len("custom:"):] if fmt.startswith("custom:") else None)
+    if pred:
+        kind = "smoke_predicate" if spec.get("smoke_predicate") else "result_format custom:"
+        rc, out = run_bounded(pred, wd, env)
+        rf.need(rc != 0, f"{kind} `{pred[:80]}` already exits 0 BEFORE the launch, so it cannot see the smoke's progress "
+                         "and the dry run would FAIL (no first progress possible). FIX: make it test this run's own output "
+                         "(e.g. a record newer than $FILLER_SMOKE_T0), then re-run publish_row.py <spec.json>")
+        if rc is None:
+            _warn(spec, f"preflight: {kind} {out}; not judged")
+    if o.get("complete_cmd"):
+        rc, out = run_bounded(o["complete_cmd"], wd, env)
+        if rc == 0 and not rerun:
+            raise rf.Refused(f"nothing to do; already complete: the engine's --complete-cmd `{o['complete_cmd'][:100]}` exits 0 "
+                             f"before any run (in {wd}), so the job would end reason=complete at once and be mislabelled "
+                             "no-first-progress. FIX: file the existing result, or point --complete-cmd at THIS run's output, "
+                             "or publish with --rerun to run it again anyway")
+        if rc is None:
+            _warn(spec, f"preflight: --complete-cmd {out}; not judged")
+    if o.get("precond_cmd"):
+        rc, out = run_bounded(o["precond_cmd"], wd, env)
+        rf.need(rc in (0, None), f"--precond-cmd `{o['precond_cmd'][:100]}` exits {rc} now ({out or 'no output'}): the admission "
+                                 "gate refuses it rc=12 and PARKS the row at its first grant. FIX: make the precondition true "
+                                 "(build or fetch it in your turn), then re-run publish_row.py")
+        if rc is None:
+            _warn(spec, f"preflight: --precond-cmd {out}; not judged (the gate admits a timed-out precond too)")
+
+
+def smoke_cpus_of(spec):
+    """D9 2026-11-18 SMOKE-CPUS: the spec's optional smoke_cpus (an int SMOKE_CPUS..SMOKE_CPUS_MAX), default SMOKE_CPUS.
+    Big-model smokes should test plumbing only (latency pre-check plus one answered request), not the full workload;
+    widen with smoke_cpus only when even plumbing cannot finish on 4 cores."""
+    v = spec.get("smoke_cpus")
+    if v is None:
+        return rf.SMOKE_CPUS
+    rf.need(isinstance(v, int) and not isinstance(v, bool) and rf.SMOKE_CPUS <= v <= rf.SMOKE_CPUS_MAX,
+            f"smoke_cpus {v!r} must be an integer {rf.SMOKE_CPUS}..{rf.SMOKE_CPUS_MAX}. FIX: smoke plumbing only (latency "
+            "pre-check plus one answered request); widen only when that cannot finish on 4 cores")
+    return v
+
+
+def smoke_regions(lane, regions, flags, n=None):
+    """Where an immediate (--smoke-now) smoke runs: GPU rows on their own regions, CPU rows on 4 genuinely free cores of
+    the keeper's snapshot (rowflow.host_snapshot: region-lock, open grants, live smokes). None = nothing free now."""
+    if lane == "gpu":
+        return regions
+    _, free, _ = rf.host_snapshot(flags)
+    return rf.pick_smoke_cpus(free, n or rf.SMOKE_CPUS)
+
+
+def queue_cpu_smoke(flags, rid, spec, smoke_s, why=""):
+    """Operator 2026-11-05: the smoke is a keeper-scheduled filler. Unpublish until PASS and queue it; the allocator
+    places it in the next free slot. Queued is not a failure. `cpus` = the spec's smoke_cpus (D9 2026-11-18)."""
+    unpublish(flags, rid)
+    rf.atomic_json(rf.smoke_queued_path(flags, rid), {"id": rid, "smoke_s": smoke_s, "cpus": smoke_cpus_of(spec), "spec": spec,
+                                                      "queued_at": rf.now_iso()})
+    print(f"queued for smoke{why}; the keeper runs it in the next free slot; your row becomes ready on PASS "
+          f"(status: {rf.dry_dir(flags, rid)}/launcher.out) — move to your next task ({rid})")
+
+
+def run_queued_smoke(flags, rid, regions):
+    """The keeper's detached runner for ONE placed CPU smoke (publish_row.py --run-smoke). PASS/FAIL dequeue; WAIT (lock
+    contention, a held host) leaves it queued for the next tick."""
+    q = rf.smoke_queued_path(flags, rid)
+    qd = rf.load_json(q) or {}
+    try:
+        up = unpublished_path(flags, rid)
+        if os.path.exists(up):
+            os.replace(up, rf.ready_path(flags, rid))
+        try:
+            v, msg = run_smoke(flags, rid, regions, int(qd.get("smoke_s") or SMOKE_TIMEOUT_S))
+            if v == "PASS":
+                row = rf.load_json(rf.ready_path(flags, rid))
+                rf.need(row is not None, f"queued smoke {rid} lost its ready manifest")
+                rf.supersede(flags, row)
+                file_if_complete(flags, rid, row)
+        except Exception as e:  # noqa: BLE001
+            # keeper-hotfix 2026-11-05: a harness exception is not the row's verdict - WAIT (requeued, bounded), never FAIL
+            v, msg = "WAIT", f"harness exception {type(e).__name__}: {e}"
+        if v == "WAIT":   # bounded retry: the SMOKE_MAX_WAITS-th WAIT becomes FAIL reason=never-started
+            row = rf.load_json(rf.ready_path(flags, rid)) or rf.load_json(unpublished_path(flags, rid))
+            v = rf.smoke_wait_or_fail(flags, rid, row, msg[:200], log=print)
+        print(f"SMOKE {v} {rid} on {regions}: {msg} (log: {os.path.join(rf.dry_dir(flags, rid), 'launcher.out')})")
+        if v != "WAIT" and os.path.exists(q):
+            os.remove(q)
+        return v
+    finally:
+        try:
+            os.remove(rf.smoke_placed_path(flags, rid))
+        except OSError:
+            pass
+
+
+def retire_old_verdicts(flags, rid):
+    """ws58 2026-11-02: a publish is a FRESH smoke. An old FAIL memo (or PASS) must never stand in for this smoke's result
+    (codex-ni-s18: a 00:07Z FAIL was re-reported at 10:4xZ), so earlier verdicts move to dryrun/<id>/superseded/<ts>/."""
+    dd = rf.dry_dir(flags, rid)
+    old = rf.fail_paths(flags, rid) + ([rf.pass_path(flags, rid)] if os.path.exists(rf.pass_path(flags, rid)) else [])
+    if not old:
+        return
+    dst = os.path.join(dd, "superseded", dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
+    os.makedirs(dst, exist_ok=True)
+    for p in old:
+        os.replace(p, os.path.join(dst, os.path.basename(p)))
+
+
+def supersede_prior_attempts(flags, rid):
+    """Operator 2026-11-07: publishing <lineage>-rN files every earlier ended-unfiled attempt as SUPERSEDED-BY <rid> and reclaims
+    its scratch (shared-scratch guard + filing-no-reclaim.globs apply); ready/.withdrawn attempts are filed WITHDRAWN. Never raises."""
+    try:
+        for d in (os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "churn"),):
+            if d not in sys.path:
+                sys.path.insert(0, d)
+        import filing
+        return filing.supersede_on_publish(flags, rid)
+    except BaseException as e:  # noqa: BLE001
+        print(f"WARN supersede_prior_attempts {rid}: {type(e).__name__}: {e}")
+        return None
+
+
+def unpublished_path(flags, rid): return os.path.join(rf.dry_dir(flags, rid), "unpublished.json")
+
+
+def unpublish(flags, rid):
+    """ws58 2026-11-02: ready/<id>.json exists only for a smoke PASS. A refused/failed smoke moves the manifest to
+    dryrun/<id>/unpublished.json (kept for --repair), so nothing outside the owner's turn sees an unsmoked row."""
+    rp = rf.ready_path(flags, rid)
+    if os.path.exists(rp):
+        os.makedirs(rf.dry_dir(flags, rid), exist_ok=True)
+        os.replace(rp, unpublished_path(flags, rid))
+
+
+def queued_path(flags, rid): return os.path.join(rf.dry_dir(flags, rid), "GPU-SMOKE-QUEUED.json")
+
+
+def gpu_busy(flags):
+    """Operator 2026-11-02: a GPU smoke never loads a model onto the MI210 while a GPU job runs (OOM, timing skew).
+    Busy = a live grant holds gpu-quiet, a region-lock holder exists on gpu-quiet, or a queued-smoke batch is running."""
+    if rf.rl_status().get(rf.GPU, ("free",))[0] != "free":
+        return True
+    return rf.gpu_batch_running(flags) or any(rf.GPU in g["holds"] for g in rf.open_grants(flags))
+
+
+def run_smoke(flags, rid, regions, smoke_s):
+    """THE dry run: (verdict, msg); the manifest survives only a PASS."""
+    v, msg = "FAIL", "smoke did not run"
+    try:
+        v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=smoke_s)
+    finally:
+        if v != "PASS":
+            unpublish(flags, rid)
+    return v, msg
+
+
+def queue_order_key(flags, q):
+    """Operator 2026-11-06: the batch drains by the row's priority_rank (unpublished.json, else its ready manifest, else the
+    queued spec; default 100), then queued time, then id - never by id alone. GPU-SMOKE-QUEUED.json is only a marker."""
+    rid = os.path.basename(os.path.dirname(q))
+    qd = rf.load_json(q) or {}
+    row = rf.load_json(unpublished_path(flags, rid)) or rf.load_json(rf.ready_path(flags, rid)) or qd.get("spec") or {}
+    try:
+        at = qd.get("queued_at") or dt.datetime.fromtimestamp(os.path.getmtime(q), dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    except OSError:
+        at = ""
+    return (rf.row_rank(row), str(at), rid)
+
+
+def alert_queued_nonpass(flags, rid, verdict, msg):
+    """Operator 2026-11-06: a queued smoke that is not a PASS always reaches the owner; there is no silent drop. A FAIL with a
+    FAIL-N.json re-emits smoke-fail for the newest one (idempotent per file). Any other end (WAIT, an exception, a FAIL that
+    wrote no record) leaves dryrun/<id>/QUEUED-DROPPED-<n>.json and a `queued-smoke-dropped` alert with the reason, fix_task
+    and the unpublished.json path. Never raises (an alert failure must not stop the batch)."""
+    try:
+        row = rf.load_json(unpublished_path(flags, rid)) or rf.load_json(rf.ready_path(flags, rid)) or {}
+        owner = str(row.get("owner") or "")
+        fails = rf.fail_paths(flags, rid)
+        if verdict == "FAIL" and fails:
+            fp = fails[-1]
+            rec = rf.load_json(fp) or {}
+            rf.notify.smoke_fail(flags, rid, fp, rec, owner=owner)
+            return fp
+        dd = rf.dry_dir(flags, rid)
+        os.makedirs(dd, exist_ok=True)
+        n = len(glob.glob(os.path.join(dd, "QUEUED-DROPPED-*.json"))) + 1
+        fp = os.path.join(dd, f"QUEUED-DROPPED-{n}.json")
+        reason = f"queued GPU smoke ended {verdict} with no FAIL record: {msg}"[:400]
+        rec = {"id": rid, "at": rf.now_iso(), "kind": "queued-smoke-dropped", "verdict": verdict, "reason": reason,
+               "unpublished": unpublished_path(flags, rid),
+               "fix_task": f"re-run publish_row.py <spec.json> for {rid} ({reason}); manifest kept at {unpublished_path(flags, rid)}"}
+        rf.atomic_json(fp, rec)
+        rf.notify.emit(flags, "queued-smoke-dropped", rid, os.path.basename(fp), f"row {rid} queued GPU smoke {verdict}: {reason}",
+                       "warning", owner, {"fail_file": fp, "reason": reason, "fix_task": rec["fix_task"]})
+        return fp
+    except Exception as e:  # noqa: BLE001
+        print(f"alert-queued-nonpass {rid}: {type(e).__name__}: {e}", file=sys.stderr)
+        return None
+
+
+def run_gpu_queue(flags):
+    """The allocator's detached batch: every queued GPU smoke, one after another, as publish_row would run it - in
+    priority_rank order (queue_order_key); every non-PASS reaches the owner (alert_queued_nonpass)."""
+    n = 0
+    for q in sorted(glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")), key=lambda x: queue_order_key(flags, x)):
+        qd = rf.load_json(q) or {}
+        rid = os.path.basename(os.path.dirname(q))
+        up = unpublished_path(flags, rid)
+        if os.path.exists(rf.withdraw_pending_path(flags, rid)):
+            # withdrawn while queued under this batch: never smoked; the keeper's finish_withdrawals ends it (rc=75)
+            print(f"GPU-SMOKE SKIP {rid}: withdrawn-pending")
+            os.remove(q)
+            continue
+        if os.path.exists(up):
+            os.replace(up, rf.ready_path(flags, rid))
+        try:
+            v, msg = run_smoke(flags, rid, qd.get("regions") or "mi210_0,184-191", int(qd.get("smoke_s") or SMOKE_TIMEOUT_S))
+            if v == "PASS" and os.path.exists(rf.withdraw_pending_path(flags, rid)):
+                unpublish(flags, rid)   # withdrawn during its smoke: a PASS never lands a withdrawn row in ready/
+                v, msg = "WITHDRAWN", "withdrawn-pending; PASS not published"
+            elif v == "PASS":
+                row = rf.load_json(rf.ready_path(flags, rid))
+                rf.need(row is not None, f"queued smoke {rid} lost its ready manifest")
+                rf.supersede(flags, row)
+                file_if_complete(flags, rid, row)
+        except Exception as e:  # noqa: BLE001 - one smoke never stops the batch
+            v, msg = "FAIL", f"{type(e).__name__}: {e}"
+        print(f"GPU-SMOKE {v} {rid}: {msg}")
+        if v not in ("PASS", "WITHDRAWN"):
+            alert_queued_nonpass(flags, rid, v, msg)
+        os.remove(q)
+        n += 1
+    return n
+
+
+def completed_result(row, passed):
+    """Resolve the declared result once; a glob never becomes a destination directory."""
+    declared = row.get("declared_result_path", row.get("result_path"))
+    scratch = os.path.realpath(row.get("scratch_root") or "")
+    rf.need(row.get("scratch_root") and isinstance(declared, str) and os.path.isabs(declared),
+            "completed-smoke result needs an absolute declaration and scratch_root")
+    matches = glob.glob(declared, recursive=True) if glob.has_magic(declared) else [declared]
+    rf.need(len(matches) == 1, "completed-smoke result must match exactly one file")
+    source = os.path.realpath(matches[0])
+    rf.need(os.path.isfile(source) and os.path.commonpath([scratch, source]) == scratch
+            and source != scratch, "completed-smoke result is missing or outside scratch_root")
+    recorded = passed.get("result_path")
+    rf.need(recorded == declared or (isinstance(recorded, str) and not glob.has_magic(recorded)
+            and os.path.realpath(recorded) == source), "PASS result differs from the declared result")
+    if passed.get("result_sha256") is not None:
+        rf.need(rf.sha256(source) == passed["result_sha256"], "PASS result content hash changed")
+    return source
+
+
+def completed_bindings(flags, rid, row, passed, source):
+    """Bind filing to the unchanged PASS, published code and current validated result bytes."""
+    rf.need(row.get("schema") == rf.SCHEMA and row.get("id") == rid and passed.get("id") == rid,
+            "completed smoke row/PASS identity mismatch")
+    rf.need(passed.get("result_format") == row.get("result_format"), "PASS result format mismatch")
+    for key in ("launcher", "engine"):
+        item = row.get(key) or {}
+        rf.need(item.get("path") and item.get("sha256") and os.path.isfile(item["path"]),
+                f"completed smoke {key} identity missing")
+        rf.need(rf.sha256(item["path"]) == item["sha256"] == passed.get(key + "_sha256"),
+                f"completed smoke {key} content hash changed")
+    parsed = rf.parse_launcher(row["launcher"]["path"])
+    rf.need(os.path.realpath(parsed["engine"]) == os.path.realpath(row["engine"]["path"]),
+            "completed smoke launcher engine differs")
+    sources = {os.path.realpath(path): rf.sha256(path) for path in rf.referenced_paths(parsed)
+               if os.path.isfile(path)}
+    return {"schema": "epyc.rowflow.completed_smoke_filing.v1", "id": rid,
+            "manifest_sha256": hashlib.sha256(json.dumps(row, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+            "pass_sha256": rf.sha256(rf.pass_path(flags, rid)), "result_path": source,
+            "result_sha256": rf.sha256(source), "sources_sha256": sources,
+            "launcher_sha256": row["launcher"]["sha256"], "engine_sha256": row["engine"]["sha256"]}
+
+
+def file_if_complete(flags, rid, row):
+    """ws58 2026-11-02: a smoke that COMPLETED the whole job is the run. Its result already sits where the row writes it
+    (a declared glob resolves to one literal file); grants/<id>.ended + .complete are written as a granted run leaves them, so
+    the row is done (status: grants/<id>.complete) and is never granted."""
+    p = rf.load_json(rf.pass_path(flags, rid)) or {}
+    if p.get("job_complete") is not True:
+        return False
+    # Operator 2026-11-02: never file a row complete because its SMOKE passed. Re-checked here (a PASS.json may predate
+    # the check): the launcher must have no FILLER_SMOKE/FILLER_DRYRUN branch and the full-job predicate must hold.
+    # Preserve the exact published manifest before removing it from READY. The
+    # filer needs its rule and result path even when the entire job ran in the
+    # owner smoke. Do not reconstruct those fields after the run.
+    try:
+        ready = rf.ready_path(flags, rid)
+        rf.need(not os.path.exists(ready) or rf.load_json(ready) == row,
+                "ready manifest differs from completed smoke")
+        src = completed_result(row, p)
+        bindings = completed_bindings(flags, rid, row, p, src)
+        dd = rf.dry_dir(flags, rid)
+        receipt_path = os.path.join(dd, "completed-smoke-filing.json")
+        previous = rf.load_json(receipt_path)
+        rf.need(not os.path.exists(receipt_path) or previous == bindings,
+                "completed smoke filing content hash changed")
+        ok, why = rf.smoke_completion_check(row, bool(p.get("smoke_units_capped")), p.get("units"))
+        if not ok:
+            print(f"smoke passed but the row is NOT complete ({rid}): {why}; it stays a row")
+            return False
+        rf.need(bindings == completed_bindings(flags, rid, row, p, src),
+                "completed smoke content changed during full-completion check")
+        rf.atomic_json(os.path.join(dd, "published-manifest.json"), row)
+        archived = dict(row, result_path=src, declared_result_path=row["result_path"],
+                        completed_result_sha256=bindings["result_sha256"])
+        rf.atomic_json(os.path.join(dd, "completed-manifest.json"), archived)
+        rf.atomic_json(receipt_path, bindings)
+        g = os.path.join(flags, "grants")
+        os.makedirs(g, exist_ok=True)
+        dd = rf.dry_dir(flags, rid)
+        for term in ("ended", "complete"):
+            terminal_src = os.path.join(dd, term)
+            dest = os.path.join(g, f"{rid}.{term}")
+            if os.path.exists(terminal_src):
+                with open(terminal_src) as f:
+                    txt = f.read()
+            elif os.path.exists(dest):
+                # A retry must retain the terminal bytes already filed, including their time.
+                with open(dest) as f:
+                    txt = f.read()
+            else:
+                # the engine's own end-record format (filler_run15.sh: `rc=N time=T reason=R`, `complete time=T id=ID`):
+                # grants/<id>.ended + .complete are THE end record a smoke-completed row leaves, as a granted run does
+                txt = (f"rc=0 time={rf.now_iso()} reason=complete-in-smoke\n" if term == "ended"
+                       else f"complete time={rf.now_iso()} id={rid}\n")
+            if os.path.exists(dest):
+                with open(dest) as f:
+                    rf.need(f.read() == txt, "existing completed-smoke terminal differs")
+                continue
+            tmp = dest + ".tmp"
+            with open(tmp, "w") as f:
+                f.write(txt)
+            os.replace(tmp, dest)
+        ready = rf.ready_path(flags, rid)
+        if os.path.exists(ready):
+            rf.need(rf.load_json(ready) == row, "ready manifest changed during completed filing")
+            os.remove(ready)
+    except Exception:
+        # Any failure after completed work must not leave it grantable again.
+        # Preserve READY in the existing non-ready repair location, then raise.
+        unpublish(flags, rid)
+        raise
+    print(f"job completed inside the smoke: no compute row needed; file the result now ({rid}: {src})")
+    return True
+
+
+def resume_complete(flags, rid):
+    """Retry only terminal filing from a prior PASS; never publish, smoke or qualify again."""
+    rf.need(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", rid), "invalid completed row id")
+    dd = rf.dry_dir(flags, rid)
+    candidates = [rf.load_json(os.path.join(dd, name)) for name in
+                  ("unpublished.json", "published-manifest.json")]
+    rows = [row for row in candidates if row is not None]
+    if not rows:
+        archived = rf.load_json(os.path.join(dd, "completed-manifest.json"))
+        if archived is not None:
+            row = dict(archived)
+            if row.get("completed_result_sha256"):
+                rf.need(os.path.isfile(row.get("result_path", ""))
+                        and rf.sha256(row["result_path"]) == row["completed_result_sha256"],
+                        "archived completed result content hash changed")
+            if "declared_result_path" in row:
+                row["result_path"] = row.pop("declared_result_path")
+                row.pop("completed_result_sha256", None)
+            rows = [row]
+    rf.need(rows and all(row == rows[0] for row in rows), "prior completed/unpublished manifest missing or ambiguous")
+    passed = rf.load_json(rf.pass_path(flags, rid))
+    rf.need(passed and passed.get("job_complete") is True, "prior completed PASS missing")
+    rf.need(file_if_complete(flags, rid, rows[0]), "prior smoke no longer satisfies full completion")
+    return 0
+
+
+def pid_argv(pid):
+    """argv of a live pid as one string ('' when unreadable)."""
+    try:
+        with open(f"/proc/{int(pid)}/cmdline", "rb") as f:
+            return f.read().replace(b"\0", b" ").decode(errors="replace")
+    except (OSError, TypeError, ValueError):
+        return ""
+
+
+def smoke_in_flight(flags, rid):
+    """Why a smoke of `rid` is in flight, else None. Stale records never block: a RUNNING.json counts only while its pid is
+    alive and before its deadline+grace (past that the keeper's reconcile_dryruns owns it); a SMOKE-PLACED.json only while
+    its pid is alive AND is still that row's --run-smoke runner (a recycled pid is not a smoke)."""
+    r = rf.load_json(rf.running_path(flags, rid)) or {}
+    if r.get("pid") and rf.proc_alive(r["pid"]):
+        dl = rf.iso_epoch(r["deadline"]) if r.get("deadline") else None
+        if dl is None or time.time() < dl + rf.DRYRUN_DEADLINE_GRACE_S:
+            return f"dryrun/{rid}/RUNNING.json pid {r['pid']} (since {r.get('started')})"
+    pl = rf.load_json(rf.smoke_placed_path(flags, rid)) or {}
+    if pl.get("pid") and rf.proc_alive(pl["pid"]):
+        argv = pid_argv(pl["pid"])
+        if "publish_row.py" in argv and "--run-smoke" in argv and rid in argv:
+            return f"dryrun/{rid}/SMOKE-PLACED.json runner pid {pl['pid']} (since {pl.get('at')})"
+    return None
+
+
+def publish_smoked(spec, flags, source, queue_cpu=False):
+    """Publish, then THE dry run (rowflow.dryrun_run writes PASS.json or the FAIL memo). queue_cpu=True (the CLI default,
+    operator 2026-11-05): a CPU row's smoke is QUEUED for the keeper (returns None). A GPU row whose GPU is busy is QUEUED
+    for the next GPU gap. An immediate CPU smoke with no free cores in the keeper's snapshot is queued too.
+    A republish while this id's smoke is in flight is refused first: its GPU-busy/queue/fail paths would unpublish the live
+    row under the running smoke. Only the CLI publish path reaches here; the keeper's runners call run_smoke directly."""
+    busy = smoke_in_flight(flags, str(spec.get("id") or ""))
+    if busy:
+        raise rf.Refused(f"smoke already in flight for {spec.get('id')}: {busy}; republishing now would unpublish the live row. "
+                         "Wait for its verdict (or stop that smoke), then publish again")
+    want = smoke_cpus_of(spec)   # refused before anything is published
+    row = rf.publish(spec, flags, source=source)
+    rid = row["id"]
+    if want > rf.SMOKE_CPUS:
+        held = int(rf.contract_of(row, flags=flags).get("held") or 0)
+        if want > held:
+            unpublish(flags, rid)
+            raise rf.Refused(f"smoke_cpus {want} exceeds the row's own contract width ({held} cores); a smoke never runs wider "
+                             "than its row. FIX: lower smoke_cpus (plumbing only: latency pre-check plus one answered request)")
+    retire_old_verdicts(flags, rid)
+    supersede_prior_attempts(flags, rid)
+    smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
+    if spec.get("lane") == "gpu" and gpu_busy(flags):
+        unpublish(flags, rid)
+        rf.atomic_json(queued_path(flags, rid), {"id": rid, "regions": spec.get("regions") or "mi210_0,184-191", "smoke_s": smoke_s, "spec": spec,
+                                                 "queued_at": rf.now_iso()})
+        print(f"GPU busy: smoke queued; it runs in the next GPU gap; your row becomes ready on PASS — move to your next task ({rid})")
+        return None
+    if spec.get("lane") != "gpu" and queue_cpu:
+        queue_cpu_smoke(flags, rid, spec, smoke_s)
+        return None
+    regions = smoke_regions(spec.get("lane"), spec.get("regions") or "mi210_0,184-191", flags, want)
+    if not regions:
+        queue_cpu_smoke(flags, rid, spec, smoke_s, " (no free cores right now)")
+        return None
+    v, msg = run_smoke(flags, rid, regions, smoke_s)
+    if v == "PASS":
+        print(f"SMOKE PASS {rid} on {regions}: {msg}")
+        rf.supersede(flags, row)   # refinement 5: a PASSed successor withdraws its predecessors
+        if file_if_complete(flags, rid, row):
+            return None
+        return row
+    if v == "WAIT" and spec.get("lane") != "gpu":   # waiting for a lock / a held host is never a failure: the keeper retries
+        queue_cpu_smoke(flags, rid, spec, smoke_s, f" (WAIT: {msg[:160]})")
+        return None
+    # operator 2026-11-03 design goal: cause + fix in ONE line; the long log stays on disk behind a path
+    raise rf.Refused(f"smoke {v} for {rid} on {regions}: {msg} (log: {os.path.join(rf.dry_dir(flags, rid), 'launcher.out')}; "
+                     f"the row is not granted until a smoke PASSes)")
 
 
 def results_written_during(fail, rundir):
@@ -129,8 +1028,8 @@ def results_written_during(fail, rundir):
 
 def repair(rid, flags):
     """Returns (rc, message). rc 0 = republished; 3 = unknown failure class (nothing changed)."""
-    row = rf.load_json(rf.ready_path(flags, rid))
-    rf.need(row and row.get("schema") == rf.SCHEMA, f"no epyc.row.v3 row at ready/{rid}.json")
+    row = rf.load_json(rf.ready_path(flags, rid)) or rf.load_json(unpublished_path(flags, rid))
+    rf.need(row and row.get("schema") == rf.SCHEMA, f"no epyc.row.v3 row at ready/{rid}.json or dryrun/{rid}/unpublished.json")
     fails = rf.fail_paths(flags, rid)
     rf.need(fails, f"no FAIL record under dryrun/{rid}/; nothing to repair")
     fail = rf.load_json(fails[-1]) or {}
@@ -155,6 +1054,8 @@ def repair(rid, flags):
             spec.pop("result_format")  # the extension guess for a marker, not a declaration: lint refuses or rewrites
     elif cls != tc.FailClass.derivable_field_missing:
         return 3, f"UNKNOWN-FAILURE-CLASS {reason}" if d["source"] != "typed" else f"UNKNOWN-FAILURE-CLASS (typed {cls.value}) {reason}"
+    # no task re-lint here: --repair republishes a row that passed check_task_lint at publish and changes only
+    # lint-derivable fields (result_path/result_format/lane/scratch_root/keep), never handoff_task
     for note in lint(spec):
         print(f"LINT {note}")
     new = rf.publish(spec, flags, source=f"repair:{fails[-1]}")
@@ -168,9 +1069,31 @@ def main(argv=None):
     ap.add_argument("spec", nargs="?")
     ap.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")
     ap.add_argument("--repair", metavar="ROW_ID")
+    ap.add_argument("--resume-complete", metavar="ROW_ID", help="retry terminal filing from an unchanged prior completed PASS; no smoke rerun")
     ap.add_argument("--flags", default=rf.FLAGS)
+    ap.add_argument("--run-gpu-queue", action="store_true", help="(allocator, detached) run every queued GPU smoke")
+    ap.add_argument("--smoke-now", action="store_true", help="run the CPU smoke now on free cores of the keeper's snapshot "
+                    "instead of queueing it for the keeper (still queued when nothing is free)")
+    ap.add_argument("--run-smoke", metavar="ROW_ID", help="(allocator, detached) run ONE keeper-placed CPU smoke")
+    ap.add_argument("--regions", help="with --run-smoke: the cpus the keeper assigned")
+    ap.add_argument("--rerun", action="store_true", help="publish even though the engine's --complete-cmd already exits 0 "
+                    "(the preflight otherwise refuses: nothing to do)")
     a = ap.parse_args(argv)
+    if a.run_smoke:
+        rf.need(a.regions, "--run-smoke needs --regions")
+        v = run_queued_smoke(a.flags, a.run_smoke, a.regions)
+        return 0 if v in ("PASS", "WAIT") else 1
+    if a.run_gpu_queue:
+        try:
+            print(f"GPU-SMOKE-BATCH ran {run_gpu_queue(a.flags)}")
+        finally:
+            rf.release_gpu_batch(a.flags)
+        return 0
     try:
+        rf.need(sum(bool(x) for x in (a.spec, a.repair, a.resume_complete)) <= 1,
+                "choose spec, --repair or --resume-complete")
+        if a.resume_complete:
+            return resume_complete(a.flags, a.resume_complete)
         if a.repair:
             rc, msg = repair(a.repair, a.flags)
             print(msg)
@@ -180,9 +1103,17 @@ def main(argv=None):
         rf.need(spec, f"{a.spec} is not a JSON object")
         if a.migrate:
             spec = rf.spec_from_legacy(spec, a.flags)
+        rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
+        check_operator_gate(spec, a.flags)
+        refresh_view()
+        check_handoff(spec)
+        check_task_lint(spec)
         for note in lint(spec):
             print(f"LINT {note}")
-        print(rf.published_line(rf.publish(spec, a.flags, source=os.path.abspath(a.spec)), a.flags))
+        preflight(spec, a.flags, rerun=a.rerun)   # pipeline audit 2026-11-10 #4: before anything is published or queued
+        row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now)
+        if row:
+            print(rf.published_line(row, a.flags))
         return 0
     except rf.Refused as e:
         print(f"REFUSED: {e}")

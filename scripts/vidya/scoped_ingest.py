@@ -521,7 +521,7 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
     report: dict[str, Any] = {"schema": REPORT_SCHEMA, "store_root": str(root), "as_of": as_of,
                               "receipt_dirs": [], "receipts_listed": 0, "receipts_known": 0,
                               "receipts_memo_refused": 0, "receipts_read": 0,
-                              "rows_projected": 0, "v2_projected": 0, "refusals": [],
+                              "rows_projected": 0, "v2_projected": 0, "steps_projected": 0, "refusals": [],
                               "floors_listed": 0, "floors_known": 0, "floors_memo_refused": 0,
                               "floors_projected": 0, "served_shape_listed": 0, "served_shape_known": 0,
                               "served_shape_memo_refused": 0, "served_shape_projected": 0,
@@ -610,6 +610,20 @@ def ingest_scoped_store(ledger: Ledger | str | Path, store_root: str | Path, *, 
                 report["v2_projected"] += 1
         except (ProjectionError, OSError, ValueError) as exc:
             reason = f"v2 {type(exc).__name__}: {exc}"[:300]
+            report["refusals"].append({"receipt": str(path), "reason": reason})
+            refused_memo[memo_key] = {"stat": [stat.st_size, stat.st_mtime_ns], "reason": reason}
+        # VB-SL2-STEPS: estimated target steps/s rows, only for a capture whose native body carries
+        # the block (zero rows otherwise, so a block-less capture ingests exactly as before). Own
+        # try: a steps refusal (e.g. a missing estimator string) must not cost the v1/v2 rows.
+        try:
+            for native in serving.native_rows_steps(document, receipt_locator=f"autokernel:{path}",
+                                                    receipt_sha256=digest):
+                tup = corpus._carry_verification(serving.project_steps(native), native, digest)
+                incoming.extend(to_frames(tup, as_of=as_of, adapter_id=serving.ADAPTER_ID_STEPS,
+                                          authority=getattr(serving, "AUTHORITY", None)))
+                report["steps_projected"] += 1
+        except (ProjectionError, OSError, ValueError) as exc:
+            reason = f"steps {type(exc).__name__}: {exc}"[:300]
             report["refusals"].append({"receipt": str(path), "reason": reason})
             refused_memo[memo_key] = {"stat": [stat.st_size, stat.st_mtime_ns], "reason": reason}
     if incoming:

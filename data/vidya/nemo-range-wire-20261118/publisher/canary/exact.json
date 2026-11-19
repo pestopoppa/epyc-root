@@ -1,0 +1,148 @@
+{
+  "schema": "epyc.vidya.loop_beliefs.v1",
+  "consumer": "autokernel.nemo_fixture_range_join",
+  "as_of": "2026-11-18T21:32:15.723939Z",
+  "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/canary/ledger.jsonl",
+  "policy": {
+    "use": "planner-context",
+    "floor": "Judged/Located",
+    "standard": "DV"
+  },
+  "known_good_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/canary/exact.known-good.json",
+  "status": "ready",
+  "reason": null,
+  "detail": "",
+  "tier_emptied": [],
+  "tier_emptied_alarm": {
+    "key": "belief-target-tier-emptied.autokernel.nemo_fixture_range_join",
+    "action": null,
+    "error": "ModuleNotFoundError: No module named 'session_bus'"
+  },
+  "targets": [
+    {
+      "scope": "task",
+      "task_id": "VB-NEMO-RANGE-JOIN-WIRE"
+    }
+  ],
+  "ledger_state": {
+    "schema": "epyc.vidya.ledger_state.v1",
+    "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/canary/ledger.jsonl",
+    "frame_count": 3,
+    "head_seq": 2,
+    "head_hash": "sha256:42dd186edbf28f7d6e3df374235325ecc55c81cd8cf8c8b6934c49019bfffc9e",
+    "verified_at": "2026-11-18T21:32:13Z",
+    "fresh": true,
+    "freshness": {
+      "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/canary/index.yaml",
+      "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "index_max_id": 0,
+      "synced_max_id": 0,
+      "last_sync": "2026-11-18T21:32:13Z",
+      "was_fresh": false,
+      "sync_action": "ingested",
+      "frames_emitted": 0,
+      "sync_seconds": 0.0,
+      "sources": []
+    }
+  },
+  "ledger_state_digest": "sha256:94f67f90f9101936d1fe8795e11f23e9d7d677bc5fbe49b603c43883aa88215c",
+  "evidence": {
+    "status": "presented",
+    "reasons": [],
+    "frontier": 3,
+    "as_of": "2026-11-18T21:32:15.723939Z",
+    "claim_ids": [
+      "clm_nemo-range-join:c07c0f2008af83014d6294ecbad585bbb6e24f84f654b633b9338bb4a87337ad"
+    ],
+    "contested_claim_ids": [],
+    "withdrawn_claim_ids": [],
+    "refuted_claim_ids": [],
+    "host_claim_ids": [],
+    "not_evidence_claim_ids": [],
+    "claims": [
+      {
+        "claim_id": "clm_nemo-range-join:c07c0f2008af83014d6294ecbad585bbb6e24f84f654b633b9338bb4a87337ad",
+        "source_kind": "nemo-range-join",
+        "run": null,
+        "grade": "Judged/Located",
+        "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/replay.json#sha256=c07c0f2008af83014d6294ecbad585bbb6e24f84f654b633b9338bb4a87337ad",
+        "tier": "target",
+        "status": "verified",
+        "outcome": "",
+        "mechanism_id": "",
+        "value": 1.0,
+        "unit": "replay_pass_indicator",
+        "effect_rel": null,
+        "noise_floor_rel": null,
+        "anchor_value": null,
+        "n_pairs": null,
+        "reps": 80,
+        "recipe": "",
+        "model_file": "",
+        "stale_epoch": false,
+        "retrofit": false,
+        "linked_claim_ids": [],
+        "knob_family": "",
+        "role": "",
+        "varied": [],
+        "knobs": {},
+        "stack_regime": "",
+        "task_id": "VB-NEMO-RANGE-JOIN-WIRE",
+        "not_evidence": false
+      }
+    ],
+    "flagged": {
+      "contested": [],
+      "withdrawn": [],
+      "refuted": []
+    },
+    "tiers": {
+      "knob": 0,
+      "target": 1,
+      "lineup": 0,
+      "sibling": 0,
+      "host": 0,
+      "harness": 0
+    },
+    "tiers_shown": {
+      "knob": 0,
+      "target": 1,
+      "lineup": 0,
+      "sibling": 0,
+      "host": 0,
+      "harness": 0
+    },
+    "nonempty_target": true,
+    "empty_targets": [],
+    "banner": null,
+    "tried_index": [],
+    "tried_index_count": 0,
+    "runs": [
+      {
+        "source_kind": "nemo-range-join",
+        "run": null,
+        "status": "presented",
+        "reason": "",
+        "claim_ids": [
+          "clm_nemo-range-join:c07c0f2008af83014d6294ecbad585bbb6e24f84f654b633b9338bb4a87337ad"
+        ]
+      }
+    ],
+    "omitted": [],
+    "omitted_count": 0,
+    "section": "## Belief-kernel evidence (Vidya ledger, read-only)\nTarget(s): task VB-NEMO-RANGE-JOIN-WIRE.\nTask observations apply only to the requested task and the scope stated in each claim. Grade is the folded claim_tuple.grade() Q/T at ledger frontier 3, as of 2026-11-18T21:32:15.723939Z.\n### Usable, target tier -- claims scoped to the requested target\n- clm_nemo-range-join:c07c0f2008af83014d6294ecbad585bbb6e24f84f654b633b9338bb4a87337ad [Judged/Located \u00b7 verified] task VB-NEMO-RANGE-JOIN-WIRE\n  fixture_range_join_replay: 1 replay_pass_indicator (n=80). Current retained-fixture replay only. Original capture custody, clock identity, server-token attribution, historical boundaries and GPU behavior remain unknown.\n  /mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/replay.json#sha256=c07c0f2008af83014d6294ecbad585bbb6e24f84f654b633b9338bb4a87337ad: publisher_smoke retained 80 SDK fixture runs passed the range join replay. Current retained-fixture replay only. Original capture custody, clock identity, server-token attribution, historical boundaries and GPU behavior remain unknown.\nShown 0 of 0 knob, 1 of 1 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 0 of 0 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.\nOptional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.",
+    "section_sha256": "96575ebd596efc758a49b0517a761e57a997f3e9cd8e71d9359a042ef5c0e3c9",
+    "section_bytes": 1619
+  },
+  "banner": null,
+  "flag_counts": {
+    "contested": 0,
+    "withdrawn": 0
+  },
+  "known_good_error": null,
+  "alarm": {
+    "cleared": {
+      "error": "ModuleNotFoundError: No module named 'session_bus'"
+    }
+  }
+}

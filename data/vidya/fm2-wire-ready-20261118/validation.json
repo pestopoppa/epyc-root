@@ -1,0 +1,34 @@
+{
+  "scope": "Offline synthetic controls; native source-control acceptance remains separate",
+  "system_pytest": {
+    "command": "python3 -m pytest -q tests/vidya/test_fm2_adamast.py scripts/experiments/fm2-adamast/test_pilot.py tests/vidya/test_fm4_gate_acceptance.py",
+    "passed": 43,
+    "skipped": 5,
+    "skip_reason": "System Python lacks OpenAI transport dependencies; resolved by running source/transport suites under the prepared runtime interpreter",
+    "carrier_invariants": {
+      "tuples": 2,
+      "source_kinds": 1,
+      "violations": 0
+    }
+  },
+  "runtime_python_unittest": {
+    "interpreter": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python",
+    "commands": [
+      "-B scripts/experiments/fm2-adamast/test_pilot.py",
+      "-B tests/vidya/test_fm2_adamast.py"
+    ],
+    "producer_transport_passed": 7,
+    "adapter_cli_canary_passed": 5,
+    "skipped": 0
+  },
+  "controls": [
+    "native-parser diagnosis rederivation",
+    "coherently resealed diagnosis mismatch",
+    "request/trace prompt mismatch",
+    "source and response drift",
+    "missing pre-call capture refusal",
+    "failure UNKNOWN without numeric diagnosis",
+    "exact diagnostic claim and unrelated-consumer exclusion",
+    "smoke begin-boundary and no-repeat request safety"
+  ]
+}

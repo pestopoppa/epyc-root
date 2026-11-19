@@ -1,0 +1,10 @@
+{
+  "binding_expected_custody_sha256": "ab6d10e509d7483963a39b0da2caccab4ac8b85ee33a9e0b117107601d8d8702",
+  "custody_source_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17-safe/custody.py",
+  "custody_source_sha256": "ab6d10e509d7483963a39b0da2caccab4ac8b85ee33a9e0b117107601d8d8702",
+  "schema": "kpf17.alt17-input-seal.v1",
+  "scope": "map-capture revalidation only",
+  "source_binding_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17-safe/binding.json",
+  "source_binding_sha256": "5b56f806a39f24a2f68dafe147b5b56295a2975fea3914bca2a388e571b16b82",
+  "tested_function": "custody.validate_maps"
+}

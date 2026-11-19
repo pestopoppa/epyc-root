@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-afdfa091684fea1c",
+      "failure_modes": [
+        {
+          "code": "MAST-13",
+          "name": "Weak verification",
+          "evidence": "The agent states: \"#30574 is absent. Its sha is not in the object store, so I judged from source: v10 has no `save_slot_draft` or `SLOT_DRAFT_MAGIC`.\" This relies on the absence of specific string literals in the source code rather than verifying the functional behavior or the actual merge status via a reliable method (like `git log` or checking the remote directly if the object store is incomplete). The task explicitly asked to check presence in trees, and while the agent tried `merge-base`, the fallback to source inspection for a missing SHA is a weak check that could miss refactored code or different naming conventions.",
+          "confidence": "medium",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795005814,
+        "warnings": []
+      }
+    }
+  ]
+}

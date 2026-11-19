@@ -1,0 +1,31 @@
+{
+  "id": "cafe4-v10-geometry-capture-v6-build-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-geometry-capture-v6-build/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-geometry-capture-v6-build/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Accept only pinned v10 target diagnostic with exact frozen prompts and V6 capture candidate build, compiled CAFE4_CAPTURE, geometry, MTP and rewind markers, hashes and local linkage. Build-only; write-time grant provenance, native controls and full CAFE-4 remain unproven.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-geometry-capture-v6-build",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.sh",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sha256",
+    "*.patch",
+    "*.md",
+    "*.txt"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-geometry-capture-v6-build/proof.py predicate"
+}

@@ -1,0 +1,31 @@
+{
+ "at": "2026-11-05T00:33:02Z",
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/launcher.out",
+ "elapsed_s": 56,
+ "ended": "rc=5 time=2026-11-05T00:32:06Z reason=build-missing:README.md: OK",
+ "engine_sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2",
+ "first_progress": null,
+ "first_progress_s": 140,
+ "first_unit_at": null,
+ "fix_task": "fix dry-run failure of kpf174-plan-bound-integration-20261105: job ended rc=5 time=2026-11-05T00:32:06Z reason=build-missing:README.md: OK after 5s, before its first progress (no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/native-attempts/attempt-b_mdvpvc/native-result.json (json): no new real record); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=0-3; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (see compute-flags/dryrun/kpf174-plan-bound-integration-20261105/launcher.out; the keeper retries as soon as the launcher file changes)",
+ "id": "kpf174-plan-bound-integration-20261105",
+ "launcher_out_tail": [
+  "",
+  "==== dry run 2026-11-05T00:32:05Z regions=0-3 launcher_sha=f70c890d22ea3ee0bd1d2b030b07d81ede153d18cfa6d63bd90432e931e4c404 units_before=0",
+  "2026-11-05T00:32:05Z [kpf174-plan-bound-integration-20261105] launcher up pid=2252338 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/stop minwin=300s ports=none dryrun=1",
+  "2026-11-05T00:32:06Z [kpf174-plan-bound-integration-20261105] ended rc=5 reason=build-missing:README.md: OK  (grant deleted)",
+  "2026-11-05T00:32:41Z [kpf174-plan-bound-integration-20261105] launcher signalled",
+  "==== dry run FAIL: job ended rc=5 time=2026-11-05T00:32:06Z reason=build-missing:README.md: OK after 5s, before its first progress (no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/native-attempts/attempt-b_mdvpvc/native-result.json (json): no new real record); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=0-3; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-05T00:33:02Z)"
+ ],
+ "launcher_sha256": "f70c890d22ea3ee0bd1d2b030b07d81ede153d18cfa6d63bd90432e931e4c404",
+ "progress_rule": "record",
+ "reason": "job ended rc=5 time=2026-11-05T00:32:06Z reason=build-missing:README.md: OK after 5s, before its first progress (no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/native-attempts/attempt-b_mdvpvc/native-result.json (json): no new real record); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=0-3; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf174-plan-bound-integration-20261105/native-attempts/attempt-b_mdvpvc/native-result.json",
+ "row_sha256": "bac615fbfccbb02bd8d07f4787ef729324179ef70e0bbf7562b7daa108f63ea8",
+ "rowflow_sha256": "0feacff131d8fc88f58b33d37adaeb75c62ce02c15b2a7fdcb23d3f8f88ecb1f",
+ "units": 0,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

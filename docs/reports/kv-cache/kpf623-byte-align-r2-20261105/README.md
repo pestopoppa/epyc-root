@@ -1,0 +1,1 @@
+Successor enumerates all empty auxiliary IDs and verifies the sealed original classification counts and unique reconstructions without reclassifying. Original native census remains inconclusive; byte decomposition does not prove tokenizer compatibility.

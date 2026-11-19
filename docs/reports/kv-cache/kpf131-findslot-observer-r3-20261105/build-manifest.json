@@ -1,0 +1,23 @@
+{
+  "binary": "fixture",
+  "binary_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d",
+  "build_observation": "Recorded retrospectively from this session compile command; this manifest is not an independent reproducible-build attestation.",
+  "compiler": "/usr/bin/x86_64-linux-gnu-g++-15",
+  "compiler_sha256": "148558fc6e291be5a3a1c14adef7638c4c8bec30d085ebaff740244c0204be37",
+  "compiler_version": "c++ (Ubuntu 15.2.0-4ubuntu4) 15.2.0",
+  "flags": [
+    "-std=c++17",
+    "-I<detached-source>/src",
+    "-I<detached-source>/include",
+    "-I<detached-source>/ggml/include",
+    "-L<old-build>/bin",
+    "-Wl,-rpath,<old-build>/bin",
+    "-lllama",
+    "-lggml",
+    "-lggml-base"
+  ],
+  "schema": "kpf131.fixture-build.v1",
+  "source": "fixture.cpp",
+  "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+  "source_sha256": "086b7f9bb76087bd841b65b4d9f40ea5b8dda880b70204140222fd9078921fed"
+}

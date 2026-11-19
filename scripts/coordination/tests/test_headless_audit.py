@@ -172,7 +172,7 @@ class MutationProbeAntiVacuityTests(AuditTestCase):
         base = git(self.repo, "rev-parse", "HEAD").strip()
         head = self.commit_change("src/widget.py",
                                   "def widget():\n    return 42\n", "fix widget")
-        result = self._audit_offline("Fix the null return in src/widget.py", base, head)
+        result = self._audit_offline("Fix src/widget.py: the null return", base, head)
         probe = result["mutation_probe"]
         self.assertEqual(probe["target"], "src/widget.py")
         self.assertTrue(probe["passed"], probe)
@@ -186,7 +186,7 @@ class MutationProbeAntiVacuityTests(AuditTestCase):
         """THE ANTI-VACUITY CASE. Task names src/widget.py; the worker changed docs."""
         base = git(self.repo, "rev-parse", "HEAD").strip()
         head = self.commit_change("docs/notes.md", "# notes\nchanged\n", "touch docs")
-        result = self._audit_offline("Fix the null return in src/widget.py", base, head)
+        result = self._audit_offline("Fix src/widget.py: the null return", base, head)
         probe = result["mutation_probe"]
         self.assertEqual(probe["target"], "src/widget.py")
         self.assertFalse(probe["passed"], probe)
@@ -211,7 +211,7 @@ class MutationProbeAntiVacuityTests(AuditTestCase):
                       "fixture is wrong: the naive log probe must be able to pass here, "
                       "otherwise this test proves nothing about the net-diff choice")
 
-        result = self._audit_offline("Fix the null return in src/widget.py", base, head)
+        result = self._audit_offline("Fix src/widget.py: the null return", base, head)
         probe = result["mutation_probe"]
         self.assertFalse(probe["passed"], probe)
         self.assertEqual(result["verdict"], ha.NEEDS_REWORK)
@@ -225,7 +225,7 @@ class MutationProbeAntiVacuityTests(AuditTestCase):
         # reverse-apply of that patch can no longer check clean.
         (self.repo / "src" / "widget.py").write_text(
             "totally unrelated content\n", encoding="utf-8")
-        result = self._audit_offline("Fix the null return in src/widget.py", base, head)
+        result = self._audit_offline("Fix src/widget.py: the null return", base, head)
         probe = result["mutation_probe"]
         checks = {c["check"]: c for c in probe["checks"]}
         self.assertTrue(checks["present"]["passed"])
@@ -242,7 +242,7 @@ class MutationProbeAntiVacuityTests(AuditTestCase):
         self.assertEqual(result["verdict"], ha.BLOCKED_EVIDENCE)
         self.assertEqual(result["mechanical_floor"], ha.BLOCKED_EVIDENCE)
 
-    def test_probe_target_comes_from_the_task_text_not_the_diff(self) -> None:
+    def test_probe_target_comes_from_explicit_task_deliverable_not_the_diff(self) -> None:
         """If the target were chosen from the diff, the probe would be a tautology."""
         base = git(self.repo, "rev-parse", "HEAD").strip()
         head = self.commit_change("docs/notes.md", "# notes\nx\n", "docs only")
@@ -250,8 +250,72 @@ class MutationProbeAntiVacuityTests(AuditTestCase):
         facts = ha.git_facts(self.repo, f"{base}..{head}")
         target = ha.choose_probe_target(rows, facts)
         self.assertEqual(target["target"], "src/widget.py")
-        self.assertEqual(target["derived_from"], "task_text")
+        self.assertEqual(target["derived_from"], "task_text_direct_action_path")
         self.assertNotIn(target["target"], facts["changed_paths"])
+
+    def test_probe_ignores_context_path_and_selects_stated_deliverable(self) -> None:
+        rows = [{"task_id": "T-2", "task_text":
+                 "Read docs/background.md for context; implement src/widget.py; "
+                 "docs/reference-material.md is background."}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertEqual(target["target"], "src/widget.py")
+        self.assertEqual(target["derived_from"], "task_text_direct_action_path")
+
+    def test_probe_refuses_multiple_deliverable_paths_in_one_clause(self) -> None:
+        rows = [{"task_id": "T-5", "task_text": "Update src/widget.py and tests/test_widget.py"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertIsNone(target["target"])
+        self.assertIn("ambiguous", target["reason"])
+
+    def test_probe_refuses_a_co_listed_path_even_when_paths_have_extensions(self) -> None:
+        rows = [{"task_id": "T-7", "task_text": "Update src/a.py and src/b.py"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertIsNone(target["target"])
+        self.assertIn("ambiguous", target["reason"])
+
+    def test_probe_refuses_when_any_direct_clause_is_ambiguous(self) -> None:
+        rows = [{"task_id": "T-8", "task_text":
+                 "Update src/a.py using src/b.py; update src/c.py"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertIsNone(target["target"])
+        self.assertIn("ambiguous", target["reason"])
+
+    def test_probe_refuses_multiple_paths_before_later_direct_target(self) -> None:
+        rows = [{"task_id": "T-9", "task_text":
+                 "Update src/a.py and src/b.py; update src/c.py"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertIsNone(target["target"])
+        self.assertIn("ambiguous", target["reason"])
+
+    def test_probe_does_not_promote_referenced_path_to_expected_deliverable(self) -> None:
+        rows = [{"task_id": "T-3", "task_text":
+                 "Read docs/background.md and compare src/widget.py with the old version"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertIsNone(target["target"])
+        self.assertIn("strict direct action/path form", target["reason"])
+
+    def test_probe_does_not_treat_negated_edit_as_a_deliverable(self) -> None:
+        rows = [{"task_id": "T-4", "task_text": "Do not edit src/widget.py; review docs/guide.md"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertIsNone(target["target"])
+
+    def test_probe_refuses_tail_negation_that_refers_to_the_target(self) -> None:
+        rows = [{"task_id": "T-10", "task_text":
+                 "Update src/a.py only as documentation; do not change it"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertIsNone(target["target"])
+        self.assertIn("ambiguous", target["reason"])
+
+    def test_probe_keeps_target_when_later_negation_is_unrelated(self) -> None:
+        rows = [{"task_id": "T-11", "task_text": "Update src/a.py; do not add tests"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertEqual(target["target"], "src/a.py")
+
+    def test_probe_does_not_guess_file_from_prose_about_tests(self) -> None:
+        rows = [{"task_id": "T-6", "task_text":
+                 "Add tests proving `src/foo.py` handles the boundary correctly"}]
+        target = ha.choose_probe_target(rows, {})
+        self.assertIsNone(target["target"])
 
 
 # ------------------------------------------------------- 2. packet contract
@@ -306,7 +370,7 @@ class IndependenceTests(AuditTestCase):
         base = git(self.repo, "rev-parse", "HEAD").strip()
         head = self.commit_change("docs/notes.md", "# notes\nx\n", "docs only")
         brief = write_brief(self.run_dir / "brief.json", "T-1",
-                            "Fix the null return in src/widget.py")
+                            "Fix src/widget.py: the null return")
         report = write_report(self.run_dir / "report.json", "T-1",
                               artifacts=["src/widget.py"],
                               summary="Rewrote src/widget.py; all tests pass. SENTINEL-XYZZY")
@@ -327,7 +391,7 @@ class IndependenceTests(AuditTestCase):
         base = git(self.repo, "rev-parse", "HEAD").strip()
         head = self.commit_change("src/widget.py", "def widget():\n    return 42\n", "fix")
         brief = write_brief(self.run_dir / "brief.json", "T-1",
-                            "Fix the null return in src/widget.py")
+                            "Fix src/widget.py: the null return")
         report = write_report(self.run_dir / "report.json", "T-1",
                               artifacts=["src/widget.py", "src/never_touched.py"])
         result = ha.audit(ha.parse_packet(self.packet(
@@ -341,7 +405,7 @@ class IndependenceTests(AuditTestCase):
         base = git(self.repo, "rev-parse", "HEAD").strip()
         head = self.commit_change("src/widget.py", "def widget():\n    return 42\n", "fix")
         brief = write_brief(self.run_dir / "brief.json", "T-1",
-                            "Fix the null return in src/widget.py")
+                            "Fix src/widget.py: the null return")
         report = write_report(self.run_dir / "report.json", "T-1",
                               commits=["deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"],
                               artifacts=["src/widget.py"])
@@ -355,7 +419,7 @@ class IndependenceTests(AuditTestCase):
     def test_pass_claimed_over_an_empty_diff_is_a_contradiction(self) -> None:
         head = git(self.repo, "rev-parse", "HEAD").strip()
         brief = write_brief(self.run_dir / "brief.json", "T-1",
-                            "Fix the null return in src/widget.py")
+                            "Fix src/widget.py: the null return")
         report = write_report(self.run_dir / "report.json", "T-1", outcome="pass")
         result = ha.audit(ha.parse_packet(self.packet(
             brief_path=str(brief), report_path=str(report),
@@ -380,7 +444,7 @@ class FailClosedTests(AuditTestCase):
         head = self.commit_change(
             "src/widget.py", f"def widget():\n    return {42 + self._seq}\n", "fix")
         brief = write_brief(self.run_dir / "brief.json", "T-1",
-                            "Fix the null return in src/widget.py")
+                            "Fix src/widget.py: the null return")
         report = write_report(self.run_dir / "report.json", "T-1",
                               artifacts=["src/widget.py"], commits=[head])
         return self.packet(brief_path=str(brief), report_path=str(report),
@@ -525,7 +589,7 @@ class CliTests(AuditTestCase):
         base = git(self.repo, "rev-parse", "HEAD").strip()
         head = self.commit_change("docs/notes.md", "# notes\nx\n", "docs only")
         brief = write_brief(self.run_dir / "brief.json", "T-1",
-                            "Fix the null return in src/widget.py")
+                            "Fix src/widget.py: the null return")
         report = write_report(self.run_dir / "report.json", "T-1")
         packet_path = self.tmp / "packet.json"
         packet_path.write_text(json.dumps(self.packet(

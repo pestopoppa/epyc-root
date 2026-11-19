@@ -1,0 +1,140 @@
+{
+  "timestamp_utc": "2026-11-18T15:36:42.681743+00:00",
+  "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate",
+  "allocated_bytes_before": 72724664320,
+  "allocated_bytes_after_before_report": 71911358464,
+  "net_scratch_allocated_bytes_reclaimed": 813305856,
+  "allocated_bytes_in_removed_paths": 813305856,
+  "byte_basis": "Filesystem blocks reported by du -sx -B1. Final total excludes this receipt.",
+  "ready_json_manifest_count_checked": 1324,
+  "retained_output_identities_before_and_after": {
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/official/7e48d529b4cc483aa98db09d818d27a1/Qwen3.6-35B-A3B-IQ2_KT.gguf": {
+      "dev": 2431,
+      "ino": 215018172,
+      "size": 10217312160,
+      "mtime_ns": 1795015004133624528,
+      "ctime_ns": 1795015005061624684
+    },
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat": {
+      "dev": 2431,
+      "ino": 209119977,
+      "size": 192039506,
+      "mtime_ns": 1795010137245357637,
+      "ctime_ns": 1795010138238369239
+    },
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ2_XXS.gguf": {
+      "dev": 2431,
+      "ino": 209119991,
+      "size": 9588011424,
+      "mtime_ns": 1795010530954939152,
+      "ctime_ns": 1795010531778948711
+    },
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ4_KT.gguf": {
+      "dev": 2431,
+      "ino": 209119993,
+      "size": 17723187104,
+      "mtime_ns": 1795012549394802811,
+      "ctime_ns": 1795012550229810768
+    },
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-Q4_K_M.gguf": {
+      "dev": 2431,
+      "ino": 209119989,
+      "size": 21125552544,
+      "mtime_ns": 1795010236577516840,
+      "ctime_ns": 1795010237369526072
+    },
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/model/Qwen3-4B-Instruct-2507-BF16.gguf": {
+      "dev": 2431,
+      "ino": 213823253,
+      "size": 8051283488,
+      "mtime_ns": 1794974478179767197,
+      "ctime_ns": 1795008065591494882
+    }
+  },
+  "retained": {
+    "exp01-official-20261118-r2": "Published official CPU runner, sealed source and current publisher smoke; runner precondition passed before and after cleanup.",
+    "exp01-ready-20261118/official": "Three live recovered model arms pinned in official R2 PINS.json and models.env. Filed complete-input seal also pins the original shared imatrix. No remaining partial or extra GGUF found.",
+    "exp01-ready-20261118/continuation/official": "Fourth live IQ2_KT model arm, continuation terminal and sealed witness chain.",
+    "exp01-ready-20261118/inputs": "Original source and tooling/preparation witnesses, including the live publisher fixture pin. Earlier cleanup already removed the large temporary source copy; this folder occupies about 1 MiB.",
+    "exp01-ready-20261118/continuation-first-smoke-evidence": "Only retained original records from a failed publisher smoke. Earlier cleanup removed its derived model and matrix.",
+    "parity-native-20261118-r2": "Current parity ready row, BF16 conversion, native and smoke receipts, launcher and runtime pins.",
+    "actor-seat-native-20261118": "Current detached private candidate with unique commit awaiting native acceptance.",
+    "kvq-ready": "Current private prepared successor including the patched detached research worktree.",
+    "other packets": "Current task-specific preparations, unique evidence, and published launch closures including GPU pool, lifecycle, NP-D1, MI210, R231 R3 and quality packet runtime inputs."
+  },
+  "removed": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-withdrawn",
+      "allocated_bytes": 40960,
+      "reason": "Withdrawn and filed official R1. All five remaining files match the committed withdrawn-R1 archive byte for byte. The R2 PREPARATION-RECEIPT mentions it as history; the R2 launcher and runtime pins never use it.",
+      "git_head_archived_originals": [
+        "data/vidya/exp01-input-recovery-20261118/official-capture-preparation/withdrawn-r1/FAIL-1.json",
+        "data/vidya/exp01-input-recovery-20261118/official-capture-preparation/withdrawn-r1/SMOKE-EXITED.json",
+        "data/vidya/exp01-input-recovery-20261118/official-capture-preparation/withdrawn-r1/launcher.out",
+        "data/vidya/exp01-input-recovery-20261118/official-capture-preparation/withdrawn-r1/smoke-runner.out",
+        "data/vidya/exp01-input-recovery-20261118/official-capture-preparation/withdrawn-r1/withdrawn-manifest.json"
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/smoke/b0955db96d8a48568602530a4daea18c",
+      "allocated_bytes": 803508224,
+      "reason": "The filed input-recovery continuation publisher smoke produced a disposable 0.6B quant and smoke-only imatrix. The committed log, manifest, terminal and result bytes were matched. Current EXP01 captures use the four 35B outputs and a separate original 0.6B fixture.",
+      "git_head_archived_originals": [
+        "data/vidya/exp01-input-recovery-20261118/continuation/smoke-native/RUN.json",
+        "data/vidya/exp01-input-recovery-20261118/continuation/smoke-native/TERMINAL.json",
+        "data/vidya/exp01-input-recovery-20261118/continuation/smoke-native/imatrix.log",
+        "data/vidya/exp01-input-recovery-20261118/continuation/smoke-native/quant-IQ2KT.log",
+        "data/vidya/exp01-input-recovery-20261118/continuation/smoke-native/results.jsonl"
+      ],
+      "removed_fixture_derivatives": {
+        "Qwen3-0.6B-IQ2_KT.gguf": {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/smoke/b0955db96d8a48568602530a4daea18c/Qwen3-0.6B-IQ2_KT.gguf",
+          "sha256": "48610e863668eb4b30fc8067a24dc2de48b8d45c0abefbb95cf5e54ffb80c803",
+          "st_ctime_ns": 1795014050332203285,
+          "st_dev": 2431,
+          "st_ino": 215018166,
+          "st_mtime_ns": 1795014050157200753,
+          "st_size": 802259488
+        },
+        "imatrix.dat": {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/smoke/b0955db96d8a48568602530a4daea18c/imatrix.dat",
+          "sha256": "771550416458bcc53f96e3678c3c0407b640dd43b57919ec22052b04ece6700d",
+          "st_ctime_ns": 1795014047204158014,
+          "st_dev": 2431,
+          "st_ino": 215018163,
+          "st_mtime_ns": 1795014047001155075,
+          "st_size": 1153428
+        }
+      }
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/fixture-validation",
+      "allocated_bytes": 1757184,
+      "reason": "Generated completed pytest fixtures. Current parity launcher, source closure, native and smoke plans, and asset pins do not consume them. Linked mock checkouts were removed through their own fixture repositories.",
+      "git_worktree_remove": [
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/fixture-validation/test_c1_reader_checkout_curren0/a/rootco",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/fixture-validation/test_c1_reader_checkout_curren0/b/rootco",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/fixture-validation/test_c1_negative_control_libra0/co/rootco",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/fixture-validation/test_c1_refresh_lag_within_gra0/rootco",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/fixture-validation/test_c1_refresh_lag_within_gra0/s/rootco",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/fixture-validation/test_c1_stale_reader_refuses_a0/co/rootco",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/fixture-validation/test_c1_current_reader_is_read0/co/rootco"
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r3/pytest",
+      "allocated_bytes": 491520,
+      "reason": "Generated intermediate pytest fixtures for the filed R231 R3 packet. Native result, source, smoke and checks remain."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r3/pytest-final",
+      "allocated_bytes": 7507968,
+      "reason": "Generated final pytest fixtures for the filed R231 R3 packet. Native result, source, smoke and checks remain."
+    }
+  ],
+  "earlier_receipts": [
+    "cleanup-report.json",
+    "scratch-cleanup-20261118.json",
+    "cleanup-20261118.json"
+  ]
+}

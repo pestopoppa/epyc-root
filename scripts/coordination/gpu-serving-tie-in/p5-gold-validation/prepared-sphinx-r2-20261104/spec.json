@@ -1,0 +1,28 @@
+{
+  "id": "codex-gpu-serving-p5-sphinx-gold-r2-20261104",
+  "owner": "handoff-gpu-serving-tie-in",
+  "launcher": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/launch.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Full instrument diagnostic completes only with both real arms, every 2 FTP+1 PTP status named, source-bound reports and clean owned-container removal. decision=PASS requires resolved gold/all tests pass and unresolved no-op/FTP failure+PTP pass; complete-but-wrong controls file decision=FAIL with successful job completion. Missing/error/incomplete runs fail closed. Both modes identically cap270s; estimate/window300s. Exact reporting-only pytest -rA --color=no suffix, unchanged selectors/patches/parser. No models; not full P5-2. Launcher runs seven native-outcome and four parser/reporting controls under FILLER_CPUS before both actual arms, identically in smoke/full; shared instrument deadline270s starts before controls. ERROR/SKIPPED named statuses refuse completion. Controls have not run independently and must pass in publisher smoke.",
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2c",
+  "priority_rank": 70,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "SOURCE.sha256",
+    "logs/run_evaluation/*/*/*/*.json",
+    "logs/run_evaluation/*/*/*/*.txt",
+    "logs/run_evaluation/*/*/*/*.diff",
+    "logs/run_evaluation/*/*/*/*.sh"
+  ],
+  "ram_gib": 16,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-r2-20261104/complete.py",
+  "supersedes": "codex-gpu-serving-p5-sphinx-gold-20261104"
+}

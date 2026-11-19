@@ -1,0 +1,28 @@
+{
+  "id": "toc-cmp-3-contract-20261118-r2",
+  "owner": "h-delegation-context-preassembly",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "0-3",
+  "priority_rank": 50,
+  "admission_class": "diagnostic",
+  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-r2/packet/launcher.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-r2",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-r2/native/RESULT.json",
+  "result_format": "json",
+  "ram_gib": 10,
+  "budget_gib": 1,
+  "estimate_s": 1800,
+  "min_window_s": 300,
+  "max_window_s": 2790,
+  "resumable": false,
+  "first_progress_s": 300,
+  "unit_key": "unit",
+  "smoke_predicate": "python3 -B /mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-r2/packet/runner.py smoke",
+  "decision_rule": "completed >= 36",
+  "handoff_task": "context-and-token-economy.md:TOC-CMP-3",
+  "keep": [
+    "native/*"
+  ],
+  "notes": "36 descriptive two-turn sessions; candidate boundary/render and deterministic fixture summary. Smoke one pair and verified server exit. No retries or deployment claim."
+}

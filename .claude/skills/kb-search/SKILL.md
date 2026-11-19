@@ -7,8 +7,8 @@ description: Semantic search over the project's compiled markdown knowledge base
 
 Use this skill when an Explore subagent or session would otherwise grep/find blindly across:
 
-- `wiki/` (24 compiled articles synthesizing 246 source documents)
-- `handoffs/active/` (~53 in-progress work items)
+- `wiki/` (compiled articles synthesizing the source documents; ~30 pages, see `wiki/INDEX.md`)
+- `handoffs/active/` (~40 in-progress work items, 2026-11-09)
 - `handoffs/completed/` (historical decisions still load-bearing)
 - `research/` (intake notes + deep-dives)
 - `progress/YYYY-MM/` (daily session summaries)
@@ -82,14 +82,18 @@ To check index state:
 
 - This skill is for the markdown corpus only. For code, use GitNexus tools.
 - The encoder requires `onnxruntime` and the GTE-ModernColBERT-v1 ONNX model at `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/`. If absent, `kb_rag query` returns no results — fall back to grep.
-- Index location: `/workspace/repos/epyc-orchestrator/data/kb_rag/index-qd-v1/` (gitignored).
+- Index location: `/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index-qd-v2/` (gitignored). Set `KB_RAG_INDEX_DIR` to override; default it with `KB_RAG_INDEX_DIR="${KB_RAG_INDEX_DIR:-/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index-qd-v2}"` before the query command below when unset.
 - **Prefix convention (OP-24, 2026-08-12)**: the index records which ColBERT role
   convention produced its vectors (`index_meta.prefix_convention`), and `query`
-  encodes the query the same way. `index-qd-v1` uses the model's trained `[Q] ` /
-  `[D] ` prefixes; the retained `data/kb_rag/index/` is the pre-migration
-  prefix-free store and is the rollback — `KB_RAG_INDEX_DIR=.../data/kb_rag/index`
-  switches back with no code change. Never point the reader at a store built under
-  a different convention; a mismatch is worse than either convention alone.
+  encodes the query the same way. The live store `index-qd-v2` (2026-11-09) uses the
+  model's trained `[Q] ` / `[D] ` prefixes plus native PyLate tokenization and
+  document punctuation pruning. Current code REFUSES the old `index-qd-v1` store
+  (`IndexConventionError`), so it is not a rollback target; the prefix-free
+  `data/kb_rag/index/` (convention `none`) still reads, via
+  `KB_RAG_INDEX_DIR=.../data/kb_rag/index`. On a refused convention `query` returns
+  no rows (fail closed), so an empty result over a known-good topic means: run
+  `cli.py stats` and check `prefix_convention` before concluding "no hits". Never
+  point the reader at a store built under a different convention.
 
 ## Verification
 

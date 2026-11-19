@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T18:49:44Z reason=complete
+job_id=vb-sync-worktree-control-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T18:49:40Z
+regions=0-23

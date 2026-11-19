@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T18:00:48Z reason=complete
+job_id=vb-q38-preflight-planner-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T18:00:40Z
+regions=0-23

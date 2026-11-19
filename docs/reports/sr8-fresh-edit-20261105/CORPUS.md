@@ -1,0 +1,7 @@
+# SR-8 synthetic fresh-edit instrument
+
+Five newly authored arithmetic maintenance tasks each change an existing library module and caller. They exercise add-and-delegate changes across two files, with varied units and arithmetic. These tiny synthetic fixtures are a new instrument, **not** the BEP tasks in the handoff's multi-file coding track. Their results cannot on their own authorize a serving route or settle SR-8's canonical BEP decision. Their limited complexity and repeated structure constrain generalization; no assertion is made about pretraining exposure or global historical independence.
+
+The model receives only each record's `prompt` and existing `files`. `expected_files`, `checks`, and `reference_files` are verifier material and MUST NOT be included in a model prompt. Each task's response must contain exactly both complete files in the prescribed file envelopes. The checker interprets a restricted arithmetic/function/import AST and never executes generated Python; unsupported correct programs return UNKNOWN. It tests both the new caller and helper on several values and the pre-existing helper on additional values. A PASS is scoped to these tests, not proof of general program correctness.
+
+`test_verifier.py` runs the known-good reference against all five cases and checks each original fixture, mutated reference, missing-file output, extra text, duplicate envelope and prohibited code. No model inference or throughput claim is made here.

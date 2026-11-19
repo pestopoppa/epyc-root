@@ -1,0 +1,1 @@
+Model-free successor fixes the prior verifier maximum from 9 s to the declared 6 s, targets 4 s gaps, and includes an over-6-second mutation. The earlier rc0 is inconclusive under its stated rule. Individual witness points only; no continuous-drift or target attribution claim. Await publisher smoke and full result.

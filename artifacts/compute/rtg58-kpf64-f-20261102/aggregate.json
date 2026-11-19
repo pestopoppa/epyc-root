@@ -1,0 +1,14 @@
+{
+  "description": "Descriptive raw aggregate using KPF-64 analysis.py formulas; F only, not a matched contrast.",
+  "requests": 230,
+  "total_prompt_tokens": 6691706,
+  "cached_tokens": 6088573,
+  "ideal_cached_tokens": 6138258,
+  "uncached_tokens": 603133,
+  "realised_hit_share": 0.9098685746205826,
+  "ideal_hit_share": 0.9172934375778016,
+  "gap_percentage_points": 0.7424862957218982,
+  "uncached_tokens_per_request": 2622.317391304348,
+  "source_requests_sha256": "see private-raw.sha256",
+  "timing_claim": false
+}

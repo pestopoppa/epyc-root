@@ -1,0 +1,9 @@
+{
+  "head": "c72ec82f5417bb2937310326120f149b665e8400",
+  "sha256": {
+    "/mnt/raid0/llm/worktrees/kv-prefix-fork-p3-20261102/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/worktrees/kv-prefix-fork-p3-20261102/src/llama-kv-cache.cpp": "1d25af160cba2f8da5df464d3e41db2c5dcd6835b1cf830df129ca759381ff59",
+    "/mnt/raid0/llm/worktrees/kv-prefix-fork-p3-20261102/src/llama-kv-cells.h": "d9ab701ef4286b26bbd9ba8fc5de8162b647215cda7d4116b9caeae7a47b7d6d",
+    "/mnt/raid0/llm/worktrees/mains/h-kvfork/scripts/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d"
+  }
+}

@@ -1,0 +1,8 @@
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 0.403s
+
+OK
+
+launch offline rc1; requested native absent; completion rejects offline rc1; mutated producer rejected rc65; atomic no-replace/interruption controls pass
+GPU/benchmark/compile/publish: none

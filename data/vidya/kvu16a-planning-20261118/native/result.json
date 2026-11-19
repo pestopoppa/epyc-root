@@ -1,0 +1,206 @@
+{
+  "cleanup": {
+    "birth_ticks": 191465187,
+    "captured": true,
+    "pid": 3728719,
+    "rc": 0,
+    "signals": [
+      "TERM"
+    ],
+    "verified_dead": true
+  },
+  "coverage_qualified": true,
+  "coverage_scope": "post-health selected-pair window only; startup unqualified",
+  "device": {
+    "bdf": "0000:43:00.0",
+    "card": "card2",
+    "card_vram_path": "/sys/class/drm/card2/device/mem_info_vram_used",
+    "device": 29711,
+    "drm_root": "/sys/class/drm",
+    "gpu_id": 57300,
+    "kfd_node": "/sys/class/kfd/kfd/topology/nodes/4",
+    "kfd_root": "/sys/class/kfd/kfd/topology/nodes",
+    "render_minor": 128,
+    "unique_id": 14324574859193849836,
+    "vendor": 4098
+  },
+  "grant": {
+    "FILLER_DEADLINE": "1793794470",
+    "FILLER_NEEDGPU": "1",
+    "FILLER_PIDFILE": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16a-shape-load-r3-20261104/state/handoff-kvu16a-shape-load-r3-20261104.pids",
+    "FILLER_STOPFILE": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/STOP"
+  },
+  "healthy_sampled_max_non_kv_b": 37648130048.0,
+  "interpretation": "sampled maximum only, not a peak; no registry ratification",
+  "load_bounds": {
+    "ended_at": 1914657.084243512,
+    "started_at": 1914651.877715494
+  },
+  "missing": [],
+  "peak_claim": false,
+  "raw_load_sample_count": 11,
+  "raw_load_samples_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/native-load-tfz4cs9a/all-samples.jsonl",
+  "raw_load_samples_sha256": "eed1364214b1fc80f6e884198e1bf8242e7e340809dfb57674feb450db7f0015",
+  "raw_load_sampling_gaps_s": [
+    0.0022963080555200577,
+    0.5018946998752654,
+    0.5019596910569817,
+    0.5022239831741899,
+    0.5019555611070246,
+    0.5019464499782771,
+    0.501969981007278,
+    0.5019659500103444,
+    0.501985551090911,
+    0.5022668030578643,
+    0.5019642701372504,
+    0.16888805595226586
+  ],
+  "runtime_identity": {
+    "argv": [
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+      "-m",
+      "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "19763",
+      "-np",
+      "4",
+      "-c",
+      "393216",
+      "-t",
+      "8",
+      "-b",
+      "512",
+      "-ub",
+      "512",
+      "--flash-attn",
+      "on",
+      "--jinja",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "--kv-unified",
+      "--no-mmap",
+      "-ngl",
+      "all",
+      "--cache-ram",
+      "65536",
+      "--ctx-checkpoints",
+      "32",
+      "--chat-template-file",
+      "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+      "--no-cache-idle-slots",
+      "-md",
+      "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "-ngld",
+      "99",
+      "--spec-type",
+      "draft-dflash",
+      "--spec-draft-n-max",
+      "7",
+      "--device",
+      "ROCm0",
+      "--slot-save-path",
+      "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/native-load-tfz4cs9a/slots",
+      "--device-draft",
+      "ROCm0",
+      "-lv",
+      "4"
+    ],
+    "effective_env": {
+      "GGML_IQK": "1",
+      "HSA_OVERRIDE_CPU_AFFINITY_DEBUG": "0",
+      "KMP_BLOCKTIME": "10",
+      "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib",
+      "OMP_DYNAMIC": "false",
+      "OMP_PLACES": "cores",
+      "OMP_PROC_BIND": "spread",
+      "OMP_WAIT_POLICY": "active",
+      "PATH": "/usr/bin:/bin"
+    },
+    "exe": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+    "mapped_libraries_sha256": {
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0": {
+        "device": 2431,
+        "inode": 110021857,
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0": {
+        "device": 2431,
+        "inode": 110022260,
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0": {
+        "device": 2431,
+        "inode": 110022320,
+        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0": {
+        "device": 2431,
+        "inode": 110022327,
+        "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303": {
+        "device": 2431,
+        "inode": 110022824,
+        "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so": {
+        "device": 2431,
+        "inode": 110022851,
+        "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303": {
+        "device": 2431,
+        "inode": 110022673,
+        "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303": {
+        "device": 2431,
+        "inode": 110022814,
+        "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
+      }
+    }
+  },
+  "sample_count": 2,
+  "sampled_max_own_vram_b": 51338338304,
+  "sampling_gaps_s": [
+    0,
+    0.5019642701372504,
+    0
+  ],
+  "schema": "kvu16a.load.sampled.v1",
+  "startup_unknown_samples": 1,
+  "state": {
+    "ended_at": 1914656.915355456,
+    "error": null,
+    "healthy_at": 1914656.015671936,
+    "load_ended_at": 1914657.084243512,
+    "load_started_at": 1914651.877715494,
+    "phase": "healthy",
+    "started_at": 1914656.410943017
+  },
+  "target_kv_b_from_log": 13690208256.0,
+  "whole_load_coverage_qualified": false,
+  "window": {
+    "end_monotonic_s": 1914656.915355456,
+    "selected_pair": [
+      {
+        "birth_ticks": 191465187,
+        "end_monotonic_s": 1914656.412292078,
+        "pid": 3728719,
+        "start_monotonic_s": 1914656.410943017
+      },
+      {
+        "birth_ticks": 191465187,
+        "end_monotonic_s": 1914656.915355456,
+        "pid": 3728719,
+        "start_monotonic_s": 1914656.914256348
+      }
+    ],
+    "selection": "first two post-health original samples; exact rows retained in samples.jsonl",
+    "start_monotonic_s": 1914656.410943017
+  }
+}

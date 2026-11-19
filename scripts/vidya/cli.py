@@ -556,19 +556,26 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # Kept literal (not imported) so `cli.py --help` stays cheap; test_ingest_sources pins it
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
+    "committed-conclusion",
+    "repl-shadow-observation",
     "cs22v0-parity",
     "inf34-a2-raw-prefill",
     "dev-harness-aggregate", "lb49-combined-diagnostic",
     "usage-provenance",
     "ufh12-irt-paired",
     "ufh12-gs-coverage",
+    "repl-trace-coverage",
+    "repl-trace-facts",
     "rtg57-vkq-comparison", "rtg57-vkq-oracle",
     "df2-row-exact-akx",
     "hg5-request-event",
     "graph-profiler-measurement",
     "pip02-incremental-teds",
     "odl-unlimited-ocr-run",
+    "odl-unlimited-ocr-intrinsic",
     "dtap-timeout-report",
+    "dtap-crm-pair",
+    "dtap-finance-pair",
     "pii-staged-gate",
     "ci-fixture-conformance",
     "distillation-pool",
@@ -584,7 +591,7 @@ _FILE_SOURCES = (
     "repl-retrieval-eval", "repl-embedder-speed",
     "qwen4exp-quality-measurement",
     "evidence-durability",
-    "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
+    "kb-rag-qlen", "cj7a-inverse-mutation", "dar-join-coverage", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
     "hs-prof1-profile-arms",
     "chat-template-ab", "kpf261-plan-steps", "kv-prefix-fork", "pb-hol", "occ1", "tale-budget", "review-f1", "opencode-shell",
     "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
@@ -594,18 +601,22 @@ _FILE_SOURCES = (
     "autopilot-reproposal-rate", "reviewer-fa", "typed-decisions-measurement",
     "ufh13-thesis-measurement",
     "ak-actor-seat",
+    "ak-actor-wire",
     "ds41-1017-validation",
     "toc-ab", "skillbank-ab", "harness-improvement", "ak-history",
     "injection-fixture", "chunk-kv",
     "conversation-stack-measurement", "speech-ggml-optest",
     "speech-cpu-measurement", "speech-listen-rating",
     "hil15a-auc", "repl-preview",
-    "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "ds41-w5d", "akx-lb32", "repl-embedder-parity", "clbench-cache-hit", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold", "np-ctx-kvu-measurement", "ufh14-lb7-stall", "ch19-t3-screen",
-    "hil17-attribution-ladder", "hil-lb1-loop-score",
+    "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "kvu16a-sampled-load", "kvu19a2-native", "kvu19b-gap", "ds41-w5d", "akx-lb32", "repl-embedder-parity", "clbench-cache-hit", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold", "np-ctx-kvu-measurement", "ufh14-lb7-stall", "ch19-t3-screen",
+    "ak-gfx-observation", "ak-r18-symbols", "ak-r18d-aa", "ak-r234-sweep", "hil17-attribution-ladder", "hil-lb1-loop-score",
     "ak-width-dimension", "ak-width-cells-cpu",
-    "moe-routing",
-    "gpu-cpu-noise", "launch-affinity", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
-    "hsf5p-microbench", "m4-cpu-recipe-speed", "c6-q4-microbench",
+    "moe-routing", "exp01-proxy-capture", "mi210-paired-raw", "gpu-pool-native", "r231-eof-capture",
+    "quality-pack-comparison", "qwen4exp-cpu-loader-diagnostic", "kernel-promotion-lifecycle",
+    "gpu-cpu-noise", "launch-affinity", "ch18-merge-trial", "p5-sphinx-scorer", "p5-astropy-scorer", "tool-selector-events", "monty-lane", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
+    "q38p4-greedy-parity",
+    "hsf5p-microbench", "v11-gate-bench", "m4-cpu-recipe-speed", "c6-q4-microbench", "inf66-r2364",
+    "fm4-gate-acceptance", "fm2-adamast", "thinking-budget-semantics", "nemo-range-join",
 )
 
 
@@ -623,19 +634,21 @@ def _ingest_autokernel(args) -> int:
         print(f"no such AutoKernel corpus root: {root}", file=sys.stderr)
         return 2
     led = _ledger(args)
+    property_only = args.adapter == "autokernel-property"
     if getattr(args, "only_new", False):
         # VB-LOOP-SCOPE: project into a collector, then append only what the ledger lacks
         # (new claims, plus one scope re-observation per already-live unscoped claim).
         from scoped_ingest import Collector, append_scoped  # noqa: PLC0415
         sink = Collector()
-        report = ingest_corpus(sink, root=root, as_of=args.as_of, limit=args.limit)
+        report = ingest_corpus(sink, root=root, as_of=args.as_of, limit=args.limit,
+                               property_only=property_only)
         report["only_new"] = append_scoped(led, sink.frames, as_of=args.as_of,
                                            dry_run=args.dry_run)
         report["frames_emitted"] = 0 if args.dry_run else report["only_new"]["frames"]
         report["dry_run"] = args.dry_run
     else:
         report = ingest_corpus(led, root=root, as_of=args.as_of, limit=args.limit,
-                               dry_run=args.dry_run)
+                               dry_run=args.dry_run, property_only=property_only)
     human = [
         f"documents matched={report['documents_matched']}  "
         f"rows projected={report['rows_projected']}  "
@@ -799,12 +812,12 @@ def _ingest_file_source(args) -> int:
 def cmd_ingest(args) -> int:
     # Reject absent directory corpora before creating the ledger or writer lock.
     # Keep the existing adapter-local validation for direct internal callers.
-    if args.adapter in ("autokernel", "inf70"):
-        default = (AUTOKERNEL_CORPUS_ROOT if args.adapter == "autokernel"
+    if args.adapter in ("autokernel", "autokernel-property", "inf70"):
+        default = (AUTOKERNEL_CORPUS_ROOT if args.adapter != "inf70"
                    else INF70_CORPUS_ROOT)
         root = Path(args.root) if args.root else default
         if not root.is_dir():
-            label = "AutoKernel" if args.adapter == "autokernel" else "INF-70"
+            label = "AutoKernel" if args.adapter != "inf70" else "INF-70"
             print(f"no such {label} corpus root: {root}", file=sys.stderr)
             return 2
     # one host-wide critical section per ingest: dedup-read and append must not interleave with
@@ -815,7 +828,8 @@ def cmd_ingest(args) -> int:
     # dedup-read + append (scoped_ingest.append_scoped), so a slow corpus read never blocks
     # every other writer of the shared ledger.
     if args.adapter in ("autokernel-serving", "autokernel-experiments") or (
-            getattr(args, "only_new", False) and args.adapter in ("autokernel", "inf70")):
+            getattr(args, "only_new", False) and args.adapter in (
+                "autokernel", "autokernel-property", "inf70")):
         return _cmd_ingest(args)
     with _ledger(args).write_lock():
         return _cmd_ingest(args)
@@ -826,8 +840,8 @@ def _cmd_ingest(args) -> int:
         print(f"ingest {args.adapter} needs --as-of <explicit ingest timestamp>", file=sys.stderr)
         return 2
     if getattr(args, "only_new", False) and args.adapter not in (
-            *_FILE_SOURCES, "autokernel", "inf70", "autokernel-serving"):
-        print("--only-new is supported only for file-shaped sources, autokernel and inf70",
+            *_FILE_SOURCES, "autokernel", "autokernel-property", "inf70", "autokernel-serving"):
+        print("--only-new is supported for file-shaped, AutoKernel and INF-70 sources",
               file=sys.stderr)
         return 2
     if args.adapter in _FILE_SOURCES:
@@ -836,7 +850,7 @@ def _cmd_ingest(args) -> int:
         return _ingest_autokernel_serving(args)
     if args.adapter == "autokernel-experiments":
         return _ingest_autokernel_experiments(args)
-    if args.adapter == "autokernel":
+    if args.adapter in ("autokernel", "autokernel-property"):
         return _ingest_autokernel(args)
     if args.adapter == "inf70":
         return _ingest_inf70(args)
@@ -875,18 +889,48 @@ def cmd_sync(args) -> int:
     path = _ledger_path(args)
     index = Path(args.index) if args.index else None
     if args.check:
-        st = vsync.status(path, index, from_worktree=args.from_worktree)
+        st = vsync.status(path, index, from_worktree=args.from_worktree, fetch=not args.no_fetch)
         human = (f"ledger {'FRESH' if st['fresh'] else 'STALE'}: index max intake-{st['index_max_id']} "
                  f"({st['index_entries']} entries), ledger synced through intake-{st['synced_max_id']}, "
                  f"lag {st['lag_entries']}, source {st['index']}, last sync {st['last_sync']}, ledger {st['ledger']}")
         _emit(st, args.json, human)
         return 0 if st["fresh"] else 1
     rep = vsync.sync(path, index, as_of=args.as_of, force=args.force,
-                     from_worktree=args.from_worktree)
+                     from_worktree=args.from_worktree, fetch=not args.no_fetch)
     if args.quiet:
         return 0
     return _emit(rep, args.json, f"sync: {rep['action']}  frames={rep.get('frames_emitted', 0)}  "
                  f"synced through intake-{rep['synced_max_id']}")
+
+
+def cmd_conclusion_add(args) -> int:
+    """VB-CC: write ONE committed-conclusion register row (a register writer, never a ledger
+    writer). The anchor is resolved from git history at --ref (first commit holding the item
+    verbatim; never blame); the row is validated exactly as the adapter will audit it."""
+    from adapters import committed_conclusion as ccm  # noqa: PLC0415
+    from datetime import datetime, timezone  # noqa: PLC0415
+
+    try:
+        also = []
+        for spec in args.also or ():
+            path, _, line = spec.rpartition(":")
+            also.append((path, int(line)))
+        row = ccm.build_row(
+            path=args.path, line=args.line, ref=args.ref, facet=args.facet or "",
+            kind=args.kind, stated=json.loads(args.stated_json),
+            scope=json.loads(args.scope_json), scope_evidence=args.scope_evidence,
+            category=args.category, direction=args.direction, actor=args.actor,
+            at=args.at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            retrofit=args.retrofit, task_id=args.task_id, also=also,
+            raw_paths=args.raw or (), rev=args.rev, supersedes=args.supersedes,
+            mechanism=json.loads(args.mechanism_json) if args.mechanism_json else None)
+    except (ValueError, ccm.ProjectionError) as exc:
+        print(f"conclusion add refused: {exc}", file=sys.stderr)
+        return 2
+    register = Path(args.register) if args.register else REPO_ROOT / ccm.REGISTER_REL
+    wrote = ccm.append_row(register, row)
+    return _emit({"cc_id": row["cc_id"], "written": wrote, "register": str(register)}, args.json,
+                 f"{'wrote' if wrote else 'already present'} {row['cc_id']} -> {register}")
 
 
 def cmd_cite_check(args) -> int:
@@ -1041,7 +1085,7 @@ def build_parser() -> argparse.ArgumentParser:
     be.set_defaults(func=cmd_binding_emit)
 
     i = sub.add_parser("ingest", help="run a source adapter")
-    i.add_argument("adapter", choices=["intake", "autokernel", "inf70", "autokernel-serving",
+    i.add_argument("adapter", choices=["intake", "autokernel", "autokernel-property", "inf70", "autokernel-serving",
                                        "autokernel-experiments", *_FILE_SOURCES])
     i.add_argument("--path", action="append",
                    help="file or directory for a file-shaped source (repeatable)")
@@ -1082,7 +1126,36 @@ def build_parser() -> argparse.ArgumentParser:
     sy.add_argument("--as-of", help="ingest timestamp (default now)")
     sy.add_argument("--force", action="store_true")
     sy.add_argument("--quiet", action="store_true")
+    sy.add_argument("--no-fetch", action="store_true",
+                    help="read the existing origin/main ref without fetching (Git hook)")
     sy.set_defaults(func=cmd_sync)
+
+    co = sub.add_parser("conclusion", help="committed-conclusion register (VB-CC)")
+    cosub = co.add_subparsers(dest="conclusion_cmd", required=True)
+    ca = cosub.add_parser("add", help="append one confirmed committed-conclusion row")
+    ca.add_argument("--path", required=True, help="repo-relative handoff/progress path")
+    ca.add_argument("--line", type=int, required=True, help="item line at --ref")
+    ca.add_argument("--ref", default="origin/main")
+    ca.add_argument("--facet", help="identity facet when one item concludes per model")
+    ca.add_argument("--kind", default="result", choices=["result", "decision"])
+    ca.add_argument("--stated-json", required=True)
+    ca.add_argument("--scope-json", default="{}")
+    ca.add_argument("--scope-evidence", default="line",
+                    choices=["line", "heading", "handoff-header", "none"])
+    ca.add_argument("--category", default="CANDIDATE")
+    ca.add_argument("--direction", default="higher_better")
+    ca.add_argument("--mechanism-json")
+    ca.add_argument("--task-id")
+    ca.add_argument("--also", action="append", help="secondary anchor path:line (at --ref)")
+    ca.add_argument("--raw", action="append", help="raw evidence path (sha256 recorded)")
+    ca.add_argument("--rev", type=int, default=1,
+                    help="revision of this cc_id (a substantive correction mints rev+1)")
+    ca.add_argument("--supersedes", help="cc_id:rev this row replaces (with --rev > 1)")
+    ca.add_argument("--actor", required=True)
+    ca.add_argument("--at")
+    ca.add_argument("--retrofit", action="store_true")
+    ca.add_argument("--register", help=f"register file (default <repo>/data/belief/committed_conclusions.jsonl)")
+    ca.set_defaults(func=cmd_conclusion_add)
 
     cc = sub.add_parser("cite-check", help="gate intake citations in project documents")
     cc.add_argument("paths", nargs="*", help="files or dirs (default: handoffs, wiki, docs)")

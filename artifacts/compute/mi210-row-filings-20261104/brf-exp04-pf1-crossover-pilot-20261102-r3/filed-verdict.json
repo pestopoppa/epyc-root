@@ -1,0 +1,45 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence_sha256": {
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r3/attempt-summary.json": "34d2264ccf9e4d864e81d3ffb769291fb429e3db05483eb9f2e0e2c7dab5536d",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r3/end.txt": "7a9b45a4f16b453e750348809229ce95081df06fa3f7cff184d4bb696491cdf6",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r3/manifest.json": "1de05d0aa14dbd369545a29272ca4da6868d64208b914b3228cfba60bfea8f21",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r3/native-result.json": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b"
+  },
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Original archived summary: REVISE harness; 4/8 valid units, capture 0.75, both A2 HIP-residency proofs missing, 2K disabled-control ratio 0.8591 outside \u00b110%. Pilot invalid; no PF1 verdict or EXPAND authorization. Later shared result is not this attempt.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:10:03+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T23:07:38Z reason=complete",
+ "filed_at": "2026-11-04T07:10:03+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXP04",
+ "id": "brf-exp04-pf1-crossover-pilot-20261102-r3",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/brf-exp04-pf1-crossover-pilot-20261102-r3.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Original archived summary: REVISE harness; 4/8 valid units, capture 0.75, both A2 HIP-residency proofs missing, 2K disabled-control ratio 0.8591 outside \u00b110%. Pilot invalid; no PF1 verdict or EXPAND authorization. Later shared result is not this attempt.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "brf-exp04-pf1-crossover-pilot-20261102-r3",
+ "row_verdict": "inconclusive",
+ "rule": "EXP-04 pilot (exploratory/decision-support). Read out/summary.json (PILOT-COMPLETE.json). EXPAND to the full PF1 L x -ub matrix (r=5, CIs, reversed-order replicate) if every A1/A2 unit proves HIP residency (KFD pid + VRAM sampled in-window, mapped libggml-hip = v10 store), A1-disabled/A0 median within +-10% at both L, capture completeness 1.0; REVISE if the control diverges or capture is incomplete; INCONCLUSIVE otherwise. Early stops (answer/futility/cap) are operational decisions, never PF1 gate results; the 2K/8K screen never yields a negative PF1 verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

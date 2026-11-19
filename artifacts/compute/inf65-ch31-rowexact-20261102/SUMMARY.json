@@ -1,0 +1,15 @@
+{
+  "custody": "Original untracked workspace files; not a durable native custody transfer.",
+  "files": [
+    {
+      "relative_path": "RESULT.json",
+      "sha256": "3ae40781fca2415e3d2c3daa5c74e0a0f14d686b2291a96bca5c966c5bf4e33e"
+    },
+    {
+      "relative_path": "linkage.txt",
+      "sha256": "09092e1c8c561c68e81fc8daf6cc6e28d50bf7fd0edfe5e8f1e0846d491d6241"
+    }
+  ],
+  "kind": "selected original-data summary and raw file digest inventory",
+  "raw_evidence_root": "/workspace/artifacts/compute/inf65-ch31-rowexact-20261102"
+}

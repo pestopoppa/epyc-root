@@ -1,0 +1,74 @@
+{
+  "schema": "epyc.delegation.context_sizes.v1",
+  "pairing": "DCP-14 latest earlier non-delegate in parent_request_id group",
+  "unit": "captured Unicode characters; not tokens",
+  "mode_available": false,
+  "paired": 347,
+  "included": 61,
+  "excluded": {
+    "later_parent": 230,
+    "truncated": 56
+  },
+  "no_parent_prompt": {
+    "worker_general": 172
+  },
+  "by_role": [
+    {
+      "parent_role": "architect_critic",
+      "delegate_role": "worker_general",
+      "pairs": 20,
+      "parent_chars": {
+        "min": 761,
+        "median": 780.0,
+        "max": 782,
+        "total": 15580
+      },
+      "worker_chars": {
+        "min": 287,
+        "median": 491.0,
+        "max": 2015,
+        "total": 17501
+      }
+    },
+    {
+      "parent_role": "architect_general",
+      "delegate_role": "worker_general",
+      "pairs": 22,
+      "parent_chars": {
+        "min": 768,
+        "median": 780.0,
+        "max": 782,
+        "total": 17159
+      },
+      "worker_chars": {
+        "min": 218,
+        "median": 715.5,
+        "max": 2261,
+        "total": 21515
+      }
+    },
+    {
+      "parent_role": "frontdoor",
+      "delegate_role": "worker_general",
+      "pairs": 19,
+      "parent_chars": {
+        "min": 44,
+        "median": 858,
+        "max": 7321,
+        "total": 38072
+      },
+      "worker_chars": {
+        "min": 1342,
+        "median": 1704,
+        "max": 7163,
+        "total": 48519
+      }
+    }
+  ],
+  "input": {
+    "path": "/mnt/raid0/llm/tmp/inference_tap_events.jsonl",
+    "sha256": "976cdd811228daa5634378e8c4cdacf040f8197c1d07ac1a77557c1d599e59aa"
+  },
+  "producer_sha256": "afa15ffc7e263e1297d5370f7a3b1eb6df61d743b537fde7f6dc81cba85b03d4",
+  "pairer_sha256": "5227123a909ef312ff090f018759b8295e20f2b44844f258be3924b27d79d150"
+}

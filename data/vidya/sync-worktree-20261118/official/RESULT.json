@@ -1,0 +1,19 @@
+{
+  "authority": "software-control-only",
+  "cpus": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "id": "vb-sync-worktree-control-20261118",
+  "lag": 0,
+  "manual_sync_count": 0,
+  "mode": "official",
+  "native_receipt_sha256": "d47b4128190408d09840249d8aa8ea5f35ecc45dbb96149f18387d6614211eee",
+  "refused": 0,
+  "run_dir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge",
+  "selected": 1,
+  "source_pins_sha256": "1832dc0efcbd93f9060a703cb9ec082086c1e1609bf591391960de1880c88f06",
+  "status": "passed"
+}

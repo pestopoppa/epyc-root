@@ -1,0 +1,26 @@
+{
+  "id": "lsa-combined-numerics-20261104",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 1,
+  "estimate_s": 600,
+  "first_progress_s": 300,
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Compile reviewed combined candidate and frozen test; execute unchanged model-free unit then frozen projection fixture once in order, stop on failure, STOP or deadline. Report strict KEY_MISMATCH count separately from test's one-step tolerance; no repeat.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined",
+  "keep": [
+    "results.jsonl",
+    "source-sha256.txt",
+    "binary-sha256.txt",
+    "disassembly.txt",
+    "unit.log",
+    "projection.log",
+    "test-combined"
+  ]
+}

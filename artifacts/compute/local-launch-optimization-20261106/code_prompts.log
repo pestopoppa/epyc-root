@@ -1,0 +1,32 @@
+[region-lock] acquiring gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=600.0) …
+[region-lock] held gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: python3 /workspace/artifacts/compute/local-launch-optimization-20261106/harness.py --phase cpu --only cpu_code_t48_mtp_8k,cpu_code_t48_mtp_16k,cpu_code_t48_mtp_28k,cpu_code_t96_mtp_28k,cpu_code_t96_nomtp_28k --no-evict
+[15:46:22] cpu_code_t48_mtp_8k: launching taskset ... :18074
+[15:46:35] cpu_code_t48_mtp_8k: warmup n_predict=16
+[15:46:36] cpu_code_t48_mtp_8k: measured request 1/2 (cache_prompt=False)
+[15:47:16] cpu_code_t48_mtp_8k: measured request 2/2 (cache_prompt=True)
+[15:47:32] cpu_code_t48_mtp_8k: done ok=True elapsed=70.4s
+[15:47:32] {"arm": "cpu_code_t48_mtp_8k", "ok": true, "tok_s": [29.350278839113923], "acceptance": {"alpha": 0.85981, "accepted": 184, "generated": 214}}
+[15:47:32] cpu_code_t48_mtp_16k: launching taskset ... :18074
+[15:47:45] cpu_code_t48_mtp_16k: warmup n_predict=16
+[15:47:47] cpu_code_t48_mtp_16k: measured request 1/2 (cache_prompt=False)
+[15:49:02] cpu_code_t48_mtp_16k: measured request 2/2 (cache_prompt=True)
+[15:49:19] cpu_code_t48_mtp_16k: done ok=True elapsed=106.8s
+[15:49:19] {"arm": "cpu_code_t48_mtp_16k", "ok": true, "tok_s": [29.370944357319566], "acceptance": {"alpha": 0.94712, "accepted": 197, "generated": 208}}
+[15:49:19] cpu_code_t48_mtp_28k: launching taskset ... :18074
+[15:49:34] cpu_code_t48_mtp_28k: warmup n_predict=16
+[15:49:36] cpu_code_t48_mtp_28k: measured request 1/2 (cache_prompt=False)
+[15:51:45] cpu_code_t48_mtp_28k: measured request 2/2 (cache_prompt=True)
+[15:51:54] cpu_code_t48_mtp_28k: done ok=True elapsed=154.7s
+[15:51:54] {"arm": "cpu_code_t48_mtp_28k", "ok": true, "tok_s": [1000000.0], "acceptance": {"alpha": 0.375, "accepted": 6, "generated": 16}}
+[15:51:54] cpu_code_t96_mtp_28k: launching taskset ... :18074
+[15:52:07] cpu_code_t96_mtp_28k: warmup n_predict=16
+[15:52:09] cpu_code_t96_mtp_28k: measured request 1/2 (cache_prompt=False)
+[15:54:24] cpu_code_t96_mtp_28k: measured request 2/2 (cache_prompt=True)
+[15:54:33] cpu_code_t96_mtp_28k: done ok=True elapsed=159.1s
+[15:54:33] {"arm": "cpu_code_t96_mtp_28k", "ok": true, "tok_s": [1000000.0], "acceptance": {"alpha": 0.41176, "accepted": 7, "generated": 17}}
+[15:54:33] cpu_code_t96_nomtp_28k: launching taskset ... :18074
+[15:54:46] cpu_code_t96_nomtp_28k: warmup n_predict=16
+[15:54:47] cpu_code_t96_nomtp_28k: measured request 1/2 (cache_prompt=False)
+[15:56:53] cpu_code_t96_nomtp_28k: measured request 2/2 (cache_prompt=True)
+[15:57:02] cpu_code_t96_nomtp_28k: done ok=True elapsed=148.9s
+[15:57:02] {"arm": "cpu_code_t96_nomtp_28k", "ok": true, "tok_s": [1000000.0], "acceptance": null}

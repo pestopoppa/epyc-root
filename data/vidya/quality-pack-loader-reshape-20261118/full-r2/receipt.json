@@ -1,0 +1,323 @@
+{
+  "broad_pack_input": false,
+  "broad_pack_status": "incomplete",
+  "candidate_collected": true,
+  "checks": {
+    "candidate": {
+      "completion_tokens": 11,
+      "content_sha256": "1c8cea56b7e615605a35be71aa95546d9117c1fcf799ade8a2074cf6409c21df",
+      "expected_finish": "stop",
+      "finish": "stop",
+      "reasoning_sha256": null,
+      "request_sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee",
+      "response_sha256": "c7505d257142e0478857a7f45274b7afebd423c6173a305db24749e47355ba66",
+      "semantic_matches": true,
+      "token_ids": [
+        4754,
+        8096,
+        47460,
+        3147,
+        14778,
+        2129,
+        1767,
+        763,
+        17,
+        92,
+        248046
+      ]
+    },
+    "production": {
+      "completion_tokens": 14,
+      "content_sha256": "f9a4dd337d64c222830e5f90c9abf2659492ac4e3ff247f6751c56857b5fe103",
+      "expected_finish": "stop",
+      "finish": "stop",
+      "reasoning_sha256": null,
+      "request_sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee",
+      "response_sha256": "1d434e07865d4fb6644f525dc9dd00602a405ae4c0baefb95dcd34e744fea020",
+      "semantic_matches": false,
+      "token_ids": [
+        4754,
+        8096,
+        25,
+        1873,
+        26,
+        1076,
+        30,
+        17,
+        1008,
+        12,
+        104174,
+        1076,
+        25,
+        248044
+      ]
+    }
+  },
+  "comparison": {
+    "content_sha256_equal": false,
+    "finish_equal": true,
+    "reasoning_sha256_equal": true,
+    "token_ids_equal": false
+  },
+  "filed_at": "2026-11-18T02:45:46+00:00",
+  "files": {
+    "RESULT.json": {
+      "archive": "RESULT.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "dee8f89c8d199e9232441251b48f714d2ea738992cb435ba2ae5bb2591bbf7a5"
+    },
+    "filed-verdict.json": {
+      "archive": "filed-verdict.json",
+      "encoding": "raw",
+      "sha256": "1fcc6edbcb440b1faeecbeee033ef8caa57a47cb3ac8a1c190532516ce4079ba"
+    },
+    "native/banked-capture.json": {
+      "archive": "native/banked-capture.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "e7eb3fdbab35f36aad7982d5edfd1baacfbf821b6f5349feacc5a461c9ab3247"
+    },
+    "native/banked-capture.sha256": {
+      "archive": "native/banked-capture.sha256",
+      "encoding": "raw",
+      "sha256": "867bd3111e83f379f72219540d0d39bc659c2314120ca2cc54409bfaddb7f451"
+    },
+    "native/candidate-diagnostic-capture.json": {
+      "archive": "native/candidate-diagnostic-capture.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "a0782eae5ff55f34e967d12df736aa59e0be8c8c2ebcc4bace56e99bdfa74c71"
+    },
+    "native/candidate-diagnostic-capture.sha256": {
+      "archive": "native/candidate-diagnostic-capture.sha256",
+      "encoding": "raw",
+      "sha256": "f54b7500d977b2bcc7be57b30d9bf866cd4ce1d5d6c65a64490fd075376b53ef"
+    },
+    "native/candidate/cleanup.json": {
+      "archive": "native/candidate/cleanup.json",
+      "encoding": "raw",
+      "sha256": "b4d29902394379b92dfc6225a7fff06ee6ed57005450da42f47f6f23b63e89c7"
+    },
+    "native/candidate/qwen4exp-loader-cpu-json.request.json": {
+      "archive": "native/candidate/qwen4exp-loader-cpu-json.request.json",
+      "encoding": "raw",
+      "sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee"
+    },
+    "native/candidate/qwen4exp-loader-cpu-json.response.json": {
+      "archive": "native/candidate/qwen4exp-loader-cpu-json.response.json",
+      "encoding": "raw",
+      "sha256": "c7505d257142e0478857a7f45274b7afebd423c6173a305db24749e47355ba66"
+    },
+    "native/candidate/server.json": {
+      "archive": "native/candidate/server.json",
+      "encoding": "raw",
+      "sha256": "42a8e58d1709f78f961a312bdd872d7f633e0ed1a05aaa6d3ee6c91beace364a"
+    },
+    "native/candidate/server.log": {
+      "archive": "native/candidate/server.log",
+      "encoding": "raw",
+      "sha256": "e4bc3bd8967172e25cd309e4c008c0839ae507856e54554f62d11309a23907f1"
+    },
+    "native/production/cleanup.json": {
+      "archive": "native/production/cleanup.json",
+      "encoding": "raw",
+      "sha256": "4b0f48ff7ca67bdeaf3ea45d7b0fc72f53873fb7e2d556072c2a8466f9ccf03c"
+    },
+    "native/production/qwen4exp-loader-cpu-json.request.json": {
+      "archive": "native/production/qwen4exp-loader-cpu-json.request.json",
+      "encoding": "raw",
+      "sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee"
+    },
+    "native/production/qwen4exp-loader-cpu-json.response.json": {
+      "archive": "native/production/qwen4exp-loader-cpu-json.response.json",
+      "encoding": "raw",
+      "sha256": "1d434e07865d4fb6644f525dc9dd00602a405ae4c0baefb95dcd34e744fea020"
+    },
+    "native/production/server.json": {
+      "archive": "native/production/server.json",
+      "encoding": "raw",
+      "sha256": "66510c2cf019f3621b1ef51459ee1c5df1b554f0794889d7657c2a48622c25a0"
+    },
+    "native/production/server.log": {
+      "archive": "native/production/server.log",
+      "encoding": "raw",
+      "sha256": "7647b787ae1530e04515979eea5c6c84a1192ee99f0b605c0f3ec2ac2399de60"
+    },
+    "native/scheduler.grant": {
+      "archive": "native/scheduler.grant",
+      "encoding": "raw",
+      "sha256": "2d79a12e9402c70f41f29dbd97377f8bc929b9bfc6c3ababdedd4877951aed16"
+    },
+    "owner-verdict.json": {
+      "archive": "owner-verdict.json",
+      "encoding": "raw",
+      "sha256": "aeae036c44f16ac724baf2ddec1c48d84f661dcacf157d2c4eb4299b32dbde0e"
+    },
+    "row-manifest.json": {
+      "archive": "row-manifest.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "4e8487a8aeb4a8c1efaa0b2a93ad06461ee6633b80c537be2911dae602f0fe5b"
+    },
+    "row.ended": {
+      "archive": "row.ended",
+      "encoding": "raw",
+      "sha256": "9c8e13531502d50755eaca4e7cf28609d9ac6d4956f24fa1b324262dba093b80"
+    }
+  },
+  "observations": {
+    "candidate": {
+      "binary_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+      "capture_sha256": "a0782eae5ff55f34e967d12df736aa59e0be8c8c2ebcc4bace56e99bdfa74c71",
+      "cleanup": {
+        "dead": true,
+        "exit_status": 0,
+        "pid": 1470502,
+        "port_closed": true
+      },
+      "kernel_commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+      "loader_log_evidence": {
+        "log_sha256": "e4bc3bd8967172e25cd309e4c008c0839ae507856e54554f62d11309a23907f1",
+        "native_line_numbers": {
+          "blk.0.hc_attn_norm.weight": 3115,
+          "blk.0.hc_ffn_norm.weight": 3119
+        },
+        "native_lines": {
+          "blk.0.hc_attn_norm.weight": "0.00.723.069 D create_tensor: loading tensor blk.0.hc_attn_norm.weight",
+          "blk.0.hc_ffn_norm.weight": "0.00.723.081 D create_tensor: loading tensor blk.0.hc_ffn_norm.weight"
+        },
+        "native_load_phase": {
+          "context_start": {
+            "line": "0.10.437.312 I llama_context: constructing llama_context",
+            "line_number": 5513
+          },
+          "start": {
+            "line": "0.00.722.952 I load_tensors: loading model tensors, this can take a while... (mmap = true, direct_io = false)",
+            "line_number": 3058
+          }
+        },
+        "runtime_dims_from_pinned_source": [
+          2560,
+          4
+        ],
+        "stored_dims": [
+          10240
+        ]
+      },
+      "response": {
+        "completion_tokens": 11,
+        "content_sha256": "1c8cea56b7e615605a35be71aa95546d9117c1fcf799ade8a2074cf6409c21df",
+        "expected_finish": "stop",
+        "finish": "stop",
+        "reasoning_sha256": null,
+        "request_sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee",
+        "response_sha256": "c7505d257142e0478857a7f45274b7afebd423c6173a305db24749e47355ba66",
+        "semantic_matches": true,
+        "token_ids": [
+          4754,
+          8096,
+          47460,
+          3147,
+          14778,
+          2129,
+          1767,
+          763,
+          17,
+          92,
+          248046
+        ]
+      }
+    },
+    "production": {
+      "binary_sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+      "capture_sha256": "e7eb3fdbab35f36aad7982d5edfd1baacfbf821b6f5349feacc5a461c9ab3247",
+      "cleanup": {
+        "dead": true,
+        "exit_status": 0,
+        "pid": 1454370,
+        "port_closed": true
+      },
+      "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "loader_log_evidence": {
+        "log_sha256": "7647b787ae1530e04515979eea5c6c84a1192ee99f0b605c0f3ec2ac2399de60",
+        "native_line_numbers": {
+          "blk.0.hc_attn_norm.weight": 3115,
+          "blk.0.hc_ffn_norm.weight": 3119
+        },
+        "native_lines": {
+          "blk.0.hc_attn_norm.weight": "0.00.784.396 D create_tensor: loading tensor blk.0.hc_attn_norm.weight",
+          "blk.0.hc_ffn_norm.weight": "0.00.784.413 D create_tensor: loading tensor blk.0.hc_ffn_norm.weight"
+        },
+        "native_load_phase": {
+          "context_start": {
+            "line": "0.12.080.187 I llama_context: constructing llama_context",
+            "line_number": 5513
+          },
+          "start": {
+            "line": "0.00.784.236 I load_tensors: loading model tensors, this can take a while... (mmap = true, direct_io = false)",
+            "line_number": 3058
+          }
+        },
+        "runtime_dims_from_pinned_source": [
+          10240
+        ],
+        "stored_dims": [
+          10240
+        ]
+      },
+      "response": {
+        "completion_tokens": 14,
+        "content_sha256": "f9a4dd337d64c222830e5f90c9abf2659492ac4e3ff247f6751c56857b5fe103",
+        "expected_finish": "stop",
+        "finish": "stop",
+        "reasoning_sha256": null,
+        "request_sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee",
+        "response_sha256": "1d434e07865d4fb6644f525dc9dd00602a405ae4c0baefb95dcd34e744fea020",
+        "semantic_matches": false,
+        "token_ids": [
+          4754,
+          8096,
+          25,
+          1873,
+          26,
+          1076,
+          30,
+          17,
+          1008,
+          12,
+          104174,
+          1076,
+          25,
+          248044
+        ]
+      }
+    }
+  },
+  "production_collected": true,
+  "promotion_authorized": false,
+  "quality_transfer_authorized": false,
+  "rationale": "Both pinned CPU arms captured the two named F32 norm loads in a unique serving mmap phase, completed the fixed no-spec request with a clean stop, and verified owned PID and listener cleanup. Pinned loader source gives flat [10240] for v10 and [2560,4] for C13 against the same flat GGUF header. The production response failed the strict JSON semantics and the candidate response passed. The recorded strict two-arm acceptance exited 1.",
+  "row": "handoff-vidya-quality-pack-loader-reshape-cpu-20261118-r2",
+  "scheduler_exit_code": 1,
+  "source_files": {
+    "loader_witness_sha256": {
+      "path": "../successor-r2/loader-reshape-witness.json.original-bytes.json",
+      "sha256": "eb1a7ab49b75440793223b4d8bf7982577dda1c0fe37ac76d956362337b9f0e3"
+    },
+    "prior_frontdoor_receipt_sha256": {
+      "path": "../successor-r2/frontdoor-full-receipt.json.original-bytes.json",
+      "sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c"
+    },
+    "request_plan_sha256": {
+      "path": "../successor-r2/plan.json.original-bytes.json",
+      "sha256": "320462354167cdc270420dc6a16122543764ee6e581c2fb958af1b08d14a82cd"
+    },
+    "source_manifest_sha256": {
+      "path": "../successor-r2/SOURCE.sha256",
+      "sha256": "fa218bd9e86c43b6e87aedc0937ea7e7b8023f55eb13467ef749858863e9e5da"
+    },
+    "validator_source_sha256": {
+      "path": "../successor-r2/quality_parity.py",
+      "sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+    }
+  },
+  "status": "loader_exercised_response_refused",
+  "verdict": "fail"
+}

@@ -1,0 +1,52 @@
+{
+  "timestamp_utc": "2026-11-18T15:53:19.165287+00:00",
+  "allocated_bytes_before": 71932461056,
+  "allocated_bytes_after_before_receipt": 71932227584,
+  "manifest_count": 1648,
+  "removed": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-reshape-bank-20261118",
+      "allocated_bytes": 204800,
+      "reason": "Superseded CPU loader packet. Both native outcomes, the witness, and source receipt are committed in data/vidya/quality-pack-loader-reshape-20261118/. The remaining unique files are old launch/source copies."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2/out/smoke",
+      "allocated_bytes": 28672,
+      "reason": "Superseded R231 R2 smoke. Its only file is identical to a committed NATIVE.json. The unique full-attempt failure remains in r2/out/native."
+    }
+  ],
+  "allocated_bytes_in_removed_paths": 233472,
+  "r231_committed_smoke_matches": [
+    "data/vidya/r231-eof-native-20261118/native-smoke-seal.json"
+  ],
+  "verified_model_pins": {
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/official/7e48d529b4cc483aa98db09d818d27a1/Qwen3.6-35B-A3B-IQ2_KT.gguf": {
+      "dev": 2431,
+      "ino": 215018172,
+      "size": 10217312160,
+      "mtime_ns": 1795015004133624528,
+      "ctime_ns": 1795015005061624684
+    },
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ2_XXS.gguf": {
+      "dev": 2431,
+      "ino": 209119991,
+      "size": 9588011424,
+      "mtime_ns": 1795010530954939152,
+      "ctime_ns": 1795010531778948711
+    },
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ4_KT.gguf": {
+      "dev": 2431,
+      "ino": 209119993,
+      "size": 17723187104,
+      "mtime_ns": 1795012549394802811,
+      "ctime_ns": 1795012550229810768
+    },
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-Q4_K_M.gguf": {
+      "dev": 2431,
+      "ino": 209119989,
+      "size": 21125552544,
+      "mtime_ns": 1795010236577516840,
+      "ctime_ns": 1795010237369526072
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "source": "/mnt/raid0/llm/tmp/kvfork/kpf17-wrapper-stop-successor-v2-20261105",
+  "original_source": {
+    "source": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5",
+    "sha256": {
+      "filler_run15.sh": "e848a1d37e164b14ac3a95a9a51a47ed7514a120a6f5dd18b0903bcaebcaa8ad",
+      "complete.py": "3f5b85479716fe6aa1926dd5ed23d20a6f1b5539e1d429af692658632fb32d36",
+      "native_files.py": "614b7ab24b50032acb7774ab01c6ea11ed78a118092e3345c968aea3e9e104b8"
+    }
+  },
+  "sha256": {
+    "filler_run15.sh": "9faf04d491853df3e7f3b18475467d60439ffebbe6cd2ad173efb9be46af1029",
+    "filler_run15.original.sh": "e848a1d37e164b14ac3a95a9a51a47ed7514a120a6f5dd18b0903bcaebcaa8ad",
+    "complete.py": "3f5b85479716fe6aa1926dd5ed23d20a6f1b5539e1d429af692658632fb32d36",
+    "native_files.py": "614b7ab24b50032acb7774ab01c6ea11ed78a118092e3345c968aea3e9e104b8",
+    "qualify.py": "227f31aec2eae9f5f22cbb7f4500edc6b1286a8bcc1404e479e84ab7831471c0",
+    "row_complete.py": "9bd25973d89995e0ae23ec2a9a30966f8774b78c8e32dbcb6154a5e3b3eaf0ab",
+    "launch.sh": "64f83c911b1c388967f6ff485ce66a67141ace577b4ca5162dd767ee9329d8fa",
+    "spec.json": "f256c75e21c1bbe920d7fc470c565b828fd31768975b8b8151dc67a2ec5f7ea6",
+    "sources.json": "ab0a811a26141574f76e6a6297d7d9a3bfbe68e0e42cb072f623314f3b802ee6"
+  }
+}

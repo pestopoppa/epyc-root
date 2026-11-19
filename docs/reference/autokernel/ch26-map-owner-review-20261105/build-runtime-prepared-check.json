@@ -1,0 +1,22 @@
+{
+  "build_check": {
+    "build": "prepared-manifest-and-selected-binaries-match",
+    "source_commit": "c72ec82f5417bb2937310326120f149b665e8400"
+  },
+  "checks": [
+    "manifest, provenance, source and selected binary digests match custody",
+    "fresh hash and before/after/current metadata match for eight files",
+    "synthetic complete-set binding pass",
+    "old metadata receipt refused",
+    "partial mapped set refused"
+  ],
+  "custody_check_source": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-serving-compact-integration/custody_check.py",
+  "custody_check_source_sha256": "98f144d7e50e62e9f7c08ade481bcf59eda0f28b82d4c799ca50792c23502741",
+  "custody_path": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-c5-map-functional-20261104/build-prepared.json",
+  "custody_sha256": "dc8bf7715b7c4a2256859ca9b078ab6c181485c42c2aa1fd7ddafa90687e2593",
+  "prepared_path": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-census-owner-integration/private-c5/build-runtime-prepared.json",
+  "prepared_sha256": "aaa3a46c42cb92ed6cdbb4b893acef15498d8e8b0964ef63a443eb842d93f7c3",
+  "required_count": 8,
+  "schema": "ch26.private-map-preparation-check.v1",
+  "scope": "model-free, synthetic map; no process mapping, inference or floor admission"
+}

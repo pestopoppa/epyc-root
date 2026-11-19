@@ -1,0 +1,84 @@
+{
+  "schema": "epyc.vidya.sc18_gpu_pool_attention_preparation.v1",
+  "recorded_utc": "2026-11-17T21:27:56.883463+00:00",
+  "state": "prepared_for_owner_publication",
+  "row_id": "ni-gpu-pool-attention-20261117-v1",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:SC18-GPU-POOL-ATTENTION-LIVE",
+  "handoff_task_proposal": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/handoff-task.md",
+  "scope": {
+    "operator": "ROPE",
+    "seed": 2026102603,
+    "selected_cases": 328,
+    "smoke_invocations": 1,
+    "official_invocations": 1,
+    "gpu_region": "mi210_0",
+    "job_cpus": "184-191",
+    "model_free": true,
+    "applicability": [
+      "op",
+      "run_id",
+      "scope_basis"
+    ],
+    "historical_outputs_ingested": 0,
+    "shared_grade_control": [
+      "Judged",
+      "T0"
+    ],
+    "other_attention_ops": [
+      "SOFT_MAX",
+      "FLASH_ATTN_EXT"
+    ]
+  },
+  "source": {
+    "research_commit": "ceb08a491abe3ff023a4740f654341e2127fba6b",
+    "original_writer_git_path": "data/gpu-pool/attention-20261026/run-v3.py",
+    "source_pin_git_path": "data/vidya/gpu-pool-capture-20261104/source-pins.json",
+    "patch_git_path": "data/vidya/gpu-pool-capture-20261104/attention.patch",
+    "candidate_commit": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+    "removed_worktree_dirty_state": "UNKNOWN",
+    "shim_original_source_digest_receipt": "51080dff80b0b8a72b7a41ce878f093eff0f13e739fee93d3490421c8d1041e6",
+    "shim_recreated_source_matches_receipt": false,
+    "candidate_binary_and_dso_pins": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/source/ACTUAL-ARTIFACT-PINS.sha256",
+    "packet_archive_input": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/candidate"
+  },
+  "packet_sha256": {
+    "PINNED.sha256": "8d93d18f229c11e25702d46d383783f44857e2c3798e9ed49ec7258ad83533ed",
+    "launch.sh": "814a6529b4a1e1e7ee364ba020707f1e823757a344b1ac95be0389c9e9221028",
+    "spec.json": "1254cd479de279a0db9c0ad54a156d60dc342e6fcd6270e14db2f7fdbfbf9b7e",
+    "run_attention.py": "3ce8780edfc76475b6fcbb77704cca82cf152912e05fa5635c0435d3d8a684bc",
+    "test_run_attention.py": "aa1d0b3a26da0ebd1729bfd695390af973b6a4b4fc01e33d823d5c648410e0b0",
+    "handoff-task.md": "81b8e5ebf8a5a61681428b6aa404b313ee5a337241bdbb6eb03cea5ba96bfe70",
+    "source/original-run-v3.py": "41d4bc5a6faf46e7568e12566b43508b604954dc50b82a8b8d04b11f0988fb53",
+    "source/attention.patch": "fa9e9aa6f1424d14685011a46fc6700f62db196a6221a9e5d07b2ddf9f22236c",
+    "source/capture-patched-run-v3.py": "a9bb296e029ec6fb44cc36de01b143445804bc869c19d191593f655560e9a2e7",
+    "source/ACTUAL-ARTIFACT-PINS.sha256": "2dfa85d649930f84b04576360a5694cce10ca566a3dd71832a52414c41150cf8",
+    "validation.log": "0d8fbf341eed265cf022ee2652e3bae8260ec43d10cb0049edf2195c4eaf07c6"
+  },
+  "validation": {
+    "status": "PASS",
+    "focused_controls_passed": 12,
+    "native_executions_by_preparation": 0,
+    "log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/validation.log",
+    "advisory": "Publisher task lint warns it cannot machine-test the stop-on-answer prose; it accepts the box and the decision rule is declared verdict_by=agent.",
+    "initial_failures_resolved": [
+      "Use admitted q3 cores 88-91 after all-region claim timed out",
+      "Pin the current registered GPU-pool adapter bytes, not the older matmul closure digest"
+    ],
+    "gitnexus": "Lane is unindexed and upstream impact query unavailable; proposed producer is a new scratch file with no existing callers."
+  },
+  "commands": {
+    "working_directory": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate",
+    "test": "/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 88-91 --role build --tag vidya-attention-model-free --timeout-s 2 -- /usr/bin/taskset -c 88-91 /usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/test_run_attention.py",
+    "verify": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/run_attention.py verify",
+    "publish": "ROWFLOW_REPO=/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate /usr/bin/python3 -B /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/spec.json",
+    "official_complete": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/run_attention.py complete"
+  },
+  "official_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/native/RESULT.json",
+  "official_capture_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/native/belief.json",
+  "publication": {
+    "actor": "owning session",
+    "status_per_owner": "GPU smoke queued; publisher returned rc0",
+    "smoke_pass_verified": false
+  },
+  "scheduling": "300 second estimate and minimum copied from the publisher floors used by the matmul packet; no new performance claim."
+}

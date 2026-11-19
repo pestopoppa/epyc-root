@@ -1,0 +1,18 @@
+{
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3/supervise.py": "ee80ec5a4e8bf23eb42c8debc33b0c5e4516ebc7f08bd3c1cf1d374d274f86d1",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3/check.py": "acd594d448e29182a837e931294b48a2c4a8dc0027fae2296376b6a789992b39",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3/job.sh": "d4b89ef8214b3fd81fd50e59f5adc22248c1de451c0f73c730599cf60f12aa6d",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3/proof.py": "7abf5fa1500d1eef7e58c42af4721808f8ab4f2a0c670fd794d12aab6ad34b4e",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3/complete.py": "4543be7cc8fd0a137a038a6b9a1b2d67b358873e1fd76d0e7f1bbc6e38acc31f",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3/verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+  "/opt/rocm/llvm/bin/clang": "d7abf6eb6db27e3ead0be22aed5688b51ea4ab64831476f68434087155a68b21",
+  "/opt/rocm/llvm/bin/clang++": "d7abf6eb6db27e3ead0be22aed5688b51ea4ab64831476f68434087155a68b21",
+  "/opt/rocm/llvm/bin/clang++.cfg": "e795800978f7e1ad08f20c0b3d51b97fe34c17204f6a0a71cac55de593524e40",
+  "/opt/rocm/llvm/bin/clang-18.cfg": "e795800978f7e1ad08f20c0b3d51b97fe34c17204f6a0a71cac55de593524e40",
+  "/usr/bin/cmake": "e8e3ba5a77d694b6c85ea52c96af984b6aec172cd23454f1f55dfe468da8b6a9",
+  "/usr/bin/make": "93fc2b4bbe134f593c864748fce8a101588d0ca68577b216ae09aa08acd3e61e",
+  "/usr/bin/nm": "9a811468a6a478b28e19b3749dce7e9d7f586ee8cb6f3a3a1fe0174e4387016e",
+  "/usr/bin/ldd": "9dbc169785669587120a68a7edb2607453f97868f86e756375692cb73d888252",
+  "/usr/bin/sed": "ed5640ac9a0af33a8be9a981ef70f03cd83d5e902a7c5eeff18ee02b2fd48505",
+  "/opt/rocm/llvm/lib/clang/18/lib/linux/libclang_rt.asan-x86_64.so": "4e6102d48c57ac85a987accba7935f10d6398fc2add4d9e6d260c0e3fd181c9d"
+}

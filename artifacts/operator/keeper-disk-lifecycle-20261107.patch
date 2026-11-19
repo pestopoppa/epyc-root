@@ -1,0 +1,38 @@
+diff --git a/scripts/coordination/rowflow/filler_run15.sh b/scripts/coordination/rowflow/filler_run15.sh
+index f9ad582fa..5bb428791 100755
+--- a/scripts/coordination/rowflow/filler_run15.sh
++++ b/scripts/coordination/rowflow/filler_run15.sh
+@@ -259,6 +259,14 @@ write_ended() { # rc reason
+   rm -f "$ENDED.tmp"
+   rm -f "$GRANT"
+   log "ended rc=$1 reason=$2 (grant deleted)"
++  # 2026-11-07 (coordinator: a build row left a ROOT-owned mode-555 tree of ~42 GB that trash-sweep could not delete):
++  # at row end the job dir must be reclaimable by the keeper's uid. Modes we own are repaired here (best effort, never
++  # fatal); a foreign-uid residue is logged with the exact chown so the janitor's OWNER step and the operator see it.
++  case "${WORKDIR:-}" in /mnt/raid0/llm/tmp/*) if [ -d "$WORKDIR" ]; then
++    chmod -R u+rwX "$WORKDIR" 2>/dev/null || true
++    foreign=$(find "$WORKDIR" -maxdepth 3 ! -user "$(id -un)" -print -quit 2>/dev/null || true)
++    [ -z "$foreign" ] || log "OWNER-RESIDUE: $foreign is not owned by $(id -un); fix: sudo chown -R $(id -u):$(id -g) $WORKDIR"
++  fi;; esac   # only a job dir under tmp/ (never the default /workspace)
+   notify_end "$1" "$2"
+ }
+ # 2026-11-04 incident (disk-floor kill, nobody told for 3 h): push every terminal event to the row owner (session bus)
+diff --git a/scripts/coordination/rowflow/ws58-calendar-keeper-v13.sh b/scripts/coordination/rowflow/ws58-calendar-keeper-v13.sh
+index 897ae2fff..1d6af902f 100755
+--- a/scripts/coordination/rowflow/ws58-calendar-keeper-v13.sh
++++ b/scripts/coordination/rowflow/ws58-calendar-keeper-v13.sh
+@@ -382,7 +382,13 @@ def first_start(ids):
+         if e: pub.append(e)
+     if st: return min(st), 'first job start'
+     if pub: return min(pub), 'publish time'
+-    return None, 'no started= in grants/<id>.ended and no published_at in the manifest'
++    # 2026-11-07 (operator: automatic reclamation; 99 groups sat INPUT-ONLY forever): a row that recorded neither still
++    # has a published manifest file and an end record on disk. The manifest's mtime is never later than the job start
++    # (a republish rewrites it before the keeper re-dry-runs and re-grants), so it is a CONSERVATIVE cutoff: anything
++    # older stays input; only files the job wrote after publication can be reclaimed.
++    mt = [os.path.getmtime(mans[rid][1]) for rid in sorted(ids) if rid in mans and os.path.isfile(mans[rid][1])]
++    if mt: return min(mt), 'manifest mtime (no started=/published_at)'
++    return None, 'no started= in grants/<id>.ended, no published_at and no manifest file'
+ def input_set(root, cutoff):
+     '''every file / symlink / empty dir under root whose mtime is before cutoff (+1 s: recorded times are whole seconds):
+     written before the job started => INPUT, never deleted. Any walk error raises (the item is skipped).'''

@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Scheduled rc0, native mode=build, pinned v10/source patch/candidate/bridge and artifact hashes, compiled CAFE2_VERIFY_RAW marker and local library linkage satisfy build-only rule. No model, timing, expert union, runtime floor or cost verdict.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T14:22:43+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T14:20:43Z reason=complete",
+ "filed_at": "2026-11-04T14:22:43+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-2",
+ "id": "cafe2-v10-verify-cost-build-r2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe2-v10-verify-cost-build-r2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/df2/cafe2-build-r2/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Scheduled rc0, native mode=build, pinned v10/source patch/candidate/bridge and artifact hashes, compiled CAFE2_VERIFY_RAW marker and local library linkage satisfy build-only rule. No model, timing, expert union, runtime floor or cost verdict.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe2-build-r2/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe2-v10-verify-cost-build-r2-20261104",
+ "row_verdict": "pass",
+ "rule": "Accept only pinned v10 plus exact CAFE-2 candidate/bridge and CMake patch; full CPU cafe2-verify-cost executable, compiled CAFE2_VERIFY_RAW marker, content hashes and local llama-common linkage. Build-only prerequisite: no timing, expert union, MTP execution or CAFE-2 cost verdict. Stop on build failure, source mismatch, STOP or deadline; incomplete is UNKNOWN. Successor after scheduled rc75 disk-floor, no scheduled RESULT; no completed build is reused.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "18707f847a7beaabde3bb8459782a341b896ca5d26129ccb8c1ca15b3ae02945",
+  "result": "pass",
+  "status": "filed"
+ }
+}

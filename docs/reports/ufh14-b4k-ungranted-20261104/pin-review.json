@@ -1,0 +1,45 @@
+{
+  "status": "OFFLINE_PATCH_VALIDATED_UNAPPLIED",
+  "at": "2026-11-04T16:55:47.741478+00:00",
+  "reviewed_packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v2-20261104",
+  "scratch_patch": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/guard-independent-next-patch-20261104",
+  "findings": [
+    {
+      "id": "argv-content-pin",
+      "issue": "launch_record compares claimed argv_sha256 but never recomputes it from argv; modified model/device/port passes original function",
+      "fix": "Require nonempty list of NUL-free strings and SHA-256 of native NUL-joined argv equals literal ARGV_SHA",
+      "proof": "Original accepts modified model; patch rejects modified model/device/port and invalid types; exact original argv passes"
+    },
+    {
+      "id": "unanchored-packet-pin-manifest",
+      "issue": "launch.sh trusts dynamically loaded packet-pins.json; jointly replacing input+pin or removing entries passes runtime self-consistency",
+      "fix": "Patched launch.sh binds exact packet-pins bytes to literal SHA-256; updated scratch manifest binds patched job.py",
+      "proof": "Offline extracted preflight accepts exact pins, rejects input-only mutation, input+pin co-mutation and empty manifest"
+    }
+  ],
+  "tests": {
+    "command": "python3 -m unittest discover -s /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/guard-independent-next-patch-20261104 -p test_*.py -v",
+    "passed": 9,
+    "failed": 0,
+    "execution": "Only isolated launch_record AST and extracted pin-check Python; no job main/check/model/publisher invoked"
+  },
+  "files_sha256": {
+    "launch.patch": "1ddafe1f77909358689226d9f7f3bfa48fe9aa641d5ad7e14eca21ced8bce6aa",
+    "job.patch": "261223883cce763d552f2e733ac0748b1476f827e13d58b4f1f5e4e2c4891f14",
+    "test_pin_anchor.py": "3a655826f51a22c93d0afefdb04863902109737888209419ae8c0a736762fc8e",
+    "test_launch_digest.py": "cf92ffe22bf75b4a6e0b61e6b19711196f7bd29783715f1052e0d8d0edce20fc",
+    "job.py": "2acc8a0d02375cb12a56b5d64097481c7796748f4db9caf182946b081e6700e0",
+    "packet-pins.json": "4a5d4a56bdd417a8c18de62e73b6387861f1d9d4613e2d3ff5ae094955a2c00b",
+    "launch.sh": "04686bbd5fb1b305bb74caad28e7b32563cc7f2a21d1e43e2321d52919052e55"
+  },
+  "trust_boundary": "Literal pin anchor is only covered externally when the exact patched launcher hash is captured by the native publisher manifest. This review did not publish or modify any manifest. Runtime self-consistency is not producer-time provenance.",
+  "integration": "Owning session must apply to a fresh unpublished packet, refresh its packet-pins digest literal after final content, and let publisher capture final launcher SHA-256. Existing packet unchanged.",
+  "safety": {
+    "gpu_or_queue_polled": false,
+    "publisher_invoked": false,
+    "model_invoked": false,
+    "active_queued_packets_mutated": false,
+    "maintained_production_or_grants_mutated": false
+  },
+  "gitnexus": "Current scratch worktree unindexed; impact launch_record ambiguous across repositories. Manual scope limited to scratch launch_record/launcher copies; no production impact."
+}

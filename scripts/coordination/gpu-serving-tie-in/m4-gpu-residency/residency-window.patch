@@ -1,0 +1,87 @@
+--- a/native/server_np_sweep.py
++++ b/native/server_np_sweep.py
+@@ -811,6 +811,26 @@
+         fh.write(json.dumps(row, sort_keys=True) + "\n")
+ 
+ 
++def residency_sample_inside_batch(
++    samples: list[dict[str, Any]], *, pid: int, batch_start_ns: int, batch_end_ns: int
++) -> bool:
++    """Require a completed own-PID sample wholly inside the request window.
++
++    Monotonic values share this process's clock; they are not wall timestamps.
++    Reject malformed intervals rather than treating an earlier warmup sample as
++    evidence of GPU residency during request processing.
++    """
++    if type(pid) is not int or pid <= 0 or type(batch_start_ns) is not int or type(batch_end_ns) is not int or batch_end_ns < batch_start_ns:
++        return False
++    for sample in samples:
++        start = sample.get('sample_start_monotonic_ns')
++        end = sample.get('sample_end_monotonic_ns')
++        if (sample.get('pid') == pid and type(start) is int and type(end) is int
++                and batch_start_ns <= start <= end <= batch_end_ns):
++            return True
++    return False
++
++
+ def run_cell(
+     *,
+     model: ModelSpec,
+@@ -898,10 +918,15 @@
+             while not sample_stop.is_set():
+                 kfd = Path('/sys/class/kfd/kfd/proc')
+                 try:
++                    sample_start_ns = time.monotonic_ns()
+                     own = sum(int(f.read_text()) for f in (kfd / str(proc.pid)).glob('vram_*'))
+                     device = int(Path('/sys/class/drm/card2/device/mem_info_vram_used').read_text())
++                    kfd_count = len(list(kfd.iterdir()))
++                    sample_end_ns = time.monotonic_ns()
+                     samples.append({'timestamp': utc_now(), 'pid': proc.pid, 'own_vram_bytes': own,
+-                                    'device_vram_bytes': device, 'kfd_process_count': len(list(kfd.iterdir()))})
++                                    'device_vram_bytes': device, 'kfd_process_count': kfd_count,
++                                    'sample_start_monotonic_ns': sample_start_ns,
++                                    'sample_end_monotonic_ns': sample_end_ns})
+                     if own > vram_limit:
+                         os.kill(proc.pid, signal.SIGTERM)
+                         sample_stop.set()
+@@ -915,15 +940,19 @@
+             sample_stop.set(); sampler.join(timeout=5)
+             raise RuntimeError('GPU residency unproven before request batch')
+         try:
++            batch_start_ns = time.monotonic_ns()
+             results, wall_s = run_prompt_batch(
+                 port=port, model=model, np_level=np_level, prompts=prompts,
+                 n_predict=args.n_predict, request_timeout_s=args.request_timeout,
+                 requests_path=requests_path,
+             )
++            batch_end_ns = time.monotonic_ns()
+         finally:
+             sample_stop.set(); sampler.join(timeout=5)
+         if sampler.is_alive() or not samples or any(s.get('own_vram_bytes', 0) <= 0 or s.get('own_vram_bytes', 0) > vram_limit or s.get('device_vram_bytes', 0) <= 0 or s.get('kfd_process_count', 0) < 1 for s in samples):
+             raise RuntimeError('GPU residency unproven during request batch')
++        if not residency_sample_inside_batch(samples, pid=proc.pid, batch_start_ns=batch_start_ns, batch_end_ns=batch_end_ns):
++            raise RuntimeError('no completed own-PID GPU residency sample within request batch')
+         row = summarize_cell(
+             model=model,
+             np_level=np_level,
+@@ -935,6 +964,8 @@
+         )
+         row["server_log"] = str(log_path)
+         row['gpu_residency_during'] = samples
++        row['gpu_residency_batch_start_monotonic_ns'] = batch_start_ns
++        row['gpu_residency_batch_end_monotonic_ns'] = batch_end_ns
+         row['ggml_maps'] = str(output_dir / f"ggml-maps-{cell_index}.txt")
+         return row
+     finally:
+@@ -1241,7 +1272,10 @@
+                     'attestation_locator':str(request_path), 'attestation_sha256':request_sha,
+                     'extra':{'role':role, 'model_sha256':model_sha, 'recipe_sha256':recipe_sha, 'source_commit':commit, 'producer_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                              'binary':str(args.llama_server.resolve()), 'context_size':args.context_size,
+-                             'np':np_level, 'gpu_residency_during':row['gpu_residency_during'], 'ggml_maps':row['ggml_maps']}}
++                             'np':np_level, 'gpu_residency_during':row['gpu_residency_during'],
++                             'gpu_residency_batch_start_monotonic_ns':row['gpu_residency_batch_start_monotonic_ns'],
++                             'gpu_residency_batch_end_monotonic_ns':row['gpu_residency_batch_end_monotonic_ns'],
++                             'ggml_maps':row['ggml_maps']}}
+                 measurement['measurement_sha256'] = hashlib.sha256(json.dumps(measurement, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()).hexdigest()
+                 row['belief_measurements'] = [measurement]
+             summary_rows.append(row)

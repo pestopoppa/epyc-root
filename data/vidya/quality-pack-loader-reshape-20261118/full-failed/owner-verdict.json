@@ -1,0 +1,5 @@
+{
+  "verdict": "fail",
+  "rationale": "rc=1; production tensor-log witness for blk.0.hc_attn_norm.weight missing under strict parser. No captures or completed comparison; owned PID1077265 exited and listener closed. Original failure retained, no bank or promotion authority.",
+  "filed_by": "handoff-vidya-belief-substrate"
+}

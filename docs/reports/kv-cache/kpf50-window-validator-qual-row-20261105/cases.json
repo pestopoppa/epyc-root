@@ -1,0 +1,222 @@
+[
+  {
+    "name": "positive",
+    "expected_rc": 0,
+    "status": "SYNTHETIC_CONTROL_ONLY"
+  },
+  {
+    "name": "native_unproved",
+    "expected_rc": 3,
+    "status": "UNKNOWN"
+  },
+  {
+    "name": "missing_children",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_clock_after",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_clock_before",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_dispatch_csv",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_process_maps",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_residency",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_server_log",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_shape",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_smoke_after",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_smoke_before",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_smoke_csv",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_smoke_log",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_children",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_shape",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_process_maps",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_residency",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_clock_before",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_clock_after",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_smoke_before",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_smoke_after",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "wrong_source",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "wrong_order",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "incomplete",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "partial",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "nonfresh",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "bad_pid",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "bad_window",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "bad_schema",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "bad_synthetic",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "bad_seal",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "escape",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "mixed_phase",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "short_fork",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "bad_shape",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "wrong_maps_pid",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "wrong_residency_pid",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "zero_vram",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "bad_dispatch",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "bad_dispatch_time",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "missing_step",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_window",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  },
+  {
+    "name": "malformed_policy",
+    "expected_rc": 2,
+    "status": "REFUSE"
+  }
+]

@@ -3,7 +3,7 @@
 
 The host already runs a nightly root cron job (operator ruling 2026-10-22: build NO parallel backup):
   02:00Z  cloud-llm-vault sync   /mnt/raid0/llm/cloud-llm-vault/{epyc,host,twyne}/{claude,codex}  (immutable)
-  ~02:15Z ai-sessions tarball     /mnt/raid0/llm/claude-backups/ai-sessions-*.tar.gz  (keep 14)
+  ~02:15Z ai-sessions tarball     /mnt/raid0/llm/claude-backups/ai-sessions-*.tar.gz  (keep 1 verified; scripts/backup/backup_retention.py)
           micron snapshot          /mnt/micron/backups (vault only, keep 60; host mount, not visible here)
 and logs to claude-backups/backup.log + LAST_STATUS.
 
@@ -44,7 +44,7 @@ HOME = Path(os.path.expanduser("~"))
 VAULT = Path("/mnt/raid0/llm/cloud-llm-vault")
 BACKUPS = Path("/mnt/raid0/llm/claude-backups")
 ORCH = Path("/workspace/repos/epyc-orchestrator")
-KEEP_TARBALLS = 14
+KEEP_TARBALLS = 1   # LOOP-21: newest verified only (display expectation; no alarm reads it)
 STALE_H = 36
 SNAPSHOT_STALE_H = 3          # hourly snapshots: >3 h old means the sync is not running
 OPENCODE_RO_DIR = Path("/mnt/raid0/llm/opencode-db")

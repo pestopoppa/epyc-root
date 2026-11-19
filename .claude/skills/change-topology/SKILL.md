@@ -89,6 +89,8 @@ ratchet** across identical cycles (fragmentation — remedy: none, it caps the
 context you may declare). Reporting one as the other is how "we need headroom"
 becomes a mechanism nobody measured.
 
+On a move TO the GPU: **HIP FA gate:** if a GPU role uses a head size outside {40,64,72,80,96,112,128,256}, or K/V cache types that differ or are not f16/q8_0/q4_0/bf16, run the one-step detection (grep the server log for `missing support|not supported, set to disabled`) before serving; see `docs/reference/hip-fa-unsupported-shapes.md`.
+
 ### 4 — recompute capacity, both legs
 `scripts/capacity.sh`. Per instance, per device. The host leg reports UNGATED
 rather than passing when `/proc/meminfo` is unreadable; treat UNGATED as a

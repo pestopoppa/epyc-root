@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T11:05:55Z reason=complete
+job_id=lsa-gitnexus-enum-validate-20261104
+owner=lsa-screen
+step=job-run
+estimated_wall_s=300
+started=2026-11-04T11:05:49Z
+regions=0,1,96,97

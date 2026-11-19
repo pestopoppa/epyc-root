@@ -1,0 +1,59 @@
+{
+  "custody": "Original untracked workspace files; not a durable native custody transfer.",
+  "files": [
+    {
+      "relative_path": "README.md",
+      "sha256": "929daabf4993204ec94f03a8eed4d3cc59a2acaa0c1cf24dfdbd6acc2eb05fd9"
+    },
+    {
+      "relative_path": "build-job.sh",
+      "sha256": "deb86cd35843924879c8e86e726363f6e04f6a123652476a21e8992031f6c554"
+    },
+    {
+      "relative_path": "build-launch.sh",
+      "sha256": "8c685fe694b4dbdd2468987acb75c4d8bae841191bb6d2def3e31104aba892f7"
+    },
+    {
+      "relative_path": "build-spec.json",
+      "sha256": "caac5762e97a1d2536d8fb30ed1bd1a303e795918a2f2e6989f046cff6152191"
+    },
+    {
+      "relative_path": "candidate.patch",
+      "sha256": "2ebd6f50eb1870e4d23e1173af82c38ca83ff53eabf2b6fb27a96879fb7388b5"
+    },
+    {
+      "relative_path": "controls-job.sh",
+      "sha256": "d939c636726967c048c2cdd473b9286b8efe39ad6b74a5aac9e10edb98041d84"
+    },
+    {
+      "relative_path": "controls-launch.sh",
+      "sha256": "97be64732a3838a1ec48d6f122ad8545a11e5d6982e18ca15d15dbb7c5768db7"
+    },
+    {
+      "relative_path": "controls-spec.json",
+      "sha256": "062a48116fde069c4353a4d39b261dc985db4747e11dfa8eddae4a6b3d35dd7d"
+    },
+    {
+      "relative_path": "local-runtime.py",
+      "sha256": "acaa2df57a4be71c9d4d720bfc0c40b64f9076cef84f852b640582935856be2d"
+    },
+    {
+      "relative_path": "prepare-inputs.sh",
+      "sha256": "3b71a9d10abdee4b5484ced47c26226ba6df3bfff12b86046b4532afd6919141"
+    },
+    {
+      "relative_path": "review-delta.patch",
+      "sha256": "7db804e5e92c8ab32e9e0439cbebc7f92b470c0ae77192fe965c194e2c1f3b93"
+    },
+    {
+      "relative_path": "reviewed-candidate.patch",
+      "sha256": "545e17c8f54cd1b42cda2e6d0867e0fd0a4ab8c286825f3febcc6aa597c2c493"
+    },
+    {
+      "relative_path": "runtime-spec.json",
+      "sha256": "dff5db7a58db86559d625b74ff593d2cb275ae1f3ebcfc720c83dd56bda2780a"
+    }
+  ],
+  "kind": "selected original-data summary and raw file digest inventory",
+  "raw_evidence_root": "/workspace/artifacts/compute/ch18b-source-20261102"
+}

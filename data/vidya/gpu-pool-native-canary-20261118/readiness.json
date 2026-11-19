@@ -1,0 +1,13 @@
+{
+  "scope": "Prospective terminal-bound exact-candidate planning replay; no native producer acceptance or production adoption",
+  "validation": {
+    "focused_controls": "11 passed",
+    "diff_check": "passed",
+    "upstream_impact": "GitNexus unindexed; direct callers reviewed; canary and focused tests only"
+  },
+  "sources_sha256": {
+    "scripts/vidya/canary/gpu_pool_context_exclusion.py": "f2542455581540b8c51d87334c0c8e33ca2e4ed990e01b21c8a90d8ee36aaac9",
+    "tests/vidya/test_gpu_pool_scope_control.py": "9d5a0f99496d69180aff495aae4fe7f16fa27e0da97bca699847638d956d6faf"
+  },
+  "native_acceptance": "pending original official GPU rows; synthetic controls do not supply it"
+}

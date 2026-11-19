@@ -1,0 +1,5 @@
+# FM2 native source-control acceptance
+
+Official row `vb-fm2-wire-20261118` completed rc0 on CPUs0–23 with the pinned v10 CPU Qwen3.8-27B Q8_0 judge. The one selected original trace yielded a valid native diagnosis (`none_apply`, zero assigned codes). Strict adapter replay verified the frozen source packet, pre-call marker, exact original request/response and native parser result, ordered capture times, grant and runtime custody. Original private traces and HTTP journals remain at `/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/packet/`; the committed summary exposes digests only.
+
+The existing native `belief_canary.py` passed: the exact receipt-derived observation reached `coordination.fm2` as `Judged/Located` harness context, remained outside the reliance whitelist, and was excluded from `autokernel.planner`. `planning-canary.json` retains the exact identity. This closes one-trace native source control and the isolated shared-reader canary. Production coordinator consumption remains separate in the parent. No prevalence, accuracy, faithfulness, crosswalk validation or causal fan-out conclusion follows.

@@ -1,0 +1,21 @@
+{
+  "target": {
+    "id": "Function:scripts/vidya/producers/repl_shadow_validate.py:validate_shadow_stream",
+    "name": "validate_shadow_stream",
+    "type": "Function",
+    "filePath": "scripts/vidya/producers/repl_shadow_validate.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 0,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 0,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "byDepthCounts": {},
+  "affected_processes": [],
+  "affected_modules": [],
+  "byDepth": {}
+}

@@ -1,0 +1,9 @@
+# Prefix request-boundary integration qualification
+
+PREPARED_UNEXECUTED, ready=false. No tests/smoke/publish performed.
+
+Executes AST-retained selected_slice, Runner.request, cell_verdict and validated_top2 from sealed control.py; excludes all imports, server classes, main and native setup. Uses a sealed conservative witness candidate and fake transport, generated miniature prefix=2 synthetic traces, literal token/logprob responses and synthetic in-request residency samples. These samples test request plumbing only and prove no hardware residency. Retained request geometry 1984 is explicitly translated to synthetic prefix 2 at the witness injection boundary. No exact-inputs, model, old native trace or R5 cell is consumed. Original exposed g0-S2-B remains INVALID.
+
+Six full controls cover actual request-to-witness-to-verdict ordering: positive boundary plus later covering snapshot, duplicate boundary, multiple layouts, foreign task, foreign slot and truncation. Native judge is a throwing sentinel. Refusals require zero compare/judge entries; positive requires exactly one compare through retained smoke verdict. This qualifies conservative integration only, not native trace generation, physical layout, historical equivalence, live custody, repeat rules or inference readiness.
+
+300s reservation provides scheduling/process-isolation headroom; actual controls are expected subsecond apart from retained log-quiet polling. Workload bounded to 120s, cleanup 7s; stop immediately on answer, STOP, deadline, custody/order failure. No padding or repeat-to-fill. Canonical engine owns grant/CPU assignment. Supervisor captures/signals/reaps direct worker only; worker creates no children. Full completion reads local result and END independently of inner environment. Dryrun has two controls and separate SMOKE_ONLY output; it cannot satisfy completion.

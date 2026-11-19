@@ -1,0 +1,20 @@
+[region-lock] acquiring regions [] as role='build' (timeout_s=1.0) …
+[region-lock] held sub-quarter cores {q3: [88, 89, 90, 91]}
+test_repeated_seed_blocks_must_match_the_manifest_and_operator_order (test_gpu_pool_scope_control.NativeResultBinding.test_repeated_seed_blocks_must_match_the_manifest_and_operator_order) ... ok
+test_candidate_reader_refuses_stale_or_unchecked_context_even_with_matching_claim (test_gpu_pool_scope_control.ScopeControls.test_candidate_reader_refuses_stale_or_unchecked_context_even_with_matching_claim) ... ok
+test_historical_standalone_record_is_declined (test_gpu_pool_scope_control.ScopeControls.test_historical_standalone_record_is_declined) ... ok
+test_modified_log_is_refused_before_planner_read (test_gpu_pool_scope_control.ScopeControls.test_modified_log_is_refused_before_planner_read) ... ok
+test_native_result_must_bind_only_complete_official_terminal_capture (test_gpu_pool_scope_control.ScopeControls.test_native_result_must_bind_only_complete_official_terminal_capture) ... ok
+test_native_scope_metadata_cannot_route_to_model_device_or_consumer (test_gpu_pool_scope_control.ScopeControls.test_native_scope_metadata_cannot_route_to_model_device_or_consumer) ... ok
+test_partial_malformed_and_hybrid_candidate_requests_are_invalid (test_gpu_pool_scope_control.ScopeControls.test_partial_malformed_and_hybrid_candidate_requests_are_invalid) ... ok
+test_pinned_snapshot_cannot_supply_native_planning_context (test_gpu_pool_scope_control.ScopeControls.test_pinned_snapshot_cannot_supply_native_planning_context) ... ok
+test_reader_can_present_a_real_scope_match_from_a_synthetic_triplet (test_gpu_pool_scope_control.ScopeControls.test_reader_can_present_a_real_scope_match_from_a_synthetic_triplet) ... ok
+test_repeated_candidate_claims_can_be_bounded_by_the_reader (test_gpu_pool_scope_control.ScopeControls.test_repeated_candidate_claims_can_be_bounded_by_the_reader) ... ok
+test_same_source_candidate_hybrid_cannot_enter_ordinary_harness (test_gpu_pool_scope_control.ScopeControls.test_same_source_candidate_hybrid_cannot_enter_ordinary_harness) ... ok
+test_smoke_capture_is_refused_before_planner_read (test_gpu_pool_scope_control.ScopeControls.test_smoke_capture_is_refused_before_planner_read) ... ok
+test_strict_ingest_preserves_candidate_counts_and_excludes_model_context (test_gpu_pool_scope_control.ScopeControls.test_strict_ingest_preserves_candidate_counts_and_excludes_model_context) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 3.858s
+
+OK

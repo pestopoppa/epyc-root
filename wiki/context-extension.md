@@ -2,8 +2,65 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): YaRN 128K MI210 R10 READY, aggregate-1g interim, CPU/GPU PPL offset unexplained, five harness failures. Earlier: 2026-10-28 (HELMET restoration and fresh Oolong cohort approved, not run). Earlier: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
-**Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
+**Last compiled**: 2026-11-18 (wrap-up sweep). Earlier: 2026-11-09 (AutoKernel wiki compile, ak-wrap d). Earlier: 2026-11-08 (operator wiki sweep, main-inf22). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): YaRN 128K MI210 R10 READY, aggregate-1g interim, CPU/GPU PPL offset unexplained, five harness failures. Earlier: 2026-10-28 (HELMET restoration and fresh Oolong cohort approved, not run). Earlier: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
+**Sources**: 25 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 4 active handoffs, 15 intake entries)
+
+## Compiled Update — 2026-11-18 (wrap-up sweep, autokernel): why decode slows with context on CPU and GPU, and which attention levers were tried
+
+**Confidence: inferred** (source reading, serving-rate arithmetic and one futility row; no new long-context quality or YaRN measurement this sweep).
+
+- **The serving slowdown with context is large and mostly attention traffic.** Production `:8074` (96 threads, MTP d4) ran 41.1 tok/s under 8k and 16.7-18.4 tok/s at 32k-131k over 2,706 requests. That is about 24.3 ms against about 57 ms per token, so roughly 58% of per-token time at 32k scales with context. The task mix confounds MTP acceptance, so this is an association, not an isolated FA measurement.
+- **CPU decode attention re-reads the KV per row.** Reading champion C14, the row-split FA path walks the full KV once per (q head, verify row): for Q38FN (GQA 12, head dim 256, f16 KV) with MTP d4 that is about 45 GiB of K/V traffic per verify step at 32k against 0.75 GiB of unique KV bytes. This is a candidate explanation for the earlier YARN-CPU-ATTN curve (A3B, 16 q heads, 5x falloff from 34k to 253k), still unmeasured. A default-off split-KV candidate with a fixed-order merge is estimated at 2-4% at 4k, 15-22% to 30-45% at 32k and 20-26% to 40-55% at 64k; the keep bar is a 32k geomean >= 1.02 with 4k >= 0.995, and 64k and 128k are not covered by its row.
+- **GPU decode attention at depth is latency-bound, not byte-bound (inferred).** The 27B `gv_fattn` kernel reads KV at 226 GB/s at d128k, about 14% of HBM, with one 17.4 KB chunk in flight per CU. FA is 26-52% of the step at 128k, so a 1.5x op-level gain would give about +10-20% no-draft decode at d128k, +4-8% at d32k and parity at d4k. Two bitwise-identical, default-off knobs target it; nothing has been run.
+- **A cheaper tail fix did not help.** Splitting the combine tails of the decode FA kernel (the exact-order idea from a 5090 source reporting +4.58% at 129k) gave -5% / -1% / +2% op-level FA time at 32k / 64k / 128k, below the +2% bar at 64k, and was closed as futility; the source's gain does not transfer to this kernel.
+- **Row-gather attention has a measured long-context bound.** The FAROWS port (skip masked rows at 35-42k fill, architect_critic Q8_0 np4) was bounded at 33% decode and 21.6% verify; the shipped side-channel version measured verify geomean 1.092 and flat decode (0.991), and the operator accepted it for the next champion.
+- **No YaRN, JETLONG or DCA rows ran in this window.** The track remains owned by autokernel and re-scoped to champion C10 `7f1bd044b` (see the 2026-11-09 entry); AM-DECISIVE-1 is still unrun, and the handoff recorded on 2026-11-18 that its dependent DS-F1 prototype needed an operator choice.
+
+### Source References (2026-11-18, autokernel sweep)
+- [AKX-ALL-24 CPU FA parallelism](../research/deep-dives/akx-all-24-cpu-fa-parallelism-20261118.md) - 45 GiB traffic arithmetic, serving rates, split-KV estimates
+- [C15-GV-BW diagnosis](../research/deep-dives/c15-gv-fattn-bandwidth-20261118.md) - d128k bandwidth and latency analysis
+- [long-context-program](../handoffs/active/long-context-program.md) - track ownership and open YaRN boxes
+- [rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md) - FAVEC-TAIL futility record
+- [autokernel progress 2026-11-17](../progress/2026-11/2026-11-17-autokernel.md) - FAROWS bound and verdicts
+
+## Compiled Update — 2026-11-09 (AutoKernel wiki compile, ak-wrap d): YaRN track re-scoped to C9, LSA-PORT-1 re-homed, S8-C API validated
+
+- **Re-scope**: the whole YaRN/JETLONG/KSHIFT/DCA track is owned by autokernel (was main-inf22) and re-scoped to champion C10 `7f1bd044b` (was C9 `d210f85c2`); any branch or tip named in a box must be re-based on or measured against C10 before it counts. AM-DECISIVE-1 (27B Q8_0, 32K, full KV vs native AM at 5x vs Expected Attention at 5x; KEEP needs AM minus EA >= +10 points exact-match, one-sided paired sign-test p <= 0.05) is still unrun ([long-context-program](../handoffs/active/long-context-program.md)).
+- **S8-C recency API validated** (row `triattention-s8c-api-params2-20261104`, Qwen3-1.7B-Q8_0, status pass, 31/31 cases): 8 valid HTTP 200 (identical default-equivalent: n_evicted 60, pos_max_after 127) and 23 invalid HTTP 400; no quality or performance claim ([long-context-program](../handoffs/active/long-context-program.md)).
+- **LSA-PORT-1** (experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention) was re-homed into the D-LSA section from the INF-48 park decision; INF-48 itself is parked under the gate "GPU AutoKernel lane restart" ([rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md)).
+
+### Source References (2026-11-09 AutoKernel wiki compile)
+- [long-context-program](../handoffs/active/long-context-program.md), [rocm-kernel-authoring](../handoffs/active/rocm-kernel-authoring.md)
+
+## Compiled Update — 2026-11-08 (operator wiki sweep, main-inf22): the YaRN x2 native-window gate ends NOT-FAIL but borderline
+
+- Row `yarn-native-window-gate-20261106` (rows r4-r6; 756 paired probes, 24 chains, 0 invalid; C7 store, Qwen3.8-27B Q8_0, native -c 262144 vs YaRN x2 -c 524288): primary one-sided cluster sign-flip p = 0.0558 (FAIL iff <= 0.05); b 28 (native right, YaRN wrong) vs c 15; accuracy 67.3% vs 65.6% (-1.7 pp). Item-level McNemar p 0.033 is descriptive only. The difference sits at long depth (long zone 57.9% vs 54.2%; 128k b 6 / c 1); short zone 72.7% vs 73.1%. Not an equivalence or safety claim: the no-regression concern at 128k remains open, and YaRN >= 256k stays parked.
+
+### Source References (2026-11-08 main-inf22 operator wiki sweep)
+- `progress/2026-11/2026-11-08-main-inf22.md`
+- `handoffs/active/kernel-champion-and-promotion.md` (C8 package boxes; rows filed with their RESULT.json paths)
+- `handoffs/active/long-context-program.md` (YARN-NATIVE-WINDOW-GATE)
+
+## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): YaRN 512k fits the MI210 once GPU-LEAK-1 is fixed; D-LSA GPU fast path is futile at 32k
+
+- **YARN-512K-MEMFIT: PASS** (Qwen3.8-27B Q8_0, YaRN x2 at 524,288 tokens, MI210, C7 store with GPU-LEAK-1 fix `a9c38f8e0`). Load 47.27 GiB; 60 requests graphs-on leak slope **0.0 MiB/request**, peak 47.62 GiB; 498,729-token needle answered correctly; in-request peak 48.7 GiB ≤ 55 GiB bound; prefill 3,802 s. The earlier +15 GiB overshoot was **GPU-LEAK-1** (HIP-graph capture churn, 0.283 GiB/request), not static budget (~47.5 GiB). Open: the DFlash2 draft on GPU needs 52.55 GiB (> 52 bound), and draft-on-CPU crashed rc -6 because the C7 llama-server lacks `-cd` (draft context). Evidence `/mnt/raid0/llm/tmp/yarn-e1-mem-c7-20261106/out/RESULT.json`.
+- **LSA-H12-INDEXER: FUTILE** — PCA scorer feeding the H12 fused sparse FA on the 27B: dense/LSA op time at kv 32k = 0.368 (LSA 2.7x slower) vs pre-registered ≥1.10; scoring + top-k over all keys and re-projecting f16 K per ubatch costs more than attending 4,612 of 32k keys saves. GPU fast path closed at 32k; LSA-H12-E2E not run. D-LSA's remaining value is quality (LSA-QUALITY-32K) and the 512k YaRN regime, where the paper's whole-model gains start.
+- **LSA-QUALITY-32K**: the v1 screen had no no-think wrapper and was discarded; re-run with the nothink renderer. Phase A window arm: 0/8 pass; dense and PCA arms still running.
+- Ownership (operator 2026-11-07): main-inf22 owns the whole YaRN track, including the former workspace-ec Jet-Long/K-shift/DCA boxes.
+
+### Source References (2026-11-07 main-inf22 sweep)
+- `progress/2026-11/2026-11-07-main-inf22.md`, `progress/2026-11/2026-11-06-main-inf22.md`
+
+## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): the native LSA sentinel passes one 5,132-token case, the S8-C recency planner needed a float-rounding fix, and N10 is unscorable
+
+**Confidence: verified** (scoped single-case results; no quality or speed claim).
+
+- **LSA native 27B sentinel.** On the experimental C5-derived candidate `088a77bd6`, a 5,132-token no-thinking PCA request returned the exact gold in 10 output tokens with K/V pruning in all sixteen global layers, zero fallbacks and own-PID VRAM sampled in-request. Getting there required matching the pinned Torch CPU BF16 reduction order, Qwen text M-RoPE and the author's full-128 unstable Ward rank (including masked infinities); an earlier run fell back on a layer-3 Ward tie ambiguity. At this length only ~1.03% of prefill K/V row visits are removed (~10.22% in decode), prompt/generation 91.19/3.10 s with tracing on. No dense baseline repeat, speedup or promotion.
+- **Related LSA diagnostics.** Hardware BF16 dot at row 474 differs by one bit in one accumulation order and matches blocked; eight-lane normalization matches the frozen row 1185, sequential does not; a compile-only HIP `std::sort` viability leg failed while CPU tied-sort checks passed. The CPU window control (4 sinks + last 4,608 keys, 8,204-token fixture) completed but `retrieval_match=false` and the research projection was marked invalid. The 9,216-key capacity check holds at 326.8 MB of the 2 GiB limit.
+- **S8-C recency (TriAttention).** The first recency candidate failed 2/11 oracle cases (gapped occupancy and failed sequence removal over-reported); a property check found n=10, ratio 0.7f selecting 6 vs the legacy 7, fixed by a float-rounding patch (V2: 65 size groups, 3,112,886 checks pass). The real-cache API run on Qwen3-1.7B returned 60 evictions then the expected error on a repeat against the gapped state: response-level evidence only, no KV-continuity, quality or speed claim.
+- **YARN E1.** The 400K A2 N10 witness returned a response with zero bracketed GPU samples (2,267 of 2,269 observations were slot timeouts), so it is unscorable and its no-replay rule forbids re-running it. The Jet-Long 2,048-token framing diagnostic passed.
+
+Sources: [LSA native checkpoint](../progress/2026-11/2026-11-04-lsa-native.md) · [triattention progress](../progress/2026-11/2026-11-04-handoff-triattention-kv-selection.md) · [codex-gen progress](../progress/2026-11/2026-11-04-handoff-codex-gen.md) · [long-context handoff](../handoffs/active/long-context-program.md)
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 
@@ -25,7 +82,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 **Confidence: verified for the predeclared native-zone sample; no equivalence claim.** The final YaRN extension-arm comparison contains 74 native-window pairs (`b=2`, `c=1`, one-sided exact McNemar `p=0.5`, mean paired A1−A0 score difference `−0.022`). The result is `NOT-FAIL-underpowered`, not a pass of equivalence or safety. Beyond-native A1-only rows are descriptive; Oolong-synth at 400K has 54 observations and mean score 0.093. HELMET KILT `nq`/`hotpotqa` cells were absent, so they provide no result. At that checkpoint the 120-pair Oolong GPU packet and HELMET restoration were prospective. The later fresh GPU comparison recorded 141 pairs (b=7, c=11, p=0.881) and its original 120-pair subset (b=5, c=10, p=0.941), both NOT-FAIL rather than equivalence; the historical 1f/1g power tasks remain open and runs must not be pooled across prior plans. ([later readout](../progress/2026-11/2026-11-01-handoff-yarn.md))
 
-Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extension-research.md), [2026-10-27 workspace-58 evidence](../progress/2026-10/2026-10-27-workspace-58.md), [accepted-scope record](../progress/2026-10/2026-10-27-full-wrap-1850.md).
+Sources: [YaRN context-extension handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [2026-10-27 workspace-58 evidence](../progress/2026-10/2026-10-27-workspace-58.md), [accepted-scope record](../progress/2026-10/2026-10-27-full-wrap-1850.md).
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 15, 3c4ca599): the YaRN native-window gate is FINAL: NOT-FAIL-underpowered
 
@@ -38,9 +95,9 @@ Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extens
 
 ### Source References (2026-10-23 wrap-up sweep 15)
 
-- [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) — YARN-AGG-1e, YARN-AGG-1f
+- [yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) — YARN-AGG-1e, YARN-AGG-1f
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md) — gate FINAL and OOM root cause
-- [gpu-serving-tie-in-program](../handoffs/active/gpu-serving-tie-in-program.md) — GPU-LEAK-1
+- [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) — GPU-LEAK-1
 
 ---
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): a native-window answer change is not a quality regression, and the judge labels are agent-produced, not human
@@ -56,7 +113,7 @@ Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extens
 
 ### Source References (2026-10-22 wrap-up sweep 10)
 
-- [handoffs/active/yarn-context-extension-research.md](../handoffs/active/yarn-context-extension-research.md) — operator correction, power caveat, AGG-1a-d and JUDGE-1a-d records
+- [handoffs/active/long-context-program.md](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) — operator correction, power caveat, AGG-1a-d and JUDGE-1a-d records
 - [progress/2026-10/2026-10-22-yarn-judge1-labels.md](../progress/2026-10/2026-10-22-yarn-judge1-labels.md) — label provenance and judge agreement figures
 - [progress/2026-10/2026-10-22-yarn-ruler-schema.md](../progress/2026-10/2026-10-22-yarn-ruler-schema.md) — RULER suite added to the belief-kernel schema
 - [handoffs/active/CURRENT-CAMPAIGN.md](../handoffs/active/CURRENT-CAMPAIGN.md) — operator decisions of 2026-10-22 including the delegation
@@ -77,13 +134,13 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 
 ### Positional Encoding Extension (YaRN)
 
-- **YaRN extends context 2-4x with zero inference overhead**: RoPE dimensions are divided into groups with different linear scaling factors. Fine-tuned mode extends ~2x with 0.1% of pre-training data; dynamic mode extends further at inference time with zero fine-tuning. RoPE embeddings are pre-computed, so there is no per-token cost. [yarn-context-extension-research handoff](../handoffs/active/yarn-context-extension-research.md)
+- **YaRN extends context 2-4x with zero inference overhead**: RoPE dimensions are divided into groups with different linear scaling factors. Fine-tuned mode extends ~2x with 0.1% of pre-training data; dynamic mode extends further at inference time with zero fine-tuning. RoPE embeddings are pre-computed, so there is no per-token cost. [yarn-context-extension-research handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research)
 
-- **llama.cpp fully supports YaRN**: Dedicated CLI flags (`--rope-scaling yarn`, `--rope-scale N`, `--yarn-orig-ctx N`, plus fine-tuning parameters `--yarn-ext-factor`, `--yarn-attn-factor`, `--yarn-beta-slow`, `--yarn-beta-fast`). Our models support extension: Qwen3.5 supports 256K native + YaRN to 1M; Qwen3-Next-80B supports 256K native + YaRN to 1M (RULER 91.8% avg across 4K-1M). [yarn-context-extension-research handoff](../handoffs/active/yarn-context-extension-research.md)
+- **llama.cpp fully supports YaRN**: Dedicated CLI flags (`--rope-scaling yarn`, `--rope-scale N`, `--yarn-orig-ctx N`, plus fine-tuning parameters `--yarn-ext-factor`, `--yarn-attn-factor`, `--yarn-beta-slow`, `--yarn-beta-fast`). Our models support extension: Qwen3.5 supports 256K native + YaRN to 1M; Qwen3-Next-80B supports 256K native + YaRN to 1M (RULER 91.8% avg across 4K-1M). [yarn-context-extension-research handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research)
 
 - **Quality degradation at extended lengths is an open question for our specific hardware**: The RULER accuracy curve from 256K to 1M with YaRN on CPU inference has not been measured. KV cache memory at 1M context is the primary concern -- 6x KV compression via TurboQuant-style techniques (intake-191, intake-192, intake-193) could make this practical but is not yet implemented beyond our existing Hadamard+q4_0 quantization.
 
-- **RoPE base-extension trades position-fidelity for token-fidelity provably (intake-569, Du et al. 2026)**: Closed-form proofs of four RoPE failure modes (Position Inversion → 0.5 prob at long M; Position Aliasing → 100% exponentially in M; Token Inversion → 0.5 at m ≥ 20K; Token Aliasing ≈ 5% positions at BF16 h=64). Critical asymmetry: raising the RoPE base B (the YaRN move) **helps** token modes F3/F4 but **hurts** position modes F1/F2 — no single B preserves both. Empirically all tested 7B–405B models collapse to chance (~0.25) on a 4-element position-indexing task by 4K–8K tokens. **Operational implication for EPYC**: 32K is the operational hard line for reliable position discrimination; above 32K, YaRN-style extension preserves content fidelity but degrades position fidelity, so YaRN's `yarn-context-extension-research.md` gate now requires workload tolerance for degraded position-discrimination. Triangulates mechanistically with intake-547#02 (Wang RLM reproduction): depth-2 96× wallclock cliff is the predicted symptom of long-context attention over depth-1 children's outputs. [2026-05-20-rope-long-context-bounds.md](../research/deep-dives/2026-05-20-rope-long-context-bounds.md), [yarn-context-extension-research handoff](../handoffs/active/yarn-context-extension-research.md), [intake-569]
+- **RoPE base-extension trades position-fidelity for token-fidelity provably (intake-569, Du et al. 2026)**: Closed-form proofs of four RoPE failure modes (Position Inversion → 0.5 prob at long M; Position Aliasing → 100% exponentially in M; Token Inversion → 0.5 at m ≥ 20K; Token Aliasing ≈ 5% positions at BF16 h=64). Critical asymmetry: raising the RoPE base B (the YaRN move) **helps** token modes F3/F4 but **hurts** position modes F1/F2 — no single B preserves both. Empirically all tested 7B–405B models collapse to chance (~0.25) on a 4-element position-indexing task by 4K–8K tokens. **Operational implication for EPYC**: 32K is the operational hard line for reliable position discrimination; above 32K, YaRN-style extension preserves content fidelity but degrades position fidelity, so YaRN's `yarn-context-extension-research.md` gate now requires workload tolerance for degraded position-discrimination. Triangulates mechanistically with intake-547#02 (Wang RLM reproduction): depth-2 96× wallclock cliff is the predicted symptom of long-context attention over depth-1 children's outputs. [2026-05-20-rope-long-context-bounds.md](../research/deep-dives/2026-05-20-rope-long-context-bounds.md), [yarn-context-extension-research handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [intake-569]
 
 ### Memory-Augmented Architectures
 
@@ -171,8 +228,8 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 - [Memento Iterative Reasoning Cluster](../research/deep-dives/memento-iterative-reasoning-cluster.md) -- Dual information stream (15pp KV vs text ceiling), InftyThink/InftyThink+/Accordion-Thinking comparison, quad-stack KV compression opportunity, Fold/Unfold toggle
 - [ReSum Context Summarization](../research/deep-dives/resum-context-summarization.md) -- Diminishing returns at 128K, compaction timing for extended windows
 - [Context-Folding / FoldGRPO](../research/deep-dives/context-folding-foldgrpo.md) -- 32K beats 327K finding demonstrates that compression can outperform raw extension
-- [yarn-context-extension-research handoff](../handoffs/active/yarn-context-extension-research.md) -- YaRN CLI flags, model support, open research questions
-- [memento-block-reasoning-compression handoff](../handoffs/active/memento-block-reasoning-compression.md) -- Block masking feasibility in llama.cpp, SFT training design, composability analysis
+- [yarn-context-extension-research handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) -- YaRN CLI flags, model support, open research questions
+- [memento-block-reasoning-compression handoff](../handoffs/active/context-and-token-economy.md#track-memento-block-reasoning-compression) -- Block masking feasibility in llama.cpp, SFT training design, composability analysis
 - [intake-153](https://arxiv.org/abs/2512.24601) Recursive Language Models -- Theoretical foundation; EPYC implements ~80% of RLM architecture
 - [intake-154](https://arxiv.org/abs/2510.11967) Context-Folding -- Branch/fold call stack; sub-linear context growth
 - [intake-155](https://arxiv.org/abs/2510.24699) AgentFold -- Two-level proactive folding; 92% context reduction; sub-linear growth
@@ -195,13 +252,13 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 
 The new CPU Qwen3.6-35B-A3B leg reached 323K with 5/5 retrieval; native and YaRN ×2 matched at 133K and 253K. At matched depth, YaRN's decode cost was at most 4%, while decode fell with depth in both arms and 8K append cost grew to about 600 seconds around 351K. DCA beat raw extrapolation in one-window 64K PPL runs, but DCA-vs-YaRN remains suggestive only and the CPU/GPU offset is unresolved.
 
-Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [AutoKernel all-devices/all-dimensions](../handoffs/active/autokernel-all-devices-all-dimensions.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
+Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [AutoKernel all-devices/all-dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
 
 ### Supplemental changed-source coverage — Oct 3–6
 
 The post-manifest CPU YaRN progress distinguishes native-window cost from extension quality: Qwen3.6-35B-A3B reached 323K with 5/5 tested needles; native and static YaRN ×2 matched at 133K and 253K, while static ×2 failed the native-window inertness rule (decode loss 1.3% at depth 0 and 7.6% at 34K; MTP acceptance 53% to 48%). Dynamic per-request YaRN/DCA remains the acceptable direction in that test record; it does not establish a general context-extension quality win. The GPU tie-in handoff adds only an open memory-attribution task for the +15 GiB E1 overshoot already recorded here, not a new result.
 
-Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md).
+Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research).
 
 ## Incremental synthesis — 2026-10-06 workspace-ec wrap (native-window inertness, K-shift, Jet-Long)
 
@@ -214,7 +271,7 @@ Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-
 - **Jet-Long (cost not yet measured).** In-window exactness is reported by the paper on Qwen3, but the uncached correction costs roughly 5x the attention K+V bytes per decode step (derived estimate), the fused kernel is SM90-only, and there is no MTP or DFlash2 support. Decision gating: CTX-JETLONG-COST (arithmetic plus CPU microbenchmark; passes at <= 10% decode cost at 262K and <= 25% at 1M), then a bit-exact in-window prototype, with YARN-MSCALE-AB deciding how cheap inertness can be. The interim recommendation is a length-routed second server (D) with its RAM stated as a number, F as target, Jet-Long cached as the stretch; DCA is off the in-window path (identity only below chunk_size minus local window, refuses MTP in v1, roughly 2x attention cost).
 - **YaRN is not a short-context identity, and CPU YaRN is cost-neutral beyond that:** the same session's CPU leg (323K, 5/5 needles; decode cost at most 4% at matched depth) is recorded in the section above; its limit at depth is CPU attention cost, not the scaling method.
 
-Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [native-window summary](../artifacts/yarn-native-window-20261005/summary.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md). Study notes (scratch, not durable): `/mnt/raid0/llm/tmp/yarn-inert-design-20261006/{OPTIONS,CTX2_KSHIFT,STAGE3_PLAN}.md`.
+Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [native-window summary](../artifacts/yarn-native-window-20261005/summary.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md). Study notes (scratch, not durable): `/mnt/raid0/llm/tmp/yarn-inert-design-20261006/{OPTIONS,CTX2_KSHIFT,STAGE3_PLAN}.md`.
 
 ## Incremental synthesis — 2026-10-06 evening (Jet-Long gate A PASS, the small-ubatch abort, CPU prefill scaling)
 
@@ -225,14 +282,14 @@ Sources: [YaRN context-extension research](../handoffs/active/yarn-context-exten
 - **Jet-Long small-ubatch bug.** With Jet-Long ON (window 256, native 1024) the CPU server aborts on `GGML_ASSERT(i01 >= 0 && i01 < ne01)` in `ggml_compute_forward_get_rows` (`ggml-cpu/ops.cpp:5350`) for any ubatch smaller than the window at positions past native: ub 16 crashed at about 1280 tokens, ub 256 ran clean to 9145 tokens and crashed on the final 4-token ubatch. Checkpoints, cache-ram and the drafter were each ruled out (crash with `--ctx-checkpoints 0 --cache-ram 0`, and with no drafter); `-ub 256` removed it only for full ubatches. By extension decode (n=1) beyond native is exposed, and the GPU run (ub 16, window 2048) shares the exposure. Hypothesis, unproven: the grouped-position path builds an out-of-range row index when the ubatch is smaller than the window. Slot save/restore under Jet-Long was never reached (see the checkpoint rule in [ssm-hybrid](ssm-hybrid.md)). Evidence: [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE_TEST.md).
 - **CPU long-context prefill scaling (35B-A3B MTP Q8_0, 96 threads, `-ub 256`).** Instantaneous prefill rate falls about 10x by 100k tokens: Jet-Long 374 tok/s at 1.7k, 198 at 12k, 97 at 32k, 70 at 53k, 43 at 94k, 39 at 104k; static YaRN 321 at 2.2k, 128 at 23k, 62 at 64k, 41.5 at 105k. The cumulative average falls from about 490 tok/s (4.8k) to 70 (109k). The two arms track each other, so below native Jet-Long adds no visible slope penalty; the cost is attention over a growing KV on CPU. Both logs end near 109k of a roughly 288k prompt (progress 0.38), so the shape beyond 109k is extrapolation, and a 1M prefill is hours. Evidence: [PREFILL_SCALING](../artifacts/yarn-ctx-20261006/jetlong/PREFILL_SCALING.md).
 
-Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GATE_A](../artifacts/yarn-ctx-20261006/jetlong/GATE_A.md), [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE_TEST.md), [PREFILL_SCALING](../artifacts/yarn-ctx-20261006/jetlong/PREFILL_SCALING.md).
+Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GATE_A](../artifacts/yarn-ctx-20261006/jetlong/GATE_A.md), [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE_TEST.md), [PREFILL_SCALING](../artifacts/yarn-ctx-20261006/jetlong/PREFILL_SCALING.md).
 
 ## Incremental synthesis — 2026-10-07 workspace-ec pre-pause wrap (the Jet-Long hybrid-input bug)
 
 - **The small-ubatch abort was a missing input, not a size limit.** Root cause (fixed at `e6ea79421`, branch llama.cpp-experimental-jetlong-hip-20261006): `llm_graph_input_mem_hybrid::set_input` never filled the Jet-Long inputs and `can_reuse` never blocked graph reuse, so on qwen35/qwen35moe above native the attention read uninitialised indices. The visible symptom was the `get_rows` assert; the dangerous one is **silently wrong attention**. Every pre-fix above-native result on hybrid models is therefore INVALID. New T4 tests (ub 1/4/16/64, tail, decode, IMRoPE+NeoX, q8_0+f16) pass and a real 27B at `-ub 16` no longer crashes. Gap: the synthetic harness bypassed the hybrid input class, which is why it never saw this.
 - **Small-model recall (Qwen3-0.6B, native 32k; NeoX path, no repro of the bug).** 1x: N 6/6, J 6/6. 2x: J 6/6, static YaRN 5/6, X 5/6. 4x: Y 3/6, X 0/6, J not run (CPU too slow). The 4x J arm remains open.
 
-Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [JETLONG_SMALL_RESULTS](../artifacts/ec-wrapup-20261007/JETLONG_SMALL_RESULTS.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md).
+Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [pre-pause progress](../progress/2026-10/2026-10-07-workspace-ec.md), [JETLONG_SMALL_RESULTS](../artifacts/ec-wrapup-20261007/JETLONG_SMALL_RESULTS.md), [SAVE_RESTORE_TEST](../artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 9): the native-window gate reads NOT-FAIL on 2 discordant pairs, and the gate now says so
 
@@ -247,7 +304,7 @@ Sources: [YaRN context-extension research](../handoffs/active/yarn-context-exten
 
 - [progress/2026-10/2026-10-22-yarn-gate-power-note.md](../progress/2026-10/2026-10-22-yarn-gate-power-note.md)
 - [progress/2026-10/2026-10-22-yarn-native-gate-runner.md](../progress/2026-10/2026-10-22-yarn-native-gate-runner.md)
-- [handoffs/active/yarn-context-extension-research.md](../handoffs/active/yarn-context-extension-research.md)
+- [handoffs/active/long-context-program.md](../handoffs/active/long-context-program.md#track-yarn-context-extension-research)
 
 ## Compiled Update — 2026-10-21 (sweep 5): the YaRN gate is specified, the Oolong adapter exists, and the K-shift fix is queued
 
@@ -276,32 +333,32 @@ Sources: [YaRN context-extension research](../handoffs/active/yarn-context-exten
   - **Validation.** A blind 50-item labelling sheet waits for operator labels. Results are relative to the pinned local judge and never comparable to published figures.
 - **V11-100, the YaRN K-shift pure-rotation fix** (`experimental/yarn-kshift-fix-20261021` @ `b67a5b9bc`), folds into the consolidation after the C2 CAS (CH-23). Its test travels with the commit. The native-window non-regression gate (YaRN must not regress inside the native window) remains a hard gate on the champion.
 
-Sources: [YaRN context extension research](../handoffs/active/yarn-context-extension-research.md), [RAO/ReDel substrate spike](../handoffs/active/rao-redel-substrate-spike.md), [Progress dpf-sample-yarn](../progress/2026-10/2026-10-21-dpf-sample-yarn.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md), [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md)
+Sources: [YaRN context extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [RAO/ReDel substrate spike](../handoffs/active/context-and-token-economy.md#track-rao-redel-substrate-spike), [Progress dpf-sample-yarn](../progress/2026-10/2026-10-21-dpf-sample-yarn.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md)
 
 ## Compiled Update — 2026-10-26 (wrap-up, workspace-58)
 
-- **YaRN scope is Qwen3.8-27B factor 2 (524,288) as an np 1 MI210 mode.** E1 quality PASS to 500K but FAIL on C4 memory (A1 63.9 GiB vs 55 limit); next is YARN-E1-MEM. v10 traps: the server clamps every slot to `n_ctx_train`, so `--override-kv qwen35.context_length` plus a mandatory `--yarn-orig-ctx 262144` are required. The native-window gate remains NOT-FAIL-underpowered, and the K-shift fix shipped in champion C3. ([yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md), [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to-25.md))
+- **YaRN scope is Qwen3.8-27B factor 2 (524,288) as an np 1 MI210 mode.** E1 quality PASS to 500K but FAIL on C4 memory (A1 63.9 GiB vs 55 limit); next is YARN-E1-MEM. v10 traps: the server clamps every slot to `n_ctx_train`, so `--override-kv qwen35.context_length` plus a mandatory `--yarn-orig-ctx 262144` are required. The native-window gate remains NOT-FAIL-underpowered, and the K-shift fix shipped in champion C3. ([yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [week outcomes](../docs/reference/inference-outcomes-week-2026-10-18-to-25.md))
 
 ## Compiled Update — 2026-10-27 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the recorded decisions; beyond-native cells are report-only.
 
-- **YARN-AGG-1(ii) extension arms: NOT-FAIL-underpowered, not an equivalence claim.** On native-zone pairs the one-sided exact McNemar has n_pairs 74, b=2 (A0 right / A1 wrong), c=1, p=0.5, mean paired diff A1-A0 -0.022. A0 ran 80/80 and A1 139/139 planned items. Cell means are tiny-n and report-only (oolong_synth@240k n=61: A1 0.138 vs A0 0.149). This follows the native-gate rule that YaRN must not regress the native window; with 3 discordant items it cannot detect a regression either way. ([yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `/mnt/raid0/llm/tmp/yarn-extension-arms-out/decision.json`)
-- **Beyond native, A1 only (no A0, no gate):** Oolong-synth@400k n=54 mean 0.093 (CI 0.071-0.133); helmet_json_kv, longbio_standard and ruler_mv @400k are 1/1; ruler_mk_2 @400k and @480k are 0/1. HELMET nq/hotpotqa 128k were dropped because the KILT data is missing; YARN-AGG-1g restores it and folds the discordant items into the 1f power run. ([yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
-- **CH-23 YaRN K-shift: the champion fails `test-yarn-kshift` and fix `b67a5b9bc` passes it.** On `dd3d9721c` the YaRN x4 round-trip K NMSE is 8.79e-2 (shifted vs fresh 1.92e-2; non-YaRN `attn_factor` 1.1 round trip 4.41e-2). With the fix, all are <= 2e-9, non-YaRN digests are bit-identical and CPU ROPE is 448/448; HIP ROPE was not run. Correctness-only. ([autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md) CH-23; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `/mnt/raid0/llm/tmp/yarn-kshift-fix-20261021/prefix_run.log`)
-- **M12 long-context reader recipe re-measured on C5 (CH-26a): PASS 9/9** with warm cache share >= 0.98 on 35B-MTP and 27B-DFlash2; cold legs reprocess 100% (104,698 to 191,447 tokens). See [kv-cache](kv-cache.md). ([autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md); [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md))
+- **YARN-AGG-1(ii) extension arms: NOT-FAIL-underpowered, not an equivalence claim.** On native-zone pairs the one-sided exact McNemar has n_pairs 74, b=2 (A0 right / A1 wrong), c=1, p=0.5, mean paired diff A1-A0 -0.022. A0 ran 80/80 and A1 139/139 planned items. Cell means are tiny-n and report-only (oolong_synth@240k n=61: A1 0.138 vs A0 0.149). This follows the native-gate rule that YaRN must not regress the native window; with 3 discordant items it cannot detect a regression either way. ([yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `/mnt/raid0/llm/tmp/yarn-extension-arms-out/decision.json`)
+- **Beyond native, A1 only (no A0, no gate):** Oolong-synth@400k n=54 mean 0.093 (CI 0.071-0.133); helmet_json_kv, longbio_standard and ruler_mv @400k are 1/1; ruler_mk_2 @400k and @480k are 0/1. HELMET nq/hotpotqa 128k were dropped because the KILT data is missing; YARN-AGG-1g restores it and folds the discordant items into the 1f power run. ([yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research); [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md))
+- **CH-23 YaRN K-shift: the champion fails `test-yarn-kshift` and fix `b67a5b9bc` passes it.** On `dd3d9721c` the YaRN x4 round-trip K NMSE is 8.79e-2 (shifted vs fresh 1.92e-2; non-YaRN `attn_factor` 1.1 round trip 4.41e-2). With the fix, all are <= 2e-9, non-YaRN digests are bit-identical and CPU ROPE is 448/448; HIP ROPE was not run. Correctness-only. ([autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) CH-23; [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md); `/mnt/raid0/llm/tmp/yarn-kshift-fix-20261021/prefix_run.log`)
+- **M12 long-context reader recipe re-measured on C5 (CH-26a): PASS 9/9** with warm cache share >= 0.98 on 35B-MTP and 27B-DFlash2; cold legs reprocess 100% (104,698 to 191,447 tokens). See [kv-cache](kv-cache.md). ([autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md))
 
-Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md), [autokernel-champion-aggregate](../handoffs/active/autokernel-champion-aggregate.md), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md)
+Sources: [yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [2026-10-27 harvest](../progress/2026-10/2026-10-27-workspace-58.md), [2026-10-26 log](../progress/2026-10/2026-10-26-workspace-58.md)
 
 ## Compiled Update — 2026-10-28 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** (preparation records; no new YaRN measurement).
 
-- **HELMET data restoration (YARN-AGG-1g) is approved but not run.** A bounded CPU launcher reserves 32 GiB total, keeps the 150 GiB free floor, pins the archive digest, inventories and hashes the four KILT files, and resumes per-file extraction; five model-free fixture tests passed. No dataset was downloaded and no model ran. ([yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md); [YaRN restore](../progress/2026-10/2026-10-27-ni-yarn-restore.md))
-- **A fresh 120-pair native Oolong cohort is approved as a GPU observation.** It records model, store-library, template, source and arm-recipe digests before each window's first load and uses the existing native McNemar rule; it does not pool or regrade historical windows. Historical windows lack some content digests, so the pooling task stays open, and the finite cohort may be underpowered. ([yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md))
+- **HELMET data restoration (YARN-AGG-1g) is approved but not run.** A bounded CPU launcher reserves 32 GiB total, keeps the 150 GiB free floor, pins the archive digest, inventories and hashes the four KILT files, and resumes per-file extraction; five model-free fixture tests passed. No dataset was downloaded and no model ran. ([yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research); [YaRN restore](../progress/2026-10/2026-10-27-ni-yarn-restore.md))
+- **A fresh 120-pair native Oolong cohort is approved as a GPU observation.** It records model, store-library, template, source and arm-recipe digests before each window's first load and uses the existing native McNemar rule; it does not pool or regrade historical windows. Historical windows lack some content digests, so the pooling task stays open, and the finite cohort may be underpowered. ([yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research))
 - **YaRN CPU fixed120 s0-s3 all ended rc1** ("captured process did not exit"); a YaRN s3 correctness run was co-tenant with a 42 s preflight on revoked CPUs, ruled no invalidation by the owner because co-tenancy cannot change a correctness verdict. ([2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md))
 
-Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) · [YaRN restore](../progress/2026-10/2026-10-27-ni-yarn-restore.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)
+Sources: [yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) · [YaRN restore](../progress/2026-10/2026-10-27-ni-yarn-restore.md) · [2026-10-28 workspace-58](../progress/2026-10/2026-10-28-workspace-58.md)
 
 ## Compiled Update — 2026-10-29 (operator wiki sweep, workspace-58)
 
@@ -312,19 +369,19 @@ Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-exten
 - **The standing extension-arms read is unchanged:** NOT-FAIL-underpowered (74 native pairs, McNemar p=0.5), explicitly not an equivalence claim; HELMET nq/hotpotqa 128k remain dropped (KILT data missing).
 - **FA-INT64-OFFSET fold is reconciled:** the three commits are recorded as present in the champion, a precondition for any run past 512K (audit-reconciliation, not a new measurement).
 
-Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) · [2026-10-28 workspace-58 progress](../progress/2026-10/2026-10-28-workspace-58.md) · [2026-10-29 workspace-58 progress](../progress/2026-10/2026-10-29-workspace-58.md) · [2026-10-28 codex C3 prep](../progress/2026-10/2026-10-28-codex-c3-prep.md)
+Sources: [yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) · [2026-10-28 workspace-58 progress](../progress/2026-10/2026-10-28-workspace-58.md) · [2026-10-29 workspace-58 progress](../progress/2026-10/2026-10-29-workspace-58.md) · [2026-10-28 codex C3 prep](../progress/2026-10/2026-10-28-codex-c3-prep.md)
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the recorded native observations (single runs, descriptive); no YaRN scientific gate (120-pair McNemar, 141-item power plan, CPU/GPU offset attribution) closed this sweep.
 
-- **The matched 64K CPU/GPU perplexity offset persists and is unattributed.** Qwen2.5-0.5B-Instruct-f16 at context 65536, batch 2048/ubatch 256, FA off, f16 KV: CPU PPL 13.6293 +/- 0.20758, GPU 14.3940 (tokenwise R2 rerun 14.3944), lower is better, GPU minus CPU +0.7647. Model, text and source commit match; the 64 prediction/target token-ID keys match exactly. The +/- is within-run token spread, not a between-run interval, so no significance, kernel-cause or equivalence claim follows. (Note: the model's native window is 32768, so 65536 is beyond training context.) ([source](../handoffs/active/yarn-context-extension-research.md))
+- **The matched 64K CPU/GPU perplexity offset persists and is unattributed.** Qwen2.5-0.5B-Instruct-f16 at context 65536, batch 2048/ubatch 256, FA off, f16 KV: CPU PPL 13.6293 +/- 0.20758, GPU 14.3940 (tokenwise R2 rerun 14.3944), lower is better, GPU minus CPU +0.7647. Model, text and source commit match; the 64 prediction/target token-ID keys match exactly. The +/- is within-run token spread, not a between-run interval, so no significance, kernel-cause or equivalence claim follows. (Note: the model's native window is 32768, so 65536 is beyond training context.) ([source](../handoffs/active/long-context-program.md#track-yarn-context-extension-research))
 - **The 141-item aggregate power run is INTERIM only.** `yarn-agg-1g-power-20261031` hit its window boundary (rc75) with A0 29/141 and A1 30/141 records. The 29 matched pairs show b=1, c=6 (one-sided p=0.992, mean A1-A0 score +0.218) and the exact original-120 subset 25 pairs b=0, c=5. These are incomplete snapshot statistics, explicitly not FAIL/NOT-FAIL, equivalence or power acceptance, and historical discordant scores are not pooled. ([source](../progress/2026-10/2026-10-31-paw-b-yarn-interim.md))
-- **Five YaRN launches ended in harness/admission failures, none a quality result.** MI210 R3 died before any item (client built `/v1/v1/models`, HTTP 404); Oolong S0 v27 produced one budget-exhausted A0 (1,024-token cap, score 0) and no pair; S0 v33 ended rc78 `lock lost` with zero new exposure; the JetLong 130K paired run failed because the Y server capped its slot at 32768 and rejected the 130,000-token prompt (J never attempted); CPU 64K r3/r4 stopped at RSS guards (6 GiB, then 16 GiB with 17.3 GB sampled). All preserve the 120-pair denominator and unknowns, with no redraw. ([source](../handoffs/active/yarn-context-extension-research.md))
+- **Five YaRN launches ended in harness/admission failures, none a quality result.** MI210 R3 died before any item (client built `/v1/v1/models`, HTTP 404); Oolong S0 v27 produced one budget-exhausted A0 (1,024-token cap, score 0) and no pair; S0 v33 ended rc78 `lock lost` with zero new exposure; the JetLong 130K paired run failed because the Y server capped its slot at 32768 and rejected the 130,000-token prompt (J never attempted); CPU 64K r3/r4 stopped at RSS guards (6 GiB, then 16 GiB with 17.3 GB sampled). All preserve the 120-pair denominator and unknowns, with no redraw. ([source](../handoffs/active/long-context-program.md#track-yarn-context-extension-research))
 - **R10 (MI210 128K, 120-pair plan) is READY but unarmed.** The final-source native A1 smoke processed 103,311 prompt tokens in 238.2 s; a separate cutoff control drained in 34 s. The R9 summary-writer `NameError` was repaired and R9's 216 s request stays a failed attempt. The keeper exited after STOP_AT, so no grant exists; no scientific result. ([source](../progress/2026-10/2026-10-31-codex-ni-yarn-r10.md))
-- **YARN-JUDGE-1 closed on integration, not quality.** One genuine native HELMET longqa cell (7,390 prompt tokens, 55 output tokens, 1 judged/0 unjudged) ran end to end with a cloud-judge pin matching the 50-item validation pin (49/50 agreement, Cohen kappa 0.940; 19 rule labels and 31 cross-family model labels, not human labels). Descriptive accuracy 0/1 after 8192-context truncation establishes nothing about long-context quality. ([source](../handoffs/active/yarn-context-extension-research.md))
+- **YARN-JUDGE-1 closed on integration, not quality.** One genuine native HELMET longqa cell (7,390 prompt tokens, 55 output tokens, 1 judged/0 unjudged) ran end to end with a cloud-judge pin matching the 50-item validation pin (49/50 agreement, Cohen kappa 0.940; 19 rule labels and 31 cross-family model labels, not human labels). Descriptive accuracy 0/1 after 8192-context truncation establishes nothing about long-context quality. ([source](../handoffs/active/long-context-program.md#track-yarn-context-extension-research))
 
-Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-extension-research.md) · [paw-b-yarn-interim](../progress/2026-10/2026-10-31-paw-b-yarn-interim.md) · [YaRN R10](../progress/2026-10/2026-10-31-codex-ni-yarn-r10.md) · [S0 v33 admission](../progress/2026-10/2026-10-31-yarn-v33-admission-0816.md) · [2026-10-30 inference pipeline](../progress/2026-10/2026-10-30-codex3-inference-pipeline.md)
+Sources: [yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) · [paw-b-yarn-interim](../progress/2026-10/2026-10-31-paw-b-yarn-interim.md) · [YaRN R10](../progress/2026-10/2026-10-31-codex-ni-yarn-r10.md) · [S0 v33 admission](../progress/2026-10/2026-10-31-yarn-v33-admission-0816.md) · [2026-10-30 inference pipeline](../progress/2026-10/2026-10-30-codex3-inference-pipeline.md)
 
 ## Compiled Update — 2026-11-01 (YaRN native-entry failure and retained denominator)
 
@@ -333,21 +390,21 @@ Sources: [yarn-context-extension-research](../handoffs/active/yarn-context-exten
 - The exact `yarn-128k-mi210-sol-r10-20261031` normal-entry run failed rc1 at a frozen-cohort-path guard before arm admission. It recorded 0/120 A0 items, 0/120 A1 items, and 0/120 pairs; therefore that run’s predeclared paired rule is unevaluated, not a pass, fail, or null effect. Keep its original 120-pair denominator and unresolved item identities; do not redraw. This failed R10 run is distinct from the completed 141-item YaRN aggregate and its 120-pair subset.
 - The unsupported S0-V34 lock-loss-reproducer completion claim is reopened after the audit found no source SHA, artifact, test, or receipt. This is a task-state correction only; no reproduction evidence was produced.
 
-Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extension-research.md) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [workspace-58 progress](../progress/2026-10/2026-10-31-workspace-58.md)
+Sources: [YaRN context-extension handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) · [tick-science audit](../docs/reports/tick-science-audit-20261031.md) · [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [workspace-58 progress](../progress/2026-10/2026-10-31-workspace-58.md)
 
 ## Compiled Update — 2026-11-01 (incremental source review)
 
 **Confidence: scoped to cited native records and source controls.**
 
-- The 141 fresh paired YaRN power comparison and the separate original-120 subset met the declared discordant-count target and were NOT-FAIL under their fixed one-sided exact rules, without equivalence or adoption claims. Interrupted CPU shards and failed plan-path attempts remain separate and cannot be redrawn. ([YaRN](../handoffs/active/yarn-context-extension-research.md); [workspace progress](../progress/2026-10/2026-10-31-workspace-58.md); [belief program](../handoffs/active/vidya-belief-substrate-program.md))
+- The 141 fresh paired YaRN power comparison and the separate original-120 subset met the declared discordant-count target and were NOT-FAIL under their fixed one-sided exact rules, without equivalence or adoption claims. Interrupted CPU shards and failed plan-path attempts remain separate and cannot be redrawn. ([YaRN](../handoffs/active/long-context-program.md#track-yarn-context-extension-research); [workspace progress](../progress/2026-10/2026-10-31-workspace-58.md); [belief program](../handoffs/active/vidya-belief-substrate-program.md))
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
-- YaRN r1 was refused at admission (`rc=6`, missing dry-run/launcher/job/manifest fields) with no native work. Private r2 is model-free prep: exact max N19 = 498,965 tokens, 52 source hashes pinned, launch refuses before v14 without a manifest-bound booking. No GPU result. [yarn](../handoffs/active/yarn-context-extension-research.md), [progress](../progress/2026-11/2026-11-01-codex-ni-inf12-yarne1-repair-luna.md)
+- YaRN r1 was refused at admission (`rc=6`, missing dry-run/launcher/job/manifest fields) with no native work. Private r2 is model-free prep: exact max N19 = 498,965 tokens, 52 source hashes pinned, launch refuses before v14 without a manifest-bound booking. No GPU result. [yarn](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [progress](../progress/2026-11/2026-11-01-codex-ni-inf12-yarne1-repair-luna.md)
 - OOLONG S0 v35 (rc=70, `DRYRUN_REFUSED: malformed claimed_cpus`) and S1 v31 (rc=75, admission lost before cutoff) are admission-class FAILED-RUNs with zero new pairs; denominators and sealed cells are preserved. The CPU-claim path must be requalified before continuation.
-- INF12 R13 attempt `20261031T210259Z-128495` ended rc=75 at the work deadline during `eventqa_131072/base`; completed items cannot be attributed, and it is distinct from attempt `20261101T003829Z-2260396`. [delta-mem](../handoffs/active/delta-mem-reproduction.md)
+- INF12 R13 attempt `20261031T210259Z-128495` ended rc=75 at the work deadline during `eventqa_131072/base`; completed items cannot be attributed, and it is distinct from attempt `20261101T003829Z-2260396`. [delta-mem](../handoffs/active/model-evaluation-queue.md#track-delta-mem-reproduction)
 
 ## Compiled Update — 2026-11-01 (intake dive digest backfill, batch b, workspace-58)
 
@@ -373,10 +430,59 @@ Sources: [YaRN context-extension handoff](../handoffs/active/yarn-context-extens
 
 ## YaRN S3 partial accounting — 2026-11-01
 
-The S3/v30 window ended at its deadline with one additional completed A0 and no A1. Its cumulative accounting was two completed A0, three UNKNOWN A0, 25 unexposed A0 and 30 unexposed A1, with zero matched pairs among the 27 non-UNKNOWN original pairs. The original 120-pair campaign denominator remains unchanged; this partial produces no full-cohort verdict. ([YaRN handoff](../handoffs/active/yarn-context-extension-research.md); [filing evidence](../artifacts/compute/yarn-s3-v30-20261101/summary.json); [handoff progress](../progress/2026-11/2026-11-01-handoff-yarn.md))
+The S3/v30 window ended at its deadline with one additional completed A0 and no A1. Its cumulative accounting was two completed A0, three UNKNOWN A0, 25 unexposed A0 and 30 unexposed A1, with zero matched pairs among the 27 non-UNKNOWN original pairs. The original 120-pair campaign denominator remains unchanged; this partial produces no full-cohort verdict. ([YaRN handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research); [filing evidence](../artifacts/compute/yarn-s3-v30-20261101/summary.json); [handoff progress](../progress/2026-11/2026-11-01-handoff-yarn.md))
 
 ## Compiled Update — 2026-11-01 (YaRN E1-MEM proof preparation)
 
-The E1-MEM split-proof candidate passed seven offline proof tests, eight model-free qualification controls and verification of 53 source-dependency hashes. It also refuses the N15 missing-control case. Request-manifest rebinding and canonical v14 integration remain incomplete, followed by booking and keeper qualification; this is preparation evidence only and includes no inference or long-context result. The separately recorded S3 partial and its original 120-pair denominator remain as described above. ([YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md); [YaRN handoff](../handoffs/active/yarn-context-extension-research.md); [E1 candidate record](../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md))
+The E1-MEM split-proof candidate passed seven offline proof tests, eight model-free qualification controls and verification of 53 source-dependency hashes. It also refuses the N15 missing-control case. Request-manifest rebinding and canonical v14 integration remain incomplete, followed by booking and keeper qualification; this is preparation evidence only and includes no inference or long-context result. The separately recorded S3 partial and its original 120-pair denominator remain as described above. ([YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md); [YaRN handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research); [E1 candidate record](../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md))
 
-Sources: [YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md) · [YaRN handoff](../handoffs/active/yarn-context-extension-research.md) · [E1 candidate record](../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md)
+Sources: [YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md) · [YaRN handoff](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) · [E1 candidate record](../artifacts/compute/yarn-e1-proof-candidate-20261101/README.md)
+
+## Compiled update — 2026-11-03: YaRN E1 memory replay (split stage groups)
+
+The historical E1 (9a3f1392a) vs W (b0ba1d427) replay on the 27B Q8 found own-PID VRAM flat at every stage and identical between images: A0 (262k) 37.13 GiB, A1 (YaRN 524k) 47.63 GiB through 500k. The ~10.5 GiB A1−A0 gap is load-time KV sizing, not prefill growth. Caveat: the replay reset the server between the 128k/240k and 400k/500k groups, while the original E1 ran one unbroken chain, so cross-chain growth is still open (YARN-E1-MEM-CHAIN). Indicative np1 decode: ~33 tok/s at 3k, 17.2 at 128k, 12.3 at 240k, 8.3 at 400k, 7.0 at 500k.
+
+Sources: [INF-22 handoff, YARN-E1-MEM](../handoffs/completed/mi210-serving-program.md#track-mi210-serving-program) · [session record](../progress/2026-11/2026-11-03-inf22-unblock.md)
+
+## Compiled update — 2026-11-04 (wrap-up sweep): YARN E1-MEM chain
+
+- The single-server 128k→500k chain (r2) COMPLETED with a peak of 47.6 GiB, under the 55 GiB budget. The r1/r2 rows shared one RESULT path (an infra defect the owner must fix).
+- The Jet-Long 2048-token short-framing diagnostic was filed DIAGNOSTIC-RESULT/pass: exactly 2,048 evaluated tokens, zero cached, no truncation.
+
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [long-context program](../handoffs/active/long-context-program.md) · [MI210 program](../handoffs/completed/mi210-serving-program.md)
+
+## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
+
+- **YaRN E1-MEM chain PASS:** one unbroken A1 chain on one server (E1 image `9a3f1392a`, Qwen3.8-27B Q8_0, YaRN 524k), 128k→240k→400k→500k. The continuous own-PID peak was **47.63 GiB**, within the 55 GiB bar and identical to the split replay, which closes YARN-E1-MEM. Source: [mi210-serving-program.md:372-375](../handoffs/completed/mi210-serving-program.md).
+
+## Compiled Update — 2026-11-06 (YaRN OOLONG moves to the MI210, then pauses)
+
+- The CPU path for YaRN OOLONG is abandoned: a 112k-token item needs about 7 h of CPU prefill with no checkpoint, so s1/s2 v39 were both filed inconclusive.
+- First MI210 attempt (v40) exited rc78 because the job's Landlock fence denied `/dev/kfd`; v41/v42 fixed it (HIP TMPDIR, full-affinity ROCm threads, vanishing HIP temp files). A GPU job fence must allow the KFD device node.
+- The operator paused YARN-OOLONG until further notice (2026-11-06).
+
+Sources: [long-context program](../handoffs/active/long-context-program.md) · [wrap-up 6 progress](../progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md) · [friction review pass 4](../docs/reports/coordination/keeper-friction-review-20261105.md)
+
+### YaRN oolong ownership handover (2026-11-06)
+
+The YaRN oolong program (YARN-OOLONG-V38-RESUME) moved from the operator ad-hoc session to main-inf22 at the operator's direction, and the operator lifted the YaRN pause ("he owns the YaRN work, so he's free to schedule it as needed"). The CPU path is abandoned (about 7 h per 112k-token item with no checkpoint); the GPU recipe uses the shared `job_fence` module and four GPU job fixes. Source: `progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md`, `handoffs/active/long-context-program.md`.
+
+## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): long-context decode is the bottleneck; ≥256k YaRN parked
+
+- **Measured 27B Q8_0 decode on MI210 (no draft, q8_0 KV):** 17.4 / 12.4 / ~7 tok/s at 128k / 240k / 500k. The fit is ms/token ≈ 29.7 + 0.217·ctx_k. The context term reads KV at ≈160 GB/s, about 10% of HBM. Cold prefill takes 5.1 min at 128k and 63 min at 499k. At 512k the model is not interactively usable.
+- **VRAM is not the constraint.** The usable ceiling is ~63.8 GiB, with a 62 GiB KFD operating gate. The 55/52 GiB YaRN-E1 gates were judgement margins. With the DFlash2 drafter on GPU, 512k loads at 52.55 GiB and is projected to peak at ~54 GiB, so it fits. Moving KV to host (`-nkvo` or a per-layer mask) is strictly worse, because attention moves to slower memory.
+- **Operator decision 2026-11-07 (`a33e52917`):** park all ≥256k YaRN work until the C8 attention-decode fix lands. The kept items are YARN-NATIVE-WINDOW-GATE, native-window inertness, KSHIFT-FIX-MODEL-TEST, the YARN-AGG-1 spec and YARN-E1-PROOF.
+- **Native-window gate r2 abort.** The root cause was checkpoint min-spacing of 8192, which erased the question checkpoints, so cache reuse missed. r3 runs with `--checkpoint-min-step 0`.
+- **streaming-llm stays closed.** A hybrid attention-only eviction carve-out is feasible, but the payoff is dominated by the harness route and C8-1.
+- Sources: `docs/design/long-context-and-c8-strategy-20261107.md`, `handoffs/active/long-context-program.md`, `progress/2026-11/2026-11-07-main-inf22.md`.
+
+## Compiled Update — 2026-11-07 (LSA-QUALITY-32K parked; LSA-MOE-1 relocated)
+
+**Confidence: verified** (checkpoint text in the long-context handoff; no quality verdict was produced).
+
+- **LSA-QUALITY-32K r8 was parked 2026-11-07 17:57Z by main-inf22 after an operator ROI review.** It is a checkpoint, not a result: dense was in phase B dev with 17 dev cells done, pca in phase C heldout at 10/32. Each item takes 25-45 min on a 24-core quarter, leaving 10+ h of wall time.
+- **Why it was parked:** the screen gates speed paths that are closed. LSA-H12-INDEXER is FUTILE (0.37x), and LSA's strategic target (LSA-YARN-512K) is parked at >=256k. The quarters went to C8 kernel builds.
+- **Resume conditions:** an LSA speed path becomes live again (a new indexer design, or LSA-CPU-SPARSE), or YaRN >=256k is unparked. The runner exits 75 on STOP and re-runs only missing cells, so resuming continues from the ledger; its scratch must not be reclaimed.
+- **LSA-MOE-1** (A3B frozen-teacher capture and PCA projections for its ten global layers) moved from `model-architecture-readiness.md` to step (d) of the D-LSA plan in the long-context program, keeping its gate: it starts only after the 27B screen reaches KEEP-QUALITY and one 27B fast path keeps. The move lets INF-33 (Engram) close independently.
+
+Sources: [long-context-program](../handoffs/active/long-context-program.md) · [model-architecture-readiness](../handoffs/completed/model-architecture-readiness-completed-20261107.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)

@@ -1,0 +1,11 @@
+test_historical_standalone_record_is_declined (test_gpu_pool_scope_control.ScopeControls.test_historical_standalone_record_is_declined) ... ok
+test_modified_log_is_refused_before_planner_read (test_gpu_pool_scope_control.ScopeControls.test_modified_log_is_refused_before_planner_read) ... ok
+test_native_scope_metadata_cannot_route_to_model_device_or_consumer (test_gpu_pool_scope_control.ScopeControls.test_native_scope_metadata_cannot_route_to_model_device_or_consumer) ... ok
+test_reader_can_present_a_real_scope_match_from_a_synthetic_triplet (test_gpu_pool_scope_control.ScopeControls.test_reader_can_present_a_real_scope_match_from_a_synthetic_triplet) ... ok
+test_smoke_capture_is_refused_before_planner_read (test_gpu_pool_scope_control.ScopeControls.test_smoke_capture_is_refused_before_planner_read) ... ok
+test_strict_ingest_preserves_candidate_counts_and_excludes_model_context (test_gpu_pool_scope_control.ScopeControls.test_strict_ingest_preserves_candidate_counts_and_excludes_model_context) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.853s
+
+OK

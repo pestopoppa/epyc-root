@@ -1,0 +1,16 @@
+{
+  "reference": {
+    "verbatim_task": "Report the ticket identifier from the receipt.",
+    "current_intent": "Recover the ticket identifier exactly.",
+    "plan": "Read the receipt, then report the ticket identifier.",
+    "completion_requirements": "Return only the ticket identifier as the FINAL answer.",
+    "artifacts": "Use the synthetic receipt as the source.",
+    "pointers": "The ticket identifier is on line two of the receipt.",
+    "pinned_governance": "Never send the receipt to a third party."
+  },
+  "units": [
+    {"id": "preserved", "mutation": "none", "expected_verdict": "entailed", "expected_literal": true},
+    {"id": "late-conflict", "mutation": "override", "expected_verdict": "contradicted", "expected_literal": true},
+    {"id": "late-missing-governance", "mutation": "remove_governance", "expected_verdict": "unknown", "expected_literal": false}
+  ]
+}

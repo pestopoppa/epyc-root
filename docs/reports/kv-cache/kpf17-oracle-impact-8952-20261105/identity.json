@@ -1,0 +1,27 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "source_worktree": "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105-source",
+  "targets": [
+    [
+      "test_partial_restore_busy_source_one",
+      "tests/test-save-load-state.cpp"
+    ]
+  ],
+  "graph_binding": {
+    "registry": "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/private-graph/registry.json",
+    "meta": "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105-source/.gitnexus/meta.json",
+    "required_lastCommit": "8952a0f693fb923918157eb25117641b74766230"
+  },
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/job.py": "8f2396dd27dfce9d36753b67150ae8c40b9eb832fc0caa016e360934f8ed4d44",
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/launch.sh": "14e666a28c5681b19fc4625ab1c70a7abe4e1e10b90a79eac481f826a89b92a3",
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/spec.json": "fba148c396590244af6b98b225f24b2de15450f8d9a230dc80ef372c1e6878de",
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/README.md": "3616fdff9a0c3a89e3b964328d3b4e0ff41b4a71ced9124e15756e3fca59c23a",
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105/test-only.patch": "b7eb4cabacadb7378bd1bcc8af4532f71ce39c751b5d0f11ce4abe96b010eac6",
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105-source/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-impact-8952-20261105-source/tests/test-save-load-state.cpp": "528e020b682b0dba1c251b2519d68033a01cd314a73b92f5778976cb56586612",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+  }
+}

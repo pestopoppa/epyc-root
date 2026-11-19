@@ -1,0 +1,219 @@
+--- upstream/producer.py
++++ producer.py
+@@ -45,32 +45,28 @@
+ 
+ 
+ def render(port, slots):
+-    from scripts.server import orchestrator_stack as s
+-    import subprocess
+-    checkout = Path.cwd().resolve()
+-    status = subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], text=True)
+-    if status:
+-        raise RuntimeError('orchestrator checkout has tracked changes')
+-    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+-    registry = checkout / 'orchestration/model_registry.yaml'
+-    role = s.RegistryLoader(registry_path=registry, validate_paths=False).get_role('architect_critic')
+-    # Use a fixed render port and permit exactly two isolation substitutions.
+-    raw = s.build_server_command(role, 8083, False, numa_instance=0, prepare_runtime_dirs=False)
+-    argv = replace_single(replace_single(raw, '--port', port), '--slot-save-path', slots)
+-    prefix = s._numa_prefix('architect_critic', 0)
+-    env = s.build_launch_env('architect_critic', os.environ.copy())
+-    binary, paths = s._stack_prior_runtime_overrides('architect_critic')
+-    s._apply_runtime_requirements_env(env, binary_override=binary, ld_paths=paths,
+-                                      preserve={**s.recipe_env_for('architect_critic'), **s._role_env_overrides('architect_critic')})
+-    s.apply_pinned_launch_env(env, prefix)
+-    if '--no-cache-idle-slots' not in argv:
+-        raise RuntimeError('expected compiled cache-idle behavior missing')
+-    files = [argv[0]] + [argv[argv.index(flag) + 1] for flag in ASSET_FLAGS]
+-    identities = {str(Path(f).resolve()): digest(f) for f in files}
+-    return {'checkout': str(checkout), 'head': head, 'registry_sha256': digest(registry), 'stack_priors_path': str(s.STACK_PRIORS_PATH.resolve()),
+-            'stack_priors_sha256': digest(s.STACK_PRIORS_PATH),
+-            'rendered_argv': raw, 'argv': argv, 'prefix': prefix,
+-            'effective_env': selected_env(env), 'identities': identities}, env
++    # Native launch consumes an immutable compiler render prepared before publication.
++    record = json.loads((Path(__file__).parent / 'preflight.json').read_text())
++    for asset in record['assets']:
++        if stat_identity(asset['path']) != asset['stat']:
++            raise RuntimeError('preflight asset identity changed: ' + asset['path'])
++    plan = dict(record['plan'])
++    plan['argv'] = replace_single(replace_single(plan['rendered_argv'], '--port', port), '--slot-save-path', slots) + ['-lv', '4']
++    if os.environ.get('FILLER_DRYRUN') == '1':
++        allowed = sorted(os.sched_getaffinity(0) & set(range(184, 192)))
++        if len(allowed) != 4: raise RuntimeError('native smoke affinity is not exactly four granted CPUs')
++        plan['prefix'] = replace_single(plan['prefix'], '-c', ','.join(map(str, allowed)))
++        plan['qualification_affinity'] = allowed
++    else:
++        if os.sched_getaffinity(0) != set(range(184,192)):
++            raise RuntimeError('full load must retain all eight recipe CPUs')
++    return plan, dict(plan['effective_env'])
++
++
++def stat_identity(path):
++    s = os.stat(path)
++    return {'dev': s.st_dev, 'ino': s.st_ino, 'size': s.st_size,
++            'mtime_ns': s.st_mtime_ns, 'ctime_ns': s.st_ctime_ns}
+ 
+ 
+ def proc_identity(pid, birth, plan):
+@@ -98,13 +94,35 @@
+         rows = [line.split() for line in maps if line.split() and line.split()[-1] == path]
+         if not rows or any(int(row[4]) != stat.st_ino or row[3] != f'{os.major(stat.st_dev):02x}:{os.minor(stat.st_dev):02x}' for row in rows):
+             raise RuntimeError('mapped library identity changed: ' + path)
+-        lib_ids[path] = {'sha256': digest(path), 'device': stat.st_dev, 'inode': stat.st_ino}
++        expected = json.loads((Path(__file__).parent/'preflight.json').read_text())['runtime'].get(path)
++        actual_hash = digest(path)
++        if expected is None or actual_hash != expected: raise RuntimeError('mapped library differs from approved store: '+path)
++        lib_ids[path] = {'sha256': actual_hash, 'device': stat.st_dev, 'inode': stat.st_ino}
+     for path, sha in plan['identities'].items():
+-        if digest(path) != sha:
+-            raise RuntimeError('binary or model identity changed: ' + path)
++        entry = next(x for x in json.loads((Path(__file__).parent/'preflight.json').read_text())['assets'] if x['path'] == path)
++        if entry['sha256'] != sha or stat_identity(path) != entry['stat']:
++            raise RuntimeError('preflight identity changed: ' + path)
+     if sampler.start_ticks(proc) != birth:
+         raise RuntimeError('process birth changed during identity capture')
+     return {'exe': executable, 'argv': actual, 'effective_env': selected_env(observed_env), 'mapped_libraries_sha256': lib_ids}
++
++
++def owns_listener(port, pid, birth):
++    proc=Path('/proc')/str(pid)
++    if sampler.start_ticks(proc)!=birth:return False
++    sockets=set()
++    for fd in (proc/'fd').iterdir():
++        try: target=os.readlink(fd)
++        except FileNotFoundError:continue
++        match=re.fullmatch(r'socket:\[(\d+)\]',target)
++        if match:sockets.add(match.group(1))
++    local=f'0100007F:{port:04X}'
++    rows=(proc/'net/tcp').read_text().splitlines()[1:]
++    return any(len(x:=row.split())>=10 and x[1].upper()==local and x[3]=='0A' and x[9] in sockets for row in rows) and sampler.start_ticks(proc)==birth
++
++
++def owned_health(port, pid, birth):
++    return owns_listener(port,pid,birth) and health(port) and owns_listener(port,pid,birth)
+ 
+ 
+ def health(port):
+@@ -141,8 +159,11 @@
+     if not slots.is_dir() or any(slots.iterdir()):
+         raise RuntimeError('isolated slot directory missing or not empty')
+     plan, env = render(args.port, slots)
++    adapter = Path(__file__).parent/'vidya/adapters/kvu16a_native.py'
++    plan.update({'belief_adapter_sha256': digest(adapter), 'producer_path': str(Path(__file__).resolve()),
++                 'producer_sha256': digest(Path(__file__)), 'producer_files_sha256': {name: digest(Path(__file__).parent/name) for name in ('producer.py','sampler.py','device_identity.py','server_lifecycle.py')}})
+     plan.update({'max_gap_seconds': args.max_gap_seconds, 'healthy_samples': args.healthy_samples,
+-                 'meaning': 'sampled own-PID VRAM; observed maximum is not a measured peak'})
++                 'meaning': 'healthy-window coverage; all startup samples and unknowns retained; sampled maximum is not a measured peak'})
+     plan_path = args.output_dir / 'plan.json'
+     if not args.run_plan_sha256:
+         write_json(plan_path, plan)
+@@ -164,17 +185,17 @@
+     try:
+         pid, birth = server.start()
+         hip = str((Path(plan['argv'][0]).parent / 'libggml-hip.so.0').resolve())
+-        monitor = sampler.Sampler(pid, birth, hip, args.output_dir / 'samples.jsonl', startup=True,
++        monitor = sampler.Sampler(pid, birth, hip, args.output_dir / 'all-samples.jsonl', startup=True,
+                                   phase=lambda: state['phase'], device=device).start()
+         while time.time() < deadline and not stop and not stopfile.exists():
+             if not server.alive() or monitor.abort.is_set():
+                 raise RuntimeError(monitor.reason or 'server exited')
+             last = monitor.last
+-            if last and last['hip_resident'] and (last['own_vram_b'] or 0) > 0 and health(args.port):
++            if last and last['hip_resident'] and (last['own_vram_b'] or 0) >= 1024**3 and owned_health(args.port, pid, birth):
+                 if state['healthy_at'] is None:
+                     identity = proc_identity(pid, birth, plan)
+                     state['healthy_at'] = time.monotonic(); state['phase'] = 'healthy'
+-                lines = (args.output_dir / 'samples.jsonl').read_text().splitlines()
++                lines = (args.output_dir / 'all-samples.jsonl').read_text().splitlines()
+                 healthy_samples = [json.loads(x) for x in lines if json.loads(x).get('phase') == 'healthy']
+                 if len(healthy_samples) >= args.healthy_samples:
+                     end_identity = proc_identity(pid, birth, plan)
+@@ -189,29 +210,52 @@
+     finally:
+         state['ended_at'] = time.monotonic()
+         if monitor and not monitor.stop(): state['error'] = state['error'] or 'sampler did not stop'
++        state['ended_at'] = time.monotonic()
+         try: cleanup = server.close()
+         except BaseException as exc: state['error'] = state['error'] or f'cleanup: {exc}'
+-    samples_path = args.output_dir / 'samples.jsonl'
++    samples_path = args.output_dir / 'all-samples.jsonl'
+     records = [json.loads(x) for x in samples_path.read_text().splitlines()] if samples_path.exists() else []
+     observed = [x for x in records if x.get('status') == 'observed']
+-    begins = [x['sample_start_monotonic_s'] for x in observed] + [state['ended_at']]
+-    ends = [state['started_at']] + [x['sample_end_monotonic_s'] for x in observed]
++    healthy = [x for x in observed if x['phase'] == 'healthy'][:args.healthy_samples]
++    load_bounds = {'started_at':state['started_at'], 'ended_at':state['ended_at']}
++    if healthy:
++        state['load_started_at'] = state['started_at']; state['load_ended_at'] = state['ended_at']
++        state['started_at'] = healthy[0]['sample_start_monotonic_s']
++        state['ended_at'] = healthy[-1]['sample_end_monotonic_s']
++    window = {'start_monotonic_s':state['started_at'], 'end_monotonic_s':state['ended_at'],
++              'selection':'first two post-health original samples; exact rows retained in samples.jsonl',
++              'selected_pair':[{'start_monotonic_s':x['sample_start_monotonic_s'], 'end_monotonic_s':x['sample_end_monotonic_s'], 'pid':x['pid'], 'birth_ticks':x['birth_ticks']} for x in healthy]}
++    with (args.output_dir/'samples.jsonl').open('x') as f:
++        for x in healthy:f.write(json.dumps(x,sort_keys=True)+'\n')
++        f.flush();os.fsync(f.fileno())
++    begins = [x['sample_start_monotonic_s'] for x in healthy] + [state['ended_at']]
++    ends = [state['started_at']] + [x['sample_end_monotonic_s'] for x in healthy]
+     gaps = [max(0, b-a) for a,b in zip(ends, begins)]
+     missing = [x for x in records if x.get('status') == 'missing']
+-    complete = not state['error'] and bool(cleanup and cleanup.get('verified_dead')) and not missing and bool(observed) and all(x['own_vram_b'] is not None for x in observed) and max(gaps) <= args.max_gap_seconds
+-    healthy_vram = [x['own_vram_b'] for x in observed if x['phase'] == 'healthy' and x['own_vram_b'] is not None]
++    complete = not state['error'] and bool(cleanup and cleanup.get('verified_dead')) and not missing and len(healthy) >= args.healthy_samples and all(x['hip_resident'] and (x['own_vram_b'] or 0) >= 1024**3 for x in healthy) and max(gaps) <= args.max_gap_seconds
++    healthy_vram = [x['own_vram_b'] for x in healthy if x['own_vram_b'] is not None]
+     log = (args.output_dir / 'server.log').read_text(errors='replace') if (args.output_dir / 'server.log').exists() else ''
+     kv_matches = re.findall(r'llama_kv_cache: size =\s*([0-9.]+) MiB \(393216 cells,\s*16 layers,\s*4/1 seqs\), K \(q8_0\)', log)
+     kv_b = float(kv_matches[0]) * 1024**2 if len(kv_matches) == 1 else None
+     if kv_b is None or not healthy_vram:
+         complete = False
+-    result = {'schema': 'kvu16a.load.sampled.v1', 'state': state, 'device': device, 'runtime_identity': identity,
+-              'cleanup': cleanup, 'sample_count': len(observed), 'missing': missing, 'sampling_gaps_s': gaps,
+-              'coverage_qualified': complete, 'sampled_max_own_vram_b': max((x['own_vram_b'] for x in observed if x['own_vram_b'] is not None), default=None),
++    result = {'schema': 'kvu16a.load.sampled.v1', 'grant': {k: os.environ.get(k) for k in ('FILLER_NEEDGPU','FILLER_DEADLINE','FILLER_STOPFILE','FILLER_PIDFILE')}, 'state': state, 'device': device, 'runtime_identity': identity,
++              'cleanup': cleanup, 'sample_count': len(healthy), 'raw_load_sample_count': len(observed), 'missing': missing, 'sampling_gaps_s': gaps,
++              'coverage_scope': 'post-health selected-pair window only; startup unqualified',
++              'window': window, 'load_bounds': load_bounds, 'raw_load_samples_path':str(samples_path), 'raw_load_samples_sha256':digest(samples_path),
++              'whole_load_coverage_qualified':False, 'peak_claim':False,
++              'raw_load_sampling_gaps_s':[max(0,b-a) for a,b in zip([load_bounds['started_at']]+[x['sample_end_monotonic_s'] for x in observed],[x['sample_start_monotonic_s'] for x in observed]+[load_bounds['ended_at']])],
++              'startup_unknown_samples': sum(x['phase']=='startup' and x['own_vram_b'] is None for x in observed),
++              'coverage_qualified': complete, 'sampled_max_own_vram_b': max(healthy_vram, default=None),
+               'target_kv_b_from_log': kv_b,
+               'healthy_sampled_max_non_kv_b': max(healthy_vram) - kv_b if healthy_vram and kv_b is not None else None,
+               'interpretation': 'sampled maximum only, not a peak; no registry ratification'}
+     write_json(args.output_dir / 'result.json', result)
++    if complete:
++        import importlib.util
++        spec = importlib.util.spec_from_file_location('kvu16a_native', adapter)
++        capture = importlib.util.module_from_spec(spec);spec.loader.exec_module(capture)
++        if capture.record_run(args.output_dir) is None: raise RuntimeError('native belief capture absent')
+     return 0 if complete else 75
+ 
+ 
+--- upstream/server_lifecycle.py
++++ server_lifecycle.py
+@@ -8,6 +8,9 @@
+ from pathlib import Path
+ import subprocess
+ import time
++import sys
++
++ACTIVE = None
+ import sampler
+ 
+ 
+@@ -18,12 +21,14 @@
+         self.birth_reader=birth_reader or (lambda p: sampler.start_ticks(Path('/proc') / str(p)))
+         self.proc=None;self.birth=None;self.stream=None
+     def start(self):
++        global ACTIVE
+         if self.proc is not None: raise RuntimeError('server already started')
+         self.stream=self.log.open('xb')
+         try:
+             # Inherit the engine's killable process group; no setsid/detachment.
+-            self.proc=self.factory(self.cmd, env=self.env, stdin=subprocess.DEVNULL,
++            self.proc=self.factory([sys.executable, str(Path(__file__).parent/'pdeath_exec.py'), str(os.getpid()), *self.cmd], env=self.env, stdin=subprocess.DEVNULL,
+                                    stdout=self.stream, stderr=subprocess.STDOUT, start_new_session=False)
++            ACTIVE=self.proc
+             self.birth=self.birth_reader(self.proc.pid)
+             with self.pidfile.open('a') as stream:
+                 stream.write(str(self.proc.pid)+'\n');stream.flush();os.fsync(stream.fileno())

@@ -1,0 +1,242 @@
+{
+  "binary": {
+    "path": "/mnt/raid0/llm/UTILS/bin/colgrep-1.2.0",
+    "sha256": "833e52aa6c40d090142fa132e3c75d3e792a4707474682a2496e3471f646f956",
+    "version": "1.2.0"
+  },
+  "files": {
+    "scripts/experiments/dcp10-discovery/colgrep_native.py": "f6485a3f297be86180da72745b6d2baa03875e8d0a2528bbc7c4c0a950de20ef",
+    "scripts/experiments/dcp10-discovery/test_colgrep_native.py": "cef2c2722ab38f592d53ba6cd1b5129e0cba1ed2bfd4b2da3eba728e3f876d2c"
+  },
+  "initial_adapter_files": {
+    "scripts/experiments/dcp10-discovery/colgrep_native.py": "551dff51cba57e223e35878b9f72fd4642beadb4d3018be5f3ea6413fc110c44",
+    "scripts/experiments/dcp10-discovery/test_colgrep_native.py": "8d798abadd3ca7b927673b1476cff26709855033da64ff8f9ead8f351b7ca7f4"
+  },
+  "interface": {
+    "build": "build_index(assets, root, assets / 'bases' / root.name, timeout)",
+    "errors": "IsolationError is confinement/cleanup failure; NativeError is confined command failure/timeout; SIGTERM exit 143 after cleanup.",
+    "search": "search(argv, root, data_home, timeout)"
+  },
+  "isolation": {
+    "cpu_memory": "Pinned runc; no KFD or DRI; CPU-only flag and env; Docker cpuset follows process affinity; up to 8 GiB cgroup hard limit and no swap.",
+    "image_id": "sha256:d9b8c34d61a9b9a3c44cab883d7d2f2619d674966ab520186f799cf32e3e0377",
+    "image_repo_digest": "ubuntu@sha256:fe81560990fae86dc4743202b2cb4d3df98d0bcf949173cecef15ce1127ef852",
+    "mounts": "Sandbox root and exact base/binary/model/runtime/sealed data are recursively read-only; search-only writable disposable flock file shadows .lock; build-only write access to its fresh private XDG data directory.",
+    "network": "Docker network=none, no route, no daemon socket in child",
+    "sqlite": "RW host connection on fresh init index only; checkpoint(TRUNCATE) then copy zero-byte WAL and valid 32 KiB SHM before sealing; SQLite FTS SELECT from the sealed read-only bind mount verified."
+  },
+  "limits": "Non-inference confinement probe and mocked controls only; native model init/search qualification and official cohort observations are separate. Existing score-custody and source-admission limits remain.",
+  "materialization_fix": {
+    "failed_qualification": {
+      "cause": "Pinned init produced native chunks but no merged codes/residuals. Native search's lazy mmap load failed at opening merged_codes.lock on the read-only index.",
+      "log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/dcp10-colgrep-native-20261118/launcher.out"
+    },
+    "files": {
+      "scripts/experiments/dcp10-discovery/colgrep_native.py": "f6485a3f297be86180da72745b6d2baa03875e8d0a2528bbc7c4c0a950de20ef",
+      "scripts/experiments/dcp10-discovery/test_colgrep_native.py": "cef2c2722ab38f592d53ba6cd1b5129e0cba1ed2bfd4b2da3eba728e3f876d2c"
+    },
+    "implementation": "After confined native init and before the payload seal, deterministically prepare native merged codes/residuals and matching manifests. This uses only fresh local index output, performs no model work, respects the existing build deadline, and records materialization.json in the task's private data_home. Keep vector payload, its coordination lock paths, runtime, model and source read-only during retrieval. Only the pre-existing disposable project .lock mount is writable.",
+    "next": "Restage adapter identity with the existing row packet preparation, then run a new publisher smoke with a fresh tiny fixture. Native query qualification is pending. No grant, packet, helper or retained smoke payload was changed by this fix.",
+    "status": "source_fix_and_noninference_probes_passed",
+    "upstream": {
+      "citations": {
+        "next-plaid/src/index.rs": {
+          "lines": [
+            940,
+            948,
+            954,
+            986,
+            1014,
+            1043
+          ],
+          "reason": "MmapIndex loads native document lengths, computes padding as max minus last, and asks for merged codes and residuals before mapping either.",
+          "sha256": "82eda8f32e57ffaf6c10157a3a63a8e62797b1dca9b1b2fe65912d5106526d1c"
+        },
+        "next-plaid/src/mmap.rs": {
+          "lines": [
+            1159,
+            1217,
+            1256,
+            1287,
+            1359,
+            1379,
+            1382,
+            1386,
+            1438,
+            1457,
+            1473,
+            1504,
+            1581,
+            1612,
+            1665,
+            1684
+          ],
+          "reason": "Both merge routines first try a matching manifest and expected NPY size. A miss opens an exclusive lock, then writes temp arrays and manifests. The materializer replicates NPY v1 header, plain chunk concatenation, row padding and JSON fields.",
+          "sha256": "59edade553f90594a3018d45a27e428eb4ff00fa7e0a3de3881070e0193221b9"
+        }
+      },
+      "commit": "10806326cd665629070a06be1b338e876aa1aa62",
+      "source_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/native-colgrep-v1.2.0-source",
+      "tag": "v1.2.0"
+    },
+    "validation": {
+      "focused_tests": 8,
+      "git_diff_check": "passed",
+      "probe": {
+        "docker": "Read-only access to both merged files succeeded. Attempted writes to them and creation of either merge lock were refused.",
+        "file_copy_only": true,
+        "independent_numpy": "Exact element equality to original chunk arrays and validated pinned dtype.",
+        "inference": false,
+        "native_payload_preserved": true,
+        "source_fast_path": {
+          "codes": {
+            "bytes": 385,
+            "header_bytes": 129,
+            "shape": [
+              32
+            ]
+          },
+          "manifest_checks": "Chunk count, row count, document-length padding, metadata mtime, data dimensions and merged file sizes matched.",
+          "residuals": {
+            "bytes": 897,
+            "header_bytes": 129,
+            "shape": [
+              32,
+              24
+            ]
+          }
+        }
+      },
+      "retained_failed_smoke_index": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-colgrep-native/assets/bases/fixture-1795033898-62f2c5f0569d45968f95761d60f30a77/colgrep/indices/fixture-1795033898-62f2c5f0569d45968f95761d60f30a77-f0bd7b0c/index",
+      "ruff": "passed"
+    }
+  },
+  "model": {
+    "files_and_bytes": {
+      "config.json": 1252,
+      "config_sentence_transformers.json": 762,
+      "model.onnx": 67970609,
+      "model_int8.onnx": 17228399,
+      "onnx_config.json": 792,
+      "tokenizer.json": 3583847
+    },
+    "path": "/mnt/raid0/llm/hf-home/hub/models--lightonai--LateOn-Code-edge/snapshots/07ef20f406c86badca122464808f4cac2f6e4b25",
+    "revision": "07ef20f406c86badca122464808f4cac2f6e4b25"
+  },
+  "publisher_qualification": {
+    "cpus": "116-119",
+    "engine_rc": 75,
+    "engine_reason": "partial-native-incomplete",
+    "limits": "Fresh separate fixture real init + immutable model query only; no official cohort score or custody acceptance.",
+    "official_result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-colgrep-native/native/RESULT.json",
+    "predicate": "smoke_predicate exited 0",
+    "preparation_receipt_sha256": "66b9f45fc59be61c1f58a3082977718240e0f0f173aac943c2c7f5752ad20950",
+    "row": "dcp10-colgrep-native-20261118",
+    "status": "SMOKE PASS; PUBLISHED",
+    "utc": "2026-11-18T20:36:30Z"
+  },
+  "runtime": {
+    "path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/native-colgrep-ort-source/libonnxruntime.so.1.23.0",
+    "sha256": "b0ef55d282792a762a346db77ce79519f72b238092a3d8b8944b831d42eda564",
+    "version": "1.23.0",
+    "wheel_sha256": "05f67edb93678cab5cd77eda89b65bb1b58f3d4c0742058742cfad8b172cfa83"
+  },
+  "source": {
+    "archive_url": "https://codeload.github.com/lightonai/next-plaid/tar.gz/refs/tags/v1.2.0",
+    "files": {
+      "colgrep/src/commands/init.rs": {
+        "behavior": "Use canonical checkout path, explicit local model, default read-only configuration load, and private index initialization.",
+        "lines": [
+          25,
+          65
+        ],
+        "sha256": "26367ac78b4d2a96944dd2cacc9af9e20c73fe3f801ed9f2f5c3ea55db6dc450"
+      },
+      "colgrep/src/commands/search.rs": {
+        "behavior": "Emit a top-k JSON list, skip updates when externally locked, make stats writes best effort, preserve absolute checkout paths.",
+        "lines": [
+          495,
+          523,
+          1016,
+          1023,
+          1480,
+          1497
+        ],
+        "sha256": "8c6f07041205db79b6d9b3ce3cb2bf20ecf2d52e540e8fb04b0ab273d5e6354d"
+      },
+      "colgrep/src/config.rs": {
+        "behavior": "Absent configuration loads defaults without writes; explicit config save is separate.",
+        "lines": [
+          185,
+          210
+        ],
+        "sha256": "937046ae5b01eae0a3ccd990edbb96c593281d17ab3461abf6980d1e1f660a94"
+      },
+      "colgrep/src/index/mod.rs": {
+        "behavior": "Skip auto-index when locked; ignore patterns are relative to checkout; SearchResult serializes unit and score.",
+        "lines": [
+          1301,
+          1311,
+          1928,
+          1946,
+          2363,
+          2366
+        ],
+        "sha256": "96905f67fa270be33497d915a2fb928d48a6e4c4a35c53cf9654bc4579bc34e6"
+      },
+      "colgrep/src/index/paths.rs": {
+        "behavior": "Opens/truncates .lock before exclusive nonblocking flock.",
+        "lines": [
+          195,
+          208
+        ],
+        "sha256": "e69dbd8343b08be53926cc21b7abcfe6e5828d63710d8e2687c1a37605348eda"
+      },
+      "colgrep/src/model.rs": {
+        "behavior": "Existing local model directory preempts hub access; lists expected model assets.",
+        "lines": [
+          9,
+          34
+        ],
+        "sha256": "902a7f400396975da87ea9b08e01a7f9ccc0a84892ab90a1dc01af1a72f504d3"
+      },
+      "colgrep/src/onnx_runtime.rs": {
+        "behavior": "Version 1.23.0; forced CPU suppresses CUDA setup and explicit ORT_DYLIB_PATH preempts auto-download.",
+        "lines": [
+          33,
+          70,
+          133,
+          151
+        ],
+        "sha256": "2db2c4962918510b2407af3899c09a6c283b75a05b73a3cc96114bfde81281b4"
+      },
+      "colgrep/src/parser/types.rs": {
+        "behavior": "JSON unit contains file, line and end_line.",
+        "lines": [
+          113,
+          121
+        ],
+        "sha256": "7520a65a01cc26e1ec0a7360cad1b7ae5f124f96579437c1d2a2a9e7bc1aaee1"
+      },
+      "next-plaid/src/filtering.rs": {
+        "behavior": "Metadata SQLite opens with journal_mode=WAL and the FTS reader reuses it.",
+        "lines": [
+          594,
+          613
+        ],
+        "sha256": "dcc1663f154cd22d76589c507240b620593058f96ae0c22b17cc5c93c8ed1d86"
+      }
+    },
+    "inspection_archive_extraction": "/mnt/raid0/llm/tmp/delegation-context-preassembly/native-colgrep-v1.2.0-source",
+    "tag_commit": "10806326cd665629070a06be1b338e876aa1aa62"
+  },
+  "status": "adapter_and_noninference_probe_passed",
+  "validation": {
+    "gitnexus": "Worktree index absent; status/impact attempted and guarded root writer refused CPU admission. New isolated symbols only.",
+    "integrated_discovery_suite": "28 unittest cases passed after owner integration, including source-only refresh and merged-vector preparation; no test inference.",
+    "limits": "No official index, query, model hash, allocator publication, or commit occurred in this task; the separate publisher smoke must run a tiny real init+query.",
+    "lint": "ruff passed both adapter files",
+    "mocked_tests": 7,
+    "real_noninference_probe": "Pinned binary --version, runtime API 23, effective CPU/memory cgroups, offline namespace, no GPU devices/production index, read-only mount write rejection, disposable lock conflict and FTS query against synthetic SQLite schema passed."
+  }
+}

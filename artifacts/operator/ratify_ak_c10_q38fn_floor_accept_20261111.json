@@ -1,0 +1,74 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-C10-Q38FN-FLOOR-ACCEPT-20261111",
+  "status": "ratified",
+  "ratified_at": "2026-11-11T14:12:49Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (typed RATIFY on the terminal)",
+  "decision": "Register the C10 serving floor (suspect: true, accepted) and the clean C10 64k floor at decision/quiet grade.",
+  "operator_decision": {
+    "date": "2026-11-11",
+    "channel": "decision tool",
+    "option": "Accept via script",
+    "formal_record": "the operator's signature on this script"
+  },
+  "champion": "7f1bd044b1e49a88b33460977bd96feae3db8e5c",
+  "serving_floor_row": "ak-c10-q38fn-floor-r5-20261111",
+  "serving_floor_row_verdict": "FUTILITY_NOISY_NOT_REGISTERED",
+  "longctx_floor_row": "ak-c10-q38fn-floor-r2-20261110",
+  "autokernel_code_worktree": {
+    "path": "/mnt/raid0/llm/worktrees/ak-c10-floor-research",
+    "branch": "ak/c10-floor-20261110",
+    "head": "cb7297c434c94d2c4b963408bcf133c303fe4857"
+  },
+  "suspect_flag_cleared": false,
+  "outliers_remain_unexplained": true,
+  "suspect_floors_accepted": [
+    "serving"
+  ],
+  "role": "qwen38_flash_next_ud_iq4xs_local",
+  "numerics_epoch": "default",
+  "floors": {
+    "serving": {
+      "entry_id": "db5cb56a88caec68",
+      "floor_pct": 1.963,
+      "n": 24,
+      "k": 5,
+      "record": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/store-b0ba1d427/runtime-source-floors/cff9ad900700c8057a2783946e5e5dc5ed718818728dd1bdbdfb9e0199b16fb8/23efbfc9002d91ef67f95d3a40caa106a00d2bc3b76ae29a47e4845627db0c00/serving-floor.q38fn-802bf9ac6-cpu-t48-mtp-d4.requests-57c9006dfde7443a1bf9b58c08f1ac6834dddcdf3cafcfb770717f141b1d8640.matched_process_v2.pairs-5.json",
+      "record_sha256": "951be41e375865410faec98475c4bc2c9731e2ed3e131a569cfd7b924a100cf6",
+      "suspect": true,
+      "unexplained_outliers": [
+        {
+          "anchor_tok_s": 51.96664309898204,
+          "candidate_tok_s": 56.327863369726415,
+          "effect_pct": 8.392,
+          "pair_index": 0
+        },
+        {
+          "anchor_tok_s": 57.11557425693976,
+          "candidate_tok_s": 51.84424772882704,
+          "effect_pct": 9.229,
+          "pair_index": 7
+        }
+      ],
+      "rationale": "Row r5 (24 pairs, 95% CI 1.34-2.93%) supersedes r2's 2.441% suspect serving floor and sits below the C9 floor (4.146%). Two MAD-outlier pairs (0 and 7) could not be tied to independent degraded-host evidence and remain in the floor. The loop's own verdict on this window was FUTILITY_NOISY_NOT_REGISTERED; registration is the operator's acceptance."
+    },
+    "longctx": {
+      "entry_id": "0fa26952b5f14af5",
+      "floor_pct": 0.703,
+      "n": 24,
+      "k": 5,
+      "record": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/store-b0ba1d427/longctx/q38fn-802bf9ac6-cpu-t48-mtp-d4/floors/anchors/809b852030ccc771/serving-floor.q38fn-802bf9ac6-cpu-t48-mtp-d4-lc64k-23eea2fa.requests-0445fd119ede8328365a9ecf94daee939b320025886ae5a50131ef9382c97324.matched_process_v2.pairs-5.json",
+      "record_sha256": "7c411fc54acaca85828bda6691576e57a49f76f0da055ab424dbf1379a3d06b7",
+      "suspect": false,
+      "unexplained_outliers": [],
+      "rationale": "Clean 24-pair floor from row r2 (95% CI 0.54-1.02%), carried in r5's RESULT.json plans[1]; guard raised no outliers."
+    }
+  },
+  "loop_behaviour": "suspect is not read by floor_registry lookup, _validate_matched_floor or gate_floor, so require-grade decision returns these entries; carry-forward still refuses a suspect store floor.",
+  "records_modified": false,
+  "research_commit": "e3aac480b966796f698a019eeec3e6a0812ad48d",
+  "applied_by": "scripts/operator/run_ak_c10_q38fn_floor_accept_20261111.sh",
+  "ratify_script_sha256": "feb29ca22bcdda162175889b74fc7742d818a5491badbcd43fca70b507b0a040",
+  "processes_touched": []
+}

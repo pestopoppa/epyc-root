@@ -1,0 +1,277 @@
+{
+  "alarm": {
+    "cleared": {
+      "belief-ledger-not-current-escalated.autokernel.planner": "not-active",
+      "belief-ledger-not-current.autokernel.planner": "not-active"
+    }
+  },
+  "as_of": "2026-11-18T03:32:32.185506+00:00",
+  "banner": "No beliefs are scoped to Qwen3.6-35B-A3B-Q4_K_M.gguf (gpu). The lines below are sibling/host context only.",
+  "consumer": "autokernel.planner",
+  "detail": "",
+  "evidence": {
+    "as_of": "2026-11-18T03:32:32.185506+00:00",
+    "banner": "No beliefs are scoped to Qwen3.6-35B-A3B-Q4_K_M.gguf (gpu). The lines below are sibling/host context only.",
+    "claim_ids": [],
+    "claims": [
+      {
+        "anchor_value": null,
+        "claim_id": "clm_cc:v1:9b4af358097a78c29c95cb6da00c6e70:r1#m0",
+        "effect_rel": null,
+        "grade": "Judged/Located",
+        "knob_family": "",
+        "knobs": {},
+        "linked_claim_ids": [],
+        "locator": "git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L15",
+        "mechanism_id": "gfx90a-asm:int8-mfma-rate",
+        "model_file": "",
+        "n_pairs": null,
+        "noise_floor_rel": null,
+        "not_evidence": true,
+        "outcome": "",
+        "recipe": "",
+        "reps": null,
+        "retrofit": true,
+        "role": "",
+        "run": null,
+        "source_kind": "committed-conclusion",
+        "stack_regime": "",
+        "stale_epoch": false,
+        "status": "verified",
+        "tier": "host",
+        "unit": "x",
+        "value": 1.0,
+        "varied": []
+      },
+      {
+        "anchor_value": null,
+        "claim_id": "clm_cc:v1:5d421b0573b9acf93838716381a702fe:r1#m0",
+        "effect_rel": null,
+        "grade": "Judged/Located",
+        "knob_family": "",
+        "knobs": {},
+        "linked_claim_ids": [],
+        "locator": "git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L12",
+        "mechanism_id": "",
+        "model_file": "",
+        "n_pairs": null,
+        "noise_floor_rel": null,
+        "not_evidence": true,
+        "outcome": "",
+        "recipe": "",
+        "reps": null,
+        "retrofit": false,
+        "role": "",
+        "run": null,
+        "source_kind": "committed-conclusion",
+        "stack_regime": "",
+        "stale_epoch": false,
+        "status": "verified",
+        "tier": "harness",
+        "unit": "",
+        "value": null,
+        "varied": []
+      },
+      {
+        "anchor_value": null,
+        "claim_id": "clm_cc:v1:803957c4a4e8ecb3df820d69810ecab1:r1#m0",
+        "effect_rel": null,
+        "grade": "Judged/Located",
+        "knob_family": "",
+        "knobs": {},
+        "linked_claim_ids": [],
+        "locator": "git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L14",
+        "mechanism_id": "",
+        "model_file": "",
+        "n_pairs": null,
+        "noise_floor_rel": null,
+        "not_evidence": true,
+        "outcome": "",
+        "recipe": "",
+        "reps": null,
+        "retrofit": false,
+        "role": "",
+        "run": null,
+        "source_kind": "committed-conclusion",
+        "stack_regime": "",
+        "stale_epoch": false,
+        "status": "verified",
+        "tier": "harness",
+        "unit": "",
+        "value": null,
+        "varied": []
+      },
+      {
+        "anchor_value": null,
+        "claim_id": "clm_cc:v1:b963cf90b497817ea68a8136ff1c7c59:r1#m0",
+        "effect_rel": null,
+        "grade": "Judged/Located",
+        "knob_family": "",
+        "knobs": {},
+        "linked_claim_ids": [],
+        "locator": "git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L13",
+        "mechanism_id": "",
+        "model_file": "",
+        "n_pairs": null,
+        "noise_floor_rel": null,
+        "not_evidence": true,
+        "outcome": "",
+        "recipe": "",
+        "reps": null,
+        "retrofit": false,
+        "role": "",
+        "run": null,
+        "source_kind": "committed-conclusion",
+        "stack_regime": "",
+        "stale_epoch": false,
+        "status": "verified",
+        "tier": "harness",
+        "unit": "",
+        "value": null,
+        "varied": []
+      }
+    ],
+    "contested_claim_ids": [],
+    "empty_targets": [
+      "Qwen3.6-35B-A3B-Q4_K_M.gguf"
+    ],
+    "flagged": {
+      "contested": [],
+      "refuted": [],
+      "withdrawn": []
+    },
+    "frontier": 43401,
+    "host_claim_ids": [
+      "clm_cc:v1:9b4af358097a78c29c95cb6da00c6e70:r1#m0",
+      "clm_cc:v1:5d421b0573b9acf93838716381a702fe:r1#m0",
+      "clm_cc:v1:803957c4a4e8ecb3df820d69810ecab1:r1#m0",
+      "clm_cc:v1:b963cf90b497817ea68a8136ff1c7c59:r1#m0"
+    ],
+    "nonempty_target": false,
+    "not_evidence_claim_ids": [
+      "clm_cc:v1:9b4af358097a78c29c95cb6da00c6e70:r1#m0",
+      "clm_cc:v1:5d421b0573b9acf93838716381a702fe:r1#m0",
+      "clm_cc:v1:803957c4a4e8ecb3df820d69810ecab1:r1#m0",
+      "clm_cc:v1:b963cf90b497817ea68a8136ff1c7c59:r1#m0"
+    ],
+    "omitted": [
+      {
+        "claim_id": "clm_cc:v1:f91859fc0c9acc05c4d5cb43a2fba3ab:r1#m0",
+        "detail": "cap 30 claims / 14000 bytes",
+        "reason": "bounded",
+        "run": null,
+        "source_kind": "committed-conclusion"
+      }
+    ],
+    "omitted_count": 1,
+    "reasons": [
+      "bounded"
+    ],
+    "refuted_claim_ids": [],
+    "runs": [
+      {
+        "claim_ids": [
+          "clm_cc:v1:5d421b0573b9acf93838716381a702fe:r1#m0",
+          "clm_cc:v1:803957c4a4e8ecb3df820d69810ecab1:r1#m0",
+          "clm_cc:v1:9b4af358097a78c29c95cb6da00c6e70:r1#m0",
+          "clm_cc:v1:b963cf90b497817ea68a8136ff1c7c59:r1#m0"
+        ],
+        "reason": "",
+        "run": null,
+        "source_kind": "committed-conclusion",
+        "status": "presented"
+      }
+    ],
+    "section": "## Belief-kernel evidence (Vidya ledger, read-only)\nNo beliefs are scoped to Qwen3.6-35B-A3B-Q4_K_M.gguf (gpu). The lines below are sibling/host context only.\nTarget(s): Qwen3.6-35B-A3B-Q4_K_M.gguf / Q4_K_M / gpu / gfx90a.\nClaims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 43401, as of 2026-11-18T03:32:32.185506+00:00.\n### Device-scope claims (host tier) -- scoped by device only, no model: host ceiling, not about this model; not evidence for a proposal\n- clm_cc:v1:9b4af358097a78c29c95cb6da00c6e70:r1#m0 [Judged/Located \u00b7 verified \u00b7 retrofit] device-scope: host ceiling, not about this model\n  gfx90a-asm:int8-mfma-rate: 1 x (metric int8_mfma_rate_over_f16; n unrecorded). - DEVICE FACT: MI210 (gfx90a) int8 MFMA runs at the f16/bf16 MFMA rate (no 2x int8 throughput), so int8 GEMM ports gain only from rem ... ce: AK-ASM-H4 box note (`handoffs/active/autokernel-loop.md`).\n### Loop-infrastructure facts (harness tier) -- tooling and source-dependency context for this consumer; not evidence about any model or for a proposal\n- clm_cc:v1:5d421b0573b9acf93838716381a702fe:r1#m0 [Judged/Located \u00b7 verified] harness fact: loop infrastructure, not about any model: git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L12 (protocol none; n unrecorded; 2026-11-06T08:53:33Z): Committed conclusion (b8a1d13 progress/2026-11/2026-11-06-inf22-vbcc.md:12): HARNESS LESSON -- - HARNESS LESSON (op-test timing): test-backend-ops perf cells that end in a view node (the TOPK_MOE_ASM cells end in the norm reshape view) repeat a no-op, so only the arm RATIO is meaningful and absolute us/run is not a kernel time. Evidence: `/mnt/raid0/llm/tmp/ak-asm-h11h13-gate-20261106/out/RESULT.json`.\n- clm_cc:v1:803957c4a4e8ecb3df820d69810ecab1:r1#m0 [Judged/Located \u00b7 verified] harness fact: loop infrastructure, not about any model: git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L14 (protocol none; n unrecorded; 2026-11-06T08:53:33Z): Committed conclusion (b8a1d13 progress/2026-11/2026-11-06-inf22-vbcc.md:14): HARNESS LESSON -- - HARNESS LESSON (HIP graphs): launch-removal fusions are invisible end to end under HIP-graph-captured decode: H14 1.13x op but e2e 1.0006 / 0.992, H6 1.017x op. Judge launch-removal fusions on e2e ... p. Evidence: `/mnt/raid0/llm/tmp/ak-asm-h14h15-gate-20261106/out/RESULT.json`, `/mnt/raid0/llm/tmp/ak-asm-h4h6-gate-20261105/out/RESULT.json`.\n- clm_cc:v1:b963cf90b497817ea68a8136ff1c7c59:r1#m0 [Judged/Located \u00b7 verified] harness fact: loop infrastructure, not about any model: git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L13 (protocol none; n unrecorded; 2026-11-06T08:53:33Z): Committed conclusion (b8a1d13 progress/2026-11/2026-11-06-inf22-vbcc.md:13): HARNESS LESSON -- - HARNESS LESSON (real-model witness): op tests passed while the real-model path differed. H15 correctness depends on graph-allocator aliasing (op tests cannot cover it, fold needs 27B PPL on/off),  ... ne. Evidence: `/mnt/raid0/llm/tmp/ak-asm-h14h15-gate-20261106/out/RESULT.json`, `/mnt/raid0/llm/tmp/ak-asm-h12-gate-20261105/out/RESULT.json`.\nShown 0 of 0 knob, 0 of 0 target, 0 of 0 lineup, 0 of 0 sibling, 1 of 1 device-scope (host) claim(s), 3 of 4 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.\nOptional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.",
+    "section_bytes": 4046,
+    "section_sha256": "9e04873d0a74f000c8c8a69418b4300ed4975f506dd2e8f602f1ba6156248923",
+    "status": "presented",
+    "tiers": {
+      "harness": 4,
+      "host": 1,
+      "knob": 0,
+      "lineup": 0,
+      "sibling": 0,
+      "target": 0
+    },
+    "tiers_shown": {
+      "harness": 3,
+      "host": 1,
+      "knob": 0,
+      "lineup": 0,
+      "sibling": 0,
+      "target": 0
+    },
+    "tried_index": [],
+    "tried_index_count": 0,
+    "withdrawn_claim_ids": []
+  },
+  "flag_counts": {
+    "contested": 149,
+    "withdrawn": 217
+  },
+  "known_good_error": null,
+  "known_good_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/unrelated-gpu/known-good.json",
+  "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/reprojected.jsonl",
+  "ledger_state": {
+    "frame_count": 43401,
+    "fresh": true,
+    "freshness": {
+      "frames_emitted": 0,
+      "index_max_id": 0,
+      "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/unrelated-gpu/index.yaml",
+      "last_sync": "2026-11-18T03:32:24Z",
+      "sources": [],
+      "sync_action": "already-fresh",
+      "sync_seconds": null,
+      "synced_max_id": 0,
+      "was_fresh": true
+    },
+    "head_hash": "sha256:311eccda9ebe5cc0b787611142848574dffd8da39e99746c1711379ebcaf4536",
+    "head_seq": 43400,
+    "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/reprojected.jsonl",
+    "schema": "epyc.vidya.ledger_state.v1",
+    "verified_at": "2026-11-18T03:32:32Z"
+  },
+  "ledger_state_digest": "sha256:30503856351f6a9b3f2a8267b723c25021be6cf25f032f26f7b5f7671a8eca1c",
+  "policy": {
+    "floor": "Judged/Located",
+    "standard": "DV",
+    "use": "planner-context"
+  },
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "f898681ff6d29d52974d1e3fb97c10f2982bc60c",
+    "origin_main": "f898681ff6d29d52974d1e3fb97c10f2982bc60c",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate"
+  },
+  "reader_checkout_check": true,
+  "reason": null,
+  "schema": "epyc.vidya.loop_beliefs.v1",
+  "status": "ready",
+  "targets": [
+    {
+      "backend": "gpu",
+      "context_tokens": null,
+      "device": "gfx90a",
+      "focus_symbols": [],
+      "kernel_only": true,
+      "knob_families": [],
+      "label": "",
+      "model_file": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "model_sha256": "",
+      "quant": "Q4_K_M",
+      "recipe": "",
+      "role": "",
+      "scope": "model",
+      "stack_regime": ""
+    }
+  ],
+  "tier_emptied": [],
+  "tier_emptied_alarm": {
+    "action": "not-active",
+    "key": "belief-target-tier-emptied.autokernel.planner"
+  }
+}

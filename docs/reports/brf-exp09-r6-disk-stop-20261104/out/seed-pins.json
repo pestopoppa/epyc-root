@@ -1,0 +1,114 @@
+{
+  "sha256": "59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266",
+  "native_cell_count": 24,
+  "control_cell_count": 24,
+  "control_exec_ids": [
+    "f31565b84cc2"
+  ],
+  "control_item_sha256": {
+    "item-01": "e7ec108fc0cc7771a201c4712269246e37937d81f0990c93a2dd5420a7b4e265",
+    "item-02": "ecac80e1bb9deaece59bbeafee1cdbeaeeb9f103f39c5b441afd2b61a4967b81",
+    "item-03": "8dfee961e8514e8ecaf929925dff486a6d3c1ea8841f533948832b118b2cb1b7",
+    "item-04": "b2dc3bf683aae8ca95ccf3498b8655c1d7b5d84dddfcd9d9930b55e91a1ef007",
+    "item-05": "7e2c9775751837f52cc366caa3099d3c1e5724029a886ad9837a8f083ad00473",
+    "item-06": "51875c3091a046cacf90f2e5cf02ec55fb6c5c3615decf64e74bff487fc03c94",
+    "item-07": "7817c9267ca612972c34455433b94814b1cc26c09811003d916b7125201ebe61",
+    "item-08": "a22b912c40e44a197e7da10411ef4a4dfae72b664ccf9bebe26c0c4647aac951",
+    "item-09": "f75b17f36d1f20dee17218bb0920241d8bcc17b09d293307ae017d144e803630",
+    "item-10": "4a5642791f659d3794bc646dff96b3affff387006a378c8e1b5aaebd7bf40084",
+    "item-11": "1c5162cdb6d766e4ced75382b656f65941ca4831731cfbeb80c87e4247e4f932",
+    "item-12": "05aa91bac15dc90c5487d453c67777c1e8c1107d570d00d9bf91df89a84de083",
+    "item-13": "966dcfca83fa095057e5becda9039ec6c01d2b53d844fa74573b77c78acd13e2",
+    "item-14": "4283beee7f4bf2ad69de933d1763f9e7b1155741cb7d9bf1975bcb71256af1a6",
+    "item-15": "aa660d7b804aff3ee6a220de6779fc9631891e238729f9270690fc7ba3f71408",
+    "item-16": "b1e467cce6f9a84da493d3df2b1d235e691e653b5ecc4a6c2da7f384993eb7bc",
+    "item-17": "c6605f1f54512586072b8d781622745e757428b38ae5da24e418496eef8efe48",
+    "item-18": "8ed81648d829257d090dbf1ef8ced9421b9014df19fb3cca1b4fb731074b2b33",
+    "item-19": "15e03646db3a194ff9d72c33d5435e80020db51476ca1dabd26f2e84894b4eed",
+    "item-20": "e611ec40467e1636d7f45cd717dfded7909f048b25322887dee4db33f8e1e532",
+    "item-21": "e323d0a7d4539bc4a1ca997d4ac80c9b267d6e75b7ec764630d1070b94002e38",
+    "item-22": "d6a45f2fe6d7a24486d336c9d6cc6e2c9b0badb008b82aa347d594d52c8d2533",
+    "item-23": "275e80bc644877594175fb235d0a81d7001f4284a9fd57ac818716855be49c5c",
+    "item-24": "cc891f5483f90115cbf805cc6e1484eb222e9ce1f3fcf2dfc03fcee345d047af"
+  },
+  "preflight": {
+    "kind": "preflight",
+    "control_fn_sha256": "e1707a1b865d7c27da0267e3b3141ef11d77ade5c6c227ab48adf786ae4a67ce",
+    "control_code_unchanged": true,
+    "orch_pin": "3a428cb3795b26251c5f111c9eaa887db0690994",
+    "server": {
+      "pid": 3932529,
+      "cpus": "0-23",
+      "threads": "24",
+      "cmd": [
+        "taskset",
+        "-c",
+        "0-23",
+        "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+        "-m",
+        "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "--port",
+        "18429",
+        "--host",
+        "127.0.0.1",
+        "-t",
+        "24",
+        "-c",
+        "16384",
+        "-np",
+        "1",
+        "--jinja",
+        "--chat-template-file",
+        "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+        "--cache-type-k",
+        "q8_0",
+        "--cache-type-v",
+        "q8_0",
+        "--temp",
+        "0",
+        "--no-warmup"
+      ],
+      "ggml_libs": [
+        "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+        "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+        "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+        "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303"
+      ],
+      "linkage_ok": true,
+      "foreign_libs": []
+    },
+    "probe": "ready",
+    "probe_meta": {
+      "latency_s": 0.92,
+      "usage": {
+        "completion_tokens": 2,
+        "prompt_tokens": 173,
+        "total_tokens": 175,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 173,
+        "prompt_ms": 871.417,
+        "prompt_per_token_ms": 5.037092485549133,
+        "prompt_per_second": 198.5272263451367,
+        "predicted_n": 2,
+        "predicted_ms": 31.458,
+        "predicted_per_token_ms": 15.729,
+        "predicted_per_second": 63.576832602199765
+      }
+    },
+    "corpus_sha256": "d69556e907a25d24a1e837a1258413791d5ad86335f389721e5a701a119f216d",
+    "n_items": 24,
+    "cap_s": 2700,
+    "exec_id": "f31565b84cc2",
+    "dryrun": false,
+    "t": 6.5,
+    "ts": "2026-11-04T16:11:37Z"
+  },
+  "corpus_manifest_sha256": "076446cce8d4f0ba14ab1a450eeb4b93e861383367db031d0354465cec12e2cd"
+}

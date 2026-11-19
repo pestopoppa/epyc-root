@@ -1,0 +1,55 @@
+{
+  "row": "codex-ufh12-shadow-gnx-v2-20261104",
+  "verdict": "pass",
+  "source_commit": "f58d0bf7668147b5aa142ade921b7b86ece35ec0",
+  "rc": 0,
+  "native_result_sha256": "98507c35f50f5be07116009c046d43b28fa23ce3a45b375edd4ea1883541877d",
+  "contexts": 4,
+  "impacts": [
+    {
+      "risk": "LOW",
+      "impactedCount": 1,
+      "summary": {
+        "direct": 1,
+        "modules_affected": 0,
+        "processes_affected": 0
+      },
+      "symbol": "ShadowSink",
+      "path": "scripts/vidya/producers/repl_shadow_sink.py"
+    },
+    {
+      "risk": "LOW",
+      "impactedCount": 0,
+      "summary": {
+        "direct": 0,
+        "modules_affected": 0,
+        "processes_affected": 0
+      },
+      "symbol": "validate_shadow_stream",
+      "path": "scripts/vidya/producers/repl_shadow_validate.py"
+    },
+    {
+      "risk": "LOW",
+      "impactedCount": 8,
+      "summary": {
+        "direct": 4,
+        "modules_affected": 1,
+        "processes_affected": 0
+      },
+      "symbol": "ingest",
+      "path": "scripts/vidya/ingest_sources.py"
+    },
+    {
+      "risk": "LOW",
+      "impactedCount": 0,
+      "summary": {
+        "direct": 0,
+        "modules_affected": 0,
+        "processes_affected": 0
+      },
+      "symbol": "cmd_ingest",
+      "path": "scripts/vidya/cli.py"
+    }
+  ],
+  "scope": "Pinned index prerequisite only; not online-shadow execution or blanket clearance for changed source."
+}

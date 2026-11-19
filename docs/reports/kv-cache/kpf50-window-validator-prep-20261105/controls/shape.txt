@@ -1,0 +1,26 @@
+[
+  {
+    "context_tokens": 80000,
+    "seq_id": 0,
+    "suffix_tokens": 20000,
+    "trunk_tokens": 60000
+  },
+  {
+    "context_tokens": 80000,
+    "seq_id": 1,
+    "suffix_tokens": 20000,
+    "trunk_tokens": 60000
+  },
+  {
+    "context_tokens": 80000,
+    "seq_id": 2,
+    "suffix_tokens": 20000,
+    "trunk_tokens": 60000
+  },
+  {
+    "context_tokens": 80000,
+    "seq_id": 3,
+    "suffix_tokens": 20000,
+    "trunk_tokens": 60000
+  }
+]

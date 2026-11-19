@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "codex-bf745bf107ba87eb",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The assistant states: \"All three completed PAW screens are now filed, with receipts and committed findings... both real compiler smokes are running.\" The trace shows the agent reading scripts (`write_capture.py`, `job.py`) but does not show any execution of the verification logic or confirmation that the 'receipts' and 'findings' are actually correct, only that the files exist and scripts are present.",
+          "confidence": "medium",
+          "severity": "moderate"
+        },
+        {
+          "code": "MAST-11",
+          "name": "Premature termination",
+          "evidence": "The assistant concludes: \"All three completed PAW screens are now filed...\" while the trace indicates the \"real compiler smokes are running\" (implying ongoing processes) and the agent immediately proceeds to `sleep` and then reads more scripts, suggesting the task was declared complete before the running processes finished or were verified.",
+          "confidence": "low",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795007951,
+        "warnings": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+ "admission_class": "block-correctness",
+ "decision_rule": "Canary B verdict with live BGE-large embedder: PASS iff the assembled planner context holds trial 1472's keep with 2.025 and ingest_triviality_guard AND the frontier section is assembled (T1 count recorded; 0 is the intended post-rebase state); code 452b5884, orchestrator 326f5027; FAIL if the keep or frontier section is absent; UNKNOWN on embedder/assembly/state-hash failure. Not a measurement; no timing claim. Stop at first verdict; no retry in-run.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 300,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 900,
+ "gib": 48,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-CANARY-B-LIVE-EMBEDDER",
+ "id": "vb-canary-b-r1-20261103",
+ "keep": [
+  "RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vb-canary-b-r1-20261103/launch.sh",
+  "sha256": "862a7a34e77872067470a51b2ec26295ed862825881db865e87b707e708fb15f"
+ },
+ "lineage": "vb-canary-b",
+ "min_window_s": 900,
+ "owner": "ws58",
+ "ports": [
+  18797
+ ],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:3950: untestable prose prerequisite: 'once canary A also exits 0. FAIL with a missing keep is a finding to route, not a retry. [no-belief: canary alignment]'"
+ ],
+ "published_at": "2026-11-04T00:05:40Z",
+ "published_from": "/mnt/raid0/llm/tmp/vb-canary-b-r1-20261103/row-spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-canary-b-r1-20261103/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vb-canary-b-r1-20261103",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vb-canary-b-r1-20261103/STOP",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/vb-canary-b-r1-20261103"
+}

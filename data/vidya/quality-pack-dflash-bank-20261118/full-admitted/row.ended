@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T02:46:54Z reason=complete
+job_id=handoff-vidya-quality-pack-dflash-bank-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=1100
+started=2026-11-18T02:41:37Z
+regions=72-95

@@ -1,0 +1,66 @@
+{
+ "book_s": 300,
+ "budget_gib": 1.0,
+ "busy_fraction": 0.1,
+ "decision_rule": "Stop on answer after one direct, prospective OpenCode variable-context call against v10 CPU Qwen3-0.6B Q8_0 seals exact owned server identity, original props and offered prompt and bundle bytes, and a shared call-ID metrics sibling with strict reader replay at refused=0 and clean process and port teardown. Stop on futility on the first source, identity, native, join or cleanup failure, STOP or deadline, retaining source bytes and partial status. A separate four-CPU publisher smoke replays this instrument end to end. The official run books a CPU quarter. This is a one-call source-custody control.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 240,
+ "gib": 8,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-SEAT-NATIVE-INSTRUMENT",
+ "id": "vb-ak-seat-native-instrument-20261118",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.json",
+  "*.jsonc",
+  "*.patch",
+  "*.sha256",
+  "root/**",
+  "research/**",
+  "bin/**",
+  "official/**",
+  "smoke/**",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/launch.sh",
+  "sha256": "dbea6a549e0298a9fc52b7c53fc7b9747baf9477f3074dddf1263757c2fc39a0"
+ },
+ "min_window_s": 300,
+ "owner": "vidya-belief-substrate",
+ "ports": [
+  19413
+ ],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:379: untestable prose prerequisite: 'after one sealed valid call and cleanup; stop-on-futility on the first source/identity/native/join/cleanup failure, STOP'"
+ ],
+ "published_at": "2026-11-18T16:02:50Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/row.spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T16:02:50Z",
+  "session": "01a1ef5b-839c-74a0-8d2d-55579a8e6f76",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/job.py smoke-complete",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/STOP",
+ "unit_key": "call_id",
+ "verdict_by": "agent",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/engine-work"
+}

@@ -1,0 +1,126 @@
+[
+    {
+        "Id": "sha256:933f693c6b3b67b39ba789fac7f276251ab017908290bd8c39d10b0f702dae52",
+        "RepoTags": [],
+        "RepoDigests": [
+            "vllm/vllm-openai-rocm@sha256:4fcd39b758b660c4e9c345c021e2ea8f0ccdb31e3c32507d676cc3005ae83fba"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-11-01T09:38:25.34143593Z",
+        "Config": {
+            "Env": [
+                "PATH=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel/bin:/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel/lib/llvm/bin:/usr/local/lib/python3.12/dist-packages/_rocm_sdk_core/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "PYTORCH_ROCM_ARCH=gfx90a;gfx942;gfx950;gfx1100;gfx1101;gfx1200;gfx1201;gfx1150;gfx1151",
+                "AITER_ROCM_ARCH=gfx942;gfx950",
+                "SITE_PACKAGES=/usr/local/lib/python3.12/dist-packages",
+                "SDK_DEV=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel",
+                "SDK_CORE=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_core",
+                "ROCM_PATH=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel",
+                "ROCM_HOME=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel",
+                "HIP_PATH=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel",
+                "HIP_CLANG_PATH=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel/lib/llvm/bin",
+                "HIP_DEVICE_LIB_PATH=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_core/lib/llvm/amdgcn/bitcode",
+                "LD_LIBRARY_PATH=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel/lib:/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel/lib/rocm_sysdeps/lib:/usr/local/lib/python3.12/dist-packages/_rocm_sdk_core/lib:/usr/local/lib/python3.12/dist-packages/_rocm_sdk_core/lib/rocm_sysdeps/lib",
+                "HSA_NO_SCRATCH_RECLAIM=1",
+                "PYTHON_VERSION=3.12",
+                "DEBIAN_FRONTEND=noninteractive",
+                "PYTHONPATH=/usr/local/lib/python3.12/dist-packages/_rocm_sdk_core/share/amd_smi",
+                "SCCACHE_BUCKET=",
+                "SCCACHE_REGION=",
+                "SCCACHE_S3_NO_CREDENTIALS=",
+                "SCCACHE_IDLE_TIMEOUT=",
+                "ROCPROFILER_QUEUE_INTERPOSITION=0",
+                "UV_HTTP_TIMEOUT=500",
+                "UV_INDEX_STRATEGY=unsafe-best-match",
+                "UV_LINK_MODE=copy",
+                "CCACHE_DIR=/root/.cache/ccache",
+                "CCACHE_COMPILERCHECK=content",
+                "MAX_JOBS=16",
+                "UV_COMPILE_BYTECODE=1",
+                "SCCACHE_ENDPOINT=",
+                "HSA_ENABLE_IPC_MODE_LEGACY=1",
+                "UCX_ROCM_COPY_SIGPOOL_MAX_ELEMS=inf",
+                "UCX_ROCM_IPC_SIGPOOL_MAX_ELEMS=inf",
+                "TOKENIZERS_PARALLELISM=false",
+                "SAFETENSORS_FAST_GPU=1",
+                "HIP_FORCE_DEV_KERNARG=1",
+                "PYTORCH_NVML_BASED_CUDA_CHECK=1",
+                "KINETO_CONFIG=/app/libkineto.conf"
+            ],
+            "Entrypoint": [
+                "vllm",
+                "serve"
+            ],
+            "WorkingDir": "/app",
+            "Labels": {
+                "org.opencontainers.image.version": "22.04"
+            },
+            "ArgsEscaped": true,
+            "Shell": [
+                "/bin/bash",
+                "-c"
+            ]
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 34847073776,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/mnt/raid0/docker/overlay2/408e16649138dfea3cc1c5495b14a595cc86d8535842572c385c5e9e85089315/diff:/mnt/raid0/docker/overlay2/d46d2adae60dafe64f4b658cfd72e8dea871089cff86dc9381bf2422d7910599/diff:/mnt/raid0/docker/overlay2/6862fd033f31b8f50abf5eb8c21c12a0efcb60fd196274b371d3c7cf3779e42d/diff:/mnt/raid0/docker/overlay2/b66924efb34b5d86047bfa56a2ab8f874c66cd7504ab4cf7cdef22b6c183e607/diff:/mnt/raid0/docker/overlay2/2272c4c3b3faa050b4c2802ace7abedb9ac97fed498e8fea3eb25e541e45a984/diff:/mnt/raid0/docker/overlay2/31454203776ef15fc5dbf263b1227c71e5302730b3cb1d3e5d7234286e8c44b5/diff:/mnt/raid0/docker/overlay2/a285a0b3fc3b18d2fe8ad07ddbd343209981c9e9c03888082ca860e618dce03b/diff:/mnt/raid0/docker/overlay2/66d68d7e1edd0893b5fa8ba333041dc1ddac0db580c8011aaf1055db79360d3e/diff:/mnt/raid0/docker/overlay2/abd3bbfa8aeaceaa31b6fffb4b4aec259489ba8c823022297d8149a2fb979d9e/diff:/mnt/raid0/docker/overlay2/23fb32a8e979cad0562d0d5b27b95806d16112ef7eb72473dccc0958940570d8/diff:/mnt/raid0/docker/overlay2/6f19f6a6b25573238956f5b34a3d03644113c997865471c9962d65a3c28bf01e/diff:/mnt/raid0/docker/overlay2/f124a6d65cf20903aeaa8d4b52d6923606bfad638345e7c1ef7350a7686434a2/diff:/mnt/raid0/docker/overlay2/0ec89ab080c0f6fbfb49fcaee46599157e43522b3a746a9e0638e9c70382c145/diff:/mnt/raid0/docker/overlay2/465adad4ca97a7444aea8c3abb84129aaa7614131c99c1fc8cf2f264a470dcbf/diff:/mnt/raid0/docker/overlay2/8b8c7d154e4dcaf5f320e0d5a205739fa532454211f6764042772bb34017114d/diff:/mnt/raid0/docker/overlay2/0ec07db84e083beb1b2232b64532c7865850e6446380360088191f304d14c7f8/diff:/mnt/raid0/docker/overlay2/53d8b0ccef7a338ecb2839098bedadca1be75e990e62b704c018b0d683d46962/diff:/mnt/raid0/docker/overlay2/a15cec3617b7fc0d4ee8e92d18b11a4462787e8b6e1caa4ed530044f234d8ab8/diff:/mnt/raid0/docker/overlay2/217e3f0e9f16f98649973ce363559c1b148403a5b90b7d6df3acdaa2e8f08dbc/diff:/mnt/raid0/docker/overlay2/a867574944b153eca7b1574ee2a62034262de75c7028e18be57426a913a6354d/diff:/mnt/raid0/docker/overlay2/45791a7ee251374618c1bf578ea51567348bdd691564d0d7650c35398a1fa475/diff:/mnt/raid0/docker/overlay2/cb797fd784863caf0e80135daa72f4a132f86f62825f1b0252acbc8e9419e4eb/diff:/mnt/raid0/docker/overlay2/91c564e8ac25213bd6e4feed829608962764f84c149f844af244248ad27e80e2/diff:/mnt/raid0/docker/overlay2/8f1dedfbede2938bbe2148bf245e7d96bcbc5d53aad5ad389204b2e9102253de/diff:/mnt/raid0/docker/overlay2/c28e229454c26136575b56f5dd064df45ad0c66fe9908c68ee2752ca01cf0bef/diff:/mnt/raid0/docker/overlay2/62b511a805a44a6e1d7b50f868d79602f7eabff66709c4ec0f2c4f4a19ae5fc9/diff:/mnt/raid0/docker/overlay2/5b7655c399920f6b9181745f0067865bb0790bd656128a73365b5251bf72fb33/diff:/mnt/raid0/docker/overlay2/86970b7be4b5dc7d756604ccfcfc3b7f89f97f7420bc24421a04f11602185cee/diff:/mnt/raid0/docker/overlay2/1ca6f843957a4a8dd016f8dfe10799ef65b48854239227b12c5a4153d19c90c9/diff:/mnt/raid0/docker/overlay2/657391917ced05a979c9e0acf19ae067e74c017d06583b5a70b965037b233e12/diff:/mnt/raid0/docker/overlay2/742d4ff95954c87ed04f0bc8ea155d502014f06cc01693a6c8e59dbc151f3bcc/diff:/mnt/raid0/docker/overlay2/fb0ee6e7ae5ff0305a46abcf7db853d723ebc9cb0f155a5330ad86b793e69c07/diff:/mnt/raid0/docker/overlay2/04b92d708c75e7d46c546f2034afc60c31663186cb0433a4c9b37ef69578737f/diff:/mnt/raid0/docker/overlay2/681e81ca2c0abfd8c4b894f5124a9e1341935a5771ff4a68a9297f599df02e23/diff:/mnt/raid0/docker/overlay2/e3d9d85b8dfb21e7eb5a5df7ad8b700677a521d265ba1d6b750eb3ea2da21b34/diff:/mnt/raid0/docker/overlay2/64f50b943b07c8f8885d0a850841831298494b49014ddb3e8bf59d9e8b87ae8c/diff:/mnt/raid0/docker/overlay2/e55058252e5f71014675e20153da3f9bb8bd35d3170aa95e85a9cba9c1d0e56c/diff:/mnt/raid0/docker/overlay2/65e81959f0b238cf24b65c808d53797f76be41d5baf35e6ac55b3fa3189f7f06/diff:/mnt/raid0/docker/overlay2/140f237837d2af5d53dc7cab4a7325fcb2b491a5b0a2ba12e0f13abce1a4df95/diff:/mnt/raid0/docker/overlay2/27f7676807ded96d8faab7034fd2760a574a6599695d376eae07596cbda6a653/diff",
+                "MergedDir": "/mnt/raid0/docker/overlay2/0412156dc921e8bc03bae5da9ab63b380a4f1210373438e1b524a23edb66bfec/merged",
+                "UpperDir": "/mnt/raid0/docker/overlay2/0412156dc921e8bc03bae5da9ab63b380a4f1210373438e1b524a23edb66bfec/diff",
+                "WorkDir": "/mnt/raid0/docker/overlay2/0412156dc921e8bc03bae5da9ab63b380a4f1210373438e1b524a23edb66bfec/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:129f77d88403f1d66805466da50673bab10cf6052bdf1fe422b0341b51a55da2",
+                "sha256:15508a6a4d48c4251c1a67b4f4f02cb7b15f4484a969464192ea513289a3adad",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:5e013e947e8b0e9526a5c8af6e0b2e86c379c61f4f21583e2f6bf03863e56db5",
+                "sha256:428df691c1da609027341c2cc8b294f4b4f454d7298e37936e04f18f0aee1fc0",
+                "sha256:efae49a213aa39c92660a823a48d9b3c1a492c4a4d903fd427188b7c8b1847fa",
+                "sha256:70348e39772eb9ccd4ecd15a278cc87202a5013f430f7528cad21ed19fe8a028",
+                "sha256:6b39fb2a74560f7fcee061cc37bea650ba00ca124e8791afecb81f4120431f7f",
+                "sha256:4b3b513de6a6fc46b87a9df4f2938a0d459e5e5c38214bbf5b61c27b9efe038c",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:673d05f67698988d846e5f4cebcffcb845aa803e6f0014e587837fa728df5e36",
+                "sha256:db9f7404873bdc6c9560374d305945ff8e9fecd47f0533e344f7472b0ebe6c9b",
+                "sha256:ea1e1ed23fd27bbfe9b6a75b2c812cbcd12cffc4c5df19a82ade66470de05627",
+                "sha256:597583a46a152ecb5a245d8b39cfa9d8528d4a3b6add4fa08b2a8e90474ee6a5",
+                "sha256:2c7ee5f1e627e42c79a2bbcd0ffd2fa89b4f833c7cc310bf33e954601a110e61",
+                "sha256:44dd5aa8c8bc84966dd3efe1aaa635c6e622c369c837bf042f7e67f4135b5dc1",
+                "sha256:a1ebe97647fc72a31908d4618ef8b9e1a03c6fa3272405800412c7ba60eaced7",
+                "sha256:064ec0b26c16b9f12d83795315ddc353cbaed2bcb471bb823a143ad4fa00493c",
+                "sha256:1e847a93e10094e514a15a82a791d993449c4611c617584d51a5cc0991a5494b",
+                "sha256:a8128b2aecd40722bfdd68b0eb687e9d9e3124bdac071a82662ace6c83618c4d",
+                "sha256:6c2ada4f344f4607028f28d50b9601273c9070d722ea044da4e42ae129e45ba7",
+                "sha256:0195b27c371bedb9f9c192dac52391744f8297a8b04655abcd5e237f12bbe955",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:456528200356b1d487123325a412a3ff6c539f9d2f6c3e192999c804382276b8",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:3ee69427266e82055d62f7325a98e3f2688b499f8415dabbdfbac3ca30aca2d2",
+                "sha256:4cb63d734d27eca707a569b25ffa6ac86dbabf9edf1fa64d9eb85547dad03b25",
+                "sha256:2d33a4166654bb2cbd5d1c2205dabbb9ae42ad39340c566a0a6fc89cb19dd0b8",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:7636331330826e145ff154ae07555b500c689903c43806ab09cc02dd04ad8aba",
+                "sha256:8f1148229d6a6733d2ad8cdcd364954485f2e58b334ff9bb9ab5b024766b01a6",
+                "sha256:b9bb66dca7c980234ecced7abed55f0302264ef37fc8686b8cd0b4a9752d4cb4",
+                "sha256:da9059f2c67e0e5a8cf55fd0b1a9bbc64b115e2f57fd856229f6c7069bca5a76",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:31ddeb803d0b217978f56837f859e2e53a77f5436db743d0dfaaa11b27acdcc3",
+                "sha256:c7862a3a0a64ff0fab1ffa920ef80199e272482e269fa5281e8d228cc775c921",
+                "sha256:262a7d17a6b366c118f30783181a4d9044bad7f03eda5d4b008fe48d6605fe50",
+                "sha256:40b844ba2ae76aefaf8f32da34762630511dc374b0a3c3502bdec69202136cb0",
+                "sha256:e707e32ad214c856e061a01c296453ca373350d4fb41eb38684f6e989278fa51",
+                "sha256:5209811bab88a4d9d6e1d9bcbe47bd0294bd291fead9953637c31c9422a733ae"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+    }
+]

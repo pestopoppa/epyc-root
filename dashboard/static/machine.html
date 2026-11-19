@@ -1913,8 +1913,9 @@ function renderProcess() {
     if (num(d.inference_tap_age_s)) h += row("tap file age", fmtAge(d.inference_tap_age_s), d.inference_tap_age_s > 600 ? "warn" : "");
     h += "</div>";
     const fr = d._freshness || {};
-    if (fr.staleness_class && fr.staleness_class !== "fresh" && fr.reason) {
-      h += `<div class="seclabel">producer freshness</div><div class="lines ${fr.staleness_class === "stale" ? "bad" : "warn"}">${esc(fr.reason)}</div>`;
+    const frc = (window.epycFreshClass && window.epycFreshClass(fr.staleness_class)) || fr.staleness_class;
+    if (frc && frc !== "fresh" && fr.reason) {
+      h += `<div class="seclabel">producer freshness</div><div class="lines ${(frc === "stale" || frc === "missing") ? "bad" : "warn"}">${esc(fr.reason)}</div>`;
     }
     const lines = Array.isArray(d.autopilot_recent_lines) ? d.autopilot_recent_lines : [];
     if (lines.length) {

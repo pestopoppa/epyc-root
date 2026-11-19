@@ -1,0 +1,30 @@
+{
+ "schema": "epyc.m4.fold_rule.v1",
+ "authority": "/workspace/artifacts/operator/m4-fold-authority-20261104.md",
+ "authority_sha256": "1515c2dfb3f09745d57df802d788bd217ca672d395a7bd089bb42708336d886a",
+ "metric_direction": "higher",
+ "metric": "aggregate decode tok/s per cell; ratio = median(candidate)/median(baseline) over ABBA pairs",
+ "arm_order": "ABBA",
+ "gpu": {
+  "pass_ratio": 1.0,
+  "fail_ratio": 0.95,
+  "evidence": "M4-GPU-AA-NOISE n=5 mean 0.968 SD 0.025"
+ },
+ "cpu": {
+  "pass_ratio": 1.0,
+  "fail_ratio": 0.94,
+  "evidence": "Q38 recipe r3 within-cell decode noise ~3%"
+ },
+ "quality": {
+  "check": "greedy_token_identity",
+  "temperature": 0,
+  "seed": "fixed",
+  "scope": "sealed prompt pool, all roles",
+  "on_divergence": "FAIL"
+ },
+ "verdict": {
+  "pass": "every role >= pass_ratio",
+  "fail": "any role < fail_ratio or quality divergence",
+  "else": "INCONCLUSIVE (no fold)"
+ }
+}

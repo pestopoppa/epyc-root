@@ -1,0 +1,52 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": null,
+ "answer": null,
+ "at": "2026-11-18T18:42:06+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T18:41:18Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-sync-published-repair-20261118.ended",
+ "filed_at": "2026-11-18T18:42:06+00:00",
+ "filed_by": "file_result.py",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-SYNC-PUBLISHED-REPAIR",
+ "id": "vb-sync-published-repair-20261118",
+ "machine_checkable": true,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-sync-published-repair-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-sync-published-repair-20261118",
+ "row_verdict": "pass",
+ "rule": "selected == 1 and refused == 0 and lag == 0 and manual_sync_count == 0",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 106,
+  "input": 439918852,
+  "output": 1856544,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 441775396,
+  "tokens_per_task": 4167692.4150943398
+ },
+ "values": {
+  "lag": 0.0,
+  "manual_sync_count": 0.0,
+  "refused": 0.0,
+  "selected": 1.0
+ },
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e2cbc53974ee997b6e5d22c708afc2492715e38a9302e074bb7ae5bc02a5c80f",
+  "result": "pass",
+  "status": "filed"
+ }
+}

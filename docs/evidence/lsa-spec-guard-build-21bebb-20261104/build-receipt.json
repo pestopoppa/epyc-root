@@ -1,0 +1,20 @@
+{
+  "source_commit": "21bebb74857df7bc537e0ddddd1c77e448389249",
+  "base_commit": "2aceed42bf1e3273e1a8feef12fa91dfe57d2e6b",
+  "donor_provenance_sha256": "df40691ea3fba7064d0d284a80956fafe3427b73f5158852bef97416c3d416a4",
+  "donor_seeded_manifest_sha256": "f70f2dca172b92b47a5d141d1312a6c7c0b01362cb3e43a041ac4dd5c139b5c2",
+  "donor_graph_object_sha256": "2fdb438ba00d00af058b5018ce17f30f9ebb0468f4865b89c0eaf6d1279da429",
+  "candidate_graph_object_sha256": "3a1511cdef23727d15c39c6ea821744de22390f73318c48d0438cb9602a77fcf",
+  "candidate_graph_source_sha256": "032c62f1a380f9d036495c1bb719a5f31fe6231e3043e1282ffa144581f2ba29",
+  "cmake_cache_sha256": "387c181b44ef0442487813ac27b0c69fefb278414b3191f1538cbcc9ec5ba0b5",
+  "compile_commands_sha256": "a610e388b023123fadd673f0934dd3a71069fe7b74810fe4c1de5c31c53de750",
+  "seeded_objects_sha256": "e3525cf0934a1fd6261a1341b7e84225839206108f676b3dd0f4ac65fbded0bf",
+  "libllama_sha256": "ee2e8bc598615ed9dc9d9ed5d464e272afe6a7a48929fe3ab13fcfdfc9b60330",
+  "dsos": {
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/out/bin/libggml-base.so.0.16.0": "d26f2caecdbfdd12e492828465d6bbb61187f41854021d4fab92e4081fef1f0d",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/out/bin/libggml-hip.so.0.16.0": "814c831b89d803502a3f6ef350bc167f6bdfc918e92061ee7143c252446dfa10",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/out/bin/libggml.so.0.16.0": "aaeb620010baf63e9a4af964073b4389ad49bb7ed8f3bced95b6d81db378b5c1",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/out/bin/libggml-cpu.so.0.16.0": "e8b5c94b5ea61dfa3c9c6e5f278a1707986abb44ddf0f0196c090fa3fbebe959",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/out/bin/libllama.so.0.0.10428": "ee2e8bc598615ed9dc9d9ed5d464e272afe6a7a48929fe3ab13fcfdfc9b60330"
+  }
+}

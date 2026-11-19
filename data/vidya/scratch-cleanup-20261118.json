@@ -1,0 +1,113 @@
+{
+  "timestamp_utc": "2026-11-18T15:17:31.423891+00:00",
+  "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate",
+  "removed": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/draft",
+      "allocated_bytes": 212992,
+      "reason": "Superseded unpublished NP-D1 deployment draft. The ready manifest points at the final sibling deployment and its native result."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/draft2",
+      "allocated_bytes": 217088,
+      "reason": "Superseded unpublished NP-D1 deployment revision. The ready manifest points at the final sibling deployment and its native result."
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/final-pytest",
+      "allocated_bytes": 1052672,
+      "reason": "Generated pytest fixtures outside the ready scratch root. The final deployment, preparation report, and native records are retained."
+    }
+  ],
+  "bytes_removed": 1482752,
+  "byte_basis": "Allocated bytes counted under removed paths using du -s -B1.",
+  "retained": {
+    "exp01-ready-20261118/inputs": "Stat-pinned Q8 source and preparation receipts required by the R2 continuation.",
+    "exp01-ready-20261118/official": "R2 REUSE-PINS.json requires the original matrix, completed model arms and native records.",
+    "exp01-ready-20261118/continuation": "Current R2 launcher, smoke, quantizer output and terminal result.",
+    "exp01-ready-20261118/continuation-first-smoke-evidence": "Only preserved records of the superseded publisher smoke. Prior cleanup already removed its generated model and matrix.",
+    "parity-native-20261118-r2": "Qualified parity row scratch with the required BF16 conversion and its asset pins.",
+    "actor-seat-native-20261118": "Current detached private native writer with a unique candidate commit awaiting native acceptance.",
+    "kvq-ready": "Current prepared successor and patched research worktree.",
+    "kvu19-successor": "Completed source, evidence and ready manifests retained. Prior receipt records removal of obsolete worktrees and build.",
+    "npd1-native-20261117/npd1": "Final published deployment with launcher and native results.",
+    "other prepared or ready packets and unique evidence": "Retained runtime assets and original evidence, including GPU pool candidate builds."
+  },
+  "earlier_receipts": [
+    "cleanup-report.json",
+    "scratch-cleanup-20261118.json"
+  ],
+  "followup_passes": [
+    {
+      "timestamp_utc": "2026-11-18T16:10:48.010879+00:00",
+      "removed": [
+        {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/official-reader-current/pytest",
+          "allocated_bytes": 15466496,
+          "reason": "Completed official-reader synthetic pytest basetemp. Software-verification report remains in official-reader-current/result.json. The only embedded repository is an isolated test fixture with no linked worktrees."
+        }
+      ],
+      "bytes_removed": 15466496,
+      "byte_basis": "Allocated bytes under the removed path using du -s -B1.",
+      "retained": {
+        "exp01-ready-20261118/official": "Three stat-matched GGUF arms consumed by the current R2 runner, the continuation-pinned imatrix, and native source evidence.",
+        "exp01-ready-20261118/continuation": "One stat-matched GGUF arm consumed by the current R2 runner and the continuation result pinned in R2.",
+        "exp01-official-20261118-r2": "Active official capture, publisher smoke, and original evidence.",
+        "exp01-ready-20261118/smoke": "Original smoke records remain; earlier cleanup removed the generated model.",
+        "other packets": "Current prepared packets, runtime assets, and unique result evidence."
+      },
+      "verified_model_pins": {
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/official/7e48d529b4cc483aa98db09d818d27a1/Qwen3.6-35B-A3B-IQ2_KT.gguf": {
+          "dev": 2431,
+          "ino": 215018172,
+          "size": 10217312160,
+          "mtime_ns": 1795015004133624528,
+          "ctime_ns": 1795015005061624684
+        },
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ2_XXS.gguf": {
+          "dev": 2431,
+          "ino": 209119991,
+          "size": 9588011424,
+          "mtime_ns": 1795010530954939152,
+          "ctime_ns": 1795010531778948711
+        },
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ4_KT.gguf": {
+          "dev": 2431,
+          "ino": 209119993,
+          "size": 17723187104,
+          "mtime_ns": 1795012549394802811,
+          "ctime_ns": 1795012550229810768
+        },
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-Q4_K_M.gguf": {
+          "dev": 2431,
+          "ino": 209119989,
+          "size": 21125552544,
+          "mtime_ns": 1795010236577516840,
+          "ctime_ns": 1795010237369526072
+        }
+      }
+    },
+    {
+      "timestamp_utc": "2026-11-18T16:12:13.060090+00:00",
+      "removed": [
+        {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/git-source.tar",
+          "allocated_bytes": 166211584,
+          "reason": "Generated KVU19 source staging archive for the completed build. Recreated byte-for-byte from commit a0d0ae238e714aaab04e973ef4b5a4b7c9917744 in /mnt/raid0/llm/llama.cpp and verified SHA-256 87e3cdc13b1859a31dfd3ced43c596e6b9653e2194b1ebd0d5eb6772593c04c2. Filed native output, source commit, patch and build receipt remain."
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-finish-20261118/__pycache__",
+          "allocated_bytes": 270336,
+          "reason": "Generated bytecode from the superseded actor-seat software preparation. Software report, source copies, patch and live native packet remain."
+        }
+      ],
+      "bytes_removed": 166481920,
+      "byte_basis": "Allocated bytes under removed paths using du -s -B1.",
+      "retained": {
+        "parity-native-20261118-r2": "Only remaining parity execution packet; its model is a current pinned input. The R1 filename under filing-20261118 is a filed receipt.",
+        "r231-eof-wire-20261118": "R3 native completion and the older R1/R2 paths containing original evidence. R2 still contains a unique native failure record.",
+        "wrap-merge-recovery": "Preserves a locally unique merge input. The 0.ours object is absent from the repository object database.",
+        "actor-seat-finish-20261118": "The software report and its supporting source/test evidence remain."
+      }
+    }
+  ]
+}

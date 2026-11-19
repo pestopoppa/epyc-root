@@ -1,0 +1,143 @@
+{
+ "blocked": false,
+ "plan_refusals": [],
+ "schema": "reembed-stores-eg2/v1",
+ "target": {
+  "arm_id": "eg2-gguf-bf16-256",
+  "digest": "e711408cd51fae4f831b704135bba1c8974d92fe202d1fee5509bec89a64a92e",
+  "dim": 256,
+  "doc_prompt": "title: none | text: ",
+  "dtype": "bf16",
+  "model": "ggml-org/embeddinggemma-2-GGUF/embeddinggemma-2-BF16.gguf",
+  "native_dim": 768,
+  "normalise": "l2-after-truncation",
+  "prompt_hash": "05e21668a4f78706ea20a6617fa867fbb9dba4a7a6c4499a8e0a0204ff2b57e1",
+  "revision": "58faf90940886df2d62be555c8765d00dac362c5",
+  "runtime": "llama-server experimental/gemma-embedding2-on-v10 (CPU, build-cpu)"
+ },
+ "units": [
+  {
+   "components": [
+    {
+     "blocked": [],
+     "bytes": {
+      ".episodic_faiss.lock": 0,
+      "embeddings.faiss": 264249389,
+      "episodic.db": 539058176,
+      "id_map.npy": 2516794
+     },
+     "detail": {
+      "index_type": "IndexFlatIP",
+      "resolved_text": 64514,
+      "rows_without_vector": 0
+     },
+     "dim": 1024,
+     "files": {
+      "db": "episodic.db",
+      "extra0": ".episodic_faiss.lock",
+      "id_map": "id_map.npy",
+      "index": "embeddings.faiss"
+     },
+     "id_map_len": 64514,
+     "kind": "episodic",
+     "rows": 64514,
+     "status": "READY",
+     "text_source": "memories.context (JSON) -> record_from_legacy_context(ctx).embedding_text() [objective|task_description + task_type + priority; orchestration/repl_memory/memory_record.py, the convention reseed_episodic_store.py wrote]",
+     "vectors": 64514,
+     "warnings": []
+    },
+    {
+     "blocked": [],
+     "bytes": {
+      "skills.db": 90112
+     },
+     "detail": {},
+     "dim": null,
+     "files": {
+      "db": "skills.db"
+     },
+     "id_map_len": null,
+     "kind": "skills",
+     "rows": 0,
+     "status": "NO_VECTORS",
+     "text_source": "skills.title + when_to_apply + task_types -> skill_bank.skill_embedding_text() [orchestration/repl_memory/skill_bank.py]",
+     "vectors": 0,
+     "warnings": []
+    },
+    {
+     "blocked": [],
+     "bytes": {
+      "session_embeddings.npy": 4096128,
+      "sessions.db": 102400
+     },
+     "detail": {
+      "capacity_rows": 1000,
+      "metadata_rows": {},
+      "nonzero_vector_rows": 0
+     },
+     "dim": 1024,
+     "files": {
+      "db": "sessions.db",
+      "npy": "session_embeddings.npy"
+     },
+     "id_map_len": null,
+     "kind": "sessions",
+     "rows": 0,
+     "status": "EMPTY",
+     "text_source": "NONE RETAINED: the embeddings table keeps (id, session_id, content_type) only and no production writer defines the embedded text",
+     "vectors": 0,
+     "warnings": []
+    }
+   ],
+   "directory_bytes": 23207791161,
+   "given": [
+    "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions"
+   ],
+   "marker": null,
+   "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions",
+   "reasons": [],
+   "status": "READY",
+   "unmanaged_entries": 77,
+   "warnings": []
+  },
+  {
+   "components": [
+    {
+     "blocked": [],
+     "bytes": {
+      "strategies.db": 2437120,
+      "strategy_embeddings.faiss": 5849133,
+      "strategy_id_map.npy": 55287
+     },
+     "detail": {
+      "index_type": "IndexFlatIP",
+      "resolved_text": 1428
+     },
+     "dim": 1024,
+     "files": {
+      "db": "strategies.db",
+      "id_map": "strategy_id_map.npy",
+      "index": "strategy_embeddings.faiss"
+     },
+     "id_map_len": 1428,
+     "kind": "strategy",
+     "rows": 1428,
+     "status": "READY",
+     "text_source": "strategies: title + description + insight [orchestration/repl_memory/strategy_store.py _publish_search_indexes_from_rows]",
+     "vectors": 1428,
+     "warnings": []
+    }
+   ],
+   "directory_bytes": 8341540,
+   "given": [
+    "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/strategies"
+   ],
+   "marker": null,
+   "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/strategies",
+   "reasons": [],
+   "status": "READY",
+   "unmanaged_entries": 1,
+   "warnings": []
+  }
+ ]
+}

@@ -1,0 +1,578 @@
+[
+  {
+    "assertion": {
+      "applicability": {
+        "kernel": {
+          "binary_sha256": "a2e62037e37ff0391017bd68fec421f271f94c2dfb1df3e767ff45abeeb4c01b"
+        },
+        "knob_family": "embedder_vector_parity",
+        "knobs": {
+          "arm_id": "eg2-gguf-bf16-768",
+          "flash_attn_resolved": "on",
+          "lane": "gguf-bf16",
+          "scope_complete": true,
+          "threads": 4
+        },
+        "quant": "bf16",
+        "run_id": "ufh12-gp1-shipped-argv",
+        "scope_basis": "native"
+      },
+      "locator": "replembparity:ufh12-gp1-shipped-argv:gguf-bf16:repl_embedder_parity_cos_min:/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/out/parity.json",
+      "revision_observed": "2026-10-27T22:31:40Z",
+      "source_id": "src_replembparity_0dccc09762e44fa322210a57",
+      "source_kind": "repl-embedder-parity",
+      "title": "repl_embedder_parity_cos_min"
+    },
+    "frame_id": "sha256:7823df715cd2e94d97a299964d36c56a789c0e5841584239ca68808a39615c2b",
+    "frame_type": "epyc.vidya/frame/source_observed/v1",
+    "provenance": {
+      "about": "replembparity_0dccc09762e44fa322210a57",
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "retrofit": false
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "claim_id": "clm_replembparity_0dccc09762e44fa322210a57",
+      "display_text": "EmbeddingGemma-2 vector parity, lane gguf-bf16 vs st-fp32-full: min cosine 0.999993 over 211 chunks + 45 queries (file:/mnt/raid0/llm/worktrees/repl-emb-25-orch-20261020/data/repl_retrieval_eval/arm-manifest-20261020/probe45-intake1357.jsonl); gate PASS at threshold 0.99; scope complete; vector parity only, no recall or speed claim",
+      "source_id": "src_replembparity_0dccc09762e44fa322210a57"
+    },
+    "frame_id": "sha256:893ccaa92016de9d3faed8a575f96350001a9eb454054c23bbb02be5722bb09b",
+    "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+    "provenance": {
+      "about": "replembparity_0dccc09762e44fa322210a57",
+      "derived_from": "src_replembparity_0dccc09762e44fa322210a57",
+      "method": "vidya.adapters.repl_embedder_parity/v1"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "category": "CANDIDATE",
+      "claim_id": "clm_replembparity_0dccc09762e44fa322210a57",
+      "evidence_id": "evd_replembparity_0dccc09762e44fa322210a57",
+      "grade": {
+        "Q": "Judged",
+        "T": "Located"
+      },
+      "metric": "repl_embedder_parity_cos_min",
+      "metric_direction": "higher_better",
+      "observation": {
+        "outcome_native": "PASS"
+      },
+      "protocol_id": "",
+      "reps": 256,
+      "source_id": "src_replembparity_0dccc09762e44fa322210a57",
+      "unit": "cosine (min over per-item cosines vs ST FP32 reference)",
+      "value": "0.999993"
+    },
+    "frame_id": "sha256:ef85ea8fb81243ec65731f455ca3212d561b5d24259b84acf57d1a3e1d03362c",
+    "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+    "provenance": {
+      "about": "clm_replembparity_0dccc09762e44fa322210a57",
+      "evidence": "evd_replembparity_0dccc09762e44fa322210a57",
+      "grade_reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+      ],
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "reps_basis": "items (chunk documents + queries), one encode pass each"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "applicability": {
+        "kernel": {
+          "binary_sha256": "a2e62037e37ff0391017bd68fec421f271f94c2dfb1df3e767ff45abeeb4c01b"
+        },
+        "knob_family": "embedder_vector_parity",
+        "knobs": {
+          "arm_id": "eg2-gguf-bf16-768",
+          "flash_attn_resolved": "on",
+          "lane": "gguf-bf16",
+          "scope_complete": true,
+          "threads": 4
+        },
+        "quant": "bf16",
+        "run_id": "ufh12-gp1-shipped-argv",
+        "scope_basis": "native"
+      },
+      "locator": "replembparity:ufh12-gp1-shipped-argv:gguf-bf16:repl_embedder_parity_cos_mean:/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/out/parity.json",
+      "revision_observed": "2026-10-27T22:31:40Z",
+      "source_id": "src_replembparity_1739d6d511f9cdae610c0e7f",
+      "source_kind": "repl-embedder-parity",
+      "title": "repl_embedder_parity_cos_mean"
+    },
+    "frame_id": "sha256:e4783395d18d84d8b28767e17adf0397b5625e78b333500819f94cd0153b80d0",
+    "frame_type": "epyc.vidya/frame/source_observed/v1",
+    "provenance": {
+      "about": "replembparity_1739d6d511f9cdae610c0e7f",
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "retrofit": false
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "claim_id": "clm_replembparity_1739d6d511f9cdae610c0e7f",
+      "display_text": "EmbeddingGemma-2 vector parity, lane gguf-bf16 vs st-fp32-full: mean cosine 0.999997 over 211 chunks + 45 queries (file:/mnt/raid0/llm/worktrees/repl-emb-25-orch-20261020/data/repl_retrieval_eval/arm-manifest-20261020/probe45-intake1357.jsonl); gate PASS at threshold 0.99; scope complete; vector parity only, no recall or speed claim",
+      "source_id": "src_replembparity_1739d6d511f9cdae610c0e7f"
+    },
+    "frame_id": "sha256:9a3e30a2dd56503a70db4be2d79e9d1584801589746ddcb294e741ec30573f57",
+    "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+    "provenance": {
+      "about": "replembparity_1739d6d511f9cdae610c0e7f",
+      "derived_from": "src_replembparity_1739d6d511f9cdae610c0e7f",
+      "method": "vidya.adapters.repl_embedder_parity/v1"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "category": "CANDIDATE",
+      "claim_id": "clm_replembparity_1739d6d511f9cdae610c0e7f",
+      "evidence_id": "evd_replembparity_1739d6d511f9cdae610c0e7f",
+      "grade": {
+        "Q": "Judged",
+        "T": "Located"
+      },
+      "metric": "repl_embedder_parity_cos_mean",
+      "metric_direction": "higher_better",
+      "observation": {
+        "outcome_native": "PASS"
+      },
+      "protocol_id": "",
+      "reps": 256,
+      "source_id": "src_replembparity_1739d6d511f9cdae610c0e7f",
+      "unit": "cosine (mean over per-item cosines vs ST FP32 reference)",
+      "value": "0.999997300781"
+    },
+    "frame_id": "sha256:f85d5215eedf7c61860919e8a60fb7ed70e674abd90bd3cb5ef0152a2f7a81be",
+    "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+    "provenance": {
+      "about": "clm_replembparity_1739d6d511f9cdae610c0e7f",
+      "evidence": "evd_replembparity_1739d6d511f9cdae610c0e7f",
+      "grade_reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+      ],
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "reps_basis": "items (chunk documents + queries), one encode pass each"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "applicability": {
+        "kernel": {
+          "binary_sha256": "a2e62037e37ff0391017bd68fec421f271f94c2dfb1df3e767ff45abeeb4c01b"
+        },
+        "knob_family": "embedder_vector_parity",
+        "knobs": {
+          "arm_id": "eg2-gguf-bf16-768",
+          "flash_attn_resolved": "on",
+          "lane": "gguf-bf16",
+          "scope_complete": true,
+          "threads": 4
+        },
+        "quant": "bf16",
+        "run_id": "ufh12-gp1-shipped-argv",
+        "scope_basis": "native"
+      },
+      "locator": "replembparity:ufh12-gp1-shipped-argv:gguf-bf16:repl_embedder_parity_nonfinite_vectors:/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/out/parity.json",
+      "revision_observed": "2026-10-27T22:31:40Z",
+      "source_id": "src_replembparity_088581b4cbcb0ab5675f0c06",
+      "source_kind": "repl-embedder-parity",
+      "title": "repl_embedder_parity_nonfinite_vectors"
+    },
+    "frame_id": "sha256:77ca9584b54c1f3d37a8a51783d5ab8ddc562201ccab37ed141000dc85c07cd9",
+    "frame_type": "epyc.vidya/frame/source_observed/v1",
+    "provenance": {
+      "about": "replembparity_088581b4cbcb0ab5675f0c06",
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "retrofit": false
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "claim_id": "clm_replembparity_088581b4cbcb0ab5675f0c06",
+      "display_text": "EmbeddingGemma-2 vector parity, lane gguf-bf16 vs st-fp32-full: non-finite vectors 0.000000 over 211 chunks + 45 queries (file:/mnt/raid0/llm/worktrees/repl-emb-25-orch-20261020/data/repl_retrieval_eval/arm-manifest-20261020/probe45-intake1357.jsonl); gate PASS at threshold 0.99; scope complete; vector parity only, no recall or speed claim",
+      "source_id": "src_replembparity_088581b4cbcb0ab5675f0c06"
+    },
+    "frame_id": "sha256:60af700845b86bd3ff0ce6f6d2274cb6e2b2657befabc6411d44806dd54db782",
+    "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+    "provenance": {
+      "about": "replembparity_088581b4cbcb0ab5675f0c06",
+      "derived_from": "src_replembparity_088581b4cbcb0ab5675f0c06",
+      "method": "vidya.adapters.repl_embedder_parity/v1"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "category": "CANDIDATE",
+      "claim_id": "clm_replembparity_088581b4cbcb0ab5675f0c06",
+      "evidence_id": "evd_replembparity_088581b4cbcb0ab5675f0c06",
+      "grade": {
+        "Q": "Judged",
+        "T": "Located"
+      },
+      "metric": "repl_embedder_parity_nonfinite_vectors",
+      "metric_direction": "lower_better",
+      "observation": {
+        "outcome_native": "PASS"
+      },
+      "protocol_id": "",
+      "reps": 256,
+      "source_id": "src_replembparity_088581b4cbcb0ab5675f0c06",
+      "unit": "vectors (count with a NaN or Inf)",
+      "value": 0
+    },
+    "frame_id": "sha256:7d35c507f5b98aaea6e003fad3011d94dd3bcb651283f289f2aad0198be0791e",
+    "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+    "provenance": {
+      "about": "clm_replembparity_088581b4cbcb0ab5675f0c06",
+      "evidence": "evd_replembparity_088581b4cbcb0ab5675f0c06",
+      "grade_reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+      ],
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "reps_basis": "items (chunk documents + queries), one encode pass each"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:45:00Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "applicability": {
+        "kernel": {
+          "binary_sha256": "a2e62037e37ff0391017bd68fec421f271f94c2dfb1df3e767ff45abeeb4c01b"
+        },
+        "knob_family": "embedder_vector_parity",
+        "knobs": {
+          "arm_id": "eg2-gguf-bf16-768",
+          "flash_attn_resolved": "on",
+          "lane": "gguf-bf16",
+          "scope_complete": true,
+          "threads": 4
+        },
+        "quant": "bf16",
+        "run_id": "ufh12-gp1-shipped-argv",
+        "scope_basis": "native"
+      },
+      "locator": "replembparity:ufh12-gp1-shipped-argv:gguf-bf16:repl_embedder_parity_cos_min:/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/out/parity.json",
+      "revision_observed": "2026-10-27T22:31:40Z",
+      "source_id": "src_replembparity_0dccc09762e44fa322210a57",
+      "source_kind": "repl-embedder-parity",
+      "title": "repl_embedder_parity_cos_min"
+    },
+    "frame_id": "sha256:49ce7d78cdb7dc1a0c6a0b3ac728f603105e1a9018d7e28063faf346a597ef79",
+    "frame_type": "epyc.vidya/frame/source_observed/v1",
+    "provenance": {
+      "about": "replembparity_0dccc09762e44fa322210a57",
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "retrofit": false
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "claim_id": "clm_replembparity_0dccc09762e44fa322210a57",
+      "display_text": "EmbeddingGemma-2 vector parity, lane gguf-bf16 vs st-fp32-full: min cosine 0.999993 over 211 chunks + 45 queries (file:/mnt/raid0/llm/worktrees/repl-emb-25-orch-20261020/data/repl_retrieval_eval/arm-manifest-20261020/probe45-intake1357.jsonl); gate PASS at threshold 0.99; scope complete; vector parity only, no recall or speed claim",
+      "source_id": "src_replembparity_0dccc09762e44fa322210a57"
+    },
+    "frame_id": "sha256:3f8db0b39e3267aa06638c67d1ba3aef9f8e0c7a3fda72769b0109ff6091c3f1",
+    "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+    "provenance": {
+      "about": "replembparity_0dccc09762e44fa322210a57",
+      "derived_from": "src_replembparity_0dccc09762e44fa322210a57",
+      "method": "vidya.adapters.repl_embedder_parity/v1"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "category": "CANDIDATE",
+      "claim_id": "clm_replembparity_0dccc09762e44fa322210a57",
+      "evidence_id": "evd_replembparity_0dccc09762e44fa322210a57",
+      "grade": {
+        "Q": "Judged",
+        "T": "Located"
+      },
+      "metric": "repl_embedder_parity_cos_min",
+      "metric_direction": "higher_better",
+      "observation": {
+        "outcome_native": "PASS"
+      },
+      "protocol_id": "",
+      "reps": 256,
+      "source_id": "src_replembparity_0dccc09762e44fa322210a57",
+      "unit": "cosine (min over per-item cosines vs ST FP32 reference)",
+      "value": "0.999993"
+    },
+    "frame_id": "sha256:c9d4e1994e9510ad31c34e11f3a6f67fc870444a603b7a2da6c0f593d8591e94",
+    "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+    "provenance": {
+      "about": "clm_replembparity_0dccc09762e44fa322210a57",
+      "evidence": "evd_replembparity_0dccc09762e44fa322210a57",
+      "grade_reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+      ],
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "reps_basis": "items (chunk documents + queries), one encode pass each"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "applicability": {
+        "kernel": {
+          "binary_sha256": "a2e62037e37ff0391017bd68fec421f271f94c2dfb1df3e767ff45abeeb4c01b"
+        },
+        "knob_family": "embedder_vector_parity",
+        "knobs": {
+          "arm_id": "eg2-gguf-bf16-768",
+          "flash_attn_resolved": "on",
+          "lane": "gguf-bf16",
+          "scope_complete": true,
+          "threads": 4
+        },
+        "quant": "bf16",
+        "run_id": "ufh12-gp1-shipped-argv",
+        "scope_basis": "native"
+      },
+      "locator": "replembparity:ufh12-gp1-shipped-argv:gguf-bf16:repl_embedder_parity_cos_mean:/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/out/parity.json",
+      "revision_observed": "2026-10-27T22:31:40Z",
+      "source_id": "src_replembparity_1739d6d511f9cdae610c0e7f",
+      "source_kind": "repl-embedder-parity",
+      "title": "repl_embedder_parity_cos_mean"
+    },
+    "frame_id": "sha256:f4a00c4954242985f34640738ac05d59827edb063959f69ff412a68b45b6e8b3",
+    "frame_type": "epyc.vidya/frame/source_observed/v1",
+    "provenance": {
+      "about": "replembparity_1739d6d511f9cdae610c0e7f",
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "retrofit": false
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "claim_id": "clm_replembparity_1739d6d511f9cdae610c0e7f",
+      "display_text": "EmbeddingGemma-2 vector parity, lane gguf-bf16 vs st-fp32-full: mean cosine 0.999997 over 211 chunks + 45 queries (file:/mnt/raid0/llm/worktrees/repl-emb-25-orch-20261020/data/repl_retrieval_eval/arm-manifest-20261020/probe45-intake1357.jsonl); gate PASS at threshold 0.99; scope complete; vector parity only, no recall or speed claim",
+      "source_id": "src_replembparity_1739d6d511f9cdae610c0e7f"
+    },
+    "frame_id": "sha256:903d6885b3d6d108a13b04032134cc1586dbd6e05e191a6d74335cabc72bdbbb",
+    "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+    "provenance": {
+      "about": "replembparity_1739d6d511f9cdae610c0e7f",
+      "derived_from": "src_replembparity_1739d6d511f9cdae610c0e7f",
+      "method": "vidya.adapters.repl_embedder_parity/v1"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "category": "CANDIDATE",
+      "claim_id": "clm_replembparity_1739d6d511f9cdae610c0e7f",
+      "evidence_id": "evd_replembparity_1739d6d511f9cdae610c0e7f",
+      "grade": {
+        "Q": "Judged",
+        "T": "Located"
+      },
+      "metric": "repl_embedder_parity_cos_mean",
+      "metric_direction": "higher_better",
+      "observation": {
+        "outcome_native": "PASS"
+      },
+      "protocol_id": "",
+      "reps": 256,
+      "source_id": "src_replembparity_1739d6d511f9cdae610c0e7f",
+      "unit": "cosine (mean over per-item cosines vs ST FP32 reference)",
+      "value": "0.999997300781"
+    },
+    "frame_id": "sha256:9bb342d076281122a01bd9566359f5317fcf677671f6c31a75f5310e0a94acbc",
+    "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+    "provenance": {
+      "about": "clm_replembparity_1739d6d511f9cdae610c0e7f",
+      "evidence": "evd_replembparity_1739d6d511f9cdae610c0e7f",
+      "grade_reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+      ],
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "reps_basis": "items (chunk documents + queries), one encode pass each"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "applicability": {
+        "kernel": {
+          "binary_sha256": "a2e62037e37ff0391017bd68fec421f271f94c2dfb1df3e767ff45abeeb4c01b"
+        },
+        "knob_family": "embedder_vector_parity",
+        "knobs": {
+          "arm_id": "eg2-gguf-bf16-768",
+          "flash_attn_resolved": "on",
+          "lane": "gguf-bf16",
+          "scope_complete": true,
+          "threads": 4
+        },
+        "quant": "bf16",
+        "run_id": "ufh12-gp1-shipped-argv",
+        "scope_basis": "native"
+      },
+      "locator": "replembparity:ufh12-gp1-shipped-argv:gguf-bf16:repl_embedder_parity_nonfinite_vectors:/mnt/raid0/llm/tmp/codex-ni-20261027-ufh12-shipped-parity/successor/out/parity.json",
+      "revision_observed": "2026-10-27T22:31:40Z",
+      "source_id": "src_replembparity_088581b4cbcb0ab5675f0c06",
+      "source_kind": "repl-embedder-parity",
+      "title": "repl_embedder_parity_nonfinite_vectors"
+    },
+    "frame_id": "sha256:e71811638df94208e47b700fb71a8a5c46d427a3ef1d0632c733faf022e28f41",
+    "frame_type": "epyc.vidya/frame/source_observed/v1",
+    "provenance": {
+      "about": "replembparity_088581b4cbcb0ab5675f0c06",
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "retrofit": false
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "claim_id": "clm_replembparity_088581b4cbcb0ab5675f0c06",
+      "display_text": "EmbeddingGemma-2 vector parity, lane gguf-bf16 vs st-fp32-full: non-finite vectors 0.000000 over 211 chunks + 45 queries (file:/mnt/raid0/llm/worktrees/repl-emb-25-orch-20261020/data/repl_retrieval_eval/arm-manifest-20261020/probe45-intake1357.jsonl); gate PASS at threshold 0.99; scope complete; vector parity only, no recall or speed claim",
+      "source_id": "src_replembparity_088581b4cbcb0ab5675f0c06"
+    },
+    "frame_id": "sha256:3851eba0336994ab3949058540fef28e98d2196d1880103326b51096dceb7610",
+    "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+    "provenance": {
+      "about": "replembparity_088581b4cbcb0ab5675f0c06",
+      "derived_from": "src_replembparity_088581b4cbcb0ab5675f0c06",
+      "method": "vidya.adapters.repl_embedder_parity/v1"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  },
+  {
+    "assertion": {
+      "category": "CANDIDATE",
+      "claim_id": "clm_replembparity_088581b4cbcb0ab5675f0c06",
+      "evidence_id": "evd_replembparity_088581b4cbcb0ab5675f0c06",
+      "grade": {
+        "Q": "Judged",
+        "T": "Located"
+      },
+      "metric": "repl_embedder_parity_nonfinite_vectors",
+      "metric_direction": "lower_better",
+      "observation": {
+        "outcome_native": "PASS"
+      },
+      "protocol_id": "",
+      "reps": 256,
+      "source_id": "src_replembparity_088581b4cbcb0ab5675f0c06",
+      "unit": "vectors (count with a NaN or Inf)",
+      "value": 0
+    },
+    "frame_id": "sha256:acf09821e35ba93662d233da397879fd3b8be917d58aee89ea8e30f52a8d5f24",
+    "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+    "provenance": {
+      "about": "clm_replembparity_088581b4cbcb0ab5675f0c06",
+      "evidence": "evd_replembparity_088581b4cbcb0ab5675f0c06",
+      "grade_reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+      ],
+      "method": "vidya.adapters.repl_embedder_parity/v1",
+      "reps_basis": "items (chunk documents + queries), one encode pass each"
+    },
+    "pubinfo": {
+      "actor": "vidya.adapters.repl_embedder_parity/v1",
+      "authority_scope": "measurement",
+      "created_at": "2026-10-27T22:46:17Z"
+    },
+    "signatures": []
+  }
+]

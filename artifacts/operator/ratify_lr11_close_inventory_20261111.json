@@ -1,0 +1,25 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "decision": "LR11-CLOSE-INVENTORY",
+  "gate_id": "RATIFY-LR11-CLOSE-INVENTORY-20261111",
+  "operator_decision": "explicit human ratification of the one-file additive amendment",
+  "ratified_at": "2026-11-11T14:18:28Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "targets": [
+    "agents/shared/SESSION_LIFECYCLE.md"
+  ],
+  "rule": "Ticket/PR close performs an exact declared-root/lane inventory; cleanup is limited to main-released paths through the existing cleanup gate. (LR-13 subagent scratch lifetime was ratified separately: RATIFY-LR13-SUBAGENT-SCRATCH-20261109.)",
+  "not_changed": "one additive bullet only; no lines rewritten or deleted; no human_only_paths.yaml or pin change",
+  "patch": {
+    "path": "artifacts/operator/lr11-close-inventory-20261111.patch",
+    "sha256": "fb4501b7dbffded27d56b9ab98be2364db71b765918bb0136ad416483e10cb47"
+  },
+  "state": {
+    "agents/shared/SESSION_LIFECYCLE.md": {
+      "sha256_after": "5926bf19a8f8c7996ca7bd1ddfc663cf2e4caa5b6e96c70a6adffc93e60f7dfb"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_lr11_close_inventory_20261111.receipt.json",
+  "applied_by": "artifacts/operator/ratify_lr11_close_inventory_20261111.sh"
+}

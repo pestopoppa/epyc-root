@@ -1,0 +1,1732 @@
+[
+ {
+  "type": "function",
+  "function": {
+   "name": "bayesopt",
+   "description": "Bayesian optimization with Gaussian process (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "bounds": {
+      "type": "array",
+      "description": "Parameter bounds [[min, max], ...]",
+      "items": {}
+     },
+     "objective": {
+      "type": "string",
+      "description": "Expression to maximize"
+     },
+     "n_init": {
+      "type": "integer",
+      "description": "Initial random samples",
+      "default": 5
+     },
+     "n_iter": {
+      "type": "integer",
+      "description": "Optimization iterations",
+      "default": 25
+     },
+     "acquisition": {
+      "type": "string",
+      "description": "ei, ucb, pi",
+      "default": "ei"
+     }
+    },
+    "required": [
+     "bounds",
+     "objective"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "budget_override",
+   "description": "Request additional tool budget for active task.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "category": {
+      "type": "string",
+      "description": "Budget category: read|write|exec|llm"
+     },
+     "reason": {
+      "type": "string",
+      "description": "Why extra budget is needed"
+     }
+    },
+    "required": [
+     "category"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "calculate",
+   "description": "Evaluate mathematical expression",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "expression": {
+      "type": "string",
+      "description": "Math expression (numpy available)"
+     }
+    },
+    "required": [
+     "expression"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "classify_text",
+   "description": "Classify text into categories",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": ""
+     },
+     "categories": {
+      "type": "array",
+      "description": "Possible categories",
+      "items": {}
+     }
+    },
+    "required": [
+     "text",
+     "categories"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "csv_to_json",
+   "description": "Convert CSV data to JSON array",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "csv_content": {
+      "type": "string",
+      "description": "CSV string"
+     },
+     "delimiter": {
+      "type": "string",
+      "description": "",
+      "default": ","
+     },
+     "has_header": {
+      "type": "boolean",
+      "description": "",
+      "default": true
+     }
+    },
+    "required": [
+     "csv_content"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "embed_text",
+   "description": "Generate embedding for text",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": ""
+     },
+     "side": {
+      "type": "string",
+      "description": "Embedding role; required when the EG2 seam is enabled"
+     }
+    },
+    "required": [
+     "text"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "fetch_stock_price",
+   "description": "Compatibility stub for stock price lookup; no market data backend is configured",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "ticker": {
+      "type": "string",
+      "description": "Stock ticker symbol"
+     }
+    },
+    "required": [
+     "ticker"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "fetch_wikipedia",
+   "description": "Fetch Wikipedia article summary",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string",
+      "description": "Article title"
+     },
+     "sentences": {
+      "type": "integer",
+      "description": "",
+      "default": 5
+     }
+    },
+    "required": [
+     "title"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "format_python",
+   "description": "Format Python code using black or ruff",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "code": {
+      "type": "string",
+      "description": "Python code to format"
+     }
+    },
+    "required": [
+     "code"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "get_current_date",
+   "description": "Get current date in ISO format with weekday",
+   "parameters": {
+    "type": "object",
+    "properties": {}
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "get_current_time",
+   "description": "Get current date, time, and UTC timestamp",
+   "parameters": {
+    "type": "object",
+    "properties": {}
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "get_time",
+   "description": "Get the current local time for an IANA timezone",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "timezone": {
+      "type": "string",
+      "description": "IANA timezone name, e.g. UTC or Asia/Tokyo"
+     }
+    }
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "get_wikipedia_article",
+   "description": "Fetch the full text of a Wikipedia article by title",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string",
+      "description": "Exact article title"
+     },
+     "language": {
+      "type": "string",
+      "description": "Wikipedia language code",
+      "default": "en"
+     }
+    },
+    "required": [
+     "title"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "git_status",
+   "description": "Get git repository status",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "repo_path": {
+      "type": "string",
+      "description": "Path to repo",
+      "default": "."
+     }
+    }
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "histogram",
+   "description": "Create histogram from data (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "array",
+      "description": "Data values",
+      "items": {}
+     },
+     "bins": {
+      "type": "integer",
+      "description": "",
+      "default": 20
+     },
+     "width": {
+      "type": "integer",
+      "description": "",
+      "default": 80
+     },
+     "height": {
+      "type": "integer",
+      "description": "",
+      "default": 20
+     }
+    },
+    "required": [
+     "data"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "http_get",
+   "description": "Fetch content from a URL via HTTP GET",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string",
+      "description": "URL to fetch"
+     },
+     "headers": {
+      "type": "object",
+      "description": "Optional headers"
+     },
+     "timeout": {
+      "type": "integer",
+      "description": "Timeout in seconds",
+      "default": 30
+     }
+    },
+    "required": [
+     "url"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "http_post",
+   "description": "Send data to a URL via HTTP POST",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string",
+      "description": ""
+     },
+     "data": {
+      "type": "object",
+      "description": "JSON body"
+     },
+     "headers": {
+      "type": "object",
+      "description": ""
+     },
+     "timeout": {
+      "type": "integer",
+      "description": "",
+      "default": 30
+     }
+    },
+    "required": [
+     "url"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "json_query",
+   "description": "Query JSON data using JMESPath expressions",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "object",
+      "description": "JSON data to query"
+     },
+     "query": {
+      "type": "string",
+      "description": "JMESPath expression"
+     }
+    },
+    "required": [
+     "data",
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "json_to_csv",
+   "description": "Convert JSON array to CSV",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "array",
+      "description": "Array of objects",
+      "items": {}
+     },
+     "columns": {
+      "type": "array",
+      "description": "Column order (optional)",
+      "items": {}
+     }
+    },
+    "required": [
+     "data"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "lint_python",
+   "description": "Run Python linting on code or file",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "code": {
+      "type": "string",
+      "description": "Python code to lint"
+     },
+     "file_path": {
+      "type": "string",
+      "description": "Path to Python file"
+     }
+    }
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "list_directory",
+   "description": "List directory contents",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": ""
+     },
+     "pattern": {
+      "type": "string",
+      "description": "",
+      "default": "*"
+     },
+     "recursive": {
+      "type": "boolean",
+      "description": "",
+      "default": false
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "list_files",
+   "description": "List files in a directory",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Directory path"
+     },
+     "pattern": {
+      "type": "string",
+      "description": "Glob pattern to filter"
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "matrix_eigenvalues",
+   "description": "Compute eigenvalues and optionally eigenvectors (C++ Eigen)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "A": {
+      "type": "array",
+      "description": "Square matrix (n\u00d7n)",
+      "items": {}
+     },
+     "vectors": {
+      "type": "boolean",
+      "description": "Also return eigenvectors",
+      "default": false
+     }
+    },
+    "required": [
+     "A"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "matrix_solve",
+   "description": "Solve linear system Ax=b using QR decomposition (C++ Eigen)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "A": {
+      "type": "array",
+      "description": "Coefficient matrix (n\u00d7n)",
+      "items": {}
+     },
+     "b": {
+      "type": "array",
+      "description": "Right-hand side vector (n)",
+      "items": {}
+     }
+    },
+    "required": [
+     "A",
+     "b"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "matrix_svd",
+   "description": "Singular Value Decomposition (C++ Eigen)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "A": {
+      "type": "array",
+      "description": "Matrix (m\u00d7n)",
+      "items": {}
+     },
+     "full": {
+      "type": "boolean",
+      "description": "",
+      "default": false
+     }
+    },
+    "required": [
+     "A"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "mcmc",
+   "description": "Metropolis-Hastings MCMC sampler (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "log_density": {
+      "type": "string",
+      "description": "Log density expression (vars: x0, x1, ...)"
+     },
+     "x0": {
+      "type": "array",
+      "description": "Initial state",
+      "items": {}
+     },
+     "n_samples": {
+      "type": "integer",
+      "description": "",
+      "default": 10000
+     },
+     "proposal_std": {
+      "type": "number",
+      "description": "",
+      "default": 1.0
+     },
+     "burnin": {
+      "type": "integer",
+      "description": "",
+      "default": 1000
+     },
+     "seed": {
+      "type": "integer",
+      "description": "",
+      "default": 42
+     }
+    },
+    "required": [
+     "log_density",
+     "x0"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "monte_carlo",
+   "description": "Run Monte Carlo simulation",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "expression": {
+      "type": "string",
+      "description": "Expression to evaluate (use 'x' for random)"
+     },
+     "samples": {
+      "type": "integer",
+      "description": "",
+      "default": 10000
+     },
+     "distribution": {
+      "type": "string",
+      "description": "uniform, normal, exponential",
+      "default": "uniform"
+     }
+    },
+    "required": [
+     "expression"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "monte_carlo_native",
+   "description": "High-performance Monte Carlo integration (C++ OpenMP parallel)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "bounds": {
+      "type": "array",
+      "description": "Integration bounds [[a1,b1], [a2,b2], ...]",
+      "items": {}
+     },
+     "function": {
+      "type": "string",
+      "description": "sphere, gaussian, polynomial",
+      "default": "constant"
+     },
+     "n_samples": {
+      "type": "integer",
+      "description": "",
+      "default": 10000
+     },
+     "seed": {
+      "type": "integer",
+      "description": "",
+      "default": 42
+     }
+    },
+    "required": [
+     "bounds"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "ocr_extract",
+   "description": "Extract text from the current image using OCR (LightOnOCR). Returns extracted text characters.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "image_base64": {
+      "type": "string",
+      "description": "Base64-encoded image data"
+     }
+    },
+    "required": [
+     "image_base64"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "optimize",
+   "description": "Minimize/maximize function using Nelder-Mead or gradient descent",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "x0": {
+      "type": "array",
+      "description": "Initial guess",
+      "items": {}
+     },
+     "objective": {
+      "type": "object",
+      "description": "Quadratic {A,b,c} or named function"
+     },
+     "method": {
+      "type": "string",
+      "description": "",
+      "default": "nelder_mead"
+     },
+     "mode": {
+      "type": "string",
+      "description": "",
+      "default": "minimize"
+     },
+     "max_iter": {
+      "type": "integer",
+      "description": "",
+      "default": 1000
+     }
+    },
+    "required": [
+     "x0",
+     "objective"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_braille",
+   "description": "Create braille character plot for terminal (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "array",
+      "description": "X coordinates",
+      "items": {}
+     },
+     "y": {
+      "type": "array",
+      "description": "Y coordinates",
+      "items": {}
+     },
+     "plot_type": {
+      "type": "string",
+      "description": "scatter, line",
+      "default": "line"
+     },
+     "width": {
+      "type": "integer",
+      "description": "",
+      "default": 80
+     },
+     "height": {
+      "type": "integer",
+      "description": "",
+      "default": 20
+     },
+     "title": {
+      "type": "string",
+      "description": "",
+      "default": "Plot"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_function",
+   "description": "Plot mathematical function (sin, cos, exp, etc.)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "function": {
+      "type": "string",
+      "description": "sin, cos, exp, log, x^2, x^3, sqrt, tanh, sigmoid, gaussian"
+     },
+     "x_min": {
+      "type": "number",
+      "description": "",
+      "default": -3.14159
+     },
+     "x_max": {
+      "type": "number",
+      "description": "",
+      "default": 3.14159
+     },
+     "width": {
+      "type": "integer",
+      "description": "",
+      "default": 80
+     },
+     "height": {
+      "type": "integer",
+      "description": "",
+      "default": 20
+     }
+    },
+    "required": [
+     "function"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_sixel",
+   "description": "Create high-resolution sixel graphics plot (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "array",
+      "description": "X coordinates",
+      "items": {}
+     },
+     "y": {
+      "type": "array",
+      "description": "Y coordinates",
+      "items": {}
+     },
+     "plot_type": {
+      "type": "string",
+      "description": "",
+      "default": "line"
+     },
+     "width": {
+      "type": "integer",
+      "description": "Pixel width",
+      "default": 800
+     },
+     "height": {
+      "type": "integer",
+      "description": "Pixel height",
+      "default": 400
+     },
+     "title": {
+      "type": "string",
+      "description": ""
+     },
+     "colors": {
+      "type": "array",
+      "description": "Color palette",
+      "items": {}
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "python_eval",
+   "description": "Evaluate a Python expression safely",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "expression": {
+      "type": "string",
+      "description": "Python expression"
+     },
+     "variables": {
+      "type": "object",
+      "description": "Variables to inject"
+     }
+    },
+    "required": [
+     "expression"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "read_file",
+   "description": "Read contents of a file",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Path to file"
+     },
+     "max_lines": {
+      "type": "integer",
+      "description": "Maximum lines to read"
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "read_json",
+   "description": "Read and parse a JSON file",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Path to JSON file"
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "render_math",
+   "description": "Render LaTeX to Unicode/ASCII (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "latex": {
+      "type": "string",
+      "description": "LaTeX expression"
+     },
+     "format": {
+      "type": "string",
+      "description": "unicode or ascii",
+      "default": "unicode"
+     }
+    },
+    "required": [
+     "latex"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "run_shell",
+   "description": "Execute a shell command (sandboxed)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "command": {
+      "type": "string",
+      "description": ""
+     },
+     "timeout": {
+      "type": "integer",
+      "description": "",
+      "default": 30
+     },
+     "cwd": {
+      "type": "string",
+      "description": ""
+     }
+    },
+    "required": [
+     "command"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "run_tests",
+   "description": "Run pytest tests on a file or directory",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Path to test file or directory"
+     },
+     "verbose": {
+      "type": "boolean",
+      "description": "Verbose output"
+     }
+    },
+    "required": [
+     "path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_arxiv",
+   "description": "Search arXiv for academic papers by keyword, author, or topic",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query (supports arXiv syntax)"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "",
+      "default": 10
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_books",
+   "description": "Search Google Books for publications",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "",
+      "default": 10
+     },
+     "filter": {
+      "type": "string",
+      "description": "Filter: ebooks, free-ebooks, paid-ebooks, partial, full"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_files",
+   "description": "Search files under a directory for text content",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "directory": {
+      "type": "string",
+      "description": "Directory to search"
+     },
+     "content": {
+      "type": "string",
+      "description": "Text to search for"
+     },
+     "recursive": {
+      "type": "boolean",
+      "description": "Search recursively"
+     },
+     "pattern": {
+      "type": "string",
+      "description": "Glob pattern to filter files"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "Maximum matching files to return"
+     }
+    },
+    "required": [
+     "directory",
+     "content"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_papers",
+   "description": "Search Semantic Scholar for academic papers with citation data",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "",
+      "default": 10
+     },
+     "year_range": {
+      "type": "string",
+      "description": "Year range filter (e.g. 2020-2025)"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_wikipedia",
+   "description": "Search Wikipedia for articles matching a query (returns summaries)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "",
+      "default": 5
+     },
+     "language": {
+      "type": "string",
+      "description": "Wikipedia language code",
+      "default": "en"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "similarity_search",
+   "description": "Find similar items by embedding",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": ""
+     },
+     "items": {
+      "type": "array",
+      "description": "Array of strings to search",
+      "items": {}
+     },
+     "top_k": {
+      "type": "integer",
+      "description": "",
+      "default": 5
+     }
+    },
+    "required": [
+     "query",
+     "items"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "solve_ode",
+   "description": "Solve ODE dy/dt=f(t,y) with adaptive RK45 (C++ Boost.Odeint)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "y0": {
+      "type": "array",
+      "description": "Initial conditions",
+      "items": {}
+     },
+     "t_span": {
+      "type": "array",
+      "description": "[t_start, t_end]",
+      "items": {}
+     },
+     "coefficients": {
+      "type": "object",
+      "description": "Linear system {A, b}"
+     },
+     "system": {
+      "type": "string",
+      "description": "Expression like '-0.5*y'"
+     },
+     "rtol": {
+      "type": "number",
+      "description": "",
+      "default": "1e-6"
+     },
+     "atol": {
+      "type": "number",
+      "description": "",
+      "default": "1e-9"
+     }
+    },
+    "required": [
+     "y0",
+     "t_span"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "sql_query",
+   "description": "Execute SQL query on in-memory SQLite database",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "SQL query"
+     },
+     "tables": {
+      "type": "object",
+      "description": "Dict of table_name -> list of dicts"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "start_service",
+   "description": "Dry-run compatibility stub; does not start system services",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Service name requested by the prompt"
+     }
+    },
+    "required": [
+     "name"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "statistics",
+   "description": "Calculate statistics for a dataset",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "array",
+      "description": "Array of numbers",
+      "items": {}
+     },
+     "metrics": {
+      "type": "array",
+      "description": "",
+      "default": [
+       "mean",
+       "std",
+       "min",
+       "max",
+       "median"
+      ],
+      "items": {}
+     }
+    },
+    "required": [
+     "data"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "symbolic_solve",
+   "description": "Solve equation symbolically using SymPy",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "equation": {
+      "type": "string",
+      "description": "Equation (use 'x' as variable)"
+     },
+     "variable": {
+      "type": "string",
+      "description": "",
+      "default": "x"
+     }
+    },
+    "required": [
+     "equation"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_create",
+   "description": "Create a task to track a unit of work.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "subject": {
+      "type": "string",
+      "description": "Brief imperative title"
+     },
+     "description": {
+      "type": "string",
+      "description": "What needs to be done"
+     },
+     "active_form": {
+      "type": "string",
+      "description": "Present continuous status text"
+     }
+    },
+    "required": [
+     "subject",
+     "description"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_list",
+   "description": "List tracked tasks for this request.",
+   "parameters": {
+    "type": "object",
+    "properties": {}
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_update",
+   "description": "Update task status.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "task_id": {
+      "type": "string",
+      "description": ""
+     },
+     "status": {
+      "type": "string",
+      "description": ""
+     }
+    },
+    "required": [
+     "task_id"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "translate_text",
+   "description": "Compatibility stub for translation; no translation backend is configured",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": "Text to translate"
+     },
+     "source_lang": {
+      "type": "string",
+      "description": "Source language"
+     },
+     "target_lang": {
+      "type": "string",
+      "description": "Target language"
+     }
+    },
+    "required": [
+     "text",
+     "target_lang"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_conclude",
+   "description": "Persist a durable user preference or fact. Scanned for injection safety.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "fact": {
+      "type": "string",
+      "description": "The preference or fact to store"
+     },
+     "category": {
+      "type": "string",
+      "description": "One of: general, format, workflow, style, domain",
+      "default": "general"
+     },
+     "user_id": {
+      "type": "string",
+      "description": "",
+      "default": "default"
+     }
+    },
+    "required": [
+     "fact"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_context",
+   "description": "Get contextual answer about the user's preferences or background.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "question": {
+      "type": "string",
+      "description": "Question about user preferences"
+     },
+     "user_id": {
+      "type": "string",
+      "description": "",
+      "default": "default"
+     }
+    },
+    "required": [
+     "question"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_profile",
+   "description": "Retrieve the current user profile (preferences, facts, background).",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "user_id": {
+      "type": "string",
+      "description": "User identifier",
+      "default": "default"
+     }
+    }
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_search",
+   "description": "Search stored user facts by keyword.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query (case-insensitive substring)"
+     },
+     "user_id": {
+      "type": "string",
+      "description": "",
+      "default": "default"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "vision_analyze",
+   "description": "Analyze an image with the vision pipeline using EXIF, VL description/OCR, face, or CLIP analyzers.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "image_path": {
+      "type": "string",
+      "description": "Path to image file"
+     },
+     "analyzers": {
+      "type": "string",
+      "description": "Comma-separated analyzer names, e.g. exif,vl_describe"
+     },
+     "vl_prompt": {
+      "type": "string",
+      "description": "Optional prompt for VL analyzers"
+     }
+    },
+    "required": [
+     "image_path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "vision_face_identify",
+   "description": "Detect faces in an image and match them against the vision face index.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "image_path": {
+      "type": "string",
+      "description": "Path to image file"
+     },
+     "threshold": {
+      "type": "string",
+      "description": "Similarity threshold",
+      "default": "0.6"
+     }
+    },
+    "required": [
+     "image_path"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "vision_search",
+   "description": "Search analyzed images by natural-language text query.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Natural-language image search query"
+     },
+     "limit": {
+      "type": "integer",
+      "description": "Maximum results",
+      "default": 5
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "web_research",
+   "description": "Deep web research: search, fetch top pages, and synthesize with worker models. Returns dense summaries instead of bare snippets.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "Maximum search results to retrieve",
+      "default": 5
+     },
+     "max_pages": {
+      "type": "integer",
+      "description": "Maximum pages to fetch and synthesize",
+      "default": 3
+     },
+     "domain_filter": {
+      "type": "string",
+      "description": "Optional domain filter (e.g. docs.python.org)"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "web_search",
+   "description": "Search the web using DuckDuckGo (no API key needed)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "",
+      "default": 10
+     },
+     "region": {
+      "type": "string",
+      "description": "Region code",
+      "default": "wt-wt"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "write_file",
+   "description": "Write content to file",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": ""
+     },
+     "content": {
+      "type": "string",
+      "description": ""
+     },
+     "mode": {
+      "type": "string",
+      "description": "w=overwrite, a=append",
+      "default": "w"
+     }
+    },
+    "required": [
+     "path",
+     "content"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "write_json",
+   "description": "Write data to a JSON file",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Path to JSON file"
+     },
+     "data": {
+      "type": "object",
+      "description": "Data to write"
+     },
+     "indent": {
+      "type": "integer",
+      "description": "Indentation level"
+     }
+    },
+    "required": [
+     "path",
+     "data"
+    ]
+   }
+  }
+ }
+]

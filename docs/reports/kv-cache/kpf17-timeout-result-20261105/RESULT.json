@@ -1,0 +1,77 @@
+{
+  "attempt_id": "kvfork17-timeout-qual-20261104-attempt-4f8c2a11",
+  "attempt_nonce": "4f8c2a11-f24d-4a16-9b5a-87ce89b8c321",
+  "case": {
+    "captured_owned_pid_births": {
+      "2707491": 196277888,
+      "2707510": 196277889,
+      "2707527": 196277890,
+      "2707592": 196277893
+    },
+    "cleanup_signals": [
+      {
+        "birth": 196277890,
+        "pid": 2707527,
+        "signal": "SIGTERM"
+      },
+      {
+        "birth": 196277893,
+        "pid": 2707592,
+        "signal": "SIGTERM"
+      }
+    ],
+    "debugger_birth": 196277890,
+    "debugger_pid": 2707527,
+    "direct_adopted_children_after_cleanup": [],
+    "elapsed_s": 0.4123,
+    "evidence": {
+      "commands.gdb": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/RESULT.evidence/commands.gdb",
+        "sha256": "3e23d45842e57ae86d2893cff8a71bbdf79370068b2acf285b5c483e0d9a830c"
+      },
+      "gcc.stderr": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/RESULT.evidence/gcc.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gcc.stdout": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/RESULT.evidence/gcc.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gdb.stderr": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/RESULT.evidence/gdb.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "gdb.stdout": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/RESULT.evidence/gdb.stdout",
+        "sha256": "21a55257fd0d089ccdf5423e5f6f1de4500e8e23f0325cec403046ed7ce458b0"
+      },
+      "hang": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/RESULT.evidence/hang",
+        "sha256": "b0e08735fee0e4a9f4dbccee16bf952895da824925ac33f9c319d356de765741"
+      },
+      "hang.c": {
+        "path": "/mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/RESULT.evidence/hang.c",
+        "sha256": "f8de765b6a9439f8a844aa9f3f7c0e1ed11116cf1e2f44670379a7b477c79998"
+      }
+    },
+    "executable_sha256": "b0e08735fee0e4a9f4dbccee16bf952895da824925ac33f9c319d356de765741",
+    "gdb_commands_sha256": "3e23d45842e57ae86d2893cff8a71bbdf79370068b2acf285b5c483e0d9a830c",
+    "inferior_birth": 196277893,
+    "inferior_pid": 2707592,
+    "pidfd_verified": true,
+    "source_sha256": "f8de765b6a9439f8a844aa9f3f7c0e1ed11116cf1e2f44670379a7b477c79998",
+    "status": "PASS",
+    "subreaper_verified": true,
+    "survivors": {},
+    "timed_out": true,
+    "timeout_phase": "GDB continuing deliberately nonterminating inferior",
+    "transcript_sha256": "4990e4f809452000a0d39bd8cc0119324cfcc62593bc5567e926874528416100"
+  },
+  "created_utc": "2026-11-05T00:58:26Z",
+  "gcc_sha256": "1fa7bb6439186b9f4912ad97d9072b6e0ded5b98b831a257d23d619719b74722",
+  "gdb_sha256": "e4602ab9111e3f6cc481933e9b80695e5f074a74039a6bb45bf55fa2498dc017",
+  "qualifier_sha256": "96c2aae486cc0c5ef4c667d892e59cc95eea1fa538d69f55fa99c6b00cc3577c",
+  "schema": "kpf17.timeout-cleanup-qualification.v1",
+  "scope": "model-free deliberate GDB and inferior timeout cleanup only; no KPF-17 source/model/oracle claim",
+  "status": "PASS"
+}

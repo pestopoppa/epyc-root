@@ -699,14 +699,14 @@ def _refuse(msg: str) -> int:
 
 
 def cmd_apply(a) -> int:
-    # OPERATOR DIRECTIVE 2026-10-04 (hard rule): "Claude/codex backup logs should NOT BE TOUCHED UNDER ANY
-    # CIRCUMSTANCES. They are historical transcripts used by a root filesystem project far more senior to
-    # anything performed in this project repo." apply is permanently disabled; this tool is report-only.
-    print("codex_retention_reaper: apply is PERMANENTLY DISABLED by operator directive (2026-10-04): "
-          "Claude/codex session logs and backups are never deleted by this project. Report-only.", file=sys.stderr)
-    return 4
+    # RE-ENABLED 2026-11-07 by operator decision (session operator-adhoc-ops-20261105), reversing the 2026-10-04
+    # "~/.codex is never touched" rule for ~/.codex ONLY: rollouts older than the retention window whose
+    # byte-identical (sha256) vault copy exists are removed; everything newer stays. Every other harness
+    # tree (claude, opencode, hermes, vault, ...) remains NEVER_TOUCH. --no-packages limits the pass to rollouts.
+    return _cmd_apply_impl(a)
 
-def _cmd_apply_disabled_original(a) -> int:
+
+def _cmd_apply_impl(a) -> int:
     home, vault, state = a.home, a.vault, Path(a.state_dir)
     if not os.path.isdir(home):
         print(f"codex home {home} missing", file=sys.stderr)
@@ -809,7 +809,7 @@ def _cmd_apply_disabled_original(a) -> int:
         ledger.write(action="unlink", kind="rollout", path=p, vault_path=vp,
                      size=st.st_size, mtime_ns=st.st_mtime_ns, sha256=lh)
 
-    if body["packages"]:
+    if body["packages"] and not getattr(a, "no_packages", False):
         fresh = ProcView(home)
         current = {(p["pkg"], p["release"]): p for p in
                    classify_packages(home, fresh, a.keep_releases, a.package_min_age_days,
@@ -875,9 +875,10 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--max-hash-gib", type=float, default=DEFAULT_MAX_HASH_GIB,
                    help="sha256 budget per run over size-matched candidates (default 4)")
     r.add_argument("--max-list", type=int, default=20, help="sample paths listed per class")
-    p = sub.add_parser("apply", parents=[common], help="DISABLED (operator 2026-10-04): never deletes codex/claude logs")
+    p = sub.add_parser("apply", parents=[common], help="delete vault-verified rollouts older than N days (re-enabled 2026-11-07)")
     p.add_argument("--older-than-days", type=float, required=True)
     p.add_argument("--confirm-token", default=None)
+    p.add_argument("--no-packages", action="store_true", help="rollouts only; leave packages/ alone")
     return ap
 
 

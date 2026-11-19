@@ -28,6 +28,7 @@ Run:  scripts/coordination/tests/test_worker_runner.py
 from __future__ import annotations
 
 import json
+import io
 import os
 import shutil
 import subprocess
@@ -359,6 +360,21 @@ def test_brief_carries_identity_and_sourced_constraints(tmp_path):
     assert row["expected_occupancy"] == {"est_h": 0.5}
     assert row["constraints"][0]["source"] == "MEASUREMENT.md:44"
     assert row["constraints"][1]["source"] == "unsourced"   # visible, not silent
+
+
+def test_assignment_stdin_preserves_utf8_task_identity_and_whitespace(monkeypatch):
+    task_text = "  Exact row: café — quoted ‘text’\nsecond line  "
+    raw = json.dumps({"rows": [{"task_id": "T1", "task_text": task_text}]},
+                     ensure_ascii=False).encode("utf-8")
+    monkeypatch.setattr(wr.sys, "stdin", io.StringIO(raw.decode("utf-8")))
+    args = wr.argparse.Namespace(assignment=None, assignment_stdin=True,
+                                 task_id=None, row_text=None)
+    loaded = wr.load_assignment(args)
+    assert loaded["rows"][0]["task_text"] == task_text
+    brief = wr.build_brief(loaded["rows"], batch_id="B", lane="lane0",
+                           worktree=Path("/w"), report_path=Path("/w/r.json"),
+                           cfg=dict(wr.DEFAULTS), lease_expires_ts="t")
+    assert brief["rows"][0]["task_text"] == task_text
 
 
 def test_brief_refuses_over_4kb(tmp_path):

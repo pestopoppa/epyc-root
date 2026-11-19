@@ -1,0 +1,270 @@
+{
+  "status": "PASS",
+  "mode": "MODEL_FREE_QUALIFICATION",
+  "controls": [
+    {
+      "case": "honest",
+      "implementation": "original",
+      "expected": "BOUNDED_OBSERVATION",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "BOUNDED_OBSERVATION",
+        "valid_sample_count": 2,
+        "overlap_count": 1
+      },
+      "matched": true
+    },
+    {
+      "case": "honest",
+      "implementation": "corrected",
+      "expected": "BOUNDED_OBSERVATION",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "BOUNDED_OBSERVATION",
+        "valid_sample_count": 2,
+        "overlap_count": 1
+      },
+      "matched": true
+    },
+    {
+      "case": "wrong_executable",
+      "implementation": "original",
+      "expected": "BOUNDED_OBSERVATION",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "BOUNDED_OBSERVATION",
+        "valid_sample_count": 2,
+        "overlap_count": 1
+      },
+      "matched": true
+    },
+    {
+      "case": "wrong_executable",
+      "implementation": "corrected",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "unknown_status",
+      "implementation": "original",
+      "expected": "BOUNDED_OBSERVATION",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "BOUNDED_OBSERVATION",
+        "valid_sample_count": 2,
+        "overlap_count": 1
+      },
+      "matched": true
+    },
+    {
+      "case": "unknown_status",
+      "implementation": "corrected",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "missing_executable",
+      "implementation": "original",
+      "expected": "BOUNDED_OBSERVATION",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "BOUNDED_OBSERVATION",
+        "valid_sample_count": 2,
+        "overlap_count": 1
+      },
+      "matched": true
+    },
+    {
+      "case": "missing_executable",
+      "implementation": "corrected",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "missing_status",
+      "implementation": "original",
+      "expected": "BOUNDED_OBSERVATION",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "BOUNDED_OBSERVATION",
+        "valid_sample_count": 2,
+        "overlap_count": 1
+      },
+      "matched": true
+    },
+    {
+      "case": "missing_status",
+      "implementation": "corrected",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "zero_own",
+      "implementation": "original",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "zero_own",
+      "implementation": "corrected",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "wrong_birth",
+      "implementation": "original",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "wrong_birth",
+      "implementation": "corrected",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "no_mapping",
+      "implementation": "original",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "no_mapping",
+      "implementation": "corrected",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "no_kfd",
+      "implementation": "original",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "no_kfd",
+      "implementation": "corrected",
+      "expected": "UNKNOWN",
+      "actual": {
+        "invocation": "synthetic",
+        "native_dispatch": 2.0,
+        "status": "UNKNOWN",
+        "valid_sample_count": 0,
+        "overlap_count": 0
+      },
+      "matched": true
+    }
+  ],
+  "source_seals": "dd36ae78e28f4fd048ed6411a038386410cfd6853b5c7ffc9194308b412e68a9  original.py\n2e2836e54ee07109e6303781bbbbed053840f7eb8a46f9af205365492ea2d208  corrected.py\n442a6f5445345904304b5da11a9992a83020e836174a66fe108660703eeb7bdf  qualify.py\n2173a73763b3b2f09332e49179f282a716698c71a5fdd00eb8d5637d8fe48bac  complete.py\n5aff13937ab18b546ffb3aa59ff6cf129e7912691698ded5b44eab1a96a51046  README.md\n",
+  "model_opened": false,
+  "gpu_accessed": false,
+  "processes_spawned": 0,
+  "affinity": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47
+  ]
+}

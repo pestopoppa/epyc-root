@@ -2,7 +2,7 @@
  *
  * THE ONE cross-dashboard nav. Before this, every page hand-copied a `<nav>`;
  * they were written at different times and drifted into a link matrix with holes
- * (audit 1.3 in handoffs/active/dashboard-architecture-restructure.md) — reaching
+ * (audit 1.3 in handoffs/active/coordination-and-churn-pipeline.md) — reaching
  * AutoKernel meant routing through the handoff board, and cross-server URLs were
  * re-derived ad hoc in three places. Links now come from ONE machine-readable
  * registry (`dashboard/registry.json`), inlined ahead of this file by
@@ -20,6 +20,18 @@
  * *why* it is empty; a nav that draws an error banner into every page header
  * cannot.
  */
+/* One freshness vocabulary (hub: fresh/aging/stale/missing). The orchestrator
+ * envelope says "dead" for "missing" and AK6 said "warn" for "aging"; the table
+ * is inlined from dashboard/freshness.py by server.nav_asset() as
+ * window.__EPYC_FRESH_ALIASES. Returns null for an unmapped value (never coerced
+ * to "fresh"). Pages read orchestrator envelopes through this. */
+window.epycFreshClass = function (v) {
+  var t = window.__EPYC_FRESH_ALIASES || {};
+  if (typeof v !== "string") return null;
+  var k = v.trim().toLowerCase();
+  return Object.prototype.hasOwnProperty.call(t, k) ? t[k] : null;
+};
+
 (function () {
   "use strict";
 

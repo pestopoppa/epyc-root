@@ -1,0 +1,1 @@
+Exercises the retained stat-only model admission checker with synthetic paths and tiny private files; no model weights opened. The same-size mutation with restored mtime is expected to be accepted, demonstrating the metadata-only limitation; no model immutability, live integration or profile claim.

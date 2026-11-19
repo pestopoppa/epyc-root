@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "The full nonce-bound model-free historical-image fixture exited zero in both own-child cases: the honest sequence selected 0,1 then 2,3 and the skip-apply mutant was detected at 0,1; executable and all five DSO identities were enforced and mapped snapshots matched. This is fixture qualification only, not a historical control or physical layout verdict.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T23:54:43+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T23:41:43Z reason=complete",
+ "filed_at": "2026-11-04T23:54:43+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-13.1-NATIVE-FINDSLOT",
+ "id": "kvu-kpf131-old-native-findslot-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/kvu-kpf131-old-native-findslot-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/kvu/find-slot-native-v1/out/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-kvu",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "The full nonce-bound model-free historical-image fixture exited zero in both own-child cases: the honest sequence selected 0,1 then 2,3 and the skip-apply mutant was detected at 0,1; executable and all five DSO identities were enforced and mapped snapshots matched. This is fixture qualification only, not a historical control or physical layout verdict.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/find-slot-native-v1/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "kvu-kpf131-old-native-findslot-20261104",
+ "row_verdict": "pass",
+ "rule": "FIXTURE_PASS iff honest old-image find_slot selects 0,1 then 2,3 following apply_ubatch, skip-apply mutant selects 0,1 and is detected, both own-child processes exit 0 with executable and all five mapped ggml/llama DSO pin/identity snapshots agreeing before and after. Missing data, changed mapping or any other outcome INVALID. No historical control or layout conclusion.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "2d07fd0567d5e0e0165d2d24c5318964877d03563ffa54b8b51ed3ec3d7840f5",
+  "result": "pass",
+  "status": "filed"
+ }
+}

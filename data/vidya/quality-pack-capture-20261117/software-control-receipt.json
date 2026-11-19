@@ -1,0 +1,40 @@
+{
+  "scope": "Synthetic software fixture with isolated ledger",
+  "first_ingest": {
+    "adapter": "adapters/quality_pack_comparison.py",
+    "adapter_id": "vidya.adapters.quality_pack_comparison/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 3,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack/software-fixture-s5pa3s4s/quality_pack_comparison.synthetic.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "quality-pack-comparison",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "retry": {
+    "adapter": "adapters/quality_pack_comparison.py",
+    "adapter_id": "vidya.adapters.quality_pack_comparison/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 0,
+    "frames_skipped": 3,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack/software-fixture-s5pa3s4s/quality_pack_comparison.synthetic.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "quality-pack-comparison",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "ledger_sha256": "f98e6a63e417f63b5eaa402e437901949c9f8815770d548917fc61bd08747854"
+}

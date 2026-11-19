@@ -1,0 +1,22 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "C6-Q4-MMVQ-FIX q4_K timing (gpu-q3; lower time is better). Question: does the n=4 slowdown persist on the committed fixed build 21232569a vs original C6 729599d",
+ "estimate_s": 900,
+ "gib": 32,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:C6-Q4-MMVQ-FIX",
+ "id": "c6q4-timing-4arm-20261105",
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/c6-q4fix-takeover-20261105/timing-row/launch.sh"
+ },
+ "lineage": "c6q4-timing-4arm",
+ "min_window_s": 1500,
+ "owner": "operator-adhoc-takeover-20261105",
+ "priority_rank": 40.0,
+ "published_at": "2026-11-05T16:24:58Z",
+ "regions": "mi210_0,88-95,184-191",
+ "schema": "epyc.row.v3",
+ "shape": "gpu-q3",
+ "stop_file": "/mnt/raid0/llm/tmp/c6-q4fix-takeover-20261105/timing-row/STOP",
+ "window_s": 1800
+}

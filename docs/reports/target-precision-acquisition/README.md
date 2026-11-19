@@ -1,0 +1,5 @@
+# Target-precision input acquisition
+
+The prospective matched target-precision row uses `/dev/shm/mtp-target-precision-20261104` as its declared task-specific scratch root. The downloader streams pinned BF16 shards and a non-UD Q4_K_M target, verifies their declared lengths and SHA-256 values outside any grant, and writes a completion or failure event to the handoff session. It rechecks the shared disk floor and memory/tmpfs headroom during transfer. These files are volatile: after reboot or a failed transfer, re-establish the inputs before publication; retain completed shards through the row's declared keep policy.
+
+`source-manifest.json` records exact repository revisions, source URLs, expected hashes and bounded header evidence. Both converted sources name the same model family, but their exact shared base revision and tensor correspondence remain unproven. Preserve that limitation and return an inconclusive causal verdict if matched identity cannot be established. This preparation provides no inference result or precision effect.

@@ -1,0 +1,35 @@
+test_exact_historical_argv_and_artifact_identity (__main__.MatmulIdCaptureTest.test_exact_historical_argv_and_artifact_identity) ... ok
+test_one_prospective_invocation_and_strict_rederivation (__main__.MatmulIdCaptureTest.test_one_prospective_invocation_and_strict_rederivation) ... ERROR
+test_refuses_absent_kfd_and_zero_vram (__main__.MatmulIdCaptureTest.test_refuses_absent_kfd_and_zero_vram) ... ok
+test_refuses_changed_persisted_request (__main__.MatmulIdCaptureTest.test_refuses_changed_persisted_request) ... ok
+test_refuses_changed_raw_log (__main__.MatmulIdCaptureTest.test_refuses_changed_raw_log) ... ok
+test_refuses_coherent_wrong_denominator (__main__.MatmulIdCaptureTest.test_refuses_coherent_wrong_denominator) ... ok
+test_refuses_escaped_affinity (__main__.MatmulIdCaptureTest.test_refuses_escaped_affinity) ... ok
+test_refuses_incomplete_task_samples (__main__.MatmulIdCaptureTest.test_refuses_incomplete_task_samples) ... ok
+test_refuses_outside_process_window (__main__.MatmulIdCaptureTest.test_refuses_outside_process_window) ... ok
+test_refuses_reused_pid (__main__.MatmulIdCaptureTest.test_refuses_reused_pid) ... ok
+test_refuses_substituted_case_with_unchanged_denominator (__main__.MatmulIdCaptureTest.test_refuses_substituted_case_with_unchanged_denominator) ... ok
+test_refuses_wrong_mapped_inode (__main__.MatmulIdCaptureTest.test_refuses_wrong_mapped_inode) ... ok
+test_refuses_wrong_pid (__main__.MatmulIdCaptureTest.test_refuses_wrong_pid) ... ok
+test_smoke_is_not_native_ingestion (__main__.MatmulIdCaptureTest.test_smoke_is_not_native_ingestion) ... ok
+test_stop_reaps_without_sealing (__main__.MatmulIdCaptureTest.test_stop_reaps_without_sealing) ... ok
+
+======================================================================
+ERROR: test_one_prospective_invocation_and_strict_rederivation (__main__.MatmulIdCaptureTest.test_one_prospective_invocation_and_strict_rederivation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/test_run_matmul_id.py", line 132, in test_one_prospective_invocation_and_strict_rederivation
+    self.assertEqual(len(runner.capture.emit(result["capture"], as_of=runner.capture.now())), 1)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/scripts/vidya/adapters/gpu_pool_native.py", line 227, in emit
+    for frame in to_frames(claim, as_of=as_of, adapter_id=ADAPTER_ID, authority=AUTHORITY)]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/scripts/vidya/claim_tuple.py", line 857, in to_frames
+    from frames import make_frame  # local import: keeps this module importable without the ledger
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'frames'
+
+----------------------------------------------------------------------
+Ran 15 tests in 3.580s
+
+FAILED (errors=1)

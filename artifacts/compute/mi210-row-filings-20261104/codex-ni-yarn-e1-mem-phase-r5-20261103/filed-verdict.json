@@ -1,0 +1,44 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence_sha256": {
+   "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r5-20261103/end.txt": "8583001e4c7a16de614cdf2203a7031a609815ce8dfc495dad91bd0e05f50031",
+   "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r5-20261103/manifest.json": "7e97214bb4530d546ca4e8358980d0ad809c9a7586daa5fca12ebafb0cdbc031",
+   "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r5-20261103/native-result.json": "d8b08c04b6755ca4c2928b8f3c844176408813805b023f92ac407567ddeff48e"
+  },
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc75 at 20:36Z: stopped/partial attempt. Shared COMPLETE result written 21:40Z is later than the grant and cannot establish run ownership. Split-group resets do not exclude cross-chain growth; no close of YARN-E1-MEM.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:10:04+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-03T20:36:24Z reason=exited",
+ "filed_at": "2026-11-04T07:10:04+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "mi210-serving-program.md:YARN-E1-MEM",
+ "id": "codex-ni-yarn-e1-mem-phase-r5-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r5-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/out/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "codex-ni",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "rc75 at 20:36Z: stopped/partial attempt. Shared COMPLETE result written 21:40Z is later than the grant and cannot establish run ownership. Split-group resets do not exclude cross-chain growth; no close of YARN-E1-MEM.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "codex-ni-yarn-e1-mem-phase-r5-20261103",
+ "row_verdict": "inconclusive",
+ "rule": "Historical E1 memory attribution on unchanged 2026-10-04 E1 and W images: own-PID KFD VRAM and hipMalloc shim series joined to the original YaRN E1 smoke and 128k/240k/400k/500k native needle stages for A0/A1. Higher VRAM is worse; identify the first phase with the +15 GiB excess and whether W removes it. Split stage groups are diagnostic and reset the server between groups; no quality or current champion claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "d8b08c04b6755ca4c2928b8f3c844176408813805b023f92ac407567ddeff48e",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

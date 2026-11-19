@@ -1,0 +1,12 @@
+{
+  "verdict": "inconclusive",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Stopped rc75; archived attempt summary has 1/2 units valid, 0.5 capture, A1 run failure; no full pilot or control comparison. REVISE, not a PF1 rejection. Later shared result is not this attempt.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r5/attempt-summary.json": "961251f9f334575fdd33ecdcdb9453bb72193b062a61d89d35de28180097db67",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r5/native-result.json": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r5/end.txt": "c95b5feb99223162e7b89b38ff819bafce28f9a39a6a35635435adfbbc327882",
+    "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r5/manifest.json": "323a48a5c8dc7b74b55f2d15d722b1bdf33a61473bbb113f24aff08d1d8a3f5e"
+  }
+}

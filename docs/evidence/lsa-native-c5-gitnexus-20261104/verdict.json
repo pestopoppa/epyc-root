@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "claude-filing-subagent",
+  "rationale": "rc=75 hard-end before the index completed; results.jsonl holds only the source inventory (3345 files, head d424aba6) with no index_complete record. Superseded by targeted-v3/v4.",
+  "verdict": "fail"
+ },
+ "at": "2026-11-04T13:55:20+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-04T09:51:01Z reason=hard-end",
+ "filed_at": "2026-11-04T13:55:20+00:00",
+ "filed_by": "claude-filing-subagent",
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-native-c5-gitnexus-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/lsa-native-c5-gitnexus-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/graph-integration-20261104/gitnexus-prep/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "lsa-screen",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "rc=75 hard-end before the index completed; results.jsonl holds only the source inventory (3345 files, head d424aba6) with no index_complete record. Superseded by targeted-v3/v4.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/graph-integration-20261104/gitnexus-prep/results.jsonl",
+ "root_cause_family": null,
+ "row": "lsa-native-c5-gitnexus-20261104",
+ "row_verdict": "fail",
+ "rule": "One successful guarded index of private native C5 tree with target and commit verified; stop after completed index or on failure, no repeat.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "a83f279f307a604a99be6b697429778da6fb93669af79883e759c2e9f2ddd5b1",
+  "result": "fail",
+  "status": "filed"
+ }
+}

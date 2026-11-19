@@ -40,6 +40,11 @@ open(due, 'a').write(json.dumps(rec) + '\n')
 PY
     echo "$id" >> "$SEEN"
   done
+  # keeper-friction-review 2026-11-05 refinement 3: file machine-checkable runs via file_result.py and queue
+  # prose-rule runs whose owner is not live in filing-owner-less.jsonl (one alarm per batch). Never blocks the alarm.
+  af_rc=0
+  python3 "$ROOT/scripts/coordination/churn/auto_file.py" --flags "$F" --bus-root "$BUS" >/dev/null 2>>"$F/filing-watch.log" || af_rc=$?
+  if [ "$af_rc" != 0 ]; then echo "$(date -u +%FT%TZ) auto-file rc=$af_rc" >> "$F/filing-watch.log"; fi
   alarm_rc=0
   # The bus uses installed PyYAML/jsonschema; -I suppresses required user-site dependencies.
   python3 "$ROOT/scripts/coordination/filing_takeover_alarm.py" --flags-root "$F" --bus-root "$BUS" || alarm_rc=$?

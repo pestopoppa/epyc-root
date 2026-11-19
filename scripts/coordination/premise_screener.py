@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """premise_screener.py — is this backlog row's premise STILL TRUE in the world?
 
-Owning handoff: handoffs/active/loop-owned-fleet-implementation.md, task P2-2.
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md, task P2-2.
 Plan of record:  docs/design/loop-owned-fleet.html ("premise_screener NEW —
                  the one day-1 classifier").
 Consumer:        scripts/coordination/worker_runner.py (P2-1) preflight.

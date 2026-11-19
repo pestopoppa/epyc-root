@@ -1,6 +1,6 @@
 # CS-43.3 audit: `GGML_BACKEND` and `QT_ABI_VERSION` consumers (upstream-based qwentts candidate)
 
-**Status**: audit table, read-only; filed with the speech-kernel promotion package ([`docs/reference/kernel-manifests/speech-v2-manifest.md`](../kernel-manifests/speech-v2-manifest.md)). **No launcher, test or script is edited** while `production-speech-v1` serves: for the frozen binary the env var is correct. Task: CS-43.3 in [`handoffs/active/conversation-stack.md`](../../../handoffs/active/conversation-stack.md). Run 2026-10-22 against `origin/main` of each repo (after `git fetch`): epyc-orchestrator `109bc37b`, epyc-inference-research `b3fe1448a`, epyc-root `e95107499`.
+**Status**: audit table, read-only; filed with the speech-kernel promotion package ([`docs/reference/kernel-manifests/speech-v2-manifest.md`](../kernel-manifests/speech-v2-manifest.md)). **No launcher, test or script is edited** while `production-speech-v1` serves: for the frozen binary the env var is correct. Task: CS-43.3 in [`handoffs/active/speech-and-multimodal.md`](../../../handoffs/active/speech-and-multimodal.md). Run 2026-10-22 against `origin/main` of each repo (after `git fetch`): epyc-orchestrator `109bc37b`, epyc-inference-research `b3fe1448a`, epyc-root `e95107499`.
 
 ## 1. What the frozen binary does, and what upstream changed
 

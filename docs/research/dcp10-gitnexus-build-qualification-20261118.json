@@ -1,0 +1,54 @@
+{
+  "schema": "epyc.dcp10.gitnexus-build-qualification.v1",
+  "row": "dcp10-gitnexus-build-20261118",
+  "disposition": "PARKED-THREE-FAILED-QUALIFICATIONS",
+  "published": false,
+  "native_graph_builds": 0,
+  "official_task_attempts": 0,
+  "index_receipts": 0,
+  "tests": {
+    "command": "python3 -m unittest discover -s scripts/experiments/dcp10-discovery -p 'test_gitnexus*.py'",
+    "passed": 31,
+    "ruff": "pass"
+  },
+  "attempts": [
+    {
+      "time": "2026-11-18T22:45:39Z",
+      "engine_rc": 1,
+      "docker_rc": 125,
+      "error": "Docker requires explicit bind-propagation=rprivate with bind-recursive=readonly"
+    },
+    {
+      "time": "2026-11-18T22:46:23Z",
+      "engine_rc": 1,
+      "docker_rc": 125,
+      "error": "runc rejected descriptor-backed regular-file mount at /dcp10/node: invalid argument"
+    },
+    {
+      "time": "2026-11-18T22:46:59Z",
+      "engine_rc": 1,
+      "docker_rc": 125,
+      "error": "runc rejected descriptor-backed directory mount at /dcp10/output: invalid argument"
+    }
+  ],
+  "originals": {
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/dcp10-gitnexus-build-20261118/launcher.out": "8ea2fd031522d4e888c8aaa0979dc14f359325dbe55553413b680640d126346c",
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/dcp10-gitnexus-build-20261118/FAIL-1.json": "3610f39fbab1af6349dce8901753bc16667f320e27ac9364845e224af64cb463",
+    "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-gitnexus-build/spec.json": "0c12ebbee0d104314c4acdc286d9622920090db86778ab2f4b05765374520575",
+    "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-gitnexus-build/assets/build-request.json": "3970cc63ec782abfa7e0604eee3ee78f03dff80987199fea19d3cc3651e642f2",
+    "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-gitnexus-build/packet/launcher.sh": "c75cd398dbacfe117e94de78249ab66cc16c0f64dd1c97fa1474e291f332a844"
+  },
+  "producer_sha256": {
+    "scripts/experiments/dcp10-discovery/gitnexus_build.py": "58f1aa03b5c4bb4070565b23355db32f695b63ca4d917ab8d52904cf6048e1f1",
+    "scripts/experiments/dcp10-discovery/gitnexus_build_worker.mjs": "73d13416dfd39ca229b5a1b1e94baa1989b0bb955e9996830e06d921c3d5b22c",
+    "scripts/experiments/dcp10-discovery/gitnexus_build_row.py": "5e0dd0cdfb82bb26d742c2fae8f8df025c0a365297560dccfda2e40362fe054c",
+    "scripts/experiments/dcp10-discovery/test_gitnexus_build.py": "48074b959b1990e7548e30a0225bbde7587d209cc9f3f662148d406f16154269"
+  },
+  "limits": [
+    "No ABI, extension, checkpoint or graph quality verdict; native worker never started.",
+    "Descriptor controls pass offline only; no safe native mount transport established.",
+    "Do not retry this lineage or reset its failure count; redesign transport offline first.",
+    "Existing shared-scratch, source-admission and capture-reader custody refusals remain."
+  ],
+  "request_sha256": "3970cc63ec782abfa7e0604eee3ee78f03dff80987199fea19d3cc3651e642f2"
+}

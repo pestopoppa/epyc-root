@@ -1,0 +1,247 @@
+diff --git a/src/api/routes/chat_delegation.py b/src/api/routes/chat_delegation.py
+index b3777c27..e2181400 100644
+--- a/src/api/routes/chat_delegation.py
++++ b/src/api/routes/chat_delegation.py
+@@ -41,6 +41,7 @@ from src.repl_environment.child_lane import closes_lanes
+ from .chat_delegation_config import (
+     DelegationConfig,
+     _delegation_config,
++    _delegation_context_budget,
+     _delegation_local,
+     _delegation_specialist_turn_token_cap,
+     _get_delegation_depth,
+@@ -269,7 +270,7 @@ def _maybe_dcp_seed_context(
+     """
+     from src.features import features as _get_features
+ 
+-    if not _get_features().dcp_pre_assembly:
++    if budget <= 0 or not _get_features().dcp_pre_assembly:
+         return base_ctx
+     try:
+         from pathlib import Path as _Path
+@@ -371,7 +372,8 @@ def _run_specialist_loop(
+     )
+     q_for_specialist = _trim_block(question, cfg.specialist_question_chars)
+     brief_for_specialist = _trim_block(brief, cfg.specialist_brief_chars)
+-    ctx_for_specialist = _trim_block(context, cfg.specialist_context_chars)
++    context_budget = _delegation_context_budget(delegate_to, delegate_mode, cfg)
++    ctx_for_specialist = _trim_block(context, context_budget.context_chars)
+     specialist_started = time.perf_counter()
+     try:
+         deleg_repl = REPLEnvironment(
+@@ -414,6 +416,7 @@ def _run_specialist_loop(
+             q_for_specialist,
+             code_search_fn=lambda q, limit=20: deleg_repl._code_search(q, limit=limit),  # noqa: SLF001
+             base_ctx=corpus_ctx,
++            budget=context_budget.discovery_budget,
+         )
+ 
+         for _turn in range(max_delegate_turns):
+diff --git a/src/api/routes/chat_delegation_config.py b/src/api/routes/chat_delegation_config.py
+index cb693cb2..602e30d0 100644
+--- a/src/api/routes/chat_delegation_config.py
++++ b/src/api/routes/chat_delegation_config.py
+@@ -7,6 +7,7 @@ patches against src.api.routes.chat_delegation.* keep working.
+ 
+ from __future__ import annotations
+ 
++import json
+ import os
+ import threading
+ from dataclasses import dataclass
+@@ -194,3 +195,51 @@ def _delegation_specialist_turn_token_cap(
+     else:
+         base = min(base, cfg.specialist_turn_n_tokens_default)
+     return max(96, base)
++
++
++@dataclass(frozen=True)
++class DelegationContextBudget:
++    """Input component caps; discovery uses packer estimates, never exact tokens."""
++
++    context_chars: int
++    discovery_budget: int = 2000
++
++
++def _delegation_context_budget(
++    delegate_to: str, delegate_mode: str, cfg: DelegationConfig,
++) -> DelegationContextBudget:
++    """Resolve an opt-in role/mode cap without enlarging legacy global limits.
++
++    ORCHESTRATOR_DELEGATION_CONTEXT_BUDGETS is a JSON object, for example
++    {"worker_general": {"repl": {"context_chars": 600, "discovery_budget": 1000}}}.
++    Missing entries retain legacy limits. Invalid configuration fails before
++    specialist execution; all entries are validated, including unselected ones.
++    Question/brief, reactive tool output and corpus budgets are unchanged.
++    """
++    defaults = DelegationContextBudget(cfg.specialist_context_chars)
++    raw = os.environ.get("ORCHESTRATOR_DELEGATION_CONTEXT_BUDGETS", "").strip()
++    if not raw:
++        return defaults
++    try:
++        policies = json.loads(raw)
++    except (ValueError, TypeError) as exc:
++        raise ValueError("invalid delegation context budgets JSON") from exc
++    if not isinstance(policies, dict):
++        raise ValueError("delegation context budgets must be an object")
++    resolved = {}
++    limits = {"context_chars": defaults.context_chars, "discovery_budget": 2000}
++    for role, modes in policies.items():
++        if role not in _valid_delegate_roles() or not isinstance(modes, dict):
++            raise ValueError("invalid delegation context budget role or modes")
++        for mode, values in modes.items():
++            if mode not in {"react", "repl"} or not isinstance(values, dict):
++                raise ValueError("invalid delegation context budget mode or values")
++            if set(values) - limits.keys():
++                raise ValueError("unknown delegation context budget field")
++            caps = dict(limits)
++            for key, value in values.items():
++                if type(value) is not int or not 0 <= value <= limits[key]:
++                    raise ValueError(f"invalid delegation context budget {key}")
++                caps[key] = value
++            resolved[(role, mode)] = DelegationContextBudget(**caps)
++    return resolved.get((delegate_to, delegate_mode), defaults)
+diff --git a/tests/unit/test_delegation_context_budgets.py b/tests/unit/test_delegation_context_budgets.py
+new file mode 100644
+index 00000000..b5fada05
+--- /dev/null
++++ b/tests/unit/test_delegation_context_budgets.py
+@@ -0,0 +1,138 @@
++"""Offline controls for opt-in specialist input component budgets."""
++
++import json
++from dataclasses import replace
++from unittest.mock import MagicMock
++
++import pytest
++from src.api.routes import chat_delegation as CD
++from src.api.routes.chat_delegation_config import (
++    DelegationConfig,
++    DelegationContextBudget,
++    _delegation_context_budget,
++)
++
++ENV = "ORCHESTRATOR_DELEGATION_CONTEXT_BUDGETS"
++
++
++@pytest.fixture(autouse=True)
++def clean_environment(monkeypatch):
++    monkeypatch.delenv(ENV, raising=False)
++    monkeypatch.setattr(
++        "src.api.routes.chat_delegation_config._valid_delegate_roles",
++        lambda: frozenset({"worker_general", "coder_escalation"}),
++    )
++
++
++def test_defaults_and_role_mode_isolation(monkeypatch):
++    cfg = DelegationConfig.from_env()
++    legacy = DelegationContextBudget(cfg.specialist_context_chars, 2000)
++    assert _delegation_context_budget("worker_general", "repl", cfg) == legacy
++    monkeypatch.setenv(
++        ENV, json.dumps({"worker_general": {"repl": {"context_chars": 17, "discovery_budget": 31}}})
++    )
++    assert _delegation_context_budget("worker_general", "repl", cfg) == DelegationContextBudget(
++        17, 31
++    )
++    assert _delegation_context_budget("worker_general", "react", cfg) == legacy
++    assert _delegation_context_budget("coder_escalation", "repl", cfg) == legacy
++
++
++@pytest.mark.parametrize(
++    "raw",
++    [
++        "[",
++        "[]",
++        "null",
++        '{"unknown":{}}',
++        '{"worker_general":[]}',
++        '{"worker_general":{"debug":{}}}',
++        '{"worker_general":{"repl":[]}}',
++        '{"worker_general":{"repl":{"typo":1}}}',
++        '{"worker_general":{"repl":{"context_chars":true}}}',
++        '{"worker_general":{"repl":{"context_chars":-1}}}',
++        '{"worker_general":{"repl":{"context_chars":100000}}}',
++        '{"worker_general":{"repl":{"discovery_budget":2001}}}',
++        '{"worker_general":{"repl":{"discovery_budget":1.5}}}',
++    ],
++)
++def test_invalid_configuration_fails_before_execution(monkeypatch, raw):
++    monkeypatch.setenv(ENV, raw)
++    repl = MagicMock()
++    monkeypatch.setattr(CD, "REPLEnvironment", repl)
++    with pytest.raises(ValueError):
++        CD._run_specialist_loop(
++            "q", "context", "brief", "worker_general", "repl", MagicMock(), None
++        )
++    repl.assert_not_called()
++
++
++def test_zero_budget_skips_discovery_before_feature_lookup(monkeypatch):
++    monkeypatch.setattr("src.features.features", lambda: pytest.fail("discovery must not run"))
++    assert CD._maybe_dcp_seed_context("q", code_search_fn=None, base_ctx="base", budget=0) == "base"
++
++
++@pytest.mark.parametrize("mode", ["repl", "react"])
++@pytest.mark.parametrize("chars,discovery", [(0, 0), (17, 31), (None, None)])
++def test_real_loop_passes_selected_caps_without_touching_question_or_brief(
++    monkeypatch, mode, chars, discovery
++):
++    cfg = replace(
++        DelegationConfig.from_env(),
++        compact_specialist_prompt=False,
++        specialist_corpus_context=False,
++    )
++    monkeypatch.setattr(CD, "_delegation_config", lambda: cfg)
++    if chars is not None:
++        monkeypatch.setenv(
++            ENV,
++            json.dumps(
++                {"worker_general": {mode: {"context_chars": chars, "discovery_budget": discovery}}}
++            ),
++        )
++    env = MagicMock()
++    repl = MagicMock(return_value=env)
++    seed = MagicMock(return_value="seeded corpus")
++    builder = MagicMock(return_value="assembled prompt")
++    monkeypatch.setattr(CD, "REPLEnvironment", repl)
++    monkeypatch.setattr(CD, "_maybe_dcp_seed_context", seed)
++    monkeypatch.setattr("src.prompt_builders.build_root_lm_prompt", builder)
++    primitives = MagicMock()
++    primitives.llm_call.side_effect = OSError("fixture stop; no model")
++    result = CD._run_specialist_loop(
++        "verbatim question", "x" * 1000, "verbatim brief", "worker_general", mode, primitives, None
++    )
++    assert "fixture stop" in result[0]
++    cap = cfg.specialist_context_chars if chars is None else chars
++    expected = CD._trim_block("x" * 1000, cap)
++    assert repl.call_args.kwargs["context"] == (
++        "verbatim brief" + ("\n\nContext:\n" + expected if expected else "")
++    )
++    assert seed.call_args.kwargs["budget"] == (2000 if discovery is None else discovery)
++    assert builder.call_args.kwargs["original_prompt"].startswith("verbatim question")
++    assert builder.call_args.kwargs["corpus_context"] == "seeded corpus"
++
++
++def test_partial_override_keeps_other_component_and_global_ceiling(monkeypatch):
++    cfg = replace(DelegationConfig.from_env(), specialist_context_chars=123)
++    monkeypatch.setenv(ENV, '{"worker_general":{"repl":{"discovery_budget":5}}}')
++    assert _delegation_context_budget("worker_general", "repl", cfg) == DelegationContextBudget(
++        123, 5
++    )
++    monkeypatch.setenv(ENV, '{"worker_general":{"repl":{"context_chars":124}}}')
++    with pytest.raises(ValueError):
++        _delegation_context_budget("worker_general", "repl", cfg)
++
++
++def test_unused_policy_is_validated(monkeypatch):
++    monkeypatch.setenv(ENV, '{"coder_escalation":{"react":{"discovery_budget":-1}}}')
++    with pytest.raises(ValueError):
++        _delegation_context_budget("worker_general", "repl", DelegationConfig.from_env())
++
++
++def test_empty_policy_preserves_defaults(monkeypatch):
++    cfg = DelegationConfig.from_env()
++    monkeypatch.setenv(ENV, '{"worker_general":{"repl":{}}}')
++    assert _delegation_context_budget("worker_general", "repl", cfg) == DelegationContextBudget(
++        cfg.specialist_context_chars
++    )

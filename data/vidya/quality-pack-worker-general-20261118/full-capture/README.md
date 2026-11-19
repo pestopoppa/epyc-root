@@ -1,0 +1,7 @@
+# Isolated worker-general input capture
+
+The scheduler recorded rc=0 for row `handoff-vidya-quality-pack-worker-general-20261118`. The pinned v10 and C13 images each completed all four predetermined requests on CPUs 72–95 with Qwen3.6-35B-A3B-MTP-Q8_0, the recorded chat template, native MTP cap 4 and one slot. The runner wrote and verified the v10 bank hash before starting C13 and verified it again after C13 cleanup. The cleanup records match the captured v10 and C13 PIDs, and both record an exited process and a closed listener. The [publication packet](../receipt.json) records the compiled serving configuration with speculation disabled.
+
+JSON, code and long-prose matched in content and token IDs at 14, 19 and 16 completion tokens per arm. Reasoning differed in both content and token IDs, with 43 v10 tokens and 34 C13 tokens. Long-prose reached the prescribed 16-token bound in both arms. The prior frontdoor JSON mismatch remains in the broad-pack record. The verdict applies to isolated input capture. Seven-profile parity and deployed equivalence remain unassessed, and promotion is unauthorized.
+
+The [receipt](receipt.json) records the per-request observations, process identities and archive hashes. Each `*.original-bytes.json` envelope retains the original bytes in its `bytes_b64` field, with a SHA-256 digest in `sha256`. The request plan and capture runner are in the parent publication packet.

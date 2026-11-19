@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate owner",
+  "rationale": "Native row ended rc=1 at 2026-11-18T02:02:14Z. RESULT status inadmissible_bank: JSON 227, code 82 and reasoning 160 tokens pass strict admission; long prose 256 tokens finishes at length but empty content fails unchanged semantic validator. Four native production responses exist; no candidate collected, broad pack incomplete. Decision rule requiring admitted production bank is not satisfied. Preserve original bank and cleanup; prospective successor must retain strict validation and medium thinking.",
+  "verdict": "fail"
+ },
+ "answer": null,
+ "at": "2026-11-18T02:05:38+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-18T02:02:14Z reason=job-rc-1:exited",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-vidya-quality-pack-architect-critic-bank-20261118.ended",
+ "filed_at": "2026-11-18T02:05:38+00:00",
+ "filed_by": "handoff-vidya-belief-substrate owner",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-ARCHITECT-BANK",
+ "id": "handoff-vidya-quality-pack-architect-critic-bank-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-architect-critic-bank-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/prospective-pack-20261118/out/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "Native row ended rc=1 at 2026-11-18T02:02:14Z. RESULT status inadmissible_bank: JSON 227, code 82 and reasoning 160 tokens pass strict admission; long prose 256 tokens finishes at length but empty content fails unchanged semantic validator. Four native production responses exist; no candidate collected, broad pack incomplete. Decision rule requiring admitted production bank is not satisfied. Preserve original bank and cleanup; prospective successor must retain strict validation and medium thinking.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/prospective-pack-20261118/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-vidya-quality-pack-architect-critic-bank-20261118",
+ "row_verdict": "fail",
+ "rule": "Capture four newly pinned architect-critic requests on the original isolated v10 24-CPU MTP-cap-4 server and seal the production bank with the native output bytes. Stop on answer after strict item validation and owned server cleanup. Stop on STOP, deadline, failed identity, startup, transport or cleanup, or an inadmissible bank, recording the disposition and original bytes. Publisher smoke uses four CPUs and the pinned v10 no-spec small model for one native completion. Candidate collection awaits the complete seven-profile pack pin.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 28,
+  "input": 95649089,
+  "output": 413816,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 96062905,
+  "tokens_per_task": 3430818.035714286
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "3963f098d2c09ed8c27c1f3b06db702ba440c68e9f7a8a2634a45d026b06869c",
+  "result": "fail",
+  "status": "filed"
+ }
+}

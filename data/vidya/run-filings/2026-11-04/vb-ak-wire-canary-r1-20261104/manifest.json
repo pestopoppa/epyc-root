@@ -1,0 +1,43 @@
+{
+ "admission_class": "block-correctness",
+ "decision_rule": "Read RESULT.json: PASS iff status=PASS AND prepare_status=ready AND ingest_refused=0 AND rows_projected>0 AND proposition_visible=true AND canonical_unchanged=true. FAIL iff prepare_status=ready AND canonical_unchanged=true AND (proposition_visible=false OR ingest_refused>0 OR rows_projected=0). UNKNOWN on exception, prepare refusal or canonical hash change. Native proposition comes from actor-wire-final.json via unchanged adapter; no applicability invented. One real loop_beliefs.prepare; no model/backend/network calls; no timing or quality claim; stop first verdict, no in-run retry.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 900,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-AK-WIRE-MATRIX-LIVE",
+ "id": "vb-ak-wire-canary-r1-20261104",
+ "keep": [
+  "RESULT.json",
+  "evidence/**",
+  "state/ingest.json",
+  "state/prepared.json",
+  "state/planner-belief-section.txt"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/launch.sh",
+  "sha256": "83bda61404cd38895c45bca14b5fccd2da9a263cdec49e5b0f8d67c13d2f1895"
+ },
+ "lineage": "vb-ak-wire-canary",
+ "min_window_s": 900,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "published_at": "2026-11-04T07:22:57Z",
+ "published_from": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/row-spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/progress.py",
+ "stop_file": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/STOP",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104"
+}

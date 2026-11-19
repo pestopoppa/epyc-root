@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Official rc=75 disk-floor after one second; filing.file_run(packet_root) refuses missing or mismatched RESULT/COMPLETE pair. No valid >=200-call window, baseline, eviction or cache decision; UFH14-B4k remains open.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T17:10:29+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-04T17:05:26Z reason=disk-floor",
+ "filed_at": "2026-11-04T17:10:29+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:UFH14-B4k",
+ "id": "ufh14-b4k-guard-v4-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh14-b4k-guard-v4-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v4-20261104/out/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "Official rc=75 disk-floor after one second; filing.file_run(packet_root) refuses missing or mismatched RESULT/COMPLETE pair. No valid >=200-call window, baseline, eviction or cache decision; UFH14-B4k remains open.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v4-20261104/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "ufh14-b4k-guard-v4-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "File only by invoking filing.file_run(packet_root), which calls select_run with COMPLETE, retained exact consumed grant and its original same-ID successful ended receipt; refuse missing, ambiguous, symlinked or outside-grant runs. VALID synthetic production-shape replica window: >=200 successful dispatched calls, >=95% prefix_fp coverage, pinned private 8083 argv (only scratch port and slot path differ), original default thinking and 384 output-token request shape, GPU residency/linkage and cleanup. Report missed_prefill_share (lower better), hit_tok (higher better), cold_large_share (lower better), concurrent_dupes and evictions. Not organic traffic; incomplete otherwise.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

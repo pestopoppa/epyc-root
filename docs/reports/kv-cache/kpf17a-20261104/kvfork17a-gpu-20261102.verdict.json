@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-kvfork",
+  "rationale": "rc=0, COMPLETE binding b286122530ecb36c562be0c4a1175f5d0e3114024873ebf3d87ed0802bb9a556 and all 111 case receipts: 89 paired-bitwise-equal,22 declared-unsupported; all 25 shared cases supported and bitwise equal. Completion enforces strict full comparator, native mask controls, finite outputs, source/build/library identity and >=2 DURING-process own-HIP/KFD positive-VRAM samples per supported arm. No speed or adoption claim.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:08:05+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T11:56:02Z reason=complete",
+ "filed_at": "2026-11-04T07:08:05+00:00",
+ "filed_by": "handoff-kvfork",
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17a",
+ "id": "kvfork17a-gpu-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/kvfork17a-gpu-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/kvfork17a-gpu-20261102/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-kvfork",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc=0, COMPLETE binding b286122530ecb36c562be0c4a1175f5d0e3114024873ebf3d87ed0802bb9a556 and all 111 case receipts: 89 paired-bitwise-equal,22 declared-unsupported; all 25 shared cases supported and bitwise equal. Completion enforces strict full comparator, native mask controls, finite outputs, source/build/library identity and >=2 DURING-process own-HIP/KFD positive-VRAM samples per supported arm. No speed or adoption claim.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kvfork17a-gpu-20261102/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "kvfork17a-gpu-20261102",
+ "row_verdict": "pass",
+ "rule": "All 111 complete paired case receipts, declared 22 ROCm0 unsupported only, 25 shared cases supported, strict bitwise comparator passes; each supported arm has >=2 DURING-process own-HIP mapping + positive per-PID KFD VRAM samples. No speed or adoption claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "b47516d60446d1d36f0ffa7267630bc5d23c298bd9a9c32a18e8e24f5ce68591",
+  "result": "pass",
+  "status": "filed"
+ }
+}

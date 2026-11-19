@@ -188,7 +188,8 @@ class TestGate:
         res = evaluate("c", r, self._policy())
         assert res.outcome == Outcome.ALLOW and res.usable_as_current
         cert = res.certificate
-        assert cert["input_attestations"] == ["e"]
+        assert [i["label"] for i in cert["inputs"]] == ["e"]
+        assert all(a.startswith("sha256:") for a in cert["input_attestations"])
         assert cert["policy"]["digest"] == self._policy().digest()
         assert "NOT that the underlying proposition is true" in cert["proves"]
         assert cert["certificate_hash"].startswith("sha256:")

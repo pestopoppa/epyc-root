@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-df2",
+  "rationale": "Native scheduled mode=build rc0: pinned v10 and exact integration patch, candidate/bridge/executable/DSO hashes, compiled MTP_LIFECYCLE proof and local llama-common/llama/ggml linkage receipt. Full CPU lifecycle executable build only; native model, MTP execution, rollback/fault and performance are untested.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:30:37+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:18:07Z reason=complete",
+ "filed_at": "2026-11-04T07:30:37+00:00",
+ "filed_by": "handoff-df2",
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-mtp-lifecycle-build-r2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/cafe4-v10-mtp-lifecycle-build-r2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Native scheduled mode=build rc0: pinned v10 and exact integration patch, candidate/bridge/executable/DSO hashes, compiled MTP_LIFECYCLE proof and local llama-common/llama/ggml linkage receipt. Full CPU lifecycle executable build only; native model, MTP execution, rollback/fault and performance are untested.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2/RESULT.json",
+ "root_cause_family": null,
+ "row": "cafe4-v10-mtp-lifecycle-build-r2-20261104",
+ "row_verdict": "pass",
+ "rule": "Accept only pinned v10 plus exact candidate, bridge and build integration patch, full CPU lifecycle executable build, compiled MTP_LIFECYCLE marker, content hashes and local llama-common linkage. Build-only; no model, MTP execution, rollback or fault verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "5786e3dae2a9656cd6d6fb43ef601fe3323fa3b80484b7bcd1a4fa3f7d55b348",
+  "result": "pass",
+  "status": "filed"
+ }
+}

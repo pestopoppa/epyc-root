@@ -1,0 +1,3 @@
+# CH-26b compact observer synthetic overhead row
+
+This is a source snapshot of the published `ch26-compact-observer-overhead-20261104` packet. Its active manifest and launcher in the keeper control the run; the snapshot does not replace them. The native prototype lives in `../ch26-owner-functional-repair-20261104/native/`. The smoke completed one four-CPU synthetic off/on pair; the full 24-pair, 96-CPU run is pending. Its controlled CPU-time workload is diagnostic only and does not measure C5 serving overhead or establish a noise floor. The published manifest's window is the authoritative run bound; the full row can stop inconclusive on resource, evidence, deadline or cleanup failure.

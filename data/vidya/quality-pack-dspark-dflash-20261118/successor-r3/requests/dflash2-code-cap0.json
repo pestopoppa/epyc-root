@@ -1,0 +1,1 @@
+{"cache_prompt":false,"n_predict":128,"prompt":"Below is a Python function with a docstring. Complete the body with input validation, a loop, and a return statement. The function returns the even integers from a list.\ndef only_even(values):\n    \"\"\"Collect even integers in order.\"\"\"\n","return_tokens":true,"seed":35,"speculative.n_max":0,"stream":false,"temperature":0}

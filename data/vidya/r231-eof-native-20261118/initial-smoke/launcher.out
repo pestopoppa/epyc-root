@@ -1,0 +1,11 @@
+
+==== dry run 2026-11-18T03:34:10Z regions=116-119 launcher_sha=72f179fe6fff159586a93c9699807ffebd36d62bc3e114fb44f3c96e941886c0 units_before=0
+2026-11-18T03:34:10Z [vidya-r231-eof-native-wire-20261118] launcher up pid=2629560 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r231-eof-native-wire-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r231-eof-native-wire-20261118/stop minwin=120s ports=none dryrun=1
+2026-11-18T03:34:10Z [vidya-r231-eof-native-wire-20261118] START regions=116-119 cpus=116-119 threads=4 gpu=0 end=2026-11-18T03:49Z
+2026-11-18T03:34:10Z [vidya-r231-eof-native-wire-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+job rc=0
+==== engine START at +5s; first-progress timer (90 s) starts now
+2026-11-18T03:34:16Z [vidya-r231-eof-native-wire-20261118] ended rc=75 reason=partial-native-incomplete (grant deleted)
+2026-11-18T03:34:16Z [vidya-r231-eof-native-wire-20261118] one window done; exiting (no --repeat)
+==== dry run FAIL: no first progress within 90 s: job ended rc=75 time=2026-11-18T03:34:16Z reason=partial-native-incomplete after 10s; no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r231-eof-native-wire-20261118/native-attempts/attempt-5aa0gvlv/native-result.json (json): no new real record; 1 new record(s) ignored: placeholder (measurement: false); fix: make the job write its first measured record to /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-r231-eof-native-wire-20261118/native-attempts/attempt-5aa0gvlv/native-result.json within first_progress_s=90 (a numeric field outside the bookkeeping keys, no qualification_only/measurement:false), or declare smoke_predicate or unit_key in the spec, then re-run publish_row.py <spec.json> (2026-11-18T03:34:21Z)
+==== OVER-DECLARED busy_fraction: declared 1, measured 0; right-size the shape/claim

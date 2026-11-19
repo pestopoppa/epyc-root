@@ -1,0 +1,29 @@
+{
+  "id": "toc-cmp-3-evalqual-20261118-r3",
+  "owner": "h-delegation-context-preassembly",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "0-3",
+  "priority_rank": 55,
+  "admission_class": "diagnostic",
+  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-evalqual-r3/packet/launcher.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-evalqual-r3",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-evalqual-r3/native/RESULT.json",
+  "result_format": "json",
+  "ram_gib": 64,
+  "budget_gib": 1,
+  "estimate_s": 1650,
+  "min_window_s": 2090,
+  "max_window_s": 2390,
+  "resumable": false,
+  "first_progress_s": 1000,
+  "unit_key": "unit",
+  "smoke_predicate": "python3 -B /mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-evalqual-r3/packet/runner.py smoke",
+  "decision_rule": "completed >= 4",
+  "handoff_task": "context-and-token-economy.md:TOC-CMP-3",
+  "keep": [
+    "native/*"
+  ],
+  "notes": "Final evaluator candidate uses the receipted Qwen3.6-35B-A3B-MTP Q8_0 model with the r2 rubric, schema, and four adaptive controls. Smoke requires passing both paraphrase and unsupported external-state controls.",
+  "lineage": "toc-cmp-3-evalqual"
+}

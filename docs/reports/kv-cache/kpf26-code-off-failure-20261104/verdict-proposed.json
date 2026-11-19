@@ -1,0 +1,5 @@
+{
+  "verdict": "inconclusive",
+  "rationale": "Full original OFF rc1: HTTP200 response and trace record3 launched/0completed/3cancelled, no completed summaries; collector result is INCOMPLETE: completed API scout report missing. Native cap180 and packet request600*fraction.4 yield reported scoutbudget240; incomplete prefill under that budget is retained, not a completed fanout or gate verdict.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

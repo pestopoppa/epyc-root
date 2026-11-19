@@ -1,0 +1,1 @@
+own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 8.910 ms/step  112.2 steps/s  448.9 tok/s

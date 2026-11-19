@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T22:12:39Z reason=disk-floor
+job_id=hsf3-source-coverage-task8-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-04T22:12:38Z
+regions=0-23

@@ -1,0 +1,41 @@
+{
+  "full_gak_pass": null,
+  "input_byte_identity_with_prior_full_run": "unknown",
+  "kind": "selected native diagnostic summary, original remains in scratch",
+  "mul_mat_failures_all_q4_k": true,
+  "raw_result": "/mnt/raid0/llm/tmp/codex-c6-combined-20261102/RESULT.json",
+  "raw_result_sha256": "a44b905e0bc65949c302f9a46eb243f094a23072da2f73834c6c8a6cd64b1bb9",
+  "records": [
+    {
+      "counts": {
+        "fail": 25,
+        "not_supported": 326,
+        "ok": 1120
+      },
+      "native_rc": 1,
+      "op": "MUL_MAT",
+      "stderr_sha256": "ccc7d2b5eb3bb793fc8a90a4820eceb788b39ef9327a111f565d89085d454bd6",
+      "stdout_sha256": "6b5e5aac94a2a7f1ab50acbd7b03b294d0f391e8f20f78e8e95eaaeee9b633f6"
+    },
+    {
+      "counts": {
+        "ok": 815
+      },
+      "native_rc": 0,
+      "op": "MUL_MAT_ID",
+      "stderr_sha256": "b9d170c736a3b83ae8553b4d6e02d8a031174cb7f1b3c52652faeff9648142cf",
+      "stdout_sha256": "95c9ae44d53a7ae74f1ea7fe40aaffc19cb777a725ebd6702418fda9b855ec7c"
+    },
+    {
+      "counts": {
+        "not_supported": 2229,
+        "ok": 2978
+      },
+      "native_rc": 0,
+      "op": "FLASH_ATTN_EXT",
+      "stderr_sha256": "34ebbef7ba787de86d3ff0670e6a7f95758e7c518fc13b241571f3e1637bb269",
+      "stdout_sha256": "58bd76b334f16cdd7a0122902aef11c50a0c15af17f1d4af442327fd0370165e"
+    }
+  ],
+  "status": "COMPLETE_NATIVE_DIAGNOSTIC"
+}

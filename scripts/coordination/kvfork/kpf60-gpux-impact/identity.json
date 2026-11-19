@@ -1,0 +1,20 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "source_worktree": "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104",
+  "sha256": {
+    "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/job.py": "b483591eda140785266e53e3e8571bd18a147a3d920156ebacd9ff5330125f78",
+    "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/launch.sh": "396d72d1464c50e9e0793a1bac520cc8fa980b57b101e598aeb5576eccae32d0",
+    "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/test_source_integrity.py": "e958c360f995830d611f47a8e993fa7a9d09865713b5dac1ebf0c846ed508a12",
+    "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/spec.json": "d4d35c8f2e6c926fbc5c3d7285146371c52358fcfa86e2c8fd5e4f1f8452f8bb",
+    "/mnt/raid0/llm/tmp/kvfork/kpf60-gpux-impact-8952-20261104/README.md": "66765f861069e9bcab16f3e9b158c86763025713b8f9d0adfc6e0c484ef42eb1",
+    "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104/src/llama-context.cpp": "550536ded1a68f250ffdc9d49ed8b1900f844c441c5214f3e2ac41ca6d9db61c",
+    "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104/src/llama-kv-cache.cpp": "22e6be8328fee4cf82760e7ec3dc47ac8609123b35ea06994b0655c2a1ec47c1",
+    "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104/src/llama-kv-cache.h": "e421159206e74144b2cffe5af2db000be88be308c55f681cbd25d97f7f4493d7",
+    "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104/src/llama-memory-hybrid.cpp": "6a398438a7aa0e012365e2955a48fc84707d07a3c8f049a3f1f4e71ce7e71aac",
+    "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104/src/llama-memory-hybrid.h": "d89dc6e8f0778f3504f7bb1b48ab589e96f81ccbc26df00e9b73e8384d41a449",
+    "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104/tests/test-chunk-kv.cpp": "731bcbc2af0959ca484577a553ae2b5d805534125b2b78718d7c74b1f8240782"
+  }
+}

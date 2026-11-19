@@ -1,0 +1,204 @@
+{
+ "mirror_fp32__mirror_int8": {
+  "agreement": "59/70",
+  "recomputed_matches_stored": true,
+  "disagreements": [
+   {
+    "query_id": "hotpot_minddr_md9",
+    "fp32_top1": 107,
+    "int8_top1": 59,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 2.6259367177314473e-05,
+    "fp32_rel_top2_margin": 2.6259367177314473e-05
+   },
+   {
+    "query_id": "hotpot_shape_placement",
+    "fp32_top1": 105,
+    "int8_top1": 119,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0005697201075285766,
+    "fp32_rel_top2_margin": 0.0005697201075285766
+   },
+   {
+    "query_id": "hotpot_instrument_repair_measurement",
+    "fp32_top1": 104,
+    "int8_top1": 85,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0004276554599185671,
+    "fp32_rel_top2_margin": 0.0004276554599185671
+   },
+   {
+    "query_id": "hotpot_deepseek_dsa",
+    "fp32_top1": 27,
+    "int8_top1": 189,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.00029561389248611427,
+    "fp32_rel_top2_margin": 0.00029561389248611427
+   },
+   {
+    "query_id": "hotpot_rao_redel_cluster",
+    "fp32_top1": 147,
+    "int8_top1": 198,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0054271435226531505,
+    "fp32_rel_top2_margin": 0.0054271435226531505
+   },
+   {
+    "query_id": "hotpot_leanstral_planning",
+    "fp32_top1": 148,
+    "int8_top1": 14,
+    "int8_top1_rank_in_fp32": 6,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0011318254348263777,
+    "fp32_rel_top2_margin": 0.0004124986738760684
+   },
+   {
+    "query_id": "hotpot_agent_file_security",
+    "fp32_top1": 142,
+    "int8_top1": 132,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0010778248470070734,
+    "fp32_rel_top2_margin": 0.0010778248470070734
+   },
+   {
+    "query_id": "locomo_fable_handoff_evolution",
+    "fp32_top1": 9,
+    "int8_top1": 193,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0007235637968350593,
+    "fp32_rel_top2_margin": 0.0007235637968350593
+   },
+   {
+    "query_id": "locomo_kernel_concurrency_trace",
+    "fp32_top1": 72,
+    "int8_top1": 195,
+    "int8_top1_rank_in_fp32": 3,
+    "fp32_rel_gap_top1_vs_int8pick": 0.001459330360486506,
+    "fp32_rel_top2_margin": 0.0009554219636664245
+   },
+   {
+    "query_id": "locomo_trace_memory_events",
+    "fp32_top1": 179,
+    "int8_top1": 16,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0017152308165736922,
+    "fp32_rel_top2_margin": 0.0017152308165736922
+   },
+   {
+    "query_id": "locomo_routing_repair_family",
+    "fp32_top1": 140,
+    "int8_top1": 7,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0027545150731223323,
+    "fp32_rel_top2_margin": 0.0027545150731223323
+   }
+  ],
+  "disagree_int8pick_rank_counts": {
+   "2": 9,
+   "3": 1,
+   "6": 1
+  },
+  "disagree_fp32_rel_margin_median": 0.0007235637968350593,
+  "agree_fp32_rel_margin_median": 0.006979978024519077
+ },
+ "upstream_fp32__upstream_int8": {
+  "agreement": "59/70",
+  "recomputed_matches_stored": true,
+  "disagreements": [
+   {
+    "query_id": "hotpot_minddr_md9",
+    "fp32_top1": 107,
+    "int8_top1": 59,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 2.6259367177314473e-05,
+    "fp32_rel_top2_margin": 2.6259367177314473e-05
+   },
+   {
+    "query_id": "hotpot_shape_placement",
+    "fp32_top1": 105,
+    "int8_top1": 119,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0005697201075285766,
+    "fp32_rel_top2_margin": 0.0005697201075285766
+   },
+   {
+    "query_id": "hotpot_instrument_repair_measurement",
+    "fp32_top1": 104,
+    "int8_top1": 85,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0004276554599185671,
+    "fp32_rel_top2_margin": 0.0004276554599185671
+   },
+   {
+    "query_id": "hotpot_deepseek_dsa",
+    "fp32_top1": 27,
+    "int8_top1": 189,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.00029561389248611427,
+    "fp32_rel_top2_margin": 0.00029561389248611427
+   },
+   {
+    "query_id": "hotpot_rao_redel_cluster",
+    "fp32_top1": 147,
+    "int8_top1": 198,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0054271435226531505,
+    "fp32_rel_top2_margin": 0.0054271435226531505
+   },
+   {
+    "query_id": "hotpot_leanstral_planning",
+    "fp32_top1": 148,
+    "int8_top1": 14,
+    "int8_top1_rank_in_fp32": 6,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0011318254348263777,
+    "fp32_rel_top2_margin": 0.0004124986738760684
+   },
+   {
+    "query_id": "hotpot_agent_file_security",
+    "fp32_top1": 142,
+    "int8_top1": 132,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0010778248470070734,
+    "fp32_rel_top2_margin": 0.0010778248470070734
+   },
+   {
+    "query_id": "locomo_fable_handoff_evolution",
+    "fp32_top1": 9,
+    "int8_top1": 193,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0007235637968350593,
+    "fp32_rel_top2_margin": 0.0007235637968350593
+   },
+   {
+    "query_id": "locomo_kernel_concurrency_trace",
+    "fp32_top1": 72,
+    "int8_top1": 195,
+    "int8_top1_rank_in_fp32": 3,
+    "fp32_rel_gap_top1_vs_int8pick": 0.001459330360486506,
+    "fp32_rel_top2_margin": 0.0009554219636664245
+   },
+   {
+    "query_id": "locomo_trace_memory_events",
+    "fp32_top1": 179,
+    "int8_top1": 16,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0017152308165736922,
+    "fp32_rel_top2_margin": 0.0017152308165736922
+   },
+   {
+    "query_id": "locomo_routing_repair_family",
+    "fp32_top1": 140,
+    "int8_top1": 7,
+    "int8_top1_rank_in_fp32": 2,
+    "fp32_rel_gap_top1_vs_int8pick": 0.0027545150731223323,
+    "fp32_rel_top2_margin": 0.0027545150731223323
+   }
+  ],
+  "disagree_int8pick_rank_counts": {
+   "2": 9,
+   "3": 1,
+   "6": 1
+  },
+  "disagree_fp32_rel_margin_median": 0.0007235637968350593,
+  "agree_fp32_rel_margin_median": 0.006979978024519077
+ }
+}

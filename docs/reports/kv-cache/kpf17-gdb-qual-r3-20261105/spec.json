@@ -1,0 +1,40 @@
+{
+  "attempt_id": "kvfork17-gdb-continue-qual-r3-20261105-attempt-a742c",
+  "attempt_nonce": "a742c-r3-qualification-20261105",
+  "cleanup_contract": "gcc and gdb execute as captured direct children under a verified subreaper; bounded STOP/timeout cleanup signals only PID/birth-verified captured descendants through pidfds, then repeatedly captures, signals, reaps, and verifies every adopted own child after the captured parent exits, including children born after a tree snapshot; normal completion also checks and drains adopted children and cannot PASS if that requires signals; no process-group or name-pattern signals",
+  "decision_rule": "PASS iff control and exit-23 mutation each prove GDB post-continue PID zero and exact exit code with unsignalled cleanup, and a deliberately hanging own child reaches its deadline, receives PID/birth-verified pidfd SIGTERM and is reaped with no survivors; all sealed inputs and evidence match. Fixture only, no KPF-17 oracle claim.",
+  "dryrun_native_result": true,
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+  "id": "kvfork17-gdb-continue-qual-r3-20261105",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute",
+  "lane": "cpu",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/launch.sh",
+  "launcher_contract": {
+    "class": "cpu",
+    "completion_predicate": "validator requires control, exit-23 mutation, and timeout cleanup case with identity-bound signal and no remaining children",
+    "engine": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+    "role": "build",
+    "smoke_output": "publisher-provided FILLER_DRYRUN_RESULT_PATH only; accept any resolved path except the full attempt RESULT.json and reject any existing destination; full attempt path is selected only outside FILLER_SMOKE and FILLER_DRYRUN",
+    "stop": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/STOP",
+    "workdir": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105"
+  },
+  "notes": "Preparation only. Full output is attempt-bound by a dedicated directory, attempt ID, and nonce; publisher smoke output has a separate path. Source scripts copied into successor only. Do not infer a KPF-17/oracle claim from this prerequisite packet.",
+  "owner": "h-kvfork",
+  "priority_rank": 45,
+  "ram_gib": 1,
+  "regions": "any-cpu-quarter",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/full-attempt-kvfork17-gdb-continue-qual-r3-20261105-a742c/RESULT.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105",
+  "sealed_files": [
+    "qualify.py",
+    "spec.json"
+  ],
+  "smoke_result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r3-20261105/out/publisher-smoke/RESULT.json",
+  "smoke_timeout_s": 120,
+  "supersedes": "kvfork17-gdb-continue-qual-r2-20261104"
+}

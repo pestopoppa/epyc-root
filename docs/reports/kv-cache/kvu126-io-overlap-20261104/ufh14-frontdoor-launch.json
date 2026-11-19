@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/mnt/raid0/llm/kernels/production/cpu/llama-server",
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "19083",
+    "-t",
+    "16",
+    "-c",
+    "4096",
+    "-np",
+    "1",
+    "--no-mmap"
+  ],
+  "pid": 1526438,
+  "ld_library_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin",
+  "phase": "run",
+  "binary_realpath": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server",
+  "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+}

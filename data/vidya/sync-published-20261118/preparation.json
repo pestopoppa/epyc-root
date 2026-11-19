@@ -1,0 +1,21 @@
+{
+  "status": "reference_trigger_source_and_rowflow_packet_prepared_not_executed",
+  "files_changed": [
+    "scripts/vidya/cli.py",
+    "scripts/vidya/hook_sync.sh",
+    "scripts/vidya/install_sync_hook.sh",
+    "tests/vidya/test_ledger_plumbing.py"
+  ],
+  "scratch_row": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/ROW.md",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/launch.sh",
+  "tests": "4 focused pytest cases passed, including existing hook stdin/veto, unrelated refs, and aborted transactions; syntax and git diff check",
+  "gitnexus": "repository not indexed; impact unavailable",
+  "installation": "existing /workspace/.git/hooks/post-commit and post-merge have installed Vidya block at configured hooks path; preserved installation receipt exists",
+  "limits": [
+    "production acceptance requires genuine qualifying intake update",
+    "origin/main tracking-ref updates can take up to 120 seconds; failure is logged and does not fail Git",
+    "paths without a local origin/main tracking-ref update are not covered",
+    "native row not run"
+  ],
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/spec.json"
+}

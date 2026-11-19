@@ -1,0 +1,39 @@
+{
+  "schema": "kvu19a2.completion-repair.v2",
+  "at": "2026-11-17T23:59:55.779696+00:00",
+  "row": "handoff-vidya-kvu19a2-wire-20261117-r2",
+  "state": "ready-for-publish",
+  "accepted_deadline_controls": [
+    "1794962130",
+    "2026-11-18T00:35:30Z",
+    "2026-11-18T01:35:30+01:00"
+  ],
+  "rejected_deadline_controls": [
+    "",
+    "2026-11-18T00:35:30",
+    "nan",
+    "1794962130.5",
+    "-1",
+    "1794962130 ",
+    "99999999999999999999999999"
+  ],
+  "smoke_raw_relative_to_attempt_result_parent": "kvu19a2-native-smoke/smoke-case80-base-r1/out_80.bin",
+  "retained_prior_smoke_grant": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-kvu19a2-wire-20261117-r2/kvu19a2-native-smoke/grant-receipt.original",
+    "sha256": "b14f60a0c0c3a2b9e6c8b7596a5082a95965b7ad19856b6e3c7d1dd9a90cec49"
+  },
+  "finalizer": {
+    "returncode": 0,
+    "pinned_files": 289
+  },
+  "sha256": {
+    "kvu19a2_repeat_rootbuild.py": "736630cbc7de74d0f67a2433737c97ab89db476d47b1acff35ff70b9263a75f4",
+    "smoke_predicate.py": "fa99ccfdb8a4a43302e007dd4aaf886ab5ec607e14e2825c698b06cc3a033a9b",
+    "source-pins.json": "e398f5fc1a3aa8b32e43c6d501bf95cb4c19fd900710dbfadf3e31613a4b8db4",
+    "finalize.py": "2aa0f3401270d267d36012d362f03f4f4468e83ce70145eb9df6e829aa962595",
+    "pins.json": "c4d5d63d05193384834ac5a23c15a396f7d04bbd71e6e5c16ff21df22d3ba49e"
+  },
+  "native_residency_gate_changed": false,
+  "gpu_launched": false,
+  "published": false
+}

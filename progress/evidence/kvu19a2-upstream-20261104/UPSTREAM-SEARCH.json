@@ -1,0 +1,137 @@
+{
+  "as_of": "2026-11-04",
+  "repository": "ggml-org/llama.cpp",
+  "method": "Read-only GitHub plugin searches; bounded result pages, not an exhaustive novelty audit",
+  "searches": [
+    {
+      "query": "\"nondeterministic\" \"HIP\"",
+      "results": [
+        {
+          "number": 30175,
+          "title": "Eval bug: Nondeterministic FA prefill with Qwen 3.5 9B on RDNA3 (ROCm/HIP) on multimodal requests since b10905",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/30175"
+        },
+        {
+          "number": 16424,
+          "title": "Eval bug: Using llama.cpp with ROCm produces garbage output with --split-mode layer",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/16424"
+        },
+        {
+          "number": 14727,
+          "title": "Eval bug: Nondeterministic output with ROCm backend despite zero temperature",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/14727"
+        },
+        {
+          "number": 26781,
+          "title": "chat: enable_thinking forced true in jinja/caps.cpp capability probe leaks into non-DeepSeek templates (regression from #26398)",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/26781"
+        },
+        {
+          "number": 10197,
+          "title": "Bug: Nondeterministic results on AMD RDNA3 (ROCm) despite zero temperature and fixed seed",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/10197"
+        },
+        {
+          "number": 8496,
+          "title": "Bug: GGML_HIP_UMA causes consistency errors",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/8496"
+        }
+      ]
+    },
+    {
+      "query": "\"fattn\" \"gfx90a\"",
+      "results": [
+        {
+          "number": 23577,
+          "title": "Eval bug: MTP with Qwen3.6 27B outputs repeated //// after long session",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/23577"
+        },
+        {
+          "number": 11913,
+          "title": "Misc. bug: ROCm images cannot be found",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/11913"
+        },
+        {
+          "number": 15936,
+          "title": "Compile bug: Failing to compile with hipblas and gfx803",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/15936"
+        },
+        {
+          "number": 14193,
+          "title": "Compile bug: RocmWMMA doesn't work",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/14193"
+        },
+        {
+          "number": 14178,
+          "title": "Misc. bug: Failure to allocate buffer with ROCm 6.4",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/14178"
+        }
+      ]
+    },
+    {
+      "query": "\"flash\" \"576\"",
+      "results": [
+        {
+          "number": 31555,
+          "title": "CUDA: on Volta, FA dispatch for DKQ=576 picks a 16-column MMA kernel (no sm_70 code) when gqa_ratio % 16 == 8",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/31555"
+        },
+        {
+          "number": 30391,
+          "title": "Misc. bug: flash_attn.comp cols_per_thread is 0 on Adreno A750",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/30391"
+        },
+        {
+          "number": 30048,
+          "title": "Vulkan: FA quantized-KV dequant scratch can exceed maxBufferSize at long context",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/30048"
+        },
+        {
+          "number": 29251,
+          "title": "Qwen3-VL: mtmd vision embeddings carry ~5× HF precision-floor noise → reproducible accuracy drop vs transformers (quant/backend/version-independent)",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/29251"
+        },
+        {
+          "number": 29345,
+          "title": "MiMo-V2.6-Flash-RL: sidecar MTP draft (-md mtp-*.gguf --spec-type draft-mtp) fails with \"blk.0.attn_q not found\" — draft should reuse main model weights",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/29345"
+        },
+        {
+          "number": 30175,
+          "title": "Eval bug: Nondeterministic FA prefill with Qwen 3.5 9B on RDNA3 (ROCm/HIP) on multimodal requests since b10905",
+          "url": "https://github.com/ggml-org/llama.cpp/issues/30175"
+        }
+      ]
+    }
+  ],
+  "initial_queries_without_results": [
+    "gfx90a nondeterministic flash attention",
+    "\"fattn-tile\" nondeterminism"
+  ],
+  "related": [
+    {
+      "number": 30175,
+      "url": "https://github.com/ggml-org/llama.cpp/issues/30175",
+      "scope": "RDNA3 model-level FA nondeterminism involving D256 WMMA; same-cause relation to this CDNA2 TILE diagnostic is unproven"
+    },
+    {
+      "number": 14727,
+      "url": "https://github.com/ggml-org/llama.cpp/issues/14727",
+      "state": "closed",
+      "scope": "RDNA3 model-output nondeterminism; not established as this reduced TILE case"
+    },
+    {
+      "number": 31555,
+      "url": "https://github.com/ggml-org/llama.cpp/issues/31555",
+      "state": "open",
+      "scope": "Volta D576 MMA dispatch abort, a different observed outcome/device path"
+    },
+    {
+      "number": 28495,
+      "url": "https://github.com/ggml-org/llama.cpp/issues/28495",
+      "state": "open",
+      "scope": "Unified-KV prompt-processing throughput limitation, not a nondeterminism report"
+    }
+  ],
+  "conclusion": "No exact same-case issue established within these bounded searches; no claim that current upstream master is affected or that no duplicate exists."
+}

@@ -1,0 +1,111 @@
+{
+  "as_of": "2026-11-18T16:10:52Z",
+  "campaign_history_snapshot_sha256": "986ae5f15273c589098c10b74dd5d9112d6a299b12e3b6f0ec77f51b666ab3f8",
+  "campaign_store": "/mnt/raid0/llm/autokernel/proof-q38fn-r6-20261112",
+  "claims": [
+    "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2KT:pp512",
+    "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2KT:tg128",
+    "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2XXS:pp512",
+    "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2XXS:tg128",
+    "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ4KT:pp512",
+    "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ4KT:tg128",
+    "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:Q4KM:pp512",
+    "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:Q4KM:tg128"
+  ],
+  "control_only": false,
+  "entry": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "filing": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/exp01-official-native-20261118",
+  "frames": 24,
+  "history_recalled": 3,
+  "history_rendered": {
+    "mechanism": "akm-cpu-q6k-x4t-weight-prefetch",
+    "stale": true,
+    "status": "scope_blocked"
+  },
+  "mode": "official",
+  "negative_targets": [
+    {
+      "backend": "gpu",
+      "model": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/official/7e48d529b4cc483aa98db09d818d27a1/Qwen3.6-35B-A3B-IQ2_KT.gguf"
+    },
+    {
+      "backend": "gpu",
+      "model": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ2_XXS.gguf"
+    },
+    {
+      "backend": "gpu",
+      "model": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ4_KT.gguf"
+    },
+    {
+      "backend": "gpu",
+      "model": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-Q4_K_M.gguf"
+    },
+    {
+      "backend": "cpu",
+      "model": "unrelated-model.gguf"
+    }
+  ],
+  "official_native_acceptance": "verified-original-filing",
+  "original_official_r3_pre_hook": true,
+  "original_results_sha256": "1331643fca75e0287ad76ad2a56e985a7c38ddff666955b5d07f512cf740e728",
+  "proposal_reliance": [
+    {
+      "accepted": [
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2KT:pp512",
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2KT:tg128"
+      ],
+      "declared": [
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2KT:pp512",
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2KT:tg128"
+      ],
+      "rejected": []
+    },
+    {
+      "accepted": [
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2XXS:pp512",
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2XXS:tg128"
+      ],
+      "declared": [
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2XXS:pp512",
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2XXS:tg128"
+      ],
+      "rejected": []
+    },
+    {
+      "accepted": [
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ4KT:pp512",
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ4KT:tg128"
+      ],
+      "declared": [
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ4KT:pp512",
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ4KT:tg128"
+      ],
+      "rejected": []
+    },
+    {
+      "accepted": [
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:Q4KM:pp512",
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:Q4KM:tg128"
+      ],
+      "declared": [
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:Q4KM:pp512",
+        "clm_exp01-official:324f2a402186442f9efc21f4e65624eb:Q4KM:tg128"
+      ],
+      "rejected": []
+    }
+  ],
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "b5911113a95e57a22c9df48f51fe7c3b9f69eb7a",
+    "origin_main": "b5911113a95e57a22c9df48f51fe7c3b9f69eb7a",
+    "root": "/mnt/raid0/llm/views/epyc-root-main"
+  },
+  "refused": 0,
+  "rendered_excerpt_sha256": "3c80d16323cc69e14ee6170b977cdc6a883bf4a4606023dcf2c29ea9af81d179",
+  "rows": 8,
+  "schema": "epyc.vidya.exp01_planning_canary.v3",
+  "scratch_ledger": true,
+  "status": "passed",
+  "stop": "AgentPlanner._proposal_from_agent intercepted before backend execution"
+}

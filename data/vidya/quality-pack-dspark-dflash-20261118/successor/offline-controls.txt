@@ -1,0 +1,8 @@
+$ python3 -B data/vidya/quality-pack-dspark-dflash-20261118/successor/offline_controls.py
+PASS reconstructed original successor SOURCE.sha256
+PASS staged witness with a new inode and the original bytes
+PASS corrupted staged witness refused
+PASS four cap-0/7 pairs, exact request bytes, cross-packet uniqueness, comparator pair admission
+PASS changed cap-free request and cross-server pair refused
+PASS original v10 small-model no-spec response replay
+PASS cap echo and draft-counter fixtures, including three corrupted-response refusals

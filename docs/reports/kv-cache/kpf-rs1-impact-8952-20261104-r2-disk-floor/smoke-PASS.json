@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf-rs1-impact-8952-20261104-r2/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-04T19:27:20Z reason=exited",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf-rs1-impact-8952-20261104-r2/native-attempts/attempt-kzd5769g/native-result.json (measurement field)",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T19:27:22Z",
+ "id": "kpf-rs1-impact-8952-20261104-r2",
+ "launcher_sha256": "58c704a07765e133e2077416e04a38e66ced86f6077b0a54de604033770a6136",
+ "passed_at": "2026-11-04T19:27:22Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf-rs1-impact-8952-20261104-r2/native-attempts/attempt-kzd5769g/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

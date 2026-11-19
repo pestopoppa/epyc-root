@@ -38,3 +38,7 @@ Use `--no-commit` only if the operator specifically wants the exact changes and 
 
 
 The repository rule is explicit: `coordination/session-bus/human_only_paths.yaml` marks `agents/shared/*.md` human-only, and `agents/shared/OPERATING_CONSTRAINTS.md` § Operator Decision Requests states: “The operator signs from a terminal.” Chat consent cannot supply this receipt; run the signing command in a separate interactive terminal, without `!` or a chained activation command. MAIN will independently review the signed commit before normal publication.
+
+## Addendum 2026-11-11 — superseded by LR-11-only bundle
+
+The 10-07 pins went stale: `OPERATING_CONSTRAINTS.md` and `SESSION_LIFECYCLE.md` were amended by later ratified commits (including `RATIFY-LR13-SUBAGENT-SCRATCH-20261109`, which already states that scratch lifetime is the main's call per subagent brief). The operator decided on 2026-11-11 "LR-11 only (Recommended)": LR-13 counts as ratified by that 11-09 gate, so the OPERATING_CONSTRAINTS hunk is dropped. The unchanged SESSION_LIFECYCLE close-inventory bullet is re-anchored in `artifacts/operator/lr11-close-inventory-20261111.patch` (gate `RATIFY-LR11-CLOSE-INVENTORY-20261111`, script `artifacts/operator/ratify_lr11_close_inventory_20261111.sh`). The 10-07 patch and script are retained unchanged and must not be signed.

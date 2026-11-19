@@ -70,6 +70,13 @@ artifact, staleness bound, and meaning of absence. The AMD AI Lab page is one su
 explicit snapshot from `epyc-web`; its benchmark claims remain labeled by the
 source site's evidence status.
 
+The board's flow panel has one counter: `daily_flow` in `data/handoff_timeline.json`, written by
+`scripts/handoffs/build_handoff_timeline.py` (flows from `--no-merges` by each commit's own date;
+end-of-day stock from the first-parent line). The hub only sums those days and runs no git for it,
+so an absent artifact shows "flow unavailable", never zeros. The `hub_view` panel (`/api/hub_view`)
+reports the served HEAD, its distance to origin/main, and `refresh_hub_view.sh`'s last outcome from
+`.git/epyc-view-refresh.json`; a failed fetch or checkout degrades `/api/health`.
+
 **No unregistered pages.** A page reachable but absent from the registry is
 invisible to the nav, has no probe, and no one learns it exists — which is how the
 7.6k-line `:8000/dashboard` page accreted in the first place. A **retired** route

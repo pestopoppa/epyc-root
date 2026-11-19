@@ -1,0 +1,9 @@
+# Corrected C6 targeted comparison: guarded preparation
+
+The build receipt is pending. `bind.py` refuses to create `BOUND.json` until the full corrected build and its source and image custody checks pass. The launcher always exits 75: this packet is not dispatchable or publishable. After a successful build, bind its actual receipt and image, independently review the runner and binding, then produce a newly sealed publisher-ready row and run native GPU smoke under the current rowflow admission rules.
+
+`job.py` runs two paired n=4 comparisons and the n=5 preservation case. Each native invocation has its own captures, exact seed and route, pinned image, own-PID residency witnesses, and child cleanup checks. Full and smoke runs write to different directories and result paths. A completed native failure is a scoped diagnostic result, not a pass; missing witnesses are inconclusive. `complete.py` rechecks evidence and artifact custody. Smoke must execute native GPU units and retain the same witnesses; neither this preparation nor the offline tests are smoke evidence.
+
+`test_offline.py` tests absent-build refusal, comparator tampering, and route parsing without invoking a GPU. The old runners in `reference/` are historical implementation references only. No native GPU testing has been performed on this new runner.
+
+The baseline build receipt remains in the scratch draft as `BASELINE-BUILD-RESULT.json`; this review snapshot retains `BASELINE-BUILD-INPUTS.sha256` and `BASELINE-CANDIDATE.patch`; the active predecessor files and manifests were not changed. The completion verifier uses a recorded rowflow grant snapshot and the declared row ID, so it does not require `FILLER_ID` or other inner-only variables in the outer process. `test_completion_outer.py` tests that boundary with simulated evidence and no GPU.

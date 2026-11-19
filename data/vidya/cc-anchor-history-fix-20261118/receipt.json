@@ -1,0 +1,19 @@
+{
+  "status": "fixed and verified",
+  "root_cause": "Path-limited git rev-list includes deletion commits, and git show <commit>:<path> fails for their absent paths.",
+  "fix": "On a historical blob read failure, verify path absence with a literal full-tree git ls-tree lookup before skipping. Preserve the original error for a present entry or failed verification. Current-ref reads and the quote-not-found error retain their existing paths.",
+  "gitnexus": {
+    "status": "Repository not indexed",
+    "impact": "Unavailable without an index",
+    "direct_callers_verified_in_source": [
+      "build_row",
+      "resolve_also"
+    ]
+  },
+  "verification": {
+    "before": "New deletion/reintroduction test reproduced the git show ProjectionError.",
+    "command": "python3 -m pytest -q tests/vidya/test_committed_conclusion_adapter.py",
+    "result": "16 passed; 15 carrier tuples checked with 0 violations.",
+    "diff_check": "passed"
+  }
+}

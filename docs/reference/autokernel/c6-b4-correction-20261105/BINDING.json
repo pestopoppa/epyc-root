@@ -1,0 +1,10 @@
+{
+  "schema": "epyc.c6.b4-correction.v1",
+  "candidate_source": "/mnt/raid0/llm/tmp/codex-c6-mmqfix-20261102/src/ggml/src/ggml-cuda/mmvq.cu",
+  "candidate_source_sha256": "5394afa3ff85ebce4b12004423e64ce1d8f92b32db88063c6f30dbe95dff22bc",
+  "candidate_source_build_input_manifest": "/mnt/raid0/llm/tmp/codex-c6-mmqfix-20261102/BUILD-INPUTS.sha256",
+  "patch_sha256": "1fcf3d6c8ecc9fecca199687d2d2637f31c93b6426b81401726645e8d7f6a9c2",
+  "patched_source_sha256": "0161a57e6b6c91e04e61e6e26b5d4a75a6b8cfb833f21dc40275f80e2bb7cca0",
+  "scope": "q4_K n=4 non-fused b4 min correction only",
+  "status": "prepared, not built or GPU tested"
+}

@@ -1,0 +1,20 @@
+Testing 1 devices
+
+Backend 1/1: CPU
+  Device description: AMD EPYC 9655 96-Core Processor
+  Device memory: 1160617 MB (1160617 MB free)
+
+[FLASH_ATTN_EXT] ERR = 0.499994436 > 0.003000000   CASCADE_REFERENCE_FA(split=0,mask_case=0): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.499994436 > 0.003000000   CASCADE_REFERENCE_FA(split=256,mask_case=0): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.499964625 > 0.003000000   CASCADE_REFERENCE_FA(split=97,mask_case=1): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.499980175 > 0.003000000   CASCADE_REFERENCE_FA(split=97,mask_case=2): test failed [1;31mFAIL[0m
+  0/4 tests passed
+
+Failing tests:
+  CASCADE_REFERENCE_FA(split=0,mask_case=0)
+  CASCADE_REFERENCE_FA(split=256,mask_case=0)
+  CASCADE_REFERENCE_FA(split=97,mask_case=1)
+  CASCADE_REFERENCE_FA(split=97,mask_case=2)
+  Backend CPU: [1;31mFAIL[0m
+0/1 backends passed
+[1;31mFAIL[0m

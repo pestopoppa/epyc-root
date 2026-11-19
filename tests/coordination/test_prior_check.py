@@ -293,6 +293,10 @@ def test_task_document_is_listed_but_never_the_prior(tmp_path):
     book = tmp_path / "tmp" / "compute-flags"
     book.mkdir()
     (book / "f8-booking-list.md").write_text(f"KVU-12.1 {MODEL} prompt_n\n")
+    # The tmp run-record walk only reads result-shaped names (summary/result/report/... , records/*.json,
+    # *.jsonl); a booking list is surfaced through a document root (research / --extra-root), which
+    # reads any .md. Point that scanner at the booking directory so the document is actually listed.
+    roots = roots + ["--extra-root", str(book)]
     j = json.loads(cli("--json", "--model", MODEL, "--decision", "KVU-12.1", *roots).stdout)
     assert j["candidates"] and j["candidates"][0]["task_doc"] is True
     assert j["prior"].startswith("prior=none")

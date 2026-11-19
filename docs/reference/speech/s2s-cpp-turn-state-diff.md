@@ -1,6 +1,6 @@
 # s2s.cpp turn state machine vs our controller (CS-22.D1 design-input diff)
 
-**Status**: design input only; ratifies nothing, adopts nothing, measures nothing (zero compute). Written 2026-10-22 for CS-22.D1 ([`handoffs/active/conversation-stack.md`](../../../handoffs/active/conversation-stack.md)); intake record: intake-2350#record.
+**Status**: design input only; ratifies nothing, adopts nothing, measures nothing (zero compute). Written 2026-10-22 for CS-22.D1 ([`handoffs/active/speech-and-multimodal.md`](../../../handoffs/active/speech-and-multimodal.md)); intake record: intake-2350#record.
 **Source**: ServeurpersoCom/s2s.cpp pinned at `e620fab214cb12ee264ba3717b50b3eb52006892` (verified `git log -1` on `/mnt/raid0/llm/tmp/dive-s2s-cpp-ultra-gguf/repo`). **Licence MIT** (`LICENSE`, "MIT License, Copyright (c) 2023-2026 The s2s.cpp authors"), so code may be lifted with the notice; nothing is adopted wholesale.
 **Ours**: `epyc-orchestrator/src/voice/controller.py` (a transport-neutral controller: one active turn, `cancel()` / `apply_retain_cancel_choice()`, ordered cleanup hooks); CS-18 (retain/cancel decision through the existing cancel path), CS-23 (cancel chain: queued audio, then interlocutor generation, then vocoder, then orchestrator), CS-22.V1 (VAD grid), CS-47 (turn-end bake-off), [`turn-taking-measurands.md`](turn-taking-measurands.md). We have **no VAD or turn-end code in `src/voice` yet** (no matches for VAD/barge/turn-detect in that directory); CS-22 is still open.
 

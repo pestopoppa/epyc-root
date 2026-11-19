@@ -1,0 +1,16 @@
+{
+  "row": "brf-exp09-expanded-r3-20261104",
+  "rc": 75,
+  "reason": "disk-floor",
+  "verdict": "inconclusive",
+  "result_sha256": "59b4358cfdb709bf3b14a0781803d6595080b3045c8c0133b830b3e836ba7266",
+  "observed_cells": 24,
+  "planned_cells": 96,
+  "by_arm": {
+    "control": 24
+  },
+  "control_accuracy_mean": 0.7663333333333333,
+  "all_parsed": true,
+  "all_captured": true,
+  "comparison": "not evaluable: no verified-quote or other treatment cells"
+}

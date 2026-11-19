@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T14:18:07Z reason=disk-floor
+job_id=ufh14-repl-emb23a-parse-v2-20261104
+owner=handoff-agentic-serving-harness-fixes
+step=job-run
+estimated_wall_s=3300
+started=2026-11-04T14:17:59Z
+regions=48-71

@@ -1,0 +1,63 @@
+{
+ "book_s": 225,
+ "budget_gib": 0.01,
+ "busy_fraction": 0.25,
+ "decision_rule": "selected_count >= 2 and refusal_count == 0 and reliance_count == 0 and task_gate_claims == 0",
+ "declared_shape": "sub-quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-FM4-COORDINATOR-ENTRY-PREP",
+ "id": "vb-fm4-coordinator-context-20261118",
+ "keep": [
+  "source/**",
+  "launcher/**",
+  "official/**",
+  "official-*/**",
+  "publisher_smoke-*/**",
+  "*.py",
+  "*.json",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/launcher/launch.sh",
+  "sha256": "3e54f06dd6c7434084331be23a0cb33b90e1dab0d8d2034ba68ae0dc892a709c"
+ },
+ "lineage": "vidya-fm4-coordinator-context",
+ "min_window_s": 120,
+ "notes": "Model-free structural replay. The packet seals the coordinator role, entry point, reader and adapter closure, and both replay descriptors before admission. The publisher smoke selects one original pair and official selects both pairs in one isolated ledger, each on four allocated CPUs. The original private, read-only rollouts are replayed in place against the pinned filed census. Pass requires both exact Judged/Located harness observations in the coordinator review context, zero reliance and task-gate claims, and exclusion from autokernel.planner. Task outcomes remain null. Stop on answer after verifying the exact context. Stop on identity/input drift, refusal, STOP or the earlier of the grant deadline and 300 seconds, preserving partial UNKNOWN. The estimate is the 300-second admission floor. The result describes isolated entrypoint assembly.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:4: untestable prose prerequisite: 'after focused refusal controls and publisher four-CPU native smoke PASS. Model-free retained-native replay of the two or'"
+ ],
+ "published_at": "2026-11-18T17:23:08Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T17:23:08Z",
+  "session": "01a1efa8-bde5-7eb1-bc29-03fc437a19d5",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/STOP",
+ "total_units": 2,
+ "unit_key": "selected_count",
+ "window_s": 420,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/engine-work"
+}

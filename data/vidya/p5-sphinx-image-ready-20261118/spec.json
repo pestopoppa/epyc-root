@@ -1,0 +1,33 @@
+{
+  "schema": "epyc.row.v3",
+  "kind": "compute",
+  "id": "vb-p5-sphinx-image-rebuild-20261118",
+  "owner": "handoff-vidya-belief-substrate",
+  "handoff_task": "vidya-belief-substrate-program.md:VB-P5-SPHINX-IMAGE-REBUILD",
+  "lane": "cpu",
+  "shape": "sub-quarter",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 8,
+  "budget_gib": 4,
+  "busy_fraction": 0.25,
+  "priority_rank": 70,
+  "estimate_s": 420,
+  "min_window_s": 300,
+  "first_progress_s": 300,
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/launch.sh",
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/official/RESULT.json",
+  "result_format": "json",
+  "dryrun_native_result": true,
+  "smoke_predicate": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/launch.sh --complete",
+  "verdict_by": "agent",
+  "keep": [
+    "SOURCE.sha256",
+    "launch.sh",
+    "build-image.sh",
+    "context/Dockerfile",
+    "spec.json",
+    "official/**"
+  ],
+  "decision_rule": "Accept a successful network-disabled build from the exact digest-pinned Sphinx base and Dockerfile with inspectable derived image and an original hashed build log. Stop on answer after the image and build log are retained or on first refusal, STOP, the allocation deadline or 300 seconds. Build custody only."
+}

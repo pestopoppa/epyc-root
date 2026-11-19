@@ -153,7 +153,7 @@ Re-open trigger status: MET on availability, NOT met on capability (no official 
 licenses. The 10M-example FuzzyBench training set remains unavailable; 1477's recipe is the closest self-hosted path.
 ```
 
-## 5. New stub C — `handoffs/active/fuzzy-workflow-authoring-gui.md` (owner: user-facing-harness-index → **UFH-09**)
+## 5. New stub C — `handoffs/completed/fuzzy-workflow-authoring-gui.md` (owner: user-facing-harness-index → **UFH-09**)
 
 ```markdown
 # Fuzzy Workflow Authoring GUI — deterministic flow, fuzzy steps, one canvas

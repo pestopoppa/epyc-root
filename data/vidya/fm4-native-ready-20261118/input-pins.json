@@ -1,0 +1,50 @@
+{
+  "collector_sha256": "ad8c3645f3fef671a46886c2f1ad7dbebe3fa2ecce78b8fa0252fa13ba285ced",
+  "pairs": [
+    {
+      "binding_kind": "native_agent_path",
+      "child_agent_path": "/root/scratch_cleanup",
+      "identity": {
+        "child_agent_id": "01a1ef4a-44d3-74e3-ae17-c8fa32009836",
+        "dispatch_tool_use_id": "call_83106cd980044f1bac254e200034127d",
+        "parent_session_id": "01a1ef49-ca67-7a53-bdfc-4bd5a1c87a6a"
+      },
+      "inputs": {
+        "child": {
+          "bytes": 781525,
+          "file": "private/scratch_cleanup.child.jsonl",
+          "sha256": "c96d3e863eeff8fb413c00d9cdeec93c26793d9db7600d2d0b6e1bddaa2dcf17"
+        },
+        "parent": {
+          "bytes": 1893418,
+          "file": "private/scratch_cleanup.parent.jsonl",
+          "sha256": "86cc0f612eefeec2794773c2468358bd9315a0e05e761d37dfb2ad831b8c675c"
+        }
+      },
+      "pair_id": "scratch_cleanup"
+    },
+    {
+      "binding_kind": "native_agent_path",
+      "child_agent_path": "/root/exp01_acceptance",
+      "identity": {
+        "child_agent_id": "01a1ecac-5b5b-7a60-bb40-a372abd334a7",
+        "dispatch_tool_use_id": "call_c8f079356562429693a35665f4a639a6",
+        "parent_session_id": "01a1ecab-d8ad-7501-b4d7-ab56cdda54be"
+      },
+      "inputs": {
+        "child": {
+          "bytes": 2001397,
+          "file": "private/exp01_acceptance.child.jsonl",
+          "sha256": "c1716d218df439ee2aaddc46df0faa466a85f9eb7777c3623775a5c3b41470ea"
+        },
+        "parent": {
+          "bytes": 2345593,
+          "file": "private/exp01_acceptance.parent.jsonl",
+          "sha256": "07215f18d4b953e20af3d5f698e9176fcac54f8ae2305b5c60326d5401100ab7"
+        }
+      },
+      "pair_id": "exp01_acceptance"
+    }
+  ],
+  "schema": "fm4.codex_dispatch.census_inputs.v1"
+}

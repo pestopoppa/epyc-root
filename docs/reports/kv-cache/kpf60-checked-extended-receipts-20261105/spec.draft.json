@@ -1,0 +1,24 @@
+{
+  "decision_rule": "Build-only pass requires the exact content-sealed extended arithmetic source and fixture, zero compile and fixture exits, verified owned-child cleanup, and matching source, binary and log hashes. No native cache, model, writer parity, GPU, transfer or byte-count measurement follows.",
+  "dryrun_native_result": true,
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-60.GPU-X",
+  "id": "kpf60-checked-extended-receipts-20261105",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute",
+  "lane": "cpu",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf60-checked-extended-receipts-20261105/launch.sh",
+  "lineage": "kpf60-checked-extended",
+  "owner": "h-kvfork",
+  "priority_rank": 45,
+  "ram_gib": 4,
+  "regions": "any-cpu-quarter",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf60-checked-extended-receipts-20261105/out/RESULT.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf60-checked-extended-receipts-20261105",
+  "smoke_timeout_s": 300,
+  "supersedes": "kpf60-checked-extended-20261104",
+  "notes": "UNREADY pending review and publisher smoke. Same fixture; fresh attempt receipts; no native cache claim."
+}

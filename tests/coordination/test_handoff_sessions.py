@@ -13,6 +13,12 @@ from scripts.coordination import handoff_sessions as hs
 @pytest.fixture(autouse=True)
 def _wrapups_landed(monkeypatch):
     monkeypatch.setattr(hs, "landed", lambda sha, repo=None: True)
+    monkeypatch.setattr(hs, "tmux", lambda *a, **k: (1, ""))  # never reach a tmux server (INC-20260806 guard)
+    monkeypatch.setattr(hs.tg, "admit", lambda conf, budget, kind="work": (True, "test"))  # no live codex meter
+    monkeypatch.setattr(hs.tg, "resume_verdict", lambda e, now, conf: (True, "test"))  # G2 no-progress parking is not under test here
+    real_decide = hs.decide  # fixture sessions are event-driven: with no report of their own they idle (the live
+    monkeypatch.setattr(hs, "decide", lambda flags, slug, e, *a, **k:  # default "missing report -> go on" would resume them)
+                        real_decide(flags, slug, e, *a, **k) if e.get("last_report") else ("pause", "test: no report"))
 
 
 def _setup(tmp_path, n=3, cap=2):
@@ -22,7 +28,7 @@ def _setup(tmp_path, n=3, cap=2):
     sessions = {f"h{i}": {"handoff": f"handoffs/active/h{i}.md", "engine": "codex", "session_id": f"sid{i}",
                           "status": "suspended", "row_patterns": [f"^h{i}-"], "last_end": hs.now_iso(),
                           "last_wrapup": f"abc123{i}"} for i in range(n)}
-    (F / "handoff-sessions.json").write_text(json.dumps({"max_live": cap, "sessions": sessions}))
+    (F / "handoff-sessions.json").write_text(json.dumps({"max_live": cap, "auto_start": False, "sessions": sessions}))  # no auto-start from the real repo index
     calls = []
 
     def runner(cmd, pf, out):
@@ -32,25 +38,32 @@ def _setup(tmp_path, n=3, cap=2):
     return F, calls, runner
 
 
+def _manifest(F, rid, **kw):
+    """Rows route to their owner by the manifest's handoff_task (bg.pilot_of, operator 2026-11-02), not by rid pattern."""
+    (F / "ready" / f"{rid}.json").write_text(json.dumps({"id": rid, "schema": "epyc.row.v3",
+                                                         "handoff_task": f"handoffs/active/{rid.split('-')[0]}.md", **kw}))
+
+
 def test_run_end_resumes_owner_with_manifest_facts(tmp_path):
     F, calls, runner = _setup(tmp_path)
     (F / "grants" / "old-h0-x.ended").write_text("rc=0")
     hs.dispatch_once(str(F), runner, seed=True)
     assert not calls
-    (F / "ready" / "h0-row-v2.json").write_text(json.dumps({"id": "h0-row-v2", "schema": "epyc.row.v3", "result_path": "/r/x.json",
-                                                            "decision_rule": "keep if delta>=2%"}))
+    _manifest(F, "h0-row-v2", result_path="/r/x.json", decision_rule="keep if delta>=2%")
     (F / "ready" / "h0-row-v2.launcher.out").write_text("start\nEND rc=127 missing binary\n")
     (F / "grants" / "h0-row-v2.ended").write_text("rc=127 time=t reason=job-rc-127:exited")
     (F / "grants" / "other-row.ended").write_text("rc=0")
     reg, st = hs.dispatch_once(str(F), runner)
     assert len(calls) == 1
     cmd, prompt = calls[0]
-    assert cmd == ["codex", "exec", "resume", "--json", "sid0", "-"]
+    assert cmd[:4] == ["codex", "exec", "resume", "--json"] and cmd[-2:] == ["sid0", "-"]  # model pin sits between
     for frag in ("h0-row-v2", "rc=127", "END rc=127 missing binary", "result_path: /r/x.json",
-                 'decision_rule: "keep if delta>=2%"', "fetch origin", "BACKLOG-handoff-h0.md",
-                 "file the verdict", "filing-done/h0-row-v2.FILED", "WRAPPED <sha>"):
+                 'decision_rule: "keep if delta>=2%"', "origin/main was merged in", "BACKLOG-handoff-h0.md",
+                 "verdict", "filing-done/h0-row-v2.FILED", "WRAPPED <sha>"):
         assert frag in prompt, frag
     assert reg["sessions"]["h0"]["status"] == "live"
+    (F / "filing-done").mkdir(exist_ok=True)
+    (F / "filing-done" / "h0-row-v2.FILED").write_text("")  # DSH-2: the receipt acks the event (else it is redelivered)
     reg, _ = hs.dispatch_once(str(F), runner)  # pid not alive, wrap-up landed -> suspended, no duplicate resume
     assert reg["sessions"]["h0"]["status"] == "suspended" and len(calls) == 1
 
@@ -59,37 +72,42 @@ def test_unwrapped_session_is_not_resumed_for_new_work(tmp_path, monkeypatch):
     F, calls, runner = _setup(tmp_path, n=1, cap=5)
     monkeypatch.setattr(hs, "landed", lambda sha, repo=None: False)
     hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-r")
     (F / "grants" / "h0-r.complete").write_text("complete")
     reg, st = hs.dispatch_once(str(F), runner)
-    assert not calls and len(st["queue"]) == 1, "event stays queued until the wrap-up lands"
+    assert len(st["queue"]) == 1, "event stays queued until the wrap-up lands"
+    # 01420487d: the owner is nudged at once to land its wrap-up, never handed the new run end
+    assert calls and all("FIRST fix and land your wrap-up" in p and "Run end" not in p for _, p in calls)
     assert "UNWRAPPED h0" in (F / "handoff-sessions.log").read_text()
     monkeypatch.setattr(hs, "landed", lambda sha, repo=None: True)
     reg, st = hs.dispatch_once(str(F), runner)
-    assert len(calls) == 1 and not st["queue"]
+    assert "Run end" in calls[-1][1] and "`h0-r`" in calls[-1][1] and not st["queue"]
 
 
 def test_cap_queues_excess_events(tmp_path, monkeypatch):
-    F, calls, runner = _setup(tmp_path, n=3, cap=2)
+    F, calls, runner = _setup(tmp_path, n=4, cap=2)
     hs.dispatch_once(str(F), runner, seed=True)
     monkeypatch.setattr(hs, "alive", lambda pid: bool(pid))
-    for i in range(3):
+    for i in range(4):
+        _manifest(F, f"h{i}-r")
         (F / "grants" / f"h{i}-r.complete").write_text("complete")
     reg, st = hs.dispatch_once(str(F), runner)
-    assert len(calls) == 2 and len(st["queue"]) == 1
+    assert len(calls) == 2 + hs.FILING_SLOTS and len(st["queue"]) == 1  # DSH-4: one filing slot above max_live
 
 
 def test_idle_handoff_with_work_is_started_and_usage_limit_pauses(tmp_path):
     F, calls, runner = _setup(tmp_path, n=1, cap=5)
     reg = json.loads((F / "handoff-sessions.json").read_text())
     reg["sessions"]["h0"]["last_end"] = "2020-01-01T00:00:00Z"
+    reg["sessions"]["h0"]["last_report"] = {"next": "h0-a"}  # the session reported open work -> go on
     (F / "handoff-sessions.json").write_text(json.dumps(reg))
     (F / "BACKLOG-handoff-h0.md").write_text("- [blocked] cpu rank=1 **h0-a**\n- [qualified-armed] gpu rank=2 **h0-b**\n")
     hs.dispatch_once(str(F), runner, seed=True)
-    assert len(calls) == 1 and "Continue your handoff" in calls[0][1] and "WRAPPED <sha>" in calls[0][1]
+    assert len(calls) == 1 and "go on: next=h0-a" in calls[0][1] and "WRAPPED <sha>" in calls[0][1]
     reg = json.loads((F / "handoff-sessions.json").read_text())
     Path(reg["sessions"]["h0"]["last_output"]).write_text('{"type":"error","message":"You have hit your usage limit"}\n')
     reg, _ = hs.dispatch_once(str(F), runner)
-    assert reg["paused_until"] and reg["sessions"]["h0"]["waits_on"] == ["h0-b"]
+    assert reg["engine_pause"]["codex"]["until"] and reg["sessions"]["h0"]["waits_on"] == ["h0-b"]
     assert "USAGE-LIMIT" in (F / "handoff-sessions.log").read_text()
 
 
@@ -110,3 +128,515 @@ def test_unpushed_wrapup_is_resumed_immediately(tmp_path, monkeypatch):
     Path(reg["sessions"]["h0"]["last_output"]).write_text("WRAPPED abc1234\n")
     reg, _ = hs.dispatch_once(str(F), runner)
     assert reg["sessions"]["h0"]["status"] == "suspended"
+
+
+def test_event_resume_honours_fresh_next(tmp_path):
+    """2026-11-17: a run-end/alert resume ignored fresh_next and replayed a 115M-token thread into the G2 kill."""
+    F, calls, runner = _setup(tmp_path, n=1, cap=2)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h0"]["fresh_next"] = True
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-row-v3")
+    (F / "grants" / "h0-row-v3.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert calls, "event did not resume the owner"
+    cmd, prompt = calls[-1]
+    assert "resume" not in cmd and "sid0" not in cmd, cmd
+    assert "h0-row-v3" in prompt
+    assert not reg["sessions"]["h0"].get("fresh_next")
+
+
+def _ended_turn(tmp_path, F):
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    out = tmp_path / "o.jsonl"
+    out.write_text('{"text":"done WRAPPED abc1230"}\n')
+    reg["sessions"]["h0"].update(pid=999999999, last_output=str(out), status="live")
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+
+
+def test_turn_end_closes_window_when_not_restarting(tmp_path, monkeypatch):
+    """2026-11-17: no lingering pane-status window after a turn that is not followed by an immediate restart."""
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    killed = []
+    monkeypatch.setattr(hs, "kill_window", lambda slug: killed.append(slug))
+    _ended_turn(tmp_path, F)
+    reg, _ = hs.dispatch_once(str(F), runner, seed=True)
+    assert reg["sessions"]["h0"]["status"] == "suspended" and killed == ["h0"] and not calls
+
+
+def test_turn_end_keeps_window_when_unpushed_restart_follows(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    killed = []
+    monkeypatch.setattr(hs, "kill_window", lambda slug: killed.append(slug))
+    monkeypatch.setattr(hs, "landed", lambda sha, repo=None: False)
+    _ended_turn(tmp_path, F)
+    hs.dispatch_once(str(F), runner, seed=True)
+    assert killed == [] and len(calls) == 1
+
+
+def test_kill_window_respects_protected_and_start_recreates(monkeypatch):
+    seen = []
+    monkeypatch.setattr(hs, "tmux_has_window", lambda slug: False)
+    monkeypatch.setattr(hs, "tmux", lambda *a, **k: (seen.append(a), (1, ""))[1])
+    hs.launch_in_tmux("h0", ["true"], "/dev/null", "/nonexistent/o.jsonl", "/")
+    assert seen and seen[0][0] == "new-window"  # START after a close recreates the window by name
+    seen.clear()
+    monkeypatch.setattr(hs, "tmux_has_window", lambda slug: True)
+    monkeypatch.setattr(hs, "window_name", lambda slug: slug)
+    hs.kill_window("codex-gen")
+    assert seen == []
+    hs.kill_window("h0")
+    assert seen and seen[0][0] == "kill-window"
+
+
+# --- HS-LANE-REAP-SPAM: locked lanes skipped, failures logged once, REAPED only on success ---
+class _R:
+    def __init__(self, rc=0, out="", err=""):
+        self.returncode, self.stdout, self.stderr = rc, out, err
+
+
+def _reap_setup(monkeypatch, tmp_path, *, locked, remove_rc=0):
+    lane = tmp_path / "h-x"
+    lane.mkdir()
+    calls, logs = [], []
+
+    def fake_git(cwd, *args, timeout=300):
+        calls.append(args)
+        if args[:2] == ("worktree", "list"):
+            out = f"worktree {tmp_path}/main\nHEAD abc\n\nworktree {lane}\nHEAD def\n"
+            if locked:
+                out += "locked Active session\n"
+            return _R(out=out)
+        if args[:2] == ("worktree", "remove"):
+            assert "--force" not in args
+            return _R(rc=remove_rc, err="fatal: boom" if remove_rc else "")
+        return _R()
+
+    monkeypatch.setattr(hs, "_git", fake_git)
+    monkeypatch.setattr(hs, "alive", lambda pid: False)
+    monkeypatch.setattr(hs, "lane_dir", lambda slug: str(lane))
+    monkeypatch.setattr(hs, "lane_clean_and_landed", lambda d: True)
+    monkeypatch.setattr(hs, "log", lambda flags, msg: logs.append(msg))
+    reg = {"sessions": {"x": {"status": "suspended"}}}
+    return reg, calls, logs
+
+
+def test_reap_skips_locked_lane_and_logs_once(monkeypatch, tmp_path):
+    reg, calls, logs = _reap_setup(monkeypatch, tmp_path, locked=True)
+    for _ in range(5):
+        hs.reap_lanes({}, reg, repo=str(tmp_path))
+    assert not any(a[:2] == ("worktree", "remove") for a in calls)
+    assert not any("unlock" in a for a in calls)
+    assert len(logs) == 1 and logs[0].startswith("LANE-LOCKED")
+
+
+def test_reap_failure_logged_once_never_as_reaped(monkeypatch, tmp_path):
+    reg, calls, logs = _reap_setup(monkeypatch, tmp_path, locked=False, remove_rc=128)
+    for _ in range(5):
+        hs.reap_lanes({}, reg, repo=str(tmp_path))
+    assert len(logs) == 1 and logs[0].startswith("LANE-REAP-FAILED")
+    assert not any("LANE-REAPED" in m for m in logs)
+
+
+def test_reap_success_logs_reaped(monkeypatch, tmp_path):
+    reg, calls, logs = _reap_setup(monkeypatch, tmp_path, locked=False)
+    hs.reap_lanes({}, reg, repo=str(tmp_path))
+    assert len(logs) == 1 and logs[0].startswith("LANE-REAPED")
+
+
+# HS-DUPLICATE-EVENT-TURNS: duplicate, replayed and superseded run ends are dropped before they cost a turn.
+def _filed(F, rid):
+    (F / "filing-done").mkdir(exist_ok=True)
+    (F / "filing-done" / f"{rid}.FILED").write_text("")
+
+
+def test_row_base_parses_revision_anywhere():
+    assert hs.row_base("h0-x") == ("h0-x", 1)
+    assert hs.row_base("h0-x-r3") == ("h0-x", 3)
+    assert hs.row_base("h0-bank-r2-20261118") == ("h0-bank-20261118", 2)
+    assert hs.superseded_by("h0-x", ["h0-x-r2", "h0-x-r3", "h1-x-r9"]) == "h0-x-r3"
+    assert hs.superseded_by("h0-x-r3", ["h0-x-r2"]) is None
+
+
+def test_twin_end_file_after_delivery_is_dropped(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, st = hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1 and "h0-r" in st["delivered"]  # first delivery always goes through
+    _filed(F, "h0-r")
+    hs.dispatch_once(str(F), runner)  # turn ends, receipt present
+    (F / "grants" / "h0-r.complete").write_text("complete")  # the .complete twin lands later
+    reg, st = hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1 and not st["queue"]
+    assert "DEDUPE-DELIVERED h0-r -> h0" in (F / "handoff-sessions.log").read_text()
+
+
+def test_prefiled_row_is_still_delivered_once(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-r")
+    _filed(F, "h0-r")
+    (F / "grants" / "h0-r.complete").write_text("complete")  # filed before the owner saw it
+    hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1  # operator 2026-11-18: first delivery kept
+    (F / "grants" / "h0-r.ended").write_text("rc=0")  # the twin is still a duplicate
+    hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1
+
+
+def test_lower_revision_after_higher_delivered_is_superseded(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-x-r2")
+    (F / "grants" / "h0-x-r2.complete").write_text("complete")
+    hs.dispatch_once(str(F), runner)
+    _filed(F, "h0-x-r2")
+    hs.dispatch_once(str(F), runner)
+    _manifest(F, "h0-x")
+    (F / "grants" / "h0-x.ended").write_text("rc=1")  # a late failure of the superseded r1
+    reg, st = hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1 and not st["queue"]
+    assert "SUPERSEDED h0-x -> h0: superseded by h0-x-r2" in (F / "handoff-sessions.log").read_text()
+
+
+def test_queued_lower_revision_dropped_when_higher_queued(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    hs.dispatch_once(str(F), runner, seed=True)
+    monkeypatch.setattr(hs, "landed", lambda sha, repo=None: False)  # hold events in the queue
+    _manifest(F, "h0-y")
+    (F / "grants" / "h0-y.ended").write_text("rc=1")
+    _, st = hs.dispatch_once(str(F), runner)
+    assert [e["rid"] for e in st["queue"]] == ["h0-y"]
+    _manifest(F, "h0-y-r2")
+    (F / "grants" / "h0-y-r2.complete").write_text("complete")
+    monkeypatch.setattr(hs, "landed", lambda sha, repo=None: True)
+    n0 = len(calls)
+    _, st = hs.dispatch_once(str(F), runner)
+    assert not st["queue"] and len(calls) == n0 + 1 and "`h0-y-r2`" in calls[-1][1]
+    assert "SUPERSEDED h0-y -> h0" in (F / "handoff-sessions.log").read_text()
+
+
+# ---- R1/R2/R3/R5 autonomy rules (operator-approved 2026-11-18) ----
+def _lanes(monkeypatch, tmp_path):
+    monkeypatch.setattr(hs, "ensure_lane", lambda slug, repo=None: (str(tmp_path), "ok"))
+    monkeypatch.setattr(hs, "_git", lambda *a, **k: type("R", (), {"returncode": 1, "stdout": ""})())
+
+
+def _continue(monkeypatch):
+    monkeypatch.setattr(hs, "decide", lambda flags, slug, e, *a, **k: ("continue", "test: more work"))
+
+
+def _digest(F):
+    p = F / hs.AUTONOMY_DIGEST_NAME
+    return [json.loads(l) for l in p.read_text().splitlines()] if p.exists() else []
+
+
+def test_r1_refused_spawn_is_not_a_resume_and_parks_after_three(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=2)
+    _lanes(monkeypatch, tmp_path)
+    _continue(monkeypatch)
+
+    def refuse(*a, **k):
+        raise hs.tg.SpawnRefused("codex: effort 'm1' not valid")
+    monkeypatch.setattr(hs, "launch", refuse)
+    for i in range(3):
+        reg, _ = hs.dispatch_once(str(F), runner)
+        e = reg["sessions"]["h0"]
+        assert not e.get("resume_ts"), "a refused spawn never counts toward max_resumes"
+    assert e["parked"]["reason"] == "spawn-config-invalid: codex: effort 'm1' not valid"
+    hs.dispatch_once(str(F), runner)  # parked: no fourth attempt, logged once
+    log = (F / "handoff-sessions.log").read_text()
+    assert log.count("REFUSED-SPAWN h0") == 3 and log.count("PARK h0: spawn-config-invalid") == 1
+    assert [d["action"] for d in _digest(F) if d["slug"] == "h0"] == ["PARK"]
+    e["parked"]["at"] = "2000-01-01T00:00:00Z"  # guardrail: never auto-unparked, even with a fresh event
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert reg["sessions"]["h0"]["parked"]["reason"].startswith("spawn-config-invalid")
+
+
+def test_r1_streak_resets_on_success_and_success_counts(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=2)
+    _lanes(monkeypatch, tmp_path)
+    _continue(monkeypatch)
+    n = {}
+
+    def flaky(flags, slug, e, prompt, fresh=False, runner=None):
+        n[slug] = n.get(slug, 0) + 1
+        if n[slug] <= 2:
+            raise hs.tg.SpawnRefused("same")
+        return 999999999, "out"
+    monkeypatch.setattr(hs, "launch", flaky)
+    for _ in range(3):
+        reg, _ = hs.dispatch_once(str(F), runner)
+    e = reg["sessions"]["h0"]
+    assert not hs.tg.is_parked(e) and "spawn_refused_streak" not in e and len(e["resume_ts"]) == 1
+
+
+def _parked_setup(tmp_path, monkeypatch, reason="no progress evidence: last 2 turn(s)", n=1, cap=2):
+    F, calls, runner = _setup(tmp_path, n=n, cap=cap)
+    hs.dispatch_once(str(F), runner, seed=True)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    for e in reg["sessions"].values():
+        e["parked"] = {"reason": reason, "at": "2020-01-01T00:00:00Z", "wrapup": e.get("last_wrapup")}
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    return F, calls, runner
+
+
+def test_r2_event_after_park_auto_unparks(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch)
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert not hs.tg.is_parked(reg["sessions"]["h0"]) and len(reg["sessions"]["h0"]["auto_unparks"]) == 1
+    assert "AUTO-UNPARK h0: queued run-end event h0-r" in (F / "handoff-sessions.log").read_text()
+    assert _digest(F)[0]["action"] == "AUTO-UNPARK"
+
+
+def test_r2_new_landed_wrapup_auto_unparks(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h0"]["last_wrapup"] = "newsha"
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert not hs.tg.is_parked(reg["sessions"]["h0"])
+
+
+@pytest.mark.parametrize("reason", ["operator hold", "lease expired: 9000 s > 5400 s"])
+def test_r2_never_unparks_operator_or_ineligible(tmp_path, monkeypatch, reason):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch, reason=reason)
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"]) and not _digest(F)
+
+
+def test_r2_guardrails_no_event_full_cap_and_daily_limit(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch)
+    reg, _ = hs.dispatch_once(str(F), runner)  # same wrap-up as at park time, no event -> stays parked
+    assert hs.tg.is_parked(reg["sessions"]["h0"])
+    real_cap = hs.tg.width_cap
+    monkeypatch.setattr(hs.tg, "width_cap", lambda *a, **k: (0, "test"))
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"]), "live >= cap: no auto-unpark"
+    monkeypatch.setattr(hs.tg, "width_cap", real_cap)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h0"]["auto_unparks"] = [hs.time.time(), hs.time.time()]
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"]), "2 auto-unparks in 24 h already used"
+
+
+def test_r5_idle_slot_unparks_top_ranked_old_event(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch, n=2)
+    st = {"seen": [], "queue": [{"slug": s, "rid": f"{s}-r", "kind": "run-end", "end": "x"} for s in ("h1", "h0")]}
+    (F / "handoff-sessions.state.json").write_text(json.dumps(st))  # events queued BEFORE the park: R2 does not fire
+    monkeypatch.setattr(hs, "priority_order", lambda repo, priority=None: {hs.hkey("handoffs/active/h1.md"): (0, 0),
+                                                                          hs.hkey("handoffs/active/h0.md"): (1, 0)})
+    reg, _ = hs.dispatch_once(str(F), runner)
+    S = reg["sessions"]
+    assert not hs.tg.is_parked(S["h1"]) and hs.tg.is_parked(S["h0"]), "one per pass, top-ranked first"
+    assert "AUTO-UNPARK h1: idle slot" in (F / "handoff-sessions.log").read_text()
+
+
+def test_r5_no_effect_when_unparked_candidate_has_work(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch, n=2)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h1"].pop("parked")
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    (F / "handoff-sessions.state.json").write_text(json.dumps({"seen": [], "queue": [
+        {"slug": "h0", "rid": "h0-r", "kind": "run-end", "end": "x"}]}))
+    monkeypatch.setattr(hs, "decide", lambda flags, slug, e, *a, **k: ("continue", "work") if slug == "h1" else ("pause", "none"))
+    monkeypatch.setattr(hs, "_go", lambda *a, **k: True)
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"]) and not _digest(F)
+
+
+# ---- operator gate (operator-approved 2026-11-18): operator-only work is never started by automation ----
+def _gate(F, slug="h0", reason="kernel promotion v11"):
+    assert hs.main(["gate", slug, "--reason", reason, "--flags", str(F)]) == 0
+    return json.loads((F / "handoff-sessions.json").read_text())
+
+
+def _ratify(F, name, **kw):
+    d = F / "operator-ratify"
+    d.mkdir(exist_ok=True)
+    (d / f"{name}.json").write_text(json.dumps({"slug": name, "by": "operator", "at": "2026-11-18T00:00:00Z", "reason": "ok", **kw}))
+
+
+def test_gate_subcommand_sets_gate_and_parks(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1)
+    e = _gate(F)["sessions"]["h0"]
+    assert e["operator_gate"]["reason"] == "kernel promotion v11" and e["operator_gate"]["since"]
+    assert e["parked"]["reason"].startswith("operator-gate:")
+    assert hs.tg.is_parked(e) and hs.tg.is_gated(e)
+    with pytest.raises(SystemExit):
+        hs.main(["gate", "h0", "--flags", str(F)])
+
+
+def test_gated_session_never_spawned_nor_auto_unparked_and_events_kept(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1)
+    _lanes(monkeypatch, tmp_path)
+    _continue(monkeypatch)
+    reg = _gate(F)
+    e = reg["sessions"]["h0"]
+    e["parked"]["reason"] = "no progress evidence: x"  # even an auto-unpark-eligible park reason stays held
+    e["parked"]["at"] = "2000-01-01T00:00:00Z"
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    assert not hs.tg.auto_unpark_eligible(e, 0)
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    for _ in range(3):
+        reg, st = hs.dispatch_once(str(F), runner)
+    assert calls == [] and hs.tg.is_gated(reg["sessions"]["h0"]) and not reg["sessions"]["h0"].get("auto_unparks")
+    assert any(ev["slug"] == "h0" for ev in st["queue"]), "gated events stay queued, never dropped"
+    log = (F / "handoff-sessions.log").read_text()
+    assert log.count("GATE-HELD h0") == 1 and "AUTO-UNPARK h0" not in log
+
+
+def test_gated_session_never_auto_started(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1)
+    reg = _gate(F)
+    assert hs.start_handoff(str(F), reg, {"handoff": "handoffs/active/h0.md", "slug": "h0"}, runner, {}, 0, 2) is None
+    assert calls == []
+    assert hs._go(str(F), "h0", reg["sessions"]["h0"], "p", runner, None, fresh=True) is False and calls == []
+
+
+def test_unpark_refused_then_lifted_with_ratification(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=2)
+    _gate(F)
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
+    assert hs.tg.is_gated(json.loads((F / "handoff-sessions.json").read_text())["sessions"]["h0"])
+    _ratify(F, "h0", slug="h1")  # names the wrong slug: rejected
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
+    _ratify(F, "h0", by="")  # missing key: rejected
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
+    _ratify(F, "h0")
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 0
+    e = json.loads((F / "handoff-sessions.json").read_text())["sessions"]["h0"]
+    assert not hs.tg.is_gated(e) and not hs.tg.is_parked(e)
+    log = (F / "handoff-sessions.log").read_text()
+    assert "GATE-LIFTED h0" in log and "UNPARK h0 (operator)" in log
+    assert hs.main(["unpark", "h1", "--flags", str(F)]) == 0  # ungated unpark unchanged
+
+
+# ---------------------------------------------------------------- D9 waste fixes (2026-11-18)
+def _event_resume(tmp_path, monkeypatch, total_tokens):
+    F, calls, runner = _setup(tmp_path, n=1, cap=2)
+    monkeypatch.setattr(hs.tg, "rollout_usage", lambda sid, *a, **k: {"total_tokens": total_tokens, "last_input": 1000})
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-row-v3")
+    (F / "grants" / "h0-row-v3.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert calls, "event did not spawn the owner"
+    return F, calls, reg
+
+
+def test_resume_over_ceiling_starts_fresh_never_resumes(tmp_path, monkeypatch):
+    """D9 fix 1: a thread already over session_token_ceiling is never resumed; a FRESH thread starts from the checkpoint."""
+    F, calls, reg = _event_resume(tmp_path, monkeypatch, 20_000_000)
+    cmd, prompt = calls[-1]
+    assert "resume" not in cmd and "sid0" not in cmd, cmd
+    assert "Checkpoint from your previous thread" in prompt and "h0-row-v3" in prompt
+    assert "FRESH-INSTEAD-OF-RESUME h0: thread at 20000000 tokens" in (F / "handoff-sessions.log").read_text()
+
+
+def test_resume_at_80pct_of_ceiling_starts_fresh(tmp_path, monkeypatch):
+    F, calls, _ = _event_resume(tmp_path, monkeypatch, 12_000_000)  # 80% of the 15M default
+    assert "resume" not in calls[-1][0]
+
+
+def test_resume_under_ceiling_still_resumes(tmp_path, monkeypatch):
+    F, calls, _ = _event_resume(tmp_path, monkeypatch, 1_000_000)
+    assert "resume" in calls[-1][0] and "sid0" in calls[-1][0]
+    assert "FRESH-INSTEAD-OF-RESUME" not in (F / "handoff-sessions.log").read_text()
+
+
+def test_fanout_absent_from_codex_spawn_prompts(tmp_path, monkeypatch):
+    """D9 fix 3: codex exec has no subagents; no fan-out text reaches a codex prompt (brief or resume)."""
+    _, calls, _ = _event_resume(tmp_path, monkeypatch, 20_000_000)  # fresh: brief + event prompt
+    _, prompt = calls[-1]
+    assert "FAN OUT" not in prompt and "concurrent subagents" not in prompt
+    assert "result-bearing task" in prompt
+    assert "is a wasted turn" not in prompt and "turn ends ONLY at" not in prompt
+
+
+HOLD = ("> **⛔ HOLD — OPERATOR GATE (2026-11-18).** No v11 prep work until the operator ratifies.\n"
+        "> Do not publish, unpark, or dispatch anything that works these boxes.")
+
+
+def _big_handoff(n=400):
+    boxes = "\n".join(f"- [ ] **BIG-{i} — task number {i}.** " + ("lorem ipsum dolor sit amet " * 60) for i in range(n))
+    return f"# Big\n\n{HOLD}\n\n**Status**: active (on HOLD)\n\n## Tasks\n\n- [x] **BIG-DONE — done.** ✅ 2026-11-01\n{boxes}\n"
+
+
+def test_state_md_under_3kb_with_hold_verbatim(tmp_path):
+    """D9 fix 2: STATE.md stays <= 3 kB on a large handoff; the HOLD block is verbatim; event-named boxes come first."""
+    F, _, _ = _setup(tmp_path, n=1)
+    text = _big_handoff()
+    assert len(text) > 400_000
+    e = {"handoff": "handoffs/active/big.md", "engine": "codex"}
+    out = hs.compile_state(str(F), "big", e, {"rid": "big-row-BIG-377", "kind": "end"}, text)
+    assert len(out.encode()) <= hs.STATE_MAX_BYTES, len(out.encode())
+    assert HOLD in out
+    assert "**Status**: active (on HOLD)" in out
+    boxes = [ln for ln in out.splitlines() if ln.startswith("- BIG-")]
+    assert boxes and boxes[0].startswith("- BIG-377:"), boxes[:2]
+    assert "BIG-DONE" not in out and len(boxes) <= hs.STATE_MAX_BOXES
+    assert "big-row-BIG-377" in out
+
+
+def test_state_md_written_at_spawn(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1)
+    lane = tmp_path / "lane"
+    (lane / "handoffs" / "active").mkdir(parents=True)
+    (lane / "handoffs" / "active" / "h0.md").write_text(_big_handoff(20))
+    p = hs.write_state(str(F), "h0", {"handoff": "handoffs/active/h0.md"}, None, str(lane))
+    assert p == str(F / "handoff-sessions" / "h0" / "STATE.md")
+    assert Path(p).stat().st_size <= hs.STATE_MAX_BYTES and "BIG-0" in Path(p).read_text()
+
+
+def test_box_show_returns_the_right_box(tmp_path, capsys):
+    F, _, _ = _setup(tmp_path, n=1)
+    lane = tmp_path / "lane"
+    (lane / "handoffs" / "active").mkdir(parents=True)
+    (lane / "handoffs" / "active" / "h0.md").write_text(
+        "# H\n\n- [ ] **A-1 — first.** body one\n  - sub detail of A-1\n- [ ] **A-2 — second.** body two\n  continuation of A-2\n\nprose\n")
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h0"]["cwd"] = str(lane)
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    assert hs.main(["box", "show", "h0", "A-2", "--flags", str(F)]) == 0
+    out = capsys.readouterr().out
+    assert out == "- [ ] **A-2 — second.** body two\n  continuation of A-2\n"
+    assert hs.main(["box", "show", "h0", "A-1", "--flags", str(F)]) == 0
+    assert "sub detail of A-1" in capsys.readouterr().out
+    assert hs.main(["box", "show", "h0", "A-9", "--flags", str(F)]) == 1
+
+
+def test_prep_tick_not_counted_as_progress(tmp_path, monkeypatch):
+    """D9 fix 3: landed ticks without a verdict/number and without an owned filed result are not an effect."""
+    F, _, _ = _setup(tmp_path, n=1)
+    e = {"last_wrapup": "abc1234", "last_resume": hs.now_iso()}
+    monkeypatch.setattr(hs, "landed_ticks", lambda sha, repo=None: 2)
+    monkeypatch.setattr(hs, "landed_result_ticks", lambda sha, repo=None: 0)
+    monkeypatch.setattr(hs, "turn_result", lambda flags, slug, e: False)
+    assert hs.turn_effect(str(F), "h0", e) == ""
+    assert "PREP-TICKS h0: 2 landed tick(s)" in (F / "handoff-sessions.log").read_text()
+    monkeypatch.setattr(hs, "turn_result", lambda flags, slug, e: True)
+    assert "owned filed result" in hs.turn_effect(str(F), "h0", e)
+    monkeypatch.setattr(hs, "turn_result", lambda flags, slug, e: False)
+    monkeypatch.setattr(hs, "landed_result_ticks", lambda sha, repo=None: 1)
+    assert "1 with a verdict/number" in hs.turn_effect(str(F), "h0", e)
+
+
+def test_result_tick_grading():
+    t = hs.tg.result_tick
+    assert t("- [x] **X-1 — bench.** 41.2 tok/s vs 39.0 ✅ 2026-11-18 [belief: clm_abc]")
+    assert t("- [x] **X-2 — gate.** PASS 12/12 ✅ 2026-11-18 [no-belief: diag]")
+    assert not t("- [x] **X-3 — prepare launcher.** wired and published ✅ 2026-11-18 [belief: cc]")
+    assert not t("- [x] **X-4 — custody packet.** sealed at 83c110265331 ✅ 2026-11-18 [no-belief: prep]")

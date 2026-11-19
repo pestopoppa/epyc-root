@@ -153,6 +153,7 @@ else
 fi
 
 check "/mnt/raid0/llm exists" "[ -d /mnt/raid0/llm ]" "Create with: mkdir -p /mnt/raid0/llm"
+check "no shared clone has core.bare=true (worktree repair hazard)" "bash $SCRIPT_DIR/check_core_bare.sh >/dev/null" "Run scripts/session/check_core_bare.sh; fix: git -C <repo> config core.bare false"
 
 # /tmp/claude bind-mount matters for an interactive session (scratch redirection) but is irrelevant to a
 # batch preflight, so it is advisory (WARN, not FAIL) under the batch profile.
@@ -285,7 +286,7 @@ else
   EPISODIC_OUT=$(cd "${LLM_ROOT}/epyc-orchestrator" && uv run python "$EPISODIC_CHECK" 2>&1) && EPISODIC_RC=0 || EPISODIC_RC=$?
   check "Episodic store integrity (sync, round-trip, diversity, degenerate vectors)" \
     "[ $EPISODIC_RC -eq 0 ]" \
-    "$(echo "$EPISODIC_OUT" | grep -E '^\s+\[FAIL\]' | sed 's/^ *//' | tr '\n' ';') — do NOT trust memory-derived results; see handoffs/active/episodic-memory-integrity.md"
+    "$(echo "$EPISODIC_OUT" | grep -E '^\s+\[FAIL\]' | sed 's/^ *//' | tr '\n' ';') — do NOT trust memory-derived results; see handoffs/active/memory-program.md"
 fi
 
 echo ""

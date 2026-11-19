@@ -1,0 +1,5 @@
+{
+  "verdict": "inconclusive",
+  "rationale": "Full original ON rc1: HTTP200 response and trace record3 launched/2completed/1timeout; stage ends at240.055s with reported scoutbudget240 under request600*fraction.4 and percall180. Two summaries remain observed but the required three-scout report is incomplete; collector result is INCOMPLETE: completed API scout report missing. No diagnostic completion, KPF26 gate, timing or comparative claim.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

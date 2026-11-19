@@ -1,0 +1,86 @@
+{
+  "schema": "epyc.preparation.v1",
+  "id": "kpf174-plan-bound-integration-20261105",
+  "ready": false,
+  "kind": "compute",
+  "runtime_limit_s": 120,
+  "inference_authorized": false,
+  "research_commit": "1157adc2f007d1b0c45ddc6daf91eafc45358df7",
+  "sources": [
+    {
+      "path": "/mnt/raid0/llm/worktrees/mains/h-heterogeneous-slot-fabric-residency/docs/reports/kv-cache/kpf174-oracle-preflight-20261105/preflight.py",
+      "sha256": "4ab26a15efeea7ec1ee7d9e35db04156e59495c2cbf7e6a0b1d8f7c573925df5"
+    },
+    {
+      "path": "/mnt/raid0/llm/worktrees/research-kpf174c-pin/scripts/benchmark/kpf174/kpf174_swa_drafter.py",
+      "sha256": "d008fc6bd0e2541b92f1cc7ef1acb72931332d59743c3d11615a3cf8c3d85725"
+    },
+    {
+      "path": "/mnt/raid0/llm/worktrees/research-kpf174c-pin/scripts/benchmark/kpf13/kpf13_restore_ab.py",
+      "sha256": "2683c46d8cb46ebd0d35d66c40c6cf970e6a181a6b8704f41ab1af6f3debba98"
+    }
+  ],
+  "question": "Can the prospective immutable-plan adapter refuse malformed cell coverage before native analyze computes pooled acceptance slack or calls judge_cell, while preserving native analyze output on one complete prospective model-free fixture?",
+  "distinct_from": "Existing standalone guard unittest qualification; this prerequisite targets the real analyze entry boundary and ID-to-geometry binding, not another guard suite.",
+  "expected_effect": "No stochastic estimate: exact structural refusal and equality of native pure-judge JSON. No model output or historical rejudgment.",
+  "input_contract": {
+    "plan": "Sealed plan.json: exact four launches; synthetic-g901-c17 bound to group=901/c=17/S=3; fixed L=100/swa_cells=40/build=[17], rules=v1, fixture SHA-256; all sources/adapter/plan/fixture are sealed by SHA256SUMS.",
+    "fixture": "Sealed fixture.json constructed solely from integer ranges and literal dictionaries; 64 synthetic token IDs, three identical controls, two arms, pinned checkpoint per launch. Honest/flag_on expect PASS; both mutants lower draft_n_accepted from 40 to 0 and expect DETECTED. No historical/native run data was read.",
+    "custody": "Vendored pinned native kpf174 and sibling kpf13 modules plus guard. Entire local import closure, adapter, launcher, fixture and plan sealed in SHA256SUMS; pre/post execution and each mutation boundary verify; imports only vendored module or stdlib."
+  },
+  "adapter_contract": [
+    "Refuse unknown/missing/extra launches before entering native analyze.",
+    "For each launch, compare exact cell ID set to plan; compare each cell group/c/S and cell field to predeclared entry; compare geo L/swa_cells/build to plan. Reject booleans where integers are required.",
+    "Call validate_launch for every launch before ANY native analyze, acceptance_spread or judge_cell call. mutant_partial=True only for mut_partial_noop. Any error returns a structural refusal artifact and no native verdict.",
+    "Only after all launches pass, call pinned native analyze with exact rules and no discovered prior_191a. Retain structural qualification separately from native verdict; never publish a KPF correctness conclusion.",
+    "Use a callback-entry witness or AST-controlled wrapper to prove malformed plan/input refuses before native acceptance_spread; a mere invalid returned native verdict does not establish ordering.",
+    "Assert native analyze output equals adapter-delegated output exactly on complete synthetic fixture; separately prove missing/extra launch, renamed ID with mismatched geometry, and one incomplete launch refuse before delegate entry. These are integration controls, not a replay of standalone guard tests."
+  ],
+  "smoke_contract": {
+    "launcher": "launch.sh -> canonical filler_run15.sh -> smoke.py -> adapter.py. Dryrun/smoke uses FILLER_DRYRUN=1 or FILLER_SMOKE=1 and requires distinct FILLER_DRYRUN_RESULT_PATH. Launcher precondition verifies SHA256SUMS.",
+    "region": "Engine exports FILLER_ID, FILLER_END, FILLER_STOPFILE, FILLER_CPUS and tasksets the job. Worker preserves os.sched_getaffinity(0), never widens it; engine owns grant validation.",
+    "execution": "Engine dryrun uses one structural control and SMOKE_ONLY at distinct FILLER_DRYRUN_RESULT_PATH. Full mode uses all ten controls and MODEL_FREE_QUALIFICATION at out/RESULT.json. Both execute only native pure analyze on synthetic inputs.",
+    "deadline": "120-second workload limit reduced to preserve seven-second cleanup reserve before FILLER_END; cleanup bounded to seven seconds.",
+    "cleanup": "Captured child only: TERM, 2s wait, KILL, 2s wait, reap and ps timeout 1s. Cleanup exceptions fail closed and produce END receipt; success result requires proven absence.",
+    "stop": "Stop once integration controls answer question or on first custody/refusal-order/equality/launch failure. No inference or follow-on run."
+  },
+  "readiness_blockers": [
+    "No dryrun or full qualification executed.",
+    "Live registry duplicate discovery and owner review required before publication."
+  ],
+  "historical_boundary": "R5 g0-S2-B remains exposed/INVALID and must not be rerun or redrawn; source integration cannot qualify historical a1f0c8cf9 custody or establish physical-layout equivalence.",
+  "smoke_launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-plan-bound-integration-prep-20261105/smoke.sh",
+  "remaining": "Prepared only; owner review, engine dryrun and full qualification remain unexecuted; no publication.",
+  "implemented_controls": [
+    "missing_launch",
+    "extra_launch",
+    "rename_id",
+    "geometry_group",
+    "geometry_junction",
+    "geometry_suffix",
+    "incomplete_later_launch",
+    "unknown_source",
+    "wrong_pruning",
+    "missing_control"
+  ],
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 1,
+  "estimate_s": 140,
+  "smoke_timeout_s": 140,
+  "priority_rank": 45,
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-plan-bound-integration-prep-20261105/launch.sh",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-plan-bound-integration-prep-20261105/out/RESULT.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-plan-bound-integration-prep-20261105",
+  "result_format": "json",
+  "keep": [
+    "**"
+  ],
+  "dryrun_native_result": true,
+  "lineage": "kpf174-plan-bound-integration",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4-PLAN-QUAL",
+  "decision_rule": "Full model-free qualification PASS requires exact native equality, declared honest/flag_on PASS and both mutants DETECTED, all ten structural refusals before native entry, identical pre/post input seals, worker rc=0 and proven owned-PID absence. Dryrun synthetic smoke checks one refusal and cannot satisfy full completion.",
+  "workload_limit_s": 120,
+  "cleanup_budget_s": 7
+}

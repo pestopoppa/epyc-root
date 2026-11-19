@@ -1,0 +1,9 @@
+
+==== dry run 2026-11-05T01:24:21Z regions=0-3 launcher_sha=ab750e3ec1191a86e2d0eb5e8fa3be53ccedc2ba576fb780ac12b42a2113c1a2 units_before=0
+2026-11-05T01:24:21Z [kvfork-kpf131-findslot-observer-20261105] launcher up pid=3096264 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork-kpf131-findslot-observer-20261105/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork-kpf131-findslot-observer-20261105/stop minwin=300s ports=none dryrun=1
+2026-11-05T01:24:21Z [kvfork-kpf131-findslot-observer-20261105] START regions=0-3 cpus=0-3 threads=4 gpu=0 end=2026-11-05T01:43Z
+RuntimeError('fixture result missing')
+job rc=1
+2026-11-05T01:24:24Z [kvfork-kpf131-findslot-observer-20261105] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-05T01:24:24Z [kvfork-kpf131-findslot-observer-20261105] one window done; exiting (no --repeat)
+==== dry run FAIL: job ended rc=1 time=2026-11-05T01:24:24Z reason=job-rc-1:exited after 5s, before its first progress (no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork-kpf131-findslot-observer-20261105/native-attempts/attempt-h28hga8o/native-result.json (json): no new real record); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/kvfork-kpf131-findslot-observer-20261105/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=0-3; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-05T01:24:26Z)

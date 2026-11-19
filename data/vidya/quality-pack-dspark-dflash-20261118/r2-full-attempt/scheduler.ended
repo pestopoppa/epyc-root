@@ -1,0 +1,7 @@
+rc=1 time=2026-11-18T01:50:55Z reason=job-rc-1:exited
+job_id=handoff-vidya-quality-pack-dspark-dflash-20261118-r2
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=1700
+started=2026-11-18T01:47:39Z
+regions=72-95

@@ -533,13 +533,13 @@ REGISTRY_PATH="${REGISTRY_PATH:-${EPYC_ROOT}/scripts/coordination/observer_regis
 
 # registry_restart_candidates — one TAB-separated line per registry row with
 # runtime.restart_on_stale == true: id, pidfile, expected_path, provenance,
-# start_argv (as a JSON array), log. Never fails the caller: a missing or
+# start_argv (as a JSON array), stale_predicate, source_tree_path, log. Never fails the caller: a missing or
 # unreadable registry, or one with zero such rows, is silent empty output —
 # "nothing to restart", not an error this loop should ever abort on.
 registry_restart_candidates() {
   [[ -r "$REGISTRY_PATH" ]] || return 0
   python3 - "$REGISTRY_PATH" <<'PY_EOF' 2>/dev/null || true
-import json, sys
+import json, os, sys
 try:
     reg = json.load(open(sys.argv[1]))
 except Exception:
@@ -554,6 +554,11 @@ for row in reg.get("observers", []):
         str(rt.get("expected_path", "")),
         str(rt.get("provenance", "")),
         json.dumps(rt.get("start_argv") or []),
+        # NIB2-89: which staleness predicate this row opted into. ALWAYS non-empty
+        # (tab-IFS `read` collapses empty middle fields), and "inode" — the NIB2-81
+        # behaviour — unless a row explicitly sets runtime.stale_predicate.
+        str(rt.get("stale_predicate") or "inode"),
+        str(rt.get("source_tree_path") or os.path.dirname(str(rt.get("expected_path", ""))) or "."),
         str(rt.get("log", "")),
     ]))
 PY_EOF
@@ -659,6 +664,41 @@ sys.exit(0 if (running.st_dev, running.st_ino) != (current.st_dev, current.st_in
 PY_EOF
 }
 
+# registry_source_tree_is_stale <pid> <provenance_file> <tree_path>
+#
+# NIB2-89 — the H-4 `source_tree` predicate, generalised to a registered daemon.
+# OPT-IN ONLY: reached solely when a registry row sets
+# `runtime.stale_predicate: "source_tree"`. No row does today, so this function is
+# DORMANT (and this whole script is, while bus_supervisor stays DOWN by operator
+# ruling 2026-09-23). The default predicate stays the NIB2-81 inode check above.
+#
+# Same two-independent-sources shape as daemon_source_is_stale: the PUBLISHED
+# value is the `source_tree` the daemon recorded in its own provenance file at its
+# own start (daemon_source_tree.sh `dp_publish_source_tree`); the CURRENT value is
+# `git rev-parse HEAD:<tree_path>` NOW. Comparing HEAD against HEAD would agree
+# forever. The provenance record must carry THE LIVE PID — a record left by a
+# previous incarnation says nothing about this process.
+#   0 = STALE, 1 = current, 2 = cannot tell (FAIL CLOSED, never acted on).
+registry_source_tree_is_stale() {
+  local pid="$1" prov="$2" tree_path="$3" pub cur
+  [[ -r "$prov" ]] || return 2
+  pub="$(python3 - "$prov" "$pid" <<'PY_EOF' 2>/dev/null || true
+import json, sys
+try:
+    rec = json.load(open(sys.argv[1]))
+    v = rec.get("source_tree")
+    if rec.get("pid") == int(sys.argv[2]) and isinstance(v, str) and v.strip():
+        print(v.strip())
+except Exception:
+    pass
+PY_EOF
+)"
+  [[ -n "$pub" ]] || return 2
+  cur="$(git -C "$EPYC_ROOT" rev-parse --verify -q "HEAD:${tree_path}" 2>/dev/null || true)"
+  [[ -n "$cur" ]] || return 2
+  [[ "$pub" != "$cur" ]]
+}
+
 # stop_registry_daemon <pidfile> <basename> — stop_wedged's exact shape
 # (SIGTERM, poll for up to 10s re-verifying identity every second, escalate to
 # SIGKILL), pointed at a THIRD PARTY confirmed via ITS OWN pidfile + cmdline.
@@ -720,8 +760,8 @@ start_registry_daemon() {
 # RESTART_MIN_INTERVAL_S, so a predicate that keeps firing after a restart
 # cannot loop-restart the daemon it is meant to protect.
 check_registry_restarts() {
-  local id pidfile expected_path provenance argv_json log_path basename
-  while IFS=$'\t' read -r id pidfile expected_path provenance argv_json log_path; do
+  local id pidfile expected_path provenance argv_json predicate tree_path log_path basename
+  while IFS=$'\t' read -r id pidfile expected_path provenance argv_json predicate tree_path log_path; do
     [[ -n "$id" ]] || continue
     basename="$(basename -- "$expected_path")"
     registry_daemon_identity "$pidfile" "$basename"
@@ -733,7 +773,12 @@ check_registry_restarts() {
       continue
     fi
     local rc=0
-    registry_script_is_stale "$REG_PID" "$expected_path" || rc=$?
+    case "$predicate" in
+      inode)       registry_script_is_stale "$REG_PID" "$expected_path" || rc=$? ;;
+      source_tree) registry_source_tree_is_stale "$REG_PID" "$provenance" "$tree_path" || rc=$? ;;
+      *)           log "  registry-restart[$id]: unknown stale_predicate '$predicate' — not acting (fail closed)"
+                   continue ;;
+    esac
     if (( rc == 2 )); then
       log "  registry-restart[$id]: STALE CHECK UNAVAILABLE — not acting (fail closed)"
       continue

@@ -1,0 +1,16 @@
+{
+  "scope": "prospective ordered-seed native binding and bounded exact-candidate reader controls",
+  "tests": 13,
+  "failures": 0,
+  "rc": 0,
+  "cpu_list": "88-91",
+  "role": "build",
+  "log_sha256": "f6a88c4b120d71ffc45c359efb61cce13c2d328733318f94afbb6ba49379becd",
+  "source_sha256": {
+    "scripts/vidya/canary/gpu_pool_context_exclusion.py": "188e7b80297dcfb85cd29f35762890d4f8db7fb70a3a8127350eacd8632e071c",
+    "tests/vidya/test_gpu_pool_scope_control.py": "ce6737d421d44c17996b5d35f9eaed7ba8603b534e94722b464268bb92325031"
+  },
+  "native_acceptance": false,
+  "production_defaults_changed": false,
+  "gitnexus": "No indexed repository available in lane; impact unavailable."
+}

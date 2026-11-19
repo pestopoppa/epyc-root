@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "Official missing-arm continuation ended rc0 after 234 verified native IQ2_KT tensors. Five rebuilt inputs comprise the shared imatrix and Q4_K_M/IQ2_XXS/IQ4_KT/IQ2_KT arms. Filing depends on the retained complete-output seal and original grant/run/log custody. Pass is rebuilt-input recovery only: original predecessor failure remains, no inferred pilot, speed, quality or historical-byte equivalence verdict.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T15:20:34+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T15:16:48Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vidya-exp01-proxy-input-recovery-20261118-r2.ended",
+ "filed_at": "2026-11-18T15:20:34+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-EXP01-PROXY-INPUT-RECOVERY",
+ "id": "vidya-exp01-proxy-input-recovery-20261118-r2",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-exp01-proxy-input-recovery-20261118-r2.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official missing-arm continuation ended rc0 after 234 verified native IQ2_KT tensors. Five rebuilt inputs comprise the shared imatrix and Q4_K_M/IQ2_XXS/IQ4_KT/IQ2_KT arms. Filing depends on the retained complete-output seal and original grant/run/log custody. Pass is rebuilt-input recovery only: original predecessor failure remains, no inferred pilot, speed, quality or historical-byte equivalence verdict.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vidya-exp01-proxy-input-recovery-20261118-r2",
+ "row_verdict": "pass",
+ "rule": "Continue the terminal original run with its one-time pregrant verified 560x512 imatrix and Q4_K_M, IQ2_XXS and IQ4_KT outputs. Build only the missing IQ2_KT arm from the original digest-verified non-MTP Q8_0 source in one 24-CPU window. Stop on answer after one native IQ2_KT GGUF is complete and its original logs, grant, and five combined output identities are captured. Stop on futility on any identity, native-unit, STOP or deadline failure, and record any incomplete-byte disposition. Publisher smoke on four CPUs and threads derives one native IQ2_KT tensor from the pinned 0.6B Q8_0 fixture with a fresh one-chunk 512-token matrix, and Q8_0 passthrough for other quantized tensors. The new official arm is sealed by a later one-time pregrant weight hash. Recovery readiness supplies no performance or pilot verdict.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 68,
+  "input": 279133840,
+  "output": 1153129,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 280286969,
+  "tokens_per_task": 4121867.1911764704
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "b09d136eafd95e3badf078f869d8a95966d4257f51ca46cbdc1586ec181f488a",
+  "result": "pass",
+  "status": "filed"
+ }
+}

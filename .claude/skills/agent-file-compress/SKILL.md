@@ -16,8 +16,8 @@ Use when:
 
 Do not use when:
 
-- Compressing live tool-call output streams — that is `repl-turn-efficiency.md`'s slot, with different persistence-clause caveats.
-- Compressing structured payloads (TOON / JSON tool results) — that is `tool-output-compression.md`'s slot.
+- Compressing live tool-call output streams — that is `harness-program.md#track-repl-turn-efficiency`'s slot, with different persistence-clause caveats.
+- Compressing structured payloads (TOON / JSON tool results) — that is `context-and-token-economy.md#track-tool-output-compression`'s slot.
 - Editing the source agent file. Source edits go through `agent-file-architecture` first.
 
 ## Workflow

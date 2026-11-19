@@ -1,0 +1,127 @@
+diff --git a/src/llama-kv-compress.cpp b/src/llama-kv-compress.cpp
+index c2fde8aac..4c93a50d2 100644
+--- a/src/llama-kv-compress.cpp
++++ b/src/llama-kv-compress.cpp
+@@ -270,6 +270,7 @@ std::vector<float> llama_kv_compress_score(
+     llama_pos pos_max = llama_memory_seq_pos_max(mem, seq_id);
+     if (pos_max < 0) return {};
+     const int n_kv = pos_max + 1;
++    if (params.n_sink < 0 || params.n_sink >= n_kv) return {};
+ 
+     std::vector<int> positions(n_kv);
+     std::iota(positions.begin(), positions.end(), 0);
+@@ -316,24 +317,40 @@ int llama_kv_compress_evict(
+         llama_seq_id    seq_id,
+         const llama_kv_compress_params & params) {
+ 
++    if (params.n_sink < 0 || params.keep_recent < 0 ||
++        !std::isfinite(params.compression_ratio) || params.compression_ratio < 0.0f || params.compression_ratio > 1.0f ||
++        !std::isfinite(params.recency_ratio) || params.recency_ratio < 0.0f || params.recency_ratio > 1.0f ||
++        (params.keep_recent > 0 && params.recency_ratio > 0.0f)) return -1;
++    llama_memory_t mem = llama_get_memory(ctx);
++    const llama_pos pos_max = llama_memory_seq_pos_max(mem, seq_id);
++    if (pos_max < 0) return -1;
++    if (params.n_sink >= pos_max + 1) return 0;
++
+     auto scores = llama_kv_compress_score(ctx, seq_id, params);
+     if (scores.empty()) return -1;
+ 
+-    llama_memory_t mem = llama_get_memory(ctx);
+     const int n_kv = (int)scores.size();
+ 
+-    // Find eviction threshold
+-    std::vector<float> sorted(scores.begin() + params.n_sink, scores.end());
+-    std::sort(sorted.begin(), sorted.end());
+-    int n_evict_target = (int)(sorted.size() * params.compression_ratio);
++    // Preserve the legacy eviction target over non-sink positions. Reserve at
++    // most the retained budget so recent protection cannot exceed that target.
++    const int n_active = n_kv - params.n_sink;
++    const int n_evict_target = (int)(n_active * params.compression_ratio);
+     if (n_evict_target <= 0) return 0;
+-    float threshold = sorted[std::min(n_evict_target, (int)sorted.size() - 1)];
++    const int n_kept = n_kv - n_evict_target;
++    const int requested_recent = params.recency_ratio > 0.0f
++        ? (int)(n_kept * params.recency_ratio) : params.keep_recent;
++    const int recent_count = std::min(requested_recent, n_active - n_evict_target);
++    const int recent_start = n_kv - recent_count;
+ 
+-    // Mark positions for eviction
++    std::vector<float> sorted(scores.begin() + params.n_sink, scores.begin() + recent_start);
++    std::sort(sorted.begin(), sorted.end());
+     std::vector<bool> evict(n_kv, false);
+-    for (int p = params.n_sink; p < n_kv; p++) {
+-        if (scores[p] < threshold) {
+-            evict[p] = true;
++    if (recent_count > 0 && n_evict_target >= (int)sorted.size()) {
++        for (int p = params.n_sink; p < recent_start; ++p) evict[p] = true;
++    } else {
++        const float threshold = sorted[std::min(n_evict_target, (int)sorted.size() - 1)];
++        for (int p = params.n_sink; p < recent_start; ++p) {
++            if (scores[p] < threshold) evict[p] = true;
+         }
+     }
+ 
+diff --git a/src/llama-kv-compress.h b/src/llama-kv-compress.h
+index 0e14ec47f..40637b176 100644
+--- a/src/llama-kv-compress.h
++++ b/src/llama-kv-compress.h
+@@ -16,6 +16,8 @@ struct llama_kv_compress_params {
+     float compression_ratio = 0.50f;  // fraction of KV entries to REMOVE
+     int   n_future          = 128;    // future positions for RoPE averaging
+     int   n_sink            = 4;      // sink tokens to protect (never evicted)
++    int   keep_recent       = 0;      // most recent positions to reserve, 0 = disabled
++    float recency_ratio     = 0.0f;   // fraction of retained budget to reserve; exclusive with keep_recent
+     bool  use_covariance    = true;   // include covariance term (more accurate, slower)
+ 
+     // If true, shift remaining positions to close gaps after eviction via seq_add.
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index 07544da91..a165773b2 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -5545,6 +5545,8 @@ static llama_kv_compress_params make_server_expected_attention_params(const serv
+     llama_kv_compress_params ea_params;
+     ea_params.compression_ratio = 1.0f - task.slot_action.keep_ratio; // keep_ratio=0.5 → remove 50%
+     ea_params.n_sink            = task.slot_action.keep_first;
++    ea_params.keep_recent       = task.slot_action.keep_recent;
++    ea_params.recency_ratio     = task.slot_action.recency_ratio;
+     ea_params.n_future          = task.slot_action.n_future;
+     ea_params.use_covariance    = task.slot_action.use_covariance;
+     ea_params.layer_weights     = task.slot_action.layer_weights;
+@@ -5572,7 +5574,24 @@ std::unique_ptr<server_res_generator> server_routes::handle_slots_compact(const
+ 
+     auto body = json::parse(req.body, nullptr, false);
+ 
++    if (body.is_object() && body.contains("keep_recent") && body.contains("recency_ratio")) {
++        res->error(format_error_response("Specify only one of keep_recent and recency_ratio", ERROR_TYPE_INVALID_REQUEST));
++        return res;
++    }
++    if (body.is_object() && body.contains("keep_recent") &&
++        (!body["keep_recent"].is_number_integer() || body["keep_recent"].get<int>() < 0)) {
++        res->error(format_error_response("keep_recent must be a non-negative integer", ERROR_TYPE_INVALID_REQUEST));
++        return res;
++    }
++    if (body.is_object() && body.contains("recency_ratio") &&
++        (!body["recency_ratio"].is_number() || body["recency_ratio"].get<double>() < 0.0 || body["recency_ratio"].get<double>() > 1.0)) {
++        res->error(format_error_response("recency_ratio must be between 0 and 1", ERROR_TYPE_INVALID_REQUEST));
++        return res;
++    }
++
+     server_task task(SERVER_TASK_TYPE_SLOT_COMPACT);
++    task.slot_action.keep_recent = body.is_object() && body.contains("keep_recent") ? body["keep_recent"].get<int>() : 0;
++    task.slot_action.recency_ratio = body.is_object() && body.contains("recency_ratio") ? body["recency_ratio"].get<float>() : 0.0f;
+     task.slot_action.id_slot        = id_slot;
+     task.slot_action.keep_ratio     = body.is_object() && body.contains("keep_ratio")     ? body["keep_ratio"].get<float>()    : 0.5f;
+     task.slot_action.keep_first     = body.is_object() && body.contains("keep_first")     ? body["keep_first"].get<int>()      : 8;
+diff --git a/tools/server/server-task.h b/tools/server/server-task.h
+index 07501dfaf..c7f9b7311 100644
+--- a/tools/server/server-task.h
++++ b/tools/server/server-task.h
+@@ -174,6 +174,8 @@ struct server_task {
+ 
+         // used by SERVER_TASK_TYPE_SLOT_COMPACT (Expected Attention KV compaction)
+         float keep_ratio       = 0.5f;  // fraction of KV entries to KEEP
++        int   keep_recent      = 0;     // number of recent positions protected
++        float recency_ratio    = 0.0f;  // fraction of retained budget protected
+         int   keep_first       = 8;     // sink tokens protected from eviction
+         int   n_future         = 128;   // RoPE averaging window
+         bool  use_covariance   = true;  // include covariance term (more accurate)

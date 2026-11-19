@@ -1,0 +1,28 @@
+{
+  "row": "vb-v9-8-lifecycle-native-20261118",
+  "status": "launcher_fixed_in_unpublished_successor_matrix_refresh_blocked",
+  "original_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/out/RESULT.json",
+  "original_native_capture": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/out/.capture-3f1ea83fa7b64591b4ed923ed07b6fc3/resident/capture.json",
+  "cause": "Canonical matrix measured 2026-09-24 and has 2026-10-03 mtime. Full recorded and live topology hash 560d489bb6df16b9 matches, but the matrix exceeded 30 days. Runner refused before starting any cohort. Old launcher passed the incomplete capture to the sealer, whose missing fresh_capture lookup masked the refusal.",
+  "external_trigger": "Operator-authorized production relaunch and quiet-window remeasurement of the actual lineup via the canonical contention-matrix producer. The standard freshness validator must pass; production relaunch queue /mnt/raid0/llm/tmp/relaunch-queue-20261111/README.md.",
+  "successor_spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/successor/row.spec.json",
+  "changed": [
+    "successor/job.py",
+    "successor/launch.sh",
+    "successor/row.spec.json",
+    "successor/README.md",
+    "successor/SOURCE.sha256",
+    "successor/sources/"
+  ],
+  "blast_radius": "Scratch successor only, with a single engine launcher and its result finalization. Shared repo unchanged. GitNexus upstream risk UNKNOWN: lane unindexed, stale workspace graph incompatible (storage 41 vs CLI 40), guarded re-index refused CPU admission.",
+  "validation": {
+    "archived_failure_regression": "PASS: real archived resident capture surfaced contention matrix is STALE prior to seal.",
+    "live_precondition": "PASS negative control: refused stale matrix, exit 1, no claim.",
+    "no_model_dryrun": "PASS: FILLER_DRYRUN=1 python3 -I -B job.py, exit 0.",
+    "shell_syntax_and_source_pins": "PASS",
+    "publisher_smoke": "not run"
+  },
+  "published": false,
+  "committed": false,
+  "handoff_ticked": false
+}

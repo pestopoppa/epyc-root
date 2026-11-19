@@ -1,0 +1,60 @@
+{
+ "book_s": 315,
+ "budget_gib": 4.0,
+ "busy_fraction": 0.25,
+ "decision_rule": "Accept a successful network-disabled build from the exact digest-pinned Sphinx base and Dockerfile with inspectable derived image and an original hashed build log. Stop on answer after the image and build log are retained or on first refusal, STOP, the allocation deadline or 300 seconds. Build custody only.",
+ "declared_shape": "sub-quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 420,
+ "first_progress_s": 300,
+ "gib": 8,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-P5-SPHINX-IMAGE-REBUILD",
+ "id": "vb-p5-sphinx-image-rebuild-20261118",
+ "keep": [
+  "SOURCE.sha256",
+  "launch.sh",
+  "build-image.sh",
+  "context/Dockerfile",
+  "spec.json",
+  "official/**",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/launch.sh",
+  "sha256": "1a7ae42e59a59d85b86f6305812c1158ee34fe4b714dee0622f9983375b5c79b"
+ },
+ "min_window_s": 300,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 70.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:367: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)"
+ ],
+ "published_at": "2026-11-18T19:10:10Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T19:10:10Z",
+  "session": "01a1f00f-0f08-7960-932e-c085a62f16fb",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118",
+ "shape": "quarter",
+ "smoke_predicate": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/launch.sh --complete",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118/STOP",
+ "verdict_by": "agent",
+ "window_s": 840,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-image-build-sealed-20261118"
+}
