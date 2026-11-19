@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 219
+      "open": 220
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -2336,7 +2336,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 133,
+      "closed": 134,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 27,
@@ -2348,11 +2348,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 162,
+      "total": 163,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 83,
+          "closed": 84,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2368,7 +2368,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 765,
+          "line": 766,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 17
@@ -2548,7 +2548,7 @@
       "closed": 485,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 116,
+      "open": 117,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2557,7 +2557,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 602
+      "total": 603
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
