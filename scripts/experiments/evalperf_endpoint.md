@@ -8,7 +8,32 @@ Prepare the EvalPlus environment and datasets before publishing. The upstream
 checkout used during implementation was `evalplus/evalplus` commit
 `26d6d00bb1fd0fa37f39c99d5290da67891d1c5e`. Its native profiler preflight must pass
 on the allocated host. The endpoint URLs must serve the exact configured model
-IDs. The runner does not start or reload endpoints.
+IDs. By default the runner consumes existing endpoints. An arm with `launch`
+starts its own endpoint for that arm and stops it before the next arm; it never
+reloads the serving stack.
+
+The optional `launch` object contains `argv` (an argument array, without a shell),
+`library_dir`, `startup_timeout_s` (1–300), and nonempty `inputs`. Each input is
+`{"path": "/prepared/input", "stat": [st_dev, st_ino, st_size, st_mtime_ns]}`
+captured **after** verifying the source/build/model identity during preparation.
+Include the executable, mapped libraries, every model shard and any template.
+Stat revalidation detects replacement; it does not establish build provenance
+or GPU residency. Those proofs remain required in the row's native capture.
+Pass the reserved loopback port, configured model alias and granted thread count
+explicitly in `argv`; the process inherits the row's CPU affinity. Owned URLs
+must use `http://127.0.0.1:PORT/v1`. An occupied port is refused before spawn.
+Preserve the exclusive bind behavior of the server; the pre-spawn port probe
+does not reserve the port against another process racing to bind it.
+The runner records the launch command, library path, prepared input identities
+and server log per arm, and appends the captured PID to `FILLER_PIDFILE` when set.
+
+The prepared scratch environment at
+`/mnt/raid0/llm/tmp/ernie-image-turbo-evaluation/evalperf/venv` passed upstream's
+`simple_test_profiler()` on 2026-11-19. Cirron 0.4 imports `pkg_resources`, so it
+requires `setuptools<81` in this environment (prepared version 80.10.2).
+This preflight opens the counter; it is not a model result or an instruction
+count validation on generated code. Datasets and full native compatibility must
+still be prepared and checked before publication.
 
 Example configuration (paths and endpoint model IDs must be filled from prepared
 inputs, not copied as a runnable row):

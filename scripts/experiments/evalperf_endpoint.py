@@ -2,10 +2,12 @@
 """Run two pinned EvalPerf endpoint arms; reject partial output before comparison.
 
 Requires a prepared EvalPlus checkout/environment and a manifest of the 118 task
-IDs. This script neither installs dependencies nor starts/reloads serving stacks.
-Invoke only inside an allocated row. No promotion or significance claim is made.
+IDs. This script never installs dependencies or reloads serving stacks. Optional
+prepared endpoint commands run under its custody inside an allocated row.
+No promotion or significance claim is made.
 """
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import math
@@ -14,10 +16,12 @@ from pathlib import Path
 import signal
 import statistics
 import subprocess
+import time
 import urllib.request
 
 
-def run_native(argv, **kwargs):
+@contextmanager
+def owned_process(argv, **kwargs):
     """Reap the owned native process and stop its group on every exit path.
 
     The row's TERM must reach correctness/profiling workers even when the
@@ -42,9 +46,7 @@ def run_native(argv, **kwargs):
         process = subprocess.Popen(argv, start_new_session=True, **kwargs)
         if pending:
             raise InterruptedError(f"native EvalPerf cancelled by signal {pending[0]}")
-        rc = process.wait()
-        if rc:
-            raise subprocess.CalledProcessError(rc, argv)
+        yield process
     finally:
         # A second cancellation cannot interrupt cleanup or leave an unreaped
         # child. Signal only the new session whose leader PID we captured.
@@ -69,6 +71,86 @@ def run_native(argv, **kwargs):
             for sig, handler in previous_handlers.items():
                 signal.signal(sig, handler)
             signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
+
+
+def run_native(argv, **kwargs):
+    with owned_process(argv, **kwargs) as process:
+        rc = process.wait()
+        if rc:
+            raise subprocess.CalledProcessError(rc, argv)
+
+
+def check_endpoint(arm):
+    request = urllib.request.Request(arm["base_url"].rstrip("/") + "/models")
+    with urllib.request.urlopen(request, timeout=1) as response:
+        models = json.load(response)["data"]
+    if arm["model"] not in {m["id"] for m in models}:
+        raise ValueError("endpoint model identity mismatch")
+
+
+@contextmanager
+def endpoint(arm, output, env):
+    """Optionally launch one prepared local endpoint; never adopt a live port.
+
+    Command, library path and file identities are prepared before publication.
+    The row supplies CPU affinity through inheritance. This only owns processes
+    it spawned; no stack reload or shared server mutation is performed.
+    """
+    launch = arm.get("launch")
+    if launch is None:
+        check_endpoint(arm)
+        yield
+        return
+    from urllib.parse import urlsplit
+    import socket
+    url = urlsplit(arm["base_url"])
+    if url.scheme != "http" or url.hostname != "127.0.0.1" or not url.port:
+        raise ValueError("owned endpoint requires explicit IPv4 loopback port")
+    # Refuse an occupied listener before starting: its identity may match while
+    # belonging to another session. The server must also bind exclusively.
+    with socket.socket() as probe:
+        probe.bind((url.hostname, url.port))
+    command = launch["argv"]
+    if (not isinstance(command, list) or not command
+            or any(not isinstance(s, str) or not s for s in command)):
+        raise ValueError("endpoint argv must be a nonempty string array")
+    deadline_s = launch["startup_timeout_s"]
+    if type(deadline_s) is not int or not 1 <= deadline_s <= 300:
+        raise ValueError("endpoint startup timeout must be in 1..300 seconds")
+    # Stat tuples refer to the already verified build/model inputs; no weight
+    # hashing or other preparation occurs under a compute grant.
+    pins = launch["inputs"]
+    if not pins:
+        raise ValueError("owned endpoint requires prepared input identities")
+    for pin in pins:
+        stat = Path(pin["path"]).stat()
+        if [stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns] != pin["stat"]:
+            raise ValueError("prepared endpoint input changed")
+    server_env = dict(env, LD_LIBRARY_PATH=launch["library_dir"])
+    (output / "server-command.json").write_text(json.dumps({
+        "argv": command, "LD_LIBRARY_PATH": server_env["LD_LIBRARY_PATH"],
+        "inputs": pins,
+    }, indent=2) + "\n")
+    with (output / "server.log").open("w") as log:
+        with owned_process(command, env=server_env, stdout=log,
+                           stderr=subprocess.STDOUT) as process:
+            if os.environ.get("FILLER_PIDFILE"):
+                with open(os.environ["FILLER_PIDFILE"], "a") as receipt:
+                    receipt.write(f"{process.pid}\n")
+            deadline = time.monotonic() + deadline_s
+            while True:
+                if process.poll() is not None:
+                    raise RuntimeError("owned endpoint exited during startup")
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("owned endpoint startup deadline exceeded")
+                try:
+                    check_endpoint(arm)
+                    break
+                except OSError:
+                    time.sleep(0.1)
+            yield
+            if process.poll() is not None:
+                raise RuntimeError("owned endpoint died during evaluation")
 
 
 def bounded_number(value, low, high):
@@ -183,11 +265,8 @@ def run(config, output):
         raise ValueError("workers exceed inherited CPU allocation")
     # Read-only identity checks happen before either expensive generation arm.
     for arm in arms:
-        request = urllib.request.Request(arm["base_url"].rstrip("/") + "/models")
-        with urllib.request.urlopen(request, timeout=5) as response:
-            models = json.load(response)["data"]
-        if arm["model"] not in {m["id"] for m in models}:
-            raise ValueError("endpoint model identity mismatch")
+        if "launch" not in arm:
+            check_endpoint(arm)
     output.mkdir(parents=True, exist_ok=False)
     env = {**os.environ, "PYTHONPATH": str(source), "TOKENIZERS_PARALLELISM": "false"}
     summaries = {}
@@ -205,8 +284,9 @@ def run(config, output):
         # its descendants, including correctness/profiling workers.
         argv = ["timeout", "--kill-after=5s", str(config["arm_timeout_s"]), *argv]
         (role_dir / "command.json").write_text(json.dumps(argv) + "\n")
-        with (role_dir / "native.log").open("w") as log:
-            run_native(argv, cwd=source, env=env, stdout=log, stderr=subprocess.STDOUT)
+        with endpoint(arm, role_dir, env):
+            with (role_dir / "native.log").open("w") as log:
+                run_native(argv, cwd=source, env=env, stdout=log, stderr=subprocess.STDOUT)
         files = list(role_dir.rglob("*_evalperf_results.json"))
         if len(files) != 1:
             raise ValueError("expected exactly one full native result")

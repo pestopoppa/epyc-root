@@ -307,3 +307,161 @@ def test_second_arm_failure_keeps_first_checkpoint_without_complete(prepared, mo
         runner.run(config, output)
     assert set(json.loads((output / "checkpoint.json").read_text())) == {"coder"}
     assert not (output / "RESULT.json").exists()
+
+
+@pytest.fixture
+def owned_arm(tmp_path):
+    import socket
+    import sys
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    script = tmp_path / "server.py"
+    script.write_text("""import http.server, json, sys
+class Handler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(json.dumps({'data': [{'id': 'coder'}]}).encode())
+http.server.HTTPServer(('127.0.0.1', int(sys.argv[1])), Handler).serve_forever()
+""")
+    stat = script.stat()
+    return {"model": "coder", "base_url": f"http://127.0.0.1:{port}/v1",
+            "launch": {"argv": [sys.executable, str(script), str(port)],
+                       "library_dir": str(tmp_path), "startup_timeout_s": 3,
+                       "inputs": [{"path": str(script), "stat": [stat.st_dev,
+                                  stat.st_ino, stat.st_size, stat.st_mtime_ns]}]}}, tmp_path
+
+
+def capture_children(monkeypatch):
+    original = runner.subprocess.Popen
+    children = []
+    def spawn(*args, **kwargs):
+        child = original(*args, **kwargs)
+        children.append(child)
+        return child
+    monkeypatch.setattr(runner.subprocess, "Popen", spawn)
+    return children
+
+
+def assert_reaped(children):
+    import os
+    assert len(children) == 1
+    assert children[0].poll() is not None
+    with pytest.raises(ProcessLookupError):
+        os.killpg(children[0].pid, 0)
+
+
+@pytest.mark.parametrize("fail", [False, True])
+def test_owned_endpoint_reaped_after_success_or_native_failure(owned_arm, monkeypatch, fail):
+    import os
+    arm, output = owned_arm
+    children = capture_children(monkeypatch)
+    def evaluate():
+        with runner.endpoint(arm, output, dict(os.environ)):
+            runner.check_endpoint(arm)
+            assert children[0].poll() is None
+            if fail:
+                raise RuntimeError("native failed")
+    if fail:
+        with pytest.raises(RuntimeError, match="native failed"):
+            evaluate()
+    else:
+        evaluate()
+    assert_reaped(children)
+    assert (output / "server-command.json").exists()
+
+
+def test_owned_endpoint_wrong_model_reaped_before_evaluation(owned_arm, monkeypatch):
+    import os
+    arm, output = owned_arm
+    arm["model"] = "wrong"
+    children = capture_children(monkeypatch)
+    with pytest.raises(ValueError, match="identity mismatch"):
+        with runner.endpoint(arm, output, dict(os.environ)):
+            pytest.fail("must not evaluate wrong model")
+    assert_reaped(children)
+
+
+def test_owned_endpoint_refuses_changed_prepared_inputs(owned_arm, monkeypatch):
+    import os
+    arm, output = owned_arm
+    Path(arm["launch"]["inputs"][0]["path"]).write_text("changed")
+    children = capture_children(monkeypatch)
+    with pytest.raises(ValueError, match="prepared endpoint input changed"):
+        with runner.endpoint(arm, output, dict(os.environ)):
+            pytest.fail("must not evaluate changed input")
+    assert not children
+
+
+def test_owned_endpoint_refuses_occupied_port_without_spawning(owned_arm, monkeypatch):
+    import os
+    import socket
+    from urllib.parse import urlsplit
+    arm, output = owned_arm
+    children = capture_children(monkeypatch)
+    with socket.socket() as listener:
+        listener.bind(("127.0.0.1", urlsplit(arm["base_url"]).port))
+        listener.listen()
+        with pytest.raises(OSError):
+            with runner.endpoint(arm, output, dict(os.environ)):
+                pytest.fail("must not adopt existing port")
+    assert not children
+
+
+def test_owned_endpoint_startup_exit_is_reaped(owned_arm, monkeypatch):
+    import os
+    import sys
+    arm, output = owned_arm
+    arm["launch"]["argv"] = [sys.executable, "-c", "raise SystemExit(7)"]
+    children = capture_children(monkeypatch)
+    with pytest.raises(RuntimeError, match="exited during startup"):
+        with runner.endpoint(arm, output, dict(os.environ)):
+            pytest.fail("must not evaluate failed server")
+    assert_reaped(children)
+
+
+def test_owned_endpoint_deadline_reaps_unready_server(owned_arm, monkeypatch):
+    import os
+    import sys
+    arm, output = owned_arm
+    arm["launch"].update(argv=[sys.executable, "-c", "import signal; signal.pause()"],
+                         startup_timeout_s=1)
+    children = capture_children(monkeypatch)
+    with pytest.raises(TimeoutError, match="startup deadline"):
+        with runner.endpoint(arm, output, dict(os.environ)):
+            pytest.fail("must not evaluate unready server")
+    assert_reaped(children)
+
+
+def test_owned_endpoint_cancellation_during_startup_reaps_server(owned_arm, monkeypatch):
+    import os
+    import sys
+    arm, output = owned_arm
+    arm["launch"]["argv"] = [sys.executable, "-c",
+        "import os, signal; os.kill(os.getppid(), signal.SIGTERM); signal.pause()"]
+    children = capture_children(monkeypatch)
+    with pytest.raises(InterruptedError):
+        with runner.endpoint(arm, output, dict(os.environ)):
+            pytest.fail("must not evaluate cancelled server")
+    assert_reaped(children)
+
+
+
+def test_owned_endpoint_and_native_child_both_reaped_on_cancellation(owned_arm, monkeypatch):
+    import os
+    import signal
+    import sys
+    arm, output = owned_arm
+    children = capture_children(monkeypatch)
+    handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT)}
+    with pytest.raises(InterruptedError):
+        with runner.endpoint(arm, output, dict(os.environ)):
+            runner.run_native([sys.executable, "-c",
+                "import os,signal; os.kill(os.getppid(), signal.SIGTERM); signal.pause()"])
+    assert len(children) == 2
+    for child in children:
+        assert child.poll() is not None
+        with pytest.raises(ProcessLookupError):
+            os.killpg(child.pid, 0)
+    assert all(signal.getsignal(sig) == handler for sig, handler in handlers.items())
