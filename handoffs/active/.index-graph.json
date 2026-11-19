@@ -701,7 +701,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T10:07:53Z",
+  "generated_at": "2026-11-19T10:14:35Z",
   "nodes": [
     {
       "age_days": 9,
@@ -746,7 +746,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 902,
+          "line": 903,
           "name": "angelslim-techniques-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -755,7 +755,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 927,
+          "line": 928,
           "name": "delta-mem-reproduction",
           "open": 4,
           "readiness": "ready"
@@ -764,7 +764,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 953,
+          "line": 954,
           "name": "ernie-image-turbo-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -773,7 +773,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1052,
+          "line": 1053,
           "name": "gpu-cot-scaffold-sidecar",
           "open": 0,
           "readiness": "no_open"
@@ -782,7 +782,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1078,
+          "line": 1079,
           "name": "lightning-attention-port",
           "open": 0,
           "readiness": "no_open"
@@ -791,7 +791,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1149,
+          "line": 1150,
           "name": "minddr-deep-research-mode",
           "open": 2,
           "readiness": "ready"
@@ -800,7 +800,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1211,
+          "line": 1212,
           "name": "minimax-h3-video-generation-evaluation",
           "open": 1,
           "readiness": "ready"
@@ -809,7 +809,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1234,
+          "line": 1235,
           "name": "qwen-mtp-llamacpp-port",
           "open": 1,
           "readiness": "ready"
@@ -818,7 +818,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1251,
+          "line": 1252,
           "name": "strand-rust-coder-rustevo2-verification",
           "open": 1,
           "readiness": "ready"
@@ -827,7 +827,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1264,
+          "line": 1265,
           "name": "summary-token-attention-readiness",
           "open": 0,
           "readiness": "no_open"
@@ -836,7 +836,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1278,
+          "line": 1279,
           "name": "tidar-one-pass-variant-b",
           "open": 0,
           "readiness": "no_open"
@@ -845,7 +845,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1290,
+          "line": 1291,
           "name": "meq-carve-gpu-serving-tie-in-program",
           "open": 2,
           "readiness": "ready"
@@ -854,7 +854,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1301,
+          "line": 1302,
           "name": "meq-carve-gpu-acceleration-path",
           "open": 0,
           "readiness": "no_open"
@@ -863,7 +863,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1310,
+          "line": 1311,
           "name": "meq-carve-eval-tower-verification",
           "open": 0,
           "readiness": "no_open"
@@ -872,7 +872,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1318,
+          "line": 1319,
           "name": "meq-carve-multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -881,7 +881,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1325,
+          "line": 1326,
           "name": "meq-carve-speculative-decoding-mtp-refresh",
           "open": 0,
           "readiness": "no_open"
@@ -894,7 +894,7 @@
           "gates": [
             "INF-77"
           ],
-          "line": 1333,
+          "line": 1334,
           "name": "meq-carve-glm52-reviewer-capability-gates",
           "open": 1,
           "readiness": "blocked"
@@ -903,7 +903,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1347,
+          "line": 1348,
           "name": "meq-carve-typed-decision-plane",
           "open": 1,
           "readiness": "ready"
@@ -916,7 +916,7 @@
           "gates": [
             "UFH-01#agentic-serving-harness-fixes"
           ],
-          "line": 1354,
+          "line": 1355,
           "name": "meq-carve-routing-intelligence",
           "open": 0,
           "readiness": "no_open"
@@ -925,7 +925,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1364,
+          "line": 1365,
           "name": "meq-carve-memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -934,7 +934,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1378,
+          "line": 1379,
           "name": "meq-carve-frontier-f3-data-flywheel",
           "open": 0,
           "readiness": "no_open"
@@ -943,7 +943,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1386,
+          "line": 1387,
           "name": "meq-carve-tq3-quantization-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -952,7 +952,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1393,
+          "line": 1394,
           "name": "meq-carve-multimodal-pipeline",
           "open": 0,
           "readiness": "no_open"
@@ -961,7 +961,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1400,
+          "line": 1401,
           "name": "meq-carve-opendataloader-pipeline-integration",
           "open": 0,
           "readiness": "no_open"
@@ -970,7 +970,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1407,
+          "line": 1408,
           "name": "meq-carve-document-parser-table-bench",
           "open": 0,
           "readiness": "no_open"
@@ -979,7 +979,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1414,
+          "line": 1415,
           "name": "meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 1,
           "readiness": "ready"
@@ -1009,7 +1009,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 1431,
+          "line": 1432,
           "name": "meq-carve-reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1018,7 +1018,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1442,
+          "line": 1443,
           "name": "meq-carve-repl-turn-efficiency",
           "open": 1,
           "readiness": "ready"
@@ -1027,7 +1027,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1449,
+          "line": 1450,
           "name": "gpu-candidates-surface-qwen38-update",
           "open": 0,
           "readiness": "no_open"
@@ -1040,7 +1040,7 @@
           "gates": [
             "EVL-08"
           ],
-          "line": 1605,
+          "line": 1606,
           "name": "paw-compiled-specialists",
           "open": 3,
           "readiness": "blocked"
@@ -1544,15 +1544,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 238,
-      "dispatchable": 15,
+      "closed": 239,
+      "dispatchable": 14,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "last_advanced": "2026-11-19",
       "next_action": "P1-8 autopilot reader for region_lock_wait_s_by_holder; W2 cost era; W6 fail-open guards; then E5 Stage-B re-measure",
-      "open": 16,
+      "open": 15,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -1572,18 +1572,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 8,
           "gates": [],
           "line": 41,
           "name": "numa-placement-and-contention",
-          "open": 9,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1690,
+          "line": 1703,
           "name": "batched-decode-measurement",
           "open": 3,
           "readiness": "ready"
@@ -1592,7 +1592,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2784,
+          "line": 2797,
           "name": "numa-placement-defect-20260730",
           "open": 3,
           "readiness": "ready"
@@ -1601,7 +1601,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 4332,
+          "line": 4345,
           "name": "shape-keyed-contention-gating",
           "open": 0,
           "readiness": "no_open"
@@ -1631,7 +1631,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 4965,
+          "line": 4978,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1653,7 +1653,7 @@
             "INF-45#shape-keyed-contention-gating",
             "UFH-01"
           ],
-          "line": 5498,
+          "line": 5511,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"

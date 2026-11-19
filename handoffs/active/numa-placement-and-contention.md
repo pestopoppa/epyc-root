@@ -1281,10 +1281,23 @@ now trustworthy, where before they were not. Verified against the live registry 
       persisted (`wf_d3095ecd-19e`). Define the raw per-cell vector BEFORE the sweep so feasibility,
       the non-separable capacity fit and interference coefficients all derive offline; a reduction is
       a lossy commitment. Operator constraint: **do not re-bench anything already measured.**
-- [ ] **W9. Do NOT bulk-green the 23 tests.** At least 5 are correct tests reporting real defects —
+- [x] **W9. Do NOT bulk-green the 23 tests.** ✅ 2026-11-19 (pipeline-mgmt; orch `fef37beb`) [no-belief: test/data repair] At least 5 are correct tests reporting real defects —
       3 assert `--spec-type == draft-mtp` and receive the falsified composed recipe (they go green at
       W3); 2 are the alias drift guards. A bulk pass would encode the falsified recipe into the suite
       and erase the alias signal. Fix data first.
+      - *(2026-11-19, pipeline-mgmt.)* Re-ran the topology/stack/registry/spec/priors/placement unit suites
+        (~1720 tests, 90 files) on origin/main: the draft-mtp assertions and both alias drift guards pass
+        UNCHANGED (data fix `ed891211`, W3); no failing test remains that hides a data defect. The original
+        23 were never itemised, so the count is for this sweep: before 4 failed + 4 errors (8 tests, all stale)
+        + 1 order-dependent + 16 env-dependent; after 0 stale. Residual = 16
+        `test_config_applicator.py::test_restart_role_*` (env: live host has a GPU bench holding gpu-quiet
+        exclusive, so the restart refuses; no skip pattern in that suite, left and reported) and 1
+        order-dependent `test_stack_priors_compiler.py::test_instance_slots_...` (passes alone and in pairs;
+        fails only after `test_stack_change_pipeline_simulated_fixtures.py`, a cache/module-state leak; not data).
+        Repaired (class b, each with a cited reason in `fef37beb`): `test_single_instance_roles_use_first_entry`
+        (fail-closed since `2c435097`), 2x `test_spec_off_bitwise_roles` (`63fd32d5` call-site/param order),
+        5x ni63 capacity-child (re-pin for operator-approved `f38a2379` + new import-closure file
+        `slot_declarations.py`). No assertion weakened. `stack_change_guard.py` untouched (W6).
 - [x] **W10. Reconcile the two Qwen3-VL throughput figures** ✅ 2026-08-01 — both recorded with conditions; separately found the ratified MMMU-250 result was sitting under `mmmu_val_250`, a key the descriptor compiler does not read, so the role was reported as having NO quality evidence. Renamed to `vl_score`.
       ORIGINAL NOTE: (102.18 text-only vs 112.20 MMMU
       image+text) into the registry with conditions attached, not as one scalar.
