@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T11:47:16Z",
+  "generated_at": "2026-11-19T12:02:56Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1245,7 +1245,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1108,
+          "line": 1119,
           "name": "bulk-inference-campaign",
           "open": 3,
           "readiness": "ready"
@@ -1254,7 +1254,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1764,
+          "line": 1775,
           "name": "eval-benchmark-cost-reduction",
           "open": 0,
           "readiness": "no_open"
@@ -1263,7 +1263,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1865,
+          "line": 1876,
           "name": "eval-tower-architecture-audit-2026-07-20",
           "open": 2,
           "readiness": "ready"
@@ -1272,7 +1272,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2254,
+          "line": 2265,
           "name": "eval-tower-loop-robustness-audit-2026-07-20",
           "open": 2,
           "readiness": "ready"
@@ -1281,7 +1281,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2454,
+          "line": 2465,
           "name": "fable5-window2-findings-01-optimizer-integrity",
           "open": 1,
           "readiness": "ready"
@@ -1290,7 +1290,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2523,
+          "line": 2534,
           "name": "inference-batch-loop",
           "open": 5,
           "readiness": "ready"
@@ -1299,7 +1299,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2792,
+          "line": 2803,
           "name": "prompt-construction-determinism",
           "open": 0,
           "readiness": "no_open"
@@ -1308,7 +1308,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2916,
+          "line": 2927,
           "name": "re4-protocol-redesign",
           "open": 2,
           "readiness": "ready"
@@ -1317,7 +1317,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 3081,
+          "line": 3092,
           "name": "scoring-infra-standardization",
           "open": 7,
           "readiness": "ready"
@@ -1885,7 +1885,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1030,
+          "line": 1032,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1894,7 +1894,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1646,
+          "line": 1648,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1903,7 +1903,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1793,
+          "line": 1795,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
@@ -1914,15 +1914,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 229,
-      "dispatchable": 25,
+      "closed": 230,
+      "dispatchable": 24,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-19",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 27,
+      "open": 26,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1956,7 +1956,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 23,
+          "dispatchable": 22,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1965,14 +1965,14 @@
           ],
           "line": 20,
           "name": "autokernel-champion-aggregate",
-          "open": 25,
+          "open": 24,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1772,
+          "line": 1774,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1981,7 +1981,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1896,
+          "line": 1898,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2228,
+          "line": 2230,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2367,
+          "line": 2369,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2929,
+          "line": 2931,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2020,7 +2020,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3067,
+          "line": 3069,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2032,7 +2032,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3074,
+          "line": 3076,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2849,7 +2849,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 203,
+      "closed": 205,
       "dispatchable": 39,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -2888,7 +2888,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 372,
+          "line": 376,
           "name": "delegation-context-preassembly",
           "open": 8,
           "readiness": "ready"
@@ -2897,7 +2897,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 604,
+          "line": 608,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2906,7 +2906,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 870,
+          "line": 874,
           "name": "per-request-reasoning-budget",
           "open": 4,
           "readiness": "ready"
@@ -2915,7 +2915,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1375,
+          "line": 1379,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -2924,7 +2924,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1912,
+          "line": 1916,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -2933,7 +2933,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2674,
+          "line": 2678,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -2942,7 +2942,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3101,
+          "line": 3105,
           "name": "tool-output-compression",
           "open": 3,
           "readiness": "ready"
@@ -2951,7 +2951,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3758,
+          "line": 3762,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
