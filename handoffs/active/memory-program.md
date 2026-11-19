@@ -552,6 +552,16 @@ failure caught in amber.
       This verifies the file now; it is not a receipt that the 2026-09-18 runs checked its digest
       or satisfied the other checklist items. [belief: cc]
     - **2026-11-09 (apr2 third-pass) PARTIAL, box stays OPEN:** research branch `apr2/third-pass-20261109` `c9aac169b`. `scripts/benchmark/beam_prerun_checklist.py` checks items 1-8 mechanically (PASS / FAIL / UNKNOWN with evidence; `cleared` only when all eight PASS) from the run's scored summary plus a per-arm `beam_run_receipt.json` (schema in the module docstring: reader model/max_tokens/prompt sha256/closed-book flag, ingest roles/chunking/retrieval budget, dataset path+sha256). 11 fixture tests pass (`--noconftest`). **Run on the three 2026-09-18 runs** (`full`=20260918_195111, `rag`=221626, `trace`=232546): item 1 PASS (all `beam_macro`), item 4 PASS (one fixed judge `gemma-4-26B-A4B-it-ORIG-Q8_0`, reader differs), item 8 PASS (rag/trace headlines 0.626/0.650 vs the 0.557 floor); items 2, 3, 5, 6, 7 UNKNOWN: no receipt exists (item 3 also shows truncated rows 2/3/3 of 400). So the Sep runs are NOT cleared, and the gap is now machine-visible. **Not done:** the launcher does not yet WRITE `beam_run_receipt.json`; until it does no new run can clear items 2, 3, 5, 6, 7, and the minimum `max_tokens` the highest-nugget ability needs is a parameter (default 1024), not a measured need. [no-belief: checker and fixtures; historical result is UNKNOWN, not a finding]
+
+    - [x] **M-12c-RECEIPT-WRITER — implement the lane-owned BEAM receipt-producing reader launcher with offline tests.** ✅ 2026-11-19 [no-belief: offline launcher/control fixtures; no measured benchmark finding]
+      2026-11-19: `proposed/m12c/payload/research/scripts/benchmark/run_beam_reader.py`
+      prepares digest-verified parquet, both-role manifests, matched instructions and retrieval outside
+      the grant; execution checkpoints actual prompts/settings, responses, finish reasons and receipt
+      status. Source and prompt digests are bound. Ten offline tests pass, including synthetic
+      full/rag/trace receipts clearing the research checker at `c9aac169b`; trace/HTTP are stubs.
+      No inference or historical receipt backfill. Parent M-12c stays OPEN: 2048 tokens is still an
+      unmeasured cap, and the checker must require complete receipts and validate source/prompt bindings
+      before fresh matched arms are published. Dependencies: `proposed/m12c/source-pins.json`.
   - **[declined: ws58 2026-11-03 content-review: merged into M-12c as its item (8); a reference note, not a task]** **M-12d — external reference curves, used as floors and sanity checks, never as targets.**
         (a) Tulving: the authors' shipped 12-arm results at
         `/mnt/raid0/llm/data/eval/tulving_episodic/episodic-memory-benchmark/epbench/data/result_lenient_all_book_200.csv`
