@@ -282,5 +282,36 @@ class BeliefCaptureGateTest(unittest.TestCase):
         self.assertNotIn("--strict", line[0])
 
 
+class ReceiptStateVerdictPrefix(unittest.TestCase):
+    """The verdict comes from the FILED prefix, not the rule prose (autokernel report 2026-11-19)."""
+
+    def setUp(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("bcc", CHECKER)
+        self.bcc = importlib.util.module_from_spec(spec)
+        sys.modules["bcc"] = self.bcc  # dataclasses need the module registered
+        spec.loader.exec_module(self.bcc)
+        self.tmp = Path(tempfile.mkdtemp())
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def state(self, first):
+        p = self.tmp / "row-r2.FILED"
+        p.write_text(first + "\n")
+        return self.bcc.receipt_state([p])[0]
+
+    def test_pass_with_failure_words_in_rule_is_complete(self):
+        self.assertEqual(self.state("FILED row-r2: pass rc=0 rule='KEEP if x; FAIL otherwise; INCOMPLETE if y'"), "COMPLETE")
+
+    def test_fail_verdict_and_nonzero_rc(self):
+        self.assertEqual(self.state("FILED row-r2: fail rc=0 rule='...'"), "FAILED")
+        self.assertEqual(self.state("FILED row-r2: inconclusive rc=0 rule='PASS if'"), "INCONCLUSIVE")
+        self.assertEqual(self.state("FILED row-r2: pass rc=3 rule='...'"), "RC=3")
+
+    def test_legacy_line_without_prefix_still_parsed(self):
+        self.assertEqual(self.state("row-r2 FAILED-RUN at step 3"), "FAILED-RUN")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

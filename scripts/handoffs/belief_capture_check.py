@@ -218,6 +218,17 @@ def receipt_state(paths: list[Path]) -> tuple[str, str]:
     except OSError:
         return "UNREADABLE", run_id
     first = text.splitlines()[0] if text.splitlines() else ""
+    # a filing receipt states its verdict up front: "FILED <id>: <verdict> rc=<n> rule='...'"; the rule prose after it
+    # routinely contains "FAIL otherwise"/"INCOMPLETE", so only the prefix is the verdict (autokernel report 2026-11-19)
+    head = re.match(r"\s*FILED\s+\S+:\s*(\S+)\s+rc\s*=\s*(-?\d+)", first)
+    if head:
+        verdict, rc = head.group(1).upper().strip(",;"), int(head.group(2))
+        if rc != 0:
+            return f"RC={rc}", run_id
+        if re.fullmatch(r"FAILED(?:-RUN)?|FAIL|INCONCLUSIVE|INCOMPLETE|PARTIAL", verdict):
+            return ("FAILED" if verdict == "FAIL" else verdict), run_id
+        return "COMPLETE", run_id
+    first = first.split(" rule=", 1)[0]
     m = re.search(r"\b(FAILED(?:-RUN)?|INCONCLUSIVE|INCOMPLETE|PARTIAL)\b|\brc\s*=\s*([1-9]\d*)", first, re.I)
     if m:
         return (m.group(1) or f"rc={m.group(2)}").upper(), run_id
