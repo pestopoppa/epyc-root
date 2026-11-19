@@ -2,9 +2,9 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 51,
-      "handoffs": 14,
+      "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 505
+      "open": 504
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -627,7 +627,7 @@
       "blocked": 0,
       "closed": 356,
       "guarded": 0,
-      "last_advanced": "2026-11-18",
+      "last_advanced": "2026-11-19",
       "open": 3,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1167,22 +1167,6 @@
           "open": 1
         }
       ]
-    },
-    "hybrid-checkpoint-prompt-reuse.md": {
-      "blocked": 0,
-      "closed": 21,
-      "guarded": 0,
-      "last_advanced": "2026-11-17",
-      "open": 1,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-86",
-      "state": "active",
-      "total": 22
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
@@ -1859,7 +1843,6 @@
             "INF-06#autokernel-research-loop",
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "UFH-01",
@@ -1971,7 +1954,6 @@
             "INF-06",
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "UFH-01",
@@ -1992,7 +1974,6 @@
           "gates": [
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "UFH-01"
@@ -2670,7 +2651,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 25,
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
       "track": "rocm verify profile backend"
     },
@@ -2679,7 +2660,7 @@
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 27,
+      "line": 26,
       "next_action": "DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3",
       "track": "speculative decoding mtp refresh"
     },
@@ -2690,7 +2671,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 28,
+      "line": 27,
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
       "track": "yarn context extension research"
     },
@@ -2780,17 +2761,6 @@
       "line": 19,
       "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "track": "workspace-58 champion calibration"
-    },
-    "INF-86": {
-      "deps": [
-        "INF-83"
-      ],
-      "handoff": "hybrid-checkpoint-prompt-reuse.md",
-      "id": "INF-86",
-      "index": "inference-research-index.md",
-      "line": 25,
-      "next_action": "DS-F1 (waits on external AM-DECISIVE-1 verdict) + earlyoom --ignore tweak (operator host edit); slot-restore fix validated on C13, ships v11",
-      "track": "hybrid checkpoint prompt-reuse exposure"
     },
     "PIP-04": {
       "deps": [

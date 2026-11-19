@@ -78,11 +78,6 @@
       "to": "INF-65"
     },
     {
-      "from": "INF-86",
-      "kind": "dep",
-      "to": "INF-83"
-    },
-    {
       "from": "PIP-04",
       "kind": "dep",
       "to": "INF-83"
@@ -261,12 +256,6 @@
       "kind": "ref",
       "to": "EVL-02",
       "weight": 2
-    },
-    {
-      "from": "INF-45",
-      "kind": "ref",
-      "to": "INF-86",
-      "weight": 4
     },
     {
       "from": "INF-45",
@@ -497,12 +486,6 @@
       "weight": 2
     },
     {
-      "from": "INF-86",
-      "kind": "ref",
-      "to": "INF-45",
-      "weight": 2
-    },
-    {
       "from": "PIP-04",
       "kind": "ref",
       "to": "EVL-02",
@@ -701,7 +684,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T11:12:42Z",
+  "generated_at": "2026-11-19T11:14:17Z",
   "nodes": [
     {
       "age_days": 9,
@@ -990,7 +973,6 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-86",
             "RTG-34#coordination-and-churn-pipeline",
             "UFH-01"
           ],
@@ -999,7 +981,6 @@
             "INF-06#autokernel-research-loop",
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "UFH-01",
@@ -1354,7 +1335,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 13,
+        "unblocks": 12,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1397,7 +1378,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 11,
+        "unblocks": 10,
         "unblocks_rows": [
           "EVL-49",
           "INF-62",
@@ -1611,7 +1592,6 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-86",
             "RTG-34#coordination-and-churn-pipeline",
             "UFH-01"
           ],
@@ -1620,7 +1600,6 @@
             "INF-06",
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "UFH-01",
@@ -1639,14 +1618,12 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-86",
             "UFH-01"
           ],
           "dispatchable": 0,
           "gates": [
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
             "UFH-01"
@@ -1682,7 +1659,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 12,
+        "unblocks": 11,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1797,7 +1774,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 11,
+        "unblocks": 10,
         "unblocks_rows": [
           "INF-62",
           "INF-65",
@@ -1945,7 +1922,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 10,
+        "unblocks": 9,
         "unblocks_rows": [
           "INF-66",
           "INF-73",
@@ -2315,7 +2292,7 @@
       "last_advanced": "2026-11-19",
       "next_action": "Fix C12 CPU mul_mat IQ3_XXS/Q6_K (QDEC r3) + QDEC judge; q81 r4 edge leg; EDGE-HIP-NONFINITE; LB4.9 per-route bar",
       "open": 56,
-      "priority": 0.0021,
+      "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2395,11 +2372,11 @@
       "last_advanced": "2026-11-18",
       "next_action": "Run V11-C13-GPU-LOADCHECK (row 1b); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; C14 fold per INF-65; D6/D7",
       "open": 18,
-      "priority": 0.0297,
+      "priority": 0.0263,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
-        "unblocks": 2
+        "unblocks": 1
       },
       "priority_rank": 28,
       "readiness": "blocked",
@@ -2421,7 +2398,7 @@
       "last_advanced": "2026-11-07",
       "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "open": 6,
-      "priority": 0.0021,
+      "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2431,32 +2408,6 @@
       "readiness": "blocked",
       "state": "active",
       "track": "workspace-58 champion calibration"
-    },
-    {
-      "age_days": 2,
-      "blocked": 0,
-      "blocked_by": [
-        "INF-83"
-      ],
-      "closed": 21,
-      "dispatchable": 1,
-      "domain": "inference-research",
-      "guarded": 0,
-      "handoff": "hybrid-checkpoint-prompt-reuse.md",
-      "id": "INF-86",
-      "last_advanced": "2026-11-17",
-      "next_action": "DS-F1 (waits on external AM-DECISIVE-1 verdict) + earlyoom --ignore tweak (operator host edit); slot-restore fix validated on C13, ships v11",
-      "open": 1,
-      "priority": 0.0021,
-      "priority_basis": {
-        "campaign": 0,
-        "source": "heuristic",
-        "unblocks": 0
-      },
-      "priority_rank": 29,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "hybrid checkpoint prompt-reuse exposure"
     },
     {
       "age_days": 2,
@@ -3156,7 +3107,7 @@
       "last_advanced": "2026-11-19",
       "next_action": "Ship PLACEMENT-DECLARE-ONLY-COST-BASED, then KEEPER-RESIDENT-TENANT-ACCOUNTING and AUTONOMY-DIGEST-REVIEW",
       "open": 26,
-      "priority": 0.0402,
+      "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
         "source": "heuristic",
@@ -3263,7 +3214,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 356,
@@ -3272,7 +3223,7 @@
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-18",
+      "last_advanced": "2026-11-19",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
       "open": 3,
       "priority": 0.711,
@@ -3947,14 +3898,13 @@
       "INF-82",
       "INF-83",
       "INF-84",
-      "INF-86",
       "RTG-100"
     ],
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 26,
-      "heuristic": 5,
+      "heuristic": 4,
       "override": 0
     },
     "tiers": {
@@ -3969,7 +3919,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 7,
+    "blocked": 6,
     "no_open": 0,
     "ready": 24
   },

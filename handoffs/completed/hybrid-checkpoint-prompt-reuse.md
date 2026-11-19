@@ -2,7 +2,7 @@
 
 > **Split out of [`numa-placement-and-contention.md`](numa-placement-and-contention.md) on 2026-11-10 (INF-45 restructure, operator "yes, take both on").** The body below is the former `## Track: dynamic-stack-concurrency` lifted verbatim; box text is unchanged. Earlier fold history: [`../completed/dynamic-stack-concurrency.md`](../completed/dynamic-stack-concurrency.md).
 
-**Status**: ACTIVE — 2026-11-17: every INF-86 measurement box is closed, including INF-86-SLOT-RESTORE-CHECKPOINTS (C13 validation PASS: restored/live cache_n both 13754 and greedy identity). Remaining: DS-F1 (waits on the external AM-DECISIVE-1 verdict) and the earlyoom `--ignore` tweak (the operator's host edit). C13 validation is not production deployment.
+**Status**: COMPLETED 2026-11-19 — every box closed; DS-F1 moved to long-context-program.md (AM compaction track); earlyoom agent protection applied with `--avoid`. Slot-restore checkpoint fix validated on C13 and ships with the next production kernel.
 **Created**: 2026-11-10 (split)
 **Scratch**: `/mnt/raid0/llm/tmp/hybrid-checkpoint-prompt-reuse/`
 **Owner**: AutoKernel session (workspace-18)
@@ -54,7 +54,7 @@ Do not restart DS-6 or DS-7 from first principles. The historical ledger contain
 
 earlyoom is deployed and verified live ([`../completed/earlyoom-oom-protection.md`](../completed/earlyoom-oom-protection.md)); these optional residuals now live here because this handoff owns the preventive ceilings and stack-lifecycle concerns earlyoom complements:
 
-- [ ] **Optional `--ignore` tweak**: add `claude|codex` to earlyoom's `--ignore` regex (e.g. `'^(llama-server|sd-server|claude|codex)$'` in `/etc/default/earlyoom`) to shield agent sessions — under `--sort-by-rss` a `claude`/`codex` session can otherwise be a victim before a small runaway. Non-blocking; operator edit + `systemctl restart earlyoom`.
+- [x] **Optional `--ignore` tweak**: add `claude|codex` to earlyoom's `--ignore` regex (e.g. `'^(llama-server|sd-server|claude|codex)$'` in `/etc/default/earlyoom`) to shield agent sessions — under `--sort-by-rss` a `claude`/`codex` session can otherwise be a victim before a small runaway. Non-blocking; operator edit + `systemctl restart earlyoom`. ✅ 2026-11-19 (pipeline-mgmt): applied by the operator on the host as `--avoid ^(claude|codex)$` instead of `--ignore` (agent sessions are killed LAST, never made unkillable — a runaway session stays killable), via drop-in `/etc/systemd/system/earlyoom.service.d/ignore-agents.conf`; verified running argv (pid 905693, started 2026-11-19T11:13:24) carries `--ignore ^(llama-server|sd-server)$ --avoid ^(claude|codex)$`. [no-belief: host config change, verified by argv]
   **VERIFIED 2026-07-29 (`auditor`) — premise CONFIRMED, prescription CORRECTED, still operator-only.**
   *Live config (pid 3761):* `earlyoom -M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore
   '^(llama-server|sd-server)$' --prefer '^llama-bench$'`. So `--sort-by-rss` is on and the ignore list
