@@ -1,6 +1,6 @@
 # Tulving CAS scoring validity and offline re-score protocol (M-12f, absorbs M-12i)
 
-Date: 2026-11-09. Source: `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json` (scorer v2, 20-chapter set, run 20260619_141212, role `ingest_long_context`). Model-free arithmetic over the stored `per_question` rows (456 rows); no bench release, no claim, no belief rows.
+Date: 2026-11-09; source-convention verdict added 2026-11-19. Source: `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json` (scorer v2, 20-chapter set, run 20260619_141212, role `ingest_long_context`). Model-free arithmetic over the stored `per_question` rows (456 rows); no bench release, no claim, no belief rows.
 
 ## Approved EPYC v3 definition (OP-M12F, 2026-11-11)
 
@@ -9,8 +9,50 @@ The operator selected **gold≥2, zero partial**. Prospective EPYC reports use s
 gold item; retain eligible questions with incomplete retrieval in the denominator
 and give them tau 0.0. Latest-State F1 still uses all latest questions. Both legs
 are higher-better. If either leg has no eligible questions, CAS is undefined
-(`null`), with the available leg reported separately. This defines EPYC scoring;
-the paper's singleton convention remains unverified.
+(`null`), with the available leg reported separately. This defines EPYC scoring.
+The paper's exclusion of zero/single-item questions is now verified below;
+this establishes agreement on eligibility, not equivalence of the complete scoring pipelines.
+
+## Source-convention verdict (M-12f, 2026-11-19)
+
+**Yes: the paper explicitly excludes both zero- and single-item ground truths
+from ordering evaluation.** Appendix B.3.3, printed page 34, says to
+“consider only the questions that are related to a ground truth answer of size
+at least 2 (otherwise there is no order).” Table 4's caption, printed page 10,
+also restricts ordering to questions involving at least two events.
+Source: [arXiv 2501.13121v1, Appendix B.3.3](https://arxiv.org/pdf/2501.13121v1#page=34)
+and [Table 4](https://arxiv.org/pdf/2501.13121v1#page=10), version 2025-01-21;
+PDF SHA-256 `7c54fb94d5f09cd152eeb2ac2b10e4c5b547df2b4532753bf2420a92d73e262c`.
+
+The released aggregation code independently confirms the exclusion at upstream
+commit `892b22af097d4389d4f1b9cd47b5c51fdacd9bef`:
+[`epbench/src/evaluation/evaluation_wrapper.py`, lines 235–236](https://github.com/ahstat/episodic-memory-benchmark/blob/892b22af097d4389d4f1b9cd47b5c51fdacd9bef/epbench/src/evaluation/evaluation_wrapper.py#L235-L236)
+filters ground-truth index length greater than one before setting denominator
+`N` (Git blob `75f0e3ecd0441bba1b293a0577cd6de97709fb49`). Short rows can reach
+per-row judge evaluation, but are excluded from aggregate ordering coverage.
+
+M-12f is resolved: OP-M12F's prospective EPYC v3 eligibility agrees with the
+paper on this question, so excluded questions must not enter the ordering
+denominator as zeroes. The historical 20ch result remains diagnostic, never a
+CAS headline: v3 CAS is **0.07042657698264104**, with **15 eligible** ordering
+questions, **7 eligible partials** assigned zero, and **30 excluded** short-gold
+questions. These numbers come from the existing offline record below; no new
+inference or re-score was run for this verdict.
+
+The source paper also conditions order comparison on full item matching.
+This finding does not establish equivalence of semantic matching, partial-case
+aggregation, or composite leaderboard CAS. It does not deploy the payload
+scorer into research or admit v3 under SC67; those boundaries remain as stated
+below. The paper-convention uncertainty is closed rather than carried as an
+additional prerequisite for the approved EPYC definition.
+
+In particular, pinned upstream
+[`epbench/src/evaluation/ranking.py`](https://github.com/ahstat/episodic-memory-benchmark/blob/892b22af097d4389d4f1b9cd47b5c51fdacd9bef/epbench/src/evaluation/ranking.py#L115-L165)
+(Git blob `3c6089ff7d840ee4d18c910a89e70032c8ba9b5d`) also filters Latest bins
+to two-or-more events and clamps the summarized ordering product at zero.
+EPYC v3's all-latest leg and signed ordering leg remain explicitly local
+choices; agreement on singleton exclusion does not put the two CAS figures on
+one scale.
 
 The lane-owned scorer payload
 `proposed/m12f/payload/research/scripts/benchmark/score_tulving_run.py` now selects
