@@ -453,3 +453,11 @@ Implemented prospective KPF-17.4d custody gate: immutable build receipt/manifest
 ## 07:52Z — Close prospective KPF-17.4d build-receipt and mapped-ggml custody gate with passing focused tests.
 
 Wrap-up retry after D9 commit-message refusal: recorded existing operator authorization from this session-per-handoff brief. The previous failed attempt already appended the detailed 19-test result and ticked KPF-17.4D-RECEIPT-MAP-GATE; no repeated tick. No additional code or model execution.
+
+## 07:56Z — Implement source-bound prospective harness loader and restore model-free test execution
+
+Implemented the KPF-17.4d direct research loader: SHA-256 verification of the three Python import dependencies and argv precedes any research code execution, and cell resume binding rechecks and retains their identity. Source is epyc-inference-research@1157adc2f007d1b0c45ddc6daf91eafc45358df7; individual content pins and reconstruction commands are in scripts/coordination/kvfork/kpf174d-prospective/pinned_harness.py and HARNESS.md. Detached sparse dependencies reside outside the lane under tmp/heterogeneous-slot-fabric-residency/kpf174d/research. All 43 model-free tests PASS, including tamper/missing-source rejection before import. GitNexus status/impact could not run because this lane has no index; no impact risk verdict claimed. No model execution, row publication or historical verdict change. Next is a distinct successor publication task; old launch/spec target the exposed g0 witness and must not be republished. Preserve exposed g0-S2-B and g1-S2-B.
+
+## 07:57Z — Implement source-bound prospective harness loader and restore model-free test execution
+
+Persistence retry for KPF-17.4D-HARNESS-SOURCE-GATE: the initial commit hook required an authorization record for scripts/coordination paths. The commit now records the operator dispatch instruction to restore the source-bound harness. The first wrap-up already applied the result tick and detailed progress entry; both are included in this commit. Validation remains 43/43 model-free tests PASS.

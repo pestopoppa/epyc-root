@@ -5,12 +5,11 @@ from pathlib import Path
 from types import SimpleNamespace
 from layout_witness import parse, witness, compare, Invalid
 from bound_custody import validate_custody, verify_mappings
+from pinned_harness import ROOT as RESEARCH_ROOT, load_harness, verify_sources
 D=Path(__file__).resolve().parent
-spec=importlib.util.spec_from_file_location('prior', '/mnt/raid0/llm/tmp/cal-1026/kpf174d-c1-layout-source/run.py')
-prior=importlib.util.module_from_spec(spec);spec.loader.exec_module(prior)
-b,k=prior.b,prior.k
+b,k=load_harness()
 BIN=Path('/mnt/raid0/llm/tmp/kvfork/kpf174d-prospective/bin/llama-server')
-ARGV=Path('/mnt/raid0/llm/worktrees/research-kpf174c-pin/scripts/benchmark/kpf13/argv.gpu-27b-dflash2.txt')
+ARGV=RESEARCH_ROOT/'scripts/benchmark/kpf13/argv.gpu-27b-dflash2.txt'
 OUT=Path('/mnt/raid0/llm/tmp/kvfork/kpf174d-prospective/out')
 PORT=18443
 LIMIT=2*1024**3
@@ -42,6 +41,7 @@ def resume_binding(expected,proof,model,smoke):
   if hashlib.sha256(Path(name.strip()).read_bytes()).hexdigest()!=digest:
    raise k.Abort('source pin mismatch: '+name)
  return {'schema':'kpf174d-cell-binding/v1','binary_sha256':expected,
+         'research_sources':verify_sources(),
          'custody':validate_custody(D, BIN.parent, proof),
          'build_proof':digest_json(proof),'sources_sha256':hashlib.sha256(manifest.read_bytes()).hexdigest(),
          'inputs_sha256':hashlib.sha256((D/'exact-inputs.json').read_bytes()).hexdigest(),
