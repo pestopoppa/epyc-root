@@ -256,3 +256,48 @@ def test_apply_preserves_crlf_and_stray_bytes(tmp_path):
 
 def test_parse_fields_case_insensitive():
     assert TL.parse_fields("- [ ] **X-1** t\n      · Done when: ok")["done when"] == "ok"
+
+
+# ---- mechanical migration (handoff_migrate.py) ----------------------------------------------------------------------
+import handoff_migrate as HM  # noqa: E402
+
+MIG = """# M
+**Status**: ACTIVE — x
+
+## Track: t
+<!-- gate: none -->
+
+### Phase 1 notes
+
+- [ ] **M-1 — implement the parser** wire it into run.py
+  - [ ] **M-1a** child
+- [x] **M-0** done ✅ 2026-11-01 [belief: cc] ok
+  - [ ] **M-0b** open child of a ticked parent
+- [ ] **M-2 ❄ FROZEN — resume only once OP-7 is decided** later
+
+## History
+
+- [ ] **H-9** stray
+"""
+
+
+def test_migration_moves_marks_and_keeps_first_lines():
+    new, st = HM.migrate_text(MIG)
+    lines = new.split("\n")
+    bl = lines.index("### Backlog")
+    i1 = next(i for i, l in enumerate(lines) if l.startswith("- [ ] **M-1 "))
+    i2 = next(i for i, l in enumerate(lines) if l.startswith("- [ ] **M-2 "))
+    assert bl < i1 < i2 < lines.index("### Phase 1 notes")
+    blk = "\n".join(lines[i1:i2])
+    assert "· roll-up: children carry the work" in blk and "· section: Phase 1 notes" in blk
+    assert "· ❄ frozen until: OP-7 is decided" in "\n".join(lines[i2:i2 + 4])
+    assert st["moved"] == 2 and st["left_nested"] == 1 and st["left_section"] == 1
+    assert HM.open_shas(MIG.split("\n")) == HM.open_shas(lines)
+    assert HM.first_lines(MIG.split("\n")) == HM.first_lines(lines)
+    assert HM.migrate_text(new)[0] == new                 # idempotent
+
+
+def test_annotations_never_change_the_rubric():
+    box = "- [ ] **Z-1 — fix the scorer** tests pass"
+    ann = box + "\n      · section: Deferred until after the parked thing lands\n      · class: non-inference"
+    assert TL.dispatch_result(box)["fails"] == TL.dispatch_result(ann)["fails"]

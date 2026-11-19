@@ -284,9 +284,18 @@ def box_state(txt, fields=None):
     return 'open'
 
 
+ANNOTATION_LINE = re.compile(r'^\s*·\s*(?:❄\s*)?(?:section|class|roll-up|inputs-missing|frozen until)\s*:', re.I)
+
+
+def strip_annotations(txt):
+    """The box text minus mechanical-migration annotation lines (`· section:`, `· class:`, `· roll-up:`,
+    `· inputs-missing:`, `· frozen until:`), so adding them never changes the rubric verdict (size e, prose d)."""
+    return '\n'.join(l for i, l in enumerate(txt.split('\n')) if i == 0 or not ANNOTATION_LINE.match(l))
+
+
 def dispatch_result(txt, ch=0):
     """Report rubric + parsed §2.2 fields + grammar fails (g-*) for opted-in boxes."""
-    r = score2(txt, ch)
+    r = score2(strip_annotations(txt), ch)
     f = parse_fields(txt)
     head = txt.split('\n')[0]
     bid, tag = box_id(head), CLASS_TAG.search(head)
