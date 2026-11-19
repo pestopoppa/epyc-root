@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T09:30:11Z",
+  "generated_at": "2026-11-19T09:31:57Z",
   "nodes": [
     {
       "age_days": 9,
@@ -3193,7 +3193,7 @@
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-19",
-      "next_action": "Make PROD-KERNEL-HOOK-NOT-LIVE live in /workspace, then AUTONOMY-DIGEST-REVIEW and the HITL-R4/R6/R8 D9 package",
+      "next_action": "Ship PLACEMENT-DECLARE-ONLY-COST-BASED, then KEEPER-RESIDENT-TENANT-ACCOUNTING and AUTONOMY-DIGEST-REVIEW",
       "open": 26,
       "priority": 0.041,
       "priority_basis": {
