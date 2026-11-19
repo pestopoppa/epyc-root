@@ -631,7 +631,7 @@ def test_sibling_evidence_is_labelled_transfer_unproven(tmp_path, alarm):
     stranger = _loop("stranger", model="Some-Other-Model-Q8_0.gguf", mech="akm-stranger")
     path = _write(tmp_path, *q4, uniform, stranger)
     _, ev = _ev(tmp_path, alarm, path, DS41_1017_T)
-    assert ev["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 3, "host": 0}
+    assert ev["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 3, "host": 0, "harness": 0}
     sibling_lines = [line for line in ev["section"].splitlines()
                      if line.startswith("- ") and "transfer unproven" in line]
     assert len(sibling_lines) == 3
@@ -641,7 +641,7 @@ def test_sibling_evidence_is_labelled_transfer_unproven(tmp_path, alarm):
     assert set(ev["claim_ids"]) == {_cid(b) for b in q4}       # sibling ids are reliance-eligible
     assert _cid(stranger) not in ev["section"]
     _, q38 = _ev(tmp_path, alarm, path, Q38_T)                 # uniform file is UD's sibling
-    assert q38["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 1, "host": 0}
+    assert q38["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 1, "host": 0, "harness": 0}
     assert f"measured on {Q38_UNI}" in q38["section"]
 
 
@@ -654,12 +654,12 @@ def test_section_caps(tmp_path, alarm):
     hosts = [_host(f"host-{i}") for i in range(6)]
     path = _write(tmp_path, *own, *sib, *hosts)
     _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
-    assert ev["tiers"] == {"knob": 0, "target": 30, "lineup": 0, "sibling": 12, "host": 6}
+    assert ev["tiers"] == {"knob": 0, "target": 30, "lineup": 0, "sibling": 12, "host": 6, "harness": 0}
     assert ev["tiers_shown"]["target"] <= lb.TIER_CAPS["target"] == 16
     assert ev["tiers_shown"]["sibling"] <= lb.TIER_CAPS["sibling"] == 8
     assert ev["tiers_shown"]["host"] <= lb.TIER_CAPS["host"] == 3
     assert ev["section_bytes"] <= lb.DEFAULT_MAX_BYTES == 14000
-    assert lb.DEFAULT_MAX_CLAIMS == 27
+    assert lb.DEFAULT_MAX_CLAIMS == 30
     assert "bounded" in ev["reasons"]
     _, tight = _ev(tmp_path, alarm, path, DS41_Q4_T, max_bytes=4000)
     assert 0 < tight["section_bytes"] <= 4000
@@ -840,12 +840,12 @@ def test_value_bearing_line_and_decimal_strings(tmp_path, alarm):
     assert (f"- {_cid(reg)} [Judged/Located · verified · retrofit] DS41-Q4/cpu ds41-r1 "
             "build 7ef80392 epoch c42cd561") in text
     assert ("  akm-ds41-q4q5-two-row-activation-reuse @ mul_mat_qX_K_q8_2_X4_T: REGRESSED "
-            "-8.22% vs anchor (20.1 t/s vs anchor 21.9 t/s; floor 3.41%; 5 pairs; decisive) "
+            "-8.22% vs anchor (metric aggregate_tok_s; 20.1 t/s vs anchor 21.9 t/s; floor 3.41%; 5 pairs; decisive) "
             "-- producer verdict regression") in text
     claim = ev["claims"][0]
     assert (claim["value"], claim["unit"], claim["outcome"]) == (20.1, "t/s", "regressed")
     _, gpu = _ev(tmp_path, alarm, path, GPU_27B)
-    assert "serving floor: median 81.12 t/s; floor 0.81%" in gpu["section"]
+    assert "serving floor: metric aggregate_tok_s; median 81.12 t/s; floor 0.81%" in gpu["section"]
 
 
 def test_newest_floor_is_always_shown_and_ranking_order(tmp_path, alarm):
@@ -920,7 +920,7 @@ def test_existing_answer_keys_are_kept(tmp_path, alarm):
         assert {"claim_id", "source_kind", "run", "grade", "locator", "tier", "status",
                 "outcome", "mechanism_id", "value", "unit", "effect_rel"} <= set(claim)
     empty = lb._evidence_empty("no_applicable_claims", as_of=AS_OF)
-    assert empty["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 0, "host": 0}
+    assert empty["tiers"] == {"knob": 0, "target": 0, "lineup": 0, "sibling": 0, "host": 0, "harness": 0}
     assert empty["banner"] is None
 
 
@@ -1125,50 +1125,444 @@ def test_claim_without_device_matches_gpu_target_and_is_never_host(tmp_path, ala
     assert lb.tier_of(scope, lb.Target.from_mapping({**ARCHITECT_T, "backend": "cpu"})) is None
 
 
-class _StubReader:
-    """Just enough of p1_acceptance.Reader for ac5: per-target (evaluation, collection)."""
-
-    def __init__(self, evs, rows35):
-        self.evs, self.rows35 = evs, rows35
-
-    def read(self, name, quant=None):
-        rows = self.rows35 if name == "Qwen3.6-35B" else []
-        return self.evs[name], {"rows": rows, "flagged": {b: [] for b in lb.FLAG_BUCKETS}}
-
-    def target(self, name, quant=None):
-        import p1_acceptance as acc
-        return lb.Target.from_mapping(acc.TARGETS[name])
+Q35 = "Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+VL = "Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf"
 
 
-def _ac5_inputs(*, vl_target=0, vl_banner="No beliefs are scoped to Qwen3-VL-30B.",
-                model35="Qwen3.6-35B-A3B-MTP-Q8_0.gguf", same_sets=False):
+def _ac5_ledger(tmp_path, *, vl=0, q35=3, name="ac5.jsonl"):
+    parts = [*_q38_claims(Q38_UD, 12, "ud"), *_q38_claims(DS41_Q4, 12, "q4"),
+             *_q38_claims(DS41_1017, 12, "d17"),
+             *_q38_claims(Q35, q35, "q35"), *_q38_claims(VL, vl, "vl")]
+    return _write(tmp_path, *parts, name=name)
+
+
+def test_ac5_derives_a_zero_claim_cpu_model_from_the_ledger(tmp_path):
+    """AC5 intent: a model with no claims of its own has target tier 0 + banner and the CPU models'
+    usable sets are pairwise distinct. The zero-claim model is derived, not pinned to Qwen3-VL."""
     import p1_acceptance as acc
-    evs = {}
-    for i, name in enumerate(acc.CPU_FIVE):
-        ids = ["clm_shared"] if same_sets and name in ("DS41-Q4", "Q38FN") else [f"clm_{i}"]
-        evs[name] = {"tiers": {"target": 0}, "banner": "", "section": "x", "claim_ids": ids}
-    evs["Qwen3-VL-30B"].update(tiers={"target": vl_target}, banner=vl_banner,
-                               section=f"{vl_banner}\nmore")
-    rows35 = [{"claim_id": f"clm_kpf{i}", "tier": "target", "model_file": model35,
-               "source_kind": "kv-prefix-fork-measurement"} for i in range(3)]
-    return evs, rows35
-
-
-def test_ac5_amended_passes_when_35b_target_claims_are_scoped_to_the_35b():
-    import p1_acceptance as acc
-    result = acc.ac5(_StubReader(*_ac5_inputs()))
+    r = acc.Reader(_ac5_ledger(tmp_path), AS_OF, {})
+    result = acc.ac5(r)
     assert result["pass"], result["detail"]
-    assert "kv-prefix-fork-measurement': 3" in result["detail"]
-    assert "pairwise distinct across the five CPU models True" in result["detail"]
+    assert "Qwen3-VL-30B (derived: 0 model-scoped claims)" in result["detail"]
+    # once Qwen3-VL gains claims it stops qualifying: another zero-belief cpu model, or none
+    r = acc.Reader(_ac5_ledger(tmp_path, vl=3, name="vl.jsonl"), AS_OF, {})
+    result = acc.ac5(r)
+    assert "Qwen3-VL-30B (derived" not in result["detail"]
+    assert "DS41-1017 (derived" in result["detail"] or "cannot be proven" in result["detail"]
 
 
-@pytest.mark.parametrize("kw,why", [
-    ({"vl_target": 2}, "Qwen3-VL-30B: target 2"),
-    ({"vl_banner": ""}, "banner False"),
-    ({"model35": "Qwen3.8-27B-Q8_0.gguf"}, "foreign"),
-    ({"same_sets": True}, "identical: [('DS41-Q4', 'Q38FN')]"),
-])
-def test_ac5_amended_fails_on_each_leg(kw, why):
+def test_ac5_cannot_be_proven_when_every_cpu_model_has_claims(tmp_path):
     import p1_acceptance as acc
-    result = acc.ac5(_StubReader(*_ac5_inputs(**kw)))
-    assert not result["pass"] and why in result["detail"], result["detail"]
+    path = _write(tmp_path, *_q38_claims(VL, 3, "vl"), *_q38_claims(Q35, 3, "q35"),
+                  *_q38_claims(Q38_UD, 3, "ud"), *_q38_claims(Q38_UNI, 3, "uni"),
+                  *_q38_claims(DS41_Q4, 3, "q4"), *_q38_claims(DS41_1017, 3, "d17"),
+                  name="all.jsonl")
+    res = acc.ac5(acc.Reader(path, AS_OF, {}))
+    assert not res["pass"] and "cannot be proven" in res["detail"]
+
+
+def test_ac5_still_fails_on_foreign_35b_claims_and_identical_usable_sets(tmp_path):
+    import p1_acceptance as acc
+    r = acc.Reader(_ac5_ledger(tmp_path), AS_OF, {})
+    real_collect = acc.lb.collect
+
+    def foreign(frames, targets, **kw):                 # a 35B target row scoped to another model
+        col = real_collect(frames, targets, **kw)
+        if targets[0].model_file == Q35:
+            for row in col["rows"]:
+                row["model_file"] = "Qwen3.8-27B-Q8_0.gguf"
+        return col
+    acc.lb.collect = foreign
+    try:
+        res = acc.ac5(r)
+    finally:
+        acc.lb.collect = real_collect
+    assert not res["pass"] and "foreign" in res["detail"], res["detail"]
+    # identical usable sets: two models reading the same claim ids fails distinctness
+    real_eval = acc.lb.evaluate_frames
+
+    def same(frames, targets, **kw):
+        ev = real_eval(frames, targets, **kw)
+        if targets[0].model_file in (Q38_UD, DS41_Q4):
+            ev = {**ev, "claim_ids": ["clm_shared"]}
+        return ev
+    r2 = acc.Reader(_ac5_ledger(tmp_path, name="same.jsonl"), AS_OF, {})
+    acc.lb.evaluate_frames = same
+    try:
+        res = acc.ac5(r2)
+    finally:
+        acc.lb.evaluate_frames = real_eval
+    assert not res["pass"] and "identical" in res["detail"], res["detail"]
+
+
+def test_device_scope_group_renders_below_model_claims_and_is_not_target_evidence(tmp_path, alarm):
+    """VB-LOOP-TEXT (operator 2026-11-02): a target with both kinds of claim renders the
+    model-scoped claims first and the device-only claims in a separate, labelled device-scope
+    group below them; the device-only claims are not counted as target evidence."""
+    own = _loop("ds41-own", mech="akm-own")
+    hosts = [_host(f"inf70-both-{i}", value=f"{400 + i}.5") for i in range(2)]
+    path = _write(tmp_path, own, *hosts)
+    _, ev = _ev(tmp_path, alarm, path, DS41_Q4_T)
+    section = ev["section"]
+    group = "### Device-scope claims"
+    assert group in section and "scoped by device only, no model" in section
+    assert section.index("### Usable, target tier") < section.index(group)
+    assert ev["tiers"]["target"] == 1 and ev["tiers"]["host"] == 2
+    assert ev["claim_ids"] == [_cid(own)]                       # only the model claim is reliance-eligible
+    host_ids = {_cid(h) for h in hosts}
+    assert not host_ids & set(ev["claim_ids"])
+    assert all(_tier_of(ev, h) == "host" for h in host_ids)
+    tail = section[section.index(group):].split("### Tried mechanisms")[0]
+    assert "device-scope: host ceiling, not about this model" in tail
+    assert "akm-own" not in tail                                # no model claim leaks into the group
+
+
+def test_target_with_only_device_scope_claims_has_no_target_evidence(tmp_path, alarm):
+    """A target whose only claims are device-only: zero target-tier evidence, the empty-target
+    banner, and the device-scope group is still shown, labelled as not about this model."""
+    hosts = [_host(f"inf70-only-{i}", value=f"{410 + i}.5") for i in range(3)]
+    path = _write(tmp_path, *hosts)
+    _, ev = _ev(tmp_path, alarm, path, QWEN35_T)
+    assert ev["tiers"]["target"] == 0 and ev["tiers"]["host"] == 3
+    assert ev["claim_ids"] == []
+    section = ev["section"]
+    assert "No beliefs are scoped to" in section
+    assert "### Device-scope claims" in section
+    assert "### Usable, target tier" not in section
+    assert "3 of 3 device-scope (host) claim(s)" in section
+
+
+def _q38_claims(model, n, tag):
+    return [_loop(f"{tag}-{i}", model=model, quant="", mech=f"akm-{tag}-{i}",
+                  value=f"{20 + i}.5") for i in range(n)]
+
+
+def test_ac2_derives_a_model_with_no_scoped_claims_from_the_ledger(tmp_path):
+    """AC2 intent: a lineage member with no model-scoped claims gets the banner first and its
+    siblings' lines as 'transfer unproven'. The target is derived, not pinned: DS41-1017 here has
+    real claims (as in production now) and must not be chosen."""
+    import p1_acceptance as acc
+    path = _write(tmp_path, *_q38_claims(Q38_UD, 10, "ud"), *_q38_claims(DS41_1017, 3, "d17"),
+                  *_q38_claims(DS41_Q4, 3, "q4"))
+    r = acc.Reader(path, AS_OF, {})
+    result = acc.ac2(r)
+    assert result["pass"], result["detail"]
+    assert "Q38FN-IQ4_XS-uniform" in result["detail"] and "target tier 0" in result["detail"]
+
+
+def test_ac2_is_not_loosened_fails_without_banner_siblings_or_candidate(tmp_path):
+    import p1_acceptance as acc
+    # every lineage member has its own claims -> nothing to derive -> fail (never a free pass)
+    both = _write(tmp_path, *_q38_claims(Q38_UD, 10, "ud"), *_q38_claims(Q38_UNI, 2, "uni"),
+                  *_q38_claims(DS41_Q4, 10, "q4"), *_q38_claims(DS41_1017, 2, "d17"),
+                  name="both.jsonl")
+    res = acc.ac2(acc.Reader(both, AS_OF, {}))
+    assert not res["pass"] and "cannot be proven" in res["detail"]
+    # an empty member whose siblings have fewer than 8 lines -> fails the sibling floor
+    few = _write(tmp_path, *_q38_claims(Q38_UD, 3, "ud"), name="few.jsonl")
+    res = acc.ac2(acc.Reader(few, AS_OF, {}))
+    assert not res["pass"] and "sibling lines 3 (need 8)" in res["detail"]
+
+
+# ------------------------------------------------------------------------------ harness tier
+
+
+def _harness_frames(tmp_path):
+    import test_autokernel_actor_wire_adapter as aw
+    path, _ = aw.build(tmp_path, verdicts=("PASS", "FAIL"))
+    return aw.w.frames_for_path(path, as_of="2026-11-03T12:00:00Z")
+
+
+def test_harness_claims_reach_only_their_consumer_and_are_never_evidence(tmp_path, alarm):
+    own = _loop("ds41-own", mech="akm-own")
+    frames = _harness_frames(tmp_path)
+    hid = {f["assertion"]["claim_id"] for f in frames
+           if f["frame_type"].endswith("claim_proposed/v1")}
+    assert hid
+    path = _write(tmp_path, own, frames)
+    ans = lb.prepare("autokernel.planner", DS41_Q4_T, ledger=path, index_path=tmp_path / "index.yaml",
+                     as_of="2026-11-04T12:00:00+00:00", sync_module=FakeSync(),
+                     known_good=tmp_path / "known_good.json", **alarm)
+    assert ans["status"] == "ready", ans.get("detail")
+    ev = ans["evidence"]
+    shown = {c["claim_id"]: c for c in ev["claims"] if c["claim_id"] in hid}
+    assert shown and len(shown) <= lb.TIER_CAPS["harness"]
+    assert all(c["tier"] == "harness" and c["not_evidence"] for c in shown.values())
+    assert ev["tiers"]["harness"] == len(hid) and ev["tiers_shown"]["harness"] == len(shown)
+    assert not hid & set(ev["claim_ids"])                       # never reliance-eligible
+    assert set(shown) <= set(ev["not_evidence_claim_ids"])
+    assert "Loop-infrastructure facts (harness tier)" in ev["section"]
+    assert "not evidence about any model" in ev["section"]
+    assert ev["tiers"]["target"] == 1 and _tier_of(ev, _cid(own)) == "target"
+    assert not [c for c in ev["claims"] if c["tier"] in ("target", "sibling", "knob")
+                and c["claim_id"] in hid]
+    assert not [e for e in ev["tried_index"] if e["tier"] == "harness"]
+    # another consumer, or no consumer at all, never sees them
+    other = lb.prepare("some.other", DS41_Q4_T, ledger=path, index_path=tmp_path / "index.yaml",
+                       as_of="2026-11-04T12:00:00+00:00", sync_module=FakeSync(),
+                       known_good=tmp_path / "known_good2.json", **alarm)
+    assert other["evidence"]["tiers"]["harness"] == 0
+    assert not hid & {c["claim_id"] for c in other["evidence"]["claims"]}
+
+
+def test_harness_keeps_one_line_when_target_fills_the_byte_budget(tmp_path, alarm):
+    """2026-11-07 offline AK-wire canary: the Q38FN target tier filled 14000 bytes and the trim
+    dropped every harness line first, so the matrix finding never reached the planner."""
+    own = [_loop(f"ds41-own-{i}", mech=f"akm-own-{i}") for i in range(30)]
+    frames = _harness_frames(tmp_path)
+    path = _write(tmp_path, *own, frames)
+    kw = dict(ledger=path, index_path=tmp_path / "index.yaml", as_of="2026-11-04T12:00:00+00:00",
+              sync_module=FakeSync(), known_good=tmp_path / "known_good.json", **alarm)
+    tight = lb.prepare("autokernel.planner", DS41_Q4_T, max_bytes=4000, **kw)["evidence"]
+    assert 0 < tight["section_bytes"] <= 4000
+    assert tight["tiers_shown"]["harness"] == 1               # best harness unit survives
+    assert tight["tiers_shown"]["target"] >= 1                 # but never at the target's cost
+    assert "Loop-infrastructure facts (harness tier)" in tight["section"]
+    roomy = lb.prepare("autokernel.planner", DS41_Q4_T, **kw)["evidence"]
+    assert roomy["tiers_shown"]["harness"] >= tight["tiers_shown"]["harness"]
+
+
+def test_harness_aggregate_ranks_before_its_parts():
+    base = {"tier": "harness", "status": "verified", "outcome": "", "recipe": "", "symbol": "",
+            "hit_recipes": (), "hit_focus": (), "grade_rank": (3, 2), "recency": 1.0,
+            "mechanism_id": "", "source_kind": "autokernel-actor-wire", "run": None,
+            "stale_epoch": False}
+    seat = {**base, "claim_id": "clm_ak-actor-wire:7314:34895e93:actor_wire_seat_x"}
+    matrix = {**base, "claim_id": "clm_ak-actor-wire:7314:matrix"}
+    assert lb._rank_key(seat) < lb._rank_key(matrix)              # the pre-fix tie-break
+    assert lb._harness_rank_key(matrix) < lb._harness_rank_key(seat)
+
+
+# ------------------------------------------------------------------------------ LOOP-SAFETY C1/C2, D-A1
+
+
+class AppendingScoped:
+    """A producer-time ingest that appends a real claim stamped with the wall clock at ingest
+    time, i.e. strictly after `prepare` was entered (the 2026-10-25 canary D-A1 situation)."""
+
+    def __init__(self, tup):
+        self.tup = tup
+
+    def ingest_scoped_store(self, ledger, root, *, as_of, memo_path=None):
+        from datetime import datetime, timezone
+        stamp = datetime.now(timezone.utc).isoformat()
+        led = Ledger(ledger)
+        frames = to_frames(self.tup, as_of=stamp, adapter_id="fixture/v1")
+        for frame in frames:
+            led.append(frame)
+        return {"store_root": str(root), "receipts_listed": 1, "receipts_read": 1,
+                "new_claims": 1, "rescoped": 0, "frames_appended": len(frames), "seconds": 0.0,
+                "refusals": []}
+
+
+def _prepare_now(tmp_path, alarm, ledger, targets, **kw):
+    return lb.prepare("test.loop", targets, ledger=ledger, index_path=tmp_path / "index.yaml",
+                      sync_module=FakeSync(), known_good=tmp_path / "known_good.json",
+                      **alarm, **kw)
+
+
+def test_da1_own_producer_ingest_is_visible_to_the_same_plan(tmp_path, alarm):
+    fresh = _scoped("da1-own-ingest")
+    ans = _prepare_now(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), DS41_CPU,
+                       source_roots=[tmp_path / "store"], scoped_module=AppendingScoped(fresh))
+    assert ans["status"] == "ready", ans.get("detail")
+    assert _claim_id(fresh) in ans["evidence"]["claim_ids"]
+    assert ans["as_of"] == ans["evidence"]["as_of"]
+
+
+def test_da1_negative_control_explicit_cutoff_before_ingest_hides_it(tmp_path, alarm):
+    """The pre-fix semantics (cutoff fixed on entry) reproduced with an explicit as_of: the
+    frames the ingest appends after the cutoff stay invisible. Replays keep that behaviour."""
+    from datetime import datetime, timezone
+    cutoff = datetime.now(timezone.utc).isoformat()
+    fresh = _scoped("da1-own-ingest")
+    ans = _prepare_now(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), DS41_CPU, as_of=cutoff,
+                       source_roots=[tmp_path / "store"], scoped_module=AppendingScoped(fresh))
+    assert ans["status"] == "ready"
+    assert _claim_id(fresh) not in ans["evidence"]["claim_ids"]
+    assert ans["as_of"] == cutoff
+
+
+def _git(repo, *args, date=None):
+    env = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t",
+           "GIT_COMMITTER_EMAIL": "t@t", "PATH": "/usr/bin:/bin", "HOME": str(repo)}
+    if date:
+        env["GIT_COMMITTER_DATE"] = env["GIT_AUTHOR_DATE"] = date
+    return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True,
+                          input="", text=True, env=env).stdout.strip()
+
+
+def _checkout(tmp_path, behind, missing_date="2026-10-01T00:00:00Z"):
+    source = tmp_path / "history.git"
+    source.mkdir(parents=True)
+    repo = tmp_path / "rootco"
+    _git(source, "init", "-q", "--bare", "-b", "main")
+    tree = _git(source, "mktree")
+    base = _git(source, "commit-tree", tree, "-m", "one")
+    if behind:
+        remote = _git(source, "commit-tree", tree, "-p", base, "-m", "two", date=missing_date)
+        head = base
+    else:
+        remote = base
+        head = _git(source, "commit-tree", tree, "-p", base, "-m", "ahead-lane-commit")
+    _git(source, "update-ref", "refs/remotes/origin/main", remote)
+    _git(source, "worktree", "add", "-q", "--detach", str(repo), head)
+    return repo
+
+
+def test_c1_reader_checkout_current_when_ahead_stale_when_behind(tmp_path):
+    ahead = lb.reader_checkout(_checkout(tmp_path / "a", behind=False))
+    assert ahead["current"] is True and ahead["error"] is None
+    behind = lb.reader_checkout(_checkout(tmp_path / "b", behind=True))
+    assert behind["current"] is False and behind["behind"] == 1
+
+
+def test_c1_refresh_lag_within_grace_is_current(tmp_path):
+    """A commit pushed seconds ago that the view has not pulled yet is refresh lag, not staleness."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    lag = lb.reader_checkout(_checkout(tmp_path, behind=True, missing_date=now))
+    assert lag["current"] is True and lag["behind"] == 1 and lag["within_grace"] is True
+    strict = lb.reader_checkout(_checkout(tmp_path / "s", behind=True, missing_date=now),
+                                grace_s=0)
+    assert strict["current"] is False
+
+
+def test_c1_stale_reader_refuses_and_alarms(tmp_path, alarm):
+    ans = _prepare(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), GPU_27B,
+                   check_reader_checkout=True,
+                   reader_root=_checkout(tmp_path / "co", behind=True))
+    assert (ans["status"], ans["reason"]) == ("refused", "reader_stale")
+    assert "1 commits behind" in ans["detail"]
+    assert "belief-ledger-not-current.test.loop" in _active(alarm)
+
+
+def test_c1_non_git_root_fails_closed(tmp_path, alarm):
+    (tmp_path / "plain").mkdir()
+    ans = _prepare(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), GPU_27B,
+                   check_reader_checkout=True, reader_root=tmp_path / "plain")
+    assert (ans["status"], ans["reason"]) == ("refused", "reader_stale")
+
+
+def test_c1_current_reader_is_ready_and_records_checkout(tmp_path, alarm):
+    ans = _prepare(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), GPU_27B,
+                   check_reader_checkout=True,
+                   reader_root=_checkout(tmp_path / "co", behind=False))
+    assert ans["status"] == "ready" and ans["reader_checkout"]["current"] is True
+
+
+def test_c1_negative_control_library_default_does_not_probe(tmp_path, alarm):
+    """In-process callers (replays, canaries) are unaffected; only the CLI pins by default."""
+    ans = _prepare(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), GPU_27B,
+                   reader_root=_checkout(tmp_path / "co", behind=True))
+    assert ans["status"] == "ready" and "reader_checkout" not in ans
+
+
+def test_c2_tier_emptied_alarm_on_regression_then_clears(tmp_path, alarm):
+    claim = _scoped("c2-tier")
+    full = _ledger(tmp_path, [claim], name="full.jsonl")
+    first = _prepare(tmp_path, alarm, full, DS41_CPU)
+    assert first["status"] == "ready" and first["tier_emptied"] == []
+    kg = lb.read_known_good(Path(first["known_good_path"]))
+    assert kg["nonempty_targets"] == ["DeepSeek-V4.1-Flash-Q4.gguf"]
+    # Silent-empty input: the same consumer now reads a ledger without the target's claims.
+    empty = _ledger(tmp_path, _kvq_run(), name="empty.jsonl")
+    second = _prepare(tmp_path, alarm, empty, DS41_CPU)
+    assert second["status"] == "ready"                              # never a refusal
+    assert second["tier_emptied"] == ["DeepSeek-V4.1-Flash-Q4.gguf"]
+    assert "belief-target-tier-emptied.test.loop" in _active(alarm)
+    # Recovery clears it.
+    third = _prepare(tmp_path, alarm, full, DS41_CPU)
+    assert third["tier_emptied"] == []
+    assert "belief-target-tier-emptied.test.loop" not in _active(alarm)
+
+
+def test_c2_negative_control_never_nonempty_target_does_not_alarm(tmp_path, alarm):
+    empty = _ledger(tmp_path, _kvq_run())
+    for _ in range(2):
+        ans = _prepare(tmp_path, alarm, empty, DS41_CPU)
+        assert ans["status"] == "ready" and ans["tier_emptied"] == []
+    assert "belief-target-tier-emptied.test.loop" not in _active(alarm)
+
+
+# ------------------------------------------------------------------------------ planner selection
+
+
+def _selection_row(claim_id, **kw):
+    row = {"claim_id": claim_id, "tier": "target", "status": "verified", "outcome": "improved",
+           "recipe": "", "symbol": "", "hit_recipes": (), "hit_focus": (), "grade_rank": (3, 2),
+           "recency": 1.0, "mechanism_id": "m", "source_kind": "s", "run": None,
+           "stale_epoch": False, "metric": "", "value": 1.0, "unit": "x", "knob_family": "",
+           "varied": []}
+    return {**row, **kw}
+
+
+def test_target_observation_coverage_only_trades_equal_grade_unkeyed_duplicates():
+    common = {"grade": "Judged/Located", "protocol_id": "", "target_keys": [("m", "gpu", "")]}
+    protected = [
+        _selection_row("floor", **common, outcome="floor"),
+        _selection_row("correctness", **common, outcome="refused_correctness"),
+        _selection_row("focus", **common, symbol="s", hit_focus=("s",)),
+        _selection_row("strong", grade="Witnessed/Attested", protocol_id="p", target_keys=common["target_keys"]),
+    ]
+    repeated = [_selection_row(f"duplicate-{i}", **common, source_kind="campaign") for i in range(3)]
+    sampled = _selection_row("sampled", **common, outcome="", source_kind="sample")
+    scope_other = _selection_row("other-scope", grade=common["grade"], protocol_id="",
+                                 target_keys=[("m", "cpu", "")], source_kind="other")
+    units = [[row] for row in [*protected, *repeated, scope_other, sampled]]
+    selected = units[:7]
+    assert lb._spread_target_observations(units, selected) == selected[:-1] + [[sampled]]
+
+
+def test_what_names_the_metric_and_earlier_names_a_different_one():
+    base = {"outcome": "improved", "unit": "x", "value": 3.71, "anchor_value": None,
+            "noise_floor_rel": None, "decisive": None, "effect_rel": None, "outcome_native": "",
+            "outcome_reason": "", "mechanism_id": "h5", "symbol": "", "metric": "op_speedup",
+            "n_pairs": None, "n": 1, "reps": 1}
+    assert "metric op_speedup" in lb._what(base)
+    other = {**base, "metric": "e2e_tg_ratio", "outcome": "null", "effect_rel": None,
+             "value": 1.0, "revision": "2026-11-01", "stale_epoch": False}
+    same = {**other, "metric": "op_speedup"}
+    assert "[e2e_tg_ratio]" in lb._earlier_text({**base, "earlier": [other]})
+    assert "[" not in lb._earlier_text({**base, "earlier": [same]}).split(":", 1)[1]
+
+
+def test_knob_rows_rank_last_only_on_a_kernel_only_target():
+    knob = _selection_row("k", knob_family="slot_serving", outcome="regressed")
+    sweep = _selection_row("w", mechanism_id="", varied=["threads"], outcome="", value=None)
+    kernel = _selection_row("c", outcome="null")
+    assert lb._rank_key(knob) < lb._rank_key(kernel)         # unchanged without the declaration
+    for row in (knob, sweep):
+        row["hit_kernel_only"] = True
+        assert lb._group(row) == 7 and lb._rank_key(kernel) < lb._rank_key(row)
+    flagged = {**knob, "status": "contested"}
+    assert lb._group(flagged) == 0
+
+
+@pytest.mark.parametrize("metric,focus,expected", [
+    ("gdn_core_kernel_share_pp2048", ("gated_delta_net_cuda",), True),
+    ("mul_mat_q_kernel_share_d0", ("mul_mat_q",), True),
+    ("gdn_core_kernel_share_pp2048", ("mul_mat_q",), False),
+    ("gdn_core_kernel_share_pp2048", (), False),
+    ("moe_skew_top10_share_heldout", ("moe_skew",), False),
+])
+def test_route_share_is_keyed_to_focus(metric, focus, expected):
+    row = _selection_row("r", outcome="", metric=metric, hit_focus=focus, mechanism_id="")
+    assert lb._route_keyed(row) is expected
+
+
+def test_route_slots_are_reserved_capped_and_returned_when_unused():
+    outcomes = [[_selection_row(f"o{i:02d}", outcome="improved")] for i in range(20)]
+    routes = [[_selection_row(f"r{i}", outcome="", mechanism_id="", hit_focus=("mul_mat_q",),
+                              metric=f"mul_mat_q_kernel_share_w{i}")] for i in range(5)]
+    picked = [u[0]["claim_id"] for u in lb._select(outcomes + routes, 16, force=True)]
+    assert len(picked) == 16 and sum(c.startswith("r") for c in picked) == lb.ROUTE_SHARE_SLOTS
+    assert picked == [u[0]["claim_id"] for u in lb._select(outcomes + routes, 16, force=True)]
+    alone = [u[0]["claim_id"] for u in lb._select(outcomes, 16, force=True)]
+    assert alone == [f"o{i:02d}" for i in range(16)]
+
+
+def test_kernel_only_is_omitted_from_as_dict_unless_declared():
+    plain = lb.Target.from_mapping(DS41_Q4_T)
+    assert not plain.kernel_only and "kernel_only" not in plain.as_dict()
+    assert lb.Target.from_mapping({**DS41_Q4_T, "kernel_only": True}).as_dict()["kernel_only"] is True

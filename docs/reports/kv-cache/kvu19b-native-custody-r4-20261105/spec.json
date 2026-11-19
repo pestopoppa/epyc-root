@@ -1,0 +1,24 @@
+{
+  "id": "kvu19b-native-custody-r4-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-r4-20261105/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-187",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-r4-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Model-free synthetic target custody only: require two independent live /proc PID, birth and executable observations, plus witness/target checks and all declared mutation refusals. Profiler GPU ID to PCI BDF mapping UNKNOWN; constant-offset target containment is conditional, interior drift UNKNOWN. Stop on identity, clock, source, residency, cleanup, STOP or deadline failure; futility-only. No model, attribution or real target alignment.",
+  "estimate_s": 300,
+  "ram_gib": 2,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-19b-gap",
+  "priority_rank": 40,
+  "kind": "compute",
+  "smoke_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-r4-20261105",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kvu19b-native-custody",
+  "notes": "Successor to original custody qualification; r2 smoke failed precondition checksum and r3 held due to incorrect lineage. Preserve both failure histories; no lineage reset. Independently corroborates process identity; profiler GPU-ID-to-BDF mapping remains UNKNOWN.",
+  "supersedes": "kvu19b-native-custody-qual-20261105"
+}

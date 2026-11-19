@@ -1,0 +1,30 @@
+{
+  "timestamp_utc": "2026-11-18T16:42:15.343720+00:00",
+  "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate",
+  "prior_receipt": "fm4-native-current/cleanup.json",
+  "allocated_bytes_before_receipt": 12766539776,
+  "byte_basis": "Filesystem allocation from du -sx -B1.",
+  "removed": [],
+  "allocated_bytes_in_removed_paths": 0,
+  "finding": "No newly superseded attempt directories were established. Top-level directory timestamps show no new attempt directory after the prior receipt; fm4-native-current changed and is currently qualified-armed. Earlier retained scratch has no newly established supersession basis.",
+  "retained_current_dependencies": {
+    "parity-native-20261118-r2": "Current qualified parity input and pinned BF16 model.",
+    "actor-seat-native-20261118": "Current actor-seat source custody, including registered research worktree and unique detached commit.",
+    "kvq-ready": "Current successor and registered locked research worktree.",
+    "fm4-native-current": "Qualified-armed projection-row and private snapshots.",
+    "gpu-pool, attention-ready, attention-rest-ready, matmul-id-ready, elementwise-ready, pool-canary-ready": "Current GPU armed row and shared launcher/build assets.",
+    "other scratch": "Prior receipt identifies current inputs or evidence without confirmed durable replicas; no new supersession established."
+  },
+  "retained_allocated_bytes": {
+    "parity-native-20261118-r2": 8052109312,
+    "actor-seat-native-20261118": 2206998528,
+    "kvq-ready": 2078089216,
+    "fm4-native-current": 14127104,
+    "gpu-pool": 74391552,
+    "attention-ready": 74448896,
+    "attention-rest-ready": 74457088,
+    "matmul-id-ready": 74469376,
+    "elementwise-ready": 74452992,
+    "pool-canary-ready": 937984
+  }
+}

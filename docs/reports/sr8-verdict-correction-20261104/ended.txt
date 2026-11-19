@@ -1,0 +1,7 @@
+rc=1 time=2026-11-04T11:35:03Z reason=job-rc-1:exited
+job_id=sr8-bep-lookup-gpu-sealed-20261104
+owner=handoff-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=7200
+started=2026-11-04T11:34:30Z
+regions=mi210_0,184-191

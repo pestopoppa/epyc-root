@@ -1,0 +1,27 @@
+{
+ "schema": "fm2_mast_fseries_crosswalk.v0-stub",
+ "status": "STUB - mapping is a proposal from name/description reading only; NOT validated against graded traces. Review before any use as a shared vocabulary (box FM-2, absorbs R-24).",
+ "mast_source": "adamast/core/mast.json @ AdaMAST 3c83d81c85937f5e8911fd96daa2ca38c1ad2585 (14 codes MAST-1..14; note MAST-13 'Weak verification' and the FM-3.x split differ from the paper's FM-x.y numbering)",
+ "f_series_source": "handoffs/active/coordination-and-churn-pipeline.md, 'Track: coordinator-role-failure-modes-and-refactor' ledger table F-01..F-36 (starts ~line 3457). F-series entries are coordinator-role BEHAVIOUR failures with root cause and remediation; MAST codes are trace-internal symptoms, so the relation is a symptom family, not equivalence.",
+ "legend": {"candidate": "plausible symptom-level overlap, to be confirmed on graded traces", "unmapped": "no F-series entry found whose description matches; NOT guessed"},
+ "mappings": [
+  {"mast": "MAST-1", "name": "Disobedient to task specification", "f_series": ["F-20", "F-22"], "confidence": "weak", "status": "candidate", "note": "F-20 invented a restriction the roster never imposed; F-22 dispatched by line number against its own warning. Spec-deviation, but dispatcher-side."},
+  {"mast": "MAST-2", "name": "Disobedient to role specification", "f_series": ["F-18", "F-19"], "confidence": "weak", "status": "candidate", "note": "F-18/F-19 acted on agent infrastructure / auto-loaded instruction surfaces without approval (role-boundary overreach)."},
+  {"mast": "MAST-3", "name": "Step repetition", "f_series": [], "status": "unmapped", "note": "No F-series entry is a within-trace repetition failure (F-04 counts repeated advisory records as a backlog: a measurement error, not step repetition)."},
+  {"mast": "MAST-4", "name": "Loss of conversation history", "f_series": ["F-33(a)"], "confidence": "weak", "status": "candidate", "note": "F-33(a) lost track of the mains after wrap-up; nearest analogue but fleet-state tracking, not context loss. Verify."},
+  {"mast": "MAST-5", "name": "Unaware of termination conditions", "f_series": [], "status": "unmapped", "note": "No F-series entry."},
+  {"mast": "MAST-6", "name": "Conversation reset", "f_series": [], "status": "unmapped", "note": "No F-series entry; intake-1110 dive also lists this as a framework artifact for a dispatch-once fleet."},
+  {"mast": "MAST-7", "name": "Failure to ask for clarification", "f_series": ["F-30"], "confidence": "weak", "status": "candidate", "note": "F-30 presented a decision as prose instead of options; adjacent (coordinator-to-operator boundary), not identical."},
+  {"mast": "MAST-8", "name": "Task derailment", "f_series": ["F-14", "F-36(a)"], "confidence": "weak", "status": "candidate", "note": "F-14 shallow dispatch; F-36(a) effort on a non-worthwhile suggestion."},
+  {"mast": "MAST-9", "name": "Information withholding", "f_series": [], "status": "unmapped", "note": "No F-series entry; intake-1110 dive lists as untestable for an isolated-subagent fleet."},
+  {"mast": "MAST-10", "name": "Ignored other agent's input", "f_series": ["F-34(a)"], "confidence": "weak", "status": "candidate", "note": "F-34(a) completed main work went unrouted to the auditor. Direction differs (output not routed, rather than input ignored)."},
+  {"mast": "MAST-11", "name": "Premature termination", "f_series": [], "status": "unmapped", "note": "No F-series entry cleanly matches; F-10/F-11 ('reported instead of acting') are closer to a stop-too-early pattern but were not confirmed."},
+  {"mast": "MAST-12", "name": "No or incomplete verification", "f_series": ["F-02", "F-06", "F-09", "F-12", "F-24", "F-26"], "confidence": "moderate", "status": "candidate", "note": "Wrong or post-hoc instruments, unverified merge checks, unverified supervisor visibility, self-report taken as an answer. Densest overlap."},
+  {"mast": "MAST-13", "name": "Weak verification", "f_series": ["F-01", "F-03", "F-04", "F-25"], "confidence": "moderate", "status": "candidate", "note": "A check existed but was scoped or instrumented too weakly (scoped duty-cycle, unanchored checkbox regex, advisory counts, dispatch-as-utilisation)."},
+  {"mast": "MAST-14", "name": "Incorrect verification", "f_series": ["F-05", "F-08", "F-21", "F-27", "F-28"], "confidence": "moderate", "status": "candidate", "note": "A verification claim that was false as stated (false 'safe fast-forward', false per-agent claim, false reboot premise, withdrawn figure, false hazard)."}
+ ],
+ "unmapped_mast_codes": ["MAST-3", "MAST-5", "MAST-6", "MAST-9", "MAST-11"],
+ "f_series_without_mast_code": ["F-07", "F-13", "F-15", "F-16", "F-17", "F-23", "F-29", "F-31", "F-32", "F-35(a)"],
+ "f_series_without_mast_code_note": "Compute-idling, fleet-supervision, delivery-plane and numbering/bookkeeping failures live outside a single trace, as the intake-1110 dive predicts (MAST adds nothing outside FC1/FC3). Only the (a) event series of F-33..F-36 was examined; the (b) delivery-plane series was not.",
+ "not_examined": "Only the first ~260 chars of each ledger row were read; root-cause codes and the Corrections sections (F-17 weakened, F-23 contradicted) were not."
+}

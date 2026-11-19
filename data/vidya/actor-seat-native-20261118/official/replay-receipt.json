@@ -1,0 +1,201 @@
+{
+  "archive_members_sha256": {
+    "RESULT.original.json": "15370d41bf8acaa48d9d3bd9ffc8b0e6982ed82ecce91ab46d5950e85c824adb",
+    "actor-replies/20261118T160338-export-ses_e1099d4c2ffe4l5nT90R9oWdy9.json": "9a19d2ef4536ae6f3dae955cb0844d42c419af855f80dfbc0ea9824551670fa7",
+    "actor-replies/20261118T160338-opencode-vidya-seat_vidya-seat-13b2f207de684b12b46a5fead50aed26-rc0.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actor-replies/20261118T160338-opencode-vidya-seat_vidya-seat-13b2f207de684b12b46a5fead50aed26-rc0.stdout": "621c3c3d5ed2d1382c08d0ad08191023e98403deb3f9d528298cf10513fc2a52",
+    "actor-replies/actor-calls.jsonl": "dd703952b6d13efe4b429710cc1997fc3797155e18f8f9b62a9bbda2c6089d0b",
+    "actor.log": "5227f97ce0d3bf81d19b2c47c2529c07af50d928c66e94bb41833a018a9f5381",
+    "attempt.json": "806e1f3a79bc869617e273ef23bc56e41c1fa5eee743f41a63b4dc52ee8fa6f3",
+    "call-props.json": "b8fe8b16157f57b73e79c45eab895e295b63ad7c8da42be56860f13e82e59350",
+    "ingest.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ingest.json": "2e955a7af639abae5d5fad87a3a115aa8c479de62c15b56083f2cbecac1170cd",
+    "offered-context/.ak-scratch-owner": "438b8c327a0e4fd7c2189624e1d0e943cc02341ab71888e0fa89ba4680bdc0b9",
+    "offered-context/INDEX.md": "415ec432fbbab238a2b7bae098440e14f9feffd9375a2b80fa34c00dc4c2c0e9",
+    "offered-context/manifest.json": "c6963f6b75f33e24d4cc7218680f46278bfa2da333e4006649cfc7b5e452bf17",
+    "offered-context/sections/01-target.md": "9631694d782cc6bce67dd29bc490aa87101a3a7e8b0425e696e1c1b7e961fe20",
+    "prompt.txt": "a0cfe28e84f0773f7f999a87d5c595daacdbf758fb7e7534c1c9b28c520e6ca2",
+    "readiness-props.json": "b8fe8b16157f57b73e79c45eab895e295b63ad7c8da42be56860f13e82e59350",
+    "server.log": "ace8ef360d6a6a41dea27257b717f6c6822f37120bf2451367ad052d07d88af5",
+    "server.maps": "bc1105a13bce4d6abb23d5f9363e53cd73c64bb0068c8f31bba8caed645f0366"
+  },
+  "as_of": "2026-11-18T16:11:50+00:00",
+  "capture": {
+    "call_id": "d3373069549c424eb7830db933cae11e",
+    "call_line": 2,
+    "call_line_sha256": "1c6f739728b6a58788a069be13f21ea854ef11301a53ba9cbebc049e1d825e1d",
+    "call_record_sha256": "83f8689ffb4b81ac3e593b86f223575628ca1371578e8e1f9083599a249a1808",
+    "metrics_line": 1,
+    "metrics_line_sha256": "ee3817e1fe66b17f541bdb885bccbf5e8ab007952f55bce49a5860d68400b727",
+    "metrics_record_sha256": "5f3fded052a413505dd320d0b3954326be90263892d3009b3e81adba4e68c9c9",
+    "offered_context": {
+      "basis": "context offered by the producer",
+      "context_chars": 125,
+      "files": {
+        "sections/01-target.md": {
+          "bytes": 125,
+          "sha256": "9631694d782cc6bce67dd29bc490aa87101a3a7e8b0425e696e1c1b7e961fe20"
+        }
+      },
+      "index_chars": 1361,
+      "inline_equivalent_prompt_chars": 204,
+      "manifest_sha256": "c6963f6b75f33e24d4cc7218680f46278bfa2da333e4006649cfc7b5e452bf17",
+      "mode": "variable",
+      "prompt": {
+        "chars": 1440,
+        "sha256": "a0cfe28e84f0773f7f999a87d5c595daacdbf758fb7e7534c1c9b28c520e6ca2"
+      },
+      "sections": [
+        {
+          "chars": 125,
+          "inline": false,
+          "key": "target"
+        }
+      ]
+    },
+    "recorded_bundle_tool_calls": 0,
+    "repair_ran": true,
+    "server": {
+      "build_info": "b10303-ffc1bac82",
+      "endpoint": "http://127.0.0.1:19413/v1",
+      "n_ctx": 8192,
+      "props_at": "2026-11-18T16:03:32Z",
+      "props_sha256": "b8fe8b16157f57b73e79c45eab895e295b63ad7c8da42be56860f13e82e59350",
+      "served_model": "vidya-seat"
+    },
+    "task_response_schema_valid": false
+  },
+  "cleanup": {
+    "actor": true,
+    "port_free": true,
+    "server": true
+  },
+  "cpu_allocation": {
+    "count": 24,
+    "list": "72-95"
+  },
+  "frames": [
+    {
+      "assertion": {
+        "locator": "ak-actor-call:actor-replies/actor-calls.jsonl#L2",
+        "revision_observed": "2026-11-18",
+        "source_id": "src_akseat_0eb4164743049e618025886f",
+        "source_kind": "autokernel-actor-seat",
+        "title": "actor_call_wall_s"
+      },
+      "frame_id": "sha256:777a30ad7437635a336d16df849dcc3f762e1a7c43b3418ab008bda6214c2c0f",
+      "frame_type": "epyc.vidya/frame/source_observed/v1",
+      "provenance": {
+        "about": "akseat_0eb4164743049e618025886f",
+        "method": "vidya.adapters.autokernel_actor_seat/v1",
+        "retrofit": false
+      },
+      "pubinfo": {
+        "actor": "vidya.adapters.autokernel_actor_seat/v1",
+        "authority_scope": "measurement",
+        "created_at": "2026-11-18T16:11:50+00:00"
+      },
+      "signatures": []
+    },
+    {
+      "assertion": {
+        "claim_id": "clm_akseat_0eb4164743049e618025886f",
+        "display_text": "AutoKernel actor critic call d3373069549c424eb7830db933cae11e (seat plain+ctx-variable (cfg none), opencode:vidya-seat/vidya-seat@default, prompt a0cfe28e84f0/1440 chars, rc 0): actor_call_wall_s = 6.232 s; n=1 call, no repeat, no noise floor -- an observation, not a seat comparison. Native server vidya-seat b10303-ffc1bac82 with n_ctx 8192. Metrics sibling 5f3fded052a41350. Offered context bundle c6963f6b75f33e24.",
+        "source_id": "src_akseat_0eb4164743049e618025886f"
+      },
+      "frame_id": "sha256:5d42e5f9e3dd88c9df023176acd56f852d6c9254fc221f93668662137506c16c",
+      "frame_type": "epyc.vidya/frame/claim_proposed/v1",
+      "provenance": {
+        "about": "akseat_0eb4164743049e618025886f",
+        "derived_from": "src_akseat_0eb4164743049e618025886f",
+        "method": "vidya.adapters.autokernel_actor_seat/v1"
+      },
+      "pubinfo": {
+        "actor": "vidya.adapters.autokernel_actor_seat/v1",
+        "authority_scope": "measurement",
+        "created_at": "2026-11-18T16:11:50+00:00"
+      },
+      "signatures": []
+    },
+    {
+      "assertion": {
+        "category": "BASELINE",
+        "claim_id": "clm_akseat_0eb4164743049e618025886f",
+        "evidence_id": "evd_akseat_0eb4164743049e618025886f",
+        "grade": {
+          "Q": "Judged",
+          "T": "Located"
+        },
+        "metric": "actor_call_wall_s",
+        "metric_direction": "lower_better",
+        "observation": {
+          "outcome_native": "actor_call_complete"
+        },
+        "protocol_id": "",
+        "reps": 1,
+        "source_id": "src_akseat_0eb4164743049e618025886f",
+        "unit": "s",
+        "value": "6.232"
+      },
+      "frame_id": "sha256:9145cde759b3c43efa304e72f9492a747b7771b0b55eeb489b3288e6d058c28d",
+      "frame_type": "epyc.vidya/frame/evidence_supports_claim/v1",
+      "provenance": {
+        "about": "clm_akseat_0eb4164743049e618025886f",
+        "evidence": "evd_akseat_0eb4164743049e618025886f",
+        "grade_reasons": [
+          "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+        ],
+        "method": "vidya.adapters.autokernel_actor_seat/v1",
+        "reps_basis": "scored:calls (one actor call)"
+      },
+      "pubinfo": {
+        "actor": "vidya.adapters.autokernel_actor_seat/v1",
+        "authority_scope": "measurement",
+        "created_at": "2026-11-18T16:11:50+00:00"
+      },
+      "signatures": []
+    }
+  ],
+  "observation": {
+    "claim_id": "clm_akseat_0eb4164743049e618025886f",
+    "grade": {
+      "Q": "Judged",
+      "T": "Located"
+    },
+    "grade_reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)"
+    ],
+    "metric": "actor_call_wall_s",
+    "unit": "s",
+    "value": 6.232
+  },
+  "original_result": {
+    "archive": "native-official.tar.gz",
+    "member": "RESULT.original.json",
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/RESULT.json",
+    "sha256": "15370d41bf8acaa48d9d3bd9ffc8b0e6982ed82ecce91ab46d5950e85c824adb"
+  },
+  "packet_sha256": {
+    "ARCHIVE.json": "815a15ee6c1e2a9967626eb98ddce568a3732d4ba924b5a28fd07affe8bf5b40",
+    "RESULT.json": "9ba9dc2abb25f22c05ec044aa78ba968a420648e34be319a1166a14058b47b6b",
+    "allocator.complete": "aa2eeb11051ad2301d9e91baab7f9e2f79af64cc75aac7765ad2d71b3b0c5752",
+    "allocator.ended": "b56ea6ee80892978d93f9fdf5609cf4d425c6202adb5fab035f809d2e118bb0c",
+    "manifest.json": "cb8acc56e53b6e93633bbe30aa2dd117dfb42e052eedae9a4dbde671afba8ec1",
+    "native-official.tar.gz": "2fd1e947fbd526459102162a3ddaacc3e36357469a8a9d789190dc9c09f98705",
+    "verdict.json": "082267da2010d30e6ddcdf0e15826dbf7b4258f4421303d301652d65e72ef26e"
+  },
+  "replay": {
+    "adapter_id": "vidya.adapters.autokernel_actor_seat/v1",
+    "frames_emitted": 3,
+    "joined_calls": 1,
+    "ledger_writes": 0,
+    "new_inference_calls": 0,
+    "projected_observations": 1,
+    "refused": 0,
+    "root_replay_commit": "b5911113a95e57a22c9df48f51fe7c3b9f69eb7a",
+    "source_log": "actor-replies/actor-calls.jsonl"
+  },
+  "row_id": "vb-ak-seat-native-instrument-20261118",
+  "scope": "source custody",
+  "status": "pass"
+}

@@ -1,0 +1,16 @@
+{
+  "disposition": "failed qualification, no native acceptance",
+  "rows": [
+    "handoff-vidya-quality-pack-architect-general-hip-20261118",
+    "handoff-vidya-quality-pack-architect-general-hip-smoke-20261118",
+    "handoff-vidya-quality-pack-worker-vision-hip-mmproj-20261118",
+    "handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118"
+  ],
+  "causes": {
+    "architect-general-hip": "no in-run VRAM custody",
+    "architect-general-hip-smoke": "prepared template stat identity drift",
+    "worker-vision-hip-mmproj": "startup backend/layer-count witness rejected",
+    "architect-general-hip-loader-bank": "native job exited before progress"
+  },
+  "follow_up": "Repair each surviving source packet under its existing quality-pack box; main removed prototype shared quality capture code, so do not resurrect it during unrelated merge resolution. EXP01 old smoke was superseded by publisher PASS and official partial result; EOF r3 and EXP01 terminal events are filed."
+}

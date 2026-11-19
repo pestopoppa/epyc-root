@@ -1,0 +1,43 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "Import the actual disabled full preload-integrated driver without calling main. Require matching pre/post custody manifests, imported module inventory and callable main/setup/gate entry, plus removal of the private empty attempt directory; stop on import, custody, cleanup, STOP or deadline failure. No model, GPU, native lifecycle or historical-control claim.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18.0d(item 3, group 3)",
+ "id": "kvu-kpf18-g3-full-import-20261105",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-full-import-20261105/launch.sh",
+  "sha256": "2146ace00b6e2ee72dfe4616d91664460245a4692ca04e6e2132ffb5f4edb2c2"
+ },
+ "lineage": "kpf18-g3-full-import",
+ "min_window_s": 300,
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:820: untestable prose prerequisite: 'after GPU smoke PASS. An initial smoke reached its own result but the independent VRAM sampler missed the short allocati'"
+ ],
+ "published_at": "2026-11-05T03:59:52Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-kvu/docs/reports/kv-cache/kpf18-g3-full-import-20261105/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-full-import-20261105/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-full-import-20261105",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-full-import-20261105/STOP",
+ "unit_key": "module_count",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-full-import-20261105"
+}

@@ -1,0 +1,18 @@
+{
+  "adapter": "adapters/kv_prefix_fork.py",
+  "adapter_id": "vidya.adapters.kv_prefix_fork/v1",
+  "declined": [],
+  "dry_run": false,
+  "frames_emitted": 3,
+  "frames_skipped": 0,
+  "missing": [],
+  "only_new": true,
+  "paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-map-revalidation-20261118/out/attempts/1bc3e2e4aa5230d8d6871a4870cdffbe114196b788ce126b/belief_measurements.jsonl"
+  ],
+  "refused": [],
+  "rows_projected": 1,
+  "source": "kv-prefix-fork",
+  "units_matched": 1,
+  "units_projected": 1
+}

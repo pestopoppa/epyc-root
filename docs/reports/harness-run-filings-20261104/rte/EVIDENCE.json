@@ -1,0 +1,41 @@
+[
+  {
+    "source": "rte/RUN_HEADER.json",
+    "file": "RUN_HEADER.json.gz",
+    "native_sha256": "50c24010e54df6d6dd6ffd10d047ec8be7b98ebf86474190922196c1a055843d",
+    "native_bytes": 1854,
+    "encoding": "gzip",
+    "sha256": "1839f081d0bf9c91a4437e1cd34d131f59cdc1ae5c62d0acb6d4af00bb8886af",
+    "bytes": 964
+  },
+  {
+    "source": "rte/probe.json",
+    "file": "probe.json",
+    "bytes": 136564,
+    "sha256": "a371d5ae75e6beeae53accab561dab4accc2bcfeb413bc205fa4d7e58c2a5b58"
+  },
+  {
+    "source": "rte/probe.json.journal.jsonl",
+    "file": "probe.json.journal.jsonl",
+    "bytes": 99401,
+    "sha256": "032543c157f6588710bf7b7820e3d04f55c9902d46d4d6b9d443af6e4b9d6567"
+  },
+  {
+    "source": "rte/chunk_kv.beliefs.jsonl",
+    "file": "chunk_kv.beliefs.jsonl",
+    "bytes": 11917,
+    "sha256": "e14878e92e3e1ba471f59408978a32cccc2c4ea8885951cb86c8d1d2d8c567d1"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-rte-pfx2-quarter-native-v3-20261102.json",
+    "file": "handoff-rte-pfx2-quarter-native-v3-20261102.json",
+    "bytes": 2846,
+    "sha256": "4748e6172a2f6d4f5fb45e12ca47d2462ae91d78d4d65dfb58c2440b5f437f03"
+  },
+  {
+    "source": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-rte-pfx2-quarter-native-v3-20261102.ended",
+    "file": "handoff-rte-pfx2-quarter-native-v3-20261102.ended",
+    "bytes": 210,
+    "sha256": "789bdd68a050b761b22e871b5c850c18c7756a175df6175d2848b8160116b5b7"
+  }
+]

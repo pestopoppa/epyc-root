@@ -1,0 +1,4 @@
+Archived lane corpus: /mnt/raid0/llm/worktrees/mains/h-canonical-judge-suite-revamp/data/benchmarks/ifbench-1c40f0c/data/IFBench_test.jsonl
+sha256=d2ada7da94a38cfe406351614c4e686846ed2da6d1b339db95fa5ead19554a4a
+bytes=421499
+Rows=300; constraints=344; IDs=58

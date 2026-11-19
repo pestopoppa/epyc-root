@@ -1,0 +1,20 @@
+test_exact_historical_argv_and_artifact_identity (__main__.MatmulIdCaptureTest.test_exact_historical_argv_and_artifact_identity) ... ok
+test_one_prospective_invocation_and_strict_rederivation (__main__.MatmulIdCaptureTest.test_one_prospective_invocation_and_strict_rederivation) ... ok
+test_refuses_absent_kfd_and_zero_vram (__main__.MatmulIdCaptureTest.test_refuses_absent_kfd_and_zero_vram) ... ok
+test_refuses_changed_persisted_request (__main__.MatmulIdCaptureTest.test_refuses_changed_persisted_request) ... ok
+test_refuses_changed_raw_log (__main__.MatmulIdCaptureTest.test_refuses_changed_raw_log) ... ok
+test_refuses_coherent_wrong_denominator (__main__.MatmulIdCaptureTest.test_refuses_coherent_wrong_denominator) ... ok
+test_refuses_escaped_affinity (__main__.MatmulIdCaptureTest.test_refuses_escaped_affinity) ... ok
+test_refuses_incomplete_task_samples (__main__.MatmulIdCaptureTest.test_refuses_incomplete_task_samples) ... ok
+test_refuses_outside_process_window (__main__.MatmulIdCaptureTest.test_refuses_outside_process_window) ... ok
+test_refuses_reused_pid (__main__.MatmulIdCaptureTest.test_refuses_reused_pid) ... ok
+test_refuses_substituted_case_with_unchanged_denominator (__main__.MatmulIdCaptureTest.test_refuses_substituted_case_with_unchanged_denominator) ... ok
+test_refuses_wrong_mapped_inode (__main__.MatmulIdCaptureTest.test_refuses_wrong_mapped_inode) ... ok
+test_refuses_wrong_pid (__main__.MatmulIdCaptureTest.test_refuses_wrong_pid) ... ok
+test_smoke_is_not_native_ingestion (__main__.MatmulIdCaptureTest.test_smoke_is_not_native_ingestion) ... ok
+test_stop_reaps_without_sealing (__main__.MatmulIdCaptureTest.test_stop_reaps_without_sealing) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 3.574s
+
+OK

@@ -1,0 +1,64 @@
+{
+  "schema": "kpf18.slots-transport-qualification.v1",
+  "status": "PASS",
+  "tests": 11,
+  "failures": 0,
+  "errors": 0,
+  "observations": [
+    {
+      "entry": "SeedControl.__call__",
+      "case": "trickle",
+      "exception": "TimeoutError",
+      "elapsed_s": 0.1537959601264447,
+      "request_sha256": "f841e5de774da5c3e8fc360423f20d6b111adb946aa2d5f277baece82c0c08f3"
+    },
+    {
+      "entry": "SeedControl.__call__",
+      "case": "body",
+      "exception": "TimeoutError",
+      "elapsed_s": 0.15335135604254901,
+      "request_sha256": "12a6ad13b02d8c2821fc210c432e871bd85eba3e3b85c5610607cd10bcd6f7de"
+    },
+    {
+      "entry": "SeedControl.__call__",
+      "case": "headers",
+      "exception": "TimeoutError",
+      "elapsed_s": 0.1538323808927089,
+      "request_sha256": "f1e67564a3ae67ef405bf4cf32afb8b7c19f1ce5ee57dac33b824d9f80a75b2a"
+    },
+    {
+      "entry": "SeedControl.__call__",
+      "case": "body-STOP",
+      "exception": "Stop",
+      "elapsed_s": 0.06437727808952332,
+      "request_sha256": "3309fa3cdabb78bca8af85f344b8dd25a60d4d7a99e7c08bf0c40cffab12f234"
+    },
+    {
+      "entry": "SeedControl.__call__",
+      "case": "headers-STOP",
+      "exception": "Stop",
+      "elapsed_s": 0.0644092180300504,
+      "request_sha256": "654d5e55b13da63d3fcf934c39eba42d7f7702e62a5287fcf96edb51fce520ee"
+    },
+    {
+      "entry": "SeedControl.__call__",
+      "case": "success",
+      "exception": "Abort",
+      "elapsed_s": 0.004292469006031752,
+      "request_sha256": "c79117257319e7a009e534849f54585ec5f7b438af47372e86963eaf6b54877a"
+    }
+  ],
+  "scope": "three isolated SeedControl slots calls only; model-free; no native cancellation or full-candidate claim",
+  "inputs": {
+    "physical_trace.py": "d038e3cee0f117025f5b630d91ca2bb03966d889be8e4181c63efe56c3d15dc5",
+    "socket_deadline.py": "fcc17534e69bfa080c35abb6e38ca495fe6c1a1938983a8b601d92c08f696b93",
+    "cancel_seed_transport.py": "a961ad85add9fd0cc2af659aa3717b0d40ef31b07a15584f494e89f0a8a1d757",
+    "kpf18_gate.native.py": "76bc6e18c9b58d4270d091c2b9f42358e2225aa6481585fbf4bbb9970424f4c9",
+    "native_block.py": "2703d39eef136a58f898d7c8038756ca8fdcc9efc55506b517b28856ef49c4af",
+    "cancel_seed_stream.py": "d9ae491aea9ef6f80fe60af855b5c48cb9a25c333ab726aeafc31029b2e301bf",
+    "cancel_seed_admission.py": "a07d6060f15c2e51808216e260dad5a5190ba50f38ff1b09b1b106d27b9e0308",
+    "native_task_log.py": "83c93054f5927a4dae2f1e0aa141275e7da8aaca8813c1f332750d0c8ff3166a",
+    "test_slots.py": "46bf8596096831522446ac98ce2fe39d747b77c30fd74aab7b960093ded55145",
+    "slots_transport.py": "7d95a8ea5eba8786886db6492cec459c4fd1ea19979aa6b0f5fd00bf1e64a68c"
+  }
+}

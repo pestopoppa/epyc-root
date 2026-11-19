@@ -1,0 +1,7 @@
+# KPF50 raw residency synthetic qualification preparation
+
+Distinct substantive row `kpf50-raw-residency-qual-20261105` executes the byte-retained raw residency verifier against ten sealed fixture bundles. Positive candidate detection must be true while status remains UNKNOWN; six structural/temporal/device negatives suppress candidate detection, two malformed controls refuse, and producer-asserted native evidence stays UNKNOWN even when candidate detection is true. Each matched fixture is one genuine `cases` progress unit.
+
+Prepared only. No verifier, tests, compute, target/model/GPU access, scheduling, publication or commits performed. All fixtures are synthetic text copied from the source preparation. Native physical provenance, boot identity, sampler identity, active queues and tensor placement remain unresolved. This row cannot satisfy a native gate or performance claim.
+
+Launch uses filler_run15 CPU build role, a literal row ID and a literal-ID completion predicate. Full result is `out/RESULT.json`; smoke requires a separate FILLER_DRYRUN_RESULT_PATH outside out and can never satisfy completion. Full executes ten cases once; smoke executes positive, wrong-birth, untrusted-native only. Captured child PIDs are reaped and absence checked; timeout escalates TERM to KILL with bounded waits. STOP/deadline/drift/first mismatch terminates immediately. Reservation is 300 seconds, bounded work cap 180 seconds, each child at most five seconds. This is conservative admission headroom, not a claim of 300 seconds of work; no padding or spin.

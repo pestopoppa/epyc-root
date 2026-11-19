@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "rationale": "Official rc0 COMPLETE at 2026-11-18T19:20:25Z with original grant, UTC, source and raw artifact hashes and owned_containers_removed=true. Gold two FAIL_TO_PASS and one PASS_TO_PASS statuses all PASSED; no-op two FAIL_TO_PASS FAILED with PASS_TO_PASS PASSED. Acquisition and diagnostic controls qualify independently; actual wrapper affinity was CPUs0-23 within granted quarter, not four CPUs, and no timing or four-CPU performance claim is made. Projection/planning acceptance separate.",
+  "filed_by": "handoff-vidya-belief-substrate-owner"
+}

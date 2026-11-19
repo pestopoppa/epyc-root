@@ -10,7 +10,8 @@ What it writes under `tests/vidya/fixtures/belief_p1/`:
   serving/<label>/serving-beliefs/<capture>.json            receipt (re-sealed)
   serving/<label>/serving-beliefs/sources/<capture>.json    source  (trimmed, re-sealed)
       labels: ds41 (serving_ab.v2, a DECISIVE capture), q38fn (serving_ab.v2),
-              runtime_ab (serving_runtime_ab.v1)
+              runtime_ab (serving_runtime_ab.v1), matched_runtime (serving_runtime_ab.v1
+              keep-grade under matched_process_v2: a v3 capture carrying a runtime pair)
   floor/q27b/serving-floor.<recipe>.requests-<digest>.json  27B GPU floor (launch_residency trimmed)
   floor/q27b/loop-status.json                               the store's target block only
   PROVENANCE.json                                           original path + sha256 per fixture
@@ -44,6 +45,10 @@ CAMPAIGNS = Path("/mnt/raid0/llm/autokernel/campaigns")
 SUMMARY = Path("/mnt/raid0/llm/tmp/belief-redesign-20261021/serving_sources_summary.json")
 FLOOR = (CAMPAIGNS / "ak-27b-gpu-verify-20261004/store/serving-floor.q27b-9a3f1392a-gpu-dflash2-"
          "np1.requests-baa3aa6d30b8bef8263480a6d84250fabadfaac2944359111fb0a5cf9bd428ed.json")
+#: A keep-grade declared runtime arm under the matched instrument (v3 capture WITH a runtime
+#: pair). Not in SUMMARY: the reader refused this shape until 2026-11-10 (AK proof r4).
+MATCHED_RUNTIME = Path("/mnt/raid0/llm/autokernel/proof-q38fn-r4-20261109/serving-beliefs/"
+                       "478caaf083dbd2fb40d75653b11b0c8521bbb0546271305d50fd3cc5af9eb4db.json")
 WINDOW_KEYS = ("backend", "window_start", "window_end", "status", "gpu_residency",
                "clock_stable", "contention", "cpu_placement", "covers_request_phase", "resident",
                "schema")
@@ -76,6 +81,8 @@ def _pick(summary: list[dict]) -> dict[str, dict]:
         "q38fn": smallest([r for r in summary if r["store"].startswith("ak-q38fn")
                            and r["schema"] == v2]),
         "runtime_ab": smallest([r for r in summary if r["schema"] == runtime]),
+        "matched_runtime": {"receipt": MATCHED_RUNTIME,
+                            "source": MATCHED_RUNTIME.parent / "sources" / MATCHED_RUNTIME.name},
     }
 
 

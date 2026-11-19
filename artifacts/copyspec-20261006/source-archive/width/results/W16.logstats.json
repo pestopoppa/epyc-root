@@ -1,0 +1,19 @@
+{
+ "arm": "W16",
+ "log": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/results/server_W16.log",
+ "log_bytes": 700215,
+ "impl_stats_last_seen": {
+  "ngram-mod": {
+   "gen_drafts": 419,
+   "acc_drafts": 419,
+   "gen_tokens": 6687,
+   "acc_tokens": 4349
+  },
+  "draft-mtp": {
+   "gen_drafts": 3104,
+   "acc_drafts": 2660,
+   "gen_tokens": 12392,
+   "acc_tokens": 7987
+  }
+ }
+}

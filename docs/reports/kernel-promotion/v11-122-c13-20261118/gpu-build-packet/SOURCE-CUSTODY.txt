@@ -1,0 +1,14 @@
+bda43aa17c11b671e0e203e7eb7bf4f1303bc273
+e6dc8715fa3374406b38de48571e8700bded094f
+worktree /mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/c13-source.git
+bare
+
+worktree /mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/c13-source
+HEAD bda43aa17c11b671e0e203e7eb7bf4f1303bc273
+detached
+
+worktree /mnt/raid0/llm/tmp/v11-promotion-checklist/llg-gpu-gate/c13-source
+HEAD bda43aa17c11b671e0e203e7eb7bf4f1303bc273
+detached
+
+6f497ae993af0b3ba7250a9698296bd8ba12f87dccaa74659771392327282db2  UI.sha256

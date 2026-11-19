@@ -1,0 +1,11 @@
+# KPF-26 API same-ID republish packet
+
+The `off-spec.json` and `on-spec.json` files prepare the existing `rtg58-kpf26-api-{off,on}-diag-20261102` IDs for owning-session publication. Original row owner, lineage, ports, model, flags, cohort transformation and diagnostic decision rule are retained. No READY manifest or original scratch script was written. There is no source checkout copy: the packet references the original clean source worktree at commit `868275acb64ef3d490ecac6952518ae187fe74d3`, and `bin` is a read-only-use symlink to retained original binary inputs. The original long-scope input text is copied so both arms use the same frozen diagnostic root.
+
+The preflight refuses a source HEAD mismatch or dirty source, verifies the original binary manifest and a complete additional digest manifest (including server-impl/common/mtmd DSOs missing from the original manifest), and runs the canonical ggml linkage verifier before either server starts. Content identity does not assert source-build provenance. The row remains a descriptive prospective HS-19a-derived two-scout API diagnostic, with no KPF-26 gate, performance or deployment decision.
+
+The smoke-only branch runs after target health and before packet preparation/API spawn. It reuses the reviewed native helper byte-for-byte: require HTTP200 and a positive native completion-token count, with captured PID/birth and listener ownership unchanged before/after. It writes only the isolated qualification result then exits75 through captured-process cleanup. Full two-scout job, flags and outcomes are unchanged on normal runs; smoke cannot satisfy the API diagnostic.
+
+Offline validation: three shell scripts pass `bash -n`, three Python scripts compile, five helper tests pass (positive token, missing/zero token, changed PID birth, wrong socket owner, real listener ownership), all complete binary digest entries match, and canonical ggml linkage passes. Source is currently clean at its expected commit. Main must run the publisher smoke; no smoke, model inference, grant, qualification or publication was performed by this preparer. The same IDs preserve attempt counters; this is not a fresh-lineage reset.
+
+Actual task scratch: `/mnt/raid0/llm/tmp/kv-prefix-fork/kpf26-api-republish-20261104/`. The copied specifications and scripts in this report bind that absolute run location.

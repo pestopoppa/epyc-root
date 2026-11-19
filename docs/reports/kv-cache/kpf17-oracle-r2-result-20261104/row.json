@@ -1,0 +1,37 @@
+{
+ "decision_rule": "PASS only for explicit Test 6 PASS in both n_rs_seq=0/8 modes, same-destination valid control and stale mutation detected with named mechanism, >=2 exact-symbol in-test mapped-library witnesses per mode, and sealed build/model custody. Any missing control, skipped or invalid execution is INVALID, not a kernel defect. Build is pinned by full build receipt, executable and DSOs; the model SHA was preverified out of grant and in-grant checks use stat metadata only.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-ready/filler_run15.sh",
+  "sha256": "e848a1d37e164b14ac3a95a9a51a47ed7514a120a6f5dd18b0903bcaebcaa8ad"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 900,
+ "gib": 16,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+ "id": "kvfork17-oracle-test-r2-20261104",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-ready/launch.sh",
+  "sha256": "28e7debc1f0a27f0783e348930d0198fd80a08c8dfabbb68bd83334a778800bb"
+ },
+ "min_window_s": 300,
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "published_at": "2026-11-04T19:56:47Z",
+ "published_from": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-ready/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-ready/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-ready",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-ready/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-ready"
+}

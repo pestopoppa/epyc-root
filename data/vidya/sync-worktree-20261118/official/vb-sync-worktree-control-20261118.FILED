@@ -1,0 +1,1 @@
+FILED vb-sync-worktree-control-20261118: pass rc=0 rule='selected == 1 and refused == 0 and lag == 0 and manual_sync_count == 0' values={"selected": 1.0, "refused": 0.0, "lag": 0.0, "manual_sync_count": 0.0} by=file_result.py

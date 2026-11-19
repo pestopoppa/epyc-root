@@ -1,0 +1,11 @@
+# External-observer feasibility, model-free only
+
+Question: can an own-child external debugger observe an exported function of the unchanged historical libllama with a hardware breakpoint, retain mapped DSO hashes, and exit without loading a model? This is one technical prerequisite for a same-image layout observer, never that witness itself.
+
+Expected effect: a single llama_max_devices call yields exactly one hardware-breakpoint hit. No statistical sample or timing claim. Stop-on-answer after that one process; stop-on-futility on debugger refusal, image or mapped DSO mismatch, absent symbols, extra hits, timeout (30 seconds), or child failure. No inference, GPU load, source mutation, compilation, publication, or historical rejudgment.
+
+Before child launch, bind historical libllama digest 33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64 and current image ggml DSO digests. During SIGSTOP after ctypes dlopen and before the probed call, hash every mapped ggml/llama image DSO and compare with those pins. Accept this prerequisite only if both the pinned function and llama_kv_cache::find_slot symbol can receive hardware breakpoints, the former fires once, all mapped relevant DSOs match, and the child exits zero. Retain raw debugger stdout/stderr and JSON. This does not prove historical DSO contents, old cache ABI, task binding, layout equality, or unperturbed model execution.
+
+Offline tests: altered expected image digest must refuse before child launch; missing library refuses; mapped-file pin drift refuses; success output with absent/extra hits or missing breakpoint setup refuses. A real model-free own-child probe is allowed solely for this declaration.
+
+A complete later witness requires independent binary-level validation of cache, cell, vector/bitset and batch ABI offsets; hardware-only breakpoints at allocator and decode boundaries; no inferior function calls or memory writes; full occupied-cell and head snapshots; task/request and batch-row binding from actual server state; exact completion/return association; planted physical-placement/head/owner/row mutations detected; capture failures invalid; and matched old-image numerical control predeclaration. Matching source headers alone cannot certify offsets. This packet must remain NOT_READY until those are implemented and validated.

@@ -1,0 +1,117 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-11T14:18:28Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "214b46f27198880cee2b6530cf5f426e38d4026a",
+  "git_head_before": "214b46f27198880cee2b6530cf5f426e38d4026a",
+  "operator": "Daniele",
+  "protocol_id": "LR11-LR13-CLOSE-RULES",
+  "ratification_id": "RATIFY-LR11-CLOSE-INVENTORY-20261111",
+  "ratify_script": {
+    "exists": true,
+    "path": "artifacts/operator/ratify_lr11_close_inventory_20261111.sh",
+    "sha256": "81e3a35581f4d17aae16ea1d3dce0c15ceef8cb7b850ee662b1221b6a442f2b3"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/worktrees/lr11-close-inv-operator-20261111",
+  "sections": {
+    "coherence": {
+      "data": {
+        "agents/shared/SESSION_LIFECYCLE.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: workflow doctrine amendment; source is the LR-11/LR-13 task and exact additive patch"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id LR11-LR13-CLOSE-RULES is a clause reference, not a registered protocol name; verified via 1 anchor(s) instead",
+        "anchor present in agents/shared/SESSION_LIFECYCLE.md: - **Ticket/PR close includes the same task-owned scratch gate.**"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 8,
+      "lines_after": 219,
+      "lines_before": 211,
+      "lines_removed": 0,
+      "path": "agents/shared/SESSION_LIFECYCLE.md",
+      "sha256_after": "5926bf19a8f8c7996ca7bd1ddfc663cf2e4caa5b6e96c70a6adffc93e60f7dfb",
+      "sha256_before": "5ded02ec96ffce1fdf4d47bf5093ed3ecf99d3d6c4fced5f45193e020441b25c",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/agents/shared/SESSION_LIFECYCLE.md",
+        "+++ b/agents/shared/SESSION_LIFECYCLE.md",
+        "@@ -111,6 +111,14 @@",
+        " - **Nothing may auto-trigger the full routine.** There is no `Stop`, `SessionEnd` or `PreCompact`",
+        "   hook, no cron and no nightshift task that calls it, and there must not be one. A per-task wrap-up",
+        "   is invoked by the session doing the work.",
+        "+- **Ticket/PR close includes the same task-owned scratch gate.** Before closing a completed",
+        "+  ticket, its main inventories the exact declared scratch roots and lane worktrees, including",
+        "+  `codex-ni*` and `ni0X` lanes, and records which remain needed for review, evidence or follow-on",
+        "+  work. Release only the main-approved paths through the existing cleanup gate in",
+        "+  `agents/commands/wrap-up.md` \u00a77b; retain any path refused by that gate. The close record carries",
+        "+  the cleanup result or the named continuing owner/purpose. Prefixes identify inventory, never",
+        "+  deletion authority. This is a close-time step of the owning task, never a hook, cron, broad",
+        "+  sweep or automatic invocation of the full wrap-up routine.",
+        " - **A main dispatches a wrap-up subagent at major work boundaries, unprompted (operator, 2026-10-21).**",
+        "   Examples: the end of an intake campaign's Stage 4, a champion milestone. When the main's own compaction is looming it dispatches the wrap-up PREEMPTIVELY, before the context is lost (operator, 2026-10-21). This is a session",
+        "   action taken by the main, not a hook, so it does not conflict with the no-auto-trigger rule above."
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "git diff --check -- agents/shared/SESSION_LIFECYCLE.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    },
+    {
+      "command": "test \"$(grep -cF -- '- **Ticket/PR close includes the same task-owned scratch gate.**' 'agents/shared/SESSION_LIFECYCLE.md')\" = 1",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

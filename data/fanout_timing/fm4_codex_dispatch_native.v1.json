@@ -1,0 +1,45 @@
+{
+    "binding_kind": "native_agent_path",
+    "child_turn": {
+        "final_message_present": true,
+        "start_line": 2,
+        "state": "completed",
+        "terminal_event": "task_complete",
+        "terminal_line": 129,
+        "turn_id": "01a1eeef-c298-7770-be3e-fba425150c12"
+    },
+    "disposition": "terminal_child",
+    "identity": {
+        "child_agent_id": "01a1eeef-c28a-76d1-a869-f37f3b624754",
+        "dispatch_tool_use_id": "call_1df762adc54847a587e455ad5d94656c",
+        "parent_session_id": "01a1eeed-335d-7812-b888-306f9fa8a828"
+    },
+    "inputs": {
+        "child": {
+            "path": "/home/node/.codex/sessions/2026/11/18/rollout-2026-11-18T13-54-12-01a1eeef-c28a-76d1-a869-f37f3b624754.jsonl",
+            "sha256": "1b502d9167010369c1b3f504f837bd7b2c798aa479bdd7a37435b8452e93e9fe"
+        },
+        "parent": {
+            "path": "/home/node/.codex/sessions/2026/11/18/rollout-2026-11-18T13-51-25-01a1eeed-335d-7812-b888-306f9fa8a828.jsonl",
+            "sha256": "83720568524e1558b3476e286011f2725a0082e2c81d35fb4100bcecc92e6eee"
+        }
+    },
+    "lineage": {
+        "child_agent_path": "/root/fm4_gate_runner",
+        "child_parent_thread_id": "01a1eeed-335d-7812-b888-306f9fa8a828",
+        "child_session_id": "01a1eeef-c28a-76d1-a869-f37f3b624754",
+        "parent_session_id": "01a1eeed-335d-7812-b888-306f9fa8a828"
+    },
+    "schema": "fm4.codex_dispatch.v1",
+    "spawn_candidates": [
+        {
+            "call_id": "call_1df762adc54847a587e455ad5d94656c",
+            "call_line": 105,
+            "result_agent_id": null,
+            "result_error": false,
+            "result_line": 108,
+            "result_task_name": "/root/fm4_gate_runner"
+        }
+    ],
+    "task_outcome": null
+}

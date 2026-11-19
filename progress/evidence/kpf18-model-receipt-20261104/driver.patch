@@ -1,0 +1,30 @@
+--- candidate/driver.py
++++ candidate/driver.py
+@@ -16,7 +16,7 @@
+ sys.path[:0]=[str(BASE),str(DATA),str(BASE/'vendor'),str(BASE/'research/scripts/benchmark/kpf18')]
+ import guard
+ from ledger import Ledger,file_sha
+-from gguf_identity import metadata,draft_shape
++from model_receipt import load_verified
+ from controller import run
+ import native_group3 as g
+ import pipeline
+@@ -162,14 +162,12 @@
+     if not dry:
+         guard.boundary();guard.tests_and_enrollment()
+         argv,_=gate.parse_argv_file(Path('/mnt/raid0/llm/tmp/overnight-20261020/argv.8083-gate.txt'))
+-        PRELOAD_MODELS={'target':metadata(Path(gate.flag_val(argv,('-m','--model')))),
+-                        'drafter':metadata(Path(gate.flag_val(argv,('-md','--model-draft'))))}
+         original_models=json.loads((BASE/'ORIGINAL-MODELS.json').read_text())
+-        for role in ('target','drafter'):
+-            if any(PRELOAD_MODELS[role][key]!=original_models[role][key] for key in ('path','sha256')):
+-                raise ValueError('original model bytes changed: '+role)
++        model_paths={'target':Path(gate.flag_val(argv,('-m','--model'))),
++                     'drafter':Path(gate.flag_val(argv,('-md','--model-draft')))}
++        PRELOAD_MODELS=load_verified(os.environ['KPF_MODEL_RECEIPT'],
++                                     os.environ['KPF_MODEL_RECEIPT_SHA256'],model_paths,original_models)
+         (OUT/'PRELOAD-MODEL-IDENTITY.json').write_text(json.dumps(PRELOAD_MODELS,sort_keys=True)+'\n')
+-        PRELOAD_MODELS['draft_cache_shape']=draft_shape(PRELOAD_MODELS['drafter'])
+         unchanged_models();guard.boundary()
+     # Recipe DATA change only. Existing Server.build_env/start/stop unchanged.
+     gate.PROD_ENV['LLAMA_KV_CACHE_DEBUG']='3'

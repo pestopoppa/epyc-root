@@ -1,0 +1,25 @@
+{
+  "id": "lsa-ward-hip-tests-088-20261104",
+  "owner": "lsa-screen",
+  "lane": "gpu",
+  "regions": "mi210_0,94-95",
+  "ram_gib": 8,
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests/launch.sh",
+  "estimate_s": 900,
+  "first_progress_s": 300,
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "case",
+  "decision_rule": "One bounded MI210 sequence: exact 513-key Ward author fixture, then existing 27B-shaped native correctness suite; own PID DSO and KFD/VRAM timeline, stop first error, no model or retry.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/hip-tests",
+  "keep": [
+    "*.log",
+    "*.pass",
+    "*/witness.json",
+    "*/samples.jsonl",
+    "results.jsonl"
+  ],
+  "status": "DRAFT_AWAITING_MAIN_REVIEW"
+}

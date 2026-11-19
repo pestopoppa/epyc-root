@@ -1,0 +1,25 @@
+{
+  "row_id": "codex-ufh12-gs-private-v3-20261102",
+  "row_owner": "handoff-repl-embedding-retrieval",
+  "handoff": "handoffs/active/harness-program.md",
+  "exact_box_text": "- [ ] **REPL-EMB-2.11 - run the package gates that need no quiet host (correctness class, any window; package section 8).** G-C1: re-score the frozen 2.2 deciding set at `CHUNK_MAX_CHARS = DENSE_INPUT_MAX_CHARS = 3200` plus `/tokenize` of every chunk (fallback on FAIL: ship 800). G-P1: parity on the shipped argv `-np 4 -c 8192 -b 2048 -ub 2048` with inputs in lists of 4, recording the `flash_attn` resolution. G-P2: >= 20 real inputs of 1,500-2,040 tokens vs ST FP32 (nothing above 459 tokens has ever been compared). G-S rehearsal on a copy. Rules and bands exactly as pre-registered in package section 8; G-P1/G-P2 need VB-UFH12-PARITY first. (filed 2026-10-20)",
+  "tick_box": false,
+  "verdict": "PASS: bounded official private-copy apply and production-client parity rehearsal; not full G-S closure",
+  "evidence": {
+    "rc": 0,
+    "ended": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ufh12-gs-private-v3-20261102.ended",
+    "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/results.jsonl",
+    "native_result": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/runs/official-bcd49c57d51b4fe6ade76520b32e2e66/result.json",
+    "native_manifest": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/runs/official-bcd49c57d51b4fe6ade76520b32e2e66/migration/manifest-20261102T221727Z-4c6520.json",
+    "status": "FULL_PRIVATE_APPLY_PARITY_PASS",
+    "episodic_rows_in": 64514,
+    "episodic_rows_out": 64514,
+    "strategy_rows_in": 1428,
+    "strategy_rows_out": 1428,
+    "production_client_samples_per_store": 16,
+    "minimum_cosine_per_store": 1.0,
+    "server_reaped_and_absent": true,
+    "production_swap": false
+  },
+  "follow_up": "No repair indicated for this passing bounded rehearsal. File evidence for the row with owning handoff session; preserve evidence before scratch reclamation. Keep REPL-EMB-2.11, full G-S and R5 open: obtain package-required query token-length distribution and BGE-versus-EG2 top-k cosine-drift percentiles for approximately 500 sampled queries, complete B1-B5 as required and other remaining gate requirements; previous stored-text proxy measurements are descriptive and do not establish query gate. Production adoption remains under v11 promotion."
+}

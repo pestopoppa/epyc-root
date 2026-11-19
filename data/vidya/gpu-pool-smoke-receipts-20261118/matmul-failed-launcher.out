@@ -1,0 +1,11 @@
+
+==== dry run 2026-11-17T23:56:49Z regions=mi210_0,184-191 launcher_sha=8256d63ec24eece31d7e15e85c6504548a63606e7085c0b859270ed82de4aa65 units_before=0
+2026-11-17T23:56:49Z [ni-gpu-pool-matmul-20261117-v2] launcher up pid=1936386 class=gpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-matmul-20261117-v2/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-matmul-20261117-v2/stop minwin=300s ports=none dryrun=1
+2026-11-17T23:56:49Z [ni-gpu-pool-matmul-20261117-v2] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-11-18T00:13Z
+[region-lock] dry run: no lock taken (cpus=184-191)
+2026-11-17T23:56:49Z mi210_0 flock held
+job rc=1
+==== engine START at +5s; first-progress timer (210 s) starts now
+2026-11-17T23:56:57Z [ni-gpu-pool-matmul-20261117-v2] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-17T23:56:57Z [ni-gpu-pool-matmul-20261117-v2] one window done; exiting (no --repeat)
+==== dry run FAIL: job ended rc=1 time=2026-11-17T23:56:57Z reason=job-rc-1:exited after 10s, before its first progress (smoke_predicate `/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/r` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-matmul-20261117-v2/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=184-191; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-17T23:57:00Z)

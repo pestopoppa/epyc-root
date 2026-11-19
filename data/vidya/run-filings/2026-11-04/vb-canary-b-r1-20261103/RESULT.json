@@ -1,0 +1,31 @@
+{
+ "schema": "epyc.vb_canary_b.result.v1",
+ "measurement": false,
+ "code_sha": "452b5884911229e8365f330e5e66076fb6745486",
+ "orch_sha": "326f502759986c9846027f8187972969139c0089",
+ "embed_pid": 3891267,
+ "canonical_ledger_sha256_before": "0cfa8b4a9f34cd17fa9dac638b59fb43b5825fec8abb9f172a6bdf794ead1963",
+ "scratch_ledger_sha256": "0cfa8b4a9f34cd17fa9dac638b59fb43b5825fec8abb9f172a6bdf794ead1963",
+ "probe_dim": 1024,
+ "canary_exit": 1,
+ "gate_result": {
+  "loop": "B",
+  "live_embedder": true,
+  "observed_1472_keep_with_numbers": false,
+  "observed_frontier_count": 0,
+  "frontier_section_assembled": true,
+  "assembly_errors": [],
+  "embed_calls": 2,
+  "embed_errors": [],
+  "belief_ready": true,
+  "baseline_sha256": "a4a860c11438957df1cce86bde04eeb28dc8af23d91a0b18de350e3e922149c3",
+  "baseline_unchanged": true,
+  "canonical_ledger_unchanged": true,
+  "telemetry_unchanged": true,
+  "status": "FAIL",
+  "reason": "known conclusion missing: keep_with_numbers=False frontier_section=True"
+ },
+ "embed_dead": true,
+ "canonical_ledger_sha256_after": "0cfa8b4a9f34cd17fa9dac638b59fb43b5825fec8abb9f172a6bdf794ead1963",
+ "canonical_ledger_unchanged": true
+}

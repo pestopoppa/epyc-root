@@ -1,0 +1,32 @@
+{
+  "id": "kpf182-component-impact-8952-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf182-component-impact-8952-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf182-component-impact-8952-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At detached integrated candidate 8952a0f693fb923918157eb25117641b74766230 capture native upstream impacts for find_fork_source and do_slot_fork with full skipped-file coverage before per-sibling component-witness source edits. Stop on HIGH/CRITICAL, missing or ambiguous native target, partial/unknown schema, source drift, parser failure, STOP or deadline. Both nonpartial impacts and scan_complete required. No inference, historical regrade, component parity, or blanket edit-safety claim.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18.2",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf182-component-impact-8952-20261105",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "seals.sha256",
+    "job.py",
+    "source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "KPF-18.2-component-observer-source-impact",
+  "kind": "compute",
+  "notes": "New distinct static prerequisite, not a retry of historical KPF-18 inference. UNQUALIFIED: no tests or smoke run. Requires owner review and same-launcher four-CPU source-reference smoke with separate output before publication."
+}

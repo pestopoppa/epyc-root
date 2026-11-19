@@ -1,0 +1,40 @@
+{
+  "preparation_only": true,
+  "base_job": {
+    "path": "/mnt/raid0/llm/tmp/kvfork/kvu11c-gpu-mechanics-smoke-r3-20261105/job.py",
+    "sha256": "aaa0017fd46c42b22de6cdd5944d11724fda403e02f1e9a8662b3c0e35448780"
+  },
+  "build_receipt_source": {
+    "path": "/mnt/raid0/llm/tmp/kvfork/kvu11c-rebuild-diagnostic-20261105/out/RESULT.json",
+    "sha256": "01a8f0ff7d2b7423b69b8db7cde214587aafc3f9ded4b5a85dbacffee649862b"
+  },
+  "runner": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+    "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+  },
+  "runtime_seals": {
+    "job.py": "1f0ced5150718943f181d7929d81a130451a181c3620daa4eac1ed049eafa25c",
+    "pins.json": "e4def906c359e3d2533da02f70ac30da7fc49f28bf2f9fa4e72723e2c283359f",
+    "model-preverify.json": "74cf44448eac10724eb71427707d8194824080e2997e28e2ed44ac33ae0b9d4d",
+    "build-receipt.json": "6a20b41abb07e3efeb9c882420a5246940db90f6e6b44acf388e81e84396d999",
+    "verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+    "original-build-receipt.json": "01a8f0ff7d2b7423b69b8db7cde214587aafc3f9ded4b5a85dbacffee649862b",
+    "launch.sh": "b70b2abd648edd9a9528b68c5f1f3d31d47ccca5feb8a186921c2c7c22cf54e9"
+  },
+  "prior_build_match": false,
+  "source_commits": {
+    "qwentts": "aca703283192f892f1e85636fbc48832c4d5560a",
+    "ggml": "b86f660238dcc1a83b7cbf5a72d355a965de9245"
+  },
+  "verification": "static preparation only; no syntax/test/smoke/preflight/publication/execution",
+  "preserved_candidate_files": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-startup-cleanup-control-prep-20261105/candidate/build/libggml-base.so.0.17.0": "f438ad88cb179a0d21ed31611956c733e44634cf5311f13d91091a855c2cf99b",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-startup-cleanup-control-prep-20261105/candidate/build/libggml-cpu.so.0.17.0": "391abcdf2f9babcc40e028ca49b60c2ce874568b99b15f15f5fe49391e9b34bb",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-startup-cleanup-control-prep-20261105/candidate/build/libggml-hip.so.0.17.0": "e5046a04d8694347a7dbb1edc42775d7b1344cd3ced08959c3abfd95c5312a20",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-startup-cleanup-control-prep-20261105/candidate/build/libggml.so.0.17.0": "d93964bb012a1dd1084f09c89369c14821f5d35ae413e7f8feda1b72d51b0eaf",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-startup-cleanup-control-prep-20261105/candidate/build/tts-server": "e360c093ba4501813fc619ca2f57f0a838536f584a5a46245c917116204e9a6d"
+  },
+  "original_build_receipt_sha256": "01a8f0ff7d2b7423b69b8db7cde214587aafc3f9ded4b5a85dbacffee649862b",
+  "local_receipt_note": "Only files keys rebased to private preserved copies; original receipt retained byte for byte; all five copied digests checked against original.",
+  "spec_sha256": "435755f9fd722ecfdf5e204a0806b94d3afae7c5365880aab1be206ce15c763e"
+}

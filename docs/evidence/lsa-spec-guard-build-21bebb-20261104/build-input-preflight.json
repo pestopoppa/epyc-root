@@ -1,0 +1,13 @@
+{
+  "unit": "verified-source-and-448-donor-objects",
+  "source_commit": "21bebb74857df7bc537e0ddddd1c77e448389249",
+  "source_sha256": "032c62f1a380f9d036495c1bb719a5f31fe6231e3043e1282ffa144581f2ba29",
+  "donor_commit": "2aceed42bf1e3273e1a8feef12fa91dfe57d2e6b",
+  "donor_provenance_sha256": "df40691ea3fba7064d0d284a80956fafe3427b73f5158852bef97416c3d416a4",
+  "donor_seed_manifest_sha256": "f70f2dca172b92b47a5d141d1312a6c7c0b01362cb3e43a041ac4dd5c139b5c2",
+  "objects_verified": 448,
+  "model_loaded": false,
+  "gpu_used": false,
+  "compiled": false,
+  "recorded_ns": 1793817480397999055
+}

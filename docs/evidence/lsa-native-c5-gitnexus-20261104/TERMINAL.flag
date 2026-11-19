@@ -1,0 +1,7 @@
+2026-11-04T09:51:06Z ended: rc=75 time=2026-11-04T09:51:01Z reason=hard-end
+job_id=lsa-native-c5-gitnexus-20261104
+owner=lsa-screen
+step=job-run
+estimated_wall_s=480
+started=2026-11-04T09:32:06Z
+regions=0-95

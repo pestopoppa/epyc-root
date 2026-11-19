@@ -1,0 +1,53 @@
+{
+  "status": "complete_sphinx_projection",
+  "scope": "Original pinned Sphinx native control only; Astropy remains separate",
+  "changes": [
+    "scripts/vidya/adapters/p5_sphinx_scorer.py",
+    "scripts/vidya/ingest_sources.py",
+    "scripts/vidya/cli.py",
+    "scripts/vidya/adapters/README.md",
+    "tests/vidya/test_p5_sphinx_scorer.py",
+    "tests/vidya/test_ingest_sources.py",
+    "data/vidya/p5-sphinx-native-20261118/",
+    "docs/reports/p5-sphinx-native-projection-20261118.md"
+  ],
+  "shared_planner": "scripts/vidya/loop_beliefs.py task routing supplied by kpf17_planner",
+  "counts": {
+    "native_arms": 2,
+    "statuses": 6,
+    "observations": 6,
+    "frames": 18,
+    "refused": 0,
+    "planning_visible": 6,
+    "wrong_task_visible": 0,
+    "wrong_consumer_visible": 0
+  },
+  "tests": [
+    {
+      "command": "python3 -m pytest -q tests/vidya/test_p5_sphinx_scorer.py tests/vidya/test_p5_scorer_custody.py",
+      "result": "28 passed"
+    },
+    {
+      "command": "PYTHONPATH=/mnt/raid0/llm/epyc-inference-research/.venv-swebench/lib/python3.12/site-packages python3 -m pytest -q tests/vidya/test_ingest_sources.py",
+      "result": "102 passed"
+    },
+    {
+      "command": "cd data/vidya/p5-sphinx-native-20261118 && sha256sum -c SOURCE.sha256",
+      "result": "14 source entries OK"
+    },
+    {
+      "command": "diff -qr /mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/official data/vidya/p5-sphinx-native-20261118/official",
+      "result": "identical"
+    },
+    {
+      "command": "python3 scripts/vidya/loop_beliefs.py prepare --consumer p5.scorer_controls --target-json {scope:task,task_id:VB-P5-SCORER-CONTROLS-WIRE} --ledger <scratch>/ledger.jsonl --index <scratch>/index.yaml --as-of 2026-11-18T19:23:40Z --allow-stale-reader",
+      "result": "ready, 6 claims; other task and other consumer each ready, 0 claims; exact outputs planning.json, other-task.json, other-consumer.json"
+    }
+  ],
+  "limitations": [
+    "gitnexus status/impact: repository not indexed; blast radius unavailable",
+    "terminal pin admits original capture only; future captures require independently pinned terminal",
+    "no model/scorer execution",
+    "full external SWE-bench image not replayed"
+  ]
+}

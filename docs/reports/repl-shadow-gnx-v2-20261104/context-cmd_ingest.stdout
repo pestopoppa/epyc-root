@@ -1,0 +1,46 @@
+{
+  "status": "found",
+  "symbol": {
+    "uid": "Function:scripts/vidya/cli.py:cmd_ingest",
+    "name": "cmd_ingest",
+    "kind": "Function",
+    "filePath": "scripts/vidya/cli.py",
+    "startLine": 800,
+    "endLine": 822
+  },
+  "epistemic": "exact",
+  "incoming": {
+    "calls": [
+      {
+        "uid": "Function:tests/vidya/test_ingest_root_precondition.py:test_missing_root_never_constructs_ledger",
+        "name": "test_missing_root_never_constructs_ledger",
+        "filePath": "tests/vidya/test_ingest_root_precondition.py"
+      },
+      {
+        "uid": "Function:tests/vidya/test_ingest_root_precondition.py:test_valid_root_retains_write_lock",
+        "name": "test_valid_root_retains_write_lock",
+        "filePath": "tests/vidya/test_ingest_root_precondition.py"
+      }
+    ]
+  },
+  "outgoing": {
+    "calls": [
+      {
+        "uid": "Method:scripts/vidya/ledger.py:Ledger.write_lock#0",
+        "name": "write_lock",
+        "filePath": "scripts/vidya/ledger.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/cli.py:_ledger",
+        "name": "_ledger",
+        "filePath": "scripts/vidya/cli.py"
+      },
+      {
+        "uid": "Function:scripts/vidya/cli.py:_cmd_ingest",
+        "name": "_cmd_ingest",
+        "filePath": "scripts/vidya/cli.py"
+      }
+    ]
+  },
+  "processes": []
+}

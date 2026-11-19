@@ -1,0 +1,1302 @@
+{
+  "cpu": {
+    "configure_definitions": {
+      "BUILD_SHARED_LIBS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "BUILD_TESTING": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "CMAKE_BUILD_RPATH_USE_ORIGIN": {
+        "type": "UNINITIALIZED",
+        "value": "ON"
+      },
+      "CMAKE_BUILD_TYPE": {
+        "type": "STRING",
+        "value": "Release"
+      },
+      "CMAKE_CXX_FLAGS": {
+        "type": "STRING",
+        "value": ""
+      },
+      "CMAKE_CXX_FLAGS_DEBUG": {
+        "type": "STRING",
+        "value": "-g"
+      },
+      "CMAKE_CXX_FLAGS_MINSIZEREL": {
+        "type": "STRING",
+        "value": "-Os -DNDEBUG"
+      },
+      "CMAKE_CXX_FLAGS_RELEASE": {
+        "type": "STRING",
+        "value": "-O3 -DNDEBUG"
+      },
+      "CMAKE_CXX_FLAGS_RELWITHDEBINFO": {
+        "type": "STRING",
+        "value": "-O2 -g -DNDEBUG"
+      },
+      "CMAKE_C_FLAGS": {
+        "type": "STRING",
+        "value": ""
+      },
+      "CMAKE_C_FLAGS_DEBUG": {
+        "type": "STRING",
+        "value": "-g"
+      },
+      "CMAKE_C_FLAGS_MINSIZEREL": {
+        "type": "STRING",
+        "value": "-Os -DNDEBUG"
+      },
+      "CMAKE_C_FLAGS_RELEASE": {
+        "type": "STRING",
+        "value": "-O3 -DNDEBUG"
+      },
+      "CMAKE_C_FLAGS_RELWITHDEBINFO": {
+        "type": "STRING",
+        "value": "-O2 -g -DNDEBUG"
+      },
+      "CMAKE_INSTALL_PREFIX": {
+        "type": "PATH",
+        "value": "/usr/local"
+      },
+      "GGML_ACCELERATE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_ALL_WARNINGS_3RD_PARTY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AMX_BF16": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AMX_INT8": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AMX_TILE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX2": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX512": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX512_BF16": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX512_VBMI": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX512_VNNI": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX_VNNI": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BACKEND_DIR": {
+        "type": "PATH",
+        "value": ""
+      },
+      "GGML_BACKEND_DL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BIN_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "bin"
+      },
+      "GGML_BLAS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BLAS_VENDOR": {
+        "type": "STRING",
+        "value": "Generic"
+      },
+      "GGML_BMI2": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BUILD_EXAMPLES": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BUILD_TESTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CCACHE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CPU": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CPU_ALL_VARIANTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CPU_ARM_ARCH": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_CPU_HBM": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CPU_KLEIDIAI": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CPU_POWERPC_CPUTYPE": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_CPU_REPACK": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CUDA": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_COMPRESSION_MODE": {
+        "type": "STRING",
+        "value": "size"
+      },
+      "GGML_CUDA_FA": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CUDA_FA_ALL_QUANTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_FORCE_CUBLAS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_FORCE_MMQ": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_GRAPHS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CUDA_NCCL": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CUDA_NO_PEER_COPY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_NO_VMM": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_PEER_MAX_BATCH_SIZE": {
+        "type": "STRING",
+        "value": "128"
+      },
+      "GGML_ET": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_ET_SYSEMU": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_F16C": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_FMA": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_GPROF": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HEXAGON": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HIP": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HIP_EXPORT_METRICS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HIP_GRAPHS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_HIP_MMQ_MFMA": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_HIP_NO_VMM": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_HIP_RCCL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HIP_ROCWMMA_FATTN": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_INCLUDE_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "include"
+      },
+      "GGML_LASX": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_LIB_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "lib"
+      },
+      "GGML_LLAMAFILE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_LSX": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_LTO": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL_EMBED_LIBRARY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL_MACOSX_VERSION_MIN": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_METAL_NDEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL_SHADER_DEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL_STD": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_MUSA": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_MUSA_GRAPHS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_MUSA_MUDNN_COPY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_NATIVE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_OPENCL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_OPENCL_EMBED_KERNELS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_OPENCL_PROFILING": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_OPENCL_TARGET_VERSION": {
+        "type": "STRING",
+        "value": "300"
+      },
+      "GGML_OPENCL_USE_ADRENO_KERNELS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_OPENMP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_OPENVINO": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_RPC": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_RVV": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_RV_ZFH": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_RV_ZICBOP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_RV_ZIHINTPAUSE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_RV_ZVFBFWMA": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_RV_ZVFH": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SANITIZE_ADDRESS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SANITIZE_THREAD": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SANITIZE_UNDEFINED": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SCHED_MAX_COPIES": {
+        "type": "STRING",
+        "value": "4"
+      },
+      "GGML_SCHED_NO_REALLOC": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SSE42": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_STATIC": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SYCL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SYCL_DEVICE_ARCH": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_SYCL_DNN": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SYCL_F16": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SYCL_GRAPH": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SYCL_HOST_MEM_FALLBACK": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SYCL_SUPPORT_LEVEL_ZERO_API": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SYCL_TARGET": {
+        "type": "STRING",
+        "value": "INTEL"
+      },
+      "GGML_VIRTGPU": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VIRTGPU_BACKEND": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_CHECK_RESULTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_DEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_MEMORY_DEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_RUN_TESTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_SHADERS_GEN_TOOLCHAIN": {
+        "type": "FILEPATH",
+        "value": ""
+      },
+      "GGML_VULKAN_SHADER_DEBUG_INFO": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_VALIDATE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VXE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_WEBGPU": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_WEBGPU_CPU_PROFILE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_WEBGPU_DEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_WEBGPU_GPU_PROFILE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_WEBGPU_JSPI": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_XTHEADVECTOR": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_ZDNN": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_ZENDNN": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_ALL_WARNINGS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_ALL_WARNINGS_3RD_PARTY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_BIN_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "bin"
+      },
+      "LLAMA_BUILD_APP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_COMMON": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_EXAMPLES": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_MTMD": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_BUILD_SERVER": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_TESTS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_TOOLS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_UI": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_CURL": {
+        "type": "UNINITIALIZED",
+        "value": "OFF"
+      },
+      "LLAMA_FATAL_WARNINGS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_GLM_DSA_ORACLE_TESTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_INCLUDE_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "include"
+      },
+      "LLAMA_LIB_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "lib"
+      },
+      "LLAMA_LLGUIDANCE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_OPENSSL": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_SANITIZE_ADDRESS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_SANITIZE_THREAD": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_SANITIZE_UNDEFINED": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_TESTS_INSTALL": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_TOOLS_INSTALL": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_UI_GZIP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_UI_HF_BUCKET": {
+        "type": "STRING",
+        "value": "ggml-org/llama-ui"
+      },
+      "LLAMA_USE_PREBUILT_UI": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_USE_SYSTEM_GGML": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_WASM_MEM64": {
+        "type": "BOOL",
+        "value": "ON"
+      }
+    }
+  },
+  "gpu": {
+    "configure_definitions": {
+      "AMDGPU_TARGETS": {
+        "type": "UNINITIALIZED",
+        "value": "gfx90a"
+      },
+      "BUILD_SHARED_LIBS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "BUILD_TESTING": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "CMAKE_BUILD_RPATH_USE_ORIGIN": {
+        "type": "UNINITIALIZED",
+        "value": "ON"
+      },
+      "CMAKE_BUILD_TYPE": {
+        "type": "STRING",
+        "value": "Release"
+      },
+      "CMAKE_CXX_FLAGS": {
+        "type": "STRING",
+        "value": ""
+      },
+      "CMAKE_CXX_FLAGS_DEBUG": {
+        "type": "STRING",
+        "value": "-g"
+      },
+      "CMAKE_CXX_FLAGS_MINSIZEREL": {
+        "type": "STRING",
+        "value": "-Os -DNDEBUG"
+      },
+      "CMAKE_CXX_FLAGS_RELEASE": {
+        "type": "STRING",
+        "value": "-O3 -DNDEBUG"
+      },
+      "CMAKE_CXX_FLAGS_RELWITHDEBINFO": {
+        "type": "STRING",
+        "value": "-O2 -g -DNDEBUG"
+      },
+      "CMAKE_C_FLAGS": {
+        "type": "STRING",
+        "value": ""
+      },
+      "CMAKE_C_FLAGS_DEBUG": {
+        "type": "STRING",
+        "value": "-g"
+      },
+      "CMAKE_C_FLAGS_MINSIZEREL": {
+        "type": "STRING",
+        "value": "-Os -DNDEBUG"
+      },
+      "CMAKE_C_FLAGS_RELEASE": {
+        "type": "STRING",
+        "value": "-O3 -DNDEBUG"
+      },
+      "CMAKE_C_FLAGS_RELWITHDEBINFO": {
+        "type": "STRING",
+        "value": "-O2 -g -DNDEBUG"
+      },
+      "CMAKE_HIP_FLAGS": {
+        "type": "STRING",
+        "value": ""
+      },
+      "CMAKE_HIP_FLAGS_DEBUG": {
+        "type": "STRING",
+        "value": "-g -O"
+      },
+      "CMAKE_HIP_FLAGS_MINSIZEREL": {
+        "type": "STRING",
+        "value": "-Os -DNDEBUG"
+      },
+      "CMAKE_HIP_FLAGS_RELEASE": {
+        "type": "STRING",
+        "value": "-O3 -DNDEBUG"
+      },
+      "CMAKE_HIP_FLAGS_RELWITHDEBINFO": {
+        "type": "STRING",
+        "value": "-O2 -g -DNDEBUG"
+      },
+      "CMAKE_INSTALL_PREFIX": {
+        "type": "PATH",
+        "value": "/usr/local"
+      },
+      "GGML_ACCELERATE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_ALL_WARNINGS_3RD_PARTY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AMX_BF16": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AMX_INT8": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AMX_TILE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX2": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX512": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX512_BF16": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX512_VBMI": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX512_VNNI": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_AVX_VNNI": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BACKEND_DIR": {
+        "type": "PATH",
+        "value": ""
+      },
+      "GGML_BACKEND_DL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BIN_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "/workspace/bin"
+      },
+      "GGML_BLAS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BLAS_VENDOR": {
+        "type": "STRING",
+        "value": "Generic"
+      },
+      "GGML_BMI2": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BUILD_EXAMPLES": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_BUILD_TESTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CCACHE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CPU": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CPU_ALL_VARIANTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CPU_ARM_ARCH": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_CPU_HBM": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CPU_KLEIDIAI": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CPU_POWERPC_CPUTYPE": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_CPU_REPACK": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CUDA": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_COMPRESSION_MODE": {
+        "type": "STRING",
+        "value": "size"
+      },
+      "GGML_CUDA_FA": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CUDA_FA_ALL_QUANTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_FORCE_CUBLAS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_FORCE_MMQ": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_GRAPHS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CUDA_NCCL": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_CUDA_NO_PEER_COPY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_NO_VMM": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_CUDA_PEER_MAX_BATCH_SIZE": {
+        "type": "STRING",
+        "value": "128"
+      },
+      "GGML_ET": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_ET_SYSEMU": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_F16C": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_FMA": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_GPROF": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HEXAGON": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HIP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_HIP_EXPORT_METRICS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HIP_GRAPHS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_HIP_MMQ_MFMA": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_HIP_NO_VMM": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_HIP_RCCL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_HIP_ROCWMMA_FATTN": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_INCLUDE_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "/workspace/include"
+      },
+      "GGML_LASX": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_LIB_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "/workspace/lib"
+      },
+      "GGML_LLAMAFILE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_LSX": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_LTO": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL_EMBED_LIBRARY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL_MACOSX_VERSION_MIN": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_METAL_NDEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL_SHADER_DEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_METAL_STD": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_MUSA": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_MUSA_GRAPHS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_MUSA_MUDNN_COPY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_NATIVE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_OPENCL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_OPENCL_EMBED_KERNELS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_OPENCL_PROFILING": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_OPENCL_TARGET_VERSION": {
+        "type": "STRING",
+        "value": "300"
+      },
+      "GGML_OPENCL_USE_ADRENO_KERNELS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_OPENMP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_OPENVINO": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_RPC": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_RVV": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_RV_ZFH": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_RV_ZICBOP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_RV_ZIHINTPAUSE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_RV_ZVFBFWMA": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_RV_ZVFH": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SANITIZE_ADDRESS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SANITIZE_THREAD": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SANITIZE_UNDEFINED": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SCHED_MAX_COPIES": {
+        "type": "STRING",
+        "value": "4"
+      },
+      "GGML_SCHED_NO_REALLOC": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SSE42": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_STATIC": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SYCL": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SYCL_DEVICE_ARCH": {
+        "type": "STRING",
+        "value": ""
+      },
+      "GGML_SYCL_DNN": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SYCL_F16": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_SYCL_GRAPH": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SYCL_HOST_MEM_FALLBACK": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SYCL_SUPPORT_LEVEL_ZERO_API": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_SYCL_TARGET": {
+        "type": "STRING",
+        "value": "INTEL"
+      },
+      "GGML_VIRTGPU": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VIRTGPU_BACKEND": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_CHECK_RESULTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_DEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_MEMORY_DEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_RUN_TESTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_SHADERS_GEN_TOOLCHAIN": {
+        "type": "FILEPATH",
+        "value": ""
+      },
+      "GGML_VULKAN_SHADER_DEBUG_INFO": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VULKAN_VALIDATE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_VXE": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_WEBGPU": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_WEBGPU_CPU_PROFILE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_WEBGPU_DEBUG": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_WEBGPU_GPU_PROFILE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_WEBGPU_JSPI": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "GGML_XTHEADVECTOR": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_ZDNN": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "GGML_ZENDNN": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_ALL_WARNINGS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_ALL_WARNINGS_3RD_PARTY": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_BIN_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "/workspace/bin"
+      },
+      "LLAMA_BUILD_APP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_COMMON": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_EXAMPLES": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_MTMD": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_BUILD_SERVER": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_TESTS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_TOOLS": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_BUILD_UI": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_FATAL_WARNINGS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_GLM_DSA_ORACLE_TESTS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_INCLUDE_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "/workspace/include"
+      },
+      "LLAMA_LIB_INSTALL_DIR": {
+        "type": "PATH",
+        "value": "/workspace/lib"
+      },
+      "LLAMA_LLGUIDANCE": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_OPENSSL": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_SANITIZE_ADDRESS": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_SANITIZE_THREAD": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_SANITIZE_UNDEFINED": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_TESTS_INSTALL": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_TOOLS_INSTALL": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_UI_GZIP": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_UI_HF_BUCKET": {
+        "type": "STRING",
+        "value": "ggml-org/llama-ui"
+      },
+      "LLAMA_USE_PREBUILT_UI": {
+        "type": "BOOL",
+        "value": "ON"
+      },
+      "LLAMA_USE_SYSTEM_GGML": {
+        "type": "BOOL",
+        "value": "OFF"
+      },
+      "LLAMA_WASM_MEM64": {
+        "type": "BOOL",
+        "value": "ON"
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "id": "evl46-crm-live-source-tests-20261102",
+  "owner": "codex-evl46",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102/result.json",
+  "result_format": "json",
+  "decision_rule": "Pass iff schema dtap.crm_live_source_tests.v1, capture_kind source-test, passed >=30 and model_invoked false. Deterministic source/fixture verification only; no live model, timing, security or post-hash claim.",
+  "estimate_s": 600,
+  "ram_gib": 4,
+  "handoff_task": "benchmark-suites.md:TU-DTAP-2-SOURCE",
+  "priority_rank": 113,
+  "scratch_root": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102",
+  "launcher": "/mnt/raid0/llm/tmp/evl46-live-unit-20261102/launch.sh",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "keep": [
+    "source.json",
+    "job.sh",
+    "result.py",
+    "complete.py",
+    "launch.sh",
+    "pytest.log",
+    "result.json"
+  ],
+  "notes": "Owner handoff moved from tool-use-eval-contract to benchmark-suites; repair only the retired task pointer. Existing source test launcher and exact source commit remain pinned. Qualification is model-free."
+}

@@ -1,0 +1,25 @@
+{
+  "id": "kpf174-prefix-request-integration-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "ready": false,
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 1,
+  "estimate_s": 300,
+  "smoke_timeout_s": 140,
+  "priority_rank": 45,
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-prefix-request-integration-20261105/launch.sh",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-prefix-request-integration-20261105/out/RESULT.json",
+  "result_format": "json",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174-prefix-request-integration-20261105",
+  "keep": [
+    "**"
+  ],
+  "dryrun_native_result": true,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4D-PREFIX-INTEGRATION-QUAL",
+  "decision_rule": "Full MODEL_FREE_QUALIFICATION requires retained AST request/selected_slice path accepts synthetic single-layout boundary despite later prefix snapshot, duplicate/multi-layout/foreign-task/foreign-slot/truncated controls refuse before compare/native judge, positive smoke-only verdict uses compare once, source seals unchanged and captured direct worker reaped. No server/native inference, historical replay or equivalence.",
+  "workload_limit_s": 120,
+  "cleanup_budget_s": 7,
+  "lineage": "kpf174-prefix-request-integration"
+}

@@ -1,0 +1,16 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-k35-native-20261102/launcher.out",
+ "elapsed_s": 24,
+ "ended": "rc=75 time=2026-11-02T20:48:29Z reason=partial-native-incomplete",
+ "engine_sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c",
+ "first_unit_at": "2026-11-02T20:48:29Z",
+ "id": "handoff-kvu16h-k35-native-20261102",
+ "launcher_sha256": "edba2ff23434287d18ca3c1fdb52969197b6820fd8fed3575d29574032bdcfab",
+ "passed_at": "2026-11-02T20:48:35Z",
+ "regions": "mi210_0,q0,q1,q2,q3,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-k35-native-20261102/native-attempts/attempt-l1upyl0c/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": 37252935680,
+ "warning": null
+}

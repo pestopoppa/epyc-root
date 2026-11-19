@@ -1,0 +1,3 @@
+WARN task_lint vidya-belief-substrate-program.md:17: untestable prose prerequisite: 'after both original responses, two in-window owned GPU samples per arm, sealed replay and verified owned teardown; stop-'
+DECISION-RULE prose; verdict_by agent: owner handoff-vidya-belief-substrate files the verdict by hand after the run
+Producer and receipt pins, publisher preflight, offline runner cleanup controls, and smoke unit validation pass.

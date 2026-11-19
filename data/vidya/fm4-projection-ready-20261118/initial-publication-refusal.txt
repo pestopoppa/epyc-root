@@ -1,0 +1,4 @@
+WARN view refresh timed out after 60s; using the existing view
+REFUSED: handoff_task 'vidya-belief-substrate-program.md:VB-FM4-CODEX-PROJECTION-PREP': no checkbox **VB-FM4-CODEX-PROJECTION-PREP** in vidya-belief-substrate-program.md
+
+The publisher resolves the canonical handoff, where the new lane-local software child has not landed. Repointed the spec to the existing owning parent VB-FM4-ORACLE-WIRE; source, launcher and native inputs unchanged.

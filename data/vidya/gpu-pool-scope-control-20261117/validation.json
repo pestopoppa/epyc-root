@@ -1,0 +1,17 @@
+{
+  "synthetic_control": true,
+  "official_native_acceptance": false,
+  "positive_planning_context": false,
+  "reader_checkout_check": false,
+  "tests_run": 6,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "passed",
+  "cpu_affinity": [
+    72,
+    73,
+    74,
+    75
+  ]
+}

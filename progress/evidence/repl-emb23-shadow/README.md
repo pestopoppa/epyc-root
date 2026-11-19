@@ -1,0 +1,9 @@
+# REPL-EMB-2.3 shadow accounting draft
+
+`shadow_capture.py` is a standalone candidate for one request-scoped search: the caller supplies every arm's ordered content-digest/character-span hits, a query digest and one selected arm. Only the selected arm's spans are returned to the caller. Later opens are correlated by the same content digest and half-open overlap across all arms. Incomplete capture retains unknown for unmatched hits, and failed arms cannot silently become empty successful arms. A shadow-arm overlap is counterfactual correlation, not evidence that its result was shown. No text is retained by this candidate.
+
+This is **not integrated** into APP. It neither runs the arms nor observes native opens, authenticates caller-declared content lengths against the underlying content, records actual model exposure, persists output, nor emits a belief-kernel record. Before a real experiment, the application must supply trustworthy content-bound spans and request lifetime/completion state, account for chosen-arm display, connect native opens and retain arm/model/config identities, failures, timing and prospective producer identity through an independent online writer and planning-context canary. Existing offline retrieval capture explicitly refuses the online instrument. No inference or quality claim is made.
+
+The caller declares lengths per content digest; unknown digests and hit/open spans outside these lengths are refused. The declaration itself is not authenticated.
+
+Controls: `python3 -m pytest -q progress/evidence/repl-emb23-shadow/test_shadow_capture.py` (5 passed). They exercise selected-only return, immutable snapshots, half-open content-bound overlaps, failure retention, incomplete capture and invalid inputs. Opens and completion are refused until selected hits have been returned; returning hits does not establish that the model saw them.

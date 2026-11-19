@@ -1,0 +1,15 @@
+{
+  "row": "vb-tb-semantics-native-planner-20261118",
+  "owner_disposition": "PARKED3",
+  "ready": false,
+  "official_run": false,
+  "qualification_failures": 3,
+  "failure_causes": [
+    "missing producer launcher.sh from snapshot",
+    "missing Research autokernel import root",
+    "incorrect per-context actor receipt directory"
+  ],
+  "code_repair": "isolated workspace per label with parent-scoped receipt path and prompt/target/ledger custody checks",
+  "repaired_code_runtime_validation": "not run; no fourth qualification attempted",
+  "next": "Leave this lineage stopped under the operator three-failure rule; continue other handoff work."
+}

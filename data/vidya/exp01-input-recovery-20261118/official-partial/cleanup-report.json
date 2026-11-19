@@ -1,0 +1,51 @@
+{
+  "timestamp_utc": "2026-11-18T14:54:15.753443+00:00",
+  "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate",
+  "allocated_bytes_before": 109978025984,
+  "allocated_bytes_after_before_report": 100307484672,
+  "net_scratch_allocated_bytes_reclaimed": 9670541312,
+  "allocated_bytes_in_removed_paths": 9670541312,
+  "removed": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/smoke/ad15d7bb8afc447f9fb99be1865eb616",
+      "allocated_bytes": 126976,
+      "reason": "Superseded EXP01 smoke attempt. All remaining files matched the indexed original evidence in data/vidya/exp01-input-recovery-20261118/superseded-smoke/ad15d7bb8afc447f9fb99be1865eb616"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/smoke/eb0efcff0bdb47f1bf685207d6dae0e2",
+      "allocated_bytes": 143360,
+      "reason": "Superseded EXP01 smoke attempt. All remaining files matched the indexed original evidence in data/vidya/exp01-input-recovery-20261118/superseded-smoke/eb0efcff0bdb47f1bf685207d6dae0e2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/smoke/ec25ffeda1d7475daa662d7083fcbc83",
+      "allocated_bytes": 143360,
+      "reason": "Superseded EXP01 smoke attempt. All remaining files matched the indexed original evidence in data/vidya/exp01-input-recovery-20261118/superseded-smoke/ec25ffeda1d7475daa662d7083fcbc83"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/.partial-Qwen3.6-35B-A3B-IQ2_KT.gguf",
+      "allocated_bytes": 9670127616,
+      "logical_bytes": 9670119328,
+      "reason": "Unsealed incomplete IQ2_KT file. Quantizer hit allocator deadline (rc 124), and the completed output path does not exist. Current attempt records and completed arms retained."
+    }
+  ],
+  "protected_verified": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/TERMINAL.json",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/results.jsonl",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/RUN.json",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ2_XXS.gguf",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ4_KT.gguf",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/inputs/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/smoke/24286b6da6bf49da8454e1f67aea9ec1",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-root-code",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-ready",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118"
+  ],
+  "protected_exp01_allocated_bytes": 86351273984,
+  "reason_for_retention": "Keep the stat-pinned Q8 source, calibration inputs, current publisher smoke, current official terminal and completed generated inputs for filing and successor reuse. Keep other current, prepared and ready-row dependencies and native evidence."
+}

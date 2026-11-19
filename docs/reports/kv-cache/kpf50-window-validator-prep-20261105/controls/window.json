@@ -1,0 +1,78 @@
+{
+  "artifacts": {
+    "children": {
+      "path": "children.txt",
+      "sha256": "97c8aba0f71c9853075dd193f0c3f30ecba5f53992a2ca6252f26f01778ab83f"
+    },
+    "clock_after": {
+      "path": "clock_after.txt",
+      "sha256": "cc364ca13f0dfd86209afdaa78363488bd344f09dca57cc71702396aa3c0a107"
+    },
+    "clock_before": {
+      "path": "clock_before.txt",
+      "sha256": "7664dfd0b998616c72ef9d8f46d473373408cb25a5e022c8a39be2ff749f1a18"
+    },
+    "dispatch_csv": {
+      "path": "dispatch_csv.txt",
+      "sha256": "848cb4188909e711068d599673a819beac070556553715a7f6c331aa398c69ff"
+    },
+    "process_maps": {
+      "path": "process_maps.txt",
+      "sha256": "d31dcd07d8c62b804c43b4558a8f1108d80f660a57975673a6ccf6663b0ef167"
+    },
+    "residency": {
+      "path": "residency.txt",
+      "sha256": "2aff072d22ddcfa131e2c73e337d933d94300ddf30c6255d5472f9dca6321dab"
+    },
+    "server_log": {
+      "path": "server_log.txt",
+      "sha256": "c13926d859f08cdadd21e1834106d7a8b19ead550fbb8127ace60a8a55f6eafd"
+    },
+    "shape": {
+      "path": "shape.txt",
+      "sha256": "10b4541dcc18244997555995b45d1ed209e77dfcda71f0d5e21eb74723ca2290"
+    },
+    "smoke_after": {
+      "path": "smoke_after.txt",
+      "sha256": "fb50e9ef5727dad9d6a3c2ce321fcb25e3c32625323b73a164e791dcc1bafe94"
+    },
+    "smoke_before": {
+      "path": "smoke_before.txt",
+      "sha256": "1c15e6c7438e801b7cd0f53be56dee7f16c82671d82be17cedf33a8abe597785"
+    },
+    "smoke_csv": {
+      "path": "smoke_csv.txt",
+      "sha256": "edc2095f6097ad62e09e1e223aaef5f088dba8a105982a9be91652e482db0beb"
+    },
+    "smoke_log": {
+      "path": "smoke_log.txt",
+      "sha256": "e36ed7b6a2f5cd5c7061354f4a74ede1a479107758214073e90dd03f4b9c7219"
+    }
+  },
+  "attempt_start_ns": 1,
+  "complete": true,
+  "fresh_model": true,
+  "identity": {
+    "argv_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "device": "SYNTHETIC-GPU",
+    "dispatch_families": {
+      "synthetic_attention": "attention"
+    },
+    "drafter": "DFlash2",
+    "drafter_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "dso_sha256": {
+      "libggml-hip.so": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "model_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "prompt_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "server_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "source_commit": "1e8a6d5da9836a27e8f1d2010a02e6cebd95abdc"
+  },
+  "mode": "full",
+  "partial": false,
+  "pid": 123,
+  "pid_birth": "SYNTHETIC-BIRTH",
+  "schema": "epyc.kpf50.native-window.v1",
+  "synthetic": true,
+  "window_index": 0
+}

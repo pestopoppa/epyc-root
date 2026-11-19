@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-18T04:14:48.898844+00:00",
+  "row": "vidya-exp01-proxy-input-recovery-20261118",
+  "rc": 2,
+  "published": false,
+  "reason": "Publisher preflight refused missing inputs/Q8-VERIFIED.json. The pinned parent transfer must finish and verify before publication.",
+  "terminal_event": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/inputs/Q8-RECOVERY-TERMINAL.json",
+  "native_inference_run": false
+}

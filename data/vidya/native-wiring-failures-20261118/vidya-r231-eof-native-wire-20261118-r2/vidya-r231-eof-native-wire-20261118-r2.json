@@ -1,0 +1,64 @@
+{
+ "baseline_ref": "v10 ffc1bac82eeca6f9099e1ccd9ba49703c460a115 + preserved R23-1 EOF candidate; llama-cli SHA256 a90f1a24f8734ff02f293b8ab5eec38ec69574511daabcafde6bc089996cf6fb",
+ "book_s": 225,
+ "budget_gib": 1.0,
+ "decision_rule": "Question: do the pinned Linux CLI and linked console produce the planned EOF, blank, slash and text outcomes with complete native custody? Stop on answer after the CLI model-selection loopback EOF and eight exact simple/PTY cases, with output/process/maps/cleanup sealed. Stop on futility on first failed case, missing witness, STOP, allocated deadline or hard cap 300s. Smoke runs original CLI EOF only in its own attempt. Finite model-free behavior census only, no model, inference, performance or promotion claim.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 90,
+ "gib": 4,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R23-1-EOF-WIRE",
+ "id": "vidya-r231-eof-native-wire-20261118-r2",
+ "keep": [
+  "*.py",
+  "*.sh",
+  "*.cpp",
+  "*.json",
+  "SOURCE.sha256",
+  "out/**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2/launch.sh",
+  "sha256": "75bd688040bdfaac59a08063feea1705c734633d5739d68ff314c1a84effed4a"
+ },
+ "lineage": "vidya-r231-eof-native-wire",
+ "min_window_s": 120,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 50.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:4598: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "vidya-belief-substrate-program.md:4598: untestable prose prerequisite: 'require a planning-context canary before calling the loop wired. Source declaration: `scripts/vidya/adapters/README.md`.'",
+  "env-clean: /mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2/capture.py runs `start_new_session=True`; the keeper attributes the job's processes (and GPU residency) by FILLER_ID, so a child that loses it reads as not the row's. FIX: pass FILLER_ID through (env -i FILLER_ID=\"$FILLER_ID\" ..., env={..., \"FILLER_ID\": os.environ[\"FILLER_ID\"]}) and keep the child in the job's session (publish continues)"
+ ],
+ "published_at": "2026-11-18T03:39:18Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2/row.spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T03:39:18Z",
+  "session": "01a1ecac-5b5b-7a60-bb40-a372abd334a7",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2/out/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2",
+ "shape": "sub-quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2/smoke_predicate.py",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2/STOP",
+ "supersedes": "vidya-r231-eof-native-wire-20261118",
+ "unit_key": "unit_id",
+ "verdict_by": "agent",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/r2"
+}

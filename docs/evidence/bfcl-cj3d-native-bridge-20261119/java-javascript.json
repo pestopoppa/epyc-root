@@ -1,0 +1,45 @@
+{
+  "box": "CJ-3d",
+  "scope": "Extend pinned official single-turn native checker to Java and JavaScript; model-free software controls",
+  "upstream_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+  "upstream_paths": [
+    "berkeley-function-call-leaderboard/bfcl/model_handler/proprietary_model/openai.py",
+    "berkeley-function-call-leaderboard/bfcl/model_handler/utils.py",
+    "berkeley-function-call-leaderboard/bfcl/eval_checker/ast_eval/ast_checker.py"
+  ],
+  "behavior": "Use official language preprocessing on a deep copy before tool conversion; pass original schema and untouched native arguments to official Java/JavaScript checker. No local type coercion or new scoring rules.",
+  "tests": {
+    "command": "BFCL_CHECKOUT=/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104 PYTHONPATH=proposed/cj567 /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python -B -m unittest test_bfcl_native test_openai_tool_calls -v",
+    "integration": 12,
+    "adapter": 12,
+    "result": "PASS",
+    "selected_positive_cases": 14,
+    "new_positive_case_ids": [
+      "java_0",
+      "java_1",
+      "javascript_0",
+      "javascript_1"
+    ],
+    "negative_controls": [
+      "wrong name",
+      "missing required arguments",
+      "wrong required value",
+      "native JSON Boolean rejected where upstream requests a language-value string",
+      "category/ID mismatch"
+    ],
+    "nonmutation": "Repeated requests preserve original case and gold",
+    "broader_discovery": "Four unrelated pytest-based fixture modules failed import because this controls venv lacks pytest; scoped BFCL and adapter suites pass."
+  },
+  "bindings_sha256": {
+    "proposed/cj567/bfcl_native.py": "735ca6ee7b991d775f94a3830e51c8c92e9d5a290ed3aa6adba4f7c2c44941a4",
+    "proposed/cj567/test_bfcl_native.py": "ecf3744e9ab4828fa15dc699efdc481db67a1ccf843db133da200c69a59adea7",
+    "data/benchmarks/bfcl-v3-cj3d-prep-20261104/sample-manifest.json": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0"
+  },
+  "model_runs": 0,
+  "remaining_cases": 12,
+  "limitations": [
+    "SQL and ten multi-turn cases remain unimplemented and refused",
+    "No live fleet score or representative-sample claim",
+    "Existing VB-BFCL-NATIVE-WIRE remains prospective custody task"
+  ]
+}

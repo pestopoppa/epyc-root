@@ -1,0 +1,21 @@
+{
+  "target": {
+    "id": "Method:src/llama-kv-cache.cpp:set_input_kq_mask#3",
+    "name": "set_input_kq_mask",
+    "type": "Method",
+    "filePath": "src/llama-kv-cache.cpp"
+  },
+  "direction": "upstream",
+  "impactedCount": 0,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 0,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "byDepthCounts": {},
+  "affected_processes": [],
+  "affected_modules": [],
+  "byDepth": {}
+}

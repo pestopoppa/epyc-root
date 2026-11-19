@@ -1,0 +1,19 @@
+{
+  "authority": "software-control-only",
+  "cpus": [
+    140,
+    141,
+    142,
+    143
+  ],
+  "id": "vb-sync-published-repair-20261118",
+  "lag": 0,
+  "manual_sync_count": 0,
+  "mode": "publisher-smoke",
+  "native_receipt_sha256": "d7c72568beb3fa0b78a4fc5067068b9c4c97b3ba965e89c3acb100626c546b05",
+  "refused": 0,
+  "run_dir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/publisher-smoke-oh7500o1",
+  "selected": 1,
+  "source_pins_sha256": "fb7616cec4f5722a46f2c6f9f2407f63e953f15178121aae80da339d1782222a",
+  "status": "passed"
+}

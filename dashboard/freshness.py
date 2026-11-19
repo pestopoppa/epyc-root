@@ -35,6 +35,32 @@ CLASS_MISSING = "missing"
 CLASSES = (CLASS_FRESH, CLASS_AGING, CLASS_STALE, CLASS_MISSING)
 
 
+#: COMPATIBILITY SHIM for the second vocabulary. The orchestrator's dashboard
+#: envelope (``epyc-orchestrator/src/api/routes/dashboard_freshness.py``) spells
+#: the same four states ``fresh/aging/stale/dead``, and the AK6 grammar spelled
+#: them ``fresh/warn/stale/ABSENT``. ``dead`` (a required source file is missing)
+#: IS ``missing``; the words differ, the states do not. The HUB spelling is the
+#: one vocabulary pages and consumers key off (the plane rule: the freshness
+#: grammar lives on the hub); anything read across the seam is normalised with
+#: ``canonical_class`` first. The same table is inlined into ``/nav.js`` as
+#: ``window.epycFreshClass`` so browser consumers use this exact mapping.
+ALIASES = {"dead": CLASS_MISSING, "absent": CLASS_MISSING, "warn": CLASS_AGING}
+
+
+def canonical_class(value: object) -> str | None:
+    """Map any known spelling to a hub class; ``None`` for anything else.
+
+    Unknown values are NOT coerced to ``fresh`` or ``missing``: a producer
+    speaking a vocabulary we have not mapped must stay visibly unmapped.
+    """
+    if not isinstance(value, str):
+        return None
+    key = value.strip().lower()
+    if key in CLASSES:
+        return key
+    return ALIASES.get(key)
+
+
 def classify_age(age_s: float | None, warn_s: float | None,
                  stale_s: float | None) -> str:
     """Classify an age in seconds against a warn/stale ladder.

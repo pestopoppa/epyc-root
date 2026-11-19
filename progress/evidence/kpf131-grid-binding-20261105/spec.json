@@ -1,0 +1,31 @@
+{
+  "id": "kvu-kpf131-grid-binding-20261105",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/grid-binding-20261105/launch.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/grid-binding-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS iff both own-child fixture cases exit 0 and each of two historical find_slot breakpoint markers on the same stderr stream is followed by exactly one parseable native debug grid; first grids empty, honest second grid occupies cells 0,1 at positions 0,1, mutant second remains empty, with executable and five DSO identities stable and cleanup confirmed. Missing or ambiguous output, identity drift or cleanup failure INVALID. Fixture alignment only; no live task binding or historical control.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-13.1-GRID-BINDING",
+  "priority_rank": 30,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/grid-binding-20261105",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "gib": 1,
+  "min_window_s": 300,
+  "window_s": 600,
+  "model_free": true,
+  "unit_key": "arm",
+  "case_count": 2,
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "stop_file": "/mnt/raid0/llm/tmp/kvu/grid-binding-20261105/STOP",
+  "stop_rule": "stop on both cases or missing observation, identity, STOP, deadline or cleanup failure",
+  "gate_class": "futility-only",
+  "first_progress_s": 300,
+  "question": "Can actual old-image native allocator grid logs be associated in order to observed find_slot entries in a controlled model-free child?"
+}

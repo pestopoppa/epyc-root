@@ -1,0 +1,36 @@
+{
+  "id": "handoff-kvu16a-shape-load-r3-20261104",
+  "owner": "handoff-kv-cache-program",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/launch.sh",
+  "kind": "compute",
+  "lane": "gpu",
+  "regions": "mi210_0,184-191",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 1800,
+  "min_window_s": 600,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "handoff_task": "kv-cache-program.md:KVU-16a",
+  "lineage": "rtg57-kvu16a-shape-load-20261102-v2",
+  "supersedes": [
+    "rtg57-kvu16a-shape-load-20261102-v2"
+  ],
+  "decision_rule": "Stop-on-answer after one actual load and two post-health own-PID HIP/KFD samples (explicit selected-pair window; full raw startup stream retained, whole-load coverage false) each >=1GiB with predeclared <=1.5s sample gaps, observed unique target KV allocation, exact recipe argv/environment/model/library identity, verified captured-child cleanup and original-run belief sidecar. Report max healthy sampled own VRAM minus observed target KV bytes; lower is better; one-process observations, no independent-run error estimate or lifetime/runtime-peak claim. Futility stop on load, identity, sampling, residency or cleanup fault, STOP/deadline, or absent allocation log; no generation, registry update or deployment. Native smoke is the real load, exactly four actual granted CPUs; it retains eight configured server threads and changes only execution affinity. Full execution uses recipe CPUs184-191. Port/slots isolated; -lv4 is the sole diagnostic logging addition.",
+  "keep": [
+    "RESULT.json",
+    "native-load-*/**",
+    "*.py",
+    "*.json",
+    "*.txt",
+    "*.sha256",
+    "launch.sh",
+    "region-lock",
+    "lock-source/**",
+    "upstream/**",
+    "vidya/**"
+  ],
+  "notes": "Prepared offline only, owner publishes. Replaces unqualified v2 with missing target-KV receipt (verbosity3); preserves --no-cache-idle-slots and current compiler rendering. Source base b1d7e1f77 retained. Anchored full-model receipt validated once outside grant; no weight hashing inside job. Parent-death SIGKILL exec wrapper and common engine group, captured PID file, owned listener/birth checks and continuous STOP/deadline watcher. Private independently retained cataloged lock source; no runtime reference to another row or mutable shared lock modules. Current shared registry has tracked changes; exact registry/priors/compiler hashes are frozen in preflight, not asserted to be a clean commit. Native qualification success answers load sampling but does not consume full row completion. Healthy-window-only source: samples.jsonl contains exactly two original post-health observations with explicit bounds/selection; all-samples.jsonl retains every startup sample, unknown and gap and is digest-bound in the native result. Current adapter/claim_tuple source is unchanged and has an offline positive/unknown-rejection fixture. Qualification does not attest whole-load or peak coverage.",
+  "ram_gib": 64
+}

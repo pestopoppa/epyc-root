@@ -1,0 +1,262 @@
+{
+  "actor_receipt": {
+    "as_of": "2026-11-18T14:59:12.536989+00:00",
+    "call": {
+      "prompt_sha256": "9110babccf097bda67d073207accaf379c680c45ff920305a8b14d08e3d9a9ad",
+      "seat_arm": null,
+      "workspace": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/planning/eof-context-lih7ynpc/workspace"
+    },
+    "claim_ids": [],
+    "consumer": "autokernel.planner",
+    "contested_claim_ids": [],
+    "evidence_reasons": [],
+    "evidence_status": "presented",
+    "evidence_v2": {
+      "banner": "No beliefs are scoped to Qwen3.6-35B-A3B-Q4_K_M.gguf (cpu). The lines below are sibling/host context only.",
+      "host_claim_ids": [
+        "clm_r231-eof:235753b3c7b24784a34b2fe20af8496b"
+      ],
+      "nonempty_target": false,
+      "refuted_claim_ids": [],
+      "tiers": {
+        "harness": 1,
+        "host": 0,
+        "knob": 0,
+        "lineup": 0,
+        "sibling": 0,
+        "target": 0
+      },
+      "tiers_shown": {
+        "harness": 1,
+        "host": 0,
+        "knob": 0,
+        "lineup": 0,
+        "sibling": 0,
+        "target": 0
+      },
+      "tried_index_count": 0
+    },
+    "frontier": 3,
+    "ledger_state": {
+      "frame_count": 3,
+      "fresh": true,
+      "freshness": {
+        "frames_emitted": 0,
+        "index_max_id": 0,
+        "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/planning/eof-context-lih7ynpc/index.yaml",
+        "last_sync": "2026-11-18T14:59:12Z",
+        "sources": [],
+        "sync_action": "ingested",
+        "sync_seconds": 0.0,
+        "synced_max_id": 0,
+        "was_fresh": false
+      },
+      "head_hash": "sha256:0fac58b55ce3eab215d4176f5f244391875b3aefb414f9d0fc02d183bc504072",
+      "head_seq": 2,
+      "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/planning/eof-context-lih7ynpc/ledger.jsonl",
+      "schema": "epyc.vidya.ledger_state.v1",
+      "verified_at": "2026-11-18T14:59:12Z"
+    },
+    "ledger_state_digest": "sha256:923a8291a801634260bde6517285e7755db7fe8bac764b84b609d2310ecff1d5",
+    "mode": "required",
+    "omitted": [],
+    "omitted_count": 0,
+    "outcome": {
+      "abstain_reason": "R23-1 EOF canary intercepted before the backend",
+      "kind": "abstain"
+    },
+    "reader": {
+      "consumer": "autokernel.planner",
+      "elapsed_s": 0.112,
+      "module": "scripts/kernel_rnd/autokernel/loop/belief_context.py",
+      "module_sha256": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f",
+      "policy": {
+        "floor": "Judged/Located",
+        "standard": "DV",
+        "use": "planner-context"
+      },
+      "root_reader": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/loop_beliefs.py",
+      "root_reader_error": null
+    },
+    "receipt_id": "sha256:84b7ef62b1f9f36156650d674f74904a859871d86c6769b26501fd4921ee3be0",
+    "refusal": null,
+    "reliance": {
+      "accepted": [],
+      "declared": [
+        "clm_r231-eof:235753b3c7b24784a34b2fe20af8496b"
+      ],
+      "rejected": [
+        {
+          "claim_id": "clm_r231-eof:235753b3c7b24784a34b2fe20af8496b",
+          "reason": "host_tier"
+        }
+      ]
+    },
+    "run": [
+      {
+        "claim_ids": [
+          "clm_r231-eof:235753b3c7b24784a34b2fe20af8496b"
+        ],
+        "reason": "",
+        "run": null,
+        "source_kind": "r231-eof-capture",
+        "status": "presented"
+      }
+    ],
+    "schema": "epyc.vidya.planner_evidence_receipt.v2",
+    "section_bytes": 1800,
+    "section_sha256": "767dc2b43851d2426d6ab3bdeb069df063cc4974d23554184424193ec74904b5",
+    "status": "ready",
+    "target": {
+      "backend": "cpu",
+      "device": "epyc-9655",
+      "model_path": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "quant": "Q4_K_M",
+      "surface": ""
+    },
+    "ts": "2026-11-18T14:59:12Z",
+    "withdrawn_claim_ids": []
+  },
+  "as_of": "2026-11-18T14:59:12.536989+00:00",
+  "claim": {
+    "anchor_value": null,
+    "claim_id": "clm_r231-eof:235753b3c7b24784a34b2fe20af8496b",
+    "effect_rel": null,
+    "grade": "Judged/Located",
+    "knob_family": "",
+    "knobs": {},
+    "linked_claim_ids": [],
+    "locator": "data/vidya/r231-eof-native-20261118/r3/full/NATIVE.json",
+    "mechanism_id": "",
+    "model_file": "",
+    "n_pairs": null,
+    "noise_floor_rel": null,
+    "not_evidence": true,
+    "outcome": "",
+    "recipe": "",
+    "reps": 1,
+    "retrofit": false,
+    "role": "",
+    "run": null,
+    "source_kind": "r231-eof-capture",
+    "stack_regime": "",
+    "stale_epoch": false,
+    "status": "verified",
+    "tier": "harness",
+    "unit": "cases",
+    "value": 9.0,
+    "varied": []
+  },
+  "consumer": "autokernel.planner",
+  "decision_eligible_claim_ids": [],
+  "entry_point": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "excerpt_sha256": "73707a53e1c7e1a41a7bb015b21b848ac895e0d3a254727a16f972585318bdb0",
+  "ingest": {
+    "adapter": "adapters/r231_eof_capture.py",
+    "adapter_id": "vidya.adapters.r231_eof_capture/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 3,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "data/vidya/r231-eof-native-20261118/r3/full/NATIVE.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "r231-eof-capture",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "ledger_sha256": "2154198492f8b70c3c921ce8c859a9025ff1b79b2ee8f8ecf003193619b8f269",
+  "ledger_state": {
+    "frame_count": 3,
+    "fresh": true,
+    "freshness": {
+      "frames_emitted": 0,
+      "index_max_id": 0,
+      "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/planning/eof-context-lih7ynpc/index.yaml",
+      "last_sync": "2026-11-18T14:59:12Z",
+      "sources": [],
+      "sync_action": "ingested",
+      "sync_seconds": 0.0,
+      "synced_max_id": 0,
+      "was_fresh": false
+    },
+    "head_hash": "sha256:0fac58b55ce3eab215d4176f5f244391875b3aefb414f9d0fc02d183bc504072",
+    "head_seq": 2,
+    "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/planning/eof-context-lih7ynpc/ledger.jsonl",
+    "schema": "epyc.vidya.ledger_state.v1",
+    "verified_at": "2026-11-18T14:59:12Z"
+  },
+  "nonempty_target": false,
+  "other_consumer": {
+    "claims": [],
+    "head_hash": "sha256:0fac58b55ce3eab215d4176f5f244391875b3aefb414f9d0fc02d183bc504072",
+    "name": "autopilot.planner"
+  },
+  "protocol_id": "",
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "62980727b01bb2713b0e14f2a65ebf0ad9a667ab",
+    "origin_main": "62980727b01bb2713b0e14f2a65ebf0ad9a667ab",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate"
+  },
+  "research_checkout": "a794f5b54bea1a1f0752e0e3514ce07fa14c5ff2",
+  "research_sources_sha256": {
+    "scripts/kernel_rnd/autokernel/loop/actors.py": "4ee12bf63f60697286193bea4c59c2102bd0baa38dffa731eec3364c346faf5b",
+    "scripts/kernel_rnd/autokernel/loop/belief_context.py": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f"
+  },
+  "retry": {
+    "adapter": "adapters/r231_eof_capture.py",
+    "adapter_id": "vidya.adapters.r231_eof_capture/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 0,
+    "frames_skipped": 3,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "data/vidya/r231-eof-native-20261118/r3/full/NATIVE.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "r231-eof-capture",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "root_sources_sha256": {
+    "data/vidya/r231-eof-native-20261118/r3/planning-context/check_planner.py": "fab9437f8ebeaa8beddfc094259464f580476e8127491bf1c66f174d90f2fa6b",
+    "scripts/vidya/adapters/r231_eof_capture.py": "eff86a59a990c56813dab113e50deed4b80ba32be4f21f0c28b480eae75d34b5",
+    "scripts/vidya/claim_tuple.py": "f540063d9a738d437476def902ef23a1e5b0420e8b0fe15d8742d53d1c67b5b5",
+    "scripts/vidya/ingest_sources.py": "209717b2627541d64b2e041a693e2d37bddbfb06bc8cbd771ed3f8e61a582764",
+    "scripts/vidya/loop_beliefs.py": "640ac4342b6d5b267ffaa7dccdf53071d149c72890691626cb2a93a0a5ac50b6",
+    "scripts/vidya/sync.py": "93f8ab31d6e776e57ea93670241da97347b5035c7241318971be321015d9d479"
+  },
+  "schema": "epyc.vidya.r231_eof_planning_canary.v1",
+  "seal": "data/vidya/r231-eof-native-20261118/r3/full/NATIVE.json",
+  "seal_sha256": "3fc546abeab87d87d74775ac2d4fb2682f60ebcce3c52d3728a2c8f018136b6d",
+  "status": "passed",
+  "stop_boundary": "AgentPlanner._proposal_from_agent intercepted before backend",
+  "sync_marker": {
+    "index_entries": 0,
+    "max_id": 0,
+    "seen_sha256": [
+      "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    ],
+    "source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/planning/eof-context-lih7ynpc/index.yaml",
+    "synced_at": "2026-11-18T14:59:12Z"
+  },
+  "tiers_shown": {
+    "harness": 1,
+    "host": 0,
+    "knob": 0,
+    "lineup": 0,
+    "sibling": 0,
+    "target": 0
+  }
+}

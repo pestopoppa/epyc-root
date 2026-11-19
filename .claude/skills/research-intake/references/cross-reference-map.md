@@ -7,6 +7,12 @@
 > an intake wrongly concludes a technique is novel. 10 entries in this map were found pointing at
 > `active/` after their handoffs were archived; a sub-agent following the stale path would have found
 > nothing.
+>
+> **Folded handoffs (2026-11 backlog refactor).** Active handoffs are now ~29 program files; the former
+> per-topic handoffs live inside them as `## Track: <name>` sections, written here as
+> `file.md#track-<name>`. A file name that is no longer in `handoffs/active/` may still resolve through
+> `handoffs/active/.folded.json` (`files` for names, `ids` for retired row ids) — consult it before
+> concluding a topic is uncovered.
 
 Maps taxonomy categories to specific files and search terms for cross-referencing.
 
@@ -25,12 +31,12 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### kv_cache
 - **Chapters**: `04-radix-attention.md`
-- **Handoffs**: `completed/kv-cache-quantization.md`, `tq3-quantization-evaluation.md` (monitoring upstream PRs)
+- **Handoffs**: `completed/kv-cache-quantization.md`, `quantization-and-low-bit.md#track-tq3-quantization-evaluation` (monitoring upstream PRs)
 - **Search terms**: KV cache, paged attention, prefix caching, radix attention, cache eviction, vAttention, ChunkKV, TurboQuant, Hadamard rotation
 
 ### quantization
 - **Chapters**: (none)
-- **Handoffs**: `completed/kv-cache-quantization.md`, `tq3-quantization-evaluation.md`
+- **Handoffs**: `completed/kv-cache-quantization.md`, `quantization-and-low-bit.md#track-tq3-quantization-evaluation`
 - **Search terms**: quantization, GPTQ, AWQ, GGUF, Q4_K_M, mixed precision, calibration, TQ3_1S, Walsh-Hadamard, TurboQuant
 
 ### benchmark_methodology
@@ -40,7 +46,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### cost_aware_routing
 - **Chapters**: `08-cost-aware-rewards.md`
-- **Handoffs**: `routing-intelligence.md`
+- **Handoffs**: `routing-program.md#track-routing-intelligence`
 - **Search terms**: cost-aware, reward model, routing cost, latency-quality tradeoff
 
 ### agent_architecture
@@ -50,22 +56,22 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### context_extension
 - **Chapters**: (none)
-- **Handoffs**: `yarn-context-extension-research.md`, `completed/long-context-eval-datasets.md`
+- **Handoffs**: `long-context-program.md#track-yarn-context-extension-research`, `completed/long-context-eval-datasets.md`
 - **Search terms**: YaRN, RoPE scaling, context extension, long context, sliding window
 
 ### context_management
 - **Chapters**: (none)
-- **Handoffs**: `context-folding-progressive.md`, `completed/orchestrator-conversation-management.md`, `tool-output-compression.md`
+- **Handoffs**: `context-and-token-economy.md` (context folding; tool-output compression at `#track-tool-output-compression`), `completed/orchestrator-conversation-management.md`
 - **Search terms**: context compaction, session compaction, context folding, prompt cache boundary, HISTORY_SNIP, CONTEXT_COLLAPSE, micro-compaction, token compression, tool output filtering, RTK, segment dedup, helpfulness scoring, free-zone threshold, role-aware compaction, AgentOCR, Skill0, ICRL, optical self-compression
 
 ### inference_serving
 - **Chapters**: (none)
-- **Handoffs**: `dynamic-stack-concurrency.md`
+- **Handoffs**: `numa-placement-and-contention.md#track-dynamic-stack-concurrency`
 - **Search terms**: continuous batching, disaggregated serving, vLLM, TensorRT-LLM, llama.cpp server
 
 ### routing_intelligence
 - **Chapters**: (none)
-- **Handoffs**: `routing-intelligence.md`, `routing-and-optimization-index.md`
+- **Handoffs**: `routing-program.md#track-routing-intelligence`, `routing-and-optimization-index.md`
 - **Search terms**: routing classifier, difficulty estimation, factual risk, delegation policy
 
 ### hardware_optimization
@@ -75,12 +81,12 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### ssm_hybrid
 - **Chapters**: (none)
-- **Handoffs**: `multiscreen-attention-evaluation.md` (sub-quadratic attention survey), `log-linear-gated-deltanet-readiness.md` (Log-Linear GDN readiness tracker)
+- **Handoffs**: `long-context-program.md#track-multiscreen-attention-evaluation` (sub-quadratic attention survey), `model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness` (Log-Linear GDN readiness tracker)
 - **Search terms**: Mamba, state space model, SSM, hybrid architecture, linear attention, Jamba, Delta Net, Multiscreen, screening mechanism, absolute relevance
 
 ### multimodal
 - **Chapters**: (none)
-- **Handoffs**: `multimodal-pipeline.md`
+- **Handoffs**: `speech-and-multimodal.md#track-multimodal-pipeline`
 - **Search terms**: vision-language, multimodal, image understanding, VLM, TTS, Gemma 4, any-to-any, MedGemma
 
 ### training_distillation
@@ -90,12 +96,12 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### autonomous_research
 - **Chapters**: (none)
-- **Handoffs**: `autopilot-continuous-optimization.md`, `completed/meta-harness-optimization.md`
+- **Handoffs**: `autopilot-program.md`, `completed/meta-harness-optimization.md`
 - **Search terms**: autonomous research, automated experimentation, self-improving, Meta-Harness, harness search
 
 ### swarm_techniques
 - **Chapters**: (none)
-- **Handoffs**: `autopilot-continuous-optimization.md` (SiliconSwarm-inspired cross-species patterns)
+- **Handoffs**: `autopilot-program.md` (SiliconSwarm-inspired cross-species patterns)
 - **Search terms**: swarm, multi-agent coordination, parallel exploration, collective intelligence, SiliconSwarm, Ensue, shared memory
 
 ### memory_augmented
@@ -105,7 +111,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### knowledge_management
 - **Chapters**: (none)
-- **Handoffs**: `completed/knowledge-base-governance-improvements.md`, `context-folding-progressive.md`
+- **Handoffs**: `completed/knowledge-base-governance-improvements.md`, `context-and-token-economy.md`
 - **Search terms**: knowledge base, LLM wiki, persistent compilation, knowledge hygiene, linting, cross-referencing, intake index, governance
 
 ### rag_alternatives
@@ -120,17 +126,17 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### local_inference
 - **Chapters**: (none)
-- **Handoffs**: `dynamic-stack-concurrency.md`, `completed/kv-cache-quantization.md`
+- **Handoffs**: `numa-placement-and-contention.md#track-dynamic-stack-concurrency`, `completed/kv-cache-quantization.md`
 - **Search terms**: GGUF, llama.cpp, node-llama-cpp, local inference, on-device, local model serving
 
 ### search_retrieval
 - **Chapters**: (none)
-- **Handoffs**: `colbert-reranker-web-research.md`, `completed/knowledge-base-governance-improvements.md`
+- **Handoffs**: `knowledge-pipelines.md#track-colbert-reranker-web-research`, `completed/knowledge-base-governance-improvements.md`
 - **Search terms**: BM25, vector search, hybrid search, re-ranking, RRF, retrieval pipeline, semantic search, qmd
 
 ### document_processing
 - **Chapters**: (none)
-- **Handoffs**: `opendataloader-pipeline-integration.md`
+- **Handoffs**: `knowledge-pipelines.md#track-opendataloader-pipeline-integration`
 - **Search terms**: PDF parsing, OCR, table recognition, reading order, document extraction
 
 ## File Locations

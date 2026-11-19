@@ -215,7 +215,7 @@ surface_fold._git(repo, "worktree", "add", "--detach", str(source), assembled_co
    touch the frozen tree's `.git`, so creating or removing them is an operator-visible act.
 6. **Harness state is out of scope for every reclaim (operator hard rule, 2026-10-04).** Claude and Codex backup
    logs and session transcripts, and every third-party harness's state (opencode, hermes, Claude share, harness codex
-   homes), are never deleted, moved, truncated or reaped, whatever their size. They are historical transcripts used by
+   homes), are never deleted, moved, truncated or reaped, whatever their size. **Amended 2026-11-07 (operator decision, session operator-adhoc-ops-20261105, REVERSED for ~/.codex ONLY: the janitor's CODEX step deletes vault-verified rollouts older than 7 days and keeps the newest 7 days; claude, opencode, hermes, vault and every other harness tree stay never-touch)** They are historical transcripts used by
    a more senior project outside this repo. Their growth is reported, never reclaimed. The tree list and its code
    enforcement (`scratch_cleanup.py` `NEVER_TOUCH`; `codex_retention_reaper.py` apply permanently disabled) are in
    `docs/guides/agent-workflows/cleanup-reference-check.md` → *Never a candidate*. The only exception is the

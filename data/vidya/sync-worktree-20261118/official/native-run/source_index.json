@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "git",
+    "show",
+    "fcc89b474a0b9d906df5ea8e7cb9d4708ffeaeee:research/intake_index.yaml"
+  ],
+  "cwd": "/workspace",
+  "exit": 0
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T23:46:21Z reason=complete
+job_id=kvfork50-clock-qual-r6-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-04T23:45:51Z
+regions=mi210_0,184-187

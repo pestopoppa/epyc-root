@@ -1,0 +1,23 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-attention-20261117-v2/launcher.out",
+ "elapsed_s": 16,
+ "ended": "rc=75 time=2026-11-17T23:56:43Z reason=partial-native-incomplete",
+ "engine_sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 210,
+ "first_unit_at": "2026-11-17T23:56:43Z",
+ "id": "ni-gpu-pool-attention-20261117-v2",
+ "launcher_sha256": "cd10fe1a1555aa62d4dbb730f677f64b35794931abb291b8b5888fe45e8f1989",
+ "measured_busy_fraction": 0.002,
+ "measured_claimed_cpus": 24,
+ "measured_threads": 0.043,
+ "passed_at": "2026-11-17T23:56:48Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "mi210_0,184-191",
+ "residency_evidence": null,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/native/RESULT.json",
+ "units": 0,
+ "vram_used_max_bytes": 637423616,
+ "warning": null
+}

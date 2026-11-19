@@ -1,0 +1,35 @@
+{
+  "target": {
+    "id": "Class:scripts/vidya/producers/repl_shadow_sink.py:ShadowSink",
+    "name": "ShadowSink",
+    "type": "Class",
+    "filePath": "scripts/vidya/producers/repl_shadow_sink.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 1,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 1,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "byDepthCounts": {
+    "1": 1
+  },
+  "affected_processes": [],
+  "affected_modules": [],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "File:scripts/vidya/producers/repl_shadow_validate.py",
+        "name": "repl_shadow_validate.py",
+        "filePath": "scripts/vidya/producers/repl_shadow_validate.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      }
+    ]
+  }
+}

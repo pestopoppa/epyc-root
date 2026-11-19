@@ -1,0 +1,32 @@
+{
+  "id": "kpf30-impact-8952-20261104-r5",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At exact detached candidate 8952a0f693fb923918157eb25117641b74766230 capture six native source-bound upstream impacts and full verbose skipped-file coverage. Stop immediately and emit OWNER_WARNING on any HIGH/CRITICAL. Stop on ambiguity, parser failure, source drift or missing graph binding. Partial source-reference smoke is first progress only; success needs scan_complete partial=false. No inference or edit-safety claim for skipped files.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-30.PHASE-IMPACT",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r5",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "job.py",
+    "source_integrity.py",
+    "test_source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "kpf30-impact-8952",
+  "notes": "Prepared successor only; not published, granted, or run. Predecessor r4 ended rc=75 reason=disk-floor before native impact results; preserve that outcome and do not treat its smoke/reference rows as impact evidence. Preserve canonical FILLER_DISK_FLOOR_GIB=150 GiB: do not launch any qualification until free space is at least 150 GiB, and stop if it falls below the floor. Whole-host CPU claim 0-95 and 48 GiB reservation are unchanged. Fresh empty output directory prevents reuse of any prior exposure. Use the detached source worktree at /mnt/raid0/llm/worktrees/kpf30-impact-8952-20261104-r5 pinned at 8952a0f693fb923918157eb25117641b74766230. Require six native source-bound upstream impacts and complete verbose skipped-file coverage; HIGH/CRITICAL emits OWNER_WARNING and stops, and skipped files are never cleared. No inference, runtime correctness, or blanket edit-safety claim.",
+  "supersedes": "kpf30-impact-8952-20261104-r4"
+}

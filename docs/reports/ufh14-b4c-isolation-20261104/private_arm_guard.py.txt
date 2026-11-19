@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""Private-only arm lease and independent rollback guard; does not launch inference."""
+import argparse
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import select
+import subprocess
+import sys
+import tempfile
+import time
+
+PACKET = Path(__file__).resolve().parent
+
+def snapshot(path):
+    if path.is_symlink():
+        raise ValueError('symlink flags forbidden')
+    raw = path.read_bytes() if path.exists() else None
+    return {'exists': raw is not None, 'sha256': hashlib.sha256(raw).hexdigest() if raw is not None else None}, raw
+
+def atomic_write(path, raw):
+    fd, name = tempfile.mkstemp(prefix='.arm-', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'wb') as out:
+            out.write(raw)
+            out.flush()
+            os.fsync(out.fileno())
+        os.replace(name, path)
+    finally:
+        if os.path.exists(name):
+            os.unlink(name)
+
+class ArmGuard:
+    def __init__(self, root, flags, ttl_s=30):
+        self.root = Path(root).resolve()
+        if not self.root.is_relative_to(PACKET) or self.root == PACKET:
+            raise ValueError('guard root must be private packet child')
+        if not 0 < ttl_s <= 120:
+            raise ValueError('arm TTL must be in (0,120] seconds')
+        self.flags = json.dumps(flags, sort_keys=True).encode()
+        self.ttl_s = ttl_s
+        self.proc = None
+
+    def __enter__(self):
+        self.root.mkdir(parents=True, exist_ok=True)
+        lock = self.root / 'arm.lock'
+        self.fd = os.open(lock, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+        try:
+            fcntl.flock(self.fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BaseException:
+            os.close(self.fd)
+            raise
+        self.path = self.root / 'runtime_flags.json'
+        try:
+            self.before, raw = snapshot(self.path)
+        except BaseException:
+            os.close(self.fd)
+            raise
+        # Child gets rollback bytes through stdin and holds the same lease until done.
+        read_fd, self.write_fd = os.pipe()
+        payload = {'root': str(self.root), 'before': self.before,
+                   'raw': raw.hex() if raw is not None else None, 'ttl_s': self.ttl_s}
+        try:
+            self.proc = subprocess.Popen([sys.executable, __file__, '--watchdog', str(read_fd), str(self.fd)],
+                stdin=subprocess.PIPE, pass_fds=(read_fd, self.fd))
+            self.proc.stdin.write(json.dumps(payload).encode())
+            self.proc.stdin.close()
+            os.close(read_fd)
+            atomic_write(self.path, self.flags)
+            self.armed, _ = snapshot(self.path)
+            return self
+        except BaseException:
+            os.close(self.write_fd)
+            if self.proc: self.proc.wait(timeout=5)
+            os.close(self.fd)
+            raise
+
+    def __exit__(self, *exc):
+        os.close(self.write_fd)
+        self.proc.wait(timeout=5)
+        os.close(self.fd)
+        receipt = json.loads((self.root / 'arm-restoration.json').read_text())
+        if self.proc.returncode or not receipt['restored']:
+            raise RuntimeError('private flags rollback failed')
+
+def watchdog(read_fd, lease_fd):
+    p = json.load(sys.stdin)
+    root = Path(p['root']).resolve()
+    if not root.is_relative_to(PACKET) or root == PACKET:
+        raise ValueError('watchdog root outside private packet')
+    path = root / 'runtime_flags.json'
+    start = time.monotonic()
+    readable, _, _ = select.select([read_fd], [], [], p['ttl_s'])
+    reason = 'owner_channel_closed' if readable else 'ttl_expired'
+    if readable: os.read(read_fd, 1)
+    during, _ = snapshot(path)
+    if p['raw'] is None:
+        path.unlink(missing_ok=True)
+    else:
+        atomic_write(path, bytes.fromhex(p['raw']))
+    after, _ = snapshot(path)
+    receipt = {'before': p['before'], 'during': during, 'after': after,
+               'restored': after == p['before'], 'reason': reason,
+               'elapsed_s': time.monotonic() - start, 'watchdog_pid': os.getpid()}
+    atomic_write(root / 'arm-restoration.json', json.dumps(receipt, sort_keys=True).encode())
+    os.close(read_fd)
+    os.close(lease_fd)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--watchdog', nargs=2, type=int, required=True)
+    args = parser.parse_args()
+    watchdog(*args.watchdog)

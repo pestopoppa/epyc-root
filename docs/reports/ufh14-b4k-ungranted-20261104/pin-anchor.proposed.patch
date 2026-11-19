@@ -1,0 +1,9 @@
+--- a/launch.sh
++++ b/launch.sh
+@@ -2,5 +2,5 @@
+ set -euo pipefail
+ D=/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v2-20261104
+ PY=/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
+-"$PY" -c 'import hashlib,json,pathlib,sys; d=pathlib.Path(sys.argv[1]); p=json.loads((d/"packet-pins.json").read_text()); assert all(hashlib.sha256((d/n).read_bytes()).hexdigest()==h for n,h in p.items()), "packet content mismatch"' "$D"
++"$PY" -c 'import hashlib,json,pathlib,sys; d=pathlib.Path(sys.argv[1]); raw=(d/"packet-pins.json").read_bytes(); assert hashlib.sha256(raw).hexdigest()=="4a5d4a56bdd417a8c18de62e73b6387861f1d9d4613e2d3ff5ae094955a2c00b", "packet pin manifest mismatch"; p=json.loads(raw); assert all(hashlib.sha256((d/n).read_bytes()).hexdigest()==h for n,h in p.items()), "packet content mismatch"' "$D"
+ exec /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --id ufh14-b4k-guard-v2-20261104 --class gpu --role bench --gpu-quiet exclusive --claim-cpus 184-191 --port 18383 --min-window 10800 --stop "$D/STOP" --workdir "$D" --precond-cmd "$PY $D/job.py --check" --cmd "exec $PY $D/job.py" --complete-cmd "test -s $D/out/COMPLETE"

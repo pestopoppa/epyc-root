@@ -1,0 +1,11 @@
+{
+  "head": "c72ec82f5417bb2937310326120f149b665e8400",
+  "sha256": {
+    "/mnt/raid0/llm/worktrees/kv-prefix-fork-p3-20261102/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/worktrees/kv-prefix-fork-p3-20261102/src/llama-kv-cache.cpp": "1d25af160cba2f8da5df464d3e41db2c5dcd6835b1cf830df129ca759381ff59",
+    "/mnt/raid0/llm/worktrees/kv-prefix-fork-p3-20261102/src/llama-kv-cells.h": "d9ab701ef4286b26bbd9ba8fc5de8162b647215cda7d4116b9caeae7a47b7d6d",
+    "/mnt/raid0/llm/worktrees/mains/h-heterogeneous-slot-fabric-residency/scripts/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/kvfork/kpf31-p3-index-r2-20261104/scan_policy.py": "7060e945a2ab1c669a2210fbec834b4d7955ddd4073461e57707a69ba28caea7",
+    "/mnt/raid0/llm/tmp/kvfork/kpf31-p3-index-r2-20261104/job.py": "5b48e4a3290e2541ddd8efc91f7b445d0f81faec98ed64c454b672d9b4a8c685"
+  }
+}

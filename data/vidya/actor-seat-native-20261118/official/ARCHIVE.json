@@ -1,0 +1,17 @@
+{
+  "files": {
+    "RESULT.json": "9ba9dc2abb25f22c05ec044aa78ba968a420648e34be319a1166a14058b47b6b",
+    "allocator.complete": "aa2eeb11051ad2301d9e91baab7f9e2f79af64cc75aac7765ad2d71b3b0c5752",
+    "allocator.ended": "b56ea6ee80892978d93f9fdf5609cf4d425c6202adb5fab035f809d2e118bb0c",
+    "manifest.json": "cb8acc56e53b6e93633bbe30aa2dd117dfb42e052eedae9a4dbde671afba8ec1",
+    "native-official.tar.gz": "2fd1e947fbd526459102162a3ddaacc3e36357469a8a9d789190dc9c09f98705"
+  },
+  "original_attempt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/attempt-9x3b5skk",
+  "original_result": {
+    "archive": "native-official.tar.gz",
+    "member": "RESULT.original.json",
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/RESULT.json",
+    "sha256": "15370d41bf8acaa48d9d3bd9ffc8b0e6982ed82ecce91ab46d5950e85c824adb"
+  },
+  "schema": "epyc.vidya.native_archive.v1"
+}

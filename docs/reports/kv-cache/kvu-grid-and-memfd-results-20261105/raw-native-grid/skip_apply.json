@@ -1,0 +1,156 @@
+{
+  "arm": "skip_apply",
+  "pid": 4148333,
+  "birth_ticks": 196942847,
+  "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+  "pidfd_captured": true,
+  "before": {
+    "pid": 4148333,
+    "birth_ticks": 196942847,
+    "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+    "executable": {
+      "device": 2431,
+      "inode": 203345881,
+      "sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d"
+    },
+    "maps": {
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": {
+        "device_inode": [
+          9,
+          127,
+          103169196
+        ],
+        "sha256": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": {
+        "device_inode": [
+          9,
+          127,
+          103169331
+        ],
+        "sha256": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": {
+        "device_inode": [
+          9,
+          127,
+          103169393
+        ],
+        "sha256": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": {
+        "device_inode": [
+          9,
+          127,
+          103169400
+        ],
+        "sha256": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": {
+        "device_inode": [
+          9,
+          127,
+          103170087
+        ],
+        "sha256": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64"
+      }
+    }
+  },
+  "answer": "RESULT DETECTED 0 1",
+  "after": {
+    "pid": 4148333,
+    "birth_ticks": 196942847,
+    "boot_id": "3be2fb1a-7293-4c34-b733-c85d772b9474",
+    "executable": {
+      "device": 2431,
+      "inode": 203345881,
+      "sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d"
+    },
+    "maps": {
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": {
+        "device_inode": [
+          9,
+          127,
+          103169196
+        ],
+        "sha256": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": {
+        "device_inode": [
+          9,
+          127,
+          103169331
+        ],
+        "sha256": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": {
+        "device_inode": [
+          9,
+          127,
+          103169393
+        ],
+        "sha256": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": {
+        "device_inode": [
+          9,
+          127,
+          103169400
+        ],
+        "sha256": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191"
+      },
+      "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": {
+        "device_inode": [
+          9,
+          127,
+          103170087
+        ],
+        "sha256": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64"
+      }
+    }
+  },
+  "returncode": 0,
+  "extra_stdout": "",
+  "cleanup_confirmed": true,
+  "native_grids": [
+    {
+      "owners": "........",
+      "positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "size": 8,
+      "stream": 0,
+      "used_max_p1": 0,
+      "used": 0,
+      "head": 0,
+      "n_swa": 0
+    },
+    {
+      "owners": "........",
+      "positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "size": 8,
+      "stream": 0,
+      "used_max_p1": 0,
+      "used": 0,
+      "head": 0,
+      "n_swa": 0
+    }
+  ],
+  "stderr_sha256": "f74addc59f31cf9915934da9f2d1dc0fe93bb9f8f14681753b19ef024e003a62"
+}

@@ -55,7 +55,11 @@ MARK_FW="# epyc-fw3-fleet-watch"
 # daemon_provenance.sh joined the closure 2026-10-04: hub_supervisor.sh sources it from
 # ../coordination/ at load time (NIB2-81), so a pin without it dies under `set -e` on the first
 # cron pass and the hub is left unwatched. The 2026-09-17 pin predates that source line.
-PIN_FILES=(scripts/dashboard/hub_supervisor.sh scripts/dashboard/hub_launch_spec.py scripts/dashboard/refresh_hub_view.sh scripts/coordination/daemon_provenance.sh)
+# index_regen.py joined 2026-11-09: refresh_hub_view.sh resolves its quiet-window gate at
+# ../coordination/index_regen.py, and a pin without it silently loses the gate.
+# observer_guard.sh (and scripts/lib/env.sh, which it sources) joined 2026-11-09: hub_supervisor.sh sources it at load time,
+# so a pin without it stops the supervisor and the hub view refresh on every pass.
+PIN_FILES=(scripts/dashboard/hub_supervisor.sh scripts/dashboard/hub_launch_spec.py scripts/dashboard/refresh_hub_view.sh scripts/coordination/daemon_provenance.sh scripts/coordination/index_regen.py scripts/coordination/observer_guard.sh scripts/lib/env.sh)
 
 LINE_FW="*/5 * * * * docker exec -d -u node -e PATH=/opt/rocm/bin:/usr/local/bin:/usr/bin:/bin ${CONTAINER} setsid -f ${ROOT}/scripts/coordination/fleet_watch.sh ${MARK_FW}"
 

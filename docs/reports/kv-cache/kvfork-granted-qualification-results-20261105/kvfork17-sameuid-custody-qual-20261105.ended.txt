@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T00:58:27Z reason=complete
+job_id=kvfork17-sameuid-custody-qual-20261105
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T00:58:24Z
+regions=48-71

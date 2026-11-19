@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/primary/scripts/vidya/cli.py",
+    "--json",
+    "sync",
+    "--check",
+    "--no-fetch"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/primary",
+  "exit": 0
+}

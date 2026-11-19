@@ -1,0 +1,8 @@
+{
+  "schema": "epyc.retained-artifact-pointer.v1",
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/replay.json",
+  "sha256": "c07c0f2008af83014d6294ecbad585bbb6e24f84f654b633b9338bb4a87337ad",
+  "bytes": 137298,
+  "retention": "row spec keep publisher_smoke-*/**; exact original native bytes retained outside lane",
+  "scope": "current publisher smoke diagnostic; official acceptance pending"
+}

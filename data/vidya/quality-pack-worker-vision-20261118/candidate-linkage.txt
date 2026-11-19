@@ -1,0 +1,51 @@
+binary : /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/llama-server
+expect : libraries under /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-cpu.so.0
+  OK   libggml-hip.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-hip.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin
+         2	/opt/rocm/lib
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+	linux-vdso.so.1 (0x00007ffdd2bde000)
+	libllama-common.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libllama-common.so.0 (0x00007ac842c00000)
+	libmtmd.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libmtmd.so.0 (0x00007ac842ab6000)
+	libllama.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libllama.so.0 (0x00007ac842600000)
+	libggml.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml.so.0 (0x00007ac843d61000)
+	libggml-base.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-base.so.0 (0x00007ac843c8b000)
+	libstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007ac84235f000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007ac842276000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007ac843c57000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007ac842063000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007ac843d70000)
+	libggml-cpu.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-cpu.so.0 (0x00007ac841c00000)
+	libggml-hip.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-hip.so.0 (0x00007ac83d800000)
+	libgomp.so.1 => /lib/x86_64-linux-gnu/libgomp.so.1 (0x00007ac8435a2000)
+	libhipblas.so.2 => /opt/rocm/lib/libhipblas.so.2 (0x00007ac83d6e5000)
+	librocblas.so.4 => /opt/rocm/lib/librocblas.so.4 (0x00007ac7fc200000)
+	libamdhip64.so.6 => /opt/rocm/lib/libamdhip64.so.6 (0x00007ac7faa00000)
+	librocsolver.so.0 => /opt/rocm/lib/librocsolver.so.0 (0x00007ac795c00000)
+	librocprofiler-register.so.0 => /opt/rocm/lib/librocprofiler-register.so.0 (0x00007ac842a31000)
+	libamd_comgr.so.2 => /opt/rocm/lib/libamd_comgr.so.2 (0x00007ac78d000000)
+	libhsa-runtime64.so.1 => /opt/rocm/lib/libhsa-runtime64.so.1 (0x00007ac78cc00000)
+	libnuma.so.1 => /lib/x86_64-linux-gnu/libnuma.so.1 (0x00007ac843594000)
+	librocsparse.so.1 => /opt/rocm/lib/librocsparse.so.1 (0x00007ac738a00000)
+	libz.so.1 => /lib/x86_64-linux-gnu/libz.so.1 (0x00007ac843578000)
+	libzstd.so.1 => /lib/x86_64-linux-gnu/libzstd.so.1 (0x00007ac83d62b000)
+	libtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6 (0x00007ac84202f000)
+	libelf.so.1 => /lib/x86_64-linux-gnu/libelf.so.1 (0x00007ac843559000)
+	libdrm.so.2 => /lib/x86_64-linux-gnu/libdrm.so.2 (0x00007ac842a1a000)
+	libdrm_amdgpu.so.1 => /lib/x86_64-linux-gnu/libdrm_amdgpu.so.1 (0x00007ac84354c000)

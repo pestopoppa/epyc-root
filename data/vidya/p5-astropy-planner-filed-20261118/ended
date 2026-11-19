@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T20:08:18Z reason=complete
+job_id=vb-p5-astropy-planner-acceptance-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T20:08:13Z
+regions=48-71

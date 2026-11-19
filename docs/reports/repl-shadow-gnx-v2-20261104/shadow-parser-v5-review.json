@@ -1,0 +1,45 @@
+{
+  "schema": "epyc.independent-packet-review.v1",
+  "row": "ufh14-repl-emb23a-parse-v5-20261104",
+  "reviewed_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v5",
+  "disposition": "ONE MATERIAL TIMING GAP: rerun bootstrap inside granted job before Python",
+  "source_fingerprints": {
+    "launch.sh": "f5a596971eb63c0649ac5dd0250690fc67f2b5b3387ee0b1fbf758fd6379d2d2",
+    "spec.json": "39b4b62956cf2f7b5f1908a28bbc834360862a9b914602cabda9eedd2cafd047",
+    "pilot.py": "e8ba546b5af5904cfa0d0852884ba7666bf64b029d4fd45cf36aed40badae79d",
+    "runtime_guard.py": "c61b6eebafaddee65b24d42a40f9cc37e0013f7007c4953eb1f4b4be41ddc155",
+    "selection.py": "32bb91e014860eb62f64230c60f47f54720cf73a27ba65605ec98b154b57c796",
+    "closure.py": "904f69f4f3d70dba7586d77cc68aef8524ba27a43d4c4d2bff0cd7b6921b1433",
+    "closure.json": "daebcaa8006fa6d89340fe2b05b5e1226f4961fc853497ae973891269bbd9ac6",
+    "bootstrap_guard.sh": "00c1e4634de33a184e9806c1229fda54979cb1bfc4302e97390c9eda240ade5a",
+    "verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+  },
+  "finding": {
+    "severity": "high",
+    "detail": "launch.sh hashes bootstrap_guard.sh and invokes it before exec filler_run15, but filler can then wait for a grant. The job command later runs $PY $D/closure.py verify without re-hashing or invoking bootstrap again. A changed Python symlink/config or closure.py during the wait can execute before the verifier detects it. Run the exact pinned bootstrap guard (itself hash-checked) inside the job immediately before executing Python, and preferably again across the verifier-to-pilot transition."
+  },
+  "verified": [
+    {
+      "item": "bootstrap at launcher startup",
+      "detail": "sha256sum verifies bootstrap_guard, which checks exact symlink payload, final realpath, Python bytes, pyvenv.cfg, closure.py, copied linkage verifier and closure.json. All hashes as observed matched launcher. All are in closure.json."
+    },
+    {
+      "item": "v4 hardening retained",
+      "detail": "UTC start/end and deadline, grant pathname/ID, exact STOP and actual CPU affinity checked; mapped libggml/libllama/libmtmd hashed against production store manifest; official result path excludes smoke."
+    },
+    {
+      "item": "selection and observed open",
+      "detail": "Actual path uses selection.select requiring native stop true, eos/word, truncated false and strict single digit; selected BGE ContextBundle.get checked before event. Finally terminates/waits owned server processes and run completion requires 3 valid selections and >=1 actual open."
+    },
+    {
+      "item": "negative offline checks",
+      "detail": "test_bootstrap.py and test_runtime_guard.py: 3 passed, covering changed symlink/interpreter/config/verifier/manifest and expired/future/wrong grant/STOP/affinity/mapped-library cases."
+    }
+  ],
+  "limits": [
+    "No publisher, qualification or grant state inspected; no inference run.",
+    "Bootstrap check-to-use gap exists even after checks due shared mutable paths; adding grant-time check narrows it, immutable snapshot would provide stronger closure.",
+    "STOP still checked between synchronous operations, not in the middle of an in-flight operation; outer launcher enforces hard deadline."
+  ],
+  "tests": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v test_bootstrap.py test_runtime_guard.py: 3 PASS"
+}

@@ -1,0 +1,80 @@
+{
+ "unit_id": "lb49-gate",
+ "complete": true,
+ "verdict": "BITWISE_WITHIN_ROUTE_MISMATCH",
+ "smoke": false,
+ "commit": "72b58246cfc291857d0be84493a578128054dcf4",
+ "harness_rc": 1,
+ "n_fail": 8,
+ "fails": [
+  {
+   "case": "ds41-stock-mask",
+   "nth": "16",
+   "route": "0",
+   "bitwise_within_route": "0",
+   "nmse": "1.73600829e-09",
+   "oracle_nmse": "1.0474309e-13"
+  },
+  {
+   "case": "ds41-stock-mask",
+   "nth": "32",
+   "route": "0",
+   "bitwise_within_route": "0",
+   "nmse": "1.73453659e-09",
+   "oracle_nmse": "5.28958075e-14"
+  },
+  {
+   "case": "ds41-stock-mask",
+   "nth": "64",
+   "route": "0",
+   "bitwise_within_route": "0",
+   "nmse": "1.7366561e-09",
+   "oracle_nmse": "5.29101219e-14"
+  },
+  {
+   "case": "gathered-768",
+   "nth": "96",
+   "route": "1",
+   "bitwise_within_route": "0",
+   "nmse": "1.6699698e-09",
+   "oracle_nmse": "2.42879461e-14"
+  },
+  {
+   "case": "ds41-sinks-zero-stock",
+   "nth": "16",
+   "route": "0",
+   "bitwise_within_route": "0",
+   "nmse": "1.73647684e-09",
+   "oracle_nmse": "1.05821928e-13"
+  },
+  {
+   "case": "ds41-sinks-zero-stock",
+   "nth": "32",
+   "route": "0",
+   "bitwise_within_route": "0",
+   "nmse": "1.73476272e-09",
+   "oracle_nmse": "5.21278868e-14"
+  },
+  {
+   "case": "ds41-sinks-zero-stock",
+   "nth": "64",
+   "route": "0",
+   "bitwise_within_route": "0",
+   "nmse": "1.73671749e-09",
+   "oracle_nmse": "5.27561631e-14"
+  },
+  {
+   "case": "gathered-768-sinks-zero",
+   "nth": "96",
+   "route": "1",
+   "bitwise_within_route": "0",
+   "nmse": "1.66943714e-09",
+   "oracle_nmse": "2.69728656e-14"
+  }
+ ],
+ "routes": [
+  "0",
+  "1",
+  "3"
+ ]
+}

@@ -1,0 +1,7 @@
+e1d496a59c4223aa896bb67823c2f985ae369e7c80277fb828f5c7ff49c79af9  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build/identity.json
+ec51194767073505aadb11a87809a79d9d9c17f5178028c0c7ad70348920c0a9  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build/check.py
+4d9fdcdfb616ed677771446365edde1c6a4a84c80f49f50b7ef1158b0e0b6058  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build/job.sh
+eb8c80a834c6fd39e95637483e03ecac6fd9c5c9c083f4bf80041a10a9404b0c  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build/proof.py
+95f4491d21abe247b362b09235ff148cd7697689444aefeabe7c64405f641f1e  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build/complete.py
+029d55206bdcbce06182f42d7b9eb83ce540fe9c9ee5fa5891ee083595417619  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build/supervise.py
+57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build/verify_ggml_linkage.sh

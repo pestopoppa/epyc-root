@@ -1,0 +1,1 @@
+rc=0 time=2026-11-03T18:18:37Z reason=stop-file-before-start

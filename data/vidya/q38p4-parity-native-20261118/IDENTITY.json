@@ -1,0 +1,29 @@
+{
+ "packet": "q38p4-timing-20261105",
+ "handoff": "handoffs/active/mi210-serving-program.md:Q38P-4",
+ "llama_c6": {
+  "bin": "/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6/bin",
+  "commit": "729599d69871181d67af715a4c2f9162d5153a2e",
+  "rocm": "6.2 (/opt/rocm)",
+  "store": "gpu-20261030-729599d69-c6"
+ },
+ "vllm": {
+  "image": "vllm/vllm-openai-rocm@sha256:4fcd39b758b660c4e9c345c021e2ea8f0ccdb31e3c32507d676cc3005ae83fba",
+  "repo_digest": "sha256:4fcd39b758b660c4e9c345c021e2ea8f0ccdb31e3c32507d676cc3005ae83fba",
+  "image_id_2026_11_04": "sha256:933f693c6b3b67b39ba789fac7f276251ab017908290bd8c39d10b0f702dae52",
+  "vllm": "0.33.0",
+  "torch": "2.13.0+rocm10.0.0"
+ },
+ "model": {
+  "name": "Qwen3-4B-Instruct-2507",
+  "precision": "bf16 both engines",
+  "hf_dir": "/mnt/raid0/llm/models/Qwen3-4B-Instruct-2507",
+  "gguf": "/mnt/raid0/llm/tmp/q38p4-timing-20261105/model/Qwen3-4B-Instruct-2507-BF16.gguf",
+  "gguf_made_by": "convert_hf_to_gguf.py from C6 worktree 729599d69, run in the vLLM image, --outtype bf16",
+  "role": "small-model PROXY: no HF safetensors of Qwen3.8-27B on disk (only an exl3 4.00bpw quant); see README of this packet",
+  "gguf_bytes": 8051283488,
+  "gguf_sha256": "d7934f6fa06f9781bc15540f0e2b83f89b1895e86440a4e97af4f0434311d1bd"
+ },
+ "prompts_sha256": "a28cf110a5fb76b347c950c639c012a6d80a31ea65bad485d680e546972c63f8",
+ "corpus_sha256": "629478d35d32673f587af05f7dd32a762e6e73cfd0bdeb4915d75e521555ab0a"
+}

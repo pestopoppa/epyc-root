@@ -1,0 +1,27 @@
+{
+  "id": "handoff-kvu-kvu19a2-build-20261102",
+  "owner": "handoff-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu19a2-build-row-20261102/launch.sh",
+  "lane": "cpu",
+  "regions": "0-23",
+  "ram_gib": 64,
+  "result_path": "/mnt/raid0/llm/tmp/kvu19a2-build-row-20261102/output/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 7200,
+  "min_window_s": 3600,
+  "handoff_task": "handoffs/active/kv-unified-stack-rollout.md:KVU-19a-2",
+  "priority_rank": 30,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu19a2-build-row-20261102",
+  "dryrun_native_result": true,
+  "keep": [
+    "output/**/*.json",
+    "output/**/*.log",
+    "output/**/CMakeCache.txt",
+    "output/**/bin/**",
+    "toolchain.sha256",
+    "sealed-source-receipt.json",
+    "source-pair.json"
+  ],
+  "decision_rule": "Build only: both baseline and single-tile candidate test-backend-ops and HIP DSOs must exist with recorded source, toolchain and binary digests. A build is not a nondeterminism verdict; prepare a separate GPU repeatability row after linkage and residency verification."
+}

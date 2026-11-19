@@ -1,0 +1,9 @@
+
+==== arm 2026-11-02T11:17:57Z
+2026-11-02T11:17:57Z [sr6-qwen36-width-w2-20261102] launcher up pid=3506818 class=cpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w2-20261102/STOP minwin=10800s ports=18979 dryrun=0
+2026-11-02T11:18:42Z [sr6-qwen36-width-w2-20261102] START regions=0-95 cpus=0-95 threads=96 gpu=0 end=2026-11-02T16:09Z
+/mnt/raid0/llm/epyc-orchestrator/src/runtime/region_lock_cli.py: FAILED
+sha256sum: WARNING: 1 computed checksum did NOT match
+2026-11-02T11:18:42Z [sr6-qwen36-width-w2-20261102] WARN: 3530257 is not a group leader
+2026-11-02T11:18:42Z [sr6-qwen36-width-w2-20261102] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-02T11:18:42Z [sr6-qwen36-width-w2-20261102] one window done; exiting (no --repeat)

@@ -1,0 +1,153 @@
+{
+ "arm": {
+  "algorithmic_delay_ms": 80,
+  "arm_id": "r0",
+  "arm_kind": "streaming_cache_aware",
+  "att_context_right": 0,
+  "backend": "cpu",
+  "chunk_label": "r0",
+  "decode_options": "greedy; complete emitted-ID witness",
+  "ggml_version": "0.26.0",
+  "model_family": "nemotron-3.5",
+  "quant": "Q8_0",
+  "runner_commit": "db678a031cf4c524bcab2c45a0dc6a7813106e4a",
+  "runner_id": "transcribe-cli-private-traced",
+  "unk_ban": false,
+  "weights_sha256": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c"
+ },
+ "corpus_id": "fleurs-validation",
+ "crop_protocol_compat": {
+  "banked_row_duration_s_max": 39.96,
+  "banked_row_duration_s_min": 2.7,
+  "banked_rows_le_3s": 1,
+  "banked_source_pcm_in_lid1_test_manifest": 0,
+  "crop_durations_s": [
+   1,
+   2,
+   3
+  ],
+  "crops_file": "/mnt/raid0/llm/tmp/codex3-cs26-lid1-20261030/crops.jsonl",
+  "crops_sha256": "d5d830a69ba7ed1698772935c487c9f1e3573ae66d608e56e22a787da4261422",
+  "n_crop_cases": 9150,
+  "verdict": "INCOMPATIBLE: banked rows are full-length FLEURS-validation clips; the protocol takes Nemotron tags only from runs with identical input and duration (1/2/3 s test crops), so these tags cannot enter the LID1 comparison"
+ },
+ "language_mode": "auto",
+ "n_rows": 1437,
+ "per_language": {
+  "de": {
+   "accuracy_first": 0.8485,
+   "accuracy_majority": 0.8485,
+   "ci95_wilson_first": [
+    0.808,
+    0.8817
+   ],
+   "confusion_first": {
+    "<none>": 53,
+    "de": 308,
+    "en": 1,
+    "fi": 1
+   },
+   "duration_s": {
+    "max": 38.82,
+    "median": 10.98,
+    "min": 3.84
+   },
+   "first_tag_correct": 308,
+   "majority_tag_correct": 308,
+   "mixed_tags_in_row": 2,
+   "n": 363,
+   "no_tag": 53,
+   "out_of_mask": 1,
+   "precision_when_emitted": 0.9935,
+   "tag_emitted_rows": 310
+  },
+  "en": {
+   "accuracy_first": 0.7843,
+   "accuracy_majority": 0.7843,
+   "ci95_wilson_first": [
+    0.741,
+    0.822
+   ],
+   "confusion_first": {
+    "<none>": 85,
+    "en": 309
+   },
+   "duration_s": {
+    "max": 31.74,
+    "median": 9.06,
+    "min": 2.7
+   },
+   "first_tag_correct": 309,
+   "majority_tag_correct": 309,
+   "mixed_tags_in_row": 0,
+   "n": 394,
+   "no_tag": 85,
+   "out_of_mask": 0,
+   "precision_when_emitted": 1.0,
+   "tag_emitted_rows": 309
+  },
+  "fr": {
+   "accuracy_first": 0.7301,
+   "accuracy_majority": 0.7301,
+   "ci95_wilson_first": [
+    0.6762,
+    0.778
+   ],
+   "confusion_first": {
+    "<none>": 78,
+    "fr": 211
+   },
+   "duration_s": {
+    "max": 23.28,
+    "median": 9.6,
+    "min": 3.96
+   },
+   "first_tag_correct": 211,
+   "majority_tag_correct": 211,
+   "mixed_tags_in_row": 0,
+   "n": 289,
+   "no_tag": 78,
+   "out_of_mask": 0,
+   "precision_when_emitted": 1.0,
+   "tag_emitted_rows": 211
+  },
+  "it": {
+   "accuracy_first": 0.8798,
+   "accuracy_majority": 0.8798,
+   "ci95_wilson_first": [
+    0.8438,
+    0.9084
+   ],
+   "confusion_first": {
+    "<none>": 47,
+    "it": 344
+   },
+   "duration_s": {
+    "max": 39.96,
+    "median": 13.56,
+    "min": 5.76
+   },
+   "first_tag_correct": 344,
+   "majority_tag_correct": 344,
+   "mixed_tags_in_row": 0,
+   "n": 391,
+   "no_tag": 47,
+   "out_of_mask": 0,
+   "precision_when_emitted": 1.0,
+   "tag_emitted_rows": 344
+  }
+ },
+ "pooled_first": {
+  "accuracy": 0.8156,
+  "ci95_wilson": [
+   0.7947,
+   0.8348
+  ],
+  "correct": 1172,
+  "n": 1437
+ },
+ "schema": "brf-t3/lid1-nemotron-tags/1",
+ "segmentation_mode": "vad_30s",
+ "source": "/mnt/raid0/llm/tmp/codex3-cs8-stt5-validation-nemotron-tc-r2-20261030/validation-results/raw-r0-auto.json",
+ "source_sha256": "cf9ec8fc40cb46f04ebabb6e9be5818c111d6f16e5e75e96f17d228215cb3d0e"
+}

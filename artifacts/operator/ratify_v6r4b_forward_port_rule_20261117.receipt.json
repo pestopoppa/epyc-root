@@ -1,0 +1,131 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-17T20:10:49Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "ae8ca2533696897bc98df2ec02d56f44662f4f00",
+  "git_head_before": "ae8ca2533696897bc98df2ec02d56f44662f4f00",
+  "operator": "Daniele",
+  "protocol_id": "CLAUDE-MD-KERNEL-FORWARD-PORT-RULE",
+  "ratification_id": "RATIFY-V6R4B-FORWARD-PORT-20261117",
+  "ratify_script": {
+    "exists": true,
+    "path": "/mnt/raid0/llm/views/epyc-root-main/scripts/operator/ratify_v6r4b_forward_port_rule_20261117.sh",
+    "sha256": "168d3b8910d77b781fa3a2f7a2a1f1bba74a0665d917ea4178395384373c63f9"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/tmp/ratify-v6r4b-forward-port.ovUEyQ/root",
+  "sections": {
+    "coherence": {
+      "data": {
+        "CLAUDE.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: workflow doctrine, not a measured claim; origin INC-20260925; operator approval 2026-11-02 decisions-batch2-4"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id CLAUDE-MD-KERNEL-FORWARD-PORT-RULE is a clause reference, not a registered protocol name; verified via 2 anchor(s) instead",
+        "anchor present in CLAUDE.md: **Forward-port rule (V6R-4b / OP-58).**",
+        "anchor present in CLAUDE.md: A feature's test travels with it through every consolidation"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 2,
+      "lines_after": 269,
+      "lines_before": 267,
+      "lines_removed": 0,
+      "path": "CLAUDE.md",
+      "sha256_after": "7bebaeb7167415b3c85e2a663e1c002cfd8f19b912d8a78c1b90ece6132a6e6c",
+      "sha256_before": "9984c4f3b06b89a3ffef3d76b8e793ccd9f5b252b072c4d9bb120195944620ff",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/CLAUDE.md",
+        "+++ b/CLAUDE.md",
+        "@@ -54,6 +54,8 @@",
+        " 4. **Deploy** as a NEW production version. The candidate must be the FULL build (fresh production + all new features) validated as a whole \u2014 never reconciled via cherry-picks at promotion time; bench numbers come from the full candidate binary. Promotion checklist includes baking the project agent-file overlay (`docs/reference/agent-config/llama-tree-overlay/`) into the candidate so the new production tree ships freeze-aware agent files.",
+        " ",
+        " Champion contents and promotion presence gates: [`docs/reference/kernel-manifests/`](docs/reference/kernel-manifests/README.md).",
+        "+",
+        "+**Forward-port rule (V6R-4b / OP-58).** Forward-port one feature per commit. Before reverting a bundled commit, split it and revert only the gated-out parts. A feature's test travels with it through every consolidation (enforced in code by the DS41-C116 kernel-preservation gate, `kernel_coverage.py`). Origin: INC-20260925, our own OpenMP parallel repack (`52ddd3200`) lost in the bundled v6 Stage 1a revert (`docs/reference/agent-config/INCIDENT_LOG.md`).",
+        " ",
+        " ## Working-tree identity",
+        " "
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "python3 scripts/validate/check_ratification_receipts.py --repo-root .",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "  receipt RATIFIED   RATIFY-INF45-P23-20261109 (P-BENCH-PLACEMENT-1)",
+        "  receipt RATIFIED   RATIFY-INF45-P23-TBDS-20261111 (P-BENCH-PLACEMENT-1)",
+        "  receipt RATIFIED   RATIFY-INF45-P24-20261110 (P-BENCH-PLACEMENT-1)",
+        "  receipt RATIFIED   RATIFY-LR11-CLOSE-INVENTORY-20261111 (LR11-LR13-CLOSE-RULES)",
+        "  receipt RATIFIED   RATIFY-LR13-SUBAGENT-SCRATCH-20261109 (OPERATING-CONSTRAINTS-SUBAGENT-SCRATCH-LIFETIME)",
+        "  receipt RATIFIED   RATIFY-OP60-MEASUREMENT-EPOCH-20260926 (P-AK-SEARCH-1)",
+        "  receipt RATIFIED   RATIFY-OP63-REGION-LOCK-SCOPE-20260926 (OPERATING-CONSTRAINTS-REGION-LOCK-SCOPE)",
+        "  receipt RATIFIED   RATIFY-P-SERVE-SEL-1-20260926 (P-SERVE-SEL-1)",
+        "  receipt RATIFIED   RATIFY-P-CAL-SPECDEC-20260916 (P-CAL)",
+        "  receipt RATIFIED   RATIFY-RATIFICATION-EXEMPTIONS-CI-20261109 (RATIFICATION-RECEIPT-EXEMPTIONS-CI-20261109)",
+        "  receipt RATIFIED   RATIFY-SCRATCH-LIFECYCLE-20261004 (OPERATING-CONSTRAINTS-SCRATCH-LIFECYCLE)",
+        "  receipt RATIFIED   RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926 (TRUST-BOUNDARY-RECEIPT-EXEMPTIONS)",
+        "  receipt RATIFIED   RATIFY-V10-EPISODIC-REPIN-20260917 (P-QUAL-T1)",
+        "  receipt RATIFIED   RATIFY-WS58-LESSONS-20261027 (OPERATING-CONSTRAINTS-UNANSWERED-AND-POST-MEASUREMENT)",
+        "  receipt RATIFIED   RATIFY-WS58-RETENTION-LESSONS-20261025 (MEASUREMENT-S5-EVIDENCE-RETENTION-AND-DESTRUCTIVE-OPS)",
+        "  receipt RATIFIED   autokernel-discovery-first-20260813 (P-AK-SEARCH-1)",
+        "  receipt REFUSED    autokernel-discovery-first-20260813 (P-AK-SEARCH-1)  [preserved refusal: superseded by a later RATIFIED receipt]",
+        "",
+        "77 boundary-amending script(s): 34 receipted, 43 exempt, 0 failing.",
+        "OK"
+      ]
+    },
+    {
+      "command": "test \"$(sha256sum CLAUDE.md | cut -d' ' -f1)\" = 7bebaeb7167415b3c85e2a663e1c002cfd8f19b912d8a78c1b90ece6132a6e6c",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

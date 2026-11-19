@@ -1,0 +1,20 @@
+{
+ "decision_rule": "Qwen3.8 Flash Next IQ4_XS, CPU C5 versus aa493c690 candidate. On original three prompts, identical greedy token arrays required; rc1 with complete valid arrays ",
+ "estimate_s": 7200,
+ "gib": 192,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:CH-33-MODEL-GATES",
+ "id": "ch33-q38-causal-cpu-v3-20261104",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/ch33-q38-causal-v3/launch.sh"
+ },
+ "min_window_s": 5400,
+ "owner": "handoff-autokernel-all-devices-all-dimensions",
+ "priority_rank": 10.0,
+ "published_at": "2026-11-04T17:25:28Z",
+ "regions": "48-95",
+ "schema": "epyc.row.v3",
+ "shape": "multi-quarter(2)",
+ "stop_file": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/ch33-q38-causal-v3/STOP",
+ "window_s": 8940
+}

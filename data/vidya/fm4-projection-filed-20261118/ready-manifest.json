@@ -1,0 +1,69 @@
+{
+ "book_s": 225,
+ "budget_gib": 0.01,
+ "busy_fraction": 0.25,
+ "decision_rule": "selected_dispatch_count >= 2 and refusal_count == 0 and task_gate_claim_count == 0",
+ "declared_shape": "sub-quarter",
+ "declared_threads": 4,
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-FM4-ORACLE-WIRE",
+ "id": "vb-fm4-codex-projection-20261118",
+ "keep": [
+  "source/**",
+  "official/**",
+  "official-*/*",
+  "official-*/planner/**",
+  "publisher_smoke-*/*",
+  "publisher_smoke-*/planner/**",
+  "*.py",
+  "*.sh",
+  "*.json",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/projection-row/launcher/launch.sh",
+  "sha256": "206658ac76644cc95d5d23220e70ba06522a7e5559c627ed5c04968c78af8820"
+ },
+ "lineage": "vidya-fm4-native-codex-dispatch-projection",
+ "min_window_s": 120,
+ "notes": "CPU-only model-free structural canary. A detached sparse checkout plus an overlaid adapter, ingest source and canary is sealed by source-pins.json. Revalidate private read-only originals against the already filed public two-pair census. The publisher smoke selects one real pair on four granted CPUs. The official row selects both pairs together in one isolated ledger using four granted CPUs. Pass requires exact Judged/Located harness context for coordination.fm4, no reliance references, no autokernel.planner exposure and zero task-gate claims. Task outcomes remain null. Stop on answer after both exact claims are selected. Stop on futility at the first digest or identity drift, malformed input, refusal, STOP or the earlier of the engine deadline and 300 seconds. A partial UNKNOWN preserves any selected receipts already validated. The estimate is the publisher's 300 second admission floor.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:3: untestable prose prerequisite: 'prerequisites. Require a planning-context canary before declaring wired. [no-belief: prospective source-wiring task] [in'"
+ ],
+ "published_at": "2026-11-18T16:39:10Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/projection-row/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T16:39:10Z",
+  "session": "01a1ef7a-285e-7a23-9322-0d8eea1ed72c",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/projection-row/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/projection-row",
+ "shape": "sub-quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/projection-row/STOP",
+ "threads_evidence": [
+  "--threads 4"
+ ],
+ "total_units": 2,
+ "unit_key": "selected_dispatch_count",
+ "window_s": 420,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/projection-row/engine-work"
+}

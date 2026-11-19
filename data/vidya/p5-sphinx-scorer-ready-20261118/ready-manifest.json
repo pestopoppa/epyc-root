@@ -1,0 +1,63 @@
+{
+ "book_s": 300,
+ "budget_gib": 1.0,
+ "decision_rule": "Can the pinned Sphinx scorer write both native controls with a verified CPU grant, UTC completion, source and raw-content hashes, all two FAIL_TO_PASS and one PASS_TO_PASS statuses, and owned-container removal? Qualify only a COMPLETE acquisition with those witnesses. File the observed gold and negative diagnostic PASS or FAIL independently. Stop on answer after both full arms or on first refusal, STOP, the earlier allocation deadline or 270 seconds. Finite scorer instrument control without a model.",
+ "declared_shape": "quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 360,
+ "first_progress_s": 300,
+ "gib": 16,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-P5-SPHINX-SCORER-NATIVE",
+ "id": "vb-p5-sphinx-scorer-native-20261118",
+ "keep": [
+  "SOURCE.sha256",
+  "*.py",
+  "*.sh",
+  "*.json",
+  "official/**",
+  "image-build.log",
+  "image-build.grant",
+  "image-build.Dockerfile",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/launch.sh",
+  "sha256": "3762e2e5906fd54923104166d2b8dda3577ef1d8e20aa7ba3db30e030abca9d8"
+ },
+ "min_window_s": 300,
+ "notes": "Publisher and official paths are disjoint. Sphinx gold and no-op negative controls use the pinned offline rebuild and existing reporting-only parser path. Original image build receipt, log, Dockerfile and grant are sealed in SOURCE.sha256. Native projection and planning-context review follow capture.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 70.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:368: untestable prose prerequisite: 'after both complete arms; stop on futility at first refusal, STOP or deadline. Gate-class=futility-only. Preserve failur'",
+  "volatile-paths: the job runs /mnt/raid0/llm/epyc-inference-research/.venv-swebench/bin/python from a lane/worktree path that can change or vanish before its grant; set \"snapshot\": true in the spec to freeze it (publish continues)"
+ ],
+ "published_at": "2026-11-18T19:17:12Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T19:17:12Z",
+  "session": "01a1f014-0b6b-7b01-b869-1c7c15a094c6",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118",
+ "shape": "quarter",
+ "smoke_predicate": "/mnt/raid0/llm/epyc-inference-research/.venv-swebench/bin/python -B /mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/custody.py complete",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/STOP",
+ "verdict_by": "agent",
+ "window_s": 780,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "kvu-kpf18-item4-raw-build-20261105",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only accepted iff full prospective 6ec877068 plus patch 5309fb07d49eda7ecfa373f5cb3dc51294c73eef931a4b7d03d083ef0dc5f2f1 build has matching reference options and source hashes; all compiled artifacts and ggml DSOs are included in receipt and custody; linkage, four compiled knob proofs and final artifact reopening pass. Stop on verified completion, or source drift, build, linkage, custody or cleanup failure, STOP or deadline. Smoke compiles modified server-context object only and proves no GPU or inference verdict.",
+  "estimate_s": 2400,
+  "min_window_s": 2400,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18-ITEM4-RAW-BUILD",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_timeout_s": 600,
+  "first_progress_s": 600,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105",
+  "keep": [
+    "RESULT.json",
+    "CUSTODY.json",
+    "runs/**",
+    "input/**",
+    "v3/**"
+  ],
+  "unit_key": "files",
+  "ram_gib": 48,
+  "lineage": "kpf18-item4-first-logits-build",
+  "notes": "First prospective build. Source worktree is patched and its complete content inventory is checked at build boundaries; base archive hash is not claimed as patched archive. Full build and raw-logit hook marker are independently checked. First-unit smoke compiles the instrumented server-context.cpp, not llama-kv-cache. No model weights are read or hashed."
+}

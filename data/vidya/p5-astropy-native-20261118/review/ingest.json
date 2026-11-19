@@ -1,0 +1,18 @@
+{
+  "adapter": "adapters/p5_astropy_scorer.py",
+  "adapter_id": "vidya.adapters.p5_astropy_scorer/v1",
+  "declined": [],
+  "dry_run": false,
+  "frames_emitted": 90,
+  "frames_skipped": 0,
+  "missing": [],
+  "only_new": true,
+  "paths": [
+    "data/vidya/p5-astropy-native-20261118/official/RESULT.json"
+  ],
+  "refused": [],
+  "rows_projected": 30,
+  "source": "p5-astropy-scorer",
+  "units_matched": 1,
+  "units_projected": 1
+}

@@ -1,0 +1,28 @@
+== kpf131-impact-r5-20261105
+  real logs:        PASS [{"language": "python", "path": "examples/model-conversion/scripts/utils/__init__.py", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}]
+  +real skip line:  FAIL AssertionError("unverified skip diagnostics: ['Skipping 3 files: unsupported grammar']")
+  +heap cpp skip=2: FAIL AssertionError('native skip count mismatch')
+== kpf17-oracle-impact-8952-20261105-r2
+  real logs:        PASS [{"lang": "python", "files": 222, "parsed": 221, "skipped": 1, "whitespace_only_candidates": ["examples/model-conversion/scripts/utils/__init__.py"], "named_paths": []}, {"lang": "typescript", "files": 308, "parsed"
+  +real skip line:  FAIL AssertionError("unverified skip diagnostics: ['Skipping 3 files: unsupported grammar']")
+  +heap cpp skip=2: FAIL AssertionError('cpp: 2 scope skips but only 0 whitespace-only files')
+== kpf182-component-impact-8952-20261105-r3
+  real logs:        PASS [{"lang": "python", "files": 222, "parsed": 221, "skipped": 1, "whitespace_only_candidates": ["examples/model-conversion/scripts/utils/__init__.py"], "named_paths": []}, {"lang": "typescript", "files": 308, "parsed"
+  +real skip line:  FAIL AssertionError("unverified skip diagnostics: ['Skipping 3 files: unsupported grammar']")
+  +heap cpp skip=2: FAIL AssertionError('cpp: 2 scope skips but only 0 whitespace-only files')
+== kpf26-attestation-impact-8682-20261105-r2
+  real logs:        PASS [{"lang": "python", "files": 2530, "parsed": 2526, "skipped": 4, "whitespace_only_candidates": ["scripts/benchmark/colbert/__init__.py", "src/tools/vision/__init__.py", "tests/classifiers/__init__.py", "tests/retrie
+  +real skip line:  FAIL AssertionError("unverified skip diagnostics: ['Skipping 3 files: unsupported grammar']")
+  +heap cpp skip=2: FAIL AssertionError('cpp: 2 scope skips but only 0 whitespace-only files')
+== kpf27d-impact-326f-successor-20261105-r2
+  real logs:        PASS [{"lang": "python", "files": 2558, "parsed": 2554, "skipped": 4, "whitespace_only_candidates": ["scripts/benchmark/colbert/__init__.py", "src/tools/vision/__init__.py", "tests/classifiers/__init__.py", "tests/retrie
+  +real skip line:  FAIL AssertionError("unverified skip diagnostics: ['Skipping 3 files: unsupported grammar']")
+  +heap cpp skip=2: FAIL AssertionError('cpp: 2 scope skips but only 0 whitespace-only files')
+== kpf625-server-impact-8952-20261105-r2
+  real logs:        PASS [{"lang": "python", "files": 222, "parsed": 221, "skipped": 1, "whitespace_only_candidates": ["examples/model-conversion/scripts/utils/__init__.py"], "named_paths": []}, {"lang": "typescript", "files": 308, "parsed"
+  +real skip line:  FAIL AssertionError("unverified skip diagnostics: ['Skipping 3 files: unsupported grammar']")
+  +heap cpp skip=2: FAIL AssertionError('cpp: 2 scope skips but only 0 whitespace-only files')
+== kpf191-drafter-impact-8952-20261105-r2
+  real logs:        PASS [{"lang": "python", "files": 222, "parsed": 221, "skipped": 1, "whitespace_only_candidates": ["examples/model-conversion/scripts/utils/__init__.py"], "named_paths": []}, {"lang": "typescript", "files": 308, "parsed"
+  +real skip line:  FAIL AssertionError("unverified skip diagnostics: ['Skipping 3 files: unsupported grammar']")
+  +heap cpp skip=2: FAIL AssertionError('cpp: 2 scope skips but only 0 whitespace-only files')

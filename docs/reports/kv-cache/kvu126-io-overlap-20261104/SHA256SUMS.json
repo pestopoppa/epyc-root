@@ -1,0 +1,38 @@
+{
+  "cafe2-v10-verify-cost-build-20261104": {
+    "original": "/mnt/raid0/llm/tmp/compute-flags/grants/cafe2-v10-verify-cost-build-20261104.ended",
+    "sha256": "4448e9078d8340fa198562b42fa470a60113e0c3d95461a3e785f7d08faf0817"
+  },
+  "handoff-kvu19-p5-champion-a1-20261104": {
+    "original": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-kvu19-p5-champion-a1-20261104.ended",
+    "sha256": "24d0338abb6f44e223029c4d45122194c4190cf55d6155f9b208250ef9f2a2cb"
+  },
+  "kvu-kpf174-custody-r1-20261104": {
+    "original": "/mnt/raid0/llm/tmp/compute-flags/grants/kvu-kpf174-custody-r1-20261104.ended",
+    "sha256": "4d955e1b624512e3d3a2929d324b2e14452ded27016694592af2256d03bcd4c4"
+  },
+  "p5-keeper-excerpt.txt": {
+    "original": "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper.log (selected lines)",
+    "sha256": "539e984fc2b71e44d72396f0963d136d18d59d0b97a848fbe647f2e27488c898"
+  },
+  "ufh12-gs-frozen-gnx-20261104": {
+    "original": "/mnt/raid0/llm/tmp/compute-flags/grants/ufh12-gs-frozen-gnx-20261104.ended",
+    "sha256": "b4c80d1068233ca42e01d4ff78bfa8ffd3d754da4572dfc0e918e91d740e8c0c"
+  },
+  "ufh14-file-observations.json": {
+    "original": "bounded record and excerpt of /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-successor/out/run/faac267aceda487a957cf21d3c35c6b9",
+    "sha256": "df0b328da249a449e972bed8ce4db4db855096dac11381459da04ce4ccbe1aa3"
+  },
+  "ufh14-frontdoor-launch.json": {
+    "original": "bounded record and excerpt of /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-successor/out/run/faac267aceda487a957cf21d3c35c6b9",
+    "sha256": "d3b608908b66da9dc01912537a79f58eaacb9e4b4d58837b5610463f1a411de1"
+  },
+  "ufh14-frontdoor-startup-excerpt.txt": {
+    "original": "bounded record and excerpt of /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-successor/out/run/faac267aceda487a957cf21d3c35c6b9",
+    "sha256": "994a305f6a6e5136ff0ca1a889c018c4ae5d89073680781777d7a55bf285bf19"
+  },
+  "ufh14-repl-emb23a-parse-v2-20261104": {
+    "original": "/mnt/raid0/llm/tmp/compute-flags/grants/ufh14-repl-emb23a-parse-v2-20261104.ended",
+    "sha256": "69571b4b5d3cf553cc9810f0ab20e703401088193b2e9c631f54f11ff5ef29f6"
+  }
+}

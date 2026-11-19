@@ -119,7 +119,7 @@ After findings, include:
   - Open uncertainty.
 - **Checks run**: the commands and code paths inspected, plus the dedup merges: which candidates were collapsed, and on which key.
 
-When a finding is recorded as a labelled gold annotation (a corpus row, not a review comment), use the ONE dual-gold schema. That is `epyc-orchestrator` `orchestration/gold_annotation.schema.json` with `src/proactive_delegation/gold_annotations.py`, owned by `reviewer-typed-artifacts.md` RA-9 (on branch `sub/reviewer-artifacts-20260916` until it merges). Map `Class` to its `cwes[]`/`category`, and record a refuted or unreachable candidate that is worth keeping as a `status: invalid` decoy. Never define a second schema here. Machine-generated annotations must pass the same module's gold-sanity gate (`gold_sanity.run_gate`) before they are admitted.
+When a finding is recorded as a labelled gold annotation (a corpus row, not a review comment), use the ONE dual-gold schema. That is `epyc-orchestrator` `orchestration/gold_annotation.schema.json` with `src/proactive_delegation/gold_annotations.py`, owned by `reviewer-control-plane.md#track-reviewer-typed-artifacts` RA-9 (on branch `sub/reviewer-artifacts-20260916` until it merges). Map `Class` to its `cwes[]`/`category`, and record a refuted or unreachable candidate that is worth keeping as a `status: invalid` decoy. Never define a second schema here. Machine-generated annotations must pass the same module's gold-sanity gate (`gold_sanity.run_gate`) before they are admitted.
 
 If no findings pass the gates, say so explicitly and name the highest-risk surfaces inspected.
 

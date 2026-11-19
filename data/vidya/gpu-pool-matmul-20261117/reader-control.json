@@ -1,0 +1,33 @@
+{
+  "task": "SC18 GPU pool native reader registration",
+  "status": "registered_synthetic_verified",
+  "source": "gpu-pool-native",
+  "usage": "scripts/vidya/cli.py ingest gpu-pool-native --path <belief.json>",
+  "files": [
+    "scripts/vidya/adapters/gpu_pool_native.py",
+    "scripts/vidya/adapters/README.md",
+    "scripts/vidya/ingest_sources.py",
+    "scripts/vidya/cli.py",
+    "tests/vidya/test_gpu_pool_native_ingest.py",
+    "tests/vidya/test_ingest_sources.py"
+  ],
+  "behavior": {
+    "accepted": "Sealed prospective native sidecar with an explicit JSON false at native.grant.smoke and re-derived case counts from the original native log.",
+    "refused": "Smoke, absent and non-boolean smoke modes; tampered logs, tampered seals and malformed JSON append no ledger frames.",
+    "declined": "Historical native objects and attention lists without a prospective sidecar append no ledger frames.",
+    "scope": "Original candidate-local supported pass/unsupported/failure counts, operator and run ID only; shared grade Judged/T0 on the synthetic fixture.",
+    "producer_compatibility": "The new registry emit validates eligibility after projection; generic begin/finish/project/read_capture/frames_for_capture and the staged producer packet were not changed."
+  },
+  "verification": {
+    "command": "PYTHONPATH=/usr/lib/python3/dist-packages taskset -c 72-75 /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -m pytest -q tests/vidya/test_gpu_pool_native.py tests/vidya/test_gpu_pool_native_ingest.py tests/vidya/test_ingest_sources.py -k 'gpu_pool_native or every_source or every_dispatched_adapter_declares_its_authority or every_wired_adapter_projects'",
+    "passed": 27,
+    "deselected": 98,
+    "carrier_tuples_checked": 25,
+    "carrier_violations": 0,
+    "diff_check": "pass for modified tracked files"
+  },
+  "pending": ["Fresh native read acceptance", "Native planning-context canary", "Remaining native carriers"],
+  "handoff_or_index_edits": false,
+  "commit_created": false,
+  "native_compute_started": false
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "kpf18.supervisor-software-qualification.v1",
+  "status": "PASS",
+  "tests": 12,
+  "embedded_driver_cell_tests": 11,
+  "persistent_driver_cell_tests": 11,
+  "manifest_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf18-supervisor-successor-20261119/manifest.json",
+  "manifest_sha256": "1da69682a4b3f55f4190e3f05dc4bbb203cb57604f5a1b00961210b6e62464d6",
+  "supervisor_sha256": "d7de43171bfc4be23163835af05907d8f00048108d8f3cb2d13a51a57e1289bb",
+  "test_sha256": "d8e9388faf66e68bd566a140d76f8ca3c629454ad07af251e7808ec1ab8afaf3",
+  "runtime_dispatch": false,
+  "scope": "real isolated child cleanup plus supervised actual full-import cell/controller/gate with synthetic server and seed peers; no native cancellation or current admission"
+}

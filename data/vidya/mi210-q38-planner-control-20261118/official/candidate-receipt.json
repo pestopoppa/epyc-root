@@ -1,0 +1,116 @@
+{
+  "actor_backend_called": false,
+  "actor_receipt_id": "sha256:011b063706179182ce6ee10d6dca94909f4cbc232cd3e39e7a68070a517ee6d3",
+  "authority": "software-control-only",
+  "baseline": false,
+  "capture_files_sha256": {
+    "attempt-00.json": "0bee64c2fdd432193d070f153ce4ec82467f1c009d4ce5bd0e64abd08f5fdfe1",
+    "attempt-01.json": "95e429527448d0436cc9d6fd5f04281fa8f03048a8b219d30902f58d75b7b341",
+    "attempt-02.json": "605fee82768e4643c6fc81def7efb7ba97454eff208981114bd964a765d35dad",
+    "attempt-03.json": "7ff535a269eba2781a4711efeb883376816f0a14446be1a638c0498c7be73ee6",
+    "declaration.json": "f5e838c0ac8eb877d37ecde0baca543fa92f9a955a436e75b99041aa3ab5ba71",
+    "terminal.json": "b4755d2775c339c73f83260e165d32bc910a60cff6f77912483884cfa4dd3054"
+  },
+  "capture_run_id": "synthetic-q38-complete",
+  "capture_terminal_sha256": "ebadf7633f9af6eb6eb6c68277f5b46545dff9098bccba452f6d1d96d4e041fe",
+  "entry_point": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "excluded": {
+    "cpu": [
+      "no_applicable_claims"
+    ],
+    "different-weight": [
+      "no_applicable_claims"
+    ],
+    "invalid-digest": [
+      "inapplicable_target"
+    ],
+    "missing-digest": [
+      "no_applicable_claims"
+    ]
+  },
+  "frames": 60,
+  "model_scope": {
+    "backend": "gpu",
+    "model_sha256": "b77b39d0b04be35c28b568f577b1b9e15e6c8b0b51beccd6b267abdeaac6b0b6",
+    "scope_basis": "native"
+  },
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "d9f7a53db8e6fb0ba51d5b0cc597011da12e4338",
+    "origin_main": "d9f7a53db8e6fb0ba51d5b0cc597011da12e4338",
+    "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/reader"
+  },
+  "refusal_controls": {
+    "partial": "invalid MI210 raw capture: only complete measurement-scope raw runs project",
+    "smoke": "invalid MI210 raw capture: only complete measurement-scope raw runs project",
+    "tampered": "invalid MI210 raw capture: capture schema or digest mismatch"
+  },
+  "refused": 0,
+  "reliance": {
+    "accepted": [
+      "clm_mi210_05110328074ce48e5b00a8f7",
+      "clm_mi210_2b655692156681aafa8bb16c",
+      "clm_mi210_2b8889363ba6b23f5111e5a9",
+      "clm_mi210_315fbe14997d605826af80d2",
+      "clm_mi210_3c30f1cdc79e3068270c3a87",
+      "clm_mi210_466ced87f4861becb98c4767",
+      "clm_mi210_484327e91d6ea59f3c4dd9c5",
+      "clm_mi210_4d09c1ae6f63b2a691d30729",
+      "clm_mi210_5b0f00096a72469e95bdda85",
+      "clm_mi210_60931f70b61e45cfe7ab427a",
+      "clm_mi210_7ad7f1b66643e0975ddbde26",
+      "clm_mi210_840f3d4bfb16178ad40a0de8",
+      "clm_mi210_895b0c7d1aa5fb9920090d8d",
+      "clm_mi210_89d236f0fa9ce9c1b231a84e",
+      "clm_mi210_a32c3199956c40c2ead6edfe",
+      "clm_mi210_c5a0d5ff894004de9361c8ea"
+    ],
+    "declared": [
+      "clm_mi210_05110328074ce48e5b00a8f7",
+      "clm_mi210_2b655692156681aafa8bb16c",
+      "clm_mi210_2b8889363ba6b23f5111e5a9",
+      "clm_mi210_315fbe14997d605826af80d2",
+      "clm_mi210_3c30f1cdc79e3068270c3a87",
+      "clm_mi210_466ced87f4861becb98c4767",
+      "clm_mi210_484327e91d6ea59f3c4dd9c5",
+      "clm_mi210_4d09c1ae6f63b2a691d30729",
+      "clm_mi210_5b0f00096a72469e95bdda85",
+      "clm_mi210_60931f70b61e45cfe7ab427a",
+      "clm_mi210_7ad7f1b66643e0975ddbde26",
+      "clm_mi210_840f3d4bfb16178ad40a0de8",
+      "clm_mi210_895b0c7d1aa5fb9920090d8d",
+      "clm_mi210_89d236f0fa9ce9c1b231a84e",
+      "clm_mi210_a32c3199956c40c2ead6edfe",
+      "clm_mi210_c5a0d5ff894004de9361c8ea",
+      "clm_mi210_d655d516555b9d32d8a5aabd",
+      "clm_mi210_e615a2a8e10ae5ca3dff9d9c",
+      "clm_mi210_f2fc6368f493dd94d678d175",
+      "clm_mi210_fe283f0ea737091f25e083e9"
+    ],
+    "rejected": [
+      {
+        "claim_id": "clm_mi210_d655d516555b9d32d8a5aabd",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_e615a2a8e10ae5ca3dff9d9c",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_f2fc6368f493dd94d678d175",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_fe283f0ea737091f25e083e9",
+        "reason": "not_presented"
+      }
+    ]
+  },
+  "rendered_excerpt_sha256": "6a570623b9d0734eb9c61679e6fe68346704bd2cb2dbd255640a2aa00900df3d",
+  "rows": 20,
+  "schema": "epyc.vidya.mi210_q38_planning_canary.v1",
+  "scratch_ledger": true,
+  "status": "passed",
+  "visible_count": 16
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "epyc.dcp10.colgrep-thread-verdict.v1",
+  "row": "dcp10-colgrep-native-20261118-r2",
+  "question": "Does bounded native threading permit the unchanged original three tasks to build private indices and complete retrieval?",
+  "decision_rule": "completed == 3 and comparison_valid == 1",
+  "verdict": "pass",
+  "rc": 0,
+  "completed": 3,
+  "comparison_valid": true,
+  "original_attempt_failures": 3,
+  "revision_failed_attempts": 0,
+  "evidence": {
+    "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-colgrep-native-r2/native/RESULT.json": "b6030207770400437f8945d8d641699d3c871512d429d5d8cd73a800fe305173",
+    "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-colgrep-native-r2/native/score.json": "897182679bda54434c547bbe7fe306f03b5d314285d3a83a85424e4d64f7cfc3"
+  },
+  "controls_record": {
+    "path": "docs/research/dcp10-colgrep-thread-controls-20261118.json",
+    "blob": "8e0103ff6152af726f9098e1e9ea9a6e4e1f8cca"
+  },
+  "diagnostic_macro_scores": [
+    {
+      "arm": "task-root-lexical",
+      "scopes": [
+        {
+          "scope": "discovery",
+          "budget_tokens": null,
+          "file_f1": 0.3212121212121212,
+          "line_f1": 0.03815313171519635
+        },
+        {
+          "scope": "packed",
+          "budget_tokens": 2000,
+          "file_f1": 0.0,
+          "line_f1": 0.0
+        },
+        {
+          "scope": "packed",
+          "budget_tokens": 4000,
+          "file_f1": 0.0,
+          "line_f1": 0.0
+        },
+        {
+          "scope": "packed",
+          "budget_tokens": 8000,
+          "file_f1": 0.0,
+          "line_f1": 0.0
+        }
+      ]
+    },
+    {
+      "arm": "task-root-colgrep",
+      "scopes": [
+        {
+          "scope": "discovery",
+          "budget_tokens": null,
+          "file_f1": 0.19393939393939394,
+          "line_f1": 0.0004131804565644045
+        },
+        {
+          "scope": "packed",
+          "budget_tokens": 2000,
+          "file_f1": 0.0,
+          "line_f1": 0.0
+        },
+        {
+          "scope": "packed",
+          "budget_tokens": 4000,
+          "file_f1": 0.0,
+          "line_f1": 0.0
+        },
+        {
+          "scope": "packed",
+          "budget_tokens": 8000,
+          "file_f1": 0.0,
+          "line_f1": 0.0
+        }
+      ]
+    }
+  ],
+  "interpretation": "The bounded-thread revision completes all three original attempts without the prior index-build error. This answers the infrastructure question for this fixed cohort only.",
+  "limits": [
+    "Higher file/line F1 means greater gold overlap; these are per-task macro diagnostics, not a population quality or superiority test.",
+    "Packed scores are zero at 2k/4k/8k for both arms; score.json uses caller-supplied candidate costs, not independently tokenized budget proof.",
+    "The original three failed attempts remain in their predecessor record; revision success does not erase their denominators.",
+    "No cohort substitution, automatic retry, production flag change or promotion. Existing source-admission and score-custody limits and VB-CONTEXTBENCH-DISCOVERY-WIRE remain."
+  ]
+}

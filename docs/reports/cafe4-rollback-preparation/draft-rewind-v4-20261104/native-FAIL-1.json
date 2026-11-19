@@ -1,0 +1,33 @@
+{
+ "at": "2026-11-04T14:20:21Z",
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=2 time=2026-11-04T14:20:16Z reason=job-rc-2:exited",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": null,
+ "first_progress_s": 600,
+ "first_unit_at": null,
+ "fix_task": "fix dry-run failure of cafe4-v10-native-rollback-fault-20261104: job ended rc=2 time=2026-11-04T14:20:16Z reason=job-rc-2:exited after 10s, before its first progress (smoke_predicate `python3 /mnt/raid0/llm/tmp/df2/cafe4-rollback-native-20261104/runtime.py predica` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=24-27; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (see compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/launcher.out; the keeper retries as soon as the launcher file changes)",
+ "id": "cafe4-v10-native-rollback-fault-20261104",
+ "launcher_out_tail": [
+  "",
+  "==== dry run 2026-11-04T14:20:10Z regions=24-27 launcher_sha=9616403c8078c88ba2301c3948787e3b6261156646222adac487261c23a85fce units_before=0",
+  "2026-11-04T14:20:10Z [cafe4-v10-native-rollback-fault-20261104] launcher up pid=1577743 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/stop minwin=900s ports=none dryrun=1",
+  "2026-11-04T14:20:10Z [cafe4-v10-native-rollback-fault-20261104] START regions=24-27 cpus=24-27 threads=4 gpu=0 end=2026-11-04T14:44Z",
+  "job rc=2",
+  "2026-11-04T14:20:16Z [cafe4-v10-native-rollback-fault-20261104] ended rc=2 reason=job-rc-2:exited (grant deleted)",
+  "2026-11-04T14:20:16Z [cafe4-v10-native-rollback-fault-20261104] one window done; exiting (no --repeat)",
+  "==== dry run FAIL: job ended rc=2 time=2026-11-04T14:20:16Z reason=job-rc-2:exited after 10s, before its first progress (smoke_predicate `python3 /mnt/raid0/llm/tmp/df2/cafe4-rollback-native-20261104/runtime.py predica` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=24-27; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-04T14:20:21Z)"
+ ],
+ "launcher_sha256": "9616403c8078c88ba2301c3948787e3b6261156646222adac487261c23a85fce",
+ "progress_rule": "smoke_predicate",
+ "reason": "job ended rc=2 time=2026-11-04T14:20:16Z reason=job-rc-2:exited after 10s, before its first progress (smoke_predicate `python3 /mnt/raid0/llm/tmp/df2/cafe4-rollback-native-20261104/runtime.py predica` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=24-27; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]",
+ "regions": "24-27",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/cafe4-v10-native-rollback-fault-20261104/native-attempts/attempt-m0wzncv3/native-result.json",
+ "row_sha256": "b71a4218ad05bf59706fc65284281e649ea88d7cf50da470ff07bd34eeabbb7d",
+ "rowflow_sha256": "2d9614336fa0ac8229802ed50d6d01af59e12a4118e2444a3e2264e4acc4d6bc",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

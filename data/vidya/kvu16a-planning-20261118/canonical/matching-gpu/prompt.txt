@@ -1,0 +1,76 @@
+You are proposing ONE kernel optimisation for llama.cpp on an AMD MI210 (gfx90a, ROCm 6.2).
+
+## Where the device time actually goes (rocprofv3, current champion)
+(no profile yet — say so rather than guessing a target)
+
+## Already tried
+(nothing yet)
+
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.8-27B-Q8_0.gguf / Q8_0 / gpu / gfx90a.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 43401, as of 2026-11-18T03:33:16.761079+00:00.
+### Usable, target tier -- claims scoped to the target's own weights
+- clm_cc:v1:9a3901bf6636a12996dc0e526ee7b4b9:r2#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h1h7-skinny-splitk-small-weight: IMPROVED (metric op_geomean_speedup; 1.21 x; n unrecorded) -- producer verdict KEEP (+1 earlier captures: improved 1.94 x 2026-11-06)
+- clm_cc:v1:940016c76397db04f415872754ddad8b:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h4-int8-mmq-prefill: REGRESSED (metric op_speedup_vs_rocblas; 0.48 x; n unrecorded) -- producer verdict DROP (+1 earlier captures: regressed [e2e_pp2048_tps] -29.70% 2026-11-06)
+- clm_cc:v1:1f49178029dfad545d05dc4ecd97f1f7:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h9-int8-gemm-per32-scale: REGRESSED (metric op_speedup; 0.52 x; n unrecorded) -- producer verdict DROP
+- clm_cc:v1:5189753c494fd3f82635d145badc5453:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h15-fused-gdn-decode: IMPROVED (metric e2e_tg128_ratio; 1.013 x; n unrecorded) -- producer verdict KEEP
+- clm_cc:v1:92010b24c2ba2cef1a4a445751985560:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h5port-ck-fa-hd256: IMPROVED (metric op_speedup; 3.71 x; n unrecorded) -- producer verdict KEEP (+1 earlier captures: improved [e2e_pp2048_ratio] 1.03 x 2026-11-06)
+- clm_cc:v1:ad66da23479e0e4b833a60e10103711a:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h1b-wvsplitk-q8-gemv: IMPROVED (metric op_geomean_speedup; 1.73 x; n unrecorded) -- producer verdict KEEP (+2 earlier captures: improved [e2e_pp5_tps] +54.70% 2026-11-06; improved [e2e_pp8_tps] +44.10% 2026-11-06)
+- clm_cc:v1:fac93347e1187b40cbf2a7a35d956772:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h10-gqa-packed-verify-attn: IMPROVED (metric op_geomean_speedup; 2.63 x; n unrecorded) -- producer verdict KEEP (+3 earlier captures: improved [e2e_decode_tps] +14.60% 2026-11-06; improved [e2e_decode_tps] +4.30% 2026-11-06; improved [e2e_decode_tps] +4.80% 2026-11-06)
+- clm_cc:v1:63fea84ccabab1b811e83b81a702624a:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h2a-rocwmma-off-mma-fa: REFUSED by the scope gate: "- [x] **AK-ASM-H2** [non-inference then inference] flash attention off rocWMMA. C6 uses the deprecated rocWMMA FA (f16 accumulation,  ... hable in the ROCWMMA=ON build: build ROCWMMA=OFF), (b) CK-tile"
+- clm_ak-exp:v1:6e82df8b4a8401c9:879d944639ecc6ff2c6024fbadf387b8370fec857f6e46793fe4a1f6431766b1 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu q27b-9a3f1392a-gpu-dflash2-np1 build 9a3f1392 epoch f9e409df
+  akm-gfx90a-q8-tiny-streamk-cap @ launch_mul_mat_q: REFUSED by the correctness gate (correctness:MUL_MAT): "MUL_MAT failed on ROCm0" (+2 earlier captures: refused_correctness 0 2026-10-04; refused_correctness 0 2026-10-04)
+  mechanism: In launch_mul_mat_q, for CDNA2 Q8_0 matrices with at most 64 output rows and 16 activation co ... . This gives each CTA more K work and redu; falsifier: Reject if the candidate fails the loop's seede ...  at least five matc
+- clm_ak-exp:v1:6e82df8b4a8401c9:d2870e050876b8eed4dac78db1d5802659b441d9a1a75c1aca4459cf2bca215c [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu q27b-9a3f1392a-gpu-dflash2-np1 build 9a3f1392 epoch f9e409df
+  akm-q8-j16-single-tile-streamk-five-cta @ launch_mul_mat_q: REFUSED by the correctness gate (correctness:MUL_MAT): "MUL_MAT failed on ROCm0" (+1 earlier captures: refused_correctness 0 2026-10-04)
+  mechanism: In launch_mul_mat_q, limit only the gfx90a Q8_0 J=16 single-tile fallback (ntiles_dst == 1) t ... 0 blocks and 8 blocks per iteration give 5; falsifier: Reject on any required ROCm0 CPU-reference tol ... aggregate_tok_s bey
+- clm_cc:v1:083046557fcf971e2e2deadc5161305d:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h6-fused-rmsnorm-quant: NULL (metric op_speedup; 1.017 x; n unrecorded) -- producer verdict DROP
+- clm_cc:v1:946670c4e125c376880eb500328e8963:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 65da39eb
+  gfx90a-asm:h14-fused-qknorm-rope-kvwrite: NULL (metric e2e_tg_ratio; 1.001 x; n unrecorded) -- producer verdict DROP (+1 earlier captures: null 0.992 x 2026-11-06)
+- clm_ak-floor:v1:q27b-9a3f1392a-gpu-dflash2-np1:8ccff75f84e0b4af [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu q27b-9a3f1392a-gpu-dflash2-np1 np 1
+  serving floor: metric aggregate_tok_s; median 81.12 t/s; floor 0.81%; n=10
+- clm_cc:v1:dd7cb94940e92032e26f934252d17978:r1#m0 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 62cb6a6a
+  gdn_core_kernel_share_pp2048: 0.158 fraction (n unrecorded). - [x] **GDN-SHARE-1 — Measure the GDN recurrent core's share of prefill and decode wall time at our serving shape.** **[2026-11-07 ma ... CPU half is a pointer to AutoKernel AK-GDN-S1 (research seed f
+- clm_kvu16a_fd3c14cda3b89b343e56bd63 [Judged/Located · verified] Qwen3.8-27B-Q8_0/gpu
+  sampled_healthy_non_kv_bytes: 37648130048 bytes (n=2). Healthy samples in one load-only process. Startup coverage UNKNOWN (unknown sample count: 1). Sampled maximum minus observed target KV; not a lifetime peak or bound.
+- clm_cc:v1:dd7cb94940e92032e26f934252d17978:r1#m1 [Judged/Located · verified · retrofit] Qwen3.8-27B-Q8_0/gpu build 62cb6a6a
+  gdn_core_kernel_share_decode_d0: 0.0136 fraction (n unrecorded). - [x] **GDN-SHARE-1 — Measure the GDN recurrent core's share of prefill and decode wall time at our serving shape.** **[2026-11-07 ma ... CPU half is a pointer to AutoKernel AK-GDN-S1 (research seed f
+### Device-scope claims (host tier) -- scoped by device only, no model: host ceiling, not about this model; not evidence for a proposal
+- clm_cc:v1:9b4af358097a78c29c95cb6da00c6e70:r1#m0 [Judged/Located · verified · retrofit] device-scope: host ceiling, not about this model
+  gfx90a-asm:int8-mfma-rate: 1 x (metric int8_mfma_rate_over_f16; n unrecorded). - DEVICE FACT: MI210 (gfx90a) int8 MFMA runs at the f16/bf16 MFMA rate (no 2x int8 throughput), so int8 GEMM ports gain only from rem ... ce: AK-ASM-H4 box note (`handoffs/active/autokernel-loop.md`).
+### Loop-infrastructure facts (harness tier) -- tooling and source-dependency context for this consumer; not evidence about any model or for a proposal
+- clm_cc:v1:5d421b0573b9acf93838716381a702fe:r1#m0 [Judged/Located · verified] harness fact: loop infrastructure, not about any model: git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L12 (protocol none; n unrecorded; 2026-11-06T08:53:33Z): Committed conclusion (b8a1d13 progress/2026-11/2026-11-06-inf22-vbcc.md:12): HARNESS LESSON -- - HARNESS LESSON (op-test timing): test-backend-ops perf cells that end in a view node (the TOPK_MOE_ASM cells end in the norm reshape view) repeat a no-op, so only the arm RATIO is meaningful and absolute us/run is not a kernel time. Evidence: `/mnt/raid0/llm/tmp/ak-asm-h11h13-gate-20261106/out/RESULT.json`.
+- clm_cc:v1:803957c4a4e8ecb3df820d69810ecab1:r1#m0 [Judged/Located · verified] harness fact: loop infrastructure, not about any model: git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L14 (protocol none; n unrecorded; 2026-11-06T08:53:33Z): Committed conclusion (b8a1d13 progress/2026-11/2026-11-06-inf22-vbcc.md:14): HARNESS LESSON -- - HARNESS LESSON (HIP graphs): launch-removal fusions are invisible end to end under HIP-graph-captured decode: H14 1.13x op but e2e 1.0006 / 0.992, H6 1.017x op. Judge launch-removal fusions on e2e ... p. Evidence: `/mnt/raid0/llm/tmp/ak-asm-h14h15-gate-20261106/out/RESULT.json`, `/mnt/raid0/llm/tmp/ak-asm-h4h6-gate-20261105/out/RESULT.json`.
+- clm_cc:v1:b963cf90b497817ea68a8136ff1c7c59:r1#m0 [Judged/Located · verified] harness fact: loop infrastructure, not about any model: git:b8a1d1383257f5b25e7f04141eccad1c31b61942:progress/2026-11/2026-11-06-inf22-vbcc.md#L13 (protocol none; n unrecorded; 2026-11-06T08:53:33Z): Committed conclusion (b8a1d13 progress/2026-11/2026-11-06-inf22-vbcc.md:13): HARNESS LESSON -- - HARNESS LESSON (real-model witness): op tests passed while the real-model path differed. H15 correctness depends on graph-allocator aliasing (op tests cannot cover it, fold needs 27B PPL on/off),  ... ne. Evidence: `/mnt/raid0/llm/tmp/ak-asm-h14h15-gate-20261106/out/RESULT.json`, `/mnt/raid0/llm/tmp/ak-asm-h12-gate-20261105/out/RESULT.json`.
+### Tried mechanisms -- every mechanism with a projected outcome here (the detailed lines above are capped; this index is not)
+Tried on Qwen3.8-27B-Q8_0: gfx90a-asm:h1h7-skinny-splitk-small-weight improved(- [x] **AK-ASM-H7** [non-i ... lifting t) x2; gfx90a-asm:h4-int8-mmq-prefill regressed(- [x] **AK-ASM-H4** [non-i ... 10 int8 M) x2
+  gfx90a-asm:h9-int8-gemm-per32-scale regressed(- [x] **AK-ASM-H9** [non-i ... n epilogu); gfx90a-asm:h15-fused-gdn-decode improved(- [x] **AK-ASM-H15** [non- ... l bf16 st)
+  gfx90a-asm:h5port-ck-fa-hd256 improved(- [x] **AK-ASM-H5-PORT** [ ... sion; q8_) x2; gfx90a-asm:h1b-wvsplitk-q8-gemv improved(- [x] **AK-ASM-H1** [non-i ... al). Tier) x3
+  gfx90a-asm:h10-gqa-packed-verify-attn improved(- [x] **AK-ASM-H10** [non- ... a, but as) x4; gfx90a-asm:h2a-rocwmma-off-mma-fa refused-scope(- [x] **AK-ASM-H2** [non-i ... ) CK-tile)
+  akm-gfx90a-q8-tiny-streamk-cap refused(MUL_MAT failed on ROCm0) x3; akm-q8-j16-single-tile-streamk-five-cta refused(MUL_MAT failed on ROCm0) x2
+  gfx90a-asm:h6-fused-rmsnorm-quant null(- [x] **AK-ASM-H6** [non-i ... vs the C6); gfx90a-asm:h14-fused-qknorm-rope-kvwrite null(- [x] **AK-ASM-H14** [non- ... k/s withi) x2
+Shown 0 of 0 knob, 16 of 135 target, 0 of 0 lineup, 0 of 0 sibling, 1 of 1 device-scope (host) claim(s), 3 of 4 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 12 of 12 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.
+
+Propose exactly one hypothesis. Reply with ONE json object and nothing else:
+{"mechanism_id": "akm-<short-slug>",
+  "statement": "<what changes, mechanically, and why it should be faster>",
+  "falsifier": "<the measurement that would prove this wrong>",
+  "target_surface": "<one path under ggml/src/ggml-cuda/>",
+  "target_symbol": "<the function you will change>",
+  "relies_on_claims": ["<claim id>"]}
+
+In either reply, proposal or abstention, "relies_on_claims" lists the claim ids (clm_...) from the belief-kernel evidence section that your answer depends on; [] if none. It is optional and decides nothing about your answer. Only knob-, target- and sibling-scoped claims count; host-ceiling lines are background and are not accepted as reliance. Before answering, read the target-tier and "Tried" lines for your mechanism's family and list every claim id whose result your answer builds on, differs from, or avoids repeating; answer [] only if no shown claim bears on it.
+
+Rules: attack a route near the top of the profile; name a MECHANISM, not a wish; state a falsifier that could actually fail. The loop itself owns source inspection, authoring, correctness gates and matched A/B measurement. Do not make an unsupported trace or counter a prerequisite that this loop cannot collect. After a rejection for missing evidence, either use an available diagnostic named in the context or choose the smallest source-consistent change whose payoff the existing matched A/B can test. If no honest, feasible hypothesis satisfies these constraints, abstaining is a correct science result; reply instead with {"abstain": "<specific reason>", "relies_on_claims": ["<claim id>"]}. If the reason is that a mechanism you considered is ALREADY IMPLEMENTED, name what you found so it is not re-proposed: {"abstain": "<specific reason>", "mechanism_id": "<its id/slug>", "mechanism_family": "<short family, e.g. local quant/dot kernel>", "target_surface": "<path>", "target_symbol": "<function>", "relies_on_claims": ["<claim id>"]} -- all four identity fields are optional; include only what you actually found, omit the rest.
+
+Do not cache outputs by input identity or pointer, reuse buffers across repetitions, or use workload-specific shortcuts. If a deployable cache is proposed, declare it and report its cold and warm effects separately. This advisory complements R24-1/2; it never substitutes for those checks.

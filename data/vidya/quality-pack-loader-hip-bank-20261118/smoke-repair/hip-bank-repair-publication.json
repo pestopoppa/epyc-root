@@ -1,0 +1,8 @@
+{
+  "row_id": "handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118",
+  "publisher_rc": 0,
+  "qualification": "queued_GPU_busy",
+  "smoke_pass": false,
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/row.spec.json",
+  "disposition": "Owner republished changed repair packet; GPU busy; native qualification and production admission remain pending."
+}

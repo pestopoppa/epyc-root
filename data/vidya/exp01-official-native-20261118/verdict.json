@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "rc0 at 2026-11-18T15:59:16Z; producer-defined complete schedule sealed 65 native units: validity, 12 bench launches, 4 operational looks, 48 quality launches /24 paired items on CPUs72-95 with24 native threads. Existing strict official packager verified original source/input/runtime/grant/output custody and original timings/looks/items. Portable filing replays eight Judged/Located CPU PP/TG observations (3 scored launches each),24 frames,0 refusals; actual AgentPlanner.propose canary accepts scoped claims on four matching CPU targets and excludes four same-model GPU targets plus unrelated CPU. Original grant bytes preserved in native RUN.grant.raw and digest-bound. Pass applies to prospective source capture and planning-context wiring only; exploratory observations supply no protocol, historical-pilot extension, formal-gate, port or promotion warrant. Evidence data/vidya/exp01-official-native-20261118/.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T16:12:53+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T15:59:16Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vidya-exp01-proxy-official-native-20261118-r2.ended",
+ "filed_at": "2026-11-18T16:12:53+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-EXP01-PROXY-WIRE",
+ "id": "vidya-exp01-proxy-official-native-20261118-r2",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-exp01-proxy-official-native-20261118-r2.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc0 at 2026-11-18T15:59:16Z; producer-defined complete schedule sealed 65 native units: validity, 12 bench launches, 4 operational looks, 48 quality launches /24 paired items on CPUs72-95 with24 native threads. Existing strict official packager verified original source/input/runtime/grant/output custody and original timings/looks/items. Portable filing replays eight Judged/Located CPU PP/TG observations (3 scored launches each),24 frames,0 refusals; actual AgentPlanner.propose canary accepts scoped claims on four matching CPU targets and excludes four same-model GPU targets plus unrelated CPU. Original grant bytes preserved in native RUN.grant.raw and digest-bound. Pass applies to prospective source capture and planning-context wiring only; exploratory observations supply no protocol, historical-pilot extension, formal-gate, port or promotion warrant. Evidence data/vidya/exp01-official-native-20261118/.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vidya-exp01-proxy-official-native-20261118-r2",
+ "row_verdict": "pass",
+ "rule": "Can the prospective official EXP01 writer seal native custody for the original fixed proxy workload on the four newly recovered non-MTP Qwen3.6-35B-A3B arms using reference ik_llama.cpp c04881fc0f31dae5f8ec59c1d683889f0c9dfa11 on one 24-CPU quarter with 24 native threads? Preserve the original sequence, up to three pp512/tg128 launches per arm, originally scheduled operational looks at two and three, and all 24 original items paired on Q4_K_M/IQ4_KT. The 5400-second cap and existing pair stopping rule are unchanged. Stop on source-capture answer after a complete schedule as defined by the original producer and verified custody. Stop on native, identity, STOP or deadline failure and keep partial bytes. Publisher smoke uses a separate pinned 0.6B model, one bench launch and one CLI launch on four CPUs. This fresh run records completion of prospective native capture only. Historical pilot decisions, formal gates, port authority and official projection remain separate.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 75,
+  "input": 325337844,
+  "output": 1353589,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 326691433,
+  "tokens_per_task": 4355885.773333333
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "ed31003e3b3e00337cc633b0a58b2ec69b3358d70dd00c4dcbccef700e3a73b0",
+  "result": "pass",
+  "status": "filed"
+ }
+}

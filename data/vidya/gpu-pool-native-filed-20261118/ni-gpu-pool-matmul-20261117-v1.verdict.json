@@ -1,0 +1,55 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "Official allocator rc0 complete; exact expected native census observed=201, supported PASS=201, explicit UNSUPPORTED=0, failures=0; strict writer readback projected=1, refused=0, qualifying residency samples=40. Terminal native source/DSO/shim identities and per-invocation custody retained. Scope is the pinned artifact and original selected cases; source dirty state UNKNOWN and shim provenance mismatch remain. No performance, production, promotion or RVP-C2-2 claim. Planning canary separate.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T19:37:39+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T19:30:34Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/ni-gpu-pool-matmul-20261117-v1.ended",
+ "filed_at": "2026-11-18T19:37:39+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:SC18-GPU-POOL-MATMUL-LIVE",
+ "id": "ni-gpu-pool-matmul-20261117-v1",
+ "keep_tail": {
+  "reason": "no samples_a/samples_b in result",
+  "reported": false
+ },
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ni-gpu-pool-matmul-20261117-v1.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official allocator rc0 complete; exact expected native census observed=201, supported PASS=201, explicit UNSUPPORTED=0, failures=0; strict writer readback projected=1, refused=0, qualifying residency samples=40. Terminal native source/DSO/shim identities and per-invocation custody retained. Scope is the pinned artifact and original selected cases; source dirty state UNKNOWN and shim provenance mismatch remain. No performance, production, promotion or RVP-C2-2 claim. Planning canary separate.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/RESULT.json",
+ "root_cause_family": null,
+ "row": "ni-gpu-pool-matmul-20261117-v1",
+ "row_verdict": "pass",
+ "rule": "Capture one post-hook native MUL_MAT invocation on the pinned model-free c463f601b HIP executable and DSOs using MI210 and CPUs 184\u2013191. Use original seed 20261026 and original selection of 201 cases. Accept one sealed tuple with zero refusals, all 201 candidate-local CPU-reference comparisons passing, no unsupported or failed cases, re-derived source/DSO/shim hashes, and at least two distinct in-window same-PID KFD/VRAM/pinned-HIP/affinity samples. Stop after one terminal invocation, STOP, deadline or invalid custody. Candidate-specific correctness only.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 127,
+  "input": 502496387,
+  "output": 2086520,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 504582907,
+  "tokens_per_task": 3973093.755905512
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "2d6c054588dd220ed038addb6c0d01768440898a6aba353201bef1e740c596c7",
+  "result": "pass",
+  "status": "filed"
+ }
+}

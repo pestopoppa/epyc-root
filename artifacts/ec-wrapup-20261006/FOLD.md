@@ -20,15 +20,15 @@ ce2943a03 akm-ds41-solo-small-three-row-runs: +2.673% on serving:ds41-00d118d44-
 None. git cherry-pick auto-merged common/arg.cpp, common/common.h, common/speculative.cpp, tools/server/server-context.cpp (5 files, +42/-5). Default-off property rests on the original commit (per-impl width only when --spec-ngram-mod-n-max is explicit); not re-run here (no inference permitted). DFlash2/DSpark/KVU-19 paths were auto-merged without textual overlap; the champion owner regression gate should confirm.
 
 ## Builds (Release, gcc-15, GGML_NATIVE, OPENMP, LLAMA_CURL=OFF, targets llama-server llama-bench, -j 24, region-lock q1 / cpus 24-47)
-- CPU: /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/champ-build/cpu   rc=0  bin/llama-server
-- HIP: /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/champ-build/gpu   rc=0  bin/llama-server
+- CPU: (build tree not archived, 1.8 GiB of rebuildable output; recreate with ../copyspec-20261006/source-archive/width/build.sh)  rc=0  bin/llama-server
+- HIP: (build tree not archived; recreate with ../copyspec-20261006/source-archive/width/build.sh)  rc=0  bin/llama-server
   flags: GGML_HIP=ON, AMDGPU_TARGETS/GPU_TARGETS=gfx90a, HIP_GRAPHS=ON, HIP_NO_VMM=ON, HIP_MMQ_MFMA=ON, HIP_ROCWMMA_FATTN=ON (copied from gpu-20261004-b0ba1d427 CMakeCache; CPU flags from cpu-20261004-b0ba1d427)
-- Both: --version 10341 (bb5d98239); verify_ggml_linkage.sh <bin> <build>/bin = PASS (note: 2nd arg is the build bin dir, not the source tree). Script: champ-build/build.sh, logs champ-build/*.log
+- Both: --version 10341 (bb5d98239); verify_ggml_linkage.sh <bin> <build>/bin = PASS (note: 2nd arg is the build bin dir, not the source tree). Script: ../copyspec-20261006/source-archive/width/build.sh, log ../copyspec-20261006/source-archive/width/build.log
 - Not run: any server/inference/GPU. HIP backend residency must be proven at serving time.
 
 ## Evidence
-- /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/results/summary.md  (+20.5% code-edit decode at ngram cap 16, CPU frontdoor, 65/65 greedy identity)
-- /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/../results/summary.md
+- ../copyspec-20261006/source-archive/width/results/summary.md  (+20.5% code-edit decode at ngram cap 16, CPU frontdoor, 65/65 greedy identity)
+- ../copyspec-20261006/source-archive/results/summary.md
 
 ## Champion owner actions
 1. After your regression gates (speed + quality vs 4348de400, CPU and GPU), fast-forward ak/champion/llama-cpp-ffc1bac82eec to bb5d982395f8584dd3d6948903f8733c1f8745cf. If the champion has advanced past 4348de400, rebase/cherry-pick bb5d98239 onto the new tip (it touches only speculative/server arg plumbing) and rebuild.

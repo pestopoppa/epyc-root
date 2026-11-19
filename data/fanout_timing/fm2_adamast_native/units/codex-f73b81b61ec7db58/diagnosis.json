@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "codex-f73b81b61ec7db58",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The assistant states: 'The prior RLM source commit is now pushed and verified.' However, the subsequent wrap-up tool output shows: '[wrapup] push: lock held, retry 1/5 in 20s', indicating the final wrap-up commit (06aa1263866d) was not successfully pushed. The assistant's final message admits 'It has not yet reported a WRAPPED SHA', yet the earlier claim of verification for the overall state is misleading as the work is not fully durable.",
+          "confidence": "medium",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795008277,
+        "warnings": []
+      }
+    }
+  ]
+}

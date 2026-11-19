@@ -1,0 +1,1 @@
+Isolated server parameter cases. Each case repopulates the slot using 128 pinned valid token IDs; successful and invalid recency requests are judged by HTTP response. Stops at first mismatch. No continuity, model quality or performance claim.

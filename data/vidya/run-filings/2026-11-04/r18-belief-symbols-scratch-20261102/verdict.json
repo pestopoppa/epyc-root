@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "The complete/nonpartial requirement is unmet: full-result.json records partial=true, exit_code=70, reason=unhandled_exit, with ValueError: pinned input changed: private_hip during pre-comparison comparison_hashes. terminal-events.jsonl independently records disposition UNKNOWN. native-units.jsonl contains only dryrun/full CPU build-complete records, not a complete CPU/HIP host/gfx90a device symbol comparison. The exact original task is now a declined/merged paragraph at line 3632; the surviving open box is VB-KQROUTE-1 at line 2664 and requires real ingestion plus the AK planning-context canary. This run cannot close it.",
+  "tick_text": null,
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:18:47+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=70 time=2026-11-02T22:19:11Z reason=job-rc-70:exited",
+ "filed_at": "2026-11-04T07:18:47+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R18-INDEPENDENT-SYMBOL-FINDINGS",
+ "id": "r18-belief-symbols-scratch-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/r18-belief-symbols-scratch-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/native-units.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "r18-belief-successor",
+ "phase": "filing",
+ "rc": 70,
+ "reason": "The complete/nonpartial requirement is unmet: full-result.json records partial=true, exit_code=70, reason=unhandled_exit, with ValueError: pinned input changed: private_hip during pre-comparison comparison_hashes. terminal-events.jsonl independently records disposition UNKNOWN. native-units.jsonl contains only dryrun/full CPU build-complete records, not a complete CPU/HIP host/gfx90a device symbol comparison. The exact original task is now a declined/merged paragraph at line 3632; the surviving open box is VB-KQROUTE-1 at line 2664 and requires real ingestion plus the AK planning-context canary. This run cannot close it.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/belief-successor-20261102/native-units.jsonl",
+ "root_cause_family": null,
+ "row": "r18-belief-symbols-scratch-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "A complete nonpartial independent comparison with no CPU, HIP host or gfx90a device symbol differences passes; an evidenced complete comparison with differences is a valid negative; all failures and partials are UNKNOWN.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "f0ecb86bc3e424986b0649ec486c00bd0f912865e32be686d6a981dd165270b8",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

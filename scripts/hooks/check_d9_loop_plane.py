@@ -76,6 +76,35 @@ target repository is also resolved from the command itself now — its own
 command — rather than trusting the hook payload's cwd unconditionally; a commit
 chained after `cd` into an unguarded repo is no longer evaluated against
 /workspace's tree.
+
+JUDGED AT THE COMMIT ITSELF, 2026-11-02 (LOOP-46, operator sign-off via the
+decision tool, BRF-T5-2 fold-3 revision). Every fix above still guessed, from
+the command TEXT, which repository, index and paths a commit would use. On
+2026-10-31 it refused a lane-worktree commit that touched one index file by
+listing /workspace's uncommitted files. A PreToolUse hook runs before git, so
+it cannot see `GIT_INDEX_FILE=<private> git commit`, a subshell, or the
+temporary index git builds for `git commit -- <pathspec>`.
+
+Git can. The authoritative check is now this script in git-hook mode,
+
+    check_d9_loop_plane.py --git-hook commit-msg <message-file>
+
+installed as `commit-msg` by scripts/hooks/install_git_hooks.sh. It runs inside
+the commit, in the committing worktree, with GIT_INDEX_FILE pointing at the
+exact index being committed (a pathspec commit's temporary index, a private
+index, or a lane worktree's own index). The guarded set is
+`git diff --cached --no-renames HEAD` under that environment, and the ack is
+read from the message file itself. A merge counts only the guarded paths whose
+merged content matches NEITHER parent, so a merge that just brings in commits
+already judged does not need its own ack. The shared clone's working tree and
+the shared index are never read. It also covers commits made by scripts and by
+non-Claude agents, which never pass through PreToolUse. (Cherry-pick and rebase
+do not run commit-msg; they replay commits that were judged when first made.)
+
+The PreToolUse entry point now steps aside whenever the target repository's
+commit-msg hook runs this checker. It keeps the legacy text-based check only
+where that hook is missing, or where the commit passes `--no-verify`/`-n` and
+so skips git's hooks.
 """
 
 from __future__ import annotations
@@ -349,7 +378,187 @@ def _resolve_commit_cwd(cmd: str, seg: list[str], base_cwd: str | None) -> str |
     return cwd
 
 
+
+def _print_refusal(guarded: list[str], how_to_ack: str) -> None:
+    listing = "\n".join(f"      {p}" for p in guarded[:12])
+    more = f"\n      ... and {len(guarded) - 12} more" if len(guarded) > 12 else ""
+    print(f"""
+D9 REFUSED THIS COMMIT — it changes the loop plane without an ack.
+
+    {listing}{more}
+
+D9, ratified by the operator 2026-08-15: merging any change under
+`scripts/coordination/**` requires operator ack. This is the LOOP PLANE — the
+code that runs the fleet unattended, where a wrong change is found by its
+consequences at 3am rather than by a reader.
+
+`promote_lane.py` already refused such a PROMOTION (exit 5). It could not refuse
+a direct commit, and on 2026-08-16 a forward-port went straight to main through
+exactly that opening. A control with an unguarded path is not a control.
+
+{how_to_ack}
+
+Tests under scripts/coordination/tests/ are exempt: refusing them would make the
+safe half of a change harder to land than the dangerous half.
+""".rstrip(), file=sys.stderr)
+
+
+_ACK_HOWTO = """To proceed, record the ack IN the commit so it survives in the history:
+
+    git commit -m "<subject>
+
+    D9-ack: <who authorised this, and why>" -- <paths>
+
+or, for a scripted operator run:
+
+    EPYC_D9_ACK="<authorisation>" git commit ... -- <paths>"""
+
+
+# --------------------------------------------------------------------------------------
+# Git-hook mode (2026-11-02, LOOP-46): judge the commit being made, from inside it.
+# --------------------------------------------------------------------------------------
+
+# `git hash-object -t tree /dev/null`: the base for a repository's first commit.
+_EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+
+
+def _blob_id(spec: str) -> str | None:
+    """Object id of `<rev>:<path>` or `:<path>` (index), or None when absent there.
+
+    The index form reads GIT_INDEX_FILE, which git sets for its hooks to the exact index
+    being committed. Absence is a real state (a deleted path), so None is compared too.
+    """
+    out = _run(["git", "rev-parse", "-q", "--verify", spec])
+    return out[0] if out else None
+
+
+def _merge_parents() -> list[str]:
+    """MERGE_HEAD commits when this commit concludes a merge, else []."""
+    path = _run(["git", "rev-parse", "--git-path", "MERGE_HEAD"])
+    if not path:
+        return []
+    f = path[0]
+    if not os.path.isabs(f):
+        top = _run(["git", "rev-parse", "--show-toplevel"])
+        f = os.path.join(top[0] if top else ".", f)
+    try:
+        with open(f, encoding="utf-8") as fh:
+            return [l.strip() for l in fh if l.strip()]
+    except OSError:
+        return []
+
+
+def commit_guarded_paths() -> list[str] | None:
+    """Guarded paths THIS commit records, read from the index git is committing.
+
+    None means git could not answer; the caller then fails closed.
+    `--no-renames` lists both sides of a rename, so moving a file out of the loop
+    plane is a loop-plane change too.
+    """
+    base = "HEAD" if _blob_id("HEAD") else _EMPTY_TREE
+    changed = _run(["git", "diff", "--cached", "--name-only", "--no-renames", base])
+    if changed is None:
+        return None
+    guarded = sorted({p for p in changed if is_guarded(p)})
+    parents = _merge_parents()
+    if parents and guarded:
+        # A merge records whatever its incoming parents already carried; those commits were
+        # judged (and acked) when they were made. Only content matching NEITHER side, such as
+        # a conflict resolution or an evil merge, is new in this commit.
+        kept = []
+        for p in guarded:
+            mine = _blob_id(f":{p}")
+            if any(_blob_id(f"{par}:{p}") == mine for par in parents):
+                continue
+            kept.append(p)
+        guarded = kept
+    return guarded
+
+
+def _message_has_ack(msg_file: str) -> bool:
+    try:
+        with open(msg_file, encoding="utf-8", errors="replace") as fh:
+            text = fh.read()
+    except OSError:
+        return False
+    # git strips '#' comment lines (the default core.commentChar) from the final message;
+    # an ack that only appears in a comment would not survive into the history.
+    body = "\n".join(l for l in text.splitlines() if not l.startswith("#"))
+    return bool(ACK_RE.search(body))
+
+
+def git_hook_main(phase: str, msg_file: str | None) -> int:
+    if phase != "commit-msg" or not msg_file:
+        print(f"check_d9_loop_plane: unsupported git-hook phase {phase!r}", file=sys.stderr)
+        return 1
+    global _GIT_CWD
+    _GIT_CWD = None          # git runs hooks at the committing worktree's top level
+    if not _repo_has_guarded_tree():
+        return 0
+    guarded = commit_guarded_paths()
+    if guarded is None:
+        print("D9: git could not list this commit's paths; refusing rather than guessing.\n"
+              "    Retry, or ack with EPYC_D9_ACK / a D9-ack: trailer.", file=sys.stderr)
+        return 0 if (os.environ.get("EPYC_D9_ACK", "").strip() or _message_has_ack(msg_file)) else 1
+    if not guarded:
+        return 0
+    if os.environ.get("EPYC_D9_ACK", "").strip() or _message_has_ack(msg_file):
+        return 0
+    _print_refusal(guarded, _ACK_HOWTO.replace(
+        "To proceed,", "This is the commit-msg hook, judging the exact index being committed. To proceed,"))
+    return 1
+
+
+# --------------------------------------------------------------------------------------
+# PreToolUse mode: steps aside whenever the git-level judge is installed.
+# --------------------------------------------------------------------------------------
+
+def _git_level_judge_installed() -> bool:
+    """Does the target repository's commit-msg hook run this checker?
+
+    `--git-path hooks/commit-msg` honours core.hooksPath, which every epyc-root
+    worktree shares. When it is installed, git judges the exact commit, and this
+    pre-execution guess can only add false positives.
+    """
+    out = _run(["git", "rev-parse", "--git-path", "hooks/commit-msg"])
+    if not out:
+        return False
+    hook = out[0]
+    if not os.path.isabs(hook):
+        top = _run(["git", "rev-parse", "--show-toplevel"])
+        hook = os.path.join(top[0] if top else (_GIT_CWD or "."), hook)
+    try:
+        if not os.access(hook, os.X_OK):
+            return False
+        with open(hook, encoding="utf-8", errors="replace") as fh:
+            return "check_d9_loop_plane.py" in fh.read()
+    except OSError:
+        return False
+
+
+def _skips_git_hooks(seg) -> bool:
+    """`--no-verify` / `-n` skip commit-msg, so the legacy check must run instead."""
+    if not isinstance(seg, list):
+        return False
+    for t in seg:
+        if t == "--":
+            break
+        if t == "--no-verify":
+            return True
+        if len(t) > 1 and t[0] == "-" and t[1] != "-":
+            for ch in t[1:]:
+                if ch in "mFcCtS":      # takes a value: the rest of the bundle is that value
+                    break
+                if ch == "n":
+                    return True
+    return False
+
+
 def main() -> int:
+    if len(sys.argv) >= 2 and sys.argv[1] == "--git-hook":
+        phase = sys.argv[2] if len(sys.argv) > 2 else ""
+        msg = sys.argv[3] if len(sys.argv) > 3 else None
+        return git_hook_main(phase, msg)
     try:
         payload = json.load(sys.stdin)
     except (json.JSONDecodeError, ValueError):
@@ -387,6 +596,12 @@ def main() -> int:
     base_cwd = (payload.get("cwd") or "").strip() or None
     _GIT_CWD = _resolve_commit_cwd(cmd, seg, base_cwd) if seg else base_cwd
 
+    # LOOP-46 (2026-11-02): when git itself will judge this commit, from inside it, with
+    # the exact index it records, a pre-execution guess from command text adds nothing
+    # but false positives. Step aside unless the command skips git's hooks.
+    if _git_level_judge_installed() and not _skips_git_hooks(seg):
+        return 0
+
     # D9 governs one repository's loop plane. A repo that does not CONTAIN the guarded
     # tree cannot carry a loop-plane change, so the hook does not apply there. This is
     # the load-bearing check: it can only ever exempt repositories where the guarded
@@ -406,35 +621,7 @@ def main() -> int:
     if not guarded:
         return 0
 
-    listing = "\n".join(f"      {p}" for p in guarded[:12])
-    more = f"\n      ... and {len(guarded) - 12} more" if len(guarded) > 12 else ""
-    print(f"""
-D9 REFUSED THIS COMMIT — it changes the loop plane without an ack.
-
-    {listing}{more}
-
-D9, ratified by the operator 2026-08-15: merging any change under
-`scripts/coordination/**` requires operator ack. This is the LOOP PLANE — the
-code that runs the fleet unattended, where a wrong change is found by its
-consequences at 3am rather than by a reader.
-
-`promote_lane.py` already refused such a PROMOTION (exit 5). It could not refuse
-a direct commit, and on 2026-08-16 a forward-port went straight to main through
-exactly that opening. A control with an unguarded path is not a control.
-
-To proceed, record the ack IN the commit so it survives in the history:
-
-    git commit -m "<subject>
-
-    D9-ack: <who authorised this, and why>" -- <paths>
-
-or, for a scripted operator run:
-
-    EPYC_D9_ACK="<authorisation>" git commit ... -- <paths>
-
-Tests under scripts/coordination/tests/ are exempt: refusing them would make the
-safe half of a change harder to land than the dangerous half.
-""".rstrip(), file=sys.stderr)
+    _print_refusal(guarded, _ACK_HOWTO)
     return 2
 
 

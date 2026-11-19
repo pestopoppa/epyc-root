@@ -1,0 +1,49 @@
+{
+  "schema": "epyc.target-precision.sources.v1",
+  "sources": [
+    {
+      "repository": "unsloth/Qwen3.8-27B-GGUF",
+      "revision": "4ca720788d1e01f1bff70c033e0d0028fd02e502",
+      "api_evidence_sha256": "63d05d884c044cfea94f18cfaf9dbfa910399ad84330fe258398d95652c7beeb",
+      "source": [
+        "BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf",
+        "BF16/Qwen3.8-27B-BF16-00002-of-00002.gguf"
+      ],
+      "header_first_4m_sha256": "d41a3603319bc2b5ba676c9296e278166f8cc9d5714a7ec91b8587276210221c"
+    },
+    {
+      "repository": "ggml-org/Qwen3.8-27B-GGUF",
+      "revision": "cc54a8a3955ee1a099011952d0ef2eab24a7eab3",
+      "api_evidence_sha256": "dd222bb05744c5f3999d7f16d8bf0e48f6f70ce78ef2bf80d2b7fc6df65d5c3e",
+      "source": [
+        "Qwen3.8-27B-Q4_K_M.gguf"
+      ],
+      "header_first_4m_sha256": "6b14a58d5b60203cef933d235b5e8f6c7db12d2391079a906f6a60613035fc3e"
+    }
+  ],
+  "limitations": [
+    "Headers and model cards agree on Qwen3.8-27B/qwen35 family, but exact shared base revision and tensor correspondence are unproven.",
+    "Initial 4 MiB headers were insufficient for complete GGUF tensor catalog; no tensor-level comparison claimed.",
+    "All downloads are volatile tmpfs inputs, retained only by explicit task-specific row root; not a measurement."
+  ],
+  "artifacts": [
+    {
+      "name": "Qwen3.8-27B-BF16-00001-of-00002.gguf",
+      "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/4ca720788d1e01f1bff70c033e0d0028fd02e502/BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf",
+      "size_bytes": 49986159616,
+      "sha256": "b9966e82b7a4d87028b5eae061d578ee826305ebf8baea5bfc6e09bad0ba191f"
+    },
+    {
+      "name": "Qwen3.8-27B-BF16-00002-of-00002.gguf",
+      "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/4ca720788d1e01f1bff70c033e0d0028fd02e502/BF16/Qwen3.8-27B-BF16-00002-of-00002.gguf",
+      "size_bytes": 4671576000,
+      "sha256": "92e3943c4f9bd6292a7bef82369f65fed9bfed088b9df0fb2fa2ce17c9edfa02"
+    },
+    {
+      "name": "Qwen3.8-27B-Q4_K_M.gguf",
+      "url": "https://huggingface.co/ggml-org/Qwen3.8-27B-GGUF/resolve/cc54a8a3955ee1a099011952d0ef2eab24a7eab3/Qwen3.8-27B-Q4_K_M.gguf",
+      "size_bytes": 18973870528,
+      "sha256": "c600de0300ae8a0eb3a6c0b8b5561b8b96f16bd2c863c2a66c42de29d391a747"
+    }
+  ]
+}

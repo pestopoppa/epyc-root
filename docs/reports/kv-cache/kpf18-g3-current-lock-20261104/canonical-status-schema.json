@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-11-04T18:14:07.304723+00:00",
+  "provider_source": "/mnt/raid0/llm/epyc-orchestrator/src/runtime/gpu_quiet_lock.py",
+  "path": "/mnt/raid0/llm/tmp/gpu_quiet.lock",
+  "held": true,
+  "mode": "exclusive",
+  "holder_count": 1,
+  "keys_match": true,
+  "schema_match": true,
+  "kernel_ownership_readable": true,
+  "scope": "Read-only actual canonical status schema; existing holder not an authorized successor witness."
+}

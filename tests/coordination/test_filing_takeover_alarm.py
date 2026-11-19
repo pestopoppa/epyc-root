@@ -457,3 +457,39 @@ def test_owner_alert_never_creates_or_replaces_a_new_checkpoint(fixture, monkeyp
     assert len(alerts(flags)) == len(messages(bus)) == 1
     assert writes and set(writes) == {"filing-alarm.sent.json"}
     assert not (flags / "filing-alarm.alerted.json").exists()
+
+
+def _due_with_end(flags, run_id, ended, age=7200):
+    with (flags / "filing-due.jsonl").open("a") as out:
+        out.write(json.dumps({"id": run_id, "ended_file": str(ended),
+                              "seen_at": (NOW - timedelta(seconds=age)).isoformat()}) + "\n")
+
+
+def test_smoke_only_row_without_manifest_is_unfileable_not_nudged(fixture):
+    flags, bus = fixture
+    (flags / "grants").mkdir()
+    ended = flags / "grants/smoke-only-1.ended"
+    ended.write_text("rc=0 reason=complete\n")
+    _due_with_end(flags, "smoke-only-1", ended)
+    r = alarm.scan_once(flags, bus, now=NOW)
+    assert r["nudged"] == [] and r["alerted"] == [] and messages(bus) == []
+    assert r["unfileable"][0]["id"] == "smoke-only-1"
+
+
+def test_moved_aside_false_complete_marker_is_unfileable(fixture):
+    flags, bus = fixture
+    _due_with_end(flags, "false-complete-1", flags / "grants/false-complete-1.ended")
+    r = alarm.scan_once(flags, bus, now=NOW)
+    assert r["nudged"] == [] and "moved aside" in r["unfileable"][0]["reason"]
+
+
+def test_row_with_ready_manifest_still_nudges(fixture):
+    flags, bus = fixture
+    (flags / "grants").mkdir()
+    (flags / "ready").mkdir()
+    ended = flags / "grants/real-1.ended"
+    ended.write_text("rc=0 reason=complete\n")
+    (flags / "ready/real-1.json").write_text(json.dumps({"id": "real-1"}))
+    _due_with_end(flags, "real-1", ended)
+    r = alarm.scan_once(flags, bus, now=NOW)
+    assert r["nudged"] == ["real-1"] and r["unfileable"] == []

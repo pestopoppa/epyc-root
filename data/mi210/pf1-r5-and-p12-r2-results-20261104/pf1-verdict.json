@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=75 disk-floor stopped the run after 36 valid cells: all 3 A0 launches but only 2 of 3 GPU/control launches per length; control A1-disabled/A0 median 0.87455 at L256 is below 0.90. Required complete three-block same-frame guard fails; no crossover or PF1 gate verdict.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T16:13:53+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-04T16:00:39Z reason=disk-floor",
+ "filed_at": "2026-11-04T16:13:53+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "pf1-expand-r5-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/pf1-expand-r5-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/pf1-expand-r5-20261104/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "rc=75 disk-floor stopped the run after 36 valid cells: all 3 A0 launches but only 2 of 3 GPU/control launches per length; control A1-disabled/A0 median 0.87455 at L256 is below 0.90. Required complete three-block same-frame guard fails; no crossover or PF1 gate verdict.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/pf1-expand-r5-20261104/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "pf1-expand-r5-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "PF1-EXPAND-2 r5: fresh L={256,384,512,768}, A0/A1/A2/A1-disabled, ONE NEW three-block frame, five timed reps per launch/L. Question: reconcile the lower r4 L256 A1/A0=.6587, A2/A0=.7998 with upper r3 L512 A1/A0=1.1877, A2/A0=1.3886 in the same frame; predecessor windows disagree and are context only, NEVER pooled. Ratios higher=better, paired within block against A0; launch is replicate. Descriptive bracket requires a lower point <.93 and a later high point beginning a sustained >1.07 suffix; any intermediate [.93,1.07] point remains unresolved/at-crossover. All three valid blocks and capture1.0 required. A1-disabled/A0 paired median within [.90,1.10] at EVERY L. A0 CPU placement cap <=40%; GPU skew amendment: required in-window sample/max node shares recorded as covariate, skew alone does not invalidate GPU arms. HIP residency, mapped store, identity and full capture remain required. A0 hot bias unresolved. Block-end >=2 run/residency/placement failures stop for futility; after block2 stop if control diverges >25% at EVERY L. Cumulative2400s cap, engine safety/window stops; no answer-based early stop. Guard-failing/incomplete outcomes inconclusive. Descriptive exploratory futility-only; no causal interpretation, significance claim or PF1 gate verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "fa24f07c10e5c02612f5b197fc21c36b09f3efb2ff31e9c4ed5cd169bc010e29",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

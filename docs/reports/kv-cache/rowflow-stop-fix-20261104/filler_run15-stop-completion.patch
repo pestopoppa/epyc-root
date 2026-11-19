@@ -1,0 +1,55 @@
+--- a/scripts/coordination/rowflow/filler_run15.sh
++++ b/scripts/coordination/rowflow/filler_run15.sh
+@@ -194,6 +194,24 @@
+   return 0
+ }
+ is_complete() { [ -n "$COMPLETE_CMD" ] || return 1; ( cd "$WORKDIR" && bash -c "$COMPLETE_CMD" ) >/dev/null 2>&1; }
++hard_stop_recorded() {
++  [ -r "$ENDED" ] && awk '$1 == "rc=75" && ($3 == "reason=hard-end" || $3 == "reason=disk-floor") { found=1 } END { exit !found }' "$ENDED"
++}
++finish_job() { # cleanup_bad reason rc; stop reasons must survive a true native completion predicate
++  local cleanup_bad=$1 reason=$2 rc=$3
++  if [ "$cleanup_bad" = 1 ] || [ "$reason" = cleanup-failed ]; then
++    log "REFUSED: native cleanup incomplete; grant retained, no .ended or .complete"
++    STARTED_ONE=1; return 70
++  fi
++  if [ "$reason" != hard-end ] && [ "$reason" != disk-floor ] && is_complete; then
++    mark_complete || return 70
++    return 20
++  fi
++  if [ "$rc" -eq 0 ]; then rc=75; reason=partial-native-incomplete; fi
++  [ "$rc" -eq 75 ] || reason="job-rc-$rc:$reason"
++  write_ended "$rc" "$reason"
++  STARTED_ONE=1
++}
+ mark_complete() {
+   kill_pidfile || { log "REFUSED: completion while native child unverified"; return 70; }
+   mkdir -p "$GRANTS"
+@@ -351,15 +369,7 @@
+   CUR=""
+   CUR_BIRTH=""
+   exec 8>&-
+-  if [ "$cleanup_bad" = 1 ] || [ "$reason" = cleanup-failed ]; then
+-    log "REFUSED: native cleanup incomplete; grant retained, no .ended or .complete"
+-    STARTED_ONE=1; return 70
+-  fi
+-  if is_complete; then mark_complete || return 70; return 20; fi
+-  if [ "$rc" -eq 0 ]; then rc=75; reason=partial-native-incomplete; fi
+-  [ "$rc" -eq 75 ] || reason="job-rc-$rc:$reason"
+-  write_ended "$rc" "$reason"
+-  STARTED_ONE=1
++  finish_job "$cleanup_bad" "$reason" "$rc"
+ }
+ 
+ # Disabled metadata has no new file dependency or EXIT trap.
+@@ -378,6 +388,10 @@
+   fi
+ fi
+ log "launcher up pid=$$ class=$CLASS poll=${POLL}s grants=$GRANTS stop=$STOPFILE minwin=${MINWIN}s ports=${PORTS:-none}${DRYRUN:+ dryrun=$DRYRUN}"
++if hard_stop_recorded; then
++  log "REFUSED: prior hard-end/disk-floor receipt; completion cannot override stop evidence"
++  exit 75
++fi
+ if is_complete; then mark_complete || exit 70; exit 0; fi
+ while :; do
+   [ -e "$COMPLETE" ] && { log "complete marker present; exiting"; exit 0; }

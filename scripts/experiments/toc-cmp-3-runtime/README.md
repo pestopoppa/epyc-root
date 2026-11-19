@@ -1,0 +1,17 @@
+# CMP-3 experimental post-fold runtime check
+
+`orchestrator.patch` applies after `toc-cmp-3-contract/orchestrator.patch` on orchestrator commit `12afe2858f9dbd4691447926d6cf1864de64348c`. It is a candidate experiment, not a deployment. The new `context_compaction_semantic` feature defaults off and depends on `context_compaction_contract`, which in turn requires `context_arm_ab` and its dependencies.
+
+The caller explicitly installs an async, nonblocking evaluator with `configure_semantic_check(state, evaluator, evaluator_id, timeout_s)` in `src.graph.compaction_semantic`. The callback receives a request-bound case and returns UTF-8 JSON bytes in the existing seven-field CMP-3 semantic validator schema. No evaluator or network client is installed by default. The callback is process-local and must be reinstalled after restart; outcomes are serializable task state. A finite positive timeout is required; cancellation is cooperative, so the evaluator must not block the event loop or suppress cancellation.
+
+The boundary validates literal framing separately, folds history, then evaluates the resulting contract and history view before returning. An unknown, invalid response, timeout, cancellation, missing evaluator, or contradiction records an outcome and raises; further rendering and boundary retries remain blocked until a successful recheck. No evaluator is called when no fold occurs. Each outcome retains the exact reference and observed messages, plus the raw response as base64 when returned; this may contain sensitive context and must be protected accordingly. Evidence citations for non-unknown decisions must quote exact located substrings. Semantic labels are evaluator judgments: the rubric requires unknown for unsupported external-state assertions, but structural validation cannot prove that the evaluator followed it or that a cited passage semantically entails a claim. The hook checks rendered history at the boundary, not the later assembled generation request or worker understanding. The validator is adapted from `scripts/experiments/toc-cmp-3-semantic/semantic.py`; it adds no claim grading rule.
+
+Offline verification in the candidate worktree:
+
+```bash
+PYTHONPATH=/usr/lib/python3/dist-packages /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -m pytest -q tests/unit/test_toc_cmp3_semantic_runtime.py tests/unit/test_toc_cmp3_contract.py tests/unit/test_toc_mp2i_context_arms.py
+```
+
+The additive runtime patch SHA-256 is `699e52f7d47cd50e60b41c2955323608367ca13a6fc06fd44da17921c2aac590`. The sealed runtime screen uses the actual candidate boundary with three fixed synthetic cases and an isolated CPU evaluator. Expected labels and observed verdicts remain separate; completion is integration coverage. See the [screen protocol](../../../docs/design/toc-cmp-3-runtime-protocol-20261118.md).
+
+Preparation reuses the preserved model identity receipt and binds both patches, the complete staged source diff, evaluator rubric and runner. Run `python3 -B scripts/experiments/toc-cmp-3-runtime/prepare.py` once on fresh scratch; it refuses existing packets. The launcher uses the orchestrator virtual environment for graph dependencies. Publication is through `publish_row.py` with the prepared spec, whose smoke is the only directly invoked inference. Official native results live under `/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-runtime/native/`; incomplete attempts retain `PARTIAL.json`. Never infer the official result from smoke.

@@ -1,0 +1,17 @@
+{
+  "schema": "kvu19a2.offline-controls.v3",
+  "status": "offline_controls_only_not_gpu_qualification",
+  "tests": 18,
+  "tests_passed": true,
+  "launcher_offline_control_returncode": 1,
+  "requested_native_target_absent": true,
+  "offline_completion_returncode": 1,
+  "custody_mutation_launcher_returncode": 65,
+  "source_manifest_sha256": "d5986318ec79e2b1e5b47bb7ef59d2f2cbd353f237b5b1b3ac5d55cfc2aea222",
+  "runtime_manifest_sha256": "e6a9cc7856da8ddaa972a97049ddbfdb7a91fb1151bd04c45bd6b569836d05db",
+  "gpu_executed": false,
+  "benchmark_executed": false,
+  "compiled": false,
+  "published": false,
+  "supersedes": "OFFLINE-CONTROLS-v2.json"
+}

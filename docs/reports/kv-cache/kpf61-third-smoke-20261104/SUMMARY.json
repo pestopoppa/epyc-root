@@ -1,0 +1,51 @@
+{
+  "attempt": "e4dfd06df16f49258ee5bdf2ab52c0e8",
+  "first_probability_row_difference": 0,
+  "job_rc": 0,
+  "limitations": [
+    "JSON structural comparison, not byte equality or full logits",
+    "same-model cold and reorder arms; no 35B result or full gate verdict",
+    "smoke evidence only; no target exposure inferred"
+  ],
+  "native_file_hashes": {
+    "0-cold-test.request.json": "6feb538135b5b97cfda3cd5b8337560e031d4f6559a03fd7f72a67225611bd1f",
+    "0-cold-test.response.json": "84a66e5b0a52b4ab911201c026d5ec8dea5ed33460a06e1f41d5778207f0ede2",
+    "0-cold.maps.json": "cb9c009b4885140daf447e4f0adc94f55abd2c3ab6a7db2afec7fbacae77762f",
+    "0-reorder-test.request.json": "580f72ef29b41daee64f2eb391d629ed27fa1d76d1c86070ddde86c44f46e495",
+    "0-reorder-test.response.json": "d51f129c8aaa37092e7169039ac167808000b08123f7314e392e22b7215950af",
+    "0-reorder.maps.json": "470c9a446ddaf65923c726a63203e8b869376c39a63ffe757c4e705f1bb19719",
+    "EXPOSURES.jsonl": "c2976e01a9150e0b51a9f4e82edfb603fa4e29fd49555745128bbe1017093496",
+    "RESULT.json": "1b19bbb7290f49cd15961b6edf5e754ded346197e3f0feeee1529cc43e537924",
+    "native.jsonl": "349da77b34961d1b9a76d4560f81e1b0eb81395beddd29b590d007319c13aab0"
+  },
+  "native_status": "FAIL",
+  "outer_rc": 75,
+  "outer_reason": "partial-native-incomplete",
+  "planner": {
+    "applied": true,
+    "baseline_prefix": 32,
+    "candidate": {
+      "slot": 0
+    },
+    "common_prefix": 224,
+    "n_candidates": 1,
+    "n_moved": 192,
+    "n_pieces": 3,
+    "n_segment_tokens": 192,
+    "plan_ms": 0.052,
+    "reordered_prefix": 224,
+    "requested": true,
+    "timed_out": false
+  },
+  "probability_row_counts": [
+    32,
+    32
+  ],
+  "probability_rows_equal": false,
+  "scope": "one Qwen3.5-0.8B public model publisher smoke, not target 35B or full KPF-61 gate",
+  "token_counts": [
+    32,
+    32
+  ],
+  "tokens_equal": true
+}

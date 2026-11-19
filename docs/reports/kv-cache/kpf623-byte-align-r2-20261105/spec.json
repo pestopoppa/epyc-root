@@ -1,0 +1,40 @@
+{
+  "schema": "epyc.preparation.v1",
+  "id": "kpf623-byte-align-r2-20261105",
+  "owner": "h-kvfork",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "ram_gib": 2,
+  "gib": 2,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "window_s": 660,
+  "smoke_timeout_s": 300,
+  "first_progress_s": 300,
+  "priority_rank": 45,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-62.3.BYTE-ALIGN",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf623-byte-align-r2-20261105/launch.sh",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf623-byte-align-r2-20261105/out/RESULT.json",
+  "result_format": "json",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf623-byte-align-r2-20261105",
+  "workdir": "/mnt/raid0/llm/tmp/kvfork/kpf623-byte-align-r2-20261105",
+  "stop_file": "/mnt/raid0/llm/tmp/kvfork/kpf623-byte-align-r2-20261105/STOP",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "ready": false,
+  "published": false,
+  "kind": "compute",
+  "unit_key": "counts",
+  "lineage": "kpf623-byte-alignment-exploratory",
+  "question": "Exploratory only: which retained target byte pieces admit zero, one, or multiple decompositions over nonempty auxiliary byte pieces?",
+  "decision_rule": "EXPLORATORY_COMPLETE requires pinned prior full classification and record, pinned retained input inventories before/after, sequential full IDs, prior classification counts and unique reconstructions verified, and all empty auxiliary IDs enumerated. Smoke runs the same checks to a separate result. No tokenizer or quality conclusion.",
+  "controls": "Outer completion checks result/input seals and enumerated auxiliary IDs without job-only environment. Retained inventories and prior full records copied into scratch with fixed pins; smoke has separate exclusive output.",
+  "limitations": [
+    "Original native census remains inconclusive; input inventories are retained bytes, not proven tokenizer behavior.",
+    "Ambiguous counts capped at two; empty auxiliary pieces enumerated separately and excluded from decompositions."
+  ],
+  "supersedes": "kpf623-byte-alignment-exploratory-20261105"
+}

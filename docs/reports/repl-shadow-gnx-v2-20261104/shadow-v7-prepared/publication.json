@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.bounded-successor.v1",
+  "as_of": "2026-11-04",
+  "status": "PUBLISHED_SMOKE_PASS",
+  "row": "ufh14-repl-emb23a-parse-v7-20261104",
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7",
+  "published": true,
+  "official_inference_launched": false,
+  "smoke_native_inference_launched": true,
+  "publisher_rc": 0,
+  "publisher_interpreter": "/home/node/.local/bin/python3.13",
+  "publisher_log": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot-v7/publish-20261104.log",
+  "ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh14-repl-emb23a-parse-v7-20261104.json",
+  "ready_sha256": "e30afedbdb393ed2f2bc67152ed1f37044757f6b82b974dafbef75ea7cf343d6",
+  "smoke_pass": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-repl-emb23a-parse-v7-20261104/PASS.json",
+  "smoke_elapsed_s": 10,
+  "smoke_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-repl-emb23a-parse-v7-20261104/native-attempts/attempt-a5he_k3y/native-result.json (measurement field)",
+  "smoke_ended": "rc=75 time=2026-11-04T15:27:48Z reason=partial-native-incomplete",
+  "validation": {
+    "packet_unit_tests": 8,
+    "packet_unit_tests_pass": true,
+    "shell_syntax_pass": true,
+    "runtime_closure_verified": true
+  },
+  "scope": "shadow-v7 only; no maintained-source, handoff, old-manifest, production-tree or manual-grant edits",
+  "limitations": [
+    "Smoke proves native first progress only; official three-query decision rule remains to be evaluated.",
+    "Publisher records warnings for volatile Python environment paths and prose prerequisite; packet independently verifies complete runtime closure."
+  ],
+  "tool_calls": 9
+}

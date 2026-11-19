@@ -1,0 +1,146 @@
+{
+  "actor_backend_called": false,
+  "actor_receipt_id": "sha256:0ccc7ce7207cdae78a57349608e04e501c2d3b8a9e976ddd49516558b254db94",
+  "authority": "software-control-only",
+  "baseline": true,
+  "capture_files_sha256": {
+    "attempt-00.json": "078aa9aa13be2a2148615472066157f8feebef6ce90c49a651676fe40dbdf2fc",
+    "attempt-01.json": "5e542a1f9dda7485ccddca666f2979e7f6e05e4a427d0965c4287748cc113ce7",
+    "attempt-02.json": "6d38ce196ef28126ec94acde83ff014c5c95ee7e5ba85710845e3f1009509e52",
+    "attempt-03.json": "ec1920e207317282bc69bee82e0f2186b4e51dcfe3f151cd3c478bb5110b2816",
+    "declaration.json": "9b80b7c0dc8d23cb664da8e3f1263a68dee8bb7212c4fc9a2739e5152f7496aa",
+    "terminal.json": "6846ed42de1566ef9de3321bc5f29f8d21d11eb6ad8d04177a46b876b0af9efd"
+  },
+  "capture_run_id": "synthetic-q38-complete",
+  "capture_terminal_sha256": "ee715c1e50c8f4a43261935874aa107b681822792762e23b86da8e7744268a55",
+  "entry_point": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "excluded": {},
+  "frames": 60,
+  "model_scope": {
+    "backend": "gpu",
+    "model_sha256": "b77b39d0b04be35c28b568f577b1b9e15e6c8b0b51beccd6b267abdeaac6b0b6",
+    "scope_basis": "native"
+  },
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "d9f7a53db8e6fb0ba51d5b0cc597011da12e4338",
+    "origin_main": "d9f7a53db8e6fb0ba51d5b0cc597011da12e4338",
+    "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/reader"
+  },
+  "refusal_controls": {},
+  "refused": 0,
+  "reliance": {
+    "accepted": [],
+    "declared": [
+      "clm_mi210_05110328074ce48e5b00a8f7",
+      "clm_mi210_2b655692156681aafa8bb16c",
+      "clm_mi210_2b8889363ba6b23f5111e5a9",
+      "clm_mi210_315fbe14997d605826af80d2",
+      "clm_mi210_3c30f1cdc79e3068270c3a87",
+      "clm_mi210_466ced87f4861becb98c4767",
+      "clm_mi210_484327e91d6ea59f3c4dd9c5",
+      "clm_mi210_4d09c1ae6f63b2a691d30729",
+      "clm_mi210_5b0f00096a72469e95bdda85",
+      "clm_mi210_60931f70b61e45cfe7ab427a",
+      "clm_mi210_7ad7f1b66643e0975ddbde26",
+      "clm_mi210_840f3d4bfb16178ad40a0de8",
+      "clm_mi210_895b0c7d1aa5fb9920090d8d",
+      "clm_mi210_89d236f0fa9ce9c1b231a84e",
+      "clm_mi210_a32c3199956c40c2ead6edfe",
+      "clm_mi210_c5a0d5ff894004de9361c8ea",
+      "clm_mi210_d655d516555b9d32d8a5aabd",
+      "clm_mi210_e615a2a8e10ae5ca3dff9d9c",
+      "clm_mi210_f2fc6368f493dd94d678d175",
+      "clm_mi210_fe283f0ea737091f25e083e9"
+    ],
+    "rejected": [
+      {
+        "claim_id": "clm_mi210_05110328074ce48e5b00a8f7",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_2b655692156681aafa8bb16c",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_2b8889363ba6b23f5111e5a9",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_315fbe14997d605826af80d2",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_3c30f1cdc79e3068270c3a87",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_466ced87f4861becb98c4767",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_484327e91d6ea59f3c4dd9c5",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_4d09c1ae6f63b2a691d30729",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_5b0f00096a72469e95bdda85",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_60931f70b61e45cfe7ab427a",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_7ad7f1b66643e0975ddbde26",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_840f3d4bfb16178ad40a0de8",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_895b0c7d1aa5fb9920090d8d",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_89d236f0fa9ce9c1b231a84e",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_a32c3199956c40c2ead6edfe",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_c5a0d5ff894004de9361c8ea",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_d655d516555b9d32d8a5aabd",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_e615a2a8e10ae5ca3dff9d9c",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_f2fc6368f493dd94d678d175",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_fe283f0ea737091f25e083e9",
+        "reason": "not_presented"
+      }
+    ]
+  },
+  "rendered_excerpt_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+  "rows": 20,
+  "schema": "epyc.vidya.mi210_q38_planning_canary.v1",
+  "scratch_ledger": true,
+  "status": "passed",
+  "visible_count": 0
+}

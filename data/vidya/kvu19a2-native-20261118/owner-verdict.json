@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "rationale": "Complete source-bound 20-launch exact-input matrix; both cases base BIT_IDENTICAL and candidate VARIATION. Real AutoKernel planner canary passed with 20 rows/60 frames/refused0, GPU host-tier diagnostic visibility, CPU exclusion and rejection of proposal reliance. Pass is capture/wiring only; repeatability of the candidate failed. No speed, model-quality or promotion authority.",
+  "filed_by": "handoff-vidya-belief-substrate"
+}

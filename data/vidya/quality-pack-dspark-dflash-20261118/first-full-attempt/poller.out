@@ -1,0 +1,21 @@
+
+==== arm 2026-11-18T01:42:00Z engine-snapshot /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-dspark-dflash-20261118/engine
+2026-11-18T01:42:00Z [handoff-vidya-quality-pack-dspark-dflash-20261118] launcher up pid=181124 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/STOP minwin=2250s ports=19480 dryrun=0
+2026-11-18T01:42:05Z [handoff-vidya-quality-pack-dspark-dflash-20261118] START regions=72-95 cpus=72-95 threads=24 gpu=0 end=2026-11-18T02:24Z
+2026-11-18T01:42:05Z [handoff-vidya-quality-pack-dspark-dflash-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+[region-lock] acquiring regions ['q3'] as role='bench' (timeout_s=2515.0) …
+[region-lock] held ['q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-dspark-dflash-20261118/engine/filler_run15.sh --inner --id handoff-vidya-quality-pack-dspark-dflash-20261118 --class cpu --cmd /usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/capture.py --threads 24 --min-window 2250 --stop /mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/STOP --port 19480 --workdir /mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118 --gpu-threads 184-191
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/capture.py", line 345, in <module>
+    main()
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/capture.py", line 280, in main
+    verify_files(plan)
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/capture.py", line 70, in verify_files
+    verify_pin(entry, verify_digest=True)
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/capture.py", line 56, in verify_pin
+    raise ValueError(f'prepared file identity drift: {path}')
+ValueError: prepared file identity drift: /mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/cpu-feasibility.json
+job rc=1
+2026-11-18T01:42:10Z [handoff-vidya-quality-pack-dspark-dflash-20261118] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-18T01:42:10Z [notify] row-ended handoff-vidya-quality-pack-dspark-dflash-20261118 [critical] bus=sent:inference:msg-20261118T014210Z-1578516926-rowflow-keeper
+2026-11-18T01:42:10Z [handoff-vidya-quality-pack-dspark-dflash-20261118] one window done; exiting (no --repeat)

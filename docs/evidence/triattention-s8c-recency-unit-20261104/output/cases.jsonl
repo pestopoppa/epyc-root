@@ -1,0 +1,11 @@
+{"case":"legacy_default","pass":true,"reported_evicted":3,"actual_removed":3,"score_calls":1,"rm_calls":1,"detail":"disabled recency matches legacy threshold"}
+{"case":"recent_absolute","pass":true,"reported_evicted":3,"actual_removed":3,"score_calls":1,"rm_calls":1,"detail":"sink and two recent positions protected"}
+{"case":"recent_ratio","pass":true,"reported_evicted":3,"actual_removed":3,"score_calls":1,"rm_calls":1,"detail":"40 percent of retained budget protects two positions"}
+{"case":"overlap_budget","pass":true,"reported_evicted":4,"actual_removed":4,"score_calls":1,"rm_calls":1,"detail":"recent count clamped to kept non-sink budget"}
+{"case":"legacy_ties","pass":true,"reported_evicted":0,"actual_removed":0,"score_calls":1,"rm_calls":0,"detail":"legacy tied threshold retains equal scores"}
+{"case":"legacy_full_compression","pass":true,"reported_evicted":4,"actual_removed":4,"score_calls":1,"rm_calls":1,"detail":"legacy max scored position retained"}
+{"case":"all_sink","pass":true,"reported_evicted":0,"actual_removed":0,"score_calls":0,"rm_calls":0,"detail":"sink overlap protects all positions"}
+{"case":"conflicting_controls","pass":true,"reported_evicted":-1,"actual_removed":0,"score_calls":0,"rm_calls":0,"detail":"absolute and relative controls rejected together"}
+{"case":"invalid_nan","pass":true,"reported_evicted":-1,"actual_removed":0,"score_calls":0,"rm_calls":0,"detail":"non-finite ratio rejected"}
+{"case":"gapped_kv_accounting","pass":false,"reported_evicted":3,"actual_removed":1,"score_calls":1,"rm_calls":2,"detail":"reported count must equal physically removed occupied positions"}
+{"case":"seq_rm_failure","pass":false,"reported_evicted":3,"actual_removed":0,"score_calls":1,"rm_calls":1,"detail":"failed memory removal must be surfaced"}

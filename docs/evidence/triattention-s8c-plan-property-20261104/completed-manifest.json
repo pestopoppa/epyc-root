@@ -1,0 +1,46 @@
+{
+ "completed_result_sha256": "b5f76d1644d3db206d44f84a2c57bfd7e33f0a8e4a6f8568bb8925926430bab0",
+ "decision_rule": "Run pinned production-tip ffc1bac82eeca6f9099e1ccd9ba49703c460a115 S8-c safety planner. Start with 10 active entries and 0.7f against independent production float-arithmetic legacy selection; if no mismatch, run bounded sizes 0..64 and varied sinks, ratios, unique and seeded tied scores and synthetic layout/removal invariants. Stop at first counterexample, bounded completion, crash, STOP or deadline. Any counterexample fails; 65 groups without one passes. Synthetic planner only; no real cache/server/model/quality/performance claim.",
+ "declared_result_path": "/mnt/raid0/llm/tmp/triattention-s8c-plan-property-20261104/results.jsonl",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "long-context-program.md:S8-C-PLAN-PROPERTY",
+ "id": "triattention-s8c-plan-property-20261104",
+ "keep": [
+  "input-pins.json",
+  "results.jsonl",
+  "complete",
+  "output/*",
+  "packet/*",
+  "include/*"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/triattention-s8c-plan-property-20261104/packet/launcher.sh",
+  "sha256": "f927366364c314e2a828f00f57bfa93ee182a008d7bfaaa03702fa5a00f7a0fd"
+ },
+ "min_window_s": 300,
+ "owner": "triattention",
+ "ports": [],
+ "priority_rank": 16.0,
+ "publish_warnings": [
+  "long-context-program.md:1742: untestable prose prerequisite: 'after the bounded sweep; stop-on-futility on crash, stop or deadline; gate-class = futility-only. Compare default select'"
+ ],
+ "published_at": "2026-11-04T16:07:39Z",
+ "published_from": "/mnt/raid0/llm/worktrees/mains/h-triattention-kv-selection/scripts/experiments/triattention-s8c-plan-property-20261104/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-plan-property-20261104/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-plan-property-20261104",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/triattention-s8c-plan-property-20261104/STOP",
+ "unit_key": "unit",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/triattention-s8c-plan-property-20261104"
+}

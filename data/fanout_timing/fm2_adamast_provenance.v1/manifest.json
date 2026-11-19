@@ -1,0 +1,274 @@
+{
+ "claude_root": "/home/node/.claude/projects/-workspace",
+ "codex_root": "/home/node/.codex/sessions",
+ "entries": [
+  {
+   "bytes": 62773577,
+   "harness": "claude",
+   "kind": "main",
+   "month": "2026-10",
+   "path": "9bcb2011-8080-40c4-9ace-5a41abbedf73.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "7cc89fa5b6ece6b90fdd58f09196298c1b928f2a951e8918d350f44d0b9fb43e",
+   "stratum": "claude|2026-10|main"
+  },
+  {
+   "bytes": 157429394,
+   "harness": "claude",
+   "kind": "main",
+   "month": "2026-10",
+   "path": "e3953395-73a4-43b9-aebd-02a28f656f40.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "648affbf1d6f61002c95a2a61e378170fbcf3a45995f7489945e2039afa1d762",
+   "stratum": "claude|2026-10|main"
+  },
+  {
+   "bytes": 675743,
+   "harness": "claude",
+   "kind": "main",
+   "month": "2026-10",
+   "path": "e55de26f-b27e-4c79-8a24-7fcb1b88e46f.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "4d412c89d40ad7e17b9a20c545eca21d992a86317b17280b7caee618f488a71a",
+   "stratum": "claude|2026-10|main"
+  },
+  {
+   "bytes": 1561581,
+   "harness": "claude",
+   "kind": "subagent",
+   "month": "2026-10",
+   "path": "3c4ca599-bb38-4f04-b934-8bbaf211989a/subagents/agent-a0add46bc7d5c3ad7.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "d0dca56268359cea9ce298d25222e96eefe5a9effb8c0f4c7f90eda4100a6e24",
+   "stratum": "claude|2026-10|subagent"
+  },
+  {
+   "bytes": 867717,
+   "harness": "claude",
+   "kind": "subagent",
+   "month": "2026-10",
+   "path": "9bcb2011-8080-40c4-9ace-5a41abbedf73/subagents/agent-aab9935e94b5bcdcb.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "58addc7277a31805c4b040aa200bd7f0a99e071e113af08ab0c28012eaed0d76",
+   "stratum": "claude|2026-10|subagent"
+  },
+  {
+   "bytes": 938375,
+   "harness": "claude",
+   "kind": "subagent",
+   "month": "2026-10",
+   "path": "9bcb2011-8080-40c4-9ace-5a41abbedf73/subagents/agent-ac5d4da4a24717fc5.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "3ea385341ee9d1fe44a176cfe1284588aceab1cfc1d6f06bc0ff5c9f751390db",
+   "stratum": "claude|2026-10|subagent"
+  },
+  {
+   "bytes": 22516489,
+   "harness": "claude",
+   "kind": "main",
+   "month": "2026-11",
+   "path": "7da2a73f-5424-4b2c-99b6-c0ff41395217.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "a8f303d380bdf391e25f8f929635d3ae458a044c6849a57c849308eb28211e04",
+   "stratum": "claude|2026-11|main"
+  },
+  {
+   "bytes": 8048384,
+   "harness": "claude",
+   "kind": "main",
+   "month": "2026-11",
+   "path": "8f710afc-a8b2-43c2-88f9-0bd3c60c5372.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "a70c0824cf2ac7bdf42224acd94cb893043a6f240543d9742b6b5778cf4797cd",
+   "stratum": "claude|2026-11|main"
+  },
+  {
+   "bytes": 1416226,
+   "harness": "claude",
+   "kind": "main",
+   "month": "2026-11",
+   "path": "d16794f1-92ad-4baa-95d4-cdc2b308c842.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "d4e9ed714de7413a76100708628dbdb615283226067ed34f710096fa869dd27b",
+   "stratum": "claude|2026-11|main"
+  },
+  {
+   "bytes": 1903879,
+   "harness": "claude",
+   "kind": "subagent",
+   "month": "2026-11",
+   "path": "688f713e-da1e-42f4-b692-65ea0fa41996/subagents/agent-afd592c71e038e737.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "78f353c5caa7b377470073a6e892481598399b3fd9d1f1e1843d29cc188c6dbf",
+   "stratum": "claude|2026-11|subagent"
+  },
+  {
+   "bytes": 679602,
+   "harness": "claude",
+   "kind": "subagent",
+   "month": "2026-11",
+   "path": "7da2a73f-5424-4b2c-99b6-c0ff41395217/subagents/agent-a50b3337e91345291.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "f0e038b1eae336854b7f60fe199355625e1d8dc8080f6ea3dbce9fd85dcc3a66",
+   "stratum": "claude|2026-11|subagent"
+  },
+  {
+   "bytes": 1076416,
+   "harness": "claude",
+   "kind": "subagent",
+   "month": "2026-11",
+   "path": "e3953395-73a4-43b9-aebd-02a28f656f40/subagents/agent-a917a7ffd20dd0436.jsonl",
+   "root": "/home/node/.claude/projects/-workspace",
+   "sha256": "ce193a34fe2461eb3649b4b493f2b3776bccba7069f37bfde2b2339a10e49239",
+   "stratum": "claude|2026-11|subagent"
+  },
+  {
+   "bytes": 405244339,
+   "harness": "codex",
+   "kind": "main",
+   "month": "2026-10",
+   "path": "2026/10/24/rollout-2026-10-24T10-18-15-01a16d6b-0f4c-78e1-98cc-8ec8916b10cb.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "8e51a9c58093462b1a8e29963fef890f3af55535326ebedf0aaa71e5edacd424",
+   "stratum": "codex|2026-10|main"
+  },
+  {
+   "bytes": 476518667,
+   "harness": "codex",
+   "kind": "main",
+   "month": "2026-10",
+   "path": "2026/10/24/rollout-2026-10-24T21-13-58-01a16fc3-6403-7dd3-a586-8f319cb47dde.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "fbd74465000657b34a7f9ab75d08e46c41147f40f702a9c6df95b8f6d8d8dd8a",
+   "stratum": "codex|2026-10|main"
+  },
+  {
+   "bytes": 194688414,
+   "harness": "codex",
+   "kind": "main",
+   "month": "2026-10",
+   "path": "2026/10/28/rollout-2026-10-28T21-03-30-01a18453-3e40-78d1-84f8-989855c9a769.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "25538df7045a15b67b69d38b5c8f11f1efbaf390134976079d56258d25261daa",
+   "stratum": "codex|2026-10|main"
+  },
+  {
+   "bytes": 91116114,
+   "harness": "codex",
+   "kind": "subagent",
+   "month": "2026-10",
+   "path": "2026/10/30/rollout-2026-10-30T18-09-56-01a18e01-0e5f-76d0-acf1-7999493ab5dd.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "efc926bce21c6634c29b8e7651b7ecf2093813b4e38a2c63fc49fd41723b1fcb",
+   "stratum": "codex|2026-10|subagent"
+  },
+  {
+   "bytes": 76479753,
+   "harness": "codex",
+   "kind": "subagent",
+   "month": "2026-10",
+   "path": "2026/10/30/rollout-2026-10-30T19-21-45-01a18e42-cf3c-70e1-aed8-8d59c5aee1aa.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "06b84645bccf73bf84ec6142e6c3e94d16a1bee4a17700659f7cfcc5b3880769",
+   "stratum": "codex|2026-10|subagent"
+  },
+  {
+   "bytes": 2224670,
+   "harness": "codex",
+   "kind": "main",
+   "month": "2026-11",
+   "path": "2026/11/02/rollout-2026-11-02T01-43-42-01a199ed-378c-78f0-88d0-b043508de17e.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "3c0633b547c917cce66f28cc66ee9dbc9561276a95f6d1e4cbcecc6eeefdd492",
+   "stratum": "codex|2026-11|main"
+  },
+  {
+   "bytes": 1670821,
+   "harness": "codex",
+   "kind": "main",
+   "month": "2026-11",
+   "path": "2026/11/17/rollout-2026-11-17T23-17-08-01a1ebcc-c702-7b20-b980-696be82f9f74.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "b4e7bfa951ad3ee3bd75120de501f4979436f61bab5636f6aa9843e8a6357463",
+   "stratum": "codex|2026-11|main"
+  },
+  {
+   "bytes": 1960874,
+   "harness": "codex",
+   "kind": "main",
+   "month": "2026-11",
+   "path": "2026/11/18/rollout-2026-11-18T02-43-00-01a1ec89-41dd-77a1-97a8-7dabb2ff7848.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "94604567a9c125707c51c9ce650db75849aecbbbda90afbb27ab6a9b2b76ccbe",
+   "stratum": "codex|2026-11|main"
+  },
+  {
+   "bytes": 1258522,
+   "harness": "codex",
+   "kind": "subagent",
+   "month": "2026-11",
+   "path": "2026/11/18/rollout-2026-11-18T02-43-39-01a1ec89-da0d-7bb1-bd10-202f64907996.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "061777febf1b33d30c32b476179fd1cda61f3cd03e3be9563174ed45310bee97",
+   "stratum": "codex|2026-11|subagent"
+  },
+  {
+   "bytes": 350585,
+   "harness": "codex",
+   "kind": "subagent",
+   "month": "2026-11",
+   "path": "2026/11/18/rollout-2026-11-18T03-01-20-01a1ec9a-0a79-78e2-896a-ebce6bf65a4b.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "8141b4350200903ca8a7bcf31524f7f0a9fe71ac822e9bf27553a7ee6c69914f",
+   "stratum": "codex|2026-11|subagent"
+  },
+  {
+   "bytes": 1350433,
+   "harness": "codex",
+   "kind": "subagent",
+   "month": "2026-11",
+   "path": "2026/11/18/rollout-2026-11-18T03-03-21-01a1ec9b-e0a9-7b42-afad-acb7daaee028.jsonl",
+   "root": "/home/node/.codex/sessions",
+   "sha256": "6e947cdfb8a850a8ce0241a18a41b3db273b0d0981c063dcf253b358942a27ce",
+   "stratum": "codex|2026-11|subagent"
+  }
+ ],
+ "manifest_sha256": "22db18ff41088a8ab3f461e68dbcedc5f4529413746afcc98b458136fc3d7893",
+ "per_stratum": 3,
+ "schema": "adamast_sample_manifest.v1",
+ "seed": "fm2-adamast-20261118",
+ "strata": {
+  "claude|2026-10|main": {
+   "picked": 3,
+   "population": 5
+  },
+  "claude|2026-10|subagent": {
+   "picked": 3,
+   "population": 1555
+  },
+  "claude|2026-11|main": {
+   "picked": 3,
+   "population": 11
+  },
+  "claude|2026-11|subagent": {
+   "picked": 3,
+   "population": 1604
+  },
+  "codex|2026-10|main": {
+   "picked": 3,
+   "population": 3
+  },
+  "codex|2026-10|subagent": {
+   "picked": 2,
+   "population": 2
+  },
+  "codex|2026-11|main": {
+   "picked": 3,
+   "population": 159
+  },
+  "codex|2026-11|subagent": {
+   "picked": 3,
+   "population": 193
+  }
+ }
+}

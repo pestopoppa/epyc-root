@@ -1,0 +1,131 @@
+{
+  "archived_files_sha256": {
+    "README.md": "436e251aaa457c78ec65512e2da703f3ec413b0600d53e4ffd1a054247da77ad",
+    "SOURCE.sha256": "1e4aa87ec74f4cde12e2ec8e280b607bbb9e89586422d60d924f07ce54918b11",
+    "capture.py": "062c880c5f27872d8c1298208832f03efce92e6b8f6ddb3ee0116438a4ad8271",
+    "capture_base.py": "fa71939644f58002f1ce87f636cd7946b33eefde8509373c934e963e0783f4d5",
+    "complete.py": "54ff78d7d61773f71cb71758ee0b00f6cfc0076c05f52603c8ef2bb432ba94ee",
+    "frontdoor-full-receipt.json": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+    "make_plan.py": "051ae81f4166cb780b8da4b31b20d0154592d318c776b0b2c5257d3feeea3e05",
+    "model-hash-receipt.json.original-bytes.json": "3cd6fddee844a007345705507c8c2b2fdad38e65040933c6e0de69e34fbd2b4c",
+    "original-admission.json": "494b36f15949602c44eee850f26877086d754fecfab5024ba79a43283f8d5f13",
+    "plan.json.original-bytes.json": "574a7b94ca075235803b743429c51b9df0ba55ee3a5682be257679055cbbc4fb",
+    "publication.log": "34b13fae50ff51a8c6ac0b4e038f92fd3ff9680245bf3cfcde72be16ab39222c",
+    "quality_parity.py": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d",
+    "ready-manifest.json": "6f9bac7b1ae142a62ec663485745ee1ddc74ee81e75bacc2ae14ca6da0a958b7",
+    "row-launch.sh": "50222673a5c59399c8ff4d7a365608d1c8e5d3f7fd49d7f95ccf4dc3d968a9c6",
+    "row.spec.json": "610730f10d8fac9cf8a871307ac0573bbfd4450bbd4389d4df80ce75c1539cd8",
+    "smoke-PASS.json": "279cca0b126a75eec3385d67de3d18a2abb3dd53bbe41279bfd7aceafe58f518",
+    "smoke-exited.json": "8f39be4fb2c628a6bc91786bcd6066b702e1910e346b9a3ca57552345cbeaab9",
+    "smoke-model-plan.original-bytes.json": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+    "smoke-native/banked-capture.json.original-bytes.json": "b58d357614e519d62f4c099911a161a149e60ad891d974515649f51bd27ceaaf",
+    "smoke-native/production/cleanup.json": "0183824235fa71602d34cd52bc53313fe77574a7288a7e9c0dfa4201f16dd27e",
+    "smoke-native/production/native-smoke.request.json": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "smoke-native/production/native-smoke.response.json": "d7b4ed05d901053b01e9efc00314ae082e8ff33ea2ae9412d27f1e9ce92d2293",
+    "smoke-native/production/server.json": "37ccbcfe4153abc2986ce9298c18d78c98cb41db4ece3cab3cfe666c194a5f3a",
+    "smoke-result.json.original-bytes.json": "e3c3aff177998221134cdc8bf097dfe0ecd80ca2215d0d3d88a0a1e3b0260635",
+    "smoke_predicate.py": "3d0441317627815f86c31b16e3fae7c2d0f6688a15df25b577d8a05983259d3f"
+  },
+  "broad_pack_status": "incomplete",
+  "candidate_collected": false,
+  "comparator_sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d",
+  "full_capture_run_by_preparer": false,
+  "gitnexus": "status unindexed and requested impact unavailable; existing shared runner and comparator left untouched",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-INGEST-BANK",
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "original_files_sha256": {
+    "smoke-native/banked-capture.json": "353bca571c4ad50bc9b1a830745fd399a8d4602dc396945781d1095eaa9c14fb",
+    "smoke-result.json": "1b9825512c074b891060bb972e938ca41a6d43d13f44f89c134c59e2505a4cb4"
+  },
+  "original_reconciliation_refusal": {
+    "actual_finish": "stop",
+    "cached_prompt_tokens": 0,
+    "capture": "filed_original",
+    "completion_count": 34,
+    "content_sha256": "7ff2e81a609c122bf11f523e9f500f192e3d952a749a9376d5896bb0c2d1b72a",
+    "expected_finish": "stop",
+    "output_format": "reasoning",
+    "output_token_count": 34,
+    "problems": [
+      "semantic_validation_failed"
+    ],
+    "prompt_tokens": 5439,
+    "reasoning_sha256": null,
+    "request_sha256": "2bf817b432f9459498a37e627cfacca4034e95dec62721de15d630724e202afb",
+    "response_sha256": "837c93fd5c15e932fdac7f0425482021099d9de63e4eea882e5f22ed9a3c488b",
+    "semantic_matches": false,
+    "validator": {
+      "expected": "SOUTH",
+      "id": "contains-text.v1"
+    }
+  },
+  "paths": {
+    "ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-ingest-bank-20261118.json",
+    "scratch": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118",
+    "smoke_attempt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-ingest-bank-20261118/native-attempts/attempt-dfodhymc"
+  },
+  "plan_sha256": "dc9f9051575c0b94a4801ae0cd8c5bc87c88d3628a4f2c5184ef568c45701213",
+  "planning_canary": false,
+  "preserved_items": [
+    "ingest-early-lookup",
+    "ingest-recurrent-state",
+    "ingest-short-summary"
+  ],
+  "production_bank_status": "pending",
+  "production_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "promotion_authorized": false,
+  "published": true,
+  "quality_transfer_authorized": false,
+  "question_pool_sha256": "a67efd899195c9229103038234d732bd9adb775ad840234694b1cd42e79287d9",
+  "recipe_sha256": "c8fdf9a7da1235d11cc869151441a11c83536cff951c2d432451322c107c347f",
+  "replacement": {
+    "expected_finish": "stop",
+    "id": "ingest-document-reconciliation-signed-record",
+    "minimum_uncached_prompt_tokens": 4096,
+    "output_format": "json",
+    "request_sha256": "20e162e9e5992c1f3d1187d7a8f008da424a5a4bd019169d94232aa080910139",
+    "validator": {
+      "expected": {
+        "annex": "SOUTH",
+        "governing_record": "E59"
+      },
+      "id": "json-object-subset.v1"
+    }
+  },
+  "row_id": "handoff-vidya-quality-pack-ingest-bank-20261118",
+  "row_spec_sha256": "610730f10d8fac9cf8a871307ac0573bbfd4450bbd4389d4df80ce75c1539cd8",
+  "schema": "epyc.vidya.ingest_reconciliation_bank_preparation.v1",
+  "scope": "prospectively pinned production-only row prepared and smoke-passed",
+  "smoke": {
+    "attempt_result_sha256": "1b9825512c074b891060bb972e938ca41a6d43d13f44f89c134c59e2505a4cb4",
+    "bank_sha256": "353bca571c4ad50bc9b1a830745fd399a8d4602dc396945781d1095eaa9c14fb",
+    "cleanup": {
+      "dead": true,
+      "exit_status": 0,
+      "pid": 709413,
+      "port_closed": true
+    },
+    "completion_tokens": 8,
+    "cpus": [
+      116,
+      117,
+      118,
+      119
+    ],
+    "ended": "rc=0 time=2026-11-18T02:10:44Z reason=complete",
+    "first_progress": "smoke_predicate exited 0",
+    "passed_at": "2026-11-18T02:10:46Z",
+    "status": "PASS"
+  },
+  "source_manifest_sha256": "1e4aa87ec74f4cde12e2ec8e280b607bbb9e89586422d60d924f07ce54918b11",
+  "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "validation": [
+    "source SHA-256, deterministic plan/request/spec regeneration, Bash syntax, offline capture preflight",
+    "archive reconstruction and source-seal verification",
+    "three original production replay admissions and original reconciliation semantic refusal",
+    "wrong annex, wrong authority, missing authority, duplicate key, and free-text semantic refusals",
+    "truncated input refusal, mock four-item seal, tampered bank refusal, semantic and typed transport failures",
+    "51 existing kernel promotion quality-parity tests passed",
+    "publication task lint passed and native publisher smoke passed"
+  ]
+}

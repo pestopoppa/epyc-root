@@ -1,0 +1,11 @@
+# Prospective source-scout scoring rubric
+
+Scope: three newly constructed scouts over immutable source bytes pinned by `cohort-manifest.json`, based on orchestrator commit `868275acb64ef3d490ecac6952518ae187fe74d3`. The real code is the subject; the tasks are prospective and the deeply nested root is synthetic. This rubric does not claim historical-traffic representativeness or establish a KPF-26 gate.
+
+Review full trace summaries, not previews. For each scout report PASS, FAIL, or UNKNOWN, including source line citations and the full-summary digest. FAIL means a material contradiction, missing essential condition, failed execution or timeout. UNKNOWN means the available source or summary does not support a decision. Do not turn UNKNOWN into PASS. Record each result separately for every arm and window.
+
+1. `_scout_trunk_prefill` (`src/api/routes/chat_pipeline/scout_stage.py`, lines 1041–1078): PASS requires the summary to correctly identify a shared first/system-message trunk, the prerequisite requested fork and advertised compatible server capability, and that the operation is best-effort and cannot fail the scout. Check the actual source before scoring.
+2. `fork_enabled` (`src/inference/prefix_index.py`, lines 218–249): PASS requires the index to be enabled, the fork flag to request it, and server-reported mode `kv` or `checkpoint`; unavailable capabilities keep it disabled even with an explicit flag. Check actual source before scoring.
+3. `parse_props` (`src/backends/context_limits.py`, lines 194–232): PASS requires describing live `kv_unified` when available and fallback inference from slot/context and registry facts; unknown must remain unknown if evidence is insufficient. Check actual source before scoring.
+
+The collector's keyword checks are a limited trace diagnostic and must never substitute for this source-grounded review. Do not infer prefill-once, fork success, latency improvement, outcome non-regression, or a gate from a keyword result. The paired decision still needs a predeclared representative cohort, independent windows and matched flag-off rerun spread, complete outcomes including failures, qualified sampling and the handoff's native witnesses. The staged 23 planner plans are separately indexed; their recorded dependencies do not contain parallel root steps.

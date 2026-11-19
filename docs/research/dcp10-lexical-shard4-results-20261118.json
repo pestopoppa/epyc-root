@@ -1,0 +1,402 @@
+{
+  "actual_packer": {
+    "entries_checked": 72,
+    "entry_render_mode_disagreements": 0,
+    "included_files_by_budget": {
+      "2000": 0,
+      "4000": 0,
+      "8000": 0
+    },
+    "total_estimated_packed_tokens_by_budget": {
+      "2000": 0,
+      "4000": 0,
+      "8000": 0
+    }
+  },
+  "app_revision": "072d1583b3ead7456731946cd4e4595da6a9877f",
+  "arm": "task-root-lexical",
+  "audit": {
+    "full_empty_gold_tasks": 3,
+    "full_workspace_bare_path_tasks": 42,
+    "third_party_count_reverified": false,
+    "third_party_unresolvable_tasks": 88
+  },
+  "budgets": [
+    2000,
+    4000,
+    8000
+  ],
+  "cpu_affinity": "180-183",
+  "custody": {
+    "binding": "local descriptive evidence",
+    "packer_identity_limitation": "Current c24d8421... differs from trusted 7d39ebc4... in the strict reader.",
+    "prior_exit_code": 2,
+    "prior_producer_refusal": "ValueError: capture custody ancestor is group/world writable",
+    "scratch_ancestor": "/mnt/raid0/llm/tmp",
+    "scratch_ancestor_mode": "0777",
+    "shard_capture_attempted": false,
+    "shard_has_accepted_receipt": false
+  },
+  "dataset_hashes": {
+    "full": "2f56535bdc73eb8a68bf4ebb49789d8e9cd4f219ea60df6290b85278aee61ca8",
+    "lite": "e9dcfd504cbfb849ac815a79040c793d0d92f94eecc9b5a4ee3e1445a2f8a791"
+  },
+  "discovered_files_by_task": {
+    "Multi-SWE-Bench__c__maintenance__bugfix__2fa17064": 8,
+    "Multi-SWE-Bench__cpp__maintenance__bugfix__8e59bdd3": 8,
+    "SWE-PolyBench__python__maintenance__bugfix__b01e9113": 8
+  },
+  "disposition": "bounded_local_diagnostic_complete",
+  "elapsed_seconds": 5.547974259941839,
+  "eligible_task_count": 3,
+  "execution": {
+    "command_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard4/official-command.txt",
+    "command_sha256": "6ff6891c3174234fbf17b04720bc2d7381260a59acf5585db6d9dd1f625d3862",
+    "independent_verifier_exit_code": 0,
+    "official_attempts": 1,
+    "official_exit_code": 0,
+    "publisher_constraints": [
+      "The deployed publish_row.py CLI refuses estimate_s under 300 seconds: under 5 min: run it in your turn, not as a row.",
+      "Publisher task lint classifies the live DCP-10 parent as non-inference (deliverable) and refuses a compute row for that class."
+    ],
+    "region_lock_acquired": false,
+    "smoke_attempts": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "hf_rev": "c2855792b006af41c67202d33883fb9d46362853",
+  "independent_check": "Verified 12 task-scope counts, six macro metrics per scope, all three actual pack budgets and rendered modes.",
+  "independent_check_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard4/verify_actual.txt",
+  "independent_check_sha256": "44398ecec0265db8556aa5b846c94fdc126f846acdceb41f08ba3699dbd279ea",
+  "independent_checker_source_sha256": "d3fdcbc50984ad1047cd6fa7a0974cf7c0c3f6419d7ab6db572b803b07a76a2c",
+  "limit": 20,
+  "macro_scopes": [
+    {
+      "budget_tokens": null,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "discovery"
+    },
+    {
+      "budget_tokens": 2000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 4000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 8000,
+      "metrics": {
+        "file_f1": 0.0,
+        "file_precision": 0.0,
+        "file_recall": 0.0,
+        "line_f1": 0.0,
+        "line_precision": 0.0,
+        "line_recall": 0.0
+      },
+      "scope": "packed"
+    }
+  ],
+  "main_review": {
+    "conclusion": "All three raw hit lists contain 20 distinct paths. No Python or C gold path appears; the C++ gold path is 18th. The fixed top-eight discovery selection misses all gold paths before packing.",
+    "raw_paths_unique_per_task": 20,
+    "scope": "Original rank-four source and cohort only; no population or candidate-arm claim."
+  },
+  "max_files": 8,
+  "measurement_scope": {
+    "maximum_unit_change_in_macro_fraction": 0.3333333333333333,
+    "model_decodes": 0,
+    "planned_attempts": 3,
+    "question": "Does instrumentation reconcile and does zero packed overlap recur on the sealed rank-four tasks?",
+    "replacements": 0,
+    "stop_rule": "Stop after the three selected attempts or at 90 seconds. An input or source seal failure stops the run."
+  },
+  "output_sha256": {
+    "c.json": "edae2a7019f9c5b227c4c048ed1c3321489a0ae7d26cec74e38634e6bcf50884",
+    "cpp.json": "2a7803c3bcac5e75bb5c10ef6e3acfb88462326e32ed36cb29161613c3034132",
+    "discovery.jsonl": "51ced81af4a71c5a3b4a44ec7ef55a8a367dfd0bd5d720508cbfb8854a807f29",
+    "predictions.jsonl": "ec9eaa1e7bba44f6b78afee3c66511061f8589d944084e45fafa557d8a93bfcc",
+    "python.json": "9e7bf580c4d805aedfc5536e8fe86b0ee9fceb4941f421c2ee405770e322579b",
+    "score-request.json": "607bd1eb2c9b7150911235435bd207125929c4d89fc53eb4ea2cfd81f3328c89",
+    "scored-output.json": "9e21ef11a713d06b3baf3e1ebd3d32b60e182206a96f4424c7638e65f85daec9"
+  },
+  "packet_hashes": {
+    "dataset-audit.json": "c7fff38967f40cbde4ca8a437255820620ef18683e80bed6048d9cfc73219841",
+    "dispositions.json": "a30d70a0eb7af2b2df0ebbe20278f25efe715532d560a8d76a2d5a8a23a2efa1",
+    "tasks.jsonl": "29b1b139c849239f4a5ec9159a059f178f699ee1ab6b5cde32cc3b5c6faec581"
+  },
+  "per_task_scope_counts": [
+    {
+      "budget_tokens": null,
+      "counts_by_task": {
+        "Multi-SWE-Bench__c__maintenance__bugfix__2fa17064": {
+          "file": {
+            "fn": 3,
+            "fp": 8,
+            "tp": 0
+          },
+          "line": {
+            "fn": 511,
+            "fp": 186,
+            "tp": 0
+          }
+        },
+        "Multi-SWE-Bench__cpp__maintenance__bugfix__8e59bdd3": {
+          "file": {
+            "fn": 1,
+            "fp": 8,
+            "tp": 0
+          },
+          "line": {
+            "fn": 446,
+            "fp": 216,
+            "tp": 0
+          }
+        },
+        "SWE-PolyBench__python__maintenance__bugfix__b01e9113": {
+          "file": {
+            "fn": 1,
+            "fp": 8,
+            "tp": 0
+          },
+          "line": {
+            "fn": 191,
+            "fp": 176,
+            "tp": 0
+          }
+        }
+      },
+      "scope": "discovery"
+    },
+    {
+      "budget_tokens": 2000,
+      "counts_by_task": {
+        "Multi-SWE-Bench__c__maintenance__bugfix__2fa17064": {
+          "file": {
+            "fn": 3,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 511,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "Multi-SWE-Bench__cpp__maintenance__bugfix__8e59bdd3": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 446,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "SWE-PolyBench__python__maintenance__bugfix__b01e9113": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 191,
+            "fp": 0,
+            "tp": 0
+          }
+        }
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 4000,
+      "counts_by_task": {
+        "Multi-SWE-Bench__c__maintenance__bugfix__2fa17064": {
+          "file": {
+            "fn": 3,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 511,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "Multi-SWE-Bench__cpp__maintenance__bugfix__8e59bdd3": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 446,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "SWE-PolyBench__python__maintenance__bugfix__b01e9113": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 191,
+            "fp": 0,
+            "tp": 0
+          }
+        }
+      },
+      "scope": "packed"
+    },
+    {
+      "budget_tokens": 8000,
+      "counts_by_task": {
+        "Multi-SWE-Bench__c__maintenance__bugfix__2fa17064": {
+          "file": {
+            "fn": 3,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 511,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "Multi-SWE-Bench__cpp__maintenance__bugfix__8e59bdd3": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 446,
+            "fp": 0,
+            "tp": 0
+          }
+        },
+        "SWE-PolyBench__python__maintenance__bugfix__b01e9113": {
+          "file": {
+            "fn": 1,
+            "fp": 0,
+            "tp": 0
+          },
+          "line": {
+            "fn": 191,
+            "fp": 0,
+            "tp": 0
+          }
+        }
+      },
+      "scope": "packed"
+    }
+  ],
+  "prediction_status_counts": {
+    "ok": 3
+  },
+  "preparation_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard4/PREPARATION.json",
+  "preparation_sha256": "a854bc6a17f5110294907ebbfc329e8ba3c003f2c4ab3ae08b2513b5816c3dc1",
+  "previous_request_sha256": "c0fea8996fd1894af83dd7512d230dc696c6a133790472c078a4f6fb5c0a6176",
+  "producer_sha256": "cf0ca0f7dec5533ed465c1cd30f6941070b5212f0335d4af0a49d023f41f0130",
+  "raw_lexical_search_by_task": {
+    "Multi-SWE-Bench__c__maintenance__bugfix__2fa17064": {
+      "gold_file_hits": [],
+      "hits": 20
+    },
+    "Multi-SWE-Bench__cpp__maintenance__bugfix__8e59bdd3": {
+      "gold_file_hits": [
+        {
+          "path": "include/nlohmann/detail/json_pointer.hpp",
+          "rank": 18
+        }
+      ],
+      "hits": 20
+    },
+    "SWE-PolyBench__python__maintenance__bugfix__b01e9113": {
+      "gold_file_hits": [],
+      "hits": 20
+    }
+  },
+  "request_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard4/packet/request.json",
+  "request_seal_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard4/REQUEST.sha256",
+  "request_seal_sha256": "845d6576160a3c2e091688b17353785d69224a6c80a1f6e630fba64935e37ff2",
+  "request_sha256": "edd06fc73906b8eb0293a24c614364e7206ae3bac7702e8f1647640e715e323a",
+  "run_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard4/pilot/run.json",
+  "run_sha256": "f513ffc57a519aa35a24c06072bcd2fbe430247173f6cbed2ed2a1a283c732b7",
+  "runtime_limit_seconds": 90,
+  "selected": [
+    {
+      "base_commit": "17b06e2c6650de162e7954babf6224c1975c2852",
+      "dataset": "lite",
+      "disposition": "include",
+      "instance_id_sha256": "00da61716b442d3d6cc6858e48e40988969bcefd64c596053d6ecd94c0182938",
+      "language": "python",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/huggingface/transformers.git",
+      "stratum_size": 266,
+      "task_id": "SWE-PolyBench__python__maintenance__bugfix__b01e9113"
+    },
+    {
+      "base_commit": "e5e388df132fdff91d4e6afb8d8e66be175fa051",
+      "dataset": "full",
+      "disposition": "include",
+      "instance_id_sha256": "0a3efde37dc476dfbbfc3f6a9c40804adb4a70c550be96a46c168d4c8c0ba25c",
+      "language": "c",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/ponylang/ponyc.git",
+      "stratum_size": 68,
+      "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2fa17064"
+    },
+    {
+      "base_commit": "7b6cf5918bc9a4b85d1e3fb9ff65348d6dce5d10",
+      "dataset": "full",
+      "disposition": "include",
+      "instance_id_sha256": "0e99402b4a0b2b5eaa0653f1c416d4e4ad2b487c34ebe9aef18d319e869f0b96",
+      "language": "cpp",
+      "missing_gold_paths": [],
+      "repo_url": "https://github.com/nlohmann/json.git",
+      "stratum_size": 60,
+      "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__8e59bdd3"
+    }
+  ],
+  "selection_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard4/selected.tsv",
+  "selection_rank": 4,
+  "selection_rule": "Ascending SHA-256 of UTF-8 instance ID within each declared stratum",
+  "selection_sha256": "851a9ad635bbf25327a171c2f70a271292419e7d92a3befb71a7c0a3ff063173",
+  "source_hashes": {
+    "src/context_assembly.py": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924",
+    "src/context_discovery.py": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+    "src/contextbench_score.py": "feabbd1c29d5e236a3e81b664d05d15178faeaa7d8418306581b289705b177de",
+    "src/repl_environment/code_search.py": "2aa8a78d82ce60ba61d29b26eadd7f56bc06d1492dc5b5021731472cfce41c20",
+    "src/repl_environment/task_root.py": "7ec2dd4a97d8a8f758acdaa053234891637485383a30f4eec8a108b4f4f0769f"
+  },
+  "task": "DCP-10-P4",
+  "upstream_git_rev": "1436c28a8eb95496da4ea69ad458b9f8a8eb7d61"
+}

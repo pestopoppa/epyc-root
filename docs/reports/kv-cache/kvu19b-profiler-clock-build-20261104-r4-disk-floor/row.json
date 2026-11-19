@@ -1,0 +1,37 @@
+{
+ "decision_rule": "Build-only pass requires source-bound clock-instrumented p3batch with compiled clock markers and local linked DSOs, zero exit and verified owned process cleanup. No model inference, clock-domain calibration or attribution follows.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 600,
+ "first_progress_s": 900,
+ "gib": 8,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KVU-19b-gap",
+ "id": "kvu19b-profiler-clock-build-20261104-r4",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-profiler-r4/launch.sh",
+  "sha256": "96933faa16e9ac9d4afa11ea572668ee4058694bf2cf3a7ed4d548bc1940551c"
+ },
+ "min_window_s": 300,
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 40.0,
+ "published_at": "2026-11-04T20:13:58Z",
+ "published_from": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-profiler-r4/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-profiler-r4/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-profiler-r4",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-profiler-r4/STOP",
+ "window_s": 1020,
+ "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-profiler-r4"
+}

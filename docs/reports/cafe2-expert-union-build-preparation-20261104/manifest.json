@@ -1,0 +1,51 @@
+{
+ "decision_rule": "Build-only: accept pinned v10 plus exact CAFE2 expert-union candidate/header/bridge, frozen tokenizer input and CMake integration; full CPU executable with CAFE2_VERIFY_RAW, CAFE2_EFFECTIVE_THREADS and cafe2.expert.window.begin.v1 compiled markers, source/artifact hashes and local library linkage. No native callback, expert union, timing or CAFE-2 verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-2",
+ "id": "cafe2-v10-expert-union-build-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.cpp",
+  "*.hpp",
+  "*.json",
+  "*.sha256",
+  "*.patch",
+  "*.md",
+  "tokenizer-linkage.txt"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build/launch.sh",
+  "sha256": "1dab9b1147945875e859066426747756acdb7cfe23e9eab8f5a86bb9d2acba18"
+ },
+ "min_window_s": 1800,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:462: identity fields incomplete: ['region', 'estimate'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210); estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)",
+  "speculative-decoding.md:462: untestable prose prerequisite: 'requires it. (intake-1935 claim 0) \u2014 Owner: workspace-ec (2026-10-06).\\n  - 2026-11-04: published `cafe2-v10-verify-cost-'"
+ ],
+ "published_at": "2026-11-04T14:38:15Z",
+ "published_from": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe2-expert-build/proof.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/df2/cafe2-expert-build"
+}

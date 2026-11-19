@@ -41,6 +41,19 @@ stop(){ [ -n "$SPID" ] || return 0
         [ -d /proc/$SPID ] && { say "SIGTERM not honoured -> SIGKILL"; kill -KILL $SPID 2>/dev/null; sleep 3; }
         ps -p $SPID >/dev/null 2>&1 && say "FATAL pid $SPID alive" || say "server pid $SPID dead"; SPID=""; }
 die(){ stop; [ -n "${CPID:-}" ] && kill -TERM "$CPID" 2>/dev/null; say "ARM $LABEL end rc=$1 held $(( $(date +%s)-T0 ))s"; exit "$1"; }
+# BUILDVERIFY-1 pre-arm gate (opt-in by env; digests OBJECTS, never the linked .so; mtime and path names prove nothing):
+#   BUILDVERIFY_SYMBOLS="STR ..."            every STR must be present in $B/libggml-cpu.so (proves a knob is compiled in)
+#   BUILDVERIFY_DIR=<cmake build dir> BUILDVERIFY_EXPECT=<manifest.json>   object manifest must equal the recorded one
+if [ -n "${BUILDVERIFY_SYMBOLS:-}" ]; then
+  python3 -I "$H/tools/buildverify.py" symbol "$B/libggml-cpu.so" $BUILDVERIFY_SYMBOLS 2>&1 | while read -r l; do say "buildverify: $l"; done
+  [ "${PIPESTATUS[0]}" -eq 0 ] || { say "FATAL buildverify: expected symbol absent from the binary"; die 65; }
+fi
+if [ -n "${BUILDVERIFY_DIR:-}" ] && [ -n "${BUILDVERIFY_EXPECT:-}" ]; then
+  BV_TMP=$(mktemp "$OUT/buildverify.XXXXXX.json")
+  python3 -I "$H/tools/buildverify.py" manifest "$BUILDVERIFY_DIR" -o "$BV_TMP" || { say "FATAL buildverify: manifest failed"; die 65; }
+  python3 -I "$H/tools/buildverify.py" compare "$BUILDVERIFY_EXPECT" "$BV_TMP" 2>&1 | while read -r l; do say "buildverify: $l"; done
+  [ "${PIPESTATUS[0]}" -eq 0 ] || { say "FATAL buildverify: object manifest differs from the recorded build"; die 65; }
+fi
 trap "kill -TERM \$SPID 2>/dev/null" EXIT
 
 cores_sampler(){ exec bash "$H/tools/cores_sampler.sh" "$1" "$OUT/$LABEL.coresidency" 0-95 20; }

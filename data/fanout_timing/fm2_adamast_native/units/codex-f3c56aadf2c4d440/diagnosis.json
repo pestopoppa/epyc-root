@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "codex-f3c56aadf2c4d440",
+      "failure_modes": [
+        {
+          "code": "MAST-11",
+          "name": "Premature termination",
+          "evidence": "The agent concludes the turn with 'Native smoke remains queued' and 'no candidate capture has started', yet marks the work as 'WRAPPED' and requests a fresh session, despite the task requiring the native HIP smoke to PASS.",
+          "confidence": "high",
+          "severity": "moderate"
+        },
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The agent verifies that '26 original source hashes match' and that '13 controls and 51 comparator tests passed', but explicitly states 'Native smoke remains queued', meaning the primary functional verification (the smoke test) was never executed or confirmed.",
+          "confidence": "high",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795008124,
+        "warnings": []
+      }
+    }
+  ]
+}

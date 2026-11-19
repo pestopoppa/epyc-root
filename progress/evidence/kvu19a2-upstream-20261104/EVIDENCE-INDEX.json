@@ -1,0 +1,1042 @@
+{
+  "schema": "kvu19a2.upstream-evidence.v1",
+  "scope": "offline recheck of committed observations; no new GPU measurement",
+  "sources": [
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/result.json",
+      "copy": "sources/root-repeat-result.json",
+      "sha256": "88af22831fda196b7995bda933769fa3f4720d25253720712bed90f3b6e21c91",
+      "bytes": 109919
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-repeat-20261102/canonical-input-hashes.json",
+      "copy": "sources/canonical-input-hashes.json",
+      "sha256": "f9fc6b1f96d359c7dad6023794a9b804e71910a2d6ae31acc25f2faaf317f1e8",
+      "bytes": 729
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-build/build-receipt.json",
+      "copy": "sources/root-build-receipt.json",
+      "sha256": "3b327e7b729e02e38ed377847f4ea890d42852aa4e2300f681be07e86742511f",
+      "bytes": 3019
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-build/harness-receipt.json",
+      "copy": "sources/root-harness-receipt.json",
+      "sha256": "15e966e5488629fe0f1c9baf309056dda08ea60b262171e8f5df078647a9f3d3",
+      "bytes": 1005
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-repeat-20261102/PREDECLARATION-ROOTBUILD.md",
+      "copy": "sources/root-predeclaration.md",
+      "sha256": "94466eff41bbbb59ed2185c8c021b785965344ad253a571079f7a9ee855d5d61",
+      "bytes": 2307
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-repeat-20261102/container-toolchain.sha256",
+      "copy": "sources/container-toolchain.sha256",
+      "sha256": "2b8ad6a514751640eec363b27a3c9dc29fa17e8479a4a2f144bcf80a648c68dd",
+      "bytes": 498
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "scripts/benchmark/native/kvu19a2_fa_harness.cpp",
+      "copy": "sources/fa_harness.cpp",
+      "sha256": "b9f352a91ea975c682cbe78c2f4dbf9035c6a40e309b84035bfbdaf49b420091",
+      "bytes": 12209
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "scripts/benchmark/kvu19a2_repeat_rootbuild.py",
+      "copy": "sources/repeat_rootbuild.py",
+      "sha256": "bb08d9f646c83e16286ee830246e8545c95f23a2ba1af86d64f6c5b532995043",
+      "bytes": 10758
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "scripts/benchmark/kvu19a2_immutable_build.py",
+      "copy": "sources/immutable_build.py",
+      "sha256": "610082645c35c7994835547b247f4dbdb665c3772fee3c6a5f1ca5f4f4b0e0ba",
+      "bytes": 5497
+    },
+    {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "scripts/benchmark/kvu19a2_harness_immutable_compile.py",
+      "copy": "sources/harness_compile.py",
+      "sha256": "0ef0060100c5eeb5e65041002487284095cc056292de9ea93565844a1476b27e",
+      "bytes": 2672
+    },
+    {
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/result.json",
+      "copy": "sources/barrier-result.json",
+      "sha256": "515bc1211a2661d02fe47d2c05c13efaa0481b3c871868266070d1b002def607",
+      "bytes": 118112
+    },
+    {
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-sync-build-20261102/receipt.json",
+      "copy": "sources/barrier-build-receipt.json",
+      "sha256": "1d00db9e5fcf394d59d7548d1269fdfa2333bc3559da4a69e446ad1efc85dafc",
+      "bytes": 1346
+    },
+    {
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-sync-build-20261102/RESULT.md",
+      "copy": "sources/barrier-RESULT.md",
+      "sha256": "2b52dca9184b5bd4778f19f4acfbd58e51882c809533ef0f8e96bcfdb1f834bf",
+      "bytes": 1721
+    },
+    {
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-sync-build-20261102/PREDECLARATION.md",
+      "copy": "sources/barrier-predeclaration.md",
+      "sha256": "1746ce6590047d6f021c7a94d2f2d123f70bca6f4527be3734dcb6670dcc8910",
+      "bytes": 1398
+    },
+    {
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "repository": "/mnt/raid0/llm/epyc-inference-research",
+      "path": "artifacts/kvu19a2-sync-build-20261102/sync.patch",
+      "copy": "sources/barrier.patch",
+      "sha256": "cbd70a8a642f8cc45df2fbdc90015030e63113c4033cf17d51674587f011aed9",
+      "bytes": 751
+    },
+    {
+      "commit": "a0d0ae238e714aaab04e973ef4b5a4b7c9917744",
+      "repository": "/mnt/raid0/llm/llama.cpp-experimental",
+      "path": "ggml/src/ggml-cuda/fattn-tile.cuh",
+      "copy": "sources/fattn-tile.baseline.cuh",
+      "sha256": "878a3640f685e68c6c3d3102c331c43054bfb0bce81f68c3224ad271b8d9d844",
+      "bytes": 64117
+    },
+    {
+      "sha256": "4147d2b65bbb416fdee1bf004d5447238933524bf3c087a69dcf6bbeca73b235",
+      "copy": "sources/guarded-loop.patch",
+      "source": "preserved historical patch; digest bound by root-build receipt"
+    }
+  ],
+  "experiments": {
+    "root_bound": {
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "result_sha256": "88af22831fda196b7995bda933769fa3f4720d25253720712bed90f3b6e21c91",
+      "arm_labels": {
+        "base": "loop-index baseline",
+        "candidate": "guarded-loop patch"
+      }
+    },
+    "barrier_ab": {
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "result_sha256": "515bc1211a2661d02fe47d2c05c13efaa0481b3c871868266070d1b002def607",
+      "arm_labels": {
+        "base": "original guarded-loop candidate",
+        "candidate": "candidate plus barrier change"
+      }
+    }
+  },
+  "metrics": {
+    "root_bound": {
+      "78": {
+        "base": {
+          "runs": 5,
+          "distinct_output_sha256": 1,
+          "elements": 32768,
+          "varying_elements": 0,
+          "max_absolute_within_arm_spread": 0.0,
+          "finite_all": true
+        },
+        "candidate": {
+          "runs": 5,
+          "distinct_output_sha256": 5,
+          "elements": 32768,
+          "varying_elements": 16384,
+          "max_absolute_within_arm_spread": 0.0017658434808254242,
+          "finite_all": true
+        }
+      },
+      "80": {
+        "base": {
+          "runs": 5,
+          "distinct_output_sha256": 1,
+          "elements": 16384,
+          "varying_elements": 0,
+          "max_absolute_within_arm_spread": 0.0,
+          "finite_all": true
+        },
+        "candidate": {
+          "runs": 5,
+          "distinct_output_sha256": 5,
+          "elements": 16384,
+          "varying_elements": 4096,
+          "max_absolute_within_arm_spread": 0.000479917973279953,
+          "finite_all": true
+        }
+      }
+    },
+    "barrier_ab": {
+      "78": {
+        "base": {
+          "runs": 5,
+          "distinct_output_sha256": 5,
+          "elements": 32768,
+          "varying_elements": 16384,
+          "max_absolute_within_arm_spread": 0.0027541331946849823,
+          "finite_all": true
+        },
+        "candidate": {
+          "runs": 5,
+          "distinct_output_sha256": 5,
+          "elements": 32768,
+          "varying_elements": 16384,
+          "max_absolute_within_arm_spread": 0.0021391240879893303,
+          "finite_all": true
+        }
+      },
+      "80": {
+        "base": {
+          "runs": 5,
+          "distinct_output_sha256": 5,
+          "elements": 16384,
+          "varying_elements": 4096,
+          "max_absolute_within_arm_spread": 0.0005635109264403582,
+          "finite_all": true
+        },
+        "candidate": {
+          "runs": 5,
+          "distinct_output_sha256": 5,
+          "elements": 16384,
+          "varying_elements": 4096,
+          "max_absolute_within_arm_spread": 0.0006801867857575417,
+          "finite_all": true
+        }
+      }
+    }
+  },
+  "runs": [
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "base",
+      "repeat": 1,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r1/out_78.bin",
+      "sha256": "943f6eb15ab23efb5b7beac6315bac3f9107b36dd68cc104771fa916cbe7e90d",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r1/native.log",
+      "log_sha256": "8b44bbe6bf1849588484f5838509c3dab38d77752a3f231cb5b831e36c0b6f64",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "base",
+      "repeat": 2,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r2/out_78.bin",
+      "sha256": "943f6eb15ab23efb5b7beac6315bac3f9107b36dd68cc104771fa916cbe7e90d",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r2/native.log",
+      "log_sha256": "8b44bbe6bf1849588484f5838509c3dab38d77752a3f231cb5b831e36c0b6f64",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "base",
+      "repeat": 3,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r3/out_78.bin",
+      "sha256": "943f6eb15ab23efb5b7beac6315bac3f9107b36dd68cc104771fa916cbe7e90d",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r3/native.log",
+      "log_sha256": "8b44bbe6bf1849588484f5838509c3dab38d77752a3f231cb5b831e36c0b6f64",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "base",
+      "repeat": 4,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r4/out_78.bin",
+      "sha256": "943f6eb15ab23efb5b7beac6315bac3f9107b36dd68cc104771fa916cbe7e90d",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r4/native.log",
+      "log_sha256": "8b44bbe6bf1849588484f5838509c3dab38d77752a3f231cb5b831e36c0b6f64",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "base",
+      "repeat": 5,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r5/out_78.bin",
+      "sha256": "943f6eb15ab23efb5b7beac6315bac3f9107b36dd68cc104771fa916cbe7e90d",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-base-r5/native.log",
+      "log_sha256": "8b44bbe6bf1849588484f5838509c3dab38d77752a3f231cb5b831e36c0b6f64",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 1,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r1/out_78.bin",
+      "sha256": "e912c691cc2b98f3dc2bd00f80b0effdabe7c1144d59753b921116dd0ec87b2c",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r1/native.log",
+      "log_sha256": "260283ab8bff94dbfcaf4fbfd6a08f58f752199f85c15f4d1c2904baa187d5c5",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 2,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r2/out_78.bin",
+      "sha256": "158dda2156e12c066176a01e9b795d86f27342085c53344ab4decc0b2bda2446",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r2/native.log",
+      "log_sha256": "b42c79ccc66c5a31f2d8ce93dc2733a919c1a24322764dcf12a3507a5bb31e60",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 3,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r3/out_78.bin",
+      "sha256": "3c4e8e80a9cdf0f1964990811d1dcfa5756b66c333cb67ebbb315f9352569102",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r3/native.log",
+      "log_sha256": "9d39190a7ac697a84a61e5ad2ff194466e43897669e6eba2f69826bca6ef50d7",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 4,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r4/out_78.bin",
+      "sha256": "449b888adc9a871dbf0fe93f1ad952c710f05566bf5d3d430206280d0c931b53",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r4/native.log",
+      "log_sha256": "f3d52a6f0a65690551e81bafed8e33e52c57220d176603d5439f9d7cfc5791c2",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 5,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r5/out_78.bin",
+      "sha256": "274c14fb5d7de6bbf5ad41eb003736a40575734a8ea1d4e949899b926d6a4a34",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case78-candidate-r5/native.log",
+      "log_sha256": "ab6eae9365d51aa8a09388e9025a08955a63bb20ba54dbb38210796aaeec8c62",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "base",
+      "repeat": 1,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r1/out_80.bin",
+      "sha256": "7129e9ef21531e5b40fa23f2fe6f7e012bb866e48aac7b7bf8b822aa3a1b1e2d",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r1/native.log",
+      "log_sha256": "261ea815c00f1800b998bc1f026243d92182657349ab24a91e61fea3c38870d0",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "base",
+      "repeat": 2,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r2/out_80.bin",
+      "sha256": "7129e9ef21531e5b40fa23f2fe6f7e012bb866e48aac7b7bf8b822aa3a1b1e2d",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r2/native.log",
+      "log_sha256": "261ea815c00f1800b998bc1f026243d92182657349ab24a91e61fea3c38870d0",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "base",
+      "repeat": 3,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r3/out_80.bin",
+      "sha256": "7129e9ef21531e5b40fa23f2fe6f7e012bb866e48aac7b7bf8b822aa3a1b1e2d",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r3/native.log",
+      "log_sha256": "261ea815c00f1800b998bc1f026243d92182657349ab24a91e61fea3c38870d0",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "base",
+      "repeat": 4,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r4/out_80.bin",
+      "sha256": "7129e9ef21531e5b40fa23f2fe6f7e012bb866e48aac7b7bf8b822aa3a1b1e2d",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r4/native.log",
+      "log_sha256": "261ea815c00f1800b998bc1f026243d92182657349ab24a91e61fea3c38870d0",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "base",
+      "repeat": 5,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r5/out_80.bin",
+      "sha256": "7129e9ef21531e5b40fa23f2fe6f7e012bb866e48aac7b7bf8b822aa3a1b1e2d",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-base-r5/native.log",
+      "log_sha256": "261ea815c00f1800b998bc1f026243d92182657349ab24a91e61fea3c38870d0",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-base.so.0.16.0": "8cc0f22ea446542618a3b3bfbbc973e05e9667f4e3be69950b54d4367fc0d482",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-cpu.so.0.16.0": "b495e2551b07e56f8ad72bf0097b9f73aba01a48a351f7de97277575ed031b23",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml-hip.so.0.16.0": "c1207b369ebe2c9fb36e538431e1bf97e9db4add00163dd29ccdc77a6577351c",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/base/bin/libggml.so.0.16.0": "c858672e0fb1029b570be8d5dbfd2e86ec3ec570abee7c50d1af366af5e07c14"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 1,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r1/out_80.bin",
+      "sha256": "a671ba5ce6e60b6712b4188e3b955862adedf2f8c7b86528e0aa0e01f82e5a27",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r1/native.log",
+      "log_sha256": "f376b8b6276fd43111e29bf13c39f50a0e4b9f2717481b3d1768963ed7bd83dc",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 2,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r2/out_80.bin",
+      "sha256": "e1a379508e1909edb3bdcef9a326d90ea6f61bb62fd195b5928647021790c1d5",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r2/native.log",
+      "log_sha256": "b7fba9621fef93710edacb81e72f373e7ba50a128db1364fb89ac53fa810c1e4",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 3,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r3/out_80.bin",
+      "sha256": "f537314a51c18bbe2df8d588f3b9479d004b9e695f4ccdac5cc00f4384f3d273",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r3/native.log",
+      "log_sha256": "5aded6945bb229c1f02e9818fc61b2e94ed9ee1a9bedd15457596106219479cf",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 4,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r4/out_80.bin",
+      "sha256": "eec3e6ddfecf3194bdf012759461ad88d71cd962f80add7ce8d6a557d88ace69",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r4/native.log",
+      "log_sha256": "a700daa8f87bd39a3c53a153f8d2d8db319d98bcdda964f0c7dd49a4ae451be2",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "root_bound",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 5,
+      "commit": "f8878bf145490c43458aab0fad27eac6514918d5",
+      "path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r5/out_80.bin",
+      "sha256": "3fed5e28cf3e74e371a3e0b9b3c640d1f63b00b741f6dc191637a30cfb1eec48",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-repeat-20261102/root-bound-native/case80-candidate-r5/native.log",
+      "log_sha256": "780961893dd1639317439f1a561da3a6f2da4a0d7892b510100abad946807a05",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "base",
+      "repeat": 1,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r1/out_78.bin",
+      "sha256": "b34d579e81482fec0a7801080370e104d23cc30e1c3c09eb127333576e217a76",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r1/native.log",
+      "log_sha256": "446daaa0a7ae0c27f3d6cb64f270f8a25c1f53bff09a26dab3d0a9f680cb0333",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "base",
+      "repeat": 2,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r2/out_78.bin",
+      "sha256": "4c1e1165a2aec2628ffd8c685f3bdb690a3c5ccdabeb78e39d4d7fceabb815c6",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r2/native.log",
+      "log_sha256": "1475bb8eac1094c0d6a74f0c70030eaf475b9ea6074ee5d6e3430d075c4e95b8",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "base",
+      "repeat": 3,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r3/out_78.bin",
+      "sha256": "1eeffb835b8d06c3b8e874610cbb9fe71cdb8686d8df54575bbaac6e2e130419",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r3/native.log",
+      "log_sha256": "98a15b165add027a30d9d7fa65c2bb10492b904b41b6612161e3c7b377790b8b",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "base",
+      "repeat": 4,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r4/out_78.bin",
+      "sha256": "31c3cb763eeba6d1669aa1da8df9c9c17d8b649c993956ddc2be1d731ec1efc1",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r4/native.log",
+      "log_sha256": "b8b41e83e6e3e50450649539a7fc6388176e77fabedab17aba28f178d1a37507",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "base",
+      "repeat": 5,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r5/out_78.bin",
+      "sha256": "e0ed2ef2e8b80925eff54bf83a46bc5e90c8d002ce7f60f88c7708ef8b3d5e03",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-base-r5/native.log",
+      "log_sha256": "7c1c82bd7f5c26054ae5e0a4f320c0eda18f64758c40013eae15b84aa34cc65c",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 1,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r1/out_78.bin",
+      "sha256": "9d17de58fd07400e51680934ba02d40fcbbdc8083ed26a9eda56ad86a7a49b5b",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r1/native.log",
+      "log_sha256": "9b9909086eadb18c85b7411305ed2cb6b5255c661b5932f529ae5f355d383eca",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 2,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r2/out_78.bin",
+      "sha256": "ae67c23156a1324ecdbb755ea91bd6e6b85c6d717bc6b0b8549720ec8abcdad6",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r2/native.log",
+      "log_sha256": "7c99ddc03a2144d1929f54fc2bde7b09429b82815c03a493d17ed681ad6215e8",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 3,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r3/out_78.bin",
+      "sha256": "df7c657024bc4c9ddfa0fd470decc81dfa70ad7a37d71d023c47e40da17f6017",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r3/native.log",
+      "log_sha256": "3656958fe6fdf59fc32a12f985e4435b683fe5d13cbc5224857ac27b6922fe7c",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 4,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r4/out_78.bin",
+      "sha256": "bb6386e2fe6ffc5b904f2e214ae4c3d23144e63e7aa54e2d3ceb8ecfb580e2df",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r4/native.log",
+      "log_sha256": "fd4ef4e3aa1493ec3e002beab500ff84cd73a262396f5acf9b488e22ee3ca7b4",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 78,
+      "arm": "candidate",
+      "repeat": 5,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r5/out_78.bin",
+      "sha256": "a322fc4f91287fc42312051063e98f4d18494c0489478c7554ae12808419bdc3",
+      "bytes": 131072,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case78-candidate-r5/native.log",
+      "log_sha256": "105cf5fc268b7525679a5b3879701833124a1954d2a51b31865509df2e366a42",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "base",
+      "repeat": 1,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r1/out_80.bin",
+      "sha256": "cd96facbf1e32f0fda26290b530ddf1fc37df607bb36cb13b00264abadc8d320",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r1/native.log",
+      "log_sha256": "8e19ee09f7aab50b71b5fd1072c4e595d990070dd268b22f9403b6e35c607e36",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "base",
+      "repeat": 2,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r2/out_80.bin",
+      "sha256": "b7382b31db54926917a6263cf127b5754d0f94a538ce34392f7953369a3deec3",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r2/native.log",
+      "log_sha256": "298fb44206721ef992b8d1e19b5bae33cf6fd6f8ba94019af1860de6a41d3c8d",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "base",
+      "repeat": 3,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r3/out_80.bin",
+      "sha256": "eec3e6ddfecf3194bdf012759461ad88d71cd962f80add7ce8d6a557d88ace69",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r3/native.log",
+      "log_sha256": "a700daa8f87bd39a3c53a153f8d2d8db319d98bcdda964f0c7dd49a4ae451be2",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "base",
+      "repeat": 4,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r4/out_80.bin",
+      "sha256": "4f35b82cfeb93268a10eecc54756e9414b5de5935d24fdab1cba562cc232adb2",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r4/native.log",
+      "log_sha256": "f26f51cec7c0d5de2af749ad35c1d0a366fa587a552bd7f4a7bccb17d0db8de2",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "base",
+      "repeat": 5,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r5/out_80.bin",
+      "sha256": "6f49d636e98e326837f4e72a8846b44c1f9ea55d42bd674922861163945cc0c9",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-base-r5/native.log",
+      "log_sha256": "ceea219ca54c4435c105898a1adaad0b6390c3265e3e4aa02de23399b7a5ea2b",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-base.so.0.16.0": "acf11980d8ff395a2b0a686a4a913d8f7a53a58d84a9a0c099b9dc5934456a8b",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-cpu.so.0.16.0": "e14a3ca7545bb05b066edcf1cb7cfa51e722043e8088383c6de87ba3d3ac0f41",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml-hip.so.0.16.0": "dd965b9f875f98ee45961d683e84d646f85cd4d44ad2046a265636beb23a4e88",
+        "/dev/shm/kvu19a2-immutable-build-v2-20261102/candidate/bin/libggml.so.0.16.0": "8df615638e52eedf2ed62379e4b06be7572ac15ab7bf04978b150c882919931c"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 1,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r1/out_80.bin",
+      "sha256": "71593670fcf34ddb42d0da01791b08b2c55683f925d6d07a47e65a37aea424e0",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r1/native.log",
+      "log_sha256": "06e1eab6e0792304e22e24a341a2da23d8d34ecaa4c539958a6c371bd269b0e2",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 2,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r2/out_80.bin",
+      "sha256": "2c227da1710bf88fd0328349f88680a6dd0cf5117b38637aebf07f95cf2ad854",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r2/native.log",
+      "log_sha256": "e7d542f1740a62fb43231cdb085818aec311495a38e5f561a01f2db89cfc8999",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 3,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r3/out_80.bin",
+      "sha256": "8a6ab2ae915536b3518df07e2b70f188922b795d9820f7cf3af052cd3ab79bcc",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r3/native.log",
+      "log_sha256": "285351d36598dcb242bf9a3b87a90b1f1851c9b12320a495a652c5e7541f2ef4",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 4,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r4/out_80.bin",
+      "sha256": "716e7dacb7388a4db0625d8f6d1653ff0221fda824ea2491bba5227708416b24",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r4/native.log",
+      "log_sha256": "832678cd7e1aea6045b6ff7152966c3d29de139b53504f8f0d53026b80957667",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    },
+    {
+      "experiment": "barrier_ab",
+      "case": 80,
+      "arm": "candidate",
+      "repeat": 5,
+      "commit": "7a8a2d8fade9ee17368c374c3da42df4f69dfbd6",
+      "path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r5/out_80.bin",
+      "sha256": "d194ceaff15c78df0902d8bdd9e56fe07f967026cedddbdc7dd49b20796b2999",
+      "bytes": 65536,
+      "log_path": "artifacts/kvu19a2-sync-build-20261102/native/case80-candidate-r5/native.log",
+      "log_sha256": "a4dac8e33b4d2891159882514f728bd4a8f68c97d4436d0760e32d98e252446e",
+      "input_hashes_match_canonical": true,
+      "positive_in_window_kfd": true,
+      "mapped_ggml": {
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-base.so.0.16.0": "89827ca1ccb802db679895b73eda513553e6ad8d13ac5ed3c8872340f4cd2ae3",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-cpu.so.0.16.0": "fb052dd661a7e56647702cda50941ef453dd767ac55821e98f4df43fe843fdfa",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml-hip.so.0.16.0": "61ab9630ae73451cf32877f4e03e158832e30b0e597c27bb157f4d80282ec99c",
+        "/dev/shm/kvu19a2-sync-build-20261102/build/bin/libggml.so.0.16.0": "a388cb8c8de2f36e2704de536eef41262801723fff4336b9f09e0c632ebad543"
+      }
+    }
+  ],
+  "related_search": {
+    "path": "UPSTREAM-SEARCH.json",
+    "sha256": "559c237bedcae131c3c6d75b6a20db21c9c0971cb9888c3a2ef5e004623440d9",
+    "scope": "root-owned bounded read-only GitHub search metadata; not exhaustive novelty evidence"
+  }
+}

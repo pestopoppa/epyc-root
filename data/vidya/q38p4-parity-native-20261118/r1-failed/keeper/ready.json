@@ -1,0 +1,82 @@
+{
+ "book_s": 330,
+ "budget_gib": 1.0,
+ "decision_rule": "Does greedy decoding on the Qwen3-4B-Instruct-2507 BF16 proxy yield identical native token IDs and stop categories on the pinned C6 llama.cpp GPU runtime and vLLM 0.33.0 ROCm image under the same predeclared 512-token input and at most 128 generated tokens per arm? Each arm uses its own sequential launch, one fixed request, speculative decoding and prefix cache disabled, and exact body bytes under one exclusive MI210 grant. Stop-on-answer after one settled match or divergence. Stop-on-futility on STOP, grant deadline, input or response refusal, load or cleanup failure, or missing two samples with in-window linkage. The publisher smoke runs one separate 0.6B HIP arm on four reserved threads with native token IDs and cleanup. The full result is a finite correctness diagnostic.",
+ "declared_shape": "gpu",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 420,
+ "first_progress_s": 115,
+ "gib": 32,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-Q38P4-PARITY-WIRE",
+ "id": "q38p4-greedy-parity-20261118-r1",
+ "keep": [
+  "SOURCE.sha256",
+  "spec.json",
+  "settings.py",
+  "launch.sh",
+  "runner.py",
+  "producer.py",
+  "check.py",
+  "asset-pins.json",
+  "native-plan.json",
+  "smoke-plan.json",
+  "receipts/native/*.json",
+  "receipts/smoke/*.json",
+  "convert.sh",
+  "convert.log",
+  "render_tokens.py",
+  "tokens.json",
+  "c6-*.txt",
+  "vllm-*.txt",
+  "official/*.json",
+  "official/*.log",
+  "official/capture/*",
+  "official/capture/llama/*",
+  "official/capture/vllm/*",
+  "smoke/*/RESULT.json",
+  "official/RESULT.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/launch.sh",
+  "sha256": "8e60a1fe276a22730c099d210f77f956d1972aa358b39cae2dcd67abaadf6795"
+ },
+ "min_window_s": 330,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [
+  19433,
+  19434
+ ],
+ "priority_rank": 55.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:17: untestable prose prerequisite: 'after both original responses, two in-window owned GPU samples per arm, sealed replay and verified owned teardown; stop-'"
+ ],
+ "published_at": "2026-11-18T04:09:34Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T04:09:34Z",
+  "session": "01a1ecc1-6219-71b3-9d0f-89c2ec497974",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118",
+ "shape": "gpu",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/check.py smoke",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/STOP",
+ "total_units": 1,
+ "unit_key": "unit_id",
+ "verdict_by": "agent",
+ "window_s": 840,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118"
+}

@@ -139,14 +139,38 @@ def _build_certificate(
     `input_attestations` is the replayability hook: same policy digest + same input digests => same
     result, checkable offline.
     """
+    # Each consumed path is stated in full and attested by the digest of that statement, so an
+    # offline checker (scripts/vidya/cert_check.py) can re-derive the verdict from the certificate
+    # alone and detect an input that was edited after the fact. The digest binds the stated grade;
+    # it is NOT yet a ledger-frame digest (frames are not carried on Belief paths) -- see VB-CERT-1.
+    inputs = sorted(
+        (
+            {"side": side, "label": label, "Q": g.q_name, "T": g.t_name}
+            for side, paths in (("pro", belief.pro_paths), ("con", belief.con_paths))
+            for label, g in paths
+        ),
+        key=lambda r: (r["side"], r["label"], r["Q"], r["T"]),
+    )
     cert = {
         "_type": "epyc.vidya/certificate/v1",
         "verifier": {"id": "vidya.gate", "fold_version": fold_result.__class__.__module__},
         "resource": {"claim_id": belief.claim_id, "question": policy.use},
-        "policy": {"digest": policy.digest(), "standard": policy.standard},
-        "input_attestations": sorted(
-            {label for label, _ in belief.pro_paths + belief.con_paths}
-        ),
+        "policy": {
+            "digest": policy.digest(),
+            "standard": policy.standard,
+            "fields": {
+                "use": policy.use,
+                "floor": policy.floor.as_dict(),
+                "standard": policy.standard,
+                "conjunctive": policy.conjunctive,
+                "allow_conflicted": policy.allow_conflicted,
+                "allow_review_required": policy.allow_review_required,
+                "allow_labelled_stale": policy.allow_labelled_stale,
+                "min_disjoint_supports": policy.min_disjoint_supports,
+            },
+        },
+        "inputs": inputs,
+        "input_attestations": sorted(content_hash(r) for r in inputs),
         "frontier": fold_result.frontier,
         "as_of": fold_result.as_of,
         "result": "PASSED",

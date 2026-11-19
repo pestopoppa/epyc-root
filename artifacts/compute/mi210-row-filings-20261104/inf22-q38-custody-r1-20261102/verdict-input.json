@@ -1,0 +1,10 @@
+{
+  "verdict": "inconclusive",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc143 launcher-signalled and no custody result. No custody completion, performance or recipe conclusion.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/inf22-q38-custody-r1-20261102/end.txt": "13c7dc6c28c8d19753ca9b55b9d9f4183593f7b508e449e726ee04a4b2cb919b",
+    "artifacts/compute/mi210-row-filings-20261104/inf22-q38-custody-r1-20261102/manifest.json": "f89052b68d263400eb2c765cae187f95ec0e2a16686da19fe52c87d681660fa6"
+  }
+}

@@ -1,0 +1,49 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "answer": "NO_VERDICT",
+  "filed_by": "autopilot-backlog-session",
+  "rationale": "rc=0 complete but clock_stable=false on 136/136 invocations; dry-run ingest refused=1; no floor. vidya-belief-substrate-program.md, commit e702503a0.",
+  "verdict": "inconclusive"
+ },
+ "answer": "NO_VERDICT",
+ "at": "2026-11-09T20:36:53+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-09T16:48:20Z reason=complete",
+ "filed_at": "2026-11-09T20:36:53+00:00",
+ "filed_by": "autopilot-backlog-session",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R18D-AA-WIRE",
+ "id": "vidya-r18d-aa-wire-20261109-r3",
+ "keep_tail": {
+  "reason": "no samples_a/samples_b in result",
+  "reported": false
+ },
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-r18d-aa-wire-20261109-r3.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261109-r3/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "operator-adhoc-ops-20261105",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc=0 complete but clock_stable=false on 136/136 invocations; dry-run ingest refused=1; no floor. vidya-belief-substrate-program.md, commit e702503a0.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261109-r3/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "vidya-r18d-aa-wire-20261109-r3",
+ "row_verdict": "inconclusive",
+ "rule": "QUESTION: with the MI210 sclk pinned by the job itself (power_dpm_force_performance_level set auto->high via one approved sudo write while holding an exclusive GPU grant, restored to auto on exit; levels recorded in out/clock-level.json), does the original post-hook pp512 A/A capture rederive a clock-stable settled bootstrap floor (Qwen3.8-27B-Q8_0, v10 production-store closure)? The first run (vidya-r18d-aa-wire-20261104) recorded clock_stable=false on all 136 invocations (sclk 800-1700 MHz); the stability check is NOT loosened and a run that is still unstable is refused, not floored. STOP RULE (measurement-sufficiency): A/A expected effect is zero; 20 scored process pairs per condition (SETTLED, PREHEATED, successful POST_BUILD), warmups retained, no efficacy peeking. Stop-on-answer when all three conditions finish 20 pairs and the sealed capture rederives; stop-on-futility on STOP/deadline, launch failure, missing own-PID GPU residency, sudo -n unusable (rc 5), level not auto at start (rc 6), set failure (rc 7), restore failure (rc 8), or mismatched source/image/input identity, preserving partial/UNKNOWN. Interim looks are futility-only (formal-gate class). RESULT FORMAT: capture.py sealed sidecar + project.py (ClaimTuple via claim_tuple.grade()). A calibration candidate requires a complete full-run record with 20 fresh A/A pairs in each condition, all invocations GPU-resident AND clock_stable, and pp512 bootstrap floors with provenance; review calibration and re-adjudication before updating bench.MEASURED_FLOOR_PCT. Partial units and dry-run PASS are not a floor verdict. Scope: Qwen3.8-27B Q8_0 exact prepared GGUF. Inputs (source, research, identities) are read from the r1 directory vb-r18d-aa-wire-20261104; outputs go to this directory.",
+ "tokens": {
+  "available": false,
+  "owner_slug": "operator-adhoc-ops-20261105",
+  "reason": "no rollout tokens attributed to the owner session today"
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "01b90cae84c7ade273896ee3a00fe8a703e4e6bed5ba2e3648b997dd994fc7bf",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

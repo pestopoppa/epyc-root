@@ -1,0 +1,6 @@
+{
+  "input_manifest": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/input.json",
+  "claim_close": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/run/claim.close.json",
+  "pair_journal": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/run/journal.jsonl",
+  "posthash_result": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/live-pair-20261104/posthash/posthash.json"
+}

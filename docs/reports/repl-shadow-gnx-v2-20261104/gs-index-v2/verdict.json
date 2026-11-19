@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Official rc=0. Exact target context and upstream impacts for emit, validate, rederive and adapter project at source 981ef5ba9ad1476bdb0d7feb84067f4fac074776 were recorded; all LOW, maximum 3 indexed callers. Source paths unchanged since that pin. This is an impact finding only, not completion of G-S.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T14:36:50+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T14:24:16Z reason=complete",
+ "filed_at": "2026-11-04T14:36:50+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.11",
+ "id": "ufh12-gs-frozen-gnx-v2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh12-gs-frozen-gnx-v2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Official rc=0. Exact target context and upstream impacts for emit, validate, rederive and adapter project at source 981ef5ba9ad1476bdb0d7feb84067f4fac074776 were recorded; all LOW, maximum 3 indexed callers. Source paths unchanged since that pin. This is an impact finding only, not completion of G-S.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet-v2/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "ufh12-gs-frozen-gnx-v2-20261104",
+ "row_verdict": "pass",
+ "rule": "Pin detached root commit 981ef5ba9ad1476bdb0d7feb84067f4fac074776, run wrapper index with four-quadrant admission, record context and upstream impact for emit, validate, rederive in frozen capture and project in coverage adapter. PASS requires all exact target identities and LOW/MEDIUM. HIGH/CRITICAL immediately recorded stop and warning; no edits. Unknown, ambiguity, mismatched target/index or partial is not PASS; smoke scan is not verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "1565c8aa5f1729ad403f9fd1c0f36315918140a4383eb708c6756af4197ce0d2",
+  "result": "pass",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,5 @@
+# Prospective KPF-18 item-4 floor guard
+
+This model-free guard composes the existing prospective layout parser and rejects missing final HTTP task/slot identities, incorrect slot assignments, extra or missing task/phase rows, layout mismatches and differences in any physical cell owner mask. The selected batch must include source prefill, two distinct decoder rows and target suffix prefill. `guard` requires caller-provided final HTTP responses; `compare` requires exact masks because slot roles are fixed.
+
+Run `python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-item4-floor-guard-20261105 -p test_guard.py`. These synthetic tests mock the parser and do not establish live task binding, that a selected batch is an actual single physical ubatch, checkpoint restore, source image or library custody, GPU residency, stop/cleanup, a real control floor, or historical equivalence. The parser itself refuses unbound multiple layout snapshots. This guard is an incomplete component, not a launcher or a qualified inference row. Its strict all-four-task same-batch test can refuse a scientifically useful run; refusal is not a failure verdict.

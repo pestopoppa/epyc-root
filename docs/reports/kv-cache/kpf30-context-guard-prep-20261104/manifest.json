@@ -1,0 +1,8 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "source_tree": "/mnt/raid0/llm/tmp/kvfork/kpf17-oracle-build-20261104/source",
+  "source_file": "tools/server/server-context.cpp",
+  "source_sha256": "7c68370f9085178de2fa57d2c679915d3befb54ff8e6a3377756965c9501b7ba",
+  "patch_sha256": "aad51ca1003d13f9920cc64b7089040ddf9227e5f3468058eb9ef964b5bc4fef",
+  "status": "unapplied; impact unknown; diagnostic admission only"
+}

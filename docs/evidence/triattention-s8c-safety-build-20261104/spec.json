@@ -1,0 +1,26 @@
+{
+  "id": "triattention-s8c-safety-build-20261104",
+  "owner": "triattention",
+  "launcher": "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104/packet/launcher.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "gib": 16,
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "first_progress_s": 600,
+  "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-safety-build-20261104/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Build the experimental dense-layout fail-closed S8-c CPU candidate from frozen production tip and pinned safety patch; checkpoint ggml-base, retain server and library digests, stop on first compile failure, stop request, or deadline. Build evidence only; no hybrid, gapped-cache, runtime, quality, or GPU claim.",
+  "handoff_task": "long-context-program.md:S8-C-SAFETY-BUILD",
+  "priority_rank": 18,
+  "keep": [
+    "results.jsonl",
+    "base-unit.json",
+    "artifact-sha256.txt",
+    "out/**",
+    "packet/**"
+  ],
+  "kind": "compute"
+}

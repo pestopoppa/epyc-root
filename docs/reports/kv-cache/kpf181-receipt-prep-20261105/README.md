@@ -1,0 +1,11 @@
+# KPF-18.1 model receipt component
+
+This isolated helper prepares a full-content receipt before a grant and verifies a pinned receipt plus current file identities at runtime without hashing model weights. The expected digests are those in the retained KPF-18.1 comparator review. Preparation refuses row execution and exclusive receipt creation avoids overwriting prior evidence. It checks descriptor and path identity around hashing. Runtime identity comparison binds the earlier hash; it is not a fresh content hash, and a file can change after verification. Consumers must check the identities again at capture boundaries and protect the interval as far as the eventual launcher permits.
+
+One small-fixture test covers successful verification, receipt tampering, exclusive creation, changed content, symlink refusal, digest mismatch and refusal during a grant. No real model was hashed, and this component is not integrated into the retained disabled comparator or a GPU launcher. It does not establish writer exclusion, comparator non-exposure, native context, admission or performance.
+
+## Disabled qualification-entry integration
+
+The isolated `qualification_entry.REVIEW.py` copies the retained v14 qualification entry (original SHA-256 `90eb818de5197243358c44fe0a214a15c889af85fbd90e6156554ac3489ee1c0`) and replaces its full-GGUF hash loop with receipt verification before and after the native child. `qualification-entry.patch` records the exact delta. `RECEIPT_SHA256 = None` intentionally refuses: after a permitted pre-grant receipt is prepared, its actual digest must be embedded in reviewed source and resealed, not supplied by untrusted runtime environment. The copy retains `CUSTODY_PROVIDER=None` and adds a static CLI refusal. Both copied shell entries refuse immediately and contain no legacy dispatch.
+
+The isolated qualification entry has no direct model hash call. Its transitive native gate and absent historical production comparator have not been fully audited or integrated; the complete future launcher cannot yet be claimed free of in-grant weight hashing. No receipt was generated and no model or GPU execution occurred. Synthetic tests cover the component, static guards and receipt verification placement; they do not establish native execution, active writer exclusion or a row.

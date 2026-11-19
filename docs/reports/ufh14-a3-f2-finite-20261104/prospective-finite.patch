@@ -1,0 +1,21 @@
+--- a/analyze_f2.py
++++ b/analyze_f2.py
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python3
+ """Project F2 SSE arrival gaps without assigning a keep verdict."""
+-import json, pathlib, statistics, sys
++import json, math, pathlib, statistics, sys
+ import client_ttft
+ 
+ LEGS=('cold1','all4warm1','all4warm2','cold2')
+@@ -51,6 +51,10 @@
+             for gap in gaps:
+                 bins[0 if gap<.01 else 1 if gap<.1 else 2 if gap<1 else 3 if gap<5 else 4]+=1
+             timing=by_id[member['request_sha256']]['timings']
++            for field in ('predicted_n', 'predicted_ms', 'cache_n', 'prompt_n'):
++                value=timing[field]
++                if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value):
++                    raise ValueError(f'{leg} member{i}: invalid native {field}')
+             if timing['predicted_n']<=0 or timing['predicted_ms']<=0:raise ValueError(f'{leg} member{i}: no native decode timing')
+             member_rows.append({'member':i,'delta_events':len(stamps),'gaps':len(gaps),
+                                 'gap_median_s':statistics.median(gaps),'gap_p95_s':quantile(gaps,.95),

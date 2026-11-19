@@ -1,0 +1,133 @@
+{
+ "complete": true,
+ "verdict": "NWT_NULL_FAIL",
+ "at": "2026-11-06T00:28:39Z",
+ "decision_basis": "Operator decision 2026-11-05: quality gate for numerics-changing Q8_0 routes = no-worse-than-C6 by perplexity on production weights, long prompts. Coordinator 2026-11-05: implemented against an EMPIRICAL NULL of K=6 precision-neutral perturbations of C6 (the paired-SE rule was mis-specified for chaotic hybrid models). PASS iff ln_ratio(F) <= mean(null)+2*SD(null) AND KLD(F) <= mean(KLD null)+2*SD(KLD null) (KLD rule pre-registered 2026-11-05 before any run, replacing 1.25*max).",
+ "models": {
+  "a3b": {
+   "model": "a3b",
+   "k_null": 6,
+   "null_arms": {
+    "null_ssm_alpha": {
+     "ln_ratio": 0.000313,
+     "ln_ratio_se": 0.00077,
+     "kld": 0.006148,
+     "kld_max": 11.980076,
+     "same_top_p_pct": 97.493
+    },
+    "null_ssm_beta": {
+     "ln_ratio": 0.001436,
+     "ln_ratio_se": 0.000759,
+     "kld": 0.006358,
+     "kld_max": 12.033731,
+     "same_top_p_pct": 97.466
+    },
+    "null_blk0_shexp": {
+     "ln_ratio": 0.000747,
+     "ln_ratio_se": 0.000731,
+     "kld": 0.005561,
+     "kld_max": 8.283855,
+     "same_top_p_pct": 97.542
+    },
+    "null_blk20_shexp": {
+     "ln_ratio": 0.000718,
+     "ln_ratio_se": 0.000342,
+     "kld": 0.000998,
+     "kld_max": 0.217044,
+     "same_top_p_pct": 98.62
+    },
+    "null_lm_head": {
+     "ln_ratio": 0.000439,
+     "ln_ratio_se": 0.000189,
+     "kld": -0.0,
+     "kld_max": 6.1e-05,
+     "same_top_p_pct": 99.997
+    },
+    "null_attn_k": {
+     "ln_ratio": 0.0012,
+     "ln_ratio_se": 0.000713,
+     "kld": 0.005558,
+     "kld_max": 12.994588,
+     "same_top_p_pct": 97.567
+    }
+   },
+   "F": {
+    "ln_ratio": 0.002885,
+    "ln_ratio_se": 0.000815,
+    "kld": 0.006336,
+    "kld_max": 9.115068,
+    "same_top_p_pct": 97.411,
+    "ppl_Q": 5.998355,
+    "ppl_base": 5.981072
+   },
+   "F_per_chunk_ln_ratio": [
+    0.00279,
+    0.01099,
+    0.00026,
+    0.0012,
+    -0.00024,
+    0.0018,
+    -0.00357,
+    0.00061,
+    0.00173,
+    0.00893,
+    0.00047,
+    0.00179,
+    0.0047,
+    0.00396,
+    -0.00167,
+    0.01249
+   ],
+   "base_ppl": 5.9837,
+   "base_logits_sha256": "12a03ebc04ea16fb0aae7058000ca38c5465e99818bed5e64ccb5eefc3610e48",
+   "null_ln_mean": 0.0008088333333333333,
+   "null_ln_sd": 0.0004338319567144249,
+   "null_ln_se": 0.0001771111546772566,
+   "null_kld_max": 0.006358,
+   "null_kld_mean": 0.0041038333333333335,
+   "null_kld_sd": 0.002827913323754225,
+   "ln_threshold": 0.001676497246762183,
+   "kld_threshold": 0.009759659980841783,
+   "F_z_vs_null": 4.785647148703083,
+   "sign_test": {
+    "n_positive": 6,
+    "n": 6,
+    "p_two_sided": 0.03125,
+    "null_biased_positive": true,
+    "statement": "NULL IS BIASED POSITIVE: every precision-neutral perturbation raised PPL - any reroute costs quality (separate finding)"
+   },
+   "ln_ok": false,
+   "kld_ok": true,
+   "verdict": "NWT_NULL_FAIL"
+  }
+ },
+ "note": "stop-on-answer: A3B did not pass; Q38FN not run",
+ "method": {
+  "ctx": 4096,
+  "chunks": 16,
+  "corpus_sha256": "bfe9eb16ab9987fb88bde4ea9a30a00f2a45db01dfc14bad78d05325789c4f12",
+  "null_arms": {
+   "ssm_alpha": "ssm_alpha",
+   "ssm_beta": "ssm_beta",
+   "blk0_shexp": "blk.0.+_shexp",
+   "blk20_shexp": "blk.20.+_shexp",
+   "lm_head": "=output.weight",
+   "attn_k": "attn_k.weight"
+  },
+  "rule": "ln_ratio(F) <= mean(null)+2*SD(null) AND KLD(F) <= mean(KLD null)+2*SD(KLD null)"
+ },
+ "stores": {
+  "C": {
+   "store": "cpu-20261105-21232569a-llg",
+   "commit": "21232569a88ab106b89c543205bf2102b6388dbc"
+  },
+  "F": {
+   "store": "cpu-20261105-65da39eb1-c6fold2",
+   "commit": "65da39eb1fe7fddbfa7de81cc2f39d54a6b2a428"
+  },
+  "N": {
+   "store": "cpu-20261105-fff2c6909-nullknob",
+   "commit": "fff2c69095008a051fc69040effd7fc9ed119d45"
+  }
+ }
+}

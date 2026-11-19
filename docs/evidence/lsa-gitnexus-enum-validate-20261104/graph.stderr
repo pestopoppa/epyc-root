@@ -1,0 +1,20 @@
+STAGE batch-start 1793790314759
+STAGE preprocess-start fixture.cpp 1793790314877
+STAGE preprocess-end parse-start fixture.cpp 1793790314877
+STAGE parse-end query-start fixture.cpp 1793790314878
+STAGE query-end scope-start fixture.cpp 4 1793790314878
+STAGE scope-end fixture.cpp 1793790315127
+STAGE type-env-start fixture.cpp 1793790315127
+STAGE type-env-end fixture.cpp 1793790315128
+STAGE match-iteration-start fixture.cpp 1793790315128
+STAGE batch-end 1793790315130
+STAGE batch-start 1793790315734
+STAGE preprocess-start fixture.py 1793790315744
+STAGE preprocess-end parse-start fixture.py 1793790315744
+STAGE parse-end query-start fixture.py 1793790315744
+STAGE query-end scope-start fixture.py 3 1793790315744
+STAGE scope-end fixture.py 1793790315762
+STAGE type-env-start fixture.py 1793790315762
+STAGE type-env-end fixture.py 1793790315763
+STAGE match-iteration-start fixture.py 1793790315763
+STAGE batch-end 1793790315764

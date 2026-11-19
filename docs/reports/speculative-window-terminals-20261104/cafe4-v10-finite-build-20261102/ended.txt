@@ -1,0 +1,7 @@
+rc=64 time=2026-11-02T22:19:23Z reason=job-rc-64:exited
+job_id=cafe4-v10-finite-build-20261102
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=1800
+started=2026-11-02T22:19:20Z
+regions=72-95

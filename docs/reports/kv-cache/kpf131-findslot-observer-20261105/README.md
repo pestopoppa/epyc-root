@@ -1,0 +1,3 @@
+# KPF-13.1 allocator entry observer qualification
+
+Two model-free own-inferior fixture arms; GDB hardware breakpoint must observe two allocator entries per arm, with pinned executable and five mapped DSO device/inode/hash identities before and after, expected native output, zero inferior exit, debugger success and owned cleanup. This qualifies an observer only; it does not establish physical layout, request binding, historical controls or binary reproducibility. Fixture build manifest is retrospective. Stop on mismatched custody, missing hit, STOP or deadline. The publisher smoke runs this same bounded fixture and writes an isolated result; the full row repeats it under grant.

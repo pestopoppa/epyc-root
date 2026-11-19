@@ -53,7 +53,7 @@ RECORD_REF = -1
 # evidence batch -- `research/sources/intake-20260819/EVIDENCE-*.md` -- which `\d+` reported as a
 # dangling citation to an entry that cannot exist. An 8-digit id is a path component, never an
 # entry, and a `dangling` verdict on one is the scanner minting a defect out of a directory.
-_CITE = re.compile(r"\bintake-(\d{1,4})(?:#(\d+|record))?\b")
+_CITE = re.compile(r"(?<![\w/])intake-(\d{1,4})(?:#(\d+|record))?(?!\.md)\b")
 # `intake-710/711` is one citation naming two entries. Reading only the first silently halves the
 # graph, which would understate staleness -- the direction that hides problems.
 #
@@ -67,7 +67,7 @@ _CITE = re.compile(r"\bintake-(\d{1,4})(?:#(\d+|record))?\b")
 #
 # Run members are entry ids and carry the same 1-4 digit bound as `_CITE`: `intake-20260819/20260820`
 # is a directory naming an evidence batch, not two entries.
-_RUN = re.compile(r"\bintake-(\d{1,4})((?:/\d{1,4}\b(?!\.\d))+)")
+_RUN = re.compile(r"(?<![\w/])intake-(\d{1,4})((?:/\d{1,4}\b(?!\.\d))+)")
 
 
 def source_id(num: str) -> str:

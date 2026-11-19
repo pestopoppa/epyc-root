@@ -1,0 +1,20 @@
+{
+  "schema": "kpf50.model-stat-admission.v1",
+  "models": [
+    {
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "device": 2431,
+      "inode": 96505457,
+      "size": 29047086048,
+      "mtime_ns": 1786727071030792493
+    },
+    {
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "device": 2431,
+      "inode": 96211175,
+      "size": 2056414752,
+      "mtime_ns": 1787172135435655139
+    }
+  ],
+  "scope": "Metadata comparison only; prior content provenance stays outside runtime admission. Metadata equality does not independently establish immutable model contents."
+}

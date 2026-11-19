@@ -1,0 +1,12 @@
+test_accepts_legacy_grant_and_refuses_mismatched_fields (test_recovery_capture.RecoveryCaptureTests.test_accepts_legacy_grant_and_refuses_mismatched_fields) ... ok
+test_custody_write_refuses_existing_result_without_altering_it (test_recovery_capture.RecoveryCaptureTests.test_custody_write_refuses_existing_result_without_altering_it) ... ok
+test_native_group_cleanup_reaps_child (test_recovery_capture.RecoveryCaptureTests.test_native_group_cleanup_reaps_child) ... ok
+test_official_precheck_failure_is_filed_and_not_complete (test_recovery_capture.RecoveryCaptureTests.test_official_precheck_failure_is_filed_and_not_complete) ... ValueError: mismatch
+ok
+test_smoke_precheck_failure_does_not_emit_allocator_result (test_recovery_capture.RecoveryCaptureTests.test_smoke_precheck_failure_does_not_emit_allocator_result) ... ValueError: mismatch
+ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.383s
+
+OK

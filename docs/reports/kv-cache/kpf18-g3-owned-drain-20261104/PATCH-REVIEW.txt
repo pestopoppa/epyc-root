@@ -1,0 +1,24 @@
+KPF-18 group-3 proposed rowflow refusal driver patch
+
+Reviewable patch (not applied): `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-entry-adapter/driver-entry-refusal.patch`. Scratch proposed source: `g3-entry-adapter/driver.py.proposed`.
+
+The patch imports the tested terminal `EntryRefused` and `run_with_rowflow_boundary`, wraps the existing `guard.ContextBoundary(ctx)` passed into `controller.run`, and catches `EntryRefused` before the existing broad `except Exception`. It preserves the current `record['diagnostic_error']` value and `DIAGNOSTIC-REFUSAL.json` ledger write, then raises `gate.Abort`. This lets the controller's per-construction `except Exception` be bypassed by the wrapper's `BaseException` subclass while retaining its `finally` attempt ledger write. The wrapper also promotes ordinary exceptions from guard checks to the terminal control type, covering STOP/resource failures from `guard.ContextBoundary`.
+
+The fake-injected test suite runs the actual candidate `controller.run()` through the actual candidate `kpf18_gate.main()` with fake gate collaborators and fake server; it passed 17/17. The STOP/deadline refusal returns gate rc=3, preserves the diagnostic artifact, gate cleanup stops the fake server, the open run is marked partial and finalized, and publish is skipped. A separate retry-shaped fake test confirms guard failures bypass `except Exception` while the `finally` ledger path runs. No real subprocess, signal, grant, model, build, GPU or benchmark ran.
+
+The patch has an explicit dependency on the tested scratch modules `driver_boundary.py` and `adapter.py`. Those files must be placed in the candidate source custody chain and included in a newly reviewed `SOURCES.sha256` before this patch could be integrated; neither the dependency files nor candidate manifests were changed here. `launch.sh` and `job.sh` remain untouched with unconditional DRAFT refusal.
+
+SHA-256 source and patch identities at review time:
+
+| File | SHA-256 |
+|---|---|
+| candidate `launch.sh` | `b6c5f22784322e8784c39712d77bcd723ab00bd7f0559f5dc0bfaedc6fce5a6c` |
+| candidate `job.sh` | `ebda1ad669555e2bf52075c3e0c1aae08871fd26dc0d5dfc7cd8282c148e52be` |
+| candidate `driver.py` (patch base) | `917445e3ff39475690be391376015c02a5b37fc107844941e5277b4dd4bff903` |
+| candidate `controller.py` | `8ec6701726c61aa0e279bdd4e8f7f7f37633e4751d0359a95334036d36e7ea27` |
+| candidate `kpf18_gate.py` | `a3a357fee44a712982247e3d4c0544b4d140c08f75530519c2d3910c97ef8c0a` |
+| tested scratch `driver_boundary.py` | `73650fd97f4fa4dad27c5471182afb306e037a2fefad6608a2224cb70163f6e0` |
+| tested scratch `adapter.py` | `94feccf1723452f8b6face4e9660c4091aeab49ae1fb44e4738fd433c65dc1d1` |
+| proposed patch | `4abb5cfa991433e3bcce7e0b8d4ea9d100ac303c231f7b0f33e0b22546693c2b` |
+
+Patch source compiled in memory. Candidate entry files and manifests were not modified; the unconditional refusal barrier remains in force.

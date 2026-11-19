@@ -1,0 +1,31 @@
+{
+  "id": "v11-fa8-impact-5026470-20261104",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At exact detached experimental arm C commit 5026470c6c5882042aa543ae54fe5410357b41ae capture native upstream impact for flash_attn_ext_f16_process_tile in ggml/src/ggml-cuda/fattn-mma-f16.cuh and verbose skipped-file coverage. Stop on HIGH/CRITICAL with OWNER_WARNING, source drift, ambiguous or missing graph binding, parser failure, STOP or deadline. A partial source-reference smoke is not impact clearance; success requires scan_complete partial=false. No model, inference or edit-safety claim for skipped files.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:V11-FA-8",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/v11-fa8-impact-20261104",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "job.py",
+    "source_integrity.py",
+    "test_source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "v11-fa8-impact-5026470",
+  "notes": "Model-free static graph scan only; 150 GiB disk floor retained. The separate GPU overflow experiment and arm A route remain unrun. Fresh detached task worktree outside scratch root; no kernel changes."
+}

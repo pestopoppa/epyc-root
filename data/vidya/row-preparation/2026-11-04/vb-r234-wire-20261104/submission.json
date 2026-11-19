@@ -1,0 +1,6 @@
+{
+  "publisher_outcome": "GPU-SMOKE-QUEUED",
+  "source_packet": "/mnt/raid0/llm/tmp/vb-r234-wire-20261104",
+  "status_is_submission_snapshot": true,
+  "no_floor_or_performance_decision": true
+}

@@ -1,0 +1,20 @@
+{
+  "gitnexus": "status: Repository not indexed; no indexed application symbol edited",
+  "original_native_sha256": {
+    "cohort.json": "3638c148301bbd3290b038aa449774bf38a676dc1afc629ac92850eb59dc2206",
+    "frozen-coverage.belief_measurements.jsonl": "0b40b201592f943b3cb8fef028f1b98d8ca8e54ce3c1cd45fc0bf10c3fbf1c49",
+    "frozen-coverage.record.json": "a31f6c9b7c1db2136d78bb8ee53e85ba75e78934f232507f24e2f57f0f85f020",
+    "results.jsonl": "a3fba5b29d8042450b3161edd60bfca89dd3f51f0eb14f386d0e652a2e878b66",
+    "run-context.json": "a164d0ffbe43483fb115fb3e5eac8df72a2f867a9818d5cd3fb546eceb48f783"
+  },
+  "positive_canary": "not-established",
+  "reason": "Retained native context is v1 and lacks producer-time synthetic boolean; current strict reader refuses it. Native paired input pins cannot be retroactively converted into model/corpus applicability. Current frozen projector is backend-only, and planner does not match corpus identity.",
+  "required_next_boundary": "A new prospective producer capture must declare its fixture status and validated paired model/runtime/cohort applicability at write time; matching consumer contract must be implemented and checked with positive and mismatching cases, without rewriting retained run.",
+  "scope": "scratch-only; isolated temporary ledger for synthetic fixture; no canonical ingestion, tracked edits, inference, grants or handoff changes",
+  "status": "passed-negative-uncertainty-contracts",
+  "tests": {
+    "log": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/safe-canary-20261104/pytest.log",
+    "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/safe-canary-20261104/test_uncertainty.py",
+    "result": "7 passed in 0.26s"
+  }
+}

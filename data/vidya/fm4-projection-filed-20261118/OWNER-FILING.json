@@ -1,0 +1,7 @@
+{
+  "row": "vb-fm4-codex-projection-20261118",
+  "verdict": "pass",
+  "result_sha256": "f2f61851a6ad05ada504d3c96a3d8e251400e09242b1edd880726ec2efb8fad1",
+  "scope": "Retained-native diagnostic context assembly only; no genuine coordinator review, suitable task-gate success, or measurement warrant.",
+  "rc": 0
+}

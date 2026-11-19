@@ -1,0 +1,16 @@
+schema=lsa-native-manifest-v1
+model_sha256=a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348
+map_path=/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/native-map-validation-r2/pca.lsamap
+map_sha256=8f280922d41ea2f8209cc6b800b827f1e2d82785d1989c9a55e0ce0c276856b7
+source_sha256=baaa28cb00b4378b3d33e02dc971e2781482d5c4d45e29e9140143bdf7832e65
+map_model_identity=Qwen3.8-27B
+geometry=24,4,256,64
+global_layers=3,7,11,15,19,23,27,31,35,39,43,47,51,55,59,63
+max_keys=8192
+max_new_tokens=2048
+max_host_bytes=2147483648
+max_device_bytes=2147483648
+top_k=4096
+top_p=1024
+window=512
+sink=4

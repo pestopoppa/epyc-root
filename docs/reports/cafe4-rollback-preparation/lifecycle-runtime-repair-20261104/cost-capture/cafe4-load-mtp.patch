@@ -1,0 +1,11 @@
+--- a/candidate.cpp
++++ b/candidate.cpp
+@@ -68,7 +68,7 @@
+ static double error(const std::vector<float>&a,const std::vector<float>&b){if(a.size()!=b.size()||a.empty())return INFINITY;double e=0;for(size_t i=0;i<a.size();++i)e=std::max(e,std::abs((double)a[i]-b[i]));return e;}
+ int main(int argc,char**argv){
+  if(argc!=2||!argv[1][0]){std::fprintf(stderr,"usage: %s model.gguf\n",argv[0]);return 2;}
+- llama_backend_init();auto mp=llama_model_default_params();mp.n_gpu_layers=0;std::unique_ptr<llama_model,decltype(&llama_model_free)> model(llama_model_load_from_file(argv[1],mp),llama_model_free);
++ llama_backend_init();auto mp=llama_model_default_params();mp.n_gpu_layers=0;mp.load_mtp=true;std::unique_ptr<llama_model,decltype(&llama_model_free)> model(llama_model_load_from_file(argv[1],mp),llama_model_free);
+  if(!model||llama_model_n_layer_nextn(model.get())<=0){std::fprintf(stderr,"UNKNOWN MTP model required\n");return 2;}
+  auto*v=llama_model_get_vocab(model.get());const char*text="Explain how a jet engine works in three sentences.";int n=-llama_tokenize(v,text,std::strlen(text),nullptr,0,true,true);if(n<=0||n>120)return 2;llama_tokens prompt(n);if(llama_tokenize(v,text,std::strlen(text),prompt.data(),n,true,true)!=n)return 2;
+  Observation off=trial(model.get(),prompt,0),observe=trial(model.get(),prompt,1),fault=trial(model.get(),prompt,2);

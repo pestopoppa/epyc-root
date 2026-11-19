@@ -23,4 +23,8 @@
 # deliberately — an actual external path is an operator decision, not a
 # default.
 schema: session_bus.filesystem_allowlist.v1
-entries: []
+entries:
+  - path: /sys/fs/cgroup/rowflow
+    reason: keeper per-row cgroups (audit 1)
+    added_by: operator
+    added_on: 2026-11-10

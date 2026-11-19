@@ -1,0 +1,84 @@
+{
+  "method": "stdlib symtable static parse only; no retained function executed",
+  "referenced_globals": {
+    "cell_verdict": [
+      "AttributeError",
+      "IndexError",
+      "KeyError",
+      "OverflowError",
+      "TypeError",
+      "ValueError",
+      "compare",
+      "judge",
+      "k",
+      "len",
+      "validated_top2"
+    ],
+    "selected_slice": [
+      "Invalid",
+      "any",
+      "iter",
+      "len",
+      "next",
+      "parse",
+      "set"
+    ],
+    "genexpr": [],
+    "validated_top2": [
+      "ValueError",
+      "bool",
+      "float",
+      "int",
+      "isinstance",
+      "len",
+      "list",
+      "math",
+      "type"
+    ],
+    "request": [
+      "LIMIT",
+      "OUT",
+      "TypeError",
+      "ValueError",
+      "float",
+      "hashlib",
+      "int",
+      "json",
+      "k",
+      "len",
+      "max",
+      "min",
+      "os",
+      "range",
+      "selected_slice",
+      "str",
+      "sum",
+      "time",
+      "witness"
+    ]
+  },
+  "explicit_namespace": [
+    "os",
+    "math",
+    "parse",
+    "witness",
+    "Invalid",
+    "hashlib",
+    "json",
+    "time",
+    "OUT",
+    "LIMIT",
+    "k",
+    "validated_top2",
+    "compare",
+    "judge"
+  ],
+  "defined_by_retained_ast": [
+    "selected_slice",
+    "cell_verdict",
+    "validated_top2",
+    "request"
+  ],
+  "standard_builtins": "provided by Python exec; used only literal data and stdlib",
+  "fix": "Add explicit stdlib os for request journal fsync and math for validated_top2.isfinite. No import/setup/main/native code executed."
+}

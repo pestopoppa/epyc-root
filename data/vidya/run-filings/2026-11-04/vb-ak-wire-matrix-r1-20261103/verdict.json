@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Native actor-wire finalization status PASS, attempted=expected=15; canonical CLI ak-actor-wire ingest projected 31 verifier findings and 93 frames with refused=[], missing=[], declined=[]. This passes the row capture/projection rule. Its handoff remains open until the actual AK planning canary lists the proposition; no timing, quality or merge-validity claim.",
+  "tick_text": null,
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:19:14+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:04:12Z reason=complete",
+ "filed_at": "2026-11-04T07:19:14+00:00",
+ "filed_by": "agent",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-AK-WIRE-MATRIX-LIVE",
+ "id": "vb-ak-wire-matrix-r1-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-ak-wire-matrix-r1-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "vidya-fanout",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Native actor-wire finalization status PASS, attempted=expected=15; canonical CLI ak-actor-wire ingest projected 31 verifier findings and 93 frames with refused=[], missing=[], declined=[]. This passes the row capture/projection rule. Its handoff remains open until the actual AK planning canary lists the proposition; no timing, quality or merge-validity claim.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-matrix-r1-20261103/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-ak-wire-matrix-r1-20261103",
+ "row_verdict": "pass",
+ "rule": "Correctness only, no timing: does a live native actor_wire matrix finalization write a sealed actor-wire-final.json that cli.py ingest ak-actor-wire projects with refused=0. Verifier finding, not a model-quality measurement. Shares host with a GPU job.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "64f4a6c291e093e13e0e9581e8441328bb0bb26429911b67f117f5905c605aa4",
+  "result": "pass",
+  "status": "filed"
+ }
+}

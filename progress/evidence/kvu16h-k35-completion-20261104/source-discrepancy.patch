@@ -1,0 +1,15 @@
+--- pre-ws58-native_job.py
++++ retained-native_job.py
+@@ -155,6 +155,12 @@
+         if stopped():
+             return 75
+         blockers = m.collect_process_blockers()
++        if native:
++            # Native smoke (ws58 2026-11-02): four pinned CPUs, one 16-token cell, measurement_claim false - other sessions'
++            # CPU quarters are legitimately busy. Refuse only a process that owns this cell's port or serves from a GPU kernel.
++            port_flag = '--port ' + str(PORT + i)
++            blockers = [b for b in blockers if port_flag in str(b.get('args', '')) or 'error' in b
++                        or ('/gpu' in str(b.get('args', '')) and ' -ngl 0' not in str(b.get('args', '')))]
+         if blockers:
+             raise RuntimeError('host has other inference workloads: ' + repr(blockers))
+         cell = {'scenario': s.name, 'port': PORT + i, 'nominal_context': 2048, 'rep': 1,

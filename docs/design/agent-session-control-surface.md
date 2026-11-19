@@ -3,7 +3,7 @@
 **Status:** recommendation, nothing implemented
 **Date:** 2026-07-29
 **Author:** investigation session (read-only w.r.t. `tmux_adapter.py`)
-**Owning handoff:** `handoffs/active/session-bus-thin-dispatcher.md` (M5 adapter)
+**Owning handoff:** `handoffs/active/coordination-and-churn-pipeline.md` (M5 adapter)
 
 ---
 

@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "git",
+    "sparse-checkout",
+    "set",
+    "--no-cone",
+    "/research/intake_index.yaml"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/primary",
+  "exit": 0
+}

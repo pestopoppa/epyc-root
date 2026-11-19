@@ -1,0 +1,50 @@
+{
+ "decision_rule": "Three-query private prospective wiring pilot, not quality or full online-shadow completion. Complete only if official real phase has 3 rows, each real BGE and Granite hybrid search in separate indexes with no fallback, exactly BGE shown to real private Qwen3.6-35B frontdoor, actual pointer open delivered to hash-chained ShadowSink, validated event stream and all owned processes dead; any no-open, invalid model selection, timeout, absent inference, failed arm or missing evidence is explicit incomplete. Hidden-arm overlap is counterfactual and missing next open is unknown. Preserve provenance separately from model identity claims; no retrospective or verified-model warrant.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 3300,
+ "first_progress_s": 600,
+ "gib": 64,
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3a",
+ "id": "ufh14-repl-emb23a-private-pilot-20261104",
+ "keep": [
+  "out/**/*",
+  "pilot.py",
+  "bridge.py",
+  "launch.sh",
+  "spec.json",
+  "prepared-inputs.json",
+  "scripts/vidya/producers/*.py",
+  "out/*/*/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/launch.sh",
+  "sha256": "b782b885d85ac9cc1cce47a65f93010627ed76c49a1d662231f710db417c6980"
+ },
+ "min_window_s": 3600,
+ "notes": "GPU-independent CPU quarter private pilot; uses registered bge-large and granite-97m-r2 frozen GGUF arms and selected frontdoor kernel. Smoke imports source only; official run uses native model and independent indexes. 77ba24ef detached shared source worktree must remain available until filing.",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "ports": [
+  19081,
+  19082,
+  19083
+ ],
+ "priority_rank": 50.0,
+ "publish_warnings": [
+  "volatile-paths: the job runs /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python from a lane/worktree path that can change or vanish before its grant; set \"snapshot\": true in the spec to freeze it (publish continues)"
+ ],
+ "published_at": "2026-11-04T07:35:39Z",
+ "published_from": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/out/*/*/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/STOP",
+ "window_s": 4260,
+ "workdir": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot"
+}

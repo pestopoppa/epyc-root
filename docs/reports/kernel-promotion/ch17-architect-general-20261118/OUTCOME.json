@@ -1,0 +1,170 @@
+{
+  "status": "PUBLISHER_SMOKE_PASS",
+  "row_id": "ch17-c13-architect-general-cpu-20261118",
+  "qualifying_failures": 0,
+  "row_spec": {
+    "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/row.spec.json",
+    "sha256": "f0d6da9b8db6c8c53be373dd358b090dfaf1619daaf265856a85f53b2c35abc1"
+  },
+  "ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ch17-c13-architect-general-cpu-20261118.json",
+  "publisher_pass": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch17-c13-architect-general-cpu-20261118/PASS.json",
+    "sha256": "3c2a582c1d99bf306a7e2d408e178397a40d4fdc73dd7e3a2d3e5ab2f501413e",
+    "passed_at": "2026-11-18T11:04:22Z",
+    "first_progress": "smoke_predicate exited 0",
+    "cpus": "164-167",
+    "elapsed_s": 10,
+    "engine_ended": "rc=75 time=2026-11-18T11:04:20Z reason=partial-native-incomplete"
+  },
+  "smoke": {
+    "scope": {
+      "threads": 4,
+      "draft_type": "draft-simple",
+      "role": "plumbing smoke"
+    },
+    "model": {
+      "identity_source": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-gpu-gate/gate/smoke-model.json",
+      "path": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+      "sha256": "c159d1518f16bc42533d9a09f034eb598b670341adc2b08b9a9751614aea71eb",
+      "stat": {
+        "dev": 2431,
+        "ino": 188775692,
+        "size": 804753824,
+        "mtime_ns": 1765590200108301020,
+        "ctime_ns": 1769627064381075183
+      }
+    },
+    "receipt": {
+      "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/smoke/RESULT.json",
+      "sha256": "62f917d1e5c48bc10cd85ff2bac304bd1a81203038431792258da5430441bc27"
+    },
+    "publisher_attempt_result": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch17-c13-architect-general-cpu-20261118/native-attempts/attempt-hkqsdxse/native-result.json",
+      "sha256": "62f917d1e5c48bc10cd85ff2bac304bd1a81203038431792258da5430441bc27"
+    },
+    "raw_arms": [
+      {
+        "arm": "none",
+        "raw": {
+          "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/smoke/run-7giwawac/pair1-none.json",
+          "sha256": "c7b6e79a5a6f6f2302af1d8a10ef596ccee45f84fd60ca3954c2c991e47dfb69"
+        },
+        "cleanup_verified": true,
+        "custody_samples": 10,
+        "generated_token_count": 32,
+        "draft_n": 0,
+        "draft_n_accepted": 0
+      },
+      {
+        "arm": "draft-simple",
+        "raw": {
+          "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/smoke/run-7giwawac/pair1-draft-simple.json",
+          "sha256": "06ed04625740ea7f0fdfbb15623520873feaeabeffff2dc65ff4e06aaec7f53e"
+        },
+        "cleanup_verified": true,
+        "custody_samples": 14,
+        "generated_token_count": 32,
+        "draft_n": 24,
+        "draft_n_accepted": 24
+      }
+    ],
+    "identical_greedy_tokens": true,
+    "native_mtp_exercised": false
+  },
+  "sources": {
+    "row_manifest": {
+      "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/SOURCE.sha256",
+      "sha256": "dd3a6f7aa6f5de7caa168540e0827dfec83edf6fb8b7fe15a17d221533fe18ca"
+    },
+    "prepared_inputs": {
+      "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/inputs.json",
+      "sha256": "62757757984e86b1bf3fec3b63c3b629f075191dd10775da5995c3594a851eab"
+    },
+    "preparation_receipt": {
+      "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/PREPARE.json",
+      "sha256": "e1b822d785424e9d009799e095426d961444d2e40de1b8ce341d0729a1e5fff1"
+    },
+    "matrix_plan": {
+      "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/split-admission-ch17-reviewed/cpu/prepared/plan.json",
+      "sha256": "2dae6a4cc127e7937575165cf4d688f4277afe0aabe17b11c5d97fa9a29b5448"
+    }
+  },
+  "native": {
+    "result_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/RESULT.json",
+    "result_state": "pending_keeper_grant",
+    "raw_directory_pattern": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/out/run-*",
+    "ports": [
+      19580
+    ],
+    "candidate": {
+      "commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+      "image": "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13",
+      "server_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+      "tree": "e6dc8715fa3374406b38de48571e8700bded094f"
+    },
+    "threads": 96,
+    "np": 1,
+    "context": 262144,
+    "kv": "f16",
+    "spec_type": "draft-mtp",
+    "model_files": [
+      {
+        "identity_source": "/mnt/raid0/llm/tmp/v11-promotion-checklist/quality-recipes/recipes.json",
+        "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+        "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+        "stat": {
+          "dev": 2431,
+          "ino": 96209037,
+          "size": 10946624,
+          "mtime_ns": 1787946258053345946,
+          "ctime_ns": 1787946258059149197
+        }
+      },
+      {
+        "identity_source": "/mnt/raid0/llm/tmp/v11-promotion-checklist/quality-recipes/recipes.json",
+        "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+        "sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
+        "stat": {
+          "dev": 2431,
+          "ino": 96209038,
+          "size": 49835229856,
+          "mtime_ns": 1787971384722588539,
+          "ctime_ns": 1787971384778473886
+        }
+      },
+      {
+        "identity_source": "/mnt/raid0/llm/tmp/v11-promotion-checklist/quality-recipes/recipes.json",
+        "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf",
+        "sha256": "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833",
+        "stat": {
+          "dev": 2431,
+          "ino": 96209043,
+          "size": 43836407744,
+          "mtime_ns": 1787972823021404632,
+          "ctime_ns": 1787972823102165070
+        }
+      },
+      {
+        "identity_source": "/workspace/artifacts/compute/inf22-m4-q38-recipe-r4-20261104/inputs/q38-input-3-custody.json",
+        "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+        "sha256": "5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6",
+        "stat": {
+          "dev": 2431,
+          "ino": 96212066,
+          "size": 2786568256,
+          "mtime_ns": 1788344735087117043,
+          "ctime_ns": 1788344735091117079
+        }
+      }
+    ],
+    "template": {
+      "evidence": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118/chat-template.jinja",
+      "mode": "embedded",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+      "verified_once_from_shard_1_metadata": true
+    },
+    "claim_scope": "bounded descriptive diagnostic"
+  },
+  "decision_rule": "Does external shared Q8_0 MTP activate and preserve greedy token identity on the C13 architect_general CPU primary recipe (96 physical threads, np1, context 262144, F16 KV), and what decode throughput ratios are observed? Expect active drafting and a decode speed increase (higher tok/s is better). Three adjacent AB/BA/AB pairs of four sealed greedy 128-token prompts describe dispersion, not a formal confidence bound or a speed winner. Treat small differences such as 2% as unresolved. Keep each paired MTP/none decode ratio, raw token IDs and first disagreement, acceptance counts, exact recipe and during-request PID/image/all-TID CPU and foreign workload custody. Stop on answer after all three pairs and verified cleanup. Stop on futility at the first bad input, grant, foreign workload/unknown contention, startup, custody, request, token, activation, deadline, or cleanup. Short prompts measure early decode in the configured context pool.",
+  "limit": "Publisher qualification tested request, grant, image, PID, TID and cleanup plumbing with external draft-simple on the already-pinned small model. Native Q38 MTP activation, native request-time contention controls and comparative results await the keeper grant."
+}

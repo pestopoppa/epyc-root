@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-speculative-decoding-mtp",
+  "rationale": "Official build row ended rc1 and produced no RESULT.json, so the build-only decision rule is not met. The retained build log reaches 452/452 and linkage log completes; the proof searched libllama-server-impl.so for G8_COMPARE_BEGIN, but the built marker is in linked libllama-common.so. This is a marker-location harness failure; no inference, agreement, residency, or performance conclusion follows.",
+  "verdict": "fail"
+ },
+ "at": "2026-11-02T11:53:40+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-02T11:50:25Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-02T11:53:40+00:00",
+ "filed_by": "handoff-speculative-decoding-mtp",
+ "handoff_task": "handoffs/active/speculative-decoding-mtp-refresh.md:G8",
+ "id": "g8-v10-hip-build-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/g8-v10-hip-build-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g8-build-row/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "Official build row ended rc1 and produced no RESULT.json, so the build-only decision rule is not met. The retained build log reaches 452/452 and linkage log completes; the proof searched libllama-server-impl.so for G8_COMPARE_BEGIN, but the built marker is in linked libllama-common.so. This is a marker-location harness failure; no inference, agreement, residency, or performance conclusion follows.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g8-build-row/RESULT.json",
+ "root_cause_family": null,
+ "row": "g8-v10-hip-build-20261102",
+ "row_verdict": "fail",
+ "rule": "Accept only a complete clean v10 plus exact G8 comparison patch HIP gfx90a build, source checked before and after, compiled marker in server, linkage and SHA-256 receipt validated. Build-only diagnostic; no inference or agreement conclusion.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "fail",
+  "status": "filed"
+ }
+}

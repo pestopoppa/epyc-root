@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T14:43:25Z reason=complete
+job_id=pf1-expand-r3-20261104
+owner=ws58
+step=job-run
+estimated_wall_s=1900
+started=2026-11-04T14:30:03Z
+regions=mi210_0,0-95

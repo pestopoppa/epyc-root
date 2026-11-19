@@ -1,0 +1,29 @@
+{
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "source_worktree": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105-source",
+  "targets": [
+    [
+      "update_dft",
+      "common/common.cpp"
+    ],
+    [
+      "load_dft",
+      "common/common.cpp"
+    ]
+  ],
+  "graph_binding": {
+    "registry": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/private-graph/registry.json",
+    "meta": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105-source/.gitnexus/meta.json",
+    "required_lastCommit": "8952a0f693fb923918157eb25117641b74766230"
+  },
+  "sha256": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/job.py": "890f73492d9dc46bdabd5fe4bd62ccab9faaca6556d3d3d6dbea732aeaeff65f",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/launch.sh": "6cff4f4546f46076e093b88099d2f8f8a109c24c324cb9140362f3ec382a15e9",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/spec.json": "93e7b0d05f09d5e249ca83bc1c074087caa4b7ca5e3bfa2f2ac4f8a0cc43ed4e",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105/README.md": "791722b3a278d567da4a156cb7b243e6a22f39a62c7432b1c864c9700c7999b5",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105-source/scripts/gitnexus-analyze.sh": "52fa37e3d3c1952faddd2db82ec3dd3846eb341dcf50d6293fd82706a7c1328d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf191-drafter-impact-8952-20261105-source/common/common.cpp": "eed097674613b2e8072a493bae42865e69092054601a404b2dff23a06c5a2a9f"
+  }
+}

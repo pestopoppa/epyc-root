@@ -1,0 +1,1 @@
+{"finished_utc_epoch": 1793654298.0248377, "mode": "full", "pytest_rc": 0, "schema": "evl46.crm_reader.tests.v1", "scope": "synthetic reader/source/claim controls; no live measurement", "source_commit": "64a96b58b5054a54a2efae416ae25908d0f13dbe", "started_utc_epoch": 1793654297.023267}

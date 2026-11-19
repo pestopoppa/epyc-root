@@ -1,0 +1,77 @@
+--- a/candidate.cpp
++++ b/candidate.cpp
+@@ -11,6 +11,7 @@
+ #include <cstdlib>
+ #include <memory>
+ #include <vector>
++#include "frozen_prompt_ids.hpp"
+ using Context = std::unique_ptr<llama_context, decltype(&llama_free)>;
+ static int top(llama_context * c, const llama_vocab * v, int i) {
+  const float *p=llama_get_logits_ith(c,i); int n=llama_vocab_n_tokens(v);
+@@ -89,13 +90,14 @@
+  llama_backend_init();auto mp=llama_model_default_params();mp.n_gpu_layers=0;mp.load_mtp=true;std::fprintf(stderr,"CAFE4_MTP_LOAD_ENABLED\n");std::unique_ptr<llama_model,decltype(&llama_model_free)> model(llama_model_load_from_file(argv[1],mp),llama_model_free);
+  if(!model||llama_model_n_layer_nextn(model.get())<=0){std::fprintf(stderr,"UNKNOWN MTP model required\n");return 2;}
+  auto*v=llama_model_get_vocab(model.get());
+- const char *prompts[]={"Explain two ways to organize a workshop.","Describe three ways roots protect soil.","Explain how a lock prevents a race condition.","Outline how to test a search feature.","Summarize why bridges need expansion joints.","Describe a safe procedure for inspecting a bicycle.","Explain the purpose of a database index.","List three ways to make a meeting agenda clear.","Describe how water moves through a watershed."};
+- const char*text=prompts[index];std::fprintf(stderr,"CAFE4_GEOMETRY_V5 prompt_index=%ld\n",index);
+- int n=-llama_tokenize(v,text,std::strlen(text),nullptr,0,true,true);if(n<=0||n>120)return 2;llama_tokens prompt(n);if(llama_tokenize(v,text,std::strlen(text),prompt.data(),n,true,true)!=n)return 2;
++ const auto & prompt = cafe4_frozen_prompts.at(index);
++ if (!v || prompt.empty() || prompt.size() >= 120) return 2;
++ for (llama_token token : prompt) if (token < 0 || token >= llama_vocab_n_tokens(v)) return 2;
++ std::fprintf(stderr,"CAFE4_GEOMETRY_V5 prompt_index=%ld\n",index);
+  Observation off=trial(model.get(),prompt,0),observe=trial(model.get(),prompt,1),fault=trial(model.get(),prompt,2);
+  if(!off.ok||!observe.ok||!fault.ok||off.prefix!=observe.prefix||off.prefix!=fault.prefix||off.draft!=observe.draft||off.draft!=fault.draft){std::fprintf(stderr,"UNKNOWN lifecycle/provenance or matched-prefix control missing\n");return 2;}
+  const double base=std::max({error(off.batched,off.oracle),error(off.checkpoint,off.oracle),error(off.batched,off.checkpoint),error(observe.batched,observe.oracle),error(observe.checkpoint,observe.oracle),error(observe.batched,observe.checkpoint)}),tol=base+1e-5, e0=error(off.logits,off.checkpoint),e1=error(observe.logits,observe.checkpoint),ef=error(fault.logits,fault.checkpoint),eo=error(off.logits,observe.logits),delta=error(fault.logits,observe.logits);
+- std::fprintf(stderr,"CAFE4_GEOMETRY_REFS prompt=%ld off_batch_serial=%.9g off_ckpt_serial=%.9g observe_batch_serial=%.9g observe_ckpt_serial=%.9g\n",index,error(off.batched,off.oracle),error(off.checkpoint,off.oracle),error(observe.batched,observe.oracle),error(observe.checkpoint,observe.oracle));
++ std::fprintf(stderr,"CAFE4_GEOMETRY_REFS prompt=%ld off_batch_serial=%.9g off_ckpt_serial=%.9g off_batch_ckpt=%.9g observe_batch_serial=%.9g observe_ckpt_serial=%.9g observe_batch_ckpt=%.9g\n",index,error(off.batched,off.oracle),error(off.checkpoint,off.oracle),error(off.batched,off.checkpoint),error(observe.batched,observe.oracle),error(observe.checkpoint,observe.oracle),error(observe.batched,observe.checkpoint));
+  std::printf("CAFE4_MTP_ROLLBACK width=%zu accepted=%d selected=%llu faulted=%llu off_error=%.9g observe_error=%.9g fault_error=%.9g off_observe=%.9g fault_observe=%.9g tolerance=%.9g\n",off.draft.size(),off.accepted,(unsigned long long)observe.selected,(unsigned long long)fault.faulted,e0,e1,ef,eo,delta,tol);
+  if(e0>tol||e1>tol||eo>tol){std::fprintf(stderr,"UNKNOWN nonfault cold-prefix numerical control failed\n");return 2;}
+  if(ef<=10*tol||delta<=10*tol){std::fprintf(stderr,"UNKNOWN fault sensitivity absent\n");return 2;}
+--- /dev/null
++++ b/frozen_prompt_ids.hpp
+@@ -0,0 +1,13 @@
++#pragma once
++// Prepared with content-bound v10 vocabulary-only tokenizer.
++static const std::vector<llama_tokens> cafe4_frozen_prompts = {
++    {814, 20139, 1330, 5337, 310, 29249, 264, 24279, 13},
++    {72240, 2250, 5337, 19101, 5827, 16665, 13},
++    {814, 20139, 1204, 264, 5128, 27028, 264, 6741, 2876, 13},
++    {58235, 1204, 310, 1228, 264, 2624, 4416, 13},
++    {8917, 5437, 537, 3069, 37683, 1144, 14046, 33124, 13},
++    {72240, 264, 5902, 10018, 364, 23331, 286, 264, 33828, 13},
++    {814, 20139, 279, 7193, 314, 264, 4475, 1857, 13},
++    {826, 2250, 5337, 310, 1236, 264, 6236, 17853, 2708, 13},
++    {72240, 1204, 2919, 10480, 1472, 264, 88211, 13},
++};
+--- a/proof.py
++++ b/proof.py
+@@ -6,15 +6,18 @@
+  with open(p,'rb') as f:
+   for b in iter(lambda:f.read(1048576),b''): h.update(b)
+  return h.hexdigest()
+-CANDIDATE='df0b80e303cc90c817e518063b370f579f717eeabbee9ff53f75ceead73b5d97'
++CANDIDATE='16ef99eba1de3eef503172bb9cb7a8836cf5138f6f35b102125b7834908b728c'
++FROZEN_HEADER='8c457f8bb8d3f7961dd69403b9e0eb01c862456a6e320a2d1398173f507f2b65'
++FROZEN_MANIFEST='5ccd46dd3cc0d9b2046f84346dff91a046ec8f6488c1559abee5293e186f6fb1'
+ BRIDGE='9688a97c3ad30e5aa008650d29a7b4d463109220b7dc48a136f9324aa2cf3919'
+ def source():
++ assert digest(D/"frozen_prompt_ids.hpp")==FROZEN_HEADER and digest(D/"frozen-prompts.json")==FROZEN_MANIFEST
+  assert digest(D/"candidate.cpp")==CANDIDATE and digest(D/"mtp_draft_bridge.hpp")==BRIDGE
+  assert subprocess.check_output(['git','-C',str(S),'rev-parse','HEAD'],text=True).strip()=='ffc1bac82eeca6f9099e1ccd9ba49703c460a115'
+  assert hashlib.sha256(subprocess.check_output(['git','-C',str(S),'diff','--binary','--abbrev=10','HEAD'])).hexdigest()==PATCH
+  assert not subprocess.check_output(['git','-C',str(S),'ls-files','--others','--exclude-standard'])
+ def validate(d):
+- source(); assert d["source_commit"]=="ffc1bac82eeca6f9099e1ccd9ba49703c460a115" and d["patch_sha256"]==PATCH and d["candidate_sha256"]==CANDIDATE and d["bridge_sha256"]==BRIDGE; r=pathlib.Path(d['run']).resolve(strict=True); assert r.parent==(D/'runs').resolve()
++ source(); assert d["frozen_prompt_ids_sha256"]==FROZEN_HEADER and d["frozen_prompt_manifest_sha256"]==FROZEN_MANIFEST; assert d["source_commit"]=="ffc1bac82eeca6f9099e1ccd9ba49703c460a115" and d["patch_sha256"]==PATCH and d["candidate_sha256"]==CANDIDATE and d["bridge_sha256"]==BRIDGE; r=pathlib.Path(d['run']).resolve(strict=True); assert r.parent==(D/'runs').resolve()
+  for p,h in d['files'].items():
+   q=pathlib.Path(p).resolve(strict=True); assert q.is_relative_to(r) and digest(q)==h
+  p=r/('candidate.o' if d['mode']=='smoke' else 'build/bin/cafe4-mtp-rollback')
+@@ -28,7 +31,7 @@
+ def write(mode,run,out):
+  source(); r=pathlib.Path(run); files=[r/'candidate.o'] if mode=='smoke' else [r/'build/bin/cafe4-mtp-rollback',r/'build/CMakeCache.txt',r/'configure.log',r/'build.log',r/'linkage.log',*list((r/'build/bin').glob('libllama*.so*')),*list((r/'build/bin').glob('libggml*.so*'))]
+  assert files and all(x.exists() for x in files)
+- d={'schema':'epyc.cafe4.mtp.build.v1','mode':mode,'run':str(r.resolve()),'source_commit':'ffc1bac82eeca6f9099e1ccd9ba49703c460a115','patch_sha256':PATCH,'candidate_sha256':digest(D/'candidate.cpp'),'bridge_sha256':digest(D/'mtp_draft_bridge.hpp'),'files':{str(x.resolve()):digest(x) for x in files},'scope':'build only; target-bound real-MTP rollback and fault comparison source, no native result'}
++ d={'schema':'epyc.cafe4.mtp.build.v1','mode':mode,'run':str(r.resolve()),'source_commit':'ffc1bac82eeca6f9099e1ccd9ba49703c460a115','patch_sha256':PATCH,'candidate_sha256':digest(D/'candidate.cpp'),'bridge_sha256':digest(D/'mtp_draft_bridge.hpp'),'files':{str(x.resolve()):digest(x) for x in files},'frozen_prompt_ids_sha256':FROZEN_HEADER,'frozen_prompt_manifest_sha256':FROZEN_MANIFEST,'scope':'build only; target-bound real-MTP rollback and fault comparison source, no native result'}
+  validate(d); p=pathlib.Path(out); p.parent.mkdir(parents=True,exist_ok=True); fd,tmp=tempfile.mkstemp(dir=p.parent,prefix='.proof-')
+  with os.fdopen(fd,'w') as f: json.dump(d,f,sort_keys=True); f.write('\n'); f.flush(); os.fsync(f.fileno())
+  os.replace(tmp,p)

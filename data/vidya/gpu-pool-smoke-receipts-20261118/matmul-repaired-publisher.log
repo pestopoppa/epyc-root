@@ -1,0 +1,4 @@
+WARN view refresh timed out after 60s; using the existing view
+WARN task_lint vidya-belief-substrate-program.md:757: untestable prose prerequisite: 'after one terminal invocation and strict rederivation; stop-on-futility on STOP, deadline or invalid custody; gate-class'
+DECISION-RULE prose; verdict_by agent: owner handoff-vidya-belief-substrate files the verdict by hand after the run
+GPU busy: smoke queued; it runs in the next GPU gap; your row becomes ready on PASS — move to your next task (ni-gpu-pool-matmul-20261117-v2)

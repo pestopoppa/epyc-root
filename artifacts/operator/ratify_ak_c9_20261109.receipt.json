@@ -1,0 +1,121 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-09T16:13:06Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "7b9115c49e7f37da5c57cce4d51a7904b886b3ac",
+  "git_head_before": "7b9115c49e7f37da5c57cce4d51a7904b886b3ac",
+  "operator": "Daniele",
+  "protocol_id": "P-AK-SEARCH-1-A5",
+  "ratification_id": "RATIFY-AK-C9-20261109",
+  "ratify_script": {
+    "exists": true,
+    "path": "/mnt/raid0/llm/worktrees/ak-ratify-20261109/scripts/operator/run_ak_c9_ratify_20261109.sh",
+    "sha256": "a7a86b1c6464d30cf757d6b4724af45a1bf75387f611f2aabb32f106f190c823"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/tmp/ratify-ak-c9.9cp5Ti/root",
+  "sections": {
+    "coherence": {
+      "data": {
+        "measurement/protocols/kernel-research.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: keep-path rule that sets no numeric threshold; the thresholds and their A/A floor evidence are a later human-only step"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-AK-SEARCH-1-A5 is a clause reference, not a registered protocol name; verified via 1 anchor(s) instead",
+        "anchor present in measurement/protocols/kernel-research.md: ## P-AK-SEARCH-1-A5"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 23,
+      "lines_after": 871,
+      "lines_before": 848,
+      "lines_removed": 0,
+      "path": "measurement/protocols/kernel-research.md",
+      "sha256_after": "c086e4ee9f7bffd3e25f6f88636a780ca0aa1827589bc115a5ddafe749559315",
+      "sha256_before": "f4223c738e5aa6ba75134fa78e2c558e9cefe40f49967fe4de7f505487173c75",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/measurement/protocols/kernel-research.md",
+        "+++ b/measurement/protocols/kernel-research.md",
+        "@@ -846,3 +846,26 @@",
+        " - Banking, composition of source candidates, readiness, promotion and the release boundary are",
+        "   exactly as `P-AK-SEARCH-1`, A1, A2, A3 and A3.1 left them.",
+        " ",
+        "+## P-AK-SEARCH-1-A5 \u2014 graph-level KLD / same-top rule for graph-fusion keeps (AK-FUSE-GRAPH-KLD-1, RATIFIED 2026-11-09)",
+        "+",
+        "+For any keep candidate whose patch touches graph-fusion, ggml-alloc or graph-matcher files",
+        "+(`gates.touches_graph_fusion`), the keep path requires `gates.graph_kld_gate` to pass against the",
+        "+champion's saved base logits (wikitext-2, `-c 4096 --chunks 16`, Q38FN UD-IQ4_XS and the 27B lane,",
+        "+`--kl-divergence-base` saved once per champion).",
+        "+",
+        "+Pass means mean KLD <= K and same-top >= S, where K and S are set from the champion's own A/A floor",
+        "+measured on the same model/chunks (K = A/A mean KLD plus a margin the operator chooses, S = A/A",
+        "+same-top minus a margin). The known-bad replay (C7 c420b9d1a Q38FN: KLD 0.1865, same-top 88.6%) must",
+        "+fail under the chosen values, and the H15 on/off pair is the within-run control.",
+        "+",
+        "+K and S are not set by this amendment. They are human-only values, supplied to",
+        "+`gates.KldThresholds.from_config` as `max_mean_kld` and `min_same_top_pct`; both are required, and",
+        "+neither has a default. Until both are supplied the verdict is `threshold_unset`, a reported refusal",
+        "+(never a pass, never a silent skip). The A/A floor run (about 10-25 GPU-min per model, 16 GB base",
+        "+logits each) is the evidence the operator sizes the margins from.",
+        "+",
+        "+Enforcement state at ratification: `graph_kld_gate` exists in `loop/gates.py` but is not yet called",
+        "+from the keep path in `loop/run.py`, and no run-level config input for the thresholds exists yet.",
+        "+Until that wiring lands this rule is not mechanically enforced, and a fusion keep is not refused",
+        "+automatically by the gate.",
+        "+"
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "grep -qF 'P-AK-SEARCH-1-A5' measurement/protocols/kernel-research.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

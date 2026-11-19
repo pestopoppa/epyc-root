@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T14:00:42Z reason=direct-run
+job_id=lsa-ward-cpu-oracles-088-20261104
+owner=lsa-screen
+step=job-run
+estimated_wall_s=1200
+started=2026-11-04T14:00:41Z
+regions=q0

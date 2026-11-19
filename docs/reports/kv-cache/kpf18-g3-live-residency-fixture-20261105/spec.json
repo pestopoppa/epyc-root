@@ -1,0 +1,23 @@
+{
+  "id": "kvu-kpf18-g3-live-residency-fixture-20261105",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-live-residency-fixture-20261105/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-187",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-live-residency-fixture-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Model-free owned HIP fixture loads pinned historical ggml HIP backend and allocates device memory. Require seven live source-bound PID/birth, executable, backend mapping, KFD device and positive own-VRAM snapshots over at least 12 seconds with captured-child cleanup. Stop on missing residency, identity or backend drift, compiler, STOP, deadline or cleanup failure. This does not qualify native gate, actual model, continuous residency, compute activity or inference.",
+  "estimate_s": 300,
+  "ram_gib": 4,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18.0d(item 3, group 3)",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "unit_key": "samples",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-live-residency-fixture-20261105",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf18-g3-live-residency-fixture",
+  "dryrun_timeout_s": 300
+}

@@ -285,6 +285,74 @@ def project_unlimited_ocr_run(native: dict) -> ClaimTuple:
         raise ProjectionError(f"ODL run projection refused: {exc}") from exc
 
 
+# --- ODL-011 intrinsic diagnostics (SC/BI/ICC/DCC): VB-ODL-INTRINSIC-PROJECTION -----------------
+# One tuple per NON-NULL native intrinsic row of the same verified run record. Null rows cannot be
+# a measurement (zero reps is refused by ClaimTuple) so they are not projected; their native
+# ``detail`` (the null reason) stays in ``extra.run_metrics`` of every sibling tuple. Direction,
+# unit and denominator basis are the producer's declared metric definitions
+# (odl_bench/intrinsic.py ``score_prediction_dir``), never inferred from values.
+INTRINSIC_PROTOCOL = "odl-bench/ekimetrics-intrinsic-diagnostic/v1"
+_INTRINSIC = {
+    "Ekimetrics.SC": ("fraction", "chunks"),
+    "Ekimetrics.BI": ("fraction", "structural blocks"),
+    "Ekimetrics.ICC": ("cosine", "eligible chunks"),
+    "Ekimetrics.DCC": ("cosine", "chunk/window pairs"),
+}
+_PRED_SHA = re.compile(r"prediction_set_sha256=([0-9a-f]{64})")
+
+
+def intrinsic_native_rows(path: str | Path) -> tuple[dict, ...]:
+    out = []
+    for base in native_rows(path):
+        for row in base["payload"]["run_metrics"]:
+            if row.get("metric_family") != "intrinsic":
+                continue
+            name = row.get("metric_name")
+            if name not in _INTRINSIC:
+                raise ProjectionError(f"ODL intrinsic row has unknown metric {name!r}")
+            value, n = row.get("value"), row.get("n")
+            if value is None:
+                continue  # null reason is retained in extra.run_metrics
+            if (isinstance(value, bool) or not isinstance(value, (int, float))
+                    or not math.isfinite(value) or type(n) is not int or n < 1):
+                raise ProjectionError("ODL intrinsic row has a non-finite value or empty count")
+            match = _PRED_SHA.search(row.get("detail") or "")
+            if not match:
+                raise ProjectionError("ODL intrinsic row carries no prediction-set digest")
+            out.append({**base, "intrinsic": dict(row), "prediction_set_sha256": match.group(1)})
+    return tuple(out)
+
+
+@register("odl-unlimited-ocr-intrinsic", source_class="measurement")
+def project_intrinsic_row(native: dict) -> ClaimTuple:
+    try:
+        reopened = [r for r in intrinsic_native_rows(native["record_path"])
+                    if r["intrinsic"] == native["intrinsic"]]
+        if len(reopened) != 1 or reopened[0] != native:
+            raise ProjectionError("ODL intrinsic native row changed after reopening")
+        payload, row = native["payload"], native["intrinsic"]
+        unit, basis = _INTRINSIC[row["metric_name"]]
+        return ClaimTuple(
+            measurement_id=f"odl-unlimited-ocr-intrinsic:{payload['record_id']}:{row['metric_name']}",
+            metric=row["metric_name"], value=row["value"],
+            date=payload["inputs"]["started_utc"], category=payload["category"],
+            metric_direction="higher_better", protocol_id=INTRINSIC_PROTOCOL,
+            reps=row["n"], reps_basis=f"{basis} (per-page mean aggregation; see detail)", unit=unit,
+            claim=f"{row['metric_name']} model-free stand-in chunker diagnostic; no quality or adoption claim",
+            attestation_path=native["record_path"], attestation_sha256=native["record_sha256"],
+            attestation_present=True, attestation_verified=True, source_kind=ADAPTER_ID,
+            source_class="measurement",
+            extra={"record_id": payload["record_id"], "source": payload["source"],
+                   "producer": payload["producer"], "inputs": payload["inputs"],
+                   "intrinsic_detail": row["detail"],
+                   "prediction_set_sha256": native["prediction_set_sha256"],
+                   "run_metrics": payload["run_metrics"], "outputs": payload["outputs"]})
+    except (KeyError, TypeError, ValueError) as exc:
+        if isinstance(exc, ProjectionError):
+            raise
+        raise ProjectionError(f"ODL intrinsic projection refused: {exc}") from exc
+
+
 # The CLI imports ``adapters`` from scripts/vidya; source consumers also use
 # ``scripts.vidya.adapters`` from the repository root. Publish the fully
 # initialized module under both spellings so the projection registers once.

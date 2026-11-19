@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "claude-filing-subagent",
+  "rationale": "Full r3 completed (status ok, full_rc 0): 20 decode-only rows (10 drafted with reported draft_n 990, 10 no-draft with draft_n unknown), dedicated server per variant, park by direct prefill, own-PID HIP VRAM peak 51.7 GiB, PID teardown verified dead and port freed, no slot-eviction/purge log lines, peak resident 358,838 tokens (91.3% of 393,216 pool). L3 decode loss vs L0 base: drafted 35.56 -> ~14.9 tps (-58.0%), no-draft 22.17 -> ~8.58 tps (-61.3%); A/B/A nodraft drift 0.0%. Report verdict: P5 trigger (>=5%) MET; split-per-slot trigger (>=15% at >=300k) MET. No production or global KVU-16h completion implied.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T13:58:17+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T11:34:01Z reason=complete",
+ "filed_at": "2026-11-04T13:58:17+00:00",
+ "filed_by": "claude-filing-subagent",
+ "handoff_task": "handoffs/active/kv-cache-program.md:KVU-16h-runner",
+ "id": "handoff-kvu16h-p3-lifecycle-r3-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-kvu16h-p3-lifecycle-r3-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/kvu/p3-row-r3-20261104/result.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-kvu",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Full r3 completed (status ok, full_rc 0): 20 decode-only rows (10 drafted with reported draft_n 990, 10 no-draft with draft_n unknown), dedicated server per variant, park by direct prefill, own-PID HIP VRAM peak 51.7 GiB, PID teardown verified dead and port freed, no slot-eviction/purge log lines, peak resident 358,838 tokens (91.3% of 393,216 pool). L3 decode loss vs L0 base: drafted 35.56 -> ~14.9 tps (-58.0%), no-draft 22.17 -> ~8.58 tps (-61.3%); A/B/A nodraft drift 0.0%. Report verdict: P5 trigger (>=5%) MET; split-per-slot trigger (>=15% at >=300k) MET. No production or global KVU-16h completion implied.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/p3-row-r3-20261104/result.json",
+ "root_cause_family": null,
+ "row": "handoff-kvu16h-p3-lifecycle-r3-20261104",
+ "row_verdict": "pass",
+ "rule": "Qualification is two native dedicated server lifecycles only and yields no occupancy/performance verdict. Full A1 requires 20 decode-only rows, >=2 during-decode samples each, fixed expected neighbour occupancy, matched occupancy within 5%, positive drafted counts, no drafter/spec configuration and no request-local zero; missing native no-draft draft_n is UNKNOWN, explicit reported draft_n must be zero, two own-PID HIP/VRAM samples, distinct server PIDs and verified PID/port teardown before the next variant. Derive L3 loss only from full mode, versus mean L0 base/after; no production deployment or global KVU-16h completion implied. Qualification is exactly CPUs184-187 and gives no exclusive-window claim: current upstream dry runs acquire no locks. Full protocol and exclusive GPU admission are unchanged. Full r3 parks all neighbours by existing direct prefill instead of the unsuccessful restore optimization; same20-row occupancy and lifecycle gates. A partial failed-result file is not PASS.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "4ec4395fcd09fa56b66c7a8dfefd788f00cf4aa08c16f7b3fbe0483c88feee1f",
+  "result": "pass",
+  "status": "filed"
+ }
+}

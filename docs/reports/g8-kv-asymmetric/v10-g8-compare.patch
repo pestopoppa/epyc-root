@@ -1,0 +1,26 @@
+diff --git a/common/sampling.cpp b/common/sampling.cpp
+index 21642fb71c..c11f7d71c4 100644
+--- a/common/sampling.cpp
++++ b/common/sampling.cpp
+@@ -668,6 +668,21 @@ std::vector<llama_token> common_sampler_sample_and_accept_n(struct common_sample
+             (int) (draft_tok == id));
+     };
+ 
++    // G8 diagnostic: compare every target row under its teacher-forced draft prefix.
++    // A clone isolates sampler state from the real accept loop. Greedy-only campaign;
++    // stochastic draws from this clone are not an unbiased coupling measurement.
++    if (getenv("LLAMA_G8_COMPARE_ALL") != nullptr) {
++        common_sampler_ptr probe(common_sampler_clone(gsmpl));
++        fprintf(stderr, "G8_COMPARE_BEGIN rows=%zu\n", draft.size());
++        for (size_t j = 0; j < draft.size(); ++j) {
++            const llama_token target = common_sampler_sample(probe.get(), ctx, idxs[j], grammar_first);
++            fprintf(stderr, "G8_COMPARE_ROW pos=%zu batch=%d draft=%d target=%d match=%d\n",
++                    j, idxs[j], draft[j], target, int(draft[j] == target));
++            common_sampler_accept(probe.get(), draft[j], true);
++        }
++        fprintf(stderr, "G8_COMPARE_END rows=%zu\n", draft.size());
++    }
++
+     size_t i = 0;
+     for (; i < draft.size(); i++) {
+         const llama_token id = common_sampler_sample(gsmpl, ctx, idxs[i], grammar_first);

@@ -1,0 +1,21 @@
+{
+  "row_id": "codex-ni-akxall31-gdn-hip-build-prereq-20261102",
+  "diagnosis": "Granted build failed while compiling tests/test-backend-ops.cpp, before linking test-backend-ops. The attempt has no RESULT.json or HIP-BUILD-MANIFEST.json; the supplied manifest is the ready-row specification.",
+  "root_cause": "Malformed staged test overlay: at tests/test-backend-ops.cpp:12509, the insertion left `test_cases.emplace_back(new test_gdn_onehot_oracle(GGML_TYPE_BF16));, ordered most-recent-first`. The trailing prose belongs to the preceding comment and was left as C++ tokens, causing `expected primary-expression before ','` followed by `'ordered' was not declared`. This is a deterministic source-overlay/build-input defect, not a HIP compiler or device failure.",
+  "evidence": [
+    "attempt-1/logs/build-test-backend-ops-hip.log: compiler diagnostics at line 12509 and make failure for test-backend-ops",
+    "attempt-1/source/tests/test-backend-ops.cpp:12509 contains the malformed line",
+    "git diff in attempt-1/source shows the overlay changed the original comment and appended its suffix to the new BF16 registration",
+    "attempt-1/logs/configure-hip.log records successful HIP compiler detection, HIP/hipBLAS discovery, and CMake generation",
+    "attempt-1/smoke/gated_delta_net.cu.o exists (255248 bytes); the separate substantive HIP object smoke succeeded, with only libxml2 version warnings in its log",
+    "test-backend-ops executable is absent; HIP gated-delta object is present in the HIP build tree"
+  ],
+  "retain_before_filing_or_reaping": [
+    "attempt-1/logs/**, especially build-test-backend-ops-hip.log, configure-hip.log, and smoke-gated-delta-hip-object.log",
+    "attempt-1/source/tests/test-backend-ops.cpp plus its base commit and patch/diff (retain the exact malformed staged input)",
+    "attempt-1/build-hip/CMakeCache.txt and build metadata needed to reproduce the failed target",
+    "attempt-1/build-hip/ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/gated_delta_net.cu.o and attempt-1/smoke/gated_delta_net.cu.o",
+    "the ready manifest and row launcher/job/spec inputs that identify the authorized build recipe"
+  ],
+  "classification": "build-input defect; prerequisite remains unfulfilled; no inference, runtime, operation-correctness, or performance evidence"
+}

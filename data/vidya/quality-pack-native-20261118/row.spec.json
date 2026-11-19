@@ -1,0 +1,23 @@
+{
+  "id": "handoff-vidya-quality-pack-frontdoor-20261118",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack-native/row-launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "ram_gib": 48,
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack-native/out/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 1200,
+  "min_window_s": 1500,
+  "priority_rank": 38,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack-native",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-NATIVE-CONTROL",
+  "dryrun_native_result": true,
+  "first_progress_s": 100,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/quality-pack-native/smoke_predicate.py",
+  "decision_rule": "Question: can the isolated CPU/MTP frontdoor slice generate genuine native banked and candidate response bytes with bound identities? Stop on answer after four independent same-body captures per arm and verified cleanup. Stop on STOP, scheduler deadline, or first failed identity, startup, response or cleanup; retain artifact bytes. Four-CPU smoke requests one native completion on the immutable v10 CPU image and pinned Qwen3-0.6B Q8_0 under a 45 second startup and 30 second request bound. Evidence is scoped to the isolated slice; all seven-profile parity, live serving equivalence and promotion authority remain outside this row.",
+  "verdict_by": "agent",
+  "keep": ["out/**", "*.py", "*.json", "*.md", "*.sh", "SOURCE.sha256"]
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""model_pin_guard.py — SEC-ART-7 re-pull drift check (handoffs/active/model-artifact-integrity.md).
+"""model_pin_guard.py — SEC-ART-7 re-pull drift check (handoffs/active/stack-lifecycle-program.md).
 
 A registered artifact is one whose model row in the orchestrator registry carries the SEC-ART-1 pins:
 `roles.<role>.model.{path, hf_repo, hf_revision, sha256}` (hf_revision = 40-hex commit, sha256 = the GGUF's LFS

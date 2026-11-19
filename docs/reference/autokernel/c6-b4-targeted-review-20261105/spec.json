@@ -1,0 +1,60 @@
+{
+  "schema": "epyc.c6.b4-targeted-preparation.v1",
+  "status": "HOLD_NOT_DISPATCHABLE",
+  "id": "c6-b4-targeted-comparison-20261105",
+  "owner": "handoff-autokernel-cross-workload-keep-gate",
+  "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:C6-Q4-MMVQ-FIX",
+  "question": "For the exact seed-71 originally failing q4_K n=4 inputs, do the retained combined candidate and the newly corrected image produce matching captures and how do their native correctness verdicts compare? Does the corrected image preserve the previously passing n=5 MMQ case?",
+  "scope": "scoped correctness diagnosis only; no performance, full correctness, keep, or promotion claim",
+  "conditional_build": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-b4-build-20261105/BUILD-RESULT.json",
+  "baseline_build": "/mnt/raid0/llm/tmp/akagg/c6-mmq-full-r2/BUILD-RESULT.json",
+  "cases": [
+    {
+      "name": "bs32-perm0123",
+      "params_regex": "^type_a=q4_K,type_b=f32,m=16,n=4,k=256,bs=\\[3,2\\],nr=\\[2,2\\],per=\\[0,1,2,3\\],k_v=0,o=1$",
+      "expected_route": "MMVQ",
+      "residual_seed71": 0.007148551097509587,
+      "tolerance_seed71": 0.005595352208076228
+    },
+    {
+      "name": "bs23-perm0321",
+      "params_regex": "^type_a=q4_K,type_b=f32,m=16,n=4,k=256,bs=\\[2,3\\],nr=\\[1,1\\],per=\\[0,3,2,1\\],k_v=0,o=1$",
+      "expected_route": "MMVQ",
+      "residual_seed71": 0.007426463120529613,
+      "tolerance_seed71": 0.006011777852522346
+    },
+    {
+      "name": "ordinal-7047-n5",
+      "params_regex": "^type_a=q4_K,type_b=f32,m=16,n=5,k=256,bs=\\[1,1\\],nr=\\[1,1\\],per=\\[0,1,2,3\\],k_v=0,o=1$",
+      "ordinal": 7047,
+      "expected_route": "MMQ",
+      "tolerance_seed71": 0.005948093131031932
+    }
+  ],
+  "measurement": {
+    "seed": 71,
+    "arms": "For each n=4 case run retained combined candidate and corrected image, each freshly under the grant; n=5 run corrected image and compare captured input bytes against retained prior n=5 evidence.",
+    "acceptance": "Each case must match original tensor input hashes, exact descriptor and original per-case tolerance, expected route, own-PID pinned HIP/ggml mappings, at least two own-PID KFD samples, positive own-PID VRAM during execution, native result, grant identity, and verified process cleanup. Native failures are valid scoped results if witnesses are complete; missing witnesses are inconclusive. Corrected n=4 passes and preserved n=5 pass are prerequisites, not a full-suite verdict.",
+    "stop": "Stop on missing custody, invalid witness, input/route/tolerance drift, STOP, deadline or cleanup failure; preserve any completed raw evidence. A valid native failure ends that case with a failure verdict; any early termination leaves unexecuted cases inconclusive."
+  },
+  "proposed_resources": {
+    "lane": "gpu",
+    "regions": "mi210_0,184-191",
+    "claim_cpus": "184-191",
+    "gpu_threads": "184-191",
+    "gpu_quiet": "exclusive",
+    "ram_gib": 32,
+    "estimate_s": 600,
+    "min_window_s": 600,
+    "status": "provisional; reassess against actual runner and comparable grant durations"
+  },
+  "dependencies": [
+    "Full build result must be COMPLETE_BUILD_ONLY; rerun its completion verifier and bind receipt, source manifest, patch, config, output file and alias hashes; independently verify fresh image library linkage and correction provenance.",
+    "Pin baseline image, its complete DSO and alias hashes, retained input bytes and original per-case tolerance/ordinal; source-build provenance must be content-bound.",
+    "Implement and review isolated job and strict completion predicate for the exact five invocations; reference scripts are historical examples and are not directly runnable. Retain raw logs, captures, native return codes and route, witnesses, grant and cleanup.",
+    "Use isolated native GPU smoke with the same residency and input witnesses and a distinct smoke result, then seal actual launcher, runner, image pins, dependencies and packet; run publisher smoke and publish only after qualification.",
+    "Full-suite successor requires targeted passing results and separately bound evidence."
+  ],
+  "launcher": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-b4-targeted-20261105/launch.sh",
+  "result_path": "/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/c6-b4-targeted-20261105/RESULT.json"
+}

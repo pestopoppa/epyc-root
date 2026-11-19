@@ -1,0 +1,105 @@
+{
+  "schema": "epyc.vidya.frontdoor_slice_filing.v1",
+  "row": "handoff-vidya-quality-pack-frontdoor-20261118",
+  "rc": 0,
+  "verdict": "pass",
+  "scope": "isolated frontdoor input capture only; broad pack and comparison acceptance remain open",
+  "request_count_per_arm": 4,
+  "cpus": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71
+  ],
+  "raw_derived_comparisons": [
+    {
+      "id": "json",
+      "completion_tokens": [
+        8,
+        13
+      ],
+      "content_equal": false,
+      "token_ids_equal": false
+    },
+    {
+      "id": "code",
+      "completion_tokens": [
+        17,
+        17
+      ],
+      "content_equal": true,
+      "token_ids_equal": true
+    },
+    {
+      "id": "reasoning",
+      "completion_tokens": [
+        21,
+        21
+      ],
+      "content_equal": true,
+      "token_ids_equal": true
+    },
+    {
+      "id": "long-prose",
+      "completion_tokens": [
+        16,
+        16
+      ],
+      "content_equal": true,
+      "token_ids_equal": true
+    }
+  ],
+  "bank_sha256": "afca01f46f4735bf28b7d6a0cc95dddf8258aa32a4544350d964160a94fd9f8a",
+  "candidate_sha256": "2e8c6322ef8402bf0f4af64d520ce3f0dd2c8b794cb365b712040d849e5ea9f8",
+  "files_sha256": {
+    "RESULT.json": "b5d6f5a64396013c718f4bc744f1a5baa5227be0ad350db3b557542c24fdecff",
+    "native/banked-capture.json": "afca01f46f4735bf28b7d6a0cc95dddf8258aa32a4544350d964160a94fd9f8a",
+    "native/banked-capture.sha256": "65e864271276c3a4ba1ed2cb8b036f4187c67f5be99a5e89ec112451265f8b18",
+    "native/candidate/cleanup.json": "584f1b8a3e939029590b165ce93d30f67c3aaf940b50f320ab4ee0f988955f87",
+    "native/candidate/code.request.json": "e2e0e611c03c963f3b96934cec7ab9b7ffb4ec0dcbe48ab9dc238f9cb8236c47",
+    "native/candidate/code.response.json": "4b785ce55e16ba7ca5dcbfadcf439b96cdc083a8a4141df6feabe1e0a924c00e",
+    "native/candidate/json.request.json": "e954017faf56e56c8d44eb637cce53f4ffa0876f91f8b2dbc0a8878ac31cc707",
+    "native/candidate/json.response.json": "880892e69cef14c379b40a72af97900fe32f1086b5f3b8c80b4267ea9d4b198c",
+    "native/candidate/long-prose.request.json": "76cebc9b9f1b5f276d20c4df93670dd6747e8e8f2f3f50c94338fa43c307e30d",
+    "native/candidate/long-prose.response.json": "bdbfd355fede2a4c3d1ae80ef7a2769ba671ca4590f3dc8d855368831b894b8a",
+    "native/candidate/reasoning.request.json": "dc7b425ac99b6a4261433072e8353bfa8520d5fc8e295163289a47c2a3266e47",
+    "native/candidate/reasoning.response.json": "68bb15beacae572affc023428eaf04af93ea2d974df2541c317e11a4d67b0932",
+    "native/candidate/server.json": "3171ecc860afd74e1651f298f5ec8e71287b3042f02a02bd00c2f5a91aa3abbc",
+    "native/candidate/server.log": "7a7ddf77e3f05debbb5936d425a2dc1bbd881ee0bb599f2888b00b84ff9aa803",
+    "native/candidate-capture.json": "2e8c6322ef8402bf0f4af64d520ce3f0dd2c8b794cb365b712040d849e5ea9f8",
+    "native/production/cleanup.json": "8b0c6b650b2b70f59d55a17480acdb639c3e201e6266c949785adfaa2ae3e095",
+    "native/production/code.request.json": "e2e0e611c03c963f3b96934cec7ab9b7ffb4ec0dcbe48ab9dc238f9cb8236c47",
+    "native/production/code.response.json": "672de5d30d2b013ca0dbc629d9698821bfed13e2b5b7ad1eb407df886734aa39",
+    "native/production/json.request.json": "e954017faf56e56c8d44eb637cce53f4ffa0876f91f8b2dbc0a8878ac31cc707",
+    "native/production/json.response.json": "cc7c9a81d8cdd6a31044c147a7ef3ef0d0ddc758d1ae4b178cc6db62b6de5e99",
+    "native/production/long-prose.request.json": "76cebc9b9f1b5f276d20c4df93670dd6747e8e8f2f3f50c94338fa43c307e30d",
+    "native/production/long-prose.response.json": "46a79900b08d9388a4f68d176681df3598452145280f9f8bb35ecfdb769b55d3",
+    "native/production/reasoning.request.json": "dc7b425ac99b6a4261433072e8353bfa8520d5fc8e295163289a47c2a3266e47",
+    "native/production/reasoning.response.json": "58395ca029135daefcc8f161531d4e1f9bd3d8988c9a3da4d4e6144b6b4f0edb",
+    "native/production/server.json": "640351410c0691f87fe5a9d5ba31aa095caee6719c93c995a622354a5ea2bdcf",
+    "native/production/server.log": "546171309a3d70bf4dfec39d73e56e5a128c668d6e024f0508e4db563978b984",
+    "native/scheduler.grant": "a70149b6800fdbda3d365ed129903edb26e8d1354eb7f6a12bbbf013ec7337d7"
+  },
+  "cleanup": "both captured servers dead and listeners closed",
+  "promotion_authorized": false
+}

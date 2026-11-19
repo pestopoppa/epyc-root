@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T12:58:25Z reason=direct-run
+job_id=lsa-final-hip-compile-20261104
+owner=lsa-screen
+step=job-run
+estimated_wall_s=2700
+started=2026-11-04T12:56:40Z
+regions=q1

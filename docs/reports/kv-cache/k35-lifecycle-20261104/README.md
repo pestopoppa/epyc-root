@@ -1,0 +1,11 @@
+# K35 separate-server lifecycle validation
+
+The full `handoff-kvu16h-k35-native-20261102` row passes its lifecycle-only rule (rc0, 2026-11-02T21:26:01Z). The first arm uses dedicated `--spec-type none`, no draft model/device/layer/length flags, and no request-level speculative override. PID 4020185 (birth ticks 177720388) completed 16 tokens and was proven dead with completed cleanup rc0. Its after-cleanup sample at 21:25:44.607220Z precedes the second arm's pre-launch sample at 21:25:46.488185Z. Fresh native-MTP PID 4023919 (birth ticks 177721977) also completed 16 tokens and was proven dead with completed cleanup rc0 at the second arm's end. Both arms have successful before-launch, after-health, after-request, before-cleanup and after-cleanup samples; all captured-process samples match their arm PID. The bound runner checks PID/birth listener ownership before accepting health and again before sending the request.
+
+`validation.json` contains the checked lifecycle summary; `RESULT.json`, the per-arm request/argv/response/result/server logs, source inputs, prepared identities and row/end records retain native evidence. `verdict-proposed.json` is for the owning session to file. This report did not file, tick or commit anything.
+
+This is an engineering lifecycle validation (`measurement_claim=false`), not a throughput, quality, GPU-residency, memory-plateau or global runner-coverage measurement. Recorded incidental timing and telemetry do not establish such claims. The parent KVU-16h-runner acceptance spans P3/X0, KVU-16b, Q38-T7 and GPU-slot copies; this two-arm K35 result cannot close that parent by itself.
+
+The owning session reviewed and filed the preserved proposed verdict through `file_result.py`; checkbox application is part of the owning wrap-up.
+
+Concurrent upstream custody review records that the original native_job.py receipt digest predates a native-only blocker-filter edit; see `progress/evidence/kvu16h-k35-completion-20261104/audit.json`. Preserve that discrepancy: these raw process/request/cleanup observations support only scoped engineering lifecycle validation, not an exact executed-source or measurement warrant. The upstream lifecycle checkbox and existing VB-SWAP-C family enrollment are retained without duplicate task/source entries.

@@ -1,0 +1,224 @@
+diff --git a/scripts/chunk-kv/g3_gate.py b/scripts/chunk-kv/g3_gate.py
+index 881e8cc24..022e8dd08 100755
+--- a/scripts/chunk-kv/g3_gate.py
++++ b/scripts/chunk-kv/g3_gate.py
+@@ -36,6 +36,12 @@ except ModuleNotFoundError:
+     import g3_manifest
+ import tempfile
+ 
++try:
++    import g3_outcome_guard
++except ModuleNotFoundError:
++    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++    import g3_outcome_guard
++
+ GATES = {
+     "mean_kl": ("<=", 0.05),
+     "p95_kl": ("<=", 0.25),
+@@ -342,10 +348,11 @@ def _load_pinned_scorer(path, expected_sha):
+     return module.score_answer
+ 
+ 
+-def paired_retention(path, tasks_path, expected, scorer_module=None):
++def paired_retention(path, tasks_path, expected, scorer_module=None, segments_path=None):
+     """Score paired raw outputs against each frozen task and pinned scorer."""
+     tasks = g3_manifest.records(tasks_path)
+     pairs = {}
++    outcome_rows = []
+     with open(path, encoding="utf-8") as f:
+         for line in f:
+             if not line.strip():
+@@ -370,10 +377,18 @@ def paired_retention(path, tasks_path, expected, scorer_module=None):
+             if row.get("error") is not None or row.get("complete") is not True:
+                 raise ValueError("task output is incomplete or failed")
+             pairs[key] = output
++            outcome_rows.append(row)
+     required = {(rid, arm) for rid in expected for arm in ("full", "reuse")}
+     if set(pairs) != required:
+         raise ValueError("paired task outcome coverage is incomplete")
+     ids = sorted(expected)
++    segment_digest = None
++    if segments_path is not None:
++        with open(segments_path, "rb") as f:
++            data = f.read()
++        segment_digest = hashlib.sha256(data).hexdigest()
++        segment_rows = [json.loads(line) for line in data.splitlines() if line.strip()]
++        g3_outcome_guard.validate(ids, outcome_rows, segment_rows)
+     text_hashes = {tasks[rid]["scorer_sha256"] for rid in ids
+                    if tasks[rid].get("metric") == "orchestrator_text_v1"}
+     if len(text_hashes) > 1:
+@@ -409,13 +424,16 @@ def paired_retention(path, tasks_path, expected, scorer_module=None):
+         else:
+             undefined += 1
+     estimates.sort()
+-    return {"score_full": total / len(ids), "score_reuse": sum(reuse) / len(ids),
++    result = {"score_full": total / len(ids), "score_reuse": sum(reuse) / len(ids),
+             "retention": ratio, "n_tasks": len(ids), "bootstrap_seed": 62026,
+             "bootstrap_samples": 10000, "bootstrap_undefined": undefined,
+             "scorer_sha256": next(iter(text_hashes)) if text_hashes else None,
+             "item_scores": [{"id": rid, "full": full[i], "reuse": reuse[i],
+                              "metric": tasks[rid]["metric"]} for i, rid in enumerate(ids)],
+             "bootstrap_95": [nearest_rank(estimates, 2.5), nearest_rank(estimates, 97.5)] if estimates else None}
++    if segment_digest is not None:
++        result["outcome_segments_sha256"] = segment_digest
++    return result
+ 
+ 
+ def cmd_gate(args):
+@@ -427,6 +445,9 @@ def cmd_gate(args):
+         rc = cmd_prereg(args)
+         if rc != 0:
+             return rc
++    if getattr(args, "outcome_segments", None) and not args.retention:
++        print("REFUSED: --outcome-segments requires --retention")
++        return 3
+     reqs, pos, meta = load_run(args.run)
+     retention, score = None, None
+     if not args.dev:
+@@ -438,7 +459,8 @@ def cmd_gate(args):
+             if meta.get("n_cont") != 64:
+                 raise ValueError("native run did not declare 64 continuation positions")
+             expected = bound_cohort(manifest, reqs, pos, args.selector, args.naive)
+-            score = paired_retention(args.retention, args.tasks, expected, getattr(args, "scorer_module", None))
++            score = paired_retention(args.retention, args.tasks, expected, getattr(args, "scorer_module", None),
++                                     getattr(args, "outcome_segments", None))
+             retention = score["retention"]
+         except (ValueError, OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
+             print(f"REFUSED: invalid frozen cohort or paired outcomes: {exc}")
+@@ -537,6 +559,7 @@ def main():
+     s.add_argument("--corpus", help="frozen tokenized corpus JSONL matching the manifest")
+     s.add_argument("--tasks", help="frozen task target JSONL matching the manifest")
+     s.add_argument("--retention", help="paired per-item full/reuse raw output JSONL")
++    s.add_argument("--outcome-segments", help="opt-in segment ledger JSONL for completed paired outcomes")
+     s.add_argument("--scorer-module", help="digest-pinned canonical orchestrator debug_scorer.py for frozen text tasks")
+     s.add_argument("--dev", action="store_true")
+     s.add_argument("--out", help="write OUT.json and OUT.md")
+diff --git a/scripts/chunk-kv/g3_outcome_guard.py b/scripts/chunk-kv/g3_outcome_guard.py
+new file mode 100644
+index 000000000..f7f8e556f
+--- /dev/null
++++ b/scripts/chunk-kv/g3_outcome_guard.py
+@@ -0,0 +1,64 @@
++#!/usr/bin/env python3
++"""Refuse incomplete or unpaired G3 outcome inputs; does not score quality."""
++import argparse
++import json
++from pathlib import Path
++
++
++def validate(ids, outcomes, segments):
++    ids = list(ids)
++    if not ids or len(ids) != len(set(ids)) or any(not isinstance(x, str) or not x for x in ids):
++        raise ValueError('invalid expected ids')
++    expected = {(x, arm) for x in ids for arm in ('full', 'reuse')}
++    indexed = {}
++    for row in outcomes:
++        key = (row.get('id'), row.get('arm'))
++        if key not in expected or key in indexed:
++            raise ValueError('unexpected or duplicate outcome')
++        if row.get('complete') is not True or row.get('finish_reason') != 'eog':
++            raise ValueError('incomplete outcome')
++        if not isinstance(row.get('output_tokens'), list):
++            raise ValueError('missing outcome tokens')
++        indexed[key] = row
++    if set(indexed) != expected:
++        raise ValueError('missing paired outcome')
++    ledger = {key: [] for key in expected}
++    for row in segments:
++        key = (row.get('id'), row.get('arm'))
++        if key not in ledger:
++            raise ValueError('unexpected segment')
++        ledger[key].append(row)
++    for key, rows in ledger.items():
++        if not rows:
++            raise ValueError('missing segment ledger')
++        tokens = []
++        for i, row in enumerate(rows):
++            if row.get('segment') != i or row.get('start') != len(tokens) or not isinstance(row.get('tokens'), list):
++                raise ValueError('out-of-order or malformed segment')
++            expected_reason = 'eog' if i == len(rows) - 1 else 'continue'
++            if row.get('finish_reason') != expected_reason:
++                raise ValueError('incomplete segment ledger')
++            tokens.extend(row['tokens'])
++        if tokens != indexed[key]['output_tokens']:
++            raise ValueError('segment/output token mismatch')
++    return {'pairs': len(ids), 'outcomes': len(indexed), 'segments': sum(map(len, ledger.values()))}
++
++
++def rows(path):
++    return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
++
++
++def main():
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--ids', required=True, help='JSON array of predeclared request IDs')
++    p.add_argument('--outcomes', required=True)
++    p.add_argument('--segments', required=True)
++    a = p.parse_args()
++    try:
++        print(json.dumps(validate(json.loads(Path(a.ids).read_text()), rows(a.outcomes), rows(a.segments)), sort_keys=True))
++    except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
++        p.exit(2, f'INVALID: {e}\n')
++
++
++if __name__ == '__main__':
++    main()
+diff --git a/scripts/chunk-kv/tests/test_g3_outcome_guard_integration.py b/scripts/chunk-kv/tests/test_g3_outcome_guard_integration.py
+new file mode 100644
+index 000000000..01519f59c
+--- /dev/null
++++ b/scripts/chunk-kv/tests/test_g3_outcome_guard_integration.py
+@@ -0,0 +1,53 @@
++"""Opt-in ledger validation occurs before exact or canonical text scoring."""
++import hashlib
++import importlib.util
++import json
++import tempfile
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++
++PATH=Path(__file__).resolve().parents[1]/'g3_gate.py'
++spec=importlib.util.spec_from_file_location('g3_gate_outcome_integration',PATH)
++gate=importlib.util.module_from_spec(spec);spec.loader.exec_module(gate)
++
++class Integration(unittest.TestCase):
++    def setUp(self):
++        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
++        p=Path(self.tmp.name);self.task=p/'tasks';self.out=p/'outcomes';self.seg=p/'segments'
++        self.expected={'q':{}}
++        self.tasks=[{'id':'q','metric':'exact_token_match','target_tokens':[1,2,3]}]
++        self.outcomes=[{'id':'q','arm':a,'output_tokens':[1,2,3],'output_text':'ok','complete':True,'finish_reason':'eog'} for a in ('full','reuse')]
++        self.segments=[{'id':'q','arm':a,'segment':i,'start':start,'tokens':tokens,'finish_reason':reason}
++                       for a in ('full','reuse') for i,start,tokens,reason in ((0,0,[1,2],'continue'),(1,2,[3],'eog'))]
++        self.write()
++    def write(self):
++        for path,rows in ((self.task,self.tasks),(self.out,self.outcomes),(self.seg,self.segments)):
++            path.write_text(''.join(json.dumps(row)+'\n' for row in rows))
++    def test_legacy_unchanged_and_segmented_valid(self):
++        for o in self.outcomes:o.pop('finish_reason')
++        self.write();legacy=gate.paired_retention(self.out,self.task,self.expected)
++        self.assertEqual(legacy['retention'],1);self.assertNotIn('outcome_segments_sha256',legacy)
++        for o in self.outcomes:o['finish_reason']='eog'
++        self.write();result=gate.paired_retention(self.out,self.task,self.expected,segments_path=self.seg)
++        self.assertEqual(result['retention'],1)
++        self.assertEqual(result['outcome_segments_sha256'],hashlib.sha256(self.seg.read_bytes()).hexdigest())
++    def test_refuses_interruption_exhaustion_mismatch_duplicates(self):
++        variants=[self.segments[:-1],self.segments+self.segments[:1],
++                  [dict(x,finish_reason='length') if x['arm']=='reuse' and x['segment']==1 else x for x in self.segments],
++                  [dict(x,tokens=[9]) if x['arm']=='reuse' and x['segment']==1 else x for x in self.segments]]
++        for rows in variants:
++            self.segments=rows;self.write()
++            with self.subTest(rows=rows),self.assertRaises(ValueError):
++                gate.paired_retention(self.out,self.task,self.expected,segments_path=self.seg)
++    def test_text_scorer_interface_and_no_score_on_invalid(self):
++        self.tasks=[{'id':'q','metric':'orchestrator_text_v1','scorer_sha256':'a'*64,'scoring_method':'exact_match','expected':'ok','scoring_config':{}}]
++        self.write()
++        with patch.object(gate,'_load_pinned_scorer',return_value=lambda a,b,c,d: a==b) as load:
++            result=gate.paired_retention(self.out,self.task,self.expected,'scorer.py',self.seg)
++            self.assertEqual(result['retention'],1);load.assert_called_once_with('scorer.py','a'*64)
++        self.segments=self.segments[:-1];self.write()
++        with patch.object(gate,'_load_pinned_scorer') as load:
++            with self.assertRaises(ValueError):gate.paired_retention(self.out,self.task,self.expected,'scorer.py',self.seg)
++            load.assert_not_called()
++if __name__=='__main__':unittest.main()

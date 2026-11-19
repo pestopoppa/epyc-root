@@ -1,0 +1,45 @@
+{
+  "affinity": [
+    24,
+    25,
+    26,
+    27
+  ],
+  "admission_classification": "private qualification token",
+  "grant_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-screen-1-cpu-parity-r2-20261103/grants/lsa-screen-1-cpu-parity-r2-20261103.grant",
+  "grant_text": "regions=24-27 start=2026-11-03T17:55Z end=2026-11-03T18:20Z holds=q1 schema=epyc.rowflow.dryrun-grant.v1 id=lsa-screen-1-cpu-parity-r2-20261103 kind=rowflow-dryrun admission_class=diagnostic\n",
+  "lock_parent_pid": 2769067,
+  "lock_parent_fd_paths": [
+    "/dev/null",
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-screen-1-cpu-parity-r2-20261103/launcher.out",
+    "/mnt/raid0/llm/tmp/cpu_core.24.lock",
+    "/mnt/raid0/llm/tmp/cpu_core.25.lock",
+    "/mnt/raid0/llm/tmp/cpu_core.26.lock",
+    "/mnt/raid0/llm/tmp/cpu_core.27.lock",
+    "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q1.lock",
+    "/mnt/raid0/llm/tmp/cpu_region.build.q1.lock"
+  ],
+  "lock_parent_flock_lines": [
+    "18: FLOCK  ADVISORY  WRITE 2769067 09:7f:188876347 0 EOF",
+    "19: FLOCK  ADVISORY  WRITE 2769067 09:7f:188876346 0 EOF",
+    "20: FLOCK  ADVISORY  WRITE 2769067 09:7f:188876343 0 EOF",
+    "21: FLOCK  ADVISORY  WRITE 2769067 09:7f:188876342 0 EOF"
+  ],
+  "region_lock_rc": 0,
+  "region_lock_stdout": "  q0  HELD   bench[None] filler-brf-exp01-trellis-pilot-20261102-r2\n  q1  HELD   \n  q2  free   \n  q3  free   \ngpu-quiet  free   \n",
+  "region_lock_stderr": "",
+  "candidate_seal": "332167ee6cd9cf569c912dec2bd1203b4c6ea2de1a62ae121f804cca55775875",
+  "launcher_sha256": "45caa91277bfb66407a976af8657dc6712ee924f9c8b9b1925711db6d7354cf8",
+  "job_sha256": "6e814b1d99bfa33c838b8fabaa79977cd82773ae81e7208e507ecd2ee17bb7af",
+  "spec_sha256": "944549ebe285d4d5d69b9ebe1d6cb399c81dda4c1072e40428a5ce382e10ed08",
+  "model_manifest": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/parity-manifest.json",
+  "model_manifest_sha256": "405fcdf576a77f09792750fc894db5f51e162f6c9042cb7c7accb95c9f569e88",
+  "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "declared_model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "loaded_byte_proof": "manifest digest plus observed model path inode and size; no fresh model hash",
+  "model_stat": {
+    "inode": 96505457,
+    "size": 29047086048,
+    "device": 2431
+  }
+}

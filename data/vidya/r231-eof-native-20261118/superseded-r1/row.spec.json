@@ -1,0 +1,42 @@
+{
+  "schema": "epyc.row.v3",
+  "id": "vidya-r231-eof-native-wire-20261118",
+  "owner": "handoff-vidya-belief-substrate",
+  "kind": "compute",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/launch.sh",
+  "lane": "cpu",
+  "role": "bench",
+  "regions": "0-3",
+  "ram_gib": 4,
+  "declared_threads": 4,
+  "threads_evidence": [
+    "Four allocated CPUs, exact live affinity checked for original CLI and console processes."
+  ],
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/out/RESULT.json",
+  "result_format": "json",
+  "unit_key": "unit_id",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118",
+  "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118",
+  "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/STOP",
+  "min_window_s": 120,
+  "estimate_s": 300,
+  "first_progress_s": 90,
+  "priority_rank": 50,
+  "verdict_by": "agent",
+  "measurement": false,
+  "model_recipe": "Model-free Linux llama-cli selection EOF and linked console input; historical v10-derived custody candidate, no GGUF",
+  "baseline_ref": "v10 ffc1bac82eeca6f9099e1ccd9ba49703c460a115 + preserved R23-1 EOF candidate; llama-cli SHA256 a90f1a24f8734ff02f293b8ab5eec38ec69574511daabcafde6bc089996cf6fb",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R23-1-EOF-WIRE",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.cpp",
+    "*.json",
+    "SOURCE.sha256",
+    "out/**"
+  ],
+  "decision_rule": "Question: do the pinned Linux CLI and linked console produce the planned EOF, blank, slash and text outcomes with complete native custody? Stop on answer after the CLI model-selection loopback EOF and eight exact simple/PTY cases, with output/process/maps/cleanup sealed. Stop on futility on first failed case, missing witness, STOP, allocated deadline or hard cap 300s. Smoke runs original CLI EOF only in its own attempt. Finite model-free behavior census only, no model, inference, performance or promotion claim.",
+  "estimate_justification": "Expected useful runtime <=120 s. Reserve the full 300 s hard cap because the deployed publisher requires a minimum 300 s booking.",
+  "dryrun_native_result": true,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/r231-eof-wire-20261118/smoke_predicate.py"
+}

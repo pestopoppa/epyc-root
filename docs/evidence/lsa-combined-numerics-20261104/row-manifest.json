@@ -1,0 +1,45 @@
+{
+ "decision_rule": "Compile reviewed combined candidate and frozen test; execute unchanged model-free unit then frozen projection fixture once in order, stop on failure, STOP or deadline. Report strict KEY_MISMATCH count separately from test's one-step tolerance; no repeat.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 600,
+ "first_progress_s": 300,
+ "gib": 1,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-combined-numerics-20261104",
+ "keep": [
+  "results.jsonl",
+  "source-sha256.txt",
+  "binary-sha256.txt",
+  "disassembly.txt",
+  "unit.log",
+  "projection.log",
+  "test-combined"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/launch.sh",
+  "sha256": "93559a13e922867b413b17f043374d7eab42332068260b80e83ddebe3210ea9d"
+ },
+ "min_window_s": 600,
+ "owner": "lsa-screen",
+ "ports": [],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "long-context-program.md:1805: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T12:14:18Z",
+ "published_from": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined/STOP",
+ "unit_key": "unit",
+ "window_s": 1020,
+ "workdir": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/numerical-combined"
+}

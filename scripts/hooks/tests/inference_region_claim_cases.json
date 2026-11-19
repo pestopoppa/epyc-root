@@ -1,0 +1,102 @@
+[
+ {
+  "name": "bare path-qualified launch",
+  "command": "/mnt/raid0/llm/llama.cpp/build/bin/llama-bench -m x.gguf",
+  "expect": "block"
+ },
+ {
+  "name": "runner prefixes",
+  "command": "taskset -c 0-47 numactl --interleave=all llama-server -m x -t 48",
+  "expect": "block"
+ },
+ {
+  "name": "env + nohup background",
+  "command": "LD_LIBRARY_PATH=/x nohup llama-server -m x &",
+  "expect": "block"
+ },
+ {
+  "name": "bash -c body",
+  "command": "bash -c 'llama-bench -m x'",
+  "expect": "block"
+ },
+ {
+  "name": "flock on a non-region lock",
+  "command": "flock /tmp/other.lock llama-bench -m x",
+  "expect": "block"
+ },
+ {
+  "name": "flock released before launch",
+  "command": "flock /mnt/raid0/llm/tmp/cpu_region.GLOBAL.q0.lock true; llama-bench -m x",
+  "expect": "block"
+ },
+ {
+  "name": "whisper",
+  "command": "whisper-cli -m m.bin -f a.wav",
+  "expect": "block"
+ },
+ {
+  "name": "second command in a chain",
+  "command": "cd /x && llama-bench -m x",
+  "expect": "block"
+ },
+ {
+  "name": "flock cpu region wraps",
+  "command": "flock /mnt/raid0/llm/tmp/cpu_region.GLOBAL.q0.lock taskset -c 0-23 llama-bench -m x",
+  "expect": "allow"
+ },
+ {
+  "name": "flock -w quoted gpu lock -c",
+  "command": "flock -w 60 '/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock' -c 'llama-bench -m x'",
+  "expect": "allow"
+ },
+ {
+  "name": "flock -c body with cd",
+  "command": "flock /mnt/raid0/llm/tmp/cpu_region.GLOBAL.q0.lock -c 'cd /x; llama-bench -m x'",
+  "expect": "allow"
+ },
+ {
+  "name": "calendar engine",
+  "command": "bash /x/filler_run13.sh --id ROW-1",
+  "expect": "allow"
+ },
+ {
+  "name": "help",
+  "command": "llama-bench --help",
+  "expect": "allow"
+ },
+ {
+  "name": "version",
+  "command": "llama-server --version",
+  "expect": "allow"
+ },
+ {
+  "name": "grep mention",
+  "command": "grep -rn llama-bench docs/",
+  "expect": "allow"
+ },
+ {
+  "name": "echo mention",
+  "command": "echo 'run llama-bench later'",
+  "expect": "allow"
+ },
+ {
+  "name": "commit message multi-line",
+  "command": "git commit -m \"fix\nllama-bench -m x\"",
+  "expect": "allow"
+ },
+ {
+  "name": "heredoc doc",
+  "command": "cat <<EOF\nllama-bench -m x\nEOF",
+  "expect": "allow"
+ },
+ {
+  "name": "ls a binary",
+  "command": "ls build/bin/llama-server",
+  "expect": "allow"
+ },
+ {
+  "name": "comment",
+  "command": "true # llama-bench -m x",
+  "expect": "allow"
+ }
+]

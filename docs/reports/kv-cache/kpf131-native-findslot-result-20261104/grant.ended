@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T23:41:43Z reason=complete
+job_id=kvu-kpf131-old-native-findslot-20261104
+owner=h-kvu
+step=job-run
+estimated_wall_s=300
+started=2026-11-04T23:41:40Z
+regions=24-47

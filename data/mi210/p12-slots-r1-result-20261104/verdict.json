@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc1; all three harness cells refused before requests because host uptime exceeds the P-BENCH decision-grade limit. No server request, overlapping slots sample, placement or cold-cache witness; no occupancy or throughput conclusion. Preserved native log/result under data/mi210/p12-slots-r1-result-20261104/. A descriptive non-gating scout may explicitly use the existing allowed host-health warning; the full P12 box remains open.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T15:49:21+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-04T15:38:36Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-04T15:49:21+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:P12-NEXT-4",
+ "id": "p12-slots-followup-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/p12-slots-followup-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/p12-slots-followup-20261104/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "h-fable5-window2-findings-05c-mi210-lever",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "rc1; all three harness cells refused before requests because host uptime exceeds the P-BENCH decision-grade limit. No server request, overlapping slots sample, placement or cold-cache witness; no occupancy or throughput conclusion. Preserved native log/result under data/mi210/p12-slots-r1-result-20261104/. A descriptive non-gating scout may explicitly use the existing allowed host-health warning; the full P12 box remains open.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/p12-slots-followup-20261104/RESULT.json",
+ "root_cause_family": null,
+ "row": "p12-slots-followup-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "Descriptive P12 C1 np1/2/4 only: COMPLETE requires all three exact cells, harness rc0, actual performed successful drop_caches with cold_cache_guaranteed=true, in-window placement PASS, and /slots busy GET fully overlapping successful same-cell same-port request on every expected port. Missing occupancy is incomplete evidence, not absence. Native smoke does not satisfy full-run completion. Expected: existing C1 ~84\u201390 aggregate tok/s; single replicate is descriptive, not a formal speed claim. Stop-on-answer when all three native cells satisfy the specified overlap, placement and cache witnesses; stop-on-futility on STOP, deadline, server failure or missing required proof; no interim decision-grade gate.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "c83bd03656d8fccf6193fe0464209c690cea091d7eecefc3e467ba146d3214e7",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

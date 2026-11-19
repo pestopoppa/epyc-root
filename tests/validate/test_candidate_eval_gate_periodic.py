@@ -6,10 +6,20 @@ from pathlib import Path
 import subprocess
 import sys
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_candidate_eval_gate_records_exact_outcome() -> None:
+    # This is the hosted EVL-38 recipe (scripts/ci/evl38_run_capture.py), not a unit test: it runs
+    # the whole candidate gate and needs the three source checkouts and its outcome
+    # paths. Outside that recipe -- none of its environment present -- there is nothing to run, so a
+    # plain pytest sweep skips it. Once the recipe has set ANY of its environment, a missing piece is
+    # a misconfigured capture and still fails closed below.
+    recipe_env = ("CANDIDATE_EVAL_REQUIRE_DEPS", "EVL38_GATE_LOG", "EVL38_GATE_EXIT_FILE")
+    if not any(os.environ.get(name) for name in recipe_env):
+        pytest.skip("hosted EVL-38 recipe only (scripts/ci/evl38_run_capture.py sets its environment)")
     if os.environ.get("CANDIDATE_EVAL_REQUIRE_DEPS") != "1":
         raise AssertionError("complete dependency mode was not enabled")
     log_path = Path(os.environ["EVL38_GATE_LOG"])

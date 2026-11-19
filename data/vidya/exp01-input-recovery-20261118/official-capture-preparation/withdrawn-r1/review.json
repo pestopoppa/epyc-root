@@ -1,0 +1,5 @@
+{
+  "scope": "Withdrawn before official execution; original small-model bench and CLI smoke children succeeded, but checker refused requested n_gpu_layers=999 despite CPU-only native backends; no publisher PASS or native official acceptance",
+  "defect": "Original writer indexed raw grant id; genuine allocator grant has regions/start/end/holds and canonical row filename",
+  "successor": "vidya-exp01-proxy-official-native-20261118-r2"
+}

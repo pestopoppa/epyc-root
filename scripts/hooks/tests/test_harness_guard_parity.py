@@ -327,16 +327,20 @@ class TestMutation(unittest.TestCase):
 
 
 class TestPluginSurfaces(unittest.TestCase):
-    """The opencode plugins (project + global) intercept bash AND file tools."""
+    """The opencode V2 plugins (project + global) intercept shell AND file tools."""
 
     def _assert_plugin(self, path: Path):
         text = path.read_text(encoding="utf-8")
+        self.assertIn("@opencode/plugin", text)
+        self.assertIn('ctx.shell.hook("create.before"', text)
         self.assertIn("--check-path", text)
         self.assertIn("FILE_TOOLS", text)
         self.assertIn('"write"', text)
         self.assertIn('"edit"', text)
-        self.assertIn("output.args?.filePath", text)
-        self.assertIn("input.tool === \"bash\"", text)
+        self.assertIn("event.input", text)
+        self.assertIn("event.tool", text)
+        self.assertNotIn("output.args?.filePath", text)
+        self.assertNotIn("input.tool === \"bash\"", text)
 
     def test_project_plugin(self):
         self._assert_plugin(PROJECT_PLUGIN)

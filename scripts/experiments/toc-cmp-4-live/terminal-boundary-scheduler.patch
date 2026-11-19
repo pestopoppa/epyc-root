@@ -1,0 +1,96 @@
+--- a/scripts/benchmark/toc_cmp4_runner.py
++++ b/scripts/benchmark/toc_cmp4_runner.py
+@@ -142,6 +142,7 @@
+     reserves: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
+     repeats: int = REPEATS,
+     seed: int = DEFAULT_SEED,
++    replace_boundary_terminal: bool = False,
+ ) -> dict[str, Any]:
+     """Run rows not yet in the ledger.
+ 
+@@ -151,7 +152,12 @@
+     Validity rule (pre-reg section 7a): a result with ``boundary_reached`` False is VOIDED. Because
+     arms are paired by point, the whole point is voided (its ledger rows are kept, marked void) and
+     replaced by the next reserve point of the same stratum, in the seeded order. Voids are returned
+-    in ``voided_points`` and written to the ledger; an exhausted reserve is counted, not hidden."""
++    in ``voided_points`` and written to the ledger; an exhausted reserve is counted, not hidden.
++
++    A prospectively enabled pilot can also replace verified terminal-on-boundary results that have
++    no BAPS denominator. The submitter must verify the transport and trajectory before emitting
++    the terminal-on-boundary metrics. The triggering result and reserve decision share one record.
++    """
+     ledger_path.parent.mkdir(parents=True, exist_ok=True)
+     records = (
+         [json.loads(l) for l in ledger_path.read_text().splitlines() if l.strip()]
+@@ -163,12 +169,16 @@
+     reserve_next = {k: list(v) for k, v in (reserves or {}).items()}
+     # Resume: replacements recorded by an earlier session are consumed from the reserve and requeued.
+     for rec in records:
++        replacement = rec.get("reserve") if rec.get("status") == "void_point" else None
+         if rec.get("status") == "replacement":
+-            pool = reserve_next.get(rec["stratum"], [])
+-            new = next((q for q in pool if q["point_id"] == rec["replacement"]), None)
++            replacement = rec
++        if replacement is not None:
++            pool = reserve_next.get(replacement["stratum"], [])
++            new = next((q for q in pool if q["point_id"] == replacement["replacement"]), None)
+             if new is not None:
+                 pool.remove(new)
+-                queue.extend(build_schedule([new], repeats=repeats, seed=seed))
++                queue.extend(build_schedule([new], repeats=repeats, seed=seed,
++                                            **replacement.get("schedule_config", {})))
+     counts: dict[str, Any] = {"ok": 0, "rerun": 0, "dropped": 0, "skipped_done": 0,
+                               "voided_points": [], "replacements": [], "reserve_exhausted": 0}
+ 
+@@ -198,20 +208,41 @@
+                 result = {"invalid_reason": f"{type(exc).__name__}: {exc}"}
+             if attempts == 1:
+                 counts["rerun"] += 1
+-        if status == "ok" and result.get("boundary_reached") is False:
++        void_reason = None
++        if status == "ok":
++            if result.get("boundary_reached") is False:
++                void_reason = "boundary_not_reached"
++            elif (replace_boundary_terminal and result.get("boundary_reached") is True
++                  and "baps" in result and result["baps"] is None
++                  and type(result.get("actions")) is int and result["actions"] == 0
++                  and result.get("baps_unknown_reason") == "terminated_on_boundary_turn"):
++                void_reason = "terminated_on_boundary_turn"
++        if void_reason is not None:
+             voided.add(row["point_id"])
+             counts["voided_points"].append(row["point_id"])
+-            _append({"point_id": row["point_id"], "run_id": row["run_id"], "status": "void_point",
+-                     "reason": "boundary_not_reached"})
++            void = {"point_id": row["point_id"], "run_id": row["run_id"], "status": "void_point",
++                    "reason": void_reason}
+             pool = reserve_next.get(row["stratum"], [])
+-            if pool:
+-                new = pool.pop(0)
+-                _append({"status": "replacement", "void": row["point_id"],
+-                         "replacement": new["point_id"], "stratum": row["stratum"]})
++            new = pool.pop(0) if pool else None
++            replacement = None
++            if new is not None:
++                replacement = {"status": "replacement", "void": row["point_id"],
++                               "replacement": new["point_id"], "stratum": row["stratum"]}
++                schedule_config = {
++                    "budget_tokens": int(row["env"]["ORCHESTRATOR_CONTEXT_BUDGET_TOKENS"]),
++                    "trigger_fraction": float(row["env"]["ORCHESTRATOR_CONTEXT_TRIGGER_FRACTION"]),
++                }
++            if void_reason == "terminated_on_boundary_turn":
++                if replacement is not None:
++                    replacement["schedule_config"] = schedule_config
++                _append({**void, "attempts": attempts, "result": result, "reserve": replacement})
++            else:
++                _append(void)
++                if replacement is not None:
++                    _append(replacement)
++            if new is not None:
+                 counts["replacements"].append({"void": row["point_id"], "replacement": new["point_id"]})
+-                queue.extend(build_schedule([new], repeats=repeats, seed=seed,
+-                                            budget_tokens=int(row["env"]["ORCHESTRATOR_CONTEXT_BUDGET_TOKENS"]),
+-                                            trigger_fraction=float(row["env"]["ORCHESTRATOR_CONTEXT_TRIGGER_FRACTION"])))
++                queue.extend(build_schedule([new], repeats=repeats, seed=seed, **schedule_config))
+             else:
+                 counts["reserve_exhausted"] += 1
+             continue

@@ -1,0 +1,50 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=0 BUILD_PASS; exact C13 bda43aa17 source/tree and original gfx90a recipe except llguidance OFF and owned paths; enabled pins unchanged, HIP retained, zero matcher strings, local ggml linkage. No GPU timing or residency claim.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T10:27:07+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T10:26:17Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/v11-122-llg-gpu-c13-nollg-build-20261118.ended",
+ "filed_at": "2026-11-18T10:27:07+00:00",
+ "filed_by": "agent",
+ "handoff_task": "v11-promotion-checklist.md:V11-122-C13-GPU-NOLLG-PREP",
+ "id": "v11-122-llg-gpu-c13-nollg-build-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/v11-122-llg-gpu-c13-nollg-build-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-gpu-gate/build/out/BUILD-OK.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "v11-promotion-checklist",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc=0 BUILD_PASS; exact C13 bda43aa17 source/tree and original gfx90a recipe except llguidance OFF and owned paths; enabled pins unchanged, HIP retained, zero matcher strings, local ggml linkage. No GPU timing or residency claim.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-gpu-gate/build/out/BUILD-OK.json",
+ "root_cause_family": null,
+ "row": "v11-122-llg-gpu-c13-nollg-build-20261118",
+ "row_verdict": "pass",
+ "rule": "GPU no-llguidance build prerequisite: exact C13 source and original GPU configure argv, only paths and LLAMA_LLGUIDANCE OFF changed; verify enabled image pins, cache match, HIP backend, zero matcher strings and local linkage. CPU lane compiles HIP; smoke configures on four CPUs without GPU execution. Stop on BUILD_PASS or first failure.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 54,
+  "input": 196468262,
+  "output": 932916,
+  "owner_slug": "v11-promotion-checklist",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 197401178,
+  "tokens_per_task": 3655577.3703703703
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "a1793cf44a9613f3d0917c9952b78c644d3c0933028e1d62c837d4607ff6102b",
+  "result": "pass",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,161 @@
+{
+  "candidate_collected": false,
+  "checks": {
+    "architect-critic-bank-code": {
+      "actual_finish": "stop",
+      "completion_count": 82,
+      "content_sha256": "7d4ed540bb0d052f2652de75fbf90140039c320efb3d68d7f180ddf623b86e84",
+      "expected_finish": "stop",
+      "output_token_count": 82,
+      "problems": [],
+      "reasoning_sha256": "c5bb98d636ab22257dbda499dc19ae6c63f81c229b3350e51db5995e1030e276",
+      "semantic_matches": true
+    },
+    "architect-critic-bank-json": {
+      "actual_finish": "stop",
+      "completion_count": 227,
+      "content_sha256": "577c144306d4bcad129e5e80d3aa83ff5f389c054a42213906848b475e771ef1",
+      "expected_finish": "stop",
+      "output_token_count": 227,
+      "problems": [],
+      "reasoning_sha256": "3a3a405fc479a651626fbd25eceb409ce6b35a263f70c7bb4545bc340ca5ceab",
+      "semantic_matches": true
+    },
+    "architect-critic-bank-long-prose": {
+      "actual_finish": "length",
+      "completion_count": 256,
+      "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_finish": "length",
+      "output_token_count": 256,
+      "problems": [
+        "semantic_validation_failed"
+      ],
+      "reasoning_sha256": "0fd8b4cc56c7774bd48237e0ba1ef4b95324bac3f7cb0729f981d8e650e21af1",
+      "semantic_matches": false
+    },
+    "architect-critic-bank-reasoning": {
+      "actual_finish": "stop",
+      "completion_count": 160,
+      "content_sha256": "2acf1212422d4e85461e6d01ba5499f24eeed054ed98ad69ca78208a8fb043b5",
+      "expected_finish": "stop",
+      "output_token_count": 160,
+      "problems": [],
+      "reasoning_sha256": "94590f1549c6553a6229eebae0ad45ed13ccccc2e51d8607256003dce903aeab",
+      "semantic_matches": true
+    }
+  },
+  "cleanup": {
+    "dead": true,
+    "exit_status": 0,
+    "pid": 365258,
+    "port_closed": true
+  },
+  "disposition": "The prose request finished at its 256-token length limit with reasoning and empty content. JSON, code, and reasoning passed their pinned item checks. The four-item bank was refused.",
+  "ended_at": "2026-11-18T02:02:14Z",
+  "files": {
+    "RESULT.json": {
+      "archive": "RESULT.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "3963f098d2c09ed8c27c1f3b06db702ba440c68e9f7a8a2634a45d026b06869c"
+    },
+    "architect-bank-verdict.json": {
+      "archive": "architect-bank-verdict.json",
+      "encoding": "raw",
+      "sha256": "d4c577e49217bd7b2d10feb74d42694a0ab3d34cb468b5a48cf87e47be2a6a0a"
+    },
+    "filed-verdict.json": {
+      "archive": "filed-verdict.json",
+      "encoding": "raw",
+      "sha256": "14a36056136ed34e2286a21b1008762b7fd5bf1c3e85a179ab52018d99f31723"
+    },
+    "native/production-capture.json": {
+      "archive": "native/production-capture.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "7f32e60fc397f7e047d3fcaabc06b5454caf88d52cd89b4f00339cf2be2b6165"
+    },
+    "native/production-capture.sha256": {
+      "archive": "native/production-capture.sha256",
+      "encoding": "raw",
+      "sha256": "cf67e44778b9135ef2634fcb7395ff98fb71b2d93f44c44c3ad6c98a097eeae4"
+    },
+    "native/production/architect-critic-bank-code.request.json": {
+      "archive": "native/production/architect-critic-bank-code.request.json",
+      "encoding": "raw",
+      "sha256": "6b9bd9a50433e20f07ae2f8325b39381fcbf4bbf6d6c0fbbb8e72f5be28aae1a"
+    },
+    "native/production/architect-critic-bank-code.response.json": {
+      "archive": "native/production/architect-critic-bank-code.response.json",
+      "encoding": "raw",
+      "sha256": "b7acdc7abd2c70b0e1d13ed68e34f451dfd6a06eeed870301fab89ca80092e7a"
+    },
+    "native/production/architect-critic-bank-json.request.json": {
+      "archive": "native/production/architect-critic-bank-json.request.json",
+      "encoding": "raw",
+      "sha256": "a46833387b99ec4b482779c42234559ae3629e184fdfaece09e2b77a7b0fd86e"
+    },
+    "native/production/architect-critic-bank-json.response.json": {
+      "archive": "native/production/architect-critic-bank-json.response.json",
+      "encoding": "raw",
+      "sha256": "a7645b60b0c55238484a461fc0924092b0b08d17dd699fc6243b11dfee061e84"
+    },
+    "native/production/architect-critic-bank-long-prose.request.json": {
+      "archive": "native/production/architect-critic-bank-long-prose.request.json",
+      "encoding": "raw",
+      "sha256": "464e7200eb0a8166f10c9943d04d0312049512b4e44becfb2b9db966fb86c8ed"
+    },
+    "native/production/architect-critic-bank-long-prose.response.json": {
+      "archive": "native/production/architect-critic-bank-long-prose.response.json",
+      "encoding": "raw",
+      "sha256": "04bf08c5f73252d16954585bb522617983f04ffbf4e01cfae60d9f3f132a5af2"
+    },
+    "native/production/architect-critic-bank-reasoning.request.json": {
+      "archive": "native/production/architect-critic-bank-reasoning.request.json",
+      "encoding": "raw",
+      "sha256": "41403e2dff7cfcc6ca39c3f9fc3e953223c2b078e301c8d329cdf61477b600db"
+    },
+    "native/production/architect-critic-bank-reasoning.response.json": {
+      "archive": "native/production/architect-critic-bank-reasoning.response.json",
+      "encoding": "raw",
+      "sha256": "540614241aaf8951b2ab4cd5361761356a0f906e38d29a7b6ce31b45ca559391"
+    },
+    "native/production/cleanup.json": {
+      "archive": "native/production/cleanup.json",
+      "encoding": "raw",
+      "sha256": "435da92c2db7e92b7df186416162ca1e0919ffd64ab01569194ac882099c7261"
+    },
+    "native/production/server.json": {
+      "archive": "native/production/server.json",
+      "encoding": "raw",
+      "sha256": "30ea8eca12213bf95bc7f16c942080db59f0f4d9339393467ca394ddb0cb4c24"
+    },
+    "native/production/server.log": {
+      "archive": "native/production/server.log",
+      "encoding": "raw",
+      "sha256": "596ae1527cd19404e97886063e3784279eb3465f6ef7de350ed0ca2537891074"
+    },
+    "native/scheduler.grant": {
+      "archive": "native/scheduler.grant",
+      "encoding": "raw",
+      "sha256": "743756ee269a31fead330e23587ba59e4f912e469cd26a03ffca6bbea645a14d"
+    },
+    "row.FILED": {
+      "archive": "row.FILED",
+      "encoding": "raw",
+      "sha256": "ea62afab50dd744c8828c99fc25e8a177342930ee833fc82e036ef28d8a4eb6e"
+    },
+    "row.ended": {
+      "archive": "row.ended",
+      "encoding": "raw",
+      "sha256": "59a5c470ebb7cdf571e60ecfb5a5d52b6196f4a0e4448ab19523dfdaa053745a"
+    }
+  },
+  "native_status": "inadmissible_bank",
+  "question_pool_sha256": "e671e6214e660d5e14c476ca2c8fa7c1101105231911cbf2e6f3fd2aa44aa395",
+  "recipe_sha256": "51d1d63f0cf2a451eb4f320e6c7f07473cfa7eb348dfe155941ee798cf807092",
+  "request_plan_sha256": "a8a6813dd6f11648b3a8384a2ef3e92af6fae35933af53bc5a7ccc3aef8113bf",
+  "row": "handoff-vidya-quality-pack-architect-critic-bank-20261118",
+  "row_exit_status": 1,
+  "row_verdict": "fail",
+  "schema": "epyc.vidya.quality_pack_architect_bank_attempt.v1",
+  "validator_source_sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+}

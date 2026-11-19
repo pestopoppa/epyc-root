@@ -1,0 +1,49 @@
+{
+  "schema": "epyc.dcp10.colgrep-thread-controls.v1",
+  "row": "dcp10-colgrep-native-20261118-r2",
+  "predecessor": "dcp10-colgrep-native-20261118",
+  "predecessor_comparison": "invalid; three index-build errors retained",
+  "question": "Does bounded native threading allow the original three tasks to build private indices and complete immutable retrieval?",
+  "cause": "Pinned next-plaid-onnx encode_prepared_document_batches spawns one scoped OS thread per prepared batch when sessions > 1; a one-session configuration selects its serial branch. Native errors were EAGAIN on the colgrep-encode thread.",
+  "source_revision": "10806326cd665629070a06be1b338e876aa1aa62",
+  "controls": {
+    "parallel_sessions": 1,
+    "max_allocator_cpus": 4,
+    "rayon_threads": 2,
+    "tokenizer_threads": 1,
+    "tokenizers_parallelism": false,
+    "openblas_threads": 1,
+    "openmp_threads": 1,
+    "pids_limit": 256,
+    "private_config": "read-only even during index build"
+  },
+  "files_sha256": {
+    "scripts/experiments/dcp10-discovery/colgrep_native.py": "21a7c6d46600e038bb01bea2f0e6dfa269ae2c619da13c858ebe7d393d0d61df",
+    "scripts/experiments/dcp10-discovery/colgrep_row.py": "3d6df14095c23a4e5317d4458cb8983aa8817bce6c0160f3021acf025b2a8979",
+    "scripts/experiments/dcp10-discovery/colgrep_row_launcher.sh": "0c70ab7da67c5b70a857fa8250e00a9b425554875866eff86b7569386fe1646a",
+    "scripts/experiments/dcp10-discovery/prepare_colgrep_native.py": "c0f3bdb3730b66d2dfff73cf37bf6d7759fa30161b51ef02ecaba566ff946064",
+    "scripts/experiments/dcp10-discovery/test_colgrep_native.py": "da7e213ffa845a8a26a7fcfa59bdc80b1211981ad2291795462dcd5b96633863"
+  },
+  "preparation_receipt_sha256": "78d8e6e5dad9c23d2141a99622219d5803a54b09d1b52d7b45462ecd29805641",
+  "spec_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-colgrep-native-r2/spec.json",
+  "decision_rule": "completed == 3 and comparison_valid == 1",
+  "qualification": {
+    "publisher": "SMOKE PASS then PUBLISHED",
+    "cpus": "116-119",
+    "at": "2026-11-18T20:56:36Z",
+    "predicate_rc": 0,
+    "engine_rc": 75,
+    "scope": "fresh tiny native build/search fixture, not official cohort"
+  },
+  "validation": {
+    "main_review": "implementation and source branch reviewed; independent focused tests passed",
+    "agent_probe": "No-inference pinned settings command read parallel:1 and refused settings --parallel 2 on the read-only config. No native cohort rerun outside allocator.",
+    "model_proof": "Copies use original sealed directory digest with unchanged source stat identities and independently copied destination inodes; no weight hashing repeated.",
+    "independent_main_suite": "49 discovery controls passed, plus 1 added GitNexus I/O-cleanup regression; Ruff clean"
+  },
+  "limits": [
+    "Official cohort result pending. A single-batch smoke cannot prove the multi-batch cohort failure resolved.",
+    "No substitutions, automatic retries, retrieval-quality claim or application change.",
+    "Existing source-admission and score-custody refusals remain; use VB-CONTEXTBENCH-DISCOVERY-WIRE, no historical warrant reconstruction."
+  ]
+}

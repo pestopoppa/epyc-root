@@ -12,7 +12,7 @@ Gate code **G-ANC**: `git merge-base --is-ancestor <sha> <candidate>`. Every can
 
 Status words: **IN** in the production base (a must-carry); **PEND** pending; **CAND** candidate only; **EXCL** excluded; **SUPER** superseded.
 
-Sweep sources: the two production trees, `/mnt/raid0/llm/worktrees/{qwentts,whisper}-threadpool-20261020` (inspected read-only: `git status`, diffs, file mtimes, process list), `handoffs/active/conversation-stack.md` (speech-kernel sections, CS tasks), `artifacts/qwentts_threads_20261020/`.
+Sweep sources: the two production trees, `/mnt/raid0/llm/worktrees/{qwentts,whisper}-threadpool-20261020` (inspected read-only: `git status`, diffs, file mtimes, process list), `handoffs/active/speech-and-multimodal.md` (speech-kernel sections, CS tasks), `artifacts/qwentts_threads_20261020/`.
 
 Row counts (2026-10-21): 6 in champion / in production base (SP2-005 and SP2-006 folded into the champions, not production), 1 pending (SP2-004), 1 candidate only (not built), 1 excluded, 0 superseded; total 9.
 

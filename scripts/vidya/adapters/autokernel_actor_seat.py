@@ -5,6 +5,8 @@ Strict by construction. The admissible inputs are the two producer-authored reco
 
 * ``actor-calls.jsonl`` lines of schema ``epyc.autokernel.actor_call.v1`` -> one tuple per call
   (``actor_call_wall_s``);
+* Fresh ``actor_call.v2`` and its sealed ``actor_call_metrics.v2`` sibling add native server
+  identity and offered context facets to the same observation.
 * ``result-<arm>.json`` documents of schema ``epyc.autokernel.seat_ab_arm.v1`` -> five tuples per
   arm (wall, steps, tool calls, decoded tokens, compactions; totals over root + scouts).
 
@@ -48,8 +50,13 @@ from adapters.autokernel_actor_seat_capture import (  # noqa: E402
     CALL_LOG_NAME,
     CALL_METRICS,
     CALL_SCHEMA,
+    CAMPAIGN_CALL_SCHEMA,
+    CAMPAIGN_METRICS_SCHEMA,
+    CaptureError,
+    _unique_pairs,
     METRIC_CALL_WALL,
     arm_values,
+    campaign_facets,
     censored,
     measurement_identity,
     seat_digest,
@@ -76,29 +83,55 @@ def _call_natives(path: Path) -> tuple[dict, ...]:
     except OSError:
         return ()
     natives: list[dict] = []
-    seen: set[str] = set()
+    calls: dict[str, tuple[dict, int, bytes]] = {}
+    siblings: dict[str, tuple[dict, int, bytes]] = {}
     for number, raw in enumerate(lines, start=1):
         if not raw.strip():
             continue
         try:
             record = json.loads(raw)
-        except json.JSONDecodeError as exc:
+            schema = record.get("schema") if isinstance(record, dict) else None
+            if schema in (CAMPAIGN_CALL_SCHEMA, CAMPAIGN_METRICS_SCHEMA):
+                record = json.loads(raw, object_pairs_hook=_unique_pairs)
+        except (ValueError, UnicodeError) as exc:
             raise ProjectionError(f"{path}#L{number}: not JSON ({exc})") from exc
-        if not isinstance(record, dict) or record.get("schema") != CALL_SCHEMA:
-            continue  # pre-hook (or foreign) line: absence is recorded, never filled
+        if schema == CAMPAIGN_METRICS_SCHEMA:
+            call_id = record.get("call_id")
+            if not isinstance(call_id, str) or not call_id.strip() or call_id in siblings:
+                raise ProjectionError(f"{path}#L{number}: missing or duplicate metrics call_id")
+            siblings[call_id] = (record, number, raw)
+            continue
+        if schema not in (CALL_SCHEMA, CAMPAIGN_CALL_SCHEMA):
+            continue
         problems = validate_call_record(record)
         if problems:
             raise ProjectionError(f"{path}#L{number}: actor call record does not re-derive: "
                                   + "; ".join(problems))
-        if record["call_id"] in seen:
+        if record["call_id"] in calls:
             raise ProjectionError(f"{path}#L{number}: duplicate call_id {record['call_id']!r}")
-        seen.add(record["call_id"])
+        calls[record["call_id"]] = (record, number, raw)
+    for call_id, (record, number, raw) in calls.items():
+        campaign = record["schema"] == CAMPAIGN_CALL_SCHEMA
+        evidence = {}
+        if campaign:
+            if call_id not in siblings:
+                raise ProjectionError(f"{path}#L{number}: campaign call has no metrics sibling for {call_id!r}")
+            sibling, sibling_line, sibling_raw = siblings.pop(call_id)
+            try:
+                campaign_facets(record, sibling)
+            except CaptureError as exc:
+                raise ProjectionError(f"{path}#L{number}: {exc}") from exc
+            evidence = {"metrics": sibling, "metrics_line": sibling_line,
+                        "metrics_line_sha256": hashlib.sha256(sibling_raw).hexdigest()}
         if censored(record):
             continue
         for metric in CALL_METRICS:
             natives.append({"kind": "call", "metric": metric, "record": record,
-                            "path": str(path), "line": number,
-                            "line_sha256": hashlib.sha256(raw.strip()).hexdigest()})
+                            "path": str(path), "line": number, **evidence,
+                            "line_sha256": hashlib.sha256(raw if campaign else raw.strip()).hexdigest()})
+    if siblings:
+        _, number, _ = next(iter(siblings.values()))
+        raise ProjectionError(f"{path}#L{number}: campaign metrics sibling has no native campaign call")
     return tuple(natives)
 
 
@@ -186,6 +219,22 @@ def _project_call(native: dict) -> ClaimTuple:
     claim = (f"AutoKernel actor {record['role']} call {record['call_id']} "
              f"({_seat_label(record)}, rc {record['returncode']}): {metric} = {value} {unit}; "
              "n=1 call, no repeat, no noise floor -- an observation, not a seat comparison")
+    facets, observation = {}, {}
+    if record["schema"] == CAMPAIGN_CALL_SCHEMA:
+        try:
+            facets = campaign_facets(record, native.get("metrics"))
+        except CaptureError as exc:
+            raise ProjectionError(str(exc)) from exc
+        server = facets["server"]
+        metrics = facets["actor_metrics"]
+        metrics.update(line=native.get("metrics_line"), line_sha256=native.get("metrics_line_sha256"))
+        claim += (f". Native server {server['served_model']} {server['build_info']} with n_ctx "
+                  f"{server['n_ctx']}. Metrics sibling {metrics['record_sha256'][:16]}.")
+        if "context_bundle" in facets:
+            bundle = facets["context_bundle"]
+            claim += f" Offered context bundle {bundle['manifest_sha256'][:16]}."
+        outcome = "actor_call_complete" if record["returncode"] == 0 else "actor_call_failed"
+        observation = {"outcome_native": outcome}
     return ClaimTuple(
         measurement_id=measurement_identity(kind="call", record_id=record["call_id"],
                                             metric=metric,
@@ -199,7 +248,8 @@ def _project_call(native: dict) -> ClaimTuple:
         # SC69: the line bytes were re-read and hashed at this boundary.
         attestation_verified=True,
         source_kind=SOURCE_KIND,
-        extra={**_common_extra(record), "kind": "call", "call_id": record["call_id"],
+        observation=observation,
+        extra={**_common_extra(record), **facets, "kind": "call", "call_id": record["call_id"],
                "role": record["role"], "run_id": record["run_id"],
                "workspace": record["workspace"], "returncode": record["returncode"],
                "reply": record["reply"],

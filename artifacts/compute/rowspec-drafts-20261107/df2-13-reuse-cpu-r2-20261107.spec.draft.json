@@ -1,0 +1,22 @@
+{
+ "id": "df2-13-reuse-cpu-r2-20261107",
+ "owner": "operator-adhoc-ops-20261105",
+ "kind": "compute",
+ "draft": true,
+ "published": false,
+ "note": "DRAFT row spec, never published. launcher/result_path are placeholders until the owner builds the launcher and seals SOURCE.sha256; fields follow spec.json of c8-decode-x-sweep-20261107-r2.",
+ "lane": "cpu",
+ "shape": "cpu_quarter",
+ "regions": "one quarter, HIP_VISIBLE_DEVICES=-1",
+ "ram_gib": 64,
+ "estimate_s": 3000,
+ "first_progress_s": 900,
+ "handoff_task": "speculative-decoding.md:DF2-13",
+ "inputs": [
+  "staged packet artifacts/compute/codex3-df2-ernie-prep-20261031/df2-13/ (PLAN.json df2-13.reuse-plan.v1; worker.py, log_consumer.py, smoke-final PASS, SOURCE-SHA256SUMS)",
+  "Qwen3.8-27B-Q8_0 + Qwen3.8-27B-DFlash2-Q8_0, spec draft-dflash n-max 7, ctx-checkpoints 32"
+ ],
+ "change_vs_prep": "launch.sh --engine uses filler_run13; rebind to filler_run15 and re-seal SOURCE-SHA256SUMS before publishing; bind the actual promoted source SHA (READY manifests used placeholder enrollment 4d2f90c4...).",
+ "decision_rule": "Arms A_warm_server, B_warm_same_slot, B_cold_fresh_server (B = exact A output + suffix, never regenerated). PASS iff B_warm tokens == B_cold tokens at temp 0 with positive native draft counts and a native checkpoint-vs-live trace; divergence = classify near-tie vs degenerative, report cache_n/prompt_n. Absent trace or zero drafts = UNKNOWN. No speed threshold. Stop-on-answer at first terminal; futility-only.",
+ "width_justification": "single slot, one quarter; cold arm needs a fresh server so arms are sequential."
+}

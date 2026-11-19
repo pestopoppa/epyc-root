@@ -1,0 +1,3 @@
+4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
+64817c163bf7efdd4eb6cd46ca97749199d299949131970a9a49c36dcfd3ef57  /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/libllama-server-impl.so
+1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551  /mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja

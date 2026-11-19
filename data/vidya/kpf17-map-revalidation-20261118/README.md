@@ -1,0 +1,7 @@
+This prospective row runs the retained, byte-pinned `custody.validate_maps` on five private fixture files. It records a complete baseline, synchronized in-place overwrite, exact second-call refusal, grant/affinity, nonce and cleanup. The [source inputs](source/) retain the original source and input seals. The [writer](../../../scripts/vidya/producers/kpf17_map_revalidation.py) emits a source-bound receipt before projection through the existing KV-prefix-fork carrier. The trusted adapter refuses a replacement writer even if its receipts are consistently resealed.
+
+[Controls and source pins](readiness.json) establish software preparation only. Publisher smoke has a separate result and creates no claim. Original official acquisition and the actual planning-context canary remain separate requirements. The scope ends at the second call and supplies no full-custody, native-loading, model or performance result.
+
+The published scratch packet is self-contained under `/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-map-revalidation-20261118`. To reconstruct at that path, restore the source inputs to `source/`, copy the writer to `run.py`, and use the retained launcher/spec; the launcher verifies the reviewed writer digest.
+
+Publisher smoke passed at 2026-11-18T19:04:40Z on CPUs140–143, rc0; the CPU row is published with a 600-second grant window and 300-second native cap. [Original publisher receipt](publisher-PASS.json). This is readiness only.

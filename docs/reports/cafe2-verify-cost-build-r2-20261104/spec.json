@@ -1,0 +1,29 @@
+{
+  "id": "cafe2-v10-verify-cost-build-r2-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe2-build-r2/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe2-build-r2/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Accept only pinned v10 plus exact CAFE-2 candidate/bridge and CMake patch; full CPU cafe2-verify-cost executable, compiled CAFE2_VERIFY_RAW marker, content hashes and local llama-common linkage. Build-only prerequisite: no timing, expert union, MTP execution or CAFE-2 cost verdict. Stop on build failure, source mismatch, STOP or deadline; incomplete is UNKNOWN. Successor after scheduled rc75 disk-floor, no scheduled RESULT; no completed build is reused.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-2",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "dryrun_timeout_s": 900,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe2-build-r2",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.sh",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sha256"
+  ],
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe2-build-r2/proof.py predicate",
+  "first_progress_s": 300
+}

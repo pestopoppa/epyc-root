@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf60-checked-fixture-20261104-r8/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-04T21:27:08Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/kpf60-checked-fixture-20261104-r8/native-attempts/attempt-p2hcr5v_/native-result.json (measurement field)",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T21:27:10Z",
+ "id": "kpf60-checked-fixture-20261104-r8",
+ "launcher_sha256": "124552c511ffd318c163371379c0d1cfaf38c21ddb1f00d8c82ce1971336cf36",
+ "passed_at": "2026-11-04T21:27:10Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf60-checked-fixture-20261104-r8/native-attempts/attempt-p2hcr5v_/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

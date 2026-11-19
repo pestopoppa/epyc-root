@@ -1,0 +1,22 @@
+--- a/src/api/routes/health.py
++++ b/src/api/routes/health.py
+@@ -2,6 +2,7 @@
+ 
+ import asyncio
+ import logging
++import os
+ import time
+ from pathlib import Path
+ from typing import Any
+@@ -43,7 +44,10 @@
+     "toolrunner": "worker_general",
+ }
+ _DEFAULT_STACK_PRIORS_PATH = (
+-    Path(__file__).resolve().parents[3] / "orchestration" / "derived" / "stack_priors.yaml"
++    Path(
++        os.environ.get("ORCHESTRATOR_PATHS_STACK_PRIORS_PATH")
++        or str(Path(__file__).resolve().parents[3] / "orchestration" / "derived" / "stack_priors.yaml")
++    )
+ )
+ 
+ # Cache knowledge tool status at module load to avoid repeated import checks

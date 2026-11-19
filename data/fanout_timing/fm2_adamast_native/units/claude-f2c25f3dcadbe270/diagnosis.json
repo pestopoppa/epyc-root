@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-f2c25f3dcadbe270",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The agent reported 'All outline items... were applied and pushed' and 'Pushed sha: 4ed468720' without verifying that the specific content changes (the 8 retired, 3 refined, etc.) were actually present in the pushed commit, relying on the push script's success message and a count of open boxes (30) rather than inspecting the diff or file content against the outline.",
+          "confidence": "medium",
+          "severity": "moderate"
+        },
+        {
+          "code": "MAST-13",
+          "name": "Weak verification",
+          "evidence": "The agent verified success by checking `git show origin/main:handoffs/active/stack-lifecycle-program.md | grep -cE '^\\\\s*- \\\\[ \\\\]'` returned 30 and `git log origin/main --oneline -8 | grep -c stack-lifecycle` returned 1. This confirms the file exists and has a commit, but does not verify that the specific mechanical edits (RETIRE, REFINE, MERGE) were applied correctly as required by the task.",
+          "confidence": "high",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795006323,
+        "warnings": []
+      }
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 #!/bin/bash
 # trash-sweep.sh — permanently remove trash entries older than N days.
 #
-# Usage: trash-sweep.sh --older-than DAYS [--dry-run]
+# Usage: trash-sweep.sh --older-than DAYS|now [--dry-run]
+#   --older-than now   operator force-clear: removes EVERY trash entry, including ones trashed today
+#                      (operator 2026-11-05). Always preview with --dry-run first.
 # Only ever deletes inside $TRASH_ROOT. Never run on a live path.
 set -euo pipefail
 
@@ -13,14 +15,17 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --older-than) days="$2"; shift 2 ;;
         --dry-run) dry=1; shift ;;
-        *) echo "usage: trash-sweep.sh --older-than DAYS [--dry-run]" >&2; exit 2 ;;
+        *) echo "usage: trash-sweep.sh --older-than DAYS|now [--dry-run]" >&2; exit 2 ;;
     esac
 done
 
-[ "$days" -gt 0 ] || { echo "days required" >&2; exit 2; }
 [ -d "$TRASH_ROOT" ] || { echo "no trash"; exit 0; }
-
-cutoff=$(( $(date +%s) - days * 86400 ))
+if [ "$days" = now ]; then
+    cutoff=$(( $(date +%s) + 1 ))   # everything trashed up to this second
+else
+    [[ "$days" =~ ^[0-9]+$ ]] && [ "$days" -gt 0 ] || { echo "days required (positive integer, or 'now')" >&2; exit 2; }
+    cutoff=$(( $(date +%s) - days * 86400 ))
+fi
 # Age = the TRASH time, read from the YYYYMMDD-HHMMSS prefix guarded_rm.sh gives every entry —
 # never the entry's mtime: `mv` preserves mtime, so a month-old scratch dir trashed today would
 # otherwise be swept on the next run and the recoverable window would not exist. Files and dirs

@@ -1,0 +1,16 @@
+{
+  "isolated_combined_ingest": {
+    "rows": 42,
+    "frames_emitted": 126,
+    "refused": 0
+  },
+  "isolated_only_new_replay": {
+    "stdout": "committed-conclusion (adapters/committed_conclusion.py): units matched=1  projected=1  declined=0  refused=0  rows=42  frames=0\nonly-new: skipped 126 frames\n",
+    "rc": 0,
+    "frames_emitted": 0,
+    "frames_skipped": 126
+  },
+  "canonical_sync": "pending publication; no canonical ledger write",
+  "tests": "14 passed; carrier15 tuples zero violations",
+  "validation_correction": "Future validation timestamp refused before append; corrected to actual UTC. CLI human output retained as text."
+}

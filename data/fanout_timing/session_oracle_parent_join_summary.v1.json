@@ -1,0 +1,84 @@
+{
+  "assessed_verdicts": {
+    "aborted": 9,
+    "delivered_no_outcome": 795,
+    "failure": 28,
+    "partial": 645,
+    "success": 39
+  },
+  "changed_historical_verdicts": {
+    "failure": 1,
+    "partial": 1,
+    "success": 2
+  },
+  "changed_inputs": 0,
+  "changed_native_verdicts": {},
+  "cutoff": "2026-10-31T13:03:52Z",
+  "historical_verdicts": {
+    "failure": 29,
+    "partial": 643,
+    "success": 41,
+    "unavailable": 4313,
+    "unknown": 803
+  },
+  "historical_verdicts_for_assessed": {
+    "failure": 29,
+    "partial": 643,
+    "success": 41,
+    "unknown": 803
+  },
+  "historical_verdicts_sha256": "338c8087babe59676ba8568eefdf8ea3c4c85626a1484a225a1be6b8e9ed9aa9",
+  "input_status": {
+    "missing": 4313,
+    "verified": 1516
+  },
+  "input_status_by_kind": {
+    "claude_parent": {
+      "missing": 2,
+      "verified": 5
+    },
+    "claude_subagent": {
+      "missing": 720,
+      "verified": 1506
+    },
+    "codex": {
+      "missing": 3591,
+      "verified": 5
+    }
+  },
+  "manifest_entries": 5829,
+  "matched_assessments": 1516,
+  "missing_inputs": 4313,
+  "native_before_verdicts": {
+    "aborted": 9,
+    "delivered_no_outcome": 795,
+    "failure": 28,
+    "partial": 645,
+    "success": 39
+  },
+  "oracle_sha256": "564b4632a67bb7514ec4081f37efe7ed70aae7019c63a81281f95ec3f6754a3c",
+  "original_manifest_sha256": "ac041ae8c35ef638814ae878a7c614f3559ddf9755119a4152b7ebbc96b9184d",
+  "parent_join_dispositions": {
+    "matched": 355,
+    "missing": 448,
+    "not_joined": 703
+  },
+  "parent_result_outcomes": {
+    "no_outcome": 355
+  },
+  "preserved_historical_verdicts": {
+    "failure": 28,
+    "partial": 642,
+    "success": 39
+  },
+  "preserved_native_verdicts": {
+    "failure": 28,
+    "partial": 645,
+    "success": 39
+  },
+  "refused_inputs": 0,
+  "replay_manifest_sha256": "2334b8df3d3bce4b2121d63d7e741fce185c268cbe0bbe08f6d826aaa88642f9",
+  "rows_sha256": "5fd5fe06b614137bfc0d53fec84d6164a86c938a9a400d2221e9f2bd103d74d4",
+  "runner_sha256": "53d363b1445507b67cc06629de51a9d08e04ff5222151957ac79e81e4c8d3698",
+  "schema": "fm4.session_oracle_replay.v1"
+}

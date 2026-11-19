@@ -1,0 +1,21 @@
+{
+ "decision_rule": "Pass only when tests status=pass with guard, default corpus, BF16 refusal, linkage and strings gates satisfied; build alone is partial.",
+ "estimate_s": 3000,
+ "gib": 12,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:CH-LB1.1",
+ "id": "akagg-ch-lb1-c5-ansi-r2-20261104",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg/chlb1-c5-ansi-r2/launcher.sh"
+ },
+ "min_window_s": 2400,
+ "owner": "handoff-akagg",
+ "priority_rank": 65.0,
+ "published_at": "2026-11-04T18:46:44Z",
+ "regions": "any-cpu-quarter",
+ "schema": "epyc.row.v3",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg/chlb1-c5-ansi-r2/STOP",
+ "supersedes": "akagg-ch-lb1-c5-successor-20261104",
+ "window_s": 3900
+}

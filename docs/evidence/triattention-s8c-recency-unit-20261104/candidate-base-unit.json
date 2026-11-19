@@ -1,0 +1,9 @@
+{
+  "base_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "patch_sha256": "7a0c3a7f3cffb3317330cc7efdf9dfe0b3981e2c6c54183610a83be4e1b82f35",
+  "files": {
+    "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/out/CMakeCache.txt": "9490b90981295b16d323c78808d3db14d7508c31a76b3fd56684853e705e9994",
+    "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/out/compile_commands.json": "8b4a62e397aadba1ad1d0c166948f2d1cc58e3b04f68c86afab445f40e93d99a",
+    "/mnt/raid0/llm/tmp/triattention-s8c-recency-build-20261104/out/bin/libggml-base.so.0.16.0": "e3301ffa5f1f86ac678f17949d1dc1fa41c4b513d6024c7d3a54a3a0b9b56d90"
+  }
+}

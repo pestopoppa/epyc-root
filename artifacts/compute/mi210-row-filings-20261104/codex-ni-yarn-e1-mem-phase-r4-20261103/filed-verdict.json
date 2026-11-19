@@ -1,0 +1,44 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence_sha256": {
+   "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r4-20261103/end.txt": "383d9b9ab93df2e62cb180acbe52bcca3f4b93a0bc1cc39217a4ed06ab0e4a4f",
+   "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r4-20261103/manifest.json": "660219fd7688df9150de6679e8fee97b092b10160450c165173d07156016276f",
+   "artifacts/compute/mi210-row-filings-20261104/codex-ni-yarn-e1-mem-phase-r4-20261103/native-result.json": "d8b08c04b6755ca4c2928b8f3c844176408813805b023f92ac407567ddeff48e"
+  },
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc75 at 17:54Z: stopped/partial attempt. Shared COMPLETE result written 21:40Z is later than the grant and does not establish r4 provenance. Existing split-group observation in handoff is retained separately; original unbroken A1 chain remains open.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:10:04+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-03T17:54:02Z reason=exited",
+ "filed_at": "2026-11-04T07:10:04+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "mi210-serving-program.md:YARN-E1-MEM",
+ "id": "codex-ni-yarn-e1-mem-phase-r4-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ni-yarn-e1-mem-phase-r4-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/out/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "codex-ni",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "rc75 at 17:54Z: stopped/partial attempt. Shared COMPLETE result written 21:40Z is later than the grant and does not establish r4 provenance. Existing split-group observation in handoff is retained separately; original unbroken A1 chain remains open.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/codex-ni-next-gpu-prep-20261031/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "codex-ni-yarn-e1-mem-phase-r4-20261103",
+ "row_verdict": "inconclusive",
+ "rule": "Historical E1 memory attribution on unchanged 2026-10-04 E1 and W images: own-PID KFD VRAM and hipMalloc shim series joined to the original YaRN E1 smoke and 128k/240k/400k/500k native needle stages for A0/A1. Higher VRAM is worse; identify the first phase with the +15 GiB excess and whether W removes it. Split stage groups are diagnostic and reset the server between groups; no quality or current champion claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "d8b08c04b6755ca4c2928b8f3c844176408813805b023f92ac407567ddeff48e",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

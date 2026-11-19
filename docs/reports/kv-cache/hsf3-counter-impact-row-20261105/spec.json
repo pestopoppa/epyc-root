@@ -1,0 +1,33 @@
+{
+  "id": "hsf3-counter-impact-c5d1-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At detached root c5d1bfe16dc7524e3d38f17b0b8a5bcfb784f27f capture upstream progress impact bound to docs/reports/kv-cache/hsf3-census-r3-row-20261104/census.py and full verbose skipped-file coverage. Stop on HIGH/CRITICAL with owner warning, source drift, ambiguous/missing graph binding, parser failure, STOP or deadline. Success requires native impact and scan_complete partial=false; skipped/ignored source remains outside edit-safety claim. No census, fix application, gap distribution or HSF-3 closure. Capture and clean owned descendants with birth-bound pidfds.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:HSF-3",
+  "priority_rank": 90,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-counter-impact-c5d1-20261105",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "seals.sha256",
+    "job.py",
+    "source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py",
+    "counter-fix.patch"
+  ],
+  "lineage": "HSF-3-counter-fix-source-bound-impact",
+  "kind": "compute",
+  "notes": "Nonduplicate prerequisite for unapplied aggregate json_records counter fix. Separate four-CPU source-reference smoke is partial only. Full scan needs all 96 CPUs, 48 GiB RAM, 150 GiB disk floor. Prepared, untested and unpublished."
+}

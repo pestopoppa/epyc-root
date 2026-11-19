@@ -1,0 +1,34 @@
+
+==== dry run 2026-11-18T21:28:15Z regions=116-119 launcher_sha=4687fb40744c5e121330dd5d7c97158331b312a4f8e78edc41d30db3f2020915 units_before=0
+2026-11-18T21:28:15Z [vb-nemo-range-wire-20261118] launcher up pid=1712912 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/stop minwin=120s ports=none dryrun=1
+2026-11-18T21:28:15Z [vb-nemo-range-wire-20261118] START regions=116-119 cpus=116-119 threads=4 gpu=0 end=2026-11-18T21:44Z
+2026-11-18T21:28:15Z [vb-nemo-range-wire-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+adapter nemo_range_join declares no AUTHORITY
+job rc=1
+==== engine START at +5s; first-progress timer (120 s) starts now
+2026-11-18T21:28:20Z [vb-nemo-range-wire-20261118] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-18T21:28:20Z [vb-nemo-range-wire-20261118] one window done; exiting (no --repeat)
+==== dry run FAIL: job ended rc=1 time=2026-11-18T21:28:20Z reason=job-rc-1:exited after 10s, before its first progress (smoke_predicate `/usr/bin/python3 -I -B /mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=116-119; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-18T21:28:25Z)
+
+==== dry run 2026-11-18T21:29:37Z regions=116-119 launcher_sha=2d1e493428e8e9ba4b0f1cd2300211f2b765e6da1bd0109815d0b34fbcbf7feb units_before=0
+2026-11-18T21:29:37Z [vb-nemo-range-wire-20261118] launcher up pid=1728695 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/stop minwin=120s ports=none dryrun=1
+2026-11-18T21:29:37Z [vb-nemo-range-wire-20261118] START regions=116-119 cpus=116-119 threads=4 gpu=0 end=2026-11-18T21:45Z
+2026-11-18T21:29:37Z [vb-nemo-range-wire-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+isolated ingest refused
+job rc=1
+==== engine START at +5s; first-progress timer (120 s) starts now
+2026-11-18T21:29:43Z [vb-nemo-range-wire-20261118] ended rc=1 reason=job-rc-1:exited (grant deleted)
+2026-11-18T21:29:43Z [vb-nemo-range-wire-20261118] one window done; exiting (no --repeat)
+==== dry run FAIL: job ended rc=1 time=2026-11-18T21:29:43Z reason=job-rc-1:exited after 10s, before its first progress (smoke_predicate `/usr/bin/python3 -I -B /mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire` never exited 0); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=116-119; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-18T21:29:48Z)
+
+==== dry run 2026-11-18T21:32:12Z regions=140-143 launcher_sha=62d74a7170b4416484b239c6f5e66525bc104405c56e8c45bc226b0b977adb6d units_before=0
+2026-11-18T21:32:12Z [vb-nemo-range-wire-20261118] launcher up pid=1766777 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/stop minwin=120s ports=none dryrun=1
+2026-11-18T21:32:12Z [vb-nemo-range-wire-20261118] START regions=140-143 cpus=140-143 threads=4 gpu=0 end=2026-11-18T21:48Z
+2026-11-18T21:32:12Z [vb-nemo-range-wire-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+job rc=0
+2026-11-18T21:32:17Z [vb-nemo-range-wire-20261118] ended rc=0 reason=complete (grant deleted)
+2026-11-18T21:32:17Z [vb-nemo-range-wire-20261118] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-nemo-range-wire-20261118/complete, row marked COMPLETE; exiting for good
+==== engine START at +5s; first-progress timer (120 s) starts now
+==== first progress at 2026-11-18T21:32:17Z (+5s): smoke_predicate exited 0
+==== dry run PASS: first progress: smoke_predicate exited 0; rc=0 time=2026-11-18T21:32:17Z reason=complete (2026-11-18T21:32:17Z)
+==== smoke completion NOT filed: dryrun_native_result: the smoke wrote an isolated per-attempt result, not the full job's artifacts

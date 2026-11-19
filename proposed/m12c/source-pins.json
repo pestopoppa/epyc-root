@@ -1,0 +1,12 @@
+{
+  "repo": "/mnt/raid0/llm/epyc-inference-research",
+  "commit": "a794f5b54bea1a1f0752e0e3514ce07fa14c5ff2",
+  "files": {
+    "scripts/benchmark/long_context_adapters.py": "9e6925a39ed815e729a0b7e6431fcfd242bcd5001873a7722c07d2a24b6dde3d",
+    "scripts/benchmark/beam_memory_retrievers.py": "cb4438807ae06be970a2b6269097ace6e1543d4f35557658bb32fe35f5bcb47a",
+    "scripts/benchmark/dataset_adapters.py": "066ee808079c4b2874cac5293c318d20141cf382c96a862dc2bcaac3d202a02e",
+    "scripts/benchmark/beam_scoring.py": "276b9e2962f45900e5a03dd0866ad3dc596990264e88b5af7ae0a5c06d1513f2"
+  },
+  "checker_git_object": "c9aac169b:scripts/benchmark/beam_prerun_checklist.py",
+  "tests": "10 passed in 0.11s; synthetic parquet, stub trace and HTTP; no inference"
+}

@@ -1,0 +1,204 @@
+{
+  "broad_pack_status": "incomplete",
+  "candidate_collected": false,
+  "checks": {
+    "ingest-document-reconciliation-signed-record": {
+      "actual_finish": "stop",
+      "cached_prompt_tokens": 0,
+      "capture": "prospective_replacement",
+      "completion_count": 20,
+      "content_sha256": "93a806a3c31a0254c1917c7532f3754f32a8fc59526665becd54745a2e425505",
+      "expected_finish": "stop",
+      "output_token_count": 20,
+      "problems": [],
+      "prompt_tokens": 5549,
+      "reasoning_sha256": null,
+      "request_sha256": "20e162e9e5992c1f3d1187d7a8f008da424a5a4bd019169d94232aa080910139",
+      "response_sha256": "bd2d8be7fb2bac4c44a75bd1660cc81949bef082e6f69cce8eadaf46d36a51e1",
+      "semantic_matches": true,
+      "validator": {
+        "expected": {
+          "annex": "SOUTH",
+          "governing_record": "E59"
+        },
+        "id": "json-object-subset.v1"
+      }
+    },
+    "ingest-early-lookup": {
+      "actual_finish": "stop",
+      "cached_prompt_tokens": 0,
+      "capture": "filed_original",
+      "completion_count": 4,
+      "content_sha256": "4c2f9a673594828842c57ff54986506c5fec9c6201c97bd3339d3fa0b4f62301",
+      "expected_finish": "stop",
+      "output_format": "prose",
+      "output_token_count": 4,
+      "problems": [],
+      "prompt_tokens": 4767,
+      "reasoning_sha256": null,
+      "request_sha256": "18c0e2688033889dbd8871a1e09417b645793dbfb29c7a341538469c7b05e688",
+      "response_sha256": "8e79054089d9628e8b1a04a0682995aa32dc690898d5a1b59621459bb954596c",
+      "semantic_matches": true,
+      "validator": {
+        "expected": "SANDSTONE",
+        "id": "contains-text.v1"
+      }
+    },
+    "ingest-recurrent-state": {
+      "actual_finish": "stop",
+      "cached_prompt_tokens": 0,
+      "capture": "filed_original",
+      "completion_count": 21,
+      "content_sha256": "5303df091765678e7996125bf079fc0ea315dc10b41dc28dac590e6a130c6561",
+      "expected_finish": "stop",
+      "output_format": "json",
+      "output_token_count": 21,
+      "problems": [],
+      "prompt_tokens": 4892,
+      "reasoning_sha256": null,
+      "request_sha256": "6dc2db51370d8e175ebd521e302d9b53771049e7924c878442c03d794f291f12",
+      "response_sha256": "1e48217039550a1ab684cdd399ce8f967796c35333843a3896fc2e58c5db8ebe",
+      "semantic_matches": true,
+      "validator": {
+        "expected": {
+          "shipment": "RAVEN",
+          "status": "RELEASE"
+        },
+        "id": "json-object-subset.v1"
+      }
+    },
+    "ingest-short-summary": {
+      "actual_finish": "stop",
+      "cached_prompt_tokens": 0,
+      "capture": "filed_original",
+      "completion_count": 38,
+      "content_sha256": "bae7f2ed1ef2b8a9dcab2864d0dcd916e807bbfd95d9b17cecad324fea15ed93",
+      "expected_finish": "stop",
+      "output_format": "prose",
+      "output_token_count": 38,
+      "problems": [],
+      "prompt_tokens": 218,
+      "reasoning_sha256": null,
+      "request_sha256": "7812c70b1c22f747a6a678f45b1cb654b1501c77d12094a24680e8dc6389b273",
+      "response_sha256": "765b5374b69f45446f70af12eb4e82050bd56cd9cf63f505573924f3fd03013b",
+      "semantic_matches": true,
+      "validator": {
+        "expected": "gate sensor",
+        "id": "contains-text.v1"
+      }
+    }
+  },
+  "files": {
+    "RESULT.json": {
+      "archive": "RESULT.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "f18745b7198ff142c50267d4fe7ff2c9ff85ad65b195a62127dcb10233432117"
+    },
+    "filed-verdict.json": {
+      "archive": "filed-verdict.json",
+      "encoding": "raw",
+      "sha256": "bff30e1177c02e54cbae8df870729292eca0ca8a8bcf0e552caaefd8d43f5c11"
+    },
+    "native/prior-production/cleanup.json": {
+      "archive": "native/prior-production/cleanup.json",
+      "encoding": "raw",
+      "sha256": "f34ae23ab31c6976f550d6d51e134e3258188a151f76674c98a7b9c2862fb018"
+    },
+    "native/prior-production/ingest-early-lookup.request.json": {
+      "archive": "native/prior-production/ingest-early-lookup.request.json",
+      "encoding": "raw",
+      "sha256": "18c0e2688033889dbd8871a1e09417b645793dbfb29c7a341538469c7b05e688"
+    },
+    "native/prior-production/ingest-early-lookup.response.json": {
+      "archive": "native/prior-production/ingest-early-lookup.response.json",
+      "encoding": "raw",
+      "sha256": "8e79054089d9628e8b1a04a0682995aa32dc690898d5a1b59621459bb954596c"
+    },
+    "native/prior-production/ingest-recurrent-state.request.json": {
+      "archive": "native/prior-production/ingest-recurrent-state.request.json",
+      "encoding": "raw",
+      "sha256": "6dc2db51370d8e175ebd521e302d9b53771049e7924c878442c03d794f291f12"
+    },
+    "native/prior-production/ingest-recurrent-state.response.json": {
+      "archive": "native/prior-production/ingest-recurrent-state.response.json",
+      "encoding": "raw",
+      "sha256": "1e48217039550a1ab684cdd399ce8f967796c35333843a3896fc2e58c5db8ebe"
+    },
+    "native/prior-production/ingest-short-summary.request.json": {
+      "archive": "native/prior-production/ingest-short-summary.request.json",
+      "encoding": "raw",
+      "sha256": "7812c70b1c22f747a6a678f45b1cb654b1501c77d12094a24680e8dc6389b273"
+    },
+    "native/prior-production/ingest-short-summary.response.json": {
+      "archive": "native/prior-production/ingest-short-summary.response.json",
+      "encoding": "raw",
+      "sha256": "765b5374b69f45446f70af12eb4e82050bd56cd9cf63f505573924f3fd03013b"
+    },
+    "native/prior-production/server.json": {
+      "archive": "native/prior-production/server.json",
+      "encoding": "raw",
+      "sha256": "71c6e67223a6759a1700b34a838080cae6ce2b36c245097577fcba256c642d3f"
+    },
+    "native/production-capture.json": {
+      "archive": "native/production-capture.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "356750448208f41e5afad9793a38ff35ed364a0618df245109a9653ba1e27ac5"
+    },
+    "native/production-capture.sha256": {
+      "archive": "native/production-capture.sha256",
+      "encoding": "raw",
+      "sha256": "36f89d073ffd7805765e006a400bf790d1c3a589b7be4de3e5080b6b9111d2f3"
+    },
+    "native/production/cleanup.json": {
+      "archive": "native/production/cleanup.json",
+      "encoding": "raw",
+      "sha256": "ea8d6cf4e323873dcbd2d8bfb365a823b6f3402ab108864a5ecee1c7a1460f3d"
+    },
+    "native/production/ingest-document-reconciliation-signed-record.request.json": {
+      "archive": "native/production/ingest-document-reconciliation-signed-record.request.json",
+      "encoding": "raw",
+      "sha256": "20e162e9e5992c1f3d1187d7a8f008da424a5a4bd019169d94232aa080910139"
+    },
+    "native/production/ingest-document-reconciliation-signed-record.response.json": {
+      "archive": "native/production/ingest-document-reconciliation-signed-record.response.json",
+      "encoding": "raw",
+      "sha256": "bd2d8be7fb2bac4c44a75bd1660cc81949bef082e6f69cce8eadaf46d36a51e1"
+    },
+    "native/production/server.json": {
+      "archive": "native/production/server.json",
+      "encoding": "raw",
+      "sha256": "2f1e49c7ca606ab2c2da477685ea816a13f30a92b5ac84911c8240952dc75c64"
+    },
+    "native/production/server.log": {
+      "archive": "native/production/server.log",
+      "encoding": "raw",
+      "sha256": "64c384f5ee550b75a0ade4d892d9a751a2eb894aedeee6e3b06e6bceeb513166"
+    },
+    "native/scheduler.grant": {
+      "archive": "native/scheduler.grant",
+      "encoding": "raw",
+      "sha256": "cb85522b0d847214aad5fee2d15abed8b48fbce69653c92c3ccd1f088418bd07"
+    },
+    "owner-verdict.json": {
+      "archive": "owner-verdict.json",
+      "encoding": "raw",
+      "sha256": "e931e10771c7ec419a25f8995d06266d605d8dfe193d3ba725c86fa5769a8c15"
+    },
+    "row-manifest.json": {
+      "archive": "row-manifest.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "6f9bac7b1ae142a62ec663485745ee1ddc74ee81e75bacc2ae14ca6da0a958b7"
+    },
+    "row.ended": {
+      "archive": "row.ended",
+      "encoding": "raw",
+      "sha256": "0cf1168b4c0d1b7bea39bbd54bd245da35e94c496c024f6a7a6417ef60d22445"
+    }
+  },
+  "promotion_authorized": false,
+  "quality_transfer_authorized": false,
+  "rationale": "Replacement returns SOUTH/E59 with clean stop, 20 output tokens and 5549 uncached prompt tokens; three original items independently pass. Captured PID936101 exited and listener closed; no candidate collected.",
+  "row": "handoff-vidya-quality-pack-ingest-bank-20261118",
+  "status": "bank_admitted",
+  "verdict": "pass"
+}

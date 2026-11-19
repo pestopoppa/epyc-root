@@ -1,0 +1,67 @@
+{
+  "gguf_metadata": {
+    "general.architecture": "qwen4exp",
+    "qwen4exp.embedding_length": 2560,
+    "qwen4exp.hyper_connection.count": 4
+  },
+  "model_shard_sha256": [
+    "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+    "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
+    "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833"
+  ],
+  "profile": "architect-general-hip",
+  "runtime_source": {
+    "candidate": {
+      "arch_source_sha256": "ac41378673ad5b2388c5657c72b9af4fbafe7245e40b2caf695edd16c117aef7",
+      "kernel_commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+      "kernel_tree": "e6dc8715fa3374406b38de48571e8700bded094f",
+      "loader_reshape_expected": true,
+      "loader_shape": [
+        2560,
+        4
+      ],
+      "loader_source_sha256": "a3008b78e5a3e53594e67d7ccfc25ba193ff27814aec6ae6ab82289bf07bd78f",
+      "tensor_declarations": {
+        "blk.0.hc_attn_norm.weight": "layer.hc_attn_norm   = create_tensor(tn(LLM_TENSOR_HC_ATTN_NORM,   \"weight\", il), { n_embd, hc }, flags | TENSOR_ALLOW_RESHAPE);",
+        "blk.0.hc_ffn_norm.weight": "layer.hc_ffn_norm    = create_tensor(tn(LLM_TENSOR_HC_FFN_NORM,    \"weight\", il), { n_embd, hc }, flags | TENSOR_ALLOW_RESHAPE);"
+      }
+    },
+    "production": {
+      "arch_source_sha256": "bd3721c86236249328eb479a781f67c2193195a8242b22933e4e25f438da7c5e",
+      "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "kernel_tree": "a7c564ffbac0a86ce648ef6f11c1748c81a6560d",
+      "loader_reshape_expected": false,
+      "loader_shape": [
+        10240
+      ],
+      "loader_source_sha256": "a9f1e13f5b995d03f3a7b3df821d83d66db6c8881149108a346fb26eb7ccc0e1",
+      "tensor_declarations": {
+        "blk.0.hc_attn_norm.weight": "layer.hc_attn_norm   = create_tensor(tn(LLM_TENSOR_HC_ATTN_NORM,   \"weight\", il), { hc_dim }, flags);",
+        "blk.0.hc_ffn_norm.weight": "layer.hc_ffn_norm    = create_tensor(tn(LLM_TENSOR_HC_FFN_NORM,    \"weight\", il), { hc_dim }, flags);"
+      }
+    }
+  },
+  "schema": "epyc.quality_pack_loader_reshape_witness.v1",
+  "scope": "GGUF metadata and pinned source inspection. Fresh native runs establish loaded runtime and output.",
+  "source_plan_sha256": "51ca3cdd63fea358a53449151f1174751ac857431663f7745791cd0f317b0e23",
+  "tensors": {
+    "blk.0.hc_attn_norm.weight": {
+      "disk_shape": [
+        10240
+      ],
+      "shard": "Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "shard_sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
+      "tensor_bytes": 40960,
+      "tensor_type": "F32"
+    },
+    "blk.0.hc_ffn_norm.weight": {
+      "disk_shape": [
+        10240
+      ],
+      "shard": "Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "shard_sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
+      "tensor_bytes": 40960,
+      "tensor_type": "F32"
+    }
+  }
+}

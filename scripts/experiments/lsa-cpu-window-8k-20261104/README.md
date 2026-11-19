@@ -1,0 +1,3 @@
+One CPU Q8-KV positional control on the frozen 8,204-token development fixture. The preserved dense control is correct. The window keeps four sinks and the last 4,608 causal keys; either retrieval outcome is informative because GDN and earlier representations can retain information beyond the global-attention window. Capture validity requires changed masks in all sixteen global layers. No population-quality or speed comparison is authorized.
+
+The published launcher uses a stable packet outside the lane; published-packet.json binds its bytes. The owning-session review binds job and manifest. Smoke runs the same workload in separate scratch and qualifies on a genuine callback; it cannot mark the full benchmark complete.

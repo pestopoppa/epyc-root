@@ -1,0 +1,49 @@
+{
+ "decision_rule": "Descriptive CPU-only PF1 A0 drift diagnostic: same pinned C6/lbt CPU image and Q38FN UD-IQ4_XS input, three independent A0 launches each at L=256/384/448/512/768. Metric prefill tok/s, higher is better, and strict <=40% node share. Earlier r2 two-block A0 changed by roughly 9\u201317%; prior paired noise was roughly 5\u20139%, so three launches can describe repeatability but cannot establish cause or GPU crossover. Stop-on-answer when all 15 unique planned native records are valid with complete placement evidence; futility-only on STOP, deadline, failed identity, launch or placement; report partials and co-tenancy. No PF1 gate, quality, causal or promotion verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 3600,
+ "first_progress_s": 1500,
+ "gib": 160,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "mi210-independent-cpu-20261104",
+ "keep": [
+  "IDENTITY.json",
+  "SOURCE.sha256",
+  "job.py",
+  "launch.sh",
+  "spec.json",
+  "README.md",
+  "out/*.json",
+  "out/*.jsonl",
+  "out/cells/**",
+  "out/plumbing/**",
+  "complete.py",
+  "test_a0_contract.py",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/mi210-independent-cpu-20261104/launch.sh",
+  "sha256": "7455a57f513baa34798b6d13fdf11cdc5f6b9467a89b62804c336c09c6644093"
+ },
+ "min_window_s": 3600,
+ "owner": "codex-ni",
+ "ports": [],
+ "priority_rank": 1.0,
+ "published_at": "2026-11-04T15:06:06Z",
+ "published_from": "/mnt/raid0/llm/tmp/mi210-independent-cpu-20261104/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/mi210-independent-cpu-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/mi210-independent-cpu-20261104",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/mi210-independent-cpu-20261104/STOP",
+ "unit_key": "tps",
+ "window_s": 4620,
+ "workdir": "/mnt/raid0/llm/tmp/mi210-independent-cpu-20261104"
+}

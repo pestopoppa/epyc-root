@@ -1,0 +1,92 @@
+...................F.................................................... [ 60%]
+...s.......................F...................                          [100%]
+=================================== FAILURES ===================================
+______ test_every_wired_adapter_projects_through_a_registered_projection _______
+
+    def test_every_wired_adapter_projects_through_a_registered_projection():
+        for src in ingest_sources.SOURCES.values():
+            if src.frames:
+                continue
+>           mod = src.load()
+
+tests/vidya/test_ingest_sources.py:445: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/vidya/ingest_sources.py:147: in load
+    return importlib.import_module(f"adapters.{self.module}")
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+scripts/vidya/adapters/ufh12_irt_paired.py:9: in <module>
+    p=importlib.util.module_from_spec(s); s.loader.exec_module(p)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Prospective paired IRT correlations: capture and rederive, no new ladder."""
+    import hashlib, importlib.util, json, uuid
+    from datetime import datetime, timezone
+    from dataclasses import replace
+    from pathlib import Path
+>   import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'
+
+scripts/vidya/producers/ufh12_irt_paired_capture.py:6: ModuleNotFoundError
+_____________ test_every_dispatched_adapter_declares_its_authority _____________
+
+    def test_every_dispatched_adapter_declares_its_authority():
+        for src in ingest_sources.SOURCES.values():
+>           assert getattr(src.load(), "AUTHORITY", None), src.name
+
+tests/vidya/test_ingest_sources.py:631: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+scripts/vidya/ingest_sources.py:147: in load
+    return importlib.import_module(f"adapters.{self.module}")
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+scripts/vidya/adapters/ufh12_irt_paired.py:9: in <module>
+    p=importlib.util.module_from_spec(s); s.loader.exec_module(p)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Prospective paired IRT correlations: capture and rederive, no new ladder."""
+    import hashlib, importlib.util, json, uuid
+    from datetime import datetime, timezone
+    from dataclasses import replace
+    from pathlib import Path
+>   import numpy as np
+E   ModuleNotFoundError: No module named 'numpy'
+
+scripts/vidya/producers/ufh12_irt_paired_capture.py:6: ModuleNotFoundError
+P1-A carrier invariants: 1220 tuples from 64 source kinds checked (byte identity / grade invariance), 0 violation(s)
+=========================== short test summary info ============================
+FAILED tests/vidya/test_ingest_sources.py::test_every_wired_adapter_projects_through_a_registered_projection
+FAILED tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_authority
+2 failed, 116 passed, 1 skipped in 2.29s

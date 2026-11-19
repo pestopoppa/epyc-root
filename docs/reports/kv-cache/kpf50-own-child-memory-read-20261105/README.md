@@ -1,0 +1,1 @@
+Model-free, private own-child file-mapping process_vm_readv controls: actual PID/birth/parent bracket, mapped device/inode, honest bytes, child-private mutation and invalid address. This reads a CPU process virtual address only; it does not establish physical-page, GPU, map_files, native-target or whole custody provenance.

@@ -316,8 +316,8 @@
     <!-- 8 · insight graph -->
     <section class="panel" id="p-insight" data-panel="insight">
       <div class="ph">insight graph<span class="stamp" data-stamp="insight"></span></div>
-      <div class="simplified">simplified view — full interactive graph remains on the legacy page until
-        deprecation (RTG-47 Phase 1b). Layout here is a static circular projection; no zoom, pan, focus
+      <div class="simplified">simplified view — the full interactive graph went with the retired :8000/dashboard
+        page (RTG-47 Phase 1b). Layout here is a static circular projection; no zoom, pan, focus
         search or expansion.</div>
       <div id="insight-body"><span class="muted">loading…</span></div>
     </section>
@@ -399,7 +399,7 @@ function deadBody(k, what){
   const seen = p.ok ? 'last good payload ' + fmtDur((Date.now() - p.ok)/1000) + ' ago' : 'never reached this page';
   return '<div class="deadbody"><b>no data</b> — ' + esc(what) + ' ' + esc(p.err || 'unavailable') +
     '. ' + esc(seen) + '. The orchestrator API on :8000 either is down or has not yet reloaded with ' +
-    'the hub-origin CORS allowance (RTG-47). The legacy page at :8000/dashboard is unaffected.</div>';
+    'the hub-origin CORS allowance (RTG-47).</div>';
 }
 /* 1 Hz ticker: ages the per-panel stamps and dims anything past STALE_MS. */
 function tickStamps(){
@@ -445,7 +445,7 @@ function paintGlobal(){
   if (allDown){
     el.className = 'show';
     el.innerHTML = '<b>orchestrator API (:8000) unreachable from this page</b> — API down, or CORS not ' +
-      'yet enabled (pending API reload — RTG-47). Legacy page at :8000/dashboard unaffected.' +
+      'yet enabled (pending API reload — RTG-47).' +
       '<div style="color:var(--muted);margin-top:5px;font-size:11.5px;font-family:var(--mono)">' +
       esc(tried.map(k => k + ': ' + PANEL[k].err).join(' · ')) + '</div>';
     setConn('bad', ':8000 — unreachable');
@@ -568,7 +568,7 @@ function renderPhase(){
     h += '</ul>';
   }
   if (PROC._freshness && PROC._freshness.reason){
-    h += '<div class="note">producer freshness (' + esc(PROC._freshness.staleness_class || '?') + '): ' +
+    h += '<div class="note">producer freshness (' + esc((window.epycFreshClass && window.epycFreshClass(PROC._freshness.staleness_class)) || PROC._freshness.staleness_class || '?') + '): ' +
       esc(PROC._freshness.reason) + '</div>';
   }
   body.innerHTML = h;
@@ -642,8 +642,7 @@ async function control(action){
       out.textContent = corsish
         ? 'no HTTP response reached the page. A cross-origin POST needs an OPTIONS preflight that ' +
           'allows origin ' + location.origin + '; until the orchestrator API reloads with the hub ' +
-          'CORS allowance (RTG-47) this button cannot work from :8100. The legacy page at ' +
-          ':8000/dashboard performs the same control same-origin.'
+          'CORS allowance (RTG-47) this button cannot work from :8100.'
         : 'no response body.';
     }
   } finally {
@@ -901,8 +900,7 @@ function makeStream(opts){
       s.pre.innerHTML = '<span class="lg-err">stream unavailable</span>\n' +
         'EventSource to ' + esc(API + s.path) + ' failed. Cross-origin SSE needs the same CORS\n' +
         'allowance as the JSON endpoints — until the orchestrator API reloads (RTG-47) this\n' +
-        'stream cannot open from ' + esc(location.origin) + '. It may also simply be down.\n' +
-        'The legacy page at :8000/dashboard reads the same stream same-origin.';
+        'stream cannot open from ' + esc(location.origin) + '. It may also simply be down.';
     }
     s.foot.textContent = 'reconnecting in ' + (s.backoff / 1000) + 's' +
       (s.buf ? ' · showing last buffered tail' : '');
@@ -1256,7 +1254,7 @@ function renderGepa(d){
         lines.slice(-40).map(l => styleLogLine(String(l))).join('\n') + '</pre>'
       : '<div class="empty">no optimizer lines in the payload</div>') + '</div>';
   if (d._freshness && d._freshness.reason){
-    h += '<div class="note">producer freshness (' + esc(d._freshness.staleness_class || '?') + '): ' +
+    h += '<div class="note">producer freshness (' + esc((window.epycFreshClass && window.epycFreshClass(d._freshness.staleness_class)) || d._freshness.staleness_class || '?') + '): ' +
       esc(d._freshness.reason) + '</div>';
   }
   body.innerHTML = h;

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T07:23:40Z reason=complete
+job_id=vb-ak-wire-canary-r1-20261104
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=900
+started=2026-11-04T07:23:34Z
+regions=24-47

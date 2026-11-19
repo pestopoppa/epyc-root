@@ -1,0 +1,49 @@
+{
+ "decision_rule": "UFH14-B4k/B4a: VALID window = >=200 dispatched calls on the production :8083 argv replica (port 18183) carrying prefix_fp (fp_coverage >= 0.95); its prefix_cache_report per-port missed_prefill_share (lower better), hit_tok, cold_large_share, concurrent_dupes and server-log eviction count are the B4a baseline that unblocks the PFX-SEL-1 package. missed_prefill_share > 5% (concurrent_dupes removed) with evictions logged counts as window 1 of 2 for the :8083 cache-ram 65536->102400 rule (design 4.3). <200 calls = INCOMPLETE, re-run. Synthetic agentic workload on a replica, not organic traffic.",
+ "dryrun_timeout_s": 1500,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 4200,
+ "gib": 64,
+ "handoff_task": "handoffs/active/harness-program.md:UFH14-B4k",
+ "id": "ufh14-b4a-window-8083-20261102",
+ "keep": [
+  "out/runs/*/calls.jsonl",
+  "out/runs/*/serving_calls.jsonl",
+  "out/runs/*/REPORT.json",
+  "out/runs/*/SUMMARY.json",
+  "out/runs/*/argv.json",
+  "out/runs/*/residency-proof.json",
+  "out/runs/*/server.log",
+  "out/runs/*/errors.log",
+  "out/COMPLETE",
+  "job.py",
+  "launch.sh",
+  "spec.json",
+  "prod-8083-launch.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/launch.sh",
+  "sha256": "8d25bd9f084e6a3bfbe861b46116995bdc10410e5af7d3e986acc00d4c6c2f3b"
+ },
+ "min_window_s": 5400,
+ "owner": "ws58",
+ "ports": [
+  18183
+ ],
+ "priority_rank": 50.0,
+ "published_at": "2026-11-02T20:58:31Z",
+ "published_from": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/spec.json",
+ "regions": "mi210_0,184-191",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/*/calls.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/STOP",
+ "window_s": 5700,
+ "workdir": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102"
+}

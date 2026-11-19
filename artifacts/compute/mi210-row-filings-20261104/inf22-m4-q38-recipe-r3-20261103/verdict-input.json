@@ -1,0 +1,10 @@
+{
+  "verdict": "inconclusive",
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "rc0 reason=stop-file-before-start, declared native result absent; no run occurred under this row. Any later bare run is separate and cannot satisfy this sealed-row result.",
+  "tick_text": "",
+  "evidence_sha256": {
+    "artifacts/compute/mi210-row-filings-20261104/inf22-m4-q38-recipe-r3-20261103/end.txt": "0fb68a5b5b82df60ef3f666a98f77936eabd325c6047ac3a0dd32170b10ebbfc",
+    "artifacts/compute/mi210-row-filings-20261104/inf22-m4-q38-recipe-r3-20261103/manifest.json": "8d03d27fd9fbb9d5e5fe0609b439eb842af2188722a05cb8d57d4bc28c3dcdaa"
+  }
+}

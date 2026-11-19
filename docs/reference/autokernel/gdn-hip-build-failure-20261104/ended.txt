@@ -1,0 +1,7 @@
+rc=1 time=2026-11-02T11:44:03Z reason=job-rc-1:exited
+job_id=codex-ni-akxall31-gdn-hip-build-prereq-20261102
+owner=handoff-autokernel-all-devices-all-dimensions
+step=job-run
+estimated_wall_s=5400
+started=2026-11-02T11:38:16Z
+regions=0-3

@@ -1,0 +1,76 @@
+{
+  "schema": "p5.gold-control.v1",
+  "producer_source_manifest_sha256": "c8ab38f868eae9a20b7518b38a7ae78587a3386dc0bd9282adbbeca5e876d5ed",
+  "producer_launcher_sha256": "3762e2e5906fd54923104166d2b8dda3577ef1d8e20aa7ba3db30e030abca9d8",
+  "instance_id": "sphinx-doc__sphinx-8593",
+  "arms": {
+    "negative": {
+      "resolved": false,
+      "FAIL_TO_PASS": {
+        "tests/test_ext_autodoc_private_members.py::test_private_field": "FAILED",
+        "tests/test_ext_autodoc_private_members.py::test_private_members": "FAILED"
+      },
+      "PASS_TO_PASS": {
+        "tests/test_ext_autodoc_private_members.py::test_private_field_and_private_members": "PASSED"
+      },
+      "native_report": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/logs/run_evaluation/p5-gold-vb-p5-sphinx-scorer-native-20261118-negative-ns18e939edaab98003/negative/sphinx-doc__sphinx-8593/report.json",
+      "test_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/logs/run_evaluation/p5-gold-vb-p5-sphinx-scorer-native-20261118-negative-ns18e939edaab98003/negative/sphinx-doc__sphinx-8593/test_output.txt"
+    },
+    "gold": {
+      "resolved": true,
+      "FAIL_TO_PASS": {
+        "tests/test_ext_autodoc_private_members.py::test_private_field": "PASSED",
+        "tests/test_ext_autodoc_private_members.py::test_private_members": "PASSED"
+      },
+      "PASS_TO_PASS": {
+        "tests/test_ext_autodoc_private_members.py::test_private_field_and_private_members": "PASSED"
+      },
+      "native_report": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/logs/run_evaluation/p5-gold-vb-p5-sphinx-scorer-native-20261118-gold-ns18e939ee55fdcbb0/gold/sphinx-doc__sphinx-8593/report.json",
+      "test_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/logs/run_evaluation/p5-gold-vb-p5-sphinx-scorer-native-20261118-gold-ns18e939ee55fdcbb0/gold/sphinx-doc__sphinx-8593/test_output.txt"
+    }
+  },
+  "image_id": "sha256:a5f693152c2178356658d94655f2265ae787ba662337237e48cf2945c679e82d",
+  "case_sha256": "0971c84ae68579da57b1a94541d5d1a600ee842db58dadd7334d3f1d89c54135",
+  "script_binding": {
+    "official_script_sha256": "a0c969ac491740a8e30386cc6b482019e4f44d976c30b3bb288527db511bc311",
+    "offline_script_sha256": "93c7e5a5401c8eac52152f26137b746f99fb4ff41c4658ddf48119151ab5c82d",
+    "setup_index": 10,
+    "derived_image_id": "sha256:a5f693152c2178356658d94655f2265ae787ba662337237e48cf2945c679e82d",
+    "reporting_command_index": 14,
+    "reporting_only_suffix": "-rA --color=no",
+    "scope": "exact offline setup substitution and reporting-only pytest suffix; selectors, patches and parser unchanged"
+  },
+  "image_build_log_sha256": "f590eb583b68eb12160858b451ab916b18a3d2c06c652ea7eebcdca16561b1a9",
+  "wheel_manifest_sha256": null,
+  "checkout_proofs": {
+    "aaead7a750f11f15bbb4d01cfaec072e65648f51fe727fce0a4a68ac971003b7": {
+      "base_commit": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "base_tree": "89dc2fa0e6824d37bee997604aedfacf8291cf2d",
+      "image_head": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "tracked_content_matches_base": true,
+      "untracked_nonignored": 0,
+      "scope": "blob trees and clean index/worktree; regular executable mode ignored; ignored image files bound by image digest"
+    },
+    "79171a290d587926bc5bf95437a20b8a1db48448b358964a19cbdae0713a432d": {
+      "base_commit": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "base_tree": "89dc2fa0e6824d37bee997604aedfacf8291cf2d",
+      "image_head": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+      "tracked_content_matches_base": true,
+      "untracked_nonignored": 0,
+      "scope": "blob trees and clean index/worktree; regular executable mode ignored; ignored image files bound by image digest"
+    }
+  },
+  "arm_attempts": {
+    "negative": {
+      "native_report": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/logs/run_evaluation/p5-gold-vb-p5-sphinx-scorer-native-20261118-negative-ns18e939edaab98003/negative/sphinx-doc__sphinx-8593/report.json",
+      "test_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/logs/run_evaluation/p5-gold-vb-p5-sphinx-scorer-native-20261118-negative-ns18e939edaab98003/negative/sphinx-doc__sphinx-8593/test_output.txt"
+    },
+    "gold": {
+      "native_report": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/logs/run_evaluation/p5-gold-vb-p5-sphinx-scorer-native-20261118-gold-ns18e939ee55fdcbb0/gold/sphinx-doc__sphinx-8593/report.json",
+      "test_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-sphinx-scorer-r1-20261118/logs/run_evaluation/p5-gold-vb-p5-sphinx-scorer-native-20261118-gold-ns18e939ee55fdcbb0/gold/sphinx-doc__sphinx-8593/test_output.txt"
+    }
+  },
+  "decision": "PASS",
+  "status": "COMPLETE",
+  "owned_containers_removed": true
+}

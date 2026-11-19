@@ -294,7 +294,8 @@ class FrontendContractTests(unittest.TestCase):
                           "all-scope percentage shown without the open-scope figure beside it")
         self.assertIn("const filed=w=>(w.newly_filed!=null?w.newly_filed:w.opened)||0;", html)
         self.assertIn("tasks_newly_filed!=null", html)
-        self.assertIn("tasks newly filed vs completed per week", html)
+        # Retitled 2026-11-03: the series is first-seen boxes (fold moves excluded), not "filed".
+        self.assertIn("checkboxes first seen vs completed per week", html)
 
 
 class PathTraversalTests(unittest.TestCase):

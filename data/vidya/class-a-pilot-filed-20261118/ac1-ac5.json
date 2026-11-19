@@ -1,0 +1,27 @@
+{
+  "as_of": "2026-11-18T21:52:14Z",
+  "batch_sha256": "8c64e05a1120627b651de47f85305c648f1685ff23c533cfb4447cf25d77dfed",
+  "before_sha": "ee4ebcde9a8f499bf280fff905091c1442b599b6c52a825064ae7b4013584317",
+  "combined_frames": 564,
+  "decision_declines": [
+    {
+      "cc_id": "cc:v1:13323577a3e4d1f98f835df2e1d0947a",
+      "reason": "decision"
+    }
+  ],
+  "frames": 438,
+  "linked_duplicate_count": 1,
+  "picked_distinct_register_rows": 53,
+  "projected_distinct_gold_rows": 52,
+  "projected_metric_claims": 146,
+  "quote_and_warrant_negative_controls": [
+    "quote audit failed: 6eac39cb6:handoffs/active/autokernel-unified-surface-program.md#L26 does not re-hash to quote_sha256",
+    "cc:v1:20cc9bd13ce6e8fd1523a06e80e647cc sets 'protocol_id': a committed conclusion carries no protocol, rep count or run identity (no invented measurement warrant)",
+    "cc:v1:20cc9bd13ce6e8fd1523a06e80e647cc sets 'reps': a committed conclusion carries no protocol, rep count or run identity (no invented measurement warrant)",
+    "cc:v1:20cc9bd13ce6e8fd1523a06e80e647cc sets 'run_id': a committed conclusion carries no protocol, rep count or run identity (no invented measurement warrant)"
+  ],
+  "reviewed_gold": 54,
+  "total_combined_rows": 83,
+  "unscoped_projected_rows": 40,
+  "unscoped_register_rows": 41
+}

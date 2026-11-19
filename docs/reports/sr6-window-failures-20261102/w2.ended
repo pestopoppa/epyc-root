@@ -1,0 +1,7 @@
+rc=1 time=2026-11-02T11:18:42Z reason=job-rc-1:exited
+job_id=sr6-qwen36-width-w2-20261102
+owner=handoff-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=14400
+started=2026-11-02T11:18:42Z
+regions=0-95

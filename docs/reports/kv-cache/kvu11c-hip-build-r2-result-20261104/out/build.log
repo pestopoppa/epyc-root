@@ -1,0 +1,475 @@
+[  1%] Checking git version
+[  1%] Building CXX object vendor/cpp-httplib/CMakeFiles/httplib.dir/httplib.cpp.o
+[  2%] Building C object CMakeFiles/yyjson.dir/vendor/yyjson/yyjson.c.o
+[  7%] Built target ggml-base
+[  7%] Built target version
+[  8%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+[  8%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o
+[  8%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o
+[ 10%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o
+[ 10%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/repack.cpp.o
+[ 10%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o
+[ 11%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o
+[ 11%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o
+[ 12%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o
+[ 12%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o
+[ 13%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ops.cpp.o
+[ 14%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/repack.cpp.o
+[ 15%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/acc.cu.o
+[ 15%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o
+[ 15%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/add-id.cu.o
+[ 16%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o
+[ 17%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/allreduce.cu.o
+[ 19%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/binbcast.cu.o
+[ 19%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/argmax.cu.o
+[ 19%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/arange.cu.o
+[ 20%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/clamp.cu.o
+[ 19%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/col2im-1d.cu.o
+[ 20%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/argsort.cu.o
+[ 21%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/concat.cu.o
+[ 21%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/conv-transpose-1d.cu.o
+[ 22%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/conv2d-dw.cu.o
+[ 22%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/conv2d-transpose.cu.o
+[ 23%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/conv2d.cu.o
+[ 23%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/convert.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 25%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/count-equal.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 25%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/cpy.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 26%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/cumsum.cu.o
+[ 26%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/cross-entropy-loss.cu.o
+[ 27%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/diag.cu.o
+[ 27%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/diagmask.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 28%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/dsv4-hc.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 28%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/fattn-tile.cu.o
+[ 29%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/fattn-wmma-f16.cu.o
+[ 30%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/fattn.cu.o
+[ 30%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/fill.cu.o
+[ 31%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/fwht.cu.o
+[ 31%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/gated_delta_net.cu.o
+[ 32%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/getrows.cu.o
+[ 32%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/ggml-cuda.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 33%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/gla.cu.o
+[ 33%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/im2col.cu.o
+[ 34%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/lightning-indexer.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 34%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/mean.cu.o
+[ 35%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/mmf.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 35%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/mmid.cu.o
+[ 36%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/mmq.cu.o
+[ 36%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/mmvf.cu.o
+[ 37%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/mmvq.cu.o
+[ 37%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/norm.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 38%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/opt-step-adamw.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/mnt/raid0/llm/tmp/kvfork/kvu11c-source-20261104/ggml/src/ggml-cuda/lightning-indexer.cu:244:24: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+  244 | static __global__ void lightning_indexer_kernel_vec(
+      |                        ^
+/mnt/raid0/llm/tmp/kvfork/kvu11c-source-20261104/ggml/src/ggml-cuda/lightning-indexer.cu:244:24: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/mnt/raid0/llm/tmp/kvfork/kvu11c-source-20261104/ggml/src/ggml-cuda/lightning-indexer.cu:244:24: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/mnt/raid0/llm/tmp/kvfork/kvu11c-source-20261104/ggml/src/ggml-cuda/lightning-indexer.cu:244:24: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/mnt/raid0/llm/tmp/kvfork/kvu11c-source-20261104/ggml/src/ggml-cuda/lightning-indexer.cu:244:24: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/mnt/raid0/llm/tmp/kvfork/kvu11c-source-20261104/ggml/src/ggml-cuda/lightning-indexer.cu:244:24: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/mnt/raid0/llm/tmp/kvfork/kvu11c-source-20261104/ggml/src/ggml-cuda/lightning-indexer.cu:244:24: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/mnt/raid0/llm/tmp/kvfork/kvu11c-source-20261104/ggml/src/ggml-cuda/lightning-indexer.cu:244:24: warning: loop not unrolled: the optimizer was unable to perform the requested transformation; the transformation might be disabled or specified as part of an unsupported transformation ordering [-Wpass-failed=transform-warning]
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 39%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/opt-step-sgd.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 39%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/out-prod.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 40%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/pad.cu.o
+[ 40%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/pad_reflect_1d.cu.o
+[ 41%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/pool2d.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 41%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/quantize.cu.o
+8 warnings generated when compiling for gfx90a.
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 42%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/roll.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 42%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/rope.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 43%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/scale.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 43%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/set-rows.cu.o
+[ 44%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/set.cu.o
+[ 44%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/snake.cu.o
+[ 45%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/softcap.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 45%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/softmax.cu.o
+[ 46%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/solve_tri.cu.o
+[ 46%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/ssm-conv.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 47%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/ssm-scan.cu.o
+[ 48%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/sum.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 48%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/sumrows.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 50%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/top-k.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 50%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/topk-moe.cu.o
+[ 51%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/tri.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 51%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/tsembd.cu.o
+[ 52%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/unary.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 52%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/upscale.cu.o
+[ 53%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/wkv.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 53%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq112-dv112.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 54%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq128-dv128.cu.o
+[ 54%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq192-dv128.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 55%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq256-dv256.cu.o
+[ 55%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq320-dv256.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 56%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq40-dv40.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 56%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq512-dv512.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 56%] Linking CXX shared library ../../libggml-cpu.so
+[ 57%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq576-dv512.cu.o
+[ 58%] Linking C static library libyyjson.a
+[ 58%] Built target ggml-cpu
+[ 59%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq64-dv64.cu.o
+[ 59%] Built target yyjson
+[ 59%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq72-dv72.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 60%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq80-dv80.cu.o
+[ 60%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-tile-instance-dkq96-dv96.cu.o
+[ 61%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_1-ncols2_16.cu.o
+[ 61%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_1-ncols2_32.cu.o
+[ 62%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_1-ncols2_8.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 62%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_16-ncols2_1.cu.o
+[ 63%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_16-ncols2_2.cu.o
+[ 63%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_16-ncols2_4.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 64%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_2-ncols2_16.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 64%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_2-ncols2_32.cu.o
+[ 65%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_2-ncols2_4.cu.o
+[ 65%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_2-ncols2_8.cu.o
+[ 66%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_32-ncols2_1.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 66%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_32-ncols2_2.cu.o
+[ 67%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_4-ncols2_16.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 68%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_4-ncols2_2.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 68%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_4-ncols2_4.cu.o
+[ 69%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_4-ncols2_8.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 69%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_64-ncols2_1.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 70%] Linking CXX static library libhttplib.a
+[ 70%] Built target httplib
+[ 71%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_8-ncols2_1.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 71%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_8-ncols2_2.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 72%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_8-ncols2_4.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 72%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-mma-f16-instance-ncols1_8-ncols2_8.cu.o
+[ 73%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-iq1_s.cu.o
+[ 73%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-iq2_s.cu.o
+[ 75%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-iq2_xs.cu.o
+[ 75%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-iq2_xxs.cu.o
+[ 76%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-iq3_s.cu.o
+[ 76%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-iq3_xxs.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 77%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-iq4_nl.cu.o
+[ 77%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-iq4_xs.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 78%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-mxfp4.cu.o
+[ 79%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-nvfp4.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 79%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q1_0.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 80%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q2_k.cu.o
+[ 80%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q3_k.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 81%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q4_0.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 81%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q4_1.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 82%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q4_k.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 82%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q5_0.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 83%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q5_1.cu.o
+[ 83%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q5_k.cu.o
+[ 84%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q6_k.cu.o
+[ 84%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmq-instance-q8_0.cu.o
+[ 85%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_1.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 85%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_10.cu.o
+[ 86%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_11.cu.o
+[ 86%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_12.cu.o
+[ 87%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_13.cu.o
+[ 88%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_14.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 88%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_15.cu.o
+[ 89%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_16.cu.o
+[ 89%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_2.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 90%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_3.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 90%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_4.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 91%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_5.cu.o
+[ 91%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_6.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 92%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_7.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 92%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_8.cu.o
+[ 93%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/mmf-instance-ncols_9.cu.o
+[ 93%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-vec-instance-f16-f16.cu.o
+[ 94%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-vec-instance-q4_0-q4_0.cu.o
+[ 94%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-vec-instance-q8_0-q8_0.cu.o
+[ 95%] Building HIP object ggml/src/ggml-hip/CMakeFiles/ggml-hip.dir/__/ggml-cuda/template-instances/fattn-vec-instance-bf16-bf16.cu.o
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+/opt/rocm/llvm/bin/lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/lld)
+[ 95%] Linking HIP shared library ../../../libggml-hip.so
+/opt/rocm/llvm/bin/ld.lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/ld.lld)
+/opt/rocm/llvm/bin/ld.lld: /lib/x86_64-linux-gnu/libxml2.so.2: no version information available (required by /opt/rocm/llvm/bin/ld.lld)
+[ 95%] Built target ggml-hip
+[ 95%] Building CXX object ggml/src/CMakeFiles/ggml.dir/ggml-backend-dl.cpp.o
+[ 96%] Building CXX object ggml/src/CMakeFiles/ggml.dir/ggml-backend-reg.cpp.o
+[ 96%] Linking CXX shared library ../../libggml.so
+[ 96%] Built target ggml
+[ 96%] Building CXX object CMakeFiles/qwen-core.dir/src/pipeline-codec.cpp.o
+[ 97%] Building CXX object CMakeFiles/qwen-core.dir/src/qwen.cpp.o
+[ 97%] Building CXX object CMakeFiles/qwen-core.dir/src/pipeline-tts.cpp.o
+[ 98%] Linking CXX static library libqwen-core.a
+[ 98%] Built target qwen-core
+[ 98%] Building CXX object CMakeFiles/tts-server.dir/tools/tts-server.cpp.o
+[100%] Linking CXX executable tts-server
+[100%] Built target tts-server

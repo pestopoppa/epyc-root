@@ -1,0 +1,30 @@
+{
+  "id": "kvfork-kpf131-findslot-observer-r2-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf131-findslot-observer-r2-20261105/launch.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf131-findslot-observer-r2-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS only when both arms each produce two hardware breakpoint entries, expected fixture outcomes and inferior exit zero, exact pinned executable and five mapped DSO identities before and after, debugger rc zero, unchanged seals and owned cleanup. No physical layout or historical control conclusion.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-13.1-FINDSLOT-OBSERVER",
+  "priority_rank": 30,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf131-findslot-observer-r2-20261105",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "gib": 1,
+  "min_window_s": 300,
+  "window_s": 600,
+  "model_free": true,
+  "unit_key": "case_count",
+  "case_count": 2,
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "stop_file": "/mnt/raid0/llm/tmp/kvfork/kpf131-findslot-observer-r2-20261105/STOP",
+  "stop_rule": "stop on both cases or missing observation, identity, STOP, deadline or cleanup failure",
+  "gate_class": "futility-only",
+  "first_progress_s": 300
+}

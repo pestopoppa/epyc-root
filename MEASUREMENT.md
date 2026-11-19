@@ -79,6 +79,8 @@ Status: ✅ ratified, 📋 staged (operator-apply).
 | P-PARITY-1 | Greedy-output parity between two decode configurations (spec-dec type/depth, KV type, kernel route, drafter, batching mode) | per-prompt PASS/FAIL + first-differing generation-token index — **not a claim** below n=5 prompts, and **never** an aggregate pass rate | 📋 staged 2026-08-23 | D |
 | P-NONDET-1 | Run-to-run non-determinism detector (N >= 10 identical calls in ONE process) | bit-identical / not; max abs Δ across repeats (↓) | 📋 staged 2026-08-23 | D |
 | P-SERVE-SEL-1 | Text-LLM serving-selection load-sweep A/B: selection-policy arms on a single-instance saturating tier, TTFT-bound, orchestrator in the loop (`instrument_class=serving`) | TTFT-SLO attainment per block (↑); realized quality non-inferior (per-suite quantum) | ✅ 2026-09-26 | Q |
+| P-DOCPARSE-1 | Document-parser comparison on the 200-PDF OpenDataLoader corpus: LiteParse vs OpenDataLoader as the born-digital fast path, paired by document | per-document `overall` (↑), 95% paired bootstrap; median latency gate (↓) in the ADOPT clause | ✅ 2026-11-08 | Q |
+| P-SERVE-1 | Kernel-champion serving A/B instrument: fresh `llama-server` launch per sample under the role's registered production recipe, paired ABBA, with its serving floor, serving gate and headline admissibility (`instrument_class=serving`, unit = process) | aggregate decode tok/s (↑); effect = median(candidate)/median(anchor) − 1 against a process-unit floor | ✅ 2026-11-19 | K |
 
 ## 3. Claim grammar & examples
 
@@ -345,6 +347,15 @@ confers no authority beyond its own enumeration.
 
 ## CHANGELOG
 
+- **2026-11-19 (v2.x)** — AMENDMENT (Annex K, new protocol `P-SERVE-1`): the kernel-champion serving
+  A/B instrument. It records the recipe a run must pin (recipe hash, launch argv, resolved-recipe build
+  digests, paired ABBA order, `np`, frozen prompt set), the per-launch residency proof (R23-60), the
+  floor (`unit = process`, matched floor `n` in 24–256 with an interval), headline admissibility (at
+  least 14 independent launches per arm) and the gate rule (a unit mismatch refuses; `PROMOTE` needs a
+  decisive, positive effect). It describes what `loop/serving.py`, `serving_gate.py`, `floor_units.py`,
+  `headline_admissibility.py` and `accumulate.py` already enforce, lists the enforcement gaps, and changes
+  no threshold, gate or code. Distinct from `P-SERVE-SEL-1` (Annex Q). Closes RATIFY-MEAS-2.
+
 - **2026-10-25 (v2.x)** — AMENDMENT (§5, `RATIFY-WS58-RETENTION-LESSONS-20261025`): adds *Evidence retention and reclamation*,
   the clause §6 already pointed to. It names the evidence homes, and reproducible data is never
   carried. It aligns the durability clause with the 2026-08-03 durable-untracked ruling (three
@@ -354,6 +365,11 @@ confers no authority beyond its own enumeration.
   verifier. It grants no reclamation authority, and does not enact the 2026-08-03 draft's
   autonomous-loop expiry grant. Origin: 244 real tmp losses reconciled 2026-10-25. Operator
   decision D2/D7, 2026-10-25.
+- **2026-11-08 (v2.x)** — AMENDMENT (Annex Q, new protocol `P-DOCPARSE-1`): document-parser comparison on the
+  200-PDF OpenDataLoader corpus, with a decision rule committed before the ODL-013 r2 run. Ratified by the operator
+  through a decision prompt (remote app). Draft sha256 7be1598473648fb6cfcb2b81b4cf7e5ebfeb8983fe6627b70f254a4bd2b1a6b9.
+  Scope: born-digital documents of this corpus; no routing, promotion or deployment effect.
+
 - **2026-09-27 (v2.x)** — AMENDMENT (Annex K, `P-AK-SEARCH-1-A4`): the AutoKernel controller may
   adopt a runtime configuration of its own full selected serving launch (one declared field:
   threads, CPU list, NUMA policy, or a policy-listed env key such as OpenMP placement or a

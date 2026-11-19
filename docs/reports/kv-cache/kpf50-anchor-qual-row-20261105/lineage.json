@@ -1,0 +1,10 @@
+{
+  "status": "PREPARED_UNEXECUTED",
+  "retained_source": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-anchor-preflight-source-20261105/anchor_preflight.py",
+  "retained_sha256": "1bdc004c5d925c9aac0435a712dcb6f36e662c682e4c8cd80a338298dbaff71c",
+  "source_modified": false,
+  "target_enabled": false,
+  "model_access": false,
+  "compute_executed": false,
+  "published": false
+}

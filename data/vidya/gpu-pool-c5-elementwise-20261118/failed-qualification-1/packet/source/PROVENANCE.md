@@ -1,0 +1,11 @@
+# gpu-20261024-c72ec82f5-c5: llama.cpp C5 fold image (qwen4exp fused decode default OFF + ws58 0001 / CH-24), built 2026-10-24
+
+- commit `c72ec82f5417bb2937310326120f149b665e8400` (experimental/champion-c5-20261024), branch `experimental/champion-c5-20261024`; cut on C4 `cdb4d8c77c2300f61c404a3df6d1950934b39c98` (champion C3 dcc853b55 + GPU-LEAK-1c + CH-20.2).
+- diff vs cdb4d8c77: src/llama-context.cpp, src/llama-ext.h, src/models/qwen4exp-fused.cpp (libllama), tests/test-qwen4exp-fused-rope.cpp, validation/dump_logits_seq.cpp, EXL3-CPU-STATUS.md. Expected changed lib: libllama.so (both kinds); ggml libs code-identical to the C4 image.
+- behaviour: the qwen4exp fused single-token decode is OFF by default; opt-in GGML_FUSED_DECODE_ON=1; GGML_FUSED_DECODE_OFF (any value) wins. The fused path is KNOWN DEFECTIVE (FD-DIV-1b, INF-67) and stays opt-in until fixed.
+- determinism (CH-28d): flags `-ffile-prefix-map=/mnt/raid0/llm/worktrees/c5-fold-20261024=. -fmacro-prefix-map=/mnt/raid0/llm/worktrees/c5-fold-20261024=. -ffile-prefix-map=/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5=.build -fmacro-prefix-map=/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5=.build`; tools/ui/dist copied from `gpu-20261023-141e4bcf5-lbh`.
+- status: CHAMPION since 2026-10-25T08:24:10Z (guarded CAS cdb4d8c77 -> c72ec82f5, operator-approved; fork pushed 08:24:14Z). Gates: c5-fold-prep G-a..G-d (a0 gpu = PRE-EXISTING META-ASSERT-1, operator ruling), G-c5 IDENTICAL, G-s PASS, G-tb -0.81% decisive=None, G2-CONC PASS (AMENDMENT 9). Not production; production stays v10 (ffc1bac82).
+- build: script `/mnt/raid0/llm/tmp/c5-fold-prep/build_store.sh gpu`; BUILD.log header: `build start 2026-10-24T10:36:06Z src=c72ec82f5417bb2937310326120f149b665e8400 cpus=24-47 jobs=24`.
+- recipe: GGML_*/LLAMA_* CMakeCache entries vs `gpu-20261024-cdb4d8c77-c4`: 0 differing lines (expected 0); Release.
+- `llama-server --version` = `version: 10419 (c72ec82f5) built with GNU 15.2.0 for Linux x86_64` (VERSION.txt); LINKAGE.txt: PASS; SHA256SUMS (118 files, paths relative to bin/).
+- gate: PLAN.md in /mnt/raid0/llm/tmp/c5-fold-prep/ (fold_gate vs 20261024-cdb4d8c77-c4, unit tests incl. the knob truth table, CH-24 source audit + strings, versions; Q38FN greedy identity default env, fused opt-in smoke, Q38FN timing).

@@ -1,0 +1,36 @@
+BASELINE (expected two failures proving acceptance gap)
+test_snapshot_after_request_start_before_response_refuses (custody_regression.SamplingCustodyRegression.test_snapshot_after_request_start_before_response_refuses) ... FAIL
+test_snapshot_at_request_start_refuses (custody_regression.SamplingCustodyRegression.test_snapshot_at_request_start_refuses) ... FAIL
+
+======================================================================
+FAIL: test_snapshot_after_request_start_before_response_refuses (custody_regression.SamplingCustodyRegression.test_snapshot_after_request_start_before_response_refuses)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "custody_regression", line 13, in test_snapshot_after_request_start_before_response_refuses
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_snapshot_at_request_start_refuses (custody_regression.SamplingCustodyRegression.test_snapshot_at_request_start_refuses)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "custody_regression", line 22, in test_snapshot_at_request_start_refuses
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.003s
+
+FAILED (failures=2)
+REVIEW PATCH IN MEMORY
+test_snapshot_after_request_start_before_response_refuses (custody_regression.SamplingCustodyRegression.test_snapshot_after_request_start_before_response_refuses) ... ok
+test_snapshot_at_request_start_refuses (custody_regression.SamplingCustodyRegression.test_snapshot_at_request_start_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.003s
+
+OK
+EXISTING SCOPED TESTS AGAINST IN-MEMORY PATCH
+..........................
+----------------------------------------------------------------------
+Ran 26 tests in 1.887s
+
+OK

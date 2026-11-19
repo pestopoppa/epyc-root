@@ -1,0 +1,132 @@
+{
+  "requirement": "CH-17 promotion drafter re-selection",
+  "selection_status": "partial qualification preparation",
+  "comparison_row": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/row.spec.json",
+  "publisher": "/workspace/scripts/coordination/rowflow/publish_row.py",
+  "scope_file": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/scope.json",
+  "topology": {
+    "path": "/workspace/repos/epyc-orchestrator/orchestration/stack_topology.yaml",
+    "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+    "drafter_selection": {
+      "architect_critic": "dflash2"
+    }
+  },
+  "master_registry": {
+    "ref": "origin/main",
+    "commit": "e94c4dfbfceb9f5a5911337895320b2aaf43298e",
+    "path": "orchestration/model_registry.yaml",
+    "sha256": "2e153d548f377016bcffe605184dfeac0900c200b78746146845b449b1a8da06"
+  },
+  "supported_types_observed_on_c13_cpu_gpu_and_c14_cpu_gpu": [
+    "none",
+    "draft-simple",
+    "draft-eagle3",
+    "draft-mtp",
+    "draft-dflash",
+    "draft-dspark",
+    "ngram-simple",
+    "ngram-map-k",
+    "ngram-map-k4v",
+    "ngram-mod",
+    "ngram-cache",
+    "draft-tree"
+  ],
+  "candidate_image_hashes": {
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/llama-server": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/BUILD-IDENTITY.json": "16145e6b5b21d05b8f38ea140900932ca3dd5171efd0855685f6b8743d9937ca",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/llama-server": "2b4de56f813131a4bbb1c6d92deff8383e7afad8910a46b2ab5b3606b814c506",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/BUILD-IDENTITY.json": "91b4466a1cd4546697cb2dd9ca90b25c1dc764caecbb8324f2e22764a11a9892",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261118-eee3da838-c14/bin/llama-server": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261118-eee3da838-c14/BUILD-IDENTITY.json": "2e800366902f0345727db76f7ea0cb4dbb55fde90e0b8d810433f81b2fd058ea",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261118-eee3da838-c14/bin/llama-server": "2b4de56f813131a4bbb1c6d92deff8383e7afad8910a46b2ab5b3606b814c506",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261118-eee3da838-c14/BUILD-IDENTITY.json": "0a224d53be8120ca2dde5f563e391315768f7302deb15283542ac946936faae9"
+  },
+  "c14_adoption_condition": "Use the C14 candidate only if both C14 fold rows pass; CPU carry requires the filed D0 identity plus candidate linkage and exact serving artifact pins",
+  "launch_groups": [
+    {
+      "process": "frontdoor",
+      "backend": "cpu",
+      "ports": [
+        8070,
+        8080,
+        8180
+      ],
+      "aliases": [
+        "toolrunner",
+        "worker",
+        "worker_explore",
+        "worker_general",
+        "worker_math",
+        "worker_summarize"
+      ],
+      "incumbent": "legacy draft-mtp n-max 4, embedded NEXTN, no -md",
+      "registry_drafters": "undeclared",
+      "missing_comparison": "Same-image MTP vs no-draft at actual 96t np4 and 48t np1 serving shapes; attached quarter np1 row supplies bounded useful evidence. Reconcile legacy declarations; explicit rollout choice must cover all supported serving shapes."
+    },
+    {
+      "process": "architect_general",
+      "backend": "cpu",
+      "ports": [
+        8074
+      ],
+      "aliases": [],
+      "incumbent": "legacy draft-mtp n-max 4, p-min 0.5, external shared Q8_0 MTP",
+      "model": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "drafter": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+      "registry_drafters": "undeclared",
+      "missing_comparison": "Same candidate MTP vs none at 96t np1 262144 F16 KV with pinned shards and head; reuse the CPU paired request approach after sealing input pins. Earlier C6 54k wikitext MTP/none comparison used different kernel and np4.",
+      "runner": "/workspace/repos/epyc-inference-research/scripts/benchmark/serve_qwen38_flash_next.sh"
+    },
+    {
+      "process": "worker_vision",
+      "backend": "cpu",
+      "ports": [
+        8086
+      ],
+      "aliases": [
+        "vision_escalation"
+      ],
+      "incumbent": "no speculative decode explicitly disabled in compiled launch; mmproj present",
+      "registry_drafters": "undeclared",
+      "missing_comparison": "Catalog any eligible multimodal draft recipe before comparison. Existing image-bearing C13 quality evidence is for the disabled-spec baseline. No named alternate drafter is present."
+    },
+    {
+      "process": "architect_critic",
+      "backend": "gpu",
+      "ports": [
+        8083
+      ],
+      "aliases": [
+        "coder_escalation",
+        "ingest_long_context"
+      ],
+      "incumbent": "dflash2",
+      "registry_drafters": {
+        "dflash2": {
+          "spec_type": "draft-dflash",
+          "draft_max": 7,
+          "ngld": 99
+        },
+        "mtp": {
+          "spec_type": "draft-mtp",
+          "draft_max": 4
+        }
+      },
+      "control": "none",
+      "target": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "external_drafter": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "scope": "MI210 np4, unified q8_0 KV, context pool 393216, batch/ubatch 512",
+      "historical_evidence": [
+        "/workspace/artifacts/operator/v10-qualification-20260921-ffc1bac82.json",
+        "/workspace/repos/epyc-inference-research/artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json"
+      ],
+      "missing_comparison": "Exact final GPU candidate DFlash2, MTP and none in matched serving workload and quality gates. Historical v10/v9 np4 ratio 1.239 is cross-kernel. C8 DFlash2-only speed and parity do not compare the eligible candidate recipes.",
+      "runner": "/workspace/repos/epyc-inference-research/scripts/benchmark/g2_df25_concurrency_grid.py",
+      "adaptation": "/mnt/raid0/llm/tmp/codex-c6-fp64-probe-20261102/ch17-comparison/README.md",
+      "existing_decision_context": "Operator mandates DFlash2 for this model; carry with candidate evidence or report contradiction. Retain DF2-12.1 and distributional versus exact role constraints."
+    }
+  ],
+  "source_wiring_for_owner": "Prospective CH-17 CPU row RESULT.json and raw pairs.json produce candidate/model identity, matched controls, raw outcomes, in-window CPU ownership and quality/throughput comparisons. Register source and task with existing shared ClaimTuple ladder; do not infer promotion grade from this np1 quarter diagnostic.",
+  "nonclaims": "No selected-value change, final selection decision, formal promotion comparison, or native run has been inferred from preparation.",
+  "smoke_retry": "The first publisher attempt encountered absent ss in this host namespace. The retry checks ownership by matching /proc net/tcp listener inode to the exact launched PID before probing health. R2 tried the same port before R1 had drained. R3 uses dedicated port 19578 and retains live PID, affinity, and loaded project library observations during each request. R4 enables Rowflow isolated per-attempt result paths, required by the attempt-bound predicate."
+}

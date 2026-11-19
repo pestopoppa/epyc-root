@@ -1,0 +1,34 @@
+{
+  "bootstrap": "The pinned installer selects the first worktree and the reference-transaction script requires a checkout top-level. A minimal private non-bare hook host provides that checkout, pinned scripts, and isolated Git config, hooks and main ref.",
+  "changed": [
+    "run.py",
+    "source-pins.json",
+    "launch.sh",
+    "preparation.json",
+    "spec.json"
+  ],
+  "cleanup": "Both linked checkouts are removed via git worktree remove --force in LIFO order before PASS emission.",
+  "edit_checkout": "git worktree add --detach --no-checkout under the same isolated scratch-local Git repository",
+  "gitnexus_impact": "unavailable because repository is unindexed",
+  "historical_official_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official/RESULT.json",
+  "historical_receipt_scope": "Binds the prior seal. Current complete check requires the current seal. The already-filed receipt remains historical.",
+  "id": "vb-sync-worktree-control-20261118",
+  "launcher_sha256": "f77a3527a7b27d0f04dc28278f644dca79cc366ebef15911b76baf1f8c55743f",
+  "native_runtime_executed": false,
+  "prior_launcher_sha256": "34aff6a8966665ad6b7ee36463dcf0bf72ac776933300a2c86d24817149fb10c",
+  "prior_source_dir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/prior-source",
+  "prior_source_pins_sha256": "1832dc0efcbd93f9060a703cb9ec082086c1e1609bf591391960de1880c88f06",
+  "published": false,
+  "scope": "scratch source only",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current",
+  "seed_checkout": "git worktree add --detach under an isolated scratch-local Git repository",
+  "source_commit": "fcc89b474a0b9d906df5ea8e7cb9d4708ffeaeee",
+  "source_pins_sha256": "876d45256938dae707f2137f4665919e9323290bdbf4cf4bfe4c7c6398808691",
+  "status": "detached_seed_source_repaired_compile_verified",
+  "validation": [
+    "Python compile for current and prior run.py and job.py",
+    "Bash syntax check for current and prior launch.sh",
+    "Current and prior seal consistency and historical native receipt SHA-256",
+    "Both legacy seed paths are absent"
+  ]
+}

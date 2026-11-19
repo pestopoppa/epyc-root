@@ -1,0 +1,16 @@
+{
+  "id": "toc-cmp-3-final-request-20261118",
+  "owner": "h-delegation-context-preassembly",
+  "kind": "compute", "lane": "cpu", "regions": "0-3", "priority_rank": 55,
+  "admission_class": "diagnostic",
+  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-final-request/packet/launcher.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-final-request",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-final-request/native/RESULT.json",
+  "result_format": "json", "ram_gib": 14, "budget_gib": 1,
+  "estimate_s": 1000, "min_window_s": 1000, "max_window_s": 1500,
+  "resumable": false, "first_progress_s": 440, "unit_key": "unit",
+  "smoke_predicate": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -B /mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-final-request/packet/runner.py smoke",
+  "decision_rule": "completed >= 3", "handoff_task": "context-and-token-economy.md:TOC-CMP-3",
+  "keep": ["native/*"],
+  "notes": "Three fixed synthetic post-fold REPL requests to a recording worker transport with a local model evaluator. Smoke exercises one intact request. Coverage counts complete observations independently of agreement with expected labels."
+}

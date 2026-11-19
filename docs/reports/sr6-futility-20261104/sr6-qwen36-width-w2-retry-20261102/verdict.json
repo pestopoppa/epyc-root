@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-speculative-decoding-mtp",
+  "rationale": "UNKNOWN under sealed stop-on-futility rule: native PARTIAL result reports DrainError: cannot prove cgroup drained. No width comparison, registry change, adaptive extension or rerun is authorized by this packet.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:08:43+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-03T07:36:18Z reason=complete",
+ "filed_at": "2026-11-04T07:08:43+00:00",
+ "filed_by": "handoff-speculative-decoding-mtp",
+ "handoff_task": "speculative-decoding.md:SR-6",
+ "id": "sr6-qwen36-width-w2-retry-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/sr6-qwen36-width-w2-retry-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w2-retry-20261102/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-speculative-decoding-mtp",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "UNKNOWN under sealed stop-on-futility rule: native PARTIAL result reports DrainError: cannot prove cgroup drained. No width comparison, registry change, adaptive extension or rerun is authorized by this packet.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/sr6-qwen36-width-w2-retry-20261102/RESULT.json",
+ "root_cause_family": null,
+ "row": "sr6-qwen36-width-w2-retry-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "Retry of predeclared window 2 of three independent windows after prior W2 failed the region-lock checksum before workload. Select packet window w2, capture into the exact shared W1 exposure root, isolate retry smoke under smoke/w2-retry and retry server identities under output/servers-w2-retry. Preserve every exposure, response, placement and terminal; interrupted, incomplete, or missing provenance is UNKNOWN. Analyze only after all three independent windows under the sealed decision rule; no registry change or performance claim from this row alone. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "65535d0bbe1a7df66d2bf39981a7e5466067039da5a3e56d606c10c8accc0e67",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

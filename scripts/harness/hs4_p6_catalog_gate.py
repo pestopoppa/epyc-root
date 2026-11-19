@@ -3,10 +3,13 @@
 
 This comparator defines a provisional input contract. The P0.4/SC86 runner does
 not yet emit it; historical records must not be retrofitted to satisfy it.
+
+CLI exit status: 0 pass, 1 regression, 2 inconclusive or invalid input.
 """
 import argparse
 import json
 from pathlib import Path
+import sys
 
 ARMS = ('baseline', 'candidate')
 TRIALS = (1, 2)
@@ -95,8 +98,14 @@ def main():
     parser.add_argument('manifest', type=Path)
     parser.add_argument('records', type=Path, help='JSON array of prospectively bound trial records')
     args = parser.parse_args()
-    print(json.dumps(compare(json.loads(args.manifest.read_text()), json.loads(args.records.read_text())), indent=2))
+    try:
+        result = compare(json.loads(args.manifest.read_text()), json.loads(args.records.read_text()))
+    except (OSError, ValueError) as exc:
+        print(f'catalog gate: {exc}', file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2))
+    return {'pass': 0, 'fail': 1, 'unknown': 2}[result['verdict']]
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

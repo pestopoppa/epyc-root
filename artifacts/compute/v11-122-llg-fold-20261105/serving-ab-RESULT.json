@@ -1,0 +1,103 @@
+{
+ "verdict": "PASS",
+ "pairs": {
+  "p1": {
+   "none": {
+    "nollg": 58.627199999999995,
+    "llg": 41.50892524916944
+   },
+   "grammar": {
+    "nollg": 60.95363398504888,
+    "llg": 41.72566120507399,
+    "cost_nollg": 2.3264339850488867,
+    "cost_llg": 0.21673595590455363,
+    "tpot_delta_llg_minus_nollg": -19.22797277997489,
+    "cost_delta": -2.109698029144333
+   },
+   "json_schema": {
+    "nollg": 76.83171130952381,
+    "llg": 45.49425363825364,
+    "cost_nollg": 18.204511309523816,
+    "cost_llg": 3.985328389084202,
+    "tpot_delta_llg_minus_nollg": -31.337457671270172,
+    "cost_delta": -14.219182920439614
+   }
+  },
+  "p2": {
+   "none": {
+    "nollg": 42.88792275747508,
+    "llg": 42.10176666666667
+   },
+   "grammar": {
+    "nollg": 43.40584029304029,
+    "llg": 41.92780664451827,
+    "cost_nollg": 0.5179175355652106,
+    "cost_llg": -0.17396002214839967,
+    "tpot_delta_llg_minus_nollg": -1.4780336485220218,
+    "cost_delta": -0.6918775577136103
+   },
+   "json_schema": {
+    "nollg": 44.21481081081081,
+    "llg": 43.72233173076923,
+    "cost_nollg": 1.326888053335729,
+    "cost_llg": 1.620565064102557,
+    "tpot_delta_llg_minus_nollg": -0.4924790800415835,
+    "cost_delta": 0.29367701076682806
+   }
+  },
+  "p3": {
+   "none": {
+    "nollg": 40.80069344608879,
+    "llg": 41.291504456327985
+   },
+   "grammar": {
+    "nollg": 43.03318754688672,
+    "llg": 40.72563485607009,
+    "cost_nollg": 2.232494100797929,
+    "cost_llg": -0.5658696002578978,
+    "tpot_delta_llg_minus_nollg": -2.3075526908166353,
+    "cost_delta": -2.798363701055827
+   },
+   "json_schema": {
+    "nollg": 45.31579807692307,
+    "llg": 42.66728941441441,
+    "cost_nollg": 4.51510463083428,
+    "cost_llg": 1.3757849580864274,
+    "tpot_delta_llg_minus_nollg": -2.648508662508661,
+    "cost_delta": -3.1393196727478525
+   }
+  },
+  "p4": {
+   "none": {
+    "nollg": 41.79149048625793,
+    "llg": 41.33280964912281
+   },
+   "grammar": {
+    "nollg": 42.29824655819775,
+    "llg": 41.980139209726445,
+    "cost_nollg": 0.5067560719398188,
+    "cost_llg": 0.6473295606036373,
+    "tpot_delta_llg_minus_nollg": -0.31810734847130107,
+    "cost_delta": 0.14057348866381858
+   },
+   "json_schema": {
+    "nollg": 43.383036858974364,
+    "llg": 44.11504444444444,
+    "cost_nollg": 1.5915463727164365,
+    "cost_llg": 2.782234795321635,
+    "tpot_delta_llg_minus_nollg": 0.7320075854700789,
+    "cost_delta": 1.1906884226051986
+   }
+  }
+ },
+ "parity": {
+  "grammar_text_mismatch": 0,
+  "json_text_mismatch": 0,
+  "grammar_invalid": 0,
+  "json_invalid": 0
+ },
+ "grammar_tpot_delta_ms_median": -1.8927931696693285,
+ "json_tpot_delta_ms_median": -1.5704938712751222,
+ "n_rows": 216,
+ "metric": "TPOT ms (predicted_per_token_ms), lower is better; grammar cost = TPOT(grammar)-TPOT(none) same run"
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T19:20:28Z reason=complete
+job_id=vb-p5-sphinx-scorer-native-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=360
+started=2026-11-18T19:20:17Z
+regions=0-23

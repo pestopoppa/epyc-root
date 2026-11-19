@@ -1,0 +1,1219 @@
+{
+  "candidate_identity": {
+    "artifacts": [
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/candidate/bin/libggml-base.so.0",
+        "sha256": "23735e6f21028356fa81657393f9c4ffeda70477e3377a4fb49fb2eda55b002a"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/candidate/bin/libggml-cpu.so.0",
+        "sha256": "a19eb802decd2c76acd7403239ecf0ec054ae4519e2b991d6bd4cfff8edb6b5e"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/candidate/bin/libggml-hip.so.0",
+        "sha256": "45bca96a11d4dbaa30470e79b24012f32504d8c0edd00710c130ad755ca0bb7c"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/candidate/bin/libggml.so.0",
+        "sha256": "9c1bcacfe8fd67b0a1ac8dab56ff6c21ca6825a5771adfd8dbee1606461fa742"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/candidate/bin/test-backend-ops",
+        "sha256": "373b44b7476e7d34cae8e1b03e1bee40c31e515ece133667d440ce4128eb745f"
+      }
+    ],
+    "shim": {
+      "SHIM_NPROCS": 2,
+      "later_recreated_source_matches_receipt": false,
+      "original_source_digest_receipt": "51080dff80b0b8a72b7a41ce878f093eff0f13e739fee93d3490421c8d1041e6",
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/candidate/nprocs_shim.so",
+      "sha256": "d3103d7ab45e0a5fe9473d7dd401e5462f39c06174b4a64109af6e387e3b3eb4"
+    },
+    "source": {
+      "commit": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+      "removed_worktree_dirty_state": "UNKNOWN",
+      "snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/candidate/test-backend-ops.cpp",
+      "snapshot_sha256": "9a017871d6354015151630af6d75fa88d77637d599a40421a38746e0f67e7239"
+    }
+  },
+  "candidate_reads": {
+    "ADD": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+          "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/ADD.log#sha256=b1d320a3b6a7957342e49e8da7fbe6b71e021f9e66db367f81957fc612aec1c7",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "ADD",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-elementwise-20261117-v1",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0"
+        ],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "89b985b413fa692ff54df65d645a054286e6c38e3ac8386e4e5f562b248be9f0",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "ADD",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "MUL": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+          "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/MUL.log#sha256=b0ea98fd404eeb334c64be4f94a1b05ca4f4a7272e9b72fc950c2d941ac1c45d",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "MUL",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-elementwise-20261117-v1",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1"
+        ],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "a1e204fdd31effbe4072ab67a3ead31f6999a35ef161051f66ceae28368416ff",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "MUL",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "NORM": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+          "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/NORM.log#sha256=05e3a51c137c54a53c48452a802675379df7aee0a7ec7329c8e284bddd5adf93",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "NORM",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-elementwise-20261117-v1",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3"
+        ],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "db44e9f2672e31696c930b3e32ca1ce677995dc4b28db4ebe2409c021fe46c24",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "NORM",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "RMS_NORM": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+          "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/RMS_NORM.log#sha256=18d84046eb105bbceece34dc174f6a074a634d77d2d9be7046e4bd63c4db231a",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "RMS_NORM",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-elementwise-20261117-v1",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4"
+        ],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "86d06c3da33998cfaa59a622d5155a49cc0a3d2e76ef7f56b61f48ddf105724a",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "RMS_NORM",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "SCALE": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+          "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/SCALE.log#sha256=af41ead7c6bd1c748365e180805bbe32b2d9b08c78bfbe74362523f9a4a469d7",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "SCALE",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-elementwise-20261117-v1",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2"
+        ],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "76227f0effc8e075974fd12b6e5acc1cc35474b2df0b30e6c624a316630a15f3",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "SCALE",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "SUM": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+          "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/SUM.log#sha256=af169354088d833e49a55a86aab10cd80ce9de462528b6c609923602ef048976",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "SUM",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-elementwise-20261117-v1",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5"
+        ],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "422ee805733165a7800efe00337ec36241d23aa77a142ef08b017dccd6e88d92",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "SUM",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "SUM_ROWS": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+          "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/SUM_ROWS.log#sha256=7267383902fc39e511699041ed9f6fb6ee661901eb59e760acf8db7b12474114",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "SUM_ROWS",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-elementwise-20261117-v1",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "7d341075992ec3cf26c7d3911deeaa1ef6910ce5a6013f5f9b7f0a30eea0f9aa",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "SUM_ROWS",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "missing_operator": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "inapplicable_target",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "wrong_artifact": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "03050211a2d365ba7e9b97e31b20266efdec88c9fd53e28677487fddb49aac1c",
+        "op": "ADD",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "wrong_operator": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "NOT_A_GPU_POOL_OPERATOR",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "wrong_run": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "ADD",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v2",
+        "scope": "candidate"
+      }
+    },
+    "wrong_shim": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "dcda6f9832281c4fc57752dab608fd4779a017ed526f6841373cad302623932e",
+        "op": "ADD",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    },
+    "wrong_source": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "0000000000000000000000000000000000000000",
+        "candidate_sha256": "62c984bd57d0fd3fbf321169c3551bdfdc42a74526a0d39198c06568cdeac0d0",
+        "op": "ADD",
+        "run_id": "ni-gpu-pool-elementwise-20261117-v1",
+        "scope": "candidate"
+      }
+    }
+  },
+  "capture_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/belief.json",
+  "capture_sha256": "78d771863798c32fe5c89aefd727a0cf4c4426a0a65f68f072e3e3b8e31c8e6b",
+  "claims": [
+    {
+      "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+      "failed": 0,
+      "observed": 16,
+      "op": "ADD",
+      "partition": "16 native supported passes, 0 unsupported and 0 failures",
+      "passed": 16,
+      "rc": 0,
+      "seed": 2026102603,
+      "unsupported": 0
+    },
+    {
+      "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+      "failed": 0,
+      "observed": 16,
+      "op": "MUL",
+      "partition": "16 native supported passes, 0 unsupported and 0 failures",
+      "passed": 16,
+      "rc": 0,
+      "seed": 2026102603,
+      "unsupported": 0
+    },
+    {
+      "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+      "failed": 0,
+      "observed": 4,
+      "op": "SCALE",
+      "partition": "4 native supported passes, 0 unsupported and 0 failures",
+      "passed": 4,
+      "rc": 0,
+      "seed": 2026102603,
+      "unsupported": 0
+    },
+    {
+      "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+      "failed": 0,
+      "observed": 30,
+      "op": "NORM",
+      "partition": "20 native supported passes, 10 unsupported and 0 failures",
+      "passed": 20,
+      "rc": 0,
+      "seed": 2026102603,
+      "unsupported": 10
+    },
+    {
+      "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+      "failed": 0,
+      "observed": 21,
+      "op": "RMS_NORM",
+      "partition": "21 native supported passes, 0 unsupported and 0 failures",
+      "passed": 21,
+      "rc": 0,
+      "seed": 2026102603,
+      "unsupported": 0
+    },
+    {
+      "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+      "failed": 0,
+      "observed": 8,
+      "op": "SUM",
+      "partition": "7 native supported passes, 1 unsupported and 0 failures",
+      "passed": 7,
+      "rc": 0,
+      "seed": 2026102603,
+      "unsupported": 1
+    },
+    {
+      "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+      "failed": 0,
+      "observed": 10,
+      "op": "SUM_ROWS",
+      "partition": "4 native supported passes, 6 unsupported and 0 failures",
+      "passed": 4,
+      "rc": 0,
+      "seed": 2026102603,
+      "unsupported": 6
+    }
+  ],
+  "ingest": {
+    "adapter": "adapters/gpu_pool_native.py",
+    "adapter_id": "vidya.adapters.gpu_pool_native/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 21,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/belief.json"
+    ],
+    "refused": [],
+    "rows_projected": 7,
+    "source": "gpu-pool-native",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "native_grant": {
+    "deadline_epoch": 1795030650.0,
+    "path": "/mnt/raid0/llm/tmp/compute-flags/grants/ni-gpu-pool-elementwise-20261117-v1.grant",
+    "record": {
+      "end": "2026-11-18T19:39Z",
+      "holds": "gpu-quiet,t184,t185,t186,t187,t188,t189,t190,t191",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-18T19:28Z"
+    },
+    "smoke": false
+  },
+  "native_planning_context": true,
+  "native_producer_result": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/RESULT.json",
+    "sha256": "64df12bbc5df51d17b7bae2ffd7df78cebf47d141498431a84665bd0a7ec9eb8"
+  },
+  "official_native_acceptance": false,
+  "positive_planning_context": true,
+  "production_consumer_adoption": false,
+  "readers": {
+    "autokernel.planner": {
+      "checkout_checked": true,
+      "ledger_head": "sha256:19d179691075d050bc210fb188781265ce58934d7376331dcc4d40d0dd8b346d",
+      "model_target": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "visible_claims": []
+    },
+    "autopilot.planner": {
+      "checkout_checked": true,
+      "ledger_head": "sha256:19d179691075d050bc210fb188781265ce58934d7376331dcc4d40d0dd8b346d",
+      "model_target": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+          "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:0",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:1",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:2",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:3",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:4",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:5",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_gpu-pool:28abfecfde3f5e3258992af308dfb2c6bc614c7225bd1b6f70b7678b01b648c8:6",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "visible_claims": []
+    }
+  },
+  "retry": {
+    "adapter": "adapters/gpu_pool_native.py",
+    "adapter_id": "vidya.adapters.gpu_pool_native/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 0,
+    "frames_skipped": 21,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/belief.json"
+    ],
+    "refused": [],
+    "rows_projected": 7,
+    "source": "gpu-pool-native",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "row_id": "ni-gpu-pool-elementwise-20261117-v1",
+  "schema": "epyc.vidya.gpu_pool_candidate_scope.v1",
+  "scope": "candidate-local observations in the shared planning reader",
+  "sources_sha256": {
+    "adapter": "063650063cedab15e0218bd85648f6d89d4a32c46996167a1430e0449d451ef3",
+    "canary": "f2542455581540b8c51d87334c0c8e33ca2e4ed990e01b21c8a90d8ee36aaac9",
+    "carrier": "f540063d9a738d437476def902ef23a1e5b0420e8b0fe15d8742d53d1c67b5b5",
+    "consumer": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f",
+    "read_counter": "4e478e063b9267a0910cdfb5841dc4cc50aac43730841edb0d9f3d1ec4b40797",
+    "reader": "937f899cd39d6998bfadba3a6d3caef08e984bdb5d665b760e533b4438acb2fc"
+  },
+  "status": "passed",
+  "synthetic_control": false
+}

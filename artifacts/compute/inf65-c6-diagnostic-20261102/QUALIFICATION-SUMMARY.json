@@ -1,0 +1,30 @@
+{
+  "kind": "selected qualification receipts, raw retained in scratch",
+  "receipts": [
+    {
+      "ended": "rc=75 time=2026-11-02T12:58:38Z reason=partial-native-incomplete",
+      "id": "ch33-27b-dflash2-identity-v3-20261102",
+      "passed_at": "2026-11-02T12:58:42Z",
+      "receipt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch33-27b-dflash2-identity-v3-20261102/PASS.json",
+      "receipt_sha256": "7d036598c6510d647354dff2daccfc66a3731ef3ddfee7592daee7a30a4e61d6",
+      "units": 1
+    },
+    {
+      "ended": "rc=75 time=2026-11-02T13:05:20Z reason=partial-native-incomplete",
+      "id": "ch33-eg2-cobatch-cpu-v9-20261102",
+      "passed_at": "2026-11-02T13:05:24Z",
+      "receipt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch33-eg2-cobatch-cpu-v9-20261102/PASS.json",
+      "receipt_sha256": "d339b7480b39fd426b9f3e479359ced60e9baa17999598ca0d73533e5cb64e87",
+      "units": 1
+    },
+    {
+      "ended": "rc=75 time=2026-11-02T13:01:04Z reason=partial-native-incomplete",
+      "id": "codex-ch18b-build-20261102",
+      "passed_at": "2026-11-02T13:01:08Z",
+      "receipt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ch18b-build-20261102/PASS.json",
+      "receipt_sha256": "500b269c08137fb3167797f5e98e9d5756b194cd7a6bc1de3cd0e63106f8baf3",
+      "units": 1
+    }
+  ],
+  "scope": "first-unit qualifications only; no full model or build verdict"
+}

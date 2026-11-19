@@ -1,0 +1,10 @@
+{
+  "llg": {
+    "path": "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/libllama-bench-impl.so",
+    "sha256": "59ca73dbe97fbd5fbb440f8bb37fc682c3265f6ccea2011415c07d87d6a47802"
+  },
+  "nollg": {
+    "path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/c13-nollg-image/bin/libllama-bench-impl.so",
+    "sha256": "59ca73dbe97fbd5fbb440f8bb37fc682c3265f6ccea2011415c07d87d6a47802"
+  }
+}

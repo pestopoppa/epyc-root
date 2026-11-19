@@ -1,0 +1,11 @@
+{
+  "source": "/mnt/raid0/llm/tmp/kpf18-g3-repair-successor-20261029/candidate",
+  "source_hashes": {
+    "supervisor.py": "a85612e5c878d299c83a2dcac69b6f5126136354c3243c4f38394d56a29b0a9f",
+    "owned_drain.py": "6cf1d4159ee768b762ba76f911cab16b675a4b115b1fff34cf6c3e35aa461ec4",
+    "guard.py": "8c8dac0efdadb9552e0b826b1d9ba832b4a2ed6eab5393dc690319fe4b3faac3",
+    "output_reserve.py": "a763c65fc953c1ec2957b0b0784e7ed94f52b63985a12a6c633422460dd5d4fe",
+    "ledger.py": "ca2837fae282ecd0316f9216e6d03e46897168f1629ffef8437ccff1cc3fb53a"
+  },
+  "retained_result": "/mnt/raid0/llm/tmp/kvfork/g3-cleanup-qualification-20261104/RESULT.json"
+}

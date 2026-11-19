@@ -1,0 +1,4 @@
+/usr/local/lib/python3.12/dist-packages/vllm/_version.py
+/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel/lib/libamdhip64.so.7.16.26361-25e14349f2
+/usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_hip.so
+{'__version__': '0.33.0', '__commit_id__': None, 'commit_id': None}

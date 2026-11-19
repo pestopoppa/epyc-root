@@ -1,0 +1,507 @@
+# Hybrid-Model Checkpoint & Prompt-Reuse Exposure (+ KVCOMM fork)
+
+> **Split out of [`numa-placement-and-contention.md`](numa-placement-and-contention.md) on 2026-11-10 (INF-45 restructure, operator "yes, take both on").** The body below is the former `## Track: dynamic-stack-concurrency` lifted verbatim; box text is unchanged. Earlier fold history: [`../completed/dynamic-stack-concurrency.md`](../completed/dynamic-stack-concurrency.md).
+
+**Status**: COMPLETED 2026-11-19 — every box closed; DS-F1 moved to long-context-program.md (AM compaction track); earlyoom agent protection applied with `--avoid`. Slot-restore checkpoint fix validated on C13 and ships with the next production kernel.
+**Created**: 2026-11-10 (split)
+**Scratch**: `/mnt/raid0/llm/tmp/hybrid-checkpoint-prompt-reuse/`
+**Owner**: AutoKernel session (workspace-18)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-86)
+
+---
+
+
+> Folded from `handoffs/active/dynamic-stack-concurrency.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F17, route 1a, operator D1/D5; retired row RTG-11 → INF-45). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+
+### Dynamic Stack Assembly & Concurrency Management
+
+**Status**: COMPACTED 2026-05-28; default template realigned 2026-06-13 and DS-7 profile decision recorded 2026-07-04. Phases B-D are complete; DS-6/DS-7 design gaps are resolved and scaffolding exists. `epyc-orchestrator` `069f8c0` refreshed `stack_templates/default.yaml` to current live manifest topology with explicit aliases and retired-role rejection. `epyc-orchestrator` DS-E1 evidence packet tooling landed 2026-06-20; current packet output reports `ready_for_profile_decision=true` in `orchestration/reports/ds_e1_evidence_packet_20260705T094913Z.{json,md}`. Stack roster, DS-5 manifest freshness, contention matrix, RI-10 canary evidence, and production KV measurements are ready. Research manifest references were refreshed for the v6-era stack-prior contract, `epyc-orchestrator` `a62f9d14` validates contention evidence against measured contention roles so auxiliary launcher-only topology additions do not create false DS-E1 staleness, and `epyc-orchestrator` `c98c9e14` makes manifest freshness content-aware so same-version stack-prior recompile timestamps do not create false DS-E1 blockers when all live roles are covered. Phase E decision: retain the `default` steady-state/static-prewarm profile and park DS-6 QuarterScheduler until future evidence proves static pre-warm leaves material throughput or latency on the table. Decision artifact: `orchestration/reports/ds7_profile_decision_20260704T194020Z.{json,md}`. `epyc-orchestrator` `464aca54` now makes that profile self-policing by validating the default template's deployable ports and logical alias serving ports against generated live stack priors. Phase F KV sharing remains optional after AM/q4_0 feasibility.
+**Priority**: HIGH when Phase E evidence is available; otherwise blocked/monitor.
+**Domain**: routing-and-optimization primary; inference-acceleration cross-list for Phase F KVCOMM only.
+**Completed ledger**: [`../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md`](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md)
+**Updated**: 2026-07-05
+
+#### Start Here
+
+Do not restart DS-6 or DS-7 from first principles. The historical ledger contains the full design record and gap resolutions. The next implementer should:
+
+1. Check whether Phase E inputs exist: Package B throughput baselines, RI-10 canary/escalation data, and DS-5/autoresearch model-stack findings.
+2. If those inputs are absent, keep this handoff blocked and update the responsible source handoffs instead.
+3. If those inputs are present, translate them into one stack-template/profile change, validate with `--validate-only`, then decide whether QuarterScheduler work is still justified. Current answer: `default` is the retained steady-state/static-prewarm profile.
+4. Treat Phase F KVCOMM as a separate research fork; it must not block DS-6/DS-7 profile work.
+
+2026-07-05 packet result: DS-E1 is decision-ready and machine-checkable through `scripts/server/dynamic_stack_evidence_packet.py`. Current output (`orchestration/reports/ds_e1_evidence_packet_20260705T094913Z.{json,md}`): generated stack-prior roster ready (`10` live roles, compiled `2026-07-05T08:13:39Z`), DS-5 research manifest freshness ready because `stack_priors_version=4` matches and all live roles are covered despite a compile-timestamp mismatch, contention matrix ready for full live topology `5d19b3e4edf6fc27` by validating its measured contention-role subset (`df373c79cc4af06f`) and excluding auxiliary `eval_batch_frontdoor`, RI-10 canary evidence ready, and production KV-size measurements ready. Nearby `data/kv_cache_quant/kv_quant_*.csv` artifacts are still not DS-E1 evidence: they use a different schema and contexts, lack production role rows, and must not be converted into this gate. DS-7 profile interpretation is recorded in `orchestration/reports/ds7_profile_decision_20260704T194020Z.{json,md}`: retain `stack_templates/default.yaml` as `steady_state_static_prewarm`; `python3 scripts/server/orchestrator_stack.py start --stack-profile default --validate-only` passed with `17` roles, `28` instances, and `657` GB RAM estimate.
+
+#### Outstanding Tasks
+
+- [x] **DS-E1 — Phase E evidence packet**: collect current evidence before coding scheduler changes. `epyc-orchestrator` owns a read-only packet generator; write fresh packet artifacts with a current timestamp:
+  `python3 scripts/server/dynamic_stack_evidence_packet.py --output orchestration/reports/ds_e1_evidence_packet_$(date -u +%Y%m%dT%H%M%SZ).md --strict`.
+  - [~] Package B single-instance vs concurrent throughput for the roles under consideration: historical April CPU optimization data and current serving docs support the architecture direction, but the strongest numeric data predates the current June role/model map.
+  - [x] RI-10 escalation/canary data for architect burst frequency: current DS-E1 packet reports canary evidence ready.
+  - [x] DS-5/autoresearch model roster and role-quality findings: generated stack-prior roster is packaged, and research `docs/MODEL_MANIFEST.md` now references the current stack-prior contract. DS-E1 accepts same-version timestamp drift only when every live role is still represented.
+  - [x] Production KV size measurements at 2K/8K/32K tokens: direct measurement artifacts now satisfy the DS-E1 packet gate. Keep `scripts/benchmark/ds_e1_kv_measurements.sh --execute` as the rerun harness if topology or model context changes.
+  - [x] Mixed-role NUMA contention evidence, especially same-node cross-model interference: `orchestration/contention_matrix.yaml` is fresh for measured contention-role topology `df373c79cc4af06f`; full live topology is `5d19b3e4edf6fc27` because it includes launcher-only auxiliary `eval_batch_frontdoor`, which is excluded from the measured matrix check. The current serving wiki records full/quarter overlap hazards.
+- [x] **DS-7-live — Profile codification from evidence**: `stack_templates/default.yaml` now carries `metadata.ds7_profile=steady_state_static_prewarm` and `metadata.ds7_decision.status=retain_default`, backed by `orchestration/reports/ds7_profile_decision_20260704T194020Z.{json,md}`. Validation command `python3 scripts/server/orchestrator_stack.py start --stack-profile default --validate-only` passed with `17` roles, `28` instances, and `657` GB RAM estimate. This records a profile decision, not a live stack change.
+- [x] **DS-7-guard — Default template/generated-prior parity** ✅ 2026-07-06: `epyc-orchestrator` `464aca54` extends `validate_template()` so the production `default` profile fails if deployable role ports drift from generated live stack-prior serving ports, while alias roles pass only when their generated serving ports are covered by the alias target. Experimental templates remain flexible and embedding-only helper roles remain outside the live-prior parity surface.
+- **[declined: ws58 2026-11-03 content-review: parked with a conditional nobody schedules]** **DS-6-live — QuarterScheduler revalidation gate**: parked. Only implement dynamic quarter reassignment if future DS-E1-equivalent evidence shows static pre-warm leaves material throughput or latency on the table. If triggered, implement the already-resolved design:
+  - Runtime backend mutation API: `add_instance(url)`, `remove_instance(url)`, `register_quarter(role, url)`, `unregister_quarter(url)`.
+  - `QuarterScheduler` state machine with `HEALTHY/SUSPECT/DEAD/DRAINING/LAUNCHING/AVAILABLE`.
+  - Quarter-fixed ports, liveness checks, drain protocol, idle-time tracking, and retry-compatible degradation.
+- *DS-F1 moved to long-context-program.md (AM compaction track) 2026-11-19, operator.*
+- **[declined: ws58 2026-11-03 content-review: merged into DS-F1 as its conditional follow-on]** **DS-F2/F3/F4 — Cache-aware routing fork**: if DS-F1 passes, design the anchor pool, wire `ConcurrencyAwareBackend` cache-aware routing, and add `prefill_speedup_coder_pool` metrics.
+
+##### Inherited from earlyoom-oom-protection closure (2026-06-12)
+
+earlyoom is deployed and verified live ([`../completed/earlyoom-oom-protection.md`](../completed/earlyoom-oom-protection.md)); these optional residuals now live here because this handoff owns the preventive ceilings and stack-lifecycle concerns earlyoom complements:
+
+- [x] **Optional `--ignore` tweak**: add `claude|codex` to earlyoom's `--ignore` regex (e.g. `'^(llama-server|sd-server|claude|codex)$'` in `/etc/default/earlyoom`) to shield agent sessions — under `--sort-by-rss` a `claude`/`codex` session can otherwise be a victim before a small runaway. Non-blocking; operator edit + `systemctl restart earlyoom`. ✅ 2026-11-19 (pipeline-mgmt): applied by the operator on the host as `--avoid ^(claude|codex)$` instead of `--ignore` (agent sessions are killed LAST, never made unkillable — a runaway session stays killable), via drop-in `/etc/systemd/system/earlyoom.service.d/ignore-agents.conf`; verified running argv (pid 905693, started 2026-11-19T11:13:24) carries `--ignore ^(llama-server|sd-server)$ --avoid ^(claude|codex)$`. [no-belief: host config change, verified by argv]
+  **VERIFIED 2026-07-29 (`auditor`) — premise CONFIRMED, prescription CORRECTED, still operator-only.**
+  *Live config (pid 3761):* `earlyoom -M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore
+  '^(llama-server|sd-server)$' --prefer '^llama-bench$'`. So `--sort-by-rss` is on and the ignore list
+  does **not** cover `claude|codex`. Premise holds.
+  **The prescription as written cannot be followed from any agent session, and neither step exists:**
+  `/etc/default/earlyoom` **does not exist** on this host, and this container **is not booted with
+  systemd** (`systemctl` → *"System has not been booted with systemd as init system (PID 1)"*), so
+  `systemctl restart earlyoom` cannot work here. earlyoom is **PPID 1, started 13:41:48 at host boot**
+  — it lives outside the container entirely. This is a HOST-side operator action; the file/command
+  pair in the row would send whoever picks it up on a hunt for things that are not there.
+  **The rationale is stronger than the row states, measured:** thresholds are ~40 GB warn / ~20 GB kill
+  (`-M 41943040,20971520` KiB) against **1133 GB total, 1115 GB available**. The largest non-ignored
+  processes are `megasync` 1.1 GB and `claude` 0.7/0.6/0.6 GB, `codex` 0.4/0.4/0.3/0.3 GB. So if
+  earlyoom ever fires, the memory is held by the **ignored** llama-servers, and `--sort-by-rss` would
+  select a ~0.7 GB agent session against a ~20 GB deficit — **a futile kill that destroys a main
+  without relieving the pressure.** That, not "agents are victims", is the argument for the tweak.
+  *Not applied: host-side, operator-owned, and a restart briefly leaves the host unprotected.*
+  - **Operator status 2026-11-10:** not chosen in the 2026-11-10 package; stays an open operator decision (host-side edit).
+  - *(2026-11-17, autokernel)* Re-read live at 2026-11-17T11:04Z: earlyoom pid 4210 (started 2026-11-08 09:16Z), argv
+    `-M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore ^(llama-server|sd-server)$ --prefer ^llama-bench$ -N
+    /mnt/raid0/llm/epyc-root/scripts/hooks/earlyoom_audit.sh` — unchanged, `claude|codex` still not ignored. Exact host-side change
+    (run on the HOST, not in a container; dry-tested against a copy of the file):
+    `sudo sed -i.bak-20261117 "s#^EARLYOOM_ARGS=.*#EARLYOOM_ARGS=\"-M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore '^(llama-server|sd-server|claude|codex)\$' --prefer '^llama-bench\$' -N /mnt/raid0/llm/epyc-root/scripts/hooks/earlyoom_audit.sh\"#" /etc/default/earlyoom && sudo systemctl restart earlyoom && ps -o pid,lstart,args -C earlyoom`.
+    Waiting on: the operator running that host command (agents have no host shell). Tick when the live argv shows the new
+    `--ignore`.
+- **[declined: ws58 2026-11-03 content-review: an open question, not a task]** **Open question — pause-loads-after-kill hook**: earlyoom has no built-in post-kill backoff (issue #309); mlock'd pages free slowly, so it can kill several processes in ~100 ms succession before headroom is reflected. Is a pause-new-model-loads hook (triggered by the `-N` audit hook's sentinel, or by the autopilot) worth wiring into `orchestrator_stack.py`?
+- **[declined: ws58 2026-11-03 content-review: an open question, not a task]** **Open question — pre-kill `-P` hook**: worth firing the autopilot host-health remediation (drop_caches/throttle-check) *before* a kill? Risk: a pre-kill script that itself allocates under memory pressure is dangerous — must be allocation-free if used.
+
+##### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
+
+- [x] **DS-LB1 — Add tokenizer-only prefix-property tests with captured-client fixtures (turn k+1 extends turn k; two sessions share the system trunk) as the static guard for the prefix-stability assumption, and log per-session accumulated service time next to arrival order in the N-session replay so the admission ordering key can be compared offline (intake-2386, intake-2430).** ✅ 2026-10-22
+  - *(2026-10-22, workspace-f8 / locals-c.)* Both halves landed on the research branch `f8/locals-c-research-20261022` (worktree `/mnt/raid0/llm/worktrees/f8-locals-c-research`, unmerged, unpushed). (a) Prefix-property tests `scripts/benchmark/prefix_property/` (`65152c086`): reply-prefix, token-prefix and shared-system-trunk over four synthetic captured-client fixtures (tool loop, its trunk-sharing partner, plain chat, REPL code lines), using the v10 `test-chat-template` jinja engine and `llama-tokenize` (`vocab_only`, ~100 MB RSS, <1 s per GGUF) from the kernel store; 22 tests, expected outcomes pinned per role. (b) The N-session replay now logs `arrival_seq` and per-session accumulated service time (`svc_before_ms`, `svc_ms`, `svc_after_ms`), and `analysis.ordering_report` computes the FCFS-vs-least-accumulated-service disagreement share offline (`8b545b228`, 2 tests). No live replay has run yet, so no disagreement number exists.
+
+#### Dependency Graph
+
+```text
+Package B + RI-10 + DS-5 + KV-size data
+    -> DS-E1 evidence packet
+        -> DS-7-live profile codification
+        -> DS-6-live QuarterScheduler revalidation
+
+attention-matching P2
+    -> DS-F1 q4_0 offset feasibility
+        -> DS-F2 anchor pool
+            -> DS-F3 cache-aware routing
+                -> DS-F4 eval metrics
+```
+
+#### Forks And Mitigations
+
+| Condition | Action |
+|-----------|--------|
+| Phase E evidence is missing or stale | Do not code DS-6. Update the source handoffs and leave this blocked. |
+| Static pre-warm is sufficient | Keep DS-6 as design-only; spend effort on DS-7 profile hygiene and monitoring. |
+| QuarterScheduler is triggered | Implement drain-first reassignment; no mid-request evictions except as retry-compatible defense-in-depth. |
+| KVCOMM q4_0 quality gate fails | Defer Phase F; keep AM compaction as the primary KV-size lever. |
+| Disaggregated serving appears attractive | Compare against [`numa-prefill-decode-disaggregation.md`](../completed/mi210-serving-program.md#track-numa-prefill-decode-disaggregation); prefer Sarathi-style chunked prefill before NUMA KV transfer unless measurements prove otherwise. |
+
+#### Key Files
+
+| Repo | Path | Purpose |
+|------|------|---------|
+| epyc-orchestrator | `scripts/server/orchestrator_stack.py` | stack launch, profile selection, migration CLI |
+| epyc-orchestrator | `src/config/stack_templates.py` | template schema, loader, resource validation |
+| epyc-orchestrator | `src/backends/concurrency_aware.py` | full/quarter routing, slot save/restore primitives |
+| epyc-orchestrator | `src/backends/round_robin.py` | runtime backend rotation; add/remove API if DS-6 resumes |
+| epyc-orchestrator | `src/api/health_tracker.py` | circuit/health pattern for quarter liveness |
+| epyc-orchestrator | `tests/unit/test_stack_templates_v2.py` | existing DS-7 validation coverage |
+| epyc-orchestrator | `scripts/server/dynamic_stack_evidence_packet.py` | read-only DS-E1 evidence packet generator |
+| epyc-orchestrator | `orchestration/reports/ds_e1_evidence_packet_20260704T192333Z.md` | current DS-E1 packet artifact |
+| epyc-orchestrator | `tests/unit/test_dynamic_stack_evidence_packet.py` | packet generator regression coverage |
+
+#### Implementation Notes
+
+Resolved scheduler skeleton from the ledger, reduced to the current live contract:
+
+```python
+class QuarterScheduler:
+    def assign(self, role: str, priority: int) -> QuarterState:
+        """Prefer idle healthy quarters, then evict the lowest-priority idle occupant."""
+
+    def drain_for_burst(self, quarters: list[str], timeout_s: float = 30.0) -> None:
+        """Mark DRAINING, stop new routing, wait for active counts to hit zero."""
+
+    def heartbeat(self) -> None:
+        """Poll /health; remove DEAD quarters from backend rotation and relaunch."""
+```
+
+The within-role placement handoff owns the full-to-quarter transition trigger and topology-safety vetoes. This handoff owns stack/profile orchestration and dynamic quarter assignment only.
+
+#### Completed Scope
+
+| Scope | Outcome | Evidence |
+|-------|---------|----------|
+| DS-B observability | DS-1 queue depth, DS-2 escalation rate, DS-3 `--slot-save-path`, DS-4 stack state complete. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
+| DS-C pre-warm | 1x96t + 4x48t pattern documented and deployed for key roles in the historical stack. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
+| DS-D concurrency-aware routing | Session affinity, KV save/restore, and migration-thread design completed. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
+| DS-6 design audit/gaps | Dynamic URL API, liveness, quarter-fixed ports, drain protocol, idle tracking, and degradation strategy resolved. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
+| DS-7 template scaffolding | Template schema, selection mechanism, migration path, and resource validation designed; Gap 3/4 closure implemented 2026-04-21. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
+| DS-7 default-template realignment | `069f8c0` added explicit alias support/rejection of retired deployable roles and updated the checked-in default template to current live manifest topology. | `epyc-orchestrator` `069f8c0` |
+| DS-E1 evidence audit + DS-7 profile decision | Current stack-prior roster, DS-5 manifest freshness, RI-10 canary evidence, production KV measurements, and contention matrix evidence are packaged; `ready_for_profile_decision=true` in the current packet. `stack_templates/default.yaml` now records `steady_state_static_prewarm` / `retain_default`, and the DS-7 decision report keeps DS-6 parked until future evidence proves static pre-warm insufficient. | `epyc-orchestrator` `orchestration/reports/ds_e1_evidence_packet_20260704T192333Z.md`; `epyc-orchestrator` `orchestration/reports/ds7_profile_decision_20260704T194020Z.md`; `python3 scripts/server/orchestrator_stack.py start --stack-profile default --validate-only` |
+| DS-7 default-template prior-drift guard | `validate_template()` now checks the production default profile against generated live stack priors: deployable ports must match, and generated alias ports must be served by their template alias target. | `epyc-orchestrator` `464aca54`; `uv run pytest -q tests/unit/test_dynamic_stack.py tests/unit/test_stack_templates_v2.py`; `uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate` |
+| Research intake | DistServe/Splitwise/Mooncake/ORCA/Sarathi and SGLang hybrid-memory implications captured. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
+
+#### Reporting Instructions
+
+- Update [`routing-and-optimization-index.md`](routing-and-optimization-index.md) for DS-E1/DS-6/DS-7 status changes.
+- Update [`inference-research-index.md`](inference-research-index.md) only for Phase F KVCOMM status.
+- If DS-E1 blocks on missing evidence, update the source handoff for the missing evidence rather than expanding this file.
+- If Phase F is abandoned or deferred, record the reason here and in [`attention-matching-kv-compaction.md`](long-context-program.md#track-attention-matching-kv-compaction).
+
+#### Research Intake Update — 2026-06-20
+
+##### drove — proactive cold-role idle-teardown (intake-701)
+
+- DROP drove's ASR-facade idea: already shipped (`whisper_server.py` exposes OpenAI `/v1/audio/transcriptions`; `start_whisper` is a first-class managed service in `orchestrator_stack`).
+- KEEP: proactive WHOLE-PROCESS idle-teardown of COLD/RARE roles (e.g. `sd_server`, `document_formalizer`) as an OPTIONAL RAM-reclaim policy (a "DS-7-profile" option), explicitly DISTINCT from the existing DS-6 quarter-eviction idle-timeout (reassigns quarters, does NOT reclaim RAM) and from earlyoom (reactive ceiling). NEVER for hot pre-warmed roles — wholesale lazy-load is an anti-pattern for our deliberately pre-warmed + mlock single-user stack. Gated on the DS-E1 evidence packet. No benchmarks (tiny project, observations).
+
+#### Research Intake Update — 2026-08-21 (Stage-2b, intake-1274#record / intake-1279#record)
+
+- [x] **K4 (Z) — the frontdoor's `-ub 8192` is silently inert.** `cparams.n_ubatch = std::min(cparams.n_batch, n_ubatch)`
+      and `-b` is never passed, so the effective micro-batch is the **2048 default**. Either pass
+      `-b 8192` or drop the flag — as it stands the launch config misrepresents itself, and any
+      reasoning that assumes an 8192 ubatch is wrong. Independent of everything else here; fix regardless.
+      ✅ 2026-09-23 — epyc-orchestrator `3cb53971` + regenerated chain `3c6721ef`: manifest declares `default_ubatch_tokens: 2048` (the value llama.cpp was already clamping to — no effective change), `_warn_if_ubatch_exceeds_batch` on all three builders, 11 tests. `-b 8192` (a real change) stays a measurement question.
+- [x] **K4a — the research master still declares `server_defaults.ubatch_size: 8192`** (mirrored into orch `model_registry.yaml:46` / `_full.yaml:490`). No code reads it today, so it is informational drift, but it restates the inert value; set it to 2048 in the master and recompile (SSU owns the master registry). ✅ 2026-10-31 — Research `a164f0991655b9d899834eb4bfc782d5d32a6efe`; APP `da2fec3e155611118928d0e7b903428bdb6fd0d1`; 22 existing compiler/registry tests passed, [raw tests and compiler/source proof](../../artifacts/compute/codex3-k4a-20261031/REPORT.md). [no-belief: registry source consistency]
+  - The original no-reader premise is historical: both script executors consume this default; explicit role constraints and overrides retain precedence. The master is 2048 and the lean registry was regenerated with 23 active roles unchanged plus six pre-existing inactive catalogue entries. Full mode retains its tracked symlink; its separate shared working-copy target was still 8192 at observation. This closes the source/master-and-compiler task; no running-service or shared-clone deployment is claimed.
+- [x] **G4 (G) — measure our actual post-restore prompt-reuse rate.** We call
+      `/slots/{id}?action=save|restore` for full↔quarter slot migration (`llama_server.py:1242,1268`;
+      `concurrency_aware.py:126,148`). Upstream issue #25913 (open, verified on master) reports restore
+      **silently delivering zero prompt reuse on hybrid/recurrent models**, and open PR #26004 reports
+      context checkpoints not preserved across save/restore. Our frontdoor model is `qwen35moe` —
+      30 Gated DeltaNet + 10 full-attention layers — i.e. squarely a hybrid recurrent architecture.
+      **SCOPE CORRECTED AND DORMANCY CLAUSE VOIDED, 2026-08-22 (Stage-2b dive on #25913/#26004).**
+      **(a) The row's scope was too broad, in the direction that matters.** Reuse is zero only for a
+      post-restore prompt that **diverges** from the restored prefix, or is an **exact repeat** of it.
+      A prompt that **strictly extends** the restored prefix reuses **fully**. Derived from our own
+      frozen source — `server-context.cpp:3320,3322` compute
+      `pos_min_thold = max(0, pos_next - n_swa - (has_new_tokens ? 0 : 1))` and the reset block at
+      `:3374` runs only when `pos_min >= pos_min_thold`, while `llama-memory-hybrid.cpp:172-175`
+      returns the *recurrent cell's* position as `seq_pos_min` — and stated outright by the PR author.
+      Four independent upstream measurements fit that table exactly.
+      **Our full↔quarter migration is a turn-boundary session handover, i.e. the continuation shape.**
+      So "every migration costs a full re-prefill" is NOT the default expectation; it is the failure
+      mode that occurs when something rewrites the prefix. That reframes this row from *confirm a
+      known loss* to *determine whether our request stream stays a strict continuation across a
+      migration boundary* — a different and cheaper measurement.
+      **(b) The dormancy escape is VOID — the path is LIVE.** `--slot-save-path
+      /mnt/raid0/llm/cache/kv_slots/frontdoor` is set on all three frontdoor instances (8070/8080/8180,
+      read from `/proc/<pid>/cmdline`); 75 `kv_migrate_*` artifacts sit on disk; live probes recorded
+      forward=6 / reverse=4 with `n_aborted=0`. Qualification: those artifacts carry synthetic
+      `old-sess_*` ids and the newest is 2026-08-09, so exercise by *production traffic* in the last
+      two weeks is unproven — but the path is wired, enabled and demonstrably run.
+      **Gate, restated:** three arms — strict continuation, exact repeat, divergence at ~50 % depth —
+      at ~4K/16K/64K prefixes, reading `timings.cache_n` and `prompt_n` from the first completion
+      after a restore. Continuation ≈ 0 → the feature is a net loss as configured. Continuation ≈ full
+      with the other two ≈ 0 → the defect is real but our migration shape avoids it; close as
+      **exposed-but-not-hit** and keep the prefix-stability guard below as the standing control.
+      **THE FIXTURE MUST RESTART THE TARGET SERVER (or set `--cache-ram 0`) BETWEEN ARMS.** An upstream
+      reporter lost a day to leftover in-RAM checkpoints making a broken restore look like a 340×
+      success, and our frontdoor runs the 8 GiB default with no override.
+      **SHARPENED 2026-08-23 [wave-2 plan G6] — the arms are the point, and H21 below now tells us
+      which one production actually is.** One frontdoor instance restarted with **`--cache-ram 0`
+      (mandatory, not advisory — the 340x false negative above was measured, not hypothesised)**,
+      production argv otherwise, greedy seed 42. Cold prefill ~16K, save, erase all slots, restore,
+      then measure. Repeat the whole sequence at ~64K.
+      **Three arms:**
+      - **E1 — strict extension.** The next request begins with the restored prefix byte for byte.
+        **This is the production shape**: H21 below traces `/v1/chat/completions` and finds our
+        post-migration request *is* a strict extension for tool-free traffic. The code predicts
+        **full reuse**.
+      - **E2 — divergence** at ~50% depth. Control. The code predicts **~0**.
+      - **E3 — with `request.tools` present.** H21's second exception: the native-tools block is
+        appended *after* history, so it moves down past the new messages each turn and the shared
+        prefix ends at the previous turn's history. Prediction is a **bounded tail re-prefill**
+        (`u_N` + `a_N` + tools block + `u_N+1`), independent of conversation length — **not** a full
+        re-prefill, and **not** full reuse either.
+      **Read `timings.cache_n` and `prompt_n` from the first completion after each restore.**
+      **Gate, restated against the arms:** E1 full and E2 ~ 0 ⇒ the upstream defect is real but our
+      migration shape avoids it — close as **exposed-but-not-hit** and keep the prefix-stability
+      guard below as the standing control. **If E1 reads ~ 0 anyway, that is a CPU-side defect worse
+      than upstream describes and this row escalates to a v10 blocker**, because the code says it
+      should have reused. E3 materially below its bounded prediction reopens the tools path
+      separately. [intake-1292#record]
+      **Next action (2026-11-17, autokernel) [inference]:** row `inf86-g4-restore-reuse-20261117-r2` (supersedes r1, which hit its window after c64k E2; r2 reused r1's units and ran c64k E3). model: Qwen3.6-35B-A3B-MTP-Q8_0
+      frontdoor recipe (terse template 1443ea9ab4bb, thinking off, draft-mtp 4, q8_0 KV, ctx_checkpoints 32), `-np 1`, `--cache-ram 0`
+      (mandatory), `--slot-save-path` in the row. quant_build: Q8_0 on the production v10 CPU store `ffc1bac82`. region: CPU quarter,
+      est 10800 s. Per class (16K, 64K): cold prefill + save, then for each arm erase -> restore -> first completion: CTRL (erase,
+      no restore: instrument check), E1 strict extension, E0 exact repeat, E2 divergence at 50%, E3 tools block moved past a_N.
+      metric: `cache_n` / `n_saved` of the first post-restore completion (higher is better for E1). rule: INSTRUMENT_FAIL if CTRL >
+      5% or `n_restored != n_saved`; V10_BLOCKER if E1 < 10% in any class; EXPOSED_NOT_HIT if E1 >= 90% and E2 < 10% in both;
+      else DEGRADED; E3 reported against its bounded-tail prediction. Stop-on-answer when both classes complete and summarize.py
+      gives the verdict; stop-on-futility on a failed precondition, save failure, server not ready or not our PID, timings missing,
+      STOP file or deadline; gate-class = futility-only. [no-belief: row published, no result yet]
+      ✅ 2026-11-17 row `inf86-g4-restore-reuse-20261117-r2` filed pass, **EXPOSED_NOT_HIT**: E1 (strict extension, the production
+      migration shape) reuses 100% of the restored slot at both sizes (16K cache_n 15722/15722, prompt_n 1186, 19.2 s vs 181 s cold;
+      64K 63300/63300, prompt_n 1139, 70.7 s vs 1962 s cold); CTRL 0 (instrument clean, n_restored == n_saved), and E0 exact repeat,
+      E2 50% divergence and E3 tools-block reuse 0 (full re-prefill) at both sizes. The upstream defect is real but our migration
+      shape avoids it; E3 sits below its bounded-tail prediction (0 reuse, not a tail), so a tools-carrying session migrated across
+      a restore re-prefills fully. Evidence /mnt/raid0/llm/tmp/inf86-g4-restore-reuse-20261117-r2/out/RESULT.json. [no-belief: row verdict filed by agent]
+  - [x] **INF-86-G4-E3-TOOLS-REPREFILL** [inference] After a slot restore, a session whose tools block moved re-prefills in FULL
+    (reuse 0 at 16K and 64K, row `inf86-g4-restore-reuse-20261117-r2`, arm E3) instead of the bounded tail (`u_N` + `a_N` + tools +
+    `u_N+1`) G4 predicted. Find where the prefix match breaks: (1) template ordering of the tools block vs messages (does the
+    terse template / jinja render tools into the system turn, so the divergence lands at the top?), and (2) checkpoint position
+    (a restored slot carries no checkpoint at the end of `H_N-1`, so a hybrid model cannot roll back to the shared prefix).
+    Then decide whether the orchestrator can keep the tools block position-stable (pinned in the system turn, or always after
+    the latest user turn as in the saved request). model: Qwen3.6-35B-A3B-MTP-Q8_0 frontdoor recipe (terse template
+    1443ea9ab4bb). quant_build: Q8_0 on the production v10 CPU store `ffc1bac82`. region: CPU quarter, est 7200 s. Step 1 is zero
+    compute: render the E3 save and next requests with `/apply-template` or the jinja engine and record the first divergence
+    offset; the run (if needed) re-does E3 at 16K with tools pinned vs moved. metric: `cache_n` / `n_saved` of the first
+    post-restore completion (higher is better). rule: STABLE_FIX if pinned-tools reuse >= 90% of the shared prefix; NO_FIX if
+    < 10% with byte-identical shared prefix (checkpoint cause, upstream #26004 class). Stop-on-answer when the divergence offset
+    is located and the pinned arm gives a verdict; stop-on-futility on a failed precondition, server not ready or not our PID,
+    timings missing, STOP file or deadline; gate-class = futility-only. [no-belief: new box from G4 gate]
+    - *(2026-11-17, step 1, zero compute)* Offline jinja render of the frontdoor template 1443ea9ab4bb (saved E3 request vs next):
+      first divergence at char 54946 of 55306, **99.35% depth**, at the end of `u1` where the tools text began; tools are NOT in
+      the system turn. So the top is byte-identical and the full re-prefill is the **checkpoint cause** (no restorable recurrent
+      state at the divergence point), not a template-ordering defect; the shared prefix is ~99% of the save. Evidence
+      `/mnt/raid0/llm/tmp/inf86-e3-render-20261117/result.json`. Row `inf86-g4-e3-tools-20261117` (16K: CTRL, MOVED = G4 E3, PINNED =
+      tools in the system message so the next request is a strict extension, MOVED_LIVE = no restore) decides whether pinning the
+      tools block is the orchestrator fix. [no-belief: offline render, no inference]
+    - ✅ 2026-11-17 row `inf86-g4-e3-tools-20261117` filed pass, **NO_FIX**: after a restore both MOVED and PINNED re-prefill fully
+      (reuse 0, forced line) on v10 `ffc1bac82`, while MOVED_LIVE (no restore, the live slot's own checkpoints) reuses 86.9%. Pinning
+      the tools block does not help: the v10 restore path carries no hybrid checkpoints. Follow-up: INF-86-SLOT-RESTORE-CHECKPOINTS.
+      [no-belief: row verdict filed by agent]
+  - [x] **INF-86-SLOT-RESTORE-CHECKPOINTS** [inference] Save and restore hybrid/recurrent context checkpoints with `/slots` ✅ 2026-11-17 (rc=0 pass; **INF-86-SLOT-RESTORE-CHECKPOINTS** [inference] Save and restore hybrid/recurrent context checkpoints with `/slots`)
+    save/restore (or create a checkpoint at the restore point) so a restored slot can roll back to a shared prefix. Upstream first:
+    **#26004 is MERGED** (2026-10-08, head `9223fb431`, "server : preserve context checkpoints across slot save/restore") and is
+    **already in C12/C13** as `1c999e15b` (port of `033df86b`; `SLOT_CKPT_MAGIC` "SCKP" appended to the slot file), absent from v10
+    `ffc1bac82`. So no new server code: the fix ships with the v11 fold of C13 `bda43aa17`, and this box is a validation. model:
+    Qwen3.6-35B-A3B-MTP-Q8_0 frontdoor recipe. quant_build: Q8_0 on the prebuilt C13 CPU store `cpu-20261117-bda43aa17-c13`.
+    region: CPU quarter, est 5400 s. Row `inf86-slot-restore-ckpt-c13-20261117`: 16K, arms CTRL / MOVED (G4 E3 shape after restore)
+    / MOVED_LIVE (no restore). metric: MOVED cache_n vs MOVED_LIVE cache_n (higher is better) + greedy reply equality vs a fresh
+    full prefill. rule: PASS iff MOVED cache_n >= 80% of the shared prefix (MOVED_LIVE cache_n) with greedy identity; else FAIL
+    (then port/patch on `llama.cpp-experimental-c13-slot-ckpt-20261117` off C13). Stop-on-answer when the 3 arms are recorded and
+    summarize.py gives PASS/FAIL; stop-on-futility on a failed precondition, save failure, server not ready or not our PID,
+    timings missing, STOP file or deadline; gate-class = futility-only. [no-belief: new box]
+    - ✅ 2026-11-17 row `inf86-slot-restore-ckpt-c13-20261117`, rc=0, **PASS**: MOVED and MOVED_LIVE both cache_n=13754 (100% of the reachable live prefix; 86.88% of n_saved), prompt_n=3260. Fresh greedy reply matches; CTRL cache_n=0; n_restored=n_saved=15831; restored_ckpt=1. No patch needed. Evidence: `/mnt/raid0/llm/tmp/inf86-slot-restore-ckpt-c13-20261117/out/results.jsonl`; durable [validation record](../../docs/reference/inf86-slot-checkpoint-validation-20261117.md). Scope: this 16K CPU fixture on C13 bda43aa17; production v10 is unchanged. [belief: cc]
+- [x] **(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**
+      ✅ **2026-08-22, `epyc-orchestrator` `98061c6b`** — the destructive silent-success edge is
+      closed on **both** directions. `_slot_save` now *returns* `n_saved`
+      (`src/backends/concurrency_aware.py:137-163`) and `_slot_restore` returns `n_restored`
+      (`:166-187`) instead of discarding the count into a log string; the forward path aborts on
+      `n_restored != n_saved` at `:713-719`, **before** `advance(MigrationState.VERIFIED)` at `:739`
+      and before `_slot_erase(self._full_url)` at `:744`; the reverse path carries the identical
+      guard at `:921-934`. `src/backends/llama_server.py:1268/1284/1302` was fixed in the same
+      commit — it previously did not parse the body at all. A restore returning `n_restored: 0` on
+      an HTTP 200 can no longer destroy the source KV.
+      **Residual, deliberately not re-opened as a row:** the state now means *"the KV came back
+      complete"*, strictly stronger than HTTP 200 but still weaker than *"a token was reused"*. The
+      reuse instrument (`timings.cache_n` / `n_prompt_tokens_cache`) is what the G4 measurement
+      below reads; if G4 shows reuse tracking restore-completeness one-for-one, the remaining gap is
+      naming only.
+      **The triggering input is still on disk**, which is why this was fixed rather than filed: of
+      75 files in `/mnt/raid0/llm/cache/kv_slots/frontdoor`, exactly 9 are 752-byte header-only
+      saves and the next smallest is 66,148,192 B — strictly bimodal — and **4 of the 9 are
+      `old-sess_*`, the same name class as 64 real saves** (re-verified read-only
+      2026-08-23T07:52Z). That is a within-class failure of the normal path, not a probe artifact.
+      Original text follows for the record:
+      `concurrency_aware.py:679` advances to `MigrationState.VERIFIED` with `detail="restore_confirmed"`
+      on an HTTP 200, and `:682` then **erases the source slot**. `n_restored` proves the file loaded,
+      not that a single token will be reused. A zero-reuse migration would advance to VERIFIED, destroy
+      the source, and record success. The reuse count is already available — `n_prompt_tokens_cache`
+      via `GET /slots`, or `timings.cache_n` on the first completion — and `wiki/benchmark-methodology.md:1870` *(re-pointed 2026-09-26 from the rotted `:257`)*
+      already documents it as the true KV-reuse instrument. **Independent of the measurement above: the
+      state is mislabelled either way.** Gate the source erase on a reuse assertion, or rename it.
+- **[declined: ws58 2026-11-03 content-review: a note]** **(Z) Guard the prefix-stability assumption.** Full reuse after migration depends on the next
+      request being a **byte-exact extension** of the saved prefix. Three known breakers: a rendered
+      chat-template byte change, reasoning-block stripping between turns (mitigated today by
+      `--reasoning off`), and any injected timestamp or preamble. Add a static check that
+      post-migration request construction cannot alter bytes at or before the restored prefix boundary.
+- [x] **(G) #25592 is the LARGER exposure and should be measured first.** It fixes the **live
+      in-memory** checkpoint path for hybrid/recurrent — it runs on **every request**, not only on
+      migrations. It is open upstream, **absent from our tree** (`server-context.cpp:2332-2337` still
+      carries the unfixed `[TAG_CHECKPOINTS_FIX_POS_MIN]` TODO verbatim), and has four independent
+      verifications **including one on Qwen3.6-35B-A3B, our exact frontdoor model**.
+      **Measurement:** multi-turn agentic replay at 16K/64K with `-lv 4`, counting `forcing full prompt
+      re-processing` occurrences and `cache_n` per turn.
+      **Gate:** a non-trivial rate of forced full re-prefill on ordinary multi-turn traffic makes
+      #25592 a v10 candidate ahead of #26004.
+      **Next action (2026-11-10, owner AutoKernel):** row `inf86-reprefill-rate-20261110` published 17:18Z (CPU quarter, 3x16K + 2x64K sessions x 8 turns, trimmed-reply divergence, verdict_by agent). v1 smoke showed verbatim reply replay never enters checkpoint search (`attempt_lines=0`), hence the trimmed-reply design. Tick on the row's verdict.
+      **Do not conflate** with the adjacent checkpoint cluster (#24055, #25472 merged, #25592 open,
+      #26004): that cluster is entirely **performance** — full re-prefill, lost reuse — and produces
+      no wrong output. This row is about reuse rate, not correctness.
+      ✅ 2026-11-17 (autokernel) — the measurement this box asks for exists and is filed: row `inf86-reprefill-rate-20261110-r2`
+      (C10 CPU 7f1bd044b, Qwen3.6-35B-A3B-MTP-Q8_0, -lv 4, 3x16K + 2x64K sessions x 8 turns) = **0 forced re-prefills in 35 reuse
+      attempts** (16K 0/21, Wilson95 upper 15.5%; 64K 0/14, upper 21.5%). Gate: the forced rate is not non-trivial, so the forced path
+      does not make #25592 a candidate by itself. The waste that does exist (checkpoint spacing / first-only restores, RESULT below)
+      is what #25592's current head also changes, so its candidacy is decided by the measured A/B in B3 below, not by this box.
+      [no-belief: re-reads the filed r2 row verdict]
+  - RESULT 2026-11-10 row `inf86-reprefill-rate-20261110-r2` (C10 CPU 7f1bd044b, synthetic trimmed-reply turns): **NONE_OBSERVED**, 0 forced re-prefills in 35 reuse attempts (16K 0/21, Wilson95 upper 15.5%; 64K 0/14, upper 21.5%), every attempt restored a checkpoint. BUT when an older turn is re-rendered, 10/15 turns restored only to the first checkpoint (cache_n 106) and reprocessed ~the full prompt (234k of 321k reprocessed tokens) while logging a restore: the real exposure is checkpoint SPACING (min spacing 8192 erases near ones), not the forced path. Box left open: next step decides whether checkpoint spacing / #25592 matters for the v11 fold. [no-belief: row verdict filed by agent]
+  - [x] **INF-86 follow-up - older-turn re-render restores only the first checkpoint (min spacing 8192)** [inference] A/B `--checkpoint-min-step` 8192 vs 2048 vs 512 (`--ctx-checkpoints 32`) on C10 CPU, metric wasted re-prefill tokens on older-turn edits; row `inf86-ckpt-spacing-20261111`. Production frontdoor and architect_general run the 8192 default (model_registry.yaml ctx_checkpoints 32, no min step). A win is a launch-recipe change via stack-change, not a v11 kernel fold. Stop-on-answer when all 9 sessions (3 arms x 2x16K+1x64K) complete and summarize.py gives DENSER_HELPS (>=50% wasted-token cut in both classes) or NO_EFFECT (<20%); stop-on-futility on INSTRUMENT_FAIL, failed precondition or deadline; gate-class = futility-only. (2026-11-11) ✅ 2026-11-11 rc=0 pass, row inf86-ckpt-spacing-20261111: **PARTIAL**. Mean wasted tokens on last+older turns, cms8192/2048/512: 16K 6637/5596/4715 (-29%), 64K 11015/9733/7689 (-30%); too-close erasures 21->11 and 7->1; first-only restores 3->0. A ~30% cut, short of the 50% bar: spacing is not the main source of waste, so no launch-recipe change on this evidence alone. Evidence /mnt/raid0/llm/tmp/inf86-ckpt-spacing-20261111/out/RESULT.json. [no-belief: row verdict filed by agent]
+    - Residual analysis 2026-11-11 (`/mnt/raid0/llm/tmp/inf86-ckpt-spacing-20261111/ANALYSIS.md`, no new runs): the PARTIAL is a metric-baseline artifact. wasted_tokens only subtracts the new turn, so the SSM suffix after an edited older turn (T-D, unavoidable) is counted as waste: ~75% of the measured waste. Only the spacing term (D-R) is avoidable: cms8192 30% (16K) / 17% (64K) of prompt_n; cms512 removes 71% (16K) / 99% (64K) of it and is within 16% / 0.5% of the floor. Residual at cms512 is one session (16K-s1, 4.6K tok): checkpoints are cut only at user-message starts, never assistant starts. Operator chose BOTH the cms512 stack-change and the template/byte-identical fix (subagents in flight). [no-belief: analysis of an already-filed row]
+  - [x] **INF-86-CMS512 - launch-recipe change `--checkpoint-min-step 512` for frontdoor and architect_general** [inference] via the stack-change skill (one package, one operator signature, then apply and prove serving). Evidence: ANALYSIS.md above; cms512 removes 71%/99% of avoidable re-prefill on C10 CPU. Cost to bound first: more checkpoints against the 32 cap and the 16 GiB cache-ram, more state copies per prefill. Stop-on-answer: stack-change package signed and a post-change replay (inf86 harness, cms512 arm vs floor T-D) reproduces within 20% of the A/B. Optional follow-up if the residual matters: server checkpoint at assistant-message starts (server-context.cpp is_user_start sites). [no-belief: new box]
+    *(2026-11-12)* RESULT ALL_HOLD (row inf86-cms512-live-probe-20261111-r2, filed pass): re-prefill cut 0% on real traffic for all 3 roles (critic 56=56, general 52=52, frontdoor 76=76); extra checkpoint memory +5.8/+1.3/+6.5 GiB. Operator 2026-11-12: revert values, keep plumbing. Reverts: research 30718e723, orchestrator 307de993 (key unset, 8192 default). Reload hold lifted: nothing to reload. [no-belief: row verdict filed by autokernel]
+    *(2026-11-11)* Code landed (research e3aac480b, orchestrator 9690f455). RELOAD HELD by operator decision: reload a role only after row inf86-cms512-live-probe-20261111 shows real-traffic re-prefill savings and checkpoint memory fits. Stack owner: do not reconcile this drift by reloading.
+    - [x] **INF-86-CMS512 live probe (row inf86-cms512-live-probe-20261111)** [inference] quant_build: Q8_0 (frontdoor Qwen3.6-35B-A3B, architect_critic Qwen3.8-27B), UD-IQ4_XS (architect_general Qwen3.8 Flash-Next), v10 production CPU kernel store. region: CPU quarter, sequential. est 10800 s. Question: on real logged multi-turn orchestrator traffic (no trimming), does cms512 vs cms8192 cut mean re-prefilled tokens per turn by >=20% per model (frontdoor, architect_critic, architect_general) with checkpoint memory inside role headroom? Stop-on-answer: all 3 models x 2 arms complete, verdict RELOAD_OK/HOLD per model. Stop-on-futility: precondition failure, server not ready/not our PID, fewer than 5 usable multi-turn histories, STOP file or deadline. gate-class = futility-only. [no-belief: new box] ✅ 2026-11-12 answered by r2 (filed pass, ALL_HOLD: 0% re-prefill cut on real traffic for all 3 roles, +1.3..6.5 GiB checkpoint memory); r1 budget-exhausted, superseded. [no-belief: row verdict filed by agent]
+  - [x] **INF-86-TEMPLATE - keep older assistant turns byte-identical between requests (template/client fix)** ✅ 2026-11-17 NO_DEFECT (row inf86-template-preserve-20261117-r2): premise does not reproduce on the current template, older assistant turns are byte-identical, 0 wasted re-prefill tokens. [no-belief: row verdict filed by agent] [inference] the only option that also removes the unavoidable suffix floor (23.7K / 22.9K tokens in the A/B, ~3.9-7.6K per turn). Find which renderer rewrites older assistant turns (thinking strip, whitespace, tool-call reformat) in the orchestrator request path, make the re-render byte-identical, and prove with tokenizer-level prefix tests plus a replay showing D moves to the new-turn boundary. Stop-on-answer: re-render byte-identical on the captured-client fixtures and wasted-vs-floor harness metric ~0 for older-turn edits. [no-belief: new box] *(2026-11-11)* Landed in orchestrator origin/main: 301cfb21 (client-mode replay keeps assistant reasoning_content) + 8dbc2ffa (preserve_thinking=true for thinking roles without a pinned chat_template_file; only architect_general). Pending: API reload by the owner (`orchestrator_stack.py reload orchestrator`), then the live cache_n probe; follow-up: client-mode responses do not return reasoning_content yet.
+    - **Next action (2026-11-17, autokernel) [inference]:** the "API reload by the owner" step is moot: at 2026-11-17T10:53Z no
+      orchestrator API (uvicorn :8000) and no production llama-server is running, and the orchestrator checkout's HEAD already
+      contains 8dbc2ffa and 301cfb21, so the next stack start serves the fix. No live traffic exists to probe, so the proof is a
+      row on a private server: `inf86-template-preserve-20261117`. model: Qwen3.8-Flash-Next (architect_general, GGUF-embedded
+      template, f16 KV, draft-mtp 4). quant_build: UD-IQ4_XS on the production v10 CPU store `ffc1bac82`. region: CPU quarter, est
+      10800 s. Arms strip (pre-fix request) vs preserve (`preserve_thinking=true`), thinking off (production) x2 sessions + on x1, 6
+      turns to ~12K. metric: (1) byte test via `/apply-template`: render(turn k) is a byte prefix of render(turn k+1); (2) mean
+      re-prefilled tokens beyond the new suffix (lower is better). rule: BYTE_IDENTICAL_OK if the preserve arm is byte-prefix on every
+      thinking-off turn and its waste <= max(128, 5% of strip); NO_DEFECT if strip is already byte-prefix with waste < 256;
+      FIX_NO_EFFECT if preserve >= 50% of strip; else PARTIAL. Stop-on-answer when both arms complete and summarize.py gives the
+      verdict; stop-on-futility on a failed precondition, server not ready or not our PID, timings missing, STOP file or deadline;
+      gate-class = futility-only. [no-belief: row published, no result yet]
+    - 2026-11-17 inf86-template-preserve-20261117-r2: pass (NO_DEFECT) — on the production embedded template every request's render began byte-for-byte with the previous turn's (preserve arm think-off 10/10 turns, think-on 5/5 prefix_ok, zero divergence offsets); no older-turn rewrite to fix, premise does not reproduce. Evidence `/mnt/raid0/llm/tmp/inf86-template-preserve-20261117-r2/out/results.jsonl`. [no-belief: row verdict filed by agent]
+  - [x] **G5 (G) — extend this replay to N concurrent sessions with tool gaps, before any program-level scheduler work** ✅ 2026-11-17 BOUNDED_NULL_1 (row inf86-g5-nsession-20261117): 0 cause-(c) re-prefilled tokens at N in {1,4,8}, 16K and 56K. [no-belief: row verdict filed by agent] (2026-09-26, intake-1816#1, intake-1816#7). Same instrument (dedicated `-lv 4` instance on the served artifact and production recipe, never a production server), on the kv-unified shape (`--kv-unified --cache-ram`, kv-unified-stack-rollout.md) and on the frontdoor. N ∈ {1, np, 2·np}; gap lengths = HSF-3's harness-class p50/p90 (heterogeneous-slot-fabric-residency.md). Per turn, keyed by `x_session_id`: `cache_n` vs `prompt_n`, with each forced re-prefill attributed to one cause — (a) hybrid checkpoint (`forcing full prompt re-processing`, the #25592 class above), (b) prefix rewrite (request bytes differ at or before the cached prefix), (c) cross-session eviction during the gap (neither a nor b). Only (c) is what session-keyed admission (kv-unified-stack-rollout.md KVU-14) fixes; ThunderAgent matched vLLM within noise when the working set fit (intake-1816#7). Decision rule: KVU-14 opens only if cause-(c) re-prefilled tokens are ≥10% of all prompt tokens at some N ≤ 2·np in BOTH windows; otherwise BOUNDED-NULL-1 with the N and gap range covered. Belief kernel: VB-MT-REPLAY.
+    - **Next action (2026-11-17, autokernel) [inference]:** row `inf86-g5-nsession-20261117`. model: Qwen3.6-35B-A3B-MTP-Q8_0 frontdoor
+      recipe (terse template 1443ea9ab4bb, thinking off, draft-mtp 4, q8_0 KV). quant_build: Q8_0 on the production v10 CPU store
+      `ffc1bac82`. Shape: `-np 4 -c 262144 --kv-unified --cache-ram 32768 --ctx-checkpoints 32`. region: CPU quarter, est 21600 s.
+      Cells: windows 16K and 56K (4 active slots x 56K stays inside the 262144 pool) x N in {1, 4, 8}, 6 turns of strict extension
+      each, turn k of all N sessions fired concurrently. **Gap substitution, stated:** llama-server has no time-based eviction, so
+      a tool gap is modelled by what runs during it (the other N-1 sessions' turns), not by seconds; HSF-3's gap distribution
+      (still unmeasured) cannot change a no-TTL cache. Attribution: N=1 at the same window/turn is the no-contention floor (causes
+      a/b only); cause (c) per request = max(0, wasted - floor); forced lines counted per round. metric: cause-(c) re-prefilled
+      tokens as a share of all prompt tokens (lower is better). rule: KVU14_OPEN if >= 10% at some N in {4, 8} in BOTH windows, else
+      BOUNDED_NULL_1. Stop-on-answer when all 6 cells complete and summarize.py gives the verdict; stop-on-futility on a failed
+      precondition, server not ready or not our PID, > 10% request errors, STOP file or deadline; gate-class = futility-only.
+      [no-belief: row published, no result yet]
+    - 2026-11-17 inf86-g5-nsession-20261117: pass (BOUNDED_NULL_1) — on the v10 frontdoor recipe (-np 4 -c 262144 --kv-unified --cache-ram 32768) wasted re-prefill was 0 in every cell, no forced re-prefill lines, cross-session eviction 0 tokens; KVU14 does not open. Caveat: HSF-3's measured gap distribution was unavailable, so tool gaps are modelled as the other sessions' turns. Evidence `/mnt/raid0/llm/tmp/inf86-g5-nsession-20261117/out/results.jsonl`. [no-belief: row verdict filed by agent]
+
+#### Research Intake Update — 2026-08-23 (Stage-2b, intake-1292 — slot save/restore)
+
+##### H20 (Z, RECORDED) — the migration path is ARMED, not dormant, and a live-process read needs a timestamp
+
+**The re-arm trigger has already fired.** The dormancy escape clause was voided on 2026-08-22 on the
+strength of `--slot-save-path` being configured; the stronger statement is now available, and
+because it is about a *running process* it is recorded with the instant it was read.
+
+- **2026-08-22T~14:43Z, from `/proc`:** `:8070` has a listener — PID **2052930**, `llama-server` on
+  `Qwen3.6-35B-A3B-MTP-Q8_0.gguf`, `-np 4 -c 262144`, started **13:17:35Z**, **with
+  `--slot-save-path /mnt/raid0/llm/cache/kv_slots/frontdoor` set**.
+- **Re-verified 2026-08-23T07:52:51Z (read-only):** same PID, still listening on `:8070`, elapsed
+  18h35m, argv unchanged. Two samples one day apart — this persists; it is not a transient. The full
+  argv also carries `-ctk q8_0 -ctv q8_0`, `--reasoning off`, `--spec-type draft-mtp
+  --spec-draft-n-max 4`, and `-ub 8192` with **no `-b`** (independently confirming the K4 row above).
+- **Therefore `_full_url` is not None and the sole suppressor is gone.** `--slot-save-path` is
+  emitted **unconditionally**: `scripts/server/orchestrator_stack.py:1471-1480` builds `slot_dir`
+  (falling back to `SLOT_SAVE_DIR / role_name` when the registry declares nothing), runs
+  `mkdir(parents=True, exist_ok=True)`, then `cmd.extend([...])` as the **last statement before
+  `return cmd`**, with no guard of any kind — so this is unconditional for **every role built by
+  this path**, not only the frontdoor. *(The plan cited `:1454-1462`; that block is `--reasoning` /
+  `--device`. Corrected here.)* Forward migration was never flag-gated, and
+  `ORCHESTRATOR_REVERSE_MIGRATION` is defaulted to `"1"` at `orchestrator_stack.py:2176` and read at
+  `src/backends/concurrency_aware.py:782`.
+- **Nothing has migrated in this window.** The newest `kv_migrate_*` artifact is still
+  **2026-08-09T15:12:28Z** (75 files; re-listed read-only 2026-08-23T07:52Z). The path is **armed
+  and unexercised** — which is the state that most easily reads as "dormant" and is not.
+- **v9's `SLOT_SAVE` / `SLOT_RESTORE` and `do_reset` blocks are byte-identical to upstream**, so any
+  future upstream fix applies to us unmodified — no forward-port divergence to carry.
+  [intake-1292#record]
+
+**METHODOLOGICAL LESSON, and the reason this section is dated to the minute.** The two dive blocks
+appeared to contradict each other on whether `:8070` had a listener. They did not: **block 1 read
+`/proc` before the 13:17:35Z restart and was already stale when block 2 ran.** A live-process read
+measures a moving target and is worthless without the instant it was taken — the same family as *a
+measurement whose window does not overlap the phenomenon*. **Every `/proc`, `ss` or `ps` result
+quoted in a handoff must carry its timestamp, and a second sample if it is load-bearing.**
+
+##### H21 (Z, ANSWERED IN-SESSION 2026-08-22, re-verified 2026-08-23) — our post-migration request is a STRICT EXTENSION
+
+**Zero compute. This settles the shape G4 above was trying to measure. It is a finding, not a task —
+do not file it as one.** Traced through `/v1/chat/completions` in
+`epyc-orchestrator/src/api/routes/openai_compat.py`:
+
+`_context_parts_from_history` (`:248-276`) renders each history message as exactly one
+`"{Role}: {content}"` line — **append-only: no summarisation, no truncation, no reordering, no
+windowing** — the parts are joined with `"\n\n"` at `:494`, and `_combined_prompt_with_context`
+(`:316-319`) returns `f"{context}\n\nUser: {prompt}"`.
+
+So turn *N* renders as `L + "\n\nUser: " + u_N`, and turn *N+1* renders as
+`L + "\n\nUser: " + u_N + "\n\nAssistant: " + a_N + "\n\nUser: " + u_N+1`.
+**Turn N+1 begins with turn N's prompt byte for byte. It is a STRICT EXTENSION.**
+
+**Two named exceptions, both bounded:**
+- **(a) `context_compression`** rewrites history above 8 messages (`:470`), but it is **OFF**:
+  `src/features.py:185` is `FeatureSpec("context_compression", False, False, "CONTEXT_COMPRESSION",
+  ...)` — default and fallback both `False` — and the string `CONTEXT_COMPRESSION` appears **nowhere
+  else in the repository** (unbounded grep, 2026-08-23) and is absent from the live frontdoor
+  environment. Not armed, but it is a **one-flag divergence**: enabling it silently destroys the
+  strict-extension property for every conversation past 8 messages. Whoever turns it on owns
+  re-answering this question.
+- **(b) `request.tools`.** The native-tools block is appended **after** history (`:273-275`), so each
+  turn it moves down past the new messages and the shared prefix ends at the *previous* turn's
+  history. The tail — `u_N` + `a_N` + tools block + `u_N+1` — re-prefills. **Bounded and independent
+  of conversation length; not a full re-prefill** — but a tools-carrying session never reuses its
+  own last turn. This is arm **E3** of G4 above.
+
+`--reasoning off` on the frontdoor removes the thinking-block divergence separately, and is set on
+the live process.
+**Scope: this traced the OpenAI-compat chat route only.** It says nothing about the vision route,
+the completions route, or any non-OpenAI ingress.
+
+##### B3 (B, blocked on the `#25592 is the LARGER exposure` row above [wave-2 plan G7])
+
+- [x] **Evaluate llama.cpp #25592 as a v10 candidate.** ✅ 2026-11-17 EVALUATED, NO_GAIN (row inf86-pr25592-c12-ab-20261117-r2): not a fold candidate. [no-belief: row verdict filed by agent] **Upstream item: the `(G) #25592 is the
+      LARGER exposure` row immediately above — it must produce a measured forced-re-prefill rate on
+      ordinary multi-turn traffic before this opens.** #25592 outranks #26004 for us because it
+      fixes the **live in-memory** checkpoint path that runs on every request, not the migration
+      path — and it has four independent verifications, one on **Qwen3.6-35B-A3B, our exact
+      frontdoor model**. Candidacy is not adoption: it must follow the four-step workflow in
+      `CLAUDE.md` — pull fresh production, branch `llama.cpp-experimental`, build, validate no
+      regressions on **GPU and CPU**, deploy as a **new** production version with the full candidate
+      benched as a whole. **Never a patch to frozen v9, and never reconciled by cherry-pick at
+      promotion time.** [intake-1292#record] Era correction: v10 is frozen; evaluate it as a v11 fold candidate through the CH-32 upstream-delta census (kernel-champion-and-promotion).
+      **Next action (2026-11-17, autokernel) [inference]:** the upstream gate above is met (r2: 0/35 forced re-prefills, so the
+      forced path is NOT the exposure) but #25592 head `4ac1aeab1` (open, updated 2026-11-15) also changes what the r2/ckpt-spacing
+      rows found IS the exposure: hybrid checkpoints now record `pos_min = pos_max` and are usable iff `pos_max < pos_eval`, and an
+      equivalent just-restored checkpoint is not re-created. Ported onto C12 `457d5fc52` (upstream moved the search into
+      `server-slot-sched.cpp`; ours is inline in `server-context.cpp`): branch `llama.cpp-experimental-pr25592-c12-20261117` @
+      `053630887bf8` on `fork`. model: Qwen3.6-35B-A3B-MTP-Q8_0 (frontdoor recipe, `--cache-ram 0`). quant_build: Q8_0 on C12
+      `457d5fc52` vs C12+#25592 `053630887`, CPU builds from git objects in the row. region: CPU quarter, est 14400 s. metric: mean
+      re-prefilled tokens beyond the new suffix per turn (lower is better) on the r2 trimmed-reply instrument, 2x16K + 1x64K x 8 turns
+      per arm, plus greedy restored-vs-fresh reply equality. rule: FOLD_CANDIDATE if the port cuts mean waste >= 20% in both classes
+      with correctness not worse; NO_GAIN if < 20% in both (no v11 fold; the CH-32 upstream-delta census picks it up when merged);
+      REGRESSION if waste +10% or fewer fresh-reply matches. Stop-on-answer when all 6 sessions complete and summarize.py gives a
+      verdict; stop-on-futility on a build/proof failure, server not ready or not our PID, STOP file or deadline; gate-class =
+      futility-only. Row `inf86-pr25592-c12-ab-20261117`. [no-belief: row published, no result yet]
+  - 2026-11-17 inf86-pr25592-c12-ab-20261117-r2: fail (NO_GAIN) — #25592 head ported onto C12 (`053630887`) vs C12 on the r2 trimmed-reply instrument: wasted re-prefill per turn identical (c16k 4063, c64k 4721 tokens), 0 forced re-prefills both arms, fresh-vs-cache reply match 3/3 both; only 'too close' erasures moved (c16k 21 -> 19). The waste lives in the older-turn suffix (~9.5K/11K), which the PR does not address. No v11 fold; the CH-32 census picks it up if merged. Evidence `/mnt/raid0/llm/tmp/inf86-pr25592-c12-ab-20261117-r2/out/results.jsonl`. [no-belief: row verdict filed by agent]
+
+#### Research Intake Update — 2026-09-26 (orchestration prior art; intake-1783, intake-1816)
+
+**DECLINED 2026-09-26 — fronting the orchestrator with a GAIE/llm-d Endpoint Picker (c3-A3; intake-1783#04–#07).**
+- It is a Kubernetes/Envoy ext-proc stack for replicas of one model per InferencePool.
+- llama.cpp is in neither the proposal-003 mapping nor llm-d-router's built-in engines, and there is no KV-util gauge.
+- The reference LWEPP is round-robin, and heterogeneous accelerators are unbuilt.
+- NUMA, residency and device class could only ride as untyped CustomMetrics.
+- The orchestrator already sees more than the protocol can carry. The three gauges are adopted as internal
+  slot-record fields instead (heterogeneous-slot-fabric-residency.md, 2026-09-26).
+
+**DECLINED 2026-09-26 — deploying upstream ThunderAgent or Dynamo's thunderagent plugin in front of llama-server (2b-thunderagent-A5; intake-1816#6).** Upstream supports only vLLM/SGLang backends; Dynamo's plugin reads published GPU KV-block capacity and runs only inside dynamo.frontend. The orchestrator is already the single scheduler; the pattern transfers as kv-unified-stack-rollout.md KVU-14, the component does not.
+
+##### 2026-10-31 #25592 replay preparation
+
+Private multi-turn replay is READY (publication manifest SHA-256 `40370fc8a7f084795cf9f8efa4fb5a5bac2214a5f02f08875b1d4e630c4c790e`). Five actual three-turn sequences are selected and seven predeclared per-store slots remain UNKNOWN. The real launcher public 0.6B control does not exercise the full model, MTP or long contexts; no full-run, rate or gate conclusion follows. The capsule retains only hashes and count metadata for private sessions. [Plan and controls](../../artifacts/compute/codex3-prep-and-kpf-audit-20261031-0443/). [belief: cc]
+
+##### 2026-10-31 #25592 HOST lock supersession
+
+At 05:17 the owner withdrew the unarmed `codex3-dsc-25592-replay-20261031` READY after host preflight found its canonical region-lock interpreter absent. Earlier public controls remain historical, but did not qualify the real host branch; no grant or target exposure occurred. A corrected successor is in preparation; five selected sequences and seven unknown slots do not constitute a result. [Retraction receipt](../../artifacts/compute/codex3-fu03-r3-kpf-gpu-draft-20261031/host-lock-retractions.json). [belief: cc]
+
+##### 2026-10-31 #25592 HOST-fix qualification limit
+
+The replacement `codex3-dsc-25592-replay-hostfix-20261031` publication manifest `b7ffd693395738b9d6e044a563b440b97ed8399508f8bb13816b3470fde62f1b` has HOST startup/lock proof and one public three-turn control plus STOP/drain. The keeper reap gate skipped it because its replacement launcher lies outside its declared original scratch root; no arm or grant; the owner withdrew it at 05:26. A corrected in-scratch successor remains in preparation. Original five selected sequences and seven unfilled slots remain as predeclared; no full-size replay, rate or gate result follows. [Historical HOST controls](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]
+
+At 05:29 the in-scratch HOST-fix2 successor is READY, manifest `69b4e9f5fafc50eb21a5976ad6684595e64a445798ae0cd66490b4588cbd7627`; its actual launcher resides inside its declared scratch root. Final same-entry public control remains one short raw sequence plus STOP/drain; five original sequences and seven unfilled slots retain their predeclared status, with no full-size result. [Final and historical controls](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]

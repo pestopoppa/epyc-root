@@ -153,8 +153,8 @@ def _derive_approx_gate(m: Mapping[str, Any]) -> tuple[float, int, str] | str:
     selector = m.get("selector_mode")
     naive = m.get("naive_mode")
     measure = m.get("measure")
-    if selector not in {"head", "none"} or naive not in {"head", "none"} or selector == naive:
-        return "selector_mode and naive_mode must be distinct native modes ('head' and 'none')"
+    if selector not in {"head", "none", "kdev"} or naive not in {"head", "none"} or selector == naive:
+        return "selector_mode must be head, none or kdev; naive_mode must be head or none and distinct"
     if not isinstance(requests, list) or not requests:
         return "request_rows must retain the non-empty native requests.jsonl rows"
     if not isinstance(positions, list) or not positions:
@@ -170,6 +170,32 @@ def _derive_approx_gate(m: Mapping[str, Any]) -> tuple[float, int, str] | str:
             return "request_rows contain a duplicate {id, mode} pair"
         request_modes.add(key)
         if row["mode"] == selector:
+            if selector == "kdev":
+                # This is an offline oracle using a full recompute reference, not an
+                # online selector or a performance result. Preserve its native setup.
+                chunks = row.get("kdev_chunks")
+                if (row.get("selector_oracle") != "full recompute reference, offline quality instrument; not online speed"
+                        or not isinstance(chunks, list) or not chunks
+                        or not ns.nonneg_int(row.get("n_recomputed"))
+                        or not ns.nonneg_int(row.get("n_chunk_tokens")) or row["n_chunk_tokens"] == 0
+                        or not ns.finite(row.get("r"))):
+                    return "kdev selector requires native offline oracle provenance and recompute counts"
+                for chunk in chunks:
+                    if (not isinstance(chunk, dict) or not ns.nonneg_int(chunk.get("offset"))
+                            or not ns.nonneg_int(chunk.get("n_tokens")) or chunk["n_tokens"] == 0
+                            or not ns.nonneg_int(chunk.get("layer"))
+                            or not ns.nonneg_int(chunk.get("selected_tokens"))
+                            or chunk["selected_tokens"] > chunk["n_tokens"]
+                            or not ns.nonneg_int(chunk.get("target_tokens"))
+                            or chunk["target_tokens"] > chunk["n_tokens"]
+                            or not ns.finite(chunk.get("target_r")) or not 0 <= chunk["target_r"] <= 1
+                            or not ns.finite(chunk.get("realized_r"))
+                            or abs(chunk["realized_r"] - chunk["selected_tokens"] / chunk["n_tokens"]) > 1e-9):
+                        return "kdev chunk selector provenance or realized fraction is invalid"
+                if (sum(c["n_tokens"] for c in chunks) != row["n_chunk_tokens"]
+                        or sum(c["selected_tokens"] for c in chunks) != row["n_recomputed"]
+                        or abs(row["r"] - row["n_recomputed"] / row["n_chunk_tokens"]) > 1e-9):
+                    return "kdev request recompute counts do not match native chunk provenance"
             selected_ids.add(row["id"])
         if row["mode"] == "all-inject":
             if row.get("bit_identical_to_ref") is not True:
@@ -360,6 +386,8 @@ def write_belief_measurements(
             claim = (f"{m.get('source_program')} {kind}/{m.get('measure')} for {m.get('subject')}: "
                      f"{value:.6g} {unit} under window {extra['window'].get('window_id')}")
             claim = f"G3 descriptive per-position statistic; g3_gate.py owns corpus gates: {claim}"
+            if m.get("selector_mode") == "kdev":
+                claim = f"Offline full-recompute oracle selector; not online performance: {claim}"
         row = {"schema": CAPTURE_SCHEMA, "run_id": run_id, "producer": producer,
                "emitted_at": when, "date": when[:10], "metric": metric, "value": value, "unit": unit,
                "metric_direction": direction,

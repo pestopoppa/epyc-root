@@ -1,0 +1,233 @@
+{
+  "actor_receipts": [
+    {
+      "receipt_id": "sha256:d37013616d19c08d2d15b2ef9d07365229a0f18134d1e2f60b45698ece5f6bec",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_kvu19a2_30de3fcb1da5932b6730362d",
+          "clm_kvu19a2_3924f78a5ca478d586d4b87f",
+          "clm_kvu19a2_3e7357581a7fbdad1c6558bc"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_kvu19a2_30de3fcb1da5932b6730362d",
+            "reason": "host_tier"
+          },
+          {
+            "claim_id": "clm_kvu19a2_3924f78a5ca478d586d4b87f",
+            "reason": "host_tier"
+          },
+          {
+            "claim_id": "clm_kvu19a2_3e7357581a7fbdad1c6558bc",
+            "reason": "host_tier"
+          }
+        ]
+      }
+    },
+    {
+      "receipt_id": "sha256:f6428602040c14f891bef84f49b487522656823c262d39d644531ba76a3639ea",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_kvu19a2_30de3fcb1da5932b6730362d",
+          "clm_kvu19a2_3924f78a5ca478d586d4b87f",
+          "clm_kvu19a2_3e7357581a7fbdad1c6558bc"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_kvu19a2_30de3fcb1da5932b6730362d",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_kvu19a2_3924f78a5ca478d586d4b87f",
+            "reason": "not_presented"
+          },
+          {
+            "claim_id": "clm_kvu19a2_3e7357581a7fbdad1c6558bc",
+            "reason": "not_presented"
+          }
+        ]
+      }
+    }
+  ],
+  "claims_shown": [
+    {
+      "anchor_value": null,
+      "claim_id": "clm_kvu19a2_30de3fcb1da5932b6730362d",
+      "effect_rel": null,
+      "grade": "Judged/Located",
+      "knob_family": "",
+      "knobs": {},
+      "linked_claim_ids": [],
+      "locator": "kvu19a2:run-output:4",
+      "mechanism_id": "",
+      "model_file": "",
+      "n_pairs": null,
+      "noise_floor_rel": null,
+      "not_evidence": true,
+      "outcome": "",
+      "recipe": "",
+      "reps": 1,
+      "retrofit": false,
+      "role": "",
+      "run": null,
+      "source_kind": "kvu19a2-native",
+      "stack_regime": "",
+      "stale_epoch": false,
+      "status": "verified",
+      "tier": "host",
+      "unit": "",
+      "value": null,
+      "varied": []
+    },
+    {
+      "anchor_value": null,
+      "claim_id": "clm_kvu19a2_3924f78a5ca478d586d4b87f",
+      "effect_rel": null,
+      "grade": "Judged/Located",
+      "knob_family": "",
+      "knobs": {},
+      "linked_claim_ids": [],
+      "locator": "kvu19a2:run-output:12",
+      "mechanism_id": "",
+      "model_file": "",
+      "n_pairs": null,
+      "noise_floor_rel": null,
+      "not_evidence": true,
+      "outcome": "",
+      "recipe": "",
+      "reps": 1,
+      "retrofit": false,
+      "role": "",
+      "run": null,
+      "source_kind": "kvu19a2-native",
+      "stack_regime": "",
+      "stale_epoch": false,
+      "status": "verified",
+      "tier": "host",
+      "unit": "",
+      "value": null,
+      "varied": []
+    },
+    {
+      "anchor_value": null,
+      "claim_id": "clm_kvu19a2_3e7357581a7fbdad1c6558bc",
+      "effect_rel": null,
+      "grade": "Judged/Located",
+      "knob_family": "",
+      "knobs": {},
+      "linked_claim_ids": [],
+      "locator": "kvu19a2:run-output:6",
+      "mechanism_id": "",
+      "model_file": "",
+      "n_pairs": null,
+      "noise_floor_rel": null,
+      "not_evidence": true,
+      "outcome": "",
+      "recipe": "",
+      "reps": 1,
+      "retrofit": false,
+      "role": "",
+      "run": null,
+      "source_kind": "kvu19a2-native",
+      "stack_regime": "",
+      "stale_epoch": false,
+      "status": "verified",
+      "tier": "host",
+      "unit": "",
+      "value": null,
+      "varied": []
+    }
+  ],
+  "consumer": "autokernel.planner",
+  "cpu_exclusion": [
+    "no_applicable_claims"
+  ],
+  "cpu_target": [
+    {
+      "backend": "cpu",
+      "context_tokens": null,
+      "device": "epyc-9655",
+      "focus_symbols": [],
+      "knob_families": [],
+      "label": "",
+      "model_file": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "model_sha256": "",
+      "quant": "Q4_K_M",
+      "recipe": "",
+      "role": "",
+      "scope": "model",
+      "stack_regime": ""
+    }
+  ],
+  "entry_point": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "gpu_target": [
+    {
+      "backend": "gpu",
+      "context_tokens": null,
+      "device": "gfx90a",
+      "focus_symbols": [],
+      "knob_families": [],
+      "label": "",
+      "model_file": "Qwen3.8-27B-Q8_0.gguf",
+      "model_sha256": "",
+      "quant": "Q8_0",
+      "recipe": "",
+      "role": "",
+      "scope": "model",
+      "stack_regime": ""
+    }
+  ],
+  "ingest": {
+    "frames": 60,
+    "refused": 0,
+    "rows": 20
+  },
+  "ledger": {
+    "frame_count": 60,
+    "fresh": true,
+    "freshness": {
+      "frames_emitted": 0,
+      "index_max_id": 0,
+      "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/canary/kvu19-context-bpkvwc98/index.yaml",
+      "last_sync": "2026-11-18T13:18:32Z",
+      "sources": [],
+      "sync_action": "ingested",
+      "sync_seconds": 0.0,
+      "synced_max_id": 0,
+      "was_fresh": false
+    },
+    "head_hash": "sha256:a8fa6e7e7e74a3e468cc7f8a9d571140df95163b7754e8d68eae4865be237a9f",
+    "head_seq": 59,
+    "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/canary/kvu19-context-bpkvwc98/ledger.jsonl",
+    "schema": "epyc.vidya.ledger_state.v1",
+    "verified_at": "2026-11-18T13:18:32Z"
+  },
+  "ledger_sha256": "ff103eab075b6fcce59e6524928b22d354236406529a2d88209a161a36492e5f",
+  "native_inputs_sha256": {
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/run-output/kvu19a2-native.json": "f6bc0219c516e1f7412cac6d75f5a73668e58901d2e582d8cccbd53242899b3e",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/run-output/kvu19a2_native.beliefs.jsonl": "5412bc04ad38b3b4e8fce52a20b35fb786873959fa8b728dbdbabc16395ab5d0",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/run-output/result.json": "68c773fbfc552db29e0f053720cfd7039c5985d5528405d360db420a87c4eefe"
+  },
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "1e123e2eebac60167ddeeed751e24b9f8973278d",
+    "origin_main": "1e123e2eebac60167ddeeed751e24b9f8973278d",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate"
+  },
+  "rendered_excerpt": "planner-context.txt",
+  "rendered_excerpt_sha256": "d5e315381a0b976822dd8ba4ddf7784faa3087d92e2fd27fb5a7c308f88cbfa2",
+  "schema": "epyc.vidya.kvu19a2_planning_canary.v1",
+  "scope": "Model-free GPU diagnostics. Scratch ledger, no inference, model transfer or promotion.",
+  "sources_sha256": {
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/loop/actors.py": "4ee12bf63f60697286193bea4c59c2102bd0baa38dffa731eec3364c346faf5b",
+    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/loop/belief_context.py": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/adapters/kvu19a2_native.py": "c9c3d87838efd619fb14551e2a6959f45e0ce4d843c5bb12542b69a49cb6b894",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/loop_beliefs.py": "640ac4342b6d5b267ffaa7dccdf53071d149c72890691626cb2a93a0a5ac50b6"
+  },
+  "status": "passed",
+  "stop_boundary": "AgentPlanner._proposal_from_agent intercepted before the backend call"
+}

@@ -31,6 +31,7 @@ GET /api/bus                 roster, per-agent liveness, inbox depth, operator t
 GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
 GET /api/outcome             the autopilot outcome contract (+ freshness), if exported
 GET /api/gpu_window          the G1 watchdog's executor-status file (+ freshness envelope)
+GET /api/pipeline            pipeline page data: flowchart counts, sessions by step, compute regions
 GET /api/health              the FOLD over ``dashboard/panels.py``: every panel's
                              freshness envelope + watchdog, plus one status that
                              names the worst panel and why
@@ -124,7 +125,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 
-from dashboard import campaign_status, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels
+from dashboard import campaign_status, freshness, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels, pipeline_status
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -514,16 +515,8 @@ _board_cache_ts = 0.0
 _HANDOFF_PATH_RE = re.compile(r"^handoffs/(active|blocked|completed|archived)/(.+)\.md$")
 
 
-_ACT_DIFF_PATH_RE = re.compile(r"^diff --git a/\S+ b/(handoffs/\S+\.md)$")
-
-
-_ACT_CHECKED_RE = re.compile(r"^\s*[-*] \[[xX]\]")
-
-
-_ACT_UNCHECKED_RE = re.compile(r"^\s*[-*] \[ \]")
-
-
-_ACT_EMPTY = {"commits": 0, "handoffs_touched": 0, "boxes_checked": 0, "boxes_added": 0}
+_ACT_EMPTY = {"commits": 0, "handoffs_touched": 0, "boxes_checked": 0, "boxes_added": 0,
+              "moved": 0, "fold_commits": 0}
 
 
 _ACT_WINDOW_DAYS = 14
@@ -532,7 +525,6 @@ _ACT_WINDOW_DAYS = 14
 _ACT_ROLLUPS = (1, 7, 14)
 
 
-_ACT_DAY_RE = re.compile(r"^commit:[0-9a-fA-F]+\|(\d{4}-\d{2}-\d{2})$")
 
 
 def _parse_semantic_timestamp(value: object) -> float | None:
@@ -565,133 +557,115 @@ def _panel_envelope(panel: str, obs: "panels.Observation", *,
     return panels.envelope(source, obs, now=now, watchdog_state=snapshot)
 
 
-def _parse_activity_log(text: str) -> dict:
-    """Fold ``git log --format=commit:%H -p`` output into today's-activity counters.
-
-    ``boxes_checked`` counts added ``[x]`` lines (a flip shows as -``[ ]``/+``[x]``,
-    a task added-already-done as just +``[x]`` — both are completions recorded
-    today). ``boxes_added`` counts added ``[ ]`` lines (new tracked tasks).
-    """
-    commits = 0
-    touched: set[str] = set()
-    boxes_checked = boxes_added = 0
-    for line in text.splitlines():
-        if line.startswith("commit:"):
-            commits += 1
-        elif line.startswith("diff --git "):
-            m = _ACT_DIFF_PATH_RE.match(line)
-            if m:
-                touched.add(m.group(1))
-        elif line.startswith("+") and not line.startswith("+++"):
-            body = line[1:]
-            if _ACT_CHECKED_RE.match(body):
-                boxes_checked += 1
-            elif _ACT_UNCHECKED_RE.match(body):
-                boxes_added += 1
-    return {"commits": commits, "handoffs_touched": len(touched),
-            "boxes_checked": boxes_checked, "boxes_added": boxes_added}
+def _flow_unavailable(reason: str, days: int = _ACT_WINDOW_DAYS) -> dict:
+    """Window shape for "flow cannot be stated": no zero rollups for a page to mistake
+    for a day on which nothing happened."""
+    return {"available": False, "unavailable_reason": reason, "window_days": days,
+            "today": datetime.now().date().isoformat(), "per_day": [], "rollups": {},
+            "refactor_markers": [], "as_of": None, "commit": None}
 
 
-def _activity_today() -> dict:
-    """Commits/checkbox flips under ``handoffs/`` since local midnight.
-
-    Best-effort like the other git probes: zeros outside a git repo or on any
-    git failure — the board must never 500 because of this signal.
-    """
-    try:
-        proc = subprocess.run(
-            ["git", "-C", str(REPO), "log", "--since=midnight",
-             "--format=commit:%H", "-p", "--", "handoffs/"],
-            capture_output=True, text=True, timeout=10, check=False)
-    except (OSError, subprocess.SubprocessError):
-        return dict(_ACT_EMPTY)
-    if proc.returncode != 0:
-        return dict(_ACT_EMPTY)
-    return _parse_activity_log(proc.stdout)
-
-
-def _parse_activity_log_by_day(text: str) -> list[dict]:
-    """Fold ``git log --format=commit:%H|%ad -p`` output into PER-DAY counters.
-
-    Same counting rules as :func:`_parse_activity_log` (added ``[x]`` = closed,
-    added ``[ ]`` = filed), bucketed by the commit's local date so a trailing
-    window can be rolled up without a second scanner. Returns newest-day-first.
-    Each row carries a ``_touched`` set of handoff paths, which
-    :func:`_activity_window` unions per window and then strips.
-    """
-    days: dict[str, dict] = {}
-    cur: dict | None = None
-    for line in text.splitlines():
-        m = _ACT_DAY_RE.match(line)
-        if m:
-            cur = days.setdefault(m.group(1), {
-                "date": m.group(1), "commits": 0, "_touched": set(),
-                "boxes_checked": 0, "boxes_added": 0})
-            cur["commits"] += 1
-            continue
-        if cur is None:
-            continue
-        if line.startswith("diff --git "):
-            pm = _ACT_DIFF_PATH_RE.match(line)
-            if pm:
-                cur["_touched"].add(pm.group(1))
-        elif line.startswith("+") and not line.startswith("+++"):
-            body = line[1:]
-            if _ACT_CHECKED_RE.match(body):
-                cur["boxes_checked"] += 1
-            elif _ACT_UNCHECKED_RE.match(body):
-                cur["boxes_added"] += 1
-    return sorted(days.values(), key=lambda r: r["date"], reverse=True)
-
-
-def _activity_rollup(rows: list[dict], days: int, today: str) -> dict:
-    """Sum the last ``days`` calendar days (ending ``today``) of per-day rows."""
-    start = (datetime.fromisoformat(today).date()
-             - timedelta(days=days - 1)).isoformat()
-    sel = [r for r in rows if start <= r["date"] <= today]
+def _flow_rollup(rows: list[dict], sel: list[dict], days: int, start: str) -> dict:
+    """Sum selected per-day rows; opening stock is the row before the window."""
+    prior = [r for r in rows if r["date"] < start]
+    opening = prior[-1]["open_stock"] if prior else None
+    closing = sel[-1]["open_stock"] if sel else opening
+    if opening is None and sel:
+        opening = max(0, sel[0]["open_stock"] - sel[0]["net"]
+                      - sel[0].get("fold_added", 0) + sel[0].get("fold_removed", 0))
+    sum_of = lambda key: sum(r.get(key, 0) for r in sel)  # noqa: E731
+    closed, filed, removed = sum_of("closed"), sum_of("filed"), sum_of("removed")
+    fold_adj = sum_of("fold_added") - sum_of("fold_removed")
+    delta = None if opening is None or closing is None else closing - opening
     touched: set[str] = set()
     for r in sel:
-        touched |= r.get("_touched", set())
-    closed = sum(r["boxes_checked"] for r in sel)
-    filed = sum(r["boxes_added"] for r in sel)
-    return {"days": days, "since": start,
-            "commits": sum(r["commits"] for r in sel),
+        touched |= set(r.get("touched") or ())
+    return {"days": days, "since": start, "commits": sum_of("commits"),
             "handoffs_touched": len(touched),
-            "boxes_checked": closed, "boxes_added": filed,
-            "net": filed - closed}
+            "boxes_checked": closed, "boxes_added": filed, "removed": removed,
+            "declined": sum_of("declined"), "removed_open": sum_of("removed_open"),
+            "moved": sum_of("moved"), "reworded": sum_of("reworded"),
+            "born_ticked": sum_of("born_ticked"),
+            "net": filed - closed - removed,
+            "fold_adjustment": fold_adj, "opening_stock": opening, "closing_stock": closing,
+            "stock_delta": delta,
+            # Stock change the flow does not explain: lanes dated on a day their merge
+            # landed later, conflict resolutions, parallel-lane replay clamping.
+            "unexplained": None if delta is None else delta - (filed - closed - removed) - fold_adj}
 
 
-def _activity_window(days: int = _ACT_WINDOW_DAYS) -> dict:
-    """Per-day + rolled-up handoff flow over a trailing window.
+def _activity_from_timeline(days: int = _ACT_WINDOW_DAYS) -> dict:
+    """Per-day + rolled-up flow from ``daily_flow`` in the timeline artifact.
 
-    ``net`` is filed − closed: NEGATIVE means the backlog shrank (good). Same
-    best-effort contract as :func:`_activity_today` — degrades to empty rollups
-    on any git failure rather than 500ing the board.
+    build_handoff_timeline.py is the ONE counter; the hub only rolls its days up, and
+    runs no git here, so a slow host cannot blank the panel under ``_board_lock``.
+    An absent or unreadable artifact yields ``available: False`` with the reason.
     """
-    today = datetime.now().date().isoformat()
-    empty = {"window_days": days, "today": today, "per_day": [],
-             "rollups": {f"{n}d": {"days": n, "since": today, "commits": 0,
-                                   "handoffs_touched": 0, "boxes_checked": 0,
-                                   "boxes_added": 0, "net": 0}
-                         for n in _ACT_ROLLUPS}}
-    try:
-        proc = subprocess.run(
-            ["git", "-C", str(REPO), "log", f"--since={days} days ago",
-             "--date=format:%Y-%m-%d", "--format=commit:%H|%ad", "-p",
-             "--", "handoffs/"],
-            capture_output=True, text=True, timeout=30, check=False)
-    except (OSError, subprocess.SubprocessError):
-        return empty
-    if proc.returncode != 0:
-        return empty
-    rows = _parse_activity_log_by_day(proc.stdout)
-    rollups = {f"{n}d": _activity_rollup(rows, n, today) for n in _ACT_ROLLUPS}
-    per_day = [{k: v for k, v in r.items() if k != "_touched"}
-               | {"handoffs_touched": len(r["_touched"]),
-                  "net": r["boxes_added"] - r["boxes_checked"]}
-               for r in rows]
-    return {"window_days": days, "today": today,
-            "per_day": per_day, "rollups": rollups}
+    present, data, err = _read_json_object(TIMELINE_PATH, "timeline artifact")
+    if data is None:
+        return _flow_unavailable(err or "timeline artifact not generated yet", days)
+    rows = data.get("daily_flow")
+    if not isinstance(rows, list) or not rows or not all(
+            isinstance(r, dict) and "closed" in r and "open_stock" in r for r in rows):
+        return _flow_unavailable(
+            "timeline artifact has no per-day flow in the current format; "
+            "the next build_handoff_timeline.py run writes it", days)
+    today = datetime.now().date()
+    rows = [r for r in rows if r["date"] <= today.isoformat()]
+    if not rows:
+        return _flow_unavailable("timeline artifact has no rows up to today", days)
+
+    def window(n: int) -> tuple[list[dict], str]:
+        start = (today - timedelta(days=n - 1)).isoformat()
+        return [r for r in rows if r["date"] >= start], start
+
+    # An artifact built before today has no row for today: that is "not known yet", and
+    # a 1d of zeros would say nothing happened. Longer windows stay, labelled by data_through.
+    data_through = rows[-1]["date"]
+    today_known = data_through == today.isoformat()
+    rollups = {}
+    for n in _ACT_ROLLUPS:
+        sel, start = window(n)
+        if n == 1 and not today_known:
+            rollups["1d"] = {"days": 1, "since": start, "available": False,
+                             "data_through": data_through,
+                             "unavailable_reason": f"timeline data ends {data_through}"}
+            continue
+        rollups[f"{n}d"] = {**_flow_rollup(rows, sel, n, start), "available": True,
+                            "data_through": data_through}
+    sel, start = window(days)
+    per_day = [{"date": r["date"], "commits": r.get("commits", 0),
+                "boxes_checked": r["closed"], "boxes_added": r["filed"],
+                "removed": r.get("removed", 0), "moved": r.get("moved", 0),
+                "net": r["net"], "open_stock": r["open_stock"],
+                "handoffs_touched": len(r.get("touched") or ())}
+               for r in reversed(sel)]
+    markers = [m for m in data.get("refactor_markers") or []
+               if isinstance(m, dict) and m.get("date", "") >= start]
+    return {"available": True, "window_days": days, "today": today.isoformat(),
+            "per_day": per_day, "rollups": rollups, "refactor_markers": markers,
+            "data_through": data_through, "today_known": today_known,
+            "as_of": data.get("generated_at"), "commit": data.get("last_sha")}
+
+
+def _activity_today_from(window: dict) -> dict:
+    """Today's counters, read from the same rows as the window so the two cannot differ."""
+    out = dict(_ACT_EMPTY, available=bool(window.get("available")),
+               as_of=window.get("as_of"))
+    if not window.get("available"):
+        out["unavailable_reason"] = window.get("unavailable_reason")
+        return out
+    if not window.get("today_known", True):
+        out["available"] = False
+        out["unavailable_reason"] = f"timeline data ends {window.get('data_through')}"
+        return out
+    for row in window.get("per_day") or []:
+        if row["date"] == window["today"]:
+            out.update(commits=row["commits"], handoffs_touched=row["handoffs_touched"],
+                       boxes_checked=row["boxes_checked"], boxes_added=row["boxes_added"],
+                       moved=row["moved"])
+            break
+    return out
 
 
 READER_ERROR_KEY = "_reader_error"
@@ -772,8 +746,9 @@ def board_payload(*, force: bool = False) -> dict:
                 HANDOFF_DIR,
                 file_activity=_load_file_activity(),
                 dirty_ids=_dirty_handoff_ids())
-            _board_cache["activity_today"] = _activity_today()
-            _board_cache["activity_window"] = _activity_window()
+            window = _activity_from_timeline()
+            _board_cache["activity_window"] = window
+            _board_cache["activity_today"] = _activity_today_from(window)
             _board_cache_ts = now
         payload = dict(_board_cache)
     # The TTL cache is a latency device, not a producer: the board is rebuilt
@@ -789,7 +764,90 @@ def board_payload(*, force: bool = False) -> dict:
         "board", panels.live(populated=any(
             bool(v) for v in columns.values()) if isinstance(columns, dict)
             else bool(columns)))
+    # The served checkout's identity travels with the board, so the page can name the
+    # commit it is showing and how far behind origin/main that commit is.
+    payload["_freshness"]["view"] = _view_state()
     return payload
+
+
+VIEW_STATUS_PATH = REPO / ".git" / "epyc-view-refresh.json"
+_VIEW_TTL_S = 30.0
+_view_cache: dict | None = None
+_view_cache_ts = 0.0
+_view_lock = threading.Lock()
+
+
+def _git_out(*args: str) -> str | None:
+    """One cheap git query with a short timeout; ``None`` on any failure."""
+    try:
+        proc = subprocess.run(["git", "-C", str(REPO), *args], capture_output=True, text=True,
+                              timeout=5, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return proc.stdout.strip() if proc.returncode == 0 else None
+
+
+def _view_state(*, force: bool = False) -> dict:
+    """Served HEAD, its distance to origin/main, and the refresher's last report.
+
+    ``behind`` compares against the local origin/main ref, which only moves when a fetch
+    succeeds, so it reads 0 over a dead fetch. ``refresh`` is what catches that.
+    """
+    global _view_cache, _view_cache_ts
+    with _view_lock:
+        now = time.time()
+        if not force and _view_cache is not None and (now - _view_cache_ts) < _VIEW_TTL_S:
+            return dict(_view_cache)
+        head = _git_out("rev-parse", "HEAD")
+        origin = _git_out("rev-parse", "origin/main")
+        behind = _git_out("rev-list", "--count", "HEAD..origin/main")
+        committed = _git_out("log", "-1", "--format=%ct", "HEAD")
+        # In a linked worktree ``.git`` is a file, so "no report" is the path not being one.
+        present, status, err = ((False, None, None) if not VIEW_STATUS_PATH.is_file() else
+                                _read_json_object(VIEW_STATUS_PATH, "hub view refresh status"))
+        state = {
+            "head": head, "origin_main": origin,
+            "behind": int(behind) if behind and behind.isdigit() else None,
+            "head_committed_at": int(committed) if committed and committed.isdigit() else None,
+            "refresh": status, "refresh_present": present, "refresh_error": err,
+        }
+        _view_cache, _view_cache_ts = state, now
+        return dict(state)
+
+
+def _hub_view_observation(state: dict) -> panels.Observation:
+    if state.get("refresh_error"):
+        return panels.Observation(artifact_present=True, detail=state["refresh_error"])
+    status = state.get("refresh")
+    if status is None:
+        return panels.Observation(
+            artifact_present=False,
+            detail="no refresh report in this checkout (not a view, or the supervisor's "
+                   "pinned refresh_hub_view.sh predates the report)")
+    return panels.Observation(
+        artifact_present=True,
+        timestamp=_parse_semantic_timestamp(status.get("attempted_at")),
+        source="attempted_at", populated=True, detail=status.get("detail"))
+
+
+def hub_view_payload() -> dict:
+    """``/api/hub_view`` -- which commit the hub serves and whether its refresh works."""
+    state = _view_state()
+    out = dict(state)
+    env = _panel_envelope("hub_view", _hub_view_observation(state))
+    status = state.get("refresh")
+    errors = []
+    if state.get("refresh_error"):
+        errors.append(state["refresh_error"])
+    elif isinstance(status, dict) and status.get("ok") is False:
+        errors.append(f"hub view refresh failed at {status.get('stage')}: "
+                      f"{status.get('detail')} (served head {str(state.get('head'))[:12]})")
+    if errors:
+        env["data_health"], env["data_errors"] = "degraded", errors
+    else:
+        env["data_health"] = "ok"
+    out["_freshness"] = env
+    return out
 
 
 def _validate_id(handoff_id: str) -> Path | None:
@@ -815,13 +873,41 @@ def _validate_id(handoff_id: str) -> Path | None:
     return candidate if candidate.is_file() else None
 
 
+def _folded_redirect(handoff_id: str) -> tuple[str, str | None] | None:
+    """``(active/<target-stem>, track)`` for a ``state/stem`` id whose file was folded."""
+    parts = (handoff_id or "").split("/")
+    if len(parts) != 2 or parts[0] not in handoff_parser.STATES or not parts[1]:
+        return None
+    fmap = handoff_parser.load_folded_map(HANDOFF_DIR)
+    base = parts[1] + ".md"
+    if base not in fmap["files"]:
+        return None
+    target = handoff_parser.resolve_folded_file(base, fmap)
+    if not isinstance(target, str) or not target.endswith(".md") or target == base:
+        return None
+    return f"active/{target[:-3]}", fmap["files"][base].get("track")
+
+
 def detail_payload(handoff_id: str) -> tuple[int, dict]:
-    """Return ``(http_status, payload)`` for one handoff's detail view."""
+    """Return ``(http_status, payload)`` for one handoff's detail view.
+
+    A retired id (its file folded into another, D5 ``.folded.json``) resolves to the
+    fold target's card, carrying ``redirected_from`` and the target ``## Track:`` anchor.
+    """
     path = _validate_id(handoff_id or "")
+    redirected_from = anchor = None
+    if path is None:
+        hop = _folded_redirect(handoff_id or "")
+        if hop is not None and _validate_id(hop[0]) is not None:
+            redirected_from, (handoff_id, anchor) = handoff_id, hop
+            path = _validate_id(handoff_id)
     if path is None:
         return 404, {"error": "handoff not found", "id": handoff_id}
     state = handoff_id.split("/")[0]
     card = handoff_parser.parse_file(state, path, detail=True)
+    if redirected_from:
+        card["redirected_from"] = redirected_from
+        card["anchor"] = anchor
     return 200, card
 
 
@@ -960,6 +1046,16 @@ def queue_payload() -> dict:
 
     none_ready = sum(1 for r in rows if r.get("status") == "READY" and r.get("lane") == "none")
     ungated = [r.get("task_id") for r in rows if not r.get("gating")]
+    # A row whose spec_ref names a folded handoff keeps its text; the resolved target
+    # rides alongside so the badge never dangles (D5 ``.folded.json``).
+    fmap = handoff_parser.load_folded_map(HANDOFF_DIR)
+    for row in rows:
+        ref = row.get("spec_ref")
+        if isinstance(ref, str) and ref.startswith("handoffs/"):
+            p, sep, frag = ref.partition("#")
+            resolved = handoff_parser.resolve_folded_file(p, fmap)
+            if resolved != p:
+                row["spec_ref_resolved"] = resolved + sep + frag
 
     alarms = []
     if rows and none_ready == 0:
@@ -1385,6 +1481,30 @@ def loop_spec_health() -> tuple[int, dict]:
 
 
 # --------------------------------------------------------------------------- #
+# Pipeline page: compute loop + session loop, who is in which step  (/pipeline)
+# --------------------------------------------------------------------------- #
+def pipeline_payload() -> dict:
+    """Read-only fold over the dispatcher registry, turn reports, grants and keeper log."""
+    graph = graph_payload()      # the EXISTING index graph (/api/handoff_graph); no second graph is built
+    data = pipeline_status.build_payload(graph=graph)
+    if not data.get("present"):
+        obs = panels.absent(panels.source("pipeline"), data.get("error", "registry unreadable"))
+    else:
+        obs = panels.Observation(
+            artifact_present=True,
+            timestamp=_parse_semantic_timestamp(data.get("dispatcher_last_pass")),
+            source="dispatcher.last_pass", populated=bool(data.get("sessions")),
+            detail=None)
+    data["_freshness"] = _panel_envelope("pipeline", obs)
+    return data
+
+
+def pipeline_health() -> tuple[int, dict]:
+    """``/api/pipeline/health`` - is the pipeline view still true (dispatcher passing)?"""
+    return _subject_health("pipeline", pipeline_payload())
+
+
+# --------------------------------------------------------------------------- #
 # KT-3: read-only claim browser  (/knowledge)
 # --------------------------------------------------------------------------- #
 def knowledge_payload() -> dict:
@@ -1607,7 +1727,10 @@ def nav_asset() -> bytes:
     and so a page that fails to reach ``/api/dashboards`` still has its links.
     """
     prelude = ("window.__EPYC_DASHBOARDS = "
-               + json.dumps(registry_dashboards()) + ";\n")
+               + json.dumps(registry_dashboards()) + ";\n"
+               + "window.__EPYC_FRESH_ALIASES = "
+               + json.dumps({**{c: c for c in freshness.CLASSES},
+                             **freshness.ALIASES}) + ";\n")
     try:
         body = NAV_JS.read_text(encoding="utf-8")
     except OSError as exc:
@@ -1664,6 +1787,7 @@ def panel_envelopes() -> dict:
         # of what the scan actually found. The payload is TTL-cached, so this is
         # a dict lookup in the common case.
         "board": lambda: board_payload()["_freshness"],
+        "hub_view": lambda: hub_view_payload()["_freshness"],
         "handoff_detail": lambda: panels.live(),
         "health": lambda: panels.live(),
         "transport_probe": lambda: panels.live(),
@@ -1686,6 +1810,7 @@ def panel_envelopes() -> dict:
         "autokernel_loop": lambda: loop_status.snapshot()[1],
         "kernel_progression": lambda: kernel_progression.snapshot()[1],
         "loop_spec": lambda: loop_spec_payload()["_freshness"],
+        "pipeline": lambda: pipeline_payload()["_freshness"],
         "knowledge": lambda: knowledge_payload()["_freshness"],
         "knowledge_claim": lambda: panels.live(),
     }
@@ -1711,10 +1836,12 @@ def health_payload() -> dict:
     """
     envs = panel_envelopes()
     verdict = panels.fold(envs)
-    override_env = envs["diagnostic_overrides"]
-    if override_env.get("data_health") == "degraded":
-        entry = {"panel": "diagnostic_overrides", "verdict": panels.STATUS_DEGRADED,
-                 "why": "; ".join(override_env.get("data_errors") or []), "gates_health": True}
+    for name in ("diagnostic_overrides", "hub_view"):
+        env = envs[name]
+        if env.get("data_health") != "degraded":
+            continue
+        entry = {"panel": name, "verdict": panels.STATUS_DEGRADED,
+                 "why": "; ".join(env.get("data_errors") or []), "gates_health": True}
         verdict["attention"].append(entry)
         if verdict["status"] != panels.STATUS_DEGRADED:
             verdict.update(status=panels.STATUS_DEGRADED, status_set_by=entry, worst=entry)
@@ -2076,9 +2203,51 @@ def _read_graph_contract() -> tuple:
     return present, data
 
 
+HANDOFF_SESSIONS_DIR = os.environ.get("EPYC_HANDOFF_SESSIONS_DIR", "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions")
+
+
+def handoff_step_counts(sessions_dir: str = HANDOFF_SESSIONS_DIR) -> dict:
+    """{handoff basename: landed turns since that handoff's last tick} from each session's steps.jsonl (written by
+    wrapup.py, ws58). A session with no ledger yet counts its report.json: one wrapped turn without ticks = 1."""
+    try:
+        with open(sessions_dir.rstrip("/") + ".json", encoding="utf-8") as fh:
+            reg = json.load(fh).get("sessions", {})
+    except (OSError, ValueError, AttributeError):
+        return {}
+    out = {}
+    for slug, e in (reg.items() if isinstance(reg, dict) else ()):
+        if not isinstance(e, dict) or not e.get("handoff"):
+            continue
+        d, n = os.path.join(sessions_dir, slug), None
+        try:
+            with open(os.path.join(d, "steps.jsonl"), encoding="utf-8") as fh:
+                n = 0
+                for line in fh:
+                    try:
+                        n = 0 if int(json.loads(line).get("ticks") or 0) > 0 else n + 1
+                    except (ValueError, TypeError, AttributeError):
+                        continue
+        except OSError:
+            try:
+                with open(os.path.join(d, "report.json"), encoding="utf-8") as fh:
+                    r = json.load(fh)
+                n = 1 if r.get("wrapped") and not r.get("ticks") else 0
+            except (OSError, ValueError, AttributeError):
+                continue
+        out[os.path.basename(str(e["handoff"]))] = n
+    return out
+
+
 def graph_payload() -> dict:
     """Read the index graph artifact, tolerating absence/corruption."""
     present, data = _read_graph_contract()
+    steps = handoff_step_counts()
+    # The D5 redirect map rides with the graph so a bookmarked retired row id or
+    # folded file id resolves client-side (handoffs.html ``?id=``).
+    data["folded"] = handoff_parser.load_folded_map(HANDOFF_DIR)
+    for node in data.get("nodes") or ():
+        if isinstance(node, dict) and node.get("handoff") in steps:
+            node["steps_since_tick"] = steps[node["handoff"]]
     data["_freshness"] = _panel_envelope(
         "handoff_graph", _graph_observation(data, artifact_present=present))
     return data
@@ -2117,6 +2286,7 @@ ASSET_ROUTES = {
 API_ROUTES = {
     "/api/handoff_board": board_payload,
     "/api/handoff_timeline": timeline_payload,
+    "/api/hub_view": hub_view_payload,
     "/api/handoff_graph": graph_payload,
     "/api/loop": loop_payload,
     "/api/loop/progression": progression_payload,
@@ -2127,6 +2297,7 @@ API_ROUTES = {
     "/api/gpu_window": gpu_window_payload,
     "/api/benchmark_artifacts": benchmark_artifacts_payload,
     "/api/loop_spec": loop_spec_payload,
+    "/api/pipeline": pipeline_payload,
     "/api/knowledge": knowledge_payload,
     "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
@@ -2144,6 +2315,7 @@ PANEL_HEALTH_ROUTES = {
     "/api/diagnostic-overrides/health": diagnostic_overrides_health,
     "/api/loop/health": loop_data_health,
     "/api/loop_spec/health": loop_spec_health,
+    "/api/pipeline/health": pipeline_health,
     "/api/knowledge/health": knowledge_health,
 }
 

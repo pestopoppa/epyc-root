@@ -1,0 +1,23 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-C9-2-20261109",
+  "status": "ratified",
+  "ratified_at": "2026-11-09T20:45:20Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (typed RATIFY on the terminal)",
+  "items": {
+    "A": "GPU clock band droop_band_mhz 120, statistic over r3 n=136; single-stream pp512 workload, not np4",
+    "B": "R18 comparator manifest 5350aac873b0b3626851912dc44c1d3579467edacb6a999e4acfd70f83a587fd, accepted alongside the old digest",
+    "C": "code budget at actual counts; accumulate, run, serving, status carry open design questions; five files outside the proposal included, growth unreviewed",
+    "D": "ak/retired-20261109 and ak/planner-cpu-20261109, each only if its tests passed on the merged tree"
+  },
+  "merged": {
+    "retired": true,
+    "planner": true
+  },
+  "base_origin_main": "7c8436eaa46bf6c54c24c1108b6d1b9ad63b5ba7",
+  "research_commit": "eb9be38dc46d47fa31f180046089c9bf71406885",
+  "applied_by": "scripts/operator/run_ak_c9_ratify2_20261109.sh",
+  "ratify_script_sha256": "2e0b9def11294a4a7dd6f08b18951748e1861f691023db16a9d762c91e355e66",
+  "processes_touched": []
+}

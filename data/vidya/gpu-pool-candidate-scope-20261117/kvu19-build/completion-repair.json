@@ -1,0 +1,22 @@
+{
+  "schema": "kvu19a2.completion-repair.v1",
+  "at": "2026-11-17T23:57:18.378892+00:00",
+  "row": "handoff-vidya-kvu19a2-wire-20261117-r2",
+  "state": "ready-for-publish",
+  "parsed_completion_command": "/usr/bin/test -s /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/run-output/result.json",
+  "parsed_completion_rc_with_result_absent": 1,
+  "dryrun_completion_result": "FILLER_DRYRUN_RESULT_PATH (required, Bash shell-quoted)",
+  "finalizer": {
+    "returncode": 0,
+    "pinned_files": 289
+  },
+  "sha256": {
+    "row-launch.sh": "d11641c33066a792065de46b5863d4b3983d4a5665e38783997e1acb39f67b76",
+    "source-pins.json": "2ce4a213abf6b54747643ea274084c3ad50726c10e6925659884dceafbf6519b",
+    "finalize.py": "6eaffaad868efaf357e53f94ed5ce88daf0e5782578725faa27e0fa54b3b0e26",
+    "pins.json": "d7c251c99fdf1c09354629bf20d18404c3dab34af05642d95c8a9981c26754f0"
+  },
+  "native_residency_gate_changed": false,
+  "gpu_launched": false,
+  "published": false
+}

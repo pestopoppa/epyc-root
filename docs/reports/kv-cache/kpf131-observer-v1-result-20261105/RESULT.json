@@ -1,0 +1,87 @@
+{
+  "schema": "kpf131.findslot-observer.v1",
+  "status": "OBSERVER_FIXTURE_PASS",
+  "row_id": "kvu-kpf131-findslot-observer-20261104",
+  "attempt_nonce": "06fbfb64836611ff71eb741ec2b2f2cefb3310783e97c464",
+  "case_count": 2,
+  "answer": 2,
+  "records": [
+    {
+      "arm": "honest",
+      "capture": {
+        "events": [
+          {
+            "ids": [
+              0
+            ],
+            "mapped": {
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+            },
+            "exe": "/mnt/raid0/llm/tmp/kvu/observer-findslot-v1/fixture",
+            "exe_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d"
+          },
+          {
+            "ids": [
+              0
+            ],
+            "mapped": {
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+            },
+            "exe": "/mnt/raid0/llm/tmp/kvu/observer-findslot-v1/fixture",
+            "exe_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d"
+          }
+        ],
+        "exit_code": 0
+      },
+      "answer": "RESULT PASS 2 3"
+    },
+    {
+      "arm": "skip_apply",
+      "capture": {
+        "events": [
+          {
+            "ids": [
+              0
+            ],
+            "mapped": {
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+            },
+            "exe": "/mnt/raid0/llm/tmp/kvu/observer-findslot-v1/fixture",
+            "exe_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d"
+          },
+          {
+            "ids": [
+              0
+            ],
+            "mapped": {
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-hip.so.0.16.0": "65063d18e76079c2e74b5ca882e72f8266c9237dc9d9f598edc50576babc51e9",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-cpu.so.0.16.0": "19ae35c113e38a3a3fd2f254a33a9ac3497384945583dd09efe75e45b5ffeb66",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libllama.so.0.0.10348": "33bf73eaedfee5a52aa07312d0d12431133e23c54d411744e7bd51bccf375f64",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml.so.0.16.0": "c51b86873bd4d765d309967be6ea9cfd5c0b076c429adb70b15af4a9d903e191",
+              "/mnt/raid0/llm/kernels/builds/gpu-20261020-a1f0c8cf9/bin/libggml-base.so.0.16.0": "ab180e2c966ea6c76227db05ed576b195285d02c716652192aa6ca2e8ff720c9"
+            },
+            "exe": "/mnt/raid0/llm/tmp/kvu/observer-findslot-v1/fixture",
+            "exe_sha256": "078cafd6e72d274f40d82c50012b0170f80d2f0d8e72f5574cca6f88e7de7d7d"
+          }
+        ],
+        "exit_code": 0
+      },
+      "answer": "RESULT DETECTED 0 1"
+    }
+  ],
+  "smoke": false,
+  "timestamp_ns": "redacted epoch nanoseconds",
+  "scope": "model-free own-child entry observer; not physical layout, task binding, or historical control"
+}

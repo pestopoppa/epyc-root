@@ -1,0 +1,5 @@
+WARN task_lint vidya-belief-substrate-program.md:3: identity fields incomplete: ['region'] — add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)
+WARN task_lint vidya-belief-substrate-program.md:3: untestable prose prerequisite: 'prerequisites. Require a planning-context canary before declaring wired. [no-belief: prospective source-wiring task] [in'
+DECISION-RULE machine-checkable; auto_file will check: terminal_receipt_count >= 2; refusal_count == 0 (read from /mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/official/RESULT.json)
+SMOKE PASS vb-fm4-codex-native-20261118 on 116-119: first progress: new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-fm4-codex-native-20261118/native-attempts/attempt-tmpno_jw/native-result.json (unit_key terminal_receipt_count set); rc=0 time=2026-11-18T16:19:00Z reason=complete
+PUBLISHED vb-fm4-codex-native-20261118 lane=cpu regions=any-cpu-quarter window_s=420 min_window_s=120 book_s=225 resumable=false gib=1 ports=[] result=/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/official/RESULT.json (json) -> /mnt/raid0/llm/tmp/compute-flags/ready/vb-fm4-codex-native-20261118.json

@@ -1,0 +1,16 @@
+{
+  "status": "UNAPPLIED_UNBUILT",
+  "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "base_candidate_sha256": "03231c2d7cca3eaf11112b06a449639f6766d1c89fc92f7fbba82a5cae0a4cc1",
+  "compiled": false,
+  "native_callback_observed": false,
+  "active_files_modified": false,
+  "proposal_files": {
+    "candidate.cpp": "a2e00420abce89719ab8298593053d4dc37a165e92b42a36338750c89c03f924",
+    "expert_union.hpp": "6bf5bb05f647346b635b1f0b7a34bde530c5db913220ddedb65cbd7681e28d6d",
+    "cafe2-expert-union.patch": "bde54b797de3293422ca1952739fec1b882ba2cca9cfd5d3448ce0c5af176580",
+    "cafe4-load-mtp.patch": "3ae3f0eda8e3d67a7c4a2dcb565925380d7742c96ef9e41b975a2de2ecfda549",
+    "SOURCE-PROOF.md": "4877948679c86d91db6010da32c6d7af0e0856f48d7ad43bdabdce3bab9774a3",
+    "INTEGRATION.md": "dd9500cecf194fee3b4ca772d2a625d2ea7df3f724132c665f54b7b5608c741c"
+  }
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "amber-ticket",
+    "seed": 31415926,
+    "marker": "AMBER SOURCE RECORD",
+    "ticket": "amber-74-kestrel",
+    "governance": "AMBER evidence rule — retain exact identifiers and record their origin.",
+    "receipt": "AMBER RECEIPT READY"
+  },
+  {
+    "id": "teal-ticket",
+    "seed": 27182818,
+    "marker": "TEAL SOURCE RECORD",
+    "ticket": "teal-29-juniper",
+    "governance": "TEAL evidence rule — report missing source evidence explicitly.",
+    "receipt": "TEAL RECEIPT READY"
+  }
+]

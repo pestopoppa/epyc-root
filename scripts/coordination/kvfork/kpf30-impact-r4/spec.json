@@ -1,0 +1,32 @@
+{
+  "id": "kpf30-impact-8952-20261104-r4",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r4/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r4/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At exact detached candidate 8952a0f693fb923918157eb25117641b74766230 capture six native source-bound upstream impacts and full verbose skipped-file coverage. Stop immediately and emit OWNER_WARNING on any HIGH/CRITICAL. Stop on ambiguity, parser failure, source drift or missing graph binding. Partial source-reference smoke is first progress only; success needs scan_complete partial=false. No inference or edit-safety claim for skipped files.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-30.PHASE-IMPACT",
+  "priority_rank": 45,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r4",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "job.py",
+    "source_integrity.py",
+    "test_source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "kpf30-impact-8952",
+  "notes": "Prepared only, not run or published. Successor to r3 rc=75 disk-floor. Preserve canonical FILLER_DISK_FLOOR_GIB=150 GiB floor; do not override or launch until host free disk is at least 150 GiB. Whole-host CPU allocation remains regions/claim-cpus 0-95 with RAM reservation 48 GiB. Fresh output directory; r3 partial smoke is retained in its own predecessor directory and is not an impact result. Pinned detached source worktree outside the scratch reaper: /mnt/raid0/llm/worktrees/kpf30-impact-8952-20261104 at 8952a0f693fb923918157eb25117641b74766230; source tree is unchanged. The guard rejects all untracked non-ignored source files; full verbose analyzer output and skipped-file coverage must be retained. Guard copied byte-for-byte from lane and sealed in identity; no cross-lane dependency.",
+  "supersedes": "kpf30-impact-8952-20261104-r3"
+}

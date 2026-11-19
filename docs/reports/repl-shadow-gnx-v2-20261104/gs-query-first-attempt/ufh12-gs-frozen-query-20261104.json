@@ -1,0 +1,53 @@
+{
+ "decision_rule": "Descriptive scoped transfer diagnostic, not full G-S, quality or production representative: require 500/500 fixed 2.2 query rows successful on both private stores and both models, matching prepublication content pins and cleanup, with per-query token lengths and top-5/top-10 cosine percentiles and threshold counts [0.1,0.3,0.4,0.6,0.7,0.75,0.85,0.9]. Report all 500 denominator and any failure/not-run rows; rc75/partial is incomplete, rc2/failed rows is failed. Compare BGE and EG2 distributions without interpreting cross-model similarity as retrieval quality. No organic query or adoption claim.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 5400,
+ "first_progress_s": 1800,
+ "gib": 48,
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.11-QUERY",
+ "id": "ufh12-gs-frozen-query-20261104",
+ "keep": [
+  "cohort.json",
+  "input-pins.json",
+  "model-index-preverify.sha256",
+  "source.sha256",
+  "run.py",
+  "check_inputs.py",
+  "launch.sh",
+  "results.jsonl",
+  "run-summary.json",
+  "run-*.log",
+  "DONE.json",
+  "gs-frozen-query/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/launch.sh",
+  "sha256": "58ae67efef7f3827aaaea14c772102eba8ed283f0a746c4c28a39d2a9e274687"
+ },
+ "min_window_s": 5400,
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "ports": [
+  19111,
+  19112
+ ],
+ "priority_rank": 20.0,
+ "publish_warnings": [
+  "harness-program.md:2530: untestable prose prerequisite: 'after its grant file was absent during the run. Native and production parity verdicts are null; server reaped and absent'"
+ ],
+ "published_at": "2026-11-04T07:36:21Z",
+ "published_from": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/STOP",
+ "window_s": 6780,
+ "workdir": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query"
+}

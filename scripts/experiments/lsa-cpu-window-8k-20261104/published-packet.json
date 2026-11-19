@@ -1,0 +1,15 @@
+{
+  "path": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/packet",
+  "sha256": {
+    "test_first_progress.py": "754f9a6bc2567d4975e3330742f6fa3534b9ee354491dfa9100fe85a0f018288",
+    "launcher.sh": "93419bc5a56688f9383d5d6a1dcbd045dc481c166cf3662f941df8862b452df4",
+    "ids.json": "056563f23d3191f5ca9a37ca7684131daacb3210586af1d95ebfea00507209be",
+    "REVIEW.json": "85c748c693e2245fd7ecbb4a48c9143345c0fabceb46a9d1fd106e1ca4d851ec",
+    "README.md": "6154f79c9e6622c2595de41d166a345d4bd21274cbaf922b529126260c929c83",
+    "native_evidence.py": "f6eb53e5d7fd136f053ee1c227d213506d0a71c20373d67206be6efe08a7af6f",
+    "job.py": "315e09cdf5442af99d1a9902ea98230565756bad44d4b8bc6a2176242c240729",
+    "spec.json": "bde0d272bc89077ecc6b347eaa67cd4571be697e3c894e8f2e057bdcdd01daec",
+    "manifest.json": "4df4b115bebb8a8bac6e398ff657dffa5ec07b4233a311b6a119204497d5d34c",
+    "first_progress.py": "5eb02d8d04262b2d6b704baf0f80bd907572d018cc07f07c7093e68aa14c5520"
+  }
+}

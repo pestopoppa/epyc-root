@@ -1,0 +1,29 @@
+{
+  "id": "kvu-kpf174-custody-r1-20261104",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r1-20261104/v3/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r1-20261104/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only accepted iff full prospective 6ec877068 build, parent 84d0a316, reference options and source integrity match, all ggml DSOs are included in build receipt and custody manifest, pinned linkage helper passes, compiled knobs pass, and completion reopens files and compiler hashes. First-object 4-CPU smoke proves progress only. No inference, historical equivalence or correctness verdict.",
+  "estimate_s": 2400,
+  "min_window_s": 2400,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4d",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_timeout_s": 300,
+  "first_progress_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf174-custody-r1-20261104",
+  "keep": [
+    "RESULT.json",
+    "CUSTODY.json",
+    "runs/**",
+    "input/**",
+    "v3/**",
+    "source/**"
+  ],
+  "notes": "Detached source worktree; missing old source snapshot repaired before publication. Model weights are never read or hashed by this build row. Publication smoke compiles actual cache object on 4 CPUs; full HIP build is allocated CPU work. Witness successor must pin validated receipt+custody hashes before GPU publication.",
+  "unit_key": "files"
+}

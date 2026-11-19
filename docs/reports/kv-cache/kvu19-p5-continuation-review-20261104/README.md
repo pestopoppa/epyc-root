@@ -1,0 +1,14 @@
+KVU-19-P5A1 r2 continuation review
+
+Decision: no valid no-redraw continuation is implementable under the existing predeclaration. I made no source, test, handoff, or index changes.
+
+Evidence reviewed:
+- The filed r2 partial packet is `docs/reports/kv-cache/kvu19-p5-a1-r2-partial-20261104/`. Its README and `ended.txt` record rc75 `disk-floor`, no final `result.json`, 10 drafted plus 9 no-draft rows, and no-draft `L0_after` rep 2 started but did not complete. The artifacts explicitly say not to redraw exposed units.
+- The sealed predeclaration in `/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/measurement-sufficiency.json` fixes two independent dedicated lifetimes, exactly 20 valid rows (5 levels x 2 per variant), no extension/follow-up, and immediate stop on invalid evidence. It says a partial failed-result file is not PASS. The submitted `continuation.json` applies to the earlier predecessor ending before a full run; it is not authorization to continue this already exposed r2 event.
+- The retained predeclaration SHA-256 is `a628d3247e68b345e50ce5a88e640035ebdb16e4de9b96cba327272c7c89e734`; the archived probe SHA-256 is `e559549661f33d3c48d25bd16ccaf9218a3c17084585ca13c559bc6564d822af`.
+- Archived source `/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/p3_kvu_probe.py` has no resume interface. `phase_a1()` creates a fresh shared nonce and invokes `phase_a1_single()` for each variant; each single phase starts a new server, primes/parks the slots, runs the entire level sequence, then tears down. Re-running it would repeat exposed cells and produce a new lifecycle/nonce. Appending just the missing no-draft L0 control would use a new server lifetime and would not be the original matched L0-after control.
+- More fundamentally, all nine retained no-draft rows have `draft_count_observation: "unknown"` (`draft_n` null). Source `require_draft_count()` returns `None` for missing no-draft metrics, although the predeclaration requires valid draft-count evidence and says to stop on invalid protocol evidence. These already exposed rows cannot be repaired by collecting another row. The native logs establish no-draft decode timings but do not retroactively turn the unknown native draft-count observations into recorded values.
+
+Blocker: the original event is irrecoverably incomplete under its fixed protocol: it lacks one row and its nine no-draft observations fail the declared draft-count checkpoint; the server lifetimes are terminated, and the runner cannot resume without redraw or a changed protocol. A new full attempt would require a fresh predeclaration/authorization and must retain this r2 exposure as failed/inconclusive; it cannot be represented as a continuation or completion of r2.
+
+No model was launched and no scratch implementation/tests were created because a continuation path is not unambiguously allowed by the predeclaration.

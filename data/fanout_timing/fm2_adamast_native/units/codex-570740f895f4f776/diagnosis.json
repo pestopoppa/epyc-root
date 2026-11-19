@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "codex-570740f895f4f776",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The agent concludes with 'Verified exact byte recovery and SHA-256 for every original... The receipt preserves all eight strict admission checks from RESULT.json.' However, the trace only shows a script execution that outputs 'Verified exact roundtrip for 34 originals (3 envelopes).' There is no evidence in the trace that the agent actually inspected the content of `RESULT.json` to confirm the 'eight strict admission checks' were preserved, nor does it show the specific verification of the 'owner verdict' content beyond the file existing in the archive. The claim of preserving specific checks is asserted without showing the verification of those specific checks against the source.",
+          "confidence": "medium",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795007182,
+        "warnings": []
+      }
+    }
+  ]
+}

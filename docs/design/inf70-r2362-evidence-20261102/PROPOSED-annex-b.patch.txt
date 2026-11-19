@@ -1,0 +1,24 @@
+--- a/measurement/protocols/bench-cpu.md
++++ b/measurement/protocols/bench-cpu.md
+@@ -89,0 +90,21 @@
++
++**P-BENCH-SRV48-R2362-RESIDUAL-1 — prospective 48-thread residual accounting.**
++For the R23-62 experimental CPU-server diagnostic only, use the immediately preceding
++continuous contention-accounting algorithm with these scoped parameters: the target is the
++owned server process group and the **configured worker count is 48**, so an interval is eligible
++only when target use is **at least 36 core-equivalents** (0.75 × 48). The 0–95 affinity mask is
++not the worker count. Include any coordinator work in the target process group; do not substitute
++host busy cores or number of runnable tasks for target CPU time. The claim covers the complete
++physical footprint, including SMT siblings. Retain the raw data and all other eligibility,
++invalidation, window-selection and `[-1.0, 4.0]` endpoint rules unchanged. The established
++96-thread, 72-core CPU-prefill profile is unchanged.
++
++The threshold is an eligibility floor, not proof that the target was uncontended or that the
++measurement has power. A missing qualifying window, failed preflight, insufficient sampling,
++claim or ownership failure, competing-inference witness, swap I/O or invalid counters makes the
++arm invalid, never a null. No rule in this paragraph permits signals to unowned processes or
++changes the host-health preflight. This instrument is prospective and applies only to a
++pre-registered, source/binary/model/recipe-pinned R23-62 run; no historical result is
++retro-certified. A diagnostic on the retained UD model cannot explain a cross-window historical
++ratio on the retired uniform model. This paragraph grants no production, promotion, cutover or
++human-only-write authority.

@@ -1,0 +1,64 @@
+{
+  "filing": {
+    "$schema": "epyc.filed.verdict.v1",
+    "agent_verdict": {
+      "filed_by": "codex-gen",
+      "rationale": "Native RESULT status=invalid, rc=1: RuntimeError: own quarter lock not visible. passed, max_abs, dense_argmax and oracle_argmax are null; the declared finite-logit, <=1e-5 dense/all difference, argmax and 16-global-layer-mask checks cannot be evaluated. Outer rc=0 and publisher PASS establish completion handling only. No parity, timing or quality verdict. Omit tick_text because the owner LSA-SCREEN-1 box also requires implementation and CPU/MI210 screens and remains incomplete.",
+      "verdict": "inconclusive"
+    },
+    "at": "2026-11-04T07:34:40+00:00",
+    "compute_burned": true,
+    "dry_run": false,
+    "end_line": "rc=0 time=2026-11-03T17:54:00Z reason=complete",
+    "filed_at": "2026-11-04T07:34:40+00:00",
+    "filed_by": "codex-gen",
+    "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+    "id": "lsa-screen-1-cpu-parity-20261103",
+    "machine_checkable": false,
+    "manifest": "/mnt/raid0/llm/tmp/compute-flags/dryrun/lsa-screen-1-cpu-parity-20261103/completed-manifest.json",
+    "native_result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/RESULT.json",
+    "outcome_class": "PARTIAL-VERDICT",
+    "owner": "lsa-screen",
+    "phase": "filing",
+    "rc": 0,
+    "reason": "Native RESULT status=invalid, rc=1: RuntimeError: own quarter lock not visible. passed, max_abs, dense_argmax and oracle_argmax are null; the declared finite-logit, <=1e-5 dense/all difference, argmax and 16-global-layer-mask checks cannot be evaluated. Outer rc=0 and publisher PASS establish completion handling only. No parity, timing or quality verdict. Omit tick_text because the owner LSA-SCREEN-1 box also requires implementation and CPU/MI210 screens and remains incomplete.",
+    "result_exists": true,
+    "result_format": "json",
+    "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/RESULT.json",
+    "root_cause_family": null,
+    "row": "lsa-screen-1-cpu-parity-20261103",
+    "row_verdict": "inconclusive",
+    "rule": "One 45-ID prefill pair on Qwen3.8-27B-Q8_0: all vocabulary logits finite, max absolute dense/all difference <=1e-5, exact argmax equality, exactly the 16 global layers observed with unchanged all-key masks. Stop on completed pair or first failed check; no timing or quality claim.",
+    "values": {},
+    "verdict": {
+      "kind": "science",
+      "native_result_sha256": "f3710057fa58de30686a823836ed42511b4646b3f00ec6aa969da6f103644541",
+      "result": "inconclusive",
+      "status": "filed"
+    }
+  },
+  "native_result": {
+    "status": "invalid",
+    "rc": 1,
+    "invalid_reason": "RuntimeError: own quarter lock not visible",
+    "passed": null,
+    "max_abs": null,
+    "dense_argmax": null,
+    "oracle_argmax": null,
+    "native_paths": {
+      "dense": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/dense.bin",
+      "all": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/all.bin",
+      "trace": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/trace.jsonl",
+      "dense_log": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/dense.log",
+      "all_log": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/all.log",
+      "dense_monitor": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/dense-monitor.jsonl",
+      "all_monitor": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/all-monitor.jsonl"
+    },
+    "owner_pid": 2646804,
+    "owner_start_ticks": 185091083,
+    "traceback": "Traceback (most recent call last):\n  File \"/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/job.py\", line 146, in main\n    if lock.returncode or not any(line.strip().startswith(quarter+' ') and 'filler-lsa-screen-1-cpu-parity-20261103' in line for line in lock.stdout.splitlines()): raise RuntimeError('own quarter lock not visible')\n                                                                                                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: own quarter lock not visible\n",
+    "evidence_receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/booking-cpu-parity/ATTEMPT_FENCE/parity-conformance.raw.json.research-screen.json"
+  },
+  "native_result_sha256": "f3710057fa58de30686a823836ed42511b4646b3f00ec6aa969da6f103644541",
+  "scope": "Invalid CPU parity attempt; no scientific checks evaluated; LSA-SCREEN-1 remains open."
+}

@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "git",
+    "worktree",
+    "add",
+    "--detach",
+    "--no-checkout",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/primary",
+    "HEAD"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/seed",
+  "exit": 0
+}

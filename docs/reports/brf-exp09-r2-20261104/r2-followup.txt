@@ -1,0 +1,12 @@
+TOC-SP-3 / EXP09 R2 follow-up assessment (2026-11-04)
+
+Recommendation: do not spend another inference pass on R3. Recompute the disposition from R2's native `out/results.jsonl` and file an evidence-based verdict. The recorded `pass_complete` booleans are broken summary flags; the underlying 48 cell records are complete and contain the required evidence.
+
+Evidence inspected:
+- Handoff TOC-SP-3 / EXP09 R2 specifies 12 frozen logs x four arms, unchanged control, 1024-token answer cap, raw answers and selected evidence; EXPAND if control is verified, mechanism fired, and verified-quote accuracy >= control.
+- R2 `preflight`: `control_code_unchanged=true`, pin `3a428cb3795b26251c5f111c9eaa887db0690994`, production v10 CPU kernel-store libraries only (`linkage_ok=true`, no foreign libs), corpus SHA pinned, 12 items.
+- Native results: 48/48 cell rows, 12 per arm; all 48 parsed, all answers nonempty, zero answer completion ceilings at 1024. Control mean accuracy 0.803; verified_quote 0.868; shape_header 1.000; pointer_only 0.264.
+- Verified quote: planted byte-mismatch rejected on 12/12 cells; 11 accepted, one correctly failed open due an unverified quote. It produced 12 raw worker outputs and evidence payloads.
+- Result `pass_complete` says `mechanism_fired=false`, `capture_complete=false`, but this is a reducer bug: `run_cell()` emits the full record then returns only `sc`; `main()` assigns that score-only return to `got[(item, arm)]`. The final flags inspect `got[k].evidence`, `.view`, and `.answer_raw`, which are absent. They should be derived from persisted cell records (or `run_cell` should return the full emitted record). The JSONL itself has all views and raw answers.
+
+Bounded next action: offline reducer/owner review of persisted JSONL and then publish/file R2's verdict per the existing task. If a rerun is insisted upon for a corrected `pass_complete` marker, first repair this aggregation and dry-run it against the frozen JSONL; only then would a 12-log R3 replay be justified. No product code change is implicated, so no source implementation was prepared. Detached orchestrator worktree `/mnt/raid0/llm/tmp/brf-exp09-followup` exists at the pinned commit and is clean; no compute, publication, manifest, or handoff changes were made.

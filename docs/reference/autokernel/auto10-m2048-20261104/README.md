@@ -1,0 +1,9 @@
+# Synthetic M2048 Q4_K MUL_MAT_ID diagnostic
+
+Row `akx-auto10-q4k-mmid-v3-20261102` ended rc=0 on 2026-11-02 at 21:26:11Z. Its scoped diagnostic rule passed: 54 unique cases cover rand/shared/disjoint, k=1–9, and physical 48/96-thread arms. Each has seven batched and serial timing samples and matching PASS/aa_clean; all 108 correctness repetitions compare equal. The separate four-thread publisher smoke is excluded from those 54 cases.
+
+Graph latency is lower-is-better; modeled effective logical GB/s is higher-is-better. Logical-byte rates are not measured DRAM traffic. The seven pairs are repetitions within two processes, not independent process samples; no noise floor, population confidence interval, serving result, winner or roofline conclusion follows. Process-level affinity and grant/quiet-lock observations do not establish placement during every timed graph or absence of co-tenants; contention remains unknown. Loaded DSO paths and hashes were captured, but their historical source/build provenance remains unproven. The previously unapproved direct-run output is excluded.
+
+`REVIEW.txt` records source, binary, input and result hashes, coverage and limitations. This directory contains unchanged current raw records, correctness output, mapped-library and process observations, manifests and producer source. `SHA256SUMS` covers these retained files. Synthetic operand data and binary/DSO copies remain at `/mnt/raid0/llm/tmp/akagg/auto10-retained-20261104/`, outside the row scratch root, with its own 70-file hash inventory. No model weights were used.
+
+This is pre-hook native evidence: the prospective source is already registered under the merged `VB-KQROUTE-1` wiring task. No retrospective measurement warrant is supplied. It contributes one diagnostic to AKX-AUTO-10, whose broader profiler-refinement box remains open.

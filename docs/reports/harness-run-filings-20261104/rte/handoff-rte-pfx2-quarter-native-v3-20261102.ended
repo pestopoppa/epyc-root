@@ -1,0 +1,7 @@
+rc=0 time=2026-11-03T07:35:34Z reason=complete
+job_id=handoff-rte-pfx2-quarter-native-v3-20261102
+owner=handoff-repl-turn-efficiency
+step=job-run
+estimated_wall_s=5400
+started=2026-11-03T07:19:29Z
+regions=0-95

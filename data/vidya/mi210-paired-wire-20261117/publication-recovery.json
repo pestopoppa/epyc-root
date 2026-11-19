@@ -1,0 +1,39 @@
+{
+  "row_id": "vidya-mi210-q38-native-wire-20261117",
+  "resolution": "Allow the queued smoke to run in the next eligible GPU gap. The owner publication CLI has no path to reuse an archived PASS.",
+  "preserved_pass": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-mi210-q38-native-wire-20261117/superseded/20261117T204115951936Z/PASS.json",
+    "sha256": "6e38540fda8b29f1ade9765b722a4434e1221e79a2c7c13e72f86fe7bdac3243",
+    "passed_at": "2026-11-17T20:36:13Z",
+    "first_progress": "smoke_predicate exited 0",
+    "units": 0,
+    "job_complete_field_present": false,
+    "launcher_engine_hashes_match_unpublished_manifest": true
+  },
+  "queue_observation": {
+    "queued_at": "2026-11-17T20:41:16Z",
+    "marker": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-mi210-q38-native-wire-20261117/GPU-SMOKE-QUEUED.json",
+    "manifest": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-mi210-q38-native-wire-20261117/unpublished.json",
+    "ready_manifest_present": false
+  },
+  "supported_manual_trigger": {
+    "argv": [
+      "python3",
+      "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/rowflow.py",
+      "--flags",
+      "/mnt/raid0/llm/tmp/compute-flags",
+      "gpu-batch"
+    ],
+    "effect": "Start the queued GPU smoke batch through the same launcher used by the allocator. It handles all queued rows.",
+    "conditions": "GPU free and no operator HOLD. The keeper also handles the queue automatically.",
+    "invoked_during_review": false
+  },
+  "code_evidence": [
+    "publish_row.py:602-612 archives the previous PASS on publication; lines 901-921 apply this step to every successful owner publication, including the same spec, and park the manifest when the GPU is busy.",
+    "publish_row.py:1026-1038 converts --migrate input and then follows the same smoke publication path.",
+    "publish_row.py:849-872 restricts --resume-complete to an active PASS with job_complete true and only retries terminal filing.",
+    "publish_row.py:954-961 requires a FAIL for --repair.",
+    "rowflow.py:5735-5743 is the low-level manifest publisher; it has no restore operation for an archived PASS.",
+    "publish_row.py:707-730 handles the queued marker and runs the fresh smoke. rowflow.py:5623-5648 is the supported, GPU-gated manual batch entry point."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh12-gs-frozen-query-v2-20261104/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-04T07:44:06Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/ufh12-gs-frozen-query-v2-20261104/native-attempts/attempt-41yg6vkp/native-result.json (measurement field)",
+ "first_progress_s": 1800,
+ "first_unit_at": "2026-11-04T07:44:08Z",
+ "id": "ufh12-gs-frozen-query-v2-20261104",
+ "launcher_sha256": "ed51224d3336d3922434d809152142bfe09ccc23266a94cc98d57737b55d7e0c",
+ "passed_at": "2026-11-04T07:44:08Z",
+ "progress_rule": "record",
+ "regions": "48-51",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh12-gs-frozen-query-v2-20261104/native-attempts/attempt-41yg6vkp/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

@@ -1,0 +1,816 @@
+[1795015548] Log start
+[1795015548] Cmd: /mnt/raid0/llm/ik_llama.cpp/build/bin/llama-cli -m /mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf -p "<|im_start|>user
+What does the following Python code print when called with the given input?
+
+```python
+def f(text, n):
+    if len(text) <= 2:
+        return text
+    leading_chars = text[0] * (n - len(text) + 1)
+    return leading_chars + text[1:-1] + text[-1]
+```
+
+Input: `'g', 15`
+
+Give the exact output inside <answer></answer> tags.<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+
+" -n 256 --temp 0 --seed 42 -t 4 --no-display-prompt
+[1795015548] main: build = 4468 (c04881fc0)
+[1795015548] main: built with cc (Ubuntu 15.2.0-4ubuntu4) 15.2.0 for x86_64-linux-gnu
+[1795015548] main: seed  = 42
+[1795015548] main: llama backend init
+[1795015548] main: load the model and apply lora adapter, if any
+[1795015548] CPU: using device CPU - 0 MiB free
+[1795015548] llama_model_loader: loaded meta data with 31 key-value pairs and 311 tensors from /mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf (version GGUF V3 (latest))
+[1795015548] llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+[1795015548] llama_model_loader: - kv   0:                       general.architecture str              = qwen3
+[1795015548] llama_model_loader: - kv   1:                               general.type str              = model
+[1795015548] llama_model_loader: - kv   2:                               general.name str              = Qwen3 0.6B
+[1795015548] llama_model_loader: - kv   3:                           general.basename str              = Qwen3
+[1795015548] llama_model_loader: - kv   4:                         general.size_label str              = 0.6B
+[1795015548] llama_model_loader: - kv   5:                          qwen3.block_count u32              = 28
+[1795015548] llama_model_loader: - kv   6:                       qwen3.context_length u32              = 32768
+[1795015548] llama_model_loader: - kv   7:                     qwen3.embedding_length u32              = 1024
+[1795015548] llama_model_loader: - kv   8:                  qwen3.feed_forward_length u32              = 3072
+[1795015548] llama_model_loader: - kv   9:                 qwen3.attention.head_count u32              = 16
+[1795015548] llama_model_loader: - kv  10:              qwen3.attention.head_count_kv u32              = 8
+[1795015548] llama_model_loader: - kv  11:                       qwen3.rope.freq_base f32              = 1000000.000000
+[1795015548] llama_model_loader: - kv  12:     qwen3.attention.layer_norm_rms_epsilon f32              = 0.000001
+[1795015548] llama_model_loader: - kv  13:                 qwen3.attention.key_length u32              = 128
+[1795015548] llama_model_loader: - kv  14:               qwen3.attention.value_length u32              = 128
+[1795015548] llama_model_loader: - kv  15:                       tokenizer.ggml.model str              = gpt2
+[1795015548] llama_model_loader: - kv  16:                         tokenizer.ggml.pre str              = qwen2
+[1795015548] llama_model_loader: - kv  17:                      tokenizer.ggml.tokens arr[str,151936]  = ["!", "\"", "#", "$", "%", "&", "'", ...
+[1795015548] llama_model_loader: - kv  18:                  tokenizer.ggml.token_type arr[i32,151936]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+[1795015548] llama_model_loader: - kv  19:                      tokenizer.ggml.merges arr[str,151387]  = ["Ġ Ġ", "ĠĠ ĠĠ", "i n", "Ġ t",...
+[1795015548] llama_model_loader: - kv  20:                tokenizer.ggml.eos_token_id u32              = 151645
+[1795015548] llama_model_loader: - kv  21:            tokenizer.ggml.padding_token_id u32              = 151643
+[1795015548] llama_model_loader: - kv  22:                tokenizer.ggml.bos_token_id u32              = 151643
+[1795015548] llama_model_loader: - kv  23:               tokenizer.ggml.add_bos_token bool             = false
+[1795015548] llama_model_loader: - kv  24:                    tokenizer.chat_template str              = {%- if tools %}\n    {{- '<|im_start|>...
+[1795015548] llama_model_loader: - kv  25:               general.quantization_version u32              = 2
+[1795015548] llama_model_loader: - kv  26:                          general.file_type u32              = 7
+[1795015548] llama_model_loader: - kv  27:                      quantize.imatrix.file str              = /models_out/Qwen3-0.6B-GGUF/Qwen_Qwen...
+[1795015548] llama_model_loader: - kv  28:                   quantize.imatrix.dataset str              = /training_dir/calibration_datav3.txt
+[1795015548] llama_model_loader: - kv  29:             quantize.imatrix.entries_count i32              = 196
+[1795015548] llama_model_loader: - kv  30:              quantize.imatrix.chunks_count i32              = 137
+[1795015548] llama_model_loader: - type  f32:  113 tensors
+[1795015548] llama_model_loader: - type q8_0:  198 tensors
+[1795015548] load: 0 unused tokens
+[1795015548] load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+[1795015548] load: printing all EOG tokens:
+[1795015548] load:   - 128247 ('</s>')
+[1795015548] load:   - 151643 ('<|endoftext|>')
+[1795015548] load:   - 151645 ('<|im_end|>')
+[1795015548] load:   - 151662 ('<|fim_pad|>')
+[1795015548] load:   - 151663 ('<|repo_name|>')
+[1795015548] load:   - 151664 ('<|file_sep|>')
+[1795015548] load: special tokens cache size = 27
+[1795015548] load: token to piece cache size = 0.9311 MB
+[1795015548] llm_load_print_meta: format           = GGUF V3 (latest)
+[1795015548] llm_load_print_meta: arch             = qwen3
+[1795015548] llm_load_print_meta: n_ctx_train      = 32768
+[1795015548] llm_load_print_meta: n_embd           = 1024
+[1795015548] llm_load_print_meta: n_layer          = 28
+[1795015548] llm_load_print_meta: n_head           = 16
+[1795015548] llm_load_print_meta: n_head_kv        = 8
+[1795015548] llm_load_print_meta: n_rot            = 128
+[1795015548] llm_load_print_meta: n_swa            = 0
+[1795015548] llm_load_print_meta: n_swa_pattern    = 1
+[1795015548] llm_load_print_meta: n_embd_head_k    = 128
+[1795015548] llm_load_print_meta: n_embd_head_v    = 128
+[1795015548] llm_load_print_meta: n_gqa            = 2
+[1795015548] llm_load_print_meta: n_embd_k_gqa     = 1024
+[1795015548] llm_load_print_meta: n_embd_v_gqa     = 1024
+[1795015548] llm_load_print_meta: f_norm_eps       = 0.0e+00
+[1795015548] llm_load_print_meta: f_norm_rms_eps   = 1.0e-06
+[1795015548] llm_load_print_meta: f_clamp_kqv      = 0.0e+00
+[1795015548] llm_load_print_meta: f_max_alibi_bias = 0.0e+00
+[1795015548] llm_load_print_meta: f_logit_scale    = 0.0e+00
+[1795015548] llm_load_print_meta: n_ff             = 3072
+[1795015548] llm_load_print_meta: n_expert         = 0
+[1795015548] llm_load_print_meta: n_expert_used    = 0
+[1795015548] llm_load_print_meta: causal attn      = 1
+[1795015548] llm_load_print_meta: pooling type     = -1
+[1795015548] llm_load_print_meta: rope type        = 2
+[1795015548] llm_load_print_meta: rope scaling     = linear
+[1795015548] llm_load_print_meta: freq_base_train  = 1000000.0
+[1795015548] llm_load_print_meta: freq_scale_train = 1
+[1795015548] llm_load_print_meta: n_ctx_orig_yarn  = 32768
+[1795015548] llm_load_print_meta: rope_finetuned   = unknown
+[1795015548] llm_load_print_meta: ssm_d_conv       = 0
+[1795015548] llm_load_print_meta: ssm_d_inner      = 0
+[1795015548] llm_load_print_meta: ssm_d_state      = 0
+[1795015548] llm_load_print_meta: ssm_dt_rank      = 0
+[1795015548] llm_load_print_meta: ssm_n_group      = 0
+[1795015548] llm_load_print_meta: model type       = 0.6B
+[1795015548] llm_load_print_meta: model ftype      = Q8_0
+[1795015548] llm_load_print_meta: model params     = 751.632 M
+[1795015548] llm_load_print_meta: model size       = 761.797 MiB (8.502 BPW) 
+[1795015548] llm_load_print_meta: repeating layers = 446.500 MiB (8.503 BPW[1795015548] , 440.467 M parameters)
+[1795015548] llm_load_print_meta: general.name     = Qwen3 0.6B
+[1795015548] print_info: vocab type            = BPE
+[1795015548] print_info: n_vocab               = 151936
+[1795015548] print_info: n_merges              = 151387
+[1795015548] print_info: BOS token             = 151643 '<|endoftext|>'
+[1795015548] print_info: EOS token             = 151645 '<|im_end|>'
+[1795015548] print_info: EOT token             = 151645 '<|im_end|>'
+[1795015548] print_info: PAD token             = 151643 '<|endoftext|>'
+[1795015548] print_info: LF token              = 198 'Ċ'
+[1795015548] print_info: FIM PRE token         = 151659 '<|fim_prefix|>'
+[1795015548] print_info: FIM SUF token         = 151661 '<|fim_suffix|>'
+[1795015548] print_info: FIM MID token         = 151660 '<|fim_middle|>'
+[1795015548] print_info: FIM PAD token         = 151662 '<|fim_pad|>'
+[1795015548] print_info: FIM REP token         = 151663 '<|repo_name|>'
+[1795015548] print_info: FIM SEP token         = 151664 '<|file_sep|>'
+[1795015548] print_info: EOG token             = 128247 '</s>'
+[1795015548] print_info: EOG token             = 151643 '<|endoftext|>'
+[1795015548] print_info: EOG token             = 151645 '<|im_end|>'
+[1795015548] print_info: EOG token             = 151662 '<|fim_pad|>'
+[1795015548] print_info: EOG token             = 151663 '<|repo_name|>'
+[1795015548] print_info: EOG token             = 151664 '<|file_sep|>'
+[1795015548] print_info: max token length      = 256
+[1795015548] ======================================= HAVE_FANCY_SIMD is defined
+[1795015548] Free memory 0 MiB on device 0 is less the 1024 MiB safety margin
+[1795015548] ------------------- Layer sizes:
+[1795015548] Layer  0:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  1:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  2:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  3:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  4:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  5:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  6:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  7:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  8:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer  9:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 10:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 11:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 12:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 13:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 14:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 15:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 16:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 17:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 18:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 19:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 20:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 21:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 22:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 23:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 24:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 25:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 26:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 27:     15.95,    128.00,    143.95       18.00  MiB
+[1795015548] Layer 28:    157.65,    278.75,    436.40 MiB (output layer)
+[1795015548] --------------------------------------------------------------------------
+[1795015548] Total   :    446.50,   3862.75,   4309.25 MiB
+[1795015548] Free memory 0 MiB on device 0 is less the required compute buffer size 18 MiB
+[1795015548] Memory required for model tensors + cache: 4467 MiB
+[1795015548] Memory available on all devices - compute: 0 MiB
+[1795015548] llm_load_tensors: ggml ctx size =    0.14 MiB
+[1795015548] llm_load_tensors:        CPU buffer size =   761.80 MiB
+[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] .[1795015548] 
+[1795015548] llama_init_from_model: n_ctx         = 32768
+[1795015548] llama_init_from_model: n_batch       = 2048
+[1795015548] llama_init_from_model: n_ubatch      = 512
+[1795015548] llama_init_from_model: flash_attn    = 1
+[1795015548] llama_init_from_model: attn_max_b    = 0
+[1795015548] llama_init_from_model: fused_moe     = 1
+[1795015548] llama_init_from_model: grouped er    = 0
+[1795015548] llama_init_from_model: fused_up_gate = 1
+[1795015548] llama_init_from_model: fused_mmad    = 1
+[1795015548] llama_init_from_model: rope_cache    = 0
+[1795015548] llama_init_from_model: graph_reuse   = 1
+[1795015548] llama_init_from_model: k_cache_hadam = 0
+[1795015548] llama_init_from_model: v_cache_hadam = 0
+[1795015548] llama_init_from_model: split_mode_graph_scheduling = 0
+[1795015548] llama_init_from_model: reduce_type   = f16
+[1795015548] llama_init_from_model: sched_async   = 0
+[1795015548] llama_init_from_model: ser           = -1, 0
+[1795015548] llama_init_from_model: freq_base     = 1000000.0
+[1795015548] llama_init_from_model: freq_scale    = 1
+[1795015548] llama_kv_cache_init:        CPU KV buffer size =  3584.00 MiB
+[1795015548] llama_init_from_model: KV self size  = 3584.00 MiB, K (f16): 1792.00 MiB, V (f16): 1792.00 MiB
+[1795015548] llama_init_from_model:        CPU  output buffer size =     0.58 MiB
+[1795015548] llama_init_from_model:        CPU compute buffer size =   300.75 MiB
+[1795015548] llama_init_from_model: graph nodes  = 705
+[1795015548] llama_init_from_model: graph splits = 1
+[1795015548] llama_init_from_model: enabling only_active_experts scheduling
+[1795015548] llama_init_from_gpt_params: setting dry_penalty_last_n to ctx_size = 32768
+[1795015548] warming up the model with an empty run
+[1795015549] n_ctx: 32768
+[1795015549] 
+[1795015549] system_info: n_threads = 4 / 192 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 1 | FMA = 1 | NEON = 0 | SVE = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 | MATMUL_INT8 = 0 | 
+[1795015549] add_bos: 0
+[1795015549] tokenize the prompt
+[1795015549] prompt: "<|im_start|>user
+What does the following Python code print when called with the given input?
+
+```python
+def f(text, n):
+    if len(text) <= 2:
+        return text
+    leading_chars = text[0] * (n - len(text) + 1)
+    return leading_chars + text[1:-1] + text[-1]
+```
+
+Input: `'g', 15`
+
+Give the exact output inside <answer></answer> tags.<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+
+"
+[1795015549] tokens: [ '<|im_start|>':151644, 'user':872, '':198, 'What':3838, ' does':1558, ' the':279, ' following':2701, ' Python':13027, ' code':2038, ' print':1173, ' when':979, ' called':2598, ' with':448, ' the':279, ' given':2661, ' input':1946, '?':1939, '```':73594, 'python':12669, '':198, 'def':750, ' f':282, '(text':7235, ',':11, ' n':308, '):':982, '   ':262, ' if':421, ' len':2422, '(text':7235, ')':8, ' <=':2651, ' ':220, '2':17, ':':510, '       ':286, ' return':470, ' text':1467, '':198, '   ':262, ' leading':6388, '_chars':37418, ' =':284, ' text':1467, '[':58, '0':15, ']':60, ' *':353, ' (':320, 'n':77, ' -':481, ' len':2422, '(text':7235, ')':8, ' +':488, ' ':220, '1':16, ')':340, '   ':262, ' return':470, ' leading':6388, '_chars':37418, ' +':488, ' text':1467, '[':58, '1':16, ':-':10944, '1':16, ']':60, ' +':488, ' text':1467, '[-':7609, '1':16, ']':921, '``':13874, '`':19324, 'Input':2505, ':':25, ' `'':72911, 'g':70, '',':516, ' ':220, '1':16, '5':20, '`':19324, 'Give':35127, ' the':279, ' exact':4734, ' output':2550, ' inside':4766, ' <':366, 'answer':9217, '></':1472, 'answer':9217, '>':29, ' tags':9492, '.':13, '<|im_end|>':151645, '':198, '<|im_start|>':151644, 'assistant':77091, '':198, '<think>':151667, '':271, '</think>':151668, '':271 ]
+[1795015549] recalculate the cached logits (check): embd_inp.empty() false, n_matching_session_tokens 0, embd_inp.size() 106, session_tokens.size() 0, embd_inp.size() 106
+[1795015549] sampling: 
+	repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000
+	top_k = 40, tfs_z = 1.000, top_p = 0.950, min_p = 0.050, typical_p = 1.000, temp = 0.000
+	mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000
+	xtc_probability = 0.000, xtc_threshold = 1.000, top_n_sigma = 0.000
+	adaptive_target = -1.00, adaptive_decay = 0.90
+[1795015549] sampling order: 
+CFG -> Penalties -> dry -> top_k -> tfs_z -> typical_p -> top_p -> min_p -> xtc -> top_n_sigma -> temperature -> adaptive_p 
+[1795015549] generate: n_ctx = 32768, n_batch = 2048, n_predict = 256, n_keep = 0
+[1795015549] 
+
+[1795015549] embd_inp.size(): 106, n_consumed: 0
+[1795015549] eval: [ '<|im_start|>':151644, 'user':872, '':198, 'What':3838, ' does':1558, ' the':279, ' following':2701, ' Python':13027, ' code':2038, ' print':1173, ' when':979, ' called':2598, ' with':448, ' the':279, ' given':2661, ' input':1946, '?':1939, '```':73594, 'python':12669, '':198, 'def':750, ' f':282, '(text':7235, ',':11, ' n':308, '):':982, '   ':262, ' if':421, ' len':2422, '(text':7235, ')':8, ' <=':2651, ' ':220, '2':17, ':':510, '       ':286, ' return':470, ' text':1467, '':198, '   ':262, ' leading':6388, '_chars':37418, ' =':284, ' text':1467, '[':58, '0':15, ']':60, ' *':353, ' (':320, 'n':77, ' -':481, ' len':2422, '(text':7235, ')':8, ' +':488, ' ':220, '1':16, ')':340, '   ':262, ' return':470, ' leading':6388, '_chars':37418, ' +':488, ' text':1467, '[':58, '1':16, ':-':10944, '1':16, ']':60, ' +':488, ' text':1467, '[-':7609, '1':16, ']':921, '``':13874, '`':19324, 'Input':2505, ':':25, ' `'':72911, 'g':70, '',':516, ' ':220, '1':16, '5':20, '`':19324, 'Give':35127, ' the':279, ' exact':4734, ' output':2550, ' inside':4766, ' <':366, 'answer':9217, '></':1472, 'answer':9217, '>':29, ' tags':9492, '.':13, '<|im_end|>':151645, '':198, '<|im_start|>':151644, 'assistant':77091, '':198, '<think>':151667, '':271, '</think>':151668, '':271 ]
+[1795015549] n_past = 106
+[1795015549] last: [ 'When':4498 ]
+[1795015549] n_remain: 255
+[1795015549] eval: [ 'When':4498 ]
+[1795015549] n_past = 107
+[1795015549] last: [ ' the':279 ]
+[1795015549] n_remain: 254
+[1795015549] eval: [ ' the':279 ]
+[1795015549] n_past = 108
+[1795015549] last: [ ' code':2038 ]
+[1795015549] n_remain: 253
+[1795015549] eval: [ ' code':2038 ]
+[1795015549] n_past = 109
+[1795015549] last: [ ' is':374 ]
+[1795015549] n_remain: 252
+[1795015549] eval: [ ' is':374 ]
+[1795015549] n_past = 110
+[1795015549] last: [ ' called':2598 ]
+[1795015549] n_remain: 251
+[1795015549] eval: [ ' called':2598 ]
+[1795015549] n_past = 111
+[1795015549] last: [ ' with':448 ]
+[1795015549] n_remain: 250
+[1795015549] eval: [ ' with':448 ]
+[1795015549] n_past = 112
+[1795015549] last: [ ' the':279 ]
+[1795015549] n_remain: 249
+[1795015549] eval: [ ' the':279 ]
+[1795015549] n_past = 113
+[1795015549] last: [ ' input':1946 ]
+[1795015549] n_remain: 248
+[1795015549] eval: [ ' input':1946 ]
+[1795015549] n_past = 114
+[1795015549] last: [ ' `'':72911 ]
+[1795015549] n_remain: 247
+[1795015549] eval: [ ' `'':72911 ]
+[1795015549] n_past = 115
+[1795015549] last: [ 'g':70 ]
+[1795015549] n_remain: 246
+[1795015549] eval: [ 'g':70 ]
+[1795015549] n_past = 116
+[1795015549] last: [ '',':516 ]
+[1795015549] n_remain: 245
+[1795015549] eval: [ '',':516 ]
+[1795015549] n_past = 117
+[1795015549] last: [ ' ':220 ]
+[1795015549] n_remain: 244
+[1795015549] eval: [ ' ':220 ]
+[1795015549] n_past = 118
+[1795015549] last: [ '1':16 ]
+[1795015549] n_remain: 243
+[1795015549] eval: [ '1':16 ]
+[1795015549] n_past = 119
+[1795015549] last: [ '5':20 ]
+[1795015549] n_remain: 242
+[1795015549] eval: [ '5':20 ]
+[1795015549] n_past = 120
+[1795015549] last: [ ''':6 ]
+[1795015549] n_remain: 241
+[1795015549] eval: [ ''':6 ]
+[1795015549] n_past = 121
+[1795015549] last: [ '`,':7808 ]
+[1795015549] n_remain: 240
+[1795015549] eval: [ '`,':7808 ]
+[1795015549] n_past = 122
+[1795015549] last: [ ' the':279 ]
+[1795015549] n_remain: 239
+[1795015549] eval: [ ' the':279 ]
+[1795015549] n_past = 123
+[1795015549] last: [ ' function':729 ]
+[1795015549] n_remain: 238
+[1795015549] eval: [ ' function':729 ]
+[1795015549] n_past = 124
+[1795015549] last: [ ' `':1565 ]
+[1795015549] n_remain: 237
+[1795015549] eval: [ ' `':1565 ]
+[1795015549] n_past = 125
+[1795015549] last: [ 'f':69 ]
+[1795015549] n_remain: 236
+[1795015549] eval: [ 'f':69 ]
+[1795015549] n_past = 126
+[1795015549] last: [ '`':63 ]
+[1795015549] n_remain: 235
+[1795015549] eval: [ '`':63 ]
+[1795015549] n_past = 127
+[1795015549] last: [ ' is':374 ]
+[1795015549] n_remain: 234
+[1795015549] eval: [ ' is':374 ]
+[1795015549] n_past = 128
+[1795015549] last: [ ' defined':4512 ]
+[1795015549] n_remain: 233
+[1795015549] eval: [ ' defined':4512 ]
+[1795015549] n_past = 129
+[1795015549] last: [ ' as':438 ]
+[1795015549] n_remain: 232
+[1795015549] eval: [ ' as':438 ]
+[1795015549] n_past = 130
+[1795015549] last: [ ':':1447 ]
+[1795015549] n_remain: 231
+[1795015549] eval: [ ':':1447 ]
+[1795015549] n_past = 131
+[1795015549] last: [ '```':73594 ]
+[1795015549] n_remain: 230
+[1795015549] eval: [ '```':73594 ]
+[1795015549] n_past = 132
+[1795015549] last: [ 'python':12669 ]
+[1795015549] n_remain: 229
+[1795015549] eval: [ 'python':12669 ]
+[1795015549] n_past = 133
+[1795015549] last: [ '':198 ]
+[1795015549] n_remain: 228
+[1795015549] eval: [ '':198 ]
+[1795015549] n_past = 134
+[1795015549] last: [ 'def':750 ]
+[1795015549] n_remain: 227
+[1795015549] eval: [ 'def':750 ]
+[1795015549] n_past = 135
+[1795015549] last: [ ' f':282 ]
+[1795015549] n_remain: 226
+[1795015549] eval: [ ' f':282 ]
+[1795015549] n_past = 136
+[1795015549] last: [ '(text':7235 ]
+[1795015549] n_remain: 225
+[1795015549] eval: [ '(text':7235 ]
+[1795015549] n_past = 137
+[1795015549] last: [ ',':11 ]
+[1795015549] n_remain: 224
+[1795015549] eval: [ ',':11 ]
+[1795015549] n_past = 138
+[1795015549] last: [ ' n':308 ]
+[1795015549] n_remain: 223
+[1795015549] eval: [ ' n':308 ]
+[1795015549] n_past = 139
+[1795015549] last: [ '):':982 ]
+[1795015549] n_remain: 222
+[1795015549] eval: [ '):':982 ]
+[1795015549] n_past = 140
+[1795015549] last: [ '   ':262 ]
+[1795015549] n_remain: 221
+[1795015549] eval: [ '   ':262 ]
+[1795015549] n_past = 141
+[1795015549] last: [ ' if':421 ]
+[1795015549] n_remain: 220
+[1795015549] eval: [ ' if':421 ]
+[1795015549] n_past = 142
+[1795015549] last: [ ' len':2422 ]
+[1795015549] n_remain: 219
+[1795015549] eval: [ ' len':2422 ]
+[1795015549] n_past = 143
+[1795015549] last: [ '(text':7235 ]
+[1795015549] n_remain: 218
+[1795015549] eval: [ '(text':7235 ]
+[1795015549] n_past = 144
+[1795015549] last: [ ')':8 ]
+[1795015549] n_remain: 217
+[1795015549] eval: [ ')':8 ]
+[1795015549] n_past = 145
+[1795015549] last: [ ' <=':2651 ]
+[1795015549] n_remain: 216
+[1795015549] eval: [ ' <=':2651 ]
+[1795015549] n_past = 146
+[1795015549] last: [ ' ':220 ]
+[1795015549] n_remain: 215
+[1795015549] eval: [ ' ':220 ]
+[1795015549] n_past = 147
+[1795015549] last: [ '2':17 ]
+[1795015549] n_remain: 214
+[1795015549] eval: [ '2':17 ]
+[1795015549] n_past = 148
+[1795015549] last: [ ':':510 ]
+[1795015549] n_remain: 213
+[1795015549] eval: [ ':':510 ]
+[1795015549] n_past = 149
+[1795015549] last: [ '       ':286 ]
+[1795015549] n_remain: 212
+[1795015549] eval: [ '       ':286 ]
+[1795015549] n_past = 150
+[1795015549] last: [ ' return':470 ]
+[1795015549] n_remain: 211
+[1795015549] eval: [ ' return':470 ]
+[1795015549] n_past = 151
+[1795015549] last: [ ' text':1467 ]
+[1795015549] n_remain: 210
+[1795015549] eval: [ ' text':1467 ]
+[1795015549] n_past = 152
+[1795015549] last: [ '':198 ]
+[1795015549] n_remain: 209
+[1795015549] eval: [ '':198 ]
+[1795015550] n_past = 153
+[1795015550] last: [ '   ':262 ]
+[1795015550] n_remain: 208
+[1795015550] eval: [ '   ':262 ]
+[1795015550] n_past = 154
+[1795015550] last: [ ' leading':6388 ]
+[1795015550] n_remain: 207
+[1795015550] eval: [ ' leading':6388 ]
+[1795015550] n_past = 155
+[1795015550] last: [ '_chars':37418 ]
+[1795015550] n_remain: 206
+[1795015550] eval: [ '_chars':37418 ]
+[1795015550] n_past = 156
+[1795015550] last: [ ' =':284 ]
+[1795015550] n_remain: 205
+[1795015550] eval: [ ' =':284 ]
+[1795015550] n_past = 157
+[1795015550] last: [ ' text':1467 ]
+[1795015550] n_remain: 204
+[1795015550] eval: [ ' text':1467 ]
+[1795015550] n_past = 158
+[1795015550] last: [ '[':58 ]
+[1795015550] n_remain: 203
+[1795015550] eval: [ '[':58 ]
+[1795015550] n_past = 159
+[1795015550] last: [ '0':15 ]
+[1795015550] n_remain: 202
+[1795015550] eval: [ '0':15 ]
+[1795015550] n_past = 160
+[1795015550] last: [ ']':60 ]
+[1795015550] n_remain: 201
+[1795015550] eval: [ ']':60 ]
+[1795015550] n_past = 161
+[1795015550] last: [ ' *':353 ]
+[1795015550] n_remain: 200
+[1795015550] eval: [ ' *':353 ]
+[1795015550] n_past = 162
+[1795015550] last: [ ' (':320 ]
+[1795015550] n_remain: 199
+[1795015550] eval: [ ' (':320 ]
+[1795015550] n_past = 163
+[1795015550] last: [ 'n':77 ]
+[1795015550] n_remain: 198
+[1795015550] eval: [ 'n':77 ]
+[1795015550] n_past = 164
+[1795015550] last: [ ' -':481 ]
+[1795015550] n_remain: 197
+[1795015550] eval: [ ' -':481 ]
+[1795015550] n_past = 165
+[1795015550] last: [ ' len':2422 ]
+[1795015550] n_remain: 196
+[1795015550] eval: [ ' len':2422 ]
+[1795015550] n_past = 166
+[1795015550] last: [ '(text':7235 ]
+[1795015550] n_remain: 195
+[1795015550] eval: [ '(text':7235 ]
+[1795015550] n_past = 167
+[1795015550] last: [ ')':8 ]
+[1795015550] n_remain: 194
+[1795015550] eval: [ ')':8 ]
+[1795015550] n_past = 168
+[1795015550] last: [ ' +':488 ]
+[1795015550] n_remain: 193
+[1795015550] eval: [ ' +':488 ]
+[1795015550] n_past = 169
+[1795015550] last: [ ' ':220 ]
+[1795015550] n_remain: 192
+[1795015550] eval: [ ' ':220 ]
+[1795015550] n_past = 170
+[1795015550] last: [ '1':16 ]
+[1795015550] n_remain: 191
+[1795015550] eval: [ '1':16 ]
+[1795015550] n_past = 171
+[1795015550] last: [ ')':340 ]
+[1795015550] n_remain: 190
+[1795015550] eval: [ ')':340 ]
+[1795015550] n_past = 172
+[1795015550] last: [ '   ':262 ]
+[1795015550] n_remain: 189
+[1795015550] eval: [ '   ':262 ]
+[1795015550] n_past = 173
+[1795015550] last: [ ' return':470 ]
+[1795015550] n_remain: 188
+[1795015550] eval: [ ' return':470 ]
+[1795015550] n_past = 174
+[1795015550] last: [ ' leading':6388 ]
+[1795015550] n_remain: 187
+[1795015550] eval: [ ' leading':6388 ]
+[1795015550] n_past = 175
+[1795015550] last: [ '_chars':37418 ]
+[1795015550] n_remain: 186
+[1795015550] eval: [ '_chars':37418 ]
+[1795015550] n_past = 176
+[1795015550] last: [ ' +':488 ]
+[1795015550] n_remain: 185
+[1795015550] eval: [ ' +':488 ]
+[1795015550] n_past = 177
+[1795015550] last: [ ' text':1467 ]
+[1795015550] n_remain: 184
+[1795015550] eval: [ ' text':1467 ]
+[1795015550] n_past = 178
+[1795015550] last: [ '[':58 ]
+[1795015550] n_remain: 183
+[1795015550] eval: [ '[':58 ]
+[1795015550] n_past = 179
+[1795015550] last: [ '1':16 ]
+[1795015550] n_remain: 182
+[1795015550] eval: [ '1':16 ]
+[1795015550] n_past = 180
+[1795015550] last: [ ':-':10944 ]
+[1795015550] n_remain: 181
+[1795015550] eval: [ ':-':10944 ]
+[1795015550] n_past = 181
+[1795015550] last: [ '1':16 ]
+[1795015550] n_remain: 180
+[1795015550] eval: [ '1':16 ]
+[1795015550] n_past = 182
+[1795015550] last: [ ']':60 ]
+[1795015550] n_remain: 179
+[1795015550] eval: [ ']':60 ]
+[1795015550] n_past = 183
+[1795015550] last: [ ' +':488 ]
+[1795015550] n_remain: 178
+[1795015550] eval: [ ' +':488 ]
+[1795015550] n_past = 184
+[1795015550] last: [ ' text':1467 ]
+[1795015550] n_remain: 177
+[1795015550] eval: [ ' text':1467 ]
+[1795015550] n_past = 185
+[1795015550] last: [ '[-':7609 ]
+[1795015550] n_remain: 176
+[1795015550] eval: [ '[-':7609 ]
+[1795015550] n_past = 186
+[1795015550] last: [ '1':16 ]
+[1795015550] n_remain: 175
+[1795015550] eval: [ '1':16 ]
+[1795015550] n_past = 187
+[1795015550] last: [ ']':921 ]
+[1795015550] n_remain: 174
+[1795015550] eval: [ ']':921 ]
+[1795015550] n_past = 188
+[1795015550] last: [ '``':13874 ]
+[1795015550] n_remain: 173
+[1795015550] eval: [ '``':13874 ]
+[1795015550] n_past = 189
+[1795015550] last: [ '`':19324 ]
+[1795015550] n_remain: 172
+[1795015550] eval: [ '`':19324 ]
+[1795015550] n_past = 190
+[1795015550] last: [ '###':14374 ]
+[1795015550] n_remain: 171
+[1795015550] eval: [ '###':14374 ]
+[1795015550] n_past = 191
+[1795015550] last: [ ' Step':14822 ]
+[1795015550] n_remain: 170
+[1795015550] eval: [ ' Step':14822 ]
+[1795015550] n_past = 192
+[1795015550] last: [ '-by':14319 ]
+[1795015550] n_remain: 169
+[1795015550] eval: [ '-by':14319 ]
+[1795015550] n_past = 193
+[1795015550] last: [ '-step':29208 ]
+[1795015550] n_remain: 168
+[1795015550] eval: [ '-step':29208 ]
+[1795015550] n_past = 194
+[1795015550] last: [ ':':1447 ]
+[1795015550] n_remain: 167
+[1795015550] eval: [ ':':1447 ]
+[1795015550] n_past = 195
+[1795015550] last: [ '-':12 ]
+[1795015550] n_remain: 166
+[1795015550] eval: [ '-':12 ]
+[1795015550] n_past = 196
+[1795015550] last: [ ' `':1565 ]
+[1795015550] n_remain: 165
+[1795015550] eval: [ ' `':1565 ]
+[1795015550] n_past = 197
+[1795015550] last: [ 'text':1318 ]
+[1795015550] n_remain: 164
+[1795015550] eval: [ 'text':1318 ]
+[1795015550] n_past = 198
+[1795015550] last: [ ' =':284 ]
+[1795015550] n_remain: 163
+[1795015550] eval: [ ' =':284 ]
+[1795015550] n_past = 199
+[1795015550] last: [ ' '':364 ]
+[1795015550] n_remain: 162
+[1795015550] eval: [ ' '':364 ]
+[1795015550] n_past = 200
+[1795015550] last: [ 'g':70 ]
+[1795015550] n_remain: 161
+[1795015550] eval: [ 'g':70 ]
+[1795015550] n_past = 201
+[1795015550] last: [ ''':6 ]
+[1795015550] n_remain: 160
+[1795015550] eval: [ ''':6 ]
+[1795015550] n_past = 202
+[1795015550] last: [ '`,':7808 ]
+[1795015550] n_remain: 159
+[1795015550] eval: [ '`,':7808 ]
+[1795015550] n_past = 203
+[1795015550] last: [ ' `':1565 ]
+[1795015550] n_remain: 158
+[1795015550] eval: [ ' `':1565 ]
+[1795015550] n_past = 204
+[1795015550] last: [ 'n':77 ]
+[1795015550] n_remain: 157
+[1795015550] eval: [ 'n':77 ]
+[1795015550] n_past = 205
+[1795015550] last: [ ' =':284 ]
+[1795015550] n_remain: 156
+[1795015550] eval: [ ' =':284 ]
+[1795015550] n_past = 206
+[1795015550] last: [ ' ':220 ]
+[1795015550] n_remain: 155
+[1795015550] eval: [ ' ':220 ]
+[1795015550] n_past = 207
+[1795015550] last: [ '1':16 ]
+[1795015550] n_remain: 154
+[1795015550] eval: [ '1':16 ]
+[1795015550] n_past = 208
+[1795015550] last: [ '5':20 ]
+[1795015550] n_remain: 153
+[1795015550] eval: [ '5':20 ]
+[1795015551] n_past = 209
+[1795015551] last: [ '`':3989 ]
+[1795015551] n_remain: 152
+[1795015551] eval: [ '`':3989 ]
+[1795015551] n_past = 210
+[1795015551] last: [ '-':12 ]
+[1795015551] n_remain: 151
+[1795015551] eval: [ '-':12 ]
+[1795015551] n_past = 211
+[1795015551] last: [ ' `':1565 ]
+[1795015551] n_remain: 150
+[1795015551] eval: [ ' `':1565 ]
+[1795015551] n_past = 212
+[1795015551] last: [ 'len':2892 ]
+[1795015551] n_remain: 149
+[1795015551] eval: [ 'len':2892 ]
+[1795015551] n_past = 213
+[1795015551] last: [ '(text':7235 ]
+[1795015551] n_remain: 148
+[1795015551] eval: [ '(text':7235 ]
+[1795015551] n_past = 214
+[1795015551] last: [ ')':8 ]
+[1795015551] n_remain: 147
+[1795015551] eval: [ ')':8 ]
+[1795015551] n_past = 215
+[1795015551] last: [ ' =':284 ]
+[1795015551] n_remain: 146
+[1795015551] eval: [ ' =':284 ]
+[1795015551] n_past = 216
+[1795015551] last: [ ' ':220 ]
+[1795015551] n_remain: 145
+[1795015551] eval: [ ' ':220 ]
+[1795015551] n_past = 217
+[1795015551] last: [ '1':16 ]
+[1795015551] n_remain: 144
+[1795015551] eval: [ '1':16 ]
+[1795015551] n_past = 218
+[1795015551] last: [ '`,':7808 ]
+[1795015551] n_remain: 143
+[1795015551] eval: [ '`,':7808 ]
+[1795015551] n_past = 219
+[1795015551] last: [ ' which':892 ]
+[1795015551] n_remain: 142
+[1795015551] eval: [ ' which':892 ]
+[1795015551] n_past = 220
+[1795015551] last: [ ' is':374 ]
+[1795015551] n_remain: 141
+[1795015551] eval: [ ' is':374 ]
+[1795015551] n_past = 221
+[1795015551] last: [ ' **':3070 ]
+[1795015551] n_remain: 140
+[1795015551] eval: [ ' **':3070 ]
+[1795015551] n_past = 222
+[1795015551] last: [ 'less':1717 ]
+[1795015551] n_remain: 139
+[1795015551] eval: [ 'less':1717 ]
+[1795015551] n_past = 223
+[1795015551] last: [ ' than':1091 ]
+[1795015551] n_remain: 138
+[1795015551] eval: [ ' than':1091 ]
+[1795015551] n_past = 224
+[1795015551] last: [ ' ':220 ]
+[1795015551] n_remain: 137
+[1795015551] eval: [ ' ':220 ]
+[1795015551] n_past = 225
+[1795015551] last: [ '2':17 ]
+[1795015551] n_remain: 136
+[1795015551] eval: [ '2':17 ]
+[1795015551] n_past = 226
+[1795015551] last: [ '**,':97219 ]
+[1795015551] n_remain: 135
+[1795015551] eval: [ '**,':97219 ]
+[1795015551] n_past = 227
+[1795015551] last: [ ' so':773 ]
+[1795015551] n_remain: 134
+[1795015551] eval: [ ' so':773 ]
+[1795015551] n_past = 228
+[1795015551] last: [ ' the':279 ]
+[1795015551] n_remain: 133
+[1795015551] eval: [ ' the':279 ]
+[1795015551] n_past = 229
+[1795015551] last: [ ' function':729 ]
+[1795015551] n_remain: 132
+[1795015551] eval: [ ' function':729 ]
+[1795015551] n_past = 230
+[1795015551] last: [ ' returns':4675 ]
+[1795015551] n_remain: 131
+[1795015551] eval: [ ' returns':4675 ]
+[1795015551] n_past = 231
+[1795015551] last: [ ' `':1565 ]
+[1795015551] n_remain: 130
+[1795015551] eval: [ ' `':1565 ]
+[1795015551] n_past = 232
+[1795015551] last: [ 'text':1318 ]
+[1795015551] n_remain: 129
+[1795015551] eval: [ 'text':1318 ]
+[1795015551] n_past = 233
+[1795015551] last: [ '`':63 ]
+[1795015551] n_remain: 128
+[1795015551] eval: [ '`':63 ]
+[1795015551] n_past = 234
+[1795015551] last: [ ' directly':5961 ]
+[1795015551] n_remain: 127
+[1795015551] eval: [ ' directly':5961 ]
+[1795015551] n_past = 235
+[1795015551] last: [ '.':382 ]
+[1795015551] n_remain: 126
+[1795015551] eval: [ '.':382 ]
+[1795015551] n_past = 236
+[1795015551] last: [ '###':14374 ]
+[1795015551] n_remain: 125
+[1795015551] eval: [ '###':14374 ]
+[1795015551] n_past = 237
+[1795015551] last: [ ' Final':13023 ]
+[1795015551] n_remain: 124
+[1795015551] eval: [ ' Final':13023 ]
+[1795015551] n_past = 238
+[1795015551] last: [ ' Output':9258 ]
+[1795015551] n_remain: 123
+[1795015551] eval: [ ' Output':9258 ]
+[1795015551] n_past = 239
+[1795015551] last: [ ':':510 ]
+[1795015551] n_remain: 122
+[1795015551] eval: [ ':':510 ]
+[1795015551] n_past = 240
+[1795015551] last: [ '```':73594 ]
+[1795015551] n_remain: 121
+[1795015551] eval: [ '```':73594 ]
+[1795015551] n_past = 241
+[1795015551] last: [ 'python':12669 ]
+[1795015551] n_remain: 120
+[1795015551] eval: [ 'python':12669 ]
+[1795015551] n_past = 242
+[1795015551] last: [ '':198 ]
+[1795015551] n_remain: 119
+[1795015551] eval: [ '':198 ]
+[1795015551] n_past = 243
+[1795015551] last: [ 'g':70 ]
+[1795015551] n_remain: 118
+[1795015551] eval: [ 'g':70 ]
+[1795015551] n_past = 244
+[1795015551] last: [ '':198 ]
+[1795015551] n_remain: 117
+[1795015551] eval: [ '':198 ]
+[1795015551] n_past = 245
+[1795015551] last: [ '```':73594 ]
+[1795015551] n_remain: 116
+[1795015551] eval: [ '```':73594 ]
+[1795015551] n_past = 246
+[1795015551] last: [ '<|im_end|>':151645 ]
+[1795015551] n_remain: 115
+[1795015551] found an EOG token
+[1795015551]  [end of text]
+[1795015551] 
+[1795015551] llama_print_timings:        load time =     463.28 ms
+[1795015551] llama_print_timings:      sample time =      21.12 ms /   141 runs   (    0.15 ms per token,  6676.14 tokens per second)
+[1795015551] llama_print_timings: prompt eval time =     152.73 ms /   106 tokens (    1.44 ms per token,   694.03 tokens per second)
+[1795015551] llama_print_timings:        eval time =    2458.76 ms /   140 runs   (   17.56 ms per token,    56.94 tokens per second)
+[1795015551] llama_print_timings:       total time =    2660.64 ms /   246 tokens
+[1795015551] Log end

@@ -1,0 +1,16 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/refactor-r18a-v10-independent-symbols-r4-20261102/launcher.out",
+ "elapsed_s": 41,
+ "ended": "rc=75 time=2026-11-02T13:04:35Z reason=exited",
+ "engine_sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79",
+ "first_unit_at": "2026-11-02T13:04:34Z",
+ "id": "refactor-r18a-v10-independent-symbols-r4-20261102",
+ "launcher_sha256": "079f9ca2872e91dabf3bd65b28d4145d0b03eee5ebbef1cec49f415b3528fc87",
+ "passed_at": "2026-11-02T13:04:39Z",
+ "regions": "0-3",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/refactor-r18a-v10-independent-symbols-r4-20261102/scratch/native-units.jsonl",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

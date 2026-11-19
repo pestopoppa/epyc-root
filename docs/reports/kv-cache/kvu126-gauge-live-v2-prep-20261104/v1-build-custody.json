@@ -1,0 +1,134 @@
+{
+  "base_v10_source_contains_metric": false,
+  "bin_entries": {
+    "libggml-base.so": {
+      "bytes": 939848,
+      "sha256": "60c3aebba0fc6b545f25a604693ebe91d17e6f00d967b4042a2e64f599bbe36b",
+      "symlink_target": "libggml-base.so.0"
+    },
+    "libggml-base.so.0": {
+      "bytes": 939848,
+      "sha256": "60c3aebba0fc6b545f25a604693ebe91d17e6f00d967b4042a2e64f599bbe36b",
+      "symlink_target": "libggml-base.so.0.16.0"
+    },
+    "libggml-base.so.0.16.0": {
+      "bytes": 939848,
+      "sha256": "60c3aebba0fc6b545f25a604693ebe91d17e6f00d967b4042a2e64f599bbe36b",
+      "symlink_target": null
+    },
+    "libggml-cpu.so": {
+      "bytes": 2982176,
+      "sha256": "7533f0331e491a26144f6fd24a5237a45308a717180b2f664e0b0db9fb60f0a9",
+      "symlink_target": "libggml-cpu.so.0"
+    },
+    "libggml-cpu.so.0": {
+      "bytes": 2982176,
+      "sha256": "7533f0331e491a26144f6fd24a5237a45308a717180b2f664e0b0db9fb60f0a9",
+      "symlink_target": "libggml-cpu.so.0.16.0"
+    },
+    "libggml-cpu.so.0.16.0": {
+      "bytes": 2982176,
+      "sha256": "7533f0331e491a26144f6fd24a5237a45308a717180b2f664e0b0db9fb60f0a9",
+      "symlink_target": null
+    },
+    "libggml.so": {
+      "bytes": 59648,
+      "sha256": "4b42aee0055e0164a04a638946a7dbdbde22b34615a57a664fd16608d60c5ace",
+      "symlink_target": "libggml.so.0"
+    },
+    "libggml.so.0": {
+      "bytes": 59648,
+      "sha256": "4b42aee0055e0164a04a638946a7dbdbde22b34615a57a664fd16608d60c5ace",
+      "symlink_target": "libggml.so.0.16.0"
+    },
+    "libggml.so.0.16.0": {
+      "bytes": 59648,
+      "sha256": "4b42aee0055e0164a04a638946a7dbdbde22b34615a57a664fd16608d60c5ace",
+      "symlink_target": null
+    },
+    "libllama-common.so": {
+      "bytes": 6067360,
+      "sha256": "15f1a766c790de285a2362fc1b59d2b33e9772a127fec94d6f8dbcf65014be4b",
+      "symlink_target": "libllama-common.so.0"
+    },
+    "libllama-common.so.0": {
+      "bytes": 6067360,
+      "sha256": "15f1a766c790de285a2362fc1b59d2b33e9772a127fec94d6f8dbcf65014be4b",
+      "symlink_target": "libllama-common.so.0.0.10304"
+    },
+    "libllama-common.so.0.0.10304": {
+      "bytes": 6067360,
+      "sha256": "15f1a766c790de285a2362fc1b59d2b33e9772a127fec94d6f8dbcf65014be4b",
+      "symlink_target": null
+    },
+    "libllama-server-impl.so": {
+      "bytes": 7181120,
+      "sha256": "0250f88fa0eabd44c74e180c4bfdbf252133c9afa8d3894927e68847e3f15b08",
+      "symlink_target": null
+    },
+    "libllama.so": {
+      "bytes": 4518192,
+      "sha256": "90467000dfc14ca6fa40d473ca3c61e7ef8f77aa1fe9cbfe4b9b5b105fbe8edb",
+      "symlink_target": "libllama.so.0"
+    },
+    "libllama.so.0": {
+      "bytes": 4518192,
+      "sha256": "90467000dfc14ca6fa40d473ca3c61e7ef8f77aa1fe9cbfe4b9b5b105fbe8edb",
+      "symlink_target": "libllama.so.0.0.10304"
+    },
+    "libllama.so.0.0.10304": {
+      "bytes": 4518192,
+      "sha256": "90467000dfc14ca6fa40d473ca3c61e7ef8f77aa1fe9cbfe4b9b5b105fbe8edb",
+      "symlink_target": null
+    },
+    "libmtmd.so": {
+      "bytes": 1460072,
+      "sha256": "92525f71b64b1e4e18a640abcad50daf65f2df4310687fefb3abaebbb4ad2e02",
+      "symlink_target": "libmtmd.so.0"
+    },
+    "libmtmd.so.0": {
+      "bytes": 1460072,
+      "sha256": "92525f71b64b1e4e18a640abcad50daf65f2df4310687fefb3abaebbb4ad2e02",
+      "symlink_target": "libmtmd.so.0.0.10304"
+    },
+    "libmtmd.so.0.0.10304": {
+      "bytes": 1460072,
+      "sha256": "92525f71b64b1e4e18a640abcad50daf65f2df4310687fefb3abaebbb4ad2e02",
+      "symlink_target": null
+    },
+    "llama-server": {
+      "bytes": 17984,
+      "sha256": "eaff3f0e53428795f605c848853d2f339eb6c8c228e657f00ee8bb5cb4ca30c7",
+      "symlink_target": null
+    }
+  },
+  "captured_at_utc": "2026-11-04T14:47:03.154593+00:00",
+  "current_server_context_sha256": "630b761f228c3b83147d39f6e5a581e89e79717daa4360a49696d53232425e78",
+  "current_source_commit_checked": "cdf1532b993fe58bd57ba53d91659f4bb4ee508f",
+  "declared_source_commit": "cdf1532b993fe58bd57ba53d91659f4bb4ee508f",
+  "evidence": {
+    "build_log_gzip_sha256": "de0974239c1098ecaad8b5e600b6bad4efa4cc66d47fa2b27abf7f59a28817f6",
+    "build_log_raw_sha256": "de2e7d1255ae257b1f9dcfebcf229988be8f9203743b058288286cff430cea0d",
+    "cmake_cache_sha256": "1c1d1e43344ddde7504fef23c130ec884a38c12e0ebe441d952a812feea17a30",
+    "compile_commands_sha256": "dd382fb9a0d51f05a1b3c7a8919e06ed5c8de4317ff5d9100bfe86dfe6078b34",
+    "v1_inputs_sha256": "3f49d48259215a2b23c79618527f79603ac3b00b07c29e1d5ec56b80da3220b2",
+    "v1_job_sha256": "d11f18c2225491289daa8be927b6a1f52d5577a773d2457c4425d3c0b8277257",
+    "v1_launcher_sha256": "f6cf0ce9441af4c129eb250e7f9294a9bb77622183dbd7dcd22dc6d289ee6464",
+    "v1_result_sha256": "0b8cd70985789b8413cd322d925d52d3c4b71274b81974b2e75db5d8c2ffe6a1"
+  },
+  "fix_specific_metric": "kv_cache_used_cells",
+  "metric_library": "libllama-server-impl.so",
+  "original_build_time_binary_manifest": "not written before v1 exception",
+  "schema": "kvu126.preserved-build.v1",
+  "v1_control_flow": "successful pre/post source checks precede recorded grant-path exception; native build log reports built target llama-server",
+  "v1_result": {
+    "error": "grant file missing",
+    "error_type": "RuntimeError",
+    "measurement_claim": false,
+    "schema": "kvu126.gauge.native.v1",
+    "source_commit": "cdf1532b993fe58bd57ba53d91659f4bb4ee508f",
+    "status": "incomplete"
+  },
+  "v1_row_id": "kvu126-live-gauge-20261104",
+  "warrant_limit": "binary/content and preserved build evidence sealed after v1 failure; not an independently timestamped original build-time binary attestation"
+}

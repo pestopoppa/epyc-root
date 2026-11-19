@@ -1,0 +1,33 @@
+{
+  "base_commit": "c5911dba21fac8182eaada70b95724a10a68ed61",
+  "binding_kind": "native_agent_path",
+  "child_turn": {
+    "final_message_present": true,
+    "start_line": 2,
+    "state": "completed",
+    "terminal_event": "task_complete",
+    "terminal_line": 152,
+    "turn_id": "01a1efb1-8733-7360-8dfd-b4c68f69f187"
+  },
+  "gate_tests": [
+    "tests/experiments/test_fm4_codex_gate_canary.py",
+    "tests/experiments/test_fm4_native_canary.py",
+    "tests/experiments/test_fm4_codex_dispatch.py",
+    "tests/vidya/test_fm4_gate_acceptance.py"
+  ],
+  "identity": {
+    "child_agent_id": "01a1efb1-8725-78b1-a1f5-93786092ce10",
+    "dispatch_tool_use_id": "call_ca02c28604054adeb19ecc88bfcd418c",
+    "parent_session_id": "01a1efb0-b2ac-7bc2-a51a-5d7ae4dc2d39",
+    "task_id": "VB-FM4-CODEX-GATE-CANARY"
+  },
+  "input_digests": {
+    "child": "a5e207b9af14b40f9aead8a7ccd18507a037d49bc82831e5b6d62812d7424a1a",
+    "parent": "9d9510876fb1dbb9ccae5ade06055acac42a45abde1f155330524ca4a116fb00"
+  },
+  "schema": "fm4.codex_gate.prospective_source.v1",
+  "scope": "A fresh task-specific regression gate for the bounded Codex implementation child. Parent is an original prefix frozen after dispatch and independent task-ID assignment; completed child snapshot is original. No transcript contents are published. Smoke is readiness; official selected-gate acceptance, genuine coordinator adoption, Claude oracle acceptance and task accuracy remain separate.",
+  "source_file_count": 1595,
+  "source_pins_sha256": "768b6575118764eb3754dee020a3b6aefe696d6058b17e882c6305b9b8427a50",
+  "task_outcome": null
+}

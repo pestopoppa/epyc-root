@@ -1,0 +1,22 @@
+{
+  "id": "kvu11c-host-asan-build-r3-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS on sealed host-ASan gfx90a HIP tts-server build with own ggml linkage and markers; stop on source/tool drift, unsupported sanitizer, build/linkage error, STOP, deadline or disk floor. No model or GPU execution and no device ASan claim.",
+  "estimate_s": 3600,
+  "ram_gib": 24,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-11c-ASAN-BUILD",
+  "priority_rank": 45,
+  "smoke_timeout_s": 900,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu11c-asan-build-20261105/packet-r3",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute",
+  "unit_key": "bytes"
+}

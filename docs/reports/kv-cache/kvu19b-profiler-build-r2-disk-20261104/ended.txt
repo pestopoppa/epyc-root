@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T20:06:27Z reason=disk-floor
+job_id=kvu19b-profiler-clock-build-20261104-r2
+owner=h-kvu
+step=job-run
+estimated_wall_s=600
+started=2026-11-04T20:06:25Z
+regions=0-23

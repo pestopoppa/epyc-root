@@ -1,0 +1,48 @@
+{
+ "decision_rule": "PF1-EXPAND-2 r5: fresh L={256,384,512,768}, A0/A1/A2/A1-disabled, ONE NEW three-block frame, five timed reps per launch/L. Question: reconcile the lower r4 L256 A1/A0=.6587, A2/A0=.7998 with upper r3 L512 A1/A0=1.1877, A2/A0=1.3886 in the same frame; predecessor windows disagree and are context only, NEVER pooled. Ratios higher=better, paired within block against A0; launch is replicate. Descriptive bracket requires a lower point <.93 and a later high point beginning a sustained >1.07 suffix; any intermediate [.93,1.07] point remains unresolved/at-crossover. All three valid blocks and capture1.0 required. A1-disabled/A0 paired median within [.90,1.10] at EVERY L. A0 CPU placement cap <=40%; GPU skew amendment: required in-window sample/max node shares recorded as covariate, skew alone does not invalidate GPU arms. HIP residency, mapped store, identity and full capture remain required. A0 hot bias unresolved. Block-end >=2 run/residency/placement failures stop for futility; after block2 stop if control diverges >25% at EVERY L. Cumulative2400s cap, engine safety/window stops; no answer-based early stop. Guard-failing/incomplete outcomes inconclusive. Descriptive exploratory futility-only; no causal interpretation, significance claim or PF1 gate verdict.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 1500,
+ "gib": 160,
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXPAND-2",
+ "id": "pf1-expand-r5-20261104",
+ "keep": [
+  "IDENTITY.json",
+  "SOURCE.sha256",
+  "job.py",
+  "launch.sh",
+  "spec.json",
+  "out/*.json",
+  "out/*.jsonl",
+  "out/cells/**",
+  "out/plumbing/**",
+  "STATIC-CHECKS.json",
+  "PREGRANT-IDENTITY.json",
+  "static_test.py",
+  "out/results.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/pf1-expand-r5-20261104/launch.sh",
+  "sha256": "960bdd855bf100421910c203c0b063a4327967234eafe9f76d54b4f88c40e87e"
+ },
+ "min_window_s": 1800,
+ "owner": "ws58",
+ "ports": [],
+ "priority_rank": 1.0,
+ "published_at": "2026-11-04T15:44:02Z",
+ "published_from": "/mnt/raid0/llm/tmp/pf1-expand-r5-20261104/spec.json",
+ "regions": "mi210_0,0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/pf1-expand-r5-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/pf1-expand-r5-20261104",
+ "shape": "quiet-host",
+ "stop_file": "/mnt/raid0/llm/tmp/pf1-expand-r5-20261104/STOP",
+ "supersedes": "pf1-expand-r4-20261104",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/pf1-expand-r5-20261104"
+}

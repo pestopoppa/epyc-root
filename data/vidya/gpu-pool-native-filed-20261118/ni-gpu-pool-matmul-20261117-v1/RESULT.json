@@ -1,0 +1,1 @@
+{"capture": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/belief.json", "failed": 0, "observed": 201, "passed": 201, "projected": 1, "refused": 0, "resident_samples": 40, "row_id": "ni-gpu-pool-matmul-20261117-v1", "sha256": "72c1ecafe71aaeebdb696186b45666d81b58a719871b3c07468338aa7cc7017f", "unsupported": 0}

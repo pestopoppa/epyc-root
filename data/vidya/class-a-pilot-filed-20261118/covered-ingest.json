@@ -1,0 +1,18 @@
+{
+  "adapter": "adapters/committed_conclusion.py",
+  "adapter_id": "vidya.adapters.committed_conclusion/v1",
+  "declined": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill/covered-controls.jsonl"
+  ],
+  "dry_run": true,
+  "frames_emitted": 0,
+  "missing": [],
+  "paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill/covered-controls.jsonl"
+  ],
+  "refused": [],
+  "rows_projected": 0,
+  "source": "committed-conclusion",
+  "units_matched": 1,
+  "units_projected": 0
+}

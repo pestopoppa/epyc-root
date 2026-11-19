@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "Original official allocator rc0 at 2026-11-18T20:08:18Z, CPUs48-51 within allocated48-71. Original pinned two-arm Astropy native control strictly projects30 Judged/Located diagnostic observations,90 frames,refused0. Exact p5.scorer_controls / VB-P5-SCORER-CONTROLS-WIRE recognizes30, displays16 under unchanged cap with both arms; wrong-task,wrong-consumer,model-target each eligible0/shown0; altered report refused1/frames0. Source seal cdf3013191c03c12d77fa089a78262574ef50e2d19338985499269c275fcde14 and original terminal4239f3f2c1712e818c7430af8e67b8fb40f97b1eeef0b749ac2da39a7c45a34b retained. Isolated source-sealed replay explicitly reader_checkout_check=false; no live adoption, scorer rerun, model-quality, performance or population conclusion.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T20:14:51+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T20:08:18Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-p5-astropy-planner-acceptance-20261118.ended",
+ "filed_at": "2026-11-18T20:14:51+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-P5-ASTROPY-PLANNER-ACCEPTANCE",
+ "id": "vb-p5-astropy-planner-acceptance-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-p5-astropy-planner-acceptance-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Original official allocator rc0 at 2026-11-18T20:08:18Z, CPUs48-51 within allocated48-71. Original pinned two-arm Astropy native control strictly projects30 Judged/Located diagnostic observations,90 frames,refused0. Exact p5.scorer_controls / VB-P5-SCORER-CONTROLS-WIRE recognizes30, displays16 under unchanged cap with both arms; wrong-task,wrong-consumer,model-target each eligible0/shown0; altered report refused1/frames0. Source seal cdf3013191c03c12d77fa089a78262574ef50e2d19338985499269c275fcde14 and original terminal4239f3f2c1712e818c7430af8e67b8fb40f97b1eeef0b749ac2da39a7c45a34b retained. Isolated source-sealed replay explicitly reader_checkout_check=false; no live adoption, scorer rerun, model-quality, performance or population conclusion.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-p5-astropy-planner-acceptance-20261118",
+ "row_verdict": "pass",
+ "rule": "Does the original pinned Astropy case project all 30 named statuses, with 90 frames and no refusals, to the exact scorer consumer and task context? Require all 30 eligible, both arms visible within normal context caps, scope controls each zero, and altered raw report refused with zero frames. Stop on answer or first refusal, STOP or the earlier grant deadline or 300-second cap.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 143,
+  "input": 531052848,
+  "output": 2216149,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 533268997,
+  "tokens_per_task": 3729153.8251748253
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "134e6cd55834983d0b997af49522c8e17f790540126f5b9cdc990c893702a54f",
+  "result": "pass",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T14:24:51Z reason=complete
+job_id=cafe4-v10-mtp-rollback-rewind-build-20261104
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T14:24:27Z
+regions=0-23

@@ -1,0 +1,18 @@
+{
+  "scripts/vidya/adapters/kv_prefix_fork.py": {
+    "sha256": "e6ead7b654defc820abefb71b997c12b93b49bc1dc0ac036e2b5e72b50b4895d",
+    "commit": "3967c267d471671d7458b07c455b51a9a9d7fb60"
+  },
+  "scripts/vidya/claim_tuple.py": {
+    "sha256": "6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7",
+    "commit": "253a2e75f0f27f1f267b3c29a355bf5ede8cd132"
+  },
+  "scripts/vidya/canonical.py": {
+    "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+    "commit": "85bc8c8fda168c560b7e1c13e02241544e1a97e6"
+  },
+  "scripts/vidya/adapters/README.md": {
+    "sha256": "a5fd06aacbe0853784fe2201a337b5d626e9021960800c573ce6815518ae6453",
+    "commit": "8a640317ed024745f294d11c5c88887270fddd07"
+  }
+}

@@ -1,0 +1,48 @@
+{
+ "arm": "F",
+ "history": "live",
+ "slots": 4,
+ "active": 4,
+ "sessions": [
+  "claude-00",
+  "claude-01",
+  "opencode-00",
+  "opencode-01"
+ ],
+ "wall_s": 7669.364871263504,
+ "events": {
+  "by_pattern": {
+   "ckpt_erase_old": 0,
+   "ckpt_erase_too_close": 376,
+   "ckpt_erase_invalidated": 30,
+   "cache_remove_oldest": 0,
+   "cache_size_limit_reached": 0,
+   "cache_token_limit_reached": 0,
+   "cache_skip_too_big": 0,
+   "cache_remove_obsolete": 5,
+   "full_reprocess_forced": 10,
+   "ckpt_restored": 23,
+   "idle_slot_saved": 148,
+   "cache_load_failed": 0
+  },
+  "observed_eviction_events": 416,
+  "log_present": true
+ },
+ "infer_tol_tokens": 32,
+ "dry_run": false,
+ "oversubscribed": false,
+ "children": "bursts",
+ "parent_during_burst": "pause",
+ "think_scale": 1.0,
+ "think_cap_s": 60.0,
+ "peak_inflight_requests": 10,
+ "peak_active_lineages": 13,
+ "bursts": 5,
+ "burst_sizes": [
+  3,
+  1,
+  5,
+  3,
+  1
+ ]
+}

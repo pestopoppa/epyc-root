@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-ak-wire-canary-r1-20261104/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-04T07:23:04Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T07:23:03Z",
+ "id": "vb-ak-wire-canary-r1-20261104",
+ "launcher_sha256": "83bda61404cd38895c45bca14b5fccd2da9a263cdec49e5b0f8d67c13d2f1895",
+ "passed_at": "2026-11-04T07:23:08Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "24-27",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-ak-wire-canary-r1-20261104/native-attempts/attempt-imzvvyh3/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

@@ -1,0 +1,3582 @@
+{
+ "schema": "backlog-refactor-plan.v1",
+ "generated": "2026-11-02",
+ "source": "origin/main 3ac825873dfb8a8ef8d729133dff42c73b5d074d (pinned)",
+ "before": {
+  "handoffs": 175,
+  "index_rows": 175
+ },
+ "targets": [
+  {
+   "target": "kernel-champion-and-promotion.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "autokernel-champion-aggregate.md",
+    "autokernel-cross-workload-keep-gate.md",
+    "autokernel-all-devices-all-dimensions.md",
+    "cpu-fused-decoder-blocks.md",
+    "v9-kernel-per-request-speculative-params.md",
+    "laguna-s21-cpu-port.md",
+    "moe-spec-cpu-spec-dec-integration.md",
+    "fable5-window2-findings-03-portfolio-and-master-queue.md"
+   ],
+   "retired_row_ids": [
+    "INF-65",
+    "INF-75",
+    "INF-81",
+    "INF-67",
+    "INF-58",
+    "INF-28",
+    "INF-40",
+    "EVL-21"
+   ],
+   "open_boxes_before": 125,
+   "best_tier_before": 0,
+   "priority_rank_after": 1,
+   "new_row": {
+    "ID": "INF-N01",
+    "Track": "kernel champion and promotion",
+    "Handoff": "kernel-champion-and-promotion.md",
+    "Next action": "Qualify the C6 complete candidate (CPU+GPU stores) and run ONE per-target noise-floor calibration; then the v11 promotion package",
+    "Deps": [
+     "INF-N03",
+     "INF-N04"
+    ]
+   },
+   "rationale": "The champion is the shared prerequisite of the whole AK/KV chain (INF-65 in-degree 4). Keep-gate (INF-75) and all-dims seeds (INF-81) are its gates and seed queue, not programs."
+  },
+  {
+   "target": "autokernel-loop.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "autokernel-research-loop.md",
+    "autokernel-rebuild-program.md",
+    "autokernel-unified-surface-program.md",
+    "autokernel-concurrent-target-coordination.md",
+    "autokernel-orchestrator-actor-backend.md",
+    "autokernel-restart-and-strip.md",
+    "agent-collab-rnd-harness.md"
+   ],
+   "retired_row_ids": [
+    "INF-06",
+    "INF-66",
+    "INF-73",
+    "INF-74",
+    "INF-78",
+    "INF-64",
+    "INF-02"
+   ],
+   "open_boxes_before": 220,
+   "best_tier_before": 2,
+   "priority_rank_after": 6,
+   "new_row": {
+    "ID": "INF-N04",
+    "Track": "autokernel loop",
+    "Handoff": "autokernel-loop.md",
+    "Next action": "Finish the live C6 trust boundary (AK-V27-C6) and the LIVE GPU leg under a rowflow grant; restart-and-strip manifest",
+    "Deps": [
+     "EVL-N01",
+     "INF-N10"
+    ]
+   },
+   "rationale": "Six loop-engineering handoffs + the actor backend describe one loop; keep ONLY open sections, archive the 302/168/207 closed-box ledgers."
+  },
+  {
+   "target": "kv-cache-program.md",
+   "owner_index": "routing-and-optimization-index.md",
+   "folds": [
+    "kv-prefix-fork-and-paged-attention.md",
+    "kv-unified-stack-rollout.md",
+    "heterogeneous-slot-fabric-residency.md"
+   ],
+   "retired_row_ids": [
+    "RTG-58",
+    "RTG-57",
+    "INF-23"
+   ],
+   "open_boxes_before": 127,
+   "best_tier_before": 0,
+   "priority_rank_after": 2,
+   "new_row": {
+    "ID": "RTG-N01",
+    "Track": "kv cache program",
+    "Handoff": "kv-cache-program.md",
+    "Next action": "Qualify P1 prefix-fork correctness and the chunk-KV integration on the C6 candidate; carry the v11 FA path (section C) into the promotion pa",
+    "Deps": [
+     "EVL-N03",
+     "INF-N01",
+     "INF-N05",
+     "RTG-N04"
+    ]
+   },
+   "rationale": "RTG-57/RTG-58 are the two T0 rows and share the v11 kernel-candidate section (kv-unified :752-:1440) with the champion."
+  },
+  {
+   "target": "mi210-serving-program.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "gpu-serving-tie-in-program.md",
+    "mi210-big-model-and-acceleration-roadmap.md",
+    "gpu-acceleration-path.md",
+    "numa-prefill-decode-disaggregation.md",
+    "qwen38-27b-replace-qwen36.md",
+    "fable5-window2-findings-02-heterogeneous-gpu.md",
+    "fable5-window2-findings-05c-mi210-lever-category-matrix.md"
+   ],
+   "retired_row_ids": [
+    "INF-22",
+    "INF-34",
+    "INF-18",
+    "INF-44",
+    "INF-60",
+    "EVL-20",
+    "EVL-48"
+   ],
+   "open_boxes_before": 76,
+   "best_tier_before": 0,
+   "priority_rank_after": 3,
+   "new_row": {
+    "ID": "INF-N02",
+    "Track": "mi210 serving program",
+    "Handoff": "mi210-serving-program.md",
+    "Next action": "M4 fold gate on the C6 tip; PF1 CPU-vs-MI210 prefill crossover (one row) which also closes NPD-1; Q38-T7a passive read",
+    "Deps": []
+   },
+   "rationale": "One MI210 serving workstream split over nine files; INF-44 is a single box blocked on INF-34 PF1."
+  },
+  {
+   "target": "speculative-decoding.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "speculative-decoding-mtp-refresh.md",
+    "dflash2-block-drafter-experimental-build.md"
+   ],
+   "retired_row_ids": [
+    "INF-50",
+    "INF-62"
+   ],
+   "open_boxes_before": 52,
+   "best_tier_before": 0,
+   "priority_rank_after": 5,
+   "new_row": {
+    "ID": "INF-N03",
+    "Track": "speculative decoding",
+    "Handoff": "speculative-decoding.md",
+    "Next action": "XGRAMMAR-A2 p95 + parity; DF2-12.1 np>1 parity as ONE cross-slot row for every speculative role",
+    "Deps": [
+     "INF-N04"
+    ]
+   },
+   "rationale": "INF-50/INF-62/INF-46 are the same drafter capability (MTP, DFlash2, FR-Spec)."
+  },
+  {
+   "target": "long-context-program.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "yarn-context-extension-research.md",
+    "multiscreen-attention-evaluation.md",
+    "streaming-llm-baseline.md",
+    "triattention-kv-selection.md",
+    "attention-matching-kv-compaction.md"
+   ],
+   "retired_row_ids": [
+    "INF-59",
+    "INF-42",
+    "INF-51",
+    "INF-56",
+    "INF-05"
+   ],
+   "open_boxes_before": 57,
+   "best_tier_before": 4,
+   "priority_rank_after": 9,
+   "new_row": {
+    "ID": "INF-N06",
+    "Track": "long context program",
+    "Handoff": "long-context-program.md",
+    "Next action": "Re-plan YARN-128K on the MI210; S3/S2 continuation qualification; multiscreen G1 closed - archive its remaining rows into this program",
+    "Deps": [
+     "RTG-N01"
+    ]
+   },
+   "rationale": "Long-context quality/KV-selection research; multiscreen G1 closed 100% recall to 128K (INF-42 row)."
+  },
+  {
+   "target": "rocm-kernel-authoring.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "rocm-verify-profile-backend.md",
+    "agentic-rocm-kernel-authoring.md",
+    "mi210-q8-dequant-gemv-roofline.md",
+    "gemma-challenge-kernel-techniques-v7.md",
+    "llama-cpp-dsa-contribution.md",
+    "frontier-f6-upstream-publication.md"
+   ],
+   "retired_row_ids": [
+    "INF-48",
+    "INF-03",
+    "INF-37",
+    "INF-16",
+    "INF-31",
+    "EVL-27"
+   ],
+   "open_boxes_before": 99,
+   "best_tier_before": 2,
+   "priority_rank_after": 19,
+   "new_row": {
+    "ID": "INF-N10",
+    "Track": "rocm kernel authoring",
+    "Handoff": "rocm-kernel-authoring.md",
+    "Next action": "Repair audited C6 carriers and wire the oracle/Ghost boundary; C5 backlog parked per operator 2026-09-27",
+    "Deps": [
+     "EVL-N01"
+    ]
+   },
+   "rationale": "INF-48 is a hub (in-degree 4) because every GPU kernel task waits on the verify/profile oracle; one file makes that explicit."
+  },
+  {
+   "target": "cpu-decode-roofline-program.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "cpu-decode-roofline-program.md",
+    "moe-routing-tap-and-locality-measurement.md",
+    "cpu-prefill-compute-large-models.md",
+    "large-moe-expert-parallelism.md",
+    "sarathi-serve-cpu-evaluation.md"
+   ],
+   "retired_row_ids": [
+    "INF-70",
+    "INF-72",
+    "INF-09",
+    "INF-29",
+    "INF-49"
+   ],
+   "open_boxes_before": 69,
+   "best_tier_before": 2,
+   "priority_rank_after": 12,
+   "new_row": {
+    "ID": "INF-N08",
+    "Track": "cpu decode roofline program",
+    "Handoff": "cpu-decode-roofline-program.md",
+    "Next action": "CLS-RECT-1, then G2-CONC on the promotion candidate binary (shared with the v11 package); RT-1/RT-9 tap analysis",
+    "Deps": [
+     "INF-N01",
+     "INF-N02"
+    ]
+   },
+   "rationale": "INF-70 already carries 59 open boxes; the four CPU side-threads are 1-5 boxes each."
+  },
+  {
+   "target": "numa-placement-and-contention.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "numa-topology-cutover-resume-20260730.md",
+    "numa-placement-defect-20260730.md",
+    "batched-decode-measurement.md",
+    "contention-model-device-and-load-axes-rider.md",
+    "shape-keyed-contention-gating.md",
+    "within-role-placement-state-machine.md",
+    "dynamic-stack-concurrency.md",
+    "reboot-gated-inventory-and-staging.md"
+   ],
+   "retired_row_ids": [
+    "INF-45",
+    "INF-43",
+    "INF-07",
+    "RTG-07",
+    "RTG-35",
+    "RTG-42",
+    "RTG-11",
+    "EVL-49"
+   ],
+   "open_boxes_before": 98,
+   "best_tier_before": 2,
+   "priority_rank_after": 13,
+   "new_row": {
+    "ID": "INF-N09",
+    "Track": "numa placement and contention",
+    "Handoff": "numa-placement-and-contention.md",
+    "Next action": "ONE post-v11 quiet-host row: E5 NUMA x batch 2D sweep + contention-matrix re-bench + T3 confounded cells; then P0-3 cold-start commit",
+    "Deps": [
+     "INF-N04",
+     "RTG-N02"
+    ]
+   },
+   "rationale": "E5 is named in 12 boxes across 9 handoffs; contention matrix re-bench in 4 handoffs; all want the same quiet-host window."
+  },
+  {
+   "target": "deepseek-v41-flash-evaluation.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "deepseek-v41-flash-evaluation.md"
+   ],
+   "retired_row_ids": [
+    "INF-77"
+   ],
+   "open_boxes_before": 138,
+   "best_tier_before": 6,
+   "priority_rank_after": 11,
+   "new_row": {
+    "ID": "INF-N07",
+    "Track": "deepseek v41 flash evaluation",
+    "Handoff": "deepseek-v41-flash-evaluation.md",
+    "Next action": "W5d baseline + MMID on the 1017 build (one row); section C campaign boxes that restate AK gates move to kernel-champion-and-promotion",
+    "Deps": [
+     "INF-N10",
+     "RTG-N01"
+    ]
+   },
+   "rationale": "Keep as the model program; its 75-box section C (AK campaign) duplicates loop/champion gates and should shrink to campaign-specific items."
+  },
+  {
+   "target": "quantization-and-low-bit.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "tq3-quantization-evaluation.md",
+    "iqk-iquant-enablement.md",
+    "exl3-cpu-mi210-implementation.md"
+   ],
+   "retired_row_ids": [
+    "INF-54",
+    "INF-26",
+    "INF-80"
+   ],
+   "open_boxes_before": 42,
+   "best_tier_before": 6,
+   "priority_rank_after": 20,
+   "new_row": {
+    "ID": "INF-N11",
+    "Track": "quantization and low bit",
+    "Handoff": "quantization-and-low-bit.md",
+    "Next action": "C-L3-Q38FN low-bit decode profile (IQ3_XXS vs UD-IQ4_XS); EXL3 measurement rows; STQ1_0 PR watch stays one line",
+    "Deps": []
+   },
+   "rationale": "Low-bit lanes DS41/Q38FN only (operator). Watch-only items (STQ1_0 PR, IQ1_M) become a watchlist section."
+  },
+  {
+   "target": "model-architecture-readiness.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "log-linear-gated-deltanet-readiness.md",
+    "engram-conditional-memory.md"
+   ],
+   "retired_row_ids": [
+    "INF-33",
+    "INF-13"
+   ],
+   "open_boxes_before": 22,
+   "best_tier_before": 6,
+   "priority_rank_after": 27,
+   "new_row": {
+    "ID": "INF-N12",
+    "Track": "model architecture readiness",
+    "Handoff": "model-architecture-readiness.md",
+    "Next action": "Wire hattention_recurrent() and confirm it reproduces chunked; PAW-2 compile spike; watchlist (KSA/GSA, TiDAR) stays prose",
+    "Deps": [
+     "INF-N10"
+    ]
+   },
+   "rationale": "New-architecture readiness and port probes; two are pure watch items (INF-52, INF-53)."
+  },
+  {
+   "target": "speech-and-multimodal.md",
+   "owner_index": "inference-research-index.md",
+   "folds": [
+    "conversation-stack.md",
+    "multimodal-pipeline.md"
+   ],
+   "retired_row_ids": [
+    "INF-79",
+    "INF-41"
+   ],
+   "open_boxes_before": 44,
+   "best_tier_before": 0,
+   "priority_rank_after": 8,
+   "new_row": {
+    "ID": "INF-N05",
+    "Track": "speech and multimodal",
+    "Handoff": "speech-and-multimodal.md",
+    "Next action": "Qualify the repaired STT5 offline scorer; S-18 paired CPU cohort; video-gen scope is an operator decision (one line)",
+    "Deps": []
+   },
+   "rationale": "Speech + vision + image/video evaluation share the speech kernels, the GPU resident-set budget (S-17) and the 2nd-GPU gate."
+  },
+  {
+   "target": "autopilot-program.md",
+   "owner_index": "routing-and-optimization-index.md",
+   "folds": [
+    "autopilot-continuous-optimization.md",
+    "autopilot-sequential-allocation.md",
+    "promptforge-mutation-safety-contract.md",
+    "orchestration-robustness-audit-2026-07-11.md",
+    "autopilot-dashboard-fidelity-audit-2026-07-22.md",
+    "autopilot-decision-plane-audit-2026-07-22.md",
+    "scaffold-autopilot-cost-lever-deployment.md",
+    "objective-task-rate-goodput.md",
+    "evidence-plane-event-sourcing-and-narrative.md",
+    "evidence-plane-ledger-and-sequential-verdicts.md",
+    "evidence-plane-instrument-repair.md",
+    "loops-and-dashboards-audit-2026-07-05.md",
+    "bep-dcp-falsification-harness.md",
+    "batched-edit-parallel-apply.md"
+   ],
+   "retired_row_ids": [
+    "RTG-02",
+    "EVL-04",
+    "RTG-55",
+    "RTG-24",
+    "RTG-03",
+    "EVL-03",
+    "RTG-32",
+    "RTG-23",
+    "RTG-13",
+    "EVL-16",
+    "EVL-15",
+    "RTG-16",
+    "RTG-05",
+    "RTG-04"
+   ],
+   "open_boxes_before": 110,
+   "best_tier_before": 2,
+   "priority_rank_after": 18,
+   "new_row": {
+    "ID": "RTG-N05",
+    "Track": "autopilot program",
+    "Handoff": "autopilot-program.md",
+    "Next action": "Prospective capture of menus/identity/holdout, then rerun the sealed Shinka variants (EVL-04); OP-PQP/OP-ALPHAWIN decisions stay in the queu",
+    "Deps": []
+   },
+   "rationale": "RTG-02 is the most-referenced node (18 refs). Four 2026-07 audits of the same loop are 1-5 open boxes each."
+  },
+  {
+   "target": "routing-program.md",
+   "owner_index": "routing-and-optimization-index.md",
+   "folds": [
+    "typed-decision-plane.md",
+    "decision-aware-routing.md",
+    "learned-routing-controller.md",
+    "routing-intelligence.md",
+    "retrain-routing-models.md",
+    "x-mas-text-routing.md",
+    "tri-role-coordinator-architecture.md",
+    "model-capability-descriptors.md",
+    "internal-interaction-lifecycle.md"
+   ],
+   "retired_row_ids": [
+    "RTG-56",
+    "RTG-09",
+    "RTG-15",
+    "RTG-30",
+    "RTG-29",
+    "RTG-45",
+    "RTG-40",
+    "RTG-17",
+    "RTG-14"
+   ],
+   "open_boxes_before": 113,
+   "best_tier_before": 2,
+   "priority_rank_after": 25,
+   "new_row": {
+    "ID": "RTG-N08",
+    "Track": "routing program",
+    "Handoff": "routing-program.md",
+    "Next action": "TD-1d.0 re-settle acceptance; RI-18c null check in a DS41 window; everything DAR/LRC frozen behind UFH-13 moves to the FROZEN appendix",
+    "Deps": []
+   },
+   "rationale": "Mostly frozen behind UFH-13 (decision-aware-routing has 8 FROZEN boxes, learned-routing-controller 3)."
+  },
+  {
+   "target": "stack-lifecycle-program.md",
+   "owner_index": "routing-and-optimization-index.md",
+   "folds": [
+    "model-stack-single-source-update-pipeline.md",
+    "stack-change-governance-pipeline.md",
+    "standardized-stack-update-pipeline-finalization.md",
+    "model-stack-update-pipeline-audit.md",
+    "capability-registry-and-promotion.md",
+    "wp12-fleet-layer-design.md",
+    "model-artifact-integrity.md",
+    "model-exec-containment.md"
+   ],
+   "retired_row_ids": [
+    "RTG-19",
+    "RTG-36",
+    "RTG-38",
+    "RTG-20",
+    "RTG-06",
+    "RTG-43",
+    "RTG-59",
+    "UFH-16"
+   ],
+   "open_boxes_before": 29,
+   "best_tier_before": 2,
+   "priority_rank_after": 17,
+   "new_row": {
+    "ID": "RTG-N04",
+    "Track": "stack lifecycle program",
+    "Handoff": "stack-lifecycle-program.md",
+    "Next action": "OP-72 STACKCHG-HYGIENE sign; SSU-F8 owner confirmation; SEC-ART-POST-f at the next stack change (one package)",
+    "Deps": []
+   },
+   "rationale": "Five handoffs describe the one stack-change pipeline; RTG-18 is a checklist (0 open) that belongs in docs/."
+  },
+  {
+   "target": "coordination-and-churn-pipeline.md",
+   "owner_index": "routing-and-optimization-index.md",
+   "folds": [
+    "churn-pipeline.md",
+    "session-bus-thin-dispatcher.md",
+    "coordinator-role-failure-modes-and-refactor.md",
+    "fleet-fanout-measurement.md",
+    "wrap-up-division-of-labor-policy.md",
+    "loop-owned-fleet-implementation.md",
+    "handoff-index-and-backlog-graph.md",
+    "dashboard-architecture-restructure.md"
+   ],
+   "retired_row_ids": [
+    "RTG-62",
+    "RTG-34",
+    "RTG-48",
+    "RTG-49",
+    "RTG-51",
+    "RTG-52",
+    "RTG-46",
+    "RTG-47"
+   ],
+   "open_boxes_before": 111,
+   "best_tier_before": 2,
+   "priority_rank_after": 15,
+   "new_row": {
+    "ID": "RTG-N02",
+    "Track": "coordination and churn pipeline",
+    "Handoff": "coordination-and-churn-pipeline.md",
+    "Next action": "SA-1..3/JEV-3 sticky-slot change; AIR-6 guarded source; R-7 successor for mainD; dashboard Phase 1b parity check",
+    "Deps": []
+   },
+   "rationale": "The 5-node RTG-34/48/49/51/52 component is one fleet workstream; churn-pipeline is its live successor."
+  },
+  {
+   "target": "engineering-hygiene-backlog.md",
+   "owner_index": "routing-and-optimization-index.md",
+   "folds": [
+    "non-inference-backlog.md",
+    "refactoring-multirepo-2026-10.md",
+    "integration-test-coverage.md",
+    "repo-readiness-scorer.md",
+    "frontier-f4-continuity-backup.md",
+    "loop-state-offraid-backup.md",
+    "amd-ai-lab-website-publication.md"
+   ],
+   "retired_row_ids": [
+    "RTG-22",
+    "RTG-61",
+    "EVL-30",
+    "EVL-38",
+    "EVL-26",
+    "RTG-60",
+    "UFH-11"
+   ],
+   "open_boxes_before": 125,
+   "best_tier_before": 0,
+   "priority_rank_after": 16,
+   "new_row": {
+    "ID": "RTG-N03",
+    "Track": "engineering hygiene backlog",
+    "Handoff": "engineering-hygiene-backlog.md",
+    "Next action": "LOOP-10..12 and disk LOOP-21..27; refactor Wave 1 review/merge; BK-1 off-RAID snapshot; OP-OPENCODE-RECLAIM/OP-HOSTMEM stay queued",
+    "Deps": []
+   },
+   "rationale": "Zero-inference engineering backlog; two backup handoffs (EVL-26, RTG-60) are the same capability."
+  },
+  {
+   "target": "context-and-token-economy.md",
+   "owner_index": "routing-and-optimization-index.md",
+   "folds": [
+    "delegation-context-preassembly.md",
+    "context-folding-progressive.md",
+    "tool-output-compression.md",
+    "reasoning-compression.md",
+    "memento-block-reasoning-compression.md",
+    "reasoning-effort-levels.md",
+    "per-request-reasoning-budget.md",
+    "rao-redel-substrate-spike.md"
+   ],
+   "retired_row_ids": [
+    "RTG-10",
+    "RTG-08",
+    "UFH-07",
+    "UFH-05",
+    "UFH-03",
+    "RTG-28",
+    "EVL-33",
+    "EVL-34"
+   ],
+   "open_boxes_before": 70,
+   "best_tier_before": 2,
+   "priority_rank_after": 21,
+   "new_row": {
+    "ID": "RTG-N06",
+    "Track": "context and token economy",
+    "Handoff": "context-and-token-economy.md",
+    "Next action": "TOC-MP-1 pointer-reachability (zero inference); DCP-9b/10 prerequisites; TB-1 per-model budget curve as ONE sweep row",
+    "Deps": []
+   },
+   "rationale": "Eight handoffs about tokens per task (compression, folding, budgets, delegation)."
+  },
+  {
+   "target": "memory-program.md",
+   "owner_index": "routing-and-optimization-index.md",
+   "folds": [
+    "episodic-memory-integrity.md",
+    "repl-session-memory-maturity.md",
+    "unified-trace-memory-service.md",
+    "dev-harness-trace-mining.md"
+   ],
+   "retired_row_ids": [
+    "EVL-10",
+    "EVL-36",
+    "RTG-41",
+    "EVL-52"
+   ],
+   "open_boxes_before": 53,
+   "best_tier_before": 6,
+   "priority_rank_after": 22,
+   "new_row": {
+    "ID": "RTG-N07",
+    "Track": "memory program",
+    "Handoff": "memory-program.md",
+    "Next action": "M-12i model-free replay under an exclusive claim; UTM-LB2.2 projector ingest; D-f1 lease validation at the inference-owner boundary",
+    "Deps": []
+   },
+   "rationale": "Episodic/REPL/trace memory are one substrate (src/trace/, memories table)."
+  },
+  {
+   "target": "knowledge-pipelines.md",
+   "owner_index": "pipeline-integration-index.md",
+   "folds": [
+    "internal-kb-rag.md",
+    "colbert-reranker-web-research.md",
+    "document-parser-table-bench.md",
+    "opendataloader-pipeline-integration.md",
+    "searxng-search-backend.md",
+    "sliders-local-validation.md"
+   ],
+   "retired_row_ids": [
+    "PIP-04",
+    "PIP-01",
+    "PIP-02",
+    "PIP-05",
+    "RTG-33",
+    "EVL-43"
+   ],
+   "open_boxes_before": 75,
+   "best_tier_before": 6,
+   "priority_rank_after": 26,
+   "new_row": {
+    "ID": "PIP-N01",
+    "Track": "knowledge pipelines",
+    "Handoff": "knowledge-pipelines.md",
+    "Next action": "Source-review remaining K2/web contracts; PIP r30/r31 parity repair; G14 pylate re-export; canonical-profile A/B as one row",
+    "Deps": []
+   },
+   "rationale": "Whole pipeline-integration domain plus the two search/DB back-ends parked in other indices."
+  },
+  {
+   "target": "harness-program.md",
+   "owner_index": "user-facing-harness-index.md",
+   "folds": [
+    "harness-selection-and-integration.md",
+    "harness-improvement-loop.md",
+    "agentic-serving-harness-fixes.md",
+    "repl-embedding-retrieval.md",
+    "repl-turn-efficiency.md",
+    "opencode-shell-integration.md",
+    "qwen-chat-template-evaluation.md"
+   ],
+   "retired_row_ids": [
+    "UFH-01",
+    "UFH-08",
+    "UFH-14",
+    "UFH-12",
+    "EVL-37",
+    "UFH-15",
+    "RTG-54"
+   ],
+   "open_boxes_before": 109,
+   "best_tier_before": 0,
+   "priority_rank_after": 7,
+   "new_row": {
+    "ID": "UFH-N01",
+    "Track": "harness program",
+    "Handoff": "harness-program.md",
+    "Next action": "HS-OD-4 max_tokens contract; UFH14-B1 move D1-D5 out of the C95 drivers; REPL-EMB-2.8b trace write side; HIL-16 recordings",
+    "Deps": [
+     "INF-N04",
+     "INF-N07",
+     "RTG-N06",
+     "RTG-N08"
+    ]
+   },
+   "rationale": "UFH-01 is the top dep hub (in-degree 6) because its children are sections of the same harness."
+  },
+  {
+   "target": "thesis-experiment-orchestrator-vs-strongest-model.md",
+   "owner_index": "user-facing-harness-index.md",
+   "folds": [
+    "thesis-experiment-orchestrator-vs-strongest-model.md"
+   ],
+   "retired_row_ids": [
+    "UFH-13"
+   ],
+   "open_boxes_before": 9,
+   "best_tier_before": 7,
+   "priority_rank_after": 29,
+   "new_row": {
+    "ID": "UFH-N02",
+    "Track": "thesis experiment orchestrator vs strongest model",
+    "Handoff": "thesis-experiment-orchestrator-vs-strongest-model.md",
+    "Next action": "ACTIVE since 2026-10-29 (operator unparked UFH-13): TE-3 build and freeze the manifest (zero inference), then the A-3 frontdoor scout-stage ",
+    "Deps": []
+   },
+   "rationale": "Keep standalone: it is the freeze anchor for 76 FROZEN boxes in 29 handoffs; gains a generated FROZEN ledger section."
+  },
+  {
+   "target": "eval-tower-program.md",
+   "owner_index": "research-evaluation-index.md",
+   "folds": [
+    "eval-tower-verification.md",
+    "eval-tower-architecture-audit-2026-07-20.md",
+    "eval-tower-loop-robustness-audit-2026-07-20.md",
+    "scoring-infra-standardization.md",
+    "eval-benchmark-cost-reduction.md",
+    "inference-batch-loop.md",
+    "bulk-inference-campaign.md",
+    "re4-protocol-redesign.md",
+    "fable5-window2-findings-01-optimizer-integrity.md",
+    "prompt-construction-determinism.md"
+   ],
+   "retired_row_ids": [
+    "EVL-14",
+    "EVL-12",
+    "EVL-13",
+    "EVL-42",
+    "EVL-11",
+    "INF-24",
+    "EVL-07",
+    "EVL-35",
+    "EVL-19",
+    "RTG-27"
+   ],
+   "open_boxes_before": 67,
+   "best_tier_before": 2,
+   "priority_rank_after": 14,
+   "new_row": {
+    "ID": "EVL-N03",
+    "Track": "eval tower program",
+    "Handoff": "eval-tower-program.md",
+    "Next action": "EV-PROTO + live calibration acceptance; ARCH-1 god-module split; RCP prologue as the ONE inference-batch quiet-window row",
+    "Deps": []
+   },
+   "rationale": "EVL-14 is the second most-referenced node (15 refs); two 2026-07 audits of it carry 2 open boxes each."
+  },
+  {
+   "target": "benchmark-suites.md",
+   "owner_index": "research-evaluation-index.md",
+   "folds": [
+    "canonical-judge-suite-revamp.md",
+    "tool-use-eval-contract.md",
+    "agent-world-env-synthesis.md",
+    "rlm-contested-claims-self-evaluation.md",
+    "multi-file-coding-completion-capability.md",
+    "mathsmith-hc-formalizer-eval.md"
+   ],
+   "retired_row_ids": [
+    "EVL-08",
+    "EVL-46",
+    "RTG-01",
+    "EVL-39",
+    "RTG-21",
+    "EVL-31"
+   ],
+   "open_boxes_before": 69,
+   "best_tier_before": 6,
+   "priority_rank_after": 23,
+   "new_row": {
+    "ID": "EVL-N04",
+    "Track": "benchmark suites",
+    "Handoff": "benchmark-suites.md",
+    "Next action": "CJ-GATE suite adoption (operator); CJ-13 agreement/cost with the MI210 owner; EffiBench-X adoption decision",
+    "Deps": []
+   },
+   "rationale": "Suite acquisition/adoption is one capability with one operator gate (CJ-GATE)."
+  },
+  {
+   "target": "vidya-belief-substrate-program.md",
+   "owner_index": "research-evaluation-index.md",
+   "folds": [
+    "vidya-belief-substrate-program.md"
+   ],
+   "retired_row_ids": [
+    "EVL-47"
+   ],
+   "open_boxes_before": 414,
+   "best_tier_before": 5,
+   "priority_rank_after": 4,
+   "new_row": {
+    "ID": "EVL-N01",
+    "Track": "vidya belief substrate program",
+    "Handoff": "vidya-belief-substrate-program.md",
+    "Next action": "Replace the 378 per-source VB-*-WIRE boxes with ONE source-registration gate (adapter README row + generic projection) and re-run the two lo",
+    "Deps": []
+   },
+   "rationale": "Restructure in place: 413 open boxes, 378 of them the same wiring step restated per source."
+  },
+  {
+   "target": "frontier-lab-automation.md",
+   "owner_index": "research-evaluation-index.md",
+   "folds": [
+    "frontier-f2-self-running-lab.md",
+    "frontier-f3-data-flywheel.md",
+    "agent-file-prose-compression.md",
+    "intake-derived-work-2026-07-25.md",
+    "stale-open-audit-2026-07-18.md"
+   ],
+   "retired_row_ids": [
+    "EVL-24",
+    "EVL-25",
+    "EVL-01",
+    "EVL-29",
+    "EVL-44"
+   ],
+   "open_boxes_before": 29,
+   "best_tier_before": 2,
+   "priority_rank_after": 28,
+   "new_row": {
+    "ID": "EVL-N05",
+    "Track": "frontier lab automation",
+    "Handoff": "frontier-lab-automation.md",
+    "Next action": "F2 W3 reliability ladder; AFC-P5.E3 n=30 campaign stays HELD; intake-derived and stale-open audit recommendations close out",
+    "Deps": []
+   },
+   "rationale": "Lab automation + the two standing audit handoffs whose remaining items are recommendations to other handoffs."
+  },
+  {
+   "target": "model-evaluation-queue.md",
+   "owner_index": "research-evaluation-index.md",
+   "folds": [
+    "architect-model-selection-bench.md",
+    "gpu-candidates-surface-qwen38-update.md",
+    "qwen-mtp-llamacpp-port.md",
+    "gpu-cot-scaffold-sidecar.md",
+    "lightning-attention-port.md",
+    "delta-mem-reproduction.md",
+    "paw-compiled-specialists.md",
+    "minddr-deep-research-mode.md",
+    "ernie-image-turbo-evaluation.md",
+    "minimax-h3-video-generation-evaluation.md",
+    "angelslim-techniques-evaluation.md",
+    "tidar-one-pass-variant-b.md",
+    "summary-token-attention-readiness.md",
+    "strand-rust-coder-rustevo2-verification.md"
+   ],
+   "retired_row_ids": [
+    "EVL-02",
+    "INF-61",
+    "INF-46",
+    "INF-19",
+    "INF-30",
+    "INF-12",
+    "INF-76",
+    "UFH-04",
+    "PIP-03",
+    "EVL-32",
+    "INF-04",
+    "INF-53",
+    "INF-52",
+    "EVL-45"
+   ],
+   "open_boxes_before": 80,
+   "best_tier_before": 2,
+   "priority_rank_after": 10,
+   "new_row": {
+    "ID": "EVL-N02",
+    "Track": "model evaluation queue",
+    "Handoff": "model-evaluation-queue.md",
+    "Next action": "Rank the queue by lane fit; next: INF-61-ABA n-max 4 vs 8 (GPU window) and AMSB-C390-1 same-harness A/B; watchlist entries stay prose",
+    "Deps": [
+     "EVL-N04",
+     "INF-N02"
+    ]
+   },
+   "rationale": "Every candidate-model trial, bake-off, new-quant trial and \"try model X\" box in one file so stack/harness/loop handoffs carry none."
+  },
+  {
+   "target": "reviewer-control-plane.md",
+   "owner_index": "reviewer-control-plane-index.md",
+   "folds": [
+    "glm52-reviewer-capability-gates.md",
+    "reviewer-calibration-accounting.md",
+    "reviewer-model-ablations.md",
+    "reviewer-escalation-and-human-gate-policy.md",
+    "reviewer-latency-and-sampling-budget.md",
+    "reviewer-typed-artifacts.md"
+   ],
+   "retired_row_ids": [
+    "REV-02",
+    "REV-03",
+    "REV-07",
+    "REV-05",
+    "REV-06",
+    "REV-09"
+   ],
+   "open_boxes_before": 26,
+   "best_tier_before": 2,
+   "priority_rank_after": 24,
+   "new_row": {
+    "ID": "REV-N01",
+    "Track": "reviewer control plane",
+    "Handoff": "reviewer-control-plane.md",
+    "Next action": "RC-6a operator PR (P-REV-1 blocks); LB-1 latency regression attribution; GC-1a/2a/3a gates once DS41 sparse-attention cap is ready",
+    "Deps": [
+     "INF-N07",
+     "UFH-N01"
+    ]
+   },
+   "rationale": "The whole domain is one M1-M4 milestone series (observable/measured/compared/governed)."
+  }
+ ],
+ "handoffs": [
+  {
+   "handoff": "autokernel-champion-aggregate.md",
+   "row_id": "INF-65",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 35,
+   "closed_boxes": 111,
+   "tier_before": 5,
+   "action": "rename-to-target",
+   "target": "kernel-champion-and-promotion.md",
+   "box_moves": "none",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 1
+  },
+  {
+   "handoff": "autokernel-cross-workload-keep-gate.md",
+   "row_id": "INF-75",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 11,
+   "closed_boxes": 27,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "kernel-champion-and-promotion.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 1
+  },
+  {
+   "handoff": "autokernel-all-devices-all-dimensions.md",
+   "row_id": "INF-81",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 59,
+   "closed_boxes": 56,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "kernel-champion-and-promotion.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 1
+  },
+  {
+   "handoff": "cpu-fused-decoder-blocks.md",
+   "row_id": "INF-67",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 11,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "kernel-champion-and-promotion.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 1
+  },
+  {
+   "handoff": "v9-kernel-per-request-speculative-params.md",
+   "row_id": "INF-58",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 7,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "kernel-champion-and-promotion.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 1
+  },
+  {
+   "handoff": "laguna-s21-cpu-port.md",
+   "row_id": "INF-28",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 11,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "kernel-champion-and-promotion.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 1
+  },
+  {
+   "handoff": "moe-spec-cpu-spec-dec-integration.md",
+   "row_id": "INF-40",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 4,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "kernel-champion-and-promotion.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 1
+  },
+  {
+   "handoff": "fable5-window2-findings-03-portfolio-and-master-queue.md",
+   "row_id": "EVL-21",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 10,
+   "closed_boxes": 8,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "kernel-champion-and-promotion.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 1
+  },
+  {
+   "handoff": "autokernel-research-loop.md",
+   "row_id": "INF-06",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 73,
+   "closed_boxes": 302,
+   "tier_before": 5,
+   "action": "rename-to-target",
+   "target": "autokernel-loop.md",
+   "box_moves": "none",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 6
+  },
+  {
+   "handoff": "autokernel-rebuild-program.md",
+   "row_id": "INF-66",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 40,
+   "closed_boxes": 168,
+   "tier_before": 5,
+   "action": "merge-into",
+   "target": "autokernel-loop.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 6
+  },
+  {
+   "handoff": "autokernel-unified-surface-program.md",
+   "row_id": "INF-73",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 69,
+   "closed_boxes": 207,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "autokernel-loop.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 6
+  },
+  {
+   "handoff": "autokernel-concurrent-target-coordination.md",
+   "row_id": "INF-74",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 13,
+   "closed_boxes": 13,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "autokernel-loop.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 6
+  },
+  {
+   "handoff": "autokernel-orchestrator-actor-backend.md",
+   "row_id": "INF-78",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 16,
+   "closed_boxes": 32,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "autokernel-loop.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 6
+  },
+  {
+   "handoff": "autokernel-restart-and-strip.md",
+   "row_id": "INF-64",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 20,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "autokernel-loop.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 6
+  },
+  {
+   "handoff": "agent-collab-rnd-harness.md",
+   "row_id": "INF-02",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 6,
+   "closed_boxes": 5,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "autokernel-loop.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 6
+  },
+  {
+   "handoff": "kv-prefix-fork-and-paged-attention.md",
+   "row_id": "RTG-58",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 56,
+   "closed_boxes": 118,
+   "tier_before": 0,
+   "action": "rename-to-target",
+   "target": "kv-cache-program.md",
+   "box_moves": "none",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 2
+  },
+  {
+   "handoff": "kv-unified-stack-rollout.md",
+   "row_id": "RTG-57",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 52,
+   "closed_boxes": 104,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "kv-cache-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 2
+  },
+  {
+   "handoff": "heterogeneous-slot-fabric-residency.md",
+   "row_id": "INF-23",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 19,
+   "closed_boxes": 10,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "kv-cache-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 2
+  },
+  {
+   "handoff": "gpu-serving-tie-in-program.md",
+   "row_id": "INF-22",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 37,
+   "closed_boxes": 92,
+   "tier_before": 0,
+   "action": "rename-to-target+split",
+   "target": "mi210-serving-program.md",
+   "box_moves": "none; lines [155, 609, 610] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 3
+  },
+  {
+   "handoff": "mi210-big-model-and-acceleration-roadmap.md",
+   "row_id": "INF-34",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 10,
+   "closed_boxes": 18,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "mi210-serving-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 3
+  },
+  {
+   "handoff": "gpu-acceleration-path.md",
+   "row_id": "INF-18",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 9,
+   "closed_boxes": 15,
+   "tier_before": 6,
+   "action": "merge-into+split",
+   "target": "mi210-serving-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [558, 626] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 3
+  },
+  {
+   "handoff": "numa-prefill-decode-disaggregation.md",
+   "row_id": "INF-44",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 0,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "mi210-serving-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 3
+  },
+  {
+   "handoff": "qwen38-27b-replace-qwen36.md",
+   "row_id": "INF-60",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 30,
+   "tier_before": 5,
+   "action": "merge-into",
+   "target": "mi210-serving-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 3
+  },
+  {
+   "handoff": "fable5-window2-findings-02-heterogeneous-gpu.md",
+   "row_id": "EVL-20",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 9,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "mi210-serving-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 3
+  },
+  {
+   "handoff": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
+   "row_id": "EVL-48",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 14,
+   "closed_boxes": 16,
+   "tier_before": 6,
+   "action": "merge-into+split",
+   "target": "mi210-serving-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [215, 227, 245, 246, 249, 250, 251, 254, 255, 258] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 3
+  },
+  {
+   "handoff": "speculative-decoding-mtp-refresh.md",
+   "row_id": "INF-50",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 32,
+   "closed_boxes": 59,
+   "tier_before": 0,
+   "action": "rename-to-target+split",
+   "target": "speculative-decoding.md",
+   "box_moves": "none; lines [246, 319] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 5
+  },
+  {
+   "handoff": "dflash2-block-drafter-experimental-build.md",
+   "row_id": "INF-62",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 20,
+   "closed_boxes": 41,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "speculative-decoding.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 5
+  },
+  {
+   "handoff": "yarn-context-extension-research.md",
+   "row_id": "INF-59",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 34,
+   "closed_boxes": 57,
+   "tier_before": 4,
+   "action": "rename-to-target",
+   "target": "long-context-program.md",
+   "box_moves": "none",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 9
+  },
+  {
+   "handoff": "multiscreen-attention-evaluation.md",
+   "row_id": "INF-42",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 6,
+   "tier_before": 6,
+   "action": "merge-into+split",
+   "target": "long-context-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [324] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 9
+  },
+  {
+   "handoff": "streaming-llm-baseline.md",
+   "row_id": "INF-51",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 5,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "long-context-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 9
+  },
+  {
+   "handoff": "triattention-kv-selection.md",
+   "row_id": "INF-56",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 7,
+   "closed_boxes": 0,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "long-context-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 9
+  },
+  {
+   "handoff": "attention-matching-kv-compaction.md",
+   "row_id": "INF-05",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 9,
+   "closed_boxes": 7,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "long-context-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 9
+  },
+  {
+   "handoff": "rocm-verify-profile-backend.md",
+   "row_id": "INF-48",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 49,
+   "closed_boxes": 99,
+   "tier_before": 5,
+   "action": "rename-to-target",
+   "target": "rocm-kernel-authoring.md",
+   "box_moves": "none",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 19
+  },
+  {
+   "handoff": "agentic-rocm-kernel-authoring.md",
+   "row_id": "INF-03",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 25,
+   "closed_boxes": 91,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "rocm-kernel-authoring.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 19
+  },
+  {
+   "handoff": "mi210-q8-dequant-gemv-roofline.md",
+   "row_id": "INF-37",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 11,
+   "closed_boxes": 22,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "rocm-kernel-authoring.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 19
+  },
+  {
+   "handoff": "gemma-challenge-kernel-techniques-v7.md",
+   "row_id": "INF-16",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 7,
+   "closed_boxes": 111,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "rocm-kernel-authoring.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 19
+  },
+  {
+   "handoff": "llama-cpp-dsa-contribution.md",
+   "row_id": "INF-31",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 10,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "rocm-kernel-authoring.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 19
+  },
+  {
+   "handoff": "frontier-f6-upstream-publication.md",
+   "row_id": "EVL-27",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 6,
+   "closed_boxes": 1,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "rocm-kernel-authoring.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 19
+  },
+  {
+   "handoff": "cpu-decode-roofline-program.md",
+   "row_id": "INF-70",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 59,
+   "closed_boxes": 108,
+   "tier_before": 4,
+   "action": "keep-as-target",
+   "target": "cpu-decode-roofline-program.md",
+   "box_moves": "none",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 12
+  },
+  {
+   "handoff": "moe-routing-tap-and-locality-measurement.md",
+   "row_id": "INF-72",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 9,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "cpu-decode-roofline-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 12
+  },
+  {
+   "handoff": "cpu-prefill-compute-large-models.md",
+   "row_id": "INF-09",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 27,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "cpu-decode-roofline-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 12
+  },
+  {
+   "handoff": "large-moe-expert-parallelism.md",
+   "row_id": "INF-29",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 2,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "cpu-decode-roofline-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 12
+  },
+  {
+   "handoff": "sarathi-serve-cpu-evaluation.md",
+   "row_id": "INF-49",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 0,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "cpu-decode-roofline-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 12
+  },
+  {
+   "handoff": "numa-topology-cutover-resume-20260730.md",
+   "row_id": "INF-45",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 42,
+   "closed_boxes": 104,
+   "tier_before": 7,
+   "action": "rename-to-target",
+   "target": "numa-placement-and-contention.md",
+   "box_moves": "none",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 13
+  },
+  {
+   "handoff": "numa-placement-defect-20260730.md",
+   "row_id": "INF-43",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 9,
+   "closed_boxes": 36,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "numa-placement-and-contention.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 13
+  },
+  {
+   "handoff": "batched-decode-measurement.md",
+   "row_id": "INF-07",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 11,
+   "closed_boxes": 43,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "numa-placement-and-contention.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 13
+  },
+  {
+   "handoff": "contention-model-device-and-load-axes-rider.md",
+   "row_id": "RTG-07",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 8,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "numa-placement-and-contention.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 13
+  },
+  {
+   "handoff": "shape-keyed-contention-gating.md",
+   "row_id": "RTG-35",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 23,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "numa-placement-and-contention.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 13
+  },
+  {
+   "handoff": "within-role-placement-state-machine.md",
+   "row_id": "RTG-42",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 18,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "numa-placement-and-contention.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 13
+  },
+  {
+   "handoff": "dynamic-stack-concurrency.md",
+   "row_id": "RTG-11",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 11,
+   "closed_boxes": 11,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "numa-placement-and-contention.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 13
+  },
+  {
+   "handoff": "reboot-gated-inventory-and-staging.md",
+   "row_id": "EVL-49",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 16,
+   "closed_boxes": 4,
+   "tier_before": 7,
+   "action": "merge-into+split",
+   "target": "numa-placement-and-contention.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [311] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 13
+  },
+  {
+   "handoff": "deepseek-v41-flash-evaluation.md",
+   "row_id": "INF-77",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 138,
+   "closed_boxes": 104,
+   "tier_before": 6,
+   "action": "keep",
+   "target": "deepseek-v41-flash-evaluation.md",
+   "box_moves": "none",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 11
+  },
+  {
+   "handoff": "tq3-quantization-evaluation.md",
+   "row_id": "INF-54",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 15,
+   "closed_boxes": 18,
+   "tier_before": 6,
+   "action": "rename-to-target+split",
+   "target": "quantization-and-low-bit.md",
+   "box_moves": "none; lines [200] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 20
+  },
+  {
+   "handoff": "iqk-iquant-enablement.md",
+   "row_id": "INF-26",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 25,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "quantization-and-low-bit.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 20
+  },
+  {
+   "handoff": "exl3-cpu-mi210-implementation.md",
+   "row_id": "INF-80",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 22,
+   "closed_boxes": 21,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "quantization-and-low-bit.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 20
+  },
+  {
+   "handoff": "log-linear-gated-deltanet-readiness.md",
+   "row_id": "INF-33",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 11,
+   "closed_boxes": 6,
+   "tier_before": 6,
+   "action": "rename-to-target",
+   "target": "model-architecture-readiness.md",
+   "box_moves": "none",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 27
+  },
+  {
+   "handoff": "engram-conditional-memory.md",
+   "row_id": "INF-13",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 11,
+   "closed_boxes": 19,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "model-architecture-readiness.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 27
+  },
+  {
+   "handoff": "conversation-stack.md",
+   "row_id": "INF-79",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 34,
+   "closed_boxes": 74,
+   "tier_before": 0,
+   "action": "rename-to-target+split",
+   "target": "speech-and-multimodal.md",
+   "box_moves": "none; lines [283, 682, 732, 744, 755, 765, 776, 950] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 8
+  },
+  {
+   "handoff": "multimodal-pipeline.md",
+   "row_id": "INF-41",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 10,
+   "closed_boxes": 45,
+   "tier_before": 6,
+   "action": "merge-into+split",
+   "target": "speech-and-multimodal.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [830] move to model-evaluation-queue.md",
+   "new_index": "inference-research-index.md",
+   "priority_rank_after": 8
+  },
+  {
+   "handoff": "autopilot-continuous-optimization.md",
+   "row_id": "RTG-02",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 57,
+   "closed_boxes": 42,
+   "tier_before": 6,
+   "action": "rename-to-target",
+   "target": "autopilot-program.md",
+   "box_moves": "none",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "autopilot-sequential-allocation.md",
+   "row_id": "EVL-04",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 8,
+   "closed_boxes": 18,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "promptforge-mutation-safety-contract.md",
+   "row_id": "RTG-55",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 22,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "orchestration-robustness-audit-2026-07-11.md",
+   "row_id": "RTG-24",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 47,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "autopilot-dashboard-fidelity-audit-2026-07-22.md",
+   "row_id": "RTG-03",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 11,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "autopilot-decision-plane-audit-2026-07-22.md",
+   "row_id": "EVL-03",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 46,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "scaffold-autopilot-cost-lever-deployment.md",
+   "row_id": "RTG-32",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 12,
+   "closed_boxes": 4,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "objective-task-rate-goodput.md",
+   "row_id": "RTG-23",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 18,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "evidence-plane-event-sourcing-and-narrative.md",
+   "row_id": "RTG-13",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 6,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "evidence-plane-ledger-and-sequential-verdicts.md",
+   "row_id": "EVL-16",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 13,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "evidence-plane-instrument-repair.md",
+   "row_id": "EVL-15",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 6,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "loops-and-dashboards-audit-2026-07-05.md",
+   "row_id": "RTG-16",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 45,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "bep-dcp-falsification-harness.md",
+   "row_id": "RTG-05",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 4,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "batched-edit-parallel-apply.md",
+   "row_id": "RTG-04",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 4,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "autopilot-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 18
+  },
+  {
+   "handoff": "typed-decision-plane.md",
+   "row_id": "RTG-56",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 29,
+   "closed_boxes": 26,
+   "tier_before": 6,
+   "action": "rename-to-target+split",
+   "target": "routing-program.md",
+   "box_moves": "none; lines [705] move to model-evaluation-queue.md",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "decision-aware-routing.md",
+   "row_id": "RTG-09",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 30,
+   "closed_boxes": 42,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "routing-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "learned-routing-controller.md",
+   "row_id": "RTG-15",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 22,
+   "closed_boxes": 45,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "routing-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "routing-intelligence.md",
+   "row_id": "RTG-30",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 16,
+   "closed_boxes": 6,
+   "tier_before": 7,
+   "action": "merge-into+split",
+   "target": "routing-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [408] move to model-evaluation-queue.md",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "retrain-routing-models.md",
+   "row_id": "RTG-29",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 4,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "routing-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "x-mas-text-routing.md",
+   "row_id": "RTG-45",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 2,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "routing-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "tri-role-coordinator-architecture.md",
+   "row_id": "RTG-40",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 7,
+   "closed_boxes": 21,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "routing-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "model-capability-descriptors.md",
+   "row_id": "RTG-17",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 4,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "routing-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "internal-interaction-lifecycle.md",
+   "row_id": "RTG-14",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 27,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "routing-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 25
+  },
+  {
+   "handoff": "model-stack-single-source-update-pipeline.md",
+   "row_id": "RTG-19",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 48,
+   "tier_before": 2,
+   "action": "rename-to-target",
+   "target": "stack-lifecycle-program.md",
+   "box_moves": "none",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 17
+  },
+  {
+   "handoff": "stack-change-governance-pipeline.md",
+   "row_id": "RTG-36",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 11,
+   "closed_boxes": 15,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "stack-lifecycle-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 17
+  },
+  {
+   "handoff": "standardized-stack-update-pipeline-finalization.md",
+   "row_id": "RTG-38",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 9,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "stack-lifecycle-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 17
+  },
+  {
+   "handoff": "model-stack-update-pipeline-audit.md",
+   "row_id": "RTG-20",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 6,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "stack-lifecycle-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 17
+  },
+  {
+   "handoff": "capability-registry-and-promotion.md",
+   "row_id": "RTG-06",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 5,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "stack-lifecycle-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 17
+  },
+  {
+   "handoff": "wp12-fleet-layer-design.md",
+   "row_id": "RTG-43",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 14,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "stack-lifecycle-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 17
+  },
+  {
+   "handoff": "model-artifact-integrity.md",
+   "row_id": "RTG-59",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 12,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "stack-lifecycle-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 17
+  },
+  {
+   "handoff": "model-exec-containment.md",
+   "row_id": "UFH-16",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 11,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "stack-lifecycle-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 17
+  },
+  {
+   "handoff": "churn-pipeline.md",
+   "row_id": "RTG-62",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 24,
+   "closed_boxes": 29,
+   "tier_before": null,
+   "action": "rename-to-target",
+   "target": "coordination-and-churn-pipeline.md",
+   "box_moves": "none",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 15
+  },
+  {
+   "handoff": "session-bus-thin-dispatcher.md",
+   "row_id": "RTG-34",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 37,
+   "closed_boxes": 170,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "coordination-and-churn-pipeline.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 15
+  },
+  {
+   "handoff": "coordinator-role-failure-modes-and-refactor.md",
+   "row_id": "RTG-48",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 12,
+   "closed_boxes": 48,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "coordination-and-churn-pipeline.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 15
+  },
+  {
+   "handoff": "fleet-fanout-measurement.md",
+   "row_id": "RTG-49",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 4,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "coordination-and-churn-pipeline.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 15
+  },
+  {
+   "handoff": "wrap-up-division-of-labor-policy.md",
+   "row_id": "RTG-51",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 8,
+   "closed_boxes": 20,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "coordination-and-churn-pipeline.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 15
+  },
+  {
+   "handoff": "loop-owned-fleet-implementation.md",
+   "row_id": "RTG-52",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 9,
+   "closed_boxes": 53,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "coordination-and-churn-pipeline.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 15
+  },
+  {
+   "handoff": "handoff-index-and-backlog-graph.md",
+   "row_id": "RTG-46",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 25,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "coordination-and-churn-pipeline.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 15
+  },
+  {
+   "handoff": "dashboard-architecture-restructure.md",
+   "row_id": "RTG-47",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 12,
+   "closed_boxes": 22,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "coordination-and-churn-pipeline.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 15
+  },
+  {
+   "handoff": "non-inference-backlog.md",
+   "row_id": "RTG-22",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 66,
+   "closed_boxes": 130,
+   "tier_before": 5,
+   "action": "rename-to-target",
+   "target": "engineering-hygiene-backlog.md",
+   "box_moves": "none",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 16
+  },
+  {
+   "handoff": "refactoring-multirepo-2026-10.md",
+   "row_id": "RTG-61",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 47,
+   "closed_boxes": 84,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "engineering-hygiene-backlog.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 16
+  },
+  {
+   "handoff": "integration-test-coverage.md",
+   "row_id": "EVL-30",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 2,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "engineering-hygiene-backlog.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 16
+  },
+  {
+   "handoff": "repo-readiness-scorer.md",
+   "row_id": "EVL-38",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 9,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "engineering-hygiene-backlog.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 16
+  },
+  {
+   "handoff": "frontier-f4-continuity-backup.md",
+   "row_id": "EVL-26",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 2,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "engineering-hygiene-backlog.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 16
+  },
+  {
+   "handoff": "loop-state-offraid-backup.md",
+   "row_id": "RTG-60",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 0,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "engineering-hygiene-backlog.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 16
+  },
+  {
+   "handoff": "amd-ai-lab-website-publication.md",
+   "row_id": "UFH-11",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 5,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "engineering-hygiene-backlog.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 16
+  },
+  {
+   "handoff": "delegation-context-preassembly.md",
+   "row_id": "RTG-10",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 12,
+   "closed_boxes": 18,
+   "tier_before": 6,
+   "action": "rename-to-target",
+   "target": "context-and-token-economy.md",
+   "box_moves": "none",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 21
+  },
+  {
+   "handoff": "context-folding-progressive.md",
+   "row_id": "RTG-08",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 16,
+   "closed_boxes": 17,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "context-and-token-economy.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 21
+  },
+  {
+   "handoff": "tool-output-compression.md",
+   "row_id": "UFH-07",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 7,
+   "closed_boxes": 48,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "context-and-token-economy.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 21
+  },
+  {
+   "handoff": "reasoning-compression.md",
+   "row_id": "UFH-05",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 6,
+   "closed_boxes": 29,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "context-and-token-economy.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 21
+  },
+  {
+   "handoff": "memento-block-reasoning-compression.md",
+   "row_id": "UFH-03",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 3,
+   "tier_before": 2,
+   "action": "merge-into+split",
+   "target": "context-and-token-economy.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [227] move to model-evaluation-queue.md",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 21
+  },
+  {
+   "handoff": "reasoning-effort-levels.md",
+   "row_id": "RTG-28",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 12,
+   "closed_boxes": 11,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "context-and-token-economy.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 21
+  },
+  {
+   "handoff": "per-request-reasoning-budget.md",
+   "row_id": "EVL-33",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 6,
+   "closed_boxes": 7,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "context-and-token-economy.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 21
+  },
+  {
+   "handoff": "rao-redel-substrate-spike.md",
+   "row_id": "EVL-34",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 6,
+   "closed_boxes": 10,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "context-and-token-economy.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 21
+  },
+  {
+   "handoff": "episodic-memory-integrity.md",
+   "row_id": "EVL-10",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 16,
+   "closed_boxes": 56,
+   "tier_before": 6,
+   "action": "rename-to-target",
+   "target": "memory-program.md",
+   "box_moves": "none",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 22
+  },
+  {
+   "handoff": "repl-session-memory-maturity.md",
+   "row_id": "EVL-36",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 15,
+   "closed_boxes": 14,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "memory-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 22
+  },
+  {
+   "handoff": "unified-trace-memory-service.md",
+   "row_id": "RTG-41",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 14,
+   "closed_boxes": 38,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "memory-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 22
+  },
+  {
+   "handoff": "dev-harness-trace-mining.md",
+   "row_id": "EVL-52",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 8,
+   "closed_boxes": 9,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "memory-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "routing-and-optimization-index.md",
+   "priority_rank_after": 22
+  },
+  {
+   "handoff": "internal-kb-rag.md",
+   "row_id": "PIP-04",
+   "owner_index_before": "pipeline-integration-index.md",
+   "open_boxes": 21,
+   "closed_boxes": 43,
+   "tier_before": 6,
+   "action": "rename-to-target",
+   "target": "knowledge-pipelines.md",
+   "box_moves": "none",
+   "new_index": "pipeline-integration-index.md",
+   "priority_rank_after": 26
+  },
+  {
+   "handoff": "colbert-reranker-web-research.md",
+   "row_id": "PIP-01",
+   "owner_index_before": "pipeline-integration-index.md",
+   "open_boxes": 8,
+   "closed_boxes": 18,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "knowledge-pipelines.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "pipeline-integration-index.md",
+   "priority_rank_after": 26
+  },
+  {
+   "handoff": "document-parser-table-bench.md",
+   "row_id": "PIP-02",
+   "owner_index_before": "pipeline-integration-index.md",
+   "open_boxes": 18,
+   "closed_boxes": 9,
+   "tier_before": 6,
+   "action": "merge-into+split",
+   "target": "knowledge-pipelines.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [95] move to model-evaluation-queue.md",
+   "new_index": "pipeline-integration-index.md",
+   "priority_rank_after": 26
+  },
+  {
+   "handoff": "opendataloader-pipeline-integration.md",
+   "row_id": "PIP-05",
+   "owner_index_before": "pipeline-integration-index.md",
+   "open_boxes": 17,
+   "closed_boxes": 9,
+   "tier_before": 6,
+   "action": "merge-into+split",
+   "target": "knowledge-pipelines.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [65] move to model-evaluation-queue.md",
+   "new_index": "pipeline-integration-index.md",
+   "priority_rank_after": 26
+  },
+  {
+   "handoff": "searxng-search-backend.md",
+   "row_id": "RTG-33",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 19,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "knowledge-pipelines.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "pipeline-integration-index.md",
+   "priority_rank_after": 26
+  },
+  {
+   "handoff": "sliders-local-validation.md",
+   "row_id": "EVL-43",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 8,
+   "closed_boxes": 0,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "knowledge-pipelines.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "pipeline-integration-index.md",
+   "priority_rank_after": 26
+  },
+  {
+   "handoff": "harness-selection-and-integration.md",
+   "row_id": "UFH-01",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 16,
+   "closed_boxes": 26,
+   "tier_before": 0,
+   "action": "rename-to-target",
+   "target": "harness-program.md",
+   "box_moves": "none",
+   "new_index": "user-facing-harness-index.md",
+   "priority_rank_after": 7
+  },
+  {
+   "handoff": "harness-improvement-loop.md",
+   "row_id": "UFH-08",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 16,
+   "closed_boxes": 36,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "harness-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "user-facing-harness-index.md",
+   "priority_rank_after": 7
+  },
+  {
+   "handoff": "agentic-serving-harness-fixes.md",
+   "row_id": "UFH-14",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 29,
+   "closed_boxes": 61,
+   "tier_before": 5,
+   "action": "merge-into",
+   "target": "harness-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "user-facing-harness-index.md",
+   "priority_rank_after": 7
+  },
+  {
+   "handoff": "repl-embedding-retrieval.md",
+   "row_id": "UFH-12",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 20,
+   "closed_boxes": 29,
+   "tier_before": 0,
+   "action": "merge-into",
+   "target": "harness-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "user-facing-harness-index.md",
+   "priority_rank_after": 7
+  },
+  {
+   "handoff": "repl-turn-efficiency.md",
+   "row_id": "EVL-37",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 17,
+   "closed_boxes": 29,
+   "tier_before": 6,
+   "action": "merge-into+split",
+   "target": "harness-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [215] move to model-evaluation-queue.md",
+   "new_index": "user-facing-harness-index.md",
+   "priority_rank_after": 7
+  },
+  {
+   "handoff": "opencode-shell-integration.md",
+   "row_id": "UFH-15",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 5,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "harness-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "user-facing-harness-index.md",
+   "priority_rank_after": 7
+  },
+  {
+   "handoff": "qwen-chat-template-evaluation.md",
+   "row_id": "RTG-54",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 10,
+   "closed_boxes": 34,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "harness-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "user-facing-harness-index.md",
+   "priority_rank_after": 7
+  },
+  {
+   "handoff": "thesis-experiment-orchestrator-vs-strongest-model.md",
+   "row_id": "UFH-13",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 9,
+   "closed_boxes": 2,
+   "tier_before": 7,
+   "action": "keep",
+   "target": "thesis-experiment-orchestrator-vs-strongest-model.md",
+   "box_moves": "none",
+   "new_index": "user-facing-harness-index.md",
+   "priority_rank_after": 29
+  },
+  {
+   "handoff": "eval-tower-verification.md",
+   "row_id": "EVL-14",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 27,
+   "closed_boxes": 74,
+   "tier_before": 6,
+   "action": "rename-to-target+split",
+   "target": "eval-tower-program.md",
+   "box_moves": "none; lines [232, 259] move to model-evaluation-queue.md",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "eval-tower-architecture-audit-2026-07-20.md",
+   "row_id": "EVL-12",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 45,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "eval-tower-loop-robustness-audit-2026-07-20.md",
+   "row_id": "EVL-13",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 29,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "scoring-infra-standardization.md",
+   "row_id": "EVL-42",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 14,
+   "closed_boxes": 28,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "eval-benchmark-cost-reduction.md",
+   "row_id": "EVL-11",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 6,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "inference-batch-loop.md",
+   "row_id": "INF-24",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 9,
+   "closed_boxes": 17,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "bulk-inference-campaign.md",
+   "row_id": "EVL-07",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 7,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "re4-protocol-redesign.md",
+   "row_id": "EVL-35",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 3,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "fable5-window2-findings-01-optimizer-integrity.md",
+   "row_id": "EVL-19",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 1,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "prompt-construction-determinism.md",
+   "row_id": "RTG-27",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 3,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "eval-tower-program.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 14
+  },
+  {
+   "handoff": "canonical-judge-suite-revamp.md",
+   "row_id": "EVL-08",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 31,
+   "closed_boxes": 17,
+   "tier_before": 6,
+   "action": "rename-to-target",
+   "target": "benchmark-suites.md",
+   "box_moves": "none",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 23
+  },
+  {
+   "handoff": "tool-use-eval-contract.md",
+   "row_id": "EVL-46",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 7,
+   "closed_boxes": 23,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "benchmark-suites.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 23
+  },
+  {
+   "handoff": "agent-world-env-synthesis.md",
+   "row_id": "RTG-01",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 4,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "benchmark-suites.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 23
+  },
+  {
+   "handoff": "rlm-contested-claims-self-evaluation.md",
+   "row_id": "EVL-39",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 4,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "benchmark-suites.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 23
+  },
+  {
+   "handoff": "multi-file-coding-completion-capability.md",
+   "row_id": "RTG-21",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 7,
+   "closed_boxes": 7,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "benchmark-suites.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 23
+  },
+  {
+   "handoff": "mathsmith-hc-formalizer-eval.md",
+   "row_id": "EVL-31",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 15,
+   "closed_boxes": 6,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "benchmark-suites.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 23
+  },
+  {
+   "handoff": "vidya-belief-substrate-program.md",
+   "row_id": "EVL-47",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 414,
+   "closed_boxes": 336,
+   "tier_before": 5,
+   "action": "keep",
+   "target": "vidya-belief-substrate-program.md",
+   "box_moves": "restructure in place",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 4
+  },
+  {
+   "handoff": "frontier-f2-self-running-lab.md",
+   "row_id": "EVL-24",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 12,
+   "tier_before": 2,
+   "action": "rename-to-target",
+   "target": "frontier-lab-automation.md",
+   "box_moves": "none",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 28
+  },
+  {
+   "handoff": "frontier-f3-data-flywheel.md",
+   "row_id": "EVL-25",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 12,
+   "tier_before": 2,
+   "action": "merge-into+split",
+   "target": "frontier-lab-automation.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner; lines [56] move to model-evaluation-queue.md",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 28
+  },
+  {
+   "handoff": "agent-file-prose-compression.md",
+   "row_id": "EVL-01",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 0,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "frontier-lab-automation.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 28
+  },
+  {
+   "handoff": "intake-derived-work-2026-07-25.md",
+   "row_id": "EVL-29",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 12,
+   "closed_boxes": 38,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "frontier-lab-automation.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 28
+  },
+  {
+   "handoff": "stale-open-audit-2026-07-18.md",
+   "row_id": "EVL-44",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 6,
+   "closed_boxes": 13,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "frontier-lab-automation.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 28
+  },
+  {
+   "handoff": "architect-model-selection-bench.md",
+   "row_id": "EVL-02",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 26,
+   "closed_boxes": 78,
+   "tier_before": 6,
+   "action": "rename-to-target",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "none",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "gpu-candidates-surface-qwen38-update.md",
+   "row_id": "INF-61",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 8,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "qwen-mtp-llamacpp-port.md",
+   "row_id": "INF-46",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 6,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "gpu-cot-scaffold-sidecar.md",
+   "row_id": "INF-19",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 7,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "lightning-attention-port.md",
+   "row_id": "INF-30",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 2,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "delta-mem-reproduction.md",
+   "row_id": "INF-12",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 4,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "paw-compiled-specialists.md",
+   "row_id": "INF-76",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 8,
+   "closed_boxes": 3,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "minddr-deep-research-mode.md",
+   "row_id": "UFH-04",
+   "owner_index_before": "user-facing-harness-index.md",
+   "open_boxes": 6,
+   "closed_boxes": 4,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "ernie-image-turbo-evaluation.md",
+   "row_id": "PIP-03",
+   "owner_index_before": "pipeline-integration-index.md",
+   "open_boxes": 6,
+   "closed_boxes": 5,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "minimax-h3-video-generation-evaluation.md",
+   "row_id": "EVL-32",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 7,
+   "closed_boxes": 0,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "angelslim-techniques-evaluation.md",
+   "row_id": "INF-04",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 2,
+   "closed_boxes": 2,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "tidar-one-pass-variant-b.md",
+   "row_id": "INF-53",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 1,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "summary-token-attention-readiness.md",
+   "row_id": "INF-52",
+   "owner_index_before": "inference-research-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 0,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "strand-rust-coder-rustevo2-verification.md",
+   "row_id": "EVL-45",
+   "owner_index_before": "research-evaluation-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 2,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "model-evaluation-queue.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "research-evaluation-index.md",
+   "priority_rank_after": 10
+  },
+  {
+   "handoff": "glm52-reviewer-capability-gates.md",
+   "row_id": "REV-02",
+   "owner_index_before": "reviewer-control-plane-index.md",
+   "open_boxes": 5,
+   "closed_boxes": 52,
+   "tier_before": 7,
+   "action": "rename-to-target+split",
+   "target": "reviewer-control-plane.md",
+   "box_moves": "none; lines [220] move to model-evaluation-queue.md",
+   "new_index": "reviewer-control-plane-index.md",
+   "priority_rank_after": 24
+  },
+  {
+   "handoff": "reviewer-calibration-accounting.md",
+   "row_id": "REV-03",
+   "owner_index_before": "reviewer-control-plane-index.md",
+   "open_boxes": 3,
+   "closed_boxes": 11,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "reviewer-control-plane.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "reviewer-control-plane-index.md",
+   "priority_rank_after": 24
+  },
+  {
+   "handoff": "reviewer-model-ablations.md",
+   "row_id": "REV-07",
+   "owner_index_before": "reviewer-control-plane-index.md",
+   "open_boxes": 9,
+   "closed_boxes": 14,
+   "tier_before": 6,
+   "action": "merge-into",
+   "target": "reviewer-control-plane.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "reviewer-control-plane-index.md",
+   "priority_rank_after": 24
+  },
+  {
+   "handoff": "reviewer-escalation-and-human-gate-policy.md",
+   "row_id": "REV-05",
+   "owner_index_before": "reviewer-control-plane-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 3,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "reviewer-control-plane.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "reviewer-control-plane-index.md",
+   "priority_rank_after": 24
+  },
+  {
+   "handoff": "reviewer-latency-and-sampling-budget.md",
+   "row_id": "REV-06",
+   "owner_index_before": "reviewer-control-plane-index.md",
+   "open_boxes": 4,
+   "closed_boxes": 3,
+   "tier_before": 2,
+   "action": "merge-into",
+   "target": "reviewer-control-plane.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "reviewer-control-plane-index.md",
+   "priority_rank_after": 24
+  },
+  {
+   "handoff": "reviewer-typed-artifacts.md",
+   "row_id": "REV-09",
+   "owner_index_before": "reviewer-control-plane-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 17,
+   "tier_before": 7,
+   "action": "merge-into",
+   "target": "reviewer-control-plane.md",
+   "box_moves": "all OPEN sections move verbatim under a \"## <old stem>\" track heading in the target; closed sections and ledgers stay in the file, which is git-mv'd to handoffs/completed/ with a \"Folded into <target>\" banner",
+   "new_index": "reviewer-control-plane-index.md",
+   "priority_rank_after": 24
+  },
+  {
+   "handoff": "swarm-dataset-distillation.md",
+   "row_id": "RTG-39",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 1,
+   "closed_boxes": 2,
+   "tier_before": 7,
+   "action": "retire",
+   "target": null,
+   "box_moves": "handoffs/blocked/swarm-dataset-distillation.md already holds the ledger; the 7-line active pointer and row RTG-39 go",
+   "new_index": null,
+   "priority_rank_after": null
+  },
+  {
+   "handoff": "model-stack-change-standardization-audit.md",
+   "row_id": "RTG-18",
+   "owner_index_before": "routing-and-optimization-index.md",
+   "open_boxes": 0,
+   "closed_boxes": 0,
+   "tier_before": 7,
+   "action": "retire",
+   "target": null,
+   "box_moves": "RTG-18: 0 open boxes; the checklist (:215-:241) becomes docs/guides/agent-workflows/stack-change-checklist.md and is referenced from stack-lifecycle-program.md",
+   "new_index": null,
+   "priority_rank_after": null
+  }
+ ],
+ "unmapped": [],
+ "model_evaluation_queue": {
+  "target": "model-evaluation-queue.md",
+  "owner_index": "research-evaluation-index.md",
+  "priority_rank_after": 10,
+  "whole_handoffs": [
+   "architect-model-selection-bench.md",
+   "gpu-candidates-surface-qwen38-update.md",
+   "qwen-mtp-llamacpp-port.md",
+   "gpu-cot-scaffold-sidecar.md",
+   "lightning-attention-port.md",
+   "delta-mem-reproduction.md",
+   "paw-compiled-specialists.md",
+   "minddr-deep-research-mode.md",
+   "ernie-image-turbo-evaluation.md",
+   "minimax-h3-video-generation-evaluation.md",
+   "angelslim-techniques-evaluation.md",
+   "tidar-one-pass-variant-b.md",
+   "summary-token-attention-readiness.md",
+   "strand-rust-coder-rustevo2-verification.md"
+  ],
+  "box_moves": [
+   {
+    "from": "gpu-serving-tie-in-program.md",
+    "lines": [
+     155,
+     609,
+     610
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "mi210-serving-program.md"
+   },
+   {
+    "from": "gpu-acceleration-path.md",
+    "lines": [
+     558,
+     626
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "mi210-serving-program.md"
+   },
+   {
+    "from": "eval-tower-verification.md",
+    "lines": [
+     232,
+     259
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "eval-tower-program.md"
+   },
+   {
+    "from": "multiscreen-attention-evaluation.md",
+    "lines": [
+     324
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "long-context-program.md"
+   },
+   {
+    "from": "speculative-decoding-mtp-refresh.md",
+    "lines": [
+     246,
+     319
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "speculative-decoding.md"
+   },
+   {
+    "from": "glm52-reviewer-capability-gates.md",
+    "lines": [
+     220
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "reviewer-control-plane.md"
+   },
+   {
+    "from": "typed-decision-plane.md",
+    "lines": [
+     705
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "routing-program.md"
+   },
+   {
+    "from": "routing-intelligence.md",
+    "lines": [
+     408
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "routing-program.md"
+   },
+   {
+    "from": "memento-block-reasoning-compression.md",
+    "lines": [
+     227
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "context-and-token-economy.md"
+   },
+   {
+    "from": "frontier-f3-data-flywheel.md",
+    "lines": [
+     56
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "frontier-lab-automation.md"
+   },
+   {
+    "from": "tq3-quantization-evaluation.md",
+    "lines": [
+     200
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "quantization-and-low-bit.md"
+   },
+   {
+    "from": "multimodal-pipeline.md",
+    "lines": [
+     830
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "speech-and-multimodal.md"
+   },
+   {
+    "from": "opendataloader-pipeline-integration.md",
+    "lines": [
+     65
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "knowledge-pipelines.md"
+   },
+   {
+    "from": "document-parser-table-bench.md",
+    "lines": [
+     95
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "knowledge-pipelines.md"
+   },
+   {
+    "from": "conversation-stack.md",
+    "lines": [
+     283,
+     682,
+     732,
+     744,
+     755,
+     765,
+     776,
+     950
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "speech-and-multimodal.md"
+   },
+   {
+    "from": "fable5-window2-findings-05c-mi210-lever-category-matrix.md",
+    "lines": [
+     215,
+     227,
+     245,
+     246,
+     249,
+     250,
+     251,
+     254,
+     255,
+     258
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "mi210-serving-program.md"
+   },
+   {
+    "from": "reboot-gated-inventory-and-staging.md",
+    "lines": [
+     311
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "numa-placement-and-contention.md"
+   },
+   {
+    "from": "repl-turn-efficiency.md",
+    "lines": [
+     215
+    ],
+    "to": "model-evaluation-queue.md",
+    "from_target": "harness-program.md"
+   }
+  ]
+ },
+ "after": {
+  "handoffs": 29,
+  "index_rows": 29
+ },
+ "dep_edges_pruned": [
+  {
+   "edge": [
+    "autokernel-loop.md",
+    "kernel-champion-and-promotion.md"
+   ],
+   "why": "the loop produces candidates; promotion consumes them (INF-65 deps INF-06 is the real direction)"
+  },
+  {
+   "edge": [
+    "kernel-champion-and-promotion.md",
+    "kv-cache-program.md"
+   ],
+   "why": "INF-81 seeds wait on RTG-57/58 sections, but the KV program needs the C6 tip (RTG-58 deps INF-65)"
+  },
+  {
+   "edge": [
+    "routing-program.md",
+    "harness-program.md"
+   ],
+   "why": "RTG-30 -> UFH-14 was a section-level wait; UFH-01 -> RTG-09 is the program edge"
+  },
+  {
+   "edge": [
+    "autokernel-loop.md",
+    "harness-program.md"
+   ],
+   "why": "INF-78 -> UFH-01 (actor backend waits on a harness tool contract) is section-level; inline it as a task note"
+  },
+  {
+   "edge": [
+    "autokernel-loop.md",
+    "routing-program.md"
+   ],
+   "why": "INF-78 -> RTG-56 typed-decision receipt; section-level"
+  },
+  {
+   "edge": [
+    "autokernel-loop.md",
+    "deepseek-v41-flash-evaluation.md"
+   ],
+   "why": "INF-78 -> INF-77 seat A/B on DS41; section-level"
+  },
+  {
+   "edge": [
+    "autokernel-loop.md",
+    "cpu-decode-roofline-program.md"
+   ],
+   "why": "INF-73 -> INF-70 fold; the fold now lives in kernel-champion-and-promotion"
+  },
+  {
+   "edge": [
+    "kernel-champion-and-promotion.md",
+    "deepseek-v41-flash-evaluation.md"
+   ],
+   "why": "INF-81 -> INF-77: the AK long-context seeds TARGET DS41 (campaign target), not a program prerequisite; DS41 -> kv-cache -> champion is the real chain"
+  }
+ ],
+ "dep_edges_after": [
+  [
+   "autokernel-loop.md",
+   "rocm-kernel-authoring.md"
+  ],
+  [
+   "autokernel-loop.md",
+   "vidya-belief-substrate-program.md"
+  ],
+  [
+   "cpu-decode-roofline-program.md",
+   "kernel-champion-and-promotion.md"
+  ],
+  [
+   "cpu-decode-roofline-program.md",
+   "mi210-serving-program.md"
+  ],
+  [
+   "deepseek-v41-flash-evaluation.md",
+   "kv-cache-program.md"
+  ],
+  [
+   "deepseek-v41-flash-evaluation.md",
+   "rocm-kernel-authoring.md"
+  ],
+  [
+   "harness-program.md",
+   "autokernel-loop.md"
+  ],
+  [
+   "harness-program.md",
+   "context-and-token-economy.md"
+  ],
+  [
+   "harness-program.md",
+   "deepseek-v41-flash-evaluation.md"
+  ],
+  [
+   "harness-program.md",
+   "routing-program.md"
+  ],
+  [
+   "kernel-champion-and-promotion.md",
+   "autokernel-loop.md"
+  ],
+  [
+   "kernel-champion-and-promotion.md",
+   "speculative-decoding.md"
+  ],
+  [
+   "kv-cache-program.md",
+   "eval-tower-program.md"
+  ],
+  [
+   "kv-cache-program.md",
+   "kernel-champion-and-promotion.md"
+  ],
+  [
+   "kv-cache-program.md",
+   "speech-and-multimodal.md"
+  ],
+  [
+   "kv-cache-program.md",
+   "stack-lifecycle-program.md"
+  ],
+  [
+   "long-context-program.md",
+   "kv-cache-program.md"
+  ],
+  [
+   "model-architecture-readiness.md",
+   "rocm-kernel-authoring.md"
+  ],
+  [
+   "model-evaluation-queue.md",
+   "benchmark-suites.md"
+  ],
+  [
+   "model-evaluation-queue.md",
+   "mi210-serving-program.md"
+  ],
+  [
+   "numa-placement-and-contention.md",
+   "autokernel-loop.md"
+  ],
+  [
+   "numa-placement-and-contention.md",
+   "coordination-and-churn-pipeline.md"
+  ],
+  [
+   "reviewer-control-plane.md",
+   "deepseek-v41-flash-evaluation.md"
+  ],
+  [
+   "reviewer-control-plane.md",
+   "harness-program.md"
+  ],
+  [
+   "rocm-kernel-authoring.md",
+   "vidya-belief-substrate-program.md"
+  ],
+  [
+   "speculative-decoding.md",
+   "autokernel-loop.md"
+  ]
+ ],
+ "dep_edges_before": 78
+}

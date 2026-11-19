@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "rationale": "Four strict item checks pass with stop/stop/stop/length finishes and 227/82/160/768 output tokens. Captured PID881683 exited and listener closed; no candidate collected.",
+  "filed_by": "handoff-vidya-belief-substrate"
+}

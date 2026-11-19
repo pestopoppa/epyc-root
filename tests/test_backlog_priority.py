@@ -93,6 +93,42 @@ class Build(unittest.TestCase):
                 return i["key"]
         return None
 
+    def test_track_scoped_hold_and_weight(self):
+        # BRF-T1-1: a folded track keeps its retired row's hold/weight via a `<ROW>#<track>` key
+        self.assertEqual(bp.scoped({"R": "row", "R#t": ""}, "R", "t"), "")          # explicit no-hold wins
+        self.assertEqual(bp.scoped({"R": "row"}, "R", "t"), "row")                  # unscoped falls back to the row
+        self.assertEqual(bp.scoped({"R#t": 0.9}, "R", None, 0.2), 0.2)              # untracked boxes never read a track key
+        hold = dict(self.cur.get("holds", {}))
+        b = next(b for b in self.boxes if b["code"] == 0 and b["rows"] and b["rows"][0] not in hold
+                 and not bp.HOLD_RX.search(b["text"][:300]) and not b.get("track"))
+        boxes = [dict(x, track="T") if x is b else x for x in self.boxes]
+        row = b["rows"][0]
+        cur = copy.deepcopy(self.cur)
+        cur["holds"][f"{row}#T"] = "track hold under test"
+        res = bp.build(cur, index_state, self.state, boxes)
+        it = next(i for i in res["items"].values() if i["file"] == b["file"] and i["line"] == b["line"])
+        self.assertEqual((it["cls"], it["blocker"]), ("H", "track hold under test"))
+        # mutation: the same box without the track key is not held
+        res0 = bp.build(copy.deepcopy(self.cur), index_state, self.state, boxes)
+        it0 = next(i for i in res0["items"].values() if i["file"] == b["file"] and i["line"] == b["line"])
+        self.assertNotEqual(it0["cls"], "H")
+
+    def test_dep_tracks_scope_the_row_dep_inheritance(self):
+        # BRF-T1-1: a Deps edge repointed by a fold keeps landing on the retired row's track
+        inh = [i for i in self.res["items"].values() if i["unblocks"].startswith("row-dep (coarse Deps edge ")]
+        self.assertTrue(inh, "fixture: some row-dep inheritance must fire on the live tree")
+        it = inh[0]
+        frm = it["unblocks"].split("edge ", 1)[1].split(")", 1)[0].split(", ")[0]
+        cur = copy.deepcopy(self.cur)
+        cur["dep_tracks"] = {f"{frm}>{it['row']}": [{"track": "no-such-track", "next_action": it["text"]}]}
+        res = bp.build(cur, index_state, self.state, self.boxes)
+        moved = res["items"][it["key"]]
+        self.assertFalse(moved["unblocks"].startswith(f"row-dep (coarse Deps edge {frm}"), moved["unblocks"])
+        # mutation: the entry naming the box's own track (None = untracked) keeps the inheritance
+        cur["dep_tracks"] = {f"{frm}>{it['row']}": [{"track": it.get("track"), "next_action": it["text"]}]}
+        res = bp.build(cur, index_state, self.state, self.boxes)
+        self.assertTrue(res["items"][it["key"]]["unblocks"].startswith("row-dep (coarse Deps edge "))
+
     def test_mutation_curated_score_changes_the_order(self):
         cur = copy.deepcopy(self.cur)
         for e in cur["entries"]:

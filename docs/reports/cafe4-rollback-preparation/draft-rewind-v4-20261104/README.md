@@ -1,0 +1,5 @@
+# CAFE-4 draft-context rewind repair
+
+The first native rollback qualification produced UNKNOWN/rc2: the draft context already extended to position 13 while target verification attempted to process position 11. The pinned server removes the post-proposal draft suffix at checkpoint pos_max+1 before processing the target verification batch. The external candidate was corrected to remove the draft suffix from prompt.size(), failing closed if removal is unsupported.
+
+CPU build row cafe4-v10-mtp-rollback-rewind-build-20261104 was published and four-CPU smoke PASS at 2026-11-04T14:23:30Z, content predicate rc0 and clean STOP rc75. Candidate SHA-256 92445f075ac2c271420d44369f83e3b6f1e9b9d5cf6915adc92fa8840a6c493c; smoke proof requires the draft-rewind marker plus existing MTP load and rollback markers. The scheduled full build and native matched controls remain pending; no native rollback, fault-sensitivity or parent verdict is established. The failed native lineage has one qualification failure and is not reset.

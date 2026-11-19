@@ -1,0 +1,111 @@
+{
+ "best_gpu_arm_median_ratio": {
+  "2048": {
+   "arm": "A1",
+   "clears_1.10": false,
+   "ratio": 0
+  },
+  "8192": {
+   "arm": "A1",
+   "clears_1.10": false,
+   "ratio": 0
+  }
+ },
+ "cap_s": 3600,
+ "capture_completeness": 1.0,
+ "consumer_coverage": {
+  "HSF": "not covered: needs the full L set (1K..32K)",
+  "NPD": "not covered: needs the full L set",
+  "PF1": "not yet testable (cells < 2 valid)",
+  "cells_valid": {
+   "A0@2048": 1,
+   "A0@8192": 1,
+   "A1-disabled@2048": 0,
+   "A1-disabled@8192": 0,
+   "A1@2048": 0,
+   "A1@8192": 0,
+   "A2@2048": 0,
+   "A2@8192": 0
+  }
+ },
+ "control_A1disabled_over_A0_median": {
+  "2048": null,
+  "8192": null
+ },
+ "cumulative_wall_s": 1019.8,
+ "decision_suggestion": "REVISE",
+ "duration_per_cell_s": {
+  "A0@2048": {
+   "max": 302.85,
+   "median": 302.85,
+   "n": 1
+  },
+  "A0@8192": {
+   "max": 109.17,
+   "median": 109.17,
+   "n": 1
+  },
+  "A1-disabled@2048": {
+   "max": 84.65,
+   "median": 84.65,
+   "n": 1
+  },
+  "A1-disabled@8192": {
+   "max": 130.16,
+   "median": 130.16,
+   "n": 1
+  },
+  "A1@2048": {
+   "max": 168.17,
+   "median": 168.17,
+   "n": 1
+  },
+  "A1@8192": {
+   "max": 85.63,
+   "median": 85.63,
+   "n": 1
+  },
+  "A2@2048": {
+   "max": 57.54,
+   "median": 57.54,
+   "n": 1
+  },
+  "A2@8192": {
+   "max": 81.6,
+   "median": 81.6,
+   "n": 1
+  }
+ },
+ "label": "exploratory/decision-support; owner (PF1) reviews; never a PF1 gate result; the 2K/8K screen never yields a negative PF1 verdict",
+ "paired_ratio_vs_A0_by_block": {},
+ "residency_failures": [],
+ "run_failures": [
+  "b0-L2048-A1",
+  "b0-L2048-A2",
+  "b0-L2048-A1-disabled",
+  "b0-L8192-A1",
+  "b0-L8192-A2",
+  "b0-L8192-A1-disabled"
+ ],
+ "schema": "brf-exp04-summary.v1",
+ "stop_reason": "futility: >= 2 GPU units failed to RUN (argv/launch error, not a residency finding; REVISE the harness)",
+ "units_total": 8,
+ "units_valid": 2,
+ "updated_at": "2026-11-03T09:33:13Z",
+ "variance_per_arm": {
+  "A0@2048": {
+   "cv": null,
+   "mean": 249.191493,
+   "median": 249.191493,
+   "n": 1,
+   "sd": null
+  },
+  "A0@8192": {
+   "cv": null,
+   "mean": 209.397619,
+   "median": 209.397619,
+   "n": 1,
+   "sd": null
+  }
+ }
+}

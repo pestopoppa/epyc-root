@@ -339,7 +339,7 @@ global.location = { port: '8100', protocol: 'http:', hostname: 'h',
         self.assertFalse([h for h in links.values() if h.endswith("/kernel")],
                          f"the nav still offers the retired route: {links}")
         self.assertEqual(chips.get("Kernel R&D"), "live")
-        self.assertEqual(chips.get("Legacy (:8000)"), "legacy",
+        self.assertEqual(chips.get("AMD AI Lab"), "draft",
                          "an unrelated row's chip was lost")
         self.assertNotIn("Handoffs", chips,
                          "a chipless row grew a chip — the fallback is too broad")

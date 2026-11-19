@@ -1,0 +1,7 @@
+rc=75 time=2026-11-05T00:58:07Z reason=partial-native-incomplete
+job_id=kpf18-g3-slots-deadline-qual-20261105
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T00:58:04Z
+regions=48-71

@@ -1,0 +1,30 @@
+{
+  "observed_at": 1794975353.7807243,
+  "boot_id": "554ca94e-2835-4c06-bec4-6fd5d2c18a1b",
+  "lock": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/inputs/.recovery.lock",
+    "device": 2431,
+    "inode": 208857018
+  },
+  "fd9_holders": [
+    {
+      "pid": 3075445,
+      "start_ticks": 84447110,
+      "cmdline": [
+        "/bin/bash",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/recover_q8.sh"
+      ]
+    },
+    {
+      "pid": 3075469,
+      "start_ticks": 84447117,
+      "cmdline": [
+        "python3",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/fetch_ranges.py",
+        "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/inputs/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf",
+        "https://huggingface.co/bartowski/Qwen_Qwen3.6-35B-A3B-GGUF/resolve/d98fa7286daa6544d050929df95e436741ee739b/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf"
+      ]
+    }
+  ],
+  "ownership": "observed existing transfer; not a new spawn receipt; no signals sent"
+}

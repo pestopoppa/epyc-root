@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-537d9d9a5f93fb5f",
+      "failure_modes": [
+        {
+          "code": "MAST-10",
+          "name": "Ignored other agent's input",
+          "evidence": "The subagent's report explicitly stated: 'The divergence erase `if (cur.pos_max > pos_next) {` (KPF server-context.cpp:4188) ignores `pinned`, so a pinned junction is erased when a request diverges below it.' The assistant then responded: 'I'm overruling the dive's proposed fix. The erase is correct as written...'",
+          "confidence": "high",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795004751,
+        "warnings": []
+      }
+    }
+  ]
+}

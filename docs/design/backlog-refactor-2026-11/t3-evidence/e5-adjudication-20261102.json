@@ -1,0 +1,574 @@
+{
+ "schema": "brf-t3-e5-adjudication/1",
+ "generated": "2026-11-02",
+ "agent": "ws58",
+ "run_dir": "/mnt/raid0/llm/epyc-inference-research/data/batched_decode/a7-gemma4_26b_a4b_q4km_mtp-20260813T223750Z",
+ "cells_jsonl_sha256": "dfc0487c7c328ce4385d8b5efa1ded72a88c6d21a04e3eee4164c4739ebd0330",
+ "events_jsonl_sha256": "d1298af4457d4b4b690826b065488abb58886e5bf7ffa2864e6cf1cd5fd5c527",
+ "events_cache_drop_witness_present": false,
+ "distinct_pages_by_node_layouts_across_cells": 1,
+ "harness_note": "research scripts/benchmark/server_numa_np_sweep.py:5 docstring: drop_caches + re-warm runs between model groups, not per cell",
+ "dispositions": {
+  "UNRESOLVED-MISSING-EVIDENCE": 4,
+  "DEMONSTRATED-INVALID": 4
+ },
+ "cells": [
+  {
+   "cell_id": "gemma4_26b_a4b_q4km_mtp-C1-np1-a7full",
+   "timestamp": "2026-08-13T22:39:52.360892+00:00",
+   "decision_grade_label": true,
+   "aggregate_decode_tps_as_recorded": 48.92,
+   "instances": [
+    {
+     "cpus": "0-95",
+     "declared_policy": "interleave=all",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 1.0
+    }
+   ],
+   "disposition": "UNRESOLVED-MISSING-EVIDENCE",
+   "reason": "declared full-machine 0-95 interleave=all, affinity match, pages evenly interleaved (local_fraction 1.0) - consistent with corrected placement, but no runtime memory-policy attestation (req d) and no per-cell cache-drop witness (req c); not established, NOT invalid",
+   "affinity_sha256": "1996525d267cd81121028c23ca810126075ecfa3e6a5985312b84c2c9b7ad995"
+  },
+  {
+   "cell_id": "gemma4_26b_a4b_q4km_mtp-C1-np2-a7full",
+   "timestamp": "2026-08-13T22:41:17.481918+00:00",
+   "decision_grade_label": true,
+   "aggregate_decode_tps_as_recorded": 72.94,
+   "instances": [
+    {
+     "cpus": "0-95",
+     "declared_policy": "interleave=all",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 1.0
+    }
+   ],
+   "disposition": "UNRESOLVED-MISSING-EVIDENCE",
+   "reason": "declared full-machine 0-95 interleave=all, affinity match, pages evenly interleaved (local_fraction 1.0) - consistent with corrected placement, but no runtime memory-policy attestation (req d) and no per-cell cache-drop witness (req c); not established, NOT invalid",
+   "affinity_sha256": "4eba2c0687bc832b9257b27954e4a7f39a6fb41d41fc921b311c89787080a267"
+  },
+  {
+   "cell_id": "gemma4_26b_a4b_q4km_mtp-C1-np4-a7full",
+   "timestamp": "2026-08-13T22:42:28.993526+00:00",
+   "decision_grade_label": true,
+   "aggregate_decode_tps_as_recorded": 85.89,
+   "instances": [
+    {
+     "cpus": "0-95",
+     "declared_policy": "interleave=all",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 1.0
+    }
+   ],
+   "disposition": "UNRESOLVED-MISSING-EVIDENCE",
+   "reason": "declared full-machine 0-95 interleave=all, affinity match, pages evenly interleaved (local_fraction 1.0) - consistent with corrected placement, but no runtime memory-policy attestation (req d) and no per-cell cache-drop witness (req c); not established, NOT invalid",
+   "affinity_sha256": "ead1e2956706eb5e015a4daedad4c1207d5ab6dda452a960c6c5502ab4f0f2c1"
+  },
+  {
+   "cell_id": "gemma4_26b_a4b_q4km_mtp-C1-np8-a7full",
+   "timestamp": "2026-08-13T22:43:36.623512+00:00",
+   "decision_grade_label": true,
+   "aggregate_decode_tps_as_recorded": 99.04,
+   "instances": [
+    {
+     "cpus": "0-95",
+     "declared_policy": "interleave=all",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 1.0
+    }
+   ],
+   "disposition": "UNRESOLVED-MISSING-EVIDENCE",
+   "reason": "declared full-machine 0-95 interleave=all, affinity match, pages evenly interleaved (local_fraction 1.0) - consistent with corrected placement, but no runtime memory-policy attestation (req d) and no per-cell cache-drop witness (req c); not established, NOT invalid",
+   "affinity_sha256": "738c6928761fca88310c80906d1dc2c437b0c00b3af4451c181f3d6da1e0dc8a"
+  },
+  {
+   "cell_id": "gemma4_26b_a4b_q4km_mtp-C1b-np1-a7half",
+   "timestamp": "2026-08-13T22:46:04.630736+00:00",
+   "decision_grade_label": true,
+   "aggregate_decode_tps_as_recorded": 39.19,
+   "instances": [
+    {
+     "cpus": "0-47,96-143",
+     "declared_policy": "none",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 0.5
+    },
+    {
+     "cpus": "48-95,144-191",
+     "declared_policy": "none",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 0.5
+    }
+   ],
+   "disposition": "DEMONSTRATED-INVALID",
+   "reason": "req (b) violated: straddling half-machine cpuset with numactl_policy=none, not declared a defect-replication control; pages_by_node witness shows model pages spread N0-N3 (local_fraction 0.5), identical to the preceding interleave=all cells' layout - an inherited warm page cache, which also witnesses req (c) non-compliance (first touch under policy=none after a cache drop cannot reproduce the 4-node interleave counts)",
+   "affinity_sha256": "2091d1889b7de3d56d9ca5fac153fc541b523582831ae1975d11b0b0e483997d"
+  },
+  {
+   "cell_id": "gemma4_26b_a4b_q4km_mtp-C1b-np2-a7half",
+   "timestamp": "2026-08-13T22:48:04.489576+00:00",
+   "decision_grade_label": true,
+   "aggregate_decode_tps_as_recorded": 54.9,
+   "instances": [
+    {
+     "cpus": "0-47,96-143",
+     "declared_policy": "none",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 0.5
+    },
+    {
+     "cpus": "48-95,144-191",
+     "declared_policy": "none",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 0.5
+    }
+   ],
+   "disposition": "DEMONSTRATED-INVALID",
+   "reason": "req (b) violated: straddling half-machine cpuset with numactl_policy=none, not declared a defect-replication control; pages_by_node witness shows model pages spread N0-N3 (local_fraction 0.5), identical to the preceding interleave=all cells' layout - an inherited warm page cache, which also witnesses req (c) non-compliance (first touch under policy=none after a cache drop cannot reproduce the 4-node interleave counts)",
+   "affinity_sha256": "a17f8f984b5f9e87befba12c939246aa39ec909fab105d2b1998bfcc4ae71873"
+  },
+  {
+   "cell_id": "gemma4_26b_a4b_q4km_mtp-C1b-np4-a7half",
+   "timestamp": "2026-08-13T22:49:37.193130+00:00",
+   "decision_grade_label": true,
+   "aggregate_decode_tps_as_recorded": 74.25,
+   "instances": [
+    {
+     "cpus": "0-47,96-143",
+     "declared_policy": "none",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 0.5
+    },
+    {
+     "cpus": "48-95,144-191",
+     "declared_policy": "none",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 0.5
+    }
+   ],
+   "disposition": "DEMONSTRATED-INVALID",
+   "reason": "req (b) violated: straddling half-machine cpuset with numactl_policy=none, not declared a defect-replication control; pages_by_node witness shows model pages spread N0-N3 (local_fraction 0.5), identical to the preceding interleave=all cells' layout - an inherited warm page cache, which also witnesses req (c) non-compliance (first touch under policy=none after a cache drop cannot reproduce the 4-node interleave counts)",
+   "affinity_sha256": "c317ec52cd0ebefbb333d1e5f20888353f87744321de7e429bbb4718032f7f85"
+  },
+  {
+   "cell_id": "gemma4_26b_a4b_q4km_mtp-C1b-np8-a7half",
+   "timestamp": "2026-08-13T22:51:00.752201+00:00",
+   "decision_grade_label": true,
+   "aggregate_decode_tps_as_recorded": 95.4,
+   "instances": [
+    {
+     "cpus": "0-47,96-143",
+     "declared_policy": "none",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 0.5
+    },
+    {
+     "cpus": "48-95,144-191",
+     "declared_policy": "none",
+     "affinity_match": true,
+     "pages_by_node": {
+      "N0": 1051410,
+      "N1": 1051410,
+      "N2": 1051415,
+      "N3": 1051381
+     },
+     "local_fraction": 0.5
+    }
+   ],
+   "disposition": "DEMONSTRATED-INVALID",
+   "reason": "req (b) violated: straddling half-machine cpuset with numactl_policy=none, not declared a defect-replication control; pages_by_node witness shows model pages spread N0-N3 (local_fraction 0.5), identical to the preceding interleave=all cells' layout - an inherited warm page cache, which also witnesses req (c) non-compliance (first touch under policy=none after a cache drop cannot reproduce the 4-node interleave counts)",
+   "affinity_sha256": "ded92b09845285c57f7165b1f2b10f44c5cb0a8b00e2188cd5d09c17cc47a9e6"
+  }
+ ],
+ "historical_conclusions": "each cell's recorded throughput stays accurate as recorded; dispositions judge corrected-placement compliance only",
+ "qwen_manifest_reconciliation": {
+  "count": 20,
+  "req_a_pass_groups": [
+   "qwen36_q8_0",
+   "qwen3_next_80b"
+  ],
+  "req_b_fail": 10,
+  "req_c_per_cell_drop_declared": 0,
+  "req_d": "not attestable from manifests (harness-side runtime attestation)",
+  "req_e": "harness reuse not assessable from manifests",
+  "manifests": [
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1-np1-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "bbadd5e25c1ed4ccd135debdda4978bb893758ad625d7c8105affade771fe0fb",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1-np1-e1parity-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "930ce7ec80f65d20e451f738b40c0b037dabeff631d1d1806ab7522d2712f88e",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1-np16-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "26220dd6ab5520a0644a7e5533b4a3f6326bdaaf78170fdc2289840652772b96",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1-np2-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "4b995d07e8fe133add793099639a7ee041b56202acc1dac2457c80678d06f84e",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1-np4-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "08451e59f1b6dcd78c58ff3b90a36fe19e6c9ce9913a847d3fc11a84ee7b914c",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1-np8-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "ce1321735588b74954fcc3ac0ee94a8ebac56c986d654c6703d27043b2e2a847",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1b-np1-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "24d43a387d86f1a62638aa5906fb5f4e65dfbff5a9d04717818b16581c6f9d04",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1b-np1-e1parity-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "59ea59f67665ff617313be1cd86b4b595a55cd5aaf50be49796dba4de363e7b6",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1b-np16-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "1dc43df4f47a33f1f1cd4c03c20da62192ff1941cae74d3dbf162325fa01cbc7",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1b-np2-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "e26e2d1133595c9d7b9c024df85e2bb86363787bacca9d4723e11395eef37b4a",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1b-np4-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "b6c684c9719d0861423554b766dac0312363101a1f37f25c93506e99bf2fe754",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen36_q8_0/qwen36_q8_0-C1b-np8-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "ce742f9146a731b1cbb58efcf92e0a53e7630afcb65c536e94377178dcec436e",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen3_next_80b/qwen3_next_80b-C1-np1-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "a0c89a7eb42d65fbfed9cd2996b65bc7cd18f693eebd8c893b896566d5a6ba61",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen3_next_80b/qwen3_next_80b-C1-np2-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "e58114d9690c36cbcc759c87cd2988b46cc4d5222462f31a38b8b24361eb5292",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen3_next_80b/qwen3_next_80b-C1-np4-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "14759d0480d9fe7dd797e02d4e5e02631639aa496ac68aeab34615e776a575da",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen3_next_80b/qwen3_next_80b-C1-np8-a7full.json",
+    "instances": [
+     [
+      "0-95",
+      "interleave=all"
+     ]
+    ],
+    "req_b": "PASS",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "9d670e0798e0b015d7b1cf7d7c86da4badafbfe9010983d33ef70ef2fd04dc86",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen3_next_80b/qwen3_next_80b-C1b-np1-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "37d5fb202ec23c2baa2b78684b27b3da40efe866e295bedb7db18129a1d4e7d8",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen3_next_80b/qwen3_next_80b-C1b-np2-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "2fcd3fe23862de8c21910f9b20f0d6004df1d1227f7f741a6c4cbf1c1392b3e7",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen3_next_80b/qwen3_next_80b-C1b-np4-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "1bc23b99fe7c8a5ada8412ed4008b72bd5d631c9a685f301013683057ca7cded",
+    "req_a_full_interleave_shape_in_group": true
+   },
+   {
+    "manifest": "qwen3_next_80b/qwen3_next_80b-C1b-np8-a7half.json",
+    "instances": [
+     [
+      "0-47,96-143",
+      "none"
+     ],
+     [
+      "48-95,144-191",
+      "none"
+     ]
+    ],
+    "req_b": "FAIL (straddling cpuset, policy none, no defect-control declaration)",
+    "req_c_per_cell_drop_declared": false,
+    "sha256": "09027611a6577c98aff5e6461639d4883fb0b0c2ce05b04433fcdc41ea6b541c",
+    "req_a_full_interleave_shape_in_group": true
+   }
+  ]
+ },
+ "regeneration_candidates": [
+  "gemma4_26b_a4b_q4km_mtp-C1b-np1-a7half",
+  "gemma4_26b_a4b_q4km_mtp-C1b-np2-a7half",
+  "gemma4_26b_a4b_q4km_mtp-C1b-np4-a7half",
+  "gemma4_26b_a4b_q4km_mtp-C1b-np8-a7half",
+  "gemma4_26b_a4b_q4km_mtp-C1-np1-a7full (only if the decision needs the witness)",
+  "gemma4_26b_a4b_q4km_mtp-C1-np2-a7full (only if the decision needs the witness)",
+  "gemma4_26b_a4b_q4km_mtp-C1-np4-a7full (only if the decision needs the witness)",
+  "gemma4_26b_a4b_q4km_mtp-C1-np8-a7full (only if the decision needs the witness)",
+  "the 20 Qwen manifests after (b)/(c) reconciliation; launcher a7-fire-20260813 MISSING, rebuild first"
+ ]
+}

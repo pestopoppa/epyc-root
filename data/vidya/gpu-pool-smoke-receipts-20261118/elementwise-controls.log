@@ -1,0 +1,18 @@
+test_accepts_seven_ordered_native_tuples_through_shared_grade (__main__.ElementwiseTest.test_accepts_seven_ordered_native_tuples_through_shared_grade) ... ok
+test_preserves_first_terminal_failure_and_does_not_start_second (__main__.ElementwiseTest.test_preserves_first_terminal_failure_and_does_not_start_second) ... ok
+test_refuses_altered_last_log (__main__.ElementwiseTest.test_refuses_altered_last_log) ... ok
+test_refuses_changed_prospective_request (__main__.ElementwiseTest.test_refuses_changed_prospective_request) ... ok
+test_refuses_missing_or_duplicate_op_even_if_resealed (__main__.ElementwiseTest.test_refuses_missing_or_duplicate_op_even_if_resealed) ... ok
+test_refuses_resealed_overlapping_process_windows (__main__.ElementwiseTest.test_refuses_resealed_overlapping_process_windows) ... ok
+test_refuses_resealed_second_denominator_drift (__main__.ElementwiseTest.test_refuses_resealed_second_denominator_drift) ... ok
+test_refuses_resealed_support_swap_with_unchanged_counts (__main__.ElementwiseTest.test_refuses_resealed_support_swap_with_unchanged_counts) ... ok
+test_refuses_resealed_unsupported_to_pass (__main__.ElementwiseTest.test_refuses_resealed_unsupported_to_pass) ... ok
+test_refuses_same_pid_with_wrong_birth_ticks (__main__.ElementwiseTest.test_refuses_same_pid_with_wrong_birth_ticks) ... ok
+test_refuses_second_run_samples_with_wrong_pid (__main__.ElementwiseTest.test_refuses_second_run_samples_with_wrong_pid) ... ok
+test_refuses_second_run_selection_drift_at_write (__main__.ElementwiseTest.test_refuses_second_run_selection_drift_at_write) ... ok
+test_refuses_smoke_in_direct_checker_and_registered_reader (__main__.ElementwiseTest.test_refuses_smoke_in_direct_checker_and_registered_reader) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.689s
+
+OK

@@ -1,0 +1,30 @@
+{
+  "schema": "codex.f2-finite-ready.v1",
+  "at": "2026-11-04T17:08:21.652800+00:00",
+  "task": "UFH14-A3A-F2",
+  "status": "SUCCESSOR_OFFLINE_QUALIFIED_NOT_PUBLISHED",
+  "terminal": true,
+  "packet": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/f2-finite-successor-20261104",
+  "row_id": "ufh14-a3af2-finite-r2-20261104",
+  "source_manifest_sha256": "ff9382bad8d1ee82c4b5aa8fb42ffcab33dd2caeb5cf9bcafb843efac09b30ac",
+  "changes": [
+    "Reject nonnumeric, boolean and nonfinite predicted_n/predicted_ms/cache_n/prompt_n before decode projection",
+    "Add 24 malformed native timing negative controls"
+  ],
+  "checks": {
+    "model_free_controls": "PASS including 24 malformed native timing refusals",
+    "authority_contract": "PASS 13 negative controls",
+    "receipt_publication_controls": "PASS",
+    "source_closure": "SEALED 87 entries"
+  },
+  "published_ready": false,
+  "publication_attempted": false,
+  "inference_launched": false,
+  "grants_modified": false,
+  "existing_packet_modified": false,
+  "existing_row_id": "ufh14-a3af2-rowflow-r1-20261102",
+  "existing_owner": "handoff-agentic-serving-harness-fixes; existing keeper queued publisher",
+  "existing_queue_receipt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ufh14-a3af2-rowflow-r1-20261102/GPU-SMOKE-QUEUED.json",
+  "no_publication_reason": "Existing F2 smoke is queued according to owning-session retained receipt. Parent instructed successor-only preparation while that row owns queued/armed/running work. No duplicate F2 publication or queue monitoring performed.",
+  "successor_action": "Owning session may retire existing queued request at its own boundary and review/publish this successor via publish_row.py smoke. Native smoke PASS is still required; offline controls confer no READY or inference result."
+}

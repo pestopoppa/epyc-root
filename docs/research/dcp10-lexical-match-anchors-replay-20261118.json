@@ -1,0 +1,330 @@
+{
+  "custody_limit": "Original writable-ancestor capture refusal and trusted packer identity mismatch still apply.",
+  "request_sha256": "ae70002ed9ebbe3c3b2b13247f220897d6f3352d03f067076aee63f63058f986",
+  "schema": "epyc.dcp10.lexical-match-anchors.replay.v1",
+  "scope": "Fixed-cohort deterministic offline comparison with no sampling-error estimate.",
+  "seal": {
+    "first_request_sha256": "2c76bfaa82c1c9bdb21cb4338574ccabd3fea6c887921f48cadf78bfcc88bc20",
+    "first_result_sha256": "2a12f5242e929e2ab42b3f9c4dfddf4c68342727a1c869a8a64135f34aa3e490",
+    "request_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/anchor-replay/request-final.json",
+    "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/anchor-replay/result-final.json",
+    "result_sha256": "965a6e4eea0932d521f11d72147861abef5d5b7c2cb20a91749176778d1daa79"
+  },
+  "summary": {
+    "budgets": {
+      "2000": {
+        "changed_rendered_prompts": 2,
+        "original": {
+          "estimated_packed_tokens": 0,
+          "included_files": 0,
+          "included_gold_files": 0,
+          "included_gold_lines": 0,
+          "macro_metrics": {
+            "file_f1": 0,
+            "file_precision": 0,
+            "file_recall": 0.0,
+            "line_f1": 0,
+            "line_precision": 0,
+            "line_recall": 0.0
+          }
+        },
+        "patched": {
+          "estimated_packed_tokens": 2984,
+          "included_files": 5,
+          "included_gold_files": 3,
+          "included_gold_lines": 0,
+          "macro_metrics": {
+            "file_f1": 0.14444444444444446,
+            "file_precision": 0.14814814814814814,
+            "file_recall": 0.18518518518518517,
+            "line_f1": 0,
+            "line_precision": 0.0,
+            "line_recall": 0.0
+          }
+        }
+      },
+      "4000": {
+        "changed_rendered_prompts": 2,
+        "original": {
+          "estimated_packed_tokens": 2854,
+          "included_files": 1,
+          "included_gold_files": 0,
+          "included_gold_lines": 0,
+          "macro_metrics": {
+            "file_f1": 0,
+            "file_precision": 0.0,
+            "file_recall": 0.0,
+            "line_f1": 0,
+            "line_precision": 0.0,
+            "line_recall": 0.0
+          }
+        },
+        "patched": {
+          "estimated_packed_tokens": 7593,
+          "included_files": 9,
+          "included_gold_files": 3,
+          "included_gold_lines": 0,
+          "macro_metrics": {
+            "file_f1": 0.1111111111111111,
+            "file_precision": 0.08148148148148149,
+            "file_recall": 0.18518518518518517,
+            "line_f1": 0,
+            "line_precision": 0.0,
+            "line_recall": 0.0
+          }
+        }
+      },
+      "8000": {
+        "changed_rendered_prompts": 2,
+        "original": {
+          "estimated_packed_tokens": 17790,
+          "included_files": 4,
+          "included_gold_files": 0,
+          "included_gold_lines": 0,
+          "macro_metrics": {
+            "file_f1": 0,
+            "file_precision": 0.0,
+            "file_recall": 0.0,
+            "line_f1": 0,
+            "line_precision": 0.0,
+            "line_recall": 0.0
+          }
+        },
+        "patched": {
+          "estimated_packed_tokens": 23467,
+          "included_files": 14,
+          "included_gold_files": 3,
+          "included_gold_lines": 0,
+          "macro_metrics": {
+            "file_f1": 0.1,
+            "file_precision": 0.06878306878306878,
+            "file_recall": 0.18518518518518517,
+            "line_f1": 0,
+            "line_precision": 0.0,
+            "line_recall": 0.0
+          }
+        }
+      }
+    },
+    "candidates_per_arm": 72,
+    "changed_candidates": 10,
+    "plans_per_arm": 27,
+    "tasks": 9
+  },
+  "validation": {
+    "bad_seal_rejected": true,
+    "candidate_pytest_log_sha256": "4da87dc9706c3c623112650a5a6cc700346b47b1388af71a775ffb29bf64201a",
+    "candidate_pytest_passed": 130,
+    "gitnexus": "No indexed repositories. Status and upstream impact attempted; no reindex. The replay runner has no production callers.",
+    "independent_original_task_scope_checks": 36,
+    "modified_request_rejected": true,
+    "original_candidates_reproduced": 72,
+    "original_pack_entries_reproduced": 216,
+    "original_plans_reproduced": 27,
+    "replay_agreement": "The pre-lint and final executions returned identical evidence and aggregate values under separate prospective seals.",
+    "ruff": "pass"
+  },
+  "tasks": [
+    {
+      "base_commit": "51d37d1be95547059251076b3fadaa317750aab3",
+      "candidate_count": 8,
+      "language": "python",
+      "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3",
+      "candidate_changes": [
+        {"cost_codemap": 7188, "cost_full": 100032, "gold_file": true, "lexical_match_lines": [1], "original": {"cost_slices": 100032, "desired_mode": "full", "line_ranges": [[1, 21]]}, "patched": {"cost_slices": 1062, "desired_mode": "slices", "line_ranges": [[1, 1], [3, 31], [33, 34], [36, 92], [94, 133]]}, "path": "xarray/core/dataset.py", "slice_block_sha256": "a9dca5a3d8bca2087b865aea5d71d2e17685c7b270a14d8fe088b1bfc903f518"},
+        {"cost_codemap": 5436, "cost_full": 67472, "gold_file": true, "lexical_match_lines": [1], "original": {"cost_slices": 67472, "desired_mode": "full", "line_ranges": [[1, 21]]}, "patched": {"cost_slices": 852, "desired_mode": "slices", "line_ranges": [[1, 1], [3, 18], [20, 21], [23, 55], [57, 98]]}, "path": "xarray/core/dataarray.py", "slice_block_sha256": "07a43fb6f962b6b651da519f89ba88a57a5a38a5b4035510323f385a13abfde8"},
+        {"cost_codemap": 4430, "cost_full": 72215, "gold_file": false, "lexical_match_lines": [1], "original": {"cost_slices": 72215, "desired_mode": "full", "line_ranges": [[1, 21]]}, "patched": {"cost_slices": 526, "desired_mode": "slices", "line_ranges": [[1, 1], [3, 10], [12, 15], [17, 36], [38, 58], [60, 64], [67, 70]]}, "path": "xarray/tests/test_dataset.py", "slice_block_sha256": "488630461b881a3ea7a4292bbd3cfa15db64bb9e72a6ddcae253549f89864cff"},
+        {"cost_codemap": 5715, "cost_full": 64075, "gold_file": false, "lexical_match_lines": [1], "original": {"cost_slices": 64075, "desired_mode": "full", "line_ranges": [[1, 21]]}, "patched": {"cost_slices": 774, "desired_mode": "slices", "line_ranges": [[1, 1], [3, 19], [21, 25], [27, 53], [55, 92], [94, 97], [99, 103], [109, 110]]}, "path": "xarray/tests/test_backends.py", "slice_block_sha256": "5c51a683b23eb7ce0ec93a02c100a3e28cfee3a2cf965ac5052f738ec494f166"},
+        {"cost_codemap": 4746, "cost_full": 69514, "gold_file": false, "lexical_match_lines": [1], "original": {"cost_slices": 69514, "desired_mode": "full", "line_ranges": [[1, 21]]}, "patched": {"cost_slices": 455, "desired_mode": "slices", "line_ranges": [[1, 1], [3, 8], [10, 13], [15, 51], [53, 57]]}, "path": "xarray/tests/test_dataarray.py", "slice_block_sha256": "eeebe962370d97e52b5b335647300fef947a216b6bd229ad328af4c64778691f"},
+        {"cost_codemap": 2804, "cost_full": 33683, "gold_file": false, "lexical_match_lines": [1], "original": {"cost_slices": 33683, "desired_mode": "full", "line_ranges": [[1, 21]]}, "patched": {"cost_slices": 445, "desired_mode": "slices", "line_ranges": [[1, 1], [3, 19], [21, 24], [26, 26], [28, 52], [61, 69]]}, "path": "xarray/core/variable.py", "slice_block_sha256": "7d1d6f368ed864dcadcad96084188d9715d98302128df65854bff4a1d742236f"},
+        {"cost_codemap": 6794, "cost_full": 24738, "gold_file": false, "lexical_match_lines": [1], "original": {"cost_slices": 24738, "desired_mode": "full", "line_ranges": [[1, 21]]}, "patched": {"cost_slices": 493, "desired_mode": "slices", "line_ranges": [[1, 1], [3, 15], [17, 19], [21, 43], [45, 63]]}, "path": "xarray/plot/dataarray_plot.py", "slice_block_sha256": "4e2beda3541eda24cc1e130df272c41d6b6c68bef648a965a4332e19b8bbe02b"}
+      ],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 3, "fp": 0, "tp": 0}, "line": {"fn": 298, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 1, "fp": 0, "tp": 2}, "line": {"fn": 298, "fp": 223, "tp": 0}}, "estimated_packed_tokens": 1914, "included": [{"content_sha256": "bcd149c529d70d3e0c0e93ff6ca455b955eaad03bb083965b3ac82c39ebd1456", "estimated_tokens": 1062, "path": "xarray/core/dataset.py", "pred_spans": [[1, 1], [3, 31], [33, 34], [36, 92], [94, 133]], "rendered_mode": "slices"}, {"content_sha256": "808de75f3c58f488d1109fb9b52250ae31e27ad2d3ddbdc4222a5d6472005078", "estimated_tokens": 852, "path": "xarray/core/dataarray.py", "pred_spans": [[1, 1], [3, 18], [20, 21], [23, 55], [57, 98]], "rendered_mode": "slices"}], "metrics": {"file_f1": 0.8, "file_precision": 1.0, "file_recall": 0.6666666666666666, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "e63bc219872c0222f8b6c1e5f9924e1662b3df14e5fe7beee0898af540f1bf2f"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 3, "fp": 0, "tp": 0}, "line": {"fn": 298, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 1, "fp": 3, "tp": 2}, "line": {"fn": 298, "fp": 438, "tp": 0}}, "estimated_packed_tokens": 3669, "included": [{"content_sha256": "bcd149c529d70d3e0c0e93ff6ca455b955eaad03bb083965b3ac82c39ebd1456", "estimated_tokens": 1062, "path": "xarray/core/dataset.py", "pred_spans": [[1, 1], [3, 31], [33, 34], [36, 92], [94, 133]], "rendered_mode": "slices"}, {"content_sha256": "808de75f3c58f488d1109fb9b52250ae31e27ad2d3ddbdc4222a5d6472005078", "estimated_tokens": 852, "path": "xarray/core/dataarray.py", "pred_spans": [[1, 1], [3, 18], [20, 21], [23, 55], [57, 98]], "rendered_mode": "slices"}, {"content_sha256": "b3585368e4dd905ab697cd36b03202906ee65756c853ea53ad740636631b836d", "estimated_tokens": 526, "path": "xarray/tests/test_dataset.py", "pred_spans": [[1, 1], [3, 10], [12, 15], [17, 36], [38, 58], [60, 64], [67, 70]], "rendered_mode": "slices"}, {"content_sha256": "96fcd15408d5b877119087a70b5c80d8a5294d9f20ac71f7b66cabadfc20ba97", "estimated_tokens": 774, "path": "xarray/tests/test_backends.py", "pred_spans": [[1, 1], [3, 19], [21, 25], [27, 53], [55, 92], [94, 97], [99, 103], [109, 110]], "rendered_mode": "slices"}, {"content_sha256": "b3f1ff702eff3e84c382eb6dfa41f13701b88c722df6f74327101dd29a32ada5", "estimated_tokens": 455, "path": "xarray/tests/test_dataarray.py", "pred_spans": [[1, 1], [3, 8], [10, 13], [15, 51], [53, 57]], "rendered_mode": "slices"}], "metrics": {"file_f1": 0.5, "file_precision": 0.4, "file_recall": 0.6666666666666666, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "cdf0c12f41963020f6934edb4c9b140af7a607147f958e4286c3525d55bbcaef"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 3, "fp": 0, "tp": 0}, "line": {"fn": 298, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 1, "fp": 5, "tp": 2}, "line": {"fn": 298, "fp": 554, "tp": 0}}, "estimated_packed_tokens": 4607, "included": [{"content_sha256": "bcd149c529d70d3e0c0e93ff6ca455b955eaad03bb083965b3ac82c39ebd1456", "estimated_tokens": 1062, "path": "xarray/core/dataset.py", "pred_spans": [[1, 1], [3, 31], [33, 34], [36, 92], [94, 133]], "rendered_mode": "slices"}, {"content_sha256": "808de75f3c58f488d1109fb9b52250ae31e27ad2d3ddbdc4222a5d6472005078", "estimated_tokens": 852, "path": "xarray/core/dataarray.py", "pred_spans": [[1, 1], [3, 18], [20, 21], [23, 55], [57, 98]], "rendered_mode": "slices"}, {"content_sha256": "b3585368e4dd905ab697cd36b03202906ee65756c853ea53ad740636631b836d", "estimated_tokens": 526, "path": "xarray/tests/test_dataset.py", "pred_spans": [[1, 1], [3, 10], [12, 15], [17, 36], [38, 58], [60, 64], [67, 70]], "rendered_mode": "slices"}, {"content_sha256": "96fcd15408d5b877119087a70b5c80d8a5294d9f20ac71f7b66cabadfc20ba97", "estimated_tokens": 774, "path": "xarray/tests/test_backends.py", "pred_spans": [[1, 1], [3, 19], [21, 25], [27, 53], [55, 92], [94, 97], [99, 103], [109, 110]], "rendered_mode": "slices"}, {"content_sha256": "b3f1ff702eff3e84c382eb6dfa41f13701b88c722df6f74327101dd29a32ada5", "estimated_tokens": 455, "path": "xarray/tests/test_dataarray.py", "pred_spans": [[1, 1], [3, 8], [10, 13], [15, 51], [53, 57]], "rendered_mode": "slices"}, {"content_sha256": "e42fb2128f08e197fd01c07ebe73213daa2ec595dc8074a944ea4127a2b4ad0c", "estimated_tokens": 445, "path": "xarray/core/variable.py", "pred_spans": [[1, 1], [3, 19], [21, 24], [26, 26], [28, 52], [61, 69]], "rendered_mode": "slices"}, {"content_sha256": "e4ea96beb0ae32ab23581e1ac05a1a54144e9fb3c6c267938d6afb74c1096619", "estimated_tokens": 493, "path": "xarray/plot/dataarray_plot.py", "pred_spans": [[1, 1], [3, 15], [17, 19], [21, 43], [45, 63]], "rendered_mode": "slices"}], "metrics": {"file_f1": 0.4, "file_precision": 0.2857142857142857, "file_recall": 0.6666666666666666, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "046ca9317d79ca85ca7d041692003758787f5d09304b6b825b10da0b631ceac3"}
+        }
+      }
+    },
+    {
+      "base_commit": "517d8c984ce9b30792fe5b6c8c79547d3748f34d",
+      "candidate_count": 8,
+      "language": "c",
+      "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4",
+      "candidate_changes": [],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 597, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 597, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 597, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 597, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 597, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 597, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        }
+      }
+    },
+    {
+      "base_commit": "8d9d528bf52c60864802844e8acf16db09dae19a",
+      "candidate_count": 8,
+      "language": "cpp",
+      "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a",
+      "candidate_changes": [],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 851, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 851, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 851, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 2, "fp": 0, "tp": 0}, "line": {"fn": 851, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 2, "fp": 1, "tp": 0}, "line": {"fn": 851, "fp": 290, "tp": 0}}, "estimated_packed_tokens": 4269, "included": [{"content_sha256": "dcc4d9738d3e8d3b9f51286f1dc90d0c49ea8325982008ced021932a0b0b0cda", "estimated_tokens": 4269, "path": "doc/python-license.txt", "pred_spans": [[1, 290]], "rendered_mode": "full"}], "metrics": {"file_f1": 0, "file_precision": 0.0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "54cb184cfdf77248c6875a467872218f866ccb3a7a68b838ae342864e5fcc71a"},
+          "patched": {"counts": {"file": {"fn": 2, "fp": 1, "tp": 0}, "line": {"fn": 851, "fp": 290, "tp": 0}}, "estimated_packed_tokens": 4269, "included": [{"content_sha256": "dcc4d9738d3e8d3b9f51286f1dc90d0c49ea8325982008ced021932a0b0b0cda", "estimated_tokens": 4269, "path": "doc/python-license.txt", "pred_spans": [[1, 290]], "rendered_mode": "full"}], "metrics": {"file_f1": 0, "file_precision": 0.0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "54cb184cfdf77248c6875a467872218f866ccb3a7a68b838ae342864e5fcc71a"}
+        }
+      }
+    },
+    {
+      "base_commit": "252685092cacdd0f8b485ed6f105ec7acc29c7a4",
+      "candidate_count": 8,
+      "language": "python",
+      "task_id": "SWE-Bench-Pro__python__maintenance__bugfix__739b23db",
+      "candidate_changes": [],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 5, "fp": 0, "tp": 0}, "line": {"fn": 152, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 5, "fp": 0, "tp": 0}, "line": {"fn": 152, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 5, "fp": 0, "tp": 0}, "line": {"fn": 152, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 5, "fp": 0, "tp": 0}, "line": {"fn": 152, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 5, "fp": 0, "tp": 0}, "line": {"fn": 152, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 5, "fp": 0, "tp": 0}, "line": {"fn": 152, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        }
+      }
+    },
+    {
+      "base_commit": "764110c805d8020f5202c60ffed2b2570caf792a",
+      "candidate_count": 8,
+      "language": "c",
+      "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__0dde5323",
+      "candidate_changes": [],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 1127, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 1127, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 1127, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 1127, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 1, "tp": 0}, "line": {"fn": 1127, "fp": 660, "tp": 0}}, "estimated_packed_tokens": 6398, "included": [{"content_sha256": "ca34b504e874fd335b1ad1217615998f2e698b70ca0b6b4237eb43c39d27bfe0", "estimated_tokens": 6398, "path": "test/libponyc/cap.cc", "pred_spans": [[1, 660]], "rendered_mode": "full"}], "metrics": {"file_f1": 0, "file_precision": 0.0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "43ae9dadb883aaf2165533d61798296d9b0622c4a5a3256d059ebdc3d28bd732"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 1, "tp": 0}, "line": {"fn": 1127, "fp": 660, "tp": 0}}, "estimated_packed_tokens": 6398, "included": [{"content_sha256": "ca34b504e874fd335b1ad1217615998f2e698b70ca0b6b4237eb43c39d27bfe0", "estimated_tokens": 6398, "path": "test/libponyc/cap.cc", "pred_spans": [[1, 660]], "rendered_mode": "full"}], "metrics": {"file_f1": 0, "file_precision": 0.0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "43ae9dadb883aaf2165533d61798296d9b0622c4a5a3256d059ebdc3d28bd732"}
+        }
+      }
+    },
+    {
+      "base_commit": "c03f55ec3a0511611fa7f0537f858544a0ed03bd",
+      "candidate_count": 8,
+      "language": "cpp",
+      "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__2c49ef99",
+      "candidate_changes": [],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 3, "fp": 0, "tp": 0}, "line": {"fn": 1471, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 3, "fp": 0, "tp": 0}, "line": {"fn": 1471, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 3, "fp": 1, "tp": 0}, "line": {"fn": 1471, "fp": 232, "tp": 0}}, "estimated_packed_tokens": 2854, "included": [{"content_sha256": "5115d5a8ced36a20b8cec034812f7b0d2ac20d511a147f9beea9b0ef27d94b56", "estimated_tokens": 2854, "path": "test/gtest/gtest-spi.h", "pred_spans": [[1, 232]], "rendered_mode": "full"}], "metrics": {"file_f1": 0, "file_precision": 0.0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "4c10bf1340f981a27ffb75ee174fd7877b257d7c5b39422773b5c2f53df00f41"},
+          "patched": {"counts": {"file": {"fn": 3, "fp": 1, "tp": 0}, "line": {"fn": 1471, "fp": 232, "tp": 0}}, "estimated_packed_tokens": 2854, "included": [{"content_sha256": "5115d5a8ced36a20b8cec034812f7b0d2ac20d511a147f9beea9b0ef27d94b56", "estimated_tokens": 2854, "path": "test/gtest/gtest-spi.h", "pred_spans": [[1, 232]], "rendered_mode": "full"}], "metrics": {"file_f1": 0, "file_precision": 0.0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "4c10bf1340f981a27ffb75ee174fd7877b257d7c5b39422773b5c2f53df00f41"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 3, "fp": 2, "tp": 0}, "line": {"fn": 1471, "fp": 522, "tp": 0}}, "estimated_packed_tokens": 7123, "included": [{"content_sha256": "dcc4d9738d3e8d3b9f51286f1dc90d0c49ea8325982008ced021932a0b0b0cda", "estimated_tokens": 4269, "path": "doc/python-license.txt", "pred_spans": [[1, 290]], "rendered_mode": "full"}, {"content_sha256": "5115d5a8ced36a20b8cec034812f7b0d2ac20d511a147f9beea9b0ef27d94b56", "estimated_tokens": 2854, "path": "test/gtest/gtest-spi.h", "pred_spans": [[1, 232]], "rendered_mode": "full"}], "metrics": {"file_f1": 0, "file_precision": 0.0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "acebd0c1b83194b4a44d808455b7c1b16e31db8d216adbdf7484fe704afbd5ad"},
+          "patched": {"counts": {"file": {"fn": 3, "fp": 2, "tp": 0}, "line": {"fn": 1471, "fp": 522, "tp": 0}}, "estimated_packed_tokens": 7123, "included": [{"content_sha256": "dcc4d9738d3e8d3b9f51286f1dc90d0c49ea8325982008ced021932a0b0b0cda", "estimated_tokens": 4269, "path": "doc/python-license.txt", "pred_spans": [[1, 290]], "rendered_mode": "full"}, {"content_sha256": "5115d5a8ced36a20b8cec034812f7b0d2ac20d511a147f9beea9b0ef27d94b56", "estimated_tokens": 2854, "path": "test/gtest/gtest-spi.h", "pred_spans": [[1, 232]], "rendered_mode": "full"}], "metrics": {"file_f1": 0, "file_precision": 0.0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "acebd0c1b83194b4a44d808455b7c1b16e31db8d216adbdf7484fe704afbd5ad"}
+        }
+      }
+    },
+    {
+      "base_commit": "1a4462d72eb03f30dc83a879b1dd57aac8b2c18b",
+      "candidate_count": 8,
+      "language": "python",
+      "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__1d90db61",
+      "candidate_changes": [
+        {"cost_codemap": 2742, "cost_full": 50401, "gold_file": false, "lexical_match_lines": [4], "original": {"cost_slices": 50401, "desired_mode": "full", "line_ranges": [[1, 24]]}, "patched": {"cost_slices": 530, "desired_mode": "slices", "line_ranges": [[3, 14], [16, 25], [27, 27], [29, 42], [44, 53]]}, "path": "astropy/modeling/core.py", "slice_block_sha256": "8a0a55e0ac839901751839689a50a414e94e09bee54ee861e50c69379ea8122d"},
+        {"cost_codemap": 3295, "cost_full": 40442, "gold_file": false, "lexical_match_lines": [2], "original": {"cost_slices": 40442, "desired_mode": "full", "line_ranges": [[1, 22]]}, "patched": {"cost_slices": 242, "desired_mode": "slices", "line_ranges": [[1, 5], [7, 11], [13, 14], [16, 19], [21, 23]]}, "path": "astropy/coordinates/representation.py", "slice_block_sha256": "00b5510c01b5cdfccf5289676c9a54cfffc26e80fc7cf7761ef9994af895300e"},
+        {"cost_codemap": 736, "cost_full": 26105, "gold_file": true, "lexical_match_lines": [1], "original": {"cost_slices": 26105, "desired_mode": "full", "line_ranges": [[1, 21]]}, "patched": {"cost_slices": 298, "desired_mode": "slices", "line_ranges": [[1, 4], [6, 7], [9, 15], [17, 32]]}, "path": "astropy/coordinates/sky_coordinate.py", "slice_block_sha256": "67af469d9ff9ce6fdb2035ea0acaaf921cf76c1cd3e171e175e40c14392c01e1"}
+      ],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 1, "fp": 0, "tp": 0}, "line": {"fn": 52, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 0, "fp": 2, "tp": 1}, "line": {"fn": 52, "fp": 95, "tp": 0}}, "estimated_packed_tokens": 1070, "included": [{"content_sha256": "24edb7921cc9d5ac9fdda777c0fc7976fe8c0cc64f0107add564502a4995db74", "estimated_tokens": 530, "path": "astropy/modeling/core.py", "pred_spans": [[3, 14], [16, 25], [27, 27], [29, 42], [44, 53]], "rendered_mode": "slices"}, {"content_sha256": "8e23ca29cae1e674268ccb534875360f861dc73400e0f77b0b5fcb9107870da2", "estimated_tokens": 242, "path": "astropy/coordinates/representation.py", "pred_spans": [[1, 5], [7, 11], [13, 14], [16, 19], [21, 23]], "rendered_mode": "slices"}, {"content_sha256": "4b12e7711b687b65538b89c1ee740c0db5b779d6430720f92f59f1523f1ac18f", "estimated_tokens": 298, "path": "astropy/coordinates/sky_coordinate.py", "pred_spans": [[1, 4], [6, 7], [9, 15], [17, 32]], "rendered_mode": "slices"}], "metrics": {"file_f1": 0.5, "file_precision": 0.3333333333333333, "file_recall": 1.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "0f95d84bc31c84a22214454841495af53046969dca6fd465db72de56a74eda81"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 1, "fp": 0, "tp": 0}, "line": {"fn": 52, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 0, "fp": 2, "tp": 1}, "line": {"fn": 52, "fp": 95, "tp": 0}}, "estimated_packed_tokens": 1070, "included": [{"content_sha256": "24edb7921cc9d5ac9fdda777c0fc7976fe8c0cc64f0107add564502a4995db74", "estimated_tokens": 530, "path": "astropy/modeling/core.py", "pred_spans": [[3, 14], [16, 25], [27, 27], [29, 42], [44, 53]], "rendered_mode": "slices"}, {"content_sha256": "8e23ca29cae1e674268ccb534875360f861dc73400e0f77b0b5fcb9107870da2", "estimated_tokens": 242, "path": "astropy/coordinates/representation.py", "pred_spans": [[1, 5], [7, 11], [13, 14], [16, 19], [21, 23]], "rendered_mode": "slices"}, {"content_sha256": "4b12e7711b687b65538b89c1ee740c0db5b779d6430720f92f59f1523f1ac18f", "estimated_tokens": 298, "path": "astropy/coordinates/sky_coordinate.py", "pred_spans": [[1, 4], [6, 7], [9, 15], [17, 32]], "rendered_mode": "slices"}], "metrics": {"file_f1": 0.5, "file_precision": 0.3333333333333333, "file_recall": 1.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "0f95d84bc31c84a22214454841495af53046969dca6fd465db72de56a74eda81"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 1, "fp": 0, "tp": 0}, "line": {"fn": 52, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 0, "fp": 2, "tp": 1}, "line": {"fn": 52, "fp": 95, "tp": 0}}, "estimated_packed_tokens": 1070, "included": [{"content_sha256": "24edb7921cc9d5ac9fdda777c0fc7976fe8c0cc64f0107add564502a4995db74", "estimated_tokens": 530, "path": "astropy/modeling/core.py", "pred_spans": [[3, 14], [16, 25], [27, 27], [29, 42], [44, 53]], "rendered_mode": "slices"}, {"content_sha256": "8e23ca29cae1e674268ccb534875360f861dc73400e0f77b0b5fcb9107870da2", "estimated_tokens": 242, "path": "astropy/coordinates/representation.py", "pred_spans": [[1, 5], [7, 11], [13, 14], [16, 19], [21, 23]], "rendered_mode": "slices"}, {"content_sha256": "4b12e7711b687b65538b89c1ee740c0db5b779d6430720f92f59f1523f1ac18f", "estimated_tokens": 298, "path": "astropy/coordinates/sky_coordinate.py", "pred_spans": [[1, 4], [6, 7], [9, 15], [17, 32]], "rendered_mode": "slices"}], "metrics": {"file_f1": 0.5, "file_precision": 0.3333333333333333, "file_recall": 1.0, "line_f1": 0, "line_precision": 0.0, "line_recall": 0.0}, "rendered_sha256": "0f95d84bc31c84a22214454841495af53046969dca6fd465db72de56a74eda81"}
+        }
+      }
+    },
+    {
+      "base_commit": "f00f95b30dd68c7faaff0aa88508c218bc19f02b",
+      "candidate_count": 8,
+      "language": "c",
+      "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__1e842312",
+      "candidate_changes": [],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 294, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 294, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 294, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 294, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 294, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 294, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        }
+      }
+    },
+    {
+      "base_commit": "9294e25c98f9c09a1874842dbcaae7a91336a57e",
+      "candidate_count": 8,
+      "language": "cpp",
+      "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a",
+      "candidate_changes": [],
+      "budgets": {
+        "2000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 682, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 682, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "4000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 682, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 682, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        },
+        "8000": {
+          "original": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 682, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+          "patched": {"counts": {"file": {"fn": 4, "fp": 0, "tp": 0}, "line": {"fn": 682, "fp": 0, "tp": 0}}, "estimated_packed_tokens": 0, "included": [], "metrics": {"file_f1": 0, "file_precision": 0, "file_recall": 0.0, "line_f1": 0, "line_precision": 0, "line_recall": 0.0}, "rendered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+        }
+      }
+    }
+  ]
+}

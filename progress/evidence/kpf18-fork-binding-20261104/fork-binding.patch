@@ -1,0 +1,11 @@
+--- candidate/fork_binding.py
++++ candidate/fork_binding.py
+@@ -25,6 +25,8 @@
+         raise DataError('native fork has no provable slot/offset')
+     slot=int(slot_binding[1]); logged_task=int(slot_binding[2]);src=int(fork[1]);t=int(fork[2]);total=int(fork[3])
+     if slot not in range(4) or logged_task < -1:raise DataError('invalid native fork slot/task')
++    if src not in range(4) or src == slot or not 0 < t < total:
++        raise DataError('invalid native fork source or token range')
+     lo,hi=original_line(mapping,start,end,original_raw,text);native_lo=scope_native_start+lo;native_hi=scope_native_start+hi
+     candidates=[]
+     for event in events:

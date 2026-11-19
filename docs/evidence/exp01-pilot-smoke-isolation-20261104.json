@@ -1,0 +1,37 @@
+{
+  "box": "EXP01-PILOT",
+  "prior_row": "brf-exp01-trellis-pilot-20261102-r2",
+  "verdict": "inconclusive",
+  "cause": "Smoke Q4KM launch 1 used 4 native threads; remaining 11 launches used 24; smoke results were resumed by official run.",
+  "evidence": [
+    "/mnt/raid0/llm/tmp/brf-exp01/run/speed-Q4KM-1.json",
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/brf-exp01-trellis-pilot-20261102-r2/PASS.json",
+    "/mnt/raid0/llm/tmp/compute-flags/grants/brf-exp01-trellis-pilot-20261102-r2.ended"
+  ],
+  "successor": "brf-exp01-trellis-pilot-20261104-r3",
+  "change": "Separate per-attempt smoke output from fresh official run-r3; reject resource-mismatched resumed units and native n_threads mismatches.",
+  "estimator": "Unchanged; no post-hoc exclusion.",
+  "source_sha256": {
+    "launcher_r3.sh": "4f86134ab6c7d39b3d06ad50c5a537a265c34cb1516f36a2069e149498ddac20",
+    "pilot_spec_r3.json": "9fb9209b4a5e2c1017f50c58f8bacbba11731c3f5eaff7b1e0eb20e2f5d81731",
+    "job_r3.sh": "5681888b9ff9524bb04508cde477314673e52582309ecde53566c30e9b5b5fbb",
+    "pilot_r3_job.sh": "8f7a180fd8cbc58a55d8492d2cff5cdde2b4eef5644f6bc2548edf77cea1dbec",
+    "pilot_r3_complete.sh": "798b801798d3b8d3cf1e9fcba3de07bc66a49e025465eb0758c8b055c2431729"
+  },
+  "build_verdicts": {
+    "original": "fail",
+    "r2": "fail",
+    "r3": "fail",
+    "r4": "inconclusive",
+    "r5": "pass"
+  },
+  "smoke": {
+    "result": "PASS",
+    "cpus": "0-3",
+    "row": "brf-exp01-trellis-pilot-20261104-r3",
+    "first_progress": "new measurement record in per-attempt native-result.json",
+    "stop_rc": 75,
+    "stop_reason": "partial-native-incomplete",
+    "interpretation": "Expected clean stop after first progress; full measurement delegated to keeper."
+  }
+}

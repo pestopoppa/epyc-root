@@ -1,0 +1,65 @@
+{
+ "book_s": 300,
+ "budget_gib": 1.0,
+ "decision_rule": "Capture seven exact original elementwise operator selections on the pinned model-free c463f601b HIP executable and four DSOs using MI210 and CPUs 184-191. Use one original seed, 2026102603. Stop on answer after seven terminal invocations and strict readback yields seven tuples with zero refusals, 105 observed cases split into 88 supported CPU-reference passes and 17 explicit unsupported cases, zero failures, and at least two distinct in-window same-PID KFD, VRAM, pinned-map and affinity samples per invocation. Stop on futility at STOP, deadline or invalid custody. Gate class is futility-only. Acceptance applies to the recorded seed, exact native cases and candidate artifacts.",
+ "declared_shape": "gpu",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 60,
+ "gib": 8,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:SC18-GPU-POOL-ELEMENTWISE-LIVE",
+ "id": "ni-gpu-pool-elementwise-20261117-v1",
+ "keep": [
+  "native/**",
+  "PINNED.sha256",
+  "candidate/**",
+  "scripts/vidya/**",
+  "run_elementwise.py",
+  "verify_ggml_linkage.sh",
+  "source/**",
+  "result.json",
+  "test_run_elementwise.py",
+  "validation.log",
+  "case-plan.tsv",
+  "README.md",
+  "native/RESULT.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/launch.sh",
+  "sha256": "fc22aab9fd6c8beffafc0ad038cd675b7339d2a0c324549c9cff39e3440bb9ed"
+ },
+ "min_window_s": 300,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:756: pending operator choice (field h) \u2014 route to the operator queue first",
+  "vidya-belief-substrate-program.md:756: untestable prose prerequisite: 'after seven terminal invocations and strict rederivation; stop-on-futility on STOP, deadline or invalid custody; gate-cl'"
+ ],
+ "published_at": "2026-11-17T23:15:15Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-17T23:15:15Z",
+  "session": "01a1ebc3-30af-7791-bbd9-4cb5f06e4961",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready",
+ "shape": "gpu",
+ "smoke_predicate": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/run_elementwise.py smoke",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/STOP",
+ "verdict_by": "agent",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready"
+}

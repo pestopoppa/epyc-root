@@ -1,0 +1,761 @@
+{
+ "schema": "p3.a1.v1",
+ "started_at": "2026-11-04T15:00:44Z",
+ "nonce": "0bab1a17e160",
+ "park_mode": "prefill",
+ "park_mode_effective": "prefill",
+ "pool_cells": 393216,
+ "rows": [
+  {
+   "level": "L0_base",
+   "variant": "nodraft",
+   "rep": 1,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 36.3,
+   "decode_tps": 21.616,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.168,
+   "wall_s": 23.86,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 12,
+    "n_during_busy": 11,
+    "resident_min": 57122,
+    "resident_max": 57559,
+    "resident_max_frac_pool": 0.1464,
+    "per_slot_at_max": {
+     "0": 57559,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57122,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57559,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L0_base",
+   "variant": "nodraft",
+   "rep": 2,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 36.3,
+   "decode_tps": 22.228,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.168,
+   "wall_s": 23.2,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 12,
+    "n_during_busy": 11,
+    "resident_min": 57123,
+    "resident_max": 57572,
+    "resident_max_frac_pool": 0.1464,
+    "per_slot_at_max": {
+     "0": 57572,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57123,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57572,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L1_156k",
+   "variant": "nodraft",
+   "rep": 1,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 37.3,
+   "decode_tps": 21.096,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.176,
+   "wall_s": 24.45,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 13,
+    "n_during_busy": 12,
+    "resident_min": 156499,
+    "resident_max": 156968,
+    "resident_max_frac_pool": 0.3992,
+    "per_slot_at_max": {
+     "0": 57590,
+     "1": 99378,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57121,
+     "1": 99378,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57590,
+     "1": 99378,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L1_156k",
+   "variant": "nodraft",
+   "rep": 2,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 35.8,
+   "decode_tps": 21.298,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.175,
+   "wall_s": 24.22,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 12,
+    "n_during_busy": 11,
+    "resident_min": 156500,
+    "resident_max": 156929,
+    "resident_max_frac_pool": 0.3991,
+    "per_slot_at_max": {
+     "0": 57551,
+     "1": 99378,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57122,
+     "1": 99378,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57551,
+     "1": 99378,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L2_258k",
+   "variant": "nodraft",
+   "rep": 1,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 37.5,
+   "decode_tps": 21.076,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.167,
+   "wall_s": 24.46,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 13,
+    "n_during_busy": 12,
+    "resident_min": 258046,
+    "resident_max": 258517,
+    "resident_max_frac_pool": 0.6574,
+    "per_slot_at_max": {
+     "0": 57591,
+     "1": 99378,
+     "2": 101548,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57120,
+     "1": 99378,
+     "2": 101548,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57591,
+     "1": 99378,
+     "2": 101548,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L2_258k",
+   "variant": "nodraft",
+   "rep": 2,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 35.8,
+   "decode_tps": 21.236,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.17,
+   "wall_s": 24.28,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 13,
+    "n_during_busy": 12,
+    "resident_min": 258047,
+    "resident_max": 258518,
+    "resident_max_frac_pool": 0.6574,
+    "per_slot_at_max": {
+     "0": 57592,
+     "1": 99378,
+     "2": 101548,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57121,
+     "1": 99378,
+     "2": 101548,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57592,
+     "1": 99378,
+     "2": 101548,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L3_358k",
+   "variant": "nodraft",
+   "rep": 1,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 37.2,
+   "decode_tps": 21.007,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.164,
+   "wall_s": 24.54,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 13,
+    "n_during_busy": 12,
+    "resident_min": 358357,
+    "resident_max": 358827,
+    "resident_max_frac_pool": 0.9125,
+    "per_slot_at_max": {
+     "0": 57590,
+     "1": 99378,
+     "2": 101548,
+     "3": 100311
+    },
+    "busy_per_slot_min": {
+     "0": 57120,
+     "1": 99378,
+     "2": 101548,
+     "3": 100311
+    },
+    "busy_per_slot_max": {
+     "0": 57590,
+     "1": 99378,
+     "2": 101548,
+     "3": 100311
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L3_358k",
+   "variant": "nodraft",
+   "rep": 2,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 35.7,
+   "decode_tps": 21.317,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.17,
+   "wall_s": 24.19,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 13,
+    "n_during_busy": 11,
+    "resident_min": 358358,
+    "resident_max": 358787,
+    "resident_max_frac_pool": 0.9124,
+    "per_slot_at_max": {
+     "0": 57550,
+     "1": 99378,
+     "2": 101548,
+     "3": 100311
+    },
+    "busy_per_slot_min": {
+     "0": 57121,
+     "1": 99378,
+     "2": 101548,
+     "3": 100311
+    },
+    "busy_per_slot_max": {
+     "0": 57550,
+     "1": 99378,
+     "2": 101548,
+     "3": 100311
+    }
+   },
+   "decode_only": true
+  },
+  {
+   "level": "L0_after",
+   "variant": "nodraft",
+   "rep": 1,
+   "prompt_n": 4,
+   "cache_n": 57078,
+   "prefill_tps": 36.4,
+   "decode_tps": 21.795,
+   "predicted_n": 512,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null,
+   "ttft_s": 0.168,
+   "wall_s": 23.66,
+   "finish": "length",
+   "reasoning_chars": 1468,
+   "content_chars": 0,
+   "draft_count_observation": "unknown",
+   "kv_resident": {
+    "n_samples": 12,
+    "n_during_busy": 11,
+    "resident_min": 57123,
+    "resident_max": 57562,
+    "resident_max_frac_pool": 0.1464,
+    "per_slot_at_max": {
+     "0": 57562,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_min": {
+     "0": 57123,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    },
+    "busy_per_slot_max": {
+     "0": 57562,
+     "1": 0,
+     "2": 0,
+     "3": 0
+    }
+   },
+   "decode_only": true
+  }
+ ],
+ "parks": [
+  {
+   "nb": 1,
+   "how": "prefill",
+   "prompt_n": 99378,
+   "cache_n": 0,
+   "prefill_tps": 481.6,
+   "ttft_s": 206.445,
+   "kv_resident": {
+    "n_samples": 31,
+    "n_during_busy": 0,
+    "resident_min": null,
+    "resident_max": null,
+    "resident_max_frac_pool": null,
+    "per_slot_at_max": null,
+    "busy_per_slot_min": {},
+    "busy_per_slot_max": {}
+   }
+  },
+  {
+   "nb": 2,
+   "how": "prefill",
+   "prompt_n": 101548,
+   "cache_n": 0,
+   "prefill_tps": 468.9,
+   "ttft_s": 216.781,
+   "kv_resident": {
+    "n_samples": 32,
+    "n_during_busy": 0,
+    "resident_min": null,
+    "resident_max": null,
+    "resident_max_frac_pool": null,
+    "per_slot_at_max": null,
+    "busy_per_slot_min": {},
+    "busy_per_slot_max": {}
+   }
+  },
+  {
+   "nb": 3,
+   "how": "prefill",
+   "prompt_n": 100311,
+   "cache_n": 0,
+   "prefill_tps": 469.1,
+   "ttft_s": 213.933,
+   "kv_resident": {
+    "n_samples": 34,
+    "n_during_busy": 0,
+    "resident_min": null,
+    "resident_max": null,
+    "resident_max_frac_pool": null,
+    "per_slot_at_max": null,
+    "busy_per_slot_min": {},
+    "busy_per_slot_max": {}
+   }
+  }
+ ],
+ "residency": [
+  {
+   "at": "L0",
+   "per_slot": {
+    "0": 57593,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   },
+   "sum": 57593,
+   "busy": [],
+   "frac_pool": 0.1465,
+   "metrics": {
+    "llamacpp:prompt_tokens_total": 57095.0,
+    "llamacpp:prompt_seconds_total": 90.869,
+    "llamacpp:tokens_predicted_total": 529.0,
+    "llamacpp:tokens_predicted_seconds_total": 24.493,
+    "llamacpp:n_decode_total": 559.0,
+    "llamacpp:n_tokens_max": 57593.0,
+    "llamacpp:prompt_tokens_seconds": 628.322,
+    "llamacpp:predicted_tokens_seconds": 21.598,
+    "llamacpp:requests_processing": 0.0,
+    "llamacpp:requests_deferred": 0.0,
+    "llamacpp:n_busy_slots_per_decode": 1.0
+   }
+  },
+  {
+   "at": "L1",
+   "per_slot": {
+    "0": 57593,
+    "1": 99378,
+    "2": 0,
+    "3": 0
+   },
+   "sum": 156971,
+   "busy": [],
+   "frac_pool": 0.3992,
+   "metrics": {
+    "llamacpp:prompt_tokens_total": 156481.0,
+    "llamacpp:prompt_seconds_total": 297.446,
+    "llamacpp:tokens_predicted_total": 1554.0,
+    "llamacpp:tokens_predicted_seconds_total": 71.213,
+    "llamacpp:n_decode_total": 1634.0,
+    "llamacpp:n_tokens_max": 99378.0,
+    "llamacpp:prompt_tokens_seconds": 526.082,
+    "llamacpp:predicted_tokens_seconds": 21.8219,
+    "llamacpp:requests_processing": 0.0,
+    "llamacpp:requests_deferred": 0.0,
+    "llamacpp:n_busy_slots_per_decode": 1.0
+   }
+  },
+  {
+   "at": "L2",
+   "per_slot": {
+    "0": 57593,
+    "1": 99378,
+    "2": 101548,
+    "3": 0
+   },
+   "sum": 258519,
+   "busy": [],
+   "frac_pool": 0.6574,
+   "metrics": {
+    "llamacpp:prompt_tokens_total": 258037.0,
+    "llamacpp:prompt_seconds_total": 514.217,
+    "llamacpp:tokens_predicted_total": 2579.0,
+    "llamacpp:tokens_predicted_seconds_total": 119.522,
+    "llamacpp:n_decode_total": 2710.0,
+    "llamacpp:n_tokens_max": 101548.0,
+    "llamacpp:prompt_tokens_seconds": 501.806,
+    "llamacpp:predicted_tokens_seconds": 21.5776,
+    "llamacpp:requests_processing": 0.0,
+    "llamacpp:requests_deferred": 0.0,
+    "llamacpp:n_busy_slots_per_decode": 1.0
+   }
+  },
+  {
+   "at": "L3",
+   "per_slot": {
+    "0": 57593,
+    "1": 99378,
+    "2": 101548,
+    "3": 100311
+   },
+   "sum": 358830,
+   "busy": [],
+   "frac_pool": 0.9126,
+   "metrics": {
+    "llamacpp:prompt_tokens_total": 358356.0,
+    "llamacpp:prompt_seconds_total": 728.279,
+    "llamacpp:tokens_predicted_total": 3604.0,
+    "llamacpp:tokens_predicted_seconds_total": 167.924,
+    "llamacpp:n_decode_total": 3785.0,
+    "llamacpp:n_tokens_max": 101548.0,
+    "llamacpp:prompt_tokens_seconds": 492.059,
+    "llamacpp:predicted_tokens_seconds": 21.4621,
+    "llamacpp:requests_processing": 0.0,
+    "llamacpp:requests_deferred": 0.0,
+    "llamacpp:n_busy_slots_per_decode": 1.0
+   }
+  },
+  {
+   "at": "L0_after",
+   "per_slot": {
+    "0": 57593,
+    "1": 0,
+    "2": 0,
+    "3": 0
+   },
+   "sum": 57593,
+   "busy": [],
+   "frac_pool": 0.1465,
+   "metrics": {
+    "llamacpp:prompt_tokens_total": 358364.0,
+    "llamacpp:prompt_seconds_total": 728.498,
+    "llamacpp:tokens_predicted_total": 4628.0,
+    "llamacpp:tokens_predicted_seconds_total": 216.315,
+    "llamacpp:n_decode_total": 4809.0,
+    "llamacpp:n_tokens_max": 101548.0,
+    "llamacpp:prompt_tokens_seconds": 491.922,
+    "llamacpp:predicted_tokens_seconds": 21.3947,
+    "llamacpp:requests_processing": 0.0,
+    "llamacpp:requests_deferred": 0.0,
+    "llamacpp:n_busy_slots_per_decode": 1.0
+   }
+  }
+ ],
+ "server": {
+  "argv": [
+   "numactl",
+   "--membind=3",
+   "--",
+   "taskset",
+   "-c",
+   "184,185,186,187,188,189,190,191",
+   "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server",
+   "-m",
+   "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+   "--host",
+   "127.0.0.1",
+   "--port",
+   "18198",
+   "-np",
+   "4",
+   "-c",
+   "393216",
+   "-t",
+   "8",
+   "-ub",
+   "2048",
+   "--flash-attn",
+   "on",
+   "--jinja",
+   "-ctk",
+   "q8_0",
+   "-ctv",
+   "q8_0",
+   "--kv-unified",
+   "--no-mmap",
+   "-ngl",
+   "all",
+   "--cache-ram",
+   "65536",
+   "--chat-template-file",
+   "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+   "--device",
+   "ROCm0",
+   "--slot-save-path",
+   "/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/run-rcq8ghra/nodraft/slots",
+   "--metrics",
+   "--no-cache-idle-slots",
+   "-tb",
+   "8"
+  ],
+  "argv_transforms": [
+   "binary /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -> /mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/llama-server",
+   "--port -> 18198",
+   "--slot-save-path -> /mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/run-rcq8ghra/nodraft/slots",
+   "+ --metrics",
+   "+ --no-cache-idle-slots (keep idle neighbours resident)",
+   "keeper effective CPUs 184,185,186,187,188,189,190,191",
+   "dedicated no-draft process; all drafter arguments removed"
+  ],
+  "env_overrides": {
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "KMP_BLOCKTIME": "10",
+   "GGML_IQK": "1"
+  },
+  "vram_before": {
+   "t": 1793804444.2642078,
+   "used_b": 46154293248,
+   "total_b": 68702699520,
+   "pids": {}
+  },
+  "pid": 2631349,
+  "load_s": 4.0,
+  "hip_dlopen_proof": {
+   "ok": true,
+   "ggml_libs": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-hip.so.0.16.0",
+    "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml.so.0.16.0"
+   ],
+   "hip_mapped": [
+    "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/bin/libggml-hip.so.0.16.0"
+   ]
+  },
+  "build_info": "b10419-c72ec82f5",
+  "n_slots": 4,
+  "n_ctx_slot": 262144,
+  "teardown": {
+   "pid": 2631349,
+   "already_exited": true,
+   "sent": [],
+   "verified_dead": true,
+   "returncode": 1
+  },
+  "vram": {
+   "n_samples": 493,
+   "peak_used_b": 46154293248,
+   "baseline_used_b": 46154293248,
+   "peak_minus_baseline_b": 0,
+   "own_pid_peak_vram_b": 45942521856,
+   "nonzero_samples": 492,
+   "peak_used_gib": 42.98,
+   "own_pid_peak_vram_gib": 42.79
+  },
+  "log_scan": {
+   "failed to find a memory slot": 0,
+   "context size has been exceeded": 0,
+   "failed to find free space in the KV cache": 0,
+   "exceeds the available context size": 0,
+   "purging slot": 0,
+   "Unable to restore slot": 0,
+   "saving_idle_slot_lines": 0
+  },
+  "port_free_after": true
+ },
+ "warmup": {
+  "prompt_n": 168,
+  "cache_n": 0,
+  "prefill_tps": 398.7,
+  "decode_tps": 34.612,
+  "predicted_n": 17,
+  "draft_n": null,
+  "draft_n_accepted": null,
+  "draft_acc": null,
+  "ttft_s": 0.44,
+  "wall_s": 0.93,
+  "finish": "stop",
+  "reasoning_chars": 47,
+  "content_chars": 6
+ },
+ "cpt_meas": 2.9312,
+ "cpt_pool": 2.9338,
+ "prime": {
+  "prompt_n": 56927,
+  "cache_n": 155,
+  "prefill_tps": 629.4,
+  "decode_tps": 21.331,
+  "predicted_n": 512,
+  "draft_n": null,
+  "draft_n_accepted": null,
+  "draft_acc": null,
+  "ttft_s": 90.554,
+  "wall_s": 114.56,
+  "finish": "length",
+  "reasoning_chars": 1468,
+  "content_chars": 0
+ },
+ "p_tokens": 57082,
+ "erase": [
+  {
+   "id_slot": 1,
+   "n_erased": 99378
+  },
+  {
+   "id_slot": 2,
+   "n_erased": 101548
+  },
+  {
+   "id_slot": 3,
+   "n_erased": 100311
+  }
+ ],
+ "finished_at": "2026-11-04T15:17:09Z"
+}

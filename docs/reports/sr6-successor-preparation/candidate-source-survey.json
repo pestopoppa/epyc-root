@@ -1,0 +1,138 @@
+{
+  "schema": "sr6.source-survey.v1",
+  "status": "CANDIDATE_ONLY_NOT_EXPOSURE_CLEARED",
+  "source": "epyc-orchestrator:benchmarks/prompts/core_v2.jsonl",
+  "source_head": "9e138e3a3e22ecf8c57cd5bf50beed571d107b54",
+  "source_last_change": "1a135b8bc471ea2f3324d8d36b4458f13e02e697",
+  "source_sha256": "a59be17ef3c39390fb0043cff5731e087f7e280c9eaaa113c969ff594851a502",
+  "prior_scope": "Exact raw UTF-8 prompt hashes from previous 15-prompt SR-6 diagnostic only",
+  "entries": [
+    {
+      "id": "debugbench_number-of-atoms_java",
+      "suite": "debugbench",
+      "candidate_class": "code",
+      "prompt_sha256": "c8d1db890259b1598aa2883b94eaba1871507737d18ca7871eec3d568a1fa413",
+      "prompt_chars": 2134,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "hotpot_comparison_5a87868c5542996e4f308828",
+      "suite": "hotpotqa",
+      "candidate_class": "rag_candidate",
+      "prompt_sha256": "229ff84858120111e4d4c504690ab2f79d801544c54ffb4631b7171053cb3802",
+      "prompt_chars": 5646,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "leval_legal_contract_qa_439",
+      "suite": "leval",
+      "candidate_class": "rag_candidate",
+      "prompt_sha256": "10c54c0af666295d22cca21df091c0523e3e0ecf33a19f2ecef10cdaadd1fd3f",
+      "prompt_chars": 55822,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "leetcode_dungeon-game",
+      "suite": "livecodebench",
+      "candidate_class": "code",
+      "prompt_sha256": "2e238b625053dde5f1cacf5f977319e719fcc7c3035c3fd1e9e24a482a435b66",
+      "prompt_chars": 1599,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "longbench_671b3fa1bb02136c067d5353",
+      "suite": "longbench",
+      "candidate_class": "rag_candidate",
+      "prompt_sha256": "2c89abf0190f49a0ca3ae1a0ba9b03badee4b8d606c6aa339feafaf63dc9a99d",
+      "prompt_chars": 112532,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "humaneval_HumanEval_52",
+      "suite": "coder",
+      "candidate_class": "code",
+      "prompt_sha256": "6cceb825d74ba4f5c2da4815d3fa0bf7d716b7ee7e53c7ded8f6da696865d48f",
+      "prompt_chars": 341,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "cruxeval_input_0156",
+      "suite": "cruxeval",
+      "candidate_class": "code",
+      "prompt_sha256": "de47252dd5af34e61769d3d6f3ad990fd8c8eda5f65cd46190f837cb019e5025",
+      "prompt_chars": 291,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "debugbench_queries-on-number-of-points-inside-a-circle_cpp",
+      "suite": "debugbench",
+      "candidate_class": "code",
+      "prompt_sha256": "49cb8802cada0bc94f3f4c91191d044e26b7938995b98a6a4a9358401145a958",
+      "prompt_chars": 2069,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "hotpot_bridge_5a75e06155429976ec32bc60",
+      "suite": "hotpotqa",
+      "candidate_class": "rag_candidate",
+      "prompt_sha256": "129f290bf944a83cb30c6bff2703b36448e429591701a8255d4de358bd55737b",
+      "prompt_chars": 6420,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "leetcode_flip-equivalent-binary-trees",
+      "suite": "livecodebench",
+      "candidate_class": "code",
+      "prompt_sha256": "607f2bc927da46191b868c1b11437d40e2f537602cd14a729ee010082046d42f",
+      "prompt_chars": 1034,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "usaco_silver_836_silver_multiplayer_moo",
+      "suite": "usaco",
+      "candidate_class": "code",
+      "prompt_sha256": "c1d22390784f18f0b59d152cba6cee6a4b5b7dc69f11d538daa0a49e62c5ffe6",
+      "prompt_chars": 2167,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "zeroscrolls_space_digest_460",
+      "suite": "zeroscrolls",
+      "candidate_class": "rag_candidate",
+      "prompt_sha256": "6beb6b4efd64a2e539aa565c629880f17d453118805bffff41a2bfade1feb402",
+      "prompt_chars": 29880,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "bcb_BigCodeBench/0",
+      "suite": "bigcodebench",
+      "candidate_class": "code",
+      "prompt_sha256": "83813e5096561a3a13b4bfab737cefced910b982154d346fd835fa67fb46c673",
+      "prompt_chars": 559,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "mbpp_0106",
+      "suite": "coder",
+      "candidate_class": "code",
+      "prompt_sha256": "013e6551cd24446f72bea87ea752451e3fb0216aace31525538c0ee6040e5806",
+      "prompt_chars": 293,
+      "matches_15_prior_raw_hashes": false
+    },
+    {
+      "id": "cruxeval_output_0590",
+      "suite": "cruxeval",
+      "candidate_class": "code",
+      "prompt_sha256": "2a3ff3aff3093a4ad31007de4940c108515c7cb2fc9d45068383eed4e66d8fa1",
+      "prompt_chars": 261,
+      "matches_15_prior_raw_hashes": false
+    }
+  ],
+  "limitations": [
+    "Not a fresh or held-out prompt manifest; exposure outside the prior SR-6 diagnostic is unknown.",
+    "Core benchmark prompts may have been evaluated elsewhere; no provenance or non-model-origin guarantee.",
+    "RAG labels are candidates and need task review; long context may exceed chosen serving shape.",
+    "No prose candidates, rendering, tokenization, 5-gram metrics, seeds, partitions, or semantic duplicate review.",
+    "Never use this survey alone for row publication."
+  ]
+}

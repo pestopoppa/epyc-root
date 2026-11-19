@@ -1,0 +1,71 @@
+PASS logical Q projection supports GQA geometry
+PASS logical K projection supports geometry
+PASS GQA sum excludes all rotary coordinates
+PASS BF16 midpoint input rounds ties to even before projection
+PASS BF16 midpoint next float retains rounding direction
+PASS BF16 matmul output midpoint rounds before normalization
+PASS unidentified projection maps fail closed
+PASS logical Q projection supports GQA geometry
+PASS logical K projection supports geometry
+PASS GQA sum excludes all rotary coordinates
+PASS BF16 midpoint input rounds ties to even before projection
+PASS BF16 midpoint next float retains rounding direction
+PASS BF16 matmul output midpoint rounds before normalization
+PASS unidentified projection maps fail closed
+PASS partial cluster never publishes a bucket
+PASS cluster publishes exactly at512
+PASS append completes clusters incrementally
+PASS selection count equals budget plus window plus sinks
+PASS stable score ties expand ascending bucket members then window and sinks
+PASS first position contains itself once
+PASS request epoch mismatch rejected
+PASS nonappend cache overwrite rejected
+PASS rollback invalidates affected cluster and later clusters
+PASS rollback can append accepted replacement suffix
+PASS rollback reconstruction matches fresh clustering exactly
+PASS slot reuse and map change clear all native cache state
+PASS paired duplicate or BF16-near-tie clustering completes
+PASS tie fixtures preserve a capped complete partition in member order
+PASS paired duplicate or BF16-near-tie clustering completes
+PASS tie fixtures preserve a capped complete partition in member order
+PASS paired duplicate or BF16-near-tie clustering completes
+PASS tie fixtures preserve a capped complete partition in member order
+PASS pinned author full-rank tie ordering resolves all cutoffs
+PASS causal window selection before first completed cluster
+PASS visible tied cluster selects after author-rank resolution
+PASS rollback clears tied clusters
+PASS selected attention accepts ragged indices, holes, extras and sinks
+PASS only three selected slots per head touch KV including duplicate extra
+PASS sparse full-KV execution equals compact gathered execution bit for bit
+PASS attention matches independent analytic GQA and sink result
+PASS unselected NaN KV is never read
+PASS nonfinite selected V fails without publishing partial output
+PASS future row rejected before KV reads or output writes
+PASS negative per-query length rejected
+PASS zero selected slots with sink produce zero output
+PASS single slot returns stored V exactly for each GQA head
+PASS selected attention accepts ragged indices, holes, extras and sinks
+PASS only three selected slots per head touch KV including duplicate extra
+PASS sparse full-KV execution equals compact gathered execution bit for bit
+PASS attention matches independent analytic GQA and sink result
+PASS future row rejected before KV reads or output writes
+PASS negative per-query length rejected
+PASS zero selected slots with sink produce zero output
+PASS single slot returns stored V exactly for each GQA head
+PASS selected attention accepts ragged indices, holes, extras and sinks
+PASS only three selected slots per head touch KV including duplicate extra
+PASS sparse full-KV execution equals compact gathered execution bit for bit
+PASS attention matches independent analytic GQA and sink result
+PASS future row rejected before KV reads or output writes
+PASS negative per-query length rejected
+PASS zero selected slots with sink produce zero output
+PASS single slot returns stored V exactly for each GQA head
+PASS selected attention accepts ragged indices, holes, extras and sinks
+PASS only three selected slots per head touch KV including duplicate extra
+PASS sparse full-KV execution equals compact gathered execution bit for bit
+PASS attention matches independent analytic GQA and sink result
+PASS future row rejected before KV reads or output writes
+PASS negative per-query length rejected
+PASS zero selected slots with sink produce zero output
+PASS single slot returns stored V exactly for each GQA head
+RESULT test-lsa-native failures=0 avx512=1

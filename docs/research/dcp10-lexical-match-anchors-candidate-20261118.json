@@ -1,0 +1,49 @@
+{
+  "base_revision": "072d1583b3ead7456731946cd4e4595da6a9877f",
+  "patch": "scripts/experiments/dcp10-discovery/lexical-match-anchors.patch",
+  "patch_sha256": "ff591f176735d2ca75d9e629a38d764d9099dd8fbc57917c0e7034429e34d337",
+  "patched_files": {
+    "src/context_discovery.py": {
+      "base_sha256": "52a1fd3f97f6852ba8a7c434ebe95b37a52ad5367d94029d9c3e646cc68511e6",
+      "candidate_sha256": "74bd5e7d4783081c240b88d55c50590eb236e97482a9966c3fa5b82e50873ea6"
+    },
+    "src/repl_environment/code_search.py": {
+      "base_sha256": "2aa8a78d82ce60ba61d29b26eadd7f56bc06d1492dc5b5021731472cfce41c20",
+      "candidate_sha256": "09c06903e2a9fccdef6ead89497d9217d5ad74aee67749e735bee22cdb3f5008"
+    },
+    "tests/unit/test_context_discovery.py": {
+      "base_sha256": "76ab28b0d7386b8ab5e258fdc941268bf3b59526110f61dfd729af294d3e1030",
+      "candidate_sha256": "f76b72b296ec60b901630e2051d3d64e9c1519fb5112fd4eb956699cc4d2dce6"
+    },
+    "tests/unit/test_task_root_surfaces.py": {
+      "base_sha256": "30a013aa5191428618c13173e80a05ff195e74a251e50949b5723849801fd933",
+      "candidate_sha256": "566eda99807a4a042c79d7f53df05715a5fc6f19c58ab9e67fd2794387d429a6"
+    }
+  },
+  "schema": "epyc.dcp10.lexical-match-anchors.candidate.v1",
+  "scope": "Detached source candidate and mock tests; no promotion, inference, cohort rerun, quality result, or trust change.",
+  "scratch_cleanup_record": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-cost/CANDIDATE-DONE.json",
+  "validation": {
+    "candidate_module_origins_verified": true,
+    "git_apply_cached_forward_check": "pass",
+    "git_apply_reverse_check": "pass",
+    "git_diff_check": "pass",
+    "gitnexus": "Repository not indexed; status and upstream impact attempted; no reindex.",
+    "pytest_version": "7.4.4",
+    "python_version": "3.11.17",
+    "retained_request_prediction_discovery_and_source_hashes": "match all three shards",
+    "ruff_check_on_four_changed_files": "pass",
+    "test_files": [
+      "tests/unit/test_context_discovery.py",
+      "tests/unit/test_context_assembly.py",
+      "tests/unit/test_code_search.py",
+      "tests/unit/test_task_root_surfaces.py",
+      "tests/unit/test_dcp4_wiring.py"
+    ],
+    "test_log": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-cost/candidate-pytest.txt",
+    "test_log_sha256": "8d2796d921ace929f8f0608d02c44d0d0ce31ee0f080450ebf3c0b00fbcd7cb9",
+    "test_mode": "ORCHESTRATOR_MOCK_MODE=1, ORCHESTRATOR_REGISTRY_MODE=lean",
+    "test_warning": "pytest asyncio_mode configuration was unrecognized with plugin autoload disabled.",
+    "tests_passed": 130
+  }
+}

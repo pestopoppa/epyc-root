@@ -1,0 +1,9 @@
+{
+  "base_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "patch_sha256": "7612c84004793847a77237d8881830a8f17041625be28bd409591289f62298dc",
+  "files": {
+    "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104/out/CMakeCache.txt": "bdb97c87e7b5380d52daf33e818f0d02e2aaf40f7df4d6561889f5800aebe9ee",
+    "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104/out/compile_commands.json": "059af88b314738d8905b281efac1bac47c3cde0fe774606ed5456a7d51b199ca",
+    "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104/out/bin/libggml-base.so.0.16.0": "245d1f54cd3436260ba7cc573dbf81f91f468d91919b1b9e4059be05e971ceb8"
+  }
+}

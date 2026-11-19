@@ -1,0 +1,10 @@
+--- numactl.original
++++ numactl.fixed-image-draft
+@@ -6,7 +6,6 @@
+ # through the PATH of the env they pass (ambient PATH is kept). job.sh puts this directory first on PATH, so the server
+ # gets the variable. `exec` keeps the pid (shim -> numactl -> taskset -> llama-server), so own-pid / port-inode / KFD /
+ # /proc cmdline-tail checks are unaffected. Only for GPU jobs that opted in (see gpu_leak1.sh). 2026-10-23, workspace-f8.
+-export GGML_CUDA_DISABLE_GRAPHS=1
+ # GPS-PIN-1 (STACKCHG-GPUPIN-20261022, ratified OP-81; workspace-58 P1 probe): ROCr os::CreateThread gives its helper thread an
+ # all-CPU affinity unless this is 0. With it, every server thread stays inside the taskset claim, as production pins it.
+ # The kpf13 driver read-back (research 922113ff7) still exempts <= 2 full-mask threads on GPU and RECORDS the count;

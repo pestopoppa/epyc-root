@@ -1,0 +1,47 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "Build-only accepted iff full prospective 6ec877068 plus patch 5309fb07d49eda7ecfa373f5cb3dc51294c73eef931a4b7d03d083ef0dc5f2f1 build has matching reference options and source hashes; all compiled artifacts and ggml DSOs are included in receipt and custody; linkage, four compiled knob proofs and final artifact reopening pass. Stop on verified completion, or source drift, build, linkage, custody or cleanup failure, STOP or deadline. Smoke compiles modified server-context object only and proves no GPU or inference verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 600,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18-ITEM4-RAW-BUILD",
+ "id": "kvu-kpf18-item4-raw-build-20261105",
+ "keep": [
+  "RESULT.json",
+  "CUSTODY.json",
+  "runs/**",
+  "input/**",
+  "v3/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3/launch.sh",
+  "sha256": "b3caf3c21a144fc8bf4410a822f2153a382ec32f56b99092620fcb25a86a3cbe"
+ },
+ "lineage": "kpf18-item4-first-logits-build",
+ "min_window_s": 2400,
+ "notes": "First prospective build. Source worktree is patched and its complete content inventory is checked at build boundaries; base archive hash is not claimed as patched archive. Full build and raw-logit hook marker are independently checked. First-unit smoke compiles the instrumented server-context.cpp, not llama-kv-cache. No model weights are read or hashed.",
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:766: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-05T03:15:44Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/STOP",
+ "unit_key": "files",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/kpf18-raw-build-20261105/v3"
+}

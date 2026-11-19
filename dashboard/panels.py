@@ -4,7 +4,7 @@ freshness envelope, and the transport watchdog.
 
 WHY THIS MODULE EXISTS
 ----------------------
-Quoting the AK6 rider in ``handoffs/active/autokernel-research-loop.md``:
+Quoting the AK6 rider in ``handoffs/active/autokernel-loop.md``:
 
     The former ``/kernel`` page was ABSENCE-TOLERANT OVER A MISSING DIRECTORY —
     it rendered clean when its producer was dead, which is the exact shape of
@@ -279,6 +279,25 @@ _PANEL_SOURCE_CATALOG = _index((
         gates_health=True,
         notes="TTL-cached for _BOARD_TTL_S; the cache is a latency device, not a "
               "producer, so it never becomes the freshness source.",
+    ),
+    PanelSource(
+        panel="hub_view",
+        kind=KIND_ARTIFACT,
+        payload_func="hub_view_payload",
+        route="/api/hub_view",
+        producer="scripts/dashboard/refresh_hub_view.sh (hub_supervisor)",
+        producer_repo="epyc-root",
+        evidence=".git/epyc-view-refresh.json",
+        timestamp_field="attempted_at",
+        absence_means=(
+            "this checkout has no refresh report: it is not the read-only view, or the "
+            "supervisor still runs a pinned refresh script older than the report. The board "
+            "still renders, but nothing here can say whether the fetch that advances it works."),
+        warn_s=_HOUR,
+        stale_s=6 * _HOUR,
+        gates_health=True,
+        absence_is_anomalous=False,
+        notes="A failed fetch or checkout is data health (degraded), independent of age.",
     ),
     PanelSource(
         panel="handoff_graph",
@@ -643,6 +662,30 @@ _PANEL_SOURCE_CATALOG = _index((
         notes="JEV-5 phase A. spec_revised is when the spec was last re-derived from "
               "code; the thresholds' code-equality is enforced by the test suite, so "
               "age here means 'not re-read', not 'known wrong'.",
+    ),
+    PanelSource(
+        panel="pipeline",
+        kind=KIND_EXPORT,
+        payload_func="pipeline_payload",
+        route="/api/pipeline",
+        health_route="/api/pipeline/health",
+        health_func="pipeline_health",
+        producer="scripts/coordination/handoff_sessions.py dispatcher (registry + turn reports + log) and the compute keeper (grants/ready/dryrun, ws58-calendar-keeper.log)",
+        producer_repo="epyc-root",
+        evidence="/mnt/raid0/llm/tmp/compute-flags/{handoff-sessions.json,handoff-sessions/*/report.json,handoff-sessions.log,grants,ready,dryrun,ws58-calendar-keeper.log}",
+        timestamp_field="handoff-sessions.json dispatcher.last_pass",
+        absence_means=(
+            "the handoff-session dispatcher registry is missing or unreadable, so nobody "
+            "can say which agent works on which handoff or which pipeline step it is in. "
+            "The page then says so instead of drawing an empty flowchart; an empty session "
+            "table is never a statement that no session exists."),
+        warn_s=10 * _MINUTE,
+        stale_s=1 * _HOUR,
+        gates_health=False,
+        absence_is_anomalous=False,
+        notes="Step mapping lives in dashboard/pipeline_status.py:step_of. The "
+              "dispatcher passes every ~minute; age beyond the budget means the "
+              "dispatcher is not passing, not that no work exists.",
     ),
     PanelSource(
         panel="knowledge",

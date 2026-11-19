@@ -1,0 +1,21 @@
+{
+  "id": "kvu-kpf17-sealed-elf-loader-20261105",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf17-sealed-elf-loader-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf17-sealed-elf-loader-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Private ELF fixture loaded from a write/shrink/grow/seal-sealed memfd: require callable value 1729, matching memfd inode in live process maps, same-process alias overwrite EPERM, and unchanged bytes and callable value. Stop after four checks or on compiler, loader, custody, STOP or deadline failure. No ggml, cross-process, build identity, or whole-chain claim.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+  "priority_rank": 45,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf17-sealed-elf-loader-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "unit_key": "case_count",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf17-sealed-elf-loader"
+}

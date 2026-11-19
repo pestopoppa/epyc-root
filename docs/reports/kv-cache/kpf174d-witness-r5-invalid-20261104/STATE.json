@@ -1,0 +1,54 @@
+{
+  "binary_sha256": "f4d8b3a5cd9bcd537301e15966b4f8aace98f477cdd7c9bfc4b9b89ec2002650",
+  "binding": {
+    "argv_sha256": "acc297a1078a78e25bcd2715cb7105a2eabb35770332a506eac9e12a45a28702",
+    "binary_sha256": "f4d8b3a5cd9bcd537301e15966b4f8aace98f477cdd7c9bfc4b9b89ec2002650",
+    "build_proof": "6d653699d224fe690ffcd575f22e65007a2ea7546b1a953d4f71422bd6328512",
+    "inputs_sha256": "00aa042d0578eff48f999730b72368b1e696891440001bd5342fd18f07694ec0",
+    "model": {
+      "evidence": "sha256sum before row publication 2026-11-02",
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "schema": "kpf174d-model-identity/v1",
+      "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+      "stat": {
+        "ctime_ns": 1786727071283192651,
+        "dev": 2431,
+        "ino": 96505457,
+        "mtime_ns": 1786727071030792493,
+        "size": 29047086048
+      }
+    },
+    "schema": "kpf174d-cell-binding/v1",
+    "smoke": true,
+    "sources_sha256": "3a9278870654ef1f0c16a8ee8ca2d767137218646f5b51421b7e4dfec0762817"
+  },
+  "cells": {},
+  "cleanup": {
+    "at": "2026-11-04T18:59:51Z",
+    "pid": 2098871,
+    "returncode": 0,
+    "sent": [
+      "TERM"
+    ],
+    "verified_dead": true
+  },
+  "error": "Invalid: expected exactly one bound prefix snapshot",
+  "historical_verdict_unchanged": true,
+  "model": {
+    "evidence": "sha256sum before row publication 2026-11-02",
+    "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "schema": "kpf174d-model-identity/v1",
+    "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "stat": {
+      "ctime_ns": 1786727071283192651,
+      "dev": 2431,
+      "ino": 96505457,
+      "mtime_ns": 1786727071030792493,
+      "size": 29047086048
+    }
+  },
+  "partial": true,
+  "rc": 1,
+  "schema": "kpf174d-prospective/v1",
+  "smoke": true
+}

@@ -19,7 +19,7 @@ def test_stop_grace_pass_counts_isolated_native_result_not_production_result():
         production = Path(job_dir) / 'LAST-RESULT.json'
         production.write_text(json.dumps([{'old': i} for i in range(23)]) + '\n')
         spec = fx.spec(rid, job_dir, result_path=str(production), result_format='json',
-                       regions='0-95', min_window_s=300, dryrun_timeout_s=60,
+                       regions='0-95', shape_override='operator: fixture 2026-11-05: whole-host dry-run fixture', min_window_s=300, dryrun_timeout_s=60,
                        dryrun_native_result=True, dryrun_whole_host=True,
                        admission_class='diagnostic')
         rf.publish(spec, fx.flags)
@@ -39,7 +39,7 @@ def test_stop_grace_pass_counts_isolated_native_result_not_production_result():
 
         def launch(_argv, cwd, env, stdout, stderr, start_new_session):
             selected = Path(env['FILLER_DRYRUN_RESULT_PATH'])
-            selected.write_text('{"native":"one unit"}\n')
+            selected.write_text('{"native":"one unit","value":1}\n')
             launched['path'] = selected
             return NeverExits()
 
@@ -58,7 +58,7 @@ def test_stop_grace_pass_counts_isolated_native_result_not_production_result():
 
         assert verdict == 'PASS', reason
         assert 'job did not stop within 10s' in reason
-        assert reason.startswith('1 unit(s);'), reason
+        assert reason.startswith('first progress: new record in ' + str(launched['path'])), reason
         assert launched['path'] != production
         assert rf.count_units(str(launched['path']), 'json') == 1
         assert rf.count_units(str(production), 'json') == 23

@@ -1,0 +1,54 @@
+{
+ "decision_rule": "Bounded private-copy rehearsal only: smoke PASS proves pinned CPU server returns one finite 256-d embedding from a fresh private copy. Official rehearsal PASS requires rc=0, native FULL_PRIVATE_APPLY_PARITY_PASS, equal rows in/out, production-client cosine >=0.99999, and server reaped. Qualification smoke is not this verdict. The official attempt retains live-grant fail-closed checks and may stop on grant revocation; do not claim G-S completion. Full G-S remains open pending full private apply, equal rows in/out, sampled production-client parity >=0.99999, token-length distribution and top-k cosine-drift percentiles for ~500 queries, and B1-B5 closure. No production swap.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/engine/filler_run15.sh",
+  "sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945"
+ },
+ "estimate_s": 7200,
+ "gib": 5,
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.11",
+ "id": "codex-ufh12-gs-private-v3-20261102",
+ "keep": [
+  "launcher-work/*.py",
+  "launcher-work/*.sh",
+  "launcher-work/*.json",
+  "launcher-work/*.jsonl",
+  "launcher-work/runs/*/result.json",
+  "launcher-work/runs/*/private-plan.json",
+  "launcher-work/runs/*/singleton-canary.json",
+  "launcher-work/runs/*/migration/*.json",
+  "launcher-work/runs/*/*.log",
+  "launcher-work/runs/*/*.stderr",
+  "launcher-work/runs/*/*.stdout",
+  "prepared-20261102/preparation.json",
+  "prepared-20261102/private-copy-inventory.json",
+  "prepared-smoke-20261102/preparation.json",
+  "prepared-smoke-20261102/private-copy-inventory.json",
+  "launcher-work/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/launch.sh",
+  "sha256": "01ed0e76aea06ed05b1e2ab90e4cd417d13e6aef1f320d12c523fe1f4137227f"
+ },
+ "lineage": "ufh12-gs-private",
+ "min_window_s": 6900,
+ "owner": "handoff-repl-embedding-retrieval",
+ "ports": [
+  19159
+ ],
+ "priority_rank": 18.0,
+ "published_at": "2026-11-02T11:55:03Z",
+ "published_from": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/spec.DRAFT.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work/STOP",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gs-successor-v3/launcher-work"
+}

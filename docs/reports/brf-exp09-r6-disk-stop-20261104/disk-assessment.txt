@@ -1,0 +1,21 @@
+Read-only disk reclaim assessment — brf-exp09 resumes (2026-11-04)
+
+Scope: inspected /mnt/raid0/llm/tmp/brf-exp09-resume-r4, -r5, -r6, their specs/identities, filing/grant records, current keeper v12 policy/log, the janitor policy, and the published 150 GiB floor. No files were deleted and no gate was changed.
+
+Findings
+- Current /mnt/raid0 free space is 225 GiB (`df -BG --output=avail`), 75 GiB above the 150 GiB floor. This is a point-in-time reading; it does not establish a sustained margin.
+- Disk usage: R4 293 MiB, R5 293 MiB, R6 1.7 MiB. R4 and R5 each contain an `orch` checkout of about 292 MiB (about 215 MiB in `orchestration`). R6's `orch` is a symlink to R5's `orch`; deleting R5 or its `orch` would break R6. The three resume roots together are under 0.6 GiB, far below the 75 GiB current margin.
+- R4 and R5 have `grants/<id>.ended` and `filing-done/<id>.FILED`; their ready manifests remain. Keeper v12 logged `REAP-VAULT` followed by `REAP-CLEAN ... nothing outside keep set and inputs` for both at 17:12Z. Its input census says 4,953 and 4,950 files respectively predated each first recorded job start. The policy explicitly never deletes inputs, even if a file is outside a keep glob. Thus ordinary keeper reaping currently yields no space from these roots.
+- R6 is also ended and filed (17:15Z / 17:19Z); its manifest keeps the corpus, identity, job/launcher/spec, `orch/**`, dry-run/native outputs, spill, server logs and events. Its `orch` symlink is shared with R5. The R6 root was updated at 17:13Z and outputs at 17:15Z, so it has not met the one-day filed retention interval in keeper v12 (`REAP_DAYS=1`).
+- Published policy: `GOAL-ni.md` says preserve the 150 GiB floor, reuse worktrees, and remove worktrees only when tasks land via `worktree_gate.py`. `ws58-calendar-keeper-v12.sh` requires a terminal run plus its FILED receipt, waits one day, verifies a vault, checks references/processes/recent writes and keep/input protections, then reaps within caps. `disk_janitor.sh` delegates to that guarded reaper and the trash sweeper; it is not authorization for manual broad deletion. Earlier rowflow notes also specify the 150 GiB normal floor.
+
+Assessment / safe next action
+- Do not reclaim R6 or the R5 `orch` target while R6 references it. Do not delete the R4/R5 setup trees manually: the current keeper records them as inputs, and the R4/R5 filed retention window is still under one day at this inspection time. Re-running the keeper's guarded reap after its eligibility conditions mature is the policy-aligned route; based on the latest logged census it will still preserve these pre-start inputs and keep globs, so it is not expected to recover material space.
+- This lineage has no safe, policy-compliant GiB-scale reclaim candidate. If the 150 GiB floor is threatened again, use the published janitor/reaper report to identify larger eligible task-owned scratch or landed worktrees; do not count the ~0.6 GiB resume roots as a floor remedy. Any proposal to prune the retained `orch/**` artifact or the pre-start inputs needs an explicit artifact/retention policy change and reference check; this assessment makes no such change.
+
+Evidence paths
+- `/mnt/raid0/llm/tmp/brf-exp09-resume-r{4,5,6}/spec.json` and `identity.json`
+- `/mnt/raid0/llm/tmp/compute-flags/grants/brf-exp09-resume-r{4,5,6}-20261104.ended`
+- `/mnt/raid0/llm/tmp/compute-flags/filing-done/brf-exp09-resume-r{4,5,6}-20261104.FILED`
+- `/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper.log` entries 777989–777992
+- `/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v12.sh` (filed and idle reaper rules); `/mnt/raid0/llm/tmp/compute-flags/disk_janitor.sh`; `/mnt/raid0/llm/tmp/compute-flags/GOAL-ni.md`

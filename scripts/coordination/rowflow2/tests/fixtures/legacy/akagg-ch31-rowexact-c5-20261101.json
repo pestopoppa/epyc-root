@@ -1,0 +1,19 @@
+{
+ "decision_rule": "Diagnostic only: complete only after solo 1-sequence two-token identical-node and logit control and four 4-sequence permutations finish on pinned C5 image and Q",
+ "estimate_s": 900,
+ "gib": 16,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:CH-31-DEF1",
+ "id": "akagg-ch31-rowexact-c5-20261101",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/launcher.sh"
+ },
+ "min_window_s": 600,
+ "owner": "handoff-akagg",
+ "priority_rank": 25.0,
+ "published_at": "2026-11-01T21:45:31Z",
+ "regions": "0-23",
+ "schema": "epyc.row.v3",
+ "stop_file": "/mnt/raid0/llm/tmp/akagg-ch31-rowexact-20261101/STOP",
+ "window_s": 1380
+}

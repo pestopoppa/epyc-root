@@ -1,0 +1,300 @@
+{
+  "status": "PASS",
+  "controls": [
+    {
+      "case": "active-own",
+      "implementation": "original",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "active-own",
+      "implementation": "corrected",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "future-own",
+      "implementation": "original",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "future-own",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "own grant not active yet"
+      },
+      "matched": true
+    },
+    {
+      "case": "missing-own",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "missing active own grant"
+      },
+      "matched": true
+    },
+    {
+      "case": "missing-own",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "missing active own grant"
+      },
+      "matched": true
+    },
+    {
+      "case": "expired-own",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "missing active own grant"
+      },
+      "matched": true
+    },
+    {
+      "case": "expired-own",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "missing active own grant"
+      },
+      "matched": true
+    },
+    {
+      "case": "other-overlap",
+      "implementation": "original",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 32
+      },
+      "matched": true
+    },
+    {
+      "case": "other-overlap",
+      "implementation": "corrected",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 32
+      },
+      "matched": true
+    },
+    {
+      "case": "future-other-overlap",
+      "implementation": "original",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 32
+      },
+      "matched": true
+    },
+    {
+      "case": "future-other-overlap",
+      "implementation": "corrected",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 32
+      },
+      "matched": true
+    },
+    {
+      "case": "other-outside",
+      "implementation": "original",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "other-outside",
+      "implementation": "corrected",
+      "expected": "ACCEPT",
+      "observed": {
+        "outcome": "ACCEPT",
+        "other_gib": 0
+      },
+      "matched": true
+    },
+    {
+      "case": "memory-below-floor",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "live RAM plus other overlapping commitments unavailable"
+      },
+      "matched": true
+    },
+    {
+      "case": "memory-below-floor",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "live RAM plus other overlapping commitments unavailable"
+      },
+      "matched": true
+    },
+    {
+      "case": "missing-memory",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "live RAM plus other overlapping commitments unavailable"
+      },
+      "matched": true
+    },
+    {
+      "case": "missing-memory",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "live RAM plus other overlapping commitments unavailable"
+      },
+      "matched": true
+    },
+    {
+      "case": "malformed-grant",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "malformed grant"
+      },
+      "matched": true
+    },
+    {
+      "case": "malformed-grant",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "malformed grant"
+      },
+      "matched": true
+    },
+    {
+      "case": "missing-other-row",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "unknown live grant row"
+      },
+      "matched": true
+    },
+    {
+      "case": "missing-other-row",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "unknown live grant row"
+      },
+      "matched": true
+    },
+    {
+      "case": "duplicate-other-row",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "unknown live grant row"
+      },
+      "matched": true
+    },
+    {
+      "case": "duplicate-other-row",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "unknown live grant row"
+      },
+      "matched": true
+    },
+    {
+      "case": "unknown-memory",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "unknown grant memory"
+      },
+      "matched": true
+    },
+    {
+      "case": "unknown-memory",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "unknown grant memory"
+      },
+      "matched": true
+    },
+    {
+      "case": "unsafe-grant",
+      "implementation": "original",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "unsafe grant"
+      },
+      "matched": true
+    },
+    {
+      "case": "unsafe-grant",
+      "implementation": "corrected",
+      "expected": "REFUSE",
+      "observed": {
+        "outcome": "REFUSE",
+        "reason": "unsafe grant"
+      },
+      "matched": true
+    }
+  ],
+  "scope": "synthetic private flags/meminfo/time only; original known future-own acceptance recorded; no actual host or GPU admission",
+  "mode": "MODEL_FREE_QUALIFICATION",
+  "cleanup_verified": true,
+  "attempt": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-ram-admission-qual-20261105/out/full-/e918a5a403e34e3093ff68a0aa93b1b9",
+  "source_seal": {
+    "corrected.py": "6cef7e19d4ab4d1c87c7620761ec675fcdcdbbb1836b40dfc8f2dd52ef8e965c",
+    "worker.py": "b1f1cb440fa3ddb03c650bd3c03b53c45cdf3d71419f5b5abc6bdf41710c301e",
+    "complete.py": "457c981dcb36ef8294a24d90abe235948e0dfaed54fdc026bb73178f4faac4ab",
+    "README.md": "f4bc0499e1a582c8a3ff06b559bf25545f6556d1251cfad8b6f46e3a00dee8a6",
+    "SOURCE.json": "e80edbd855688aec499a2194e3620aacb108b090a6f909b0edf1e2f84bacf2b3",
+    "guard.patch": "4c7539907ad4551a0561adebfa0b2e31c56c65f3f31181b27c460832a2e84696",
+    "spec.json": "b95f918775dfef27a26529db22f4f2d8a27396cf90de9bf2943652f9afe2e64f",
+    "original.py": "c11cf23dcaca1bfd928a68db4a2ed89ae102b282c07248135d1bc65f6e716ca2",
+    "supervise.py": "4ebec418bdb14c8beec68680edbe1e5a9b490bcebabd0884fc0bbf50e829f514"
+  }
+}

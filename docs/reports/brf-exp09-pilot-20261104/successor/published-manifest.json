@@ -1,0 +1,53 @@
+{
+ "decision_rule": "BRF-T4-EXP09 repaired 12-log replay, exploratory/decision-support. Preserve the original frozen 12-log corpus (same manifest and item bytes), four arms, pinned unchanged control implementation, quote-verification planted-mismatch check, own production-consolidated-v10 kernel-store binary and worker model; only the evaluator answer completion budget changes from 256 to 1024 tokens to remove the observed exact-256-token truncation confound. Continue recording raw answers and selected evidence per cell. Complete 12-log comparison supports owner decision: EXPAND only if control is verified, mechanism fired, and verified-quote accuracy >= control; REVISE if nominal path did not run; STOP if verified-quote never beats control. Futility after >=4 verified-quote cells is an operational early-stop decision only, never a pass/fail gate; every incomplete/futile run remains partial and cannot satisfy completion. All answer records must parse without hitting the 1024-token completion ceiling for a clean full comparison; otherwise REVISE harness/inconclusive. Retention uses the original capped failed-ID reference and substring scorer, so report only that scope.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 900,
+ "gib": 48,
+ "handoff_task": "handoffs/active/context-and-token-economy.md:TOC-SP-3-EXP09-R2",
+ "id": "brf-exp09-answerbudget-r2-20261104",
+ "keep": [
+  "out/**",
+  "corpus/**",
+  "identity.json",
+  "job.py",
+  "launch.sh",
+  "build_corpus.py",
+  "spec.json",
+  "orch/**",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/launch.sh",
+  "sha256": "da0a5c6fb49faa41c654660c6954e4c4048e29b83fcb3506a96567d7c4f41f68"
+ },
+ "lineage": "brf-exp09-pilot",
+ "min_window_s": 2700,
+ "notes": "Preparation only; no inference or publication performed. Inputs are copied from /mnt/raid0/llm/tmp/brf-exp09 into a distinct scratch directory; corpus bytes, corpus manifest, and orchestrator control snapshot are preserved. Launcher pins new job, identity and manifest hashes and invokes filler_run15 with a distinct ID/port. Worker binary remains the production-consolidated-v10 CPU kernel-store path; job enforces own-library linkage. Answer cap 1024 is the sole experimental change. Existing partial futility logic is retained with explicit operational-not-gate interpretation. Interpreter resolves to the pre-existing /mnt/raid0/llm/tmp/brf-exp09/pyenv/venv (declared by absolute path); no venv copied. Orchestrator pin is a detached Git worktree at 3a428cb3795b26251c5f111c9eaa887db0690994.",
+ "owner": "ws58",
+ "ports": [
+  18419
+ ],
+ "priority_rank": 1.0,
+ "publish_warnings": [
+  "context-and-token-economy.md:3488: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "context-and-token-economy.md:3488: untestable prose prerequisite: \"after 37/48 cells (verified-quote 6.592 over 9 cells could not reach the control's 9.717 over 12).\\n    Accuracy: control\""
+ ],
+ "published_at": "2026-11-04T07:25:30Z",
+ "published_from": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2",
+ "shape": "quarter",
+ "smoke_predicate": "/mnt/raid0/llm/tmp/brf-exp09/pyenv/venv/bin/python -c 'import json; assert any(json.loads(l).get(\"kind\")==\"cell\" for l in open(\"/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/out/results.jsonl\"))'",
+ "stop_file": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/STOP",
+ "supersedes": "brf-exp09-pilot-20261102",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2"
+}

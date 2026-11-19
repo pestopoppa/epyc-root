@@ -1,0 +1,36 @@
+{
+  "schema": "cafe4.modes.native.inputs.v1",
+  "row": "df2-cafe4-modes-native-cpu-r2-20261119",
+  "executable": "/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/runs/build-6cs912qm/build/bin/cafe4-mtp-rollback",
+  "artifacts": {
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/runs/build-6cs912qm/build/bin/cafe4-mtp-rollback": "b3776b70ee6a6736ed08aac9cb379de427b0574f3373ab9c304dd5e80d3cc764",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/runs/build-6cs912qm/build/bin/libllama.so.0.0.10303": "b9438caa7cd1cad99efd2a5578210f7f91b4b3332b2f9a72e85e94f8d2cfb7d8",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/runs/build-6cs912qm/build/bin/libllama-common.so.0.0.10303": "bea46428eb84ffa85444815b62abf537117a8ff701ff1aa875d0f297fbd1c9e7",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/runs/build-6cs912qm/build/bin/libggml-base.so.0.16.0": "12c72642004f330ac4eb920f8d0ab283623909b4fdeb8297619cf3e94ad324ee",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/runs/build-6cs912qm/build/bin/libggml.so.0.16.0": "06c17d8b07a3f5974f7d3b7e0a6ec5adc8b9ce2ba764ece570a9b1a1537d872d",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/runs/build-6cs912qm/build/bin/libggml-cpu.so.0.16.0": "71c237f0111fb14b55729fd1b0630c45264c5f2a67ec1d9d5d2a53a6de6389ce"
+  },
+  "runtime": {
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-cpu-r2-20261119/runtime.py": "3cc90b81730e9e86722e9aaa863d2960c11403b3a8c9f4f29858b2167c93aff6",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-cpu-r2-20261119/launch.sh": "b2e39b70391bebb639405c200c0a81f6b545d52b63c4a805fd135e6574290214"
+  },
+  "model": {
+    "hash_mode": "reuse prior content-verified receipt with unchanged full stat; no new model hash",
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "stat": {
+      "ctime_ns": 1782411254270412235,
+      "dev": 2431,
+      "ino": 96242023,
+      "mtime_ns": 1782411254270412235,
+      "size": 37801097504
+    }
+  },
+  "build_receipt": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/RESULT.json",
+    "sha256": "18d72d8892a86d83635f7ebb6886aa63561a6f35323ead33801f446871ff6a30",
+    "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "patch_sha256": "351a431702613a5cad8d165c6959dbcde12a928963b8833bfa4668abb743e4dd",
+    "candidate_sha256": "41fc473a908b7c385d79d1941b6576cc993b985e691682d6598d6122e968fe1c"
+  }
+}

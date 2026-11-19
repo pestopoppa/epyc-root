@@ -1,0 +1,9 @@
+--- p3_kvu_probe_v2.py.before
++++ p3_kvu_probe_v2.py.after
+@@ -262,0 +263 @@
++    raise RuntimeError("KVU-16h: A1 requires separate drafted and no-draft servers")
+@@ -310,0 +312 @@
++    raise RuntimeError("KVU-16h: A1 requires separate drafted and no-draft servers")
+@@ -616,0 +619,2 @@
++    if a.phase in ("all", "a1"):
++        ap.error("KVU-16h: A1 requires separate drafted and no-draft servers")

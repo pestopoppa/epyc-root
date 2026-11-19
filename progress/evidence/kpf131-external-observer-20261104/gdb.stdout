@@ -1,0 +1,12 @@
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSTOP, Stopped (signal).
+0x00007ffff7c5b16b in kill () from /lib/x86_64-linux-gnu/libc.so.6
+Hardware assisted breakpoint 1 at 0x7ffff74dc9d0
+Hardware assisted breakpoint 2 at 0x7ffff755a280
+[New Thread 0x7ffeed7ff6c0 (LWP 3832947)]
+[New Thread 0x7ffdecdff6c0 (LWP 3832948)]
+[Thread 0x7ffdecdff6c0 (LWP 3832948) exited]
+[Thread 0x7ffeed7ff6c0 (LWP 3832947) exited]
+[Inferior 1 (process 3832936) exited normally]

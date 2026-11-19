@@ -17,7 +17,7 @@ from ledger import Ledger  # noqa: E402
 AS_OF = "2026-09-25T12:00:00Z"
 
 
-def write_capture(tmp_path, monkeypatch):
+def write_capture(tmp_path, monkeypatch, *, scratch=False):
     research_root = Path(os.environ.get(
         "KV_QUANT_TEST_RESEARCH_ROOT", str(reader.RESEARCH_ROOT)
     )).resolve()
@@ -27,10 +27,15 @@ def write_capture(tmp_path, monkeypatch):
         research_root / "scripts/benchmark/kv_quant_27b_v10_sweep.py",
     )
     producer = reader._producer()
-    monkeypatch.setattr(reader, "RESEARCH_ROOT", tmp_path)
-    summary_path = tmp_path / "summary.json"
-    summary_path.write_text('{"status":"ok"}\n')
-    digest = reader._sha256(summary_path)
+    run = tmp_path
+    if scratch:
+        scratch_root = tmp_path / "scratch"
+        run = scratch_root / "out" / "run-20261117T000000Z"
+        run.mkdir(parents=True)
+        monkeypatch.setattr(reader, "SCRATCH_ROOT", scratch_root)
+    else:
+        monkeypatch.setattr(reader, "RESEARCH_ROOT", tmp_path)
+    summary_path = run / "summary.json"
     cell_summaries = {}
     for depth in producer.DEPTHS:
         for cell in producer.CELLS:
@@ -44,12 +49,20 @@ def write_capture(tmp_path, monkeypatch):
     summary = {"status": "ok", "production_named_kernel": True, "n": 5,
                "cell_summaries": cell_summaries,
                "candidate": {"binary": {"version_line_matches": True}}}
-    rows = producer.belief_capture_rows(
-        summary, run_id="run-20260925", scored_path="summary.json",
-        scored_sha256=digest, emitted_at=AS_OF)
+    sidecar = run / "belief_measurements.jsonl"
+    if scratch:
+        summary_path.write_text(json.dumps(summary))
+        monkeypatch.setattr(producer, "utc_now", lambda: AS_OF)
+        receipt = producer.write_belief_measurements(run, summary, summary_path)
+        assert receipt["written"] and receipt["path"] == str(sidecar)
+        rows = [json.loads(line) for line in sidecar.read_text().splitlines()]
+    else:
+        summary_path.write_text('{"status":"ok"}\n')
+        rows = producer.belief_capture_rows(
+            summary, run_id="run-20260925", scored_path="summary.json",
+            scored_sha256=reader._sha256(summary_path), emitted_at=AS_OF)
+        sidecar.write_text("".join(json.dumps(row) + "\n" for row in rows))
     assert len(rows) == 12
-    sidecar = tmp_path / "belief_measurements.jsonl"
-    sidecar.write_text("".join(json.dumps(row) + "\n" for row in rows))
     return sidecar, rows, summary_path, producer
 
 
@@ -71,6 +84,73 @@ def test_writer_rows_project_and_grade_through_shared_ladder(tmp_path, monkeypat
     assert ct.grade(tup)[0]  # one existing measurement ladder, no adapter grade
     summary.write_text("changed")
     assert reader.project(natives[0]).attestation_verified is None
+
+
+def test_native_writer_absolute_scratch_summary_ingests(tmp_path, monkeypatch):
+    sidecar, rows, summary, _ = write_capture(tmp_path, monkeypatch, scratch=True)
+    assert {row["scored_path"] for row in rows} == {str(summary)}
+    natives = reader.native_rows(sidecar)
+    assert len(natives) == 12
+    assert all(reader.project(native).attestation_verified is True for native in natives)
+
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    report = ingest(ledger, reader.SOURCE_KIND, [sidecar], as_of=AS_OF)
+    assert report["refused"] == []
+    assert (report["rows_projected"], report["frames_emitted"]) == (12, 36)
+
+
+def test_scratch_projection_requires_the_native_sidecar(tmp_path, monkeypatch):
+    sidecar, rows, _, _ = write_capture(tmp_path, monkeypatch, scratch=True)
+    with pytest.raises(ct.ProjectionError, match="native scratch sidecar"):
+        reader.project({"row": rows[0]})
+    sidecar.unlink()
+    with pytest.raises(ct.ProjectionError, match="native run's sibling summary.json"):
+        reader.project({"row": rows[0], "sidecar_path": str(sidecar)})
+
+
+@pytest.mark.parametrize("mutation,reason", [
+    ("traversal", "traverses directories"),
+    ("other-run", "native run's sibling summary.json"),
+    ("research-substitute", "native run's sibling summary.json"),
+    ("symlink", "native run's sibling summary.json"),
+    ("hardlink", "regular single-link file"),
+    ("missing", "cannot be resolved"),
+    ("changed", "differs from sealed scored_sha256"),
+])
+def test_scratch_summary_substitution_refuses_the_whole_sidecar(tmp_path, monkeypatch, mutation, reason):
+    sidecar, rows, summary, producer = write_capture(tmp_path, monkeypatch, scratch=True)
+    elsewhere = summary.parent.parent / "run-other" / "summary.json"
+    elsewhere.parent.mkdir()
+    elsewhere.write_bytes(summary.read_bytes())
+    if mutation in {"traversal", "other-run", "research-substitute"}:
+        alternative = elsewhere
+        if mutation == "traversal":
+            alternative = summary.parent / ".." / summary.parent.name / summary.name
+        elif mutation == "research-substitute":
+            research = tmp_path / "research"
+            research.mkdir()
+            monkeypatch.setattr(reader, "RESEARCH_ROOT", research)
+            alternative = research / "summary.json"
+            alternative.write_bytes(summary.read_bytes())
+        for row in rows:
+            row["scored_path"] = str(alternative)
+            row["row_sha256"] = producer.row_digest(row)
+        sidecar.write_text("".join(json.dumps(row) + "\n" for row in rows))
+    elif mutation == "symlink":
+        summary.unlink()
+        summary.symlink_to(elsewhere)
+    elif mutation == "hardlink":
+        summary.unlink()
+        summary.hardlink_to(elsewhere)
+    elif mutation == "missing":
+        summary.unlink()
+    else:
+        summary.write_text('{"status":"replaced"}')
+
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    report = ingest(ledger, reader.SOURCE_KIND, [sidecar], as_of=AS_OF)
+    assert report["frames_emitted"] == 0
+    assert len(report["refused"]) == 1 and reason in report["refused"][0]["reason"]
 
 
 def test_legacy_finite_scalar_stats_remain_accepted(tmp_path, monkeypatch):

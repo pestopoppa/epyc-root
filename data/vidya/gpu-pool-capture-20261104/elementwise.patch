@@ -1,0 +1,47 @@
+--- /mnt/raid0/llm/worktrees/vb-sl2-steps-r1-code/data/gpu-pool/elementwise-20261026/run-v3.py
++++ /mnt/raid0/llm/worktrees/vb-sl2-steps-r1-code/data/gpu-pool/elementwise-20261026/run-v3.py
+@@ -1,11 +1,15 @@
+ #!/usr/bin/python3
+ """Grant-only finite artifact correctness; no timing or release inference."""
+ import ctypes, datetime, glob, hashlib, json, os, pathlib, re, signal, subprocess, time
+-ROOT=pathlib.Path('/mnt/raid0/llm/tmp/codex-ni-20261026-gpu-sampler-exit-recovery/v3/elementwise')
++import copy, sys
++sys.path.insert(0, os.environ['EPYC_VIDYA_ROOT'])
++from adapters.gpu_pool_native import begin, write_capture
++
++ROOT=pathlib.Path(os.environ['GPU_POOL_CAPTURE_OUT']).resolve()
+ BUILD=pathlib.Path('/mnt/raid0/llm/tmp/build-champion-c463f601b-hip-20260909')
+ BIN=BUILD/'bin/test-backend-ops'
+ FLAGS=pathlib.Path('/mnt/raid0/llm/tmp/compute-flags')
+-ID='ni-gpu-sampler-elementwise-20261026-v3'
++ID=os.environ['GPU_POOL_CAPTURE_ROW_ID']
+ STARTED=time.monotonic()
+ ALLOWED=set(range(184,192))
+ BCAST=r'^type=f32,ne=\[10,5,4,3\],nr=\[[12],[12],[12],[12]\],nf=1,perm1=[01],src_overlap=0$'
+@@ -93,6 +97,7 @@
+  return {'time':time.time(),'pid':pid,'starttime':starttime,'start_ticks':starttime,'overlap':overlap,'tasks':len(masks),'masks':masks,'skipped_tasks':skipped,'missing_observations':missing,'partial':bool(skipped or missing) or not overlap or not masks,'kfd':kfd_present,'kfd_detail':kfd_detail,'vram':vram,'ggml_maps':sorted(set(own_maps))}
+ def main():
+  global child
++ ROOT.mkdir(exist_ok=False)
+  safe()
+  artifacts=[]
+  for name,sha in PIN.items():
+@@ -102,6 +107,7 @@
+  shim=pathlib.Path('/mnt/raid0/llm/cache/shims/nprocs_shim.so')
+  assert digest(shim)=='d3103d7ab45e0a5fe9473d7dd401e5462f39c06174b4a64109af6e387e3b3eb4'
+  receipt=make_record(artifacts,digest(shim))
++ request=begin('elementwise',ID,{k:receipt[k] for k in ('source','artifacts','shim')},[x[0] for x in CASES],producer=__file__)
+  (ROOT/'results.json').write_text(json.dumps(receipt,indent=2))
+  assert os.environ['SHIM_NPROCS']=='2'
+  lib=ctypes.CDLL('libstdc++.so.6');fn=getattr(lib,'_ZNSt6thread20hardware_concurrencyEv');fn.restype=ctypes.c_uint
+@@ -136,6 +142,10 @@
+   resident=[s for s in local if s['overlap'] and not s['partial'] and s['tasks']>0 and s['kfd'] and sum(s['vram'].values())>0 and all(any(lib in p for p in s['ggml_maps']) for lib in ['libggml-hip','libggml-base','libggml-cpu'])]
+   result.update({'status':'native_exit_recorded','rc':rc,'observed':len(lines),'passed':passed,'unsupported':unsupported,'failed':failed,'resident_samples':len(resident),'seconds':time.time()-start,'max_tasks':max((s['tasks'] for s in local),default=0)})
+   (ROOT/'results.json').write_text(json.dumps(receipt,indent=2))
++  result.update(log_sha256=digest(log),residency_samples=local)
++  native_capture=copy.deepcopy(receipt)
++  native_capture.update(invocation_token=request['invocation_token'],runs=[copy.deepcopy(result)])
++  write_capture(ROOT/('belief-'+op+'-'+str(result['seed'])+'.json'),request,native_capture)
+   assert rc==0 and len(lines)==expected and passed>0 and not failed,result
+   assert re.search(r'Backend [0-9]+/[0-9]+: ROCm0\n  Device description:',text) and len(resident)>=2,'native HIP/owned-PID DURING residency not proven'
+   assert all('type=f32,' in line for line in lines),'scope escaped f32'

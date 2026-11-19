@@ -1,0 +1,25 @@
+{
+  "id": "vidya-r18d-aa-wire-20261104",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/launch.sh",
+  "lane": "gpu",
+  "result_path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "A calibration candidate requires a complete full-run record with 20 fresh A/A pairs in each of SETTLED, PREHEATED and successful POST_BUILD, all invocations GPU-resident, and pp512 bootstrap floors with provenance; review calibration and re-adjudication before updating the table. Partial measured units and dry-run PASS are not a floor verdict. Scope: Qwen3.8-27B Q8_0 exact prepared GGUF. SMOKE_UNSETTLED smoke invocations are excluded from every calibration condition; only full-run SETTLED originals establish a target-specific floor.",
+  "estimate_s": 14400,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R18D-AA-WIRE",
+  "priority_rank": 6,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104",
+  "keep": [
+    "out/**",
+    "*.py",
+    "*.sh",
+    "*.json"
+  ],
+  "dryrun_timeout_s": 300,
+  "supersedes": "autokernel-r18d-pp512-v10-private-20261102",
+  "smoke_timeout_s": 300,
+  "first_progress_s": 300
+}

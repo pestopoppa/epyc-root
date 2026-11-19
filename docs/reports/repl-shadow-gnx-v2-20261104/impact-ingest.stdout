@@ -1,0 +1,110 @@
+{
+  "target": {
+    "id": "Function:scripts/vidya/ingest_sources.py:ingest",
+    "name": "ingest",
+    "type": "Function",
+    "filePath": "scripts/vidya/ingest_sources.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 8,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 4,
+    "processes_affected": 0,
+    "modules_affected": 1
+  },
+  "byDepthCounts": {
+    "1": 4,
+    "2": 3,
+    "3": 1
+  },
+  "affected_processes": [],
+  "affected_modules": [
+    {
+      "name": "Vidya",
+      "hits": 5,
+      "impact": "direct"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Function:scripts/vidya/cli.py:_ingest_file_source",
+        "name": "_ingest_file_source",
+        "filePath": "scripts/vidya/cli.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:scripts/vidya/td18_backend_pin_canary.py:main",
+        "name": "main",
+        "filePath": "scripts/vidya/td18_backend_pin_canary.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Function:scripts/vidya/ufh12_gs_canary.py:main",
+        "name": "main",
+        "filePath": "scripts/vidya/ufh12_gs_canary.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "File:artifacts/coordination/meta-gpu-arch-ready-20261027/installed-source-canary.py",
+        "name": "installed-source-canary.py",
+        "filePath": "artifacts/coordination/meta-gpu-arch-ready-20261027/installed-source-canary.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "2": [
+      {
+        "depth": 2,
+        "id": "Function:scripts/vidya/cli.py:_cmd_ingest",
+        "name": "_cmd_ingest",
+        "filePath": "scripts/vidya/cli.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:scripts/vidya/ufh12_gs_canary.py",
+        "name": "ufh12_gs_canary.py",
+        "filePath": "scripts/vidya/ufh12_gs_canary.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:scripts/vidya/td18_backend_pin_canary.py",
+        "name": "td18_backend_pin_canary.py",
+        "filePath": "scripts/vidya/td18_backend_pin_canary.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "3": [
+      {
+        "depth": 3,
+        "id": "Function:scripts/vidya/cli.py:cmd_ingest",
+        "name": "cmd_ingest",
+        "filePath": "scripts/vidya/cli.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ]
+  }
+}

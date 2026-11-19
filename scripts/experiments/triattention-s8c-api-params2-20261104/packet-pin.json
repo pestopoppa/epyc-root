@@ -1,0 +1,12 @@
+{
+  "plan_sha256": "313b4cef4f057078d708f2581ab388c2f4bcd60eed8e6be6496962d7955869ed",
+  "files": {
+    "/mnt/raid0/llm/tmp/triattention-s8c-api-params2-20261104/packet/job.py": "19e81e723cff8f0f79fafa0b0fe0d4e584a2d48de4c64678851c5cac78643ca9",
+    "/mnt/raid0/llm/tmp/triattention-s8c-api-params2-20261104/packet/first_progress.py": "2d7388357f062be0e5b23ea633d72fa59b42fb3358dfadda94f47a4f4afd9e64",
+    "/mnt/raid0/llm/tmp/triattention-s8c-api-params2-20261104/packet/packet_pins.py": "fdf5a09fd72c987d73a6116330d8e74cfa35cf9bfcfb5bfc78f5e29b6f21ba78",
+    "/mnt/raid0/llm/tmp/triattention-s8c-api-params2-20261104/packet/token-ids.json": "2152a130c2147e843aeeea9b0a04691c763fe60f83cd03d74d7b529604bd14dc",
+    "/mnt/raid0/llm/tmp/triattention-s8c-api-params2-20261104/packet/api_cases.py": "34f77426ba28b171cff44f8d6d7f35c6ea157b9604b0a99243bea9c989ad7c0e"
+  },
+  "fixture_token_ids": 128,
+  "model_hash_checked_before_publication": true
+}

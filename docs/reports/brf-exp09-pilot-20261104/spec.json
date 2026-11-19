@@ -1,0 +1,18 @@
+{
+ "schema": "epyc.row.v3",
+ "id": "brf-exp09-pilot-20261102",
+ "owner": "ws58",
+ "launcher": "/mnt/raid0/llm/tmp/brf-exp09/launch.sh",
+ "lane": "cpu",
+ "regions": "any-cpu-quarter",
+ "ram_gib": 48,
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp09/out/results.jsonl",
+ "result_format": "jsonl",
+ "scratch_root": "/mnt/raid0/llm/tmp/brf-exp09",
+ "keep": ["out/**", "corpus/**", "identity.json", "job.py", "launch.sh", "build_corpus.py", "spec.json"],
+ "estimate_s": 1500,
+ "dryrun_timeout_s": 900,
+ "handoff_task": "handoffs/active/tool-output-compression.md:TOC-SP-3",
+ "decision_rule": "BRF-T4-EXP09 / manifest EXP-09 pilot, exploratory/decision-support. 12 frozen failing logs (corpus sha f3a8342c) x 4 arms: control = current _spill_output (orchestrator 3a428cb3, fn sha e1707a1b, executed unchanged, worker Qwen3.6-35B-A3B-MTP-Q8_0 on own v10 kernel-store llama-server), verified-quote, deterministic shape-header, pointer-only. Validity: control code unchanged, planted-mismatch quote rejected (mechanism fired), raw answers + evidence selections captured per cell. Owner (TOC-SP-3) decides: EXPAND if control verified and mechanism fired and verified-quote accuracy >= control; REVISE control if the nominal path did not run; STOP if verified-quote never beats control. Futility stop = operational decision, never a gate result.",
+ "notes": "Control resolved PRESENT: REPLEnvironment._spill_output (environment.py:907 at 3a428cb3) is called from the REPL execute paths (:1303/:1368/:1616/:1707) when output > output_cap 8192; worker llm_call role=worker n_tokens=512 on the last 4000 chars. Deviation: draft-mtp off, greedy; latency is not the served latency. REPL-EMB-3.2 re-fetch/latency needs the online arm (not in this pilot)."
+}

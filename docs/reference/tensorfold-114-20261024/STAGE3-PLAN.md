@@ -49,7 +49,7 @@ second reader found two locator/scope defects; both were fixed, and four claims 
 
 | Packet | Action | Owner | Execution conditions |
 |---|---|---|---|
-| P1 | 27B MI210 long-context FA seeds G2, G3, G1 and G4, plus evidence for H3/H4/H7/H8, as one inbox note. Then an arbiter rocprof probe (no build) that orders them | `handoffs/active/autokernel-all-devices-all-dimensions.md` (AKX-ALL-30, AKX-ALL-30a) | Filing: after approval. Inbox write: by the campaign owner, after the hold lifts. Arbiter: MI210 window grant (GPU arming still asks). Authoring: after AKX-ALL-19 (G3) is admitted and the FA owner confirms (note 10 §4) |
+| P1 | 27B MI210 long-context FA seeds G2, G3, G1 and G4, plus evidence for H3/H4/H7/H8, as one inbox note. Then an arbiter rocprof probe (no build) that orders them | `handoffs/active/kernel-champion-and-promotion.md` (AKX-ALL-30, AKX-ALL-30a) | Filing: after approval. Inbox write: by the campaign owner, after the hold lifts. Arbiter: MI210 window grant (GPU arming still asks). Authoring: after AKX-ALL-19 (G3) is admitted and the FA owner confirms (note 10 §4) |
 | P2 | CPU seeds Q1 and Q2 (Q38FN) and D1 (DS41-1017, record-only), as two inbox notes | same owner (AKX-ALL-30) | After approval and the hold lift. D1 is actionable only on the AKX-ALL-12 depth surface |
 | P3 | AK numerics gate: non-finite-class gate and integer-accumulator (fp32-sum) gate, each with a planted control that must go red, in the default CPU and HIP gate chain | same owner (AKX-ALL-31); INF-73 loop owner reviews the merge | No inference compute; a research branch under a build-role claim. Not blocked by the launch hold (harness code, not a run) |
 | P4 | intake-1924#record re-encounter, Stage-2 dive fields and corrections (`INTAKE-ENTRIES-PROPOSED.yaml`) | research-intake session | After approval; text edit, `validate_intake.sh` exit 0, then `vidya sync` |
@@ -74,7 +74,7 @@ P2 and P3 controls are carried by the AK keep gate (P2: paired ABA, noise-floor 
 correctness class per seed). P3 is deterministic infrastructure: its replacement conformance check is "each planted
 control goes red and the incumbent passes".
 
-## Handoff edits (append to `handoffs/active/autokernel-all-devices-all-dimensions.md`, after the AKX-ALL-29.x block, as a new subsection)
+## Handoff edits (append to `handoffs/active/kernel-champion-and-promotion.md`, after the AKX-ALL-29.x block, as a new subsection)
 
 ```markdown
 ### P6: TensorFold 1.1.4 seeds (research intake 2026-10-24)
@@ -136,7 +136,7 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
            "gap": "Multi-row FA re-reads f16 K/V per GQA query head and converts the whole q8_0 view to f16 per call (FA 29 ms + convert 8 ms = 31% of the 80k step)",
            "operational_change": "Seed G2/G3/G1/G4 in the 27B AK inbox; arbiter rocprof orders them",
            "benefit_direction": "Lower ms per verify round at depth; G2/G3 bit-exact, G1 row-invariant under the ppl/KLD contract and the DF2-9 gate",
-           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+           "owner": "handoffs/active/kernel-champion-and-promotion.md",
            "execution_conditions": "Filing after approval; inbox write and AK runs after the launch hold lifts; arbiter needs an MI210 window grant; authoring after the AKX-ALL-19 route and FA-owner confirmation",
            "closure_basis": "Immediate filing and probe retained; promotion stays behind the keep gate and the production-shape surfaces (AKX-ALL-LB2)"},
     "P2": {"project_objective": "Raise Q38FN and DS41-1017 CPU decode",
@@ -144,7 +144,7 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
            "gap": "CPY 9.4% of Q38FN wall unattributed beyond 'feeding matmuls'; GDN prologue nodes; DS41 indexer unfused at depth",
            "operational_change": "Seed Q1, Q2 (conditional) and D1 (record-only) as inbox notes",
            "benefit_direction": "Fewer nodes and copies per token; bit-exact",
-           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+           "owner": "handoffs/active/kernel-champion-and-promotion.md",
            "execution_conditions": "After approval and the hold lift; D1 only on the AKX-ALL-12 depth surface",
            "closure_basis": "Immediate filing retained; each seed carries its own falsifier"},
     "P3": {"project_objective": "Make AK correctness gates non-vacuous for non-finite propagation and reduced-precision accumulation",
@@ -152,7 +152,7 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
            "gap": "No AK gate checks the non-finite class against float64 or proves fp32 accumulation, and none requires a planted control to go red",
            "operational_change": "Two gates with planted controls in the default chain",
            "benefit_direction": "Catches NaN-dropping or fp16-accumulating candidates that tolerance gates pass",
-           "owner": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+           "owner": "handoffs/active/kernel-champion-and-promotion.md",
            "execution_conditions": "Research branch, build role, no inference compute; INF-73 owner review",
            "closure_basis": "Immediate"},
     "P4": {"project_objective": "Keep the intake record true at the current source version",
@@ -222,16 +222,16 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
   "outcome_reviews": {
     "TF114-1": {"required_outcome": "G2 is in the 27B inbox and the arbiter decides its order", "review_status": "preserved", "review_basis": "Task text names the seed id, file and predeclared rule",
       "task_refs": [
-        {"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present with sha256 recorded"},
-        {"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30a", "task_text": "  - [ ] **AKX-ALL-30a — arbiter probe before authoring the GPU FA seeds.**", "acceptance": "verdict JSON names the ordering"}]},
-    "TF114-2": {"required_outcome": "G3 seeded", "review_status": "preserved", "review_basis": "In note 60", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present"}]},
-    "TF114-3": {"required_outcome": "G1 seeded behind G2/G3", "review_status": "preserved", "review_basis": "In note 60 with ordering", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present"}]},
-    "TF114-4": {"required_outcome": "G4 seeded with head-shape falsifier", "review_status": "preserved", "review_basis": "In note 60", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present"}]},
-    "TF114-5": {"required_outcome": "Existing seeds receive the external evidence", "review_status": "preserved", "review_basis": "Evidence section of note 60", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present"}]},
-    "TF114-6": {"required_outcome": "Q1 seeded (attribution first)", "review_status": "preserved", "review_basis": "In note 65", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 65 present"}]},
-    "TF114-7": {"required_outcome": "Q2 seeded with its overlap falsifier", "review_status": "preserved", "review_basis": "In note 65", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 65 present"}]},
-    "TF114-8": {"required_outcome": "D1 recorded for the depth surface", "review_status": "preserved", "review_basis": "In note 32", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 32 present"}]},
-    "TF114-9": {"required_outcome": "Two planted-control gates run by default", "review_status": "preserved", "review_basis": "Task acceptance requires red controls and a passing incumbent", "task_refs": [{"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_id": "AKX-ALL-31", "task_text": "- [ ] **AKX-ALL-31 — planted-control numerics gates for AK candidates (intake-1924#record; TensorFold `docs/kernel-contract.md` gates 1 and 4).**", "acceptance": "both controls red; incumbent passes"}]},
+        {"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present with sha256 recorded"},
+        {"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30a", "task_text": "  - [ ] **AKX-ALL-30a — arbiter probe before authoring the GPU FA seeds.**", "acceptance": "verdict JSON names the ordering"}]},
+    "TF114-2": {"required_outcome": "G3 seeded", "review_status": "preserved", "review_basis": "In note 60", "task_refs": [{"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present"}]},
+    "TF114-3": {"required_outcome": "G1 seeded behind G2/G3", "review_status": "preserved", "review_basis": "In note 60 with ordering", "task_refs": [{"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present"}]},
+    "TF114-4": {"required_outcome": "G4 seeded with head-shape falsifier", "review_status": "preserved", "review_basis": "In note 60", "task_refs": [{"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present"}]},
+    "TF114-5": {"required_outcome": "Existing seeds receive the external evidence", "review_status": "preserved", "review_basis": "Evidence section of note 60", "task_refs": [{"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 60 present"}]},
+    "TF114-6": {"required_outcome": "Q1 seeded (attribution first)", "review_status": "preserved", "review_basis": "In note 65", "task_refs": [{"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 65 present"}]},
+    "TF114-7": {"required_outcome": "Q2 seeded with its overlap falsifier", "review_status": "preserved", "review_basis": "In note 65", "task_refs": [{"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 65 present"}]},
+    "TF114-8": {"required_outcome": "D1 recorded for the depth surface", "review_status": "preserved", "review_basis": "In note 32", "task_refs": [{"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-30", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**", "acceptance": "note 32 present"}]},
+    "TF114-9": {"required_outcome": "Two planted-control gates run by default", "review_status": "preserved", "review_basis": "Task acceptance requires red controls and a passing incumbent", "task_refs": [{"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_id": "AKX-ALL-31", "task_text": "- [ ] **AKX-ALL-31 — planted-control numerics gates for AK candidates (intake-1924#record; TensorFold `docs/kernel-contract.md` gates 1 and 4).**", "acceptance": "both controls red; incumbent passes"}]},
     "TF114-10": {"required_outcome": "intake-1924#record is dive-verified at v1.1.4 with contamination removed", "review_status": "closed-with-basis", "review_basis": "Delivered by entry_updates and INTAKE-ENTRIES-PROPOSED.yaml, not a handoff task", "task_refs": []},
     "TF114-D1": {"required_outcome": "none", "review_status": "closed-with-basis", "review_basis": "server-context.cpp:500,3143,3193 batch every slot's drafts", "task_refs": []},
     "TF114-D2": {"required_outcome": "none", "review_status": "closed-with-basis", "review_basis": "q8_1 integer-dot path in use; CDNA2 int8 = f16 rate", "task_refs": []},
@@ -244,9 +244,9 @@ The coordinator relayed both of these rows as operator-directed. Neither is the 
     "TF114-D9": {"required_outcome": "none", "review_status": "closed-with-basis", "review_basis": "Note 10 §3.2 settled it", "task_refs": []}
   },
   "proposed_tasks": [
-    {"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**"},
-    {"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_text": "  - [ ] **AKX-ALL-30a — arbiter probe before authoring the GPU FA seeds.**"},
-    {"owner": "handoffs/active/autokernel-all-devices-all-dimensions.md", "task_text": "- [ ] **AKX-ALL-31 — planted-control numerics gates for AK candidates (intake-1924#record; TensorFold `docs/kernel-contract.md` gates 1 and 4).**"}
+    {"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_text": "- [ ] **AKX-ALL-30 — inject the TensorFold 1.1.4 seeds as three inbox notes (intake-1924#record).**"},
+    {"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_text": "  - [ ] **AKX-ALL-30a — arbiter probe before authoring the GPU FA seeds.**"},
+    {"owner": "handoffs/active/kernel-champion-and-promotion.md", "task_text": "- [ ] **AKX-ALL-31 — planted-control numerics gates for AK candidates (intake-1924#record; TensorFold `docs/kernel-contract.md` gates 1 and 4).**"}
   ]
 }
 ```

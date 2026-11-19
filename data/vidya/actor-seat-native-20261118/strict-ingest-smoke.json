@@ -1,0 +1,16 @@
+{
+  "adapter": "adapters/autokernel_actor_seat.py",
+  "adapter_id": "vidya.adapters.autokernel_actor_seat/v1",
+  "declined": [],
+  "dry_run": true,
+  "frames_emitted": 3,
+  "missing": [],
+  "paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/smoke/attempt-9dsk7qb9/actor-replies/actor-calls.jsonl"
+  ],
+  "refused": [],
+  "rows_projected": 1,
+  "source": "ak-actor-seat",
+  "units_matched": 1,
+  "units_projected": 1
+}

@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=1. Pinned f58d0bf index succeeded, but context ShadowSink failed because no explicit repository selector was supplied on a host with multiple indexed repositories. Only two partial source scans exist; zero required context/impact receipts. REPL-EMB-2.3 stays open. Evidence docs/reports/harness-run-filings-20261104/gnx.",
+  "verdict": "fail"
+ },
+ "at": "2026-11-04T07:20:47+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-02T11:55:23Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-04T07:20:47+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.3",
+ "id": "codex-ufh12-shadow-gnx-v1-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ufh12-shadow-gnx-v1-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-repl-embedding-retrieval",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "rc=1. Pinned f58d0bf index succeeded, but context ShadowSink failed because no explicit repository selector was supplied on a host with multiple indexed repositories. Only two partial source scans exist; zero required context/impact receipts. REPL-EMB-2.3 stays open. Evidence docs/reports/harness-run-filings-20261104/gnx.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "codex-ufh12-shadow-gnx-v1-20261102",
+ "row_verdict": "fail",
+ "rule": "Complete only after admitted root index at pinned f58d0bf7668147b5aa142ade921b7b86ece35ec0 and context plus upstream impact receipts for ShadowSink, validate_shadow_stream, ingest and cmd_ingest; unresolved or partial is not an impact pass. HIGH or CRITICAL stops edits and requires warning.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "8a5117e5708013c2ab5e244fc4b5b202349365f871adf4cfe58ce775c32dcb81",
+  "result": "fail",
+  "status": "filed"
+ }
+}

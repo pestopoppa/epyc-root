@@ -1,0 +1,41 @@
+--- a/proof.py
++++ b/proof.py
+@@ -29,6 +29,17 @@
+  validate(d); p=pathlib.Path(out); p.parent.mkdir(parents=True,exist_ok=True); fd,tmp=tempfile.mkstemp(dir=p.parent,prefix='.proof-')
+  with os.fdopen(fd,'w') as f: json.dump(d,f,sort_keys=True); f.write('\n'); f.flush(); os.fsync(f.fileno())
+  os.replace(tmp,p)
++if sys.argv[1]=='predicate':
++ try:
++  p=pathlib.Path(os.environ['FILLER_DRYRUN_RESULT_PATH']); assert p.stat().st_mtime >= int(os.environ['FILLER_SMOKE_T0'])
++  d=json.loads(p.read_text()); assert d['mode']=='smoke'
++  assert d['source_commit']=='ffc1bac82eeca6f9099e1ccd9ba49703c460a115' and d['patch_sha256']==PATCH
++  assert d['candidate_sha256']==digest(D/'candidate.cpp') and d['bridge_sha256']==digest(D/'mtp_draft_bridge.hpp')
++  obj=(pathlib.Path(d['run']).resolve(strict=True)/'candidate.o').resolve(strict=True)
++  assert str(obj) in d['files']
++  validate(d)
++ except (AssertionError, OSError, KeyError, TypeError, ValueError, json.JSONDecodeError, subprocess.SubprocessError): raise SystemExit(1)
++ raise SystemExit(0)
+ if sys.argv[1]=='source': source()
+ elif sys.argv[1]=='write': write(*sys.argv[2:])
+ elif sys.argv[1]=='check':
+--- a/spec.json
++++ b/spec.json
+@@ -24,5 +24,6 @@
+     "*.json",
+     "*.sha256"
+   ],
+-  "first_progress_s": 900
++  "first_progress_s": 900,
++  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-rollback-row/proof.py predicate"
+ }
+--- a/runtime.sha256
++++ b/runtime.sha256
+@@ -1,7 +1,7 @@
+ 236b9b14b4140638d265778b472ec5bd2973cc8990598d21fdeb232176c2e42a  launch.sh
+ dbbe386c038af37bfba9cc4b3e88aa279851dedf44dc0169e6596637b0f4b7bd  job.sh
+ f154a6e060820d09931d7aef3974850ab61b140e9bf6fca7d0fd0322315badc8  build.sh
+-066df07905f79f9d4a05772b9efb8bc57bfdd93f85e7b15b683b17164869868d  proof.py
++545a4db999eea6daf63d4ba6a29d96c7e58259aa986a135884fae7fdc0c40f3e  proof.py
+ ab378fc8bd635da299c0dbe7371cfc8d42842c864473755d905fbaa9931871c2  supervise.py
+ 43c5a14983bd7fd413e6573acce6ca75ee1865232486bbe5a20fb6d43d22d07c  candidate.cpp
+ 9688a97c3ad30e5aa008650d29a7b4d463109220b7dc48a136f9324aa2cf3919  mtp_draft_bridge.hpp

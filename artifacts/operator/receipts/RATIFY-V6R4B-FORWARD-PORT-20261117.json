@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-V6R4B-FORWARD-PORT-20261117",
+  "indexed_by": "ratify",
+  "receipt": "artifacts/operator/ratify_v6r4b_forward_port_rule_20261117.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

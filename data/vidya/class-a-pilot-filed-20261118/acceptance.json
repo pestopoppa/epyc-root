@@ -1,0 +1,133 @@
+{
+  "ac0": {
+    "missed_gold": [
+      12,
+      16,
+      38,
+      91
+    ],
+    "n_gold": 54,
+    "n_items": 120,
+    "n_proposed": 83,
+    "pass": true,
+    "precision": 0.6024,
+    "recall": 0.9259,
+    "true_positives": 50
+  },
+  "ac1_ac5": {
+    "as_of": "2026-11-18T21:52:14Z",
+    "batch_sha256": "8c64e05a1120627b651de47f85305c648f1685ff23c533cfb4447cf25d77dfed",
+    "before_sha": "ee4ebcde9a8f499bf280fff905091c1442b599b6c52a825064ae7b4013584317",
+    "combined_frames": 564,
+    "decision_declines": [
+      {
+        "cc_id": "cc:v1:13323577a3e4d1f98f835df2e1d0947a",
+        "reason": "decision"
+      }
+    ],
+    "frames": 438,
+    "linked_duplicate_count": 1,
+    "picked_distinct_register_rows": 53,
+    "projected_distinct_gold_rows": 52,
+    "projected_metric_claims": 146,
+    "quote_and_warrant_negative_controls": [
+      "quote audit failed: 6eac39cb6:handoffs/active/autokernel-unified-surface-program.md#L26 does not re-hash to quote_sha256",
+      "cc:v1:20cc9bd13ce6e8fd1523a06e80e647cc sets 'protocol_id': a committed conclusion carries no protocol, rep count or run identity (no invented measurement warrant)",
+      "cc:v1:20cc9bd13ce6e8fd1523a06e80e647cc sets 'reps': a committed conclusion carries no protocol, rep count or run identity (no invented measurement warrant)",
+      "cc:v1:20cc9bd13ce6e8fd1523a06e80e647cc sets 'run_id': a committed conclusion carries no protocol, rep count or run identity (no invented measurement warrant)"
+    ],
+    "reviewed_gold": 54,
+    "total_combined_rows": 83,
+    "unscoped_projected_rows": 40,
+    "unscoped_register_rows": 41
+  },
+  "ac6_ac9": {
+    "all_reader_checkout_checks": true,
+    "budget": {
+      "floor_retained": "clm_ak-floor:v1:q27b-9a3f1392a-gpu-dflash2-np1:8ccff75f84e0b4af",
+      "live_ak_target_claim_ids_retained": [
+        "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:0:client_stream_events_s",
+        "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:1:acceptance_ratio",
+        "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:1:client_stream_events_s",
+        "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:2:acceptance_ratio",
+        "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:2:client_stream_events_s",
+        "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:context:0:acceptance_ratio",
+        "clm_r234:dc2079b32cce475a9f4e62d782cb09ca:context:1:acceptance_ratio"
+      ],
+      "stock_max_bytes": 14000,
+      "stock_max_claims": 30,
+      "target_tier_after": 16,
+      "target_tier_before": 16
+    },
+    "canonical_ledger_sha256_after": "ee4ebcde9a8f499bf280fff905091c1442b599b6c52a825064ae7b4013584317",
+    "canonical_ledger_sha256_before": "ee4ebcde9a8f499bf280fff905091c1442b599b6c52a825064ae7b4013584317",
+    "epoch": {
+      "comparator": "clm_cc:v1:9bb0f51ee3489ac2ef175d6c86e326ca:r1#m0",
+      "comparator_is_scratch_only": true,
+      "current_epoch": "E8-cpu-kernel",
+      "older_claim_ids": [
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m0",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m1",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m2",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m3",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m4",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m5"
+      ],
+      "older_epoch": "E5-cpu-kernel",
+      "prior_gold": 110
+    },
+    "superseded_pilot_runs": 0,
+    "target_examples": {
+      "CPU sibling gold 5": [
+        "clm_cc:v1:81b7797a9ac8ca685a44e221558b5099:r1#m0"
+      ],
+      "CPU target gold 110": [
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m0",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m1",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m2",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m3",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m4",
+        "clm_cc:v1:ff84b85e87b284bbbef83ae45feb3df4:r1#m5"
+      ],
+      "GPU host gold 34": [
+        "clm_cc:v1:ef8cd9a559e95046e7a8f6f0cef037ae:r1#m0",
+        "clm_cc:v1:ef8cd9a559e95046e7a8f6f0cef037ae:r1#m1"
+      ],
+      "GPU target gold 74": [
+        "clm_cc:v1:7271472c30063f9117c38a56de90e759:r1#m0",
+        "clm_cc:v1:7271472c30063f9117c38a56de90e759:r1#m1",
+        "clm_cc:v1:7271472c30063f9117c38a56de90e759:r1#m2"
+      ]
+    },
+    "unscoped_projected_rows": 40
+  },
+  "basis_and_controls": {
+    "ds41_c98_gold_24": "declined operator decision",
+    "fold_2_gold_35": "secondary anchor on gold 34",
+    "multimodal_gold_107_108": "original CPU and corrected 3.37% GPU verdict exact quote; stock CLI through separately repaired historical-deletion bug",
+    "native_control_1": "24 exact inf70-ingest-ds41scope claims, 24 separate -2 repeat claims; original 48 prefix count did not distinguish them",
+    "native_control_2": "24 exact sub-gpu-runner-20260916 claims, separate TALE source, absent from the 102 Class-A paths",
+    "owner_still_applies": "Design \u00a73.2/\u00a75 places register application with main and real ingest with the ledger owner.",
+    "unscoped": "40 result rows have no unambiguous exact model-device scope or combine multiple configurations. Raw quotes are retained and these results are absent from tested planner targets."
+  },
+  "canonical_ledger_mutated": false,
+  "class_a_gold_rows_already_in_baseline": 0,
+  "confirmation": "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill/confirmation.json",
+  "evidence": "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill",
+  "exact_cli_command_replay": "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill/commands.json",
+  "narrow_limitations": [
+    "Only gold results are in the proposed batch. Covered controls and the actual comparator for AC8 exist in scratch only.",
+    "AC9 checked the real Q27 AutoKernel floor and seven AutoKernel target rows at stock budget. The copied ledger had no AutoPilot source observations."
+  ],
+  "original_basis": {
+    "class_a_inventory_paths": 102,
+    "class_a_items": 120,
+    "fixture": "/mnt/raid0/llm/tmp/ws58-conclusions-adapter-design-20261025/work/a1",
+    "gold_labels": 54,
+    "root_ref": "6f201114228d0ad8d03877b61c58f74eb1ea3dbd"
+  },
+  "owner_append_candidate": "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill/gold-register.jsonl",
+  "owner_apply_path": "data/belief/committed_conclusions.jsonl",
+  "status": "validated and ready for owning main to apply",
+  "tracked_paths_changed": []
+}

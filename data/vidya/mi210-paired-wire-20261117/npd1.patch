@@ -1,0 +1,84 @@
+--- a/job.py
++++ b/job.py
+@@ -1,6 +1,8 @@
+ #!/usr/bin/env python3
+ """NPD1 step 3: CPU-only idle decode, matched CPU vs GPU-store backends."""
+-import json, os, signal, socket, subprocess, time, urllib.request
++import json, os, signal, socket, subprocess, sys, time, urllib.request
++sys.path.insert(0, os.environ["MI210_BELIEF_ROOT"])
++from scripts.vidya.producers.mi210_native_run import NativeRun, identity, grant, build_identity, model_identities
+ from pathlib import Path
+ D = Path('/mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/npd1-step3')
+ OUT = D / ('smoke-out' if os.environ.get('FILLER_SMOKE') == '1' else 'out')
+@@ -58,28 +60,46 @@
+     return Path(os.environ.get('FILLER_STOPFILE', str(D / 'STOP'))).exists()
+ 
+ OUT.mkdir(exist_ok=True)
+-for pair, arm in ORDER:
+-    if stopped(): raise SystemExit(0 if SMOKE else 'STOP')
+-    with socket.socket() as probe:
+-        probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+-        probe.bind(('127.0.0.1', PORT))
+-    store = CPU if arm == 'cpu' else GPU
+-    env = dict(os.environ, LD_LIBRARY_PATH=f'{store}/bin', **ENV)
+-    with (OUT / f'server-{pair}-{arm}.log').open('w') as logf:
+-        p = subprocess.Popen(['numactl', '--interleave=all', f'{store}/bin/llama-server'] + COMMON, stdout=logf, stderr=subprocess.STDOUT, env=env)
+-        try:
+-            start = time.monotonic()
+-            while time.monotonic() - start < 1500:
+-                if stopped(): raise SystemExit(0 if SMOKE else 'STOP while loading')
+-                if p.poll() is not None: raise RuntimeError(f'{arm} exited {p.returncode}')
+-                try:
+-                    if request('/health', timeout=5).get('status') == 'ok': break
+-                except (OSError, ValueError): pass
+-                time.sleep(2)
+-            else: raise RuntimeError(f'{arm} load timeout')
+-            run_completion()  # warmup
+-            measure = run_completion()
+-            log({'phase':'idle', 'pair':pair, 'arm':arm, 'load_s':time.monotonic()-start, 'cpus':cpus, 'threads':threads, 'load_threads':load_threads, **measure})
+-        finally:
+-            cleanup(p)
+-(D / 'out' / 'COMPLETE.json').write_text(json.dumps({'order':ORDER, 'complete':True})+'\n')
++declaration = {'source':'NPD1-STEP3', 'mode':'smoke' if SMOKE else 'measurement',
++               'native_producer':identity(__file__),
++               'model':model_identities(MODEL) + model_identities(MTP),
++               'builds':{a:build_identity(Path(s)/'bin') for a,s in [('cpu',CPU),('gpu_cpu',GPU)]},
++               'recipe':{'argv':COMMON,'env':ENV,'prompt':PROMPT,'arm_categories':{'cpu':'BASELINE','gpu_cpu':'CANDIDATE'}},
++               'order':[list(x) for x in ORDER], 'grant':grant()}
++with NativeRun(OUT, declaration) as capture:
++    for pair, arm in ORDER:
++        if stopped():
++            capture.stop = 'STOP before launch'
++            raise SystemExit(0 if SMOKE else 'STOP')
++        with socket.socket() as probe:
++            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
++            probe.bind(('127.0.0.1', PORT))
++        capture.start(pair, arm)
++        store = CPU if arm == 'cpu' else GPU
++        env = dict(os.environ, LD_LIBRARY_PATH=f'{store}/bin', **ENV)
++        with (OUT / f'server-{pair}-{arm}.log').open('w') as logf:
++            p = subprocess.Popen(['numactl', '--interleave=all', f'{store}/bin/llama-server'] + COMMON, stdout=logf, stderr=subprocess.STDOUT, env=env)
++            try:
++                start = time.monotonic()
++                while time.monotonic() - start < 1500:
++                    if stopped(): raise SystemExit(0 if SMOKE else 'STOP while loading')
++                    if p.poll() is not None: raise RuntimeError(f'{arm} exited {p.returncode}')
++                    try:
++                        if request('/health', timeout=5).get('status') == 'ok': break
++                    except (OSError, ValueError): pass
++                    time.sleep(2)
++                else: raise RuntimeError(f'{arm} load timeout')
++                run_completion()  # warmup
++                capture.update(actual_placement={'pid':p.pid, 'before_request':sorted(os.sched_getaffinity(p.pid))})
++                request_start = time.time()
++                measure = run_completion()
++                request_end = time.time()
++                capture.update(requests=[dict(measure, start=request_start, end=request_end)],
++                            actual_placement={'pid':p.pid, 'before_request':capture.active['actual_placement']['before_request'], 'after_request':sorted(os.sched_getaffinity(p.pid))})
++                log({'phase':'idle', 'pair':pair, 'arm':arm, 'load_s':time.monotonic()-start, 'cpus':cpus, 'threads':threads, 'load_threads':load_threads, **measure})
++            finally:
++                cleanup(p)
++                capture.update(release={'pid':p.pid, 'returncode':p.returncode, 'alive':p.poll() is None})
++        capture.record('complete')
++    capture.complete()
++(OUT / 'COMPLETE.json').write_text(json.dumps({'order':ORDER, 'complete':True})+'\n')

@@ -1,0 +1,5 @@
+{
+  "source_worktree": "/mnt/raid0/llm/worktrees/kpf60-gpux-impact-8952-20261104",
+  "head": "8952a0f693fb923918157eb25117641b74766230",
+  "note": "Skipped analyzer files remain outside graph coverage; prior scan coverage retained separately."
+}

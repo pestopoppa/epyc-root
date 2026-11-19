@@ -1,0 +1,114 @@
+[
+  {
+    "id": "json-only-complete",
+    "task": "Return only JSON with keys status and count; status must be ok and count must be the integer 3.",
+    "answer": "{\"status\":\"ok\",\"count\":3}",
+    "satisfied": true,
+    "rationale": "All explicitly requested requirements are met."
+  },
+  {
+    "id": "json-only-incomplete",
+    "task": "Return only JSON with keys status and count; status must be ok and count must be the integer 3.",
+    "answer": "Here is the result: {\"status\":\"ok\",\"count\":3}",
+    "satisfied": false,
+    "rationale": "The task requires JSON only; the extra prose violates it."
+  },
+  {
+    "id": "all-items-complete",
+    "task": "List all three filenames: app.py, README.md, tests.py. No explanation needed.",
+    "answer": "app.py\nREADME.md\ntests.py",
+    "satisfied": true,
+    "rationale": "All explicitly requested requirements are met."
+  },
+  {
+    "id": "all-items-incomplete",
+    "task": "List all three filenames: app.py, README.md, tests.py. No explanation needed.",
+    "answer": "app.py\nREADME.md",
+    "satisfied": false,
+    "rationale": "tests.py is missing."
+  },
+  {
+    "id": "arithmetic-complete",
+    "task": "What is 17 plus 26? Return the number only.",
+    "answer": "43",
+    "satisfied": true,
+    "rationale": "All explicitly requested requirements are met."
+  },
+  {
+    "id": "arithmetic-incomplete",
+    "task": "What is 17 plus 26? Return the number only.",
+    "answer": "42",
+    "satisfied": false,
+    "rationale": "The sum is 43."
+  },
+  {
+    "id": "sort-complete",
+    "task": "Sort these numbers ascending and return a comma-separated list: 8, 2, 5.",
+    "answer": "2,5,8",
+    "satisfied": true,
+    "rationale": "All explicitly requested requirements are met."
+  },
+  {
+    "id": "sort-incomplete",
+    "task": "Sort these numbers ascending and return a comma-separated list: 8, 2, 5.",
+    "answer": "8,5,2",
+    "satisfied": false,
+    "rationale": "Descending order violates ascending order."
+  },
+  {
+    "id": "bounded-evidence-complete",
+    "task": "Use this supplied test log only: \"passed=3 failed=1\". State both counts and whether all tests passed.",
+    "answer": "Three passed, one failed; not all tests passed.",
+    "satisfied": true,
+    "rationale": "All explicitly requested requirements are met."
+  },
+  {
+    "id": "bounded-evidence-incomplete",
+    "task": "Use this supplied test log only: \"passed=3 failed=1\". State both counts and whether all tests passed.",
+    "answer": "Three passed, zero failed; all tests passed.",
+    "satisfied": false,
+    "rationale": "The answer contradicts the supplied failed count."
+  },
+  {
+    "id": "unknown-input-complete",
+    "task": "The file contents are unavailable and no tools are accessible. State that you cannot determine its checksum; do not invent a checksum.",
+    "answer": "I cannot determine the checksum without the file contents.",
+    "satisfied": true,
+    "rationale": "All explicitly requested requirements are met."
+  },
+  {
+    "id": "unknown-input-incomplete",
+    "task": "The file contents are unavailable and no tools are accessible. State that you cannot determine its checksum; do not invent a checksum.",
+    "answer": "The checksum is 0123456789abcdef.",
+    "satisfied": false,
+    "rationale": "The checksum is invented without file contents."
+  },
+  {
+    "id": "two-fields-complete",
+    "task": "From \"name=Sam; city=Rome\", return both the name and city as JSON keys name and city.",
+    "answer": "{\"name\":\"Sam\",\"city\":\"Rome\"}",
+    "satisfied": true,
+    "rationale": "All explicitly requested requirements are met."
+  },
+  {
+    "id": "two-fields-incomplete",
+    "task": "From \"name=Sam; city=Rome\", return both the name and city as JSON keys name and city.",
+    "answer": "{\"name\":\"Sam\"}",
+    "satisfied": false,
+    "rationale": "The city field is missing."
+  },
+  {
+    "id": "unit-conversion-complete",
+    "task": "Convert 2 hours to minutes. Return the value with the unit minutes.",
+    "answer": "120 minutes",
+    "satisfied": true,
+    "rationale": "All explicitly requested requirements are met."
+  },
+  {
+    "id": "unit-conversion-incomplete",
+    "task": "Convert 2 hours to minutes. Return the value with the unit minutes.",
+    "answer": "2 minutes",
+    "satisfied": false,
+    "rationale": "Two hours equals 120 minutes."
+  }
+]

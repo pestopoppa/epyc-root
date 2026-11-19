@@ -2,7 +2,79 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): Mainplane retrieval-over-compaction intake becomes TOC-MP A/B plan; compaction monitor checkpointing. Earlier: 2026-10-22 (wrap-up sweep 7: prompt-layout producers closed, prefix probes made runnable). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-25 (OAB-9 paired context placement result); 2026-09-24 (speech-lane wrap-up compile: context as files on the opencode seat (INF-78 OAB-7s); a 79% smaller planner prompt); earlier: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+**Last compiled**: 2026-11-19 (wrap-up: HS-TD-3 context selection, CF-3c binding qualification failure, prefix-rewrite and DCP-10 protocols). Earlier: 2026-11-18 (wrap-up sweep b: CF-3c task-suite capture failure, CMP-4 boundary-terminal proposal, CMP-3 evaluator parked). Earlier: 2026-11-18 (wrap-up sweep: CF-3c, TOC-CMP-2/3/4, TOC-MP-4, TOC-SP-5 results). Earlier: 2026-11-09 (TOC-CMP-4 pre-registration, compaction Enable decision re-posed). Earlier: 2026-11-06 (wrap-up sweep, intake-ydnlc). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): Mainplane retrieval-over-compaction intake becomes TOC-MP A/B plan; compaction monitor checkpointing. Earlier: 2026-10-22 (wrap-up sweep 7: prompt-layout producers closed, prefix probes made runnable). Earlier: 2026-10-20 (wrap-up sweep 2: see the first Compiled Update). Earlier: 2026-10-20 (delta compile of 18 changed sources). Earlier: 2026-10-07 — reviewed source backlog. Previous compilation metadata: 2026-09-25 (OAB-9 paired context placement result); 2026-09-24 (speech-lane wrap-up compile: context as files on the opencode seat (INF-78 OAB-7s); a 79% smaller planner prompt); earlier: 2026-09-24 (late operator wrap-up compile: OP-49 decided — the Claude Code bash-compressor MCP surface is DROPPED; an MCP shell tool sits outside every PreToolUse guard, which match `Bash` only); earlier: 2026-09-24 (wrap-up compile: UFH-07 — the tool-output compressor's P4e observation window never accrued because the tool is never CALLED; 0 `mcp__*` tool_use blocks across all 1,092 retained transcripts, while registration and the write path verify clean; the gate collapses into its own experiment and becomes operator choice OP-49); earlier: 2026-09-17 (incremental: TOC-SP-2 exact spill recall landed; the per-episode total-token telemetry closure is false and reopened; OCC-1 scoping/harness hardening); earlier: 2026-09-17 (OCC-1 closed NEGATIVE: bitmap frames save 48–67% of billed tokens but lose 35–53 F1 points on the served Qwen3-VL reader); earlier: 2026-09-14 (code that feeds an edit is sliced, never summarised; compression cost shows up as re-fetches, not completion; spill-footer, output-regex and compaction-trigger corrections); earlier: 2026-08-25 (the OCC-2 provider image-billing claims are verified against (prefix-stable prompt rendering and cache counters landed default-off, but the current synthetic A/B cannot authorize enablement)
+
+## Compiled Update — 2026-11-18 (wrap-up sweep b): the CF-3c task-suite shard failed on a capture guard, CMP-4 awaits a boundary-terminal ruling, the CMP-3 evaluator lineage is parked
+
+**Confidence: verified** for recorded outcomes and identities; **observation** for everything about adoption (all runs are CANDIDATE diagnostics on synthetic or four-task fixtures, no deployment claim). Delta over the 2026-11-18 compile below.
+
+- **CF-3c-T2 first official shard: instrument FAIL, 6 of 24 cells.** The native graph child exited `1`, `RESULT.json` was absent, and `PARTIAL.json` recorded seven cells attempted (one instrument `UNKNOWN`) and 17 unattempted. The seventh attempt (`task-06`, `longcot_mini_18/r0/A0`) died on frontdoor REPL turn 2 with `selected history missing from native request`. Cause: the capture guard required the full untrimmed history render as a substring of the native request, but the pinned streaming chat adapter calls `user_content.strip()` (`src/backends/llama_server.py:1881` at orchestrator `12afe2858`), and the history ended in newlines after `Error:`. This is an instrument defect, not a model or policy result. All six completed cells came from the first task and each arm scored 1/1 with zero policy activations, so no arm ranking, scaling-futility call or adoption conclusion follows ([failure record](../docs/research/cf3c-task-suite-failure-20261118.md)).
+- **Repair keeps the refusal power.** The guard now accepts only the exact outer-whitespace transformation at the message boundary and still rejects changed substantive or internal-whitespace history (18 offline tests, including a real serializer MockTransport). The failed native tree, sealed packet and qualification receipts were copied to a `prior-failed-attempt` directory before filing; the successor `cf3c-task-suite-r2-20261118` repeats the frozen tasks and seeds with changed capture instrumentation, passed publisher smoke at 15:07:27Z, and its observations must stay separate from, not pooled with, the failed partial. Official `completed >= 24` is still open ([task-suite protocol](../docs/design/cf3c-task-suite-protocol-20261118.md), [progress](../progress/2026-11/2026-11-18-handoff-delegation-context-preassembly.md)).
+- **What the task-suite shard can and cannot show (design).** Four frozen text tasks, one seed each, six arms (A0, A1 k=4/8/12, A2, A3) = 24 cells; 48 text cases at four repeats are frozen only as custody for a later review. Four task blocks give a smallest possible observed accuracy step of 25 percentage points, so no comparison at this size can resolve the parent's 1-point margin. At this graph seam A3 is a control-equivalent (the history stores code, output and error, with no reasoning carrier, so A3 is recorded inactive). Futility rule: if all 24 are observed and no A1 or A2 change reaches a sent native request, mark scaling futility for this profile. Missing outcomes are `NA` (a miss in the eligible cohort), unavailable graders `grade_unavailable`, and instrument faults `UNKNOWN`.
+- **CF-3c-P2 and T1 official readings (equal-length and stateful diagnostics, each 18/18).** P2 (ten archived interactions, target in an old tool tail, an old tool head, or only in historical reasoning): A0 and A3 recovered 2/3, each A1 threshold and A2 1/3; A0 abstained on the reasoning-only target while A3 supplied an incorrect value there; A1 kept reasoning-only evidence but lost old tool receipts. T1 (inspect/release tool task): A0, A2, A3 correct 2/3, each A1 threshold 1/3 with one incorrect release submission each; mean live tokens A0 6,141 versus 4,786.33 for the A1 thresholds (about 22% lower) and 5,253.67 for A2. Costs exclude scripted archive construction. Three synthetic tasks each: mechanism and custody evidence only ([active and task results](../docs/research/cf3c-active-and-task-results-20261118.md), [P2 protocol](../docs/design/cf3c-active-evidence-protocol-20261118.md)).
+- **TOC-CMP-4: successive instrument repairs, then a boundary-terminal question for the operator.** r2 ended rc=1 (0/96, 10 dropped) because native turn-one context exhaustion was misclassified as a transport failure; the repair accepts a zero-generation outcome only when adapter, tokenizer, budget-exhaustion flags and trajectory all agree. r3 ended rc=75 (0/96, 9 dropped, all on one MBPP point, with a verified boundary-turn terminal that has no post-boundary action denominator). BAPS for such a run is UNKNOWN, never zero, and cannot complete eligible coverage. A default-off candidate and a proposed (not registered) §7a addition would exclude the whole paired point across all arms and repeats and replace it from the seeded same-stratum reserve; the proposal itself states this is selection after treatment, so the result could not establish an unbiased arm effect over the original pool. The alternative keeps §7a unchanged and leaves the 96-eligible predicate possibly unattainable. Approval is outstanding; no r4 inputs, publication or inference are authorized ([proposal](../docs/design/toc-cmp-4-boundary-terminal-proposal-20261118.md), [pre-registration](../docs/design/toc-cmp-4-preregistration-20261109.md)).
+- **CMP-3 evaluator lineage PARKED after three failed qualifications; the final-request gate has no observed allowed-dispatch path.** Qualification attempts: 4B first smoke 0/2 (list-shaped judgments, reference-only citation); r2 4B 1/2 (paraphrase passed, but a repeated bank-verification assertion was treated as its own independent support); r3 Qwen3.6-35B 0/2 (an `artifacts` field entailed with empty evidence). No retries; the four controls had been reused adaptively, so even a pass would only be in-sample calibration. In the final assembled-request screen (3/3 coverage) all three evaluator responses failed strict validation on out-of-range `verbatim_task` citations, so every dispatch was blocked, including the preserved control, and the positive path is unobserved. The production-tenant canary protocol therefore stays prospective: one owned native session at its first eligible boundary (no replay, fixtures or forced boundaries), each session moving the fraction by 100 points, with a separately qualified evaluator among its admission requirements ([evaluator protocol](../docs/design/toc-cmp-3-evaluator-qualification-protocol-20261118.md), [final-request protocol](../docs/design/toc-cmp-3-final-request-protocol-20261118.md), [production-tenant protocol](../docs/design/toc-cmp-3-production-tenant-protocol-20261118.md)).
+- **TOC-MP-4 recall screen: cohort ended inconclusive, a repaired cohort needs a new pre-registration.** The design is 20 cases with random 24-character values, two seeds, three arms (`summary_only`, `summary_pointer`, `pointer_only`) = 120 trajectories at C=16,384, exact-final-answer grading only, no replacement. One cell was recorded (UNKNOWN: `private_source_confinement_unverified`, because the tail witness was sampled only inside REPL execution while a 128-token-capped boundary-turn response contained no code), so at most 119 eligible grades were reachable and the frozen cohort could not meet the 120-eligible rule. The fixture now snapshots at boundary-turn generation start (11 offline tests pass); the operator was asked to choose a separately pre-registered repaired cohort or close inconclusive, and no answer is recorded ([protocol](../docs/design/toc-mp-4-needle-protocol-20261118.md), [results](../docs/research/toc-mp-4-results-20261118.md)).
+- **Delegation-context pre-assembly side probes.** DCP-12 prepared a four-task, identical-seed A0 repeatability pilot (baseline plus two reruns = 12 cells, DCP flags verified off): four independent pairs give 25-point flip-rate increments, so it supplies a planning input with severe uncertainty, not a floor for the DCP-6 population ([protocol](../docs/design/dcp12-calibration-protocol-20261118.md)). DCP-10 ContextBench lexical-discovery shards (zero-decode, 3 tasks each): shard 1 macro file/line recall 0.722222/0.024534; shard 2 file R/P/F1 0.177778/0.083333/0.111888, discovery-line and all 2k/4k/8k packed overlap metrics zero; the packer-custody refusal remains, with no accepted verifier tuple or population quality claim. TB-SEM-1a sealed three native chat prompts (budget omitted, budget 8, thinking disabled) for the historical thinking-budget Step 3 question; official outcomes pending.
+
+### Source References (2026-11-18, sweep b)
+- [CF-3c task-suite failure](../docs/research/cf3c-task-suite-failure-20261118.md)
+- [CF-3c task-suite protocol](../docs/design/cf3c-task-suite-protocol-20261118.md)
+- [CF-3c active-evidence protocol](../docs/design/cf3c-active-evidence-protocol-20261118.md)
+- [TOC-CMP-4 boundary-terminal proposal](../docs/design/toc-cmp-4-boundary-terminal-proposal-20261118.md)
+- [TOC-CMP-3 evaluator qualification protocol](../docs/design/toc-cmp-3-evaluator-qualification-protocol-20261118.md)
+- [TOC-CMP-3 final-request protocol](../docs/design/toc-cmp-3-final-request-protocol-20261118.md)
+- [TOC-CMP-3 production-tenant protocol](../docs/design/toc-cmp-3-production-tenant-protocol-20261118.md)
+- [TOC-MP-4 needle protocol](../docs/design/toc-mp-4-needle-protocol-20261118.md)
+- [DCP-12 calibration protocol](../docs/design/dcp12-calibration-protocol-20261118.md)
+- [Handoff-delegation progress 2026-11-18](../progress/2026-11/2026-11-18-handoff-delegation-context-preassembly.md)
+
+## Compiled Update — 2026-11-18 (wrap-up sweep): compaction governance results, CF-3c continuation pilots, and three instruments that stopped UNKNOWN
+
+**Confidence: verified** for what each record states; all are CANDIDATE/descriptive (small fixtures, simulated tools, no deployment claim).
+
+- **TOC-CMP-2 (60/60 sessions):** rules kept intact (full history, intact rule) gave 11/12 confirmed compliance; degraded residue (predicate loss or category substitution) fell to 8/24 with 13 confirmed violations. Retention of the rule text, not summary fluency, drives compliance. [CMP-2](../docs/research/toc-cmp-2-governance-results-20261118.md)
+- **TOC-CMP-3 contract (36/36):** a deterministic summary that omits the governing rule gave 2/12 simulated compliance at baseline, 11/12 with the six-field contract plus pinned governance, 12/12 with the contract plus omission manifest; both contract arms kept every pinned rule verbatim. [CMP-3 contract](../docs/research/toc-cmp-3-contract-results-20261118.md)
+- **CMP-3 isolated REPL screen:** the contract was delivered verbatim in all four contract-on sessions; manifest sessions made zero summary requests. The one contract-summary failure (teal) was a REPL `NameError`, not a delivery failure. [live](../docs/research/toc-cmp-3-live-results-20261118.md)
+- **CMP-3 runtime gate:** followed the evaluator verdict in 3/3 cases but allowed continuation on an unverified external-state assertion that should be UNKNOWN. The semantic screen produced no admissible judgments (evaluator cited text absent from the request); the final-request screen blocked 3/3 after invalid citations. LLM-judge citation validity is the binding weakness. [runtime](../docs/research/toc-cmp-3-runtime-semantic-results-20261118.md)
+- **CF-3c continuation pilots:** with the target receipt exposed, all 14 prompts matched exactly; the four that lost it answered `UNKNOWN` cleanly. A1 thresholds cut tokens 14-28% (A2 32%) but lost observation-case recoveries; in the task window every A1 threshold lost both observation-case successes and gained the reasoning case, with mean A1 tokens 22.1% below A0. Token savings are paid for in lost evidence. [pilot](../docs/research/cf3c-pilot-results-20261118.md) · [active and task](../docs/research/cf3c-active-and-task-results-20261118.md)
+- **TOC-MP-4 exact-value recall: UNKNOWN.** 1 of 120 cells recorded, 0 eligible; the tail witness was sampled only inside REPL execution, so confinement was unverifiable. The fixture now snapshots at boundary-turn generation start and the assessor marks `finish_reason=length` as UNKNOWN. [MP-4](../docs/research/toc-mp-4-results-20261118.md)
+- **TOC-CMP-4 r3 pilot: incomplete** (rc=75, 0/96 complete, 9 MBPP runs dropped on missing post-boundary fields). Missing outcomes stay UNKNOWN, never zero; broadening reserve replacement to boundary-turn terminals needs a prospective amendment. [CMP-4](../docs/research/toc-cmp-4-incomplete-pilot-20261118.md)
+- **TOC-SP-5 corpus gates:** the 62-file BEP cohort records no `prompt_tokens` or served `n_ctx`, so window occupancy and spill-follow rates are blocked on the TOC-SP-6 artifact build (conditional bound 0-58.06% for `coder_escalation`). [SP-5](../docs/research/toc-sp-5-corpus-gates-20261118.md)
+
+### Source References (2026-11-18)
+- [TOC-CMP-2 governance](../docs/research/toc-cmp-2-governance-results-20261118.md)
+- [TOC-CMP-3 contract](../docs/research/toc-cmp-3-contract-results-20261118.md)
+- [TOC-CMP-3 live](../docs/research/toc-cmp-3-live-results-20261118.md)
+- [TOC-CMP-3 runtime/semantic](../docs/research/toc-cmp-3-runtime-semantic-results-20261118.md)
+- [CF-3c pilot](../docs/research/cf3c-pilot-results-20261118.md)
+- [CF-3c active/task](../docs/research/cf3c-active-and-task-results-20261118.md)
+- [TOC-MP-4](../docs/research/toc-mp-4-results-20261118.md)
+- [TOC-CMP-4 incomplete](../docs/research/toc-cmp-4-incomplete-pilot-20261118.md)
+- [TOC-SP-5](../docs/research/toc-sp-5-corpus-gates-20261118.md)
+
+## Compiled Update — 2026-11-06 (wrap-up sweep: "You don't need long context", three dive waves)
+
+**Confidence: verified** for the dived entries; each claim below is anchored in its intake entry.
+
+- **Compaction preserves benchmark accuracy only where ground truth is external.** intake-2628#00 (arXiv 2611.05306v1, NVIDIA): EoCC at 48K/36K down to 16K/12K keeps frontier-model accuracy within -3.7 to +5.6 ppts (Opus 4.5) and -3.3 to +4.4 ppts (GPT 5.6 Sol) across six long-horizon benchmarks; the dive narrowed the claim because the FRAMES floor is real and the 5-of-22 count is per model. intake-2630#01: the benchmark class is compaction-friendly by construction — fixed objective, progress on disk; its 160K-380K sweep covers only 16-38% of a 1M window.
+- **The local-model counter-result is the load-bearing one for EPYC.** intake-2628#04: Qwen 3 Coder Next falls 53.0 -> 3.6 on SWE-bench Verified at 16K/12K; Gemma 4 31B 65.2 -> 58.0; Step 3.7 Flash 70.0 -> 56.6; Qwen 3.6 27B 68.6 -> 65.0.
+- **Governance, not task score, is the failure class.** intake-2631#01: compacted runs that retain the rule violate it 2.6x more often (8.1% -> 21.1%), and deletion is rare (3.0% absent). intake-2636#01: pooled violation 0% -> 30% after one compaction, with soft organisational policies decaying 8.3x more than hard safety norms. intake-2637#02: open-weight compactors retain only 6.06% of injected side constraints (the 17% headline includes GPT-5.4-mini).
+- **A presence check is not a safety check.** intake-2639#00: a degraded residue disarms at 43% (Qwen) and 88% (Llama) vs 9% and 31% for an intact rule; intake-2638#00 shows provenance can be destroyed before the summariser, laundering a forged `[User]:` label into user authority in 87-100% of trials across five flattening harnesses (0% for role-typed ones). Our orchestrator path is structurally safer (structured previews, control-token neutralisation, summary appended to the prompt), but our OpenCode build is untested — filed as UFH-21.
+- **One defence survives every source: keep high-stakes rules out of the compactable surface.** intake-2636#02 Constraint Pinning restores 0% violation across seven models for ~47 pinned tokens; intake-2637#03 restatement alone cuts 30% -> 13% and does not eliminate it.
+- **Compaction-damage magnitude, for probe sizing.** intake-2629#01: 5-64% of full-history successes damaged across 14 summarisers; the 79.1% "mechanical" figure is the scoring reference, not a deployable method (intake-2629#02 narrowed). intake-2527#02: +0.108 blocked/error actions at the first action after a boundary over 590 boundaries, and the paper gives no power analysis.
+- **Short context is a serving-speed lever on this host.** Depth alone costs -55% decode / -60% prefill by 128k on EPYC CPU, and MI210 np8 L64k shows a decode collapse (26.71 -> 10.18 tok/s, occupancy unresolved). Filed as DEPTH-ENV-1 so a compaction budget is chosen from measured speed, not the paper's cloud-cost ratio (intake-2628's x-fold savings are retail-API interpolation, not FLOPs).
+
+Sources: [run README](../research/deep-dives/ydnlc-20261106/README.md) · [plan](../research/deep-dives/ydnlc-20261106/PLAN.md) · [digest](../research/deep-dives/intake-digests/2026-11-06-ids-2628-2640.md) · [context-and-token-economy handoff](../handoffs/active/context-and-token-economy.md)
+
+## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): EXP-09 verified-quote spill summaries read EXPAND at 0.868 vs 0.804, but the 96-cell expansion is stuck on the disk floor
+
+**Confidence: inferred** (exploratory pilot; not a product or statistical gate).
+
+- **Answer budget fix.** The original pilot (rc75, 37/48 cells) had 5 answers capped at 256 tokens, so it was REVISE. R2 with a 1024-token budget completed 48/48 cells, all parsed below the cap: verified-quote 0.8681 vs control 0.8035 (shape-header 1.000, pointer-only 0.264), 12/12 planted quote mismatches rejected. Disposition EXPAND, with the native `mechanism_fired=false` / `capture_complete=false` flags retained because aggregation used score-only objects.
+- **R3 expansion (24 distinct failing logs, 96 cells).** Interrupted at the disk floor with 24/96 cells (all control, seed SHA-256 `59b4358c...`); R4, R5 and R6 each stopped rc75 one second after grant with no treatment cell. R7 continues from the preserved seed; treatment will run in a separate server execution, so comparisons must disclose the split. No served-latency claim.
+
+Sources: [delegation-context-preassembly progress](../progress/2026-11/2026-11-04-handoff-delegation-context-preassembly.md) · [context-and-token-economy handoff](../handoffs/active/context-and-token-economy.md)
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 
@@ -35,9 +107,9 @@ Source: research intake session intake-mainplane-20261030, plan sha256 525849605
 
 ### Source References (2026-10-22 sweep 7)
 
-- [handoffs/active/repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md)
-- [handoffs/active/tool-output-compression.md](../handoffs/active/tool-output-compression.md)
-- [handoffs/active/agentic-serving-harness-fixes.md](../handoffs/active/agentic-serving-harness-fixes.md)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
+- [handoffs/active/context-and-token-economy.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
+- [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)
 - [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
 - [progress/2026-10/2026-10-21-queue-builders-2.md](../progress/2026-10/2026-10-21-queue-builders-2.md)
 
@@ -55,8 +127,8 @@ Open: spill-summary replacement (3.1/3.2), the real-trace re-check (2.8), live v
 
 ### Source References (2026-10-20 sweep 2, context-management)
 
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — invariants, 2.1 rule, 2.2 result, 4.1/4.5.
-- [Conversation stack](../handoffs/active/conversation-stack.md) — CS16/CS18 voice payload and disposition sources.
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — invariants, 2.1 rule, 2.2 result, 4.1/4.5.
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — CS16/CS18 voice payload and disposition sources.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — retrieval-eval write side that records the run.
 
 ## Latest source review — 2026-10-07
@@ -73,8 +145,8 @@ Historical rationale needs two corrections. The RLM reproduction's large latency
 
 ### Source References
 
-- [DCP handoff](../handoffs/active/delegation-context-preassembly.md) — render identity, hit spans and usage limits.
-- [Progressive folding](../handoffs/active/context-folding-progressive.md) — BEAM caveat and source survey.
+- [DCP handoff](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — render identity, hit spans and usage limits.
+- [Progressive folding](../handoffs/active/context-and-token-economy.md) — BEAM caveat and source survey.
 - [HarnessFactory comparison](../docs/reference/harnessfactory-source-comparison-20261006.md) — shared interfaces and structural contrasts.
 - [Completed folding ledger](../handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md) and [meta-harness ledger](../handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md) — corrected historical attribution and rationale.
 
@@ -90,11 +162,11 @@ DCP now verifies a bound file-body hash again before rendering FULL, SLICES or C
 
 ## Source References
 
-- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — sweep 2 (2026-10-20)
-- [Conversation stack](../handoffs/active/conversation-stack.md) — sweep 2 (2026-10-20)
+- [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — sweep 2 (2026-10-20)
+- [Conversation stack](../handoffs/active/speech-and-multimodal.md) — sweep 2 (2026-10-20)
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — sweep 2 (2026-10-20)
-- [DCP handoff](../handoffs/active/delegation-context-preassembly.md)
-- [Progressive folding](../handoffs/active/context-folding-progressive.md)
+- [DCP handoff](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly)
+- [Progressive folding](../handoffs/active/context-and-token-economy.md)
 - [HarnessFactory comparison](../docs/reference/harnessfactory-source-comparison-20261006.md)
 - [Completed folding ledger](../handoffs/completed/context-folding-progressive-completed-through-2026-05-28.md)
 - [meta-harness ledger](../handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md)
@@ -112,7 +184,7 @@ DCP now verifies a bound file-body hash again before rendering FULL, SLICES or C
 
 ### Source References (2026-09-25)
 
-- [AutoKernel actor backend handoff](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-9 setup, paired measurements, and limits.
+- [AutoKernel actor backend handoff](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-9 setup, paired measurements, and limits.
 - [September 25 AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — run chronology and checked predictions.
 - [Agent loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — implementation and the same scoped A/B result.
 
@@ -160,7 +232,7 @@ critic acceptance change? Does it just read everything anyway? The predictions a
 ### Source References (2026-09-24 speech-lane)
 
 - [agent-loop-design.md](../docs/guides/agent-workflows/agent-loop-design.md): *Context as files, per-call metrics, tool-output caching*.
-- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-orchestrator-actor-backend.md): *Techniques learned in the opencode seat* §1 (numbers,
+- [autokernel-orchestrator-actor-backend.md](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend): *Techniques learned in the opencode seat* §1 (numbers,
   inline-set rationale, predictions).
 - [opencode-p03-audit-20260916.md](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md): row 8 (no MCP on a bare seat; `--auto` out-of-tree reads).
 
@@ -185,7 +257,7 @@ critic acceptance change? Does it just read everything anyway? The predictions a
 
 ### Source References (2026-09-24 late)
 
-- [tool-output-compression.md](../handoffs/active/tool-output-compression.md) P4e (decision record)
+- [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) P4e (decision record)
 - [progress/2026-09/2026-09-24-td21.md](../progress/2026-09/2026-09-24-td21.md) Late (4)
 - `.claude/settings.json` PreToolUse matchers (`Bash`, `Write|Edit`), read 2026-09-24
 
@@ -200,14 +272,14 @@ of the retained transcript corpus.
   retained Claude Code transcripts (2026-08-24 → 09-24)** there are **0 `mcp__*` tool_use blocks of any
   kind** and 0 ToolSearch queries for the compressor. The 2026-09-14 observation that
   `logs/tool_compression_monitor.jsonl` did not exist on disk was therefore the symptom, not the defect.
-  ([tool-output-compression](../handoffs/active/tool-output-compression.md) P4e / UFH-07)
+  ([tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) P4e / UFH-07)
 - **Everything except the trigger is correct, and that was proven rather than assumed.** Registration is
   right in both `.mcp.json` files and in `enabledMcpjsonServers`; a real FastMCP in-memory
   `call_tool("run_bash_compressed", {"command": "git status"})` wrote a **full P4c row with every follow-up
   field populated**; 19/19 unit tests pass. The gap is that MCP tools surface as **deferred** tools and no
   agent file or skill points a session at `run_bash_compressed` — so the capability exists and is
   unreachable in practice.
-  ([tool-output-compression](../handoffs/active/tool-output-compression.md) P4e;
+  ([tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) P4e;
   [2026-09-24 non-inference Tier-2](../progress/2026-09/2026-09-24-noninf-tier2.md) UFH-07)
 - **A deferred capability that nothing advertises is indistinguishable from a broken one, and the usual
   diagnosis goes to the wrong layer.** The three months of "telemetry is underpowered" readings all measured
@@ -218,7 +290,7 @@ of the retained transcript corpus.
   tool (option (i) by another name), a **tagged canary** whose rows stay out of the top-up-rate
   calculation, or drop the tool. The canary is the only one of the three that preserves the top-up-rate
   measurement the gate was designed around.
-  ([tool-output-compression](../handoffs/active/tool-output-compression.md) P4e)
+  ([tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) P4e)
 
 ### Open questions
 
@@ -229,7 +301,7 @@ of the retained transcript corpus.
 
 ### Source References (2026-09-24 wrap-up compile)
 
-- [tool-output-compression.md](../handoffs/active/tool-output-compression.md) — P4e, the UFH-07 root cause,
+- [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — P4e, the UFH-07 root cause,
   the verified write path, and the three OP-49 options.
 - [2026-09-24-noninf-tier2.md](../progress/2026-09/2026-09-24-noninf-tier2.md) — the UFH-07 row and the
   OP-49 filing.
@@ -264,7 +336,7 @@ up as re-fetches makes that gap more costly.
     GitNexus rates the impact LOW.
   - Still open: the `root_lm_system.txt` peek doc, which is a prompt change left to its owner.
 
-  [tool-output-compression](../handoffs/active/tool-output-compression.md)
+  [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
 - **The total-token telemetry closure is false (reopened 2026-09-16).**
   - The `closure_audit.py --strict-idents` sweep found no per-turn `input_tokens`/`output_tokens` in
     `session_log.py` on orchestrator `origin/main` @ `88a2902d`.
@@ -273,7 +345,7 @@ up as re-fetches makes that gap more costly.
   - The false tick came from root `08e9d60d`, part of the same "2026-07-29" codex-lane closure wave as
     RC-9/E1a. This is another example of closure inflation.
 
-  [tool-output-compression](../handoffs/active/tool-output-compression.md)
+  [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
 - **OCC-1 scoping chose GPU-only.** It was chosen before the run reported in the next section down.
   - The reader was the served Qwen3-VL-30B-A3B, not a larger model: Qwen3.8-Flash-Next + mmproj (88–92 GB)
     does not fit the 64 GB MI210, and the gemma-4 models have no mmproj on disk.
@@ -300,7 +372,7 @@ up as re-fetches makes that gap more costly.
   are still open.
 
 ### Sources
-- [tool-output-compression.md](../handoffs/active/tool-output-compression.md) — the TOC-SP-2 evidence and tests, and the reopen note for the false total-token closure.
+- [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — the TOC-SP-2 evidence and tests, and the reopen note for the false total-token closure.
 - [2026-09-16-sub-occ1.md](../progress/2026-09/2026-09-16-sub-occ1.md) — the OCC-1 GPU-only scoping, the predicted token table and the Fable review hardening.
 - [optical-context-compression.md](../handoffs/completed/optical-context-compression.md) — the measured prompt-token ratios and the closure note.
 
@@ -474,9 +546,9 @@ receipt shows quotes exist, not that nothing was omitted. Never enable its hoste
 
 ### Source References (2026-09-14 code-context and compression)
 
-- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — the standing no-LLM-summary rule, TOC-SP-1/2/3, TOC-RD-1, anchor corrections and the absent P4e sink.
-- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — CF-PB-1, CF-RX-1, the CF-3c re-fetch co-metric and the in-place corrections.
-- [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — the DCP-2 band correction, DCP-7 priors and DCP-11 packer rendering.
+- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — the standing no-LLM-summary rule, TOC-SP-1/2/3, TOC-RD-1, anchor corrections and the absent P4e sink.
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — CF-PB-1, CF-RX-1, the CF-3c re-fetch co-metric and the in-place corrections.
+- [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — the DCP-2 band correction, DCP-7 priors and DCP-11 packer rendering.
 - [`progress/2026-09/2026-09-14-research-intake.md`](../progress/2026-09/2026-09-14-research-intake.md) — defect-fix commits and merged-tree test totals.
 - intake-1357#01 and intake-1357#03 — skeleton-vs-placeholder null and the 4/45 vs 27/45 behavioural probe.
 - intake-1365#01 and intake-1365#02 — segment keep/drop absolute gain and token-level compression results.
@@ -495,7 +567,7 @@ Repair must therefore precede compute: use live builder/state/execution semantic
 
 ### Source References (2026-08-13 prefix audit)
 
-- [`repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) — implementation checkpoints, harness defects, and live semantic gate.
+- [`repl-turn-efficiency.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency) — implementation checkpoints, harness defects, and live semantic gate.
 - [`progress/2026-08/2026-08-13-auditor.md`](../progress/2026-08/2026-08-13-auditor.md) — independent primary-source audit and test rerun.
 - [`benchmark-methodology.md`](benchmark-methodology.md) — production-faithful, mutable-state-isolated A/B rule.
 
@@ -515,7 +587,7 @@ The verbatim-trajectory-log program was gated on an audit question: *which `peek
 
 ### Source References (2026-08-12)
 
-- [`handoffs/active/tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — the resolved audit half, the latent flag hazard, and the named schema prerequisite
+- [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — the resolved audit half, the latent flag hazard, and the named schema prerequisite
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the module-chain verification
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — the surrounding audit lane and its dead-code taxonomy (see [Autonomous Research](autonomous-research.md))
 
@@ -540,7 +612,7 @@ OCC-2, documentation-only):
 No claim was contradicted. The one material drift (Anthropic's tile model replacement) is exactly
 the failure mode the 2026-08-18 section warned about ("pinned to provider pricing, so it can go
 stale silently"). The consumer surface for any future routing use is
-[`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-4b (the `ω_cost`
+[`decision-aware-routing.md`](../handoffs/active/routing-program.md) DAR-4b (the `ω_cost`
 preference vector + cost-scaling τ at the retriever selection score) — not a GPU-residency cost
 lever.
 
@@ -551,7 +623,7 @@ lever.
   the DAR-4b consumer pointer.
 - [`optical-context-compression.md`](../handoffs/completed/optical-context-compression.md) — the OCC-2
   owning handoff section this record was drafted for (text prepared; main thread applies).
-- [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) — DAR-4b, the live
+- [`decision-aware-routing.md`](../handoffs/active/routing-program.md) — DAR-4b, the live
   cost-aware-routing surface the billing facts feed.
 
 ## Compiled Update — 2026-08-25: edit-format rules, the trajectory-artifact shape, and the query_memory↔spill-pointer key mismatch
@@ -622,10 +694,10 @@ schema is owned by the consuming A/B) has two concrete references worth lifting 
 
 ### Source References (2026-08-25 edit-format + memory-surface)
 
-- [`batched-edit-parallel-apply.md`](../handoffs/active/batched-edit-parallel-apply.md) — BEP-6
+- [`batched-edit-parallel-apply.md`](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) — BEP-6
   (hashline granularity overturn, the two leniency details) and BEP-7 (aider pairing rule, Cursor
   line-number tension, the +2.97 pp / 3.75 pp magnitudes).
-- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — the 2026-07-29
+- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — the 2026-07-29
   auditor scoping of the query_memory key mismatch with options (a)/(b)/(c), the
   `_spill_if_truncated` reference correction, and the 2026-04-26 intake-473 note carrying
   `afterToolCall` field-replace/throw-isolation.
@@ -677,10 +749,10 @@ the instrument-repair handoff.
 
 ### Source References (2026-08-25 memory + evidence)
 
-- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — the
+- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — the
   UTM-V1..V6 scoping (2026-08-07) with the append-only envelope, actor-vs-subject proposer, and the
   no-memory control arm in the UTM-V6 matrix.
-- [`evidence-plane-instrument-repair.md`](../handoffs/active/evidence-plane-instrument-repair.md) —
+- [`evidence-plane-instrument-repair.md`](../handoffs/active/autopilot-program.md#track-evidence-plane-instrument-repair) —
   the 2026-08-21 intake-1279#record log-retention finding, the covered-window negative, and the
   `empty_generation` detector's active status.
 - [`intake-1279#record`](../research/intake_index.yaml) — the retention-gap record with the
@@ -698,27 +770,27 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 
 ### New Findings (2026-07-16 — harness-local compaction became a load-bearing context-management caveat)
 
-- **A candidate user-facing harness can double up with or fight Orch-side compression if it runs its own compaction, prompt-cache management, or sub-agent spawning.** The new harness-selection index makes that collision explicit: the orchestrator's compression/context-folding stack only pays off end-to-end when the harness cooperates rather than inventing a second context policy. This is the concrete "layer-B needs harness cooperation" case, and it is why the harness choice is now an open-source gate rather than a hardcoded frontend detail. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md), [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
+- **A candidate user-facing harness can double up with or fight Orch-side compression if it runs its own compaction, prompt-cache management, or sub-agent spawning.** The new harness-selection index makes that collision explicit: the orchestrator's compression/context-folding stack only pays off end-to-end when the harness cooperates rather than inventing a second context policy. This is the concrete "layer-B needs harness cooperation" case, and it is why the harness choice is now an open-source gate rather than a hardcoded frontend detail. Sources: [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration), [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [hermes-outer-shell.md](../handoffs/completed/hermes-outer-shell.md), [progress 2026-07-16](../progress/2026-07/2026-07-16.md).
 
-- **Tool-output compression remains the right layer, but only at the Orch boundary.** The compression module still shrinks tool outputs before they hit context, and the MCP wrapper path now exists, but a harness that also compacts or fan-outs can erase part of that win. The current contract is therefore split: the Orch owns tool-output compaction; the harness is evaluated on whether it defers to that policy instead of competing with it. Sources: [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [harness-selection-and-integration.md](../handoffs/active/harness-selection-and-integration.md).
+- **Tool-output compression remains the right layer, but only at the Orch boundary.** The compression module still shrinks tool outputs before they hit context, and the MCP wrapper path now exists, but a harness that also compacts or fan-outs can erase part of that win. The current contract is therefore split: the Orch owns tool-output compaction; the harness is evaluated on whether it defers to that policy instead of competing with it. Sources: [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [harness-selection-and-integration.md](../handoffs/active/harness-program.md#track-harness-selection-and-integration).
 
 ## Key Findings
 
 ### New (2026-06-22, DCP seed-bundle first live A/B regressed latency → hold)
 
-- **Delegation-context pre-assembly (DCP) reached its first live A/B and recorded `hold`: it cut tokens but worsened latency and quality was unscored — it is NOT yet enabled.** The budget-bounded context pre-assembler (`src/context_assembly.py`: task analysis → file discovery → AST codemap → token verify → file slicing; ColGREP + file-reader injectable backends) wires an advisory seed-bundle attach into `chat_delegation._maybe_dcp_seed_context()` (DCP-4, 2026-05-26) while keeping reactive discovery fully enabled; bundle modes are {full, slices, codemap_only}. Offline replay (2026-06-12) validated task-root/file-selection/budget correctness, and DCP-6a (`2e2e0d3`) fixed shallow-slice content depth plus manifest freshness hashes. But the first live A/B (2026-06-19, n=3/arm) showed zero errors and fewer tokens ON-vs-OFF yet p50 latency worsened 20.2s→32.6s; the artifact recorded `decision.status=hold` (latency_not_improved + quality_not_scored). Enablement requires a larger sample plus a quality-scored falsification. This is the advisory-default-off DCP referenced as the production seed-bundle path. Source: [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md). Related: [tool-implementation.md](tool-implementation.md).
+- **Delegation-context pre-assembly (DCP) reached its first live A/B and recorded `hold`: it cut tokens but worsened latency and quality was unscored — it is NOT yet enabled.** The budget-bounded context pre-assembler (`src/context_assembly.py`: task analysis → file discovery → AST codemap → token verify → file slicing; ColGREP + file-reader injectable backends) wires an advisory seed-bundle attach into `chat_delegation._maybe_dcp_seed_context()` (DCP-4, 2026-05-26) while keeping reactive discovery fully enabled; bundle modes are {full, slices, codemap_only}. Offline replay (2026-06-12) validated task-root/file-selection/budget correctness, and DCP-6a (`2e2e0d3`) fixed shallow-slice content depth plus manifest freshness hashes. But the first live A/B (2026-06-19, n=3/arm) showed zero errors and fewer tokens ON-vs-OFF yet p50 latency worsened 20.2s→32.6s; the artifact recorded `decision.status=hold` (latency_not_improved + quality_not_scored). Enablement requires a larger sample plus a quality-scored falsification. This is the advisory-default-off DCP referenced as the production seed-bundle path. Source: [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly). Related: [tool-implementation.md](tool-implementation.md).
 
 ### New Finding (2026-06-21)
 
-- **Amortized KV-cache compaction enables iterative compaction over a long-horizon trajectory — the streaming-context residency angle.** Still (intake-708, arXiv:2606.07878) trains a small per-layer Perceiver once against a frozen base model that synthesizes compact keys/values in a single forward pass. Because compaction is a forward pass rather than per-context gradient descent (the Cartridges regime), the same compactor can be applied **iteratively/chunked over a trajectory**, which is the property that matters for context management here: a multi-turn REPL or streaming long-horizon session can re-compact its KV residency in-flight without a re-optimization step per context. This is the KV-mechanism cousin of the text-side folding/compaction this page tracks — it manages the *KV residency* of long-context rather than the text summary. Primary KV-mechanism home is [kv-cache.md]; readiness tracking lives in [summary-token-attention-readiness.md](../handoffs/active/summary-token-attention-readiness.md). [intake-708](https://www.arxiv.org/html/2606.07878v1) `external`
+- **Amortized KV-cache compaction enables iterative compaction over a long-horizon trajectory — the streaming-context residency angle.** Still (intake-708, arXiv:2606.07878) trains a small per-layer Perceiver once against a frozen base model that synthesizes compact keys/values in a single forward pass. Because compaction is a forward pass rather than per-context gradient descent (the Cartridges regime), the same compactor can be applied **iteratively/chunked over a trajectory**, which is the property that matters for context management here: a multi-turn REPL or streaming long-horizon session can re-compact its KV residency in-flight without a re-optimization step per context. This is the KV-mechanism cousin of the text-side folding/compaction this page tracks — it manages the *KV residency* of long-context rather than the text summary. Primary KV-mechanism home is [kv-cache.md]; readiness tracking lives in [summary-token-attention-readiness.md](../handoffs/active/model-evaluation-queue.md#track-summary-token-attention-readiness). [intake-708](https://www.arxiv.org/html/2606.07878v1) `external`
 
-- **Still is a GPU-CPT-gated watch-item, not a deployable context-management lever today.** Adoption requires a one-time GPU forward-KL distillation per base model (the same gating domain as the KSA/GSA summary-token cluster), and there is NO public code or compactor weights for a served family (Qwen/Gemma) as of 2026-06-05. On the BW-bound EPYC CPU regime the added per-layer Perceiver forward pass is extra decode-time compute, so net benefit vs the deployed Expected-Attention/TriAttention compactor is unmeasured. Tracked as a monitoring target in [summary-token-attention-readiness.md](../handoffs/active/summary-token-attention-readiness.md); trigger = public code OR released compactor weights for a served family, then gate on CPU compute-overhead-vs-quality. [intake-708](https://www.arxiv.org/html/2606.07878v1) `external`
+- **Still is a GPU-CPT-gated watch-item, not a deployable context-management lever today.** Adoption requires a one-time GPU forward-KL distillation per base model (the same gating domain as the KSA/GSA summary-token cluster), and there is NO public code or compactor weights for a served family (Qwen/Gemma) as of 2026-06-05. On the BW-bound EPYC CPU regime the added per-layer Perceiver forward pass is extra decode-time compute, so net benefit vs the deployed Expected-Attention/TriAttention compactor is unmeasured. Tracked as a monitoring target in [summary-token-attention-readiness.md](../handoffs/active/model-evaluation-queue.md#track-summary-token-attention-readiness); trigger = public code OR released compactor weights for a served family, then gate on CPU compute-overhead-vs-quality. [intake-708](https://www.arxiv.org/html/2606.07878v1) `external`
 
 - **Position-free compaction (inverse-RoPE) lets compacted entries be placed independent of original positions.** Still removes RoPE, positions in a latent space, then re-rotates, so a synthesized compact KV block is not pinned to the source-token positions it summarizes. For long-horizon residency management this decouples *where* compacted history is placed in the cache from *when* the underlying tokens arrived — relevant to any future folded-summary side-car that needs to re-inject consolidated state at an arbitrary cache position rather than appending. Reported: beats KV-Distill by 8-22 pts in 16/18 RULER cells across 8x-200x compression and 8k-128k context (vendor/GPU; H200, no llama.cpp integration). [intake-708](https://www.arxiv.org/html/2606.07878v1) `external`
 
 ### New Finding (2026-05-27)
 
-- **Delegation context pre-assembly is now an advisory seed bundle, not a hard firewall.** DCP-4 wires budget-bounded context assembly into the live specialist delegation path behind default-off `features().dcp_pre_assembly`: `chat_delegation._maybe_dcp_seed_context()` calls `assemble_delegation_bundle(...)`, renders the selected files/slices/codemap material, appends it to the specialist context, and falls back to the original reactive-discovery context on any assembly failure. This preserves the key context-management safety invariant: pre-assembly can reduce discovery latency and top-up count, but it must not remove the model's ability to discover missing context. DCP-6 remains the inference gate for whether this actually improves delegation latency/quality. [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md), [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md) `verified`
+- **Delegation context pre-assembly is now an advisory seed bundle, not a hard firewall.** DCP-4 wires budget-bounded context assembly into the live specialist delegation path behind default-off `features().dcp_pre_assembly`: `chat_delegation._maybe_dcp_seed_context()` calls `assemble_delegation_bundle(...)`, renders the selected files/slices/codemap material, appends it to the specialist context, and falls back to the original reactive-discovery context on any assembly failure. This preserves the key context-management safety invariant: pre-assembly can reduce discovery latency and top-up count, but it must not remove the model's ability to discover missing context. DCP-6 remains the inference gate for whether this actually improves delegation latency/quality. [delegation-context-preassembly.md](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [bulk-inference-campaign.md](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign), [progress 2026-05-27](../progress/2026-05/2026-05-27.md) `verified`
 
 ### New Finding (2026-04-21)
 
@@ -752,13 +824,13 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 
 - **Simple observation masking matches LLM summarization**: intake-274 (The Complexity Trap, arXiv:2508.21433) finds that stripping older tool outputs achieves the same performance as expensive LLM-based summarization for agent context management, at 50% of the cost. The hybrid approach (masking plus summarization) yields only 7-11% further gains. This directly validates our pattern-based tool output compression architecture. [intake-274](https://arxiv.org/abs/2508.21433)
 
-- **Tool output compression achieves 60-90% per command type**: Our Phase 2 native compression module implements 7 command-specific handlers (pytest, cargo test, git status/diff/log, ls, build compilers), each applying domain-appropriate strategies -- failure-focus for test runners, stats extraction for git status, error-focus for compilers. This layers upstream of the existing spill-and-truncate mechanisms for multiplicative benefit. [tool-output-compression handoff](../handoffs/active/tool-output-compression.md)
+- **Tool output compression achieves 60-90% per command type**: Our Phase 2 native compression module implements 7 command-specific handlers (pytest, cargo test, git status/diff/log, ls, build compilers), each applying domain-appropriate strategies -- failure-focus for test runners, stats extraction for git status, error-focus for compilers. This layers upstream of the existing spill-and-truncate mechanisms for multiplicative benefit. [tool-output-compression handoff](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
 
-- **Progressive-disclosure retrieval is the right pattern for compressed tool outputs**: Claude-Mem (intake-395) implements a 3-layer retrieval stack (search → timeline → get_observations) with hybrid FTS5+Chroma over AI-summarized observations, claiming ~10x token savings via batched-ID full-detail fetch only after index filtering. The architectural pattern -- index filtering before bulk fetch -- directly parallels the existing truncation+peek() architecture. The component itself is not adopted (AGPL-3.0, Bun/Node stack). [tool-output-compression handoff](../handoffs/active/tool-output-compression.md)
+- **Progressive-disclosure retrieval is the right pattern for compressed tool outputs**: Claude-Mem (intake-395) implements a 3-layer retrieval stack (search → timeline → get_observations) with hybrid FTS5+Chroma over AI-summarized observations, claiming ~10x token savings via batched-ID full-detail fetch only after index filtering. The architectural pattern -- index filtering before bulk fetch -- directly parallels the existing truncation+peek() architecture. The component itself is not adopted (AGPL-3.0, Bun/Node stack). [tool-output-compression handoff](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
 
-- **Durable-workflow and snapshot-resume patterns address tool output loss on disconnect**: Open Agents (intake-397) uses Vercel Workflow SDK step persistence with stream-reconnect so tool outputs belong to sandbox state rather than agent context -- outputs survive disconnects and compaction. The pattern (control-plane / execution-sandbox separation, snapshot-based hibernate/resume) is architecturally analogous to the spill-to-file + peek() mechanism but makes sandbox state durable across long-horizon sessions. Pattern-only relevance (TS/Vercel stack). [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md)
+- **Durable-workflow and snapshot-resume patterns address tool output loss on disconnect**: Open Agents (intake-397) uses Vercel Workflow SDK step persistence with stream-reconnect so tool outputs belong to sandbox state rather than agent context -- outputs survive disconnects and compaction. The pattern (control-plane / execution-sandbox separation, snapshot-based hibernate/resume) is architecturally analogous to the spill-to-file + peek() mechanism but makes sandbox state durable across long-horizon sessions. Pattern-only relevance (TS/Vercel stack). [tool-output-compression handoff](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) [repl-turn-efficiency handoff](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
 
-- **Minimal atomic tool surfaces reduce per-turn context inflation**: GenericAgent (intake-399) operates with 9 atomic tools and a <30K context budget, using dynamic tool creation via `code_run` rather than growing the tool surface. Layered L0-L4 memory replaces full-context scanning. The design principle -- prefer lazy-loaded tool outputs and skill crystallization of repeat tasks -- reinforces the existing compression-first architecture and the REPL turn efficiency goal. [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md)
+- **Minimal atomic tool surfaces reduce per-turn context inflation**: GenericAgent (intake-399) operates with 9 atomic tools and a <30K context budget, using dynamic tool creation via `code_run` rather than growing the tool surface. Layered L0-L4 memory replaces full-context scanning. The design principle -- prefer lazy-loaded tool outputs and skill crystallization of repeat tasks -- reinforces the existing compression-first architecture and the REPL turn efficiency goal. [tool-output-compression handoff](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) [repl-turn-efficiency handoff](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
 
 ### Reasoning Chain Compression
 
@@ -792,14 +864,14 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - **Two-level condensation** (Phase 1 complete): Granular per-turn blocks accumulate without re-summarization (deterministic formatting from structured turn data, no LLM call). Deep consolidation fires at escalation boundaries, sub-task completion, or when 15+ blocks accumulate, using 7B model for a single bounded-window LLM call. Feature-flagged `two_level_condensation`. Replaces the previous every-2-turn full re-summarization.
 - **Compression quality evaluation** (Phase 2a/2b done): 30B-A3B validated as minimum viable summarizer (3.0/3.0 retention). 5-level compression ladder tested: L3 is the sweet spot at 82% compression with 2.84/3 retention. L5 and Phase 3c (process reward signals) pending.
 - **Segment retention scoring**: ConsolidatedSegment with access_count, importance_score (accumulates +3 per access, +5 per update, decays at 0.995 per turn delta), and maturity tiers (draft at creation, validated at score 65+, core at 85+, demotion below 35/60).
-- **K-MEM Tulving episodic-memory baseline**: `epyc-inference-research` run `20260619_141212` completed on `ingest_long_context` with production/default GGUF expert settings (`--skip-moe-reduction`). Raw artifacts were packaged in research `b6edc64`; corrected score artifacts landed in research `9e63af0` after fixing Tulving ground-truth parsing. The deterministic scorer covered `456/456` questions with avg F1 `0.4309`, Simple Recall **`0.5684`** (scorer v2, over the 366 `get=="all"` questions; the `0.5530` figure was v1, computed over all 456), Chronological Awareness `0.1593` — kept, with the caveat that 37/45 tau questions now fail closed for partial coverage and 30/45 carry <2 ground-truth items — and avg decode `17.27 t/s`. Treat this as a mixed measurement baseline, not a context-management feature change or memory-routing promotion. Source: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md). **M-12e re-score 2026-09-14** — research `dcb769c1`, artifact `benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`; the original `tulving_score.json` is untouched, and `SCORER_VERSION = 2` now rides in every scored artifact so v1 and v2 figures cannot be compared by accident.
+- **K-MEM Tulving episodic-memory baseline**: `epyc-inference-research` run `20260619_141212` completed on `ingest_long_context` with production/default GGUF expert settings (`--skip-moe-reduction`). Raw artifacts were packaged in research `b6edc64`; corrected score artifacts landed in research `9e63af0` after fixing Tulving ground-truth parsing. The deterministic scorer covered `456/456` questions with avg F1 `0.4309`, Simple Recall **`0.5684`** (scorer v2, over the 366 `get=="all"` questions; the `0.5530` figure was v1, computed over all 456), Chronological Awareness **v3 `0.0704`** (15 eligible ordering questions, 7 eligible partials at zero; 30 zero/single-item questions excluded; historical v2 was `0.1593`) — diagnostic only, per [OP-M12F scoring note](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md) — and avg decode `17.27 t/s`. Treat this as a mixed measurement baseline, not a context-management feature change or memory-routing promotion. Source: [bulk-inference-campaign.md](../handoffs/active/eval-tower-program.md#track-bulk-inference-campaign), [progress 2026-06-20](../progress/2026-06/2026-06-20.md). **M-12e re-score 2026-09-14** — research `dcb769c1`, artifact `benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`; the original `tulving_score.json` is untouched, and `SCORER_VERSION = 2` now rides in every scored artifact so v1 and v2 figures cannot be compared by accident.
 - **Memento KV block masking feasibility**: Confirmed 2026-04-13 that `llama_memory_seq_rm()` can serve as the block eviction primitive in llama.cpp. Mid-sequence removal works; position gap semantics are correct (RoPE phases preserved). Training script for OpenMementos-228K ready with two-stage LoRA design. Blocked on model fine-tuning compute.
-- **REPL turn efficiency: S6 bug fixes + observability (2026-04-16, done)**: Three systemic bugs accounting for ~25% wasted specialist REPL turns (810/3227 calls) fixed: (a) `extract_code_from_response` dropping bare `"""` lines causing 473 NameErrors; (b) `CALL("run_python_code")` routing through registry instead of REPL globals causing 182 ValueErrors; (c) dedup guard `continue → break` causing 63 wasted turns. Added `repl_turn_errors` tracking and `specialist_repl_errors` anomaly signal. Added `web_search()` REPL global and role-aware specialist prompts. S4 (A/B benchmark) and S5 Gap 1-3 implementations (workspace_scan, STUCK signal, llm_batch combined-op) remain pending inference. [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md)
+- **REPL turn efficiency: S6 bug fixes + observability (2026-04-16, done)**: Three systemic bugs accounting for ~25% wasted specialist REPL turns (810/3227 calls) fixed: (a) `extract_code_from_response` dropping bare `"""` lines causing 473 NameErrors; (b) `CALL("run_python_code")` routing through registry instead of REPL globals causing 182 ValueErrors; (c) dedup guard `continue → break` causing 63 wasted turns. Added `repl_turn_errors` tracking and `specialist_repl_errors` anomaly signal. Added `web_search()` REPL global and role-aware specialist prompts. S4 (A/B benchmark) and S5 Gap 1-3 implementations (workspace_scan, STUCK signal, llm_batch combined-op) remain pending inference. [repl-turn-efficiency handoff](../handoffs/active/harness-program.md#track-repl-turn-efficiency)
 
 ### SEAL Control Vector Multi-Role Results
 
-- **SEAL control vectors validated for MoE and dense models, blocked on SSM-hybrid**: Multi-role regression test (2026-04-13) trained a conciseness control vector on Coder-32B Q4_K_M (production quant). Worker 30B-A3B Q4KM: -7.5% tokens with NO accuracy regression (7/7 preserved). Coder 32B Q4KM: +2.2% tokens (neutral), NO regression. Frontdoor 35B SSM-hybrid: BLOCKED -- heterogeneous block architecture (alternating SSM/attention blocks, loader expects uniform). REAP 246B: deferred (too slow for cvector training). The experiment was parked in favor of AM KV compaction which delivers 5x compression at zero degradation on factual/science prompts. [reasoning-compression.md](../handoffs/active/reasoning-compression.md)
-- **Branching density as compression quality signal**: intake-378 identifies Propose step ratio as a quantitative metric for evaluating which reasoning traces to compress vs keep. Convergent traces (deduction-heavy, 74.6% Deduce steps) should be preserved; divergent branches (33.3% Propose steps in R1 traces) are safe to prune. Random 10% step deletion from R1 data causes minimal/no degradation, directly validating TrimR and inference-time reasoning pruning. [reasoning-compression.md](../handoffs/active/reasoning-compression.md)
+- **SEAL control vectors validated for MoE and dense models, blocked on SSM-hybrid**: Multi-role regression test (2026-04-13) trained a conciseness control vector on Coder-32B Q4_K_M (production quant). Worker 30B-A3B Q4KM: -7.5% tokens with NO accuracy regression (7/7 preserved). Coder 32B Q4KM: +2.2% tokens (neutral), NO regression. Frontdoor 35B SSM-hybrid: BLOCKED -- heterogeneous block architecture (alternating SSM/attention blocks, loader expects uniform). REAP 246B: deferred (too slow for cvector training). The experiment was parked in favor of AM KV compaction which delivers 5x compression at zero degradation on factual/science prompts. [reasoning-compression.md](../handoffs/active/context-and-token-economy.md#track-reasoning-compression)
+- **Branching density as compression quality signal**: intake-378 identifies Propose step ratio as a quantitative metric for evaluating which reasoning traces to compress vs keep. Convergent traces (deduction-heavy, 74.6% Deduce steps) should be preserved; divergent branches (33.3% Propose steps in R1 traces) are safe to prune. Random 10% step deletion from R1 data causes minimal/no degradation, directly validating TrimR and inference-time reasoning pruning. [reasoning-compression.md](../handoffs/active/context-and-token-economy.md#track-reasoning-compression)
 
 ### Planned
 
@@ -844,11 +916,11 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [intake-259](https://github.com/rtk-ai/rtk) RTK Rust Token Killer -- 60-90% token reduction across 100+ commands; security concerns preclude direct adoption
 - [intake-301](https://axi.md/) AXI Agent Experience Interface -- TOON format achieves ~40% token savings; progressive disclosure mirrors truncation+peek architecture
 - [intake-302](https://arxiv.org/abs/2603.29919) SkillReducer -- 48% tool description compression via adversarial delta debugging; complements output compression
-- [context-folding-progressive handoff](../handoffs/active/context-folding-progressive.md) -- Multi-phase production implementation: Phase 0-1 complete, Phase 2a/2b done, Phase 3 in design
-- [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) -- 7 command handlers, 60-90% reduction, Phase 3 definition compression done; 2026-04-17 update: intake-395 (Claude-Mem progressive-disclosure), intake-397 (Open Agents durable workflow), intake-399 (GenericAgent minimal tool surfaces)
-- [memento-block-reasoning-compression handoff](../handoffs/active/memento-block-reasoning-compression.md) -- llama.cpp block masking feasibility confirmed, SFT training design complete
-- [Reasoning Compression handoff](../handoffs/active/reasoning-compression.md) -- SEAL multi-role regression results, branching density metrics from intake-378, training data strategy synthesis
-- [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) -- S1-S3/S5-S6 done; S6 fixed 3 bugs causing ~25% wasted specialist REPL turns (810/3,227 calls); 2026-04-17 update: intake-397 (durable-reconnect patterns), intake-399 (minimal tool surface design pressure)
+- [context-folding-progressive handoff](../handoffs/active/context-and-token-economy.md) -- Multi-phase production implementation: Phase 0-1 complete, Phase 2a/2b done, Phase 3 in design
+- [tool-output-compression handoff](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) -- 7 command handlers, 60-90% reduction, Phase 3 definition compression done; 2026-04-17 update: intake-395 (Claude-Mem progressive-disclosure), intake-397 (Open Agents durable workflow), intake-399 (GenericAgent minimal tool surfaces)
+- [memento-block-reasoning-compression handoff](../handoffs/active/context-and-token-economy.md#track-memento-block-reasoning-compression) -- llama.cpp block masking feasibility confirmed, SFT training design complete
+- [Reasoning Compression handoff](../handoffs/active/context-and-token-economy.md#track-reasoning-compression) -- SEAL multi-role regression results, branching density metrics from intake-378, training data strategy synthesis
+- [repl-turn-efficiency handoff](../handoffs/active/harness-program.md#track-repl-turn-efficiency) -- S1-S3/S5-S6 done; S6 fixed 3 bugs causing ~25% wasted specialist REPL turns (810/3,227 calls); 2026-04-17 update: intake-397 (durable-reconnect patterns), intake-399 (minimal tool surface design pressure)
 - [intake-395](https://github.com/thedotmack/claude-mem) Claude-Mem -- 3-layer progressive-disclosure retrieval (FTS5+Chroma, ~10x token savings); pattern applicable to tool-output retrieval surfaces
 - [intake-397](https://github.com/vercel-labs/open-agents) Open Agents -- durable workflow + stream-reconnect + control-plane/sandbox separation; patterns for long-running tool output survival
 - [intake-399](https://github.com/lsdefine/GenericAgent) GenericAgent -- 9 atomic tools + <30K context + L0-L4 memory; design pressure toward minimal tool surfaces and lazy-loaded outputs
@@ -859,9 +931,9 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [intake-425](https://arxiv.org/abs/2604.14004) Memory Transfer Learning -- simple embedding retrieval (cosine, N=3) outperforms LLM reranking; 431 curated insight-format memories beat 5,899 raw memories; validates FAISS-based strategy_store approach
 - [intake-426](https://arxiv.org/abs/2604.14228) Dive into Claude Code -- five-layer compaction pipeline (budget reduction → snip → microcompact → context collapse → auto-compact); Budget Reduction gap identified for EPYC; "context as scarce resource" design principle
 - [intake-708](https://www.arxiv.org/html/2606.07878v1) Still: Amortized KV Cache Compaction in a Single Forward Pass -- per-layer Perceiver synthesizes compact KV in one forward pass (vs per-context optimization); iterative/chunked compaction over a trajectory for streaming/long-horizon residency; position-free via inverse-RoPE; needs one-time GPU forward-KL distillation per base model, no public code as of 2026-06-05. Context-management angle here; primary KV-mechanism home is [kv-cache.md](kv-cache.md)
-- [summary-token-attention-readiness.md](../handoffs/active/summary-token-attention-readiness.md) -- learnable-compaction readiness tracker; Still added as a GPU-CPT-gated monitoring target alongside the KSA/GSA summary-token cluster
-- [intake-732/746/747](https://arxiv.org/abs/2606.23595) SPIRAL + recursive self-aggregation -- training-free parallel-trace + prompted-aggregation pattern (aggregation-trace generalization of short-m@k); worker/coder-tier-only fan-out; mandatory same-compute self-consistency control (see 2026-07-05 update; handoff home [reasoning-compression.md](../handoffs/active/reasoning-compression.md))
-- [gpu-cot-scaffold-sidecar.md](../handoffs/active/gpu-cot-scaffold-sidecar.md) -- scaffold-injection falsification: reasoning context does not transplant capability; format-native reasoning-slot injection as the surviving cross-model context primitive (routing story in [cost-aware-routing.md](cost-aware-routing.md))
+- [summary-token-attention-readiness.md](../handoffs/active/model-evaluation-queue.md#track-summary-token-attention-readiness) -- learnable-compaction readiness tracker; Still added as a GPU-CPT-gated monitoring target alongside the KSA/GSA summary-token cluster
+- [intake-732/746/747](https://arxiv.org/abs/2606.23595) SPIRAL + recursive self-aggregation -- training-free parallel-trace + prompted-aggregation pattern (aggregation-trace generalization of short-m@k); worker/coder-tier-only fan-out; mandatory same-compute self-consistency control (see 2026-07-05 update; handoff home [reasoning-compression.md](../handoffs/active/context-and-token-economy.md#track-reasoning-compression))
+- [gpu-cot-scaffold-sidecar.md](../handoffs/active/model-evaluation-queue.md#track-gpu-cot-scaffold-sidecar) -- scaffold-injection falsification: reasoning context does not transplant capability; format-native reasoning-slot injection as the surviving cross-model context primitive (routing story in [cost-aware-routing.md](cost-aware-routing.md))
 - [progress 2026-07-05 (CoT falsification + MTP)](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md) -- narrative + evidence index for the scaffold close; verifier/selector pivot
 - [progress 2026-07-05 daily](../progress/2026-07/2026-07-05.md) -- `dcp_for_consult` flag landed (orchestrator `4183522f`), default-off, reuses `_maybe_dcp_seed_context()`
 
@@ -871,7 +943,7 @@ This update consolidates progressive folding L1–L4 status, corrects two earlie
 
 ### Progressive folding L1–L4 status (consolidated)
 
-Per [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md), the consolidated status as of 2026-04-28:
+Per [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md), the consolidated status as of 2026-04-28:
 
 - **Phase 0 (compaction trigger raised to 75%) — done.** Configurable via `ORCHESTRATOR_SESSION_COMPACTION_TRIGGER_RATIO`. Validated by ReSum 70-80% optimal range and AgentFold delay-preserves-context evidence.
 - **Phase 1 (two-level condensation) — done.** Granular per-turn blocks (deterministic formatting, no LLM) plus deep consolidation at boundaries (single bounded-window LLM call). Feature-flagged `two_level_condensation`.
@@ -908,7 +980,7 @@ Per the pi-agent-core deep-dive, the two-stage message pipeline is exactly the b
 
 ### Sources
 
-- [`handoffs/active/context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — L1-L4 status consolidated, L5+ deferred, Phase 3c deferred
+- [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md) — L1-L4 status consolidated, L5+ deferred, Phase 3c deferred
 - intake-494 (SLIDERS) — parallel architecture, cross-link to `wiki/rag-alternatives.md`
 - intake-492 (Flywheel) — read-side `memory(action=brief)` token-budgeted assembler with confidence decay; corrected from earlier "promote-to-persistent" framing
 - [intake-473](https://github.com/badlogic/pi-mono/tree/main/packages/agent) pi-agent-core — `transformContext` / `convertToLlm` two-stage pattern as boundary for folding logic
@@ -935,7 +1007,7 @@ Five papers occupying distinct cells in a (training-required, representation-typ
 
 **@jun_song (Super-Tune) X-post** (intake-542) — Korean practitioner direction-setting signal: after testing most viral X "speed tricks", only SFT-duplicate-suppression + Adaptive Thinking verified as quality-preserving at 100k+ context. @ZenMagnets reply: spec-dec hurts high-concurrency throughput. Both signals partially corroborated by academic papers (CGR + ECHO) but with caveats: bimodal brittleness for adaptive thinking; scheduler-level fixes recover spec-dec at concurrency.
 
-**Sources**: 60 native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
+**Sources**: 62 native document references (source review 2026-10-07); sweep 2 (2026-10-20) added sources listed in the first Compiled Update
 
 ## Context PRE-assembly: the *assemble* side, vs folding's *evict* side (Repo Prompt, 2026-05-25)
 
@@ -945,15 +1017,15 @@ The Repo Prompt deep dive (intake-605) surfaced a context philosophy this page h
 - **Per-file inclusion modes.** Each file tracked `full | slices | codemap_only`; reads auto-promote to slices; overlapping/adjacent line ranges auto-merged. A 10k-line file contributes only its relevant ~200 lines, or just signatures.
 - **CodeMaps as a separate budget class.** Signature-only API skeletons (classes/functions/references, no bodies) injected distinctly, reserving budget for files actually under edit. GitNexus (42.6K symbols on epyc-orchestrator) can already produce this; nothing currently exposes an "architecture snapshot" sized to a budget for prompt injection — **analyzed-not-wired**.
 - **CPU lens (the load-bearing reframe).** RP's 60k default is GPT-5 Pro's *cloud* paste ceiling. On our BW-bound CPU regime the underlying principle — never spend a token that doesn't earn its place — is *sharper*, not weaker: every unearned context token is DRAM bandwidth paid at decode, and a bloated bundle's prefill is pure latency. Budget-bounded pre-assembly for delegation is plausibly a double win (less prefill latency + less context contamination → better quality).
-- **Where it lands.** The *assemble* side is missing from production. New handoff [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) (DCP-1..6) scopes it for *delegation* specifically — package a bundle when handing a sub-task to worker/coder, instead of each role rediscovering from scratch. Must share segment-importance heuristics with folding (this page's evict side). The closed-source GUI is not deployable, but the feature set is a spec to mine — the open-source-only rule governs *deploy*, not *analyze* (see `feedback_feature_mine_closed_source_competitors`).
+- **Where it lands.** The *assemble* side is missing from production. New handoff [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) (DCP-1..6) scopes it for *delegation* specifically — package a bundle when handing a sub-task to worker/coder, instead of each role rediscovering from scratch. Must share segment-importance heuristics with folding (this page's evict side). The closed-source GUI is not deployable, but the feature set is a spec to mine — the open-source-only rule governs *deploy*, not *analyze* (see `feedback_feature_mine_closed_source_competitors`).
 
-**Sources**: [intake-605](https://repoprompt.com/) Repo Prompt — Context Builder + CodeMaps (feature-mined via official blog + open-source `w-winter/dot314` MCP wrapper source) · cross-ref [intake-330] code-review-graph (~8.2× AST token reduction), [intake-151] GitNexus, [intake-295] fff.nvim · [delegation-context-preassembly](../handoffs/active/delegation-context-preassembly.md) · [batched-edit-parallel-apply](../handoffs/active/batched-edit-parallel-apply.md) · intake_index.yaml intake-605 `deep_dive`
+**Sources**: [intake-605](https://repoprompt.com/) Repo Prompt — Context Builder + CodeMaps (feature-mined via official blog + open-source `w-winter/dot314` MCP wrapper source) · cross-ref [intake-330] code-review-graph (~8.2× AST token reduction), [intake-151] GitNexus, [intake-295] fff.nvim · [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) · [batched-edit-parallel-apply](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply) · intake_index.yaml intake-605 `deep_dive`
 
 ### Consult context packaging reuses DCP (2026-05-31)
 
 The internal interaction-lifecycle handoff makes DCP a shared context-packaging substrate for both delegation and consult, but not the owner of consult lifecycle. P2 consult reuses the existing `_maybe_dcp_seed_context()` ranking/rendering path behind `features().dcp_for_consult` (requiring `dcp_pre_assembly`), and preserves the DCP invariant that pre-assembly is advisory only: reactive discovery/top-ups remain available. This avoids a parallel context packer and keeps the assemble-side scoring/ranking decisions in one place.
 
-**Sources**: [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) dependency note · [`internal-interaction-lifecycle.md`](../handoffs/active/internal-interaction-lifecycle.md) P2-4 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
+**Sources**: [`delegation-context-preassembly.md`](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) dependency note · [`internal-interaction-lifecycle.md`](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle) P2-4 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
 
 ## Updates — 2026-07-05
 
@@ -975,19 +1047,19 @@ The GPU CoT-scaffold experiments (full story in [cost-aware-routing.md](cost-awa
 
 The consult-reuses-DCP design recorded above (2026-05-31) is now implemented: orchestrator commit `4183522f` adds a default-off `dcp_for_consult` feature flag (requires `dcp_pre_assembly`) under which `consult()` reuses the existing `_maybe_dcp_seed_context()` packer rather than growing a second context packer. Behavior-preserving unless a caller supplies `code_search_fn` and both flags are enabled; the DCP advisory-only invariant (reactive discovery stays available) is preserved. Note the parent DCP seed-bundle A/B is still at `hold` (2026-06-22 finding above), so both flags remain default-off.
 
-**Sources**: [`reasoning-compression.md`](../handoffs/active/reasoning-compression.md) 2026-07-02 intake update · [`gpu-cot-scaffold-sidecar.md`](../handoffs/active/gpu-cot-scaffold-sidecar.md) G2/rescue-rate results · [`progress/2026-07/2026-07-05-cot-falsification-and-mtp.md`](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md) · [`progress/2026-07/2026-07-05.md`](../progress/2026-07/2026-07-05.md) (dcp_for_consult `4183522f`)
+**Sources**: [`reasoning-compression.md`](../handoffs/active/context-and-token-economy.md#track-reasoning-compression) 2026-07-02 intake update · [`gpu-cot-scaffold-sidecar.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-cot-scaffold-sidecar) G2/rescue-rate results · [`progress/2026-07/2026-07-05-cot-falsification-and-mtp.md`](../progress/2026-07/2026-07-05-cot-falsification-and-mtp.md) · [`progress/2026-07/2026-07-05.md`](../progress/2026-07/2026-07-05.md) (dcp_for_consult `4183522f`)
 
 ### New (2026-07-21, rot trades against non-termination, and the CF-3c instrument was inverted)
 
 > **Review flag (project-wiki writer-evidence policy):** model-compiled, not adopted until human or measured review.
 
-- **"Context rot" and "no-answer" are substitutes, so a give-up-rate target without a non-termination counter optimizes into agents that never finish.** In arXiv:2606.29718 (GAIR/SJTU, verified against the paper's Table 4 for Qwen3.5-397B-A17B on BrowseComp) plain ReAct has NA = 0.0 while every summarization arm has NA = 37-49%. Summary(Turn) reports a rot rate of 1.8% while **38.4% of its trajectories never produce an answer at all**; Keep-Latest NA 4.2 rises to 17.6 once summarization is added, roughly quadrupling unfinished trajectories. The paper's headline "rot 53.4% → 16.2%" is therefore partly a relabeling of failure rather than a removal of it. This is the durable transferable finding, independent of the contested policy ranking. Sources: [context-folding-progressive.md](../handoffs/active/context-folding-progressive.md), [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
+- **"Context rot" and "no-answer" are substitutes, so a give-up-rate target without a non-termination counter optimizes into agents that never finish.** In arXiv:2606.29718 (GAIR/SJTU, verified against the paper's Table 4 for Qwen3.5-397B-A17B on BrowseComp) plain ReAct has NA = 0.0 while every summarization arm has NA = 37-49%. Summary(Turn) reports a rot rate of 1.8% while **38.4% of its trajectories never produce an answer at all**; Keep-Latest NA 4.2 rises to 17.6 once summarization is added, roughly quadrupling unfinished trajectories. The paper's headline "rot 53.4% → 16.2%" is therefore partly a relabeling of failure rather than a removal of it. This is the durable transferable finding, independent of the contested policy ranking. Sources: [context-folding-progressive.md](../handoffs/active/context-and-token-economy.md), [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [progress 2026-07-21](../progress/2026-07/2026-07-21.md).
 
-- **Observation-dropping carries most of the benefit; proactive summarization is a small, sign-inconsistent residual.** From the same table: ReAct 35.0 → Discard 44.6 → Keep-Latest 43.8 → Keep-Latest+summary 48.2, so dropping stale observations delivers ~9pp of the 13.2pp headline and summarization adds 3.6-4.4pp *in the single most favorable cell*. Averaged across all six model×dataset cells the summarization delta is **+1.55pp and positive in only 4 of 6** (GLM/BrowseComp-Plus −1.1, GLM/xbench −0.6). Table 9 reports ±2.5-3.8 SD over 5 repeats on a 100-question split, so the Discard→KL+sum gap is not distinguishable from noise. This converges with arXiv:2508.21433 (The Complexity Trap), which found observation masking matching or beating LLM summarization on SWE-bench across five configs — two domains, same shape, with both papers' actual winner being a bounded trim+summarize hybrid rather than trimming alone. Sources: [context-folding-progressive.md](../handoffs/active/context-folding-progressive.md), [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [reasoning-compression.md](../handoffs/active/reasoning-compression.md).
+- **Observation-dropping carries most of the benefit; proactive summarization is a small, sign-inconsistent residual.** From the same table: ReAct 35.0 → Discard 44.6 → Keep-Latest 43.8 → Keep-Latest+summary 48.2, so dropping stale observations delivers ~9pp of the 13.2pp headline and summarization adds 3.6-4.4pp *in the single most favorable cell*. Averaged across all six model×dataset cells the summarization delta is **+1.55pp and positive in only 4 of 6** (GLM/BrowseComp-Plus −1.1, GLM/xbench −0.6). Table 9 reports ±2.5-3.8 SD over 5 repeats on a 100-question split, so the Discard→KL+sum gap is not distinguishable from noise. This converges with arXiv:2508.21433 (The Complexity Trap), which found observation masking matching or beating LLM summarization on SWE-bench across five configs — two domains, same shape, with both papers' actual winner being a bounded trim+summarize hybrid rather than trimming alone. Sources: [context-folding-progressive.md](../handoffs/active/context-and-token-economy.md), [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [reasoning-compression.md](../handoffs/active/context-and-token-economy.md#track-reasoning-compression).
 
-- **Our CF-3c compaction-quality instrument was measuring the inverse of its stated purpose, and was switched off besides.** `CompactionQualityMonitor` (`src/graph/session_log.py:563`) is gated behind `role_aware_compaction` AND `helpfulness_scoring`, both `FeatureSpec(..., False, False, ...)` (`src/features.py:152,154`), so zero production telemetry existed. Worse, compaction overwrites the segment in place (`session_summary.py:276`, `seg.consolidated = f"[Compacted] {first_sentence}"`) and the reference-miss check then extracted identifiers **from that surviving stub** — so it could only fire for content compaction KEPT and never for content compaction DESTROYED, which is the entire failure mode it exists to detect. Fixed 2026-07-21 to compare identifiers present in `seg.granular_blocks` (retained for audit) but absent from the stub, with two regression tests that fail against the previous behavior in both directions (missed loss, and false positive on preserved content). Sources: [context-folding-progressive.md](../handoffs/active/context-folding-progressive.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md), `src/graph/session_summary.py`.
+- **Our CF-3c compaction-quality instrument was measuring the inverse of its stated purpose, and was switched off besides.** `CompactionQualityMonitor` (`src/graph/session_log.py:563`) is gated behind `role_aware_compaction` AND `helpfulness_scoring`, both `FeatureSpec(..., False, False, ...)` (`src/features.py:152,154`), so zero production telemetry existed. Worse, compaction overwrites the segment in place (`session_summary.py:276`, `seg.consolidated = f"[Compacted] {first_sentence}"`) and the reference-miss check then extracted identifiers **from that surviving stub** — so it could only fire for content compaction KEPT and never for content compaction DESTROYED, which is the entire failure mode it exists to detect. Fixed 2026-07-21 to compare identifiers present in `seg.granular_blocks` (retained for audit) but absent from the stub, with two regression tests that fail against the previous behavior in both directions (missed loss, and false positive on preserved content). Sources: [context-folding-progressive.md](../handoffs/active/context-and-token-economy.md), [progress 2026-07-21](../progress/2026-07/2026-07-21.md), `src/graph/session_summary.py`.
 
-- **Our production history is already more aggressive than any policy the paper tested, which reframes the open question.** `build_granular_summary` retains a **60-character** output preview per turn — raw observations are never kept — and `src/context_compression.py` already implements a keep-latest-8-with-summary hybrid (`TOOL_OUTPUT_AGE_THRESHOLD = 8`, protected-zone first-3/last-5, errors preserved verbatim). So a seven-policy bake-off would largely re-derive a committed design; the decision-relevant question is narrower: does the protected-zone LLM-summary half earn its keep over stub-only trimming, and what is the right age threshold. Note also the paper's cost framing does not transfer — its expensive arms are threshold-triggered whole-trajectory compaction (21.7 → 53-69 tool calls), whereas the hybrid's real cost is unfinished trajectories, so summarization should be judged against `repl_max_turns` rate rather than token spend. Sources: [context-folding-progressive.md](../handoffs/active/context-folding-progressive.md), [tool-output-compression.md](../handoffs/active/tool-output-compression.md), [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md).
+- **Our production history is already more aggressive than any policy the paper tested, which reframes the open question.** `build_granular_summary` retains a **60-character** output preview per turn — raw observations are never kept — and `src/context_compression.py` already implements a keep-latest-8-with-summary hybrid (`TOOL_OUTPUT_AGE_THRESHOLD = 8`, protected-zone first-3/last-5, errors preserved verbatim). So a seven-policy bake-off would largely re-derive a committed design; the decision-relevant question is narrower: does the protected-zone LLM-summary half earn its keep over stub-only trimming, and what is the right age threshold. Note also the paper's cost framing does not transfer — its expensive arms are threshold-triggered whole-trajectory compaction (21.7 → 53-69 tool calls), whereas the hybrid's real cost is unfinished trajectories, so summarization should be judged against `repl_max_turns` rate rather than token spend. Sources: [context-folding-progressive.md](../handoffs/active/context-and-token-economy.md), [tool-output-compression.md](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [repl-turn-efficiency.md](../handoffs/active/harness-program.md#track-repl-turn-efficiency).
 
 ## Compiled Update — 2026-07-29: the masking anchor, verbatim-log-plus-grep, and total-token accounting
 
@@ -1005,7 +1077,7 @@ codebases**. Without that anchor **no learned-compression result is
 interpretable**, including any we produce, and our own prior intake already holds
 that masking carries most of the benefit. This is now a hard precondition on the
 CF-3c arm set rather than a nice-to-have.
-[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §CF-3c
+[`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) §CF-3c
 
 ### Agent-initiated compaction is four pieces, not a tool schema
 
@@ -1018,7 +1090,7 @@ the context, not in the runtime. A further unreported ablation exists in the
 released code (disabling the archive query) that would isolate the value of the
 lossless archive from the compression policy; the authors implemented it and
 omitted the result.
-[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §CF-3c
+[`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) §CF-3c
 
 ### Instrument TOTAL tokens per episode, not peak
 
@@ -1027,7 +1099,7 @@ tool calls **1.6–2.4×** and adds a summarizer call per compression plus a
 full-archive-ingesting querier call per retrieval. On a **prefill-bound CPU
 host**, flatter peaks at twice the calls may be a net throughput **loss**. Any
 compression A/B here reports total tokens per episode and wall-clock.
-[`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) §2026-07-29
+[`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) §2026-07-29
 
 ### The compaction-default question: verbatim append-only log + grep vs summarize-and-compact
 
@@ -1051,7 +1123,7 @@ emit is **unfollowable there**. The archive-query API itself needs **no embeddin
 model, no vector index and no chunking** — verbatim JSON archived by integer key,
 read back by one recall call — which maps directly onto the existing
 `_spill_if_truncated()` pointer machinery.
-[`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) §2026-07-29
+[`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) §2026-07-29
 
 ### Long-context memory injection competes with the conversation
 
@@ -1063,8 +1135,8 @@ retrieval injection must be **budget-conditional** — inject nothing once the
 untruncated history fits the window — and capped as a fraction of remaining
 budget rather than a fixed k. Detail in
 [Memory-Augmented Systems](memory-augmented.md).
-[`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) §UTM-M6–M8;
-[`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) §budget-conditional rider
+[`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M6–M8;
+[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §budget-conditional rider
 
 ### Two hygiene rules this batch forced
 
@@ -1076,14 +1148,14 @@ budget rather than a fixed k. Detail in
   from the same week carries a near-identical title to one of the two anchors,
   and anyone re-fetching by title lands on the wrong one.
 
-[`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) §CF-3c, §Dedup hazard
+[`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) §CF-3c, §Dedup hazard
 
 ### Source References
 
-- [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — mandatory masking anchor; the four pieces of agent-initiated compaction; the unreported archive-query ablation; non-termination counter; ARC-AGI-3 provenance downgrade; the title-collision dedup hazard
-- [`tool-output-compression.md`](../handoffs/active/tool-output-compression.md) — verbatim-log vs summarize-and-compact A/B design; total-vs-peak token instrumentation; the truncation audit (episodic store vs REPL journal) and the file-capable vs context-only `peek`/`grep` split
-- [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — 128K context-budget competition and its budget-conditional injection consequences
-- [`engram-conditional-memory.md`](../handoffs/active/engram-conditional-memory.md) — k as a fraction of remaining window budget rather than a fixed integer
+- [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — mandatory masking anchor; the four pieces of agent-initiated compaction; the unreported archive-query ablation; non-termination counter; ARC-AGI-3 provenance downgrade; the title-collision dedup hazard
+- [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — verbatim-log vs summarize-and-compact A/B design; total-vs-peak token instrumentation; the truncation audit (episodic store vs REPL journal) and the file-capable vs context-only `peek`/`grep` split
+- [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — 128K context-budget competition and its budget-conditional injection consequences
+- [`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — k as a fraction of remaining window budget rather than a fixed integer
 
 ## Compiled Update — 2026-08-18: optical compaction is shipping, and more context is not monotonically better
 
@@ -1138,7 +1210,7 @@ and scout cost against the plain seat under the same server generation and KV mo
 
 ### Source References
 
-- [Orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-7 implementation and measurement.
+- [Orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend) — OAB-7 implementation and measurement.
 - [DeepSeek V4.1 Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41 comparison boundary.
 - [Agent-loop design guide](../docs/guides/agent-workflows/agent-loop-design.md) — context and campaign lifecycle guidance.
 - [Main AutoKernel seat progress](../progress/2026-09/2026-09-25-main-ak-seat.md) — same-day chronology.
@@ -1153,45 +1225,45 @@ DCP remains default-off after its unfavorable first live J7 A/B, and DCP-4 seed 
 
 ### Source References (2026-10-20 context delta)
 
-- [Delegation context pre-assembly](../handoffs/active/delegation-context-preassembly.md) — the diagnostics trigger and the benchmark note.
-- [Harness improvement loop](../handoffs/active/harness-improvement-loop.md) — HIL-7 matched-budget gate that applies to any context-feature loop.
-- [Multimodal pipeline](../handoffs/active/multimodal-pipeline.md) — a parallel owned-trigger pattern for embedder screens.
+- [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — the diagnostics trigger and the benchmark note.
+- [Harness improvement loop](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-7 matched-budget gate that applies to any context-feature loop.
+- [Multimodal pipeline](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — a parallel owned-trigger pattern for embedder screens.
 
 ## Compiled Update — 2026-10-21 (sweep 3): compression A/B requirements and the error-output rule
 
-- Every elision, masking or LLM-compression arm must report (A/B-COST) compressor wall time per episode, extra model turns, the SUM of input tokens over all turns, prefix-cache reuse and invalidation counts, and summary placement; (A/B-TRIG) the trigger fraction against the named window denominator at two or more fractions (0.25 and 0.5) so context rot is separable from overflow avoidance; (A/B-STRAT) accuracy per arm per evidence-span stratum and per `terminal_state`. HIL item 8 adds overflow failures reported separately, a no-management control at every window, a fixed/broken transition table, and a wording-only control. ([tool-output-compression](../handoffs/active/tool-output-compression.md), TOC-SP-7; [HIL design](../docs/design/harness-improvement-loop-design-20261006.md) item 8, 2026-10-20)
-- The UFH-07 trajectory artifact gains `terminal_state` in {finished, context-exhausted, turn-exhausted, killed} (turn exhaustion is today only the string `[Max turns (N) reached]`), prompt tokens and served `n_ctx` per turn, spill-ledger fields, an evidence-span covariate, and a request id joining the inference tap (TOC-SP-6). ([tool-output-compression](../handoffs/active/tool-output-compression.md))
-- Design-only arms CF-AB-1 (A3 staged elision-then-summarize, A4 age-tiered half-life elision, A5 hard mask) are not to be run until TOC-SP-5 shows binding windows at a role (peak prompt above 0.60 for more than 10 percent of trajectories). TOC-SP-8 (not yet implemented, default-off): error-bearing output keeps head+tail and is never worker-summarised or aged out; today `_spill_output` is purely length-triggered. ([context-folding-progressive](../handoffs/active/context-folding-progressive.md); [tool-output-compression](../handoffs/active/tool-output-compression.md))
-- Regime caveat: component and context-policy value depends on served model and budget (K2); the Phase 3d "drop observations before LLM summarisation" bias carries a 2026-10-20 regime caveat and the script-ownership boundary (`compress_tool_output.py` has no model dependency). ([tool-output-compression](../handoffs/active/tool-output-compression.md))
+- Every elision, masking or LLM-compression arm must report (A/B-COST) compressor wall time per episode, extra model turns, the SUM of input tokens over all turns, prefix-cache reuse and invalidation counts, and summary placement; (A/B-TRIG) the trigger fraction against the named window denominator at two or more fractions (0.25 and 0.5) so context rot is separable from overflow avoidance; (A/B-STRAT) accuracy per arm per evidence-span stratum and per `terminal_state`. HIL item 8 adds overflow failures reported separately, a no-management control at every window, a fixed/broken transition table, and a wording-only control. ([tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), TOC-SP-7; [HIL design](../docs/design/harness-improvement-loop-design-20261006.md) item 8, 2026-10-20)
+- The UFH-07 trajectory artifact gains `terminal_state` in {finished, context-exhausted, turn-exhausted, killed} (turn exhaustion is today only the string `[Max turns (N) reached]`), prompt tokens and served `n_ctx` per turn, spill-ledger fields, an evidence-span covariate, and a request id joining the inference tap (TOC-SP-6). ([tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
+- Design-only arms CF-AB-1 (A3 staged elision-then-summarize, A4 age-tiered half-life elision, A5 hard mask) are not to be run until TOC-SP-5 shows binding windows at a role (peak prompt above 0.60 for more than 10 percent of trajectories). TOC-SP-8 (not yet implemented, default-off): error-bearing output keeps head+tail and is never worker-summarised or aged out; today `_spill_output` is purely length-triggered. ([context-folding-progressive](../handoffs/active/context-and-token-economy.md); [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
+- Regime caveat: component and context-policy value depends on served model and budget (K2); the Phase 3d "drop observations before LLM summarisation" bias carries a 2026-10-20 regime caveat and the script-ownership boundary (`compress_tool_output.py` has no model dependency). ([tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
 
-Sources: [tool-output-compression](../handoffs/active/tool-output-compression.md); [context-folding-progressive](../handoffs/active/context-folding-progressive.md); [harness design](../docs/design/harness-improvement-loop-design-20261006.md); [delegation-context-preassembly](../handoffs/active/delegation-context-preassembly.md).
+Sources: [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression); [context-folding-progressive](../handoffs/active/context-and-token-economy.md); [harness design](../docs/design/harness-improvement-loop-design-20261006.md); [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly).
 
 ## Compiled Update — 2026-10-31 (operator wiki sweep, workspace-58)
 
 **Confidence: verified** for the source change and plan contents; the retrieval-vs-summary question is a plan only, with zero inference run.
 
-- **Dropping the summary is the only new idea in the Mainplane intake, and its evidence is n=1.** MemGPT, Cursor, Claude Code and OpenClaw already keep the full transcript searchable beside a summary, and our REPL already emits read_file/peek pointers. The approved plan (TOC-MP-1..4) does not adopt pointer-only; it tests it. ([source](../handoffs/active/tool-output-compression.md))
-- **The first step is a zero-inference pointer-readability proof.** Session-log, compaction and spill pointers all point under `tmp_dir`, but `_validate_file_path` admits only the task root or request-scoped read roots, so a pointer can be dead in task-root or request-scope modes. TOC-MP-1 emits each pointer kind in all three modes and fixes any denial; this is a possible latent defect, unconfirmed until the test runs. ([source](../handoffs/active/tool-output-compression.md))
-- **The planned A/B has five arms and stricter reliability rules.** Arms are summary-only, summary plus pointer (today's production shape), pointer-only, no-summary pruning with placeholder pointers, and full history; requirements include pass^k with a per-task estimator, post-boundary blocked actions, retrieval misses and probes stratified by literal recoverability. TOC-MP-4's rule is fixed in advance: pointer-only exact recall of a 24-character needle at least matching summary-plus-pointer keeps it in the full A/B, otherwise M-MP2 fires. ([source](../handoffs/active/tool-output-compression.md))
-- **`CompactionQualityMonitor` now survives checkpointing.** Orchestrator `30aa952e` serializes it through the LangGraph state projection and the existing `AsyncSqliteSaver` writer, restoring into a fresh TaskState (153 tests). Feature flags remain off; no live telemetry or measured effect. ([source](../handoffs/active/context-folding-progressive.md))
+- **Dropping the summary is the only new idea in the Mainplane intake, and its evidence is n=1.** MemGPT, Cursor, Claude Code and OpenClaw already keep the full transcript searchable beside a summary, and our REPL already emits read_file/peek pointers. The approved plan (TOC-MP-1..4) does not adopt pointer-only; it tests it. ([source](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
+- **The first step is a zero-inference pointer-readability proof.** Session-log, compaction and spill pointers all point under `tmp_dir`, but `_validate_file_path` admits only the task root or request-scoped read roots, so a pointer can be dead in task-root or request-scope modes. TOC-MP-1 emits each pointer kind in all three modes and fixes any denial; this is a possible latent defect, unconfirmed until the test runs. ([source](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
+- **The planned A/B has five arms and stricter reliability rules.** Arms are summary-only, summary plus pointer (today's production shape), pointer-only, no-summary pruning with placeholder pointers, and full history; requirements include pass^k with a per-task estimator, post-boundary blocked actions, retrieval misses and probes stratified by literal recoverability. TOC-MP-4's rule is fixed in advance: pointer-only exact recall of a 24-character needle at least matching summary-plus-pointer keeps it in the full A/B, otherwise M-MP2 fires. ([source](../handoffs/active/context-and-token-economy.md#track-tool-output-compression))
+- **`CompactionQualityMonitor` now survives checkpointing.** Orchestrator `30aa952e` serializes it through the LangGraph state projection and the existing `AsyncSqliteSaver` writer, restoring into a fresh TaskState (153 tests). Feature flags remain off; no live telemetry or measured effect. ([source](../handoffs/active/context-and-token-economy.md))
 
-Sources: [tool-output-compression](../handoffs/active/tool-output-compression.md) · [context-folding-progressive](../handoffs/active/context-folding-progressive.md) · [2026-10-31 progress](../progress/2026-10/2026-10-31.md)
+Sources: [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) · [context-folding-progressive](../handoffs/active/context-and-token-economy.md) · [2026-10-31 progress](../progress/2026-10/2026-10-31.md)
 
 
 ## Compiled Update — 2026-11-01 (source-delta review)
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- The new CF-AKV-0 is a proposed zero-inference trace screen; the KV-drop probe is conditional on the specified 40% resident-old-tool-results and 20% above-48k thresholds. No outcome is reported. [Source](../handoffs/active/context-folding-progressive.md)
+- The new CF-AKV-0 is a proposed zero-inference trace screen; the KV-drop probe is conditional on the specified 40% resident-old-tool-results and 20% above-48k thresholds. No outcome is reported. [Source](../handoffs/active/context-and-token-economy.md)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
-- Compaction quality dimensions: "uncertain-incorrect rate" was declined (production has no correctness label); give-up and no-answer/max-turns rates join compaction state via existing anomaly detectors (APP `df5645e9`, 109 tests). A bounded audit could not establish resident old-tool token shares or per-decode occupancy, so the >=40%/>=20% trigger stays unknown and no KV-drop probe fired. [context-folding](../handoffs/active/context-folding-progressive.md)
-- TOTAL-tokens-per-episode is instrumented through a request-local usage ledger spanning REPL creation through FINAL repair, with cache replay separate (APP `44fa7f7d`, ROOT `a50cb6e8`; 24 + 54 controls). No A/B or performance claim. [tool-output-compression](../handoffs/active/tool-output-compression.md), [progress](../progress/2026-11/2026-11-01-total-episode-tokens.md)
-- DCP-8 (paired descriptive/lazy instruction axis, intake-1157#record) is done as a conformance instrument; DCP-11 (Packer stops downgrading edit-site files with ColGREP hits) is implemented (hosted run 41282077353, 299 passed); its policy effect is still a proposed DCP-6 arm. [DCP](../handoffs/active/delegation-context-preassembly.md)
-- Voice stack: CS-16 (spoken form/display payload) implemented, APP `ee58e839`; Nemotron 3.5 Q8 STT English WER auto/forced (%): R0 14.410/13.234, R3 12.749/12.276, R6 12.033/11.875, R13 12.482/11.451 over 1,437 utterances per setting (selection-only, no paired baseline). [conversation-stack](../handoffs/active/conversation-stack.md), [progress](../progress/2026-11/2026-11-01-nemotron-tc-validation.md)
+- Compaction quality dimensions: "uncertain-incorrect rate" was declined (production has no correctness label); give-up and no-answer/max-turns rates join compaction state via existing anomaly detectors (APP `df5645e9`, 109 tests). A bounded audit could not establish resident old-tool token shares or per-decode occupancy, so the >=40%/>=20% trigger stays unknown and no KV-drop probe fired. [context-folding](../handoffs/active/context-and-token-economy.md)
+- TOTAL-tokens-per-episode is instrumented through a request-local usage ledger spanning REPL creation through FINAL repair, with cache replay separate (APP `44fa7f7d`, ROOT `a50cb6e8`; 24 + 54 controls). No A/B or performance claim. [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression), [progress](../progress/2026-11/2026-11-01-total-episode-tokens.md)
+- DCP-8 (paired descriptive/lazy instruction axis, intake-1157#record) is done as a conformance instrument; DCP-11 (Packer stops downgrading edit-site files with ColGREP hits) is implemented (hosted run 41282077353, 299 passed); its policy effect is still a proposed DCP-6 arm. [DCP](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly)
+- Voice stack: CS-16 (spoken form/display payload) implemented, APP `ee58e839`; Nemotron 3.5 Q8 STT English WER auto/forced (%): R0 14.410/13.234, R3 12.749/12.276, R6 12.033/11.875, R13 12.482/11.451 over 1,437 utterances per setting (selection-only, no paired baseline). [conversation-stack](../handoffs/active/speech-and-multimodal.md), [progress](../progress/2026-11/2026-11-01-nemotron-tc-validation.md)
 
 ## Compiled Update — 2026-11-01 (10-31 intake deep dives, workspace-58)
 
@@ -1258,3 +1330,48 @@ Sources: [tool-output-compression](../handoffs/active/tool-output-compression.md
 ### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
 
 - intake-2544#record (SWE-Pruner): Headline token cut narrowed to the Table 1 figure of -23.1%. Worth investigating; history/observation compression sources declined, owned by the tool-output-compression lineage.
+
+## Compiled Update — 2026-11-07 (handoff art, measured)
+
+- **Structured handoff is not measurably better than a free-form summary.** On AndroidWorld-style takeovers the structured arm is +4.4 pp against a summary's +5.0 pp, at 660k vs 602k prompt tokens - structure costs 9.6% more. Adopt the field list for inspectability, not for a measured win.
+- **Validation evidence is the highest-value field; changed files is the lowest.** Handoff points carrying "what was run and what it returned" gain +14.7 pp; failure evidence +16.1 to +19.4 pp; the changed-files list +4.0 pp (the successor can `git diff` it for free). CF-AB-1 A6 now carries the measured 7+7 schema and an events-per-solved-task co-metric.
+- **Handoffs are a budgeted selection with pointers, not an agent-written summary.** t3code's transfer record is created cheaply and resolved lazily at first dispatch; raw trace buys the largest solved-rate gain but costs 37-256 s of CPU cold prefill per takeover on our measured rates.
+- **Filed work**: CTX-HO-1 and CTX-HO-3 in [context-and-token-economy.md](../handoffs/active/context-and-token-economy.md).
+
+Sources: [Handoff Debt dive](../research/deep-dives/harness-inference-20261106/intake-2653.md) · [t3code dive](../research/deep-dives/harness-inference-20261106/intake-2650.md)
+
+## Compiled Update — 2026-11-07 (compaction-governance work filed from the 2611.05306 intake waves)
+
+**Confidence: inferred** (synthesis of filed box text; no measurement has run yet).
+
+- **A detector bug is filed first**: TOC-CMP-1 notes the orchestrator summary path's reference-miss detector is inverted (it reads the compacted text instead of `seg.granular_blocks`), so a destroyed identifier cannot fire. The fix requires a unit test whose only passing outcome is the destroyed-identifier case firing.
+- **Governance retention is to be measured as a ceiling, compliance as the result** (TOC-CMP-2): 5-8 EPYC rules with hard/soft/prose enforcement classes and a sibling-target control, four arms (full history, intact rule, degraded residue, rule absent).
+- **Compaction contract and reproducibility** (TOC-CMP-3/4): a six-field execution brief, a pinned-governance buffer exempt from folding, and a verbatim_manifest arm; the A/B pre-registers a minimum detectable effect of 0.10 blocked actions per step, >= 30 paired compaction points per model with 8-12 repeats, three arms (raw tail, summary, FIFO) and Pass^3 reporting.
+- **Role-boundary regression** (TOC-CMP-5): hostile tool output containing `[User]:` or `<|im_start|>` must not survive `build_consolidation_prompt` as an un-neutralised boundary. DEPTH-ENV-1 (cpu-decode-roofline-program) will assemble the prefill/decode envelope at 16K/32K/48K/128K from existing runs for the launch-flag session.
+
+Sources: [context-and-token-economy](../handoffs/active/context-and-token-economy.md) · [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)
+
+## Compiled Update — 2026-11-09 (night: checkpoint resume_state landed, compaction shadow flag built)
+
+**Confidence: verified** (commit content on origin/main; the compaction shadow is built default-off and unvalidated).
+
+- **The /log checkpoint envelope now carries a `resume_state` block.** On origin/main as `7a44e1202`: latest validation command and its observed exit and output, remaining uncertainty, rollback note, continuation state (done, resumable or blocked) and non-source artifacts; absent evidence renders the literal `unknown`, never empty. Tests cover a populated block from an executed validation and the all-unknown case. A box can be wrongly reported as "not on main" when a cherry-pick changes the SHA; check by file content.
+- **RTG-08 option C is built, not validated.** A default-off `compaction_shadow` flag computes role-aware compaction and helpfulness and records hypothetical reference misses against the would-be stub without touching `seg.consolidated`; it still needs `two_level_condensation` on to be reached.
+
+Sources: [context-and-token-economy CTX-HO-3 box](../handoffs/active/context-and-token-economy.md) · [apr2 compaction-shadow progress](../progress/2026-11/2026-11-09-apr2-compaction-shadow.md) · [apr2 rtg08 progress](../progress/2026-11/2026-11-09-apr2-rtg08-evl47-pip04-code.md)
+
+## Compiled Update — 2026-11-09 (TOC-CMP-4 pre-registration and the compaction Enable decision)
+
+- **TOC-CMP-4 pre-registered (option (a), operator-chosen).** Primary endpoint blocked actions per step (BAPS, first 5 post-boundary actions, lower better), derivable from existing per-turn `blocked` fields. Arms `summary_only`, `pointer_only`, `prune_pointer`; 30 frozen paired points per model, 8 repeats (pilot of 8 points x 3 arms x 4 repeats first); boundary-stratified bootstrap (10,000), MDE 0.10 BAPS needing per-point paired SD <= 0.196, Holm over 3 contrasts, Pass^3 secondary; 720 runs per model; futility-only interim looks. Points whose trajectory ends before the boundary are voided and replaced from a seeded reserve ([preregistration](../docs/design/toc-cmp-4-preregistration-20261109.md)).
+- The 30-point list is frozen (sha256 `9de7e3bad1714675d1550421aa920840dc7ab7ff2ccb22dded16b853bad2655a`) with a runner built; operator booked the 720-run cell at low rank, needing a live frontdoor :8070 stack ([context-and-token-economy](../handoffs/active/context-and-token-economy.md)).
+- **Enable decision re-posed:** the "monitor-only, no behaviour change" premise for `two_level_condensation`/`role_aware_compaction`/`helpfulness_scoring` was false (the branch destroys segment text beyond the first sentence). Recommendation C, built as default-off `compaction_shadow`. The inverted reference-miss detector (TOC-CMP-1) was already fixed in `921f71d1` ([context-and-token-economy](../handoffs/active/context-and-token-economy.md)).
+- Arm vocabularies across CF-3c, CF-AB, TOC-MP-2, TOC-CMP-4 and `context_arm_ab.ARMS` collide (e.g. `A2`, `A3`); a mapping table now disambiguates them ([context-and-token-economy](../handoffs/active/context-and-token-economy.md)).
+
+Sources: [toc-cmp-4-preregistration](../docs/design/toc-cmp-4-preregistration-20261109.md) · [context-and-token-economy](../handoffs/active/context-and-token-economy.md)
+
+## Compiled Update — 2026-11-19 (typed context selection, CF-3c binding qualification, DCP-10 and prefix-rewrite protocols)
+
+- **Typed context selection (HS-TD-3).** On 12 authored integer-configuration questions, a selector picked the exact file set 12/12 and both answer arms scored 12/12 (0/0/12 paired). Answer-context bytes fell 62.81% (5101 to 1897), but selector calls cost 67.3 s, so answer-plus-selector call wall is 3.261x baseline (92.5 s vs 28.4 s). The bytes metric counts only answer-call context, so it does not show lower total prompt traffic; tasks are at the accuracy ceiling and not live coding tasks ([HS-TD-3](../docs/reports/hs-td3-context-selection-20261119.md)).
+- **CF-3c binding candidate not qualified.** `cf3c-binding-20261119` failed publisher smoke on the A1-k12 cell: the active receipt changed six observations and the log was retained, yet the model answered incorrectly with zero retrieval calls and zero log follows (3,429 prompt + 18 completion tokens, 127.3 s). The official 24-cell schedule did not run; the failure stays visible, the task is not replaced, and any changed probe needs a new profile/version. CF-3c-B2 stays open ([qualification](../docs/research/cf3c-binding-qualification-20261119.md), [continuation protocol](../docs/design/cf3c-binding-continuation-protocol-20261119.md)).
+- **Prefix-rewrite pricing (CF-PB-1 input).** A prospective local diagnostic prices replacing a warm prefix (1,024 and 4,096 token prefixes, three repetitions, slot 0, native `cache_n + prompt_n` accounting) against retaining it; it adopts no plan-boundary trigger and tests no answer quality ([protocol](../docs/design/cf-plan-boundary-protocol-20261118.md)).
+- **DCP-10 diagnostics.** A fixed three-task native ColGREP cohort and a direct stored-edge GitNexus control (stored confidence at least 0.9, both endpoint files named) are specified; three tasks can move macro recall by a third each, so they are instrument diagnostics, not quality claims ([ColGREP](../docs/design/dcp10-colgrep-native-protocol-20261118.md), [GitNexus controls](../docs/design/dcp10-gitnexus-controls-protocol-20261118.md)).

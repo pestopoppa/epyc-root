@@ -1,0 +1,8 @@
+{
+  "base_commit": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+  "base_tree": "89dc2fa0e6824d37bee997604aedfacf8291cf2d",
+  "image_head": "07983a5a8704ad91ae855218ecbda1c8598200ca",
+  "tracked_content_matches_base": true,
+  "untracked_nonignored": 0,
+  "scope": "blob trees and clean index/worktree; regular executable mode ignored; ignored image files bound by image digest"
+}

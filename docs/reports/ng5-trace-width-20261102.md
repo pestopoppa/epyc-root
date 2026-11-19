@@ -1,0 +1,9 @@
+# NG5 trace: COPYSPEC-WIDTH request corpus
+
+This is a scoped inspection of retained files, not an NG5 completion, performance claim, or proof of durable run custody.
+
+The temporary packet `/mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/` contains `prompts_p1.jsonl` (SHA-256 `5c376290be231c0d581db14c1e4defdf9005a8cff285858fe8462dd27444be7a`): 65 distinct IDs, 40 `debugbench` and 25 `hotpotqa`. Its records equal the code/RAG subset of the earlier phase-one `prompts_p1.jsonl` by ID and complete JSON value. As documented in the [phase-one trace](ng5-trace-20261102.md), the phase-one sampler appends a verbatim-support instruction to each HotpotQA request. The width packet's `phase1.py` SHA-256 is `0db2dea4883527caa6674adf32097cf932187f1bf7c0b2e96b8f209e5da0c53b`.
+
+The retained P, W8, W16 and P2 result JSONLs each contain exactly those 65 distinct IDs, with 65 HTTP 200 records and no recorded errors per arm. The summary (SHA-256 `0fd72ae42276a98e8af3f2b1904d844767ada7fb8a172ef09984852eb7bfa88b`) reports 40/40 and 25/25 identity in each compared class, a fresh server per arm, `cache_prompt=false`, and an overlapping GPU attribution job; these are run-record statements, not an independent quiet-host verification.
+
+The examined records contain raw user-message prompts and prompt token **counts**, but no rendered token sequence, repetition numerator or denominator, per-prompt range, or repeated-5-gram fraction. The fraction is **not recorded in the examined packet**. Do not import the separate retracted run's 6–17% range. Establishing the actual chat template and tokenizer identities and finding or reconstructing the original rendered tokens would be necessary for a separately identified offline calculation. The checked packet is temporary storage and its hashes do not establish committed custody or a measurement claim tuple.

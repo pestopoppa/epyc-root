@@ -1,0 +1,123 @@
+{
+ "arm": "A0",
+ "what": "native RoPE, -c 262144 (production geometry, lean single-slot shape)",
+ "started_at": "2026-11-02T13:26:39Z",
+ "out": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/native/A0/20261102T132639Z",
+ "inputs_manifest_sha256": "2eb07287faba49ed5e368700b273aa8345e927cf53d0aeb34371aca2888b1b04",
+ "preflight": {
+  "at": "2026-11-02T13:26:39Z",
+  "port": 18437,
+  "arm": "A0",
+  "pid": 2464374,
+  "prod_8083_listening": false,
+  "props_http": 200,
+  "n_ctx_props": 262144,
+  "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "build_info": "b10325-9a3f1392a",
+  "speculative": {
+   "speculative.types": "none",
+   "speculative.n_max": 3
+  },
+  "n_slots": 1,
+  "n_ctx_slot": 262144,
+  "kfd_gib": 36.779,
+  "env": {
+   "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib",
+   "GGML_CUDA_GDN_STATE_BF16": null,
+   "LLAMA_SERVER_SLOTS_DEBUG": null,
+   "GGML_CUDA_FA_MASK_SKIP": null,
+   "HIP_VISIBLE_DEVICES": null
+  },
+  "argv": [
+   "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/llama-server",
+   "-m",
+   "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+   "--host",
+   "127.0.0.1",
+   "--port",
+   "18437",
+   "-np",
+   "1",
+   "-t",
+   "8",
+   "-ub",
+   "2048",
+   "--flash-attn",
+   "on",
+   "--jinja",
+   "-ctk",
+   "q8_0",
+   "-ctv",
+   "q8_0",
+   "--no-mmap",
+   "-ngl",
+   "all",
+   "--cache-ram",
+   "0",
+   "--chat-template-file",
+   "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+   "--device",
+   "ROCm0",
+   "--slot-save-path",
+   "/mnt/raid0/llm/tmp/gpu-serving-tie-in/yarn-e1-prep/packet/out/E1-A0-low/slots",
+   "--verbosity",
+   "4",
+   "-c",
+   "262144"
+  ],
+  "ggml_libs": [
+   "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-base.so.0.16.0",
+   "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-cpu.so.0.16.0",
+   "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml-hip.so.0.16.0",
+   "/mnt/raid0/llm/kernels/builds/gpu-20261004-9a3f1392a/bin/libggml.so.0.16.0"
+  ],
+  "proof": {
+   "print_info: n_ctx_train\\s*=\\s*262144\\b": true,
+   "print_info: freq_scale_train\\s*=\\s*1\\s*$": true,
+   "llama_context: freq_scale\\s*=\\s*1\\s*$": true,
+   "llama_context: n_ctx_seq\\s*=\\s*262144\\b": true,
+   "llama_kv_cache: size =\\s*8704\\.00 MiB \\(\\s*262144 cells,\\s*16 layers": true,
+   "n_slots = 1, n_ctx_slot = 262144\\b": true
+  },
+  "forbidden": {
+   "exceeds the training context of the model .* capping": 0,
+   "failed to allocate": 0,
+   "out of memory": 0,
+   "CUDA error": 0,
+   "HIP error": 0,
+   "Bad metadata override type": 0,
+   "possible training context overflow": 0
+  },
+  "problems": []
+ },
+ "smoke": {
+  "s1": {
+   "n": 2,
+   "context_tokens": 3310,
+   "empty_answers": 0,
+   "first_prefill_s": 6.3
+  },
+  "s2": {
+   "n": 2,
+   "context_tokens": 7133,
+   "empty_answers": 0,
+   "first_prefill_s": 5.4
+  }
+ },
+ "needle": {
+  "128k": {
+   "n": 5,
+   "context_tokens": 128100,
+   "empty_answers": 0,
+   "first_prefill_s": 318.9
+  },
+  "240k": {
+   "n": 5,
+   "context_tokens": 239551,
+   "empty_answers": 0,
+   "first_prefill_s": 623.6
+  }
+ },
+ "kfd_gib_end": 37.132,
+ "finished_at": "2026-11-02T13:43:13Z"
+}

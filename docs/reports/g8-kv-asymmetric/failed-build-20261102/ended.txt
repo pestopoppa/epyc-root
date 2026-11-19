@@ -1,0 +1,7 @@
+rc=1 time=2026-11-02T11:50:25Z reason=job-rc-1:exited
+job_id=g8-v10-hip-build-20261102
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=2400
+started=2026-11-02T11:49:01Z
+regions=0-23

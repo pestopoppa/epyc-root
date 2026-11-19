@@ -1,0 +1,25 @@
+{
+  "id": "lsa-screen-1-cpu-window-8k-20261104",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/packet/launcher.sh",
+  "lane": "cpu",
+  "regions": "0-3",
+  "ram_gib": 48,
+  "estimate_s": 2400,
+  "min_window_s": 300,
+  "scratch_root": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/native/RESULT.json",
+  "result_format": "json",
+  "unit_key": "unit",
+  "decision_rule": "One 8204-token CPU positional sink4 plus last4608 control versus preserved dense correct item: require complete response, prompt_n=8204, no reopened thinking, exact expected sixteen global layers, actual changed masks in later chunks, CPU binary/library/model identity and native evidence capture. Report retrieval_match true OR false as informative; pass means capture-validity, never assumed answer loss. No timing or population-quality claim. Stop after one completed request or first validity/operational failure; no retries.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1-CPU-WINDOW",
+  "priority_rank": 22,
+  "admission_class": "diagnostic",
+  "first_progress_s": 600,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/lsa-screen-1-cpu-window-8k-20261104/packet/first_progress.py",
+  "keep": [
+    "native/*",
+    "state/*"
+  ],
+  "notes": "Exact full-job workload in smoke and grant. FILLER_STATE_DIR places smoke/grant native outputs in distinct directories. First progress requires real model callback trace. No standalone compute authorized by preparation."
+}

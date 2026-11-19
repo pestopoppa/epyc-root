@@ -1,0 +1,12 @@
+{
+  "removed": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/research",
+  "method": "git worktree remove",
+  "allocated_bytes_reclaimed": 2194980864,
+  "retained_current": [
+    "parity-native-20261118-r2: armed parity model/packet",
+    "kvq-ready/research: locked current locally patched successor source",
+    "fm2-current: original filed source and coordinator integration inputs",
+    "gpu-pool, matmul-id-ready, attention-ready, attention-rest-ready: distinct current operation rows"
+  ],
+  "retained_evidence": "actor-seat official, smoke and source receipts preserved"
+}

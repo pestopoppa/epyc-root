@@ -1,0 +1,8 @@
+test_exact_original_partition (__main__.PacketTests.test_exact_original_partition) ... ok
+test_parser_preserves_statuses (__main__.PacketTests.test_parser_preserves_statuses) ... ok
+test_pins (__main__.PacketTests.test_pins) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.073s
+
+OK

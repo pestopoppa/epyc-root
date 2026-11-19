@@ -1,0 +1,37 @@
+{
+  "head": "3a09b2fa1f21b398307f69c17bcd621eb1e5473d",
+  "tree": "1200652d7898572348a701cfc28578b2699aac3b",
+  "source_worktree": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105-source",
+  "targets": [
+    [
+      "native_call",
+      "scripts/harness/session_gap_measure.py"
+    ],
+    [
+      "extract",
+      "scripts/harness/session_gap_measure.py"
+    ],
+    [
+      "native_rows",
+      "scripts/vidya/adapters/session_intercall_gap.py"
+    ]
+  ],
+  "graph_binding": {
+    "registry": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/private-graph/registry.json",
+    "meta": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105-source/.gitnexus/meta.json",
+    "required_lastCommit": "3a09b2fa1f21b398307f69c17bcd621eb1e5473d"
+  },
+  "sha256": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/job.py": "cd74c023225db22981842a16af8729e90cf95c5d36816f92a7d1af4741304d85",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/launch.sh": "7dfe1450847152a05cb9323e602cd5df3cbb625654a7b0eda97104f5e09dee8a",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/spec.json": "5b13d2ad7bfa2b48148c0dfc2801986c701217347e9515e89a2171362457aafa",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/README.md": "aa342d712aa53b84f483bc457edef1adcdc598402825a99ceef21df47c7da846",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105-source/scripts/harness/session_gap_measure.py": "d8b1e6140c3de918e1335686cfd39a295a5f795fa5ecae5e7efb2a7de02d6eff",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105-source/scripts/vidya/adapters/session_intercall_gap.py": "7a47a2a8ba909d9a20b31ce4ce7a83a3d31699f2582a7363914697496188f1f2",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105-source/scripts/gitnexus-analyze.sh": "dacb98191be75abf64f73763d52fa89e8b738f5f3e6eac0e988159abe40d22c3",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105-source/scripts/gitnexus-writer.py": "ddf67e04ff3a82e8768d0e4373c5a88c3b42fd6a9d81959b8319fbd830ba96c0",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105-source/scripts/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d"
+  }
+}

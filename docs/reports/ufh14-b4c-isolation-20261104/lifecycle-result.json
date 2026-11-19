@@ -1,0 +1,119 @@
+{
+  "schema": "epyc.ufh14-b4c.cpu-pilot.v1",
+  "status": "native_api_lifecycle_isolated_pass_full_evaltower_backend_not_complete",
+  "owned_scratch": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-pilot-isolated-20261104",
+  "native_source_commit": "326f502759986c9846027f8187972969139c0089",
+  "source_hashes_verified_before_app_import": true,
+  "actual_lifecycle": {
+    "native_app": "src.api:app",
+    "startup_complete": true,
+    "health_http_status": 200,
+    "shutdown_complete": true,
+    "exit_code": 1,
+    "exit_code_reason": "Uvicorn re-raises captured SIGTERM with signal.raise_signal after normal shutdown; seccomp correctly denies kill/tgkill. No restart or repeat was attempted.",
+    "pid": 94849,
+    "pid_absent": true
+  },
+  "isolation": {
+    "mechanism": "Landlock ABI 6 private-subtree write allow + metadata/escape/signal seccomp deny; all new sockets denied; owned loopback listener inherited",
+    "pre_import_checks": {
+      "abi": 6,
+      "checks": {
+        "outside_write": "denied",
+        "outside_create": "denied",
+        "outside_chmod": "denied",
+        "outside_unlink": "denied",
+        "new_inet_socket": "denied",
+        "new_unix_socket": "denied",
+        "descendant_write": "denied"
+      }
+    },
+    "planted_outside_file_unchanged": true,
+    "network_connections": "Only inherited owned loopback listener and preconnected parent client; all new INET/UNIX sockets denied. Dynamic backend HTTP connections are NOT supported by this proof.",
+    "production_writes": "Kernel denied by private-subtree write policy; metadata bypass syscalls separately denied; no maintained-source, handoff, grant, production file edits performed"
+  },
+  "health_body": {
+    "status": "degraded",
+    "models_loaded": 0,
+    "mock_mode_available": true,
+    "version": "0.1.0",
+    "backend_health": {},
+    "backend_probes": {
+      "frontdoor/toolrunner/worker/worker_explore/worker_general/worker_math/worker_summarize": {
+        "ok": false,
+        "latency_ms": 18.8,
+        "url": "http://localhost:8070",
+        "status_code": null,
+        "failure_reason": "connect_error",
+        "failure_detail": "ConnectError: All connection attempts failed"
+      },
+      "architect_general": {
+        "ok": false,
+        "latency_ms": 10.9,
+        "url": "http://localhost:8074",
+        "status_code": null,
+        "failure_reason": "connect_error",
+        "failure_detail": "ConnectError: All connection attempts failed"
+      },
+      "architect_critic/coder_escalation/ingest_long_context": {
+        "ok": false,
+        "latency_ms": 8.0,
+        "url": "http://localhost:8083",
+        "status_code": null,
+        "failure_reason": "connect_error",
+        "failure_detail": "ConnectError: All connection attempts failed"
+      },
+      "vision_escalation/worker_vision": {
+        "ok": false,
+        "latency_ms": 5.2,
+        "url": "http://localhost:8086",
+        "status_code": null,
+        "failure_reason": "connect_error",
+        "failure_detail": "ConnectError: All connection attempts failed"
+      }
+    },
+    "knowledge_tools": {
+      "available": false,
+      "tools": {
+        "search_arxiv": {
+          "available": false,
+          "error": "No module named 'arxiv'"
+        },
+        "search_papers": {
+          "available": false,
+          "error": "No module named 'semanticscholar'"
+        },
+        "search_wikipedia": {
+          "available": false,
+          "error": "No module named 'mwclient'"
+        },
+        "get_wikipedia_article": {
+          "available": false,
+          "error": "No module named 'mwclient'"
+        },
+        "search_books": {
+          "available": false,
+          "error": "No module named 'googleapiclient'"
+        }
+      }
+    }
+  },
+  "inference": false,
+  "native_evaltower_run": false,
+  "publisher_run": false,
+  "full_b4c_ready": false,
+  "remaining_implementation": [
+    "A proved transport for dynamic native API->llama backend->EvalTower connections. Landlock TCP allow rules constrain port, not destination IP; allowing a port alone is insufficient for this host isolation requirement.",
+    "Actual pinned model/backend lifecycle and native scored REPL evidence, then full arms/TTL/restoration and bounded publisher smoke."
+  ],
+  "operator_decision_required": null,
+  "external_event_required": null,
+  "classification": "implementation_incomplete_not_operator_blocked",
+  "artifacts": {
+    "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-pilot-isolated-20261104/lifecycle.py": "a46e9de63ec792bcdb69acf8de145482fdb08a2fc210b361d066bf43284d353d",
+    "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-pilot-isolated-20261104/lifecycle-result.json": "d90b90052172023afb26189d78dc706e286a38e478a6d29521a101314a6fb230",
+    "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-pilot-isolated-20261104/runtime-w9immblz/api.log": "d89b2f54cb0aa815595694c1751f85d4148cb6cbccdefde84f702ec773554437",
+    "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-pilot-isolated-20261104/runtime-w9immblz/health.http": "31d6c508c7adf540755d6a4630f49d76020dcc286f1104703558d974f45ec6ac",
+    "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/cpu-pilot-isolated-20261104/runtime-w9immblz/sandbox-before-import.json": "76d590b2309d73c6eab1b7d8ad5bc94ca6694e6461f0828e89c2d39297faf65b"
+  }
+}

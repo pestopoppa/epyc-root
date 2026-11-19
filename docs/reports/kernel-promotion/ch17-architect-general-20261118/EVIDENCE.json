@@ -1,0 +1,84 @@
+{
+  "scope": "Preparation and publisher small-model plumbing only. Native Q38 external MTP comparison and final selection pending. Archived scripts retain original paths and are not standalone launchers.",
+  "stat_field_order": [
+    "dev",
+    "ino",
+    "size",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "files": {
+    "OUTCOME.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/OUTCOME.json",
+      "original_sha256": "55f63bb865ec0a0087c7f4504f591d5ca2146739a018aadf49071df5540f9236",
+      "stored_sha256": "aa128916df0365b9fd1e01e6c1004530380b960f6ec6084c8c52e620719def29",
+      "representation": "stat tuples mapped to explicit named fields; other values unchanged"
+    },
+    "PREPARE.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/PREPARE.json",
+      "original_sha256": "e1b822d785424e9d009799e095426d961444d2e40de1b8ce341d0729a1e5fff1",
+      "stored_sha256": "8bd17099f779225a86ef5b1b6e8cfca368f8e93eeb9791e7cca0b2b1a2051de9",
+      "representation": "stat tuples mapped to explicit named fields; other values unchanged"
+    },
+    "inputs.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/inputs.json",
+      "original_sha256": "62757757984e86b1bf3fec3b63c3b629f075191dd10775da5995c3594a851eab",
+      "stored_sha256": "d6a8be949ff5dcd63d75b887950fa582fc3613005163912f16e2fe416102e742",
+      "representation": "stat tuples mapped to explicit named fields; other values unchanged"
+    },
+    "row.spec.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/row.spec.json",
+      "original_sha256": "f0d6da9b8db6c8c53be373dd358b090dfaf1619daaf265856a85f53b2c35abc1",
+      "stored_sha256": "f0d6da9b8db6c8c53be373dd358b090dfaf1619daaf265856a85f53b2c35abc1",
+      "representation": "original bytes"
+    },
+    "job.py": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/job.py",
+      "original_sha256": "47ea7997398ad6a515f3e32505ac6eee6963af9935c353dfb55f7e30f4d8c590",
+      "stored_sha256": "47ea7997398ad6a515f3e32505ac6eee6963af9935c353dfb55f7e30f4d8c590",
+      "representation": "original bytes"
+    },
+    "workloads.py": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/workloads.py",
+      "original_sha256": "93f9ae57fba1fb4484975db3a84b9f9a62b06640629eb0ff4b66c5d9ad8502be",
+      "stored_sha256": "93f9ae57fba1fb4484975db3a84b9f9a62b06640629eb0ff4b66c5d9ad8502be",
+      "representation": "original bytes"
+    },
+    "prepare.py": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/prepare.py",
+      "original_sha256": "21b4e0701707e06110e3dc0596e7d3ad2cf59b8f10121674264c69b63f7e23a7",
+      "stored_sha256": "21b4e0701707e06110e3dc0596e7d3ad2cf59b8f10121674264c69b63f7e23a7",
+      "representation": "original bytes"
+    },
+    "launch.sh": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/launch.sh",
+      "original_sha256": "c9b79e5e324864c5fa7b700fae8dc7890f1674a6cc471706148b20a29f83d123",
+      "stored_sha256": "c9b79e5e324864c5fa7b700fae8dc7890f1674a6cc471706148b20a29f83d123",
+      "representation": "original bytes"
+    },
+    "SOURCE.sha256": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/SOURCE.sha256",
+      "original_sha256": "dd3a6f7aa6f5de7caa168540e0827dfec83edf6fb8b7fe15a17d221533fe18ca",
+      "stored_sha256": "dd3a6f7aa6f5de7caa168540e0827dfec83edf6fb8b7fe15a17d221533fe18ca",
+      "representation": "original bytes"
+    },
+    "server_np_sweep.py": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/server_np_sweep.py",
+      "original_sha256": "915915174c0410a938c3159dcf355d6861984b52c163b7f4ad5c889981223a2d",
+      "stored_sha256": "915915174c0410a938c3159dcf355d6861984b52c163b7f4ad5c889981223a2d",
+      "representation": "original bytes"
+    },
+    "verify_ggml_linkage.sh": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-archgen/verify_ggml_linkage.sh",
+      "original_sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+      "stored_sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+      "representation": "original bytes"
+    },
+    "PUBLISHER-PASS.json": {
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch17-c13-architect-general-cpu-20261118/PASS.json",
+      "original_sha256": "3c2a582c1d99bf306a7e2d408e178397a40d4fdc73dd7e3a2d3e5ab2f501413e",
+      "stored_sha256": "3c2a582c1d99bf306a7e2d408e178397a40d4fdc73dd7e3a2d3e5ab2f501413e",
+      "representation": "original bytes"
+    }
+  }
+}

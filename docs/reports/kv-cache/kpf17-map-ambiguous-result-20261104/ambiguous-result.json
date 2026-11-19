@@ -1,0 +1,19 @@
+{
+  "baseline": "ACCEPTED_COMPLETE_FIVE_DSO_FIXTURE",
+  "case": {
+    "barrier": "PASS",
+    "fixture_scope": "private temporary directory",
+    "id": "same-uid-in-place-overwrite-between-map-captures",
+    "reason": "unattested mapped library: /mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17/alt17-fixture-ufxk47ha/libggml.so",
+    "revalidation": "REFUSED"
+  },
+  "case_count": 1,
+  "custody_source_sha256": "ab6d10e509d7483963a39b0da2caccab4ac8b85ee33a9e0b117107601d8d8702",
+  "input_seal_sha256": "e95ec19376645dfd52b196136d83e888c0f223fb7f6306fad7b51b2ed31699e9",
+  "limitations": "This only proves custody.validate_maps detects this mutation when called again after the write. It does not cover mutation after the final revalidation, build_identity, the native loader, or the full KPF-17 custody chain.",
+  "schema": "kpf17.alt17-custody-race.v1",
+  "sealed": true,
+  "status": "PASS",
+  "tested_function": "custody.validate_maps",
+  "unit_key": "case_count"
+}

@@ -1,0 +1,45 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence_sha256": {
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r5/attempt-summary.json": "961251f9f334575fdd33ecdcdb9453bb72193b062a61d89d35de28180097db67",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r5/end.txt": "c95b5feb99223162e7b89b38ff819bafce28f9a39a6a35635435adfbbc327882",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r5/manifest.json": "323a48a5c8dc7b74b55f2d15d722b1bdf33a61473bbb113f24aff08d1d8a3f5e",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r5/native-result.json": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b"
+  },
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Stopped rc75; archived attempt summary has 1/2 units valid, 0.5 capture, A1 run failure; no full pilot or control comparison. REVISE, not a PF1 rejection. Later shared result is not this attempt.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:10:03+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-03T18:07:50Z reason=exited",
+ "filed_at": "2026-11-04T07:10:03+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXP04",
+ "id": "brf-exp04-pf1-crossover-pilot-20261102-r5",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/brf-exp04-pf1-crossover-pilot-20261102-r5.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "Stopped rc75; archived attempt summary has 1/2 units valid, 0.5 capture, A1 run failure; no full pilot or control comparison. REVISE, not a PF1 rejection. Later shared result is not this attempt.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "brf-exp04-pf1-crossover-pilot-20261102-r5",
+ "row_verdict": "inconclusive",
+ "rule": "EXP-04 pilot (exploratory/decision-support). Read out/summary.json (PILOT-COMPLETE.json). EXPAND to the full PF1 L x -ub matrix (r=5, CIs, reversed-order replicate) if every A1/A2 unit proves HIP residency (KFD pid + VRAM sampled in-window, mapped libggml-hip = v10 store), A1-disabled/A0 median within +-10% at both L, capture completeness 1.0; REVISE if the control diverges or capture is incomplete; INCONCLUSIVE otherwise. Early stops (answer/futility/cap) are operational decisions, never PF1 gate results; the 2K/8K screen never yields a negative PF1 verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "at": "2026-11-18T15:01:17Z",
+ "engine_sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a",
+ "engine_snapshot": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/engine",
+ "id": "vidya-exp01-proxy-input-recovery-20261118-r2",
+ "launcher_sha256": "0e2bbc87d7f10ff5d4976f0b7bb836e79b5dbba46083f74aa24dd96e5e4f5e8d",
+ "pid": 1220147,
+ "regions": "any-cpu-quarter"
+}

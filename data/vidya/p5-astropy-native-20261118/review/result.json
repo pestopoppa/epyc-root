@@ -1,0 +1,36 @@
+{
+  "cases": {
+    "exact-task": {
+      "eligible": 30,
+      "section_sha256": "d5ef79f38894ee160a196c364d89da36fa725c8f0c4df0845cd8de2a65748ff5",
+      "shown": 16
+    },
+    "model-target": {
+      "eligible": 0,
+      "section_sha256": "",
+      "shown": 0
+    },
+    "wrong-consumer": {
+      "eligible": 0,
+      "section_sha256": "",
+      "shown": 0
+    },
+    "wrong-task": {
+      "eligible": 0,
+      "section_sha256": "",
+      "shown": 0
+    }
+  },
+  "consumer": "p5.scorer_controls",
+  "frames": 90,
+  "instance_id": "astropy__astropy-12907",
+  "ledger_head": "sha256:1db67f091b1f32569b187298a89694e314329e29a0288937026b1a99393dbf48",
+  "reader_checkout_check": false,
+  "refusals": 0,
+  "rows": 30,
+  "status": "PASS",
+  "tamper_frames": 0,
+  "tamper_refusals": 1,
+  "task_id": "VB-P5-SCORER-CONTROLS-WIRE",
+  "terminal_sha256": "4239f3f2c1712e818c7430af8e67b8fb40f97b1eeef0b749ac2da39a7c45a34b"
+}

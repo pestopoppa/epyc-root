@@ -1,0 +1,17 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-p3-lifecycle-20261102/launcher.out",
+ "elapsed_s": 42,
+ "ended": "rc=0 time=2026-11-02T11:46:11Z reason=complete",
+ "engine_sha256": "c92186364f4de478541c98411a5024171f25adadc9fa70c44926798bfc97d42f",
+ "first_unit_at": "2026-11-02T11:46:11Z",
+ "id": "handoff-kvu16h-p3-lifecycle-20261102",
+ "job_complete": true,
+ "launcher_sha256": "789b3798e16a0ec901da3c0c67073cb3040897779f95f1aa2567c7b4531d8073",
+ "passed_at": "2026-11-02T11:46:17Z",
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-p3-lifecycle-20261102/native-attempts/attempt-o_vhcw6m/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": 38197166080,
+ "warning": null
+}

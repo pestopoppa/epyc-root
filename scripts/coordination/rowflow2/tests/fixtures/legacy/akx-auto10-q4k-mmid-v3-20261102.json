@@ -1,0 +1,21 @@
+{
+ "admission_class": "block-timing-quiet",
+ "decision_rule": "Synthetic, GPU-independent Q4_K MUL_MAT_ID diagnostic scoped to M2048 only. Smoke must produce the actual 4-thread native graph timing and byte-exact batched/se",
+ "estimate_s": 2400,
+ "gib": 8,
+ "handoff_task": "kernel-champion-and-promotion.md:AKX-AUTO-10",
+ "id": "akx-auto10-q4k-mmid-v3-20261102",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/launcher.sh"
+ },
+ "min_window_s": 2700,
+ "owner": "handoff-autokernel-all-devices-all-dimensions",
+ "priority_rank": 22.0,
+ "published_at": "2026-11-02T11:27:41Z",
+ "regions": "0-95",
+ "schema": "epyc.row.v3",
+ "shape": "quiet-host",
+ "stop_file": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/profiler-row/STOP",
+ "window_s": 3180
+}

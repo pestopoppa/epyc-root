@@ -1,0 +1,1 @@
+Syntactic displacements from three already captured historical allocator disassembly bodies; results count textual operand occurrences by register and signed displacement only. Hash-bound inputs and separate synthetic smoke. This does not determine register dataflow, object layout, physical cells, temporal semantics or historical binding.

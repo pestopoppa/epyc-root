@@ -1,0 +1,32 @@
+{
+  "model_weights_rehashed": false,
+  "packet": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native",
+  "predecessor": "/mnt/raid0/llm/tmp/v11-promotion-checklist/sealed-calibration",
+  "prepared_files_sha256": {
+    "README.md": "42fbc240084fe08c329b1a4e48e4119c71da4c5a521e10ae8c487dd06fd6a668",
+    "job.py": "8daed5e910ba9d95420b45b8f9e5eac91e0360c42dd736d64dcbd5573325ebf8",
+    "launch.sh": "d0bd6ecf9469275bab221d9982c13f48573d05b71c3648de3134605619840982",
+    "native_check.py": "f8a25ead3e64ebf66f7c0a42ab8990188e92edc165b706f9ca0f5ea91395b1ab",
+    "pins.json": "8f85d63e70965a3280833ab6579218464e773fe8beedda63cca670b470969e30",
+    "row.spec.json": "66db05330b4269b29b87e7f816a1b2efabc3a63a2f815f052cf25cddbb50b331",
+    "snapshot.py": "17e9d46ff9a0686c601080daa013e2fbe57fb08afbc0f1c72963c34d9a208bd1",
+    "test_native_packet.py": "fdafab0b1e1256860fd5a638c837398a324338ee0f4c18dca4f845687ad3d815"
+  },
+  "preserved_input_sha256": {
+    "cohorts.json": "85cb533597e5dd9adc97807d04d7a4f40c75f1064fdff40b631fd6e707323a2f",
+    "model-stat-after.txt": "61ccb7f87311cc064d61946c5f369b284c4b4a04657f89f5d90187fc6b76b639",
+    "model-stat-before.txt": "61ccb7f87311cc064d61946c5f369b284c4b4a04657f89f5d90187fc6b76b639",
+    "model.sha256": "79b0c3d6573b679ab733716df4be920f831130a19572f8f2e733999c220bb5d5",
+    "plan.json": "0e1d2452f6142580042037c82ce6a69da870be33eb9a9f4a25e9c124a878fda2",
+    "prompt.txt": "3033bb8800b83802c9dd9a6c6f44bf114642f58e55d72521923b96e7f60f8b21",
+    "recipe.json": "05532ebe5ec0a97a4ec8fcf7c313c792bef148108ab4a38d368b3ba71129e5ce",
+    "sources/k35-m4-native.py": "341b93e027894b861f374f9cdce642dad743fda467b42be25e1f230b4cfc58ec",
+    "sources/k35-research.py": "c519611dd834eddb18cf957e83501088f1f514e7c2690e974438c2706d990020",
+    "sources/store-PROVENANCE.md": "a3dba6ae9cf8c2a49d76866d8b1dfef6890300743f3df96538d74c7a09bf6058",
+    "sources/store-SHA256SUMS": "ccfe57b18bc720e569c2e97e55454a27865d15dd928857d4ba3674874a1608a2"
+  },
+  "publisher_smoke_run": false,
+  "schema": "vidya.lifecycle-packet-preparation.v1",
+  "source_snapshot_taken": false,
+  "status": "prepared-unsealed-unpublished"
+}
