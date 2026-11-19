@@ -81,7 +81,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-RETENTION-RATIFY | Sign the prepared ratify script: MEASUREMENT.md §5 'Evidence retention and reclamation' (amended draft: all reclaimers, citation sources, no size thresholds, purge-time re-check) + §5 repo-vs-08-03 wording, and the 'Destructive operations' doctrine + PreToolUse hook (decisions D2/D7/D4, 10-25). | [non-inference-backlog.md](engineering-hygiene-backlog.md) | 2026-10-25 |
 | OP-AK-CODEBUDGET-43 | The loop code-budget guard is still red on 43 existing-file overruns (the 37+2 new-module baseline was ratified 2026-11-19). Choose: ratify a per-file ratchet baseline for the 43 (recommended, measured by the guard), trim the files, or leave the guard red. | [autokernel-loop.md](autokernel-loop.md) | 2026-11-19 |
 | OP-W1-PR | Open the upstream PR from fork branch `w1-cpu-sparse-fa-prefill` @ `70ba79110` via the GitHub web UI (`gh pr create` refused: no CreatePullRequest permission). Text prepared in long-context-program.md; the W1 patch is also folded into the next composite after C16. | [long-context-program.md](long-context-program.md) | 2026-11-19 |
-| OP-ROCM102-BUILD | Approve an experimental ROCm 10.2 build, only if AK-GAP-1 shows >= 3% launch/graph overhead. Do not act before the census files. | [autokernel-loop.md](autokernel-loop.md) AK-GAP-1 | 2026-11-19 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
@@ -126,7 +125,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 13 | 499 | 51 | 2026-11-07 |
+| inference-research | 13 | 500 | 51 | 2026-11-07 |
 | pipeline-integration | 1 | 1 | 0 | 2026-11-17 |
 | research-evaluation | 4 | 219 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
