@@ -55,3 +55,7 @@ The dispatched c6-native-residency-20261109-r3 event was already filed and recei
 ## 02:40Z — Acknowledge the replayed C4-7 run-end after confirming the already-filed verdict
 
 C4-7 replayed run-end acknowledged: full run rc=0, COLLECTED_ALL, nine counters present with 28,084 numeric rows each; SQ_LDS_BANK_CONFLICT total was zero. GPU residency was recorded. Existing handoff verdict is unchanged. Results SHA-256 c749f790c51306dd49ec3e43ec5ac3a3eadbcb7970f45186c048ce5623530840; CSV SHA-256 5347eb2f7c6429975c2f22e322abc19bd91a32c3667646f0c1cace6710f25f75. FILED receipt restored. [no-belief: previously filed row verdict]
+
+## 02:41Z — Acknowledge replayed TSAN r2 run-end with previously filed race findings
+
+TSAN r2 replayed run-end acknowledged: rc=78 gpu-fence-vacuous; results show nine reports in MUL_MAT and MUL_MAT_ID, timeouts in MUL_MAT and FLASH_ATTN_EXT, and zero reports with rc=0 for SOFT_MAX, ADD and MUL. The existing handoff records the race findings and later fix verification; this partial run does not establish a clean pass. Results SHA-256 d564f18db37bf8c9013487223264c969dfc8989839619974dd01fc8b85234604. FILED receipt restored. [no-belief: previously filed row findings]
