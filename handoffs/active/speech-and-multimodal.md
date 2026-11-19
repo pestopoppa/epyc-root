@@ -232,7 +232,7 @@ Landed work lives in [`conversation-stack-completed-through-2026-10-22.md`](../c
   - vLLM-Omni `examples/online_serving/step_audio2`
 
   Use the research-intake skill; the operator selects the deep dives. Until an entry exists, cite these by URL or arXiv id only, never by a placeholder intake number.
-- [ ] **CS-2 — prepare the Annex S amendment package for operator ratification** (a human-only trust boundary; `MEASUREMENT.md:151-157`). Annex S admits only single-backend STT or TTS on `whisper_stt`/`qwentts_tts` (speech.md:7-19), so no interlocutor or end-to-end turn is measurable under it today. The package must:
+- [x] **CS-2 — prepare the Annex S amendment package for operator ratification** (a human-only trust boundary; `MEASUREMENT.md:151-157`). Annex S admits only single-backend STT or TTS on `whisper_stt`/`qwentts_tts` (speech.md:7-19), so no interlocutor or end-to-end turn is measurable under it today. The package must: ✅ 2026-11-19 [no-belief: prospective amendment package, no new measurement or verified empirical finding]
   - add a protocol family for voice turns (proposed P-VOICE-*):
     - end-of-user-speech → first audio (median and p95), split into LOCAL and ORCH turns
     - sustained RTF
@@ -246,6 +246,7 @@ Landed work lives in [`conversation-stack-completed-through-2026-10-22.md`](../c
   - issue a superseding receipt for the 2.35% → 3.37% whisper WER defect (speech.md:147-154);
   - fix the MEASUREMENT.md:71/:72 index inconsistencies.
   - STT-scoring amendment candidates: `docs/reference/speech/cs2-stt-amendment-candidates.md` (CS-2.STT1; candidates only, operator ratifies).
+  - Prepared package: [Annex S voice-turn amendment and superseding receipt draft](../../docs/reference/speech/cs2-annex-s-amendment-package.md). Definitions, device proof, exact index fixes and ratification choices are proposed only; the operator issues/applies them.
 
   Proposed initial acceptance targets, for the operator to set in the amendment:
 
