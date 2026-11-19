@@ -595,7 +595,7 @@ _FILE_SOURCES = (
     "hs-prof1-profile-arms",
     "chat-template-ab", "kpf261-plan-steps", "kv-prefix-fork", "pb-hol", "occ1", "tale-budget", "review-f1", "opencode-shell",
     "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
-    "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
+    "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "autopilot-rotation", "sealed-manifest",
     "mhs-guard-verdicts", "mhs-guard-ops",
     "verify-before-stop-measurement", "eval-suite-discriminability",
     "autopilot-reproposal-rate", "reviewer-fa", "typed-decisions-measurement",
