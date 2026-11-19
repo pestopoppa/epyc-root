@@ -4,11 +4,11 @@
   "port": 18794,
   "prepared": {
     "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/prepared.json",
-    "sha256": "7fea19f1074fa5596f501ba00badf61d60ce1715abedc48ebd0cea4c2eb1cc78"
+    "sha256": "7005a0caab8d516bd45d34c563324f2f91b9de41dd21461366db0486354c1599"
   },
   "protocol": {
     "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/protocol.json",
-    "sha256": "86f118bae1066a657ca38d51b318b0dc10f4ae393dcfae875272a0b815068b18"
+    "sha256": "9c7a685d1a8a80bd48a914c7bc06dbced2edd00ca33d7b5c956d93bddc9316b7"
   },
   "build": {
     "path": "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-r3-20261119/RESULT.json",
@@ -22,6 +22,7 @@
     "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-adaptive/protocol_requests.py": "ebbf8a18c9862986f0d74af4e2ef3a6d5106e3d57474bb98fc5548722834984c",
     "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-build/driver.py": "4205a4af38aee964aa20ca217cf4897095144922d5c5b1bb319d1f5f33dc89b0",
     "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-hip-build/driver.py": "6d209ff939a063c2a0746040e9e84d43da37987be5b83617f5f514645b6d2b7e",
-    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/runtime.py": "67c79b94b86ffe274e3b3b11552aa7d11d76fd663a216fcf94c4c87aa3b1fd7a"
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/runtime.py": "f4178535577ac5e0f95acf203c5cc5a14ef8d8e483570efe03fa2d9e4116aaea",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/native_smoke.py": "e321c3444756c101899775b93741d7599dacd9c2bd9f84837cc33f8ecc1706f3"
   }
 }

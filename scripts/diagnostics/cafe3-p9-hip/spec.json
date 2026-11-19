@@ -21,6 +21,6 @@
     "cafe3-hip-build/*.py"
   ],
   "first_progress_s": 300,
-  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/runtime.py predicate 751b336cb42b495b5a64257fb0d056ae472a7a539ca43d45f49f0e2d11b86f07",
-  "notes": "Sealed native HIP MI210 P9, full HIP R3. Smoke validates inputs and compiled CLI with devices hidden and no model load. Grant uses exclusive GPU, target/draft full offload and current per-request KFD/VRAM/local-library capture and fail-closed P9 grader. Fixed 30 requests, all five widths, no production changes."
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/runtime.py predicate 2bf64dedf6e473f99c83c9df5f731d3e6a8e4bbdd8677ec2e0d3bfec00ca1014",
+  "notes": "Sealed native HIP MI210 P9, full HIP R3. Publisher-only smoke runs one bounded 32-token completion with both models fully offloaded; requires two in-request owned KFD/nonzero-VRAM/model/all-local-library observations and child reaping. Smoke honors FILLER_CPUS/FILLER_THREADS and WS58_REGIONS; no P9 verdict from smoke. Scheduled run retains fixed 30 requests and five widths; no production changes."
 }

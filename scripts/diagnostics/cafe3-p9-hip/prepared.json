@@ -25,14 +25,14 @@
     }
   },
   "corpus": {
-    "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-20261119/cafe3-p9/corpus.jsonl",
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-hip-inputs-20261119/corpus.jsonl",
     "sha256": "28fe6166386a25b548d5529db02df31a4b7f3e24e5180e92982f7bc69ebdcd31",
     "identity": {
       "device": 2431,
-      "inode": 200153164,
+      "inode": 200153189,
       "size": 737,
-      "mtime_ns": 1795126450282859302,
-      "ctime_ns": 1795126450282859302
+      "mtime_ns": 1795127088294312373,
+      "ctime_ns": 1795127088294312373
     }
   }
 }

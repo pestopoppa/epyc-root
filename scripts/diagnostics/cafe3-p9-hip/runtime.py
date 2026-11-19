@@ -15,6 +15,7 @@ import launch_context as context
 import multi_arm
 import p9_grade
 import protocol_requests
+import native_smoke
 
 
 def reference(path):
@@ -76,7 +77,7 @@ def seal_schedule(inventory, prepared, protocol, executable, run):
             '-t', str(placement['threads']), '-tb', str(placement['threads']),
             '-ngl', '999', '--gpu-layers-draft', '999', '--host', '127.0.0.1',
             '--port', str(inventory['port']), '-c', '4096', '-np', '1',
-            '--spec-type', 'dflash', '--spec-draft-n-max', str(protocol['request_settings']['arm_widths']['adaptive']),
+            '--spec-type', 'draft-dflash', '--spec-draft-n-max', str(protocol['request_settings']['arm_widths']['adaptive']),
             '--spec-draft-n-min', '0', '--spec-draft-p-min', '0', '-fa', 'off']
     launches = []
     for arm in protocol['arms']:
@@ -94,18 +95,10 @@ def seal_schedule(inventory, prepared, protocol, executable, run):
 def run(digest):
     inventory, prepared, protocol, executable = inputs(digest)
     if os.environ.get('FILLER_DRYRUN') == '1':
-        # Real compiled binary CLI qualification only. Never loads either model.
-        timeout = min(30, int(os.environ['FILLER_DEADLINE']) - time.time())
-        context.require(timeout > 0 and not Path(os.environ['FILLER_STOPFILE']).exists(), 'smoke cutoff')
-        proc = subprocess.run([str(executable), '--help'], env=dict(LD_LIBRARY_PATH=str(executable.parent),
-                              HIP_VISIBLE_DEVICES='-1', ROCR_VISIBLE_DEVICES='-1', CUDA_VISIBLE_DEVICES='-1'),
-                              capture_output=True, timeout=timeout, check=True)
-        help_text = (proc.stdout + proc.stderr).decode(errors='replace')
-        context.require(all(flag in help_text for flag in ('--model-draft', '--spec-type', '--spec-draft-n-max')),
-                        'missing native CLI support')
-        write(os.environ['FILLER_DRYRUN_RESULT_PATH'], dict(schema='epyc.cafe3.p9-smoke.v1',
-              inventory_sha256=digest, build=inventory['build'], executable=reference(executable),
-              cli_rc=proc.returncode, models_loaded=False, arms=protocol['arms']))
+        record = native_smoke.run(inventory, prepared, executable)
+        write(os.environ['FILLER_DRYRUN_RESULT_PATH'], dict(
+            schema='epyc.cafe3.p9-smoke.v2', inventory_sha256=digest,
+            build=inventory['build'], executable=reference(executable), **record))
         return
     (ROOT / 'runs').mkdir(exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix='native-', dir=ROOT / 'runs'))
@@ -126,8 +119,9 @@ def check(digest, smoke=False):
     context.require(result['inventory_sha256'] == digest, 'result input binding')
     if smoke:
         inventory = context.bound_json(dict(path=str(ROOT / 'inputs.json'), sha256=digest))
-        context.require(result['schema'] == 'epyc.cafe3.p9-smoke.v1' and result['cli_rc'] == 0 and
-                        result['models_loaded'] is False and result['build'] == inventory['build'], 'smoke qualification')
+        context.require(result['schema'] == 'epyc.cafe3.p9-smoke.v2' and
+                        result['build'] == inventory['build'], 'smoke qualification')
+        native_smoke.validate(result)
         context.bound_file(result['executable'])
     else:
         context.require(result['schema'] == 'epyc.cafe3.p9-result.v1', 'result schema')
