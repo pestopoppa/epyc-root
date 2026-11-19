@@ -144,14 +144,35 @@ int main(int argc, char ** argv) try {
         llama_token token = config.at("first_decode_token");
         const int nvocab = llama_vocab_n_tokens(llama_model_get_vocab(model.get()));
         require(token >= 0 && token < nvocab, "invalid first decode token");
+        const bool capture_reload = config.value("capture_reload", false);
         for (int i = 0; i < steps; ++i) {
+            if (i == 0 && capture_reload) {
+                const auto ids = kv->get_layer_ids();
+                capture.begin(out / "native", std::set<int>(ids.begin(), ids.end()));
+            }
             decode(ctx.get(), {token}, prefix.size() + i);
+            if (i == 0 && capture_reload) {
+                capture.finish();
+                const auto ids = kv->get_layer_ids();
+                std::ifstream layer_file(out / "native" / ("layer-" + std::to_string(ids.front()) + ".json"));
+                json layer; layer_file >> layer;
+                const size_t count = layer.at("tensors").at("K").at("ne").at(1);
+                const auto & cells = kv->get_cells(0);
+                require(count <= cells.size(), "compact capture exceeds native cell map");
+                std::vector<int> rows;
+                for (size_t r = 0; r < count; ++r) rows.push_back(cells.is_empty(r) ? -1 : cells.pos_get(r));
+                save_json(out / "COMPACT.raw.json", {
+                    {"schema", "epyc.am.compact-provenance.v1"}, {"cache_row_positions", rows},
+                    {"query_positions", {prefix.size()}}, {"source_commit", config.at("source_commit")},
+                    {"model_identity", config.at("model_identity")}, {"capture_id", config.at("capture_id")}});
+            }
             auto * logits = llama_get_logits_ith(ctx.get(), -1);
             require(logits != nullptr, "missing append logits");
             for (int j = 0; j < nvocab; ++j) require(std::isfinite(logits[j]), "nonfinite append logits");
             token = std::max_element(logits, logits + nvocab) - logits;
         }
         result["decoded_tokens"] = steps;
+        result["captured_reload"] = capture_reload;
     }
     save_json(out / "RESULT.json", result);
     std::cout << result.dump() << '\n';

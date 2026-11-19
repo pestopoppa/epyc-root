@@ -119,7 +119,7 @@ struct state {
             k->ne[0] != q->ne[0] || k->ne[1] != v->ne[1] ||
             k->ne[2] != v->ne[2] || k->ne[2] <= 0 || q->ne[2] % k->ne[2] != 0 ||
             (mask && (mask->ne[0] != k->ne[1] || mask->ne[1] < q->ne[1] ||
-                      mask->ne[2] != 1 || mask->ne[3] != 1)) ||
+                      (mask->ne[2] != 1 && mask->ne[2] != q->ne[2]) || mask->ne[3] != 1)) ||
             !std::isfinite(params[0]) || params[0] <= 0 || params[1] != 0 || params[2] != 0 || t->src[4]) {
             throw std::runtime_error("unsupported attention geometry, bias, softcap, sinks or capture limits");
         }

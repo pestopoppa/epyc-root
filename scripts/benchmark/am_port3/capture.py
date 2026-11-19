@@ -51,8 +51,8 @@ def load_layer(directory, layer):
     return meta, tensors, hashes
 
 
-def check_layer(directory, layer):
-    meta, t, hashes = load_layer(directory, layer)
+def reference(meta, t):
+    """Actual dequantized K/V and rounded masks; contiguous GQA groups."""
     q, k, v, actual = (t[name].astype(np.float64) for name in ('Q', 'K', 'V', 'output'))
     if any(x.shape[0] != 1 for x in (q, k, v, actual)):
         raise ValueError('only one stream is supported')
@@ -68,19 +68,27 @@ def check_layer(directory, layer):
     scores = np.einsum('hnd,htd->hnt', q, k) * scale
     if 'mask' in t:
         mask = t['mask']
-        if mask.shape[:2] != (1, 1) or mask.shape[2] < q.shape[1] or mask.shape[3] != k.shape[1]:
+        if (mask.shape[0] != 1 or mask.shape[1] not in (1, q.shape[0])
+                or mask.shape[2] < q.shape[1] or mask.shape[3] != k.shape[1]):
             raise ValueError('incompatible mask geometry')
-        scores += mask[0, 0, :q.shape[1], :]
+        scores += mask[0, :, :q.shape[1], :]
     if not np.isfinite(scores.max(axis=2)).all():
         raise ValueError('fully masked captured query')
     weights = np.exp(scores - scores.max(axis=2, keepdims=True))
     weights /= weights.sum(axis=2, keepdims=True)
-    reference = np.einsum('hnt,htd->nhd', weights, v)
-    error = np.linalg.norm(actual - reference)
+    return np.einsum('hnt,htd->nhd', weights, v)
+
+
+def check_layer(directory, layer):
+    meta, t, hashes = load_layer(directory, layer)
+    expected = reference(meta, t)
+    actual = t['output'][0].astype(np.float64)
+    q, k = t['Q'][0], t['K'][0]
+    error = np.linalg.norm(actual - expected)
     return {'layer': layer, 'sha256': hashes,
-            'native_vs_numpy_relative_l2': float(error / max(np.linalg.norm(reference), 1e-30)),
-            'native_vs_numpy_max_abs': float(np.max(np.abs(actual - reference))),
-            'query_heads': q.shape[0], 'kv_heads': q.shape[0] // repeats,
+            'native_vs_numpy_relative_l2': float(error / max(np.linalg.norm(expected), 1e-30)),
+            'native_vs_numpy_max_abs': float(np.max(np.abs(actual - expected))),
+            'query_heads': q.shape[0], 'kv_heads': k.shape[0],
             'queries': q.shape[1], 'kv_rows_including_padding': k.shape[1]}
 
 

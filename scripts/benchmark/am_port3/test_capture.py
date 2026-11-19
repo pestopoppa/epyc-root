@@ -39,6 +39,29 @@ class CaptureTests(unittest.TestCase):
             self.assertEqual(result['kv_heads'], 2)
             self.assertEqual(len(result['sha256']), 7)
 
+    def test_distinct_query_head_masks_and_invalid_head_count(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            m = self.fixture(root)
+            mask = np.repeat(np.fromfile(root / 'layer-3-mask.f32', dtype='<f4').reshape(1, 1, 4, 3), 4, axis=1)
+            actual = np.empty((1, 2, 4, 3), dtype='<f4')
+            for h in range(4):
+                mask[0, h, :2, :] = -np.inf
+                mask[0, h, :2, h % 3] = h*0.3
+                v = np.arange(18).reshape(1, 2, 3, 3)
+                actual[0, :, h] = v[0, h // 2, h % 3]
+            mask.tofile(root / 'layer-3-mask.f32')
+            actual.tofile(root / 'layer-3-output.f32')
+            m['tensors']['mask']['ne'] = list(reversed(mask.shape))
+            (root / 'layer-3.json').write_text(json.dumps(m))
+            self.assertLess(capture.check(root)['layers'][0]['native_vs_numpy_max_abs'], 1e-12)
+            # Two heads cannot silently broadcast over four query heads.
+            mask[:, :2].tofile(root / 'layer-3-mask.f32')
+            m['tensors']['mask']['ne'][2] = 2
+            (root / 'layer-3.json').write_text(json.dumps(m))
+            with self.assertRaisesRegex(ValueError, 'mask geometry'):
+                capture.check(root)
+
     def test_incomplete_and_truncated_capture_refused(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

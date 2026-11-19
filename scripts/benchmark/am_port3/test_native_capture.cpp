@@ -9,7 +9,9 @@ static void check(bool ok, const char * message) {
 
 int main(int argc, char ** argv) {
     try {
-        check(argc == 2, "usage: test_native_capture OUTPUT_PARENT");
+        check(argc == 2 || (argc == 3 && std::string(argv[2]) == "--head-mask"),
+              "usage: test_native_capture OUTPUT_PARENT [--head-mask]");
+        const int mask_heads = argc == 3 ? 4 : 1;
         const std::filesystem::path root = argv[1];
         const auto backend = ggml_backend_cpu_init();
         check(backend != nullptr, "CPU backend unavailable");
@@ -22,7 +24,7 @@ int main(int argc, char ** argv) {
         auto * q = ggml_permute(ctx, original_q, 0, 2, 1, 3);
         auto * k = ggml_new_tensor_3d(ctx, GGML_TYPE_Q8_0, 64, 3, 2);
         auto * v = ggml_new_tensor_3d(ctx, GGML_TYPE_Q8_0, 64, 3, 2);
-        auto * mask = ggml_new_tensor_2d(ctx, GGML_TYPE_F16, 3, 32);
+        auto * mask = ggml_new_tensor_3d(ctx, GGML_TYPE_F16, 3, 32, mask_heads);
         auto * output = ggml_flash_attn_ext(ctx, q, k, v, mask, 0.125f, 0., 0.);
         ggml_flash_attn_ext_set_prec(output, GGML_PREC_F32);
         for (auto * x : {original_q, k, v, mask}) ggml_set_input(x);
@@ -46,11 +48,15 @@ int main(int argc, char ** argv) {
             traits->from_float_ref(data.data(), packed.data(), data.size());
             ggml_backend_tensor_set(x, packed.data(), 0, packed.size());
         }
-        std::vector<ggml_fp16_t> mask_data(3*32, ggml_fp32_to_fp16(-INFINITY));
+        std::vector<ggml_fp16_t> mask_data(3*32*mask_heads, ggml_fp32_to_fp16(-INFINITY));
         // First query attends rows 0,1; second sees all three. Other query rows
         // are padding and must survive capture as masked, not become zeros.
-        mask_data[0] = mask_data[1] = ggml_fp32_to_fp16(0.);
-        for (int i = 3; i < 6; ++i) mask_data[i] = ggml_fp32_to_fp16(0.);
+        for (int h = 0; h < mask_heads; ++h) {
+            const int offset = h*3*32;
+            mask_data[offset] = ggml_fp32_to_fp16(0.2f*h);
+            mask_data[offset+1] = ggml_fp32_to_fp16(-0.3f*h);
+            for (int i = 3; i < 6; ++i) mask_data[offset+i] = ggml_fp32_to_fp16(0.1f*h*i);
+        }
         ggml_backend_tensor_set(mask, mask_data.data(), 0, mask_data.size()*sizeof(ggml_fp16_t));
 
         am_capture::state s;

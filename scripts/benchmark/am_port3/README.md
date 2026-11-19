@@ -111,7 +111,7 @@ Native tensor reads use backend transfers and per-type dequantizers, one row at
 a time. Files contain canonical little-endian float32 with dimensions reversed
 from ggml `ne`: Q/K/V `[stream, head, token, width]`, output
 `[stream, query_token, query_head, value_width]`, mask
-`[1, 1, padded_query_token, cache_row]`. This preserves quantized K/V as actually
+`[1, 1 or query_heads, padded_query_token, cache_row]`. This preserves quantized K/V as actually
 consumed by attention, noncontiguous Q, unused cache rows and padding masks.
 The default bounds are 512 query tokens, 36,864 KV rows, width 512 and 4 GiB total
 float32 output. Streaming limits host row scratch; it does not prove the
@@ -333,9 +333,9 @@ every prefix key with zero mask bias. It recomputes reference outputs on the
 frozen prefix. Thus held-out fitter cosines compare a mathematical prefix view;
 they are not the native causal suffix outputs (which also attend suffix keys).
 The saved recurrent prefix state must be restored before install; leaving the
-post-calibration recurrent state would pair incompatible histories. Native
-reload-output agreement still requires a separate captured compact attention
-check in the model row; the current append probe alone cannot close AM-PORT-3.
+post-calibration recurrent state would pair incompatible histories. The optional compact capture/checker below supplies native reload-output
+agreement; it still requires execution in a fully linked model row. The append
+probe alone cannot close AM-PORT-3.
 
 Conversion writes per-head NPZ/metadata/FIT records and `carrier.bin`, followed
 last by `CONVERT.json` with capture/provenance/carrier hashes. A partial directory
@@ -355,3 +355,54 @@ test_native_bundle.cpp executable>` alongside the unittest command above. There
 are 19 Python tests, including the native-reader invocation when this variable
 is set. The driver passes patched-source syntax checks; full CPU/HIP builds,
 GPU capture/reload agreement, default-off controls and residency remain row work.
+
+
+## First-append compact capture and native oracle
+
+Set `capture_reload: true` in the reload config and pass `--original
+<capture-out>/native` to `run_driver.py` alongside `--converted`. The driver arms
+capture only around the FIRST appended token after restore/prune/install. It
+records the actual physical-row/original-position map and query position in
+`COMPACT.raw.json`, then disables capture for the rest of the stability probe.
+The default is false. Shared base masks and masks expanded to every query head
+are supported; intermediate head counts refuse capture rather than broadcasting
+with the wrong GQA mapping.
+
+The wrapper requires the original capture and completed conversion before native
+execution. After a successful reload it seals `COMPACT.json` with conversion and
+completion hashes, then writes `CHECK.json` only after `compact_check.py` validates
+all original/converted/native bindings. This checks original capture hashes,
+FIT/carrier hashes, exact retained K, F16-rounded C2 and beta at resolved physical
+rows, zero beta for the appended row, masked unused rows, and complete native
+layer coverage. A standalone recheck is:
+
+```bash
+python scripts/benchmark/am_port3/compact_check.py \
+  --original <capture-out>/native --converted <fit-directory> \
+  --reloaded <reload-out>
+```
+
+Two metrics answer different questions, with cosine higher and error lower better:
+
+* `native_vs_compact_oracle`: native flash output versus float64 attention using
+  the ACTUAL captured compact K/V, head masks and queries, including the appended
+  row. This isolates native reload/graph/capture integrity.
+* `frozen_prefix_quality_on_reload_queries`: reconstructed compact-prefix output
+  versus the ORIGINAL full-prefix reference using the reload's actual queries.
+  Both sides exclude the appended row. This measures local prefix approximation,
+  conditional on Q from the compact trajectory. It is not an independent
+  full-model hidden-state/logit/KLD comparison or a new held-out calibration set.
+
+Zero-norm outputs produce undefined cosine counts and null minimum/mean when no
+cosines exist. The checker emits metrics; the admitted row's decision rule must
+apply quality thresholds and combine native correctness, budget, default-off and
+32K stability results. No automatic pass is inferred from a completion marker.
+
+Twenty-five model-free tests cover 5x two-layer 4Q/2KV reloads with permuted rows,
+C2/beta/K/padding corruption, original/fit/identity tampering, invalid head masks,
+zero norms, wrapper preflight and successful sealing. A real CPU scheduler test
+runs shared and distinct per-query-head masks against the numpy oracle, checks
+capture enabled/disabled byte parity and preserves failure guards. Driver syntax
+passes against the exact patch. These establish code behavior, not a full patched
+link, model/GPU quality, default-off throughput/KLD or residency verdict. The full
+CPU/HIP build and bounded capture/fit/reload/stability row remain to publish.
