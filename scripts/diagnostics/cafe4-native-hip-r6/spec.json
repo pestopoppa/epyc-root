@@ -1,0 +1,26 @@
+{
+  "id": "df2-cafe4-modes-native-hip-r6-20261119",
+  "owner": "handoff-df2",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r6-20261119/launch.sh",
+  "lane": "gpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r6-20261119/RESULT.json",
+  "result_format": "json",
+  "verdict_by": "agent",
+  "decision_rule": "One-prompt GPU modes diagnostic only. Require hash-bound v10+diagnostic modes build and actual mapped libraries/model, official grant binding, widths 2 and 3 each normal rc0 PASS and explicit fault rc1 FAIL injected-fault. Each case must witness native strict partial acceptance, target mode1 and mode2, draft rewind, nonfault errors <= original baseline+1e-5 and fault differences >10x tolerance, finite numeric fields, no cutoff and reaped child. Stop on all four valid cases (PASS), or first missing/failed native control (UNKNOWN/futility), STOP or deadline. Smoke qualifies native model and all-library mapping only; no rollback, performance, full CAFE-4 claim follows from smoke. R6 uses token-witness source f11d4e31bbdebf1533d42136d900076124acd8a3b59ec572c7ad3ed5bb28fbdc and qualified HIP R6 executable d346b6fe24397f057a367699f77b2ed0a0319f1b34f11f6682f656ab31191b77; fixed error gate 0.743863867, lower error is better, reference floor separate. No threshold relaxation. Each case and smoke require model/all six local libraries mapped plus two live per-child KFD/nonzero-VRAM samples; missing residency is UNKNOWN. Offload requested with -ngl 99. Failed-case diagnostics retain numeric measurements, native failure messages and individual predicates separately; they never qualify UNKNOWN as PASS.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r6-20261119",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.py",
+    "*.sh",
+    "*.json"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r6-20261119/runtime.py predicate"
+}
