@@ -1,18 +1,61 @@
 {
   "by_type": {
-    "docs": 480,
+    "docs": 503,
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 377,
-    "progress": 1421,
-    "research": 332
+    "progress": 1424,
+    "research": 335
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-18T15:49:03Z",
-  "mode": "touch",
-  "scan_time": "2026-11-18T15:49:03Z",
+  "last_touch": {
+    "advanced": {
+      "added": 29,
+      "changed": 3,
+      "removed": 0
+    },
+    "at": "2026-11-19T08:54:40Z",
+    "scope_paths": [
+      "docs/design/ak-win-cnt-1-annexk-path-counters-amendment-draft.md",
+      "docs/design/cf-plan-boundary-protocol-20261118.md",
+      "docs/design/cf3c-binding-continuation-protocol-20261119.md",
+      "docs/design/dcp10-colgrep-native-protocol-20261118.md",
+      "docs/design/dcp10-gitnexus-controls-protocol-20261118.md",
+      "docs/design/hs4-p6-prospective-catalog-capture-20261119.md",
+      "docs/design/prb-t4-cpu-pilot-20261118.md",
+      "docs/design/thinking-budget-headroom-protocol-20261118.md",
+      "docs/findings/fm2-native-source-control-20261118.md",
+      "docs/findings/fm4-native-dispatch-projection-20261118.md",
+      "docs/findings/vidya-native-wiring-20261118.md",
+      "docs/reference/kernel-manifests/llama-v11-manifest.md",
+      "docs/reference/tulving-scoring-validity-m12f-2026-11-09.md",
+      "docs/reports/am-port2-continuation-20261119.md",
+      "docs/reports/dripreview12-futility-20261119.md",
+      "docs/reports/hs-td1-risk-intent-20261119.md",
+      "docs/reports/hs-td2-worker-selfcheck-20261119.md",
+      "docs/reports/hs-td3-context-selection-20261119.md",
+      "docs/reports/hs4-p2-mcp-session-contract-20261119.md",
+      "docs/reports/hs9-openweight-seed-20261119.md",
+      "docs/reports/kshift-model-r1-20261119.md",
+      "docs/reports/kv-cache/kpf41-backend-gpu-custody-recovery-20261119.md",
+      "docs/reports/kv-cache/kpf41-backend-gpu-parser-repair-20261119.md",
+      "docs/reports/kv-cache/kpf41-backend-gpu-r2-result-20261119.md",
+      "docs/reports/kv-cache/kpf623-tokenizer-roundtrip-20261105/result.md",
+      "docs/research/cf3c-binding-qualification-20261119.md",
+      "progress/2026-11/2026-11-19-autopilot-backlog-session.md",
+      "progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md",
+      "progress/2026-11/2026-11-19-handoff-yarn.md",
+      "research/deep-dives/akx-all-23-q38-topk-20261118.md",
+      "research/deep-dives/champion-gain-chain-v10-to-c15-20261118.md",
+      "research/deep-dives/mi210-next-hotspots-20261118.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-19T08:54:40Z",
   "schema_version": 1,
-  "source_set_hash": "7ca90c7ccdbeb9826e7b85b3573a10952bb58b1acd1888cbd0fd6809062c6590",
+  "source_set_hash": "d6e50607d5a479172464dc0278629b55d5cca583808b8c26000f1005ca59dd5d",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -3647,6 +3690,14 @@
       "type": "research"
     },
     {
+      "content_hash": "a137be5076a060c637775d102a87566ce64f074024e3d21b9e10a2a0b074720d",
+      "modified": "2026-11-19T08:54:38Z",
+      "path": "research/deep-dives/akx-all-23-q38-topk-20261118.md",
+      "size": 6986,
+      "title": "AKX-ALL-23: does Q38FN's QSA top-k bound CPU decode cost? (2026-11-18)",
+      "type": "research"
+    },
+    {
       "content_hash": "536ff00b24143b7dde3561b3088b883e955e869bf53973a5c5d65585ffa1e909",
       "modified": "2026-11-18T15:37:08Z",
       "path": "research/deep-dives/akx-all-24-cpu-fa-parallelism-20261118.md",
@@ -3740,6 +3791,14 @@
       "path": "research/deep-dives/c15-mmvq-fused-q8-feasibility-20261118.md",
       "size": 3326,
       "title": "C15-MMVQ-FUSED-Q8 feasibility: fold activation quantize into MMVQ (2026-11-18)",
+      "type": "research"
+    },
+    {
+      "content_hash": "217b4faa723b4425705937991c202c895dbffe71d5d8dbdb87c8885a94a6377b",
+      "modified": "2026-11-19T08:54:38Z",
+      "path": "research/deep-dives/champion-gain-chain-v10-to-c15-20261118.md",
+      "size": 24596,
+      "title": "Champion gain chain, production v10 to C14 (champion) and the C15 candidate",
       "type": "research"
     },
     {
@@ -5132,6 +5191,14 @@
       "path": "research/deep-dives/meta-harness-official-reference-code.md",
       "size": 19472,
       "title": "Deep Dive: Meta-Harness \u2014 Official Reference Code (stanford-iris-lab/meta-harness)",
+      "type": "research"
+    },
+    {
+      "content_hash": "932445c2308af34a5c4e3a209dee2ff2a03e5aea329e53e1ec930c2d4fabd629",
+      "modified": "2026-11-19T08:54:38Z",
+      "path": "research/deep-dives/mi210-next-hotspots-20261118.md",
+      "size": 7855,
+      "title": "MI210 next kernel speed levers, from existing traces only (2026-11-18)",
       "type": "research"
     },
     {
@@ -17191,6 +17258,30 @@
       "type": "progress"
     },
     {
+      "content_hash": "fdf54ba2fcb540e57979878473981d3041daf91f7b74f65cf47739b0cca2dd62",
+      "modified": "2026-11-19T08:54:38Z",
+      "path": "progress/2026-11/2026-11-19-autopilot-backlog-session.md",
+      "size": 5946,
+      "title": "2026-11-19 \u2014 autopilot-backlog-session",
+      "type": "progress"
+    },
+    {
+      "content_hash": "907427f9fac8761f2f81927e5f7957f325f82868a1295787a51dce6ae167466f",
+      "modified": "2026-11-19T08:54:38Z",
+      "path": "progress/2026-11/2026-11-19-handoff-episodic-memory-integrity.md",
+      "size": 3319,
+      "title": "2026-11-19 \u2014 handoff episodic-memory-integrity",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0b3f5d68dee8f434fdab5410b12091df9dffab2268c54c12fe6c13e80b848ce4",
+      "modified": "2026-11-19T08:54:38Z",
+      "path": "progress/2026-11/2026-11-19-handoff-yarn.md",
+      "size": 8510,
+      "title": "2026-11-19 \u2014 handoff yarn",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-18T15:37:08Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -17364,6 +17455,14 @@
       "path": "docs/design/ak-discovery-owned-cgroup-20261109.md",
       "size": 8635,
       "title": "AK-DISCOVERY-OWNED-CGROUP: job-owned cgroup for the one native discovery compiler probe",
+      "type": "docs"
+    },
+    {
+      "content_hash": "4d1a149eda7a4a365f3428b56c18fd5fe1f7e7c6ddaf4dc075977e0be74e9dba",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/design/ak-win-cnt-1-annexk-path-counters-amendment-draft.md",
+      "size": 3739,
+      "title": "AK-WIN-CNT-1 \u2014 Annex K amendment DRAFT: in-window path counters (human-amendment-only)",
       "type": "docs"
     },
     {
@@ -17703,11 +17802,27 @@
       "type": "docs"
     },
     {
+      "content_hash": "15498cc4046db4399d73af1596aea7fc3653c13395d3422abb922ed1b52ff848",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/design/cf-plan-boundary-protocol-20261118.md",
+      "size": 4540,
+      "title": "Local prefix-rewrite pricing diagnostic",
+      "type": "docs"
+    },
+    {
       "content_hash": "90728622b3a57f57a2143a06ea087e754d53adb023d4cf097bbb82cde227f828",
       "modified": "2026-11-18T15:37:07Z",
       "path": "docs/design/cf3c-active-evidence-protocol-20261118.md",
       "size": 4895,
       "title": "CF-3c active-evidence diagnostic",
+      "type": "docs"
+    },
+    {
+      "content_hash": "13b8b280c2607f5e35beb8e217f7e9bec4dae2166e127116b5d40d61feb9e7a5",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/design/cf3c-binding-continuation-protocol-20261119.md",
+      "size": 6056,
+      "title": "CF-3c binding archive continuation",
       "type": "docs"
     },
     {
@@ -17772,6 +17887,22 @@
       "path": "docs/design/conditional-depth-gate-contract.md",
       "size": 5901,
       "title": "Conditional depth expected-value gate",
+      "type": "docs"
+    },
+    {
+      "content_hash": "e4e1d7f92e815a2c817d1ecc6a2d6d66d53ea900e46e0bfed5cbb709f4a9b5cd",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/design/dcp10-colgrep-native-protocol-20261118.md",
+      "size": 7082,
+      "title": "DCP-10 fixed-cohort native ColGREP diagnostic",
+      "type": "docs"
+    },
+    {
+      "content_hash": "bd6f140e185cde7c9d7ecc66888352b41338b8f98b4e1e6b4a50d7ab98944c93",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/design/dcp10-gitnexus-controls-protocol-20261118.md",
+      "size": 3659,
+      "title": "DCP-10 direct-edge controls",
       "type": "docs"
     },
     {
@@ -18023,6 +18154,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "7a0aa22abdc7cdcdf83e4d50259028f2a2c2e6783214628fb887ce7c5c851ae0",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/design/hs4-p6-prospective-catalog-capture-20261119.md",
+      "size": 13679,
+      "title": "P6 prospective catalog capture",
+      "type": "docs"
+    },
+    {
       "content_hash": "55a60effecef7f4bd3c5023080975282133f0bd2512cb41e4482c823b9a6c164",
       "modified": "2026-11-18T15:37:07Z",
       "path": "docs/design/hs4-p6-shared-exploration-source-contract-20261006.md",
@@ -18215,6 +18354,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "3f44d3f63d1f6dc9cc19d128446c911c95d23939d1a3071cb8e4e279bab11a1b",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/design/prb-t4-cpu-pilot-20261118.md",
+      "size": 4670,
+      "title": "PRB-T4 isolated CPU preparation pilot",
+      "type": "docs"
+    },
+    {
       "content_hash": "3df459351a444a50d264af2a643317a90fa412a05f2dd06a163c93b1117fb7e8",
       "modified": "2026-11-18T15:37:07Z",
       "path": "docs/design/prefill-budget-8083-stack-change-package.md",
@@ -18300,6 +18447,14 @@
       "path": "docs/design/rowflow2-20261105.md",
       "size": 14905,
       "title": "rowflow2 \u2014 minimal keeper, shadow week and cutover (2026-11-05)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "4d752724c8d19a990ff36a97f22d44e89a1722618fd6f83d4b17b958d344a871",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/design/thinking-budget-headroom-protocol-20261118.md",
+      "size": 4629,
+      "title": "TB-SEM-1b thinking-budget headroom protocol",
       "type": "docs"
     },
     {
@@ -18511,10 +18666,26 @@
       "type": "docs"
     },
     {
-      "content_hash": "6618f07d390c47d91cac38cffa754b6c25b6da19d4359e9b41533d917ebc56cf",
-      "modified": "2026-11-18T15:37:07Z",
+      "content_hash": "a3ff60b016a275f674f5368e94fdb40425de45db1f0aee94af38492b06a316ad",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/findings/fm2-native-source-control-20261118.md",
+      "size": 1652,
+      "title": "FM2 prospective native source control, 2026-11-18",
+      "type": "docs"
+    },
+    {
+      "content_hash": "f7925613efa982934c5fbedbaba49494549b6fe47ef942b33e9a71aaca613b0a",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/findings/fm4-native-dispatch-projection-20261118.md",
+      "size": 922,
+      "title": "FM4 native dispatch diagnostic projection, 2026-11-18",
+      "type": "docs"
+    },
+    {
+      "content_hash": "ef702c6f60ddf072feb6ab40e25aaa7eb2e944cde03e7ca08d7ab2f68ce3c4f4",
+      "modified": "2026-11-19T08:54:37Z",
       "path": "docs/findings/vidya-native-wiring-20261118.md",
-      "size": 8731,
+      "size": 9825,
       "title": "Native source wiring, 2026-11-18",
       "type": "docs"
     },
@@ -19399,10 +19570,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "b60f71d53798fbb48a723f07f89ed0c52e5dc3872c6c3237c0b634bfc9520042",
-      "modified": "2026-11-18T15:37:07Z",
+      "content_hash": "b69e5f293661087fd65cff0252a3eec0b37729a4d9369c57b8448c3bc4bdd6c1",
+      "modified": "2026-11-19T08:54:37Z",
       "path": "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "size": 133086,
+      "size": 134130,
       "title": "llama.cpp v11 release manifest",
       "type": "docs"
     },
@@ -19903,10 +20074,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "88eb1514800f301d0423ffaaff07f384bf6e1b150fa6a03d06d28a83c8de22ff",
-      "modified": "2026-11-18T15:37:07Z",
+      "content_hash": "8fcadfcde3451a8db00f6c13924dfd262ade3a639006b8867377c9c433a9a4e4",
+      "modified": "2026-11-19T08:54:37Z",
       "path": "docs/reference/tulving-scoring-validity-m12f-2026-11-09.md",
-      "size": 2894,
+      "size": 5729,
       "title": "Tulving CAS scoring validity and offline re-score protocol (M-12f, absorbs M-12i)",
       "type": "docs"
     },
@@ -19948,6 +20119,14 @@
       "path": "docs/reference/vidya-live-captures-20261104.md",
       "size": 8619,
       "title": "Vidya live capture results, 2026-11-04",
+      "type": "docs"
+    },
+    {
+      "content_hash": "d9f98daa95938652dd8be037afe510de25c51eebf073044ee06be20930f06215",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/am-port2-continuation-20261119.md",
+      "size": 3057,
+      "title": "AM-PORT-2 continuation",
       "type": "docs"
     },
     {
@@ -20068,6 +20247,14 @@
       "path": "docs/reports/coordination/token-efficiency-audit-20261106.md",
       "size": 19463,
       "title": "Token-efficiency audit \u2014 dispatcher era vs main-plus-subagents takeover (2026-11-06)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "7707f5c71b2a78f8c1cc6ab9fc30e947d0bee963eade2af239602f24eb585c4c",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/dripreview12-futility-20261119.md",
+      "size": 1984,
+      "title": "Composite REPL rendering fixture: futility outcome",
       "type": "docs"
     },
     {
@@ -20239,6 +20426,46 @@
       "type": "docs"
     },
     {
+      "content_hash": "782d0267dfeed0df2200fc247ca1f5aa35ee620b1baa2244317c203b49607b33",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/hs-td1-risk-intent-20261119.md",
+      "size": 5060,
+      "title": "HS-TD-1 risk/intent authored screen \u2014 2026-11-19",
+      "type": "docs"
+    },
+    {
+      "content_hash": "43ce95bb05267e6fb39c50909135b346e9b7ee44fa5d4d8c604d41abadd53faa",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/hs-td2-worker-selfcheck-20261119.md",
+      "size": 3151,
+      "title": "HS-TD-2 worker self-check authored screen \u2014 2026-11-19",
+      "type": "docs"
+    },
+    {
+      "content_hash": "0ab04845adb015bf9f1ee0e5295a26310fbbe87120e901495a69f58995fb7bc4",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/hs-td3-context-selection-20261119.md",
+      "size": 4623,
+      "title": "HS-TD-3 paired context-selection screen \u2014 2026-11-19",
+      "type": "docs"
+    },
+    {
+      "content_hash": "33634ed7682fc08fe1295d6aa7f4dae1b3d08defb546a070a1b1ffc5e7ab53b0",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/hs4-p2-mcp-session-contract-20261119.md",
+      "size": 3085,
+      "title": "HS-4 P2 MCP session contract",
+      "type": "docs"
+    },
+    {
+      "content_hash": "5c6c57b408eeecc8af1314f7c2c2b7aeebfa4caa2b49a4f0ce8760c58bfb21ae",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/hs9-openweight-seed-20261119.md",
+      "size": 4695,
+      "title": "HS-9 open-weight seed panel \u2014 2026-11-19",
+      "type": "docs"
+    },
+    {
       "content_hash": "fa112d95158e91400304c3df056699549aedc16d6ef3112054b6b3709efcc31e",
       "modified": "2026-11-18T15:37:07Z",
       "path": "docs/reports/hyg1-build-freshness-20261101.md",
@@ -20252,6 +20479,14 @@
       "path": "docs/reports/kernel-promotion/ch17-c13-20261118/NATIVE-FINDINGS.md",
       "size": 1683,
       "title": "CH-17 frontdoor CPU diagnostic",
+      "type": "docs"
+    },
+    {
+      "content_hash": "146062e2caf3829911cbad63e31d64f25d22a64acf86bb3382b71a213b43723b",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/kshift-model-r1-20261119.md",
+      "size": 3119,
+      "title": "K-shift model test: inconclusive sensitivity gate",
       "type": "docs"
     },
     {
@@ -20463,6 +20698,30 @@
       "type": "docs"
     },
     {
+      "content_hash": "fa510bfe25149cad35f06345b70ff0d8583f5bcd5cade7c7382ace42452b7237",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/kv-cache/kpf41-backend-gpu-custody-recovery-20261119.md",
+      "size": 2475,
+      "title": "KPF-41 backend qualification source recovery",
+      "type": "docs"
+    },
+    {
+      "content_hash": "bb0dbd23004039ea29b04b4447f758c5f4b722910387c7adc85da26dc87779cd",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/kv-cache/kpf41-backend-gpu-parser-repair-20261119.md",
+      "size": 2747,
+      "title": "KPF-41 backend GPU parser repair",
+      "type": "docs"
+    },
+    {
+      "content_hash": "714967489c10620dce6bd294184e99deb51c396c35e2bf6a95ef231b051a58ba",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/kv-cache/kpf41-backend-gpu-r2-result-20261119.md",
+      "size": 2061,
+      "title": "KPF-41 backend GPU r2: INCONCLUSIVE",
+      "type": "docs"
+    },
+    {
       "content_hash": "2f6b3c00b999caa5e9f06930f4bba9a29c06e678b6b1352c95d36574ddfea4c0",
       "modified": "2026-11-18T15:37:07Z",
       "path": "docs/reports/kv-cache/kpf50-anchor-qual-row-20261105/ROW.md",
@@ -20500,6 +20759,14 @@
       "path": "docs/reports/kv-cache/kpf623-byte-alignment-exploratory-20261105/PUBLISHED.md",
       "size": 856,
       "title": "Exploratory byte alignment row",
+      "type": "docs"
+    },
+    {
+      "content_hash": "aea49dd8ac2bb98f82a6974b4b1383962dd8ceb618d36ba71c271e0644ed09e4",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/reports/kv-cache/kpf623-tokenizer-roundtrip-20261105/result.md",
+      "size": 2975,
+      "title": "KPF-62.3 native auxiliary tokenizer observation",
       "type": "docs"
     },
     {
@@ -20804,6 +21071,14 @@
       "path": "docs/research/cf3c-active-and-task-results-20261118.md",
       "size": 9455,
       "title": "CF-3c active-evidence and task-level continuation results",
+      "type": "docs"
+    },
+    {
+      "content_hash": "95dc11e32f67619796ad1339fde951c4cfac50f61aaeba90165fcebd2ceec3fd",
+      "modified": "2026-11-19T08:54:37Z",
+      "path": "docs/research/cf3c-binding-qualification-20261119.md",
+      "size": 2778,
+      "title": "CF-3c binding qualification: failed native recovery witness",
       "type": "docs"
     },
     {
@@ -21167,7 +21442,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2644,
+  "total_new": 2673,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

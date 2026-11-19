@@ -1066,7 +1066,7 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 258,
+      "closed": 263,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 92,
@@ -1078,11 +1078,11 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 365,
+      "total": 370,
       "tracks": [
         {
           "blocked": 12,
-          "closed": 37,
+          "closed": 42,
           "gates": [
             "RTG-09#routing-program",
             "RTG-09#internal-interaction-lifecycle",
@@ -1104,7 +1104,7 @@
           "closed": 35,
           "gates": [],
           "guarded": 0,
-          "line": 408,
+          "line": 416,
           "markers": 1,
           "name": "repl-turn-efficiency",
           "open": 15
@@ -1114,7 +1114,7 @@
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 820,
+          "line": 828,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1126,7 +1126,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1586,
+          "line": 1594,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 15
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2267,
+          "line": 2275,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2350,
+          "line": 2358,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2800,
+          "line": 2808,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3670,
+          "line": 3678,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1479,7 +1479,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 640,
+          "line": 641,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 4
@@ -1489,7 +1489,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1019,
+          "line": 1020,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1499,7 +1499,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1635,
+          "line": 1636,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1509,7 +1509,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1782,
+          "line": 1783,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12

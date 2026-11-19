@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T08:39:04Z",
+  "generated_at": "2026-11-19T08:56:42Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1904,7 +1904,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 640,
+          "line": 641,
           "name": "attention-matching-kv-compaction",
           "open": 4,
           "readiness": "ready"
@@ -1913,7 +1913,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1019,
+          "line": 1020,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1922,7 +1922,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1635,
+          "line": 1636,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1931,7 +1931,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1782,
+          "line": 1783,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
@@ -3652,7 +3652,7 @@
       "age_days": 0,
       "blocked": 15,
       "blocked_by": [],
-      "closed": 258,
+      "closed": 263,
       "dispatchable": 92,
       "domain": "user-facing-harness",
       "guarded": 0,
@@ -3714,7 +3714,7 @@
           "blocked_by": [],
           "dispatchable": 15,
           "gates": [],
-          "line": 408,
+          "line": 416,
           "name": "repl-turn-efficiency",
           "open": 15,
           "readiness": "ready"
@@ -3723,7 +3723,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 820,
+          "line": 828,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3736,7 +3736,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1586,
+          "line": 1594,
           "name": "harness-improvement-loop",
           "open": 16,
           "readiness": "blocked"
@@ -3749,7 +3749,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2267,
+          "line": 2275,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3770,7 +3770,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2350,
+          "line": 2358,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3785,7 +3785,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2800,
+          "line": 2808,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3796,7 +3796,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3670,
+          "line": 3678,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"
