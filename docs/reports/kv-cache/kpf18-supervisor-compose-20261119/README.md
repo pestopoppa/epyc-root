@@ -441,3 +441,62 @@ KPF-18 completion is claimed. [no-belief: model-free software regression tests]
 Source identities (SHA-256):
 - `execution_binding.py`: `e7224011cde45fa46f737b5d10b0a973dbaef96045472ad84f695fde1d4f1a16`
 - `test_execution_binding.py`: `1ad96938cf3c2af7d70923bfc48f6c23524790ec2cba7ee80f729bcc0fe3e0c2`
+
+## 2026-11-19 — current enrollment and preload prerequisites
+
+The opt-in current-guard-v3 binding now checks current admission, provider,
+source custody, output routing and reserve before and after enrollment/preload
+entry. This changes the disabled successor only; retained driver/guard/verifier
+bytes and installed historical manifests remain unchanged.
+
+`execution.enrollment` explicitly supplies `framing_result` and
+`canonical_export`. Every file must be in the source inventory, and the framing
+result and three projection files must retain the exact SHA-256 identities from
+retained guard.tests_and_enrollment. Framing still requires framing_pass=true
+and the same raw_sha256. The returned scope remains diagnostic with no new
+enrollment receipt; this is no new enrollment authority or grading rule. There
+is no fallback to vanished historical directories. The original R14 framing
+result and R15 canonical-export paths are absent on this host. Explicit paths
+permit recovery of identical bytes without weakening the identity requirements;
+the R16 export identities already present in the inherited manifest agree with
+the original three projection pins.
+
+`execution.preload_receipt` supplies the receipt path, which the binding assigns
+to driver.RETAINED_PRELOAD_RECEIPT. Both it and the driver's BASE/ORIGINAL-MODELS.json
+must be sealed inputs. Redirected arguments refuse before verifier entry. The
+original load_preload_models callable still checks the fixed receipt digest,
+metadata, model paths, draft shape and stat tuples. No model weight hashing or
+preparation is added to runtime. STOP/provider/custody changes during verifier
+execution refuse before returning models. The driver still controls its original
+identity output and subsequent unchanged_models check.
+
+Eight focused prerequisite controls PASS, covering explicit-location enrollment,
+original expected digest requirements, framing failure despite a sealed input,
+missing configuration, preload delegation and post-call STOP, unsealed/redirected
+inputs, provider/source drift and retained verifier errors. Fixtures substitute
+synthetic framing/projection pins and an inert preload callable; they do not
+qualify the actual retained verifier or native non-dry main. The previous 58
+scoped tests also PASS (66 total). Commands:
+
+```bash
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_execution_prerequisites.py
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_execution_binding.py
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_execution_admission.py
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_successor.py
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_supervisor.py -k Binding
+```
+
+GitNexus status/impact unavailable in the unindexed lane. Manual call-site
+inspection confines edits to the opt-in binding and its tests. git diff --check
+PASS. No new source/measurement producer, GPU/native result, publisher smoke,
+full-run RowflowContext qualification or KPF-18 completion is claimed.
+
+Next: exercise actual installed non-dry main through current prerequisites with
+private model-free controls and the retained preload verifier, including refusals
+before gate entry. Recover/explicitly seal exact framing/projection inputs before
+actual publisher smoke; full-run RowflowContext remains historical.
+
+Source identities (SHA-256):
+- `execution_binding.py`: `cd9e271c64cea01da7c4ba5c66ccb0051050e73dbfaa33b69daa45b7f887957a`
+- `test_execution_binding.py`: `a83b9702f9a8c3f628073929847e59e4164dc47e5163a79ac48e42b4125bc98c`
+- `test_execution_prerequisites.py`: `98402f795ef652b9574a9fe90d77e6dac7c60ba0f4045c316a10ae6776ef7ffe`

@@ -1,9 +1,17 @@
 """Opt-in current guard bindings. Does not replace native boundary checks."""
+import json
 import os
 import sys
 from pathlib import Path
 
 REVISION = 'current-guard-v3'
+FRAMING_SHA = '9c782023a139941349fb664e79c666df5ea894a231395761053bae2dd03a3225'
+FRAMING_RAW_SHA = '7cbf105def05e9f874080f6def041754b19c109c7c9ddab5b2d64bf4666a33ee'
+PROJECTION = {
+    'scripts/vidya/canonical.py': 'cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434',
+    'scripts/vidya/adapters/kv_prefix_fork.py': 'e6ead7b654defc820abefb71b997c12b93b49bc1dc0ac036e2b5e72b50b4895d',
+    'scripts/vidya/claim_tuple.py': '6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7',
+}
 SCRATCH = Path('/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency')
 
 
@@ -99,6 +107,48 @@ def prepare(seal, admission, captured):
                 boundary()
                 return gate_main()
             driver.gate.main = smoke_main
+        def sealed_input(name, expected=None):
+            path = Path(name)
+            if (not path.is_absolute() or not path.is_file()
+                    or str(path) not in seal['sources']
+                    or (expected is not None and seal['sources'][str(path)] != expected)):
+                raise ValueError('unsealed current prerequisite: ' + str(path))
+            return path
+
+        def enrollment():
+            boundary()
+            inputs = config.get('enrollment', {})
+            replay = sealed_input(inputs.get('framing_result', ''), FRAMING_SHA)
+            canonical = Path(inputs.get('canonical_export', ''))
+            for name, expected in PROJECTION.items():
+                sealed_input(str(canonical / name), expected)
+            # Preserve the retained framing/projection contract, with explicit
+            # sealed locations instead of vanished historical directories.
+            result = json.loads(replay.read_text())
+            if result.get('framing_pass') is not True or result.get('raw_sha256') != FRAMING_RAW_SHA:
+                raise ValueError('historical framing not valid')
+            boundary()
+            return {'canonical_export': str(canonical),
+                    'scope': 'diagnostic; no new enrollment receipt'}
+
+        preload = getattr(driver, 'load_preload_models', None)
+        def load_preload(receipt, manifest):
+            boundary()
+            expected_receipt = sealed_input(config.get('preload_receipt', ''))
+            expected_manifest = sealed_input(str(driver.BASE / 'ORIGINAL-MODELS.json'))
+            if Path(receipt) != expected_receipt or Path(manifest) != expected_manifest:
+                raise ValueError('redirected preload prerequisite')
+            # Retained verifier still pins receipt digest, metadata, model
+            # paths and stat tuples; neither wrapper reads model contents.
+            models = preload(receipt, manifest)
+            boundary()
+            return models
+
+        if preload is not None:
+            driver.load_preload_models = load_preload
+            if 'preload_receipt' in config:
+                driver.RETAINED_PRELOAD_RECEIPT = Path(config['preload_receipt'])
+        guard.tests_and_enrollment = enrollment
         guard.BIN = Path(config['artifacts']['server'])
         guard.boundary = boundary
         guard.sources = sources

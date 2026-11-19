@@ -47,7 +47,8 @@ class CurrentGuard(unittest.TestCase):
         self.assertEqual(self.guard.BIN, self.native)
         self.assertEqual(self.guard.boundary(), int(os.environ["FILLER_END"]))
         self.assertIs(self.driver.item3, self.driver.item3_smoke)
-        self.assertIs(self.guard.tests_and_enrollment, enrollment)
+        self.assertIsNot(self.guard.tests_and_enrollment, enrollment)
+        self.assertTrue(callable(self.guard.tests_and_enrollment))
         with self.assertRaisesRegex(ValueError, 'already bound'): bind(self.driver)
 
     def test_boundary_rechecks_admission_and_preserves_reserve_failure(self):
