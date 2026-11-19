@@ -3,14 +3,24 @@
 # existing-file overruns of the AutoKernel loop code-budget guard (OP-AK-CODEBUDGET-43, decided 2026-11-19:
 # "ratify a per-file ratchet baseline; each file's current size becomes its cap, any growth fails").
 #
-# WHAT YOU ARE SIGNING:
-#   research scripts/kernel_rnd/autokernel/loop_code_budget_baseline.json: for each file in the closed table below,
-#   its enforced ceiling (its "exceptions" entry when it has one, else "files") is RAISED to min(prepared size, size on origin/main at signing). Nothing else changes: no new
-#   entry, no new exception (an existing one keeps its approval text plus a ratchet note), no other ceiling, no header field. The guard (check_regrowth_guards.py) already enforces the
-#   ratchet: any growth over the ceiling fails, a shrink passes and never raises the ceiling.
-#   The table is closed. An overrun NOT in it (a file that grew after prep) is left red and listed, never laundered.
-#   Prepared 2026-11-19 against research origin/main: 46 overruns (the decision row said 43; 3 more grew past
-#   ceiling between the report and prep). Unit: python_nonblank_noncomment_nondocstring_physical_lines.v1.
+# WHAT YOU ARE SIGNING (re-issued 2026-11-19 after the operator's "trim first" decision):
+#   research scripts/kernel_rnd/autokernel/loop_code_budget_baseline.json, for each file in the closed table below:
+#     kind=ratchet|trimmed|bridge -> its enforced ceiling becomes an "exceptions" entry at
+#       cap = min(table cap, size on research origin/main AT SIGNING). The "files" value (the frozen baseline) never
+#       changes; a file that had no exception gains one, so a later ratchet can see this one.
+#     kind=rebaseline -> a module that was a stub at freeze (blast_radius.py): its "files" value becomes the cap. Not a ratchet.
+#   No other entry, ceiling or header field changes. A shrink passes and never raises a ceiling.
+#   SNAPSHOT AT SIGNING: the script fetches research origin/main, measures THAT tree, and refuses to commit if
+#   origin/main moved between measurement and commit (re-run). A table file that grew after prep stays red and is
+#   listed, never laundered; so does any overrun outside the table.
+#   RATCHETED TWICE => TRIM-OR-SPLIT OBLIGATION: a file whose exception entry already exists (it was ratcheted before,
+#   RATIFY-AK-C9/C9-2 on 2026-11-09) gets the obligation recorded in its approval text, naming its box in
+#   handoffs/active/autokernel-loop.md (the script refuses if that box is not on root origin/main). A file whose
+#   approval already carries an obligation is NOT ratcheted again: it stays red until the box closes.
+#   Prepared against research origin/main 0fe28fa6d (after the 8 trim commits): 45 rows = 35 ratchet + blast_radius.py
+#   rebaseline + 6 trimmed files at post-trim size (ak_check.py fell under its cap and is dropped) + 3 bridge caps
+#   (run.py, campaign_control.py, scheduling.py; split boxes AK-SPLIT-*). 22 rows are twice-ratcheted.
+#   Review: /mnt/raid0/llm/tmp/codebudget-bloat-review-20261119.md. Unit: python_nonblank_noncomment_nondocstring_physical_lines.v1.
 #
 #   Pull-free single line (fish or bash): see run_ratify_codebudget_ratchet_autokernel_20261119.sh
 #   Review / dry run (default; throwaway worktrees, nothing pushed or kept):  bash <this script>
@@ -82,54 +92,53 @@ RES_BASE="$(g "$RES" rev-parse origin/main)"
 say "== root origin/main $ROOT_BASE =="
 say "== research origin/main $RES_BASE =="
 
-# ---- closed ratchet table: file<TAB>prepared size (code lines)<TAB>ceiling at prep
+# ---- closed table: file<TAB>cap (code lines, size at prep)<TAB>kind<TAB>obligation box (twice-ratcheted files only)
 RATCHET_TSV="$(cat <<'TBL'
-actor_lifecycle.py	320	286
-actor_metrics.py	491	486
-actor_orchestrator.py	377	323
-actor_preparation.py	503	493
-actor_preparation_state.py	310	209
-actors.py	3118	3084
-ak_check.py	1090	1081
-archive.py	511	500
-bench.py	451	439
-blast_radius.py	236	106
-campaign_control.py	4817	4473
-candidate_manifest.py	1171	1152
-candidate_transactions.py	950	905
-census.py	151	150
-claim.py	855	830
-cpu_route_witness.py	298	278
-cross_target.py	437	417
-dispatch_guard.py	213	205
-driver_execution.py	982	959
-gates.py	3280	3104
-gpu_serving_profile.py	748	699
-hip_launch_proof.py	96	75
-keep_screen.py	386	378
-lane_watchdog.py	486	475
-loop.py	1474	1462
-native_scientific_witness.py	675	623
-native_server_t0_witness.py	667	657
-numerics_gates.py	215	214
-pipeline.py	380	364
-planner_only.py	241	221
-pool.py	495	490
-production.py	1330	1314
-profile_preparation.py	621	577
-resolved_recipe.py	1379	1374
-roofline_coverage.py	229	227
-run.py	7083	6953
-scheduling.py	2102	1927
-serial_run.py	2560	2558
-serving.py	2204	2201
-source_build_execution.py	482	429
-standalone_inputs.py	773	770
-surface_validation.py	414	388
-target_profile_execution.py	280	267
-unified_driver.py	1295	1293
-unified_worker.py	2250	2247
-worker_lifecycle.py	2491	2259
+actor_lifecycle.py	316	trimmed	
+actor_metrics.py	491	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+actor_orchestrator.py	369	trimmed	AK-TRIM-OR-SPLIT-SMALL-20261119
+actor_preparation.py	503	ratchet	
+actor_preparation_state.py	310	ratchet	
+actors.py	3118	ratchet	AK-SPLIT-ACTORS
+archive.py	511	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+bench.py	451	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+blast_radius.py	236	rebaseline	
+campaign_control.py	4747	bridge	
+candidate_manifest.py	1171	ratchet	
+candidate_transactions.py	950	ratchet	
+census.py	151	ratchet	
+claim.py	855	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+cpu_route_witness.py	298	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+cross_target.py	437	ratchet	
+dispatch_guard.py	213	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+driver_execution.py	982	ratchet	
+gates.py	3247	trimmed	AK-TRIM-OR-SPLIT-GATES
+gpu_serving_profile.py	748	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+hip_launch_proof.py	96	ratchet	
+keep_screen.py	386	ratchet	
+lane_watchdog.py	486	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+loop.py	1474	ratchet	AK-TRIM-GATE-PLUMBING
+native_scientific_witness.py	675	ratchet	
+native_server_t0_witness.py	667	ratchet	
+numerics_gates.py	215	ratchet	
+pipeline.py	380	ratchet	AK-TRIM-GATE-PLUMBING
+planner_only.py	241	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+pool.py	495	ratchet	AK-TRIM-GATE-PLUMBING
+production.py	1328	trimmed	AK-TRIM-OR-SPLIT-SMALL-20261119
+profile_preparation.py	621	ratchet	
+resolved_recipe.py	1379	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+roofline_coverage.py	229	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+run.py	7083	bridge	AK-SPLIT-RUNPY
+scheduling.py	2073	bridge	
+serial_run.py	2560	ratchet	AK-TRIM-GATE-PLUMBING
+serving.py	2204	ratchet	AK-TRIM-GATE-PLUMBING
+source_build_execution.py	476	trimmed	
+standalone_inputs.py	773	ratchet	
+surface_validation.py	414	ratchet	
+target_profile_execution.py	280	ratchet	
+unified_driver.py	1295	ratchet	AK-TRIM-OR-SPLIT-SMALL-20261119
+unified_worker.py	2250	ratchet	
+worker_lifecycle.py	2479	trimmed	
 TBL
 )"
 
@@ -155,33 +164,50 @@ guard() { ( cd "$RWT" && "$SYS_PY" -m "$GUARD_MOD" --baseline "$1" 2>&1 ); }
 violations() { grep -E '^  - ' "$1" | sed 's/^  - //' | sort || true; }
 
 ( cd "$RWT" && "$SYS_PY" -m "$GUARD_MOD" --emit-baseline-json ) >"$STAGE/current.json" || die "guard could not emit current counts"
-PLAN="$("$SYS_PY" - "$RWT/$BASELINE" "$STAGE/current.json" "$STAGE/table.tsv" "$STAGE/new_baseline.json" "$STAGE/plan.tsv" "$STAGE/untabled.tsv" <<'PYEOF'
+PLAN="$("$SYS_PY" - "$RWT/$BASELINE" "$STAGE/current.json" "$STAGE/table.tsv" "$STAGE/new_baseline.json" "$STAGE/plan.tsv" "$STAGE/untabled.tsv" "$GATE_ID" <<'PYEOF'
 import json, sys
-base_p, cur_p, tbl_p, out_p, plan_p, un_p = sys.argv[1:7]
+base_p, cur_p, tbl_p, out_p, plan_p, un_p, gate = sys.argv[1:8]
 base = json.load(open(base_p)); cur = json.load(open(cur_p))["files"]
 table = {}
 for ln in open(tbl_p, encoding="utf-8").read().splitlines():
     if ln.strip():
-        f, size, _old = ln.split("\t"); table[f] = int(size)
+        f, size, kind, box = (ln.split("\t") + [""])[:4]
+        assert kind in ("ratchet", "trimmed", "bridge", "rebaseline"), ln
+        table[f] = (int(size), kind, box)
 ex = base["exceptions"]
 def ceil(n): return ex[n]["ceiling"] if n in ex else base["files"][n]
 over = sorted(n for n in cur if (n in base["files"] or n in ex) and cur[n] > ceil(n))
 plan, untabled = [], []
 for n in over:
     if n not in table:
-        untabled.append(n); continue
-    cap = min(cur[n], table[n])
-    if cap > ceil(n):
-        plan.append((n, ceil(n), cap, cur[n], table[n]))
-        if n in ex:   # an exception ceiling is what the guard enforces: ratchet it, keep the old approval text
-            ex[n]["ceiling"] = cap
-            ex[n]["approval"] += " | ratchet " + str(cap) + ": RATIFY-AK-LOOP-CODE-BUDGET-RATCHET-20261119 (OP-AK-CODEBUDGET-43)"
-        else:
-            base["files"][n] = cap
+        untabled.append((n, "not in table")); continue
+    size, kind, box = table[n]
+    cap = min(cur[n], size)
+    if n in ex and "trim-or-split obligation" in ex[n]["approval"]:
+        untabled.append((n, "open trim-or-split obligation: no third ratchet")); continue
+    if cap <= ceil(n):
+        untabled.append((n, f"table cap {size} is not above the ceiling")); continue
+    obligation = ""
+    if kind == "rebaseline":
+        base["files"][n] = cap
+    elif n in ex:
+        assert box, f"{n}: twice-ratcheted file without an obligation box in the table"
+        obligation = box
+        ex[n]["ceiling"] = cap
+        ex[n]["approval"] += (f" | ratchet {cap} ({kind}): {gate} (OP-AK-CODEBUDGET-43) | RATCHETED TWICE: "
+                              f"trim-or-split obligation {box} (epyc-root handoffs/active/autokernel-loop.md); "
+                              "no further ratchet of this file until that box closes")
+    else:
+        ex[n] = {"ceiling": cap, "approval": f"ratchet {cap} ({kind}): {gate} (OP-AK-CODEBUDGET-43); "
+                 f"frozen baseline {base['files'][n]}. A second ratchet carries a trim-or-split obligation."}
+    plan.append((n, 0, cap, cur[n], size, kind, obligation))
+pristine = json.load(open(base_p)); pex = pristine["exceptions"]
+plan = [(n, pex[n]["ceiling"] if n in pex else pristine["files"][n], cap, now, size, kind, ob)
+        for (n, _o, cap, now, size, kind, ob) in plan]
 with open(un_p, "w") as fh:
-    fh.write("".join(f"{n}\t{cur[n]}\t{ceil(n)}\n" for n in untabled))
+    fh.write("".join(f"{n}\t{cur[n]}\t{ceil(n)}\t{why}\n" for n, why in untabled))
 with open(plan_p, "w") as fh:
-    fh.write("".join("%s\t%d\t%d\t%d\t%d\n" % r for r in plan))
+    fh.write("".join("%s\t%d\t%d\t%d\t%d\t%s\t%s\n" % r for r in plan))
 if plan:
     with open(out_p, "w") as fh:
         json.dump(base, fh, indent=2); fh.write("\n")
@@ -201,10 +227,19 @@ if [ "$MODE" = "verify" ]; then
 fi
 if [ "$PLAN" = "RAISE 0" ]; then say "ALREADY RATIFIED: no table file is over its ceiling. Nothing to do."; exit 0; fi
 say "== $PLAN ceiling(s) to ratchet (file, old ceiling -> new cap, current, prepared) =="
-awk -F'\t' '{printf "  %-34s %5s -> %5s   now %5s  prep %5s\n",$1,$2,$3,$4,$5}' "$STAGE/plan.tsv"
+awk -F'\t' '{printf "  %-34s %5s -> %5s   now %5s  prep %5s  %-10s %s\n",$1,$2,$3,$4,$5,$6,$7}' "$STAGE/plan.tsv"
+OBLIG="$(awk -F'\t' '$7!=""{print $7}' "$STAGE/plan.tsv" | sort -u)"
+if [ -n "$OBLIG" ]; then
+  say "== RATCHETED TWICE: $(printf '%s\n' "$OBLIG" | wc -l) trim-or-split obligation box(es) recorded in the approval text:"
+  g "$ROOT" show "$ROOT_BASE:handoffs/active/autokernel-loop.md" >"$STAGE/akl.txt" || die "cannot read autokernel-loop.md at root origin/main"
+  for box in $OBLIG; do
+    grep -qF -- "**$box " "$STAGE/akl.txt" || grep -qF -- "**$box —" "$STAGE/akl.txt" || die "obligation box $box is not filed in handoffs/active/autokernel-loop.md on root origin/main"
+  done
+  ok "every obligation box is filed on root origin/main: $(printf '%s ' $OBLIG)"
+fi
 if [ -s "$STAGE/untabled.tsv" ]; then
-  say "== overruns NOT in the table (left red, not laundered):"
-  awk -F'\t' '{printf "  %-34s now %5s  ceiling %5s\n",$1,$2,$3}' "$STAGE/untabled.tsv"
+  say "== overruns NOT ratcheted (left red, not laundered):"
+  awk -F'\t' '{printf "  %-34s now %5s  ceiling %5s  (%s)\n",$1,$2,$3,$4}' "$STAGE/untabled.tsv"
 fi
 
 guard "$RWT/$BASELINE" >"$STAGE/before.txt" || true; violations "$STAGE/before.txt" >"$STAGE/before_v.txt"
@@ -214,28 +249,40 @@ say "== guard violations BEFORE: $(wc -l <"$STAGE/before_v.txt")  AFTER: $(wc -l
 "$SYS_PY" - "$RWT/$BASELINE" "$STAGE/new_baseline.json" "$STAGE/before_v.txt" "$STAGE/after_v.txt" "$STAGE/plan.tsv" <<'PYEOF' || die "postflight failed; nothing committed"
 import json, sys
 a = json.load(open(sys.argv[1])); b = json.load(open(sys.argv[2]))
-plan = {ln.split("\t")[0]: int(ln.split("\t")[2]) for ln in open(sys.argv[5]).read().splitlines()}
+plan = {}
+for ln in open(sys.argv[5]).read().splitlines():
+    n, _old, cap, _now, _prep, kind, ob = ln.split("\t")
+    plan[n] = (int(cap), kind, ob)
 keep = lambda d: {k: v for k, v in d.items() if k not in ("files", "exceptions")}
 assert keep(a) == keep(b), "a header field changed"
-assert set(a["files"]) == set(b["files"]) and set(a["exceptions"]) == set(b["exceptions"]), "an entry was added or removed"
+assert set(a["files"]) == set(b["files"]), "a files entry was added or removed"
 ea, eb = a["exceptions"], b["exceptions"]
+added = set(eb) - set(ea)
+assert not (set(ea) - set(eb)), "an exception was removed"
+assert added <= {n for n, (_c, k, _o) in plan.items() if k != "rebaseline"}, "an exception was added outside the plan"
 for k in sorted(set(a["files"]) | set(ea)):
-    v = a["files"].get(k)
-    old = ea[k]["ceiling"] if k in ea else v
+    old = ea[k]["ceiling"] if k in ea else a["files"][k]
     new = eb[k]["ceiling"] if k in eb else b["files"][k]
     if k in plan:
-        assert new == plan[k] > old, f"{k}: enforced ceiling not raised to the planned cap"
+        cap, kind, ob = plan[k]
+        assert new == cap > old, f"{k}: enforced ceiling not raised to the planned cap"
+        if kind == "rebaseline":
+            assert k not in eb and b["files"][k] == cap, f"{k}: rebaseline must change only its files value"
+        else:
+            assert b["files"].get(k) == a["files"].get(k), f"{k}: frozen files value changed"
+        if k in ea:
+            assert eb[k]["approval"].startswith(ea[k]["approval"]), f"{k}: prior approval text not preserved"
+            assert ob and ob in eb[k]["approval"] and "RATCHETED TWICE" in eb[k]["approval"], f"{k}: obligation not recorded"
     else:
-        assert new == old, f"{k}: ceiling outside the plan changed"
-    assert k not in ea or b["files"].get(k) == v, f"{k}: files value changed under an exception"
-    if k in ea:
-        assert eb[k]["approval"].startswith(ea[k]["approval"]), f"{k}: prior approval text not preserved"
-        if k not in plan:
+        assert new == old and b["files"].get(k) == a["files"].get(k), f"{k}: ceiling outside the plan changed"
+        if k in ea:
             assert eb[k] == ea[k], f"{k}: exception outside the plan changed"
 bv = set(open(sys.argv[3]).read().splitlines()); av = set(open(sys.argv[4]).read().splitlines())
 assert av <= bv, "a violation appeared that was not there before"
-print("  ok    ratchet only: %d ceilings raised to their caps, no entry added/removed, header untouched, prior approvals preserved; "
-      "%d violations cleared, 0 introduced" % (len(plan), len(bv - av)))
+print("  ok    ratchet only: %d ceilings raised to their caps (%d new exception entries, %d twice-ratcheted with "
+      "obligations), files values frozen except rebaselines, header untouched, prior approvals preserved; "
+      "%d violations cleared, 0 introduced" % (len(plan), len(added), sum(1 for v in plan.values() if v[2]),
+                                               len(bv - av)))
 PYEOF
 
 if [ "$MODE" = "review" ]; then
@@ -252,34 +299,38 @@ push_or_die() {  # repo worktree -> sets PUSHED
   PUSHED="$RATIFY_PUSHED_SHA"
 }
 
+g "$RES" fetch -q origin main || die "cannot re-fetch research origin main before commit"
+[ "$(g "$RES" rev-parse origin/main)" = "$RES_BASE" ] || die "research origin/main moved since it was measured ($RES_BASE); nothing committed. Re-run to measure the new tip."
 cp "$STAGE/new_baseline.json" "$RWT/$BASELINE"
 g "$RWT" add -- "$BASELINE"
 [ "$(g "$RWT" diff --cached --name-only HEAD)" = "$BASELINE" ] || die "research index holds an unexpected path set"
 N="$(wc -l <"$STAGE/plan.tsv")"
 g "$RWT" commit -q -m "autokernel: loop code budget per-file ratchet, $N existing-file ceilings, $GATE_ID (signed by $RATIFY_OPERATOR)" \
-  -m "OP-AK-CODEBUDGET-43: each listed file's ceiling = its size at decision; any growth fails, shrink passes. No entry added, no exception. Per-file table in the root receipt." \
+  -m "OP-AK-CODEBUDGET-43 (trim first, then ratchet): each listed file's enforced ceiling = min(prepared cap, size on research origin/main $RES_BASE at signing), recorded as an exception over the frozen files value; blast_radius.py re-baselined as a new module. Twice-ratcheted files carry a trim-or-split obligation. Per-file table in the root receipt." \
   -m "Operator-Ratified: yes" || die "research commit failed (hook?). Nothing pushed; re-run."
 RES_COMMIT="$(g "$RWT" rev-parse HEAD)"; ok "research committed ${RES_COMMIT:0:12}"
 if [ "$DO_PUSH" -eq 1 ]; then push_or_die "$RES" "$RWT"; RES_COMMIT="$PUSHED"; ok "research main $RES_COMMIT"; fi
 
 WT="$WT" RECEIPT_REL="$RECEIPT_REL" INDEX_REL="$INDEX_REL" GATE_ID="$GATE_ID" OPERATOR="$RATIFY_OPERATOR" \
 TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)" BASE="$ROOT_BASE" RES_COMMIT="$RES_COMMIT" SCRIPT_SHA="$(sha "$SCRIPT_PATH")" \
-SCRIPT_REL="$SCRIPT_REL" PLAN_TSV="$STAGE/plan.tsv" UN_TSV="$STAGE/untabled.tsv" BASELINE="$BASELINE" "$SYS_PY" - <<'PYEOF' || die "could not write the receipts. Re-run."
+SCRIPT_REL="$SCRIPT_REL" RES_BASE="$RES_BASE" PLAN_TSV="$STAGE/plan.tsv" UN_TSV="$STAGE/untabled.tsv" BASELINE="$BASELINE" "$SYS_PY" - <<'PYEOF' || die "could not write the receipts. Re-run."
 import json, os
 e = os.environ
 files = {}
 for ln in open(e["PLAN_TSV"], encoding="utf-8").read().splitlines():
-    n, old, cap, now, prep = ln.split("\t")
-    files[n] = {"old_ceiling": int(old), "ratchet_cap": int(cap), "size_at_signing": int(now), "size_at_prep": int(prep)}
-untabled = [ln.split("\t")[0] for ln in open(e["UN_TSV"], encoding="utf-8").read().splitlines() if ln]
+    n, old, cap, now, prep, kind, ob = ln.split("\t")
+    files[n] = {"old_ceiling": int(old), "ratchet_cap": int(cap), "size_at_signing": int(now), "size_at_prep": int(prep),
+                "kind": kind, **({"trim_or_split_obligation": ob} if ob else {})}
+untabled = {ln.split("\t")[0]: ln.split("\t")[3] for ln in open(e["UN_TSV"], encoding="utf-8").read().splitlines() if ln}
 doc = {
     "schema": "epyc.operator_ratification.v1", "gate_id": e["GATE_ID"], "status": "ratified",
     "ratified_at": e["TS"], "operator": e["OPERATOR"],
     "signature_channel": "operator-run script (--attest typed confirmation)",
-    "operator_decisions": {"1": "2026-11-19 OP-AK-CODEBUDGET-43: ratify a per-file ratchet baseline for the existing-file overruns; each file's current size becomes its cap, any growth fails"},
+    "operator_decisions": {"1": "2026-11-19 OP-AK-CODEBUDGET-43: ratify a per-file ratchet baseline for the existing-file overruns; each file's current size becomes its cap, any growth fails",
+                           "2": "2026-11-19 OP-AK-CODEBUDGET-43: trim first (independent bloat review), then re-issue the ratchet; bridge caps for run.py/campaign_control.py/scheduling.py with split boxes; ratcheted twice => trim-or-split obligation"},
     "items": {"1": f"research {e['BASELINE']}: ratchet ceilings for the listed existing files (raise to cap only)"},
     "metric": "python_nonblank_noncomment_nondocstring_physical_lines.v1",
-    "files": files, "overruns_left_out_of_scope": untabled, "base_origin_main": e["BASE"],
+    "files": files, "overruns_left_out_of_scope": untabled, "base_origin_main": e["BASE"], "research_measured_at_signing": e["RES_BASE"],
     "research_commit": e["RES_COMMIT"], "applied_by": e["SCRIPT_REL"], "ratify_script_sha256": e["SCRIPT_SHA"],
     "processes_touched": [],
 }
