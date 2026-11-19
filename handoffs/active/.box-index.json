@@ -177,7 +177,7 @@
    "id": "AK-DTREE-1",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1703,
+   "line": 1704,
    "lint": {
     "fails": [
      "b",
@@ -212,7 +212,7 @@
    "id": "AK-DTREE-2",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1705,
+   "line": 1706,
    "lint": {
     "fails": [
      "d",
@@ -933,7 +933,7 @@
    "id": "DTREE-A1",
    "inputs": [],
    "inputs_missing": [],
-   "line": 1747,
+   "line": 1748,
    "lint": {
     "fails": [
      "a"
@@ -8092,6 +8092,38 @@
    "tier": null,
    "track": "autokernel-orchestrator-actor-backend"
   },
+  "handoffs/active/autokernel-loop.md#da1c704398226c1b": {
+   "class": "non-inference",
+   "class_basis": "advisory-regex",
+   "cont_lines": 0,
+   "done_when": null,
+   "file": "handoffs/active/autokernel-loop.md",
+   "frozen_until": null,
+   "gate": [],
+   "gate_open": false,
+   "gate_unknown": [],
+   "holds": [],
+   "id": null,
+   "inputs": [],
+   "inputs_missing": [],
+   "line": 15152,
+   "lint": {
+    "fails": [
+     "d"
+    ],
+    "ok": false
+   },
+   "owner": null,
+   "pos_in_backlog": null,
+   "row": "INF-06",
+   "row_rank": 19,
+   "standard": false,
+   "state": "open",
+   "text": "- [ ] **AK-TESTS-RESEARCH-MAIN-RED — get the loop/controller test suite on epyc-inference-research main back to green (130 failed, 104 errors as measured 2026-11-19, all pre-existing, none from the code-budget trims).** [code, tests] Three ",
+   "text_sha": "da1c704398226c1b",
+   "tier": null,
+   "track": "autokernel-orchestrator-actor-backend"
+  },
   "handoffs/active/autokernel-loop.md#da5ce8e601582a0f": {
    "class": "inference",
    "class_basis": "advisory-regex",
@@ -11160,7 +11192,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 685,
+   "line": 698,
    "lint": {
     "fails": [
      "c",
@@ -11194,7 +11226,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1164,
+   "line": 1177,
    "lint": {
     "fails": [
      "c",
@@ -11227,7 +11259,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1567,
+   "line": 1580,
    "lint": {
     "fails": [
      "a",
@@ -11260,7 +11292,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1688,
+   "line": 1701,
    "lint": {
     "fails": [],
     "ok": true
@@ -11290,7 +11322,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2450,
+   "line": 2463,
    "lint": {
     "fails": [],
     "ok": true
@@ -11353,7 +11385,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1033,
+   "line": 1046,
    "lint": {
     "fails": [
      "a",
@@ -11387,7 +11419,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 647,
+   "line": 660,
    "lint": {
     "fails": [
      "h"
@@ -11419,7 +11451,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2448,
+   "line": 2461,
    "lint": {
     "fails": [
      "d",
@@ -11452,7 +11484,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1159,
+   "line": 1172,
    "lint": {
     "fails": [
      "a"
@@ -11484,7 +11516,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1557,
+   "line": 1570,
    "lint": {
     "fails": [
      "s"
@@ -11516,7 +11548,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1034,
+   "line": 1047,
    "lint": {
     "fails": [],
     "ok": true
@@ -11546,7 +11578,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1035,
+   "line": 1048,
    "lint": {
     "fails": [
      "a",
@@ -11569,7 +11601,7 @@
   "handoffs/active/benchmark-suites.md#6e0d253978c8cc15": {
    "class": "inference",
    "class_basis": "explicit",
-   "cont_lines": 37,
+   "cont_lines": 50,
    "done_when": null,
    "file": "handoffs/active/benchmark-suites.md",
    "frozen_until": null,
@@ -11646,7 +11678,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2494,
+   "line": 2507,
    "lint": {
     "fails": [],
     "ok": true
@@ -11676,7 +11708,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1170,
+   "line": 1183,
    "lint": {
     "fails": [
      "d",
@@ -11709,7 +11741,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2498,
+   "line": 2511,
    "lint": {
     "fails": [
      "e"
@@ -11741,7 +11773,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1566,
+   "line": 1579,
    "lint": {
     "fails": [
      "s"
@@ -11773,7 +11805,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2410,
+   "line": 2423,
    "lint": {
     "fails": [],
     "ok": true
@@ -11803,7 +11835,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1032,
+   "line": 1045,
    "lint": {
     "fails": [
      "a"
@@ -11835,7 +11867,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2447,
+   "line": 2460,
    "lint": {
     "fails": [
      "d",
@@ -11868,7 +11900,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1549,
+   "line": 1562,
    "lint": {
     "fails": [
      "c",
@@ -11936,7 +11968,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 710,
+   "line": 723,
    "lint": {
     "fails": [
      "e",
@@ -12029,7 +12061,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 632,
+   "line": 645,
    "lint": {
     "fails": [],
     "ok": true
@@ -12059,7 +12091,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2478,
+   "line": 2491,
    "lint": {
     "fails": [
      "a"
@@ -12125,7 +12157,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 452,
+   "line": 465,
    "lint": {
     "fails": [
      "c",
@@ -12159,7 +12191,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1639,
+   "line": 1652,
    "lint": {
     "fails": [
      "c",
@@ -36845,7 +36877,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1373,
+   "line": 1374,
    "lint": {
     "fails": [
      "d",
@@ -36878,7 +36910,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1397,
+   "line": 1398,
    "lint": {
     "fails": [
      "d",
@@ -36912,7 +36944,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 584,
+   "line": 585,
    "lint": {
     "fails": [
      "c",
@@ -36945,7 +36977,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1689,
+   "line": 1690,
    "lint": {
     "fails": [
      "b",
@@ -36981,7 +37013,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 452,
+   "line": 453,
    "lint": {
     "fails": [
      "e",
@@ -37014,7 +37046,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 471,
+   "line": 472,
    "lint": {
     "fails": [
      "f",
@@ -37047,7 +37079,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 494,
+   "line": 495,
    "lint": {
     "fails": [
      "e",
@@ -37080,7 +37112,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1721,
+   "line": 1722,
    "lint": {
     "fails": [
      "d",
@@ -37113,7 +37145,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1727,
+   "line": 1728,
    "lint": {
     "fails": [
      "h"
@@ -37145,7 +37177,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1744,
+   "line": 1745,
    "lint": {
     "fails": [
      "e"
@@ -37177,7 +37209,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1742,
+   "line": 1743,
    "lint": {
     "fails": [
      "b",
@@ -37211,7 +37243,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 924,
+   "line": 925,
    "lint": {
     "fails": [
      "e",
@@ -37245,7 +37277,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1683,
+   "line": 1684,
    "lint": {
     "fails": [
      "h"
@@ -37277,7 +37309,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 962,
+   "line": 963,
    "lint": {
     "fails": [
      "a",
@@ -37310,7 +37342,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1377,
+   "line": 1378,
    "lint": {
     "fails": [
      "c",
@@ -37345,7 +37377,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 459,
+   "line": 460,
    "lint": {
     "fails": [
      "f",
@@ -37379,7 +37411,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1714,
+   "line": 1715,
    "lint": {
     "fails": [
      "d",
@@ -37412,7 +37444,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1639,
+   "line": 1640,
    "lint": {
     "fails": [
      "b",
@@ -37446,7 +37478,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1748,
+   "line": 1749,
    "lint": {
     "fails": [
      "c",
@@ -37481,7 +37513,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1713,
+   "line": 1714,
    "lint": {
     "fails": [],
     "ok": true
@@ -37511,7 +37543,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1668,
+   "line": 1669,
    "lint": {
     "fails": [
      "e",
@@ -37534,7 +37566,7 @@
   "handoffs/active/speculative-decoding.md#9789ecaac7fcb0ad": {
    "class": "non-inference",
    "class_basis": "deliverable",
-   "cont_lines": 38,
+   "cont_lines": 39,
    "done_when": null,
    "file": "handoffs/active/speculative-decoding.md",
    "frozen_until": null,
@@ -37578,7 +37610,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1726,
+   "line": 1727,
    "lint": {
     "fails": [],
     "ok": true
@@ -37608,7 +37640,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1443,
+   "line": 1444,
    "lint": {
     "fails": [
      "c",
@@ -37643,7 +37675,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1725,
+   "line": 1726,
    "lint": {
     "fails": [],
     "ok": true
@@ -37673,7 +37705,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 955,
+   "line": 956,
    "lint": {
     "fails": [
      "c",
@@ -37709,7 +37741,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 522,
+   "line": 523,
    "lint": {
     "fails": [
      "b",
@@ -37743,7 +37775,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 404,
+   "line": 405,
    "lint": {
     "fails": [
      "c",
@@ -37777,7 +37809,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1388,
+   "line": 1389,
    "lint": {
     "fails": [
      "e",
@@ -37810,7 +37842,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 585,
+   "line": 586,
    "lint": {
     "fails": [],
     "ok": true
@@ -37840,7 +37872,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1014,
+   "line": 1015,
    "lint": {
     "fails": [
      "c",
@@ -37874,7 +37906,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 598,
+   "line": 599,
    "lint": {
     "fails": [
      "b",
@@ -37909,7 +37941,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1402,
+   "line": 1403,
    "lint": {
     "fails": [
      "c",
@@ -37943,7 +37975,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 932,
+   "line": 933,
    "lint": {
     "fails": [
      "e",
@@ -37976,7 +38008,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1386,
+   "line": 1387,
    "lint": {
     "fails": [
      "e",
@@ -38009,7 +38041,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1634,
+   "line": 1635,
    "lint": {
     "fails": [
      "b",
@@ -38078,7 +38110,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1687,
+   "line": 1688,
    "lint": {
     "fails": [
      "c",
@@ -45900,8 +45932,8 @@
   "blocked": 0,
   "frozen": 24,
   "lint_ok": 289,
-  "open": 1385,
-  "total": 1409
+  "open": 1386,
+  "total": 1410
  },
  "holds_source": null,
  "include_done": false,
@@ -45938,9 +45970,9 @@
   "box handoffs/active/autopilot-program.md:3729 has 33 continuation lines > 24",
   "box handoffs/active/benchmark-suites.md:198 has 26 continuation lines > 24",
   "box handoffs/active/benchmark-suites.md:294 has 49 continuation lines > 24",
-  "box handoffs/active/benchmark-suites.md:409 has 37 continuation lines > 24",
-  "box handoffs/active/benchmark-suites.md:452 has 39 continuation lines > 24",
-  "box handoffs/active/benchmark-suites.md:1639 has 30 continuation lines > 24",
+  "box handoffs/active/benchmark-suites.md:409 has 50 continuation lines > 24",
+  "box handoffs/active/benchmark-suites.md:465 has 39 continuation lines > 24",
+  "box handoffs/active/benchmark-suites.md:1652 has 30 continuation lines > 24",
   "box handoffs/active/context-and-token-economy.md:40 has 26 continuation lines > 24",
   "box handoffs/active/context-and-token-economy.md:213 has 28 continuation lines > 24",
   "box handoffs/active/context-and-token-economy.md:2895 has 26 continuation lines > 24",
@@ -46007,10 +46039,10 @@
   "box handoffs/active/routing-program.md:3059 has 29 continuation lines > 24",
   "box handoffs/active/routing-program.md:3114 has 151 continuation lines > 24",
   "box handoffs/active/routing-program.md:3946 has 32 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:365 has 38 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:494 has 27 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:522 has 49 continuation lines > 24",
-  "box handoffs/active/speculative-decoding.md:924 has 30 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:365 has 39 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:495 has 27 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:523 has 49 continuation lines > 24",
+  "box handoffs/active/speculative-decoding.md:925 has 30 continuation lines > 24",
   "box handoffs/active/speech-and-multimodal.md:695 has 78 continuation lines > 24",
   "box handoffs/active/stack-lifecycle-program.md:1167 has 32 continuation lines > 24",
   "box handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md:314 has 42 continuation lines > 24",
@@ -46018,7 +46050,7 @@
   "box handoffs/active/vidya-belief-substrate-program.md:953 has 64 continuation lines > 24",
   "box handoffs/active/vidya-belief-substrate-program.md:2880 has 41 continuation lines > 24",
   "box handoffs/active/vidya-belief-substrate-program.md:4094 has 26 continuation lines > 24",
-  "file handoffs/active/autokernel-loop.md has 15148 lines > 6000: split by track",
+  "file handoffs/active/autokernel-loop.md has 15152 lines > 6000: split by track",
   "file handoffs/active/autopilot-program.md has 5084 lines > 4000: compact History",
   "file handoffs/active/coordination-and-churn-pipeline.md has 6337 lines > 6000: split by track",
   "file handoffs/active/cpu-decode-roofline-program.md has 6004 lines > 6000: split by track",

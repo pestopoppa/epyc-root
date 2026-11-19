@@ -79,7 +79,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-C4-CAS | Approve the champion C4 CAS (cdb4d8c77 = C3 + GPU-LEAK-1c): all gates PASS, incl. the quiet c4-gate-e re-run at 21:06Z (pp +0.58% floor 2.12%, tg −0.00% floor 2.00%, identity 15/15). Recipe `/mnt/raid0/llm/tmp/ch28-fold-20261023/PLAN.md` §3. C5 (gates complete) follows. | [autokernel-champion-aggregate.md](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) CH-30 | 2026-10-24 |
 | OP-HOOK-REFACTOR | Review the cloud audit session's `refactor/containment-scanner` and `claude/vigilant-thompson-shpyh0` (epyc-root `scripts/hooks/check_filesystem_containment.sh` + scanner): they change the guard that enforces 'do not touch anything outside /mnt/raid0/llm/'. A safety boundary: land only with operator review. | [non-inference-backlog.md](engineering-hygiene-backlog.md) | 2026-10-24 |
 | OP-RETENTION-RATIFY | Sign the prepared ratify script: MEASUREMENT.md §5 'Evidence retention and reclamation' (amended draft: all reclaimers, citation sources, no size thresholds, purge-time re-check) + §5 repo-vs-08-03 wording, and the 'Destructive operations' doctrine + PreToolUse hook (decisions D2/D7/D4, 10-25). | [non-inference-backlog.md](engineering-hygiene-backlog.md) | 2026-10-25 |
-| OP-AK-CODEBUDGET-43 | Trimmed; re-issued 45-file ratchet. Sign: scripts/operator/run_ratify_codebudget_ratchet_autokernel_20261119.sh (header) | [autokernel-loop.md](autokernel-loop.md) | 2026-11-19 |
+| OP-AK-CODEBUDGET-43 | DECIDED + RATIFIED 2026-11-19 22:55Z (trim first, then per-file ratchet; Fable bloat review, ~185 lines trimmed research `1c8d54874..0fe28fa6d`). Receipt `artifacts/operator/receipts/RATIFY-AK-LOOP-CODE-BUDGET-RATCHET-20261119.json` (root `bde27ba5f`); baseline research `252684d41` on origin/main. Open: trim-or-split boxes in autokernel-loop.md. Prune at next operator /wrap-up. | [autokernel-loop.md](autokernel-loop.md) | 2026-11-19 |
 | OP-W1-PR | Open the upstream PR from fork branch `w1-cpu-sparse-fa-prefill` @ `70ba79110` via the GitHub web UI (`gh pr create` refused: no CreatePullRequest permission). Text prepared in long-context-program.md; the W1 patch is also folded into the next composite after C16. | [long-context-program.md](long-context-program.md) | 2026-11-19 |
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
@@ -125,7 +125,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 13 | 518 | 51 | 2026-11-07 |
+| inference-research | 13 | 519 | 51 | 2026-11-07 |
 | pipeline-integration | 1 | 1 | 0 | 2026-11-17 |
 | research-evaluation | 4 | 221 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |

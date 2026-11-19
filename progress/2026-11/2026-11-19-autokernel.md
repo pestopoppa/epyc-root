@@ -71,3 +71,41 @@ Next-action cells refreshed for INF-06, INF-82, INF-50 in `inference-research-in
 
 ### Open
 r13; P2/P5 dtree rows; DTREE-0 trace; SCLK-CAPT; kernel op-gate row; EA ladder (EA arms show n_beta_set 0, check at filing). Operator: W1 PR (web UI), OP-AK-CODEBUDGET-43 (both already in the master queue).
+
+## Wrap-up 3 (since root bc8b551bc): C14 keeps, Q38FN profile, AM-PORT ladder, DTREE, code-budget ratified
+
+All shas verified on origin/main (root, research) or on the named fork branch before writing.
+
+| Row / track | Verdict | Evidence |
+|---|---|---|
+| AKX-ALL-14 | reopened, re-run on C14 PROVEN; operator kept the tick | root `bc8cf3885`; C14 recipe registered research `71a2ce3c1`; note `2fc268b0a` |
+| AK-LOO-CONFIRM-C14 | PASS: keep all four C14 CPU keeps | root `a5ab6dbd3`; contamination (a subagent build overlapped the window) recorded in the LOO row |
+| Q38FN-CPU-PEROP-PROFILE | PASS: draft FLASH_ATTN is 60% of the depth growth | root `fdc6c8d04`; Q38FN-DRAFT-FA-WINDOW and Q38FN-INDEXER-TOPK-CPU being implemented |
+| AKX-P3a census | row filed pass, box stays open | root `f1cf92109` |
+| AK-GDN-SPEC-SPLIT | measured futile | root `1501154bb` |
+| AM-PORT-2B ladder | done: no safe EA/L4 ratio on hybrid 27B (EA has no beta by design; per-token eviction drops digit tokens); original row corrected to fail; bb keeps EA refused on :8083 | root `7bb72a3a2`, `6353f5d6e` |
+| AK-DTREE P2 | both rows FUTILITY (path-row slower: 27B 0.57-0.81x, A3B 0.49-0.85x); 27B T9 arm showed real oracle divergence, fix in progress | |
+| AK-DTREE P5 | batch-mode switch landed, CPU e2e oracle 80/80 | fork `llama.cpp-experimental-dtree-kernels-20261119` `a5ea53bbd` (not a root/research commit) |
+| DTREE identity row | smoke failed on a predicate copied from the withdrawn op-gate row; being fixed. Op-gate row withdrawn as superseded; DTREE-A argmax row republished, smoke PASS | |
+| AK-PROF-SCLK-RECLAIM | clock-reclaim subagent running; SCLK-CAPT hit hard-end, re-run in progress | |
+| INF-48 | next-action cell fixes | root `dc859f45c`, `f26e9e703` |
+
+### OP-AK-CODEBUDGET-43: decided and ratified
+Fable bloat review (`/mnt/raid0/llm/tmp/codebudget-bloat-review-20261119.md`), then trims in research `1c8d54874..0fe28fa6d` (~185 lines). Ratchet re-issued (root `25e09e521`), split and trim boxes filed (`85cc5987a`). Operator RATIFIED 2026-11-19T22:55Z: receipt `artifacts/operator/receipts/RATIFY-AK-LOOP-CODE-BUDGET-RATCHET-20261119.json` (root `bde27ba5f`, ratify record `artifacts/operator/ratify_ak_loop_code_budget_ratchet_20261119.json`), baseline research `252684d41` on origin/main (measured at signing against research `0fe28fa6d`, 45 per-file ceilings). The master-queue row is rewritten as DECIDED + RATIFIED; deletion waits for the operator-cadence prune.
+
+### Pipeline (from Pipeline Management)
+Auto-filer pass-on-DROP fixed (`bba1c010a`, `--correct` path); queued GPU smoke never ran, fixed (`41041359b`); Codex rocm-kernel session retired; autokernel roster row added (operator synced config.yaml, bus provisioned).
+
+### Lesson
+Subagent builds need region-lock claims (memory saved); the LOO contamination is recorded in its row.
+
+### Wrap-up edits
+- New box `AK-TESTS-RESEARCH-MAIN-RED` in `handoffs/active/autokernel-loop.md`: 130 failed / 104 errors pre-existing on research main (numpy missing in system python3, `test_maintenance_execution` fakes lacking `ignore_errors`, yaml fault tests).
+- INF-06 next-action cell refreshed in `inference-research-index.md`; INF-48 cell already current (`dc859f45c`).
+- Checkbox flips this wrap-up: 0 ticks, 1 new open box (per-result ticks were committed with their commits). Belief-capture: the new box carries `[no-belief: tooling-repair]`.
+
+### Skipped (operator cadence)
+Step 3 pruning (OP-AK-CODEBUDGET-43 row deletion once the operator accepts; handoff compaction of autokernel-loop.md, 15k lines); Step 5 wiki sweep.
+
+### Open
+DTREE T9 oracle fix, identity row, DTREE-0 trace; Q38FN-DRAFT-FA-WINDOW, INDEXER-TOPK-CPU; SCLK-CAPT re-run and SCLK-RECLAIM; AKX-P3a box; trim-or-split boxes.

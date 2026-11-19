@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 518
+      "open": 519
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -104,7 +104,7 @@
       "closed": 877,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 120,
+      "open": 121,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 999,
+      "total": 1000,
       "tracks": [
         {
           "blocked": 2,
@@ -213,7 +213,7 @@
           "line": 14343,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 19
+          "open": 20
         }
       ]
     },
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 730,
+          "line": 743,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1042,
+          "line": 1055,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1249,
+          "line": 1262,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1575,
+          "line": 1588,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1810,
+          "line": 1823,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -2336,7 +2336,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 144,
+      "closed": 145,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 39,
@@ -2348,11 +2348,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 185,
+      "total": 186,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 90,
+          "closed": 91,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2368,7 +2368,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 793,
+          "line": 794,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29
@@ -2632,7 +2632,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "AK-GAP-1-SAMPLE/IDSORT step-1 row; AK-PROF-SCLK-CAPT; AITER C13 ports; H10b dense defect; AA-bisect r4; GDN-SHARE-1",
+      "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
       "track": "autokernel research loop"
     },
     "INF-45": {
