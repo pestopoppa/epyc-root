@@ -176,7 +176,7 @@ Completed detail: [through 2026-09-24](../completed/deepseek-v41-flash-evaluatio
 ### B — Port (experimental only; production stays frozen)
 
 - DS41-B0 (route (c): build on v10 `deepseek4`, vcruz as reference only), B1a (port branch) and B1b (CPU+HIP builds) are done; detail in the completed sibling.
-- [ ] DS41-B2 — Arch registration and loader for `deepseek41`, with a tested antirez-name compat
+- [x] DS41-B2 — Arch registration and loader for `deepseek41`, with a tested antirez-name compat ✅ 2026-11-19 [belief: cc]
   map and every tensor shape/type validated before weights load.
 - [ ] DS41-B3 — Engram: a custom FP8-row get_rows plus dequant op for the I8-packed
   (264-byte row = 256 FP8 + 8 scale) table, bit-exact against `inference/engram.py` on sampled
