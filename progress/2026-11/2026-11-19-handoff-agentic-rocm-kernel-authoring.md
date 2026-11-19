@@ -155,3 +155,7 @@ C15-EPI-Q8: diagnosed the 14 versus 16 test count from experimental source commi
 ## 07:28Z — File C15 GV bandwidth result against registered rule
 
 C15-GV-BW row c15-gv-bw-gpu-20261119-r2 filed rc=0, registered DROP(clauses): alias op 128k geomean 1.5537x, all correctness arms 76/76, but all no-draft B visits lacked witnesses and DFlash2 had one B hash mismatch versus exact A/A. End-to-end performance inconclusive; DFlash2 prompt_n=4 versus registered 32768-token prime. results.jsonl SHA-256 973da60992643c6d487de839fa469b3fb2347d1a6dafea544bf680a9db2129f7; RESULT.json SHA-256 f28dbe5dfb123ec5869e15e8d5c344097908dae89cf8e87fa9fe6f6d0c09643d. [belief: cc]
+
+## 07:31Z — Correct source-defined C15 epilogue test count and initiate fresh row publication
+
+C15-EPI-Q8: source e0b5d2637858411bfb8b27609a2e7e199dc6f38c tests/test-backend-ops.cpp:14194 defines 2 weight types x (4 norm + 4 gate) = 16 cases, explaining prior 16/16 against erroneously registered 14; both prior arms passed and no decode was measured. Fresh row c15-epi-q8-gpu-20261119-r2 corrects count to 16 while retaining pre-registered performance and identity criteria. Publication and smoke initiated; qualification remains to be confirmed. [no-belief: source inspection]
