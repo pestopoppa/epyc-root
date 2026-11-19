@@ -11,6 +11,14 @@ import time
 import launch_context as context
 
 
+def residency(pid, root=Path('/sys/class/kfd/kfd/proc')):
+    """Observe only this live child's KFD entry; missing entry is not residency."""
+    client = root / str(pid)
+    devices = {p.name: int(p.read_text().strip()) for p in client.glob('vram_*')}
+    return dict(pid=pid, kfd_registered=client.is_dir(), devices=devices,
+                vram_bytes=sum(devices.values()))
+
+
 def reap(child):
     """Terminate only the child captured by this invocation and prove reaping."""
     if child.poll() is None:
@@ -39,6 +47,8 @@ def run(manifest_path, digest, argv, log_path, result_path, requests_path=None):
     started = time.time()
     cutoff = None
     samples = []
+    gpu_samples = []
+    hip = plan['env'].get('HIP_VISIBLE_DEVICES') == '0'
     # Exclusive outputs prevent accidental overwrite of a retained capture.
     with Path(result_path).open('x') as result, Path(log_path).open('x') as log:
         try:
@@ -69,6 +79,18 @@ def run(manifest_path, digest, argv, log_path, result_path, requests_path=None):
                                 samples.append(dict(at=time.time(), maps=maps))
                         except FileNotFoundError:
                             pass  # exit race; never infer absence from it
+                    if hip:
+                        try:
+                            maps = Path(f'/proc/{child.pid}/maps').read_text()
+                            sample = residency(child.pid)
+                            sample['libraries'] = sorted({line.split()[-1] for line in maps.splitlines()
+                                if line.split() and Path(line.split()[-1]).name.startswith(('libggml', 'libllama'))})
+                            sample['at'] = time.time()
+                            # Retain negative samples too; only the offline grader
+                            # determines residency during each request's window.
+                            gpu_samples.append(sample)
+                        except FileNotFoundError:
+                            pass
                     if stop.exists():
                         cutoff = 'STOP'
                     elif time.time() >= deadline:
@@ -97,6 +119,7 @@ def run(manifest_path, digest, argv, log_path, result_path, requests_path=None):
                           pid=child.pid, started=started, ended=time.time(), rc=rc,
                           cutoff=cutoff, child_reaped=child.poll() is not None,
                           mapping_samples=samples, log=str(Path(log_path).resolve()),
+                          residency_samples=gpu_samples,
                           requests_path=str(requests_path) if requests_path is not None else None,
                           request_rc=request_rc,
                           requester_reaped=requester.poll() is not None if requester is not None else None)

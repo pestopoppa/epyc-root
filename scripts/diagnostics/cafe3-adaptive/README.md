@@ -506,8 +506,8 @@ valid widths/acceptance/confidence/timing, and belong to exactly one disjoint
 request window. Request ids, epochs, sequences and round/ticket progression
 prevent cross-request recovery. Startup width exploration is not recovery;
 missing recovery is inconclusive, and observed recovery beyond the bound fails.
-A qualifying HIP result remains inconclusive until overlapping VRAM/KFD residency
-capture is implemented. Known identity/speed/recovery failures remain failures.
+A qualifying HIP result requires the per-request overlapping VRAM/KFD and
+local-library evidence described below; older captures remain inconclusive. Known identity/speed/recovery failures remain failures.
 
 The build consumer now binds the trusted producer's packet root to the retained
 receipt directory, allowing replacement r2/r3 packets to use their own sealed
@@ -538,3 +538,45 @@ Source identities:
 - `protocol_requests.py` SHA-256 `ebbf8a18c9862986f0d74af4e2ef3a6d5106e3d57474bb98fc5548722834984c`.
 
 - `launch_context.py` SHA-256 `68540c853cc9ecf73a69712f7848ad301b49d06e2b34f73eca77e39af61a7938`.
+
+
+Per-request HIP residency capture (2026-11-19)
+--------------------------------------------
+The native supervisor now captures KFD membership, per-device VRAM bytes and
+resolved mapped llama/ggml paths for its own captured server PID throughout
+HIP execution, at the existing supervisor cadence (up to four samples/second).
+CPU execution does not collect these observations. Every sample carries wall
+time and PID; missing KFD/zero bytes stay explicit and cannot qualify residency.
+Sampling uses the same loop as STOP/deadline/requester supervision and child
+cleanup; it launches no new process. Sampling overhead falls inside measured
+request wall time and is shared by all HIP arms. Captures remain UNASSESSED.
+
+For every request in every arm, offline P9 assessment requires at least two
+distinct sample times inside both the process and request windows, the captured
+child PID, KFD membership, positive VRAM with a consistent nonnegative device
+sum, and exactly the build-bound local llama/ggml library set in each sample.
+A startup sample, another request's sample, exit-race absence or an observation
+after exit supplies no qualifying evidence. A valid known identity, speed or
+recovery failure remains FAIL even when residency is missing; an otherwise
+qualifying capture without sufficient residency remains INCONCLUSIVE. Nonfinite
+JSON refuses parsing. Existing numerical and P9 policy gates are unchanged.
+`hip_request_residency` records the result (null for CPU) in the assessment.
+Published sealed packets are unchanged and retain their old behavior; a fresh
+HIP native packet must bind these revised files before collecting evidence.
+
+Validation: **46 focused model-free tests PASS**: 21 grader, 14 supervisor and
+11 multi-arm tests. New controls cover live child-specific observation, zero
+VRAM, foreign PID/libraries, missing KFD/library/sample, malformed samples,
+inconsistent/negative bytes, repeated timestamps, stale/other-request windows,
+nonfinite JSON, valid complete HIP evidence and preservation of known failures.
+Fixtures use fake processes/files and sealed temporary capture graphs; build
+validation is mocked in grader fixtures. No native HIP or performance verdict.
+GitNexus status/impact could not run because this lane has no repository index;
+changes are confined to the diagnostic supervisor, grader and their consumers.
+
+Source SHA-256 bindings:
+- `native_runner.py`: `9232e161c79cd6766150d0f6e7b5e97b32c901822eea39b8b6fe97828641f681`
+- `p9_grade.py`: `6da58c79bc11a4c1949677b675f13254f2ea98499533ce2937799e67d4e9a8d2`
+- `test_native_runner.py`: `8ae77dedf103813406fc4c3d1c5baafae2f06ad8040670919a7225e7314c6ce6`
+- `test_p9_grade.py`: `11978e3c6f5b7f49301b4406cda3ddd07ba058851576baed00850c876f71f340`
+[no-belief: source implementation and model-free residency refusal controls only]

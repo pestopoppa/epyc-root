@@ -304,7 +304,7 @@ class GradeTest(unittest.TestCase):
         self.seal()
         with self.assertRaisesRegex(ValueError, 'environment mismatch'): self.assess()
 
-    def test_hip_requires_residency_and_retains_known_identity_failure(self):
+    def make_hip(self):
         self.grant.write_text(self.grant.read_text().replace('holds=c2,c3', 'holds=c2,c3,gpu-quiet'))
         self.grant_ref['sha256'] = context.sha256(self.grant)
         for m, proc in zip(self.manifests, self.processes):
@@ -316,10 +316,69 @@ class GradeTest(unittest.TestCase):
             proc['env'].update(m['device_env'])
             del proc['env']['CUDA_VISIBLE_DEVICES']
         self.seal()
+
+    def test_hip_requires_residency_and_retains_known_identity_failure(self):
+        self.make_hip()
         self.assertEqual(self.assess()['verdict'], 'inconclusive')
         self.requests[1][0]['response']['tokens'][0] = 9
         self.seal()
         self.assertEqual(self.assess()['verdict'], 'fail')
+
+    def add_residency(self):
+        for proc, requests in zip(self.processes, self.requests):
+            proc['pid'] = 123
+            start = requests[0]['unix_started_ns'] / 1e9
+            proc['residency_samples'] = [dict(pid=123, kfd_registered=True,
+                devices={'vram_7': 4096}, vram_bytes=4096,
+                libraries=list(self.build['files']), at=start+offset) for offset in (.1, .4)]
+
+    def test_hip_pass_requires_residency_for_every_arm_request(self):
+        self.make_hip()
+        self.add_residency()
+        self.seal()
+        result = self.assess()
+        self.assertEqual(result['verdict'], 'pass')
+        self.assertIs(result['hip_request_residency'], True)
+
+    def test_missing_wrong_pid_zero_vram_foreign_libraries_and_stale_samples(self):
+        self.make_hip()
+        import copy
+        for mutation in ('missing', 'pid', 'bool-pid', 'kfd', 'zero', 'negative', 'sum',
+                         'foreign', 'missing-lib', 'late', 'early', 'duplicate', 'nan', 'malformed'):
+            with self.subTest(mutation=mutation):
+                self.add_residency()
+                proc = self.processes[2]  # Even a static arm must prove residency.
+                samples = proc['residency_samples']
+                if mutation == 'missing': samples.pop()
+                elif mutation == 'pid': samples[0]['pid'] = 124
+                elif mutation == 'bool-pid': samples[0]['pid'] = True
+                elif mutation == 'kfd': samples[0]['kfd_registered'] = False
+                elif mutation == 'zero': samples[0].update(vram_bytes=0, devices={'vram_7': 0})
+                elif mutation == 'negative': samples[0]['devices']['vram_8'] = -1
+                elif mutation == 'sum': samples[0]['vram_bytes'] = 8192
+                elif mutation == 'foreign': samples[0]['libraries'].append('/foreign/libggml.so')
+                elif mutation == 'missing-lib': samples[0]['libraries'] = []
+                elif mutation == 'late': samples[0]['at'] = proc['ended'] + 1
+                elif mutation == 'early': samples[0]['at'] = proc['started'] + .1
+                elif mutation == 'duplicate': samples[0] = copy.deepcopy(samples[1])
+                elif mutation == 'nan': samples[0]['at'] = float('nan')
+                elif mutation == 'malformed': samples[0] = None
+                self.seal()
+                if mutation == 'nan':
+                    with self.assertRaisesRegex(ValueError, 'nonfinite JSON'):
+                        self.assess()
+                    continue
+                result = self.assess()
+                self.assertEqual(result['verdict'], 'inconclusive')
+                self.assertIs(result['hip_request_residency'], False)
+
+    def test_residency_from_another_request_does_not_cover_this_one(self):
+        self.add_residency()
+        proc = self.processes[0]
+        request = dict(self.requests[0][0])
+        request['unix_started_ns'] += 2*10**9
+        request['unix_ended_ns'] += 2*10**9
+        self.assertFalse(grader.request_resident(proc, request, set(self.build['files'])))
 
     def test_duplicate_json_keys_refused(self):
         path = self.root / 'capture.jsonl'

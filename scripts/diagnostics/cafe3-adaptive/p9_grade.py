@@ -32,6 +32,28 @@ def number(value, low=0):
     return type(value) in (int, float) and math.isfinite(value) and value > low
 
 
+def request_resident(process, request, needed):
+    """Two distinct live child samples inside THIS request, with local libraries."""
+    times = set()
+    for sample in process.get('residency_samples', []):
+        if not isinstance(sample, dict):
+            continue
+        devices = sample.get('devices')
+        libraries = sample.get('libraries')
+        at = sample.get('at')
+        if (integer(process.get('pid'), 1) and type(sample.get('pid')) is int and
+                sample['pid'] == process['pid'] and sample.get('kfd_registered') is True and
+                isinstance(devices, dict) and devices and
+                all(isinstance(k, str) and k.startswith('vram_') and integer(v) for k, v in devices.items()) and
+                integer(sample.get('vram_bytes'), 1) and sample['vram_bytes'] == sum(devices.values()) and
+                isinstance(libraries, list) and all(isinstance(p, str) for p in libraries) and
+                set(libraries) == needed and number(at) and
+                process['started'] <= at <= process['ended'] and
+                request['unix_started_ns'] / 1e9 <= at <= request['unix_ended_ns'] / 1e9):
+            times.add(at)
+    return len(times) >= 2
+
+
 def jsonl(reference):
     path = context.canonical(reference['path'])
     data = path.read_bytes()
@@ -112,6 +134,7 @@ def assess(schedule_ref, capture_ref):
     common, all_requests, totals, run_ids, outputs = None, {}, {}, set(), set()
     previous_end = None
     recovery_count, recovery_violations, backend = 0, 0, None
+    hip_resident = True
     for arm, entry, record in zip(arms, schedule['launches'], capture[1:-1]):
         manifest = context.bound_json(entry['context'])
         need(manifest['schema'] == 'epyc.cafe3.launch-context.v1' and manifest['arm'] == arm and
@@ -223,6 +246,8 @@ def assess(schedule_ref, capture_ref):
             need(abs(wall_ns - request['elapsed_ns']) <= max(1000000, request['elapsed_ns'] // 100),
                  'wall/monotonic clock disagreement')
             last_ns = request['unix_ended_ns']
+            if backend == 'hip':
+                hip_resident = request_resident(process, request, needed) and hip_resident
             tokens += len(response['tokens'])
             elapsed += request['elapsed_ns']
         all_requests[arm], totals[arm] = requests, dict(tokens=tokens, elapsed_ns=elapsed)
@@ -242,11 +267,12 @@ def assess(schedule_ref, capture_ref):
         verdict, reason = 'inconclusive', 'no post-exploration zero recovery observed'
     if recovery_violations:
         verdict, reason = 'fail', 'zero recovery exceeded predeclared round bound'
-    if backend == 'hip' and verdict != 'fail':
-        verdict, reason = 'inconclusive', 'HIP captures lack overlapping VRAM/KFD residency evidence'
+    if backend == 'hip' and not hip_resident and verdict != 'fail':
+        verdict, reason = 'inconclusive', 'HIP requests lack two overlapping child VRAM/KFD/local-library samples'
     return dict(schema='epyc.cafe3.p9-assessment.v1', verdict=verdict, reason=reason,
                 schedule=schedule_ref, capture=capture_ref, policy=POLICY, totals=totals,
                 identity_percent=100 if identical else None, best_static=static,
+                hip_request_residency=hip_resident if backend == 'hip' else None,
                 gain_percent=float(100 * (gain_ratio - 1)),
                 grader_sha256=context.sha256(__file__),
                 recovery_requests=recovery_count, recovery_violations=recovery_violations, timing='aggregate request wall; sequential whole arms; descriptive only')

@@ -41,6 +41,33 @@ class RunnerTest(unittest.TestCase):
         self.assertTrue(record['child_reaped'])
         self.assertEqual(json.loads(self.result.read_text()), record)
 
+    def test_hip_records_live_child_residency_with_same_sample_libraries(self):
+        self.plan['env']['HIP_VISIBLE_DEVICES'] = '0'
+        self.child.poll.side_effect = [None, None, 0, 0, 0]
+        with patch.object(Path, 'read_text', return_value='000-fff r-xp 0 0 0 /bound/libggml.so'), \
+             patch.object(runner, 'residency', return_value=dict(pid=123, kfd_registered=True,
+                 devices={'vram_7': 4096}, vram_bytes=4096)) as observe:
+            record = self.run_capture()
+        self.assertEqual(observe.call_count, 2)
+        observe.assert_called_with(123)
+        self.assertEqual(len(record['residency_samples']), 2)
+        for sample in record['residency_samples']:
+            self.assertEqual(sample['libraries'], ['/bound/libggml.so'])
+            self.assertLessEqual(record['started'], sample['at'])
+            self.assertLessEqual(sample['at'], record['ended'])
+        self.assertEqual(record['status'], 'UNASSESSED')
+
+    def test_kfd_observation_is_child_specific_and_preserves_zero(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertFalse(runner.residency(123, root)['kfd_registered'])
+            (root/'123').mkdir()
+            (root/'123'/'vram_7').write_text('0')
+            self.assertEqual(runner.residency(123, root)['vram_bytes'], 0)
+            (root/'123'/'vram_7').write_text('4096')
+            self.assertEqual(runner.residency(123, root)['vram_bytes'], 4096)
+            self.assertFalse(runner.residency(124, root)['kfd_registered'])
+
     def test_refusal_has_no_spawn_or_outputs(self):
         self.validate.side_effect = ValueError('context refused')
         with self.assertRaisesRegex(ValueError, 'context refused'):
