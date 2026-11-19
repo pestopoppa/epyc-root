@@ -60,8 +60,13 @@ def materialize(source):
     # Split compound native calls so the emitted stage identifies the failed
     # operation. Keep the same short-circuit order and UNKNOWN exit semantics.
     replace('if(!llama_cafe4_target_configure(ctx.get(),mode)||!process(ctx.get(),spec.get(),prompt,0))return o;',
-            'if(!llama_cafe4_target_configure(ctx.get(),mode))return o;\n'
+            'if(!llama_cafe4_target_configure(ctx.get(),0))return o;\n'
             ' if(!process(ctx.get(),spec.get(),prompt,0))return o;')
+    # The intervention belongs to rollback, not prefill/proposal/verification.
+    # Preserve independently produced proposals and all matched-control gates.
+    replace('common_speculative_accept(spec.get(),0,(uint16_t)o.accepted);',
+            'common_speculative_accept(spec.get(),0,(uint16_t)o.accepted);\n'
+            ' if(!llama_cafe4_target_configure(ctx.get(),mode))return o;')
     replace('if(!llama_memory_seq_rm(llama_get_memory(ctx.get()),0,keep,-1)||!llama_memory_seq_rm(llama_get_memory(dft->context()),0,keep,-1))return o;',
             'if(!llama_memory_seq_rm(llama_get_memory(ctx.get()),0,keep,-1))return o;\n'
             ' if(!llama_memory_seq_rm(llama_get_memory(dft->context()),0,keep,-1))return o;')
@@ -92,7 +97,7 @@ def materialize(source):
         'boundary-logits', 'draft-proposal', 'draft-too-short', 'draft-rewind',
         'preverify-counts-read', 'preverify-counts-nonzero', 'verify-process',
         'verify-logits', 'strict-partial-acceptance', 'correction-logits',
-        'target-suffix-remove', 'draft-suffix-remove', 'correction-process',
+        'rollback-configure', 'target-suffix-remove', 'draft-suffix-remove', 'correction-process',
         'postreplay-counts-read', 'target-mode-counts', 'replay-logits',
         'oracle-context', 'oracle-decode', 'oracle-logits', 'batched-context',
         'batched-prompt-decode', 'batched-prefix-decode',

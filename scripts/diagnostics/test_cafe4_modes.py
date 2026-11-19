@@ -225,12 +225,78 @@ int main(int argc,char**argv) {
         trial = generated[generated.index('static Observation trial('):generated.index('static double error(')]
         self.assertEqual(trial.count('return o;'), 1)
         self.assertIn('o.ok=true;return o;', trial)
-        self.assertEqual(trial.count('return cafe4::trial_failure('), 30)
+        self.assertEqual(trial.count('return cafe4::trial_failure('), 31)
         self.assertIn('if(!cafe4::matched_controls(off,observe,fault))', generated)
         self.assertIn('ef<=10*tol||delta<=10*tol', generated)
         self.assertIn('tol=0.743863867,', generated)
         with self.assertRaises(ValueError):
             port.materialize(source.replace('if(!oracle)return o;', 'if(!oracle){return o;return o;}'))
+
+    def test_compiled_mode_intervention_starts_at_rollback(self):
+        source = subprocess.check_output(['git', '-C', str(port.ROOT), 'cat-file', 'blob', port.BASE_BLOB], text=True)
+        generated = port.materialize(source)
+        prefill = generated[generated.index(' if(!llama_cafe4_target_configure'):generated.index(' common_speculative_begin')]
+        rollback = generated[generated.index(' int keep='):generated.index(' if(!llama_cafe4_target_counts(ctx.get(),&o.selected')]
+        directory = Path(self.scratch.name)
+        cpp = directory / 'isolation.cpp'
+        cpp.write_text(r'''#include "cafe4_modes.hpp"
+#include <cassert>
+#include <cstdint>
+#include <memory>
+#include <vector>
+using llama_tokens=std::vector<int>;
+struct Observation {
+ bool ok=false;int accepted=1,sampled=99;uint64_t selected=0,faulted=0;
+ llama_tokens draft{30,31};
+};
+std::vector<int> events;
+int active=-1,fail=0,configured=0;
+struct Draft { int* context() { static int c;return &c; } };
+bool llama_cafe4_target_configure(int*,int mode) {
+ events.push_back(10+mode);++configured;
+ if(fail==configured)return false;
+ active=mode;return true;
+}
+bool process(int*,int*,const llama_tokens&,size_t start) {
+ events.push_back(start==0?20:60+active);return true;
+}
+void common_speculative_accept(int*,int,uint16_t n) {
+ assert(n==1 && active==0);events.push_back(30);
+}
+int* llama_get_memory(int* c) { return c; }
+bool llama_memory_seq_rm(int*,int,int keep,int) {
+ assert(keep==5);events.push_back(40+active);return true;
+}
+Observation run(int mode) {
+ Observation o;int width=2;llama_tokens prompt{1,2,3};
+ auto ctx=std::make_unique<int>(0),spec=std::make_unique<int>(0);
+ auto dft=std::make_unique<Draft>();
+''' + prefill + r'''
+ // The proposal and target verification run here with no intervention.
+ assert(active==0);events.push_back(25);
+''' + rollback + r'''
+ o.ok=true;return o;
+}
+int main() {
+ for(int mode=0;mode<3;++mode)for(fail=0;fail<3;++fail) {
+  active=-1;configured=0;events.clear();auto o=run(mode);
+  assert(o.ok==(fail==0));
+  if(fail==1)assert((events==std::vector<int>{10}));
+  else if(fail==2)assert((events==std::vector<int>{10,20,25,30,10+mode}));
+  else assert((events==std::vector<int>{10,20,25,30,10+mode,40+mode,40+mode,60+mode}));
+ }
+}
+''')
+        binary = directory / 'isolation'
+        subprocess.run(['c++', '-std=c++17', '-Wall', '-Wextra', '-Werror',
+                        '-I', str(HERE), str(cpp), '-o', str(binary)], check=True)
+        result = subprocess.run([str(binary)], check=True, capture_output=True, text=True)
+        self.assertEqual(result.stderr.count('stage=target-configure '), 3)
+        self.assertEqual(result.stderr.count('stage=rollback-configure '), 3)
+        for anchor in ('common_speculative_accept(spec.get(),0,(uint16_t)o.accepted);',
+                       'if(!llama_cafe4_target_configure(ctx.get(),mode)||!process(ctx.get(),spec.get(),prompt,0))return o;'):
+            with self.subTest(anchor=anchor), self.assertRaises(ValueError):
+                port.materialize(source.replace(anchor, 'BROKEN'))
 
     def test_native_token_witnesses_preserve_acceptance_and_early_exits(self):
         source = subprocess.check_output(['git', '-C', str(port.ROOT), 'cat-file', 'blob', port.BASE_BLOB], text=True)

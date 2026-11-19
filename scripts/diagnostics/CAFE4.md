@@ -186,3 +186,45 @@ native diagnostic. Existing CAFE-4 source registration and VB-SERVING-DF2 wiring
 task apply; do not invent historical measurement warrants from the new logs.
 Parent CAFE-4 stays open.
 [no-belief: diagnostic source repair and model-free tests only]
+
+Rollback intervention boundary (2026-11-19)
+------------------------------------------
+
+R6 retained boundary token271 in all modes, but mode1 proposed `32,16106`
+while modes0/2 proposed `248068,271`. The original UNKNOWN stands. Inspection
+of the bound experimental source finds context-local mode atomics and counters,
+independent draft/speculative instances, and synchronized NextN embedding reads.
+The snapshot hook changes its selected index only for mode2 and a nonzero
+rollback index. These findings do **not** establish why the pre-rollback MTP
+proposals differed, nor prove that mode1 caused the difference.
+
+The harness previously enabled the requested intervention before prefill.
+The generator now explicitly configures mode0 before prefill and keeps it through
+proposal and target verification. After strict partial acceptance and
+`common_speculative_accept`, it configures the requested mode immediately before
+the target suffix removal. A failed transition reports `rollback-configure` and
+returns UNKNOWN before either suffix is removed. Trials still generate independent
+proposals; no proposal is substituted or forced equal. All matched lifecycle,
+prefix and draft controls, the fixed **0.743863867** tolerance (lower error is
+better), explicit fault rc1 control and 10x sensitivity tests remain unchanged.
+This repairs the intervention boundary; it does not certify native determinism.
+
+**10/10 model-free tests PASS**. The new compiled spy executes the generated
+prefill and rollback blocks in nine mode/failure combinations, checking the exact
+order of configuration, prefill, acceptance, both suffix removals and replay.
+It checks that both configuration failures stop before later operations. Existing
+21 token-witness scenarios continue to pass. Full generated C++17 syntax checking
+passes against the existing detached v10 diagnostic tree; no native inference or
+full build ran. Generated source SHA-256:
+`af8bdd0e8261e200701ae9ad8fe5ed7a00070b0a0ab46d1a18d30737173bd1d4`,
+at `/mnt/raid0/llm/tmp/df2/cafe4-mode-isolation-20261119/candidate.cpp`.
+Historical source blob remains `53035f75429327e82454f7d26f7dd67f65c80c16`;
+code and tests are `scripts/diagnostics/cafe4_port.py` and
+`scripts/diagnostics/test_cafe4_modes.py` in this commit.
+
+Next qualify a freshly hash-bound HIP build before any native row. If independently
+produced proposals still differ with every pre-rollback mode fixed to zero,
+treat that as pre-intervention variation and localize hidden-state/draft-logit
+inputs; do not relax matched controls or claim a snapshot-mode cause. Existing
+CAFE-4 source registration and VB-SERVING-DF2 wiring task apply.
+[no-belief: harness isolation correction and model-free tests only]
