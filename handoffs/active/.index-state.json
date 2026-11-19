@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 455
+      "open": 454
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -2206,10 +2206,10 @@
     },
     "routing-program.md": {
       "blocked": 1,
-      "closed": 182,
+      "closed": 183,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 68,
+      "open": 67,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2222,20 +2222,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 44,
           "gates": [],
           "guarded": 0,
-          "line": 35,
+          "line": 55,
           "markers": 1,
           "name": "routing-program",
           "open": 15
@@ -2245,7 +2245,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 576,
+          "line": 596,
           "markers": 1,
           "name": "internal-interaction-lifecycle",
           "open": 4
@@ -2255,7 +2255,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1051,
+          "line": 1071,
           "markers": 1,
           "name": "learned-routing-controller",
           "open": 7
@@ -2265,7 +2265,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2319,
+          "line": 2339,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 0
@@ -2275,7 +2275,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2395,
+          "line": 2415,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 0
@@ -2285,7 +2285,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2528,
+          "line": 2548,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 2
@@ -2295,7 +2295,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 2831,
+          "line": 2851,
           "markers": 1,
           "name": "typed-decision-plane",
           "open": 26
@@ -2305,7 +2305,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3586,
+          "line": 3606,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
@@ -2317,7 +2317,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3667,
+          "line": 3687,
           "markers": 1,
           "name": "routing-intelligence",
           "open": 9
@@ -2327,7 +2327,7 @@
           "closed": 1,
           "gates": null,
           "guarded": 0,
-          "line": 4156,
+          "line": 4176,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
