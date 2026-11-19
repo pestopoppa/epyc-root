@@ -1,0 +1,85 @@
+"""Model-free checks for the public runtime probe's no-redraw/process contract."""
+import hashlib
+import json
+import signal
+import tempfile
+from unittest import mock
+import importlib.util
+from pathlib import Path
+import subprocess
+import sys
+import unittest
+
+spec = importlib.util.spec_from_file_location('probe', Path(__file__).parents[2] / 'scripts/speech/stt5_crisp_runtime_probe.py')
+probe = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(probe)
+
+
+class RuntimeProbeTests(unittest.TestCase):
+    def test_matrix_preserves_native_context_mapping_and_language(self):
+        self.assertEqual(len(set(probe.matrix())), 8)
+        cfg = dict(runner='runner', model='model', audio='audio')
+        for context, preset in [('r0', '1'), ('r3', '0'), ('r6', '2'), ('r13', '3')]:
+            for mode, language in [('auto', 'auto'), ('forced', 'en-US')]:
+                self.assertEqual(probe.command(cfg, context, mode, Path('txt')),
+                                 ['runner', 'model', 'audio', preset, language, '3', 'txt'])
+
+    def test_drain_reaps_owned_child_that_ignores_term(self):
+        code = 'import signal,sys,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); print("ready",flush=True); time.sleep(60)'
+        child = subprocess.Popen([sys.executable, '-c', code], stdout=subprocess.PIPE, text=True)
+        try:
+            self.assertEqual(child.stdout.readline().strip(), 'ready')
+            probe.drain(child)
+            self.assertIsNotNone(child.poll())
+        finally:
+            if child.poll() is None:
+                child.kill()
+                child.wait()
+            child.stdout.close()
+
+    def test_exposed_missing_results_are_unknown_without_redraw(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            model = base / 'model'
+            model.write_bytes(b'model-free fixture')
+            parser = base / 'parser.py'
+            parser.write_text('def parse(*args): raise AssertionError("no native call")\n')
+            output = base / 'output'
+            output.mkdir()
+            st = model.stat()
+            config = base / 'config.json'
+            config.write_text(json.dumps(dict(model=str(model), parser=str(parser),
+                model_stat=[st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns],
+                pins={}, output=str(output), expected_maps=[])))
+            digest = hashlib.sha256(config.read_bytes()).hexdigest()
+            for context, mode in probe.matrix():
+                probe.write_new(output / (context + '-' + mode + '.exposure.json'),
+                                dict(config_sha256=digest))
+            old_handlers = {s: signal.getsignal(s) for s in (signal.SIGTERM, signal.SIGINT)}
+            try:
+                with mock.patch.object(sys, 'argv', ['probe', str(config)]), mock.patch.object(
+                        probe.os, 'sched_getaffinity', return_value=set(range(24))), mock.patch.object(
+                        probe.subprocess, 'Popen', side_effect=AssertionError('redraw forbidden')) as spawn:
+                    self.assertEqual(probe.main(), 0)
+                    spawn.assert_not_called()
+            finally:
+                for signum, handler in old_handlers.items():
+                    signal.signal(signum, handler)
+            summary = json.loads((output / 'summary.json').read_text())
+            self.assertEqual(summary['verdict'], 'INCONCLUSIVE')
+            self.assertEqual(len(summary['cases']), 8)
+            self.assertTrue(all(c['status'] == 'UNKNOWN' for c in summary['cases']))
+            self.assertFalse(summary['validation_exposed'])
+
+    def test_exposure_write_never_overwrites(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'exposure.json'
+            probe.write_new(path, {'original': True})
+            with self.assertRaises(FileExistsError):
+                probe.write_new(path, {'original': False})
+            self.assertEqual(path.read_text(), '{"original": true}\n')
+
+
+if __name__ == '__main__':
+    unittest.main()
