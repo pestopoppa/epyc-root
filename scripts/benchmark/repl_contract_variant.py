@@ -51,15 +51,17 @@ def repaired_fixture(text):
     return text
 
 
-def load_driver():
+def load_driver(*, fixture_transform=repaired_fixture, variant=VARIANT, extra_binding=None):
     names = ('repl_composite_fixture', 'run_repl_composite', 'run_repl_preview',
              'repl_preview_fixture', 'own_port_proof')
     texts = {n: source(n) for n in names}
-    fixture = repaired_fixture(texts['repl_composite_fixture'])
-    binding = {'variant': VARIANT, 'source_commit': SOURCE_COMMIT,
+    fixture = fixture_transform(texts['repl_composite_fixture'])
+    binding = {'variant': variant, 'source_commit': SOURCE_COMMIT,
                'producer_sha256': {n: hashlib.sha256(t.encode()).hexdigest() for n, t in texts.items()},
                'fixture_contract_sha256': hashlib.sha256(fixture.encode()).hexdigest(),
                'wrapper_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+    if extra_binding:
+        binding.update(extra_binding)
     binding['variant_sha256'] = hashlib.sha256(json.dumps(binding, sort_keys=True).encode()).hexdigest()
     modules = {}
 
@@ -101,6 +103,10 @@ def load_driver():
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     driver, binding = load_driver()
+    return run_bound(driver, binding, argv)
+
+
+def run_bound(driver, binding, argv):
     if argv == ['--binding']:
         print(json.dumps(binding, indent=2))
         return 0
