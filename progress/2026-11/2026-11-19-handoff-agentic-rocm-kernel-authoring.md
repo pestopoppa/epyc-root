@@ -151,3 +151,7 @@ RKA-A3B48-D-REMEASURE: r4 ended rc=75 with five valid cells: rounds 1–2 comple
 ## 04:41Z — Diagnose C15 epilogue test count mismatch
 
 C15-EPI-Q8: diagnosed the 14 versus 16 test count from experimental source commit e0b5d2637858411bfb8b27609a2e7e199dc6f38c, tests/test-backend-ops.cpp:14194: two weight types each instantiate four normalization and four gated cases, including a 1536-wide epilogue-off normalization control per type. The row logs show all 16 for each arm. The preregistered 14-count rule still makes the completed run FAIL(tbo); prepare a new row with the correct 16-case expectation registered before execution. RESULT.json SHA-256 edef3786d5abad18f456474fd28f61c395bae789bcf90136311bdf46f2ac41a8.
+
+## 07:28Z — File C15 GV bandwidth result against registered rule
+
+C15-GV-BW row c15-gv-bw-gpu-20261119-r2 filed rc=0, registered DROP(clauses): alias op 128k geomean 1.5537x, all correctness arms 76/76, but all no-draft B visits lacked witnesses and DFlash2 had one B hash mismatch versus exact A/A. End-to-end performance inconclusive; DFlash2 prompt_n=4 versus registered 32768-token prime. results.jsonl SHA-256 973da60992643c6d487de839fa469b3fb2347d1a6dafea544bf680a9db2129f7; RESULT.json SHA-256 f28dbe5dfb123ec5869e15e8d5c344097908dae89cf8e87fa9fe6f6d0c09643d. [belief: cc]
