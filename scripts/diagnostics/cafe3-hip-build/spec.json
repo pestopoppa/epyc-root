@@ -1,0 +1,26 @@
+{
+  "id": "df2-cafe3-full-hip-build-20261119",
+  "owner": "handoff-df2",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-20261119/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 3600,
+  "min_window_s": 3600,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-20261119/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Full HIP gfx90a build qualification only: exact v10 base, source diff and generated headers; linked llama-server contains adaptive environment, context, journal schema and poison markers. CMake requires HIP ON, backend DL OFF, ROCm Clang, gfx90a and enum-constexpr compatibility flag. All hash-bound llama/ggml libraries resolve locally, including libggml-hip; require exact defined code exports iqk_mul_mat and ggml_iqk_try_mul_mat from CPU library and ggml_backend_cuda_reg from HIP library plus compiled gfx90a image marker. Smoke compiles transformed server and reproduces IQK enum-constexpr failure then passes identical source with compatibility flag. Stop on validated full receipt; futility on build, identity, linkage or control failure, STOP or deadline. No native model, residency, identity, speed or P9 verdict.",
+  "verdict_by": "agent",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-3",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe3-hip-build-20261119",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.json",
+    "*.py",
+    "*.sh"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe3-hip-build-20261119/driver.py predicate"
+}
