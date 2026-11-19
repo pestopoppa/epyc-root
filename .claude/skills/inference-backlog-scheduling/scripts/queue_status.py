@@ -27,6 +27,35 @@ KEEPER_LOG = "ws58-calendar-keeper.log"
 MAX_FAILS = 3
 GRANT_RE = re.compile(r"regions=(\S+)\s+start=(\S+)\s+end=(\S+)")
 LOG_TAIL_BYTES = 400_000
+CAMPAIGN_STATUS_SCHEMA = "epyc.autokernel.campaign_status.v1"   # published by the AK loop (loop/campaign_status.py)
+CAMPAIGN_STATUS_STALE_S = 6 * 3600
+
+
+def campaign_status(flags, now_ts=None):
+    """READ-ONLY: <flags>/campaign-status/<row>.json written by the AK loop's publisher.
+    A file that is unreadable / wrong schema is listed as bad (never silently dropped); a payload older
+    than CAMPAIGN_STATUS_STALE_S is marked stale. Returns {"campaigns": [...], "bad": [...]}."""
+    out, bad = [], []
+    now_ts = datetime.now(timezone.utc).timestamp() if now_ts is None else now_ts
+    for p in sorted(glob.glob(os.path.join(flags, "campaign-status", "*.json"))):
+        name = os.path.basename(p)
+        try:
+            with open(p) as f:
+                d = json.load(f)
+        except (OSError, ValueError) as e:
+            bad.append({"file": name, "reason": f"unreadable: {type(e).__name__}"})
+            continue
+        if not isinstance(d, dict) or d.get("schema") != CAMPAIGN_STATUS_SCHEMA:
+            bad.append({"file": name, "reason": "unknown schema"})
+            continue
+        as_of = d.get("as_of")
+        age = now_ts - float(as_of) if isinstance(as_of, (int, float)) and not isinstance(as_of, bool) else None
+        out.append({"row_id": d.get("row_id") or name[:-5], "as_of": as_of, "age_s": age,
+                    "stale": age is None or age > CAMPAIGN_STATUS_STALE_S,
+                    "rows": list(d.get("rows") or []), "idle_bins": list(d.get("idle_bins") or []),
+                    "escalations": list(d.get("escalations") or []),
+                    "decision_package": d.get("decision_package")})
+    return {"campaigns": out, "bad": bad}
 
 
 def _load(path):
@@ -221,7 +250,8 @@ def main(argv=None) -> int:
                    "BLOCKED": r["BLOCKED"]}
         json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "util": util, "buckets": buckets,
                    "idle": r["keeper"]["idle_why"], "snapshot": r["keeper"]["snapshot"],
-                   "unfiled_ended": r["UNFILED-ENDED"]}, sys.stdout, indent=1)
+                   "unfiled_ended": r["UNFILED-ENDED"],
+                   "campaign_status": campaign_status(a.flags)}, sys.stdout, indent=1)
         print()
         return 0
     print(f"QUEUE STATUS {now.strftime('%H:%M')}Z {now.date()}  (read-only; rowflow state in {a.flags})")
@@ -250,6 +280,20 @@ def main(argv=None) -> int:
         print(f"  {res:<6} {why}")
     if not k["idle_why"]:
         print("  none reported")
+    cs = campaign_status(a.flags)
+    print(f"\nCAMPAIGN-STATUS ({len(cs['campaigns'])})  (AK loop per-stage state + ETA, published beside the grant)")
+    for c in cs["campaigns"]:
+        print(f"  {c['row_id']:<44} {'STALE ' if c['stale'] else ''}as_of age {'?' if c['age_s'] is None else int(c['age_s'] // 60)} min")
+        for line in c["rows"]:
+            print(f"    {line}")
+        for b in c["idle_bins"]:
+            print(f"    IDLE {b.get('bin')}: {int(b.get('idle_s', 0) // 60)} min, {b.get('reason', '?')}")
+        for e in c["escalations"]:
+            print(f"    ESCALATION {e.get('id')}: {e.get('decision')}")
+        if c["decision_package"]:
+            print(f"    DECISION PACKAGE: {len(c['decision_package'].get('items', []))} item(s) -- see the file")
+    for b in cs["bad"]:
+        print(f"  BAD {b['file']}: {b['reason']}")
     print(f"\nUNFILED-ENDED: {r['UNFILED-ENDED']}")
     return 0
 
