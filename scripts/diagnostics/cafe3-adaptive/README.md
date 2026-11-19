@@ -323,9 +323,10 @@ Source SHA-256 bindings for this milestone:
 checks the retained manifest before capture and returns an exact child argv and
 isolated environment. Its CLI takes the manifest, its externally pinned SHA-256
 and a file containing the actual intended argv JSON array; it prints the plan
-and starts no process. The future row runner must execute the returned plan
-unchanged, supervise STOP/deadline, and record actual mapped libraries and
-in-window HIP residency separately. Preserve this module and both sibling
+and starts no process. `native_runner.py` executes the returned plan unchanged,
+supervises STOP/deadline and grant termination, and retains up to two in-process
+raw mapping samples. Verified library coverage and in-window HIP residency still
+require separate checks. Preserve these modules and both sibling
 build-driver directories in the runner's pinned input layout.
 
 The `epyc.cafe3.launch-context.v1` manifest has these required fields:
@@ -370,6 +371,36 @@ row/deadline/STOP/affinity/GPU placement, duplicate grant fields, ended/copied
 grants, journal exclusivity and absence of weight hashing. HIP placement tests
 use a mocked build validator; they establish no native HIP execution.
 
-This is a tested launch-precondition implementation. Full builds, runner
-integration, native captures, token identity and P9 performance remain open.
+This is a tested launch-precondition implementation. Full builds, native
+captures, token identity and P9 performance remain open.
 [no-belief: source implementation and model-free launch refusal controls only]
+
+### Grant-only native process boundary (2026-11-19)
+
+`native_runner.py MANIFEST SHA256 ARGV_JSON LOG RESULT` validates the context
+before spawning the server with exactly the returned argv and isolated env.
+It refuses dry-run capture through the validator, creates exclusive outputs,
+rechecks STOP/deadline and ended/completed grants after validation, and supervises
+the captured child until exit or cutoff. Cleanup escalates TERM to KILL and waits
+for that child, including on capture exceptions. It never signals a process by
+name or prepares/hashes model weights. This CLI is for a scheduled grant only;
+it has not been published as a row and must not be invoked manually for inference.
+
+The `epyc.cafe3.process-capture.v1` receipt records exact argv/env, context digest,
+PID, start/end, exit code, cutoff, reaping and available raw mapping samples.
+Status is always `UNASSESSED`, including a zero exit. The CLI returns 75 on cutoff,
+0 on clean exit and 1 otherwise. Missing mapping samples do not establish absent
+residency. An exception leaves an incomplete result that cannot pass a grader.
+
+**9 model-free process-boundary tests PASS**, alongside **10 launch-context
+tests PASS**. The process tests mock Popen and exercise exact plan use,
+pre-spawn refusal, late STOP/deadline, exclusive outputs, in-run STOP/deadline,
+TERM/KILL escalation and exception cleanup. No native binary or model is run.
+Run `python3 -m unittest discover -s scripts/diagnostics/cafe3-adaptive -p test_native_runner.py -v`.
+
+The next integration is the declared request/arm driver: prepare and seal real
+model/corpus/protocol inputs outside grants, consume qualified full-build
+receipts, issue protocol requests while this server runs, verify actual mappings
+and HIP residency, then publish the P9 row with a model-free smoke. This process
+boundary alone does not execute or grade that protocol and does not close CAFE-3.
+[no-belief: source implementation and mocked process-boundary controls only]
