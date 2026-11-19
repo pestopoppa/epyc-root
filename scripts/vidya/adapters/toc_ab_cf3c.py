@@ -344,6 +344,14 @@ def read_unit(result_path: str | Path) -> dict:
     """Strict reader. Returns the verified, re-derived unit or raises :class:`ProjectionError`."""
     path = Path(result_path)
     result = _load(path)
+    if isinstance(result, dict) and result.get("schema") == "epyc.cf3c.task.native.v1":
+        from adapters import toc_ab_cf3c_task
+        try:
+            return toc_ab_cf3c_task.read_unit(path, result)
+        except ProjectionError:
+            raise
+        except (KeyError, TypeError, ValueError, IndexError, AttributeError) as exc:
+            _refuse(f"malformed task-level native record ({type(exc).__name__}: {exc})")
     if not isinstance(result, dict) or result.get("schema") != SCHEMA:
         raise ProjectionError("not an epyc.cf3c.native.v1 RESULT")
     if result.get("server_exited") is not True:
@@ -460,7 +468,7 @@ def native_rows(result_path: str | Path) -> tuple[dict, ...]:
         head = json.loads(path.read_text())
     except (OSError, ValueError):
         raise ProjectionError("cf3c native unit refused: RESULT.json is not JSON") from None
-    if not isinstance(head, dict) or head.get("schema") != SCHEMA:
+    if not isinstance(head, dict) or head.get("schema") not in (SCHEMA, "epyc.cf3c.task.native.v1"):
         return ()
     unit = read_unit(path)
     return tuple({"result_path": unit["result_path"], "arm": arm, "metric": metric}
@@ -485,7 +493,8 @@ def project(native: Any) -> ClaimTuple:
     ident = ns.content_hash({"packet": r["packet_sha256"], "result": unit["result_sha256"],
                              "arm": arm, "metric": metric})[:24]
     producer = unit["profile"]["producer"] if unit["profile"] else PRODUCER
-    label = "active-evidence development fixtures" if unit["profile"] else "deterministic-policy pilot"
+    label = (unit["profile"].get("label", "active-evidence development fixtures")
+             if unit["profile"] else "deterministic-policy pilot")
     head = (f"cf3c {label} (diagnostic_only; n={d['scheduled']} cells for arm "
             f"{arm}, one per case {cases}; no adoption claim)")
     if metric == M_ACC:
@@ -517,7 +526,8 @@ def project(native: Any) -> ClaimTuple:
         # RESULT.json was re-opened and hashed now, but the producer recorded no external digest of
         # it, so "verified against a recorded digest" is not claimable; the 223 sealed files ARE.
         attestation_present=True, attestation_verified=None, source_kind=SOURCE_KIND,
-        extra={"schema": SCHEMA, "producer": producer, "arm": arm, "profile": unit["profile"],
+        extra={"schema": r["schema"], "producer": producer, "arm": arm, "profile": unit["profile"],
+               "cost_accounting": d.get("cost_accounting"),
                "packet_sha256": r["packet_sha256"], "source": r["source"],
                "diagnostic_only": r.get("diagnostic_only"), "instrument_class": r.get("instrument_class"),
                "sealed_files_verified": len(r["window_sha256"]), "n_cells": d["scheduled"],
