@@ -298,11 +298,44 @@ def run(config, output):
             "verdict": "descriptive only; no automatic instrument adoption or role change"}
 
 
+def first_sample(config, output):
+    """Recognize real native codegen progress, including its unsanitized output.
+
+    This is readiness evidence only. It supplies no correctness/profile verdict.
+    A partial final line is normal while the native writer is active.
+    """
+    manifest = Path(config["task_manifest"])
+    if hashlib.sha256(manifest.read_bytes()).hexdigest() != config["task_manifest_sha256"]:
+        return False
+    tasks = set(json.loads(manifest.read_text()))
+    arm = config["arms"][0]
+    name = arm["model"].strip("./").replace("/", "--")
+    name += f"_openai_temp_{config['temperature']}-perf-instruct"
+    root = Path(output) / arm["role"] / "evalperf"
+    try:
+        with (root / (name + ".jsonl")).open() as clean:
+            sanitized = json.loads(clean.readline())
+        with (root / (name + ".raw.jsonl")).open() as raw:
+            original = json.loads(raw.readline())
+    except (OSError, ValueError):
+        return False
+    return (isinstance(sanitized, dict) and isinstance(original, dict)
+            and isinstance(sanitized.get("task_id"), str)
+            and sanitized["task_id"] in tasks
+            and original.get("task_id") == sanitized["task_id"]
+            and all(isinstance(r.get("solution"), str) and bool(r["solution"].strip())
+                    for r in (sanitized, original)))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("config", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--first-sample", action="store_true",
+                        help="read-only smoke predicate; require matching native raw/sanitized sample")
     args = parser.parse_args()
+    if args.first_sample:
+        raise SystemExit(0 if first_sample(json.loads(args.config.read_text()), args.output) else 1)
     result = run(json.loads(args.config.read_text()), args.output.resolve())
     (args.output / "RESULT.json").write_text(json.dumps(result, indent=2) + "\n")
 

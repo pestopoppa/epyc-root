@@ -78,6 +78,13 @@ of native normalized DPS appears only with at least 30 profiled tasks, following
 the handoff's working convention; it is not a ratified comparative protocol.
 There is no automatic significance, adoption or role-change verdict.
 
+`CONFIG.json OUTPUT_DIR --first-sample` is a read-only publisher smoke predicate.
+It requires matching first native raw and sanitized records in the configured
+first arm's exact model/temperature output path, a task in the digest-pinned
+cohort, and nonempty code in both records. Missing, partial, mismatched or empty
+records fail closed. A sample establishes generation progress only; correctness,
+instruction profiling and the second arm remain unqualified until the full run.
+
 Each native invocation runs in an owned process group. SIGTERM or SIGINT to the
 runner stops that group, escalates to SIGKILL after the cleanup grace period,
 and reaps the direct child before propagating cancellation. Failed, timed out or

@@ -191,6 +191,49 @@ def test_wrong_endpoint_identity_stops_before_generation(prepared, monkeypatch):
     assert not output.exists()
 
 
+@pytest.fixture
+def sample_files(prepared):
+    config, output = prepared
+    root = output / "coder" / "evalperf"
+    root.mkdir(parents=True)
+    name = "coder_openai_temp_1-perf-instruct"
+    clean, raw = root / (name + ".jsonl"), root / (name + ".raw.jsonl")
+    sample = {"task_id": IDS[0], "solution": "def answer(): return 42"}
+    clean.write_text(json.dumps(sample) + "\n")
+    raw.write_text(json.dumps(sample) + "\n")
+    return config, output, clean, raw
+
+
+def test_first_sample_requires_both_original_and_sanitized_native_bytes(sample_files):
+    config, output, clean, raw = sample_files
+    assert runner.first_sample(config, output)
+    raw.unlink()
+    assert not runner.first_sample(config, output)
+    raw.write_text('{"task_id":')
+    assert not runner.first_sample(config, output)
+
+
+@pytest.mark.parametrize("record", [
+    {}, [], {"task_id": IDS[1], "solution": "code"},
+    {"task_id": "outside/cohort", "solution": "code"},
+    {"task_id": IDS[0], "solution": "  "},
+    {"task_id": IDS[0], "solution": None},
+])
+def test_first_sample_refuses_placeholder_wrong_task_or_empty_output(sample_files, record):
+    config, output, clean, raw = sample_files
+    raw.write_text(json.dumps(record) + "\n")
+    assert not runner.first_sample(config, output)
+
+
+def test_first_sample_refuses_manifest_drift_and_wrong_arm_path(sample_files):
+    config, output, clean, raw = sample_files
+    config["arms"][0]["model"] = "another-model"
+    assert not runner.first_sample(config, output)
+    config["arms"][0]["model"] = "coder"
+    Path(config["task_manifest"]).write_text(json.dumps(IDS[::-1]))
+    assert not runner.first_sample(config, output)
+
+
 def test_native_nonzero_exit_is_reaped_and_fails_closed():
     import subprocess
     import sys
