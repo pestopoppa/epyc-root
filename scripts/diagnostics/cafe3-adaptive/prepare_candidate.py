@@ -32,7 +32,7 @@ def prepare(tree):
     if subprocess.run(['git', '-C', str(tree), 'symbolic-ref', '-q', 'HEAD'],
                       stdout=subprocess.DEVNULL).returncode == 0:
         raise ValueError('candidate must be a detached experimental worktree')
-    if git('rev-parse', 'HEAD') != native_port.PRODUCTION or git('rev-parse', 'production-consolidated-v10') != native_port.PRODUCTION:
+    if git('rev-parse', 'HEAD') != native_port.PRODUCTION or git('rev-parse', 'refs/heads/production-consolidated-v10^{commit}') != native_port.PRODUCTION:
         raise ValueError('production base changed; review port before rebuilding')
     if git('status', '--porcelain'):
         raise ValueError('candidate must start clean')
