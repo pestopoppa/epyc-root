@@ -1,6 +1,10 @@
 import copy
 import importlib.util
+import json
 from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 
 _PATH = Path(__file__).resolve().parents[2] / 'scripts/harness/hs4_p6_catalog_gate.py'
@@ -74,6 +78,45 @@ class CatalogGateTests(unittest.TestCase):
         self.records += [dict(copy.deepcopy(r), task='task-b', fixture='fixture-b') for r in self.records]
         self.records[-2]['outcome'] = self.records[-1]['outcome'] = 'fail'
         self.assertEqual(_gate.compare(self.manifest, self.records)['verdict'], 'fail')
+
+    def run_cli(self, manifest, records):
+        with tempfile.TemporaryDirectory(prefix='hs4-p6-') as directory:
+            root = Path(directory)
+            (root / 'manifest.json').write_text(json.dumps(manifest))
+            (root / 'records.json').write_text(records)
+            return subprocess.run(
+                [sys.executable, str(_PATH), str(root / 'manifest.json'), str(root / 'records.json')],
+                capture_output=True, text=True, check=False,
+            )
+
+    def test_cli_only_accepts_pass(self):
+        # Exercise the actual entry point: printing a verdict alone cannot gate a shell caller.
+        for outcome, expected, verdict in (('pass', 0, 'pass'), ('fail', 1, 'fail'),
+                                           ('infra_error', 2, 'unknown')):
+            records = copy.deepcopy(self.records)
+            for record in records[2:]:
+                record['outcome'] = outcome
+            with self.subTest(outcome=outcome):
+                result = self.run_cli(self.manifest, json.dumps(records))
+                self.assertEqual(result.returncode, expected, result.stderr)
+                self.assertEqual(json.loads(result.stdout)['verdict'], verdict)
+
+    def test_cli_invalid_input_cannot_accept(self):
+        for records in ('{', json.dumps(self.records[:-1])):
+            with self.subTest(records=records):
+                result = self.run_cli(self.manifest, records)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(result.stdout, '')
+                self.assertIn('catalog gate:', result.stderr)
+
+    def test_cli_missing_file_cannot_accept(self):
+        with tempfile.TemporaryDirectory(prefix='hs4-p6-') as directory:
+            missing = str(Path(directory) / 'missing.json')
+            result = subprocess.run([sys.executable, str(_PATH), missing, missing],
+                                    capture_output=True, text=True, check=False)
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(result.stdout, '')
+        self.assertIn('catalog gate:', result.stderr)
 
 
 if __name__ == '__main__':
