@@ -1,0 +1,41 @@
+{
+  "schema": "kpf18.retained-bindings-qualification.v2",
+  "scope": "independent model-free full-driver import, inert main and smoke-output closure; no native or GPU qualification",
+  "installed": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf18-supervisor-retained-v2-20261119",
+  "manifest_sha256": "3365c534cbec787216712308a907bf27abe9b3b895ed6ecf372d687ae92e6bff",
+  "historical_manifest_sha256": "b990727e5bc09cebc7784e15d6b5c8a55f0c45ae1da04e5d43e9d2bc983ab104",
+  "binding_revision": "retained-bindings-v2",
+  "tests": {
+    "successor": 12,
+    "execution_admission": 25,
+    "binding_regressions": 6,
+    "total": 43,
+    "failures": 0
+  },
+  "installed_controls": [
+    {
+      "control": "main",
+      "rc": 0
+    },
+    {
+      "control": "smoke-output",
+      "rc": 0
+    },
+    {
+      "control": "rebind",
+      "rc": 0
+    }
+  ],
+  "source_sha256": {
+    "install.py": "733ae4bcf1ef03f10347dd1016873fd79920d3e03fc6266f6d15f5df73e09462",
+    "test_successor.py": "84fa60f8c0d1aadab09743c5e2576226f41ca8c7421b1a567e1562aaf543c6c1",
+    "supervisor.py": "f0b08f5842d6c8dab8b96ebcf0acc1c26f62d839a02efb9f919766f01a46359d",
+    "execution_admission.py": "bb34f0ebcc8c476a60b1f63093050e3196ab8b4dfb06ec19897122fc350c3a1f"
+  },
+  "historical_sources": {
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-format-r9/evidence_view.py": "434f97561317bd0a5f75f2bcee2c7ea56b362278958ff77959c7008085422212",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-format-r9/normalize_bridge.py": "d3fed4a89230f5b18e9ec38787175c4fee9112c3dfa9e364923e0fa4d8cf8f0c",
+    "/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-format-r9/test_real_grid.py": "bcbb114cf72f5cc86b0672def2e805213c0910257670b9fcaa5bfe68d44e256e"
+  },
+  "remaining": "Historical guard.sources manifests and attempt_root namespace still apply inside full driver main; qualify explicitly versioned guard/output/admission integration before native publication."
+}

@@ -268,3 +268,48 @@ which cannot satisfy the missing R9 identity above; its candidate has no
 step is an explicitly versioned successor using retained inputs and independent
 integration controls, preserving rather than weakening the historical seals.
 Then qualify the installed driver and output routing before native publication.
+
+
+## 2026-11-19 — explicitly versioned retained bindings v2
+
+`install(..., binding_revision="retained-bindings-v2")` creates a disabled
+`kpf18.disabled-supervisor.v2` inventory. The default installer still requires
+all original R9 identities. V2 retains the three superseded path/digest pairs
+in `historical_sources`, binds the retained exact evidence reader and the
+explicitly different retained normalizer, and seals independent controls in
+place of claiming the missing `test_real_grid.py` suite passed. Unknown
+revisions, replacement drift and inherited-identity conflicts fail closed.
+Original predecessor manifests, paths, seals and qualification records are
+unchanged. All inputs stay referenced; only the existing small binding modules
+are materialized, and the full driver remains an immutable symlink.
+
+Twelve independent tests PASS. Fresh interpreters import the installed full
+driver and verify controller/transport/terminal/normalizer bindings. Actual
+`driver.main()` is exercised with inert source/witness/gate peers and dry-run
+arguments; no native source-authority check is claimed. The actual
+`item3_smoke` closure, using inert server/request/resource peers, writes only
+through its imported `OUT`, and exclusive creation refuses overwrite. Missing,
+relative, outside-scratch and symlink output roots fail before main. Direct
+entries remain rc78 and missing execution custody refuses admission. Twenty-five
+execution-admission and six binding regressions also PASS: **43 tests total**.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
+  -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 \
+  -p test_successor.py -v
+```
+
+The persistent disabled installation is
+`/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf18-supervisor-retained-v2-20261119`.
+Three isolated installed controls (main, smoke-output, rebind) returned rc0.
+[Source and installed-manifest SHA-256 identities](qualification-v2.json)
+bind this result separately from historical `qualification.json`.
+
+This qualifies model-free installed binding and legacy private-scratch output
+routing only. The driver's retained `guard.sources()` still checks historical
+manifests, and `guard.attempt_root()` still expects the candidate's legacy
+namespace. Neither was bypassed for native execution or changed by this result.
+Next: implement and qualify an explicitly versioned guard/output integration
+with current execution custody and the publisher's isolated output namespace,
+then qualify real publisher smoke before native publication. No model, GPU,
+native lifecycle or KPF-18 parent verdict follows from these controls.
