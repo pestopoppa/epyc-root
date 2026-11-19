@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T20:04:03Z",
+  "generated_at": "2026-11-19T20:16:33Z",
   "nodes": [
     {
       "age_days": 9,
@@ -3539,7 +3539,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1798,
+          "line": 1799,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3554,7 +3554,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2221,
+          "line": 2222,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"

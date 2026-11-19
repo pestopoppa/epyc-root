@@ -1394,7 +1394,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1798,
+          "line": 1799,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1407,7 +1407,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2221,
+          "line": 2222,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
