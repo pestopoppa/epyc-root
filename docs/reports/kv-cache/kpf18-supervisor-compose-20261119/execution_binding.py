@@ -139,6 +139,27 @@ def prepare(seal, admission, captured):
                     except Exception as error:
                         self._refuse(f'current boundary refusal: {type(error).__name__}: {error}', error)
             driver.RowflowContext = CurrentRowflowContext
+        retained_native_context = getattr(driver.gate, 'Ctx', None)
+        if not isinstance(retained_native_context, type):
+            raise ValueError('retained native context required')
+        class CurrentNativeContext(retained_native_context):
+            _current_terminal_refusal = None
+
+            def check_boundary(self):
+                if self._current_terminal_refusal is not None:
+                    raise driver.gate.Abort(self._current_terminal_refusal)
+                try:
+                    boundary()
+                    if self.out != output_root():
+                        raise ValueError('native context output differs from admitted output')
+                    # Keep child death, sampler abort, preemption and elapsed
+                    # budget checks in the real context used by build_ctx.
+                    super().check_boundary()
+                except Exception as error:
+                    self._current_terminal_refusal = (
+                        f'current native boundary refusal: {type(error).__name__}: {error}')
+                    raise driver.gate.Abort(self._current_terminal_refusal) from error
+        driver.gate.Ctx = CurrentNativeContext
         # ContextBoundary resolves boundary/attempt_root through the retained
         # guard globals, so its original context checks and HWM cap survive.
         # Select the existing smoke function before main selects gate.ITEMS.

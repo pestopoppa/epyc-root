@@ -1044,3 +1044,61 @@ GitNexus status/impact refuse in this unindexed sparse lane. Manual inspection
 bounds the change to current recipe action wrappers and regression fixtures.
 The session bus refuses the unregistered kvu slug; no other outbox was used.
 [no-belief: model-free software regression tests]
+
+
+## 2026-11-19 — current admission in the real native context
+
+The installed retained context reproduced a distinct admission gap: after a
+successful boundary call, creating STOP did not make its next check refuse
+(`Abort not raised`). The existing per-step and controller wrappers did not
+change the native `Ctx` returned by `build_ctx`. Earlier tests supplied an inert
+context, so they could not expose this gap.
+
+The explicitly opted-in binding now subclasses that real native context in both
+official and publisher-smoke modes. Each existing context boundary rechecks
+current custody, grant, provider, STOP/deadline, output identity and reserve,
+then runs the retained child-death, sampler, preemption and budget checks.
+Refusal latches per instance and raises the existing gate Abort; removing STOP
+does not reauthorize a refused context. The native preemption flag is preserved.
+The retained context implementation, historical seals and production trees are
+unchanged. This does not add checks inside an operation that does not already
+call the context boundary; in particular the native startup health loop remains
+unchanged. Native interruption and cleanup still need scheduled qualification.
+
+`test_native_context.py` passes 24 isolated installed controls: valid, STOP,
+provider loss, grant change, deadline, output mismatch, reserve exhaustion,
+sticky refusal, dead child, sampler abort, budget and preemption, in each mode.
+The child and sampler peers are synthetic; no server is launched.
+
+A separate installed control passes the actual retained `build_ctx` and
+`preflight`, real parser, prompt-set loader, argv validation, binary knob check,
+GPU witness installation and native-context check. It uses the actual server,
+argv, prompts, R7 records, canonical projection and preload receipt at the
+locations recorded above. Enrollment and the unchanged preload verifier check
+the accepted metadata and both live model stat tuples before the dry plan.
+The witness pins the actual ELF/HIP backend and discovers topology read-only.
+`Popen` is forbidden; no model bytes are hashed or loaded and no request is sent.
+Admission, provider, grant, clock and affinity are private test fixtures, so this
+is not actual keeper admission or complete current artifact/provider custody.
+The gate dry plan is not publication and produces no native result.
+
+Validation: two new unittest tests PASS (24 boundary controls and one actual-input
+preflight); the existing scoped 83-test suite also PASS. Historical
+`test_supervisor.py` remains excluded for its previously documented missing R9
+inputs. Reproduce with `python3 -B -m unittest discover -s
+docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_native_context.py`.
+Git diff whitespace validation PASS. Source SHA-256 identities:
+
+- `execution_binding.py`: `7774351fed859945cf25c129a2a59e799aa2a983285c153df24f38e430e680ef`
+- `test_native_context.py`: `8c4cfe63dd82be90729b0bffa780cf29ef890dca1240a5875873f5141d25429c`
+- `test_execution_binding.py`: `e0c6e6875859d25bbb9e9daa310a25e90b45ca76dfbac672e9d08cce6930b5bc`
+
+No persistent successor, publisher smoke, native/GPU run, cancellation/release
+or layout verdict is claimed. The result-bearing task this turn is the
+reproduced native-context defect and qualified fix; publication remains next.
+Seal actual artifact/provider custody in the retained-R7 successor, then create
+the lifecycle launcher and publish its GPU row using the publisher's smoke.
+GitNexus status/impact refuse in the unindexed sparse lane; manual review bounds
+the change to the opt-in native context and its tests. Session-bus drain refuses
+unregistered kvu; no other session's outbox was used.
+[no-belief: model-free software regression tests]
