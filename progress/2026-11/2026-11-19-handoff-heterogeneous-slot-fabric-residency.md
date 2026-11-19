@@ -293,3 +293,7 @@ KPF-18.0d(item 3, group 3) duplicate cancellation-order r2 event: `file_result.p
 ## 04:50Z — Consume duplicate source-custody run-end; existing verdict and FILED receipt make refiling unnecessary
 
 Duplicate run-end for `kpf623-source-custody-r2-20261105`: filing helper returned NOOP because the operator takeover already filed PASS / CUSTODY_COMPLETE with rc0, 10/10 manifest matches and identical before/after source hashes. Existing RESULT SHA-256 `77ee444bf443560f906ab586da81662acc68a2ebc61a37acd4a159930c8949d9`; existing handoff evidence retained, no additional box completed or claim added. KPF-62.3 remains open. Next: consume publisher PASS/FAIL for `kpf41-backend-gpu-qualification-r2-20261119` under KPF-18.0d; do not replay completed rows.
+
+## 04:51Z — Consume already-filed drafter-impact completion without replaying superseded work
+
+Duplicate event `kpf191-drafter-impact-8952-20261105`: result is partial source-reference data at `8952a0f693fb923918157eb25117641b74766230`, with neither native upstream impact nor nonpartial scan_complete. Existing operator verdict is INCONCLUSIVE, rc1; RESULT SHA-256 `056280c278f56734f921ddc01b528ca076f7485d5ad9ecb104e6a9e199f660f2`. Filing helper returned NOOP (FILED already exists). Existing handoff records the coverage-parser failure and later successor PASS; no duplicate result, new tick or retry. KPF-19.1 remains open for its CH-18 conformance leg.
