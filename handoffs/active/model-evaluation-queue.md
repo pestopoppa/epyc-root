@@ -785,6 +785,14 @@ non-reasoning by design. Incumbent is unchanged: `worker_general` = `gemma-4-26B
 - [ ] **WG-LFMI-2 — CPU + GPU decode, interleaved, both quants.** Report pp/tg with stddev, peak
       resident, **and tokens-per-task** — a t/s table alone is what nearly banked the wrong verdict last
       time. Reuse the harness under `benchmarks/results/scout/wg-lfm-1-20260812/` (replayable).
+      Model: LFM2.5-1.2B-Instruct, Q4_K_M and Q8_0; build: production v10 (`ffc1bac82`).
+      Prospective descriptive replay: three rotated CPU/GPU rounds, FA off/on, native r5
+      pp512/tg128/tg512; retain native samples and separate between-launch standard deviations,
+      sampled peak RSS/device VRAM with owned KFD, and completion tokens plus finish reason for
+      five reference tasks on each backend/quant. Stop-on-answer when all 24 bench legs (72 cells)
+      and 20 task responses are accounted for; stop-on-futility on identity, linkage, residency or
+      native execution failure, STOP/deadline, or the 8 GiB process RSS limit. Capped or missing
+      responses remain UNKNOWN. Gate-class = futility-only; no role-change or quality verdict.
 
 - [ ] **WG-LFMI-3 — The decision-grade bar the original row asked for and never got**: strict task
       success, per-suite outcomes, tool-schema compliance and repair rate, reasoning/output tokens,

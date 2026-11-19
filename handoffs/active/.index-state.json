@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 15,
       "oldest_advance": "2026-11-07",
-      "open": 509
+      "open": 508
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 2,
-      "closed": 868,
+      "closed": 869,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 112,
+      "open": 111,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 2,
-          "closed": 392,
+          "closed": 393,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,7 +128,7 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 35
+          "open": 34
         },
         {
           "blocked": 0,
