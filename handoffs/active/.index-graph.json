@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T18:29:17Z",
+  "generated_at": "2026-11-19T18:37:08Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1773,14 +1773,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 135,
-      "dispatchable": 28,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-19",
       "next_action": "DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3",
-      "open": 30,
+      "open": 36,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1823,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 18,
+          "dispatchable": 24,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 769,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19,
+          "open": 25,
           "readiness": "blocked"
         }
       ]
@@ -3539,7 +3539,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1783,
+          "line": 1784,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3554,7 +3554,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2206,
+          "line": 2207,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"

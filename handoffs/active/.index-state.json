@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 500
+      "open": 506
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1394,7 +1394,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1783,
+          "line": 1784,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1407,7 +1407,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2206,
+          "line": 2207,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
@@ -2339,7 +2339,7 @@
       "closed": 135,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 28,
+      "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2348,7 +2348,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 165,
+      "total": 171,
       "tracks": [
         {
           "blocked": 1,
@@ -2371,7 +2371,7 @@
           "line": 769,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 18
+          "open": 24
         }
       ]
     },
