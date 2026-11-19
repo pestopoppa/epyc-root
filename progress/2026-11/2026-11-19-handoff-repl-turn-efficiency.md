@@ -1,0 +1,5 @@
+# 2026-11-19 — handoff repl-turn-efficiency
+
+## 06:03Z — Implement HS-9 bounded live chat transport and durable runner-owned simulator trace capture with passing focused tests.
+
+HS-9 code result: added scripts/harness/hs9_live.py (SHA-256 1c1f8ff6b99f429f58d50ceb274aafcacd38903b9ed8660a45d65c133a1ef2c8) and tests/test_hs9_live.py (SHA-256 fc3ab3147cba5bdb3ee107d374e35fdc8ba431158ec45bcd98ea50eb3b1a2df8). Eight focused tests passed using mock transports; git diff --check passed. Requests are saved before transport, simulated observations feed subsequent turns, unsafe/model-fabricated capture fields are refused, and errors retain partial traces. No inference or feasibility verdict; model/build/input pins and keeper publication remain. Replaced the operator-identified copied omega source checkout with git worktree add --detach from epyc-orchestrator at recorded commit 9e138e3a3e22ecf8c57cd5bf50beed571d107b54. GitNexus reported no index; direct references limited existing capture callers to its tests.
