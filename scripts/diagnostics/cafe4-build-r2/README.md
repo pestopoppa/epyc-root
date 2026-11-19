@@ -35,3 +35,23 @@ Publisher four-CPU compiled-object smoke **PASS** on cores 116–119, clean
 STOP rc75 at 06:49:22Z. Receipt: `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-cpu-build-r2-20261119/PASS.json`; SHA-256 `022bcfea4651e5f9dc8dc5121c89cca5c5f4a0224d186f0e05e7ca4d4e27bb0c`.
 Full build remains scheduled. The environment warning is a static false positive:
 `dict(os.environ, LD_LIBRARY_PATH=...)` preserves `FILLER_ID`.
+
+Scheduled build verdict (2026-11-19)
+------------------------------------
+
+`df2-cafe4-modes-cpu-build-r2-20261119` **PASS**, scheduled rc0,
+07:10:36–07:11:21Z. The existing `driver.validate` accepted the complete
+receipt: pinned source and patch, exact corrected source/header input hashes,
+all artifact hashes, six compiled markers and five local llama/ggml linkages.
+Executable SHA-256:
+`b3776b70ee6a6736ed08aac9cb379de427b0574f3373ab9c304dd5e80d3cc764`.
+Existing result: `/mnt/raid0/llm/tmp/df2/cafe4-modes-cpu-r2-20261119/RESULT.json`,
+SHA-256 `18d72d8892a86d83635f7ebb6886aa63561a6f35323ead33801f446871ff6a30`.
+End record: `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-cpu-build-r2-20261119.ended`,
+SHA-256 `bfc495c77f3d9cfb473538afff14ac628705446a664c4468a240e8302ebe395a`.
+`file_result.py` recorded PASS and wrote the FILED receipt. Build-only verdict;
+native rollback, GPU residency, fault sensitivity and performance remain unqualified.
+The frozen native error gate **0.743863867** was not evaluated or changed.
+CAFE-4 remains open. Next publish corrected-source native CPU controls bound to
+this executable; corrected HIP R4 is already qualified-armed.
+[no-belief: build qualification only; no native numerical measurement]
