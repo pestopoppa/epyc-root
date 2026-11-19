@@ -33,3 +33,29 @@ source worktree until downstream rows finish; no model weights are hashed or
 prepared inside the grant.
 
 [no-belief: build-row smoke and validator controls only]
+
+Build exit attribution repair (2026-11-19)
+----------------------------------------
+
+The original scheduled build failed qualification after linking the server;
+its supervisor rc75 did not distinguish STOP, deadline, signal or surviving
+descendants. That historical cause remains unknown. The revised driver uses
+`cafe3-build/supervise.py` with an additional report-path argument. It records
+explicit reasons, child rc and child PIDs before draining, then persists the
+drain outcome. Leftover descendants still refuse successful qualification.
+The inherited pidfd identity checks and verified drain are unchanged; the
+new exit-boundary tests mock process execution/draining.
+
+Replacement inputs must pin this revised supervisor and driver in a NEW
+scratch packet/row. Existing published packets and inputs.json snapshots
+remain historical and are not compatible with the changed supervisor CLI.
+New inputs must declare `supervisor_protocol: epyc.cafe3.supervisor.v1`;
+the revised input checker refuses older packets before executing a command.
+No replacement row is claimed published by this source repair.
+
+The revised full-build marker gate reads the hash-bound
+`libllama-server-impl.so`, which carries server-context code in this source
+layout, and requires it in local linkage. The executable, cache and linkage
+log must also be hash-bound. UI building and prebuilt UI fetching are disabled
+and checked in CMakeCache. Full-build synthetic receipts exercise the linked
+component gate for CPU and HIP; no new full build or native P9 verdict exists.

@@ -24,6 +24,8 @@ def digest(path):
 
 def inputs():
     record = json.loads((D / 'inputs.json').read_text())
+    if record.get('supervisor_protocol') != 'epyc.cafe3.supervisor.v1':
+        raise ValueError('supervisor protocol mismatch: prepare replacement inputs')
     if subprocess.check_output(['git', '-C', str(S), 'rev-parse', 'HEAD'], text=True).strip() != BASE:
         raise ValueError('wrong base')
     diff = subprocess.check_output(['git', '-C', str(S), 'diff', '--binary', 'HEAD'])
@@ -56,18 +58,23 @@ def validate(record):
         path = Path(name).resolve(strict=True)
         if not path.is_relative_to(run) or digest(path) != expected:
             raise ValueError('artifact mismatch')
-    artifact = run / ('server.o' if record['mode'] == 'smoke' else 'build/bin/llama-server')
+    artifact = run / ('server.o' if record['mode'] == 'smoke' else 'build/bin/libllama-server-impl.so')
     if str(artifact.resolve()) not in record['files']:
         raise ValueError('unbound compiled artifact')
     strings = subprocess.check_output(['strings', str(artifact)])
     if any(marker not in strings for marker in MARKERS):
         raise ValueError('compiled CAFE3 marker missing')
     if record['mode'] == 'build':
+        for relative in ('build/bin/llama-server', 'build/CMakeCache.txt', 'linkage.log'):
+            if str((run / relative).resolve(strict=True)) not in record['files']:
+                raise ValueError('unbound build control: ' + relative)
         cache = (run / 'build/CMakeCache.txt').read_text()
         if 'GGML_HIP:BOOL=ON' not in cache or 'GGML_BACKEND_DL:BOOL=OFF' not in cache:
             raise ValueError('wrong backend configuration')
         if IQK_COMPAT not in cache or CLANGXX not in cache or not any('CMAKE_HIP_ARCHITECTURES:'+kind+'=gfx90a' in cache for kind in ('STRING', 'UNINITIALIZED')):
             raise ValueError('missing HIP compiler/IQK/gfx90a binding')
+        if 'LLAMA_BUILD_UI:BOOL=OFF' not in cache or 'LLAMA_USE_PREBUILT_UI:BOOL=OFF' not in cache:
+            raise ValueError('unexpected UI build/download')
         linkage = (run / 'linkage.log').read_text()
         if 'not found' in linkage:
             raise ValueError('unresolved library')
@@ -78,7 +85,7 @@ def validate(record):
                 if target.parent != run / 'build/bin' or str(target) not in record['files']:
                     raise ValueError('nonlocal/unbound library')
                 found.add(line.strip().split()[0])
-        if not {'libllama.so', 'libggml.so', 'libggml-base.so', 'libggml-cpu.so', 'libggml-hip.so'} <= found:
+        if not {'libllama.so', 'libggml.so', 'libggml-base.so', 'libggml-cpu.so', 'libggml-hip.so', 'libllama-server-impl.so'} <= found:
             raise ValueError('missing required libraries')
 
         cpu = (run / 'build/bin/libggml-cpu.so').resolve(strict=True)
@@ -101,10 +108,8 @@ def build():
     native = inputs()
     stop, deadline = Path(os.environ['FILLER_STOPFILE']), int(os.environ['FILLER_DEADLINE'])
     def run(command, log, env=None):
-        if stop.exists() or time.time() >= deadline:
-            raise SystemExit(75)
         with log.open('w') as f:
-            subprocess.run([sys.executable, native['supervisor'], str(stop), str(deadline), *command],
+            subprocess.run([sys.executable, native['supervisor'], str(stop), str(deadline), str(log.with_suffix('.supervisor.json')), *command],
                            stdout=f, stderr=subprocess.STDOUT, check=True, env=env)
     (D / 'runs').mkdir(exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix='build-', dir=D / 'runs'))
@@ -132,7 +137,8 @@ def build():
              '-DCMAKE_C_COMPILER=/opt/rocm/llvm/bin/clang',
              '-DCMAKE_CXX_COMPILER='+CLANGXX, '-DCMAKE_HIP_COMPILER='+CLANGXX,
              '-DCMAKE_CXX_FLAGS='+IQK_COMPAT, '-DGGML_BACKEND_DL=OFF', '-DLLAMA_BUILD_SERVER=ON',
-             '-DLLAMA_BUILD_TESTS=OFF', '-DLLAMA_CURL=OFF'], work / 'configure.log')
+             '-DLLAMA_BUILD_TESTS=OFF', '-DLLAMA_CURL=OFF',
+             '-DLLAMA_BUILD_UI=OFF', '-DLLAMA_USE_PREBUILT_UI=OFF'], work / 'configure.log')
         run(['cmake', '--build', str(work / 'build'), '--target', 'llama-server', '--parallel', os.environ['FILLER_THREADS']], work / 'build.log')
         run(['ldd', str(work / 'build/bin/llama-server')], work / 'linkage.log',
             {**os.environ, 'LD_LIBRARY_PATH': str(work / 'build/bin')})
@@ -140,6 +146,7 @@ def build():
                  work / 'configure.log', work / 'build.log', work / 'linkage.log',
                  *list((work / 'build/bin').glob('libllama*.so*')),
                  *list((work / 'build/bin').glob('libggml*.so*'))]
+    files.extend(work.glob('*.supervisor.json'))
     record = dict(schema='epyc.cafe3.hip-build.v1', base=BASE, inputs=native,
                   mode='smoke' if smoke else 'build', run=str(work),
                   files={str(p.resolve()): digest(p) for p in files})
