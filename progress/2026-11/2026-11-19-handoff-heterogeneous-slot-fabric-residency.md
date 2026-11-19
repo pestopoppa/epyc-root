@@ -333,3 +333,7 @@ Duplicate run-end `kpf625-server-impact-8952-20261105-r2-q2-sq3` already has PAS
 ## 05:05Z — Consume duplicate already-filed KPF-41 direct-vector impact run-end
 
 Duplicate run-end `kpf41-direct-vec-impact-8952a0f-20261104-r5-q2` already has INCONCLUSIVE verdict and FILED receipt from 2026-11-05 (rc143, operator-stopped for sub-quarter reshape, superseded). Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf41-direct-vec-impact-8952a0f-20261104-r5-q2.verdict.json`, SHA-256 `48cb11bcc441799634038eb14e20dc1b46fcfb7d3326552a3c3140f7409c0a85`. Handoff already records later r10 PASS. No new result-bearing task in this event, repeat filing, tick or row replay. [no-belief: duplicate event acknowledgment, no new finding]
+
+## 05:06Z — Consume duplicate already-filed historical native-impact run-end
+
+Duplicate run-end `kpf131-native-binding-impact-a1f0-r5-20261105-q` already has INCONCLUSIVE verdict and FILED receipt from 2026-11-05 (rc1, infrastructure refusal before analyze, superseded). Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf131-native-binding-impact-a1f0-r5-20261105-q.verdict.json`, SHA-256 `c6436fd2cc63b2913c1abe3b2d35c753bd1e30101a2d6e8f0df8f4f2bfe46654`. Handoff already records later q3-sq3 PASS. No new result-bearing task from this event; no repeat filing, tick or row replay. [no-belief: duplicate event acknowledgment, no new finding]
