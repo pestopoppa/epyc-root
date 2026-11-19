@@ -235,3 +235,7 @@ INF48-LIVE-1 C6-26 implementation cannot be performed under the current lane-onl
 ## 23:53Z — Assess and file c6-admission-live-proof-r13
 
 INF48-C6-CONTROLLER-PROOF: r13 inconclusive, FUTILITY_CARRIER. Trace and validation passed, but the controller exited with untyped EvidenceProducerError (C6 oracle stdout must not be empty), no admission records and no sealed refusals. Result SHA-256 ce10993b518a1c4104d3e87ea448d759adbcb6399294b05086d359693230ee94. Filing invoked; inspect receipt before retry. [no-belief: row verdict]
+
+## 23:56Z — File c6-admission-live-proof-r13 verdict
+
+Filed c6-admission-live-proof-r13 inconclusive (FUTILITY_CARRIER): trace and validation passed, but the controller died on untyped EvidenceProducerError because C6 oracle stdout was empty; no admission records or sealed refusals. Results SHA-256 ce10993b518a1c4104d3e87ea448d759adbcb6399294b05086d359693230ee94. Proof remains open. [belief: cc]
