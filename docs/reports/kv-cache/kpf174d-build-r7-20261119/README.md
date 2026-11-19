@@ -66,3 +66,24 @@ Prepared pins:
 - `v3/launch.sh` SHA-256 `1228515a930467be47b69bd64802a9f8a511b901b08ef5530b6ccecbe60343b9`.
 - `v3/runtime.sha256` SHA-256 `0fa24eac912a94e270e55fb62f0bb2395f065b956bb65ccb4f974fe0e81f8c61`.
 - `input/PREPARED.json` SHA-256 `02921950f82b9f10131ee3c6d6f7ca4fadb4b638b19c9ede739d89e4191c2468`.
+
+## Native smoke verdict (2026-11-19)
+
+R7 native smoke **PASS**, rc0, completed 14:25:44Z on CPUs 116–119;
+keeper PASS recorded 14:25:48Z. Its isolated receipt reports `compiled` and
+retains eight file digests, including the real KV-cache object, UI embed log,
+and generated `ui.cpp` and `ui.h`. This satisfies the revised smoke requirement.
+The full row is running; no full-build, custody acceptance, inference or
+historical re-judgment verdict follows. `job_complete` is explicitly false.
+The native receipt's scope string still says first object only; the eight-file
+inventory supplies the additional UI embed evidence required by the row rule.
+
+Existing evidence (referenced in place, not copied):
+- `/mnt/raid0/llm/tmp/compute-flags/dryrun/kvu-kpf174-custody-r7-20261119/PASS.json`,
+  SHA-256 `bdbae9428dfb92ad259ba4d3245d7846cae18ddc37aeb7aadeabce998073d823`.
+- Same dryrun root, `native-attempts/attempt-43ryox8s/native-result.json`,
+  SHA-256 `3633cdbb60b44973b3ba4d2b342588929b056ac7ba0e4c92b25c62b2fea5eb49`.
+
+No code changed. GitNexus status and impact were unavailable because this lane
+has no index. The change records qualification evidence only.
+[no-belief: build qualification only]

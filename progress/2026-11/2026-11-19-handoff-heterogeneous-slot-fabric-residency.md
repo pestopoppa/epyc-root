@@ -521,3 +521,7 @@ KPF-17.4d: filed kvu-kpf174-custody-r6-20261119 build-only FAIL (rc1); UI embedd
 ## 14:25Z — Repair KPF-17.4d UI build inputs and publish R7 qualification
 
 KPF-17.4d: implemented scripts/benchmark/kpf174d_build_r7.py and published kvu-kpf174-custody-r7-20261119. Compatible b10303 UI archive SHA-256 9f692b00f9e52b939852a3045752395f2b8f0495063a26e4641a1a189478ae40 is prepared before grant and bound to input metadata/digests; source 6ec877068 and reference options unchanged. Native smoke now includes source-bound UI embedding and KV-cache object compilation; output receipt/completion reopens embed log and generated UI sources. Changed-UI-metadata refusal control PASS, unchanged inputs PASS, shell syntax/diff checks PASS. Publisher queued smoke with keeper: NOT yet PASS/ready; no native/full-build/inference verdict or parent tick. See docs/reports/kv-cache/kpf174d-build-r7-20261119/README.md for runtime pins and reproduction. Resume on smoke result; no in-turn polling. [no-belief: model-free build-input repair]
+
+## 14:27Z — Consume R7 native smoke verdict: KV object and UI embedding PASS
+
+KPF-17.4d: consumed kvu-kpf174-custody-r7-20261119 native smoke PASS, rc0, CPUs 116–119. Eight-file receipt includes KV object, UI embed log and ui.cpp/ui.h. Evidence paths and SHA-256 pins in docs/reports/kv-cache/kpf174d-build-r7-20261119/README.md. Full row running; no full-build or historical verdict. [no-belief: build qualification only]
