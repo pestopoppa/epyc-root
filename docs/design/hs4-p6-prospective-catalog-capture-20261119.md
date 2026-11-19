@@ -90,13 +90,30 @@ shared `exploration_core`. Supply `--orchestrator-root` and one or more
 admitted directories; path resolution and bounded reads remain in the shared
 core. The session stamp is accepted but grants no read scope.
 
-This stage is incomplete for the full P6 comparison: `code_search` has not moved
-to the shared core. Do not freeze the trial catalogs until root-bound search is
-implemented and qualified. Existing actor catalog/config and production MCP
-registration remain unchanged. The adapter's structured grep result and
-character-page peek are explicit candidate contracts, not proof of actor output
-compatibility; actor migration still needs its seat tests. No catalog-growth
-acceptance follows from these controls.
+The candidate also exposes `code_search(root, query, k=5, session_id="")`
+through `scripts/harness/hs4_p6_root_search.py`, using the shared core's path
+resolver and bounded reader. This reusable candidate primitive is in the root
+repository; it has not been installed into the orchestrator REPL or actor server.
+It returns a structured `root-lexical` result with ranked relative paths, scores,
+and line ranges, with no source snippets. It performs no network requests,
+subprocess execution, index reads or index building and has no global fallback.
+Queries require a word and at most 1024 characters; k clamps to 1..20.
+
+Traversal examines at most 4096 entries and charges attempted reads against a
+16 MiB budget, with the shared 4 MiB per-file cap. Hidden entries, symlinks,
+non-regular files, unsupported extensions and NUL-containing files are skipped.
+The result reports scanned files, skipped entries, charged bytes and truncation;
+no hits in a truncated or skipped scan cannot establish absence. The scan is not
+a filesystem snapshot. Within the bounded subset ranking is descending lexical
+occurrence count plus ten points per query term in the relative path, with path
+order breaking ties. Discovery order determines the subset when budgets exhaust.
+
+This is an explicit candidate semantic change from actor ColGREP, not actor
+compatibility evidence. Existing actor catalog/config and production MCP
+registration remain unchanged. The adapter's structured grep/search results and
+character-page peek require actor seat qualification, followed by matched live
+catalog/custody capture and four keeper trials before any integration. No
+catalog-growth acceptance follows from these controls.
 
 The focused tests exercise actual FastMCP tools/list, stamped tool calls,
 unknown-argument refusal, read-root admission, traversal and symlink escapes,

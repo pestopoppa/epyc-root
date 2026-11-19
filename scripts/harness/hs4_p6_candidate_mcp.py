@@ -2,9 +2,8 @@
 """Isolated P6 candidate additions; never imported by the active MCP server.
 
 Launch from a pinned orchestrator checkout with its Python environment. The
-caller must supply admitted read roots. This stage exposes shared bounded file
-operations only; root-bound code_search migration remains a separate prerequisite
-before this candidate may be used for the complete P6 catalog experiment.
+caller must supply admitted read roots. Root-bound search is an explicit lexical
+candidate contract; actor compatibility and live catalog acceptance remain gated.
 """
 from __future__ import annotations
 
@@ -32,6 +31,12 @@ def register_exploration_tools(server, read_roots, *, core=None):
         ):
             raise PermissionError("root is outside the admitted read roots")
         return str(candidate)
+
+    @server.tool()
+    def code_search(root: str, query: str, k: int = 5, session_id: str = "") -> dict:
+        """Index-free lexical search under an admitted root; at most 20 paths/ranges."""
+        from scripts.harness.hs4_p6_root_search import code_search as search
+        return search(scope(root), query, k, core=core)
 
     @server.tool()
     def read_range(root: str, path: str, start_line: int = 1,
@@ -84,6 +89,7 @@ def main():
     parser.add_argument("--read-root", action="append", required=True, type=Path)
     args = parser.parse_args()
     checkout = args.orchestrator_root.resolve(strict=True)
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     sys.path.insert(0, str(checkout))
     from src import mcp_server
 

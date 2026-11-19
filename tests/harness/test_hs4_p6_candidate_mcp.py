@@ -43,7 +43,7 @@ def test_live_catalog_and_argument_contract(seat):
     async def run():
         async with fastmcp.Client(seat[0]) as client:
             tools = await client.list_tools()
-            assert {t.name for t in tools} == {"read_range", "peek", "grep", "peek_grep", "outline"}
+            assert {t.name for t in tools} == {"read_range", "peek", "grep", "peek_grep", "outline", "code_search"}
             for tool in tools:
                 assert tool.inputSchema["additionalProperties"] is False
                 assert "session_id" not in tool.inputSchema.get("required", [])
@@ -110,3 +110,72 @@ def test_peek_cannot_request_unbounded_output(seat, n):
 def test_empty_admission_refused():
     with pytest.raises(ValueError, match="read-root"):
         adapter.register_exploration_tools(fastmcp.FastMCP("empty"), [], core=core)
+
+
+def test_search_is_root_bound_and_skips_escape_links(seat):
+    root = seat[1]
+    (root.parent / "secret.py").write_text("needle = 1")
+    (root / "link.py").symlink_to(root.parent / "secret.py")
+    (root / "external").symlink_to(root.parent, target_is_directory=True)
+    (root / "local.py").write_text("needle = 2")
+    result = call(seat, "code_search", query="needle")
+    assert not result.is_error
+    assert result.data["engine"] == "root-lexical"
+    assert [h["path"] for h in result.data["matches"]] == ["local.py"]
+    assert call((seat[0], root.parent), "code_search", query="needle").is_error
+    assert call(seat, "code_search", query="needle", path="../secret.py").is_error
+
+
+def test_search_empty_query_and_caps(seat):
+    assert call(seat, "code_search", query=" ").is_error
+    assert call(seat, "code_search", query="!!!").is_error
+    assert call(seat, "code_search", query="x" * 1025).is_error
+    for i in range(25):
+        (seat[1] / f"hit{i:02}.py").write_text("needle = 1\n")
+    result = call(seat, "code_search", query="needle", k=999)
+    assert len(result.data["matches"]) == 20
+    assert result.data["matches"][0]["path"] == "hit00.py"
+    assert len(call(seat, "code_search", query="needle", k=-1).data["matches"]) == 1
+
+
+def test_search_budget_reports_incomplete_coverage(seat, monkeypatch):
+    from scripts.harness import hs4_p6_root_search as search
+    monkeypatch.setattr(search, "MAX_TOTAL_BYTES", 1)
+    result = call(seat, "code_search", query="hello")
+    assert result.data["truncated"]
+    assert result.data["bytes_read_budget_used"] <= 1
+    monkeypatch.setattr(search, "MAX_TOTAL_BYTES", 1024)
+    monkeypatch.setattr(search, "MAX_ENTRIES", 1)
+    (seat[1] / "another.py").write_text("hello")
+    result = call(seat, "code_search", query="hello")
+    assert result.data["truncated"] and result.data["entries_visited"] == 1
+
+
+def test_search_never_uses_global_clients_or_subprocess(seat, monkeypatch):
+    import subprocess
+    import socket
+    def forbidden(*args, **kwargs):
+        raise AssertionError("search attempted external retrieval")
+    monkeypatch.setattr(subprocess, "Popen", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    before = sorted(p.relative_to(seat[1]) for p in seat[1].rglob("*"))
+    assert not call(seat, "code_search", query="hello").is_error
+    assert sorted(p.relative_to(seat[1]) for p in seat[1].rglob("*")) == before
+
+
+def test_search_skips_hidden_binary_large_and_special_inputs(seat):
+    root = seat[1]
+    (root / ".hidden").mkdir()
+    (root / ".hidden/secret.py").write_text("needle")
+    (root / "binary.py").write_bytes(b"needle\x00")
+    with (root / "big.py").open("wb") as handle:
+        handle.truncate(core.MAX_FILE_BYTES + 1)
+    os.mkfifo(root / "pipe.py")
+    (root / "nested").mkdir()
+    (root / "nested/hit.py").write_text("needle\n")
+    result = call(seat, "code_search", query="needle")
+    assert not result.is_error
+    assert [h["path"] for h in result.data["matches"]] == ["nested/hit.py"]
+    assert result.data["matches"][0]["start_line"] == 1
+    assert result.data["matches"][0]["end_line"] == 1
+    assert result.data["skipped"] >= 4
