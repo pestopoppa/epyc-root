@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def install(destination, *, execution=None, binding_revision=None):
+def install(destination, *, execution=None, binding_revision=None, guard_revision=None):
     destination = Path(destination)
     if (not destination.is_absolute() or destination.exists() or destination.is_symlink()
             or not destination.resolve().is_relative_to(SCRATCH)):
@@ -40,6 +40,9 @@ def install(destination, *, execution=None, binding_revision=None):
     base_seal = json.loads((BASE / 'manifest.json').read_text())
     if binding_revision not in (None, REVISION):
         raise ValueError('unknown binding revision')
+    if guard_revision is not None and (guard_revision != 'current-guard-v3'
+            or binding_revision != REVISION or execution is None):
+        raise ValueError('current guard requires retained bindings and explicit execution')
     inherited = dict(base_seal['sources'])
     if binding_revision == REVISION:
         for name, expected in SUPERSEDED.items():
@@ -87,6 +90,14 @@ def install(destination, *, execution=None, binding_revision=None):
     (binding / 'composition.py').write_bytes((Path(base_seal['predecessor']) / 'composition.py').read_bytes())
     (binding / 'manifest.json').write_text(json.dumps(transport_seal, indent=2) + '\n')
     (destination / 'composition.py').write_bytes((BASE / 'composition.py').read_bytes())
+    if guard_revision is not None:
+        # The original binding and its inventory remain unchanged.
+        with (destination / 'composition.py').open('a') as stream:
+            stream.write('\n_legacy_output_root = output_root\n'
+                         'def output_root():\n'
+                         '    if verify().get("guard_revision") == "current-guard-v3":\n'
+                         '        return sys.modules["_kpf_current_binding"].output_root()\n'
+                         '    return _legacy_output_root()\n')
     (destination / 'driver.py').symlink_to(BASE / 'driver.py')
     (destination / 'supervisor.py').write_bytes((HERE / 'supervisor.py').read_bytes())
     (destination / 'execution_admission.py').write_bytes((HERE / 'execution_admission.py').read_bytes())
@@ -104,6 +115,12 @@ def install(destination, *, execution=None, binding_revision=None):
         seal.update(schema='kpf18.disabled-supervisor.v2', binding_revision=REVISION,
                     historical_sources=SUPERSEDED,
                     qualification_scope='independent model-free bindings; no historical R9 or native qualification')
+    if guard_revision is not None:
+        path = HERE / 'execution_binding.py'
+        sources[str(path)] = digest(path)
+        seal.update(schema='kpf18.disabled-supervisor.v3', guard_revision=guard_revision,
+                    guard_binding=str(path),
+                    qualification_scope='current guard/output software integration only; native boundary unchanged')
     (destination / 'manifest.json').write_text(json.dumps(seal, indent=2) + '\n')
     marker.unlink()
     return seal

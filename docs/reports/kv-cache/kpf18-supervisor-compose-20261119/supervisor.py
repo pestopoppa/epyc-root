@@ -53,7 +53,7 @@ def refuse_preloaded_dependencies(seal):
     """
     names = {Path(name).stem for name in seal['sources']
              if Path(name).suffix == '.py'} - {'__init__'}
-    names.update({'composition', '_supervised_driver'})
+    names.update({'composition', '_supervised_driver', '_kpf_current_binding'})
     conflicts = sorted(name for name, module in sys.modules.items()
                        if name.rsplit('.', 1)[-1] in names
                        and getattr(module, '__dict__', None) is not globals())
@@ -73,11 +73,23 @@ def run_driver():
         admission = importlib.util.module_from_spec(spec)
         exec(compile(admission_path.read_bytes(), str(admission_path), 'exec'), admission.__dict__)
         witness = admission.capture(seal)
+        binding = None
+        if seal.get('guard_revision') is not None:
+            path = Path(seal['guard_binding'])
+            if str(path) not in seal['sources']:
+                raise ValueError('unsealed current guard binding')
+            spec = importlib.util.spec_from_file_location('_kpf_current_binding', path)
+            binding = importlib.util.module_from_spec(spec)
+            exec(compile(path.read_bytes(), str(path), 'exec'), binding.__dict__)
+            binding.output_root, binding.bind = binding.prepare(seal, admission, witness)
+            sys.modules['_kpf_current_binding'] = binding
         sys.path.insert(0, str(driver_path.parent))
         spec = importlib.util.spec_from_file_location('_supervised_driver', driver_path)
         driver = importlib.util.module_from_spec(spec)
         exec(compile(driver_path.read_bytes(), str(driver_path), 'exec'), driver.__dict__)
         admission.recheck(seal, witness)
+        if binding is not None:
+            binding.bind(driver)
         return driver.main()
     return run(entry)
 

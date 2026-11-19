@@ -313,3 +313,52 @@ Next: implement and qualify an explicitly versioned guard/output integration
 with current execution custody and the publisher's isolated output namespace,
 then qualify real publisher smoke before native publication. No model, GPU,
 native lifecycle or KPF-18 parent verdict follows from these controls.
+
+
+## 2026-11-19 — current source guard and admitted output integration v3
+
+The opt-in installer argument `guard_revision="current-guard-v3"` requires
+`binding_revision="retained-bindings-v2"` and explicit execution identities.
+It produces a disabled `kpf18.disabled-supervisor.v3` inventory. Before driver
+import, the supervisor captures current admission and prepares a source-sealed
+binding module; the installed composition obtains its output directory from
+that binding. After driver import, current admission is rechecked and the
+binding replaces `guard.sources()` with the current custody/provider/grant
+recheck, `guard.attempt_root()` with the admitted directory, and `guard.BIN`
+with the explicitly sealed server artifact. It refuses an unsealed guard,
+repeated binding, mismatched driver OUT, redirected output aliases and missing,
+duplicate or mismatched `--out` arguments.
+
+In publisher mode the directory comes from the captured isolated native-result
+path, not a new environment authority. Official mode requires an explicit,
+existing private directory in sealed `execution.output_root`. Every output-root
+access rechecks admission and directory components; symlinks refuse access.
+This redirects the driver's imported OUT and its reserve-accounting root. It
+does not prove every inherited gate/helper write is contained there.
+
+Eleven new model-free tests PASS, alongside 25 execution-admission tests,
+six supervisor binding regressions and twelve retained-successor regressions:
+**54 tests total**. The new isolated child installs v3 in temporary task scratch
+and traverses actual supervisor capture/import/bind/recheck/main and outer
+cleanup. Only canonical FLAGS is redirected to a private fixture, and the gate,
+witness installer and server/request peers are inert. Actual driver.main runs
+its current guard.sources without a source-check mock. The real item3_smoke
+closure writes SMOKE-REQUEST.json into the publisher attempt directory and
+refuses overwrite. Refusal controls cover artifact drift, provider loss,
+STOP/grant/result drift, output aliases/argv, symlinks, unknown revisions and
+missing explicit execution. Official private output is also tested.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
+  -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 \
+  -p test_execution_binding.py -v
+```
+
+No persistent installation was updated. Original R9 seals and historical
+qualification records stay intact; direct entry points remain disabled (rc78).
+The native `guard.boundary`, ContextBoundary resource checks, enrollment and
+legacy smoke selection are deliberately not replaced by this integration.
+Next implement current grant/provider boundary and admitted smoke selection,
+then qualify real publisher smoke. No model/GPU execution, native lifecycle,
+mapped-DSO custody or KPF-18 parent verdict follows from these software tests.
+[no-belief: model-free software regression tests]
