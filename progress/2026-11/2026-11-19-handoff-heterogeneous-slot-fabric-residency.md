@@ -153,3 +153,7 @@ Duplicate event kvu-kpf174-witness-g1-20261105 already has a PASS filing for its
 ## 03:53Z — Consume duplicate observer-impact stop event; partial HIGH stop already filed
 
 Duplicate run-end kpf-rs1-observer-impact-20261105 already has an inconclusive verdict and FILED receipt. Existing completed KPF-RS-1.OBS-IMPACT-HIGH box records rc=3, nine of twelve impacts (eight LOW, one HIGH), stopped on llama_synchronize; owner review is required before changes to that symbol. Parent KPF-RS-1.OBS-IMPACT remains open; no complete scan or skipped-file edit-safety claim. No new result or tick claimed. Evidence: handoffs/active/kv-cache-program.md and docs/reports/kv-cache/kpf-rs1-observer-impact-result-20261105/results.jsonl plus OWNER_WARNING at git 64f64da6b. Preserve the pending GPU publisher checkpoint.
+
+## 03:54Z — Consume duplicate group-3 receipt-entry composition event; seven-control PASS already filed
+
+Duplicate event kpf18-g3-receipt-entry-compose-20261105 already has a PASS verdict and FILED receipt: rc=0, seven synthetic driver-main composition controls passed with real receipt/preload verification and fixture receipt pin. No new result or tick claimed; no native lifecycle or GPU conclusion. Parent KPF-18.0d remains open. Existing filed native-result SHA-256 d848d8c60a25e234b3d6f4476e5261721584eb8af3eca873924b2e1a37832886. The dispatcher task suffix KPF-18.0d(item 3, group 3) is not a resolvable box ID; canonical parent KPF-18.0d was read instead. Preserve the pending GPU publisher checkpoint.
