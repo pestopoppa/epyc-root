@@ -286,7 +286,7 @@ else
 fi
 
 if [ "$fail" -ne 0 ]; then
-  die "preflight failed: $ROOT is not in the state this bundle was prepared against (epyc-root origin/main b3e1bb00). Stale checkout: fast-forward it first. Moved target: regenerate the bundle. Nothing written."
+  die "preflight failed: $ROOT is not in the state this bundle was prepared against (epyc-root origin/main 9ed706cf4). Stale checkout: fast-forward it first. Moved target: regenerate the bundle. Nothing written."
 fi
 say "  preflight clean"
 
