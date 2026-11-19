@@ -217,6 +217,17 @@ current serving and topology attestation, and a fresh eligible run contract; do
 not reuse the old manifest's v9 topology without revalidation. EV-PROTO's alternate
 execution modes are not required for that replacement. [belief: cc]
 
+**2026-11-19 capture prerequisite fixed:** the root confidence-source writer now
+derives speculative state from retained raw `serving.slots._list` entries rather
+than trusting the probe's lossy `spec_declared` summary. Missing, empty, malformed,
+partially declared or endpoint-error evidence cannot establish OFF; contradictory
+raw/summary declarations refuse capture. `tests/vidya/test_confidence_source_adapter.py`:
+35 passed. Existing probe identities without raw slots cannot qualify a new
+spec-off capture. Next: update the EV-CONF-2 producer to retain the raw `/slots`
+response and reject unknown slot declarations before publishing its fresh probe;
+EV-4b remains open. Historical measurements are unchanged.
+[no-belief: software contract and synthetic regression tests, no inference result]
+
 - **[declined: ws58 2026-11-03 content-review: merged into EV-4b — the accuracy leg is done and the calibration axes are EV-4b's rerun; the "v7 contention-matrix" gate is era-stale]** **EV-4** — Complete the decision-grade HE-R+ calibration baseline through the inference-batch loop after v7 contention-matrix recertification. *(accuracy leg DONE; calibration axes pending the EV-4b rerun below)*
 - [x] Run current eval tower on Scoring Verifiers HE-R+ benchmark ✅ 2026-07-21 — two-phase run on the E7 instrument (frontdoor @ certified concurrency 3, worker_general `--allow-serial`): **accuracy BANKED** frontdoor 0.7085 (820/820), worker_general 0.6572 (814/820; unscored rows excluded per REL-1); dataset_sha256 `87eaabbd…` identical across arms; ledger `DONE_MARGINAL_OBS` per the entry's own authored marginal fork.
 - [x] Diagnose the calibration-axes outcome ✅ 2026-07-21 — ECE 0.0/AUROC None/Spearman 1.0 = degenerate BY DESIGN: EV-CONF suppressed `n_probs` for `code_execution`-scored questions and all scoring_verifiers items are code-execution-scored; also means the ranking metrics (Top-1/Bottom-1/ρ/MAE) were structurally unmeasurable with binary confidence. Operator decided **ESC-7-EXT Option A** same day: code_execution now captures generation-logprob geomean confidence (test verdict stays the label; landed in orchestrator).
