@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T13:28:21Z",
+  "generated_at": "2026-11-19T13:30:28Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1328,15 +1328,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 480,
-      "dispatchable": 118,
+      "closed": 482,
+      "dispatchable": 116,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-19",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 119,
+      "open": 117,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1371,15 +1371,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 871,
-      "dispatchable": 114,
+      "closed": 872,
+      "dispatchable": 113,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-19",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
-      "open": 116,
+      "open": 115,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1471,7 +1471,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 47,
+          "dispatchable": 46,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1479,7 +1479,7 @@
           ],
           "line": 9702,
           "name": "autokernel-unified-surface-program",
-          "open": 47,
+          "open": 46,
           "readiness": "blocked"
         },
         {
@@ -1490,7 +1490,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14111,
+          "line": 14112,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1524,7 +1524,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14324,
+          "line": 14325,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11,
           "readiness": "blocked"

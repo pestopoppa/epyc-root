@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 501
+      "open": 500
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 221
+      "open": 219
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 2,
-      "closed": 871,
+      "closed": 872,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 114,
+      "open": 113,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -167,7 +167,7 @@
         },
         {
           "blocked": 0,
-          "closed": 220,
+          "closed": 221,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -177,7 +177,7 @@
           "line": 9702,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 47
+          "open": 46
         },
         {
           "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14111,
+          "line": 14112,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14324,
+          "line": 14325,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11
@@ -2545,10 +2545,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 480,
+      "closed": 482,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 118,
+      "open": 116,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
