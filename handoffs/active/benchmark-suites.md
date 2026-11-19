@@ -443,6 +443,19 @@ our own harness and score offline.
       Full benchmark scores remain UNKNOWN; parent stays open pending full wiring.
       CJ-6e runtime has the same repair; publish its successor next.
       [no-belief: infrastructure repair and synthetic qualification only]
+      2026-11-19 v5 full run: **inconclusive**, rc=75 at 22:45:49Z;
+      **28/300 valid responses, 28 exposures**, indices 0–27, all finish reasons
+      `stop`, zero unresolved exposures. Exact prompt and native-response hash/content
+      joins passed for all 28. Stopped before the next request to preserve the
+      full 1200-second request timeout and cleanup reserve; the grant ended at 23:06Z.
+      Strict/loose **UNKNOWN**, paired delta UNCOMPUTED, adoption UNCLAIMED.
+      [Verdict and original-file SHA-256 bindings](../../docs/evidence/ifbench-cj6a-v5-20261119/verdict.json).
+      Preserve exposure/result/native triples for a successor that skips indices 0–27;
+      never redraw them. The server drain receipt confirms child exit rc=0.
+      The idle-held alerts are historical: the row has ended and released its grant;
+      the worker capped generation at eight threads despite a 48-CPU allocation.
+      Next: qualify a continuation with CPU allocation matched to actual usage and
+      immutable original records, then publish; parent remains open. [belief: cc]
   - [x] **CJ-6a-CORPUS — Acquire and bind the original IFBench corpus.** Preserve the root `data/IFBench_test.jsonl` from `allenai/IFBench` commit `1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d`, verify its upstream blob and SHA-256, confirm 300 unique prompts / 344 constraints / 58 IDs, and retain license/source provenance and the fixed input manifest. The parent remains open for its generation-to-official-scorer wiring. [Pinned corpus](../../data/benchmarks/ifbench-1c40f0c/README.md). ✅ 2026-11-04 [belief: cc]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6b. Size on disk** and record it in the same table as CJ-1…CJ-4.
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6c. Determine execution requirement** — scoring is judge-free, network-free and

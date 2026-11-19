@@ -1,0 +1,413 @@
+{
+  "row": "codex-ifbench-cj6a-27b-v5-20261119",
+  "verdict": "inconclusive",
+  "rc": 75,
+  "expected": 300,
+  "exposures": 28,
+  "valid_responses": 28,
+  "valid_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+  ],
+  "validation_errors": [],
+  "finish_reasons": {
+    "stop": 28
+  },
+  "partial": {
+    "partial": true,
+    "reason": "before next request or insufficient full timeout and cleanup reserve"
+  },
+  "strict": "UNKNOWN",
+  "loose": "UNKNOWN",
+  "paired_delta": "UNCOMPUTED",
+  "adoption": "UNCLAIMED",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/000.exposure.json",
+      "sha256": "643eef592f1827031ea87885c85ff64e6e987d72b4366c263c4d6d2cbfcc9fbb"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/000.result.json",
+      "sha256": "e8c9e41bb131444d6a9991107538c7102feb1e9c2f990d7c2c3bcb310423fea9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/000.response.json",
+      "sha256": "e0a81e68d87c72da5d41526e1945912b94119e2fe4dfa7fb9ee0634379b92a0b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/001.exposure.json",
+      "sha256": "d97c83f5eec91629d4a94682da9cae7e301acb26f6fdefa4b2e37eca7faf7c5e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/001.result.json",
+      "sha256": "d652468b1c38eaf35b54cb8bc54a0b24667ab9169b3fa2861382a083a34c801e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/001.response.json",
+      "sha256": "7a5603416ee46fbf45c9f197a96c76af14a6ad62fd721b03572147bcad89530d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/002.exposure.json",
+      "sha256": "1c934098c8c9b86385a88093206113db0d7491785c2858a9f50b78f46f888ba8"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/002.result.json",
+      "sha256": "ec27e424c480f635242ce291072e8479fb13d85e10708f9eb29d73eb78d2a541"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/002.response.json",
+      "sha256": "5777b290ece6e4574550628a1f92e5f52336d67d22832128e8566b6df1d81593"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/003.exposure.json",
+      "sha256": "8f07767a223e8a725938214c1d9e10b99e91d2edecce2269fd74f828e67fff51"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/003.result.json",
+      "sha256": "2f6a7accd07e798c987e73d734198cbb314574e16de2b78a01e3f45195e2b45e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/003.response.json",
+      "sha256": "563659e4bc84557b18249b56170b8f1b02bfd42e887ef855265423af6c6cc567"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/004.exposure.json",
+      "sha256": "aa76dcac37ad48fce6a4e16d10594163b72498ffeb330c0368be12ab933ad802"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/004.result.json",
+      "sha256": "9deb985557f03807f8d1402ae43444900427f3f32faa5a2b62384a532c0e288a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/004.response.json",
+      "sha256": "0db0dc30c3fee4af693d4e6c25fb75318c39ec18d7f64755ac84906dc7c95280"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/005.exposure.json",
+      "sha256": "a83cade46dfbd94ae6c7c8c5cccef5a6720807670730744f6127f5eec792e28d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/005.result.json",
+      "sha256": "adb0c43d70c470ed66f70ccdcedb9af10512a95cabbea189097a43aecdfc3bd9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/005.response.json",
+      "sha256": "acb66b13b98bb84e8203285d22347353c63b2c07753f46e1398692657ecdfdcd"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/006.exposure.json",
+      "sha256": "253af969f194d67943d8e5e7656132c850527ac617adf1bbebb1db8d4c59a983"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/006.result.json",
+      "sha256": "bd227ff99a2b3752be8a78324cf2203a661c840165012bc68df7aa7f54bb70c1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/006.response.json",
+      "sha256": "0b2ca88dd6b59af56281315e5e0287ee13ae0dda45de8b0fa52a991d55fcda58"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/007.exposure.json",
+      "sha256": "11cd4d0ed117d6cd463e1abe047b6ff45aa11ce06c280ee71c3d4db4ad217c69"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/007.result.json",
+      "sha256": "d525dcf8f2bab5894e9f9c881f162d94fa2518ef487f92ab168afd55de81f816"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/007.response.json",
+      "sha256": "578d12e6fd140ee4ee66fabb837ca553abbc5089561af0da89c753625fbc848f"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/008.exposure.json",
+      "sha256": "eceedd4ddcc4c3eac694b6e2899bd9e9bed62c4ba57639eaba2800fa020742e9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/008.result.json",
+      "sha256": "022f027142e4d4c61e820263949d1eafd91139961b986825870801fd93d9f59b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/008.response.json",
+      "sha256": "86896ecd52e92d5303f79069036adf9b3bd721bad041d1caa9655aac68dd3de1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/009.exposure.json",
+      "sha256": "7f926a33bde8174368f3c3821c1f4c8e0cce4a18f4c3e4c241cc47e8263b071d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/009.result.json",
+      "sha256": "ba4fbddc2302bd0d17f01bb96a6ea661c0863664209da3f9976ccf5d4284aed0"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/009.response.json",
+      "sha256": "d66b6b03be598b47b0c868e12436e94c4a58550fa24f6f088b9e5d55d281518e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/010.exposure.json",
+      "sha256": "e6cba114c56dd440b17d4d4affb51b0521a383eed98c5211b2ac62f7618e111a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/010.result.json",
+      "sha256": "c852a40e633a4c1de8d79ef554f0fdf04e1f1d5bcc818f2501cf6f6ffa3de4b5"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/010.response.json",
+      "sha256": "a6c49b9e9b659d9c036897db48039d5c15cd094ea155c03c18ea778fea605e22"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/011.exposure.json",
+      "sha256": "24bf5e670cfae1156774e429f9d809dbc454ca4f5a1c9b65f6291eee630a36c9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/011.result.json",
+      "sha256": "466b4303aaa6e467779748d4c0ad8b2d43c67fc90012a4d9e42b1b5948c2a5fb"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/011.response.json",
+      "sha256": "2ba8c3845bb59e57164db125c121164c808641cfd6425fa4f90ef558491dd23d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/012.exposure.json",
+      "sha256": "43218b5415baff466451b6af522cb7732dfed7e04953d44cc96f46f174baefb3"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/012.result.json",
+      "sha256": "1c71fe4f88bcc228e4cc1a92dbfecfd59e24c06f02dbee9f350e70803909b161"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/012.response.json",
+      "sha256": "321971aa3f0ddcecfafe21e03dbd8ce089c6a8aced15e08f769843250b8bac58"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/013.exposure.json",
+      "sha256": "d6bb9e079cfbfdc1bcf9ec3d2ec37b9ba0cbc851585b10d6cc386b176640dbaa"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/013.result.json",
+      "sha256": "be92e9c8086baba792545880d1ce3aa9db2306d4bb3b9806b4a33d978a590169"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/013.response.json",
+      "sha256": "ca98a207166f70d92d255b6b0b655f9ebc18251b4e11ecf062ec25b33bb01e1e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/014.exposure.json",
+      "sha256": "f869ba399c3ac06c4314dbc39578595f4ef297066a0a6d82346266c2f4267c7e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/014.result.json",
+      "sha256": "2eecca4d3b9078106579addc3b30d831d0ef9ce2d67766242af77abe99478be9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/014.response.json",
+      "sha256": "03ac032c6d060f246fe12363a1aaea188192087e2ee3e7cd8be845d428446299"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/015.exposure.json",
+      "sha256": "4d1efbd2de708b1d37a9929e2554a4bb7108fafce6127557d73368bf53beb828"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/015.result.json",
+      "sha256": "1a372a4fe126e182eca38c200dd3af2ef3453c036f212fc43d4e2825fa747a9b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/015.response.json",
+      "sha256": "1651920d121049ddeee8f305134caa3ed0c1fcab0e650bf96805600103758e87"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/016.exposure.json",
+      "sha256": "05be0c2628a613df3dfa864d0bf31d5cd22b3c79c3cb5adb75bdd2d46c83db0d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/016.result.json",
+      "sha256": "8410b5a61f17299b869c9f6e1aea09c8edc561a5ad2f64de2b1fedb4d2dafa09"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/016.response.json",
+      "sha256": "7c0a6cc8aba532a2e93444bacaa1149f3ce16f45f2a90be27015519ad18c12e2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/017.exposure.json",
+      "sha256": "edffca1dd2545fb9986fc9091e32cd8d4b05d63e2d60dd1b071ffcc27c1ef87c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/017.result.json",
+      "sha256": "07e8e07b8177e13b3cf5264772a07c80cdb40a88d179b010b0151705e3cf00c5"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/017.response.json",
+      "sha256": "56899b955699483b8cc5f02cd5c7f3b5c38f0e5cb0398a5cbdfc63ef9774ffa2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/018.exposure.json",
+      "sha256": "6e8fd2925edd7777d409f94963b9c8e986bf97d72a9840a861892acc37c313fc"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/018.result.json",
+      "sha256": "51123be6f26b1865c3509c931f544d65600e063fe115a5a45180c703a611d801"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/018.response.json",
+      "sha256": "4581719ae31ad799f1c78eba95a57bfae5339fa1b49564e020f04624a0e93af1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/019.exposure.json",
+      "sha256": "e0ac309c0c8356a965e9eb33547bd7718af666fec933b7bf4b9a91b18bb53472"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/019.result.json",
+      "sha256": "23e979d0dc1c5e314621a4efd9cc8079c1b6c4fd10ea1ba616ff8f2d71810e9a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/019.response.json",
+      "sha256": "2a98f9974756b4fdee2fee12f4e352533c0bb28c8d046c1ccc75c498fb5c4ec2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/020.exposure.json",
+      "sha256": "2fcb8baa211016ebc745526d3c8860cf6d2d62cc616dcb4c5df2329a524ef22c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/020.result.json",
+      "sha256": "d74e631042c512d6571af9ec63ebc9fece4e7a8c93a08cc4f63df2e1c9d0d4f7"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/020.response.json",
+      "sha256": "002a7089df1a16443d11d09fc559a75702c093c63b21e495752c6b4349a1eb36"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/021.exposure.json",
+      "sha256": "726446b24d19ce3ca00f51ff4429ea877f9b3b6c58f043858c87e8ae17c427e3"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/021.result.json",
+      "sha256": "2656bb5579dd038bafdf1fb5adc4c8b77661612735561c944b8b0f95e34f28a9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/021.response.json",
+      "sha256": "ca05eebc0342bee21e90c5a982cbd33719bc65fe94653ff7f9b54e7fe1109efc"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/022.exposure.json",
+      "sha256": "0d29880e57a9f182a959d35b5b938a359f2d23e274ba6a057a17b0c8c08acc19"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/022.result.json",
+      "sha256": "4e85a8db3700ebdb78dec8219adb64fa02da5f43c2f21990bb809e138af525f0"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/022.response.json",
+      "sha256": "d3fcd709a8912ed53dca8b82129d960cf4d0e3858de27976c95c16e024388e4a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/023.exposure.json",
+      "sha256": "93ccc1a3448a23f06fc66be9214288681fe2bea393fbb3322659ddefd201cb56"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/023.result.json",
+      "sha256": "24d3114c5f51ea5327f0276f6bcc893f24c3dab2a4a97110ddad209681678784"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/023.response.json",
+      "sha256": "e37237a1e3d6e4e21dc42498d2c5bdc173c057e742fd68adc370b84f7399037a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/024.exposure.json",
+      "sha256": "fb1539e611df9a2bfb8655870850af57c194706fa9961c04ec8a94952a97ae3c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/024.result.json",
+      "sha256": "208749074cbdbcd2b3d632de32967d3609d1846637ac93565d828c9a5031b2d5"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/024.response.json",
+      "sha256": "99de1116e053dd0e8f8b731922a5f0f1ee1b7ac2e704a8acb827ee05512a20be"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/025.exposure.json",
+      "sha256": "feb3438c7c5e021123f173af29bbb99d6fbd7254ec87177352c8590383808c40"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/025.result.json",
+      "sha256": "89fdd883be01c9dbaa89ca55ed6b7be238623ef5dd3ad0a9dad5bec8f195994c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/025.response.json",
+      "sha256": "60132947983e540808fe84829475e7ab8d55da342a0d4fb15be8eabdbd4326d1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/026.exposure.json",
+      "sha256": "d37aa69189c3762f477a8cec236e1214b7fbc3b54763bef606850d4df4c11226"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/026.result.json",
+      "sha256": "7e4f15ec1ed8dc2ff900dba418f32ea94751b20605768e26ff201bdd72ce6b80"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/026.response.json",
+      "sha256": "fd8e4ab513496341f0f7d8057e88d628ecaff7cae80e837af5e1ff551ecb8a0a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/027.exposure.json",
+      "sha256": "f303bb138f3cc0f0a1070a8cb0c2e488285ced98c9fe2a36cc53a634970de669"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/027.result.json",
+      "sha256": "46bfb42790b1423b99eaf3f76d80300ef9b000fd3c3d2db85558943693ca022f"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/027.response.json",
+      "sha256": "f93bd1761097ad2e9d8b72cac9fafb240c836f28459c8a09fa87ea9d5dda4d21"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/PARTIAL.json",
+      "sha256": "e064c9a2e3bd129b54fceef34bb8a6647b9f8376475e4152cc1adc07ea1123de"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/server-1067327.drain.json",
+      "sha256": "3271c9b48ef8a8052678e9f3c381c096dbe637d4826fff47844e049f13185101"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/server-1067327.json",
+      "sha256": "762c0310e878c889dd7c555a628e26bd49e0d615651177cf69796e63e75f7467"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/worker.py",
+      "sha256": "430beb40735527ed9a0a31ed802cccf25241bbd83bb8f296012b5410fe788292"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/ws58-launcher.out",
+      "sha256": "3e258cf152a60fb44ac92e6dea4c511cc86adb3624091f937eccba59ecf2d464"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ifbench-cj6a-27b-v5-20261119.ended",
+      "sha256": "ec6caeea7eac28f4e6de76aa19a50bc5d97fa24ebff02d52e1504790b8e5a7a9"
+    }
+  ],
+  "retention": "Retain original scratch with --no-reclaim for no-redraw continuation; no source or raw response copied into repository."
+}
