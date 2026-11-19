@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T20:28:29Z",
+  "generated_at": "2026-11-19T20:30:37Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 770,
+          "line": 771,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 30,
           "readiness": "blocked"
@@ -2366,7 +2366,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 969,
+          "line": 970,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 49,
           "readiness": "blocked"
