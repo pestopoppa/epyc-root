@@ -104,3 +104,52 @@ def test_wrong_type_or_malformed_cell_is_refused(monkeypatch, key):
 
     out, _ = collect(monkeypatch, modify)
     assert out == {"q4_K": {}}
+
+
+def perf_line(runs="100", us="50", shape="m=256,n=9,k=256"):
+    return (f"MUL_MAT(type_a=q4_K,type_b=f32,{shape},bs=[1,1]): "
+            f"{runs} runs - {us} us/run\n")
+
+
+@pytest.mark.parametrize("runs,us", [
+    ("0", "50"), ("-1", "50"), ("1.5", "50"), ("bad", "50"),
+    ("100", "0"), ("100", "-1"), ("100", "nan"), ("100", "inf"),
+    ("100", "1.2.3"),
+])
+def test_parser_refuses_invalid_record_even_among_valid_repeats(runs, us):
+    # In particular, zero-run records previously became ordinary timings,
+    # and NaN/Inf records were silently omitted from otherwise valid logs.
+    with pytest.raises(ValueError, match="invalid MUL_MAT perf record"):
+        d.parse_tbo_perf(perf_line() + perf_line(runs, us) + perf_line())
+
+
+@pytest.mark.parametrize("shape", ["m=0,n=9,k=256", "m=256,n=-1,k=256",
+                                       "m=256,n=9", "m=bad,n=9,k=256"])
+def test_parser_refuses_invalid_shape(shape):
+    with pytest.raises(ValueError, match="invalid MUL_MAT perf record"):
+        d.parse_tbo_perf(perf_line(shape=shape))
+
+
+def test_parser_retains_valid_repeats_and_scientific_notation():
+    assert d.parse_tbo_perf(perf_line(us="4e1") + perf_line(us="60")) == {
+        ("q4_K", 9, "256", "256"): 50}
+
+
+@pytest.mark.parametrize("child_rc,expected_rc", [(0, 126), (124, 124)])
+def test_tbo_retains_invalid_record_refusal(monkeypatch, tmp_path, child_rc, expected_rc):
+    ctx = Context()
+    ctx.dir = tmp_path
+    ctx.time_left = lambda: 1000
+    ctx.say = lambda msg: None
+
+    def run(argv, env, log, timeout, **kwargs):
+        log.write_text(perf_line() + perf_line(runs="0"))
+        return child_rc, 12345
+
+    monkeypatch.setattr(d, "run_logged", run)
+    result = d.tbo(ctx, "invalid", Path("A"), Path("A"), "gpu", "ROCm0",
+                   "MUL_MAT", perf_filter="type_a=q4_K,type_b=f32")
+    assert result["rc"] == expected_rc
+    assert result["perf"] == {}
+    assert "0 runs" in result["perf_parse_error"]
+    assert Path(result["log"]).is_file()

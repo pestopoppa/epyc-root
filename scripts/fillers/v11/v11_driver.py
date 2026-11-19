@@ -235,17 +235,28 @@ def parse_tbo(text: str) -> dict:
     return {"passed": passed, "total": total, "n_fail_lines": len(fails), "max_nmse_on_fail": max(nm) if nm else None,
             "first_fails": fails[:5], "ok100": bool(m) and passed == total and total > 0 and not fails}
 
-PERF_RE = re.compile(r"MUL_MAT\((?P<vars>[^)]*)\):\s+(?P<runs>\d+) runs\s+-\s+(?P<us>[0-9.]+) us/run")
+PERF_RE = re.compile(r"MUL_MAT\((?P<vars>[^)]*)\):\s+(?P<runs>\S+) runs\s+-\s+(?P<us>\S+) us/run")
 def parse_tbo_perf(text: str) -> dict:
-    """{(type_a, n): us_per_run} from `test-backend-ops perf -o MUL_MAT -p type_a=...`. Keeps the mean of repeats per (type,n,m,k,bs)."""
+    """Dense f32 timings keyed by (type,n,m,k); refuse invalid execution records.
+
+    An rc=0 launch can still report an invalid timing. Reject the entire
+    population rather than silently dropping that cell or averaging it away.
+    """
     acc: dict = {}
     for l in text.splitlines():
         m = PERF_RE.search(l)
         if not m: continue
         v = dict(kv.split("=", 1) for kv in re.split(r",(?![^\[]*\])", m["vars"]) if "=" in kv)
         if v.get("type_b", "f32") != "f32" or v.get("bs", "[1,1]") != "[1,1]": continue
-        key = (v["type_a"], int(v["n"]), v["m"], v["k"])
-        acc.setdefault(key, []).append(float(m["us"]))
+        try:
+            runs, us = int(m["runs"]), float(m["us"])
+            dims = [int(v[d]) for d in ("n", "m", "k")]
+            if runs <= 0 or not math.isfinite(us) or us <= 0 or min(dims) <= 0:
+                raise ValueError("nonpositive runs/dimensions or invalid timing")
+            key = (v["type_a"], dims[0], str(dims[1]), str(dims[2]))
+        except (KeyError, ValueError) as exc:
+            raise ValueError(f"invalid MUL_MAT perf record: {l.strip()}") from exc
+        acc.setdefault(key, []).append(us)
     return {k: statistics.mean(x) for k, x in acc.items()}
 
 def parse_bench(text: str) -> list[dict]:
@@ -472,7 +483,11 @@ def tbo(ctx, name, exe_build: Path, lib_build: Path, dev: str, backend: str, op:
     if pins:
         out["pin"] = pins[0]
         if not pins[0]["ok"]: out |= {"rc": 125, "passed": 0, "pin_refused": True}   # D1: residual escape / unprovable pin => run refused
-    if perf_filter: out["perf"] = {f"{k[0]}|{k[1]}|{k[2]}|{k[3]}": v for k, v in parse_tbo_perf(text).items()}
+    if perf_filter:
+        try:
+            out["perf"] = {f"{k[0]}|{k[1]}|{k[2]}|{k[3]}": v for k, v in parse_tbo_perf(text).items()}
+        except ValueError as exc:
+            out |= {"rc": out["rc"] or 126, "perf": {}, "perf_parse_error": str(exc)}
     ctx.say(f"tbo {name}: rc={rc} {out['passed']}/{out['total']} fails={out['n_fail_lines']}" if not perf_filter else f"tbo perf {name}: rc={rc} cases={len(out['perf'])}")
     return out
 
