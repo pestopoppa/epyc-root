@@ -76,4 +76,91 @@ class BoundCustody(unittest.TestCase):
         with self.assertRaises(ValueError): bc.verify_mappings(self.packet, self.bin, lines[-1])
 
 
+class RelocatedCustody(BoundCustody):
+    def setUp(self):
+        super().setUp()
+        for name in ('libllama.so', 'libllama-common.so', 'libllama-server-impl.so'):
+            p = self.bin / name
+            p.write_text(name)
+            self.paths.append(p)
+        self.origin = Path('/reclaimed/build-attempt/build/bin')
+        self.receipt['run_dir'] = str(self.origin.parent.parent)
+        self.receipt['libraries'] = {p.name: bc.ggml.digest(p) for p in self.paths
+                                     if p.name != 'llama-server'}
+        self.receipt['files'] = {str(self.origin / p.name): bc.ggml.digest(p)
+                                  for p in self.paths}
+        self.save_receipt()
+        self.proof['build_receipt_sha256'] = bc.ggml.digest(self.packet / 'BUILD-RECEIPT.json')
+        self.proof['libraries'] = dict(self.receipt['libraries'])
+        self.proof['relocated_from_bin'] = str(self.origin)
+        # The original manifest contains no physical path or inode. Retain it,
+        # updating only this fixture's receipt digest after creating the fixture.
+        path = self.packet / 'GGML-CUSTODY.json'
+        manifest = json.loads(path.read_text())
+        manifest['build_receipt_sha256'] = self.proof['build_receipt_sha256']
+        path.write_text(json.dumps(manifest))
+        self.proof['ggml_custody_sha256'] = bc.ggml.digest(path)
+
+    def test_explicit_relocation_preserves_original_manifest(self):
+        before = (self.packet / 'GGML-CUSTODY.json').read_bytes()
+        result = self.validate()
+        self.assertEqual(result['relocated_from_bin'], str(self.origin))
+        self.assertEqual(result['retained_bin'], str(self.bin))
+        self.assertEqual((self.packet / 'GGML-CUSTODY.json').read_bytes(), before)
+
+    def test_wrong_origin_or_implicit_relocation_refused(self):
+        for origin in ('/other/build/bin', '/reclaimed/../build-attempt/build/bin', 'build/bin'):
+            with self.subTest(origin=origin):
+                self.proof['relocated_from_bin'] = origin
+                with self.assertRaises(ValueError): self.validate()
+        self.proof.pop('relocated_from_bin')
+        with self.assertRaises(ValueError): self.validate()
+
+    def test_changed_serving_library_and_binary_refused(self):
+        for p in self.paths:
+            with self.subTest(path=p.name):
+                before = p.read_bytes()
+                p.write_bytes(b'changed')
+                with self.assertRaises(ValueError): self.validate()
+                p.write_bytes(before)
+
+    def test_each_original_attestation_required(self):
+        for p in self.paths:
+            with self.subTest(path=p.name):
+                key = str(self.origin / p.name)
+                value = self.receipt['files'].pop(key)
+                self.save_receipt()
+                self.proof['build_receipt_sha256'] = bc.ggml.digest(self.packet / 'BUILD-RECEIPT.json')
+                with self.assertRaisesRegex(ValueError, 'not attested'): self.validate()
+                self.receipt['files'][key] = value
+
+    def test_incomplete_library_set_refused(self):
+        self.receipt['libraries'].pop('libllama.so')
+        self.save_receipt()
+        self.proof['build_receipt_sha256'] = bc.ggml.digest(self.packet / 'BUILD-RECEIPT.json')
+        with self.assertRaisesRegex(ValueError, 'incomplete'): self.validate()
+
+    def test_mapping_still_uses_retained_inode(self):
+        lines = []
+        for name in bc.ggml.REQUIRED:
+            p = self.bin / name
+            st = p.stat()
+            lines.append(f'1000-2000 r-xp 0 {os.major(st.st_dev):x}:{os.minor(st.st_dev):x} {st.st_ino} {p}')
+        maps = '\n'.join(lines)
+        self.assertEqual(bc.verify_mappings(self.packet, self.bin, maps)['status'], 'PASS')
+        p = self.bin / bc.ggml.REQUIRED[0]
+        old = p.with_suffix('.old')
+        p.rename(old)
+        p.write_bytes(old.read_bytes())
+        with self.assertRaises(ValueError): bc.verify_mappings(self.packet, self.bin, maps)
+
+    def test_mapping_requires_all_attested_libraries(self):
+        # Base fixture's positional paths also include the executable; use the
+        # explicit ggml-only mapping test above for this relocated fixture.
+        self.test_mapping_still_uses_retained_inode()
+
+    def test_missing_each_ggml_attestation(self):
+        self.test_each_original_attestation_required()
+
+
 if __name__ == '__main__': unittest.main()
