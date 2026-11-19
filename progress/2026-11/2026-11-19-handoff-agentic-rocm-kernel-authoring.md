@@ -63,3 +63,7 @@ TSAN r2 replayed run-end acknowledged: rc=78 gpu-fence-vacuous; results show nin
 ## 02:42Z — Acknowledge replayed C10 GEMM-down build result
 
 C10 GEMM-down build replayed end acknowledged: previously filed BUILD_OK, configure rc=0, build rc=0, source 7bcf6218bc4849dd47276078d1dd052e77e17fe1. results.jsonl SHA-256 10e6312aff244b520231a03694679cf28832a69772af2d2f8b9b69688cc9a95e. AITER-PORT-1 was subsequently completed by prefill and quality results; FILED receipt restored. [no-belief: previously filed build result]
+
+## 02:43Z — Acknowledge replayed C10 correctness result and previously accepted addendum
+
+C10 correctness replayed end acknowledged: native rc=75 and FAIL(witness); MUL_MAT 1202/1202, KLD -0.0 and top-1 99.997%. Previously filed witness-addendum re-score CORRECT was operator accepted, as recorded in AITER-PORT-1. Native results SHA-256 57f57112c99ed2ae784e07a49736c6286f2577145b6061076e7ee27ff1e14ca1. FILED receipt restored. [no-belief: previously filed and accepted result]
