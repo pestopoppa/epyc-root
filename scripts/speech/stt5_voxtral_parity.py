@@ -89,6 +89,17 @@ def command(cfg, delay):
             '--no-timestamps', '-l', 'en', '-m', cfg['model'], '-f', cfg['audio']]
 
 
+
+def child_environment(variant):
+    env = {**os.environ, 'LD_LIBRARY_PATH': variant['library_path'],
+           'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1',
+           'HIP_VISIBLE_DEVICES': '-1', 'ROCR_VISIBLE_DEVICES': '-1',
+           'CS8_VOXTRAL_TOKEN_TRACE': '1'}
+    # Match the original probe: the diagnostic reduced-KV knob must not leak in.
+    env.pop('CS8_VOXTRAL_SMOKE_KV', None)
+    return env
+
+
 def evaluate(stdout, stderr, reference, rc, interrupted, loaded, expected):
     if interrupted or rc != 0:
         return dict(verdict='INCONCLUSIVE', reason='interrupted or native runner error')
@@ -161,9 +172,7 @@ def main():
         loaded = set()
         interrupted = False
         try:
-            env = {**os.environ, 'LD_LIBRARY_PATH': variant['library_path'],
-                   'OMP_NUM_THREADS': '1', 'OPENBLAS_NUM_THREADS': '1',
-                   'HIP_VISIBLE_DEVICES': '-1', 'ROCR_VISIBLE_DEVICES': '-1'}
+            env = child_environment(variant)
             with (case / 'stdout').open('x') as stdout, (case / 'stderr').open('x') as stderr:
                 child = subprocess.Popen(argv, stdout=stdout, stderr=stderr, env=env)
                 while child.poll() is None:

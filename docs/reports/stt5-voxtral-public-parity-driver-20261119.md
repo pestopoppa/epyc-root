@@ -99,3 +99,32 @@ Publication invoked through `publish_row.py .../spec.json --smoke-now` for
 no smoke PASS, grant parity or validation claim is made. PASS and FAIL-1 terminal
 files are registered for dispatcher resumption. The result-bearing code change
 corrects backend selection before any inference successor can be admitted.
+
+## Terminal smoke failure and trace-environment repair
+
+Publisher returned rc2 / FAIL-1 at 15:44:01Z: both cases reaped rc0 and the
+smoke summary is INCONCLUSIVE, because neither native output contained the
+required token witness. No first progress predicate was satisfied; the row is
+not admitted. This is not a token disagreement or a parity PASS.
+
+The retained overlay guards the witness with `CS8_VOXTRAL_TOKEN_TRACE`.
+The original public probe exports it and unsets `CS8_VOXTRAL_SMOKE_KV`;
+the driver omitted these environment controls. Added `child_environment()`
+to force tracing and remove the diagnostic KV knob, while preserving FILLER_ID,
+CPU visibility and the pinned library path. An adversarial inherited-environment
+regression proves these controls and parent-environment immutability.
+All **21 model-free Voxtral tests PASS**; `git diff --check` passes.
+
+- `/mnt/raid0/llm/tmp/stt5/voxtral-parity-20261119/smoke-output/summary.json` SHA-256 `526c0678918ae9b3ff9558a0b9f60686667d8ddc41e89167db8b3256f2ca44be`.
+- `/mnt/raid0/llm/tmp/compute-flags/dryrun/stt5-voxtral-public-parity-r1-20261119/FAIL-1.json` SHA-256 `4c8ac4511aa6be4d0cfc90752eccc24615a6940d5e18ed1800683afaf0279418`.
+- Original trace-guard source:
+  `/mnt/raid0/llm/tmp/codex3-cs8-stt5-accuracy-20261030/ultra-adapter/voxtral4b.backend480.traced.cpp`
+  SHA-256 `bb0c50a9859015a961a807ba3daa509130a8d27263e6f9a24730911eaf598850`.
+
+Both smoke case directories and their INCONCLUSIVE receipts remain immutable.
+The prepared executed-script snapshot/config still identify the failed attempt;
+do not silently substitute this repair into that configuration. Next turn must
+bind the repaired driver and use a fresh explicit smoke attempt directory before
+republishing through publish_row.py. Keep original validation exposures unchanged.
+This is a tested code correction; no repaired model run, smoke PASS, parity,
+validation, WER, rate or promotion is claimed.

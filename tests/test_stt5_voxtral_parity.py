@@ -65,6 +65,18 @@ class ParityTest(unittest.TestCase):
                          '--gpu-backend', 'cpu', '--no-gpu', '--threads', '1',
                          '--no-timestamps', '-l', 'en', '-m', '/model', '-f', '/public'])
 
+    def test_native_trace_environment_matches_original_probe(self):
+        with mock.patch.dict(m.os.environ, {'CS8_VOXTRAL_SMOKE_KV': '1',
+                                           'CS8_VOXTRAL_TOKEN_TRACE': '',
+                                           'FILLER_ID': 'row-test'}):
+            env = m.child_environment({'library_path': '/pinned/lib'})
+            self.assertEqual(env['CS8_VOXTRAL_TOKEN_TRACE'], '1')
+            self.assertNotIn('CS8_VOXTRAL_SMOKE_KV', env)
+            self.assertEqual(env['FILLER_ID'], 'row-test')
+            self.assertEqual(env['LD_LIBRARY_PATH'], '/pinned/lib')
+            self.assertEqual(env['ROCR_VISIBLE_DEVICES'], '-1')
+            self.assertEqual(m.os.environ['CS8_VOXTRAL_SMOKE_KV'], '1')
+
     def test_owned_child_timeout_escalates_and_reaps(self):
         child = mock.Mock()
         child.poll.side_effect = [None, 0]
