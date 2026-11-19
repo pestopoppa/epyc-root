@@ -174,6 +174,68 @@ class Supervisor(unittest.TestCase):
         with self.assertRaises(ValueError): install.install(self.destination)
 
 
+class DependencyBinding(unittest.TestCase):
+    def setUp(self):
+        from unittest.mock import patch
+        # The test runner imports the installer; the isolated production entry
+        # must not. Restore the runner's module dictionary after each control.
+        modules = patch.dict(sys.modules)
+        modules.start()
+        self.addCleanup(modules.stop)
+        sys.modules.pop('install', None)
+
+    def subject(self):
+        # Unit controls use a source inventory, not a fabricated admission.
+        # They need no installed runtime or model bytes.
+        mod = load(HERE / 'supervisor.py', 'dependency_gate')
+        sources = json.loads((install.BASE / 'manifest.json').read_text())['sources']
+        return mod, {'sources': sources, 'driver': str(install.BASE / 'driver.py')}
+
+    def test_preloaded_native_peers_refused_before_import(self):
+        from unittest.mock import patch
+        import types
+        supervisor, seal = self.subject()
+        for name in ('guard', 'controller', 'native_group3', 'pipeline', 'kpf18_gate',
+                     'adapter', 'driver_boundary', 'foreign.controller'):
+            with self.subTest(name=name):
+                with patch.dict(sys.modules, {name: types.ModuleType(name)}):
+                    with patch.object(supervisor, 'run', side_effect=lambda entry: entry()), \
+                         patch.object(supervisor, 'verify', return_value=seal):
+                        with patch.object(supervisor.importlib.util, 'spec_from_file_location',
+                                          side_effect=AssertionError('driver import reached')):
+                            with self.assertRaisesRegex(ValueError, 'preloaded driver binding'):
+                                supervisor.run_driver()
+                self.assertNotIn(name, sys.modules)
+        self.assertIsNone(supervisor.refuse_preloaded_dependencies(seal))
+
+    def test_matching_origin_still_refused(self):
+        from unittest.mock import patch
+        import types
+        supervisor, seal = self.subject()
+        peer = types.ModuleType('controller')
+        peer.__file__ = next(name for name in seal['sources']
+                             if name.endswith('/controller.py'))
+        with patch.dict(sys.modules, controller=peer):
+            with self.assertRaisesRegex(ValueError, 'controller'):
+                supervisor.refuse_preloaded_dependencies(seal)
+
+
+    def test_unrelated_loaded_module_permitted(self):
+        from unittest.mock import patch
+        import types
+        supervisor, seal = self.subject()
+        with patch.dict(sys.modules, unrelated_peer=types.ModuleType('unrelated_peer')):
+            self.assertIsNone(supervisor.refuse_preloaded_dependencies(seal))
+
+    def test_inventory_extension_protects_new_peer(self):
+        from unittest.mock import patch
+        import types
+        supervisor, seal = self.subject()
+        seal = dict(seal, sources={**seal['sources'], '/sealed/new_native_peer.py': 'unused'})
+        with patch.dict(sys.modules, new_native_peer=types.ModuleType('new_native_peer')):
+            with self.assertRaisesRegex(ValueError, 'new_native_peer'):
+                supervisor.refuse_preloaded_dependencies(seal)
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['--worker']: worker(Path(sys.argv[2]), sys.argv[3])
     else: unittest.main()
