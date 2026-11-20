@@ -1,4 +1,4 @@
-"""Fail-closed BFCL native multi-turn capture custody; no local grading rule.
+"""Fail-closed BFCL native single- and multi-turn capture custody; no local grading rule.
 
 Model/build digests must come from independently verified launcher manifests.
 Live capture requires local process residency proofs; scripted controls opt out explicitly.
@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 import re
 
-from bfcl_native import UPSTREAM
+from bfcl_native import UPSTREAM, CATEGORIES
 from bfcl_residency import LocalNativeTransport
 
 LOCK = Path(__file__).with_name('bfcl-catalog-lock.json')
@@ -135,13 +135,20 @@ def capture_case(bridge, row, model, identity, catalog_directory, output, query,
     selected = lock['selection'].get(row['case']['id'], {})
     if any(digest(row[field]) != selected.get(field + '_sha256') for field in ('case', 'gold')):
         raise ValueError('case/gold content differs from pinned selection')
-    functions, catalog_binding = released_catalog(row['case'], catalog_directory)
+    single_turn = category in CATEGORIES
+    if single_turn:
+        # Request construction validates category/language and binds embedded schemas.
+        payload, _ = bridge.request(row['case'], category, model)
+        catalog_binding = {'embedded_schema_sha256': digest(row['case']['function']),
+                           'lock_sha256': hashlib.sha256(LOCK.read_bytes()).hexdigest()}
+    else:
+        functions, catalog_binding = released_catalog(row['case'], catalog_directory)
     # Freeze inputs before invoking caller-supplied transport.
     row = copy.deepcopy(row)
     journal = Journal(output)
     try:
         journal.append({'kind': 'identity', 'benchmark': 'bfcl_v3',
-            'instrument': 'native-multi-turn', 'upstream_commit': UPSTREAM,
+            'instrument': 'native-single-turn' if single_turn else 'native-multi-turn', 'upstream_commit': UPSTREAM,
             'software_sha256': {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
                                 for name in ('bfcl_capture_run.py', 'bfcl_residency.py', 'bfcl_native.py', 'openai_tool_calls.py')},
             'identity': identity, 'case_id': row['case']['id'], 'category': category,
@@ -149,7 +156,7 @@ def capture_case(bridge, row, model, identity, catalog_directory, output, query,
             'catalog': catalog_binding, 'corpus': lock['corpus'],
             'protocol': {'temperature': 0, 'seed': 20261031, 'max_tokens': 4096},
             'limitations': ['official response/order checks disabled',
-                           'official irrelevance helper nested-call blind spot'],
+                           'official irrelevance helper nested-call blind spot'] if not single_turn else [],
             'identity_scope': ('scripted software control; no server proof' if software_control
                                else 'local CPU process with per-request residency proofs')})
         def record(event):
@@ -159,11 +166,23 @@ def capture_case(bridge, row, model, identity, catalog_directory, output, query,
             if not software_control and event['kind'] == 'response':
                 journal.append({'kind': 'residency', 'phase': 'after', 'proof': query.probe()})
 
-        result = bridge.capture_multi_turn(row['case'], category, model, functions,
-                                          query, record, should_stop)
+        if single_turn:
+            if should_stop():
+                result = {'status': 'interrupted', 'error': 'stopped before exposure'}
+            else:
+                record({'kind': 'exposure', 'request': payload})
+                response = query(payload)
+                record({'kind': 'response', 'response': response})
+                result = {'status': 'captured'}
+        else:
+            result = bridge.capture_multi_turn(row['case'], category, model, functions,
+                                              query, record, should_stop)
         journal.append({'kind': 'capture_result', 'result': result})
         if result['status'] == 'captured':
-            verdict = bridge.score_multi_turn(row['case'], category, row['gold'], result['turns'])
+            if single_turn:
+                verdict = bridge.score(row['case'], category, row['gold'], response, model)
+            else:
+                verdict = bridge.score_multi_turn(row['case'], category, row['gold'], result['turns'])
         else:
             verdict = {'status': result['status'], 'valid': None, 'error': result['error']}
         journal.append({'kind': 'verdict', 'verdict': verdict})

@@ -360,6 +360,18 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       no BFCL quality score. Parent stays open for the live coverage verdict and
       durable single-turn fleet capture; SQL remains excluded by the official evaluator.
       [no-belief: transport qualification; no benchmark quality claim]
+  - [x] **CJ-3d-SINGLE-CAPTURE — Pass all fourteen supported single-turn coverage cases through durable native capture and the original checker with refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
+      Single-turn Python/Java/JavaScript capture now shares the exclusive journal,
+      content-pinned inputs and local residency transport. Embedded schemas and lock
+      are hash-bound; exposure precedes transport and raw response plus after-proof
+      precede checking. All fourteen scripted positives pass, fourteen wrong-function
+      controls fail, and fourteen malformed responses remain UNKNOWN. Stop, tampering,
+      disk/transport failure, retry and lost-residency controls refuse safely.
+      **59 full-suite controls PASS**, then **4 final single-turn controls PASS**
+      (60 unique tests including the added disk/residency-loss control).
+      [Software qualification](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-capture-20261120.json).
+      Parent remains open for single-turn fleet row publication and live coverage
+      verdicts; SQL excluded, no model score claimed.
   - [x] **CJ-3d-SCHEMA — Resolve official catalog/simulator version skew and pass all ten selected multi-turn cases through durable capture and original V3 replay.** ✅ 2026-11-20 [no-belief: model-free software controls]
       Bind the whole official Twitter catalog from Gorilla
       `f64916eb4092aef76fc8609bd53eb594b5e84bd0` (13 methods), whose Twitter

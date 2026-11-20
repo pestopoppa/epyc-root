@@ -41,6 +41,115 @@ class CustodyControls(unittest.TestCase):
             previous = sha
         return [r['event'] for r in records]
 
+    def single_response(self, row):
+        language_args = {
+            'java_0': {'controller': 'mapController', 'parent': 'mapArea'},
+            'java_1': {'object': 'Customers', 'useShortName': 'true',
+                       'params': 'new HashMap<String, Object>() {{put("limit", 50); put("schemaFilter", "public");}}'},
+            'javascript_0': {'inputField': '"userInputField"', 'isComplete': 'true'},
+            'javascript_1': {'listElement': 'listElement', 'attribute': '"data-active"', 'value': 'true'},
+        }
+        calls = []
+        for entry in row['gold']['ground_truth']:
+            for name, parameters in entry.items():
+                args = language_args.get(row['case']['id'], {
+                    key: values[0] for key, values in parameters.items() if values[0] != ""})
+                calls.append({'type': 'function', 'function': {
+                    'name': name.replace('.', '_'), 'arguments': json.dumps(args)}})
+        return {'choices': [{'finish_reason': 'tool_calls', 'message': {'tool_calls': calls}}]}
+
+    def test_fourteen_single_turn_cases_durable_positive_negative_and_unknown(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for row in controls.OfficialControls.rows[:14]:
+                response = self.single_response(row)
+                wrong = copy.deepcopy(response)
+                wrong['choices'][0]['message']['tool_calls'][0]['function']['name'] = 'wrong_function'
+                for label, raw, expected in [('positive', response, True),
+                                              ('negative', wrong, False),
+                                              ('malformed', {'choices': []}, None)]:
+                    output = Path(tmp) / (row['case']['id'] + label)
+                    before = copy.deepcopy(row)
+                    def query(payload):
+                        self.assertEqual(self.read(output)[-1], {'kind': 'exposure', 'request': payload})
+                        self.assertEqual(payload, self.bridge.request(row['case'], row['category'],
+                                                                     'scripted-control')[0])
+                        return raw
+                    with self.subTest(case=row['case']['id'], response=label):
+                        with patch.object(self.bridge, 'score', wraps=self.bridge.score) as score:
+                            verdict = self.run_case(row, output, query)
+                            score.assert_called_once()
+                        self.assertIs(verdict['valid'], expected)
+                        events = self.read(output)
+                        self.assertEqual([e['kind'] for e in events],
+                                         ['identity', 'exposure', 'response', 'capture_result', 'verdict'])
+                        self.assertEqual(events[0]['instrument'], 'native-single-turn')
+                        self.assertEqual(events[2]['response'], raw)
+                        self.assertEqual(events[-1]['verdict'], verdict)
+                        self.assertEqual(row, before)
+                        with self.assertRaises(FileExistsError):
+                            self.run_case(row, output, lambda p: self.fail('retry'))
+
+    def test_single_turn_stop_transport_and_tamper_refuse_without_score(self):
+        row = controls.OfficialControls.rows[0]
+        with tempfile.TemporaryDirectory() as tmp, patch.object(self.bridge, 'score') as score:
+            output = Path(tmp) / 'stopped'
+            verdict = self.run_case(row, output, lambda p: self.fail('exposed'), should_stop=lambda: True)
+            self.assertIsNone(verdict['valid'])
+            self.assertEqual(verdict['status'], 'interrupted')
+            score.assert_not_called()
+            output = Path(tmp) / 'failed'
+            query = Mock(side_effect=OSError('transport lost'))
+            with self.assertRaises(OSError):
+                self.run_case(row, output, query)
+            query.assert_called_once()
+            score.assert_not_called()
+            self.assertEqual(self.read(output)[-1]['kind'], 'aborted')
+            changed = copy.deepcopy(row); changed['case']['question'][0][0]['content'] += ' altered'
+            with self.assertRaisesRegex(ValueError, 'content differs'):
+                self.run_case(changed, Path(tmp) / 'tampered', lambda p: self.fail('exposed'))
+            self.assertFalse((Path(tmp) / 'tampered').exists())
+
+    def test_single_turn_disk_or_residency_loss_prevents_scoring(self):
+        row = controls.OfficialControls.rows[0]
+        with tempfile.TemporaryDirectory() as tmp, patch.object(self.bridge, 'score') as score:
+            query = Mock(return_value=self.single_response(row))
+            with patch('bfcl_capture_run.os.fsync', side_effect=OSError('disk failed')):
+                with self.assertRaises(OSError):
+                    self.run_case(row, Path(tmp) / 'disk', query)
+            query.assert_not_called()
+            score.assert_not_called()
+            transport = Mock(spec=LocalNativeTransport, return_value=self.single_response(row))
+            transport.identity = self.identity
+            transport.probe.side_effect = [{}, {}, ValueError('residency lost')]
+            output = Path(tmp) / 'lost-proof'
+            with self.assertRaisesRegex(ValueError, 'residency lost'):
+                capture_case(self.bridge, row, 'scripted-control', self.identity,
+                    self.catalog, output, transport)
+            transport.assert_called_once()
+            score.assert_not_called()
+            events = self.read(output)
+            self.assertEqual([e['kind'] for e in events],
+                             ['identity', 'residency', 'exposure', 'response', 'aborted'])
+
+    def test_single_turn_live_residency_brackets_response_before_checker(self):
+        row = controls.OfficialControls.rows[0]
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / 'live'
+            transport = Mock(spec=LocalNativeTransport, return_value=self.single_response(row))
+            transport.identity = self.identity
+            transport.probe.return_value = {'mock': 'residency software control'}
+            original = self.bridge.score
+            def score(*args):
+                events = self.read(output)
+                self.assertEqual([e['kind'] for e in events],
+                    ['identity', 'residency', 'exposure', 'response', 'residency', 'capture_result'])
+                return original(*args)
+            with patch.object(self.bridge, 'score', side_effect=score):
+                verdict = capture_case(self.bridge, row, 'scripted-control', self.identity,
+                    self.catalog, output, transport)
+            self.assertIs(verdict['valid'], True)
+            self.assertEqual(transport.probe.call_count, 3)
+
     def test_official_catalog_all_ten_cases_through_durable_official_replay(self):
         with tempfile.TemporaryDirectory() as tmp:
             for row in self.rows:

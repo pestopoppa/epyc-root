@@ -1,7 +1,7 @@
 # BFCL native capture: local CPU process custody
 
 `proposed/cj567/bfcl_capture_run.py` now requires a `LocalNativeTransport` for
-live multi-turn capture. `software_control=True` is an explicit opt-out for
+live single- and multi-turn capture. `software_control=True` is an explicit opt-out for
 model-free scripted controls and is labeled as such in the identity journal.
 This change supplies process-custody checks, not a fleet score or proof of sample
 representativeness. The original official checker and scoring rules are unchanged.
@@ -78,3 +78,16 @@ Run the five model-free launcher controls with
 They cover UNKNOWN/coverage semantics, malformed selections, owned-child cleanup
 and escalation, and smoke isolation from the cohort, official scorer and prior smoke attempts. Actual
 model inference is qualified exclusively through `publish_row.py`.
+
+Single-turn capture uses the same `capture_case` entry point for the fourteen
+pinned Python, Java and JavaScript cases. Their function schemas are embedded in
+the pinned case, so no multi-turn catalog is loaded. The lock binds the original
+corpus/gold hashes and selected content digests; the journal records the schema
+and lock hashes and labels the instrument `native-single-turn`. Official request
+construction supplies the language conversion and exact reverse name mapping.
+One request is journaled and sent, its raw response and residency proof are saved,
+then `OfficialV3.score` calls the original checker. Stop before exposure returns
+UNKNOWN; disk, transport or residency failure aborts without scoring or retry.
+Malformed responses remain UNKNOWN under the existing adapter. SQL is excluded.
+The existing row worker still selects multi-turn cases; publishing single-turn
+fleet capture is the next step. These scripted controls provide no model score.

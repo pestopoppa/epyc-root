@@ -1,0 +1,61 @@
+{
+  "box": "CJ-3d",
+  "scope": "Durable single-turn native software controls; no fleet score or representativeness claim",
+  "upstream_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+  "software_and_selection_sha256": {
+    "proposed/cj567/bfcl_capture_run.py": "b55a527d7880af53c83c13bf6f5e07aaaa535afc36cd58b5f99b1a11a206ea3a",
+    "proposed/cj567/test_bfcl_capture_run.py": "0fe20b4912d987270bf8034e24b828c7bc70dbeb85154645dd821c7aa85e5405",
+    "proposed/cj567/bfcl-catalog-lock.json": "bbe8ef47dc600a732f55835d3c2827efae336c4733f34b338c1e69423990bfdc",
+    "data/benchmarks/bfcl-v3-cj3d-prep-20261104/sample-manifest.json": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0"
+  },
+  "validation": {
+    "full_suite": {
+      "modules": [
+        "test_bfcl_capture_run",
+        "test_bfcl_native",
+        "test_openai_tool_calls",
+        "test_bfcl_residency",
+        "test_bfcl_fleet_run"
+      ],
+      "result": "PASS",
+      "tests": 59,
+      "elapsed_s": 30.286,
+      "note": "Before final disk/residency-loss control and schema-binding label addition"
+    },
+    "final_single_turn_controls": {
+      "result": "PASS",
+      "tests": 4,
+      "elapsed_s": 37.643,
+      "python": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python",
+      "module": "test_bfcl_capture_run.CustodyControls",
+      "methods": [
+        "test_fourteen_single_turn_cases_durable_positive_negative_and_unknown",
+        "test_single_turn_stop_transport_and_tamper_refuse_without_score",
+        "test_single_turn_live_residency_brackets_response_before_checker",
+        "test_single_turn_disk_or_residency_loss_prevents_scoring"
+      ]
+    },
+    "environment": {
+      "BFCL_CHECKOUT": "/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104",
+      "BFCL_CATALOG": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-catalog",
+      "PYTHONPATH": "proposed/cj567"
+    }
+  },
+  "coverage": {
+    "single_turn_cases": 14,
+    "positive": 14,
+    "wrong_function_rejected": 14,
+    "malformed_unknown": 14,
+    "journal": "exclusive fsync hash chain; exposure before transport; raw response and after-residency before original checker"
+  },
+  "alert": {
+    "key": "79c60243b1795774b29dc688",
+    "action": "ACKED; historical first failed attempt already repaired and later smoke PASS in fleet-launcher-20261120.json"
+  },
+  "limitations": [
+    "Scripted completions supply no model quality warrant",
+    "Existing fleet worker still selects only ten multi-turn cases; single-turn row publication is next",
+    "SQL excluded; official checker unchanged",
+    "GitNexus status/impact unavailable: lane not indexed; direct scope review of capture_case and its tests"
+  ]
+}
