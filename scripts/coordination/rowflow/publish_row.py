@@ -320,8 +320,9 @@ def check_release_scope(flags, name, rid):
 
 
 def check_operator_gate(spec, flags):
-    """Operator gate (2026-11-18): refuse a row owned by an operator-gated session's handoff, or whose id starts with a
-    registry operator_gated_row_prefixes entry, unless operator-ratify/<slug>.json (rowprefix-<prefix>.json) exists."""
+    """Operator gate (2026-11-18): refuse a row whose id starts with a registry operator_gated_row_prefixes entry, or that
+    a hold refuses (F4: holds.yaml + the registry's operator_gate view, keyed by (session, scope), admitted by the row's
+    owner - see hold_refuses), unless operator-ratify/<hold id | slug | rowprefix-<prefix>>.json exists."""
     reg = rf.load_json(os.path.join(flags, SESSIONS_NAME)) or {}
     rid = str(spec.get("id") or "")
     prefixes = reg["operator_gated_row_prefixes"] if "operator_gated_row_prefixes" in reg else DEFAULT_GATED_ROW_PREFIXES
@@ -331,19 +332,87 @@ def check_operator_gate(spec, flags):
             rf.need(ok, f"OPERATOR-GATED: row {rid!r} matches gated prefix {pre!r}; only the operator may release it ({why})")
             check_release_scope(flags, f"rowprefix-{pre}", rid)
     f = os.path.basename(handoff_ref.file_of(str(spec.get("handoff_task") or "").strip()) or "")
-    if not f:
-        return
-    m = PROMOTION_HANDOFF_RX.match(f)
+    m = PROMOTION_HANDOFF_RX.match(f) if f else None
     if m:  # a production promotion handoff: released by the same version-prefix ratification
         ok, why = ratified(flags, f"rowprefix-{m.group(1)}")
         rf.need(ok, f"OPERATOR-GATED: handoff {f} is production kernel promotion; only the operator may release it ({why})")
         check_release_scope(flags, f"rowprefix-{m.group(1)}", rid)
+    check_holds(spec, flags, reg, f)
+
+
+HOLDS_CANDIDATES = ("handoffs/active/holds.yaml", "coordination/holds.yaml")   # == box_index.HOLDS_CANDIDATES
+HOLD_SCOPES = ("loop-launch", "all-rows", "boxes")
+HOLD_TARGET_KEYS = ("handoffs", "rows", "boxes", "files", "sessions")
+
+
+def load_holds(repo=None):
+    """F4 (AK audit B4): the operator's holds.yaml (handoff standard decision 3) as [{id, targets, scope, since, reason}].
+    Same file and id/targets shape box_index.load_holds reads; scope defaults to loop-launch. Broken file -> no holds."""
+    for rel in HOLDS_CANDIDATES:
+        p = os.path.join(repo or REPO, rel)
+        if not os.path.exists(p):
+            continue
+        try:
+            import yaml
+            doc = yaml.safe_load(open(p, encoding="utf-8").read()) or {}
+        except Exception as e:  # noqa: BLE001
+            print(f"WARN: holds file {p} unreadable ({type(e).__name__}); no holds applied", file=sys.stderr)
+            return []
+        items = doc.get("holds", doc) if isinstance(doc, dict) else doc
+        if isinstance(items, dict):
+            items = [{"id": k, **(v if isinstance(v, dict) else {})} for k, v in items.items()]
+        out = []
+        for h in items or []:
+            if isinstance(h, dict) and h.get("id"):
+                out.append({"id": str(h["id"]), "scope": str(h.get("scope") or "loop-launch"),
+                            "targets": {str(x) for k in HOLD_TARGET_KEYS for x in (h.get(k) or [])},
+                            "since": h.get("since"), "reason": h.get("reason"), "source": p})
+        return out
+    return []
+
+
+def registry_holds(reg):
+    """The registry's operator_gate entries as holds (the derived view; migrate_operator_gates_to_holds.py writes them to
+    holds.yaml once): id = slug, targets = {slug, handoff basename}, scope = the gate's scope (default loop-launch)."""
+    out = []
     for slug, e in (reg.get("sessions") or {}).items():
-        if isinstance(e, dict) and e.get("operator_gate") and os.path.basename(str(e.get("handoff") or "")) == f:
-            ok, why = ratified(flags, slug)
-            rf.need(ok, f"OPERATOR-GATED: handoff {f} is owned by operator-gated session {slug!r} "
-                        f"({e['operator_gate'].get('reason')}); only the operator may release it ({why})")
-            check_release_scope(flags, slug, rid)
+        if isinstance(e, dict) and e.get("operator_gate"):
+            g = e["operator_gate"] if isinstance(e["operator_gate"], dict) else {}
+            out.append({"id": slug, "scope": str(g.get("scope") or "loop-launch"),
+                        "targets": {slug} | ({os.path.basename(str(e.get("handoff")))} if e.get("handoff") else set()),
+                        "since": g.get("since"), "reason": g.get("reason"), "source": "handoff-sessions.json"})
+    return out
+
+
+def hold_refuses(h, spec, handoff_file):
+    """F4: a hold refuses a row only when the row's OWNER is a target, or (scope all-rows and the row's handoff, id or box
+    is a target). A row with no owner cannot be admitted by owner, so a hold on its handoff still refuses it."""
+    owner = str(spec.get("owner") or "")
+    t = h["targets"]
+    if owner and owner in t:
+        return f"its owner {owner!r} is held"
+    task = str(spec.get("handoff_task") or "")
+    box = task.rsplit(":", 1)[1] if ":" in task else ""
+    hit = (handoff_file and handoff_file in t) or str(spec.get("id") or "") in t or (box and box in t)
+    if hit and (h["scope"] == "all-rows" or not owner):
+        return f"its handoff {handoff_file} is held" + ("" if owner else " and the row names no owner")
+    return None
+
+
+def check_holds(spec, flags, reg, handoff_file, repo=None):
+    rid = str(spec.get("id") or "")
+    seen = set()
+    for h in load_holds(repo) + registry_holds(reg):
+        if h["id"] in seen:
+            continue   # holds.yaml wins over its registry-derived twin
+        seen.add(h["id"])
+        why = hold_refuses(h, spec, handoff_file)
+        if not why:
+            continue
+        ok, rwhy = ratified(flags, h["id"])
+        rf.need(ok, f"OPERATOR-GATED: row {rid!r} refused by hold {h['id']!r} (scope {h['scope']}, {h['source']}): {why} "
+                    f"({h.get('reason')}); only the operator may release it ({rwhy})")
+        check_release_scope(flags, h["id"], rid)
 
 
 def check_handoff(spec, repo=None):
