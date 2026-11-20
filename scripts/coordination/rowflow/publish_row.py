@@ -491,6 +491,14 @@ def box_identity_findings(spec, path, txt, repo=None):
         doc = _bi.load(root, regenerate=False)   # never rebuild inside the rowflow view; read what is there
     except Exception:  # noqa: BLE001 — the index is advisory here
         doc = {}
+    note = _bi.stale_note(doc, "publish_row") if hasattr(_bi, "stale_note") else None
+    if note:                                     # C0.2: never silently read zero boxes
+        if doc.get("stale"):
+            warn.append(note)                    # a copy exists but is stale / its rebuild failed
+        else:
+            print(note, file=_sys.stderr)        # never built (fresh tree): logged, not a publish warning
+    if doc.get("stale") and not doc.get("boxes"):
+        doc = {}
     bid = _task_lint().L1.head_id(first)
     name = os.path.basename(path)
     rec = None

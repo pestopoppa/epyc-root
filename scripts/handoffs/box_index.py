@@ -266,24 +266,64 @@ def _newest_source_mtime(root: Path) -> float:
     return m
 
 
+LOCK_REL = "handoffs/active/.box-index.json.lock"
+BUILD_TIMEOUT_S = 120
+
+
 def load(root: Path | str | None = None, regenerate: bool = True) -> dict:
     """THE reader entry point. `.box-index.json` is gitignored (decision, Stage B: a committed 1.3 MB artefact made
     46k-line diffs on every regen and would trip the commit-bloat guard); it is rebuilt here whenever it is missing
-    or older than any handoff / priority / state / holds source (a build is ~4 s). Returns {} if it cannot be built."""
+    or older than any handoff / priority / state / holds source.
+
+    C0.2 (Stage C): the rebuild runs `index_state.py --box-index`, which is the box build ONLY (~5 s, no classify,
+    no pickaxe, no ledger), under an exclusive flock on `.box-index.json.lock` -- concurrent callers wait for the one
+    build and then re-check freshness instead of building again. On any failure the LAST copy is returned with
+    `"stale": true` (and `"stale_reason"`) instead of `{}`; `{}` only when no copy has ever been built. Callers must
+    check `doc.get("stale")` and log `box-index stale/unavailable` (see `stale_note`)."""
+    import fcntl
     import subprocess
     root = Path(root) if root else Path(__file__).resolve().parents[2]
     p = root / INDEX_REL
+
+    def _fresh() -> bool:
+        try:
+            return p.exists() and p.stat().st_mtime >= _newest_source_mtime(root)
+        except OSError:
+            return False
+
+    reason = None
+    if regenerate and not _fresh():
+        try:
+            with open(root / LOCK_REL, "a+") as lk:
+                fcntl.flock(lk, fcntl.LOCK_EX)
+                try:
+                    if not _fresh():                     # another caller may have built it while we waited
+                        r = subprocess.run([sys.executable, str(root / "scripts/handoffs/index_state.py"), "--box-index"],
+                                           cwd=str(root), capture_output=True, text=True, timeout=BUILD_TIMEOUT_S)
+                        if r.returncode != 0:
+                            reason = f"build rc={r.returncode}: {(r.stderr or r.stdout).strip()[-300:]}"
+                finally:
+                    fcntl.flock(lk, fcntl.LOCK_UN)
+        except Exception as exc:  # noqa: BLE001 -- a failed rebuild degrades to the last copy, never to {}
+            reason = f"build failed: {type(exc).__name__}: {exc}"
     try:
-        fresh = p.exists() and p.stat().st_mtime >= _newest_source_mtime(root)
-    except OSError:
-        fresh = False
-    if not fresh and regenerate:
-        subprocess.run([sys.executable, str(root / "scripts/handoffs/index_state.py"), "--box-index"],
-                       cwd=str(root), capture_output=True, text=True, timeout=300)
-    try:
-        return json.loads(p.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {}
+        doc = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return {"stale": True, "stale_reason": reason or f"unreadable: {type(exc).__name__}", "boxes": {},
+                "counts": {}} if reason or p.exists() else {}
+    if reason or not _fresh():
+        doc["stale"] = True
+        doc["stale_reason"] = reason or "older than its sources (regenerate=False or concurrent edit)"
+    return doc
+
+
+def stale_note(doc: dict, who: str) -> str | None:
+    """One log line for a caller that got a stale/unavailable index, else None."""
+    if not doc or not doc.get("boxes"):
+        return f"{who}: box-index unavailable ({(doc or {}).get('stale_reason', 'never built')})"
+    if doc.get("stale"):
+        return f"{who}: box-index stale ({doc.get('stale_reason')}); using last copy"
+    return None
 
 
 def dumps(doc: dict) -> str:

@@ -211,3 +211,4 @@ coordination/session-bus/relay_state.json
 # Handoff standard Stage B: generated per-box index, rebuilt on read by scripts/handoffs/box_index.load() (too big to commit).
 handoffs/active/.box-index.json
 handoffs/active/.box-index.json.*.tmp
+handoffs/active/.box-index.json.lock

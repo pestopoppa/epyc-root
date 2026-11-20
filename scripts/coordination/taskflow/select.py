@@ -48,7 +48,11 @@ def load_index(root: Path | None = None) -> dict:
     root = root or REPO_ROOT
     sys.path.insert(0, str(root / "scripts" / "handoffs"))
     import box_index
-    return box_index.load(root)
+    doc = box_index.load(root)
+    note = box_index.stale_note(doc, "taskflow.select")
+    if note:                                     # C0.2: a stale/unavailable index is logged, never read as zero boxes
+        print(note, file=sys.stderr)
+    return doc
 
 
 def skip_reason(rec: dict, exclude: set[str]) -> str | None:

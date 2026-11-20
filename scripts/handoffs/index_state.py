@@ -626,6 +626,39 @@ def collect() -> dict:
     return out
 
 
+def collect_light() -> dict:
+    """Box-index-only state (C0.2): rows + per-handoff row_id/open/tracks WITHOUT `classify()` (27 s) or the
+    `last_advanced` pickaxe. `open` here = unticked, non-roll-up, non-frozen boxes (any of them keeps a row ref
+    unresolved), which is what `box_index.build` needs for gate resolution; the full counts stay in `collect()`."""
+    rows = [r for i in DOMAIN_INDICES for r in parse_index_rows(ACTIVE / i)]
+    owner = {}
+    for r in rows:
+        if r["handoff"]:
+            owner.setdefault(r["handoff"], r)
+    handoffs = {}
+    for name, p in sorted(handoff_paths().items()):
+        lines = p.read_text(encoding="utf-8", errors="replace").split("\n")
+        secs = scan_tracks(p)
+        per: dict[str, dict] = {}
+        n_open = 0
+        for lineno, state, body, _head in brc._boxes(p):
+            if state == "x" or _ROLLUP.search(body):
+                continue
+            std = _box_std_state(lines, lineno)
+            if std in ("rollup", "frozen"):
+                continue
+            n_open += 1
+            sec = next((t for t in secs if t["line"] < lineno <= t["end"]), None)
+            if sec:
+                per[sec["name"]] = per.get(sec["name"], 0) + 1
+        row = owner.get(name)
+        st = {"open": n_open, "blocked": 0, "row_id": row["id"] if row else None}
+        if secs:
+            st["tracks"] = [{"name": t["name"], "open": per.get(t["name"], 0), "blocked": 0} for t in secs]
+        handoffs[name] = st
+    return {"handoffs": handoffs, "rows": {r["id"]: r for r in rows}}
+
+
 def render_block(state: dict) -> str:
     lines = [BEGIN,
              "| Domain | Handoffs | Open | Blocked | Oldest advance |",
@@ -1607,18 +1640,18 @@ def main(argv: list[str] | None = None) -> int:
                     help="--check: judge boxes touched since this ref instead of the staged diff")
     args = ap.parse_args(argv)
 
+    if args.box_index:   # C0.2: box build ONLY (no classify, no pickaxe, no ledger) -- box_index.load() calls this
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+        import box_index
+        tmp = BOX_INDEX.with_suffix(f".json.{os.getpid()}.tmp")
+        tmp.write_text(box_index.dumps(box_index_doc(collect_light())), encoding="utf-8")
+        os.replace(tmp, BOX_INDEX)
+        return 0
+
     state = collect()
 
     if args.json:
         print(json.dumps(state, indent=2, sort_keys=True))
-        return 0
-
-    if args.box_index:
-        sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
-        import box_index
-        tmp = BOX_INDEX.with_suffix(f".json.{os.getpid()}.tmp")
-        tmp.write_text(box_index.dumps(box_index_doc(state)), encoding="utf-8")
-        os.replace(tmp, BOX_INDEX)
         return 0
 
     if args.summary:
