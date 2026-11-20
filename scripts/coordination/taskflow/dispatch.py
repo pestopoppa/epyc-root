@@ -19,6 +19,8 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
+import os
 import json
 import re
 import subprocess
@@ -91,7 +93,13 @@ def _git(repo: Path, *a: str, check=True) -> subprocess.CompletedProcess:
 
 def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]:
     repo = schema.REPOS[task["repo"]]
-    lane = base_dir / "lane"
+    # r3: the 35B miscopied long digit-heavy lane paths (".../canary-r3-2026120/.../t00/lane" for t02) ->
+    # short lane roots: /mnt/raid0/llm/tf/<4 hex>/w<n>
+    root = Path(os.environ.get("TASKFLOW_LANE_ROOT", "/mnt/raid0/llm/tf"))
+    root.mkdir(parents=True, exist_ok=True)
+    lane = root / hashlib.sha1(str(base_dir).encode()).hexdigest()[:4]
+    base_dir.mkdir(parents=True, exist_ok=True)
+    (base_dir / "lane.path").write_text(str(lane))
     base = _git(repo, "rev-parse", "origin/main").stdout.strip()
     _git(repo, "worktree", "add", "-q", "-b", branch, str(lane), base)
     return repo, lane, base

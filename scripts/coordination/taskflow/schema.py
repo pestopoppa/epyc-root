@@ -20,6 +20,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -98,6 +99,16 @@ def named_paths(text: str) -> list[str]:
     return seen
 
 
+def resolve_basename(root: Path, name: str) -> str | None:
+    """A bare file name the box cites -> its tracked path when exactly one tracked file has that name."""
+    try:
+        out = subprocess.run(["git", "-C", str(root), "ls-files", f"*/{name}", name], capture_output=True,
+                             text=True, timeout=20).stdout.split()
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return out[0] if len(out) == 1 else None
+
+
 def pick_repo(paths: list[str], text: str) -> str:
     hits = {name: sum((root / p).exists() for p in paths) for name, root in REPOS.items() if root.exists()}
     for name in ("epyc-orchestrator", "epyc-inference-research", "epyc-web"):
@@ -127,6 +138,11 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
     repo = pick_repo(paths, goal)
     rroot = REPOS[repo]
     inputs = [p for p in paths if (rroot / p).exists()]
+    for p in [p for p in paths if "/" not in p and not (rroot / p).exists()]:
+        hit = resolve_basename(rroot, p)          # r3 DHM-8: `m2_guards.py` lives at scripts/dev_harness/
+        if hit:
+            inputs.append(hit)
+            paths.remove(p)
     for p in rec.get("inputs") or []:
         if p not in inputs and (rroot / p).exists():
             inputs.append(p)
