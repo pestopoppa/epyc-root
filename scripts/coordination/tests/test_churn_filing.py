@@ -325,6 +325,27 @@ class TestSupersede(Base):
         self.assertFalse(self.filed("bf-r3")); self.assertFalse(self.filed("solo-r1"))
         self.assertIn("SUPERSEDED-BY bf-r3", self.read_filed("bf-r1"))
 
+    def test_publish_sweep_names_real_successor(self):
+        # r7c's successor r7d (its own supersedes); a later publish of an unrelated row must not claim it
+        self.row("tf-c14-r7c", where=".withdrawn", rc=75, published="2026-11-06T01:00:00Z")
+        Path(self.flags, "grants", "tf-c14-r7c.ended").write_text("rc=75 reason=superseded-by:tf-c14-r7d\n")
+        self.row("tf-c14-r7d", ended=False, published="2026-11-06T02:00:00Z", supersedes=["tf-c14-r7c"])
+        self.row("ak-route2", ended=False, published="2026-11-06T03:00:00Z")
+        lines = []
+        rep = filing.supersede_on_publish(self.flags, "ak-route2", log=lines.append)
+        self.assertEqual(rep["successor"]["tf-c14-r7c"], "tf-c14-r7d")
+        self.assertIn("SUPERSEDED-BY tf-c14-r7d", self.read_filed("tf-c14-r7c"))
+        self.assertEqual(self.verdict("tf-c14-r7c")["filed_by"], "filing.supersede:sweep")
+        self.assertFalse(any(l.startswith("SUPERSEDE-FILED ak-route2") for l in lines), lines)
+        self.assertTrue(any(l.startswith("SUPERSEDE-SWEEP tf-c14-r7c: superseded-by=tf-c14-r7d") for l in lines), lines)
+
+    def test_publish_own_supersede_labelled_filed(self):
+        self.row("own-r1", published="2026-11-06T01:00:00Z"); self.row("own-r2", ended=False, published="2026-11-06T02:00:00Z")
+        lines = []
+        filing.supersede_on_publish(self.flags, "own-r2", log=lines.append)
+        self.assertEqual(self.verdict("own-r1")["filed_by"], "filing.supersede")
+        self.assertTrue(any(l.startswith("SUPERSEDE-FILED own-r2: superseded=['own-r1']") for l in lines), lines)
+
     def test_publish_hook_never_raises(self):
         import publish_row
         with patch.object(filing, "supersede_lineage", side_effect=RuntimeError("boom")):
