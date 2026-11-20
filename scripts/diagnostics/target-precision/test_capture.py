@@ -155,3 +155,157 @@ def test_symlink_raw_refuses(panel):
     raw.symlink_to(target)
     with pytest.raises((ValueError, OSError)):
         finish(panel)
+
+
+def load_module(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.fixture
+def integrated(panel, tmp_path):
+    runner = load_module('precision_runner_test', Path(__file__).with_name('runner.py'))
+    worker = tmp_path / 'worker.py'
+    worker.write_text('''import argparse, json, pathlib, sys
+p=argparse.ArgumentParser()
+p.add_argument('--plan'); p.add_argument('--cell-id'); p.add_argument('--output')
+a=p.parse_args(); plan=json.loads(pathlib.Path(a.plan).read_text())
+assert pathlib.Path(a.output).with_name('opened.json').exists()
+mode=plan['runner'].get('test_mode', 'ok')
+if mode == 'missing': sys.exit(2)
+if mode == 'malformed': pathlib.Path(a.output).write_text('broken'); sys.exit(0)
+if mode in ('failed', 'invalid', 'abstained'):
+    value={'status':mode,'error':'test native failure'}
+else:
+    value={'status':'ok', 'positions':[{'position':0,'accepted':1,'drafted':2}],
+           'accepted':1,'drafted':2,'numerical_divergence':{'max_abs':0.001}}
+pathlib.Path(a.output).write_text(json.dumps(value))
+if mode == 'nonzero': sys.exit(3)
+''')
+    plan = json.loads(panel[0].read_text())
+    plan.update(origin='native_claimed', measurement_labels=dict(
+        id_prefix='test-only', date='2026-11-20', category='CANDIDATE',
+        claim='successful-cell acceptance in the declared precision panel'))
+    plan['runner'] = {'argv': [sys.executable, str(worker)], 'timeout_s': 10}
+    pp = write(tmp_path / 'runner-plan.json', plan)
+    dest = tmp_path / 'run'
+    return runner, pp, dest
+
+
+def projection():
+    from scripts.vidya.adapters import target_precision
+    return target_precision
+
+
+def test_runner_original_discovery_and_shared_grade(integrated):
+    runner, plan, dest = integrated
+    result = runner.run_matrix(plan, dest)
+    assert result['counts']['ok'] == 3
+    assert result['weighted_acceptance'] == 0.5
+    adapter = projection()
+    rows = adapter.native_rows(dest / 'final.json')
+    assert len(rows) == 3
+    from claim_tuple import grade
+    for row in rows:
+        claim = adapter.project(row)
+        assert claim.value == 0.5
+        assert claim.metric_direction == 'higher_better'
+        assert claim.protocol_id == '' and claim.reps is None
+        assert grade(claim)[0] == 'Judged'
+        assert claim.extra['causal_gate'] == 'UNRESOLVED'
+    with pytest.raises(FileExistsError):
+        runner.run_matrix(plan, dest)
+
+
+@pytest.mark.parametrize('mode,status', [('failed','failed'), ('invalid','invalid'),
+    ('abstained','abstained'), ('missing','failed'), ('nonzero','failed'), ('malformed','invalid')])
+def test_runner_retains_all_terminal_cells(integrated, mode, status):
+    runner, plan, dest = integrated
+    mutate(plan, lambda p: p['runner'].update(test_mode=mode))
+    result = runner.run_matrix(plan, dest)
+    assert result['counts'][status] == 3
+    assert len(result['cells']) == 3
+    assert result['weighted_acceptance'] is None
+    assert projection().native_rows(dest / 'final.json') == ()
+    for row in result['cells']:
+        assert row['native']['error']
+        assert row['native']['native_artifacts']
+        assert 'accepted' not in row['native']
+    capture.read_precision(dest / 'final.json')
+
+
+@pytest.mark.parametrize('part', ['raw', 'cell', 'opening', 'plan', 'stdout', 'summary', 'metric'])
+def test_projection_refuses_changed_originals(integrated, part):
+    runner, plan, dest = integrated
+    runner.run_matrix(plan, dest)
+    adapter = projection()
+    rows = adapter.native_rows(dest / 'final.json')
+    paths = {'raw': dest/'0.raw.json', 'cell': dest/'0.cell.json',
+             'opening': dest/'opened.json', 'plan': plan, 'stdout': dest/'0.stdout'}
+    if part in paths:
+        with paths[part].open('a') as stream:
+            stream.write(' ')
+    elif part == 'summary':
+        mutate(dest/'final.json', lambda r: r.update(weighted_acceptance=1.0))
+    else:
+        mutate(dest/'final.json', lambda r: r['measurements'][0].update(value=1.0))
+    with pytest.raises(ValueError):
+        adapter.native_rows(dest / 'final.json')
+    with pytest.raises(ValueError):
+        adapter.project(rows[0])
+
+
+@pytest.mark.parametrize('part', ['raw', 'cell', 'opening', 'plan'])
+def test_discovery_refuses_lost_originals(integrated, part):
+    runner, plan, dest = integrated
+    runner.run_matrix(plan, dest)
+    {'raw':dest/'0.raw.json', 'cell':dest/'0.cell.json',
+     'opening':dest/'opened.json', 'plan':plan}[part].unlink()
+    with pytest.raises(ValueError):
+        projection().native_rows(dest / 'final.json')
+
+
+def test_synthetic_origin_and_absent_labels_emit_no_rows(integrated):
+    runner, plan, dest = integrated
+    mutate(plan, lambda p: p.update(origin='synthetic'))
+    runner.run_matrix(plan, dest)
+    assert projection().native_rows(dest / 'final.json') == ()
+    mutate(plan, lambda p: (p.update(origin='native_claimed'), p.pop('measurement_labels')))
+    runner.run_matrix(plan, dest.with_name('unlabelled'))
+    assert projection().native_rows(dest.with_name('unlabelled') / 'final.json') == ()
+
+
+def test_foreign_metric_and_fabricated_values_refuse(integrated):
+    runner, plan, dest = integrated
+    runner.run_matrix(plan, dest)
+    adapter = projection()
+    row = adapter.native_rows(dest / 'final.json')[0]
+    with pytest.raises(ValueError):
+        adapter.project(dict(row, measurement_id='foreign'))
+    with pytest.raises(ValueError):
+        adapter.project(dict(row, value=100))
+
+
+def test_runner_timeout_retained_and_bad_command_refused(integrated):
+    runner, plan, dest = integrated
+    mutate(plan, lambda p: p['runner'].update(timeout_s=0.000001))
+    result = runner.run_matrix(plan, dest)
+    assert result['counts']['failed'] == 3
+    capture.read_precision(dest / 'final.json')
+    mutate(plan, lambda p: p['runner'].update(argv='shell command'))
+    with pytest.raises(ValueError, match='argv or timeout'):
+        runner.run_matrix(plan, dest.with_name('bad'))
+    assert not dest.with_name('bad').exists()
+
+
+def test_discovery_refuses_symlink_original(integrated):
+    runner, plan, dest = integrated
+    runner.run_matrix(plan, dest)
+    raw = dest / '0.raw.json'
+    other = dest / 'saved.json'
+    raw.rename(other)
+    raw.symlink_to(other)
+    with pytest.raises(ValueError):
+        projection().native_rows(dest / 'final.json')

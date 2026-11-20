@@ -99,6 +99,14 @@ def _plan(plan):
         if cell['cell_id'] in seen or case in seen:
             raise ValueError('duplicate cell or case')
         seen.update((cell['cell_id'], case))
+    labels = plan.get('measurement_labels')
+    if labels is not None:
+        if not isinstance(labels, dict) or set(labels) != {'id_prefix', 'date', 'category', 'claim'}:
+            raise ValueError('invalid measurement labels')
+        if any(not isinstance(v, str) or not v.strip() for v in labels.values()):
+            raise ValueError('empty measurement label')
+        if labels['category'] not in ('BASELINE', 'CANDIDATE', 'OPTIMUM'):
+            raise ValueError('invalid measurement category')
     return plan
 
 
@@ -120,7 +128,7 @@ def open_capture(plan_path, opened_path):
     return record
 
 
-def finalize_precision(opened_path, cell_paths, output_path):
+def _finalized(opened_path, cell_paths):
     """Bind every planned cell, including failures, to original native records.
 
     Missing counts remain null; weighted acceptance uses summed accepted/drafted
@@ -156,6 +164,11 @@ def finalize_precision(opened_path, cell_paths, output_path):
             raise ValueError('native shared settings mismatch')
         if cell.get('case') != expected[cid]:
             raise ValueError('native case identity mismatch')
+        for artifact in cell.get('native_artifacts', []):
+            from scripts.vidya.qwen4exp_quality_capture import stable_bytes_identity
+            _, observed = stable_bytes_identity(Path(artifact['path']))
+            if observed['sha256'] != artifact['sha256']:
+                raise ValueError('native artifact bytes changed')
         status = cell.get('status')
         if status not in totals:
             raise ValueError('unknown terminal status')
@@ -214,5 +227,36 @@ def finalize_precision(opened_path, cell_paths, output_path):
               'accepted': accepted, 'drafted': drafted, 'by_quant': by_quant,
               'causal_gate': 'UNRESOLVED', 'projection_ready': False,
               'authority': 'declared_native_fields_only_no_runtime_or_weight_equivalence_proof'}
+    labels = plan.get('measurement_labels')
+    result['measurements'] = []
+    if labels:
+        for quant, counts in sorted(by_quant.items()):
+            result['measurements'].append(dict(
+                measurement_id=labels['id_prefix'] + ':' + quant,
+                metric='successful_cell_weighted_acceptance',
+                value=counts['accepted'] / counts['drafted'], date=labels['date'],
+                category=labels['category'], claim=labels['claim'],
+                metric_direction='higher_better', unit='fraction',
+                target_quant=quant, accepted=counts['accepted'], drafted=counts['drafted']))
+    return result
+
+
+def finalize_precision(opened_path, cell_paths, output_path):
+    result = _finalized(opened_path, cell_paths)
     _exclusive(output_path, result)
     return result
+
+
+def read_precision(output_path):
+    """Reopen originals and replay every field, refusing edited or lost evidence."""
+    result, identity = _read(output_path)
+    if result.get('schema') != SCHEMA or result.get('phase') != 'finalized':
+        raise ValueError('not a prospective precision closure')
+    opened = result['opened_file']
+    _, observed = _read(opened['path'])
+    if observed != opened:
+        raise ValueError('opening identity changed')
+    paths = [cell['source_file']['path'] for cell in result['cells']]
+    if _finalized(opened['path'], paths) != result:
+        raise ValueError('closure differs from retained originals')
+    return result, identity

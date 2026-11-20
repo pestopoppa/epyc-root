@@ -3255,6 +3255,12 @@ cannot establish a precision cause; static MoE tensor eligibility is not a runti
 is qualitative and emits no omission rate or promotion warrant. These are new proposed owner
 extensions, not amendments to the completed decision-tools checkpoint or application approval.
 
+2026-11-20 target-precision profile implementation: the prospective matrix entry point
+and strict `target_precision` projection now replay retained originals and share the
+measurement ladder. Model-free fixtures only; native-worker adoption, resource admission,
+matched-weight/numerical controls and the planning-context canary remain unresolved.
+No historical measurement warrant or causal precision result is created.
+
 ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
 
 - **[declined: ws58 2026-11-03 content-review: merged into VB-KVU16H]** **VB-KVU-16B — write side + projection for the KVU-16b concurrent-residency replay** (CLAUDE.md *Belief
