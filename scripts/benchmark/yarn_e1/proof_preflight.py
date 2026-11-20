@@ -19,6 +19,51 @@ SOURCE_ROOT = "scripts/benchmark/yarn_e1"
 DEFAULT_REPO = "/mnt/raid0/llm/epyc-inference-research"
 
 
+def port_pid(port: int, *, proc=Path('/proc')) -> int | None:
+    """Resolve a TCP listener without ss; ambiguous/unreadable ownership refuses.
+
+    Socket tables and fd links must be from the same network/PID namespace.
+    A present listener with no visible owner is not an absent listener.
+    """
+    inodes = set()
+    for name in ('tcp', 'tcp6'):
+        table = proc / 'net' / name
+        try:
+            lines = table.read_text().splitlines()[1:]
+        except FileNotFoundError:
+            if name == 'tcp6':
+                continue  # IPv6 may be disabled.
+            raise
+        for line in lines:
+            fields = line.split()
+            if len(fields) < 10:
+                raise RuntimeError('malformed TCP socket table')
+            if fields[3] == '0A' and int(fields[1].rsplit(':', 1)[1], 16) == port:
+                inodes.add(fields[9])
+    if not inodes:
+        return None
+    owners = {inode: set() for inode in inodes}
+    for process in proc.iterdir():
+        if not process.name.isdecimal():
+            continue
+        try:
+            for fd in (process / 'fd').iterdir():
+                try:
+                    target = fd.readlink().as_posix()
+                except OSError:
+                    continue  # fd closed or inaccessible during inspection
+                if target.startswith('socket:[') and target.endswith(']'):
+                    inode = target[8:-1]
+                    if inode in owners:
+                        owners[inode].add(int(process.name))
+        except OSError:
+            continue  # unrelated process may exit or hide its descriptors
+    pids = set().union(*owners.values())
+    if any(not value for value in owners.values()) or len(pids) != 1:
+        raise RuntimeError(f'listener ownership unavailable or ambiguous on port {port}')
+    return pids.pop()
+
+
 def load_runner(repo: str):
     """Import the two reviewed modules in memory, independent of checkout HEAD."""
     def source(name):
@@ -44,6 +89,8 @@ def load_runner(repo: str):
             sys.modules.pop("yarn_proof", None)
         else:
             sys.modules["yarn_proof"] = previous
+    # Preserve pinned proof/host checks, replacing only the ss-dependent lookup.
+    runner.port_pid = port_pid
     return runner
 
 
