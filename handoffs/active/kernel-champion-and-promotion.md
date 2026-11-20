@@ -70,6 +70,11 @@
       · gates: needs the exact request bodies, which r1 did not log (HARNESS-FIXES H5, Meter proxy body logging, landed 3a420fa70 for future runs). Without the bodies the replay cannot be verbatim -> NOT_JUDGEABLE in the probe row; re-run on the first taskflow run with H5 logs
       · falsification / stop rule: verbatim pair replayed -> LCP-selected (harness-side) or LRU-selected (server-side); missing bodies -> NOT_JUDGEABLE. est 120 s
       · 2026-11-20 note: row `ak-pfxc-probe-gpu-20261120-r2` filed pass (KEEP) 2026-11-20 P3 NOT_JUDGEABLE (r1 request bodies not logged); rerun on the first taskflow run with H5 body logs. [no-belief: row verdict filed by agent]
+- [ ] **PFXC-R8-REPLAY** [inference] Replay the real taskflow canary r8 trace (first run with full request bodies: /mnt/raid0/llm/tmp/taskflow-stage1-canary-r8-20261120/out/bodies/<seq>-w<slot>.json.gz, order/slot from requests.jsonl body_ref/t0/slot) in order per slot on C14 vs the pfxc store kernels/builds/gpu-20261120-62e955b9b-pfxc, Qwen3.6-35B-A3B-MTP Q8_0, C14 recipe.
+      · question: does PFXC A1+A2 raise prefix-cache hit rate on real traffic by >= +3 pt (brief estimate +8-12) and cut summed prefill ms; does A2 (copy-load past f_keep >= 0.25) fire on the shared system+tools prefix (F3 cache_n=0 cases)?
+      · gate: Pipeline pings that r8 has run; synthetic probe r2 got +3.0 pt / prefill 0.914x and could not exercise A2
+      · done when: hit rate, summed prefill ms, count of F3-shape requests and A2 copy-loads per arm filed; PFXC-A2 and PFXC-P3 resolved from it
+      · region: gpu-q3 · rank 30 · est from r2 rate (59 requests ~ 1 window) x r8 request count + 25 %
 - [x] **PFXC-P4** [inference] Probe for brief F2: the C14 server with `--cache-reuse 256` on this GGUF prints `cache_reuse is not supported by this context, it will be disabled`. model: Qwen3.6-35B-A3B-MTP Q8_0, row `ak-pfxc-probe-gpu-20261120` (C14 arm log).
       · done when: row `ak-pfxc-probe-gpu-20261120` (or its successor) is filed with this probe's verdict per the stop rule below
       · falsification / stop rule: PASS iff the line is present in the C14 arm server log; FAIL if absent. est 0 s extra
