@@ -39,3 +39,13 @@ def test_migrate_retires_markers_keeping_identity():
     assert "NEEDS-OWNER" in lines[i + 1] and lines[i + 1].startswith("      ")
     assert BI.text_sha("- [~] **A-2** partial".replace("[~]", "[ ]")) == BI.text_sha(lines[i])
     assert HM.migrate_text(new, boxes=False)[0] == new          # idempotent
+
+
+def test_closed_findings_go_to_history_children_stay():
+    txt = ("# H\n\n- [~] **E-1 — OVERSTATED, largely withdrawn 2026-07-27.** prose\n      more prose\n"
+           "  - [ ] **E-1b** still open\n- [~] **E-2** half done\n\n## History\n\n- old\n")
+    new, st = HM.migrate_text(txt, boxes=False)
+    assert st["legacy_markers"] == 1 and "- [ ] **E-1b** still open" in new          # child dedented, kept
+    hist = new.split("## History", 1)[1]
+    assert "**E-1 — OVERSTATED" in hist and "[declined: C7-migration " in hist and "withdrawn 2026-07-27]" in hist
+    assert "- [ ] **E-1 —" not in new and "- [ ] **E-2** half done" in new            # E-2: not closed -> NEEDS-OWNER

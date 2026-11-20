@@ -1269,40 +1269,18 @@ The refutation's most valuable output is not the null — it is what the null ex
 **every consumer of `memories.outcome`**, not just this probe: MemRL reward shaping, Q-values, the
 routing classifier's own training labels, and skill-bank effectiveness.
 
-- [ ] **EPD-1 — CONFIRMED but reclassified 2026-07-27: correct semantics, not a bug.**
-      NEEDS-OWNER — legacy `[~]` marker retired (handoff standard C7): tick it, freeze it or keep it open
-      `outcome` is indeed written once at INSERT and never updated. But a consumer audit found
-      **nothing in the live read path consumes it** — `retriever.py` contains the string `outcome`
-      zero times in 951 lines, and there is no SQL `WHERE` on the column anywhere in the repo. Live
-      routing ranks on `q_value` + cosine + cost, and `q_value` updates correctly (TD(0) reproduced
-      bit-exactly for the 5 highest-`update_count` rows). First-observation semantics is therefore
-      the right reading; rewriting it would silently redefine a historical field. **The genuinely
-      broken sibling was `update_count`** — see below — which DOES feed a live gate. Retained as
-      context; original text follows.
-  - [x] EPD-1-orig — `outcome` is written once at INSERT and NEVER updated. Verified directly:
-        ✅ 2026-09-23 — epyc-orchestrator `24b43990`: `update_q_value` re-derives `outcome` from the updated Q (success iff Q>0.5) on every update; INSERT mapping shared. No backfill (live store; SQL shape in the commit).
-      `orchestration/repl_memory/episodic_store.py:723-725` is
-      `UPDATE memories SET q_value = ?, updated_at = ?, update_count = ? WHERE id = ?` — `outcome`
-      is absent from the SET clause, while the INSERT at `:435` writes it once.
-      Measured impact on the live store: **max `update_count` = 7,888**, mean `20.3`, and **2,792 of
-      54,960 rows have >10 updates**. Every one of those rows still carries the sign of
-      *observation #1* while its `q_value` has been refined thousands of times. Decide: update
-      `outcome` alongside `q_value`, or formally demote `outcome` to "first-observation sign" and
-      stop treating it as a label.
-  - [ ] EPD-1b — **(operator-gated, live store)** backfill historical labels: `UPDATE memories SET outcome = CASE WHEN q_value > 0.5 THEN 'success' ELSE 'failure' END WHERE update_count > 0`. Until then rows never updated again keep their first-observation label; EP-5 should filter to rows updated after 24b43990 or run after the backfill.
-    - 2026-11-09 audit: SV, operator-gated live store. The SQL threshold `q_value > 0.5` spans two reward eras (E9 and E18, duration axis from 2026-09-24), so one cut mislabels pre-E18 rows; split by era or recompute from the progress logs before applying. Not an Autopilot dependency.
-- [ ] **EPD-2 — OVERSTATED, largely withdrawn 2026-07-27.** The original claim was that `failure`
-      NEEDS-OWNER — legacy `[~]` marker retired (handoff standard C7): tick it, freeze it or keep it open
-      conflates errors with cost penalties on correct answers (`reward <= 0 -> failure`, with reward
-      carrying latency / escalation −0.15 / delegation-misattribution −0.10 penalties). Adversarial
-      verification measured the actual reach: it explains **~4.3%** of live-traffic failure labels
-      (207 of 4,822), not a dominant share. And the related `reward == 0.0 -> failure` is **correct
-      behaviour, not a bug** — `seeding_rewards.py:452-468` defines
-      `success_reward(passed) = 1.0 if passed else 0.0`, and genuine no-signal cases are dropped one
-      branch earlier as `INFRA_SKIP` (`seeding_eval.py:1268-1279`). The q_value histogram confirms
-      the binary encoding: the never-updated external population is 98.2% concentrated on exactly
-      {1.0, 0.5}. **`outcome='failure'` on those rows is the right label.** No action; retained so the
-      claim is not re-derived.
+- [x] EPD-1-orig — `outcome` is written once at INSERT and NEVER updated. Verified directly:
+      ✅ 2026-09-23 — epyc-orchestrator `24b43990`: `update_q_value` re-derives `outcome` from the updated Q (success iff Q>0.5) on every update; INSERT mapping shared. No backfill (live store; SQL shape in the commit).
+    `orchestration/repl_memory/episodic_store.py:723-725` is
+    `UPDATE memories SET q_value = ?, updated_at = ?, update_count = ? WHERE id = ?` — `outcome`
+    is absent from the SET clause, while the INSERT at `:435` writes it once.
+    Measured impact on the live store: **max `update_count` = 7,888**, mean `20.3`, and **2,792 of
+    54,960 rows have >10 updates**. Every one of those rows still carries the sign of
+    *observation #1* while its `q_value` has been refined thousands of times. Decide: update
+    `outcome` alongside `q_value`, or formally demote `outcome` to "first-observation sign" and
+    stop treating it as a label.
+- [ ] EPD-1b — **(operator-gated, live store)** backfill historical labels: `UPDATE memories SET outcome = CASE WHEN q_value > 0.5 THEN 'success' ELSE 'failure' END WHERE update_count > 0`. Until then rows never updated again keep their first-observation label; EP-5 should filter to rows updated after 24b43990 or run after the backfill.
+  - 2026-11-09 audit: SV, operator-gated live store. The SQL threshold `q_value > 0.5` spans two reward eras (E9 and E18, duration axis from 2026-09-24), so one cut mislabels pre-E18 rows; split by era or recompute from the progress logs before applying. Not an Autopilot dependency.
 - [ ] **EPD-3 — the embedding index mixes >=3 text conventions, so the vector leaks the writer path.**
       Observed conventions: `"type:{t} | objective:{o[:200]} | priority:{p}"`,
       `"type:chat | objective:{p[:200]}"`, and raw <=450-char text from
@@ -4190,3 +4168,26 @@ Source batch: 12 entries ingested 2026-11-06 (t3code, Foundry Local, HarnessMM +
 
 - [ ] **RTG-VAR-2 — Add a variant dimension to the model descriptor (rewritten 2026-11-09 for descriptor v3).** Descriptor v3 (`orchestration/model_descriptors.yaml`) is already keyed per (model, quant) with `quant`, `ctx_max`, `mem_gb`, `measured` and `role_bindings`, and its invariant is "keyed by physical model identity, never by role name". So a variant is NOT seeded from role entries: seed it from the existing per-(model, quant) records (4 physical models today) and decide whether a variant is a new sibling record per (model, quant, backend, device) or a sub-entry. Add `backend`, `device`, `path`, `sha256` (reuse the launch-time GGUF fingerprint pins from SEC-ART, 6dbc4e27, instead of re-hashing), `measured_tps`, `quality_ref`; normalise the free-form quant strings. Acceptance: schema plus a migration that resolves every existing (model, quant) record to at least one variant with no invented measurement, and `role_bindings` still resolve through the model, not the variant. Decision needed: sibling record vs sub-entry (recommend sub-entry under the (model, quant) record, so the per-(model, quant) invariant and existing readers stay unchanged).
 
+## History
+
+- **EPD-2 — OVERSTATED, largely withdrawn 2026-07-27.** The original claim was that `failure` [declined: C7-migration 2026-11-20 withdrawn 2026-07-27]
+      conflates errors with cost penalties on correct answers (`reward <= 0 -> failure`, with reward
+      carrying latency / escalation −0.15 / delegation-misattribution −0.10 penalties). Adversarial
+      verification measured the actual reach: it explains **~4.3%** of live-traffic failure labels
+      (207 of 4,822), not a dominant share. And the related `reward == 0.0 -> failure` is **correct
+      behaviour, not a bug** — `seeding_rewards.py:452-468` defines
+      `success_reward(passed) = 1.0 if passed else 0.0`, and genuine no-signal cases are dropped one
+      branch earlier as `INFRA_SKIP` (`seeding_eval.py:1268-1279`). The q_value histogram confirms
+      the binary encoding: the never-updated external population is 98.2% concentrated on exactly
+      {1.0, 0.5}. **`outcome='failure'` on those rows is the right label.** No action; retained so the
+      claim is not re-derived.
+
+- **EPD-1 — CONFIRMED but reclassified 2026-07-27: correct semantics, not a bug.** [declined: C7-migration 2026-11-20 withdrawn 2026-07-27]
+      `outcome` is indeed written once at INSERT and never updated. But a consumer audit found
+      **nothing in the live read path consumes it** — `retriever.py` contains the string `outcome`
+      zero times in 951 lines, and there is no SQL `WHERE` on the column anywhere in the repo. Live
+      routing ranks on `q_value` + cosine + cost, and `q_value` updates correctly (TD(0) reproduced
+      bit-exactly for the 5 highest-`update_count` rows). First-observation semantics is therefore
+      the right reading; rewriting it would silently redefine a historical field. **The genuinely
+      broken sibling was `update_count`** — see below — which DOES feed a live gate. Retained as
+      context; original text follows.

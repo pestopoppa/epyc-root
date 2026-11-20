@@ -233,10 +233,48 @@ def row_map(root):
 LEGACY_NOTE = "NEEDS-OWNER — legacy `[{m}]` marker retired (handoff standard C7): tick it, freeze it or keep it open"
 
 
+_CLOSED_FINDING = re.compile(r"\bwithdrawn\b|\breclassified\b|\bOVERSTATED\b|\bnot a bug\b|\bRESOLVED\b", re.I)
+_DATE = re.compile(r"\b(20\d{2}-\d{2}-\d{2})\b")
+
+
+def withdraw_to_history(lines, i, who="C7-migration", today=None):
+    """C7 disposition for a CLOSED FINDING (not a task): the box's OWN block leaves the backlog and lands under
+    `## History` as a plain line `- <first line> [declined: <who> <today> withdrawn <date>]` plus its prose; nested
+    child boxes stay where they are, dedented to the parent's level (text_sha ignores indentation)."""
+    import datetime
+    today = today or datetime.date.today().isoformat()
+    m = L1.CHECKBOX.match(lines[i]) or L1.LEGACY_MARKER.match(lines[i])
+    ind = len(m.group(1))
+    end = _own_end(lines, i)
+    blk_end = _block_end(lines, i)
+    when = (_DATE.search(m.group(3)) or [None, "?"])[1] if _DATE.search(m.group(3)) else "?"
+    head = m.group(3).replace("NEEDS-OWNER", "").strip()
+    prose = [l for l in lines[i + 1:end] if "legacy `[" not in l]
+    note = [f"- {head} [declined: {who} {today} withdrawn {when}]"] + prose
+    kids = [l[2:] if l.startswith(" " * (ind + 2)) else l for l in lines[end:blk_end]]
+    rest = lines[:i] + kids + lines[blk_end:]
+    h = next((k for k, l in enumerate(rest) if re.match(r"^##\s+History\b", l)), None)
+    if h is None:
+        while rest and not rest[-1].strip():
+            rest.pop()
+        return rest + ["", "## History", ""] + note + [""]
+    return rest[:h + 1] + [""] + note + rest[h + 1:]
+
+
 def retire_legacy_markers(lines, stats):
     """C7: `- [~|>|!] <text>` -> `- [ ] <text>` + a continuation line carrying NEEDS-OWNER (the owner decides). The
     text after the marker -- the identity, text_sha -- is unchanged; fenced examples are left alone."""
     import box_index as BI
+    sec = BI.sections(lines)
+    # pass 1: closed findings (withdrawn / reclassified / OVERSTATED / not a bug / RESOLVED) go to ## History
+    while True:
+        sec = BI.sections(lines)
+        hit = next((i for i, l in enumerate(lines) if not sec[i][4] and (m := L1.LEGACY_MARKER.match(l))
+                    and _CLOSED_FINDING.search(m.group(3))), None)
+        if hit is None:
+            break
+        lines = withdraw_to_history(lines, hit)
+        stats["legacy_withdrawn"] = stats.get("legacy_withdrawn", 0) + 1
     sec = BI.sections(lines)
     out = []
     for i, l in enumerate(lines):
