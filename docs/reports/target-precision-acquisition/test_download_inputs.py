@@ -2,6 +2,8 @@ import hashlib
 from pathlib import Path
 import download_inputs as m
 
+ORIGINAL_GUARD=m.guard
+
 class Response:
     status=200
     def __init__(self,data): self.data=data; self.headers={'Content-Length':str(len(data))}
@@ -151,3 +153,67 @@ def test_symlink_refused_without_touching_target(tmp_path,monkeypatch):
     (m.SCRATCH/'a.gguf.part').symlink_to(target)
     with pytest.raises(RuntimeError,match='refuse reuse'): m.download_inputs()
     assert target.read_bytes()==b'safe'
+
+
+def test_retry_reserves_only_missing_bytes_across_sources(tmp_path,monkeypatch):
+    # A later completed shard and a later partial must not be reserved twice.
+    first=setup_source(tmp_path,monkeypatch,b'first bytes')
+    second=b'already complete'; third=b'partly retained'
+    sources=tuple((n,'https://example.test/'+n,len(d),hashlib.sha256(d).hexdigest())
+                  for n,d in [('a.gguf',first),('b.gguf',second),('c.gguf',third)])
+    monkeypatch.setattr(m,'SOURCES',sources)
+    (m.SCRATCH/'b.gguf').write_bytes(second)
+    (m.SCRATCH/'c.gguf.part').write_bytes(third[:4])
+    # Exactly enough disk above the floor for missing bytes, no extra slack.
+    free=[150*m.GIB+len(first)+len(third)-4]
+    monkeypatch.setattr(m,'available',lambda path:free[0])
+    monkeypatch.setattr(m,'mem_available',lambda:300*m.GIB)
+    monkeypatch.setattr(m,'guard',ORIGINAL_GUARD)
+    calls=[]
+    class Accounted(Response):
+        def read(self,n):
+            chunk=super().read(n); free[0]-=len(chunk); return chunk
+    def network(req,**kw):
+        calls.append(req.full_url)
+        if req.full_url.endswith('a.gguf'): return Accounted(first)
+        assert req.full_url.endswith('c.gguf') and req.get_header('Range')=='bytes=4-'
+        r=Accounted(third[4:]); r.status=206
+        r.headers['Content-Range']=f'bytes 4-{len(third)-1}/{len(third)}'
+        return r
+    monkeypatch.setattr(m.urllib.request,'urlopen',network)
+    result=m.download_inputs()
+    assert result['status']=='COMPLETE',result
+    assert len(result['files'])==3 and len(calls)==2
+    assert free[0]==150*m.GIB
+
+
+def test_later_corrupt_completed_file_still_fails_digest(tmp_path,monkeypatch):
+    first=setup_source(tmp_path,monkeypatch)
+    later=b'later bytes'
+    monkeypatch.setattr(m,'SOURCES',m.SOURCES+(('b.gguf','https://example.test/b',len(later),hashlib.sha256(later).hexdigest()),))
+    (m.SCRATCH/'b.gguf').write_bytes(b'x'*len(later))
+    monkeypatch.setattr(m.urllib.request,'urlopen',lambda *a,**k:Response(first))
+    result=m.download_inputs()
+    assert result['status']=='FAILED' and 'pinned identity' in result['reason']
+    assert (m.SCRATCH/'b.gguf').read_bytes()==b'x'*len(later)
+
+
+def test_later_oversized_partial_refused_before_network(tmp_path,monkeypatch):
+    first=setup_source(tmp_path,monkeypatch)
+    monkeypatch.setattr(m,'SOURCES',m.SOURCES+(('b.gguf','https://example.test/b',1,'0'*64),))
+    (m.SCRATCH/'b.gguf.part').write_bytes(b'oversized')
+    def network(*a,**kw): raise AssertionError('must refuse before transfer')
+    monkeypatch.setattr(m.urllib.request,'urlopen',network)
+    result=m.download_inputs()
+    assert result['status']=='FAILED' and 'exceeds pinned size' in result['reason']
+
+
+def test_later_ambiguous_files_refused_before_network(tmp_path,monkeypatch):
+    setup_source(tmp_path,monkeypatch)
+    monkeypatch.setattr(m,'SOURCES',m.SOURCES+(('b.gguf','https://example.test/b',1,'0'*64),))
+    (m.SCRATCH/'b.gguf').write_bytes(b'x')
+    (m.SCRATCH/'b.gguf.part').write_bytes(b'x')
+    def network(*a,**kw): raise AssertionError('must refuse before transfer')
+    monkeypatch.setattr(m.urllib.request,'urlopen',network)
+    result=m.download_inputs()
+    assert result['status']=='FAILED' and 'ambiguous' in result['reason']
