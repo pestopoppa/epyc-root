@@ -91,7 +91,9 @@ def main():
     alive = survivors(path) if path else []
     if not alive:
         return 0
-    lines = "; ".join(f"{t} ({cmd})" for t, cmd in alive[:8])
+    # P5-1: only harness-issued task ids go into context, never subagent-authored command text
+    # (a relayed statement must not reach the dispatching model through a hook channel).
+    lines = ", ".join(re.sub(r"[^A-Za-z0-9_-]", "", t)[:32] for t, _ in alive[:8])
     msg = (f"HAND-BACK SWEEP: the subagent left {len(alive)} background task(s) not stopped and not reported "
            f"finished: {lines}. Check each and TaskStop it unless it is meant to outlive the hand-back.")
     if event == "SubagentStop":

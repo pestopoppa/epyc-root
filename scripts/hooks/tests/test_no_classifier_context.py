@@ -12,7 +12,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 SCAN = [ROOT / "scripts/hooks", ROOT / "scripts/coordination", ROOT / ".opencode/plugins",
         ROOT / ".claude/hooks", ROOT / ".claude/settings.json"]
 SELF = pathlib.Path(__file__).resolve()
-ALLOWED_HSO = {"scripts/hooks/session_start_lane_notice.py", "scripts/hooks/planner_readonly_gate.py"}
+# P5-1 reviewed 2026-11-20 (AK audit C2/C3/C5): additionalContext only, fixed text plus an integer
+# (staleness) or harness-issued task ids (hand-back sweep); no operator- or subagent-authored text.
+ALLOWED_HSO = {"scripts/hooks/session_start_lane_notice.py", "scripts/hooks/planner_readonly_gate.py",
+               "scripts/hooks/check_agent_dispatch.py", "scripts/hooks/posttool_handback_sweep.py",
+               "scripts/hooks/session_start_staleness.py"}
 EXT = {".py", ".sh", ".ts", ".js", ".json", ".yaml", ".yml"}
 
 

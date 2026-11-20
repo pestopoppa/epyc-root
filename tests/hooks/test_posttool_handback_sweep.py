@@ -34,7 +34,7 @@ def test_alive_task_is_listed_on_posttool(tmp_path):
     r = run({"hook_event_name": "PostToolUse", "tool_name": "Agent", "agent_transcript_path": p})
     assert r.returncode == 0
     ctx = json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"]
-    assert "b1 (watch.sh)" in ctx and "b2" not in ctx
+    assert "b1" in ctx and "watch.sh" not in ctx and "b2" not in ctx
 
 
 def test_subagent_stop_uses_system_message(tmp_path):
