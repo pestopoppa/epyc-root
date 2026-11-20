@@ -79,7 +79,8 @@ operator decisions 1-6.
   suffix); frozen = `· ❄ frozen until: <event|ID>` on the box, a `❄ frozen until:` line under a
   `## Track:` heading, or `**Status**: FROZEN` for the whole file (frozen is its own bucket, never
   open); roll-up = `[roll-up]` or `· roll-up:`; partial = parent stays `[ ]`, `/log` adds a child.
-  `[~] [>] [!]` are being retired (Stage C ratify package); do not write them.
+  `[~] [>] [!]` are retired (Stage C, C7): they are not boxes, `--check` reports them as LEGACY-MARKER and
+  `handoff_migrate.py` rewrites them (closed findings -> `## History`, anything else -> `[ ]` + NEEDS-OWNER).
 - **Placement** — open boxes live ONLY under their track's `### Backlog`, in priority order (top =
   next). A file without `## Track:` is one implicit track with its `### Backlog` after the header.
   An open box anywhere else (History, Done, prose sections) is flagged `outside-backlog`; a box
@@ -94,6 +95,16 @@ operator decisions 1-6.
 | tick | `scripts/coordination/churn/wrapup.py` (belief required; verdict required for a result tick); `/log` for checkpoints |
 | see the parsed view | `python3 scripts/handoffs/task_lint.py dispatch FILE.md [--json]` |
 | next dispatchable box | `python3 scripts/coordination/taskflow/select.py` |
+| create a handoff | `python3 scripts/handoffs/new_handoff.py <slug> --row <ID> --domain <d>` (§2.1 anatomy) |
+| move a whole track out (> 6,000 lines or > 3 tracks) | `handoff_box.py split-file --file F --track T --to <new-slug>` (writes `handoffs/active/.moves.jsonl`; rowflow rows repoint by `text_sha`) |
+| compact old ticks (operator-invoked `/wrap-up` sweep only) | `handoff_compact.py F --audit <closure_audit.json>` (ticked boxes older than 30 d -> one `### Done` line; full blocks -> `handoffs/archived/`) |
+| proposals (LLM rewrite children) | written by `propose_rewrites.py`; accept / edit / reject at wrap-up (`handoff_box.py reject`) |
+| operator holds | `handoffs/active/holds.yaml` only (the single exclusion source; fails closed) |
+
+**Rows are generated (Stage C, C6).** Each domain index carries a generated table built from each handoff's
+`**Row**` / `**Domain**` header and its top dispatchable box. Until the 7-day criteria
+(`stale_next_action.py --compare-generated`) pass, the hand rows below stay authoritative; after the hand-row
+drop the header IS the row declaration and a hand-written row is a `--check` error.
 
 **Limits** (operator decision 4; reported by `--check` / `.box-index.json` `limits`): ≤ 60 open boxes
 per track, ≤ 24 continuation lines per box (else roll-up + children), ≤ 4,000 lines per handoff

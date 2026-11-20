@@ -54,3 +54,60 @@ def repo_path(ref, default_state: str = "active") -> str | None:
     if not path.endswith(".md"):
         return None
     return path if "/" in path else f"handoffs/{default_state}/{path}"
+
+
+# ------------------------------------------------------------------ handoff standard C4: box moves (repointing)
+# Every whole-track split / box move writes one JSONL line per moved box to handoffs/active/.moves.jsonl:
+#   {"box_id", "text_sha", "from": "a.md", "to": "b.md", "at"}
+# Readers resolve a row's handoff_task through it, so a row published before a split still finds its box.
+MOVES_REL = "handoffs/active/.moves.jsonl"
+
+
+def load_moves(root) -> list:
+    import json
+    import os
+    p = os.path.join(str(root), MOVES_REL)
+    out = []
+    try:
+        with open(p, encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    d = json.loads(line)
+                except ValueError:
+                    continue
+                if isinstance(d, dict) and d.get("to"):
+                    out.append(d)
+    except OSError:
+        pass
+    return out
+
+
+def moved_file(ref, root, sha=None, moves=None):
+    """The file a ref's box lives in NOW: follow .moves.jsonl by (text_sha) first, then by box id (the ref's TASK),
+    from the ref's file; returns the ref's own file when nothing moved it. Chains are followed (a.md -> b.md -> c.md)."""
+    r = parse(ref)
+    f, task = r.file, r.task
+    moves = load_moves(root) if moves is None else moves
+    seen = set()
+    while f and f not in seen:
+        seen.add(f)
+        hit = None
+        for m in moves:
+            if m.get("from") != f:
+                continue
+            if (sha and m.get("text_sha") == sha) or (task and not str(task).isdigit() and m.get("box_id") == task):
+                hit = m
+        if not hit:
+            break
+        f = hit["to"]
+    return f
+
+
+def resolve(ref, root, sha=None) -> str | None:
+    """`key(ref)` with its file repointed through the moves log (C4); None when the ref names no file."""
+    k = key(ref)
+    if not k:
+        return None
+    f = moved_file(ref, root, sha)
+    t = parse(ref).task
+    return f"{f}:{t}" if t else f

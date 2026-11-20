@@ -30,9 +30,13 @@ As of 2026-05-27, `handoffs/active/` contains 84 non-index active handoffs plus 
 ## Handoff Lifecycle
 
 ```
-CREATE   → handoffs/active/{topic}.md  (header carries **Scratch**: its scratch roots — docs/guides/agent-workflows/handoff-index-authoring.md § Scratch roots)
-WORK     → update handoff, relevant index, and progress/YYYY-MM/YYYY-MM-DD.md
-BLOCKED  → move to handoffs/blocked/ when the work cannot proceed, or mark active handoff BLOCKED and list it in blocked/BLOCKED.md
+CREATE   → scripts/handoffs/new_handoff.py <slug> --row <ID> --domain <d>  (standard anatomy; header carries **Row**/**Domain**/**Scratch**)
+WORK     → boxes via handoff_box.py add, ticks via churn/wrapup.py (done-when checked), progress/YYYY-MM/YYYY-MM-DD.md
+BLOCKED  → box level: `· gate: <ID>` (blocked is derived); file level: holds.yaml (operator) or handoffs/blocked/
+FREEZE   → handoff_box.py freeze (`· ❄ frozen until: <event>`); a frozen box is never dispatched
+SPLIT    → handoff_box.py split-file past 6,000 lines / 3 tracks (writes .moves.jsonl; rows repoint by text_sha)
+COMPACT  → handoff_compact.py, operator-invoked /wrap-up sweep only (old ticks -> ### Done lines + handoffs/archived/)
+OWNER    → ownership belongs to the handoff; sessions are replaceable (the dispatcher spawns a new owner when needed)
 COMPLETE → extract findings, move to handoffs/completed/, and update every index that linked it
 ARCHIVE  → move superseded or historical material to handoffs/archived/
 ```

@@ -528,6 +528,14 @@ def main(argv=None):
         return 0
     tick = (agent or {}).get("tick_text")
     task = str(m.get("handoff_task") or "")
+    try:   # C4: a box moved by a track split since publish is ticked where it lives now (.moves.jsonl)
+        import handoff_ref as _hr
+        moved = _hr.resolve(task, a.lane, m.get("handoff_task_sha")) if ":" in task else None
+        if moved and moved != _hr.key(task):
+            print(f"NOTE handoff_task {task} moved -> {moved}")
+            task = moved
+    except (ImportError, AttributeError):
+        pass
     refused = done_when_refusal(a.lane, task, verdict, result_path, rec) if tick and ":" in task else None
     if refused:
         rec["tick_refused"] = refused      # C2: durable in verdict.json, so dashboard/verdict_count see it without notify

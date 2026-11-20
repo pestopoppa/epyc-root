@@ -597,6 +597,14 @@ def task_box(spec, repo=None):
     ht = str(spec.get("handoff_task") or "").strip()
     f, _, task = ht.partition(":")
     path = os.path.join(repo or REPO, "handoffs", "active", os.path.basename(f))
+    if task.strip() and not task.strip().isdigit() and hasattr(handoff_ref, "resolve"):
+        # C4: a box moved by a track split since publish resolves by (handoff_task_sha) first, then id, via .moves.jsonl
+        moved = handoff_ref.resolve(ht, repo or REPO, spec.get("handoff_task_sha"))
+        if moved and moved != handoff_ref.key(ht):
+            print(f"WARN: handoff_task {ht!r} moved -> {moved} (.moves.jsonl); the row is repointed", file=sys.stderr)
+            spec["handoff_task"] = ht = moved
+            f, _, task = ht.partition(":")
+            path = os.path.join(repo or REPO, "handoffs", "active", os.path.basename(f))
     rf.need(task.strip(), f"handoff_task {ht!r} names no task: write \"<file>.md:<TASK-ID>\" so the publish gate can lint "
                           f"the box this row serves (BRF-T6-1)")
     task = task.strip()

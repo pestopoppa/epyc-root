@@ -313,6 +313,47 @@ def op_reject(lines, a, root):
     return rest[:hist + 1] + ["", note] + rest[hist + 1:]
 
 
+def split_file(path: Path, track: str, to_slug: str, root: Path = REPO_ROOT, dry_run=False, today=None) -> dict:
+    """C4 (standard §2.3, > 6,000 lines or > 3 tracks): move a whole `## Track: <track>` section into a NEW handoff
+    `handoffs/active/<to_slug>.md` (rendered by new_handoff.render, `**Parent**` pointing back), leave a pointer track
+    in the source, and append one `.moves.jsonl` line per moved box (box_id, text_sha, from, to, at) so rowflow readers
+    repoint rows by text_sha (handoff_ref.resolve). Zero first-line changes across both files (checked)."""
+    import datetime
+    import json
+    import new_handoff as NH
+    today = today or datetime.date.today().isoformat()
+    lines = path.read_text(encoding="utf-8").split("\n")
+    start = next((i for i, l in enumerate(lines) if re.match(r"^##\s+Track:\s*" + re.escape(track) + r"\s*$", l)), None)
+    if start is None:
+        raise BoxError(f"no `## Track: {track}` in {path.name}")
+    end = next((i for i in range(start + 1, len(lines)) if re.match(r"^#{1,2}\s", lines[i])), len(lines))
+    dest = root / "handoffs" / "active" / f"{to_slug}.md"
+    if dest.exists():
+        raise BoxError(f"{dest} exists")
+    row = next((re.sub(r"^\*\*Row\*\*:\s*", "", l).strip() for l in lines[:60] if l.startswith("**Row**:")), "XXX-0")
+    dom = next((re.sub(r"^\*\*Domain\*\*:\s*", "", l).strip() for l in lines[:60] if l.startswith("**Domain**:")), "")
+    head = NH.render(to_slug, row if re.fullmatch(r"[A-Z]{3}-\d+", row) else "XXX-0", dom or "unassigned", track=track,
+                     today=today, status=f"ACTIVE — split from {path.name} ({today}); the owning session assigns its row")
+    head = head.split("\n## Track:", 1)[0].rstrip("\n") + f"\n**Parent**: [{path.name}]({path.name})\n\n"
+    moved = lines[start:end]
+    new_src = lines[:start] + [lines[start], "", f"Moved to [{to_slug}.md]({to_slug}.md) on {today} "
+                                                 f"(handoff_box.py split-file).", ""] + lines[end:]
+    before = [l for l in lines if L1.CHECKBOX.match(l)]
+    after = [l for l in new_src + moved if L1.CHECKBOX.match(l)]
+    if sorted(before) != sorted(after):
+        raise BoxError("refusing: split would change a box first line")
+    moves = [{"box_id": L1.head_id(l), "text_sha": BI.text_sha(l), "from": path.name, "to": f"{to_slug}.md", "at": today}
+             for l in moved if L1.CHECKBOX.match(l)]
+    if not dry_run:
+        dest.write_text(head + "\n".join(moved).rstrip("\n") + "\n\n## Findings\n\n## History\n\n"
+                        f"- {today} split from {path.name} (handoff_box.py split-file)\n", encoding="utf-8")
+        path.write_text("\n".join(new_src), encoding="utf-8")
+        with open(root / "handoffs" / "active" / ".moves.jsonl", "a", encoding="utf-8") as fh:
+            for m in moves:
+                fh.write(json.dumps(m, sort_keys=True) + "\n")
+    return {"moved_boxes": len(moves), "to": str(dest), "lines_moved": len(moved)}
+
+
 OPS = {"add": op_add, "split": op_split, "refine": op_refine, "gate": op_gate, "freeze": op_freeze,
        "propose": op_propose, "reject": op_reject}
 
@@ -365,6 +406,8 @@ def parser():
     p.add_argument("--proposed-by", required=True); p.add_argument("--stop-rule")
     p = sub.add_parser("reject"); common(p)
     p.add_argument("--by", required=True); p.add_argument("--reason", required=True); p.add_argument("--date")
+    p = sub.add_parser("split-file"); common(p, box=False)
+    p.add_argument("--track", required=True); p.add_argument("--to", required=True)
     p = sub.add_parser("freeze"); common(p)
     p.add_argument("--track"); p.add_argument("--whole-file", action="store_true"); p.add_argument("--until", required=True)
     return ap
@@ -373,6 +416,13 @@ def parser():
 def main(argv=None):
     a = parser().parse_args(argv)
     path = Path(a.file)
+    if a.op == "split-file":
+        try:
+            print(split_file(path, a.track, a.to, dry_run=a.dry_run))
+        except BoxError as e:
+            print(f"handoff_box: {e}", file=sys.stderr)
+            return 1
+        return 0
     try:
         print(apply(path, a.op, a, dry_run=a.dry_run) or "(no change)")
     except BoxError as e:
