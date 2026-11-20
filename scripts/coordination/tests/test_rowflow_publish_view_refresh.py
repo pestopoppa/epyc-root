@@ -98,7 +98,7 @@ class ViewRefresh(unittest.TestCase):
         self._failing("exit 1")
         spec = os.path.join(self.d, "spec.json")
         with open(spec, "w") as f:
-            f.write('{"id": "vrt-1", "estimate_s": 600}')
+            f.write('{"id": "vrt-1", "owner": "t", "estimate_s": 600}')
         reached = []
         with mock.patch.object(pr, "REPO", self.view), \
                 mock.patch.object(pr, "check_handoff", side_effect=lambda s: reached.append(s) or (_ for _ in ()).throw(SystemExit(7))), \
