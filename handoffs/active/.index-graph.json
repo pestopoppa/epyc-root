@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T10:29:58Z",
+  "generated_at": "2026-11-20T10:33:26Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1083,7 +1083,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 939,
+          "line": 952,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1092,7 +1092,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1251,
+          "line": 1264,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1101,7 +1101,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1458,
+          "line": 1471,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1110,7 +1110,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1784,
+          "line": 1797,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1119,7 +1119,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2019,
+          "line": 2032,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1766,15 +1766,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 170,
-      "dispatchable": 37,
+      "closed": 171,
+      "dispatchable": 36,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 39,
+      "open": 38,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1817,14 +1817,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 28,
+          "dispatchable": 27,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 829,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 29,
+          "open": 28,
           "readiness": "blocked"
         }
       ]
