@@ -294,16 +294,60 @@ def _legacy_done_body(req: Request, day: str, checkpoint_id: str) -> str:
     return f"{req.task_text} ✅ {day} <!-- worker-checkpoint:{checkpoint_id} -->"
 
 
-def _child_body(req: Request, checkpoint_id: str) -> str:
-    """Handoff standard Stage C (C0.3): the child is a §2.2 box -- `· done when: resume — <action>` (the enforced
-    diff gate rule a) and `· gate: <parent ID>` -- with the idempotency marker BEFORE the fields so the `gate:` value
-    stays a clean ref list."""
+def _child_body(req: Request, checkpoint_id: str, child_id: str | None = None) -> str:
+    """Handoff standard Stage C (C0.3 + Fable review): the child is a §2.2 box -- `**<parent>.ck-<n>**` id,
+    `[non-inference]` class tag (an explicit tag wins over the regex classifier, so "GPU window" in the summary never
+    makes it inference), `· done when: resume — <action>` (diff-gate rule a). It carries NO gate: the PARENT gains
+    `· gate: <child>` instead, so the resume task is never blocked by its own open parent. The idempotency marker
+    sits before the fields."""
     label = "Blocked" if req.outcome == "blocked" else "Partial"
     resume = " ".join(str(req.resume_action or "").replace("·", "-").split())
+    head = f"**{child_id}** " if child_id else ""
     return (
-        f"**{label} checkpoint `{checkpoint_id}`** — {req.summary} <!-- worker-checkpoint:{checkpoint_id} --> "
-        f"· done when: resume — {resume} · gate: {_parent_id(req.task_text) or 'none'}"
+        f"{head}[non-inference] **{label} checkpoint `{checkpoint_id}`** — {req.summary} "
+        f"<!-- worker-checkpoint:{checkpoint_id} --> · done when: resume — {resume}"
     )
+
+
+def _handoff_box():
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "handoffs"))
+    try:
+        import handoff_box as _hb
+        return _hb
+    finally:
+        _sys.path.pop(0)
+
+
+def _attach_child(lines: list[str], index: int, req: Request, checkpoint_id: str) -> list[str]:
+    """Insert the child after the parent's OWN block and add `· gate: <child id>` to the parent as a continuation
+    line (set_field; the parent's first line -- its identity -- is never touched). keepends lines in, out."""
+    import sys as _sys
+    nl = "\r\n" if lines[index].endswith("\r\n") else "\n"
+    flat = [l.rstrip("\r\n") for l in lines]
+    hb = _handoff_box()
+    pid = _parent_id(req.task_text)
+    end = hb.own_end(flat, index)
+    sub_end = end
+    indent = len(flat[index]) - len(flat[index].lstrip())
+    while sub_end < len(flat) and flat[sub_end].strip() and (len(flat[sub_end]) - len(flat[sub_end].lstrip())) > indent:
+        sub_end += 1                                    # after the parent's existing nested children too
+    cid = None
+    if pid:
+        n = 1 + sum(1 for l in flat[index:sub_end] if f"**{pid}.ck-" in l)
+        cid = f"{pid}.ck-{n}"
+    child = f"{flat[index][:indent]}  - [ ] {_child_body(req, checkpoint_id, cid)}"
+    flat = flat[:sub_end] + [child] + flat[sub_end:]
+    if cid:
+        _sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "handoffs"))
+        try:
+            import task_lint as _tl
+        finally:
+            _sys.path.pop(0)
+        own, _ = _tl.L1.own_block(flat, index)
+        old = [g for g in _tl.split_refs(_tl.parse_fields(own).get("gate", "")) if g]
+        flat = hb.set_field(flat, index, "gate", ", ".join(old + [cid]))
+    return [l + nl for l in flat[:-1]] + [flat[-1] + (nl if lines and lines[-1].endswith(("\n",)) else "")]
 
 
 def _parent_id(task_text: str) -> str | None:
@@ -352,14 +396,12 @@ def _update_handoff(path: Path, req: Request, checkpoint_id: str, day: str) -> N
         if len(opens) != 1:
             raise CheckpointError(f"exact task text resolved to {len(opens)} open checkboxes; expected 1")
         index, match = opens[0]
-        child = f"{match.group('indent')}  - [ ] {_child_body(req, checkpoint_id)}"
-        expected_body = child.lstrip().split("] ", 1)[1]
-        if marked:
-            if len(marked) == 1 and marked[0][1].group("body") == expected_body:
+        if marked:      # replay: idempotency keys on the marker + this checkpoint's child body (id-independent)
+            body = marked[0][1].group("body")
+            if len(marked) == 1 and body.endswith(_child_body(req, checkpoint_id).split("[non-inference] ", 1)[1]):
                 return
             raise CheckpointError("checkpoint marker collision in handoff")
-        newline = "\r\n" if lines[index].endswith("\r\n") else "\n"
-        lines.insert(index + 1, child + newline)
+        lines = _attach_child(lines, index, req, checkpoint_id)
     _atomic_text(path, "".join(lines))
 
 

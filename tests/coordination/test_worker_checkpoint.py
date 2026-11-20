@@ -685,5 +685,39 @@ def test_nonterminal_child_is_a_standard_box_passing_the_diff_gate(lane: Path, o
     i = next(n for n, l in enumerate(lines) if f"worker-checkpoint:{receipt['checkpoint_id']}" in l)
     f = tl.parse_fields(lines[i])
     assert f["done when"] == f"resume — {req.resume_action}"
-    assert f["gate"] == (wc._parent_id(TASK) or "none")
-    assert "a" not in tl.dispatch_result(lines[i], 0)["fails"]
+    assert "gate" not in f                                     # Fable review (c): the child carries no gate
+    r = tl.dispatch_result(lines[i], 0)
+    assert "a" not in r["fails"] and r["class"] == "non-inference"
+    assert f"- [ ] {TASK}" in lines                            # parent first line untouched
+
+
+def _req(**kw):
+    base = dict(outcome="blocked", boundary_reason="task-boundary", next_context="disjoint",
+                resume_action="Wait for the GPU window, then rerun", blocker_class="external-event",
+                blocked_on="GPU window unavailable", blocking_owner_or_event="calendar",
+                evidence_refs=("a.json",), alternatives_exhausted=("b",), boundary_key="k")
+    base.update(kw)
+    return request(**base)
+
+
+def test_attach_child_ids_class_and_reverses_gate() -> None:
+    """Fable review of C0.3: `**<parent>.ck-<n>**` id, [non-inference] even with "GPU window" in the text, child
+    inserted after the parent's own block, parent gains `· gate: <child>` on a continuation line only."""
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "handoffs"))
+    import task_lint as tl
+    parent = "- [ ] **KPF-9** [non-inference] measure the thing"
+    lines = [parent + "\n", "      · done when: pytest x passes\n", "      · gate: KPF-1\n", "- [ ] **KPF-10** next\n"]
+    out = wc._attach_child(lines, 0, _req(task_text=parent[6:]), "ckA")
+    flat = [l.rstrip("\n") for l in out]
+    assert flat[0] == parent and all(l.endswith("\n") for l in out)
+    child = next(l for l in flat if "worker-checkpoint:ckA" in l)
+    assert child.lstrip().startswith("- [ ] **KPF-9.ck-1** [non-inference]")
+    assert flat.index(child) == 3 and flat[4] == "- [ ] **KPF-10** next"   # after the parent's own block
+    assert tl.dispatch_result(child.strip(), 0)["class"] == "non-inference"
+    own, _ = tl.L1.own_block(flat, 0)
+    assert tl.parse_fields(own)["gate"] == "KPF-1, KPF-9.ck-1"
+    out2 = wc._attach_child(out, 0, _req(task_text=parent[6:]), "ckB")
+    assert any("**KPF-9.ck-2**" in l for l in out2)
+    own2, _ = tl.L1.own_block([l.rstrip("\n") for l in out2], 0)
+    assert tl.parse_fields(own2)["gate"] == "KPF-1, KPF-9.ck-1, KPF-9.ck-2"
