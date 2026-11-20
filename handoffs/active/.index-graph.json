@@ -690,7 +690,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T16:29:24Z",
+  "generated_at": "2026-11-20T16:50:33Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1766,15 +1766,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 187,
-      "dispatchable": 45,
+      "closed": 191,
+      "dispatchable": 42,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 47,
+      "open": 44,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1817,14 +1817,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 35,
+          "dispatchable": 32,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 845,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 36,
+          "open": 33,
           "readiness": "blocked"
         }
       ]
@@ -1911,18 +1911,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 231,
-      "dispatchable": 35,
+      "closed": 235,
+      "dispatchable": 31,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 37,
+      "open": 33,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1956,7 +1956,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 33,
+          "dispatchable": 29,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1965,14 +1965,14 @@
           ],
           "line": 22,
           "name": "autokernel-champion-aggregate",
-          "open": 35,
+          "open": 31,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1802,
+          "line": 1810,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1981,7 +1981,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1930,
+          "line": 1938,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2262,
+          "line": 2270,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2363,
+          "line": 2371,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2917,
+          "line": 2925,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2020,7 +2020,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3055,
+          "line": 3063,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2032,7 +2032,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3062,
+          "line": 3070,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -3568,14 +3568,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 267,
-      "dispatchable": 93,
+      "dispatchable": 96,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-20",
       "next_action": "Land CODEMODE-AB-V2 r2 rows, then CODEMODE-REL-FLIP; measure CM-2..CM-5; then UFH-TE-2 dispatch guard, HIL-RE-1",
-      "open": 94,
+      "open": 97,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3627,18 +3627,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 27,
+          "dispatchable": 30,
           "gates": [],
           "line": 444,
           "name": "repl-turn-efficiency",
-          "open": 27,
+          "open": 30,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 926,
+          "line": 929,
           "name": "qwen-chat-template-evaluation",
           "open": 6,
           "readiness": "ready"
@@ -3651,7 +3651,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1707,
+          "line": 1710,
           "name": "harness-improvement-loop",
           "open": 9,
           "readiness": "blocked"
@@ -3664,7 +3664,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2412,
+          "line": 2415,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3685,7 +3685,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2501,
+          "line": 2504,
           "name": "repl-embedding-retrieval",
           "open": 16,
           "readiness": "blocked"
@@ -3700,7 +3700,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2980,
+          "line": 2983,
           "name": "agentic-serving-harness-fixes",
           "open": 26,
           "readiness": "blocked"
@@ -3711,7 +3711,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3894,
+          "line": 3897,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"
