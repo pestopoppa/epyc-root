@@ -16,7 +16,7 @@
       "blocked": 1,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 235
+      "open": 236
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 127,
+      "closed": 128,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 58,
+      "open": 57,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 1,
-          "closed": 83,
+          "closed": 84,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -95,7 +95,7 @@
           "line": 810,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 50
+          "open": 49
         }
       ]
     },
@@ -1214,7 +1214,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1815,
+          "line": 1817,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1943,
+          "line": 1945,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1234,7 +1234,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2275,
+          "line": 2277,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2376,
+          "line": 2378,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2930,
+          "line": 2932,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3068,
+          "line": 3070,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3075,
+          "line": 3077,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2354,7 +2354,7 @@
       "closed": 195,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 43,
+      "open": 44,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,7 +2363,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 240,
+      "total": 241,
       "tracks": [
         {
           "blocked": 1,
@@ -2386,7 +2386,7 @@
           "line": 845,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 33
+          "open": 34
         }
       ]
     },
@@ -2567,7 +2567,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "needs_owner": 8,
-      "open": 130,
+      "open": 131,
       "owner_index": "research-evaluation-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -2577,7 +2577,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 618
+      "total": 619
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
