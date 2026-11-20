@@ -125,3 +125,5 @@
 {"at": "2026-11-20", "box_id": "EV-28", "from": "eval-tower-program.md", "line": 3403, "new_text_sha": "56b51637b29233a9", "old_head": null, "op": "assign-id", "text_sha": "c1e0a84d177b38ec", "to": "eval-tower-program.md"}
 {"at": "2026-11-20", "box_id": "EV-29", "from": "eval-tower-program.md", "line": 643, "new_text_sha": "29cef97ecd62180d", "old_head": null, "op": "assign-id", "text_sha": "d59e2c529d6feca9", "to": "eval-tower-program.md"}
 {"at": "2026-11-20", "box_id": "EV-30", "from": "eval-tower-program.md", "line": 626, "new_text_sha": "928ca09916e17154", "old_head": null, "op": "assign-id", "text_sha": "f2c09c1fa35fdea0", "to": "eval-tower-program.md"}
+{"at": "2026-11-20", "box_id": "CS-54", "from": "speech-and-multimodal.md", "line": 1134, "new_text_sha": "f70080d61f0549f1", "old_head": null, "op": "assign-id", "text_sha": "84ca88d0898d6ae8", "to": "speech-and-multimodal.md"}
+{"at": "2026-11-20", "box_id": "CS-55", "from": "speech-and-multimodal.md", "line": 756, "new_text_sha": "bf1b3e95dc2445b5", "old_head": null, "op": "assign-id", "text_sha": "431738f609a1c942", "to": "speech-and-multimodal.md"}
