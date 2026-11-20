@@ -142,6 +142,9 @@ def failure_class(w: dict, v: dict) -> str | None:
         return None
     if w.get("errors") and not w["usage"]["steps"]:
         return "harness"
+    te = len(w.get("tool_errors") or [])
+    if te and te * 2 >= max(1, len(w.get("tools") or [])):
+        return "harness"        # r1 canary: denied shell / JS-sandbox errors were mislabelled model-limitation
     if w.get("result") and w["result"].get("claimed_done") is False:
         return "task"           # the worker reported blocked/unclear: the box, not the model
     if v.get("reason") in ("forbidden-path", "outside-pathspec", "tests-fail", "reviewer-not_done", "reviewer-drift",
@@ -197,7 +200,8 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                                "uncached": u["input"], "output": u["output"]},  # opencode `input` excludes cache reads
                        review_tokens=(v.get("review") or {}).get("usage"), claimed=w.get("result"),
                        verdict=v["verdict"], reason=v["reason"], checks=v["checks"],
-                       failure_class=failure_class(w, v), worker_wall_s=w["wall_s"], tools=w["tools"][:40],
+                       failure_class=failure_class(w, v), worker_wall_s=w["wall_s"], tools=w["tools"][:40], edits=w.get("edits"), nudged=w.get("nudged"),
+                       tool_errors=(w.get("tool_errors") or [])[:5],
                        errors=w["errors"][:3])
             if apply and v["verdict"] == "verified":
                 row["applied"] = apply_tick(task, lane, v, w)

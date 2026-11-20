@@ -38,7 +38,8 @@ FORBIDDEN = (
     "scripts/hooks/**", "artifacts/**", "docs/reports/**", "kernels/**", "progress/**", "MEASUREMENT.md",
     "measurement/**", ".git/**",
 )
-DEFAULT_BUDGET = {"turns": 14, "tokens": 60000, "wall_s": 900, "excerpt_chars": 9000}
+DEFAULT_BUDGET = {"turns": 30, "tokens": 120000, "wall_s": 900,  # r1: 14 steps all went to exploration
+                  "excerpt_chars": 9000}
 TIER_BY_CLASS = {"non-inference": "terra", "inference": "terra"}
 
 _PATH = re.compile(r"`([A-Za-z0-9_.][\w./-]*(?:\.[A-Za-z0-9]{1,6}|/))(?::\d+(?:-\d+)?)?`")
