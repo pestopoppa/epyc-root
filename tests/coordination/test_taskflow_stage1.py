@@ -375,3 +375,18 @@ def test_brief_mode_off_skips_phase1_even_cross_repo(monkeypatch):
     t = {"id": "X-1", "repo": "epyc-orchestrator", "brief_mode": "off", "brief_state": "none"}
     assert dispatch.phase1_or_skip(t, Path("/nonexistent"), Path("/nonexistent"), "http://x/v1", "local") is None
     assert called == []
+
+
+def test_lane_follows_single_brief_repo(monkeypatch, tmp_path):
+    monkeypatch.setitem(schema.REPOS, "epyc-orchestrator", tmp_path)
+    t = schema.follow_brief_repo({"repo": "epyc-root", "where": ["epyc-orchestrator:a.py::f", "epyc-orchestrator:b.py"]})
+    assert t["repo"] == "epyc-orchestrator" and t["repo_from_box"] == "epyc-root"
+    mixed = schema.follow_brief_repo({"repo": "epyc-root", "where": ["epyc-orchestrator:a.py", "epyc-root:x.md"]})
+    assert mixed["repo"] == "epyc-root"
+
+
+def test_brief_where_paths_are_in_pathspec():
+    t = {"repo": "epyc-orchestrator", "inputs": [], "outputs": [], "forbidden": list(schema.FORBIDDEN),
+         "where": ["epyc-orchestrator:src/a.py::f", "epyc-root:docs/x.md"]}
+    assert verify.brief_paths(t) == {"src/a.py"}
+    assert verify.outside_pathspec(["src/a.py", "src/b.py"], t) == ["src/b.py"]

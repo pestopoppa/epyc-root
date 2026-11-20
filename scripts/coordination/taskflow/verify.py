@@ -38,15 +38,26 @@ def changed_paths(lane: Path, base_ref: str) -> list[str]:
     return [p for p in _git(lane, "diff", "--name-only", f"{base_ref}..HEAD").splitlines() if p.strip()]
 
 
+def brief_paths(task: dict) -> set[str]:
+    """Paths the brief's `where` names in THIS task's repo (`repo:path::symbol` -> path)."""
+    out = set()
+    for w in task.get("where") or []:
+        w = str(w)
+        repo, _, rest = w.partition(":") if ":" in w.split("::")[0] else (task.get("repo"), "", w)
+        if repo == task.get("repo") and rest:
+            out.add(rest.split("::")[0])
+    return out
+
+
 def forbidden_hits(paths: list[str], task: dict) -> list[str]:
-    named = set(task.get("inputs") or []) | set(task.get("outputs") or [])
+    named = set(task.get("inputs") or []) | set(task.get("outputs") or []) | brief_paths(task)
     dirs = tuple(n for n in named if n.endswith("/")) or ("\0",)
     return [p for p in paths if p not in named and not p.startswith(dirs)
             and any(fnmatch.fnmatch(p, g) for g in task.get("forbidden") or [])]
 
 
 def outside_pathspec(paths: list[str], task: dict) -> list[str]:
-    allowed = set(task.get("inputs") or []) | set(task.get("outputs") or [])
+    allowed = set(task.get("inputs") or []) | set(task.get("outputs") or []) | brief_paths(task)
     dirs = tuple(a for a in allowed if a.endswith("/"))
     return [p for p in paths if p not in allowed and not p.startswith(dirs or ("\0",))
             and not (p.startswith("tests/") and Path(p).name.startswith("test_"))]

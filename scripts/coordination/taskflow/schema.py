@@ -42,7 +42,7 @@ FORBIDDEN = (
     "scripts/hooks/**", "artifacts/**", "docs/reports/**", "kernels/**", "progress/**", "MEASUREMENT.md",
     "measurement/**", ".git/**",
 )
-DEFAULT_BUDGET = {"turns": 30, "tokens": 120000, "wall_s": 900,  # r1: 14 steps all went to exploration
+DEFAULT_BUDGET = {"turns": 30, "tokens": 120000, "wall_s": 600,  # r7: one 839 s task ate a third of a booking;  # r1: 14 steps all went to exploration
                   "excerpt_chars": 9000}
 TIER_BY_CLASS = {"non-inference": "terra", "inference": "terra"}
 
@@ -267,7 +267,20 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
         "tier": rec.get("tier"),   # the box `tier:` hint only; dispatch.pick_tier fills the default by kind
         "budget": dict(DEFAULT_BUDGET, **(budget or {})),
     }
-    return merge_brief(task, root)
+    merge_brief(task, root)
+    return follow_brief_repo(task)
+
+
+def follow_brief_repo(task: dict) -> dict:
+    """The lane follows the brief: when every `where` entry names ONE other supported repo, run the task there
+    (r7 TU-GR-1: box text names no path -> epyc-root lane; brief `where` all epyc-orchestrator -> external_directory)."""
+    repos = {str(w).split(":", 1)[0] for w in task.get("where") or [] if ":" in str(w)}
+    if len(repos) == 1:
+        (r,) = repos
+        if r != task["repo"] and r in SUPPORTED_REPOS and REPOS.get(r) and Path(REPOS[r]).exists():
+            task["repo_from_box"] = task["repo"]
+            task["repo"] = r
+    return task
 
 
 def main(argv=None) -> int:
