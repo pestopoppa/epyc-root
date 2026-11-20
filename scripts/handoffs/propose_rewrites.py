@@ -139,10 +139,37 @@ def clean(value, limit: int = 240) -> str:
     return " ".join(t.split())[:limit]
 
 
+def parent_headline(rec: dict) -> str:
+    """The parent's FULL headline minus the checkbox, the `**ID**` token (task_lint_core.head_id) and markup, <= 200
+    chars. Legacy headlines put the whole task inside the bold (`**S-19 — port the encoder (PACKAGE M-4) …**`), so
+    stripping "the first bold span" would leave garbage (C1 review B1)."""
+    line = rec.get("text", "")
+    m = L1.CHECKBOX.match(line)
+    body = m.group(3) if m else line
+    bid = rec.get("id") or L1.head_id(line) or ""
+    body = body.replace("**", " ")
+    if bid:
+        body = re.sub(r"^\s*(?:❄\s*)?" + re.escape(bid) + r"\b\s*", "", body)
+    body = re.sub(r"^\s*(?:\[[a-z-]+\]\s*)?[—:–.\-]*\s*", "", body)
+    out = clean(body, 200)
+    return out or f"(proposal for {bid})"
+
+
+def recently_edited(root: Path, rel: str, minutes: int) -> bool:
+    """C1 review B2: True when origin/main changed this file less than `minutes` ago (its owner is likely mid-edit)."""
+    import time
+    try:
+        r = subprocess.run(["git", "-C", str(root), "log", "-1", "--format=%ct", "origin/main", "--", rel],
+                           capture_output=True, text=True, timeout=20)
+        ts = int((r.stdout or "0").strip() or 0)
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return True                         # unknown -> treat as busy (never write into a file we cannot date)
+    return ts > 0 and time.time() - ts < minutes * 60
+
+
 def write_proposals(path: Path, rec: dict, reply: dict, who: str, dry_run: bool) -> list[str]:
     cls = rec.get("class") if rec.get("class") in ("non-inference", "inference") else "non-inference"
-    base = re.sub(r"^\s*[-*] \[.\]\s*", "", rec.get("text", ""))
-    base = re.sub(r"^\*\*[^*]+\*\*\s*(?:\[[a-z-]+\]\s*)?[—:–-]?\s*", "", base).replace("**", "").strip()
+    base = parent_headline(rec)
     items = []
     if reply.get("split"):
         for c in reply["split"][:4]:
@@ -169,7 +196,9 @@ def main(argv=None, runner=claude_runner, root: Path = REPO_ROOT) -> int:
     ap.add_argument("--per-box-tokens", type=int, default=30_000)
     ap.add_argument("--stop-share", type=float, default=0.20)
     ap.add_argument("--ledger", default=None)
-    ap.add_argument("--files", nargs="*", default=None, help="restrict to these handoff basenames")
+    ap.add_argument("--files", nargs="*", default=None, help="restrict to these handoff basenames (batch 2-3 per run)")
+    ap.add_argument("--recent-minutes", type=int, default=30,
+                    help="skip a file whose last origin/main commit is younger than this (0 = off)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
     doc = BI.load(root)
@@ -180,10 +209,22 @@ def main(argv=None, runner=claude_runner, root: Path = REPO_ROOT) -> int:
     who = f"taskflow {ts}"
     ledger = open(a.ledger, "a", encoding="utf-8") if a.ledger else None
     total = done = written = 0
-    stats = {"proposed": 0, "no-json": 0, "over-budget": 0, "error": 0}
+    stats = {"proposed": 0, "no-json": 0, "over-budget": 0, "error": 0, "skip": 0}
+    busy: set[str] = set()
+    idle: set[str] = set()
+    if a.dry_run:
+        print("DRY-RUN: child IDs shown are NOT final (nothing is written, so every child of a box renders as .p1)")
     for key, rec in candidates(doc, a.top_rows):
         if a.files and Path(rec["file"]).name not in a.files:
             continue
+        if rec["file"] in busy or (a.recent_minutes and rec["file"] not in idle
+                                   and recently_edited(root, rec["file"], a.recent_minutes)):
+            if rec["file"] not in busy:
+                print(f"SKIP-FILE {rec['file']}: changed on origin/main < {a.recent_minutes} min ago", file=sys.stderr)
+            busy.add(rec["file"])
+            stats["skip"] += 1
+            continue
+        idle.add(rec["file"])
         if done >= a.max_boxes or total >= a.budget_tokens:
             break
         share = pending_share(BI.load(root, regenerate=not a.dry_run), a.top_rows) if written else 0.0
@@ -221,7 +262,7 @@ def main(argv=None, runner=claude_runner, root: Path = REPO_ROOT) -> int:
                     print(d)
                 written += 0 if a.dry_run else 1
             except HB.BoxError as exc:
-                outcome = "error"
+                outcome = "skip"
                 print(f"SKIP {rec['id']}: {exc}", file=sys.stderr)
         stats[outcome] += 1
         if ledger:
