@@ -53,6 +53,9 @@ def preparation_schedule(sizing, available_bytes, *, placement="durable",
         step['durable_bytes'] = step['retained_bytes']
         step['tmpfs_bytes'] = 0
     if placement == 'tmpfs-intermediates':
+        # The writer owns tmpfs page charges, even after it exits. Acquisition
+        # cannot use a 4 GiB total cap while allocating the entire source set.
+        steps[0]['memory_max_bytes'] += source
         volatile = [source, source+caps['BF16'], caps['BF16'], caps['BF16'], caps['BF16']]
         for step, count in zip(steps, volatile):
             step['tmpfs_bytes'] = count

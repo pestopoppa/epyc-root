@@ -111,8 +111,9 @@ budget hit fails the command even if it returns zero. Partial outputs/logs are
 retained as failures; success is not a verified-weight receipt.
 
 **Execution remains unadmitted.** The current root cgroup is shared and refused.
-No delegated leaf, acquisition integration, aggregate control-reserve enforcement,
-per-volume floor supervisor or verified-source release implementation is claimed.
+No delegated leaf, external per-volume supervisor or verified-source release
+implementation is claimed. The acquisition integration below adds in-process
+budget checks; it does not yet admit a live acquisition.
 Disk/host sampling can detect shared resource loss but cannot reserve capacity
 or prevent another session consuming space between samples. The wrapper is for
 single-threaded callers and audited serial single-output commands; split/temp
@@ -122,3 +123,53 @@ tmpfs/RAM refusal, existing-output protection, cgroup/host-memory/OOM refusal,
 log cap, deadline, disk-loss and captured-child cleanup. No actual delegated
 cgroup, converter, quantizer, acquisition or inference was executed. Full target
 precision suite: **296 passed, 11 optional tests skipped**.
+
+## Matched-source acquisition guard (2026-11-20)
+
+`scripts/diagnostics/target-precision/acquisition.py` consumes the existing pinned
+single-upstream plan rather than the historical mixed-converter downloader.
+It requires explicit `durable` or `tmpfs-intermediates` placement, verifies the
+actual mount type, and keeps durable controls separate from source files.
+Admission rejects the shared root cgroup, non-kernel directories, populated
+subtrees, mismatched memory limits, swap and missing group-OOM enforcement.
+The dedicated acquisition process joins and verifies its kernel cgroup before
+opening any network connection. It never changes cgroup limits.
+
+Tmpfs allocation is charged to its writer. Acquisition therefore requires
+`memory.max = source_bytes + 4 GiB` (**59,880,994,926 bytes** for this plan),
+instead of the old 4 GiB process allowance alone. The preparation planner now
+includes this charge. These pages can remain charged after the process exits;
+retain that cgroup until source files are released. Durable acquisition retains
+the 4 GiB budget. Both modes preserve the 250 GiB shared-host memory floor.
+
+The guard sums remaining source bytes and remaining aggregate control reserve
+when directories share a filesystem. Different volumes are checked separately:
+durable storage keeps its 150 GiB floor, tmpfs reserves its remaining payload,
+and RAM reserves remaining tmpfs allocation above the shared-host floor. Existing
+logs and receipts consume the same 1 GiB control budget; 256 KiB stays available
+for the terminal event. It rechecks budgets, cgroup events and deadline at each
+transfer or retained-file hashing chunk. Network reads use one receive per check
+with a socket timeout of at most 30 seconds. These checks do not reserve shared
+capacity or provide an external continuous supervisor.
+
+Every source is checked against its pinned length and full SHA-256 or Git blob
+identity. Exact HTTP range-resume is required; foreign entries, symlinks,
+ambiguous files, corrupt completed files and unexpected response lengths/status
+are refused. Failed partials remain unverified; no corrupt source is silently
+replaced. The exclusive durable event reports source acquisition only, never
+conversion, tensor correspondence or qualified weights.
+
+Validation: **67 focused tests pass** across acquisition and preparation,
+including network/range failures, retained-file corruption, root/non-kernel
+cgroup refusal before network access, shared/separate volume accounting,
+memory/disk/OOM/deadline loss and terminal-event space. Acquisition implementation
+SHA-256: `434867a091c90ebcbf106d02a85100c0a95a0c9bdae9de284d22d1829461dfb4`.
+
+The refreshed resource snapshot has **277,519,183,872 durable free bytes**,
+**608,205,561,856 tmpfs free bytes**, and **1,155,408,687,104 host-available bytes**.
+The process is in `0::/`, so execution remains unadmitted. No download, delegated
+cgroup creation, conversion or model run was performed. Before actual launch,
+add an external supervisor that survives worker OOM/SIGKILL and writes a failure
+event, and implement receipt-validated source release. In-process exception
+handling cannot guarantee an event if the kernel kills the entire worker group.
+The matrix remains unpublished until matched outputs and the native floor qualify.
