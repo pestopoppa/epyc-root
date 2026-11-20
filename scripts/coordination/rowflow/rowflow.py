@@ -5015,6 +5015,16 @@ def record_build_wait(flags, owner, now=None):
     atomic_json(os.path.join(d, f"{owner}.json"), {"owner": owner, "pid": None, "at_epoch": now, "at": now_iso()})
 
 
+def free_cores(q, free):
+    """Physical-core tokens of quarter q that are free in this snapshot, ascending (a partly-held quarter: the unheld cores)."""
+    return sorted((c for c in qcores(q) if c in free), key=lambda c: int(c[1:]))
+
+
+def partial_tokens(cores, free):
+    """Core tokens plus their SMT-sibling thread tokens that are also free (a sibling a smoke/other row holds is left out)."""
+    return set(cores) | {f"t{int(c[1:]) + 96}" for c in cores if f"t{int(c[1:]) + 96}" in free}
+
+
 def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None):
     """`rowflow.py claim --build`: a short `build` grant (grants/build-<owner>-<ts>.grant, holds one quarter) so a build
     is a lane the planner sees instead of contamination. cpus = a count (<= 24: the first whole-free quarter q0-q2)
@@ -5029,29 +5039,46 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
     tq = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX)], allrows)
     holder = {q: g["id"] for g in grants for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
     s = str(cpus).strip()
+    part = None   # PARTIAL-QUARTER: core (+free sibling) tokens a build holds inside a quarter other grants hold only in part
     if re.fullmatch(r"\d+", s):
         n = int(s)
         need(1 <= n <= BUILD_MAX_CPUS, f"--cpus {n}: a build lane is at most one quarter ({BUILD_MAX_CPUS} cores)")
         pick = [q for q in QUARTERS[:3] if q in free and q not in tq]
+        if not pick:   # a quarter held only in part still has free cores: take n of them, never the whole quarter
+            for q in QUARTERS[:3]:
+                fc = free_cores(q, free)
+                if q not in tq and len(fc) >= n:
+                    part = partial_tokens(fc[:n], free); pick = [q]; break
         if not pick:   # BUILD-POCKET: remember the unmet claim so the planner leaves the next pocket for it
             record_build_wait(flags, owner, now)
-        need(pick, "no whole-free quarter q0-q2 for a build now (" + ", ".join(f"{q}: {holder.get(q, 'busy')}"
-             + (" [timing]" if q in tq else "") for q in QUARTERS[:3]) + "); retry later, never run it unclaimed")
+        need(pick, f"no whole-free quarter q0-q2 and none with >= {n} free cores for a build now (" + ", ".join(
+             f"{q}: {holder.get(q, 'busy')}" + (" [timing]" if q in tq else "") for q in QUARTERS[:3])
+             + "); retry later, never run it unclaimed")
         qs = [pick[0]]
     else:
         need(re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", s), f"--cpus {s!r}: a count or a literal cpu list")
         qs = sorted(quarters_of(s, fold=True))
         need(len(qs) == 1, f"--cpus {s} spans {qs or 'no quarter'}; a build lane is one quarter")
+        if qs[0] not in free and qs[0] not in tq and free_cores(qs[0], free):   # held in part: the listed cores must be free
+            want = {t for t in cpu_tokens(s) if t in CORES or t in THREADS}
+            miss = sorted(want - free)
+            if want and not miss:
+                part = want
     for q in qs:
         need(q not in tq, f"BUILD-REFUSED: {q} is held by timing grant {holder.get(q, '?')}; a build there would perturb "
                           "its measurement. Pick another quarter (or --cpus N to let the keeper pick)")
-        need(q in free, f"BUILD-REFUSED: {q} is held by {holder.get(q, 'another job')}; pick a free quarter")
+        need(part or q in free, f"BUILD-REFUSED: {q} is held by {holder.get(q, 'another job')}; pick a free quarter")
     t = dt.datetime.now(dt.timezone.utc) if now is None else dt.datetime.fromtimestamp(now, dt.timezone.utc)
     gid = f"{BUILD_PREFIX}{owner}-{t:%Y%m%dT%H%M%SZ}"
     _rm(os.path.join(flags, BUILD_WAIT_DIR, f"{owner}.json"))
-    line = write_grant(flags, gid, ",".join(qs), set(qs), minutes * 60)
-    rec = {"id": gid, "owner": owner, "kind": "build", "quarters": qs, "cpus": ",".join(cpu_list(q) for q in qs),
-           "minutes": minutes, "at": now_iso()}
+    if part:   # core-granular hold: explicit cpus + core/thread tokens, so the rest of the quarter stays claimable
+        cl = tokens_cpus(part)
+        line = write_grant(flags, gid, cl, set(part), minutes * 60)
+    else:
+        cl = ",".join(cpu_list(q) for q in qs)
+        line = write_grant(flags, gid, ",".join(qs), set(qs), minutes * 60)
+    rec = {"id": gid, "owner": owner, "kind": "build", "quarters": qs, "cpus": cl,
+           "minutes": minutes, "at": now_iso(), **({"partial": sorted(part)} if part else {})}
     atomic_json(os.path.join(flags, "grants", gid + ".build.json"), rec)
     log(f"BUILD-GRANT {gid}: {','.join(qs)} for {minutes} min (owner={owner}); run it pinned: taskset -c {rec['cpus']} ...")
     return gid, line
