@@ -223,6 +223,39 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
             "holds_source": next((h for h in HOLDS_CANDIDATES if (root / h).exists()), None), "boxes": boxes}
 
 
+DISPATCH_CLASSES = ("non-inference", "inference")
+
+
+def skip_reason(rec: dict, exclude: set[str] | frozenset = frozenset()) -> str | None:
+    """THE dispatchable predicate (handoff standard Stage C, C0.1): why this record is NOT dispatchable, or None.
+    Shared by taskflow/select.py and index_state.generated_next_action so a generated row never names a box the
+    dispatcher would refuse."""
+    if Path(rec.get("file", "")).name in exclude:
+        return "excluded-file"
+    st = rec.get("state")
+    if st != "open":
+        return f"state-{st}"
+    if rec.get("proposed_by"):
+        return "proposal-pending"
+    if rec.get("class") not in DISPATCH_CLASSES:
+        return f"class-{rec.get('class')}"
+    if rec.get("holds"):
+        return "held"
+    if rec.get("gate_open"):
+        return "gate-open"
+    if rec.get("inputs_missing"):
+        return "inputs-missing"
+    if rec.get("outside_backlog"):
+        return "outside-backlog"
+    if not (rec.get("lint") or {}).get("ok"):
+        return "lint-fail"
+    return None
+
+
+def dispatchable(rec: dict, exclude: set[str] | frozenset = frozenset()) -> bool:
+    return skip_reason(rec, exclude) is None
+
+
 def limit_findings(files: dict[str, Path], recs: list[dict], root: Path) -> list[str]:
     """Size-limit warnings (operator decision 4): open boxes per track, continuation lines per box, lines per file."""
     out, per_track = [], {}

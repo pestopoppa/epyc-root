@@ -319,7 +319,8 @@ def test_generated_domain_table_is_not_a_hand_row(tmp_path, monkeypatch):
     rows = IS.parse_index_rows(p)
     assert len(rows) == 1 and not rows[0].get("malformed")
     nxt = IS.generated_next_action([{"state": "open", "class": "non-inference", "id": "A-1", "pos_in_backlog": 1,
-                                     "text": "- [ ] **A-1 — do the thing** now", "gate_open": False}])
+                                     "text": "- [ ] **A-1 — do the thing** now", "gate_open": False,
+                                     "lint": {"ok": True}}], exclude=set())
     assert nxt == "**A-1** do the thing now"
     assert IS.generated_next_action([{"state": "frozen", "frozen_until": "OP-1", "text": "x"}]) == "FROZEN until OP-1"
 

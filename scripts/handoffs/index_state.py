@@ -683,27 +683,46 @@ def _cell(text: str) -> str:
     return " ".join(str(text).replace("|", "/").split())
 
 
-def generated_next_action(boxes: list[dict]) -> str:
-    """Handoff standard I.2(c): the top dispatchable box, else BLOCKED / FROZEN / NEEDS-OWNER."""
+def generated_next_action(boxes: list[dict], exclude: set[str] | None = None) -> str:
+    """Handoff standard I.2(c): the top DISPATCHABLE box (C0.1: the same `box_index.skip_reason` predicate
+    taskflow/select.py uses -- lint, inputs, holds, gates, placement, class, held files), else HELD / BLOCKED /
+    FROZEN / NEEDS-OWNER. Never a lint-failing or non-dispatchable box."""
+    import box_index
+    exclude = set(exclude if exclude is not None else _held_files())
     live = [b for b in boxes if b.get("state") != "done"]
     live.sort(key=lambda b: (b.get("pos_in_backlog") is None, b.get("pos_in_backlog") or 0, b.get("line", 0)))
     for b in live:
-        if b.get("state") == "open" and not b.get("gate_open") and b.get("class") in ("non-inference", "inference"):
+        if box_index.dispatchable(b, exclude):
             body = re.sub(r"^\s*[-*] \[.\]\s*", "", b.get("text", ""))
             if b.get("id"):
                 body = re.sub(r"^\*\*\s*(?:❄\s*)?" + re.escape(b["id"]) + r"\s*[—:–-]?\s*", "", body)
                 return _cell(f"**{b['id']}** {body.replace('**', '').strip()[:110]}")
             return _cell(body.replace("**", "").strip()[:110])
-    gated = sorted({g for b in live if b.get("gate_open") for g in b.get("gate") or []})
+    held = sorted({h for b in live for h in b.get("holds") or []})
+    if held or (live and Path(live[0].get("file", "")).name in exclude):
+        return _cell("FROZEN (operator hold" + (": " + ", ".join(held[:4]) if held else "") + ")")
+    gated = sorted({g for b in live if b.get("state") == "open" and b.get("gate_open") for g in b.get("gate") or []})
     if gated:
         return _cell("BLOCKED: " + ", ".join(gated[:6]))
     frozen = [b for b in live if b.get("state") == "frozen"]
+    pending = [b for b in live if b.get("state") in ("open", "needs-owner")]
+    if pending:   # open but not admissible (lint / inputs / class / placement / proposal) -> owner must act
+        return f"NEEDS-OWNER: {len(pending)}"
     if frozen:
         return _cell(f"FROZEN until {frozen[0].get('frozen_until') or '?'}"[:140])
-    owners = sum(1 for b in live if b.get("state") == "needs-owner")
-    if owners:
-        return f"NEEDS-OWNER: {owners} boxes"
     return "—"
+
+
+def _held_files() -> set[str]:
+    """Files whose boxes are under an operator hold for the dispatcher (select.EXCLUDE_FILES until C3 holds.yaml)."""
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "coordination"))
+        from taskflow import select as _sel  # noqa: PLC0415
+        return set(getattr(_sel, "EXCLUDE_FILES", ()))
+    except Exception:  # noqa: BLE001
+        return set()
+    finally:
+        sys.path.pop(0)
 
 
 def render_domain_tables(state: dict, bdoc: dict, prio: dict) -> dict[str, str]:

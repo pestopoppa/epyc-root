@@ -56,25 +56,13 @@ def load_index(root: Path | None = None) -> dict:
 
 
 def skip_reason(rec: dict, exclude: set[str]) -> str | None:
-    """Why this record is NOT dispatchable, or None when it is."""
-    if Path(rec.get("file", "")).name in exclude:
-        return "excluded-file"
-    st = rec.get("state")
-    if st != "open":
-        return f"state-{st}"
-    if rec.get("class") not in DISPATCH_CLASSES:
-        return f"class-{rec.get('class')}"
-    if rec.get("holds"):
-        return "held"
-    if rec.get("gate_open"):
-        return "gate-open"
-    if rec.get("inputs_missing"):
-        return "inputs-missing"
-    if rec.get("outside_backlog"):
-        return "outside-backlog"
-    if not (rec.get("lint") or {}).get("ok"):
-        return "lint-fail"
-    return None
+    """Why this record is NOT dispatchable, or None -- delegates to THE shared predicate box_index.skip_reason (C0.1)."""
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+    try:
+        import box_index
+    finally:
+        sys.path.pop(0)
+    return box_index.skip_reason(rec, exclude)
 
 
 def order_key(key_rec: tuple[str, dict]) -> tuple:
