@@ -48,3 +48,13 @@
 - Seed AK-H-MTP-DEGEN-1 (research `bfba8134e`). tool_call_parse_error contract (bb, orchestrator `1a10541b`); autokernel role file edit `5511efe5c`.
 - Filler ak-q38fn-draftfa-window-cpu stopped for the build window (rc 75).
 - Wrap-up ticks: DTREE-0-Q8MF-V2 and DTREE-ATTN-ROUTE build boxes (both landed; verdicts on their gate boxes).
+
+## Wrap-up 7 (since 5cef49e1b)
+- PFXC-R8-REPLAY box `b1afde3da`; r7d real-trace replay in flight.
+- Q8MF reuse boxes (root `92d253b50`, research seeds `8c32de012`). Box audit `8358514c2` annotated R22-2, draft-window and indexer results.
+- AKX-P1d live replay PASS (`65b2a96c9`; box stays open: W4/W5/W6 uncovered, AKX-P1e). AKX-ALL-29.4 guardband r2/r3 inconclusive, r4 PASS and ticked (`815ac30c6`, `378f7e5d9`, `e7ad3456d`): n_half=325, alpha_obs_max 0.089, 0 NMSE failures; short-process residency proven by an in-process witness (narrower reading, disclosed).
+- Canonical gpu_common: research `b018078ce`, `51ae8b2d8`; row_scaffold import root `60f04a96a`; follow-up to resolve from origin/main in flight.
+- Q38FN draft window W4096 FAIL (+27% tok/s at 64k, -5.5% at 32k, acceptance gate failed; fork `3c80eb453`). Indexer top-k FAIL (-33 ms/step at 32k but greedy identity broken by tie order; fork `aaec7962a`). Follow-ups TOPK-EXACT and W8192/adaptive in flight.
+- AK-DTREE: Q8MF-V3 NO_GAIN (A3 slope 0.23 ms/row, W12 47.8 / W16 49.8 ms vs wvsk16 53.0/60.7; op ~0.73 TB/s). ATTN-ROUTE-V2 both candidates LOSS. GDN-ROWS `ba89d5047` committed, gate in flight. HBM-CEILING box `34c36d2de` + repack fork `369fa2717`, row ak-dtree0-q8mf-hbm-gpu-20261120 queued. V4 composite branch llama.cpp-experimental-dtree-v4-20261120 in flight.
+- Scheduler: pipeline partial-quarter fix `73f498cb2`. Indexer CPU row stopped for builds (already filed fail).
+- Wrap-up ticks: DTREE-0-Q8MF-V3 and DTREE-ATTN-ROUTE-V2 build boxes (landed; verdicts on their gate boxes). No index row edits needed.
