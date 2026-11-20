@@ -207,3 +207,14 @@ def test_review_queue_routes_ownerless(tmp_path, monkeypatch):
     assert PR.owner_of("handoffs/active/f.md", {"sessions": {"s1": {"handoff": "handoffs/active/f.md"}}}, tmp_path) == "s1"
     f.write_text(f.read_text().replace("**Status**: ACTIVE — x\n", "**Status**: ACTIVE — x\n**Owner**: mainB\n"))
     assert PR.owner_of("handoffs/active/f.md", {"sessions": {}}, tmp_path) == "mainB"
+
+
+
+def test_bold_title_with_id_shaped_first_word_is_kept_whole():
+    rec = {"id": "Strategy-prompt-length", "text": "- [ ] **Strategy-prompt-length ablation.** intake-867 measured it"}
+    assert PR.parent_headline(rec).startswith("Strategy-prompt-length ablation.")
+
+
+def test_children_classified_on_their_own_text():
+    assert PR.child_class("Wire the oracle reader into scripts/x.py and add a unit test", "pytest tests/test_x.py passes") \
+        == "non-inference"

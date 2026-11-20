@@ -219,8 +219,14 @@ def parent_headline(rec: dict) -> str:
     m = L1.CHECKBOX.match(line)
     body = m.group(3) if m else line
     bid = rec.get("id") or L1.head_id(line) or ""
+    bold = re.match(r"^\s*\*\*(.+?)\*\*", body)
+    inner = bold.group(1).strip() if bold else ""
+    # strip the ID only when the bold span IS the id, or the id is followed by a separator ("S-19 — port …");
+    # a bold TITLE that merely starts with an id-shaped word ("Strategy-prompt-length ablation.") keeps every word
+    strip = bool(bid) and (inner == bid or re.match(re.escape(bid) + r"\s*[—:–.\-]", inner) is not None
+                           or not bold)
     body = body.replace("**", " ")
-    if bid:
+    if strip:
         body = re.sub(r"^\s*(?:❄\s*)?" + re.escape(bid) + r"\b\s*", "", body)
     body = re.sub(r"^\s*(?:\[[a-z-]+\]\s*)?[—:–.\-]*\s*", "", body)
     return shorten(clean(body, 10_000)) or f"(proposal for {bid})"
@@ -255,8 +261,16 @@ def recently_edited(root: Path, rel: str, minutes: int) -> bool:
     return ts > 0 and time.time() - ts < minutes * 60
 
 
+def child_class(text: str, done_when=None) -> str:
+    """Classify a child on ITS OWN text (task_lint's classifier), never inherited from the parent: a code task under an
+    [inference] parent is non-inference. Anything but inference/non-inference falls back to non-inference."""
+    import task_lint as TL
+    c = TL.dispatch_result(f"- [ ] **X-1** {text}" + (f"\n      · done when: {clean(done_when)}" if done_when else ""),
+                           0).get("class")
+    return c if c in ("non-inference", "inference") else "non-inference"
+
+
 def write_proposals(path: Path, rec: dict, reply: dict, who: str, dry_run: bool) -> list[str]:
-    cls = rec.get("class") if rec.get("class") in ("non-inference", "inference") else "non-inference"
     base = parent_headline(rec)
     items = []
     if reply.get("split"):
@@ -269,6 +283,7 @@ def write_proposals(path: Path, rec: dict, reply: dict, who: str, dry_run: bool)
     for text, dw, stop in items:
         if not clean(text):
             continue
+        cls = child_class(clean(text), dw)
         a = argparse.Namespace(box=rec["id"], cls=cls, text=clean(text), done_when=(clean(dw) or None),
                                inputs=None, tier=None, owner=None, needs_owner=True, proposed_by=who,
                                stop_rule=(clean(stop) or None))
