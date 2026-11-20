@@ -49,7 +49,8 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 3. Edit with the edit tool (exact old/new strings). Create a file with write only when the box needs a new file.
 4. Every turn must call a tool until you finish. Never describe a plan without calling a tool in the same turn.
 5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
-6. The shell runs only the ALLOWED COMMANDS (plus ls, cat, head, tail, wc, grep, git diff, git status). No pipes needed.
+6. The shell runs only the ALLOWED COMMANDS (plus ls, cat, head, tail, wc, grep, git diff, git status), exactly as written:
+   no pipes, no redirects (2>&1, >), no && chains. Paths are relative to your cwd.
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
 8. Stop as soon as the box's done-when is met.
 9. Finish with ONE final line, exactly:  TASKFLOW-RESULT {"claimed_done": true|false, "summary": "<=200 chars", "paths": ["changed/file", ...]}
@@ -220,7 +221,8 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
     env = dict(os.environ,
                XDG_CONFIG_HOME=str(run_dir / "xdg-config"), XDG_DATA_HOME=str(run_dir / "xdg-data"),
                XDG_STATE_HOME=str(run_dir / "xdg-state"), XDG_CACHE_HOME=str(run_dir.parent / "xdg-cache"),
-               OPENCODE_DISABLE_AUTOUPDATE="1", OPENCODE_DISABLE_LSP_DOWNLOAD="1", NO_COLOR="1")
+               OPENCODE_DISABLE_AUTOUPDATE="1", PWD=str(cwd),  # r2: opencode resolves paths from $PWD, not the process cwd
+               OPENCODE_DISABLE_LSP_DOWNLOAD="1", NO_COLOR="1")
     env.pop("OPENCODE_CONFIG", None)
     argv = [OPENCODE, "run", "--standalone", "--format", "json", "--agent", AGENT,
             "--model", f"{PROVIDER}/{model_id}", "--auto"]
