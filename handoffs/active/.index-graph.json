@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T03:46:05Z",
+  "generated_at": "2026-11-20T04:24:59Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1089,7 +1089,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 872,
+          "line": 883,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1098,7 +1098,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1184,
+          "line": 1195,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1107,7 +1107,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1391,
+          "line": 1402,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1116,7 +1116,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1717,
+          "line": 1728,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1125,7 +1125,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1952,
+          "line": 1963,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1772,7 +1772,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 158,
+      "closed": 161,
       "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 816,
+          "line": 819,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29,
           "readiness": "blocked"

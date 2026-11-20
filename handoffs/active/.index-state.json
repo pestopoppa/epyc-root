@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 872,
+          "line": 883,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1184,
+          "line": 1195,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1391,
+          "line": 1402,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1717,
+          "line": 1728,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1952,
+          "line": 1963,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -2343,7 +2343,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 158,
+      "closed": 161,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 37,
@@ -2355,11 +2355,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 197,
+      "total": 200,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 100,
+          "closed": 103,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2375,7 +2375,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 816,
+          "line": 819,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 28
