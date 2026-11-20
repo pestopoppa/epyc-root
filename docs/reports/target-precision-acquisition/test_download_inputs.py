@@ -72,3 +72,82 @@ def test_existing_destination_is_never_overwritten(tmp_path,monkeypatch):
     with pytest.raises(RuntimeError,match='refuse reuse'):
         m.download_inputs()
     assert marker.read_bytes()==b'retained'
+
+
+def setup_source(tmp_path, monkeypatch, data=b'complete model bytes'):
+    monkeypatch.setattr(m,'SCRATCH',tmp_path/'models')
+    monkeypatch.setattr(m,'SOURCES',(('a.gguf','https://example.test/a',len(data),hashlib.sha256(data).hexdigest()),))
+    monkeypatch.setattr(m,'guard',lambda remaining: None)
+    m.SCRATCH.mkdir()
+    return data
+
+
+def test_floor_failure_retains_prefix_and_resumes_exact_range(tmp_path,monkeypatch):
+    data=setup_source(tmp_path,monkeypatch)
+    checks=[]
+    def guard(remaining):
+        checks.append(remaining)
+        if len(checks)==2: raise RuntimeError('disk floor')
+    monkeypatch.setattr(m,'guard',guard)
+    class Chunked(Response):
+        def read(self,n): return super().read(5)
+    monkeypatch.setattr(m.urllib.request,'urlopen',lambda *a,**k: Chunked(data))
+    first=m.download_inputs()
+    assert first['status']=='FAILED' and first['partials'][0]['verified'] is False
+    assert (m.SCRATCH/'a.gguf.part').read_bytes()==data[:5]
+    monkeypatch.setattr(m,'guard',lambda remaining: checks.append(remaining))
+    def resume(req,**kw):
+        assert req.get_header('Range')=='bytes=5-'
+        r=Response(data[5:]); r.status=206
+        r.headers['Content-Range']=f'bytes 5-{len(data)-1}/{len(data)}'
+        return r
+    monkeypatch.setattr(m.urllib.request,'urlopen',resume)
+    assert m.download_inputs()['status']=='COMPLETE'
+    assert (m.SCRATCH/'a.gguf').read_bytes()==data
+    assert len(data)-5 in checks
+
+
+def test_ignored_range_preserves_partial(tmp_path,monkeypatch):
+    data=setup_source(tmp_path,monkeypatch)
+    partial=m.SCRATCH/'a.gguf.part'; partial.write_bytes(data[:5])
+    monkeypatch.setattr(m.urllib.request,'urlopen',lambda *a,**k: Response(data))
+    result=m.download_inputs()
+    assert result['status']=='FAILED' and 'range' in result['reason']
+    assert partial.read_bytes()==data[:5]
+
+
+def test_wrong_content_range_preserves_partial(tmp_path,monkeypatch):
+    data=setup_source(tmp_path,monkeypatch)
+    partial=m.SCRATCH/'a.gguf.part'; partial.write_bytes(data[:5])
+    r=Response(data[5:]); r.status=206; r.headers['Content-Range']='bytes 0-1/2'
+    monkeypatch.setattr(m.urllib.request,'urlopen',lambda *a,**k:r)
+    assert m.download_inputs()['status']=='FAILED'
+    assert partial.read_bytes()==data[:5]
+
+
+def test_complete_retained_file_is_reverified_without_network(tmp_path,monkeypatch):
+    data=setup_source(tmp_path,monkeypatch)
+    (m.SCRATCH/'a.gguf').write_bytes(data)
+    def network(*a,**kw): raise AssertionError('unexpected transfer')
+    monkeypatch.setattr(m.urllib.request,'urlopen',network)
+    assert m.download_inputs()['status']=='COMPLETE'
+    (m.SCRATCH/'a.gguf').write_bytes(b'x'*len(data))
+    result=m.download_inputs()
+    assert result['status']=='FAILED' and 'pinned identity' in result['reason']
+    assert (m.SCRATCH/'a.gguf').read_bytes()==b'x'*len(data)
+
+
+def test_corrupt_full_partial_is_removed(tmp_path,monkeypatch):
+    data=setup_source(tmp_path,monkeypatch)
+    (m.SCRATCH/'a.gguf.part').write_bytes(b'x'*len(data))
+    assert m.download_inputs()['status']=='FAILED'
+    assert not list(m.SCRATCH.iterdir())
+
+
+def test_symlink_refused_without_touching_target(tmp_path,monkeypatch):
+    import pytest
+    setup_source(tmp_path,monkeypatch)
+    target=tmp_path/'unrelated'; target.write_bytes(b'safe')
+    (m.SCRATCH/'a.gguf.part').symlink_to(target)
+    with pytest.raises(RuntimeError,match='refuse reuse'): m.download_inputs()
+    assert target.read_bytes()==b'safe'

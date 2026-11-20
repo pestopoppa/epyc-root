@@ -31,25 +31,54 @@ def guard(remaining):
     if mem_available() < 250*GIB: raise RuntimeError('host MemAvailable below 250 GiB')
 
 def download_inputs():
-    if SCRATCH.exists(): raise RuntimeError('destination already exists; refuse reuse')
-    guard(sum(x[2] for x in SOURCES)); SCRATCH.mkdir(mode=0o700,parents=True)
-    completed=[]; partial=None; started=time.time_ns()
+    # Only pinned filenames belong to this acquisition; never overwrite foreign data.
+    allowed={n+s for n,_,_,_ in SOURCES for s in ('', '.part')}
+    SCRATCH.mkdir(mode=0o700,parents=True,exist_ok=True)
+    if any(p.name not in allowed or p.is_symlink() or not p.is_file() for p in SCRATCH.iterdir()):
+        raise RuntimeError('foreign destination contents; refuse reuse')
+    completed=[]; partial=None; started=time.time_ns(); retained=[]
     try:
         for index,(name,url,size,expected) in enumerate(SOURCES):
-            remaining=sum(x[2] for x in SOURCES[index:]); guard(remaining)
-            partial=SCRATCH/(name+'.part'); path=SCRATCH/name; h=hashlib.sha256(); written=0
-            req=urllib.request.Request(url,headers={'User-Agent':'epyc-precision-preflight/1'})
-            with urllib.request.urlopen(req,timeout=120) as response, open(partial,'xb') as out:
-                if response.status!=200 or int(response.headers.get('Content-Length','-1'))!=size: raise RuntimeError('remote length or status mismatch')
-                while True:
-                    b=response.read(8*1024*1024)
-                    if not b: break
-                    out.write(b); h.update(b); written+=len(b)
-                    if written>size: raise RuntimeError('remote exceeded expected size')
-                    # Checks protect unrelated workloads; no shared process is killed.
-                    guard(sum(x[2] for x in SOURCES[index+1:]) + size-written)
-                out.flush(); os.fsync(out.fileno())
-            if written!=size or h.hexdigest()!=expected: raise RuntimeError('byte count or digest mismatch')
+            partial=SCRATCH/(name+'.part'); path=SCRATCH/name
+            if path.exists():
+                with path.open('rb') as f: actual=hashlib.file_digest(f,'sha256').hexdigest()
+                if path.stat().st_size!=size or actual!=expected:
+                    raise RuntimeError('retained completed file fails pinned identity')
+                if partial.exists(): raise RuntimeError('ambiguous completed and partial files')
+                completed.append({'path':str(path),'size':size,'sha256':expected,'source':url})
+                partial=None
+                continue
+            h=hashlib.sha256(); written=0
+            if partial.exists():
+                if partial.stat().st_size>size: raise RuntimeError('partial exceeds pinned size')
+                with partial.open('rb') as f:
+                    while b:=f.read(8*1024*1024): h.update(b); written+=len(b)
+            remaining=sum(x[2] for x in SOURCES[index+1:]) + size-written
+            guard(remaining)
+            if written<size:
+                headers={'User-Agent':'epyc-precision-preflight/2'}
+                if written: headers['Range']=f'bytes={written}-'
+                req=urllib.request.Request(url,headers=headers)
+                with urllib.request.urlopen(req,timeout=120) as response:
+                    length=int(response.headers.get('Content-Length','-1'))
+                    if written:
+                        expected_range=f'bytes {written}-{size-1}/{size}'
+                        if response.status!=206 or response.headers.get('Content-Range')!=expected_range or length!=size-written:
+                            raise RuntimeError('remote resume range or length mismatch')
+                    elif response.status!=200 or length!=size:
+                        raise RuntimeError('remote length or status mismatch')
+                    with partial.open('ab' if written else 'xb') as out:
+                        while True:
+                            b=response.read(8*1024*1024)
+                            if not b: break
+                            if written+len(b)>size: raise RuntimeError('remote exceeded expected size')
+                            out.write(b); h.update(b); written+=len(b)
+                            guard(sum(x[2] for x in SOURCES[index+1:]) + size-written)
+                        out.flush(); os.fsync(out.fileno())
+            if written!=size: raise RuntimeError('incomplete transfer; partial retained')
+            if h.hexdigest()!=expected:
+                partial.unlink(); partial=None
+                raise RuntimeError('pinned digest mismatch; corrupt partial removed')
             os.replace(partial,path); partial=None
             completed.append({'path':str(path),'size':written,'sha256':expected,'source':url})
         return {'status':'COMPLETE','started_ns':started,'finished_ns':time.time_ns(),'files':completed,
@@ -57,12 +86,13 @@ def download_inputs():
                                'different converter Q4/base model revision equivalence not established',
                                'preflight inputs only; no inference or quality claim']}
     except BaseException as exc:
-        if partial is not None:
-            try: partial.unlink()
-            except FileNotFoundError: pass
+        for name,_,_,_ in SOURCES:
+            p=SCRATCH/(name+'.part')
+            if p.exists(): retained.append({'path':str(p),'size':p.stat().st_size,'verified':False})
         return {'status':'FAILED','started_ns':started,'finished_ns':time.time_ns(),'error_type':type(exc).__name__,
                 'reason':str(exc) if isinstance(exc,RuntimeError) else 'transfer or I/O failure',
-                'files':completed,'limitations':['incomplete inputs; no inference or equivalence claim']}
+                'files':completed,'partials':retained,
+                'limitations':['incomplete inputs; retained partials are unverified; no inference or equivalence claim']}
 
 def main():
     def interrupted(signum, frame):
