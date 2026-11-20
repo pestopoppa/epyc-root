@@ -497,9 +497,37 @@ class _EndRun(Exception):
     """Phase 1 ended the run (needs-brief); the row is already filled."""
 
 
+GNX_TRIGGER = ROOT / "scripts/gitnexus-reindex.py"
+
+
+def gitnexus_trigger(batch_id: str, apply: bool, script: Path | None = None, runner=None) -> str:
+    """Once per batch: ask the gitnexus staleness trigger whether to re-index (it detaches itself).
+
+    Skipped on dry-run (not apply) and under pytest unless a fake `script` is injected. Never raises and never
+    fails the dispatch; the outcome is logged to sweep.log and returned.
+    """
+    if not apply:
+        out = "skipped:dry-run"
+    elif script is None and os.environ.get("PYTEST_CURRENT_TEST"):
+        out = "skipped:test"
+    else:
+        try:
+            r = (runner or subprocess.run)([sys.executable, str(script or GNX_TRIGGER), "trigger", "--batch-id", batch_id],
+                                           capture_output=True, text=True, timeout=30, stdin=subprocess.DEVNULL)
+            out = f"rc={r.returncode} {(r.stdout or r.stderr or '').strip()[-200:]}"
+        except Exception as e:  # noqa: BLE001 - the trigger never fails a dispatch
+            out = f"error:{type(e).__name__}: {str(e)[:150]}"
+    try:
+        _sweep_log(f"gitnexus-trigger batch={batch_id} {out}")
+    except Exception:  # noqa: BLE001
+        pass
+    return out
+
+
 def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: bool, family: str = "local") -> list[dict]:
     out.mkdir(parents=True, exist_ok=True)
     run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    gitnexus_trigger(run_id, apply)
     ledger = out / "ledger.jsonl"
     rows = []
     for n, task in enumerate(tasks):
