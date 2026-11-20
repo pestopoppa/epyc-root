@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T10:56:49Z",
+  "generated_at": "2026-11-20T10:58:23Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1769,7 +1769,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 174,
+      "closed": 175,
       "dispatchable": 36,
       "domain": "inference-research",
       "guarded": 0,
@@ -1825,7 +1825,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 831,
+          "line": 832,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 28,
           "readiness": "blocked"
@@ -2179,14 +2179,14 @@
       "blocked": 19,
       "blocked_by": [],
       "closed": 121,
-      "dispatchable": 49,
+      "dispatchable": 67,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "last_advanced": "2026-11-19",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
-      "open": 68,
+      "open": 86,
       "priority": 0.948,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
@@ -2206,20 +2206,20 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 44,
+          "dispatchable": 61,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 63,
+          "open": 80,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 6,
           "gates": [],
-          "line": 1053,
+          "line": 1106,
           "name": "multimodal-pipeline",
-          "open": 5,
+          "open": 6,
           "readiness": "ready"
         }
       ]

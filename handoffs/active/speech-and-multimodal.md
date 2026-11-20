@@ -278,6 +278,18 @@ Landed work lives in [`conversation-stack-completed-through-2026-10-22.md`](../c
   - 2026-11-19 Qwen native runner integration in `scripts/speech/cs5_qwen_reference.py`: **22 model-free tests PASS** across both candidate APIs; native prompt/processor, required upstream/package/source pins, local-only inputs/loading, synchronized completion timing and shared candidate-specific CS-3 output. [Code blobs, interfaces and limits](../../docs/reports/cs5-qwen-reference-runner-20261119.md). No model/ROCm execution; environment/input sealing, research packaging and published qualification remain. Parent stays open. [no-belief: tested Qwen reference integration only]
   - 2026-11-19 one-shot reference job `scripts/speech/cs5_reference_job.py`: **29 model-free CS-5 tests PASS**; dispatches both APIs, admits prepared input/model inventory stat receipts without weight hashing, samples co-tenant state, preserves Python/native failures and refuses output reuse. [Code blobs, manifest contract and limits](../../docs/reports/cs5-reference-job-20261119.md). Real prepared environment/input receipts and row publication remain; no model execution or qualification. Parent stays open. [no-belief: tested executable reference-job seam only]
   - 2026-11-19 published `stt5-cs5-qwen-cpu-reference-r1-20261119`: publisher queued the real-turn smoke with the keeper; **not smoke PASS yet**. Private CPU environment imports actual Qwen APIs; both configurations pass stat/package/source admission for 84 prepared file receipts. [Runtime, receipt/launcher SHA-256 identities, sampler scope and stop rule](../../docs/reports/cs5-qwen-cpu-reference-row-20261119.md). Parent remains open for native results, Step, research packaging and gfx90a. [no-belief: prepared row publication; no model result]
+  - [ ] **CS-5.p1** [inference] Prove PyTorch-ROCm executes a completed GPU tensor operation on gfx90a on this host, recording the ROCm stack version, before any model run. NEEDS-OWNER
+        · done when: A device-proof record shows gfx90a and a completed GPU tensor operation with a PASS verdict.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-5
+  - [ ] **CS-5.p2** [inference] Seal the prepared Qwen3-Omni environment and input stat receipts at revision 26291f793822fb6be9555850f06dfe95f2d7e695, then run one public JFK turn via scripts/speech/cs5_reference_job.py, stopping at the first CS-3 record or terminal failu NEEDS-OWNER
+        · done when: A Qwen CS-3 record with a live co-tenant sample exists, or the job log records the terminal load/native/admission failure or deadline.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-5
+  - [ ] **CS-5.p3** [inference] Seal the prepared Step-Audio-2-mini environment and input stat receipts at its pinned native source, then run one public JFK turn via scripts/speech/cs5_reference_job.py with the same stop rule as the Qwen arm. NEEDS-OWNER
+        · done when: A Step CS-3 record with a live co-tenant sample exists, or the job log records the terminal load/native/admission failure or deadline.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-5
+  - [ ] **CS-5.p4** [inference] Package the reference-run outputs and publish the CS-5 qualification row citing the device proof and CS-3 records, leaving the parent CS-5 item open for both arms and gfx90a. NEEDS-OWNER
+        · done when: The published row cites the device proof and CS-3 records, and the parent CS-5 checkbox remains unchecked.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-5
 - [x] **CS-5.P1a — D1 load and coherence probe of Qwen3-Omni-30B-A3B-Instruct on the MI210 (correctness only, no timing).** ✅ 2026-10-23 — PASS. Filler `speech-d1-probes`, rocm/vllm 6.4.1 container, HF native path, thinker only, bf16, `device_map=auto`, 16:04-16:06Z. `load_ok`, `all_coherent` true: P1_asr `ref_word_recall` 1.0 (verbatim transcript), P2_audio_qa on task (hits `36`/`india`/`losing`/`runs`), P3_text "Paris". VRAM 56.19 GiB after load, 56.92 peak, 5 `hf_device_map` modules spilled to CPU. torch 2.7.0, HIP 6.4, transformers 4.57.0. The first attempt died rc=1 on a float32 `input_features` against the bf16 audio tower; fixed by `.to("cuda:0", dtype=torch.bfloat16)`. Evidence: `/mnt/raid0/llm/tmp/overnight-gpu-arm-20261022/runs/speech-d1-probes/out/omni/probe.json`. This is a load/coherence result only; it ranks nothing in the CS-8 gates.
 - [x] **CS-5.P1b — D1 load probe of Step-Audio-2-mini, and diagnosis of its audio incoherence.** ✅ 2026-10-23 — loaded (15.53 GiB, 15.67 peak) and text coherent (P3 "Paris"), but NOT coherent on audio (2026-10-22: P1_asr `ref_word_recall` 0.059, output `<英语>It's a little bit of a different sound.`; P2 "A person is speaking.", no content hits). Diagnosis by code reading, not yet confirmed on the GPU: the model's `prepare_inputs_for_generation` (`modeling_step_audio_2.py`) returns only `{input_ids, attention_mask, past_key_values}` and DROPS `wavs`/`wav_lens` whenever `kwargs["past_key_values"]` is not None. The repo pins transformers 4.49.0; transformers >= 4.56 (the container's; 4.57 source checked) always creates an empty `DynamicCache` for this class (`_supports_default_dynamic_cache` is true), so the FIRST step already takes the cache branch, the audio encoder never runs, and the LLM reads literal `<audio_patch>` embeddings. `forward()` ignores the cache and re-embeds the full `input_ids` every step, so audio must be passed on every step with no cache. The mel path (16 kHz asserted, 128 mels, padding 479) and the `<|BOT|>human` prompt format match the official `stepaudio2.py`; text works, which fits. Prepared fix in `d1_probe.py` (backup `.bak-pre-stepfix-20261023`): per-instance `prepare_inputs_for_generation` override that passes wavs every step, `use_cache=False`, an encoder forward-pre-hook recording `encoder_calls` (0 means the audio never ran), `transformers` version recorded, and a non-gating `P1b_asr_official` prompt (instruction in the system turn, as `examples.py`).
 - [x] ✅ 2026-10-23 **CS-5.P1c — rerun the Step-Audio-2-mini D1 probe with the fix (GPU, via the inference-owning main).** Armed by `/mnt/raid0/llm/tmp/overnight-gpu-arm-20261022/arm_step_rerun.sh` (new FILLERS row `speech-d1-step-rerun`, draft `ROW_step_rerun.md` beside it; fresh OUT dir so the "already probed" skip does not fire, `D1_MODELS=step`; ~10-45 min, grant `regions=mi210_0,184-191`). Done when `runs/speech-d1-step-rerun/out/step/probe.json` shows `encoder_calls` > 0 on the audio prompts and P1/P2 coherent; if audio still runs but P1 is off, check the librosa mel-filter stub, bf16 encoder numerics on gfx90a, and a transformers 4.49.0 pin. A pass leaves Step as the CS-8 lead on load and coherence only.
@@ -297,12 +309,20 @@ Landed work lives in [`conversation-stack-completed-through-2026-10-22.md`](../c
   - **G3 routing:** forced-policy compliance (D5) and tool-call slot quality, plus semantic fidelity and exact-value retention when revoicing orchestrator text.
   - **G4 serving:** TTFA, RTF, VRAM and repetition/corruption rate on the MI210 at BF16, plus a quantized proxy.
       · class: inference
+  - [ ] **CS-8.p1** [inference] run the interlocutor bake-off on the reference harness (CS-5), in gate order , with the cascade measured on the same clips as the baseline. A candidate that fails a gate stops there. Gates: NEEDS-OWNER
+        · done when: Run record holds a PASS/FAIL verdict per candidate per gate reached, with cascade baseline measured on the same clips, and the run ends at the first FAIL or after G4.
+        · stop rule: Question: does each candidate clear gates G1 to G4 on the CS-5 harness, against the cascade baseline on the same clips? Effect vs error: a gate FAIL is a candidate effect; a harness precondition failure (e.g. encoder_calls 0) is an error th
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-8
 
   Tie-break: voice identity (D10). Deliver a winner recommendation with the numbers to the operator through the master decision queue. If both candidates fail G1 or G3, the recommendation says so. Kimi-Audio (12.5 Hz, 19 GB detokenizer) is not in the bake-off; it re-enters only if both candidates fail.
 - [ ] **CS-9 — measure GPU co-residency and CU partitioning for speech placement. (rescoped 2026-10-21 after operator ruling: frontdoor moves to a GPU with card 2)** This is the D3 decision input. Arms: (A) card 2 with 35B-A3B at np {1, 4, 16}; (B) card 1 with the 27B np4 and VL-30B, only if VRAM permits. For each arm, run the cascade and each candidate interlocutor concurrently. Record p95 LLM tok/s per slot plus speech TTFA/RTF. There is no CPU arm.
   - Then test soft partitioning: ROCm per-queue **CU masking** (`HSA_CU_MASK`, `hipExtStreamCreateWithCUMask`). First establish whether it works on gfx90a at all. **Established 2026-10-21 (queue row 7, `artifacts/speech-queue-20261021/result.txt`): it works on gfx90a; a disjoint mask isolates a 25% stream from a 75% one and unmasked interference is +31% on synthetic kernels, so LLM + STT/TTS co-residency on ONE MI210 is feasible to test with real tenants.** If it does, measure whether a speech CU reservation protects speech latency, and what it costs the LLM. MI210 has no hard compute partitioning, unlike MI300.
   - Also record real VRAM per co-tenant, replacing the estimates in *Facts*.
       · class: inference
+  - [ ] **CS-9.p1** [inference] measure GPU co-residency and CU partitioning for speech placement. (rescoped 2026-10-21 after operator ruling: frontdoor moves to a GPU with card 2) This is the D3 decision input. Arms: (A) card 2 wit NEEDS-OWNER
+        · done when: Run record holds, per arm and candidate, p95 LLM tok/s per slot, speech TTFA/RTF, and measured VRAM per co-tenant, plus a CU-mask row with PASS/FAIL on speech-reservation protection.
+        · stop rule: Q: does speech co-reside with the LLM on card 2 (arm A) with speech TTFA/RTF still acceptable? Effect (miss) vs error (launch or metric failure). Checkpoint per arm. Stop at arm A answer. Futility: skip arm B if VRAM check fails.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-9
 - [ ] **CS-10 — probe latency hiding on the stock models (no training), on the reference harness.**
   - (a) Step: native spoken-preamble → `<tool_call>`. Measure how often the preamble is emitted and how natural it is, and the dispatch time relative to playback.
   - (b) Step: *untrained* mid-generation injection. Append orchestrator text as a segment at a TA4 group boundary and continue. Measure coherence, the rate at which the injected content is used, and exact-value retention.
@@ -325,6 +345,18 @@ Landed work lives in [`conversation-stack-completed-through-2026-10-22.md`](../c
   - In the same package, fix the stale speech descriptions:
     - the registry `description` strings still say "HIP/gfx90a, MI210" for CPU services (research `orchestration/model_registry.yaml:2068,2163`, mirrored in orch `model_registry_full.yaml`);
     - the dashboard labels speech "GPU (MI210) · speech" (orch `src/api/routes/dashboard.py:2185`).
+  - [ ] **CS-12.p1** [inference] Re-cut the capacity-gate speech-VRAM fold (whisper 2.06 + tts 2.62 GiB) so the reservation is keyed on each service's device, using artifacts/operator/inf41-capacity-gate-aux-vram-20260924.patch on branch noninf/inf41-speech as reference. NEEDS-OWNER
+        · done when: The re-cut diff is in the stack-change package and the speech VRAM reservation key references the service's device, not a global pool.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-12
+  - [ ] **CS-12.p2** [inference] Give whisper and qwentts separate HIP_VISIBLE_DEVICES settings and record ggml linkage and the engine device line for each per Annex S. NEEDS-OWNER
+        · done when: The package lists a distinct HIP_VISIBLE_DEVICES per speech service and contains Annex S evidence of ggml linkage and the engine device line for each.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-12
+  - [ ] **CS-12.p3** [inference] Re-run the live-contention harness with 35B-A3B generating on the same card and with CPU :8074 (Flash-Next) generating, and record the 35B-A3B slowdown from CS-9. NEEDS-OWNER
+        · done when: The harness results file has both conditions, STT RTF < 0.5 and TTS first packet < 1 s in each, and the 35B-A3B slowdown value.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-12
+  - [ ] **CS-12.p4** [inference] Replace the stale 'HIP/gfx90a, MI210' descriptions on CPU speech services in research orchestration/model_registry.yaml lines 2068 and 2163 and in orch model_registry_full.yaml, and change the dashboard speech label at orch src/api/routes/d NEEDS-OWNER
+        · done when: A grep for 'HIP/gfx90a, MI210' on those CPU speech entries returns no matches, and the dashboard no longer shows 'GPU (MI210) speech' for CPU-placed speech services.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-12
 
     Make both device-true for wherever speech lands.
   - It retires the TTS `nprocs` shim concern for the GPU path; KVU-11c stays in RTG-57 for any CPU-fallback path.
@@ -370,6 +402,18 @@ Landed work lives in [`conversation-stack-completed-through-2026-10-22.md`](../c
   - Interface: `ingest(audio_chunk)`, `respond(turn) → stream of events {text_delta, audio_chunk, tool_call, end}`, `inject(text)`, `cancel()`, `health()`.
   - Test harness: WAV in → PCM/WAV out plus a JSONL event log, with no client (D7).
   - The transport abstraction must not assume the microphone is on the host, because the end state is remote laptop and phone access.
+  - [ ] **CS-20.p1** [non-inference] Define the interlocutor backend interface in `src/voice/` with `ingest(audio_chunk)`, `respond(turn)` yielding `text_delta`/`audio_chunk`/`tool_call`/`end` events, `inject(text)`, `cancel()`, and `health()`. NEEDS-OWNER
+        · done when: A unit test imports the interface, asserts all five methods exist, and asserts the four event type names are defined.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-20
+  - [ ] **CS-20.p2** [non-inference] Implement the voice-controller skeleton in `src/voice/` against the backend interface, using a stub backend. NEEDS-OWNER
+        · done when: A unit test drives ingest, respond, inject, cancel, and health on the stub backend and passes.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-20
+  - [ ] **CS-20.p3** [non-inference] Build the no-client test harness that takes a WAV in, writes PCM/WAV out, and writes a JSONL event log. NEEDS-OWNER
+        · done when: Running the harness on a fixture WAV produces an output WAV and a JSONL file where every line parses as JSON and carries an event type.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-20
+  - [ ] **CS-20.p4** [non-inference] Add a transport abstraction in `src/voice/` that is injected, so no module there imports host audio device code. NEEDS-OWNER
+        · done when: A grep of `src/voice/` finds no audio device imports, and a unit test passes using an in-memory transport double.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-20
 - [ ] **CS-21 — implement the cascade backend**: whisper :9000 → the voice-turn contract (Phase 3) → qwentts :9002, streaming PCM. This is the first end-to-end voice path, the permanent fallback (D8), and the bake-off baseline. It exercises the whole controller and contract before any new model exists.
 - [ ] **CS-22 — add VAD and turn detection.**
   - Evaluate whisper.cpp's built-in Silero VAD flags against a standalone Silero VAD in the controller, plus an end-of-turn policy (silence threshold; semantic end-of-turn is optional).
@@ -416,6 +460,15 @@ Kernel rules apply throughout: work on an experimental branch pulled fresh from 
   - Step: the Qwen2-Audio encoder plus the stride-2 adapter. Check reuse of the existing QWEN2A / whisper-enc projectors (`tools/mtmd/clip-impl.h:343-362`) first.
   - Omni: verify AuT parity.
       · class: non-inference
+  - [ ] **CS-30.p1** [non-inference] Check whether the existing QWEN2A and whisper-enc projectors in tools/mtmd/clip-impl.h:343-362 can be reused for the Step audio encoder. NEEDS-OWNER
+        · done when: A note on the experimental branch lists each of those projectors with a REUSE or NEW verdict and a one-line reason.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-30
+  - [ ] **CS-30.p2** [non-inference] Port the Step Qwen2-Audio encoder and stride-2 adapter as an mtmd projector on an experimental branch pulled fresh from production. NEEDS-OWNER
+        · done when: The mtmd tree builds and the Step audio-encoder parity check reports a PASS row.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-30
+  - [ ] **CS-30.p3** [non-inference] Verify Omni AuT audio-encoder parity. NEEDS-OWNER
+        · done when: The Omni AuT parity check reports a PASS row, recorded in the branch notes.
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: CS-30
 - [ ] **CS-31 — port speech output to ggml with streaming.**
   - Step Token2Wav: UpsampleConformerEncoderV2, the flow DiT (512 wide, 16 deep, 10 ODE steps), HiFT, and CAM++ run once per enrolled voice. Stream in chunks of 25 tokens plus 3 lookahead, with a flow attention cache and HiFT crossfade.
   - Omni: the Talker (MoE plus MTP) and Code2Wav.
@@ -1074,6 +1127,10 @@ The offline scorer used a bounded guard: 5.44 seconds, sampled peak 77.6 MB, no 
   `unknown_pairs` with reason `placement_withdrawn` (declared withdrawal, NOT a re-measurement; stamp
   `5d772b2c` → `560d489b`). A hot tier flip without a re-bench leaves contention_gate blind for vision.
       · section: Speech tasks — opened 2026-07-31
+  - [ ] **S-19.p1** [inference] re-bench `worker_vision`'s contention pairs before it is ever made HOT again (PACKAGE M-4; filed NEEDS-OWNER
+        · done when: worker_vision's unknown_pairs entry (reason placement_withdrawn) is replaced by 3 re-measured contention pairs recorded under the current placement.
+        · stop rule: Q: is worker_vision contention measurable on its current placement? Effect vs error: measured per-pair values, not withdrawal. Checkpoint after each pair. Stop-on-answer: all 3 pairs recorded. Futility: a pair cannot run or placement is wit
+        · proposed-by: taskflow 2026-11-20T10:53Z        · parent: S-19
 - [ ] **Verify the fix after the OCR service's next restart.** `CLI_PATH` resolves at module import, so PID 3266570 is still running the old resolution. The fix is inert until whoever owns inference restarts it — no action needed *for* the restart, just confirm resolution afterwards
       · section: 2026-08-03 — llama-mtmd-cli resolution: two latent defects fixed, follow-ups filed
 - [ ] **MM-1 — Repoint experiment.** Set `DASHSCOPE_BASE_URL` → `http://127.0.0.1:8087/v1`, supply **no
