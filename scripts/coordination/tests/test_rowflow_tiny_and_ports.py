@@ -48,7 +48,7 @@ class TinyRowTests(unittest.TestCase):
             rf.atomic_json(rf.ready_path(flags, rid), row)
             return row
 
-        def dry(flags, rid_, regions, one_quarter=False, smoke_s=None):
+        def dry(flags, rid_, regions, one_quarter=False, smoke_s=None, **kw):
             dd = rf.dry_dir(flags, rid_)
             os.makedirs(dd, exist_ok=True)
             if write_result:

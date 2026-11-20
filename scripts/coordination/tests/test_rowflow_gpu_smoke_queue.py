@@ -27,7 +27,7 @@ class GpuQueueTests(unittest.TestCase):
     def _go(self, busy, verdict="PASS"):
         calls = []
 
-        def dry(flags, rid, regions, one_quarter=False, smoke_s=None):
+        def dry(flags, rid, regions, one_quarter=False, smoke_s=None, **kw):
             calls.append((rid, regions))
             return verdict, "m"
         with mock.patch.object(rf, "publish", self._publish), mock.patch.object(rf, "dryrun_run", dry), \

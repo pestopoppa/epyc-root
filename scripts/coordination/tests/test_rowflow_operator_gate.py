@@ -12,6 +12,15 @@ import publish_row as pr  # noqa: E402
 import rowflow as rf  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def _isolated_hub(tmp_path, monkeypatch):
+    """F4/F5: holds.yaml is read from the hub view; never let the live hub's holds leak into these fixtures."""
+    sys.path.insert(0, os.path.dirname(_TESTS))
+    import toolroot
+    monkeypatch.setattr(toolroot, "HUB", str(tmp_path / "no-hub"))
+    monkeypatch.setattr(pr, "REPO", str(tmp_path / "no-hub"))
+
+
 @pytest.fixture
 def flags(tmp_path):
     reg = {"operator_gated_row_prefixes": ["v11-"],

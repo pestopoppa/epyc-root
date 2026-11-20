@@ -32,7 +32,7 @@ class SmokeTests(unittest.TestCase):
     def _run(self, verdict):
         seen = {}
 
-        def dry(flags, rid, regions, one_quarter=False, smoke_s=None):
+        def dry(flags, rid, regions, one_quarter=False, smoke_s=None, **kw):
             seen["fails_at_start"] = rf.fail_paths(flags, rid)
             if verdict == "FAIL":
                 rf.atomic_json(os.path.join(rf.dry_dir(flags, rid), "FAIL-1.json"), {"reason": "new"})

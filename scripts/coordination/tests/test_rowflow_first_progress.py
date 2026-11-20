@@ -205,7 +205,7 @@ class PublishFieldTests(unittest.TestCase):
             rf.atomic_json(rf.ready_path(flags, "r1"), {"id": "r1"})
             return {"id": "r1", "first_progress_s": 900}
 
-        def dry(flags, rid, regions, one_quarter=False, smoke_s=None):
+        def dry(flags, rid, regions, one_quarter=False, smoke_s=None, **kw):
             seen["smoke_s"] = smoke_s
             return "PASS", "ok"
         with mock.patch.object(pr, "smoke_regions", return_value="0-3"), mock.patch.object(rf, "publish", pub), \
