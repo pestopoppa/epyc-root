@@ -11,6 +11,9 @@ import protocol_requests
 
 
 def prepare(path, digest, result_path):
+    # Row runtimes pass pathlib.Path; compare filesystem strings consistently
+    # without resolving/normalizing away noncanonical spellings or symlinks.
+    result_path = os.fspath(result_path)
     schedule = context.bound_json(dict(path=str(path), sha256=digest))
     context.require(set(schedule) == {'schema', 'protocol', 'launches'} and
                     schedule['schema'] == 'epyc.cafe3.schedule.v1', 'invalid schedule')

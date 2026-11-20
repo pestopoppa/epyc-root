@@ -111,6 +111,28 @@ class ScheduleTest(unittest.TestCase):
         Path(self.schedule['launches'][-1]['context']['path']).write_text('{}')
         self.refused('digest mismatch')
 
+    def test_path_result_from_row_runtime_completes_all_arms(self):
+        multi_arm.execute(self.path, self.digest, Path(self.result))
+        self.assertEqual(self.runner.call_count, 3)
+        self.assertEqual(self.records()[-1]['event'], 'complete')
+
+    def test_path_result_keeps_exclusive_and_canonical_output_guards(self):
+        result = Path(self.result)
+        for value in (self.corpus['path'], self.schedule['launches'][0]['log']):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(ValueError, 'colliding output|outside inputs'):
+                    multi_arm.execute(self.path, self.digest, Path(value))
+                self.runner.assert_not_called()
+        result.symlink_to(self.root / 'missing-target')
+        with self.assertRaisesRegex(ValueError, 'new canonical path'):
+            multi_arm.execute(self.path, self.digest, result)
+        self.runner.assert_not_called()
+        result.unlink()
+        result.touch()
+        with self.assertRaisesRegex(ValueError, 'new canonical path'):
+            multi_arm.execute(self.path, self.digest, result)
+        self.runner.assert_not_called()
+
     def test_missing_or_duplicate_static_arm_refused(self):
         for arms in (['adaptive', 'static-0'], ['adaptive', 'static-0', 'static-0']):
             self.protocol['arms'] = arms
