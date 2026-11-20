@@ -53,3 +53,28 @@ mismatch, content and manifest tampering, same-size mutation and inode replaceme
 unmapped model/library, redirects, PID generation changes, unbound live callables,
 and proof failure after the raw response preventing scoring. They establish
 software behavior only. Publish actual fleet capture through rowflow next.
+
+`proposed/cj567/bfcl_fleet_run.py` provides the dedicated row worker. Its scratch
+configuration binds the approved build, prepared model, fixed selection, original
+checker checkout and released catalog. The shell launcher verifies its small input
+manifest before entering the row engine. The worker sets the server's own
+`LD_LIBRARY_PATH`, requires the full-run grant bytes to remain unchanged, and
+keeps one exclusive journal per selected multi-turn case. A partial or UNKNOWN
+case stops the run; existing output refuses continuation. It terminates and reaps
+only the server child it launched, escalating to SIGKILL if needed.
+
+The CPU smoke uses a synthetic addition-tool request with 24 output tokens,
+records native response and before/after residency proofs, and writes journals under
+`bfcl-native/` beside rowflow's unique attempt result. It also writes its one completed-request record
+to rowflow's exact `FILLER_DRYRUN_RESULT_PATH`; full runs write `run/RESULT.json`. It does not initialize the official checker or
+parse the cohort. Its transport success is an engineering qualification; even a
+truncated or non-tool response establishes no BFCL accuracy. Full capture covers
+the ten pinned multi-turn cases. The terminal records known, unknown, passed and
+completed counts; `score` stays null because this coverage selection does not
+establish a representative score. SQL remains excluded by the upstream evaluator.
+
+Run the five model-free launcher controls with
+`PYTHONPATH=proposed/cj567 python3 -B -m unittest test_bfcl_fleet_run -q`.
+They cover UNKNOWN/coverage semantics, malformed selections, owned-child cleanup
+and escalation, and smoke isolation from the cohort, official scorer and prior smoke attempts. Actual
+model inference is qualified exclusively through `publish_row.py`.

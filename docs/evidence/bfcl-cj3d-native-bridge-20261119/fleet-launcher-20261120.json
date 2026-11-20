@@ -1,0 +1,75 @@
+{
+  "box": "CJ-3d",
+  "scope": "Dedicated native CPU multi-turn coverage diagnostic; no representative score or fleet discrimination claim.",
+  "software_sha256": {
+    "proposed/cj567/bfcl_fleet_run.py": "ff7c89504d59d581e761d8336bd31e48c3ed65ab952d97a00979cb8ee7bb8336",
+    "proposed/cj567/test_bfcl_fleet_run.py": "eeab6d782928765038ec6690cd7351a9a396c80370160e32528f287d575da1c4"
+  },
+  "controls": {
+    "command": "PYTHONPATH=proposed/cj567 python3 -B -m unittest test_bfcl_fleet_run -q",
+    "result": "PASS",
+    "tests": 5,
+    "elapsed_s": 0.184
+  },
+  "row": "codex-bfcl-cj3d-27b-v1-20261120",
+  "prepared_inputs": {
+    "MODEL.json": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/MODEL.json",
+      "sha256": "15071cdf9b48dcfb78dcea47946155370d2fc8cae17cce171b72dd0418d83aa8"
+    },
+    "BUILD.json": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/BUILD.json",
+      "sha256": "5a62c90959db4779b3d714a862a38642ab6ef9eb82c43a5149f7126adb0ded3e"
+    },
+    "CONFIG.json": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/CONFIG.json",
+      "sha256": "6c970a5b1fafea1bbd13f70d91dc32bbfad7d6f795fe3275319c4c88620fe8c8"
+    },
+    "SELECTION.json": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/SELECTION.json",
+      "sha256": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0"
+    },
+    "INPUTS.sha256": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/INPUTS.sha256",
+      "sha256": "927d2a721c2ae6860533e6e9daed8fa91367876bbeea5e929f21a4e256ed4af5"
+    },
+    "spec.json": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/spec.json",
+      "sha256": "1c844a60bc79a19cf799291fd0aacfdb9870600ddcbe377e5a2c42421ecdbfc8"
+    },
+    "launch.sh": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/launch.sh",
+      "sha256": "37feb1886571ad4b9a600ba4a249ac5b6dca3043bbd2286b692f463d8931b4d0"
+    },
+    "PREPARATION.json": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/PREPARATION.json",
+      "sha256": "dc3296d8f66687a757ee1182ef91574f5f27afefee582af7aa868e1ff63ae388"
+    }
+  },
+  "linkage": {
+    "result": "PASS",
+    "command": "LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin"
+  },
+  "limitations": [
+    "Ten multi-turn coverage cases; single-turn fleet capture and SQL eligibility remain outside this row.",
+    "Smoke synthetic noncohort; no official grading or model quality inference.",
+    "Model preparation record reused only after all five inode metadata fields matched; no weights hashed inside grant."
+  ],
+  "smoke_repairs": [
+    "First attempt completed a native request but omitted the exact native result path and completed-request field; both now covered by a regression control.",
+    "Second attempt short-circuited on prior smoke completion; output and engine completion now use the unique native attempt path; the control runs two isolated attempts."
+  ],
+  "publication": {
+    "result": "SMOKE PASS; PUBLISHED",
+    "cpu_cores": "116-119",
+    "returncode": 0,
+    "completed_native_requests": 1,
+    "synthetic_noncohort": true,
+    "files": {
+      "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3d-27b-v1-20261120/PASS.json": "f0f15a16cbe2526e47de605824c132b58f976cc8132ae154f9f86c459ece162c",
+      "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3d-27b-v1-20261120/launcher.out": "a24824887144043d586877cfb77f89414b8f3e9d3cc7ea41ac7dc015761f6961",
+      "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3d-27b-v1-20261120/native-attempts/attempt-xo0dkpec/native-result.json": "ed89a28091f130e2c24c9cc749030fd5d561e17dec2868f2ecb84f2b5b28e136"
+    },
+    "result_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run/RESULT.json"
+  }
+}
