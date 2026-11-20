@@ -3260,6 +3260,12 @@ and strict `target_precision` projection now replay retained originals and share
 measurement ladder. Model-free fixtures only; native-worker adoption, resource admission,
 matched-weight/numerical controls and the planning-context canary remain unresolved.
 No historical measurement warrant or causal precision result is created.
+The per-cell `target-precision/worker.py` process adapter now binds native requests
+and retains request/log/trace identities inside the replayed closure; 78 model-free
+worker/capture tests pass. The native C++ DFlash trace producer is still absent;
+its full-logit protocol currently requires bounded traces (16 MiB reader limit).
+Keep native-worker adoption and the planning-context canary open; no new source
+class, grading rule or decision-bearing measurement was introduced.
 
 ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
 

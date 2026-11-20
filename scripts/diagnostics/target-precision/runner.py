@@ -66,6 +66,14 @@ def run_matrix(plan_path, output_dir):
             telemetry, receipt = capture._read(raw)
             native.update(raw_output_path=str(raw), raw_output_sha256=receipt['sha256'])
             if error is None:
+                if 'native_worker' in plan:
+                    request = telemetry.get('request', {})
+                    if (request.get('plan_sha256') != opened['plan_file']['sha256']
+                            or request.get('case') != case
+                            or request.get('settings') != native['settings']
+                            or request.get('runtime') != plan['native_worker']):
+                        raise ValueError('native worker request binding mismatch')
+                    native['native_artifacts'].extend(telemetry.get('native_artifacts', []))
                 status = telemetry.get('status')
                 if status not in ('ok', 'failed', 'invalid', 'abstained'):
                     raise ValueError('native status missing or unknown')
