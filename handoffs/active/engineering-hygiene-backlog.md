@@ -1271,6 +1271,10 @@ The preserved v1 correctly classified the instantaneous blackout but only checke
 - [ ] **WEB-3 — refresh evidence when measured:** if a frozen-kernel Flash-Next UD-IQ4_XS CPU np × context throughput sweep is produced, replace the card's unmeasured grid with its source-backed cells. The September 24 sweep was explicitly skipped by the operator; this task does not authorize running it.
       · class: inference
       · section: Next actions
+  - [ ] **WEB-3.p1** [inference] refresh evidence when measured: if a frozen-kernel Flash-Next UD-IQ4_XS CPU np × context throughput sweep is produced, replace the card's unmeasured grid with its source-backed cells.… NEEDS-OWNER
+        · done when: Verdict line is either 'WEB-3 PASS: grid cells replaced, each cited to the sweep source' or 'WEB-3 NO-OP: no frozen-kernel sweep artifact found; card unchanged; no sweep run'.
+        · stop rule: Question: does a frozen-kernel Flash-Next UD-IQ4_XS CPU np x context sweep exist? Effect: replace grid cells only with source-backed sweep values. Error: missing or unsourced sweep. Checkpoint: one lookup. Stop on answer: no sweep means sto
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: WEB-3
 
 > Folded from `handoffs/active/amd-ai-lab-website-publication.md` @ `ea07eb9ad4ae` on 2026-11-02 (BRF-T1-F3, route 1a, operator D1/D5; retired row UFH-11 → RTG-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -1519,6 +1523,10 @@ handoff owns the shared red-test baseline.
 
 - [ ] **BK-OBSERVE — confirm the next two 04:00 backups (11-10, 11-11) and the first 04:45 loop-state cron run with `/home/daniele/filesystem-agent/scripts/backup-health-check.sh`.** Owner: host owner. [no-belief: tooling-repair]
       · section: Tasks
+  - [ ] **BK-OBSERVE.p1** [non-inference] confirm the next two 04:00 backups (11-10, 11-11) and the first 04:45 loop-state cron run with `/home/daniele/filesystem-agent/scripts/backup-health-check.sh`. Owner: host owner. [no-belief… NEEDS-OWNER
+        · done when: backup-health-check.sh output recorded with a PASS or FAIL verdict for the 11-10 04:00 backup, the 11-11 04:00 backup, and the first 04:45 loop-state cron run.
+        · stop rule: Question: did the 11-10 and 11-11 04:00 backups and the first 04:45 loop-state cron run pass backup-health-check.sh? Error: script exits nonzero or reports a missing or failed run. Checkpoints: after each of the three runs. Stop when all th
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: BK-OBSERVE
 
 > Folded from `handoffs/active/loop-state-offraid-backup.md` @ `ea07eb9ad4ae` on 2026-11-02 (BRF-T1-F3, route 1a, operator D1/D5; retired row RTG-60 → RTG-22). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -2199,6 +2207,15 @@ C1-22 disappears with the unified plane.
   - *(workspace-f2 2026-11-09.)* No reaper can retire yet: leases only bound a KEEP veto, cover only top-level tmp/, and kernel_store_gc, worktree_salvage and reclaim_row ignore them. Coverage pinned in tests/test_scratch_lease_coverage.py.
   *(workspace-f2 2026-11-09 wrap-up.)* Still needed (see the 2026-11-09 note above). [no-belief: not-a-result]
       · section: 2026-11-05 operator-adhoc follow-ups (operator-adhoc-ops-20261105 wrap-up)
+  - [ ] **SCRATCH-LEASE-P3.p1** [non-inference] Extend lease coverage from top-level tmp/ to every scratch root that tests/test_scratch_lease_coverage.py expects. NEEDS-OWNER
+        · done when: `pytest tests/test_scratch_lease_coverage.py` exits 0 with no uncovered scratch root reported.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: SCRATCH-LEASE-P3
+  - [ ] **SCRATCH-LEASE-P3.p2** [non-inference] Make kernel_store_gc, worktree_salvage and reclaim_row check leases before removing anything. NEEDS-OWNER
+        · done when: Each of the three functions has a lease check, and their tests plus tests/test_scratch_lease_coverage.py pass.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: SCRATCH-LEASE-P3
+  - [ ] **SCRATCH-LEASE-P3.p3** [non-inference] Retire the old reapers after the lease-coverage and lease-check children are done. NEEDS-OWNER
+        · done when: Retired reaper entry points are removed or disabled, and grep finds no remaining call sites for them.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: SCRATCH-LEASE-P3
 - [ ] **SCRATCH-LEASE-P4 — delete dead `cleanup_scratch` paths.**
   *(workspace-f2 2026-11-09 wrap-up.)* Blocked on SCRATCH-LEASE-P3 (the old reapers cannot be deleted before they retire). [no-belief: not-a-result]
       · class: non-inference
@@ -2230,6 +2247,18 @@ C1-22 disappears with the unified plane.
     - AFC-V3C-PROD-TOOLS already uses the signed architect set. [no-belief: operator decision + code change, no measurement]
       · inputs-missing: `/mnt/raid0/llm/worktrees/f2-toolperm-doc`
       · section: 2026-11-05 operator-adhoc follow-ups (operator-adhoc-ops-20261105 wrap-up)
+  - [ ] **TOOLPERM-DENY-DEFAULT.p1** [inference] Refresh `contention_matrix.yaml` so the orchestrator pre-commit contention-matrix freshness check passes for the signed toolperm package, without `--no-verify`. NEEDS-OWNER
+        · done when: The pre-commit contention-matrix freshness check passes in worktree `/mnt/raid0/llm/worktrees/f2-toolperm-doc`, with no `--no-verify` used.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: TOOLPERM-DENY-DEFAULT
+  - [ ] **TOOLPERM-DENY-DEFAULT.p2** [inference] Commit and push the signed toolperm-deny-default package from worktree `/mnt/raid0/llm/worktrees/f2-toolperm-doc` as workspace-f2, on the base sha in the `.base` file. NEEDS-OWNER
+        · done when: The remote branch contains the commit with `ToolPermissions.all_tools`, the executor.py LEGACY note and the parity test, and the 71 targeted tests pass on that commit.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: TOOLPERM-DENY-DEFAULT
+  - [ ] **TOOLPERM-DENY-DEFAULT.p3** [inference] Run `/mnt/raid0/llm/tmp/toolperm_snapshot.py` after the commit lands and compare its per-role tool counts with `/mnt/raid0/llm/tmp/toolperm-deny-diff.md`. NEEDS-OWNER
+        · done when: Snapshot counts match the diff file: frontdoor 36, worker_general 26, coder_escalation and toolrunner 65, architects 35, worker_math 35, and nine roles at 0.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: TOOLPERM-DENY-DEFAULT
+  - [ ] **TOOLPERM-DENY-DEFAULT.p4** [inference] Record in the production relaunch queue README that item 1 is complete, and request the orchestrator API reload from the inference owner's boundary. NEEDS-OWNER
+        · done when: `/mnt/raid0/llm/tmp/relaunch-queue-20261111/README.md` marks item 1 done with the commit sha, and the reload request is logged to the inference owner.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: TOOLPERM-DENY-DEFAULT
 - [ ] **AGENTFILE-INJECT-DEPLOY — deliver the measured agent-file operating point to worker_general and architect_general in production.** Before this change, no production path gave a local model any agent file: `agent_file_compression_operating_point` was validated, never applied (trace 2026-11-12). Operator decision 2026-11-12: wire it for both roles.
   - **External gate:** production relaunch (Pipeline relaunch queue item 1) plus the `contention_matrix.yaml` refresh; lands with TOOLPERM-DENY-DEFAULT. Signed package backup: `/mnt/raid0/llm/tmp/toolperm-deny-default-signed-20261111.patch`.
   - Code is landed on epyc-orchestrator 440ed243c, behind `agent_file_injection`, which defaults OFF (flag-off prompts are byte-identical; this is tested):

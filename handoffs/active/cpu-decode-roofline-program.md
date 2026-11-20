@@ -5512,6 +5512,18 @@ For multi-tenant scenarios (not our current deployment): the Sarathi trade-off M
     `10107`). It does not make the CONCAT path default-on or elevate its prefill
     figures beyond observation-grade; the preserved CPU matrix
     `promotion_decision=false` is not a veto of the operator freeze.
+  - [ ] **PC-4.p1** [inference] Record the current production tip commit of llama.cpp-experimental (not the stale v7 promotion branch) and list the qwen35moe frontdoor prefill same-input compute islands with their graph-node and OpenMP dispatch counts. NEEDS-OWNER
+        · done when: A notes file exists that records the base commit hash and a per-island table of graph-node and OpenMP dispatch counts.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: PC-4
+  - [ ] **PC-4.p2** [inference] Implement a default-off barrier/graph-fusion option for those prefill islands in llama.cpp-experimental, leaving IQK dot kernels untouched. NEEDS-OWNER
+        · done when: The project builds with the option off by default, and the diff touches only the fusion/dispatch path and its option flag.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: PC-4
+  - [ ] **PC-4.p3** [inference] Run the exact-output smoke test with the fusion option off and on. NEEDS-OWNER
+        · done when: The smoke-test outputs are byte-identical between the off and on runs, and the result is recorded as PASS.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: PC-4
+  - [ ] **PC-4.p4** [inference] Run repeated p8192/n1 profiles with the option off and on, then compare libomp spin/pause share and wall time against the AK CPU screen floor. NEEDS-OWNER
+        · done when: A table lists per-run libomp spin/pause share and wall time for both settings, with a PASS or FAIL verdict against the AK CPU screen floor.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: PC-4
 
 > Folded from `handoffs/active/cpu-prefill-compute-large-models.md` @ `2ef4bc374799` on 2026-11-02 (BRF-T1-F16, route 1a, operator D1/D5; retired row INF-09 → INF-49). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -5895,6 +5907,18 @@ MoE-Spec Phase 0
   occurrence-only (not damage). v10 `llama-quant.cpp:304-307` never quantizes `ffn_gate_inp`, so flips come from upstream
   perturbation. Absorbs RT-3 (BLOCKING hazard, read before writing tap code): a flat read of a strided router tensor makes every expert appear exactly k times with sub-chance reuse; read row-by-row with ggml_backend_tensor_get at offset i * t->nb[1] (ggml/src/ggml.c:5373, src/llama-graph.cpp:1987; intake-1336#00).
       · section: Tasks
+  - [ ] **RT-2.p1** [non-inference] Port the MoE routing tap to emit per-layer top-k expert-index tensors [samples, tokens, top_k] and per-expert rank/mask (SRP), with SCH computed via the incremental oracle at 41_sch_calc.py:12-212. NEEDS-OWNER
+        · done when: Tap source reads router rows with ggml_backend_tensor_get at offset i*t->nb[1] (no flat read), and output exists for m in {4,16,64,256} at 512-token samples x 2048 per domain.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: RT-2
+  - [ ] **RT-2.p2** [non-inference] Emit EOR/IR_t per MoE layer as |E_t ∩ E_{t-1}|/K computed from the same top-k tensor the SRP output consumes. NEEDS-OWNER
+        · done when: An EOR/IR_t output exists per MoE layer, and a two-token toy input produces the hand-computed overlap ratio.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: RT-2
+  - [ ] **RT-2.p3** [non-inference] Attach chance baselines to every reported tap number: 8/256=3.13% (qwen35moe), 10/512=1.95% (qwen4exp), and DeepSeek-V2-Lite 9.38% (ReMoE 2.91x chance). NEEDS-OWNER
+        · done when: A grep of the report finds the 3.13%, 1.95%, and 9.38% baseline labels beside each metric line, with no unlabelled numeric result.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: RT-2
+  - [ ] **RT-2.p4** [non-inference] Run the ported tap on a Q8_0/BF16 reference GGUF and a Q4_K candidate of the same model over an identical token stream, emitting per-layer top-k Jaccard and replaced-expert share. NEEDS-OWNER
+        · done when: Output has per-layer Jaccard, share of token-layers with at least one replaced expert, repeat floor, and chance baseline, all labelled 'occurrence-only (not damage)', with matching token-stream checksums.
+        · proposed-by: taskflow 2026-11-20T11:13Z        · parent: RT-2
 - [ ] **RT-6 — Offline expert-placement replay on RT-1 traces, DS41 + frontdoor (intake-2116#record, intake-2134#record, intake-2138#record, intake-2141#record, intake-2142#record).** Numpy, no inference (capture is RT-1). Bins = 4 NUMA nodes and 12 CCDs; T in {1, 3} decode plus one prefill-chunk row. Arms: DeepInfer windowed per-step-peak policy (policy.py port), EPLB-global (eplb.py @ d52c72d), a zero-lag exact-load oracle (UltraEP planner logic), MoonEP rank-level greedy, and the LPLB fractional LP floor as a bound only; score every arm by per-step max/mean with the null model beside it and replication priced in copied bytes. Rule: if even the oracle/LP bound fails 1.65 / (best max/mean) >= 1.10 on >= 2 workloads, close as a negative recorded in large-moe-expert-parallelism.md.
       · section: Research intake 2026-10-20 — DeepInfer (research intake entries 2116–2142, see research/intake_index.yaml)
 - [ ] **RT-7 — Residency hit-rate curve h(k) and stationarity for DS41 hot experts on the MI210 (intake-2116#record, intake-2139#record).** Offline from RT-1 traces: for k in {39, 53, 63} experts/layer with greedy cross-layer allocation, the share of top-6 selections covered by a static ranking learned on domain A and scored on domain B, plus top-set overlap between consecutive 1k-step windows. Rule: open the HIP MXFP4 expert-cache work (CAFE-7) only if h(53) >= 0.30 on >= 2 workloads and the HIP resident MXFP4 MoE kernel check passes; h < 0.23 closes it. Per-step dynamic prefetch is excluded (fetch costs ~5.7 CPU reads).
