@@ -218,6 +218,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: verdict: STAY-35B|TRY-27B|FIX-HARNESS
       · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: champion C14 GPU store gpu-20261118-eee3da838-c14 · harness: opencode 2.2.5 + taskflow dispatch (origin/main 104a8f154) · metric: verified/attempted, tokens per verified task · rule: >=0.3 verified with model-limitation the minority failure -> STAY-35B; <0.3 with >=50% model-limitation -> TRY-27B; >=50% harness failures -> FIX-HARNESS · region: gpu-q3 (mi210_0,88-95,184-191) · est 4200 s, from 10 tasks x 300 s x 1.25 + 450 s load
       · Stop rule: stop on answer when all 10 tasks are attempted; stop on futility when the first 4 tasks are all harness-class; STOP file / deadline / grant loss.
+      · 2026-11-20 status: 7 GPU rounds (r1-r7d), current verdict FIX-HARNESS (no model verdict yet); round log, A/B r6c vs r7d and perf in docs/design/taskflow-stage1-canary-findings.md; next = path-garbling + shell-compose fixes, CPU rounds from tf1-cpu-s1 rate.
       · gate: none
       · owner: pipeline-mgmt
 - [ ] **HS-STAGE-C** [non-inference] Handoff standard Stage C (spec /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/HANDOFF-STANDARD.md): content rewrites of failing boxes so the lint-OK canary reaches 45 percent (Stage B left it at 21.6), LLM proposals as NEEDS-OWNER children, compaction, generated index rows, ratify package for human-only docs.
