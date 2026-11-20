@@ -1,0 +1,12 @@
+{
+  "plan_sha256": "7a445109de19eb59cffc1abefde697af80026cb6e09242acc3af9552d4b47e21",
+  "files": {
+    "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120/packet/api_support.py": "07a52a412f419c973caed813dade8adeb12d5ec0f95d3badd497cdd33b999a49",
+    "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120/packet/token-ids.json": "2152a130c2147e843aeeea9b0a04691c763fe60f83cd03d74d7b529604bd14dc",
+    "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120/packet/packet_pins.py": "fdf5a09fd72c987d73a6116330d8e74cfa35cf9bfcfb5bfc78f5e29b6f21ba78",
+    "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120/packet/job.py": "dd741b458453ca1582a753600f7cc95d8d89debaa66aa679296b6500ebcf8e95",
+    "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120/packet/test_physical.py": "cf0a61310e1979441c207b0475e8ae9b480a0c14daddbdcc3ba777c36a6fdd1b",
+    "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120/packet/api_cases.py": "68bdb45bf610970b1ff836c67f8fa1337963120ea3a6904a4e46e0914f6f53fd"
+  },
+  "model_hash_checked_before_publication": true
+}
