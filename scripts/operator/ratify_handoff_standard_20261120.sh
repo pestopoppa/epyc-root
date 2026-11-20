@@ -14,8 +14,8 @@
 #     bash scripts/operator/ratify_handoff_standard_20261120.sh
 #   Dry-apply THROUGH THE REAL GIT HOOKS (commits in the throwaway stage, never pushes, then discards):
 #     bash scripts/operator/ratify_handoff_standard_20261120.sh --dry-apply
-#   Sign, commit and push (the OPERATOR runs this):
-#     RATIFY_OPERATOR='<your name>' bash scripts/operator/ratify_handoff_standard_20261120.sh --apply --attest RATIFY-HANDOFF-STANDARD-20261120
+#   Sign, commit and push (the OPERATOR runs this ONE line; piped from origin/main, works from a stale clone):
+#     git -C /mnt/raid0/llm/epyc-root fetch -q origin main && git -C /mnt/raid0/llm/epyc-root show origin/main:scripts/operator/ratify_handoff_standard_20261120.sh | ROOT=/mnt/raid0/llm/epyc-root RATIFY_OPERATOR='<your name>' bash -s -- --apply --attest RATIFY-HANDOFF-STANDARD-20261120
 #   Verify origin/main (read-only):   ... --verify
 #
 # ratify-targets: CLAUDE.md agents/shared/SESSION_LIFECYCLE.md agents/shared/OPERATING_CONSTRAINTS.md
@@ -25,9 +25,20 @@
 set -euo pipefail
 export PATH="/usr/bin:/bin:${PATH}"
 
-SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
-ROOT="${ROOT:-$(cd "$(dirname "$SCRIPT_PATH")/../.." && pwd)}"
 SCRIPT_REL="scripts/operator/ratify_handoff_standard_20261120.sh"
+# Piped invocation (`git show origin/main:<this> | ROOT=<clone> bash -s -- ...`): BASH_SOURCE is empty / not a file.
+# Then ROOT is REQUIRED, and the script's own bytes are taken from the staged origin/main copy below (the exact bytes
+# `git show origin/main:` piped in), so SCRIPT_SHA is the hash of what ran.
+SRC="${BASH_SOURCE[0]:-}"
+if [ -n "$SRC" ] && [ -f "$SRC" ]; then
+  SCRIPT_PATH="$(cd "$(dirname "$SRC")" && pwd)/$(basename "$SRC")"
+  ROOT="${ROOT:-$(cd "$(dirname "$SCRIPT_PATH")/../.." && pwd)}"
+  PIPED=0
+else
+  [ -n "${ROOT:-}" ] || { echo "REFUSING: piped run (no script file) needs ROOT=<epyc-root clone>" >&2; exit 64; }
+  SCRIPT_PATH=""   # set to the staged origin/main copy once the stage exists
+  PIPED=1
+fi
 XFORM_REL="scripts/operator/ratify_handoff_standard_xform_20261120.py"
 STAGE_PARENT="/mnt/raid0/llm/tmp"
 LOCK_AGENT="operator-ratify-handoff-standard"
@@ -37,7 +48,7 @@ TARGETS=("CLAUDE.md" "agents/shared/SESSION_LIFECYCLE.md" "agents/shared/OPERATI
 PRE_SHAS=("7bebaeb7167415b3c85e2a663e1c002cfd8f19b912d8a78c1b90ece6132a6e6c"
           "5926bf19a8f8c7996ca7bd1ddfc663cf2e4caa5b6e96c70a6adffc93e60f7dfb"
           "b6ff16c9f66eea35dbbfc72de3704f56f499578a2edaaf558464f0939650c0d4")
-POST_SHAS=("ff6d72d4f539adef3ddd01404b3685c8e0d4a2f3ed5c3f5682ed238bcdf08cd0"
+POST_SHAS=("5e7b8b5a0f0e102d8576b625a399ab2aa9a723e8cd84b4bbbe73abc88c38f7f5"
            "8cd48b8cbeff9489be9963535f4ddb5114d4682fbc3b8e610939726e60f74eb8"
            "33e405bcab00eb8cc0ea8437dea395320801c1bff382c76163134d4f30a5c575")
 CHECKER_REL="scripts/validate/check_ratification_receipts.py"
@@ -121,6 +132,12 @@ trap cleanup EXIT
 g "$ROOT" worktree add -q --detach "$WT" "$BASE_SHA" || die "could not stage a worktree of $BASE"
 WT_ADDED=1
 ok "staged detached worktree $WT at ${BASE_SHA:0:12}"
+if [ "$PIPED" -eq 1 ]; then
+  SCRIPT_PATH="$WT/$SCRIPT_REL"
+  [ -f "$SCRIPT_PATH" ] || die "piped run: $SCRIPT_REL is not on $BASE, so the bytes that ran cannot be hashed"
+  ok "piped run: script bytes = origin/main copy, sha256 $(sha "$SCRIPT_PATH" | cut -c1-12)"
+fi
+ONE_LINER="git -C $ROOT fetch -q origin main && git -C $ROOT show origin/main:$SCRIPT_REL | ROOT=$ROOT RATIFY_OPERATOR='<your name>' bash -s -- --apply --attest $GATE_ID"
 
 # ---- preflight
 say "== preflight (mode=$MODE) =="
@@ -208,7 +225,7 @@ if [ "$MODE" = "review" ]; then
   say "DRY RUN COMPLETE: all checks passed in a throwaway stage. Nothing committed or pushed. --apply would commit:"
   printf '    %s\n' "${COMMIT_PATHS[@]}"
   say "Sign with ONE command:"
-  say "    RATIFY_OPERATOR='<your name>' bash $SCRIPT_REL --apply --attest $GATE_ID"
+  say "    $ONE_LINER"
   exit 0
 fi
 
@@ -228,7 +245,7 @@ ok "committed ${COMMIT_SHA:0:12} (real git hooks passed)"
 if [ "$MODE" = "dry-apply" ]; then
   say "DRY-APPLY COMPLETE: the signed commit passed the real hooks in the throwaway stage and is DISCARDED (never pushed)."
   say "Sign with ONE command:"
-  say "    RATIFY_OPERATOR='<your name>' bash $SCRIPT_REL --apply --attest $GATE_ID"
+  say "    $ONE_LINER"
   exit 0
 fi
 if [ "$DO_PUSH" -eq 0 ]; then
