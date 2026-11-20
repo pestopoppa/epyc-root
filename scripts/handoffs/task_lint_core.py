@@ -21,7 +21,10 @@ RETIRED = [r'data/stt-cs8-public-20261030', r'data/openmementos', r'backups/epis
            r'Qwen2\.5-Coder-32B[-_A-Za-z0-9.]*Q4_K_M', r'/mnt/raid0/llm/tmp/(?:wt|worktree)[^\s`]*',
            r'\.claude/worktrees/[^\s`]+']
 
-CHECKBOX = re.compile(r'^(\s*)[-*] \[( |x|X|~|>|!)\]\s?(.*)$')
+# Handoff standard C7 (operator decision 1): ONLY `[ ]` / `[x]` are boxes. The retired `[~] [>] [!]` markers are
+# reported as LEGACY-MARKER (LEGACY_MARKER below; counted, never dispatchable) and rewritten by handoff_migrate.
+CHECKBOX = re.compile(r'^(\s*)[-*] \[( |x|X)\]\s?(.*)$')
+LEGACY_MARKER = re.compile(r'^(\s*)[-*] \[([~>!])\]\s?(.*)$')
 TID = re.compile(r'\b(?:[A-Z][A-Z0-9]{1,8}-[A-Z]?\d{1,4}[a-z]?|[A-Z]{1,2}\d{1,3}[a-z]?)\b')
 DONE = re.compile(r'done[- ]when|done:|DoD|deliverable|acceptance|accept(?:ed)? (?:if|when)|exit criteri|'
                   r'result_path|→\s*`|->\s*`|output:|produces?\b|writes?\b|commit(?:s|ted)?\b|land(?:s|ed)?\b|'

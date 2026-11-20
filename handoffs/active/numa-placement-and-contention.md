@@ -4393,7 +4393,8 @@ That is almost certainly the mechanism behind this handoff's two half-speed role
 
 - [x] **A — Cross-role disjoint placement** (prerequisite; correctness-critical) — **CODE-COMPLETE 2026-05-30, behind `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT`; A-1 TOCTOU RESOLVED** via the global region mutex (`cpu_region.GLOBAL.{region}.lock`). Still LIVE-OBSERVATION-GATED before flag-on.
 - [x] **B — Shape-keyed admission core + default-off gate seam + dispatch-side caller wiring** — `Placement`, `admit_set`, `held_regions_by_role`, `seam_admit`, dual-flag gate, and `ContentionGate.evaluate(candidate_topology_idx=...)` are code-complete and verified. The seam is **authoritative** when consulted (`worst = seam_decision`), not tightening-only. **Dispatch-side caller wiring DONE 2026-05-31 (Step 2):** `inference.py` defers the coarse role-keyed pre-gate for `ConcurrencyAwareBackend` when both flags are armed (so it can't mask a later disjoint candidate); `concurrency_aware.py` `_dispatch` evaluates the gate per **real** `candidate_topology_idx` before acquiring the candidate lock (denied candidates skipped/re-polled); `contention_gate.py` `admit()` threads `candidate_topology_idx` through to `evaluate()`. B is now code-complete end-to-end; production remains **inert** only because both shape-aware flags default off and the API was not reloaded.
-- [~] **C — Backfill prep only** — pure `select_backfill_candidate` is implemented and tested; the heavy-port veto, all-heavy idle barrier, and pressure skip remain intact. Behavior-changing C work is not started.
+- [ ] **C — Backfill prep only** — pure `select_backfill_candidate` is implemented and tested; the heavy-port veto, all-heavy idle barrier, and pressure skip remain intact. Behavior-changing C work is not started.
+      NEEDS-OWNER — legacy `[~]` marker retired (handoff standard C7): tick it, freeze it or keep it open
 
 ##### Next actions (operator-gated)
 

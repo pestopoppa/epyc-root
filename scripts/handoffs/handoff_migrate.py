@@ -230,9 +230,33 @@ def row_map(root):
             for rid, r in st.get("rows", {}).items() if r.get("handoff")}
 
 
+LEGACY_NOTE = "NEEDS-OWNER — legacy `[{m}]` marker retired (handoff standard C7): tick it, freeze it or keep it open"
+
+
+def retire_legacy_markers(lines, stats):
+    """C7: `- [~|>|!] <text>` -> `- [ ] <text>` + a continuation line carrying NEEDS-OWNER (the owner decides). The
+    text after the marker -- the identity, text_sha -- is unchanged; fenced examples are left alone."""
+    import box_index as BI
+    sec = BI.sections(lines)
+    out = []
+    for i, l in enumerate(lines):
+        m = L1.LEGACY_MARKER.match(l)
+        if m and not sec[i][4]:
+            new = f"{m.group(1)}{l.lstrip()[0]} [ ] {m.group(3)}"
+            if BI.text_sha(new) != BI.text_sha(f"{m.group(1)}- [ ] {m.group(3)}"):
+                raise MigrateError("legacy-marker rewrite changed a box identity")
+            out += [new, f"{m.group(1)}      {LEGACY_NOTE.format(m=m.group(2))}"]
+            stats["legacy_markers"] = stats.get("legacy_markers", 0) + 1
+        else:
+            out.append(l)
+    return out
+
+
 def migrate_text(text, row=None, domain=None, boxes=True):
     eol = "\r\n" if "\r\n" in text else "\n"
     lines = text.replace("\r\n", "\n").split("\n")
+    st0 = {}
+    lines = retire_legacy_markers(lines, st0)
     stats = dict(moved=0, left_nested=0, left_section=0, backlogs_created=0, **{"class": 0}, frozen=0, rollup=0, inputs=0)
     before_open, before_first = open_shas(lines), first_lines(lines)
     out = lines
@@ -240,6 +264,7 @@ def migrate_text(text, row=None, domain=None, boxes=True):
         out = annotate(out, stats)
         out = move_to_backlog(out, stats)
     out, stats["headers"] = add_headers(out, row, domain)
+    stats["legacy_markers"] = st0.get("legacy_markers", 0)
     if open_shas(out) != before_open or first_lines(out) != before_first:
         raise MigrateError("first-line invariant violated; refusing to write")
     return eol.join(out), stats

@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T10:43:53Z",
+  "generated_at": "2026-11-20T10:50:46Z",
   "nodes": [
     {
       "age_days": 10,
@@ -985,6 +985,7 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
             "UFH-01"
           ],
           "dispatchable": 1,
@@ -1536,14 +1537,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 239,
-      "dispatchable": 14,
+      "dispatchable": 15,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "last_advanced": "2026-11-19",
       "next_action": "P1-8 autopilot reader for region_lock_wait_s_by_holder; W2 cost era; W6 fail-open guards; then E5 Stage-B re-measure",
-      "open": 15,
+      "open": 16,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -1590,12 +1591,12 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 0,
+          "dispatchable": 1,
           "gates": [],
           "line": 4371,
           "name": "shape-keyed-contention-gating",
-          "open": 0,
-          "readiness": "no_open"
+          "open": 1,
+          "readiness": "ready"
         },
         {
           "blocked_by": [
@@ -1603,6 +1604,7 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
             "UFH-01"
           ],
           "dispatchable": 1,
@@ -1618,7 +1620,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 5004,
+          "line": 5005,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1628,6 +1630,7 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
+            "INF-45#shape-keyed-contention-gating",
             "UFH-01"
           ],
           "dispatchable": 0,
@@ -1638,7 +1641,7 @@
             "INF-45#shape-keyed-contention-gating",
             "UFH-01"
           ],
-          "line": 5537,
+          "line": 5538,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"
@@ -1766,7 +1769,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 172,
+      "closed": 173,
       "dispatchable": 36,
       "domain": "inference-research",
       "guarded": 0,
@@ -1822,7 +1825,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 829,
+          "line": 830,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 28,
           "readiness": "blocked"
@@ -1876,7 +1879,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 667,
+          "line": 668,
           "name": "attention-matching-kv-compaction",
           "open": 4,
           "readiness": "ready"
@@ -1885,7 +1888,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1075,
+          "line": 1077,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1894,7 +1897,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1691,
+          "line": 1693,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1903,7 +1906,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1838,
+          "line": 1840,
           "name": "triattention-kv-selection",
           "open": 12,
           "readiness": "ready"
@@ -2963,14 +2966,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 183,
-      "dispatchable": 60,
+      "dispatchable": 62,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-19",
       "next_action": "DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1",
-      "open": 61,
+      "open": 63,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -3026,18 +3029,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 7,
           "gates": [],
           "line": 1074,
           "name": "learned-routing-controller",
-          "open": 6,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2342,
+          "line": 2344,
           "name": "model-capability-descriptors",
           "open": 0,
           "readiness": "no_open"
@@ -3046,7 +3049,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2418,
+          "line": 2420,
           "name": "retrain-routing-models",
           "open": 0,
           "readiness": "no_open"
@@ -3055,7 +3058,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2551,
+          "line": 2553,
           "name": "tri-role-coordinator-architecture",
           "open": 2,
           "readiness": "ready"
@@ -3064,7 +3067,7 @@
           "blocked_by": [],
           "dispatchable": 25,
           "gates": [],
-          "line": 2854,
+          "line": 2856,
           "name": "typed-decision-plane",
           "open": 25,
           "readiness": "ready"
@@ -3073,7 +3076,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3609,
+          "line": 3611,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3086,7 +3089,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 3690,
+          "line": 3692,
           "name": "routing-intelligence",
           "open": 9,
           "readiness": "blocked"
@@ -3095,7 +3098,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": null,
-          "line": 4179,
+          "line": 4181,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2,
           "readiness": "ready"

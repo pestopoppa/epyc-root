@@ -1710,6 +1710,9 @@ def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -
         if stale:   # AK audit B10: generated surfaces warn, never fail a commit that did not touch them
             warns.append(f"GENERATED ROWS: stale in {', '.join(stale)} — run index_state.py")
         warns.extend(stale_proposals(doc))
+        if doc["counts"].get("legacy_marker"):   # C7
+            warns.append(f"LEGACY-MARKER: {doc['counts']['legacy_marker']} retired `[~] [>] [!]` line(s) remain — "
+                         f"never dispatchable; `handoff_migrate.py <file>` rewrites them to `[ ]` + NEEDS-OWNER")
         n_out = doc["counts"].get("outside_backlog", 0)
         if n_out:
             warns.append(f"BOX-INDEX: {n_out} open box(es) sit outside `### Backlog` in files that have one")

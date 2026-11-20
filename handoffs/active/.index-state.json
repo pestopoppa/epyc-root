@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 528
+      "open": 529
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 13,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 428
+      "open": 430
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -1451,7 +1451,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 667,
+          "line": 668,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 4
@@ -1461,7 +1461,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1075,
+          "line": 1077,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1471,7 +1471,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1691,
+          "line": 1693,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1481,7 +1481,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 1838,
+          "line": 1840,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 11
@@ -1900,7 +1900,8 @@
       "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 14,
+      "needs_owner": 1,
+      "open": 15,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1909,7 +1910,7 @@
       },
       "row_id": "INF-45",
       "state": "active",
-      "total": 254,
+      "total": 255,
       "tracks": [
         {
           "blocked": 0,
@@ -1949,7 +1950,7 @@
           "line": 4371,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
-          "open": 0
+          "open": 1
         },
         {
           "blocked": 0,
@@ -1967,7 +1968,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 5004,
+          "line": 5005,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -1983,7 +1984,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 5537,
+          "line": 5538,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0
@@ -2214,7 +2215,8 @@
       "frozen": 7,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 60,
+      "needs_owner": 2,
+      "open": 62,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2223,7 +2225,7 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 251,
+      "total": 253,
       "tracks": [
         {
           "blocked": 0,
@@ -2265,14 +2267,14 @@
           "line": 1074,
           "markers": 1,
           "name": "learned-routing-controller",
-          "open": 5
+          "open": 7
         },
         {
           "blocked": 0,
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2342,
+          "line": 2344,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 0
@@ -2282,7 +2284,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2418,
+          "line": 2420,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 0
@@ -2292,7 +2294,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2551,
+          "line": 2553,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 2
@@ -2303,7 +2305,7 @@
           "frozen": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2854,
+          "line": 2856,
           "markers": 1,
           "name": "typed-decision-plane",
           "open": 25
@@ -2313,7 +2315,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3609,
+          "line": 3611,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
@@ -2325,7 +2327,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3690,
+          "line": 3692,
           "markers": 1,
           "name": "routing-intelligence",
           "open": 9
@@ -2335,7 +2337,7 @@
           "closed": 1,
           "gates": null,
           "guarded": 0,
-          "line": 4179,
+          "line": 4181,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
@@ -2344,7 +2346,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 172,
+      "closed": 173,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 36,
@@ -2356,7 +2358,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 210,
+      "total": 211,
       "tracks": [
         {
           "blocked": 1,
@@ -2370,13 +2372,13 @@
         },
         {
           "blocked": 1,
-          "closed": 61,
+          "closed": 62,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 829,
+          "line": 830,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 27

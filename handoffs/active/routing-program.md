@@ -1269,7 +1269,8 @@ The refutation's most valuable output is not the null — it is what the null ex
 **every consumer of `memories.outcome`**, not just this probe: MemRL reward shaping, Q-values, the
 routing classifier's own training labels, and skill-bank effectiveness.
 
-- [~] **EPD-1 — CONFIRMED but reclassified 2026-07-27: correct semantics, not a bug.**
+- [ ] **EPD-1 — CONFIRMED but reclassified 2026-07-27: correct semantics, not a bug.**
+      NEEDS-OWNER — legacy `[~]` marker retired (handoff standard C7): tick it, freeze it or keep it open
       `outcome` is indeed written once at INSERT and never updated. But a consumer audit found
       **nothing in the live read path consumes it** — `retriever.py` contains the string `outcome`
       zero times in 951 lines, and there is no SQL `WHERE` on the column anywhere in the repo. Live
@@ -1290,7 +1291,8 @@ routing classifier's own training labels, and skill-bank effectiveness.
       stop treating it as a label.
   - [ ] EPD-1b — **(operator-gated, live store)** backfill historical labels: `UPDATE memories SET outcome = CASE WHEN q_value > 0.5 THEN 'success' ELSE 'failure' END WHERE update_count > 0`. Until then rows never updated again keep their first-observation label; EP-5 should filter to rows updated after 24b43990 or run after the backfill.
     - 2026-11-09 audit: SV, operator-gated live store. The SQL threshold `q_value > 0.5` spans two reward eras (E9 and E18, duration axis from 2026-09-24), so one cut mislabels pre-E18 rows; split by era or recompute from the progress logs before applying. Not an Autopilot dependency.
-- [~] **EPD-2 — OVERSTATED, largely withdrawn 2026-07-27.** The original claim was that `failure`
+- [ ] **EPD-2 — OVERSTATED, largely withdrawn 2026-07-27.** The original claim was that `failure`
+      NEEDS-OWNER — legacy `[~]` marker retired (handoff standard C7): tick it, freeze it or keep it open
       conflates errors with cost penalties on correct answers (`reward <= 0 -> failure`, with reward
       carrying latency / escalation −0.15 / delegation-misattribution −0.10 penalties). Adversarial
       verification measured the actual reach: it explains **~4.3%** of live-traffic failure labels

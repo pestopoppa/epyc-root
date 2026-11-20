@@ -277,6 +277,9 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
     counts["total"] = len(recs)
     counts["outside_backlog"] = sum(1 for r in recs if r.get("outside_backlog"))
     counts["held"] = sum(1 for r in recs if r.get("holds") and r["state"] != "done")
+    counts["legacy_marker"] = sum(1 for _n, path in files.items()          # C7: retired [~] [>] [!] (never boxes)
+                                  for l in path.read_text(encoding="utf-8", errors="replace").split("\n")
+                                  if L1.LEGACY_MARKER.match(l))
     counts["proposals_pending"] = sum(1 for r in recs if r.get("proposed_by") and r["state"] == "needs-owner")
     return {"schema": SCHEMA, "include_done": INCLUDE_DONE, "counts": counts, "limits": limit_findings(files, recs, root),
             "holds_source": (str(holds_file(root)) if holds_list is not None else None),

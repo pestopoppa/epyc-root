@@ -207,6 +207,14 @@ def _boxes(path: Path) -> list[tuple[int, str, str, str]]:
 
 
 _BOX = re.compile(rf"^\s*{_BULLET}\[( |x)\] ")
+# Handoff standard C7: the retired `[~] [>] [!]` markers are NOT boxes (never dispatchable); they are reported.
+_LEGACY = re.compile(rf"^\s*{_BULLET}\[([~>!])\] ")
+
+
+def legacy_markers(path: Path) -> list[int]:
+    """1-based line numbers of retired `[~] [>] [!]` lines (LEGACY-MARKER; counted, never dispatchable)."""
+    return [i for i, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1)
+            if _LEGACY.match(line)]
 _OPEN_BOX = re.compile(rf"^\s*{_BULLET}\[ \] ")
 # A BANNER is the corpus's one guard form that speaks for boxes other than its own:
 # a blockquote. Every real banner in handoffs/active is `> **⚠ …`. Requiring the
