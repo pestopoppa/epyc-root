@@ -381,8 +381,12 @@ def test_lane_follows_single_brief_repo(monkeypatch, tmp_path):
     monkeypatch.setitem(schema.REPOS, "epyc-orchestrator", tmp_path)
     t = schema.follow_brief_repo({"repo": "epyc-root", "where": ["epyc-orchestrator:a.py::f", "epyc-orchestrator:b.py"]})
     assert t["repo"] == "epyc-orchestrator" and t["repo_from_box"] == "epyc-root"
-    mixed = schema.follow_brief_repo({"repo": "epyc-root", "where": ["epyc-orchestrator:a.py", "epyc-root:x.md"]})
-    assert mixed["repo"] == "epyc-root"
+    (tmp_path / "a.py").write_text("x")
+    tie = schema.follow_brief_repo({"repo": "epyc-root", "where": ["epyc-orchestrator:a.py", "epyc-root:x.md"]})
+    assert tie["repo"] == "epyc-root"                          # a tie keeps the box's repo
+    maj = schema.follow_brief_repo({"repo": "epyc-root", "refs": [],
+                                    "where": ["epyc-orchestrator:a.py", "epyc-orchestrator:b.py", "epyc-root:CLAUDE.md"]})
+    assert maj["repo"] == "epyc-orchestrator" and {"repo": "epyc-root", "path": "CLAUDE.md"} in maj["refs"]
 
 
 def test_brief_where_paths_are_in_pathspec():

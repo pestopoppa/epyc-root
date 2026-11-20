@@ -272,14 +272,24 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
 
 
 def follow_brief_repo(task: dict) -> dict:
-    """The lane follows the brief: when every `where` entry names ONE other supported repo, run the task there
-    (r7 TU-GR-1: box text names no path -> epyc-root lane; brief `where` all epyc-orchestrator -> external_directory)."""
-    repos = {str(w).split(":", 1)[0] for w in task.get("where") or [] if ":" in str(w)}
-    if len(repos) == 1:
-        (r,) = repos
-        if r != task["repo"] and r in SUPPORTED_REPOS and REPOS.get(r) and Path(REPOS[r]).exists():
-            task["repo_from_box"] = task["repo"]
-            task["repo"] = r
+    """The lane follows the brief: when a supported repo other than the task's holds MORE `where` entries than the
+    task's repo, run the task there; the other repos' existing files become read-only refs (r7 TU-GR-1: box text
+    names no path -> epyc-root lane; brief `where` = 3 orchestrator code paths + 1 root design doc)."""
+    import collections
+    ents = [(str(w).split(":", 1)[0], str(w).split(":", 1)[1].split("::")[0]) for w in task.get("where") or []
+            if ":" in str(w).split("::")[0]]
+    cnt = collections.Counter(r for r, _ in ents)
+    if not cnt:
+        return task
+    best, n = cnt.most_common(1)[0]
+    if (best != task["repo"] and n > cnt.get(task["repo"], 0) and best in SUPPORTED_REPOS and REPOS.get(best)
+            and Path(REPOS[best]).exists()):
+        task["repo_from_box"] = task["repo"]
+        task["repo"] = best
+        have = {(r.get("repo"), r.get("path")) for r in task.get("refs") or []}
+        for r, p in ents:
+            if r != best and REPOS.get(r) and (Path(REPOS[r]) / p).is_file() and (r, p) not in have:
+                task.setdefault("refs", []).append({"repo": r, "path": p})
     return task
 
 
