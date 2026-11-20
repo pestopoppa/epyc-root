@@ -23,6 +23,7 @@ def env(tmp_path, monkeypatch):
     (flags / "handoff-sessions.json").write_text(json.dumps({"operator_gated_row_prefixes": [], "sessions": {}}))
     monkeypatch.setattr(pr, "REPO", str(repo))
     monkeypatch.setattr(toolroot, "HUB", str(repo))   # F5: holds.yaml is read from the hub view first
+    monkeypatch.delenv("EPYC_HOLDS_ROOT", raising=False)   # override conftest's autouse empty holds root (C3)
     return repo, str(flags)
 
 
