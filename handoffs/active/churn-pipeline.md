@@ -224,11 +224,12 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: box_index lint-OK canary reads at least 45 percent on origin/main and the Stage C ratify package is filed for the operator
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **AK-FIXES-F2-F9** [non-inference] Build AK-audit fixes F2-F9 (D9-acked) from /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/AK-REQS-FIXES.md; 14 requirements triaged.
+      · 2026-11-20 PARTIAL: Stage C code C0-C8 landed (cbc7f4908..9557039f6) plus fixes 1a279e306 (holds fail closed), f5938d39b, c8f6e858d, 9a1fd1f8b, 4759de3fa, 154a4e4ed; 51 NEEDS-OWNER proposal children (66.9k haiku tokens). Not ticked: ratify signature pending (RTG100-HS-RATIFY), C6 sample 86.7 percent (RTG100-HS-C6-DROP), canary not re-read. Design: docs/design/handoff-standard.md.
+- [x] **AK-FIXES-F2-F9** [non-inference] Build AK-audit fixes F2-F9 (D9-acked) from /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/AK-REQS-FIXES.md; 14 requirements triaged. ✅ 2026-11-20 [belief: cc] F2-F9 landed 3be7715e1..06d920bfd plus review fixes, zombie-pid b2cc849a4, GPU packing c0cf5d5a2, allocator test c0eff9bbf, manifest f397a4b59
       · done when: each of F2-F9 is merged on origin/main with a test, and the AK-REQS-FIXES.md rows are marked landed with commit SHAs
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **AK-HOOKS-C1-C6** [non-inference] Build AK-audit hooks C1-C6 (D9-acked) from AK-REQS-FIXES.md.
+- [x] **AK-HOOKS-C1-C6** [non-inference] Build AK-audit hooks C1-C6 (D9-acked) from AK-REQS-FIXES.md. ✅ 2026-11-20 [belief: cc] hooks C1-C6 landed 66eb1ad91..c1d3a8da6
       · done when: each of hooks C1-C6 is live in the hook chain on origin/main with a test that trips it, SHAs recorded in AK-REQS-FIXES.md
       · gate: none
       · owner: pipeline-mgmt
@@ -247,3 +248,18 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
 - [x] **HS-STAGE-A** Handoff standard Stage A ba3adabf1 plus hotfix 671a6adf7 (`handoff_box.py`, `box_index.py`, lint). ✅ 2026-11-19 [no-belief: build/landing]
 - [x] **HS-STAGE-B** Handoff standard Stage B e14edec25..e5784a93f; lint-OK canary 20.5 to 21.6 percent, short of the 45 percent target because the remaining failures need content rewrites (box HS-STAGE-C). ✅ 2026-11-20 [belief: cc]
 - [x] **MODEL-Q8-REGISTERED** Q8 model registered (epyc-inference-research 1c8d54874). ✅ 2026-11-20 [no-belief: build/landing]
+- [ ] **RTG100-HS-RATIFY** [operator-decision] Operator signs the handoff-standard ratify package (human-only docs) by running scripts/operator/ratify_handoff_standard_20261120.sh.
+      · done when: the ratify script has run and its receipt is committed on origin/main
+      · gate: none
+- [ ] **RTG100-HS-C6-DROP** [non-inference] Drop the hand-written index rows once generated rows meet the C6 criteria (7 days at or above 90 percent; first sample 86.7 percent, not met).
+      · done when: python3 scripts/handoffs/stale_next_action.py --compare-generated reports at least 90 percent for 7 consecutive days and the hand rows are removed
+      · gate: none
+- [ ] **RTG100-OWNER-ROLES** [operator-decision] Operator decides the owner-roles proposal (coordinator, pipeline-mgmt, thin autokernel, speech, reserved harness stub); 3 role-file drafts sit on local branch pm-owner-roles, unpushed (docs/design/owner-roles-*-20261120.md).
+      · done when: verdict: APPROVE|AMEND|REJECT recorded and, on APPROVE, the role files are on origin/main
+      · gate: none
+- [ ] **RTG100-TASKFLOW-CANARY-RESULT** [inference] Record the result of canary row tf1-canary-35b-c14-gpu-r1-20261120 (C14, qwen3.6-35b-a3b-q8-gpu-mtp, 10 tasks) against TASKFLOW-STAGE1.
+      · done when: verdict: STAY-35B|TRY-27B|FIX-HARNESS filed from the row's result
+      · gate: TASKFLOW-STAGE1-CANARY
+- [ ] **RTG100-GENFILE-HOOK-REFUSE** [non-inference] Flip the generated-index-file pre-commit hook from warn to refuse one week after it went live.
+      · done when: the hook refuses a commit touching generated index files on origin/main and a test trips it
+      · gate: none
