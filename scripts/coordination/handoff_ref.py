@@ -111,3 +111,35 @@ def resolve(ref, root, sha=None) -> str | None:
     f = moved_file(ref, root, sha)
     t = parse(ref).task
     return f"{f}:{t}" if t else f
+
+
+DEFAULT_ROOT_ENV = ("ROWFLOW_REPO", "EPYC_ROOT")
+DEFAULT_ROOT = "/mnt/raid0/llm/views/epyc-root-main"   # tracks origin/main (publish_row.REPO)
+
+
+def default_root() -> str:
+    import os
+    for k in DEFAULT_ROOT_ENV:
+        v = os.environ.get(k)
+        if v:
+            return v
+    return DEFAULT_ROOT
+
+
+def repoint(ref, root=None, sha=None, moves=None):
+    """The ref as written, with only its file name replaced when .moves.jsonl moved its box (C4 gap 4: every
+    handoff_task consumer - rowflow owner routing / legacy migration / unfiled-ack filing, backlog_gen, filing - routes
+    a moved box to its NEW file). Keeps any `handoffs/<state>/` prefix and the `:TASK` suffix; never raises: a
+    non-string, a ref without a .md file, or an unreadable moves log returns the ref unchanged."""
+    if not isinstance(ref, str) or not parse(ref).file:
+        return ref
+    try:
+        new = moved_file(ref, root if root is not None else default_root(), sha, moves)
+    except Exception:  # noqa: BLE001 - a routing helper must never break its caller
+        return ref
+    old = parse(ref).file
+    if not new or new == old:
+        return ref
+    path, sep, task = ref.strip().partition(":")
+    head = path[: len(path) - len(old)] if path.endswith(old) else ""
+    return f"{head}{new}{sep}{task}"

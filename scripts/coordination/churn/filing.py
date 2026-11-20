@@ -124,6 +124,15 @@ def fetch_origin(repo):
         pass
 
 
+def current_handoff_task(m, repo=None):
+    """The manifest's handoff_task resolved through handoff_ref (C4 .moves.jsonl): a box moved by a track split since
+    publish is recorded against the file it lives in NOW, so the verdict routes to the new owner."""
+    ht = (m or {}).get("handoff_task")
+    if not isinstance(ht, str) or not ht.strip():
+        return ht
+    return handoff_ref.repoint(ht, root=repo, sha=(m or {}).get("handoff_task_sha"))
+
+
 def verify_receipt(repo, receipt, rid, lineage, ref="origin/main", fetch=True):
     """`<commit>:<handoff>#<BOX-ID>` -> (ok, info dict | error str). The commit must (1) be an ancestor of origin/main,
     (2) touch the named box line in the handoff, (3) leave a box line that mentions the row id or its lineage."""
@@ -408,7 +417,7 @@ def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answe
            "at": now_iso(), "outcome_class": "NO-RESULT", "phase": "filing", "compute_burned": rc == 0, "root_cause_family": None,
            "verdict": {"status": "filed", "kind": verdict.lower(), "result": verdict, "superseded_by": superseded_by},
            "row_verdict": verdict, "superseded_by": superseded_by, "answer": answer, "rc": rc, "end_line": endline,
-           "end_record": ep, "source": end_source(ep), "handoff_task": m.get("handoff_task"), "manifest": mp, "filed_by": by, "reason": note, "machine_checkable": False}
+           "end_record": ep, "source": end_source(ep), "handoff_task": current_handoff_task(m), "manifest": mp, "filed_by": by, "reason": note, "machine_checkable": False}
     summary = f"FILED {rid}: {verdict}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "") + f" rc={rc} by={by}" + (" source=smoke-complete" if end_source(ep) == "smoke-complete" else "") + (f" ({note})" if note else "")
     if not write_filed(flags, rid, summary, rec):
         return "NOOP"
@@ -665,7 +674,7 @@ def file_receipt(flags, rid, receipt, *, repo, verdict="RECEIPT", answer=None, b
     rec = {"$schema": "epyc.filed.verdict.v1", "id": rid, "row": rid, "owner": str(m.get("owner") or "?"), "filed_at": now_iso(),
            "at": now_iso(), "outcome_class": "RECEIPT", "phase": "filing", "compute_burned": True, "root_cause_family": None,
            "verdict": {"status": "filed", "kind": "receipt", "result": verdict}, "row_verdict": verdict, "answer": answer,
-           "rc": rc, "end_line": endline, "handoff_task": m.get("handoff_task"), "manifest": mp, "filed_by": by,
+           "rc": rc, "end_line": endline, "handoff_task": current_handoff_task(m, repo), "manifest": mp, "filed_by": by,
            "receipt": info, "reason": f"verdict commit {info['commit'][:12]} box {info['box']}", "machine_checkable": False}
     summary = (f"FILED {rid}: {verdict}" + (f" answer={answer}" if answer else "") + f" rc={rc} by={by} receipt={info['commit'][:12]}:"
                f"{info['handoff']}#{info['box']} box-line: {info['box_line']}")

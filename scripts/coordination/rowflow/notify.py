@@ -215,6 +215,17 @@ def filing_due(flags, rid, owner, ended_line=""):
     return emit(flags, "filing-due", rid, "v1", summary, "warning", owner, {"reason": "filing-due", "ended": ended_line[:200]}, action=True)
 
 
+try:
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import handoff_ref as _handoff_ref  # noqa: E402  (bin/rowflow; repo: scripts/coordination)
+except ImportError:
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        import handoff_ref as _handoff_ref  # noqa: E402
+    except ImportError:
+        _handoff_ref = None
+
+
 def _norm(x):
     return os.path.basename(str(x or "")).removesuffix(".md").lower()
 
@@ -227,6 +238,8 @@ def alerts_for(flags, slug="", handoff="", rows=(), session_ids=()):
     out = []
     for r in read_inbox(flags, unacked=True):
         ht = str(r.get("handoff_task") or "")
+        if _handoff_ref is not None and ht:   # C4: route a moved box's alert to the session owning its NEW file
+            ht = str(_handoff_ref.repoint(ht) or ht)
         pub = r.get("publisher") or {}
         if (_norm(r.get("owner")) in names or (r.get("row_id") in rows) or (pub.get("session") in sids)
                 or any(n and n in ht.lower() for n in names)):

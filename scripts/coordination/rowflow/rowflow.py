@@ -84,6 +84,11 @@ if _HERE not in sys.path:   # the keeper runs `python3 -I`: isolated mode does n
 import hostutil  # noqa: E402  - measured CPU%/GPU% for every status surface (2026-11-03 session review item 2)
 import diskpause  # noqa: E402  - disk floor = pause with hysteresis + HOLD-ADMISSIONS (operator 2026-11-07)
 import notify  # noqa: E402  - push every terminal event / smoke FAIL / disk-floor crossing (incident 2026-11-04)
+try:
+    import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
+except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
+    sys.path.insert(0, os.path.dirname(_HERE))
+    import handoff_ref  # noqa: E402
 
 SCHEMA = "epyc.row.v3"
 ADMISSION_CLASSES = {"correctness", "diagnostic", "block-correctness",
@@ -1141,8 +1146,8 @@ def legacy_handoff_task(m):
         return "FILLERS:" + str(m.get("id"))
     head, sep, tail = ht.partition(":")
     if head.endswith(".md") and "/" not in head:
-        return "handoffs/active/" + head + sep + tail
-    return ht
+        ht = "handoffs/active/" + head + sep + tail
+    return handoff_ref.repoint(ht, sha=m.get("handoff_task_sha"))   # C4: a moved box migrates to its new file
 
 
 def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
@@ -6447,6 +6452,7 @@ def main(argv=None):
                 if ":" not in task:
                     print(f"REFUSED: {unfiled} has no handoff_task <handoff.md>:<BOX-ID> in its manifest; run file_result.py {unfiled} --receipt <commit>:<handoff>#<BOX> yourself")
                     return 2
+                task = handoff_ref.repoint(task)   # C4: file the receipt against the box's CURRENT handoff
                 hp, box = task.rsplit(":", 1)
                 fr_py = next((p for p in (os.path.join(_HERE, "..", "churn", "file_result.py"), "/workspace/scripts/coordination/churn/file_result.py") if os.path.isfile(p)), None)
                 if not fr_py:

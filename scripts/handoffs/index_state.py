@@ -716,6 +716,48 @@ def generated_next_action(boxes: list[dict], exclude: set[str] | None = None) ->
     return "—"
 
 
+MOVES = ACTIVE / ".moves.jsonl"   # C4: one line per moved box {box_id, text_sha, from, to, at} (handoff_box split-file)
+
+
+def load_moves(path: Path | None = None) -> list[dict]:
+    path = MOVES if path is None else path
+    out = []
+    try:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            try:
+                d = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(d, dict) and d.get("from") and d.get("to"):
+                out.append(d)
+    except OSError:
+        pass
+    return out
+
+
+def moved_to(hname: str, moves: list[dict]) -> list[str]:
+    """Files that boxes of `hname` moved to (chains followed: a.md -> b.md -> c.md lands on c.md), in first-move order."""
+    out: list[str] = []
+    frontier, seen = [hname], {hname}
+    while frontier:
+        f = frontier.pop(0)
+        for m in moves:
+            if m["from"] == f and m["to"] not in seen:
+                seen.add(m["to"])
+                frontier.append(m["to"])
+                out.append(m["to"])
+    return out
+
+
+def _current_links(hname: str, moves: list[dict], owned: set[str]) -> tuple[list[str], list[str]]:
+    """(files the generated row links, files whose boxes it counts) after a split: a file whose track moved out keeps
+    its own link when it still exists and gains the destinations no other row owns; a file that moved away entirely
+    is replaced by its destinations (C4 gap 3: generated rows never link a moved-away file)."""
+    dests = [d for d in moved_to(hname, moves) if d not in owned and (ACTIVE / d).exists()]
+    here = [hname] if (ACTIVE / hname).exists() or not dests else []
+    return here + dests, here + dests
+
+
 def render_domain_tables(state: dict, bdoc: dict, prio: dict) -> dict[str, str]:
     """{domain index file: generated table} — handoff standard I.2(c), emitted BESIDE the hand-written rows (Stage B).
     Next action = top dispatchable box (.box-index.json); Deps = the row's hand Deps ∪ `gate:` row refs in its
@@ -725,11 +767,14 @@ def render_domain_tables(state: dict, bdoc: dict, prio: dict) -> dict[str, str]:
         by_file[Path(b.get("file", "")).name].append(b)
     prows = (prio or {}).get("rows", {}) if isinstance(prio, dict) else {}
     out: dict[str, list[str]] = {i: [] for i in DOMAIN_INDICES}
+    moves = load_moves()
     for rid, r in sorted(state["rows"].items()):
         idx, hname = r.get("index"), r.get("handoff")
         if idx not in out or not hname:
             continue
-        boxes = by_file.get(hname, [])
+        owned = {h for h, st in state["handoffs"].items() if st.get("owner_index") and h != hname}
+        links, counted = _current_links(hname, moves, owned)
+        boxes = [b for f in counted for b in by_file.get(f, [])]
         deps = set(r.get("deps") or [])
         deps |= {g.split("#")[0] for b in boxes for g in (b.get("gate") or []) if _ROW_REF.match(g.split("#")[0])}
         hp = ACTIVE / hname
@@ -742,7 +787,7 @@ def render_domain_tables(state: dict, bdoc: dict, prio: dict) -> dict[str, str]:
         h = state["handoffs"].get(hname, {})
         rank = (prows.get(rid) or {}).get("rank")
         out[idx].append((rank is None, rank or 0, rid,
-                         f"| {rid} | [{hname}]({hname}) | {generated_next_action(boxes)} | "
+                         f"| {rid} | {' + '.join(f'[{f}]({f})' for f in links)} | {generated_next_action(boxes)} | "
                          f"{', '.join(sorted(deps)) or '—'} | {rank if rank is not None else '—'} | "
                          f"{h.get('open', 0)}/{h.get('blocked', 0)}/{h.get('frozen', 0)}{_owner_note(boxes)} | "
                          f"{h.get('last_advanced') or '—'} |"))
@@ -1421,6 +1466,30 @@ def check(state: dict) -> list[str]:
     return errs
 
 
+def moved_row_warnings(state: dict, moves: list[dict] | None = None) -> list[str]:
+    """C4 gap 3: a HAND row naming a file whose track(s) moved (.moves.jsonl) still points dispatch at the old file."""
+    moves = load_moves() if moves is None else moves
+    if not moves:
+        return []
+    out = []
+    owned = {h for h, st in state["handoffs"].items() if st.get("owner_index")}
+    for rid, r in sorted(state["rows"].items()):
+        h = r.get("handoff")
+        if not h:
+            continue
+        dests = moved_to(h, moves)
+        if not dests:
+            continue
+        n = sum(1 for m in moves if m["from"] == h)
+        unowned = [d for d in dests if d not in owned]
+        gone = not (ACTIVE / h).exists()
+        out.append(f"MOVED: row {rid} ({r.get('index')}:{r.get('line')}) names {h}, whose track moved "
+                   f"({n} box(es)) to {', '.join(dests)} (.moves.jsonl)"
+                   + (f"; {h} no longer exists - repoint the row" if gone else "")
+                   + (f"; unowned destination(s) {', '.join(unowned)} need a **Row**/**Domain** header" if unowned else ""))
+    return out
+
+
 def graph_freshness_warnings(state: dict) -> list[str]:
     """Return advisory findings for the generated backlog graph.
 
@@ -1832,6 +1901,8 @@ def main(argv: list[str] | None = None) -> int:
         for warning in graph_freshness_warnings(state):
             print(f"ADVISORY WARNING: {warning}", file=sys.stderr)
         for warning in priority_file_warnings(state):
+            print(f"ADVISORY WARNING: {warning}", file=sys.stderr)
+        for warning in moved_row_warnings(state):
             print(f"ADVISORY WARNING: {warning}", file=sys.stderr)
         errs += citation_check()
         errs, scoped = diff_scope(errs, state, args.diff_base)

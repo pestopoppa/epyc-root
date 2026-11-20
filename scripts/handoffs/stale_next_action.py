@@ -179,6 +179,27 @@ def c6_verdict(samples: list[dict]) -> dict:
     return {"days": per, "pass": all(per.values())}
 
 
+def has_sample_today(ledger: str) -> bool:
+    """True when the C6 ledger already holds a sample dated today (UTC); reads only the tail."""
+    import datetime as _d
+    import json
+    today = _d.datetime.now(_d.timezone.utc).date().isoformat()
+    try:
+        with open(ledger, "rb") as fh:
+            fh.seek(0, 2)
+            fh.seek(max(0, fh.tell() - 65536))
+            tail = fh.read().decode("utf-8", "replace").splitlines()
+    except OSError:
+        return False
+    for line in reversed(tail):
+        try:
+            if str(json.loads(line).get("at", ""))[:10] == today:
+                return True
+        except (ValueError, AttributeError):
+            continue
+    return False
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--quiet", action="store_true", help="exit code only, no report")
@@ -186,9 +207,16 @@ def main() -> int:
                     help="C6: sample hand vs generated Next action agreement, append it to --ledger, print the "
                          "7-day hand-row-drop verdict (exit 0 = criteria met)")
     ap.add_argument("--ledger", default=DEFAULT_LEDGER)
+    ap.add_argument("--daily", action="store_true",
+                    help="with --compare-generated: record at most ONE sample per UTC day (the hub refresh calls this "
+                         "every pass; a day that already has a sample exits 0 without sampling)")
     args = ap.parse_args()
     if args.compare_generated:
         import json
+        if args.daily and has_sample_today(args.ledger):
+            if not args.quiet:
+                print(f"c6: {args.ledger} already has a sample for today (UTC); --daily skips")
+            return 0
         sample = compare_generated()
         try:
             with open(args.ledger, "a", encoding="utf-8") as fh:
