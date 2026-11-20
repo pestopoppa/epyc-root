@@ -513,6 +513,22 @@ our own harness and score offline.
       UNKNOWN pending both complete captures; parent stays open.
       [Successor bindings and smoke receipt](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/qualification-v2.json).
       [no-belief: infrastructure qualification and synthetic smoke only]
+      2026-11-20 v2 verdict: **inconclusive**, rc=75 at 00:00:50Z. Captured
+      **76/300 exact-prompt-joined valid responses**, 76 exposures, 0 unresolved exposures,
+      224 unexposed prompts; 3 responses ended at the token limit. Response-file and
+      exposure hashes and native response text match all 76 captures. The worker stopped
+      before the next request to retain its full timeout/cleanup reserve in the 75-minute
+      grant; server drain completed (rc=0). Strict/loose scores **UNKNOWN**, paired delta
+      **UNCOMPUTED**; CJ-6e remains open, with no discrimination or adoption claim.
+      IDLE-HELD warnings occurred with an 8-thread server in a 48-CPU reservation; these
+      warnings alone do not establish a hang. Next: preserve all 76 captures without
+      redraw, restore the pinned source worktree, and publish a continuation with CPU
+      reservation matched to actual server threads. The row result and FILED receipt
+      are written; its three alerts are acknowledged. Source worktree retired before
+      filing; raw captures retained by the row keep-globs.
+      [Hashed v2 verdict and capture inventory](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/verdict-v2.json)
+      (SHA-256 `f6c8ff19226572e81b7b1593973d7241e3af465c6213dadd5325e55598cfdf85`).
+      [belief: cc]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a as preconditions]** **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases
       exist, so the name alone is not a reproducible referent. Pre-seed the NLTK data directory and
       assert no network during scoring (the only network touch is an NLTK bootstrap at import; until

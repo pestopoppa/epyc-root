@@ -1,0 +1,5 @@
+# 2026-11-20 — handoff canonical-judge-suite-revamp
+
+## 00:03Z — File CJ-6e 35B v2 partial run verdict
+
+Filed codex-ifbench-cj6e-35b-v2-20261119 inconclusive (rc=75): 76/300 exact-prompt-joined valid responses, 76 exposures, zero unresolved, 224 unexposed, three length finishes. Verified response/exposure hashes and native text. Deadline reserve stop; server drained cleanly. Strict/loose UNKNOWN; paired delta UNCOMPUTED. Evidence: docs/evidence/ifbench-cj6e-paired-readiness-20261119/verdict-v2.json SHA-256 f6c8ff19226572e81b7b1593973d7241e3af465c6213dadd5325e55598cfdf85. Filed via file_result.py; CJ-6e remains open because its complete-pair criterion is unmet. Retired source worktree as required by manifest; keep-globs retained captures. Acknowledged all three row alerts. Next continuation must preserve the 76 captures, restore pinned source and match reservation to the 8-thread server. GitNexus unavailable (no index); documentation-only evidence change, no application call graph affected. [belief: cc]
