@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T09:37:04Z",
+  "generated_at": "2026-11-20T09:41:25Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1840,14 +1840,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 114,
-      "dispatchable": 34,
+      "dispatchable": 35,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-20",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 35,
+      "open": 36,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1869,20 +1869,20 @@
           "blocked_by": [
             "RTG-58"
           ],
-          "dispatchable": 18,
+          "dispatchable": 19,
           "gates": [
             "RTG-58"
           ],
           "line": 17,
           "name": "yarn-context-extension-research",
-          "open": 18,
+          "open": 19,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 642,
+          "line": 644,
           "name": "attention-matching-kv-compaction",
           "open": 4,
           "readiness": "ready"
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1046,
+          "line": 1048,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1662,
+          "line": 1664,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1809,
+          "line": 1811,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
