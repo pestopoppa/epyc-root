@@ -7,6 +7,7 @@ sys.path.insert(0, str(ROOT / "scripts" / "coordination"))
 sys.path.insert(0, str(ROOT / "scripts" / "handoffs"))
 from taskflow import select as S  # noqa: E402
 import box_index as BI  # noqa: E402
+sys.path.insert(0, str(ROOT / "scripts" / "handoffs"))
 
 
 HS = "handoffs/active/holds.yaml"   # C3: select fails closed without a holds source
@@ -60,3 +61,25 @@ def test_end_to_end_on_fixture_build(tmp_path, monkeypatch):
     doc = BI.build(tmp_path, {"fx.md": f}, {"fx.md": "TST-1"}, {"TST-1": True}, {"rows": {"TST-1": {"rank": 1}}})
     nxt, hist = S.select(doc)
     assert nxt[0] == "F-2" and hist["gate-open"] == 1 and hist["state-frozen"] == 1
+
+
+def test_extract_payload_by_identity_and_after_a_move(tmp_path, monkeypatch):
+    """C8: extract.py reads heading chain + own block from the box_index record, by text_sha, following .moves.jsonl."""
+    from taskflow import extract as X
+    import handoff_box as HB
+    monkeypatch.setenv("EPYC_HOLDS_ROOT", str(tmp_path))
+    act = tmp_path / "handoffs" / "active"
+    act.mkdir(parents=True)
+    (act / "holds.yaml").write_text("holds: []\n")
+    f = act / "fx.md"
+    f.write_text("# F\n**Status**: ACTIVE — x\n\n## Track: t\n\n### Backlog\n\n"
+                 "- [ ] **F-2** [non-inference] fix the parser\n      · done when: pytest b passes\n")
+    doc = BI.build(tmp_path, {"fx.md": f}, {"fx.md": "TST-1"}, {"TST-1": True}, {"rows": {"TST-1": {"rank": 1}}})
+    rec = doc["boxes"]["F-2"]
+    p = X.extract(rec, tmp_path)
+    assert p["box_text"].startswith("- [ ] **F-2**") and "done when" in p["box_text"]
+    assert p["heading_chain"] == ["F", "Track: t", "Backlog"] and p["hint"] == "handoffs/active/fx.md:8"
+    f.write_text(f.read_text().replace("### Backlog\n\n", "### Backlog\n\nnew prose line\n\n"))   # line hint is stale
+    assert X.extract(rec, tmp_path)["hint"] == "handoffs/active/fx.md:10"
+    HB.split_file(f, "t", "fx-moved", tmp_path, today="2026-11-20")
+    assert X.extract(rec, tmp_path)["hint"].startswith("handoffs/active/fx-moved.md:")
