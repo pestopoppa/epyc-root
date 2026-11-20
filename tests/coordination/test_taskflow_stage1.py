@@ -1,0 +1,103 @@
+"""taskflow Stage 1: schema (verbatim box, done-when, paths), tier selection, verify mechanical checks, opencode config."""
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts" / "coordination"))
+from taskflow import dispatch, schema, verify  # noqa: E402
+from taskflow.harness import local_llm  # noqa: E402
+
+BOX = ("- [ ] **FX-1 — fix the parser.** Edit `scripts/x.py`; done when `pytest tests/test_x.py` passes.\n"
+       "  continuation line kept verbatim\n")
+
+
+def _fixture(tmp_path):
+    (tmp_path / "handoffs/active").mkdir(parents=True)
+    (tmp_path / "handoffs/active/h.md").write_text("# H\n### Backlog\n" + BOX + "\n- [ ] **FX-2** other\n")
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts/x.py").write_text("print(1)\n")
+    return {"file": "handoffs/active/h.md", "line": 99, "id": "FX-1", "class": "non-inference",
+            "text_sha": schema.text_sha(BOX.split("\n")[0])}
+
+
+def test_build_verbatim_and_fields(tmp_path, monkeypatch):
+    rec = _fixture(tmp_path)
+    monkeypatch.setitem(schema.REPOS, "epyc-root", tmp_path)
+    t = schema.build(rec, root=tmp_path)
+    assert t["schema"] == "epyc.task.v1" and t["goal"] == BOX.rstrip("\n")     # line hint wrong -> resolved by text
+    assert t["line_hint"] == 3 and t["inputs"] == ["scripts/x.py"]
+    assert t["test_cmds"] == ["pytest tests/test_x.py"] and "pytest" in t["done_when"]
+    assert "handoffs/**" in t["forbidden"] and t["tier"] is None
+
+
+def test_tier_selection():
+    base = {"goal": "", "tier": None}
+    assert dispatch.pick_tier(dict(base, goal="update the README section")) == "luna"
+    assert dispatch.pick_tier(dict(base, goal="fix the off-by-one in foo.py")) == "terra"
+    assert dispatch.pick_tier(dict(base, goal="debug why the server hangs")) == "sol"
+    assert dispatch.pick_tier(dict(base, goal="fix x", tier="haiku")) == "luna"
+    assert dispatch.escalate("luna") == "terra" and dispatch.escalate("sol") is None
+    assert local_llm.model_for("sol", "codex") == "gpt-6.1-sol" and local_llm.model_for("luna", "claude") == "haiku"
+
+
+def _lane(tmp_path):
+    lane = tmp_path / "lane"
+    lane.mkdir()
+    g = lambda *a: subprocess.run(["git", "-C", str(lane), *a], check=True, capture_output=True)  # noqa: E731
+    g("init", "-q"); g("config", "user.email", "t@t"); g("config", "user.name", "t")
+    (lane / "a.py").write_text("x=1\n"); g("add", "."); g("commit", "-qm", "base")
+    base = subprocess.run(["git", "-C", str(lane), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    return lane, g, base
+
+
+def test_verify_checks(tmp_path):
+    lane, g, base = _lane(tmp_path)
+    task = {"inputs": ["a.py"], "outputs": [], "forbidden": list(schema.FORBIDDEN), "test_cmds": ["true"],
+            "done_when": "`true` passes"}
+    assert verify.verify(task, lane, base)["reason"] == "no-change"
+    (lane / "a.py").write_text("x=2\n"); g("commit", "-qam", "w")
+    v = verify.verify(task, lane, base)
+    assert v["verdict"] == "unchecked" or v["verdict"] == "verified"
+    (lane / "handoffs").mkdir(); (lane / "handoffs/h.md").write_text("x"); g("add", "."); g("commit", "-qm", "bad")
+    assert verify.verify(task, lane, base)["reason"] == "forbidden-path"
+
+
+def test_verify_reviewer_and_tests(tmp_path):
+    lane, g, base = _lane(tmp_path)
+    (lane / "a.py").write_text("x=3\n"); g("commit", "-qam", "w")
+    t = {"inputs": ["a.py"], "outputs": [], "forbidden": [], "test_cmds": [], "done_when": None}
+    assert verify.verify(t, lane, base, reviewer=lambda *_: {"verdict": "done"})["verdict"] == "verified"
+    assert verify.verify(t, lane, base, reviewer=lambda *_: {"verdict": "drift"})["verdict"] == "rejected"
+    t["test_cmds"] = ["false"]
+    assert verify.verify(t, lane, base)["reason"] == "tests-fail"
+
+
+def test_opencode_config_stable_prefix(tmp_path):
+    t = {"budget": dict(schema.DEFAULT_BUDGET), "test_cmds": ["pytest tests/a.py"]}
+    p1 = local_llm.write_config(tmp_path / "r1", "http://x/v1", "m", t)
+    p2 = local_llm.write_config(tmp_path / "r2", "http://x/v1", "m", dict(t, test_cmds=[]))
+    c1, c2 = json.loads(p1.read_text()), json.loads(p2.read_text())
+    assert c1["snapshot"] is False and c1["agent"][local_llm.AGENT]["permission"]["task"] == "deny"
+    assert c1["agent"][local_llm.AGENT]["permission"]["bash"]["pytest tests/a.py"] == "allow"
+    assert (tmp_path / "r1/POLICY.md").read_text() == (tmp_path / "r2/POLICY.md").read_text()   # cacheable prefix
+    del c1["agent"], c2["agent"], c1["instructions"], c2["instructions"]
+    assert c1 == c2
+
+
+def test_parse_events(tmp_path):
+    p = tmp_path / "e.jsonl"
+    p.write_text("\n".join(json.dumps(x) for x in [
+        {"type": "text", "part": {"type": "text", "text": 'ok\nTASKFLOW-RESULT {"claimed_done": true, "summary": "s", "paths": ["a"]}'}},
+        {"type": "step_finish", "part": {"tokens": {"input": 100, "output": 7, "cache": {"read": 80}}}}]))
+    r = local_llm.parse_events(p)
+    assert r["usage"]["input"] == 100 and r["usage"]["cache_read"] == 80 and r["result"]["claimed_done"] is True
+
+
+def test_failure_class():
+    w = {"usage": {"steps": 3}, "errors": [], "result": None, "timed_out": False}
+    assert dispatch.failure_class(w, {"verdict": "verified"}) is None
+    assert dispatch.failure_class(w, {"verdict": "rejected", "reason": "tests-fail"}) == "model-limitation"
+    assert dispatch.failure_class(dict(w, result={"claimed_done": False}), {"verdict": "rejected", "reason": "no-change"}) == "task"
+    assert dispatch.failure_class(dict(w, usage={"steps": 0}, errors=["x"]), {"verdict": "error"}) == "harness"
