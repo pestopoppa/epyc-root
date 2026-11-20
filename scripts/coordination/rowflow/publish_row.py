@@ -1080,7 +1080,12 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     A republish while this id's smoke is in flight is refused first: its GPU-busy/queue/fail paths would unpublish the live
     row under the running smoke. Only the CLI publish path reaches here; the keeper's runners call run_smoke directly."""
     busy = smoke_in_flight(flags, str(spec.get("id") or ""))
+    if not busy and rf.smoke_lock_holder(flags, str(spec.get("id") or "")):   # F2: a smoke runner without RUNNING.json yet
+        busy = "a smoke runner"
     if busy:
+        holder = rf.smoke_lock_holder(flags, str(spec.get("id") or ""))
+        if holder:
+            busy += f"; SMOKE.lock held by {holder}"
         raise rf.Refused(f"smoke already in flight for {spec.get('id')}: {busy}; republishing now would unpublish the live row. "
                          "Wait for its verdict (or stop that smoke), then publish again")
     want = smoke_cpus_of(spec)   # refused before anything is published

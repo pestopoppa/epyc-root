@@ -76,6 +76,7 @@ import signal
 import subprocess
 import sys
 import time
+import fcntl
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`: isolated mode does not put the script's directory on sys.path
@@ -3580,7 +3581,78 @@ def gpu_residency_required(d, regions):
     return "mi210_0" in regions and (d or {}).get("gpu_use") != "quiet-only"
 
 
-def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
+SMOKE_LOCK_NAME = "SMOKE.lock"   # F2 (AK audit B2, D9 2026-11-20): one smoke runner per row id
+
+
+def smoke_lock_path(flags, rid): return os.path.join(dry_dir(flags, rid), SMOKE_LOCK_NAME)
+
+
+def smoke_lock_holder(flags, rid):
+    """'pid N (who) since T' recorded by the live holder of dryrun/<id>/SMOKE.lock, else None (free or unreadable)."""
+    p = smoke_lock_path(flags, rid)
+    try:
+        fd = os.open(p, os.O_RDWR)
+    except OSError:
+        return None
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            d = load_json(p) or {}
+            return f"pid {d.get('pid', '?')} ({d.get('who', '?')}) since {d.get('at', '?')}"
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        return None
+    finally:
+        os.close(fd)
+
+
+def _verdict_since(flags, rid, t0):
+    """(verdict, msg) recorded at or after epoch t0 (PASS.json, else the newest FAIL-*.json), else None."""
+    pp = pass_path(flags, rid)
+    cands = [(os.path.getmtime(pp), "PASS", pp)] if os.path.exists(pp) else []
+    cands += [(os.path.getmtime(f), "FAIL", f) for f in fail_paths(flags, rid)]
+    cands = [c for c in cands if c[0] >= t0 - 1]
+    if not cands:
+        return None
+    _, v, path = max(cands)
+    rec = load_json(path) or {}
+    return v, f"recorded by the concurrent smoke: {rec.get('reason') or os.path.basename(path)}"
+
+
+def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None, wait_s=None, log=print):
+    """F2: dryrun_run under a per-id flock on dryrun/<id>/SMOKE.lock (allocator batch, --smoke-now, gpu-batch, publish all
+    reach here). A second caller blocks <= wait_s (default: the smoke's own timeout + grace), says who holds it, then returns
+    the verdict that smoke recorded instead of running the smoke again; WAIT when the holder outlives the wait."""
+    dd = dry_dir(flags, rid)
+    os.makedirs(dd, exist_ok=True)
+    fd = os.open(smoke_lock_path(flags, rid), os.O_RDWR | os.O_CREAT, 0o664)
+    try:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            who = smoke_lock_holder(flags, rid) or "another runner"
+            log(f"smoke in progress by {who}, waiting ({rid})")
+            t0 = time.time()
+            limit = wait_s if wait_s is not None else int(smoke_s or FIRST_PROGRESS_S) + DRYRUN_DEADLINE_GRACE_S
+            while True:
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except OSError:
+                    if time.time() - t0 >= limit:
+                        return "WAIT", f"smoke of {rid} still in progress by {who} after {int(limit)}s; not run twice"
+                    time.sleep(1)
+            got = _verdict_since(flags, rid, t0)
+            if got:
+                return got
+        os.ftruncate(fd, 0)
+        os.pwrite(fd, json.dumps({"pid": os.getpid(), "who": " ".join(sys.argv[:3])[:120], "at": now_iso()}).encode(), 0)
+        return _dryrun_run_locked(flags, rid, regions, one_quarter=one_quarter, smoke_s=smoke_s)
+    finally:
+        os.close(fd)   # closing releases the flock
+
+
+def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
     """The dry run on the regions the allocator assigned. Returns (verdict, message). verdict in PASS | FAIL | WAIT.
     Operator 2026-11-05: the smoke is a KEEPER-SCHEDULED filler - publish_row queues it, the allocator places it first on
     4 genuinely free cores and runs it here (publish_row --smoke-now runs it at once on the keeper's free snapshot);
