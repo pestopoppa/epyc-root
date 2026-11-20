@@ -66,8 +66,35 @@ def run_tests(lane: Path, cmds: list[str]) -> list[dict]:
 _RUNNABLE = re.compile(r"^(?:pytest|python3?|bash|make)\s")
 
 
+_CD = re.compile(r"^cd\s+(\S+)\s*&&\s*(.+)$")
+
+
+def lane_cmd(cmd: str | None, task: dict) -> str | None:
+    """`cd <the task repo's shared-clone path> && X` -> `X` (run in the lane, which IS that repo at origin/main).
+    r7 prep: hand-written briefs name `cd /workspace/repos/<repo> && pytest ...`, which neither the verifier
+    (_RUNNABLE) nor the worker's shell policy (no cd/&&) could run, and which would test the SHARED clone."""
+    a = " ".join(str(cmd or "").strip().strip("`").split())
+    m = _CD.match(a)
+    if m:
+        d = m.group(1).rstrip("/")
+        repo = str(task.get("repo") or "")
+        roots = {"/workspace"} if repo == "epyc-root" else set()
+        roots |= {f"/workspace/repos/{repo}", f"/mnt/raid0/llm/{repo}"}
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+            from taskflow import schema as _S
+            roots.add(str(_S.REPOS.get(repo, "")).rstrip("/"))
+        except Exception:  # noqa: BLE001
+            pass
+        finally:
+            sys.path.pop(0)
+        if d in roots:
+            a = m.group(2).strip()
+    return a or None
+
+
 def acceptance_cmd(task: dict) -> str | None:
-    a = " ".join(str(task.get("acceptance") or "").strip().strip("`").split())
+    a = lane_cmd(task.get("acceptance"), task)
     return a if a and _RUNNABLE.match(a) else None
 
 

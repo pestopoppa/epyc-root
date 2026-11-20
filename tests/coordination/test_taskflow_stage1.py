@@ -356,3 +356,12 @@ def test_no_change_lane_branch_deleted_at_drop(tmp_path, monkeypatch):
     assert dispatch.drop_lane(r, lane)
     assert not subprocess.run(["git", "-C", str(r), "rev-parse", "-q", "--verify", "refs/heads/taskflow/x/03-d"],
                               capture_output=True, text=True).stdout.strip()
+
+
+def test_brief_acceptance_cd_normalised_to_lane():
+    t = {"repo": "epyc-orchestrator", "acceptance": "cd /workspace/repos/epyc-orchestrator && python3 -m pytest -q tests/unit/x.py"}
+    assert verify.acceptance_cmd(t) == "python3 -m pytest -q tests/unit/x.py"
+    assert verify.lane_cmd("cd /workspace && python3 -m pytest -q a.py", {"repo": "epyc-root"}) == "python3 -m pytest -q a.py"
+    other = {"repo": "epyc-root", "acceptance": "cd /mnt/raid0/llm/harness/opencode && node --test x.ts"}
+    assert verify.acceptance_cmd(other) is None            # a foreign tree is never rewritten (and not runnable)
+    assert local_llm.allowed_commands(t) == ["python3 -m pytest -q tests/unit/x.py"]

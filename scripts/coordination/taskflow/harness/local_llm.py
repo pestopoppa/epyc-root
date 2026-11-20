@@ -175,7 +175,9 @@ BRIEF_RESULT = "TASKFLOW-BRIEF"
 def allowed_commands(task: dict) -> list[str]:
     """Acceptance first (it IS the runnable done-when, §1.5), then the box's own test commands, deduplicated."""
     out = []
-    for c in ([task.get("acceptance")] if task.get("acceptance") else []) + list(task.get("test_cmds") or []):
+    from taskflow import verify as _V       # `cd <task repo> && X` -> `X`: the lane is that repo
+    acc = _V.lane_cmd(task.get("acceptance"), task) if task.get("acceptance") else None
+    for c in ([acc] if acc else []) + list(task.get("test_cmds") or []):
         c = " ".join(str(c).strip().strip("`").split())
         if c and c not in out:
             out.append(c)
