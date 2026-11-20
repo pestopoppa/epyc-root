@@ -150,3 +150,15 @@ def test_worker_env_pwd_is_lane_h4(tmp_path, monkeypatch):
          "inputs": [], "tier": None, "budget": dict(schema.DEFAULT_BUDGET)}
     local_llm.spawn(t, lane, tmp_path / "run", "http://x/v1")
     assert seen["cwd"] == str(lane) == seen["pwd"]
+
+
+def test_max_tokens_cap_and_no_side_agents(tmp_path, monkeypatch):
+    b = {"messages": []}
+    assert local_llm.cap_max_tokens(b) and b["max_tokens"] == local_llm.MAX_TOKENS_CAP
+    b = {"max_completion_tokens": 32000}
+    assert local_llm.cap_max_tokens(b) and "max_completion_tokens" not in b
+    b = {"max_tokens": 200}
+    assert not local_llm.cap_max_tokens(b) and b["max_tokens"] == 200
+    monkeypatch.setattr(local_llm, "POLICY_DIR", tmp_path / "pol")
+    c = json.loads(local_llm.write_config(tmp_path / "a", "http://x/v1", "m", {"budget": dict(schema.DEFAULT_BUDGET)}).read_text())
+    assert c["agent"]["summary"] == {"disable": True} and "small_model" not in c

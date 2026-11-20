@@ -80,6 +80,19 @@ def policy_file() -> Path:
     return p
 
 
+MAX_TOKENS_CAP = 4096
+
+
+def cap_max_tokens(body: dict, cap: int = MAX_TOKENS_CAP) -> bool:
+    """Proxy guard: every request gets an output cap (r3 runaway: 31,896 tokens from an uncapped side request)."""
+    cur = body.get("max_completion_tokens") or body.get("max_tokens")
+    if cur is None or int(cur) > cap or int(cur) < 0:
+        body.pop("max_completion_tokens", None)
+        body["max_tokens"] = cap
+        return True
+    return False
+
+
 def request_digest(body: dict) -> dict:
     """H5: what the metering proxy logs per request -- enough to locate a prefix break without storing prompts."""
     msgs = body.get("messages") or []
@@ -156,8 +169,6 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         "instructions": [str(pol)],
         # H1 (prefix-cache brief 2026-11-20): r2 single tool bursts reached 20-23k tokens and drove compaction
         "tool_output": {"max_lines": TOOL_MAX_LINES, "max_bytes": TOOL_MAX_BYTES},
-        # H2: no title side-request (it evicted the np1 slot and cost ~6% of r1 computed tokens)
-        "small_model": f"{PROVIDER}/{model_id}",
         "model": f"{PROVIDER}/{model_id}",
         "provider": {PROVIDER: {
             "npm": "@ai-sdk/openai-compatible",
@@ -169,7 +180,9 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
                 "options": {"chat_template_kwargs": {"enable_thinking": False}, "cache_prompt": True},
             }},
         }},
-        "agent": {"title": {"disable": True}, "summary": {"disable": False}, AGENT: {
+        # H2: no title side-request (r1: ~6% of computed tokens, evicts the np1 slot); r3: an uncapped side request
+        # (summary/small-model path) decoded 31,896 tokens in 714 s -> summary off too, and the proxy caps max_tokens.
+        "agent": {"title": {"disable": True}, "summary": {"disable": True}, AGENT: {
             "description": "taskflow single-box worker", "mode": "primary",
             "steps": int(task["budget"]["turns"]),
             "permission": {"read": "allow", "edit": "allow", "glob": "allow", "grep": "allow", "list": "allow",
