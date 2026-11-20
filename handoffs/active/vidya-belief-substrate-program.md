@@ -2662,7 +2662,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   - Add a discovery test over a two-level fixture.
   - Confirm the nine arm sidecars project, and that any refusal names its reason.
   ✅ 2026-10-29 source `6ffee0ec72e1be2b1a04c9f4e9c48945908ae565`, integrated root `faf388a58af2cafaa482c6d036284661612a89df`: bounded two-level discovery preserves root/explicit-file layouts. Thirteen adapter controls pass; 41 carrier fixtures have zero grade/byte-identity changes. Read-only audit discovers and projects all nine original sidecars (99 rows, 297 frames), zero refusals; native hashes and producer pin unchanged. No ledger writes. [no-belief: discovery repair and read-only compatibility controls]
-- [ ] ❄ FROZEN 2026-09-27 — resume only once TD-28 unfreezes (v11 promoted AND autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
+- [ ] **SC-89** ❄ FROZEN 2026-09-27 — resume only once TD-28 unfreezes (v11 promoted AND autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): its only producer, TD-28, is frozen; wiring a source with no producer is dead code; unfreeze trigger: TD-28 unfreezes. The box stays open: frozen is not done.
 
@@ -2678,7 +2678,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
 VB-NPD-1) are activation records in the durable-triggers list above.
 
 - **[declined: ws58 2026-11-03 content-review: merged into VB-PARK-HARNESS-EVAL]** **VB-V1-BACKPRESSURE — wire the write side of `/v1` backpressure receipts** (`harness-selection-and-integration.md` HS-OD-9) before the first live bounce: one receipt per bounce with the dispatch-ledger snapshot, estimator version, `retry_after_ms`, `retry_after_basis`, next-attempt time and admission, and turn outcome. Locator = request; never graded above observation until a codified protocol exists. Distinct from SC19 (`ChatResponse.contention_gate`, `/chat` only).
-- [ ] ❄ FROZEN 2026-09-27 — resume only once DAR-LAT-3 unfreezes (autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-SEL-LOADAB — wire the write side of the selection load-sweep A/B (decision-aware-routing.md DAR-LAT-3)
+- [ ] **SC-90** ❄ FROZEN 2026-09-27 — resume only once DAR-LAT-3 unfreezes (autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-SEL-LOADAB — wire the write side of the selection load-sweep A/B (decision-aware-routing.md DAR-LAT-3)
   before its first block.**
   - Per-request rows carry: arm, ρ, block, manifest/prior-table/episodic-snapshot digests, TTFT budget, outcome class,
     selection receipt, final role, grader verdict, and `instrument_class=serving`.
@@ -2820,7 +2820,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
 Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table row in
 `scripts/vidya/adapters/README.md`. Design: [`hs19-stage2-dispatch-20260927.md`](../../docs/design/hs19-stage2-dispatch-20260927.md) §12-13.
 
-- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **VB-DISPATCH-S2 — wire the write side of the stage-2 dispatch receipts before the gate shadow run (HS-19d P3a)
+- [ ] **SC-91** ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **VB-DISPATCH-S2 — wire the write side of the stage-2 dispatch receipts before the gate shadow run (HS-19d P3a)
   and the first eval block (P5).**
   - Record one row per plan: gate value and confidence, planner role and fallback, plan sha256, validation outcome,
     `N_now`/`N_total`, and the capacity snapshot with its source.
