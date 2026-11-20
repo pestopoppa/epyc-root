@@ -3262,8 +3262,12 @@ matched-weight/numerical controls and the planning-context canary remain unresol
 No historical measurement warrant or causal precision result is created.
 The per-cell `target-precision/worker.py` process adapter now binds native requests
 and retains request/log/trace identities inside the replayed closure; 78 model-free
-worker/capture tests pass. The native C++ DFlash trace producer is still absent;
-its full-logit protocol currently requires bounded traces (16 MiB reader limit).
+worker/capture tests pass. `target-precision/native.cpp` now calls the actual DFlash
+API and emits compact full-vocabulary numerical moments within the bounded reader
+protocol; the worker validates moments, prefixes and greedy acceptance. CPU link
+and model-free tests only: actual model execution and runtime residency are not
+established. Preserve producer/source/library identities with original compact
+traces; coordinate-level reanalysis requires a separate full-vector capture.
 Keep native-worker adoption and the planning-context canary open; no new source
 class, grading rule or decision-bearing measurement was introduced.
 

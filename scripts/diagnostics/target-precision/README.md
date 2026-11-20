@@ -47,8 +47,9 @@ This entry point performs no model acquisition/preparation and must run inside
 an admitted compute row; a passing model-free test does not qualify a model run.
 `worker.py` supplies the per-cell process adapter for a **trace-enabled** DFlash
 executable. This does not make the stock `llama-server` compatible: its summary
-counters do not contain matched-prefix numerical controls. The C++ trace producer
-is still required. No fixture test establishes native DFlash execution.
+counters do not contain matched-prefix numerical controls. `native.cpp` now
+implements the C++ producer using the actual common DFlash API. Model execution
+and scientific qualification remain unperformed; fixture tests establish neither.
 
 Select it with `runner.argv = ["/absolute/python", "/absolute/worker.py"]`.
 `native_worker` must contain exactly `executable`, `env`, `prompt_manifest`,
@@ -113,3 +114,66 @@ supplied values refuse projection. Synthetic origin or absent native labels
 emits zero rows. Native-claimed labels yield observations via the existing
 `ClaimTuple` measurement ladder with no protocol ID, not causal/gating evidence.
 No claim is made that a native-claimed origin proves execution or residency.
+
+## Native producer profile
+
+`native.cpp` consumes the worker request directly. It loads the declared target
+and DFlash drafter, calls `common_speculative_process` on each physical prefill
+ubatch, calls the real `common_speculative_draft`, and verifies `[last, draft...]`
+in one target ubatch. Each block starts from fresh target/drafter contexts and
+the full accepted token prefix. This avoids relying on unqualified hybrid
+partial rollback. It is deliberately expensive and provides no throughput data.
+The serial reference starts fresh and decodes the identical prefix and every
+draft continuation one token at a time, including rejected draft positions.
+This replay/shape difference must be included in numerical-floor controls.
+No EOS stop is applied: the declared fixed block count is the diagnostic extent.
+
+Its exact verification object is:
+
+```json
+{"mode":"block", "replay":"fresh-block-serial-v1", "kv_type":"f16",
+ "context":4096, "batch":512, "ubatch":512, "draft_max":7, "blocks":8,
+ "threads":4, "flash_attention":"on"}
+```
+
+Unknown/missing keys, non-greedy sampling, invalid seeds, non-f16 KV, widths
+above 16, more than 16 blocks, context above 8192, or a verify block larger than
+its ubatch refuse execution. The backend selects 0 (CPU) or 99 (HIP) GPU layers
+for both models; actual device residency still requires the row's runtime
+proof. Target/drafter identities and library/source digests remain admission
+obligations; no weight hashing or acquisition happens in the executable.
+
+The trace declares `numerical_encoding=full-vocabulary-moments-v1`. Every row
+retains both explicit prefixes and `witness={count,verify_argmax,max_abs,sum_squared}`,
+computed from every coordinate of the actual paired float logit vectors in
+`native_witness.h`. Argmax uses lowest token ID on ties. The worker validates
+moment bounds, vocabulary stability, prefix continuation and acceptance, then
+combines sums and coordinate counts for weighted RMS. Full vectors are not
+retained in this encoding, so coordinate-level reanalysis is unavailable;
+original compact traces, producer source/binary identities and logs are retained.
+The old full-logit protocol is still supported; mixed/unknown encodings refuse.
+The producer refuses output over 16 MiB and never overwrites an existing trace.
+
+Build against a **fresh detached experimental checkout** of production
+`ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, never inside the frozen tree. For the
+model-free build test, use its headers and link the approved v10 CPU kernel-store
+libraries (the `cpu` symlink already points to `bin`, so do not append `/bin`):
+
+```bash
+g++ -std=c++17 -O1 -Wall -Wextra -Werror \
+  -I "$PRECISION_SOURCE/common" -I "$PRECISION_SOURCE/include" \
+  -I "$PRECISION_SOURCE/ggml/include" -I "$PRECISION_SOURCE/vendor/nlohmann" \
+  scripts/diagnostics/target-precision/native.cpp \
+  -L /mnt/raid0/llm/kernels/production/cpu \
+  -Wl,-rpath,/mnt/raid0/llm/kernels/production/cpu \
+  -lllama-common -lllama -lggml -lggml-base -pthread -o "$PRECISION_OUTPUT"
+```
+
+Set the executable's own `LD_LIBRARY_PATH`; a HIP run needs its separately
+admitted matching HIP build. A successful CPU link does not qualify HIP.
+`EPYC_PRECISION_SOURCE`, `EPYC_PRECISION_EXECUTABLE` and
+`EPYC_PRECISION_LIBRARIES` enable the optional real-header and real-executable
+tests in `test_native.py`. Those tests compile/run the actual C++ numerical
+reducer and refuse unsupported requests **before loading any model**. No model
+execution, native acceptance measurement, matrix qualification or causal result
+is implied. Run the actual admitted matrix only through a published compute row.

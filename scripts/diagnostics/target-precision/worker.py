@@ -82,6 +82,10 @@ def reduce_trace(trace, request):
     seen = set()
     vocab = None
     next_prefix = None
+    encoding = trace.get('numerical_encoding', 'full-logits-v1')
+    if encoding not in ('full-logits-v1', 'full-vocabulary-moments-v1'):
+        raise ValueError('unknown numerical encoding')
+    counts = []
     for block in blocks:
         index = block['block']
         capture._count(index)
@@ -114,35 +118,73 @@ def reduce_trace(trace, request):
                 raise ValueError('verification prefix is not draft continuation')
             if position == 0 and next_prefix is not None and prefix != next_prefix:
                 raise ValueError('native blocks do not follow accepted continuation')
-            verify, serial = row['verify'], row['serial']
-            if not isinstance(verify, list) or not verify or not isinstance(serial, list) or len(verify) != len(serial):
-                raise ValueError('logit vector shape mismatch')
+            if encoding == 'full-vocabulary-moments-v1':
+                if 'verify' in row or 'serial' in row:
+                    raise ValueError('mixed numerical encoding')
+                witness = row['witness']
+                if set(witness) != {'count', 'verify_argmax', 'max_abs', 'sum_squared'}:
+                    raise ValueError('invalid numerical witness fields')
+                count, argmax = witness['count'], witness['verify_argmax']
+                capture._count(count)
+                capture._count(argmax)
+                if not 1 <= count <= 1_000_000 or argmax >= count:
+                    raise ValueError('invalid witness vocabulary or argmax')
+                peak, ss = witness['max_abs'], witness['sum_squared']
+                if any(type(x) not in (int, float) or not math.isfinite(x) or x < 0 for x in (peak, ss)):
+                    raise ValueError('invalid numerical moments')
+                # Rounding tolerance scales with the reported moment, never a
+                # fixed absolute allowance that could hide tiny divergences.
+                if not math.isfinite(peak * peak) or not peak * peak <= ss * (1 + 1e-12):
+                    raise ValueError('numerical moments contradict maximum')
+                if ss > count * peak * peak * (1 + 1e-12):
+                    raise ValueError('numerical moments exceed coordinate bound')
+                max_abs = max(max_abs, peak)
+                squared.append(ss)
+                counts.append(count)
+            else:
+                if 'witness' in row:
+                    raise ValueError('mixed numerical encoding')
+                verify, serial = row['verify'], row['serial']
+                if not isinstance(verify, list) or not verify or not isinstance(serial, list) or len(verify) != len(serial):
+                    raise ValueError('logit vector shape mismatch')
+                count = len(verify)
+                for left, right in zip(verify, serial):
+                    if any(type(v) not in (int, float) or not math.isfinite(v) for v in (left, right)):
+                        raise ValueError('nonfinite native logit')
+                    delta = abs(left - right)
+                    if not math.isfinite(delta) or not math.isfinite(delta * delta):
+                        raise ValueError('native logit difference overflow')
+                    max_abs = max(max_abs, delta)
+                    squared.append(delta * delta)
+                counts.append(count)
+                argmax = max(range(count), key=verify.__getitem__)
+            row_argmax = argmax
             if vocab is None:
-                vocab = len(verify)
-            if len(verify) != vocab:
+                vocab = count
+            if count != vocab:
                 raise ValueError('vocabulary shape drift')
             if any(token >= vocab for token in draft):
                 raise ValueError('draft token outside vocabulary')
-            for left, right in zip(verify, serial):
-                if any(type(v) not in (int, float) or not math.isfinite(v) for v in (left, right)):
-                    raise ValueError('nonfinite native logit')
-                delta = abs(left - right)
-                if not math.isfinite(delta) or not math.isfinite(delta * delta):
-                    raise ValueError('native logit difference overflow')
-                max_abs = max(max_abs, delta)
-                squared.append(delta * delta)
             # Validate the greedy prefix count against actual verify predictions.
             if position < len(draft):
-                match = draft[position] == max(range(vocab), key=verify.__getitem__)
+                match = draft[position] == row_argmax
                 if (position < accepted and not match) or (position == accepted and match):
                     raise ValueError('native accepted prefix contradicts verify logits')
-        bonus_logits = rows[accepted]['verify']
+        bonus_row = rows[accepted]
+        bonus = (bonus_row['witness']['verify_argmax'] if encoding == 'full-vocabulary-moments-v1'
+                 else max(range(vocab), key=bonus_row['verify'].__getitem__))
         next_prefix = rows[0]['verify_prefix'] + draft[:accepted] + [
-            max(range(vocab), key=bonus_logits.__getitem__)]
+            bonus]
+    try:
+        total_squared = math.fsum(squared)
+    except OverflowError as exc:
+        raise ValueError('native aggregate divergence overflow') from exc
+    if not math.isfinite(total_squared):
+        raise ValueError('native aggregate divergence overflow')
     return {'status': 'ok', 'positions': list(positions.values()),
             'accepted': sum(p['accepted'] for p in positions.values()),
             'drafted': sum(p['drafted'] for p in positions.values()),
-            'numerical_divergence': {'max_abs': max_abs, 'rms': math.sqrt(math.fsum(squared) / len(squared))}}
+            'numerical_divergence': {'max_abs': max_abs, 'rms': math.sqrt(total_squared / sum(counts))}}
 
 
 def run_cell(plan_path, cell_id, output):
