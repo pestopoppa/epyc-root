@@ -115,3 +115,7 @@ CJ-3d: filed codex-bfcl-cj3d-single-27b-v1-20261120 INCONCLUSIVE (rc=1). Termina
 ## 11:47Z — Resolve IFBench second-arm window end and publish validated no-redraw continuation
 
 CJ-6e: v3 auto-filed PARTIAL, rc=75. Added 83 valid captures for 159/300 exact-prompt-joined responses, 0 unresolved exposures, 141 unexposed, 5 length finishes; server drained rc=0. Verified all prior immutable seals, capture triplets and exact original prompts before publication. Published codex-ifbench-cj6e-35b-v4-20261120 with native four-CPU smoke PASS (116–119), rc=0 at 11:47:16Z. Continuation preserves indices 000–158 without redraw; full mode 8 physical cores / 8 threads. Strict/loose UNKNOWN, paired delta UNCOMPUTED; parent remains open. Evidence: docs/evidence/ifbench-cj6e-paired-readiness-20261119/{verdict-v3,qualification-v4}.json. Auto-filed receipt retained; warning acknowledged. [belief: cc]
+
+## 12:11Z — File 35B single-turn BFCL diagnostic row result
+
+CJ-3e: Filed codex-bfcl-cj3e-single-35b-v1-20261120 INCONCLUSIVE for fleet discrimination, rc=0. Diagnostic completed=14, known=14, UNKNOWN=0, passed=13, failed=1 (java_1). Fourteen exclusive chains (98 records) validate with per-request before/after CPU PID/socket/model/build proofs; terminal agrees. Reference 27B arm is incomplete, so no fleet comparison or representative score; no retry/redraw. Evidence: docs/evidence/bfcl-cj3d-native-bridge-20261119/second-arm-single-turn-verdict-20261120.json binds existing terminal and journal SHA-256 values. Parent CJ-3e remains open. [belief: cc]

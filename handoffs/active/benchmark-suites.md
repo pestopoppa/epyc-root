@@ -527,6 +527,15 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       Row `codex-bfcl-cj3e-single-35b-v1-20261120` published: **smoke PASS**,
       rc=0 on four CPUs (116–119), one synthetic request; no cohort score.
       [Publication bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/second-arm-35b-20261120.json).
+      Single-turn second-arm result (2026-11-20), row
+      `codex-bfcl-cj3e-single-35b-v1-20261120`: rc=0, complete=14, known=14,
+      UNKNOWN=0, passed=13, failed=1 (`java_1`). All fourteen exclusive chains
+      validate (98 records), including fourteen before/after CPU PID/socket/model/build
+      proofs and original-checker verdicts; terminal agrees. Filed **INCONCLUSIVE**
+      for fleet discrimination: 27B reference lacks a terminal and has one UNKNOWN.
+      No representative score or fleet quality comparison; no retry/redraw. Parent
+      remains open for the independent supported-frame arms.
+      [Hashed terminal and journal findings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/second-arm-single-turn-verdict-20261120.json). [belief: cc]
       Separately declared 120-ID supported-frame second arm (2026-11-20):
       `codex-bfcl-cj3e-supported-35b-v1-20261120`, same 35B model/build above,
       identical frozen six-stratum selection as the 27B supported-frame arm

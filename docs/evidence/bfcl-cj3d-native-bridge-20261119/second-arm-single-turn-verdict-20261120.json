@@ -1,0 +1,172 @@
+{
+  "box": "CJ-3e",
+  "row": "codex-bfcl-cj3e-single-35b-v1-20261120",
+  "verdict": "inconclusive",
+  "rationale": "INCONCLUSIVE for CJ-3e fleet discrimination: rc=0; 35B single-turn diagnostic completed=14, known=14, unknown=0, passed=13, failed=1 (java_1). All 14 exclusive journal chains intact (98 records), with 14 exposures/responses, 14 before/after CPU PID/socket/model/build proofs and 14 original-checker verdicts; terminal agrees. Complete diagnostic capture only: no representative score, baseline-beating or adoption claim. The 27B reference arm lacks a terminal and has one UNKNOWN, so no fleet quality comparison. No retry/redraw; parent CJ-3e stays open pending independently published supported-frame arms.",
+  "tick_text": null,
+  "result_bindings": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/RESULT.json": "ad08356539902f42cc3be4a064de29b2f74eb7c2ec70ba87e17d59ef0e6638aa",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/TERMINAL.json": "ad08356539902f42cc3be4a064de29b2f74eb7c2ec70ba87e17d59ef0e6638aa",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/runtime.json": "6b90a6bd5dab7e323955d8115906a5f3609ce851d127b4a8b94fb2e95e621585",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/shutdown.json": "685d999473b73636a973d11c93ab9ac6b5bbc0dab7206c18dd1dc09d7a4d8a23"
+  },
+  "counts": {
+    "completed": 14,
+    "known": 14,
+    "unknown": 0,
+    "passed": 13,
+    "failed": 1
+  },
+  "journal_events": {
+    "identity": 14,
+    "residency": 28,
+    "exposure": 14,
+    "response": 14,
+    "capture_result": 14,
+    "verdict": 14
+  },
+  "journals": [
+    {
+      "case_id": "java_0",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/java_0.jsonl",
+      "sha256": "04a97b872b782670fb9a3959b9bafc8af08c001b14123ec6e92791b81c166f36",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "fab285092091defc430dd6c36cd30df838199801362b6f9b9033f0e4c96fafed",
+      "gold_sha256": "10be9cf1362b862d6bcb997f05ca3f659711a9788bcbb8fdd7cfd0a76f91b883"
+    },
+    {
+      "case_id": "java_1",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/java_1.jsonl",
+      "sha256": "f3d5468f5db482cf5da6b743fab9035b8ab66470be1652b8fbcd232f1aefe524",
+      "chain_valid": true,
+      "records": 7,
+      "passed": false,
+      "case_sha256": "9b04fc863188fb184e48d3962d81eb9208827c656e4cd9d8368aa8a15bd07229",
+      "gold_sha256": "b31ce378a0557fb216cef4bef27b642d91af2daf71fed188823f2aa08f41b026"
+    },
+    {
+      "case_id": "javascript_0",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/javascript_0.jsonl",
+      "sha256": "7ae30c438c83220b103e78e3c319ee777c03cd3cbdf644e90cdb72683be1e32d",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "7d947413aa9eff2fad280d54394a08c02bc1e93c0f7eb14a18e44c040bb0786a",
+      "gold_sha256": "e1a27c263df229b1aa575b80281511992df2743f9b00b857de8f85c40bed37fd"
+    },
+    {
+      "case_id": "javascript_1",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/javascript_1.jsonl",
+      "sha256": "1f5ed68bc2b25cb39d9a93366b4e3e705595883dd86fd5be6dd5f8b4b16228cd",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "cd8d9eaa3d80d9e82eb54f60c541a48a37804422a6874bffe0b6b4e4bc40bc78",
+      "gold_sha256": "ac9ea38e47bf00e9ab716a4b1917fd20d8225e5c5276d6b822f86ed80ff03d40"
+    },
+    {
+      "case_id": "multiple_0",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/multiple_0.jsonl",
+      "sha256": "a7b56fe865e3b67ecb8e21d5a16a8311cbdac4ee8fd236427053cba30edffa71",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "9963661ffda9f693103f63d27f4010c62a7fa53c1ad880960d32f02b7f2b7ab7",
+      "gold_sha256": "5a0058301bff224319d8860d5d0f121ab776f4e725af27743636befe42c2c1be"
+    },
+    {
+      "case_id": "multiple_1",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/multiple_1.jsonl",
+      "sha256": "4ac0b42e1b6d9aa301be3e4fcddcc60fe4b0c572b8f05ff11fc08dac068d8e31",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "08ec454c432468ee595cd9d9267e738f16e9828552641c133f6424e53a02f860",
+      "gold_sha256": "021034e69e454a5113772484b24b1934e68716341081e4110ec0b41957b72d63"
+    },
+    {
+      "case_id": "parallel_0",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/parallel_0.jsonl",
+      "sha256": "4f48d721108cca747be3c7708bf3f4093d9f5cf75a72fb4555a32a60a22ab0fd",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "d8b4e5b271fce60c020e101d69595cfe866cdc92e42049a578aa0ad0101b970a",
+      "gold_sha256": "82e16e4b179a89c41a36adae4e3e002d4f2caa7002c41a2ef32a3b6d0a9c609c"
+    },
+    {
+      "case_id": "parallel_1",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/parallel_1.jsonl",
+      "sha256": "75ddf97d29df9c0d49a9eafa5969e9f9497158906c66771361cb83595f047339",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "37effbbbbd8704ac997fae785a3ca9c4004450783c1c1abd11b8288e7888e7bd",
+      "gold_sha256": "ac232da10b379fb83b46bcfb30e2445837ba9be2a5177993aa9860938a8ee5f5"
+    },
+    {
+      "case_id": "parallel_multiple_0",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/parallel_multiple_0.jsonl",
+      "sha256": "fa7947f15cf8f9966f116a20ccb3a8be29d06861c0642fc01ec14924c7df2df5",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "c684895f096e1f38d19ba31953665915b9bf30486b3916369f98a89fe28b01b6",
+      "gold_sha256": "a42204048e0bf2a4b5c33ec62f9def1e96592e69cfdc5875e9da168327cde0fc"
+    },
+    {
+      "case_id": "parallel_multiple_1",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/parallel_multiple_1.jsonl",
+      "sha256": "85ac22d4d3c649630b65fc55fa4229596edc61677650cf4caa4c335b3b26bc9c",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "be6158e800fc23d000bed5ef16a851359702279d93fd72e17e469100e9ca11c2",
+      "gold_sha256": "180f75cf6d45191a18efa06ebde75eff92062fedb229b651338aa1b29db91cf6"
+    },
+    {
+      "case_id": "simple_0",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/simple_0.jsonl",
+      "sha256": "cb77e011cd2b6870a6e9936819c2b82f1ff41d9d70f04132acd28c86aa6ce47a",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "b2d2ce48081392220b98692c8100a415034be44e7f8b6f28676f8c0e8d04becc",
+      "gold_sha256": "e2cf4a33332431cdb3ba7708023fac7d26365e742dc770ff81583b3430fef40a"
+    },
+    {
+      "case_id": "simple_1",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/simple_1.jsonl",
+      "sha256": "17e809877323ce3a7496237dc2b1e28a93a57ca08472088cde7061f8dd8fe54a",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "0cda4b65bd9f4f62f9e4d3801fb39a73b9747fc9425df82336a9c00f9206dcde",
+      "gold_sha256": "97d52211c164a70f0143f1c185073b619b6f4a781b8cfa7281f8e8934ea16245"
+    },
+    {
+      "case_id": "simple_2",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/simple_2.jsonl",
+      "sha256": "7a71a85cfff1ce4f9546064caee5f96df55d4b628d14ce2eb8fe77588d87c2a0",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "9482843b64a84e6e18daee63ebf5bb2a869417b538c6a3938dfcb301313d4d7e",
+      "gold_sha256": "e86dd1a48f2c41ef03f263414cf97330f2d51893918e3d917253d9061d0a128d"
+    },
+    {
+      "case_id": "simple_3",
+      "journal_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/simple_3.jsonl",
+      "sha256": "95dfa0eecd2f54bcff268abf0c2c8589f950ddb13bdc106a2e1af805f74c6004",
+      "chain_valid": true,
+      "records": 7,
+      "passed": true,
+      "case_sha256": "2c33140af4d3daa6607351bfb600cdc4ac4e07ad72a1855b402efbed77bb304f",
+      "gold_sha256": "83c62635b82af41235a6e5f97b0a11b088c1748ece752095e6ff070fa837dbd8"
+    }
+  ],
+  "reference_evidence": "docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-verdict-20261120.json",
+  "reference_evidence_blob": "4bbe4186b06ebc3e8972d30cf23092e5d0bb52bb"
+}
