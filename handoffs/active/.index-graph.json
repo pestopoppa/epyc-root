@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T11:02:28Z",
+  "generated_at": "2026-11-20T11:10:48Z",
   "nodes": [
     {
       "age_days": 10,
@@ -2966,14 +2966,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 183,
-      "dispatchable": 62,
+      "dispatchable": 60,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-19",
       "next_action": "DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1",
-      "open": 63,
+      "open": 61,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -3029,18 +3029,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 5,
           "gates": [],
           "line": 1074,
           "name": "learned-routing-controller",
-          "open": 8,
+          "open": 6,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2344,
+          "line": 2322,
           "name": "model-capability-descriptors",
           "open": 0,
           "readiness": "no_open"
@@ -3049,7 +3049,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2420,
+          "line": 2398,
           "name": "retrain-routing-models",
           "open": 0,
           "readiness": "no_open"
@@ -3058,7 +3058,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2553,
+          "line": 2531,
           "name": "tri-role-coordinator-architecture",
           "open": 2,
           "readiness": "ready"
@@ -3067,7 +3067,7 @@
           "blocked_by": [],
           "dispatchable": 25,
           "gates": [],
-          "line": 2856,
+          "line": 2834,
           "name": "typed-decision-plane",
           "open": 25,
           "readiness": "ready"
@@ -3076,7 +3076,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3611,
+          "line": 3589,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3089,7 +3089,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 3692,
+          "line": 3670,
           "name": "routing-intelligence",
           "open": 9,
           "readiness": "blocked"
@@ -3098,7 +3098,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": null,
-          "line": 4181,
+          "line": 4159,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2,
           "readiness": "ready"

@@ -28,7 +28,7 @@
       "blocked": 13,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 430
+      "open": 428
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -2215,8 +2215,7 @@
       "frozen": 7,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "needs_owner": 2,
-      "open": 62,
+      "open": 60,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2225,7 +2224,7 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 253,
+      "total": 251,
       "tracks": [
         {
           "blocked": 0,
@@ -2267,14 +2266,14 @@
           "line": 1074,
           "markers": 1,
           "name": "learned-routing-controller",
-          "open": 7
+          "open": 5
         },
         {
           "blocked": 0,
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2344,
+          "line": 2322,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 0
@@ -2284,7 +2283,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2420,
+          "line": 2398,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 0
@@ -2294,7 +2293,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2553,
+          "line": 2531,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 2
@@ -2305,7 +2304,7 @@
           "frozen": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2856,
+          "line": 2834,
           "markers": 1,
           "name": "typed-decision-plane",
           "open": 25
@@ -2315,7 +2314,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3611,
+          "line": 3589,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
@@ -2327,7 +2326,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3692,
+          "line": 3670,
           "markers": 1,
           "name": "routing-intelligence",
           "open": 9
@@ -2337,7 +2336,7 @@
           "closed": 1,
           "gates": null,
           "guarded": 0,
-          "line": 4181,
+          "line": 4159,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
