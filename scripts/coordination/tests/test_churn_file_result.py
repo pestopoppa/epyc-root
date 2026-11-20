@@ -108,6 +108,28 @@ class TestFileResult(Base):
                                        "tick_text": "scoped native evidence"}))
         return self.run_main("akx-lb3-2-cv5-pair-r2", "--verdict-json", str(verdict))
 
+    def test_tick_text_restating_the_box_is_not_duplicated_onto_the_line(self):
+        """Regression (2026-11-20, lsa-cpu-sparse-opgate-20261119-r1): the old prompt asked for the 'exact open box
+        text' as tick_text and it was appended verbatim after the suffix. ID with spaces + parens, multi-line box."""
+        box = "**LSA-CPU-SPARSE (c)** [inference] gated on X"
+        h = Path(self.lane, "handoffs/active/h.md")
+        h.write_text(HANDOFF + f"  - [ ] {box}\n    - continuation line one\n    - [ ] **child**\n- [ ] **tail**\n")
+        self.row("akx-lb3-2-cv5-pair-r2", "judge by eye", {"x": 1})
+        man = Path(self.flags, "ready/akx-lb3-2-cv5-pair-r2.json")
+        row = json.loads(man.read_text()); row["handoff_task"] = "handoffs/active/h.md:LSA-CPU-SPARSE (c)"
+        man.write_text(json.dumps(row))
+        vj = Path(self.tmp.name, "v.json")
+        vj.write_text(json.dumps({"verdict": "pass", "rationale": "r", "tick_text": f"- [ ] {box}"}))
+        code, _, err = self.run_main("akx-lb3-2-cv5-pair-r2", "--verdict-json", str(vj))
+        self.assertEqual(code, 0, err)
+        lines = h.read_text().splitlines()
+        i = next(k for k, ln in enumerate(lines) if "LSA-CPU-SPARSE (c)" in ln)
+        self.assertTrue(lines[i].startswith("  - [x] **LSA-CPU-SPARSE (c)** [inference] gated on X ✅ "), lines[i])
+        self.assertEqual(lines[i].count("LSA-CPU-SPARSE"), 1)
+        self.assertNotIn("- [ ]", lines[i])
+        self.assertEqual(lines[i + 1:i + 4], ["    - continuation line one", "    - [ ] **child**", "- [ ] **tail**"])
+        self.assertRegex(lines[i], r"✅ \d{4}-\d{2}-\d{2} \[belief: cc\] pass rc=0; result ")
+
     def test_basename_task_ticks_active_handoff_not_same_named_root_file(self):
         root_file = Path(self.lane, "h.md")
         root_file.write_text(HANDOFF)

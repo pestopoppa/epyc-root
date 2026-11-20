@@ -503,7 +503,7 @@ def filing_step(flags, rid, filing):
                 f"filing-done/{rid}.FILED exists; do NOT re-file. Put this tick line in your wrap-up ticks: `{tick[5:300]}`.")
     if rc == 4:
         return (f"3. The decision_rule is not machine-checkable. Write {{\"verdict\": \"pass|fail|inconclusive\", \"rationale\": \"...\", "
-                f"\"tick_text\": \"<exact open box text>\"}} to a file and run `python3 scripts/coordination/churn/file_result.py {rid} "
+                f"\"tick_text\": \"<short evidence note; NOT the box text>\"}} to a file and run `python3 scripts/coordination/churn/file_result.py {rid} "
                 f"--flags {flags} --verdict-json <file> --lane <your lane>`: it writes the verdict record, ticks the box and touches "
                 f"filing-done/{rid}.FILED (the receipt that acks this event and lets the reaper reclaim scratch).")
     return (f"3. Filing script result rc={rc}: {out.strip()[:200]}. File the verdict yourself (read result_path, apply decision_rule, "

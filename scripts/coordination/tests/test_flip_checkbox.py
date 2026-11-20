@@ -141,6 +141,45 @@ class TestFlipMany(unittest.TestCase):
         self.assertEqual(self.path.read_text(), before)
 
 
+
+class TestNoBoxDuplication(unittest.TestCase):
+    """Regression: a tick must flip [ ] -> [x] on the first line and append only the unified suffix."""
+
+    TEXT = ("# H\n  - [ ] **LSA-CPU-SPARSE (c)** [inference] (row r1) Owned by x.\n"
+            "    - continuation\n  - [ ] **LSA-CPU-SPARSE-E2E**: next\n")
+
+    def flip(self, text, token, note="pass rc=0"):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d, "h.md"); p.write_text(text)
+            fc.flip(p, token, "2026-11-20", note, dry_run=False, belief="cc")
+            return p.read_text()
+
+    def test_id_with_space_and_parens(self):
+        out = self.flip(self.TEXT, "LSA-CPU-SPARSE (c)").splitlines()
+        self.assertEqual(out[1], "  - [x] **LSA-CPU-SPARSE (c)** [inference] (row r1) Owned by x. ✅ 2026-11-20 [belief: cc] pass rc=0")
+        self.assertEqual(out[2:], ["    - continuation", "  - [ ] **LSA-CPU-SPARSE-E2E**: next"])
+
+    def test_multiline_box_only_first_line_touched(self):
+        out = self.flip(self.TEXT, "LSA-CPU-SPARSE (c)")
+        self.assertEqual(out.count("✅"), 1)
+        self.assertEqual(out.splitlines()[2], "    - continuation")
+
+    def test_restated_box_note_is_refused_or_dropped(self):
+        note = "- [ ] **LSA-CPU-SPARSE (c)** [inference] (row r1) Owned by x."
+        self.assertEqual(fc.evidence_note_text(note), "")
+        with self.assertRaises(fc.CheckboxFlipError):
+            self.flip(self.TEXT, "LSA-CPU-SPARSE (c)", note)
+        self.assertEqual(fc.evidence_note_text("scoped native evidence"), "scoped native evidence")
+
+    def test_already_ticked_is_idempotent(self):
+        once = self.flip(self.TEXT, "LSA-CPU-SPARSE (c)")
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d, "h.md"); p.write_text(once)
+            with self.assertRaises(fc.CheckboxFlipError):
+                fc.flip(p, "LSA-CPU-SPARSE (c)", "2026-11-21", "pass rc=0", dry_run=False, belief="cc")
+            self.assertEqual(p.read_text(), once)
+
+
 if __name__ == "__main__":
     unittest.main()
 

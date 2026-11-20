@@ -72,6 +72,18 @@ def belief_tag(belief: str) -> str:
     return f"[{b}]" if b.startswith("no-belief:") else f"[belief: {b}]"
 
 
+# A box restated inside a verdict: `- [ ] **X** ...` / `- [x] ...`. The tick_text contract told agents to pass the
+# "exact open box text", and file_result appended it verbatim, duplicating the whole box after the suffix.
+_BOX_IN_TEXT_RX = re.compile(r"(?:^|\s)[-*] \[[ xX]\]\s")
+
+
+def evidence_note_text(note: str | None) -> str:
+    """Evidence note safe for a tick verdict: a note that is (or contains) a restated checkbox line is an
+    identifier of the box, not evidence, and is dropped (returns '')."""
+    n = " ".join((note or "").split())
+    return "" if _BOX_IN_TEXT_RX.search(n) else n
+
+
 def tick_suffix(date: str, belief: str | None = None, verdict: str = "", allow_unrecorded: bool = False) -> str:
     """The ONE tick suffix: `✅ <date> [belief: …|no-belief: …] <verdict>` (no leading space).
 
@@ -87,6 +99,8 @@ def tick_suffix(date: str, belief: str | None = None, verdict: str = "", allow_u
         raise CheckboxFlipError(f"result tick [belief: {belief}] needs a verdict on the line")
     out = f"✅ {date} {belief_tag(belief)}"
     v = " ".join((verdict or "").split())
+    if _BOX_IN_TEXT_RX.search(v):
+        raise CheckboxFlipError("tick verdict restates a checkbox line (`- [ ] ...`); refusing to duplicate the box")
     return f"{out} {v}" if v else out
 
 

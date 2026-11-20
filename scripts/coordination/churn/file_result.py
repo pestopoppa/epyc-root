@@ -567,7 +567,8 @@ def main(argv=None):
         hpath, token = task.rsplit(":", 1)
         try:
             flip_checkbox.flip(handoff_path(a.lane, hpath), token, datetime.date.today().isoformat(),
-                               f"{verdict} rc={rc}; {tick}; result {result_path or 'n/a'}", dry_run=False,
+                               "; ".join(x for x in (f"{verdict} rc={rc}", flip_checkbox.evidence_note_text(tick),
+                                                    f"result {result_path or 'n/a'}") if x), dry_run=False,
                                belief="cc")   # review S2: a filed row result is a result tick, result path on the line
             print(f"TICKED {token} in {hpath}")
         except (flip_checkbox.CheckboxFlipError, ValueError) as e:
