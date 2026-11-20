@@ -5698,6 +5698,9 @@ def reconcile_dryruns(flags, log=print, now=None, allrows=None):
     return out
 
 
+UNTRACKED_HOLDER = "untracked (no grant or smoke record: a region-lock hold or a smoke still exiting; resolves within a tick or two)"
+
+
 def idle_partial_quarters(flags, free, busy, grants, holders):
     """IDLE-WHY for CPU quarters that are not whole-free but not held by a whole-quarter holder either: name the cores
     that keep each one off the free list and who holds them (grant / smoke / '?'), so a stuck hold is visible."""
@@ -5718,7 +5721,7 @@ def idle_partial_quarters(flags, free, busy, grants, holders):
         toks = sorted((expand({q}) & busy) - {q}, key=lambda t: (t[0], int(t[1:]) if t[1:].isdigit() else 0))
         if not toks:
             continue
-        who = sorted(set().union(*[owners.get(t, {"?"}) for t in toks]))
+        who = sorted(set().union(*[owners.get(t, {UNTRACKED_HOLDER}) for t in toks]))
         nfree = len([c for c in qcores(q) if c in free])
         out[q] = f"not whole-free: {','.join(compress(set(toks)))} held by {', '.join(who)}; {nfree} cores free"
     return out
