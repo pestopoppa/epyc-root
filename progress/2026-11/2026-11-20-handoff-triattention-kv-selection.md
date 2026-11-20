@@ -1,0 +1,5 @@
+# 2026-11-20 — handoff triattention-kv-selection
+
+## 01:04Z — AM-PORT-3 actual native full-build execution; publication awaits compiled artifacts
+
+AM-PORT-3: started actual pinned detached-source CPU baseline compilation (4 build workers) and a serial CPU/HIP baseline/patched build batch, using scripts/benchmark/am_port3/build.py at root commit f1177fba3. No additional scaffold milestone or completed checkbox claimed. Batch success/failure event: /mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-full/BUILD-BATCH.json; log batch.log; captured process IDs in BUILD-PIDS.json. Registered awaiting/am-port3-full-builds.json so completion/failure can resume filing without LLM polling. Prepared token slices from existing vocabulary-tokenized AM-PORT-2 item 0; model SHA-256/preparation job writes INPUTS.json before any future publication. Actual compilation is outstanding: no linked-build receipt, smoke PASS, GPU/model/default-off/quality or 32K verdict claimed. Next: consume build outcome, fix any actual compiler/link error, otherwise publish the native bounded row using four receipts and INPUTS.json.
