@@ -393,7 +393,11 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
     env = dict(os.environ,
                XDG_CONFIG_HOME=str(run_dir / "xdg-config"), XDG_DATA_HOME=str(run_dir / "xdg-data"),
                XDG_STATE_HOME=str(run_dir / "xdg-state"), XDG_CACHE_HOME=str(run_dir.parent / "xdg-cache"),
-               OPENCODE_DISABLE_AUTOUPDATE="1", PWD=str(cwd),  # r2: opencode resolves paths from $PWD, not the process cwd
+               OPENCODE_DISABLE_AUTOUPDATE="1", PWD=str(cwd),
+               # r6: the epyc-root lane's project plugin (.opencode/plugins/filesystem-containment.ts) blocked worker
+               # writes, and Claude-Code compat would pull the lane's CLAUDE.md/.claude skills -> isolate the worker
+               OPENCODE_DISABLE_PROJECT_CONFIG="1", OPENCODE_CONFIG_PROJECT_DISABLE="1", OPENCODE_DISABLE_CLAUDE_CODE="1",
+                # r2: opencode resolves paths from $PWD, not the process cwd
                OPENCODE_DISABLE_LSP_DOWNLOAD="1", NO_COLOR="1")
     env.pop("OPENCODE_CONFIG", None)
     argv = [OPENCODE, "run", "--standalone", "--format", "json", "--agent", AGENT,

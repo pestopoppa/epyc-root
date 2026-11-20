@@ -135,7 +135,8 @@ def test_worker_env_pwd_is_lane_h4(tmp_path, monkeypatch):
         pid, returncode = 1, 0
 
         def __init__(self, argv, cwd, env, **kw):
-            seen.update(cwd=cwd, pwd=env["PWD"])
+            seen.update(cwd=cwd, pwd=env["PWD"], proj=env.get("OPENCODE_DISABLE_PROJECT_CONFIG"),
+                        cc=env.get("OPENCODE_DISABLE_CLAUDE_CODE"))
 
         def communicate(self, *a, **k):
             return b"", b""
@@ -151,6 +152,7 @@ def test_worker_env_pwd_is_lane_h4(tmp_path, monkeypatch):
          "inputs": [], "tier": None, "budget": dict(schema.DEFAULT_BUDGET)}
     local_llm.spawn(t, lane, tmp_path / "run", "http://x/v1")
     assert seen["cwd"] == str(lane) == seen["pwd"]
+    assert seen["proj"] == "1" and seen["cc"] == "1"         # r6: lane project plugins / CLAUDE.md isolated
 
 
 def test_max_tokens_cap_and_no_side_agents(tmp_path, monkeypatch):
