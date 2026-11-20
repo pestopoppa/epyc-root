@@ -64,6 +64,8 @@ SHARED_REPOS = [
     "/mnt/raid0/llm/epyc-inference-research",
     "/mnt/raid0/llm/llama.cpp",
 ]
+# Test seam: extra colon-separated shared roots (lets tests use throwaway repos).
+SHARED_REPOS += [x for x in os.environ.get("EPYC_HYGIENE_EXTRA_SHARED", "").split(":") if x]
 
 # Separator TOKENS a command is cut at (see split_into_segments below). Kept as
 # a set of literal shlex tokens, not a regex over raw text -- that distinction
@@ -583,6 +585,87 @@ def command_syncs_checkout(cmd: str) -> bool:
     return False
 
 
+# --- Rule G: session commits of generated index files (D9, operator 2026-11-20: "build it, warn first") ---
+# The hub is the only writer of the generated index surfaces (index_state.py `writer_allowed`). A session that
+# commits them by hand lands a stale copy. Surfaces: the two sidecar JSONs, the BEGIN/END GENERATED block of
+# master-handoff-index.md and the generated:start/end block of each domain index. Hand rows outside the blocks are
+# NOT generated and never warn. Limit: a PreToolUse hook sees the index BEFORE the command runs, so a chained
+# `git add X && git commit` is judged on what is already staged.
+# Flip GENERATED_COMMIT_MODE_DEFAULT to "refuse" after a week of warnings (about 2026-11-27); or set
+# EPYC_GENERATED_COMMIT_MODE=refuse in the environment.
+GENERATED_COMMIT_MODE_DEFAULT = "warn"
+GENERATED_JSON = ("handoffs/active/.index-state.json", "handoffs/active/.index-graph.json")
+GENERATED_BLOCKS = (("<!-- BEGIN GENERATED index_state -->", "<!-- END GENERATED index_state -->"),
+                    ("<!-- generated:start -->", "<!-- generated:end -->"))
+GENERATED_WARN_LOG = os.environ.get("EPYC_GENERATED_WARN_LOG", "/mnt/raid0/llm/tmp/compute-flags/generated-commit-warn.jsonl")
+
+
+def _git_out(repo: str, *args: str) -> str | None:
+    try:
+        r = subprocess.run(["git", "-C", repo, *args], capture_output=True, text=True, timeout=20)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return r.stdout if r.returncode == 0 else None
+
+
+def _generated_blocks(text: str) -> list[str]:
+    out = []
+    for b, e in GENERATED_BLOCKS:
+        i = text.find(b)
+        j = text.find(e, i + len(b)) if i >= 0 else -1
+        out.append(text[i:j] if j >= 0 else "")
+    return out
+
+
+def generated_files_staged(repo: str) -> list[str]:
+    """Staged paths that touch a generated surface (block-level for the markdown indices)."""
+    names = (_git_out(repo, "diff", "--cached", "--name-only", "-z") or "").split("\0")
+    hits = []
+    for n in filter(None, names):
+        if n in GENERATED_JSON:
+            hits.append(n)
+        elif n.startswith("handoffs/active/") and n.count("/") == 2 and n.endswith(".md"):
+            new = _git_out(repo, "show", f":{n}") or ""
+            old = _git_out(repo, "show", f"HEAD:{n}") or ""
+            if _generated_blocks(new) != _generated_blocks(old):
+                hits.append(n)
+    return hits
+
+
+def generated_commit_exempt(repo: str) -> bool:
+    if os.environ.get("EPYC_INDEX_WRITER") == "hub":
+        return True
+    top = _git_out(repo, "rev-parse", "--show-toplevel")
+    hub = os.environ.get("TOOLROOT_HUB", "/mnt/raid0/llm/views/epyc-root-main")
+    return bool(top) and os.path.realpath(top.strip()) == os.path.realpath(hub)
+
+
+def check_generated_commit(repo: str) -> int | None:
+    """None = pass silently; 0 = warned (exit 0); 2 = refused."""
+    if generated_commit_exempt(repo):
+        return None
+    files = generated_files_staged(repo)
+    if not files:
+        return None
+    mode = os.environ.get("EPYC_GENERATED_COMMIT_MODE", GENERATED_COMMIT_MODE_DEFAULT)
+    msg = ("%s: this commit stages generated index surface(s):\n    %s\n"
+           "The hub regenerates these (index_regen.py); a session copy goes stale. Unstage them "
+           "(`git restore --staged <path>`) and let the hub refresh. Hub writers set EPYC_INDEX_WRITER=hub."
+           % ("BLOCKED" if mode == "refuse" else "WARNING", "\n    ".join(files)))
+    print(msg, file=sys.stderr)
+    try:
+        os.makedirs(os.path.dirname(GENERATED_WARN_LOG), exist_ok=True)
+        with open(GENERATED_WARN_LOG, "a") as f:
+            f.write(json.dumps({
+                "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "who": os.environ.get("EPYC_AGENT_ID") or os.environ.get("CLAUDE_SESSION_ID") or os.environ.get("USER", "?"),
+                "commit": (_git_out(repo, "rev-parse", "HEAD") or "").strip(),
+                "repo": repo, "mode": mode, "files": files}) + "\n")
+    except OSError:
+        pass
+    return 2 if mode == "refuse" else 0
+
+
 def block(message: str) -> int:
     print(message.rstrip(), file=sys.stderr)
     return 2
@@ -733,6 +816,8 @@ Compare against a clean tree without touching this one:
 {OPERATOR_BYPASS_NOTE}""")
 
             if sub == "commit":
+                if check_generated_commit(repo) == 2:
+                    return 2
                 if positionals:
                     return block(f"""BLOCKED: `git commit -- <pathspec>` on a shared repo ({repo}).
 
