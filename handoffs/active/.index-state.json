@@ -16,7 +16,7 @@
       "blocked": 3,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 220
+      "open": 221
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 770,
+          "line": 792,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1082,
+          "line": 1104,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1289,
+          "line": 1311,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1615,
+          "line": 1637,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1850,
+          "line": 1872,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -2375,7 +2375,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 807,
+          "line": 808,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29
@@ -2556,7 +2556,7 @@
       "frozen": 3,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 117,
+      "open": 118,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2565,7 +2565,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 605
+      "total": 606
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
