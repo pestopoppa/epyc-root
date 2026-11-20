@@ -41,3 +41,29 @@ Consume the delivered smoke/run event and file the native result when it lands.
 Parent CAFE-4 stays open. No source tree, model, binary or log was copied.
 
 [no-belief: tested native diagnostic publication only; smoke queued]
+
+Scheduled native verdict (2026-11-20)
+-------------------------------------
+
+Filed **INCONCLUSIVE / UNKNOWN**, scheduled rc2 at 11:04:18Z. Width2 normal
+mode1 proposed `32,16106`, accepted zero, and failed strict partial acceptance;
+modes0/2 proposed `248068,271`, accepted the first token, and predicted `198`
+for the second token. All boundary tokens were `271`. Observe lifecycle and
+matched prefix/draft controls failed. Controls/measurements are null; the other
+three cases did not run. The fixed **0.743863867** tolerance remains unevaluated.
+Rollback-boundary isolation did not eliminate the observed mode1 mismatch;
+this result does not establish its root cause or qualify rollback correctness.
+
+Model and six qualified local libraries mapped. Two overlapping live child KFD
+samples each recorded **37,525,798,912 VRAM bytes**; no cutoff, child reaped.
+The original result path above has SHA-256
+`d5bbe4994d5a366679fe128c53d82e2046716e0a1ec64fdf5f23ab40ca6e79c1`.
+Native log SHA-256:
+`37f518513a5053e0778981babba86090fdef7a686be0c8e46d3ef60fb664d155`.
+The result binds official grant SHA-256
+`239ec0b28b810019e9c0447cb6850dc768429a3ca1582d52c6c554f999ba13e0`.
+Filing receipt written; alert `4c75aaa9c478c59b59aa656a` acknowledged.
+Parent CAFE-4 remains open. No retry or threshold change is published.
+Diagnose mode1 proposal/control state before another native attempt.
+
+[no-belief: inconclusive single-prompt diagnostic; existing CAFE-4 source registration applies]
