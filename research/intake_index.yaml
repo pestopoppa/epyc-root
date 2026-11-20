@@ -392480,7 +392480,11 @@
     handoffs:
     - cpu-decode-roofline-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): PR32613-A1: P7 / Q8PK-GEMM-AB; PR32613-A2: P7 / Q8PK-DECODE-OPBW; PR32613-A3: P7 / Q8PK-GEMM-AB; R2-Q6K-HEAD: P7 / Q6K-HEAD-CALLCOST; R2-IQ4NL-ZMM: P7 / IQ4NL-GEMV-ZMM"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -392587,7 +392591,13 @@
     - kernel-champion-and-promotion.md
     - "rocm-kernel-authoring.md"
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - kernel-champion-and-promotion.md
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): PR32505-A1: M1 monitor; PR32505-A2: P2 / MMID-HELPER-N10; PR32505-A3: P2 / AK-ASM-H11-UNIQ; PR32505-A4: K2 knowledge-only; R2-MMID-GATE: P2 / MMID-HELPER-N10-GATE"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -392731,7 +392741,11 @@
     - speculative-decoding.md
     - "rocm-kernel-authoring.md"
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): PR32266-A1: P2 / DTREE-0-Q8MF; PR32266-A2: K1 knowledge-only; PR32266-A3: P2 / DTREE-0-Q8MF-GATE; R2-WVSK16-WITNESS: P2 / DTREE-0-WVSK16-WITNESS"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -392810,7 +392824,11 @@
     - quantization-and-low-bit.md
     intake_entries:
     - intake-873
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): NARIQ-A1: P3 / NARIQ-KLD-MASK-1, NARIQ-IMX-1; NARIQ-A2: K3 knowledge-only; NARIQ-A3: K3 knowledge-only; NARIQ-A4: P10 / NARIQ-LIBTRELLIS-MAP-1; R2-NARIQ-CORPUS: P3 / NARIQ-TRACE-CORPUS-1; R2-NARIQ-SERVED: P3 / NARIQ-IMX-Q38FN; R2-NARIQ-TRELLIS: P3 / NARIQ-EXL3-FEAS-1"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -392930,6 +392948,9 @@
     intake_entries:
     - intake-873
   handoffs_updated: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): NARIQ-HF-A1: decline: the card restates the paper counts and is not independent evidence"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -392996,7 +393017,12 @@
     handoffs:
     - autokernel-akx-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - rocm-kernel-authoring.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): RSI-A1: K2 knowledge-only; RSI-A2: M5 monitor; RSI-A3: K2 knowledge-only"
   handoffs_created: []
   verification: stage1-unverified
   read_depth: PARTIAL
@@ -393095,7 +393121,11 @@
     - "rocm-kernel-authoring.md"
     intake_entries:
     - intake-2694
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): ROCM102-A1: P4 / ROCK-WAVE64-CHECKLIST; ROCM102-A2: K2 knowledge-only; ROCM102-A3: K2 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393215,7 +393245,12 @@
     - intake-1256
     - intake-1505
     - intake-1512
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): NARROW-A1: P9 / NARROW-DRAFT-WIDTH-TIMING; NARROW-A2: M2 monitor; NARROW-A3: K1 knowledge-only; R2-FLOOR-FUSE: P9 / DFLASH2-DRAFT-FLOOR-FUSE"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393349,7 +393384,11 @@
     - "kv-cache-program.md"
     intake_entries:
     - intake-1256
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): QDKV-A1: K1 knowledge-only; QDKV-A2: P1 / Q38FN-DRAFT-FA-WINDOW; QDKV-A3: decline: draft KV capacity is not binding, rotation already handles key outliers and the packed path is slower"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393497,7 +393536,11 @@
     - speculative-decoding.md
     - "kv-cache-program.md"
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): GMTP-A1: P9 / DRAFT-HEAD-APPROX-RECALL; GMTP-A2: K1 knowledge-only; GMTP-A3: K1 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393653,7 +393696,11 @@
     intake_entries:
     - intake-1215
     - intake-370
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): BUD-A1: P6 / TB-MULTIBUDGET-1; BUD-A2: P6 / TB-MULTIBUDGET-1; BUD-A3: M4 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393803,7 +393850,12 @@
     handoffs:
     - context-and-token-economy.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  - memory-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): GRP-A1: P5 / CF-AB-A7-PROBE; GRP-A2: P5 / UTM-B2-SEARCH-CONTROLS; GRP-A3: K4 knowledge-only; R2-GREP-HISTORY: P5 / UTM-B2-GREP-HISTORY; R2-VERBATIM-COMPACTION: P5 / UTM-B2-VERBATIM-WITH-COMPACTION; R2-RECOVERY-POINTERS: P5 / UTM-B2-RECOVERY-POINTERS"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393936,7 +393988,11 @@
     - quantization-and-low-bit.md
     - kernel-champion-and-promotion.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): QDA-A1: P3 / QUANT-LOOPCHK-1, QUANT-LOOPCHK-2; QDA-A2: P8 / GGUF-RECIPE-SEARCH; QDA-A3: P8 / GGUF-RECIPE-SCORER, GGUF-RECIPE-SEARCH; R2-GGUF-REFTRACES: P8 / GGUF-RECIPE-REFTRACES"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -394058,6 +394114,9 @@
     - long-context-program.md
     intake_entries: []
   handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): FM2-A1: K4 knowledge-only; FM2-A2: decline: a multi-billion-token training job with no consumer in our served lineup"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -394187,7 +394246,12 @@
     - intake-1087
     - intake-1227
     - intake-2010
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - autokernel-loop.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): SOLEXEC-A1: P4 / AKX-SOLSCORE-1; SOLEXEC-A2: P4 / AKX-SOLSCORE-1; SOLEXEC-A3: P4 / AK-HACKSCAN-SOLX; SOLEXEC-A4: M5 monitor; SOLEXEC-A5: decline: CUDA Blackwell problems with a withheld baseline give no decision value on gfx90a or Zen 5"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394357,7 +394421,11 @@
     - intake-2721
     - intake-2722
     - intake-873
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): NARI-A1: K3 knowledge-only; NARI-A2: M3 monitor; NARI-A3: P10 / NARIQ-BANDHEAD-1; NARI-A4: M3 monitor; R2-MFMA-ENV: P10 / EXL3-MFMA-FP16-ENV-1; R2-HADFULL: P10 / NARIQ-HADFULL-PROBE-1"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -394437,7 +394505,11 @@
     - intake-2724
     - intake-2697
     - intake-2703
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): AMDSKILLS-A1: P4 / ROCK-WAVE64-CHECKLIST; AMDSKILLS-A2: P4 / ROCM-PROFILER-DECISION; AMDSKILLS-A3: P4 / ROCK-FLYDSL-GFX90A"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394525,7 +394597,11 @@
     - intake-2697
     - intake-2703
     - intake-2724
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): FLYDOCS-A1: P4 / ROCK-FLYDSL-GFX90A; FLYDOCS-A2: K2 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394597,7 +394673,11 @@
     - intake-2697
     - intake-2703
     - intake-2724
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): FLYBLOG-A1: K2 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394683,7 +394763,12 @@
     - memory-program.md
     intake_entries:
     - intake-2729
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  - memory-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): CHATLOGSEARCH-A1: P5 / CF-AB-A7-SURFACE; CHATLOGSEARCH-A2: P5 / UTM-B2-SEARCH-CONTROLS; CHATLOGSEARCH-A3: K4 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394810,7 +394895,11 @@
     - harness-program.md
     intake_entries:
     - intake-2729
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): GREPALLYOUNEED-A1: P5 / CF-AB-A7-SURFACE; GREPALLYOUNEED-A2: K4 knowledge-only; GREPALLYOUNEED-A3: decline: the source does not contain those features"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394923,7 +395012,12 @@
     - intake-2727
     - intake-505
     - intake-864
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): WMTP-A1: P1 / Q38FN-DRAFT-FA-WINDOW; WMTP-A2: P1 / Q38FN-DRAFT-SPLITKV; WMTP-A3: M2 monitor; WMTP-A4: K1 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395043,7 +395137,11 @@
     intake_entries:
     - intake-740
     - intake-2725
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): SLIM-A1: P9 / DRAFT-HEAD-APPROX-RECALL; SLIM-A2: M2 monitor; SLIM-A3: decline: the measured CPU ceiling cannot clear the serving floor after acceptance loss"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395154,7 +395252,11 @@
     intake_entries:
     - intake-740
     - intake-2727
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): DYNA-A1: K1 knowledge-only; DYNA-A2: M2 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395296,7 +395398,11 @@
     - autokernel-akx-program.md
     intake_entries:
     - intake-2732
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): SOLAR-A1: P4 / AKX-SOLSCORE-1; SOLAR-A2: P4 / AKX-SOLSCORE-1; SOLAR-A3: M5 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -395400,7 +395506,11 @@
     intake_entries:
     - intake-2737
     - intake-2729
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): BM25SCALE-A1: K4 knowledge-only; BM25SCALE-A2: P5 / CF-AB-A7-PROBE; BM25SCALE-A3: decline: the trace store already uses the ranking the paper recommends"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395501,7 +395611,12 @@
     intake_entries:
     - intake-2739
     - intake-2725
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): ATTNDRIFT-A1: P1 / Q38FN-DRAFT-FA-WINDOW; ATTNDRIFT-A2: M2 monitor; ATTNDRIFT-A3: M2 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395633,7 +395748,13 @@
     - autokernel-loop.md
     intake_entries:
     - intake-2734
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - coordination-and-churn-pipeline.md
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): SKREPO-A1: P4 / AK-HACKSCAN-SOLX; SKREPO-A2: P4 / AK-HACKSCAN-SOLX; SKREPO-A3: P4 / ROCPROF-ATT-ADAPTER-1; SKREPO-A4: P4 / ROCK-WAVE64-CHECKLIST; SKREPO-A5: P4 / ROCM-PROFILER-DECISION; R2-ATT-ADAPTER: P4 / ROCPROF-ATT-ADAPTER-1; R2-OCC-CALC: P4 / AMDSK-OCC-CALC-1; R2-AUTOTUNE: P4 / AMDSK-AUTOTUNE-CFG-1; R2-SKILLCARD: P4 / AMDSK-SKILLCARD-EVALS-1"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -395723,7 +395844,12 @@
     intake_entries:
     - intake-2734
     - intake-2742
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): MOAT-A1: P4 / AK-ISA-IDENT-1; MOAT-A2: P4 / AK-BLOCKED-VS-FAILED; MOAT-A3: P4 / ROCK-WAVE64-CHECKLIST; MOAT-A4: decline: the port and upstream-PR machinery has no counterpart in our loop"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -395803,3 +395929,252 @@
     source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
   dive_corrections: "2026-11-20 Stage-2b wave-2 dive (sonnet; PARTIAL: README, AGENTS.md, validator.md, reviewer.md, heads of codeobj_diff.py and changeclass.py read @ 86968a5e896a). Moat is a port gate-and-provenance workflow, not a performance search. Transferable to our loop: evidence bound to an exact commit with re-derivation on head move; carry-forward without a GPU re-run only when exported symbols and normalized device ISA are identical (indeterminate treated as differ); a 'blocked (host fact) vs failed (code fact)' distinction when no GPU is present; a base-control pattern (rebuild the pre-fix source and show the gate still passes) to prove a gate is blind; 'assertion count is a lower bound' and 'read what the checker compares'. Our loop is already stronger on gaming controls (autokernel-loop.md \u00a78.6 L2007-L2023 @901b3fe). All Moat measurements are ROCm 7.x. Licence/fork/upstream machinery not applicable. CONTRIBUTING.md declined. lane_head 901b3fe44a30"
   notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 2)."
+
+- id: intake-2747
+  arxiv_id: "2404.00242"
+  url: https://arxiv.org/abs/2404.00242v4
+  source_type: paper
+  title: "DeFT: Decoding with Flash Tree-attention for Efficient Tree-structured LLM Inference"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "KV-guided grouping loads shared-prefix KV once for all tree queries."
+  - "Flattened tree KV splitting balances partitions across the tree."
+  - "Abstract reports large KV IO reduction and attention-latency speedups on tree workloads."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): prefix-KV sharing is already the single-sequence verify baseline; recorded in seeds/hypotheses/17 declined list"
+  verification: dive-verified
+  read_depth: PARTIAL
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Abstract only read in Stage 1 (v4, ICLR 2025)."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): DeFT v4 read from arXiv HTML: prefix-KV-once grouping, tree KV splitting with per-query bit masks, flash-decoding-style global reduction confirmed. For one sequence with 12-16 verify rows the prefix is already read once by our FA, so DeFT adds ~0 ms; small-tree (t=32) gain over Radix only 1.24x on A100. Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 3.3 Q-Guided vs. KV-Guided Grouping"
+    quote: 'prefix KV cache is only loaded once'
+    quote_sha256: dd81991f5558cf5d1fe057007d1a024b6a15ebe417c67797007fab7a2ee87eb6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c250b7451329714ba9e5c99466c16e96b64dcfd3f2a8e0af4a203195d93e0723, found: true}
+    source_revision: https://arxiv.org/html/2404.00242v4
+    source_artifact: {"byte_length": 662198, "effective_url": "https://arxiv.org/html/2404.00242v4", "entry_url": "https://arxiv.org/abs/2404.00242v4", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c250b7451329714ba9e5c99466c16e96b64dcfd3f2a8e0af4a203195d93e0723", "relative_path": "sha256/c2/c250b7451329714ba9e5c99466c16e96b64dcfd3f2a8e0af4a203195d93e0723.raw", "requested_url": "https://arxiv.org/html/2404.00242v4", "retrieved_at_utc": "2026-11-20T13:36:56.525314Z", "schema_version": 1, "snapshot_id": "sha256:c250b7451329714ba9e5c99466c16e96b64dcfd3f2a8e0af4a203195d93e0723"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+
+- id: intake-2748
+  arxiv_id: "2402.05099"
+  url: https://arxiv.org/abs/2402.05099v2
+  source_type: paper
+  title: "Hydragen: High-Throughput LLM Inference with Shared Prefixes"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "Prefix and suffix attention are computed separately and recombined."
+  - "Queries sharing a prefix are batched into one matrix-matrix pass over the prefix KV."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): prefix-KV sharing is already the single-sequence verify baseline; recorded in seeds/hypotheses/17 declined list"
+  verification: dive-verified
+  read_depth: PARTIAL
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Abstract only read. Merge rule assumed LSE, unconfirmed."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): Hydragen v2: prefix/suffix split recombined by LSE denominator rescaling confirmed. Targets many sequences sharing a prefix; single-sequence verify already shares prefix K/V, so no lever for our verify path. Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 3 attention decomposition"
+    quote: 'allows many matrix vector products to be replaced with fewer matrix-matrix products'
+    quote_sha256: 580b4d91b36d301b020d8f24d0b35ae92d518343e669f0fe5ebf828bfd6750b2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8c6ca78704ed091136f50ac267ae5b9aab898277f01e919c55fbf5b9b46c3ba5, found: true}
+    source_revision: https://arxiv.org/html/2402.05099v2
+    source_artifact: {"byte_length": 660266, "effective_url": "https://arxiv.org/html/2402.05099v2", "entry_url": "https://arxiv.org/abs/2402.05099v2", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "8c6ca78704ed091136f50ac267ae5b9aab898277f01e919c55fbf5b9b46c3ba5", "relative_path": "sha256/8c/8c6ca78704ed091136f50ac267ae5b9aab898277f01e919c55fbf5b9b46c3ba5.raw", "requested_url": "https://arxiv.org/html/2402.05099v2", "retrieved_at_utc": "2026-11-20T13:36:56.653318Z", "schema_version": 1, "snapshot_id": "sha256:8c6ca78704ed091136f50ac267ae5b9aab898277f01e919c55fbf5b9b46c3ba5"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+
+- id: intake-2749
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/30370
+  source_type: repo
+  title: "llama.cpp PR #30370: ggml-cuda: Add GCN HIP sparse fattn"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "Enables the sparse (index-gather) FA path on GCN-family HIP targets without WMMA."
+  - "PR body benchmarks decode at nq 1-64 with large speedups at long KV."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): dive-overturned: GCN4/5-only gate and dense-prefix tree masks never qualify for the sparse path"
+  verification: dive-overturned
+  read_depth: PARTIAL
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Open at llama.cpp head 4b69c79cca4b (2026-11-20); diff not read. Related: closed #28943 (interior fully-masked tile skip, RDNA3), merged #27970 sparse-fa, mask-to-KV_max tail skip in fattn-common.cuh."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): PR diff @8dbc504 read: device code and host gate are GCN4/5 only (GGML_CUDA_CC_IS_GCN excludes CDNA2), so it neither compiles nor selects on gfx90a. Sparsity is a top-n_kv_max hint refused above 25% of KV; a tree mask with a dense prefix never qualifies. NO-GO for tree verify. Also: llama.cpp mask-to-KV_max only trims tail tiles and is not run for a 16-row verify (fattn-common.cuh:1176 @36cd3af). Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "fattn host selection hunk"
+    quote: 'if (GGML_CUDA_CC_IS_GCN(cc)) {'
+    quote_sha256: d15b78876728ca1aea5a4fcd264daf34957c468a6f7e7e7f616341d5484c3776
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d, found: true}
+    source_revision: https://patch-diff.githubusercontent.com/raw/ggml-org/llama.cpp/pull/30370.diff
+    source_artifact: {"byte_length": 21559, "effective_url": "https://patch-diff.githubusercontent.com/raw/ggml-org/llama.cpp/pull/30370.diff", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/30370", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d", "relative_path": "sha256/aa/aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/30370.diff", "retrieved_at_utc": "2026-11-20T13:36:57.337026Z", "schema_version": 1, "snapshot_id": "sha256:aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "n_kv_max refusal hunk"
+    quote: 'if (n_kv_max > n_kv/4) {'
+    quote_sha256: 1cb69aed25db424778fb7f08760d43b3d4db5a1d30586dcf5330ace5db6523a6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d, found: true}
+    source_revision: https://patch-diff.githubusercontent.com/raw/ggml-org/llama.cpp/pull/30370.diff
+    source_artifact: {"byte_length": 21559, "effective_url": "https://patch-diff.githubusercontent.com/raw/ggml-org/llama.cpp/pull/30370.diff", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/30370", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d", "relative_path": "sha256/aa/aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/30370.diff", "retrieved_at_utc": "2026-11-20T13:36:57.710005Z", "schema_version": 1, "snapshot_id": "sha256:aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+
+- id: intake-2750
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/attention/verify_splitkv.py
+  source_type: repo
+  title: "SGLang verify_splitkv: split-KV target-verify attention with LSE merge (Triton)"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "Target verify on the Triton backend otherwise runs the prefill extend kernel, which loops the long prefix serially per sequence and head."
+  - "Replacement splits the prefix KV across programs, then LSE-merges with the small draft-draft causal block."
+  - "Supports topk==1 only; trees fall back to extend_attention_fwd with a per-element int8 custom mask."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): filed DTREE-ATTN-SHARE and DTREE-ATTN-ROUTE under AK-DTREE in speculative-decoding.md; sub-3% levers seeded in research seeds/hypotheses/17"
+  verification: dive-overturned
+  read_depth: PARTIAL
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Pinned ea442ff4ab19. Also FlashInfer c7e4de0b13ad packed bit custom mask + cascade merge_state seen (already intake-458 family)."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): verify_splitkv @ea442ff confirmed (split prefix KV + LSE merge, topk==1 only, HIP gate gfx95 only, mask is bool not int8). The baseline it fixes (serial prefix per seq/head) does not exist in llama.cpp HIP FA, which already splits KV (tile parallel_blocks, MMA stream-k). On gfx90a a 12-16-row verify with D=256 lands on the TILE kernel (fattn.cu:753/782 @36cd3af, inferred from selector). Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "verify_splitkv.py:8 @ea442ff"
+    quote: 'which loops the (long) prefix KV serially per'
+    quote_sha256: d31d786cd109f2858af86ecb931177114de74c8242ca58d450a95b7701a51219
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fc3c06b58c2ee7ca0395ed01fe5a7e87b600cc2d104c1f16a2df48b2ba632745, found: true}
+    source_revision: https://raw.githubusercontent.com/sgl-project/sglang/ea442ff4ab19171212a9ecaa0e175d0f2dd2a595/python/sglang/kernels/ops/attention/verify_splitkv.py
+    source_artifact: {"byte_length": 29773, "effective_url": "https://raw.githubusercontent.com/sgl-project/sglang/ea442ff4ab19171212a9ecaa0e175d0f2dd2a595/python/sglang/kernels/ops/attention/verify_splitkv.py", "entry_url": "https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/attention/verify_splitkv.py", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "fc3c06b58c2ee7ca0395ed01fe5a7e87b600cc2d104c1f16a2df48b2ba632745", "relative_path": "sha256/fc/fc3c06b58c2ee7ca0395ed01fe5a7e87b600cc2d104c1f16a2df48b2ba632745.raw", "requested_url": "https://raw.githubusercontent.com/sgl-project/sglang/ea442ff4ab19171212a9ecaa0e175d0f2dd2a595/python/sglang/kernels/ops/attention/verify_splitkv.py", "retrieved_at_utc": "2026-11-20T13:36:57.742737Z", "schema_version": 1, "snapshot_id": "sha256:fc3c06b58c2ee7ca0395ed01fe5a7e87b600cc2d104c1f16a2df48b2ba632745"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+
+- id: intake-2751
+  arxiv_id: null
+  url: https://github.com/ROCm/composable_kernel
+  source_type: repo
+  title: "composable_kernel CK-Tile FMHA split-KV and mask variants"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "Mask kinds are geometric only (no mask, top-left/bottom-right causal, generic window); no arbitrary tree mask."
+  - "Split-KV fwd plus combine kernels exist for decode."
+  - "Split-KV query tile bm0 is 32 or 64 rows, so 12-16 query rows underfill the tile."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated:
+  - speculative-decoding.md
+  handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): filed DTREE-ATTN-SHARE and DTREE-ATTN-ROUTE under AK-DTREE in speculative-decoding.md; sub-3% levers seeded in research seeds/hypotheses/17"
+  verification: dive-verified
+  read_depth: PARTIAL
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Pinned 6cb06034c56d; grep-level read only, nothing built for gfx90a. aiter 1ff8c8f61247: MTP multi-query PA/MLA asm is gfx942-only; FA mask limited to none/causal."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): CK @6cb06034c56d: mask kinds are geometric only (no tree mask), split-KV + LSE combine kernels exist, gfx9 splitkv bm0 is 32 (hdim 32) or 64 (others); bm0=16 variants exist only for gfx11/12. Tile/split reference only. Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "block_masking.hpp:16 @6cb0603"
+    quote: 'MASK_FROM_BOTTOM_RIGHT = 2,'
+    quote_sha256: 6b6a3ceab466aa3493af63eba3fea65b47775f519d3acc88003b5fdca68f96bf
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7, found: true}
+    source_revision: https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp
+    source_artifact: {"byte_length": 35340, "effective_url": "https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp", "entry_url": "https://github.com/ROCm/composable_kernel", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7", "relative_path": "sha256/9a/9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7.raw", "requested_url": "https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp", "retrieved_at_utc": "2026-11-20T13:36:57.773711Z", "schema_version": 1, "snapshot_id": "sha256:9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)

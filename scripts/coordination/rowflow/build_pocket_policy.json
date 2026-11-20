@@ -1,0 +1,7 @@
+{
+  "_doc": "BUILD-POCKET carve-out (pipeline-mgmt 2026-11-20, D9 standing AK ack). A CPU multi-quarter(3) row (all of q0-q2) whose hold exceeds long_hold_s and that does not declare whole_host_need leaves a pocket for short build claims: (a) it is not granted while a build claim waits; (b) a resumable one is granted with a hard end at max_hold_s (capcut-requeued, so the pocket opens at each cut). Override any key in <flags>/allocator.json under \"build_pocket\".",
+  "long_hold_s": 7200,
+  "max_hold_s": 7200,
+  "waiter_ttl_s": 7200,
+  "queue_dir": "/mnt/raid0/llm/tmp/queue"
+}

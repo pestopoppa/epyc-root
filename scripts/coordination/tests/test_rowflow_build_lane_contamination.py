@@ -56,6 +56,78 @@ class BuildLane(unittest.TestCase):
             self.assertEqual(rf.main(["--flags", self.flags, "claim", "--build", "--owner", "akagg", "--cpus", "4",
                                       "--minutes", "10"]), 0)
 
+PART = "codex-bfcl-cj3d-supported-27b-v1-20261120"
+
+
+def partial_grant():   # 8 cores of q0 + their SMT siblings (the 52 h cj3d grant)
+    return {"id": PART, "regions": "0-7", "pid": None, "dryrun": False, "started": True, "path": "x",
+            "holds": {f"c{n}" for n in range(8)} | {f"t{n}" for n in range(96, 104)}}
+
+
+class PartialQuarterBuild(unittest.TestCase):
+    """A grant holding only some cores of q0 leaves its other cores claimable by `claim --build`; a whole-quarter hold still refuses."""
+
+    def setUp(self):
+        self.flags = tempfile.mkdtemp(prefix="bldp-")
+        os.makedirs(os.path.join(self.flags, "grants"))
+
+    def free_without(self, g, quarters_busy=()):
+        busy = rf.expand(set(g["holds"]) | set(quarters_busy))
+        busy |= {q for q in rf.QUARTERS if rf.expand({q}) & busy}
+        return (set(rf.REGIONS) | set(rf.CORES) | set(rf.THREADS)) - busy
+
+    def claim(self, cpus, grants, free):
+        with mock.patch.object(rf, "contract_of", return_value={"bench": False}):
+            return rf.claim_build(self.flags, "akagg", cpus, 30, log=lambda m: None, grants=grants,
+                                  allrows={PART: {"id": PART}}, free=free)
+
+    def test_literal_free_cores_of_partly_held_q0(self):
+        g = partial_grant()
+        gid, line = self.claim("8-23", [g], self.free_without(g))
+        held = [x for x in rf.open_grants(self.flags) if x["id"] == gid][0]["holds"]
+        self.assertEqual({t for t in held if t.startswith("c")}, {f"c{n}" for n in range(8, 24)})
+        self.assertFalse(held & g["holds"]); self.assertNotIn("q0", held)
+        rec = json.load(open(os.path.join(self.flags, "grants", gid + ".build.json")))
+        self.assertIn("partial", rec)
+
+    def test_literal_list_overlapping_the_holder_refused(self):
+        g = partial_grant()
+        with self.assertRaises(rf.Refused) as e:
+            self.claim("4-12", [g], self.free_without(g))
+        self.assertIn("q0 is held", str(e.exception))
+
+    def test_count_claim_falls_back_to_free_cores_when_no_whole_quarter(self):
+        g = partial_grant(); other = {"id": "o", "holds": {"q1", "q2"}}
+        free = self.free_without(g, quarters_busy={"q1", "q2"})
+        gid, _ = self.claim("16", [g, other], free)
+        held = [x for x in rf.open_grants(self.flags) if x["id"] == gid][0]["holds"]
+        cores = {t for t in held if t.startswith("c")}
+        self.assertEqual(len(cores), 16); self.assertTrue(cores <= {f"c{n}" for n in range(8, 24)})
+        # the build left no room for a second 16: refused and a build-wait recorded
+        free2 = free - held
+        with self.assertRaises(rf.Refused):
+            self.claim("16", [g, other], free2)
+
+    def test_whole_quarter_hold_still_refuses(self):
+        g = {"id": "wq", "holds": {"q0"}}
+        free = self.free_without(g, quarters_busy={"q1", "q2"})
+        for c in ("8-23", "4"):
+            with self.assertRaises(rf.Refused):
+                self.claim(c, [g], free)
+
+    def test_partial_hold_of_timing_grant_still_refused(self):
+        g = partial_grant()
+        with mock.patch.object(rf, "timing_quarters", return_value={"q0"}), self.assertRaises(rf.Refused) as e:
+            self.claim("8-23", [g], self.free_without(g))
+        self.assertIn("timing grant", str(e.exception))
+
+    def test_other_sub_quarter_row_fits_beside_build(self):
+        g = partial_grant()
+        gid, _ = self.claim("8-15", [g], self.free_without(g))
+        bg = [x for x in rf.open_grants(self.flags) if x["id"] == gid][0]
+        free = self.free_without({"holds": g["holds"] | bg["holds"]})
+        self.assertTrue({f"c{n}" for n in range(16, 24)} <= free)
+
 
 class Contamination(unittest.TestCase):
     def setUp(self):

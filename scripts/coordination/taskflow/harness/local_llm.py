@@ -20,8 +20,10 @@ Tier map (operator directive 3): the adapter maps the task tier to a model; Stag
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -36,22 +38,201 @@ TIER_MODELS = {
     "claude": {"luna": "haiku", "terra": "sonnet", "sol": "opus"},
 }
 # Global deny-list carried over from /workspace/opencode.json (the per-run XDG config dir replaces the global config).
-BASH_DENY = ["sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
+# r1 canary: a piped test command (`cmd | head`) was denied by "*": deny -> read-only helpers are allowed.
+# r7d canary: 10 of 21 shell denials were `cat` (POLICY rule 6 promised it; READ_ONLY omitted it) plus `sed -n`,
+# `pwd`, `git show` and `cmd | head`. tool_output (200 lines / 8 KiB) bounds every output, so `cat` is safe now.
+READ_ONLY = ["ls*", "cat *", "head *", "tail *", "wc *", "grep *", "rg *", "sed -n *", "pwd", "find *",
+             "git diff*", "git status*", "git log*", "git show *", "git branch*"]
+# Pipe/redirect tails the model composes onto an allowed command (r7d: `cat f | head -100`, `cmd 2>&1`).
+PIPE_TAILS = [" 2>&1", " | head *", " | tail *", " | wc *", " | grep *", " 2>&1 | head *", " 2>&1 | tail *",
+              " 2>&1 | grep *"]
+# Task-brief layer P3 (§7): retrieval tools for locating code and for self-briefing (read-only, zero cloud tokens).
+RETRIEVAL = ["gitnexus query *", "gitnexus context *", "gitnexus impact *",
+             "/workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query *"]
+KB_SEARCH = RETRIEVAL[-1][:-2]
+BASH_DENY = ["sed *-i*", "sed *--in-place*", "find *-delete*", "find *-exec*", "* > *", "* >> *", "* | sh*", "* | bash*",
+             "sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
              "git commit*", "curl*", "wget*", "systemctl*", "reboot*", "shutdown*"]
 
 POLICY = """\
 # taskflow worker contract (identical for every task)
 You are a code worker on ONE handoff box in a disposable git worktree (your cwd). Rules:
 1. Do exactly what the box asks, nothing more. Smallest correct change. Keep the repo's style.
-2. Read only what you need: use grep/glob to locate, then read narrow line ranges. Never read whole large files.
-3. Edit with the edit tool (exact old/new strings). Create files with write only when the box asks for a new file.
-4. Never touch files listed as FORBIDDEN. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
-5. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
-6. bash is limited to the ALLOWED COMMANDS in the task. Run them to check your work when given.
-7. Stop as soon as the box's done-when is met. Do not explore further.
-8. Finish with ONE final line, exactly:  TASKFLOW-RESULT {"claimed_done": true|false, "summary": "<=200 chars", "paths": ["changed/file", ...]}
-   claimed_done=false with a reason when the box is blocked, unclear, or needs a decision you cannot make.
+2. Locate fast: at most 6 grep/glob/read calls, then EDIT. Read narrow line ranges, never whole large files.
+3. Edit with the edit tool (exact old/new strings). Create a file with write only when the box needs a new file.
+4. Every turn must call a tool until you finish. Never describe a plan without calling a tool in the same turn.
+5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
+6. The shell runs only the ALLOWED COMMANDS plus read-only helpers (ls, cat, head, tail, wc, grep, sed -n, find, pwd,
+   git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc or grep. No `>` files, no && chains, no cd.
+10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
+    Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
+7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
+8. Stop as soon as the box's done-when is met.
+9. Finish with ONE final line, exactly:  TASKFLOW-RESULT {"claimed_done": true|false, "summary": "<=200 chars", "paths": ["changed/file", ...]}
+   claimed_done=false with a reason when the box is blocked, unclear, too large for one change, or needs a decision.
 """
+
+
+NUDGE = "Continue now: call a tool in this turn (grep, read or edit). Do not describe a plan.\n"
+
+
+TOOL_MAX_LINES, TOOL_MAX_BYTES = 200, 8192
+POLICY_DIR = Path(os.environ.get("TASKFLOW_POLICY_DIR", "/mnt/raid0/llm/tmp/taskflow-policy"))
+
+
+def policy_file() -> Path:
+    """H3: ONE content-addressed POLICY path for every task, so the instructions block (which names its path) is
+    byte-identical across tasks and the server's prefix cache spans the whole batch."""
+    h = hashlib.sha256(POLICY.encode()).hexdigest()[:12]
+    p = POLICY_DIR / f"POLICY-{h}.md"
+    if not p.exists():
+        POLICY_DIR.mkdir(parents=True, exist_ok=True)
+        tmp = p.with_suffix(f".{os.getpid()}.tmp")
+        tmp.write_text(POLICY, encoding="utf-8")
+        os.replace(tmp, p)
+    return p
+
+
+MAX_TOKENS_CAP = 4096
+
+
+def cap_max_tokens(body: dict, cap: int = MAX_TOKENS_CAP) -> bool:
+    """Proxy guard: every request gets an output cap (r3 runaway: 31,896 tokens from an uncapped side request)."""
+    cur = body.get("max_completion_tokens") or body.get("max_tokens")
+    if cur is None or int(cur) > cap or int(cur) < 0:
+        body.pop("max_completion_tokens", None)
+        body["max_tokens"] = cap
+        return True
+    return False
+
+
+class DegenerationGuard:
+    """Proxy-side abort for degenerate decoding (canary r3/r4: capped runaways decoding repetitive garbage at
+    ~46 tok/s with ~0 MTP acceptance carried 44% of np1 drafted tokens).
+
+    feed(text_delta, timings) per streamed chunk -> reason str when the request should be aborted, else None.
+      mtp:    with per-chunk timings (request `timings_per_token: true`), rolling acceptance over the last
+              >= MTP_WINDOW predicted tokens stays below MTP_MIN
+      repeat: over the last REPEAT_WINDOW chars, the share of word NGRAM-grams that are repeats >= REPEAT_MAX
+    """
+    MTP_WINDOW, MTP_MIN = 512, 0.2
+    REPEAT_WINDOW, NGRAM, REPEAT_MAX, MIN_CHARS = 4000, 6, 0.6, 2000
+
+    def __init__(self):
+        self.text = ""
+        self.marks: list[tuple[int, int, int]] = []    # (predicted_n, draft_n, draft_accepted)
+
+    def feed(self, delta: str = "", timings: dict | None = None) -> str | None:
+        if delta:
+            self.text = (self.text + delta)[-self.REPEAT_WINDOW * 2:]
+        if timings and timings.get("draft_n") is not None:
+            self.marks.append((int(timings.get("predicted_n") or 0), int(timings.get("draft_n") or 0),
+                               int(timings.get("draft_n_accepted") or 0)))
+            p1, d1, a1 = self.marks[-1]
+            for p0, d0, a0 in reversed(self.marks[:-1]):
+                if p1 - p0 >= self.MTP_WINDOW:
+                    if d1 - d0 > 0 and (a1 - a0) / (d1 - d0) < self.MTP_MIN:
+                        return f"mtp-acceptance {(a1 - a0) / (d1 - d0):.2f} over {p1 - p0} tokens"
+                    break
+        if len(self.text) >= self.MIN_CHARS:
+            w = self.text[-self.REPEAT_WINDOW:].split()
+            grams = [tuple(w[i:i + self.NGRAM]) for i in range(max(0, len(w) - self.NGRAM + 1))]
+            if len(grams) >= 50:
+                rep = 1 - len(set(grams)) / len(grams)
+                if rep >= self.REPEAT_MAX:
+                    return f"repeat-ratio {rep:.2f}"
+        return None
+
+
+_XML_IN_ARGS = ("<parameter=", "<function=", "<tool_call>", "</parameter>", "</function>", "</tool_call>")
+TOOL_ARG_CORRECTION = ("Your last tool call's arguments contained raw XML tags (<parameter=...>). Call the tool again "
+                       "with plain JSON argument values only, one tool call per turn.")
+
+
+def invalid_tool_args(arguments: str) -> str | None:
+    """Client-side tool-argument check (r3/r4: Qwen XML tool-call markup leaked into argument values).
+    The r6 proxy (tool_arg_filter=true, operator 2026-11-20 "can't hurt") rejects such a response, retries upstream
+    once with TOOL_ARG_CORRECTION appended, and logs `bad_tool_args`; the strict server parser (AK) is the real fix."""
+    for tag in _XML_IN_ARGS:
+        if tag in (arguments or ""):
+            return f"tool arguments contain {tag}"
+    return None
+
+
+LANES_ROOT = os.environ.get("TASKFLOW_LANES_ROOT", "/mnt/raid0/llm/tf")
+# r5-r7d canary: the 35B types the lane's absolute path with a mangled prefix while keeping the hex lane id intact:
+# `<mnt/raid0/llm/tf/e9f8`, `.mnt/...`, `mnt/raid0/tf/...`, `/mnt/raid0/84fd/...`, `/mnt/raid0/llm/t/65a8/...`.
+_MANGLED_LANE = re.compile(r"(?<![\w/])[<.>]?/?mnt/raid0/(?:llm/)?(?:tf?/)?([0-9a-f]{4,8})(?=/|$|[\s\"'`])")
+
+
+def repair_lane_paths(text: str, lane_exists=None) -> tuple[str, int]:
+    """Rewrite mangled lane-prefix paths to LANES_ROOT/<id>. Only rewrites when the lane id names an existing lane
+    (lane_exists(id) -> bool, default: a directory under LANES_ROOT), so unrelated /mnt/raid0 paths are untouched."""
+    lane_exists = lane_exists or (lambda h: os.path.isdir(os.path.join(LANES_ROOT, h)))
+    n = 0
+
+    def sub(m):
+        nonlocal n
+        good = f"{LANES_ROOT}/{m.group(1)}"
+        if m.group(0) == good or not lane_exists(m.group(1)):
+            return m.group(0)
+        n += 1
+        return good
+    return _MANGLED_LANE.sub(sub, text or ""), n
+
+
+def rewrite_sse_tool_args(chunks: list[bytes], lane_exists=None) -> tuple[list[bytes], int]:
+    """Proxy side of repair_lane_paths: reassemble each streamed tool call's arguments, repair them, and if anything
+    changed re-emit the stream with the whole repaired argument string in that call's first delta (later argument
+    deltas emptied). Unchanged streams are returned byte-identical."""
+    raw = b"".join(chunks)
+    lines = raw.split(b"\n")
+    evs: list = []
+    args: dict = {}
+    for ln in lines:
+        ev = None
+        if ln.startswith(b"data: {"):
+            try:
+                ev = json.loads(ln[6:])
+            except ValueError:
+                ev = None
+        evs.append(ev)
+        for ch in (ev or {}).get("choices") or []:
+            for tc in (ch.get("delta") or {}).get("tool_calls") or []:
+                k = (ch.get("index", 0), tc.get("index", 0))
+                args[k] = args.get(k, "") + str((tc.get("function") or {}).get("arguments") or "")
+    fixed, total = {}, 0
+    for k, a in args.items():
+        a2, n = repair_lane_paths(a, lane_exists)
+        if n:
+            fixed[k], total = a2, total + n
+    if not total:
+        return chunks, 0
+    seen, out = set(), []
+    for ln, ev in zip(lines, evs):
+        touched = False
+        for ch in (ev or {}).get("choices") or []:
+            for tc in (ch.get("delta") or {}).get("tool_calls") or []:
+                k = (ch.get("index", 0), tc.get("index", 0))
+                fn = tc.get("function")
+                if k in fixed and isinstance(fn, dict) and "arguments" in fn:
+                    fn["arguments"] = "" if k in seen else fixed[k]
+                    seen.add(k)
+                    touched = True
+        out.append(b"data: " + json.dumps(ev).encode() if touched else ln)
+    return [b"\n".join(out)], total
+
+
+def request_digest(body: dict) -> dict:
+    """H5: what the metering proxy logs per request -- enough to locate a prefix break without storing prompts."""
+    msgs = body.get("messages") or []
+    sys_txt = "".join(str(m.get("content")) for m in msgs if m.get("role") == "system")
+    raw = json.dumps(body, sort_keys=False)
+    return {"n_messages": len(msgs), "roles": [m.get("role") for m in msgs][:60],
+            "tools": [t.get("function", {}).get("name") for t in body.get("tools") or []],
+            "system_sha": hashlib.sha256(sys_txt.encode()).hexdigest()[:16],
+            "head2k_sha": hashlib.sha256(raw[:2048].encode()).hexdigest()[:16], "body_chars": len(raw),
+            "is_title": not body.get("tools") and len(msgs) <= 2}
 
 
 def model_for(tier: str | None, family: str = "local") -> str:
@@ -59,13 +240,69 @@ def model_for(tier: str | None, family: str = "local") -> str:
     return m.get(tier or "terra", m["terra"])
 
 
+BRIEF_RESULT = "TASKFLOW-BRIEF"
+
+
+def allowed_commands(task: dict) -> list[str]:
+    """Acceptance first (it IS the runnable done-when, §1.5), then the box's own test commands, deduplicated."""
+    out = []
+    from taskflow import verify as _V       # `cd <task repo> && X` -> `X`: the lane is that repo
+    acc = _V.lane_cmd(task.get("acceptance"), task) if task.get("acceptance") else None
+    for c in ([acc] if acc else []) + list(task.get("test_cmds") or []):
+        c = " ".join(str(c).strip().strip("`").split())
+        if c and c not in out:
+            out.append(c)
+    return out
+
+
+def brief_sections(task: dict) -> list[str]:
+    """## WHERE / ## APPROACH / ## NON-GOALS / ## STALE (task-brief layer P3). Empty when there is no brief."""
+    out = []
+    if task.get("where"):
+        blast = task.get("blast_radius") or {}
+        out.append("## WHERE\n" + "\n".join(
+            f"- {w}" + (f"  (blast radius {blast[w.split('::')[-1]]}: change with care)"
+                        if "::" in w and str(blast.get(w.split("::")[-1], "")).upper() in ("HIGH", "CRITICAL") else "")
+            for w in task["where"]))
+    if task.get("approach"):
+        out.append("## APPROACH\n" + str(task["approach"]).strip())
+    if task.get("non_goals"):
+        out.append("## NON-GOALS (doing any of these is drift)\n" + "\n".join(f"- {g}" for g in task["non_goals"]))
+    if task.get("brief_state") == "stale" and task.get("stale"):
+        out.append("## STALE (the brief no longer matches the tree)\n" + "\n".join(f"- {x}" for x in task["stale"]))
+    return out
+
+
+def write_brief_section(task: dict) -> str:
+    """Phase 1 of the two-phase run (§5): self-brief (none/orphaned) or refresh (stale) -- output is constrained."""
+    why = {"stale": "the brief above is STALE: fix the listed items", "orphaned": "the old brief was written for "
+           "different box text"}.get(task.get("brief_state"), "this box has no brief yet")
+    return ("## WRITE BRIEF FIRST\n"
+            f"Phase 1 of 2 ({why}). Do NOT edit any file in this phase. Locate the code with grep/read and, if allowed, "
+            f"`gitnexus query|context <name>` or `{KB_SEARCH} \"<question>\"`. Then finish with ONE line, exactly:\n"
+            f'{BRIEF_RESULT} {{"where": ["epyc-root:path/to/file.py::symbol", ...], "approach": "<=5 lines: the decision", '
+            '"acceptance": "<the runnable form of DONE WHEN, e.g. pytest -q tests/x.py::test_y>", '
+            '"non_goals": ["<what not to change>", ...]}\n'
+            "where = repo-qualified paths that exist (optional ::symbol); acceptance must FAIL on the unchanged tree "
+            "and pass once the box is done; use the DONE WHEN command verbatim when it is one.")
+
+
 def task_suffix(task: dict, excerpts: dict[str, str]) -> str:
-    """The per-task user message. Ordered most-stable-first so even within a task the head caches."""
+    """The per-task user message (everything after the byte-identical stable prefix = opencode system prompt + tool
+    schemas + POLICY). Ordered most-stable-first so even within a task the head caches."""
     b = task["budget"]
     out = [f"## BOX ({task['handoff']}, id {task.get('id') or task['text_sha']})", task["goal"].strip(), ""]
     out.append(f"## DONE WHEN\n{task.get('done_when') or '(not stated: do what the box text asks; the reviewer judges it)'}")
-    allowed = task.get("test_cmds") or []
-    out.append("## ALLOWED COMMANDS\n" + ("\n".join(allowed) if allowed else "(none: do not use bash)"))
+    out.extend(brief_sections(task))
+    if task.get("phase") == "brief":
+        out.append(write_brief_section(task))
+    allowed = allowed_commands(task)
+    out.append("## ALLOWED COMMANDS\n" + ("\n".join(allowed) if allowed else "(no test command for this box)")
+               + "\nRead-only helpers: gitnexus query|context|impact <name>; kb-search (see WRITE BRIEF FIRST).")
+    if task.get("refs"):
+        out.append("## REFERENCE FILES (read-only copies from other repos)\n" + "\n".join(
+            f".taskflow-refs/{r['repo']}" + (f"@{r['rev']}" if r.get("rev") else "") + f"/{r['path']}"
+            for r in task["refs"]))
     out.append("## FORBIDDEN\n" + ", ".join(task["forbidden"][:12]) + " …")
     out.append(f"## LIMITS\n{b['turns']} tool turns max. Be brief.")
     if excerpts:
@@ -95,19 +332,24 @@ def excerpts_for(task: dict, cwd: Path) -> dict[str, str]:
     return out
 
 
-def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 32768,
+def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 65536,
                  out_tokens: int = 4096) -> Path:
     """Per-run opencode config (XDG_CONFIG_HOME/opencode/opencode.json) + the POLICY instructions file.
     Everything that reaches the prompt is task-independent; only bash allow patterns vary (not prompt text)."""
     cfg_dir = run_dir / "xdg-config" / "opencode"
     cfg_dir.mkdir(parents=True, exist_ok=True)
-    pol = run_dir / "POLICY.md"
-    if not pol.exists():
-        pol.write_text(POLICY, encoding="utf-8")
+    pol = policy_file()
     bash = {"*": "deny"}
-    for c in task.get("test_cmds") or []:
+    for ro in READ_ONLY:
+        bash[ro] = "allow"
+    for ro in RETRIEVAL:
+        bash[ro] = "allow"
+    for c in allowed_commands(task):
         bash[c] = "allow"
         bash[c + " *"] = "allow"
+    for base in [k for k, v in bash.items() if v == "allow"]:
+        for tail in PIPE_TAILS:
+            bash[base + tail] = "allow"
     for d in BASH_DENY:
         bash[d] = "deny"
     cfg = {
@@ -116,6 +358,8 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         "autoupdate": False,
         "share": "disabled",
         "instructions": [str(pol)],
+        # H1 (prefix-cache brief 2026-11-20): r2 single tool bursts reached 20-23k tokens and drove compaction
+        "tool_output": {"max_lines": TOOL_MAX_LINES, "max_bytes": TOOL_MAX_BYTES},
         "model": f"{PROVIDER}/{model_id}",
         "provider": {PROVIDER: {
             "npm": "@ai-sdk/openai-compatible",
@@ -127,11 +371,15 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
                 "options": {"chat_template_kwargs": {"enable_thinking": False}, "cache_prompt": True},
             }},
         }},
-        "agent": {AGENT: {
+        # H2: no title side-request (r1: ~6% of computed tokens, evicts the np1 slot); r3: an uncapped side request
+        # (summary/small-model path) decoded 31,896 tokens in 714 s -> summary off too, and the proxy caps max_tokens.
+        "agent": {"title": {"disable": True}, "summary": {"disable": True}, AGENT: {
             "description": "taskflow single-box worker", "mode": "primary",
             "steps": int(task["budget"]["turns"]),
             "permission": {"read": "allow", "edit": "allow", "glob": "allow", "grep": "allow", "list": "allow",
-                           "bash": bash, "shell": bash, "execute": bash, "question": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny",
+                           "bash": bash, "shell": bash, "question": "deny",
+                           # r1 canary: the JS `execute` sandbox ate 13 of 14 steps on syntax errors; image tool is noise
+                           "execute": "deny", "experimental_image_generate": "deny", "opencode_*": "deny", "opencode_worktree_remove": "deny", "opencode_worktree_create": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny",
                            "todowrite": "deny", "todoread": "deny", "skill": "deny",
                            "external_directory": "deny"},
         }},
@@ -147,6 +395,8 @@ def parse_events(path: Path) -> dict:
     texts: list[str] = []
     errors: list[str] = []
     tools: list[str] = []
+    tool_errors: list[str] = []
+    edits = 0
     try:
         lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError:
@@ -173,7 +423,14 @@ def parse_events(path: Path) -> dict:
         elif typ == "text" and part.get("text"):
             texts.append(str(part["text"]))
         elif typ in ("tool_use", "tool"):
-            tools.append(str(part.get("tool") or "?"))
+            name = str(part.get("tool") or "?")
+            tools.append(name)
+            st = part.get("state") or {}
+            out_txt = str(st.get("output") or st.get("error") or "")
+            if st.get("status") == "error" or out_txt.startswith(("SyntaxError", "ReferenceError", "Permission denied")):
+                tool_errors.append(f"{name}: {out_txt[:120]}")
+            if name in ("edit", "write", "patch", "apply_patch"):
+                edits += 1
         elif typ == "error":
             errors.append(json.dumps(ev.get("error") or ev)[:300])
     final = "\n".join(texts)
@@ -186,7 +443,17 @@ def parse_events(path: Path) -> dict:
             except ValueError:
                 result = {"claimed_done": None, "summary": "unparseable TASKFLOW-RESULT", "raw": raw[:300]}
             break
-    return {"usage": usage, "result": result, "text_tail": final[-1500:], "errors": errors, "tools": tools}
+    brief = None
+    for ln in reversed(final.splitlines()):
+        if BRIEF_RESULT in ln:
+            raw = ln.split(BRIEF_RESULT, 1)[1].strip()
+            try:
+                brief = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
+            except ValueError:
+                brief = {"unparseable": raw[:300]}
+            break
+    return {"usage": usage, "result": result, "brief": brief, "text_tail": final[-1500:], "errors": errors, "tools": tools,
+            "tool_errors": tool_errors, "edits": edits}
 
 
 def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "local",
@@ -194,13 +461,18 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
     """Run one worker to completion (or the wall cap). Returns {rc, wall_s, usage, result, model, tier, ...}."""
     run_dir.mkdir(parents=True, exist_ok=True)
     model_id = model_for(task.get("tier"), family)
-    write_config(run_dir, base_url, model_id, task)
+    write_config(run_dir, base_url, model_id, task, ctx=int(task["budget"].get("ctx", 65536)))  # = server per-slot ctx
     prompt = task_suffix(task, excerpts_for(task, cwd))
     (run_dir / "prompt.md").write_text(prompt, encoding="utf-8")
     env = dict(os.environ,
                XDG_CONFIG_HOME=str(run_dir / "xdg-config"), XDG_DATA_HOME=str(run_dir / "xdg-data"),
                XDG_STATE_HOME=str(run_dir / "xdg-state"), XDG_CACHE_HOME=str(run_dir.parent / "xdg-cache"),
-               OPENCODE_DISABLE_AUTOUPDATE="1", OPENCODE_DISABLE_LSP_DOWNLOAD="1", NO_COLOR="1")
+               OPENCODE_DISABLE_AUTOUPDATE="1", PWD=str(cwd),
+               # r6: the epyc-root lane's project plugin (.opencode/plugins/filesystem-containment.ts) blocked worker
+               # writes, and Claude-Code compat would pull the lane's CLAUDE.md/.claude skills -> isolate the worker
+               OPENCODE_DISABLE_PROJECT_CONFIG="1", OPENCODE_CONFIG_PROJECT_DISABLE="1", OPENCODE_DISABLE_CLAUDE_CODE="1",
+                # r2: opencode resolves paths from $PWD, not the process cwd
+               OPENCODE_DISABLE_LSP_DOWNLOAD="1", NO_COLOR="1")
     env.pop("OPENCODE_CONFIG", None)
     argv = [OPENCODE, "run", "--standalone", "--format", "json", "--agent", AGENT,
             "--model", f"{PROVIDER}/{model_id}", "--auto"]
@@ -222,8 +494,28 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
                 proc.kill()
                 proc.wait(15)
     ev = parse_events(out_p)
+    nudged = False
+    if (not timed_out and ev["result"] is None and ev["usage"]["steps"] <= 2
+            and not subprocess.run(["git", "-C", str(cwd), "status", "--porcelain"], capture_output=True, text=True).stdout.strip()):
+        # r1 canary: the 35B narrated a plan without a tool call and opencode ended the run after 1 step.
+        # One continuation in the SAME session (cached prefix), never a fresh thread.
+        nudged = True
+        with out_p.open("ab") as out, err_p.open("ab") as err:
+            proc = subprocess.Popen(argv + ["--continue"], cwd=str(cwd), env=env, stdin=subprocess.PIPE, stdout=out, stderr=err)
+            try:
+                proc.communicate(NUDGE.encode(), timeout=max(60, timeout_s - int(time.time() - t0)))
+            except subprocess.TimeoutExpired:
+                timed_out = True
+                proc.terminate()
+                try:
+                    proc.wait(15)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait(15)
+        ev = parse_events(out_p)
     u = ev["usage"]
     return {"rc": proc.returncode, "timed_out": timed_out, "wall_s": round(time.time() - t0, 1),
             "family": family, "tier": task.get("tier"), "model": model_id, "prompt_chars": len(prompt),
-            "usage": u, "uncached_input": max(0, u["input"] - u["cache_read"]) if u["input"] >= u["cache_read"] else u["input"],
-            "result": ev["result"], "errors": ev["errors"], "tools": ev["tools"], "text_tail": ev["text_tail"]}
+            "usage": u, "uncached_input": u["input"],  # opencode reports input net of cache reads
+            "result": ev["result"], "brief": ev.get("brief"), "errors": ev["errors"], "tools": ev["tools"], "nudged": nudged,
+            "tool_errors": ev["tool_errors"], "edits": ev["edits"], "text_tail": ev["text_tail"]}

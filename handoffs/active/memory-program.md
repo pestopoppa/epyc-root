@@ -6,6 +6,8 @@
 
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/` (NI08 record-design review). Historical NI07 integration source is preserved by APP commit `b87998e3b5a0cbb9da36c8db9fd2fcfbb69aba0d`; the completed task no longer depends on its throwaway checkout. M-12k scratch roots: `/mnt/raid0/llm/tmp/m12k-gpu-20261119T1500Z/` (GPU rework row, predeclared rule, smoke evidence) and `/mnt/raid0/llm/tmp/m12k-20261119T0208Z/` (original spec).
 **Status**: active — **CLEARED FOR SEEDING (M-18 full-surface audit, 2026-07-28; semantic gate
+**Row**: EVL-10
+**Domain**: routing-and-optimization
 verified live 2026-07-29).** Write path FIXED and proven self-healing in production; reseed DONE;
 standing integrity gate (M-17) blocks AutoPilot on a broken store and runs in `health_check.sh`.
 The degenerate-vector guarantee extends to **every** store via `FAISSEmbeddingStore.add()`
@@ -148,7 +150,7 @@ failure caught in amber.
         (my own smoke test caught the unpaired version writing vectors into the live sessions
         dir). Smoke-tested end-to-end with MockTeacher, zero inference: distill → dedup → store →
         FAISS-indexed, no live-tree side effects.
-  - [ ] M-11a — **First re-distil (INFERENCE — the teacher LLM writes the skills). DO NOT run
+  - [ ] **M-11a** M-11a — **First re-distil (INFERENCE — the teacher LLM writes the skills). DO NOT run
         early; DO NOT forget to run it when ready.** Operator-directed sequence (2026-07-28):
 
         **seed / run live traffic first → let real trajectories accumulate → then let autopilot
@@ -414,7 +416,7 @@ failure caught in amber.
         NextPLAID services can no longer disappear silently. **44 focused stack tests** passed,
         with Ruff and `git diff --check` clean. This closes the health-observability residual; it
         does not change the production lineup or the episodic-store acceptance result.
-- [ ] M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
+- [ ] **M-12** M-12 — Run the memory-on vs memory-off A/B that **has never existed** in either repo. This is
       the only thing that will answer "does episodic retrieval help" with evidence.
     - 2026-11-11 EVL-10 GPU judge leg (row evl10-judge-gpu-20261111, filed pass, verdict_by agent): judge Qwen3.8-27B-Q8_0+DFlash2 recipe research@48c43a547 re-judged the saved BEAM arms. Macro means: full 0.591 (399/400 judged), rag 0.590 (397/400), trace 0.599 (400/400). 4 unparseable verdicts, no futility stop; phase-1 gate 5/5. The arms do not separate (spread 0.008). This is a judge-instrument leg only and does NOT satisfy M-12b: the saved arms lack matched-prompt, retrieval-budget and digest receipts, and there is a same-family reader/judge caveat. It is never mixed with the Gemma-4-26B verdicts. Evidence: /mnt/raid0/llm/tmp/evl10-judge-gpu-20261111/out/result.json. [no-belief: row verdict filed by agent]
   - **M-12 protocol (filed 2026-09-07 via research-intake; the run itself stays compute-gated).**
@@ -1096,7 +1098,7 @@ non-executable format.
       says the code dump only stays cheap when follow-ups add a line or two, and "a session where
       every query does heavy multi-step work is the case to watch" — which is our regime. Rather than
       replicate a synthetic n=1 result, measure it on real traffic and let the cost/benefit decide.
-  - [ ] D-c1 — **Measure from real workloads, not a synthetic arm.** Instrument resumed sessions to
+  - [ ] **D-c1** D-c1 — **Measure from real workloads, not a synthetic arm.** Instrument resumed sessions to
         record (a) resume-preamble size with the current prose summary, (b) what a code-log preamble
         *would* have cost, and (c) re-derivation work observed after a resume (repeat greps/reads for
         state that was dropped). T3's hard-workflow/tool-use/REPL probe slice is the natural carrier —
@@ -1421,6 +1423,11 @@ Operator-approved [P2](../../research/intake-stage3-plan-2026-10-03-decision-too
 
 ## Track: unified-trace-memory-service
 <!-- gate: none -->
+
+### Backlog
+- [ ] **UTM-B2-SEARCH-CONTROLS** [non-inference] Extend ms.search with an optional time range applied before scoring, a stateful exclude-seen-sessions set, count-only and group-by-session modes, limit/offset and a snippet clip, and ms.expand with a window of N neighbouring events of the same session, keeping default behaviour byte-identical with the flags off (intake-2737, intake-2743).
+      · done when: unit tests in the trace-navigation suites cover each parameter (range filters before ranking, seen-set exclusion, count_only returns only an integer, window clipped at session boundaries, stable offset continuation); defaults match the pre-change golden output; existing suites pass
+      · gate: none
 
 > Folded from `handoffs/active/unified-trace-memory-service.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F24, route 1a, operator D1/D5; retired row RTG-41 → EVL-10). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 

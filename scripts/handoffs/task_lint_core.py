@@ -117,9 +117,9 @@ def path_exists(p):
 
 # THE box-id regex (handoff standard §2.2; Fable review S2, 2026-11-19), shared by task_lint, box_index,
 # index_state and backlog_row_check. The id is the FIRST token inside the leading bold span, delimited by a space,
-# `—`, `:`, `(` or the closing `**`, with an optional leading `❄`: `**KPF-18.3 — text**`, `**AKX-ALL-5 (C1): …**`,
+# `—`, `:`, `(` or the closing `**`, with optional leading decorative non-ASCII symbols (`❄`, `★★`, `☆`, emoji, `•`; stripped before matching): `**KPF-18.3 — text**`, `**AKX-ALL-5 (C1): …**`,
 # `**KPF-17: tests.**`, `**B5**`. The token must carry a digit or a hyphen, so a bold English word is never an id.
-BODY_ID = re.compile(r'^\*\*\s*(?:❄\s*)?([A-Za-z0-9][A-Za-z0-9._-]*?)\.?(?=\*\*|\s|—|–|:|\()')
+BODY_ID = re.compile(r'^\*\*\s*(?:[^\x00-\x7f\w]+\s*)*([A-Za-z0-9][A-Za-z0-9._-]*?)\.?(?=\*\*|\s|—|–|:|\()')
 HEAD_PREFIX = re.compile(r'^\s*(?:[-*+]|\d+[.)]) \[[ xX~>!]\]\s*')
 
 
@@ -130,6 +130,31 @@ def body_id(body):
         return None
     tok = m.group(1).rstrip('.-')
     return tok if tok and re.search(r'[\d-]', tok) and not tok.startswith('-') else None
+
+
+_ID_SHAPE = re.compile(r'^[A-Z][A-Z0-9]*(?:\d[a-z])?(?:[-_.][A-Za-z0-9]+)*$')   # E3b / SC84a / KPF-26.1h are IDs
+
+
+def suspect_id(bid):
+    """True when an extracted head id does not look like a box ID (a title word such as "Sub-quarter" or a plain
+    number such as "1"). An ID is an UPPER-CASE-led token of letters, digits, dots and hyphens carrying at least one
+    hyphen OR one digit: `B5`, `KPF-18.3`, and digit-free `VB-TASKFLOW-BRIEF-WIRE` are all valid IDs. A suspect box
+    gets one via `handoff_box.py assign-id`; a valid one is never renamed."""
+    return bool(bid) and not (_ID_SHAPE.match(bid) and re.search(r'[\d-]', bid))
+
+
+_BOLD_HEAD = re.compile(r'^\*\*(.*?)\*\*')
+
+
+def head_has_valid_id(line):
+    """True when ANY token of the line's leading bold span has a valid ID shape (so assign-id must not rename it)."""
+    m = HEAD_PREFIX.match(line or '')
+    if not m:
+        return False
+    b = _BOLD_HEAD.match(line[m.end():].strip())
+    if not b:
+        return False
+    return any(t and not suspect_id(t) for t in (x.strip('.:,;()\u2744\u2014\u2013') for x in b.group(1).split()))
 
 
 def head_id(line):

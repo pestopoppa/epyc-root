@@ -1,4 +1,6 @@
 # AutoKernel — the standing aggregate candidate (champion)
+**Row**: INF-65
+**Domain**: inference-research
 
 **Model**: gpt-6.1-terra
 **Effort**: high
@@ -20,6 +22,72 @@
 ## Track: autokernel-champion-aggregate
 <!-- gate: INF-06#autokernel-research-loop, INF-50#dflash2-block-drafter-experimental-build, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
+### Backlog
+- [ ] **MMID-HELPER-N10** [non-inference] Fold upstream f1793c1c4 (#27978, fast mm_ids_helper for any n_expert_used, adds the n_used=10 case) as one commit with its test onto a fresh-from-champion llama.cpp-experimental branch for the next composite, because C14 sends Q38FN's top-10 MoE through the generic per-token helper on the MI210 (intake-2719).
+      · done when: the commit exists with MUL_MAT_ID test cases (n_expert 512, n_used 10, n_tokens 16/64/512); the CPU build passes them; the HIP build shows the mm_ids_helper<10> symbol; the composite's ROCm0 test-backend-ops fold slice covers MUL_MAT_ID with no new failures
+      · gate: none        · inputs: `/mnt/raid0/llm/tmp/gdn-share-mi210-20261106/out/prof/Q38FN/pp2048`
+      · code @ C14 eee3da838 (/mnt/raid0/llm/worktrees/llama-c14-pin-20261119): `ggml/src/ggml-cuda/mmid.cu` L143-171 dispatches n_expert_used 2/4/6/8/16/32 only and sends 10 to the generic per-token loop L41-60; callers `mmq.cu` L226 and `mmf.cu` L87; upstream f1793c1c4 touches only mmid.cu (+13/-2: mm_ids_pow2 padding plus any-n dispatch) and `git apply --check` is clean on C14 (2026-11-20, no tree change)
+      · build/test: one commit on a fresh-from-champion llama.cpp-experimental branch carrying the cherry-picked hunk and new test_mul_mat_id cases (`tests/test-backend-ops.cpp` near L6557: Q8_0 and IQ4_XS weights, n_expert 512, n_used 10, n_tokens 16/64/512/2048); CPU build passes them; HIP build shows mm_ids_helper<10> via nm/strings; composite fold slice ROCm0 MUL_MAT_ID shows no new failures; folded into the next champion composite per the forward-port rule (one feature per commit, test travels with it)
+      · expected gain: Q38FN MI210 hybrid pp2048: mm_ids_helper<0> is 7.33% of GPU kernel time (141 calls x 1005 us = 141.7 of 1932.7 ms; gdn-share-mi210-20261106, C7r mmid.cu identical to C14); wave64 fast path walks 4 tokens per iteration -> ~250-350 us per call -> ~92-106 ms per 2048-token ubatch, ~5% of GPU kernel time (inferred); upstream +11.4% PP on warp32; no decode, 27B, A3B or CPU effect; confidence high that the gap is real, medium on size
+- [x] **PFXC-A1** [inference] Checkpoint policy for agentic tool loops on hybrid models (prefix-cache brief 2026-11-20, `/mnt/raid0/llm/tmp/prefix-cache-brief-20261120/BRIEF-autokernel.md` F4/A1): `checkpoint_min_step` 8192 -> 1024 by default (`-cms` still overrides), checkpoint boundaries at tool-result starts as well as user starts, and a checkpoint at the end of every generation (`--checkpoint-after-gen`, default on), so `cache_n` follows the true common prefix instead of snapping to the first-user checkpoint. model: Qwen3.6-35B-A3B-MTP Q8_0 (hybrid gated-DeltaNet + attention), C14 GPU recipe np1 ctx 32768 MTP D=2.
+      · code: fork branch `llama.cpp-experimental-pfxc-20261120` @ `62e955b9b` = C14 `eee3da838` + 1 commit (common/arg.cpp, common/chat.h, common/common.h, tools/server/server-context.cpp, server-task.{cpp,h}, test tools/server/tests/unit/test_ctx_checkpoint_pfxc.py); experimental only, production v10 untouched
+      · expected gain: +8-12 hit-rate points on the taskflow trace (brief A1: F4(b) partial-reuse losses ~40-60k tok/run in r1 plus F4(a) ~12k tok/run re-prefill of generated turns); cost = one recurrent-state copy per checkpoint (measure MiB/checkpoint in the row)
+      · falsification: the taskflow-like replay on the PFXC store gains < +3 hit-rate points over C14 at equal requests, OR resumed-state logits differ from fresh prefill (|dlogprob| >= 1e-3 or a different greedy token) -> A1 is wrong or unsafe
+      · gates: build row `ak-pfxc-build-20261120` BUILD_TESTS_PASS (CPU LFM2.5 hybrid T1 resumed==fresh, T2 post-gen reuse); GPU row `ak-pfxc-probe-gpu-20261120` P1 + taskflow-like replay; correctness unit on the A3B (resumed vs fresh top-5 logprobs) must pass before any hit-rate claim; fold into a champion composite only by operator decision
+      · done when: P1 PASS and the replay shows >= +3 hit-rate points with no correctness failure (row filed); stop-on-futility: build fail, correctness fail, or < +3 pt. est 3000 s build + 2400 s GPU
+      · ✅ 2026-11-20 row `ak-pfxc-probe-gpu-20261120-r2` filed pass (KEEP) 2026-11-20: hit 74.41% C14 -> 77.41% PFXC (+3.00 pt, at the +3 threshold), prefill sum 38,033 -> 34,743 ms (0.914), P1 PASS, correctness PASS (same first token; resumed-vs-fresh 0.773 vs C14 floor 1.077); fork 62e955b9b. Below the brief's +8-12 pt estimate (synthetic trace, one run per arm). [no-belief: row verdict filed by agent]
+- [ ] **PFXC-A2** [inference] Shared system+tools prefix at task start (brief F3/A2): when no prompt-cache entry passes `f_keep >= 0.25`, copy-load (restore without consuming) the entry with the longest absolute LCP >= `--cache-ram-copy-min` (default 512), and never FIFO-evict the oldest (prefix-anchor) checkpoint, so a new task reuses the cached system+tools prefix instead of `cache_n = 0`. Justification of keeping the 0.25 rule itself: a plain load MOVES the entry into the slot and truncates it to the LCP, destroying a 10-30k conversation for a 1-3k gain; copy-load keeps that intent. model: Qwen3.6-35B-A3B-MTP Q8_0, C14 GPU recipe.
+      · code: same commit `62e955b9b` (server_prompt_cache::load copy path, create_checkpoint anchor-keeping eviction)
+      · expected gain: +2-3 hit-rate points (brief: ~20k tok/run = ~6% of r1 computed tokens; every task start and compaction restart)
+      · falsification: P2 replay (20k prompt A, then B sharing only the first ~1.1k tokens) shows `cache_n` = 0 on the PFXC store, or copy-loaded logits differ from fresh prefill
+      · gates: build row T3 (CPU LFM2.5: copy-load logged, cache_n > 0, logits == fresh); GPU row P2 + correctness unit
+      · done when: P2 PASS (cache_n >= 0.9 x shared prefix) with correctness PASS (row filed); stop-on-futility: cache_n = 0 or correctness fail. est 600 s GPU (inside the probe row)
+      · 2026-11-20 note: row `ak-pfxc-probe-gpu-20261120-r2` filed pass (KEEP) 2026-11-20 P2 PASS but non-discriminating (C14 cache_n 3404 = PFXC 3404); the F3 cache_n=0 failure needs a real taskflow trace (title request between tasks, entry > 4x the shared prefix) to show A2; stays open. Build row ak-pfxc-build-20261120 inconclusive (LFM2 has no chat spans). [no-belief: row verdict filed by agent]
+- [ ] **PFXC-A3** [non-inference] `--cache-ram` sizing for 10+ concurrent worktrees (brief A3): entries are 330-1005 MiB (hybrid state + 32k f16 KV), 8 GiB holds ~8-12 conversations; r2 logged 41 `making room for prompt cache entry` evictions. Record per-entry MiB from the probe row's server log and write the recipe sizing (cache-ram MiB = entries x p95 entry size) plus the np2 VRAM budget note (37.9 GiB peak at np1) into the A3B recipe notes. model: Qwen3.6-35B-A3B-MTP Q8_0.
+      · expected gain: 0-3 hit-rate points (only where evictions hit a live conversation; zero kernel work)
+      · falsification: the probe replay logs zero evictions at 8192 MiB for a 10-task trace -> sizing is not a factor
+      · gates: probe row server log (entry sizes, eviction count); no build
+      · done when: sizing numbers and the recommendation are written in the recipe notes with the row id. est 0 s (reads the probe row)
+      · 2026-11-20 note: row `ak-pfxc-probe-gpu-20261120-r2` filed pass (KEEP) 2026-11-20 logged 0 prompt-cache evictions at 8192 MiB over 8 tasks (VRAM 37.7 GiB); eviction pressure only shows at the 10+ worktree scale seen in tf1 r2 (41 evictions). Recipe sizing note still to write. [no-belief: row verdict filed by agent]
+- [ ] **PFXC-A4** [non-inference] Drop `--cache-reuse 256` from recipe `qwen3.6-35b-a3b-q8-gpu-mtp` (brief F2/A4): hybrid memory `get_can_shift()` = false, the server disables it at load (`cache_reuse is not supported by this context, it will be disabled`); `--slot-save-path` is not useful (fresh worktree per task). model: Qwen3.6-35B-A3B-MTP Q8_0.
+      · expected gain: 0 hit-rate points (cosmetic; removes a misleading flag)
+      · falsification: P4 shows the C14 server does NOT print the disable line -> the flag is live and must stay
+      · gates: P4 (probe row C14 arm log); recipe edit is a registry change owned by the stack session (prepare the diff, owner applies)
+      · done when: P4 PASS and the recipe diff is prepared/handed to the registry owner. est 0 s
+      · 2026-11-20 note: P4 PASS (row above). The `--cache-reuse 256` flag is NOT in the AK canonical recipe (epyc-inference-research artifacts/serving-recipes/qwen3.6-35b-a3b-q8-gpu-mtp.json has no cache-reuse); it comes from the Pipeline taskflow row CONFIG.json ("added": "... --cache-reuse 256"), so the drop is a Pipeline-side edit, handed over in the autokernel report. [no-belief: row verdict filed by agent]
+- [x] **PFXC-P1** [inference] Probe for PFXC-A1: replay request pairs [prompt_k, prompt_k+1] from 3 taskflow-like conversations on C14 vs the PFXC store at `LLAMA_LOG_VERBOSITY=10`. model: Qwen3.6-35B-A3B-MTP Q8_0, MI210, row `ak-pfxc-probe-gpu-20261120`.
+      · done when: row `ak-pfxc-probe-gpu-20261120` (or its successor) is filed with this probe's verdict per the stop rule below
+      · expected gain: measures A1 (+8-12 pt claim)
+      · falsification / stop rule: PASS iff on PFXC `cache_n` >= true LCP - 8 for >= 80% of follow-up requests, TRC shows `restored context checkpoint`, never `forcing full prompt re-processing` on a follow-up; FAIL otherwise. est 600 s
+      · ✅ 2026-11-20 row `ak-pfxc-probe-gpu-20261120-r2` filed pass (KEEP) 2026-11-20: PFXC cache_n within 8 of true LCP on 37/40 follow-ups (92.5%), 0 forced full re-processing; C14 35/40 (87.5%). [no-belief: row verdict filed by agent]
+- [x] **PFXC-P2** [inference] Probe for PFXC-A2: prompt A (~20k tokens), unrelated request, prompt B sharing only the system+tools prefix (~1.1-2.5k tokens) with A; C14 vs PFXC. model: Qwen3.6-35B-A3B-MTP Q8_0, row `ak-pfxc-probe-gpu-20261120`.
+      · done when: row `ak-pfxc-probe-gpu-20261120` (or its successor) is filed with this probe's verdict per the stop rule below
+      · falsification / stop rule: PASS iff PFXC `cache_n` >= 0.9 x shared prefix (C14 expected 0) and B's top-5 logprobs equal the fresh-prefill ones (|d| < 1e-3 relative to the A3B A/A noise floor measured in-row). est 300 s
+      · ✅ 2026-11-20 row `ak-pfxc-probe-gpu-20261120-r2` filed pass (KEEP) 2026-11-20: PASS (cache_n 3404 of shared 3410) but non-discriminating, C14 also 3404 (F3 not reproduced on this trace). [no-belief: row verdict filed by agent]
+- [ ] **PFXC-P3** [inference] Probe for brief F4(c): replay the r1 t01 step1 -> step2 pair verbatim and read the slot-selection line (`selected slot by LCP` with sim >= 0.3 -> the r1 miss was opencode's prompt layout, harness-side; else server-side). model: Qwen3.6-35B-A3B-MTP Q8_0.
+      · done when: row `ak-pfxc-probe-gpu-20261120` (or its successor) is filed with this probe's verdict per the stop rule below
+      · expected gain: up to +5 hit-rate points if server-side (r1 first-step full misses 62.7k of 1.128M tokens); 0 if harness-side
+      · gates: needs the exact request bodies, which r1 did not log (HARNESS-FIXES H5, Meter proxy body logging, landed 3a420fa70 for future runs). Without the bodies the replay cannot be verbatim -> NOT_JUDGEABLE in the probe row; re-run on the first taskflow run with H5 logs
+      · falsification / stop rule: verbatim pair replayed -> LCP-selected (harness-side) or LRU-selected (server-side); missing bodies -> NOT_JUDGEABLE. est 120 s
+      · 2026-11-20 note: row `ak-pfxc-probe-gpu-20261120-r2` filed pass (KEEP) 2026-11-20 P3 NOT_JUDGEABLE (r1 request bodies not logged); rerun on the first taskflow run with H5 body logs. [no-belief: row verdict filed by agent]
+- [ ] **PFXC-R8-REPLAY** [inference] Replay the real taskflow canary r8 trace (first run with full request bodies: /mnt/raid0/llm/tmp/taskflow-stage1-canary-r8-20261120/out/bodies/<seq>-w<slot>.json.gz, order/slot from requests.jsonl body_ref/t0/slot) in order per slot on C14 vs the pfxc store kernels/builds/gpu-20261120-62e955b9b-pfxc, Qwen3.6-35B-A3B-MTP Q8_0, C14 recipe.
+      · question: does PFXC A1+A2 raise prefix-cache hit rate on real traffic by >= +3 pt (brief estimate +8-12) and cut summed prefill ms; does A2 (copy-load past f_keep >= 0.25) fire on the shared system+tools prefix (F3 cache_n=0 cases)?
+      · gate: Pipeline pings that r8 has run; synthetic probe r2 got +3.0 pt / prefill 0.914x and could not exercise A2
+      · done when: hit rate, summed prefill ms, count of F3-shape requests and A2 copy-loads per arm filed; PFXC-A2 and PFXC-P3 resolved from it
+      · region: gpu-q3 · rank 30 · est from r2 rate (59 requests ~ 1 window) x r8 request count + 25 %
+      · trace: run on canary r7d instead of r8 (Pipeline: r7d is the first trace with full request bodies; 193 requests, /mnt/raid0/llm/tmp/taskflow-stage1-canary-r7d-20261120/out), canary recipe np2 ctx 524288, no --cache-reuse; ABBA arms; row `ak-pfxc-r7d-replay-gpu-20261120`
+      · stop rule: stop-on-answer when ABBA rep 1 is replayed (KEEP iff hit +>=3 pt, prefill ms down and A2 fires on >= 1 F3-shape request; KEEP_A1_ONLY if A2 never fires); stop-on-futility on missing store/trace, own VRAM < 20 GiB or a grant without 184-191; gate-class = futility-only
+- [x] **PFXC-P4** [inference] Probe for brief F2: the C14 server with `--cache-reuse 256` on this GGUF prints `cache_reuse is not supported by this context, it will be disabled`. model: Qwen3.6-35B-A3B-MTP Q8_0, row `ak-pfxc-probe-gpu-20261120` (C14 arm log).
+      · done when: row `ak-pfxc-probe-gpu-20261120` (or its successor) is filed with this probe's verdict per the stop rule below
+      · falsification / stop rule: PASS iff the line is present in the C14 arm server log; FAIL if absent. est 0 s extra
+      · ✅ 2026-11-20 row `ak-pfxc-probe-gpu-20261120-r2` filed pass (KEEP) 2026-11-20: PASS, C14 log has "cache_reuse is not supported by this context, it will be disabled". [no-belief: row verdict filed by agent]
+- [ ] **PFXC-TOOLPARSE** [non-inference] Strict Qwen XML tool-call arguments (Pipeline session 2026-11-20; correctness on a served-model path, so it ships with the next composite): Qwen3.6-35B-A3B on C14 GPU (--jinja, GGUF template) sometimes emits nested malformed markup inside an argument value (`hello</parameter></function><parameter=path>...`) and the parser copied it verbatim. Fix on fork `llama.cpp-experimental-pfxc-20261120` @ `05c7c4ebf` (one commit): after a final parse `common_chat_validate_tool_markup()` splits an unambiguous `A</parameter>[</function>]<parameter=K>B` value into its arguments, otherwise throws "The model produced a malformed tool call" (a server error the harness retries); non-JSON final arguments that still carry markup are rejected too. Streaming partial parses unchanged. model: Qwen3.6-35B-A3B-MTP Q8_0 (served GGUF template, added as models/templates/Qwen3.6-35B-A3B.jinja).
+      · done when: tests/test-chat-toolparse-strict passes on the CPU build (validator cases + end-to-end on the served template, Qwen3.5-4B, Qwen3-Coder) and test-chat / test-chat-parse-truncation still pass (DONE locally 2026-11-20 on a region-locked q2 CPU build of 05c7c4ebf: 0 failures, test-chat rc 0, truncation rc 0); then the commit is folded into the next champion composite with its test (forward-port rule)
+      · expected gain: 0 hit-rate points; removes silent garbage tool arguments (correctness), each malformed call becomes a retryable error
+      · falsification: any variant of the sample yields a tool call whose string argument still contains `<parameter=`, `</function>`, `</parameter>` or `<tool_call>`; or a well-formed call changes
+      · gates: CPU unit tests above; composite fold row ROCm/CPU test slices; stop-on-futility: a well-formed call breaks. est 0 s GPU
+      · error contract (binding, coordinator 2026-11-20; fork `947d1007d`): non-streaming = HTTP 500 with `{"error":{"code":500,"type":"tool_call_parse_error","message":"<reason>","retryable":true,"raw_excerpt":"<first 256 chars of the offending tool-call text>"}}` (server_error envelope, distinct type); streaming = HTTP 200 already sent, so ONE SSE event `data: {"error":{...same object...}}` then the stream closes with NO `data: [DONE]`, and tool calls are buffered until the final parse so no partial tool_calls delta for the bad call is emitted first; recoverable (split) cases never fire it. Edge: if the first result of a stream already fails (before the 200 goes out), upstream's first-error-is-non-stream rule applies and the client gets the non-streaming envelope. Tests: tools/server/tests/unit/test_tool_parse_strict.py (assistant-prefill forced output through the served template; both paths x unrecoverable + observed sample, good call never fires): 5 passed on a region-locked q2 CPU build with LFM2.5-1.2B, 2026-11-20
+
 > Folded from the body of `handoffs/active/autokernel-champion-aggregate.md` (row INF-65), from its first `##` section on, @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
 
@@ -34,7 +102,9 @@ OP-ALPHAWIN), quality fold rule (PPL/KLD as for V11 folds) before any keep folds
 
 > **Ownership transfer 2026-11-10 (operator decision: "AutoKernel takes all").** main-inf22 is closed; its C8 fold ledger boxes CH-19, CH-32, CH-33, CH-34, CH-35, CH-36, CH-37, C8-1-H17 and DF2-BLOCK16 are now owned by **autokernel**. Any keep recorded from these boxes goes to the C11 fold, not C10.
 
-- [ ] **CH-H15-ALIAS: champion correctness blocker. The AK-ASM-H15 conv fusion races on multi-sequence ubatches.** The next composite must carry fix `41918e3a6` (fork `llama.cpp-experimental-h15-alias-20261120`, forked from C14 `eee3da838`; same hunk as dtree `f1d8f383f`) or ship with `GGML_CUDA_AK_H15=0`. Cause: the fused kernel writes silu/l2q/l2k while other blocks still read `st`/`qkv`. The allocator may place those outputs over those inputs, and on 2- and 3-sequence ubatches it did (silu == st). That corrupts the conv state. It hits any change in n_seqs between ubatches and np>1 serving, not only AK-DTREE trees. The C14 store's libggml-hip has H15; production v10 (`ffc1bac82`) does not. Evidence: the 27B T9 oracle failure (`ak-dtree-27b-gpu-20261119`, 9/48, 2.75 nat; 0/128 after the fix). The 0.8B GPU repro is clean with H15=0 and still fails with wvsk, graphs or graph reuse off (speculative-decoding.md DTREE-P2 notes). Done when: the `test-multiseq-ubatch` GPU run passes on the fix build and fails on the unfixed C14 store libs (log `/mnt/raid0/llm/tmp/h15-c14-verify.log`; queued behind the yarn host row), a 27B np=2 decode A/B shows no speed regression from the fallback, and the composite manifest lists the fix as a presence gate. model: Qwen3.8-27B Q8_0, Qwen3.6-35B-A3B (GDN hybrids). Owner: autokernel.
+- [ ] **CH-H15-ALIAS: champion correctness blocker. The AK-ASM-H15 conv fusion races on multi-sequence ubatches.** The next composite must carry fix `41918e3a6` (fork `llama.cpp-experimental-h15-alias-20261120`, forked from C14 `eee3da838`; same hunk as dtree `f1d8f383f`) or ship with `GGML_CUDA_AK_H15=0`. Cause: the fused kernel writes silu/l2q/l2k while other blocks still read `st`/`qkv`. The allocator may place those outputs over those inputs, and on 2- and 3-sequence ubatches it did (silu == st). That corrupts the conv state. It hits any change in n_seqs between ubatches and np>1 serving, not only AK-DTREE trees. The C14 store's libggml-hip has H15; production v10 (`ffc1bac82`) does not. Evidence: the 27B T9 oracle failure (`ak-dtree-27b-gpu-20261119`, 9/48, 2.75 nat; 0/128 after the fix). The 0.8B GPU repro is clean with H15=0 and still fails with wvsk, graphs or graph reuse off (speculative-decoding.md DTREE-P2 notes). Done when: ~~the `test-multiseq-ubatch` GPU run passes on the fix build and fails on the unfixed C14 store libs~~ (DONE 2026-11-20, see result below), a 27B np=2 decode A/B shows no speed regression from the fallback, and the composite manifest lists the fix as a presence gate. model: Qwen3.8-27B Q8_0, Qwen3.6-35B-A3B (GDN hybrids). Owner: autokernel.
+  - 2026-11-20: **test gate PASSED** (`/mnt/raid0/llm/tmp/h15-c14-verify.log`). Fix build `41918e3a6` (`--version` 10598 (41918e3a6), linkage 8/8 OK): `test-multiseq-ubatch` passes on CPU and on GPU, worst max |logit diff| <= 0.58 in all four schedules. Unfixed C14 store libs, same test binary, GPU: np2 passes (0.58) but the **mixed n_seqs schedule FAILS, up to 13.8**, so the trigger is a change in sequence count between ubatches. Remaining: the 27B np=2 speed A/B for the fallback and the composite manifest presence gate. [no-belief: test result, not a measurement row]
+  - 2026-11-20 C14 verify finished (09:14-09:38Z, log `/mnt/raid0/llm/tmp/h15-c14-verify.log`, 0.8B Q8_0 `test-multiseq-ubatch`, GPU): fix build (`41918e3a6`, worktree llama-h15-20261120) np2 0.584, np2-chunks 0.548, mixed 0.510, mixed-chunks 0.520 max logit diff (tol 1.50), `test-multiseq-ubatch: OK`; the UNFIXED C14 store libs (`gpu-20261118-eee3da838-c14`) fail `mixed` (seq 0 pos 27-35 differ from single-sequence replay, max |d| 1.67 to 13.83) with `n_fail == 0` assertion. The bug reproduces on the champion store and the fix cures it. Remaining on this box: the 27B np=2 decode A/B and the composite presence gate. [belief: cc]
 
 - [ ] **C8-1-H17 — AK-ASM-H17 profile, then the long-context attention decode/verify efficiency fix.** model: Qwen3.8-27B Q8_0 (+ DFlash2 drafter), q8_0 KV. Goal: raise HBM utilisation of the KV-read path (n_q=1 stock FA split/occupancy at n_kv >= 32k; the `gv_fattn_kernel` split heuristic, 2*nsm/n_head_kv = 52 splits, 1-WG/CU launch bound, `fattn-gqa-verify.cu:607-623`). Expected if attention reaches 40% of HBM: +16% @32k, +55% @128k, ~2.4x @512k no-draft decode; +25-55% DFlash2 at 50-150k agentic contexts [inferred]. Cost: S (profile) + M (fix).
   - *(2026-11-10, operator decision "AutoKernel takes all")* Owner: **autokernel**; transferred from main-inf22, which was closed. Triage and blockers above stand. [no-belief: ownership note]
@@ -1235,18 +1305,6 @@ the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's
       opt-in (or CUDA kernel + test-backend-ops case), INF-64 fused decode opt-in, `ggml-alloc.c` stray
       define; re-run greedy bit-identity + `test-backend-ops -b CPU`; record the PROD-2 reversal in the
       INF-70 ledger; **push** `inf70/champion` (private clone today).
-- [x] **FOLD-1 (champion owner)** ✅ 2026-09-08: loop stopped at the boundary (verified dead), pre-fold GPU tip
-      tagged `ak/pre-fold-gpu-tip-20260908` (pushed), fold candidate `ef81196d5` built at
-      `/mnt/raid0/llm/tmp/build-fold-ef81196d5`; `verify_ggml_linkage.sh` PASS.
-- [x] **FOLD-2 gates, SAME merged tree** ✅ 2026-09-08 — all PASS with real tallies on `ef81196d5`:
-      G1 `test-backend-ops -o SSM_SCAN -b ROCm0` 7/7 OK (incl. K=4/K=3 rollback), G2 MUL_MAT 1140/1140 OK
-      (326 unsupported type combos), G3 GATED_DELTA_NET 39/39, G4 dispatch **observed** (`llama-bench -v` +
-      `GGML_SCHED_DEBUG=2`: 27,516 nodes, SSM_SCAN=0, SSM_CONV 576 + GATED_DELTA_NET 576 on ROCm0, CPU holds only
-      12 GET_ROWS), G5 tg128 vs gen-021 **+0.052%** (20 pairs, floor 0.638%, not decisive). Result file
-      `/mnt/raid0/llm/tmp/fold-window-20260908/fold2-result.json`. NOTE: the first G1-G4 run reported PASS with
-      **OK=0** (ANSI-coloured verdicts defeated the `\bOK\b` match; `llama-bench` swallowed scheduler logs
-      without `-v`) — structural guards added: a gate PASSES only with ≥1 case run AND an agreeing `N/N tests
-      passed` tally, and the graph check only with a plausible node count AND the expected recurrent ops present.
 - [x] **FOLD-3** ✅ 2026-09-08 — **fast-forward + push, NOT a relaunch** (operator directive: no relaunch):
       `ak/champion/llama-cpp-0db32c06e3e5` `bff30cebe` → **`ef81196d5`** (`--ff-only`, tip == candidate) at
       11:16:49Z, lineage verified (`bff30cebe`, `445e93a8`, `9c4f73e29`, production `0db32c06e` all ancestors),
@@ -1256,12 +1314,6 @@ the CPU side must be fixed first; PROD-2 was operator-deferred 09-06 and today's
 
 ##### CONSOLIDATION COMPLETE — `ef81196d5`, 2026-09-08
 
-- [x] **FOLD-4 — consolidation is CLOSED; there are no CPU keeps pending** ✅ 2026-09-08. INF-70 reported
-      its final RETEST-1 results at ~12:10Z with **no keeps to fold**. The consolidated champion is
-      **`ef81196d5`** on `ak/champion/llama-cpp-0db32c06e3e5` = GPU tip `bff30cebe` + CPU champion3
-      `9c4f73e29`, FOLD-2 G1–G5 all PASS. The operator's standing condition — *no kernel research until a
-      FULLY consolidated champion* — is **satisfied**. Loop relaunch remains a **separate operator go**;
-      nothing on this page launches or schedules it.
 
 ###### Inherited v6-fork candidates — from INF-32, archived 2026-09-14
 
@@ -1286,21 +1338,6 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
       `f1-paged-attn` @ `112022a0b` (iswa graph block-table wiring `ea50522a7`; opt-in, off-by-default,
       bit-exact on plain Qwen3.6-35B and SWA gemma-4-31B) but was never folded. It is build-10079-era
       against a 10241-class champion, so folding means a re-base and a re-measure at the current floor.
-- [x] **V6R-4 — parallel model load (repack + reader), lost in the v6 bundled revert.** ✅ 2026-09-25 (main-ak-seat)
-      The OpenMP repack parallelization (`52ddd3200`, 2025-12-21; upstream PR #18239 closed unmerged) left the
-      lineage when v6 Stage 1a `814e81782` was reverted as a whole (`358f0c748`); full record in
-      `docs/reference/agent-config/INCIDENT_LOG.md` → INC-20260925. Re-ported onto the v10-lineage champion as
-      `25132e042` (test restored and extended, 150/150 bit-exact) plus a parallel pread reader run as an OpenMP team,
-      `90c12df42` (`--load-threads` / `LLAMA_ARG_LOAD_THREADS`; the old loader thread was pinned to CPU 0 by libgomp
-      under `OMP_PROC_BIND=spread`). Bit-exact (tokens, KL on logits); 27B load 3.2x warm / 2.1x cold. Under
-      `GGML_IQK=1` the DS41 recipe touches no CPU_REPACK tensor, so the reader is the whole DS41 win.
-      **Champion advanced** `ak/champion/llama-cpp-ffc1bac82eec` `2b57340bf` → `90c12df42`, pushed to the fork
-      (workspace-8d notified). Gates (research `a5906f24`, `data/champion-advance-fastload-20260925/`): DS41 519 GB
-      load 254.0 / 277.7 s (anchor) → 98.2 s (fast loader), with a 262.6 s single-thread control on the same binary;
-      production-recipe decode A/B cut by the operator after one pair (frontdoor 42.23 vs 41.79 tok/s, 0.99,
-      identical output). Builds: `kernels/builds/cpu-20260925-90c12df42` (candidate) and
-      `cpu-20260925-2b57340bf` (base), ggml linkage PASS. The DS41 campaign re-anchored on it (INF-77 DS41-C32).
-  - **V6R-4a** and **V6R-4b** (fast loader into v11; forward-port rule ratification) moved 2026-11-07 to [v11-promotion-checklist.md](v11-promotion-checklist.md) (operator decision C, INF-22 split). [moved: handoffs/active/v11-promotion-checklist.md]
 
   - V6R-4c moved 2026-11-17 to [v11-promotion-checklist.md](v11-promotion-checklist.md) (INF-65/INF-83 dedupe: INF-83 is the single v11 gate list). [moved: handoffs/active/v11-promotion-checklist.md]
 
@@ -1410,8 +1447,6 @@ all 12 launches**, peak VRAM 33.1–43.1 GiB, sclk pinned 1700 MHz. Unit: **LAUN
 Raw: `/mnt/raid0/llm/tmp/maxperf-20260908/sweep.json` + `sweep.log`; promoted into the research repo (`data/`) at
 commit `48a6f6f2`.
 
-- [x] **HEAD-1 — file the maximum-performance sweep as a canonical citable artifact** ✅ 2026-09-08
-      (`docs/design/champion-max-performance-20260908.md`; referenced from this page).
 
 ##### SECOND HEADLINE MODEL — Qwen3.6-35B-A3B-MTP-Q8_0, same champion, same GPU (2026-09-08 19:37:30-20:14:00Z)
 
@@ -1456,20 +1491,12 @@ sclk flat 1700 MHz at *every* point. Unit: **LAUNCH**. Details and per-point `re
   must carry that ~2.7% between-launch dispersion**; a 27B-grade ±0.5% precision is not available on this
   model at np=1 and implying one is a `FLOOR-UNIT-1` violation.
 
-- [x] **HEAD-2 — Qwen3.6-35B-A3B GPU concurrency sweep measured and filed** ✅ 2026-09-08
-      (24 launches, residency proven 24/24; recipe `qwen3.6-35b-a3b-q8-gpu-mtp` committed at research
-      `c3e362a1`; numbers in `docs/design/champion-max-performance-20260908.md` §6).
 - [x] ~~**HEAD-3 — the 35B concurrency ceiling is UNMEASURED above np=16.** The curve had not saturated~~ (closed 2026-10-29 audit: OBSOLETE → box text: operator said "lets stop here" at np=24/32 on 2026-09-08 - recorded decision, not oversight (L912-916))
       (+15.98% on the last step, the second-largest of the six) and VRAM stood at 41.4 of 64 GiB. `np=24`
       and `np=32` were offered on 2026-09-08 and the operator said *"lets stop here"* — so this is a
       **recorded decision, not an oversight**. Reopening costs ~2 launches × 2 points ≈ 12 min of exclusive
       GPU. Blocked on nothing but an operator go for the host. Until it is run, **never quote 310.96 tok/s
       as a maximum** — it is the highest measured point.
-- [x] **HEAD-4 — promote the 35B sweep out of scratch into the research repo `data/`.** ✅ 2026-09-16
-      Research `data/ak-champion-maxperf-35b-2026-09-08/` (JSON/logs/`sweep.py` at `8c5a9652`; the other two
-      as-executed scripts, `SHA256SUMS` and a README step correction at `1eb4a89b`). Files byte-identical to
-      scratch; every table value recomputed from the JSON and matched `docs/design/champion-max-performance-20260908.md` §6.
-      Belief-kernel write-side wiring filed as SC82 in `vidya-belief-substrate-program.md` (the 2026-09-08 sweeps are pre-hook).
 - [x] **MTP-27B-1 — the 27B is ALSO MTP-capable, and that is the missing PROD-BASE-1 denominator.** ✅ 2026-09-21
       — v9 measured on the 27B with MTP self-draft (`mtp-Qwen3.8-27B-Q8_0.gguf`, recipe
       `qwen3.8-27b-q8-gpu-mtp`) at ctx 65536: **61.32 / 85.76 / 136.06 / 169.63** across np 1/2/4/8. That IS the
@@ -1515,12 +1542,6 @@ Three separate reasons the comparison does not exist:
 > champion-vs-production ratio for Qwen3.8-27B + DFlash2 is quoting a number that was never measured, because
 > production cannot produce the denominator.
 
-- [x] **PROD-BASE-1 — if a champion-vs-production headline is ever wanted, measure production AT ITS OWN BEST.** ✅ 2026-09-21
-      Its own `np` sweep, whatever spec configuration it actually supports (MTP self-draft for Qwen3.8-27B),
-      under the same host discipline and with residency proven — **never** forcing production through the DFlash2
-      recipe, which measures a lane it does not have and would report a capability gap as a speed gap. Until that
-      exists, the champion headline stands **alone**, as an absolute number, with no ratio attached. Not blocked
-      on anything; not scheduled — it needs the host and an operator go.
 
 #### METHODOLOGICAL CAUTION — a BENCH-surface number is not a SERVING number
 
@@ -1540,8 +1561,6 @@ path that has a drafter in it, and it understates the real single-stream serving
 The +5.63% tg128 delta is **not retracted as an A/B** — it remains a valid kernel-vs-kernel comparison on its own
 surface. What is retracted is its use as a **rate**. Compiled into the wiki with the R23-58 bounded null.
 
-- [x] **METH-BENCH-1 — the bench-vs-serving distinction is recorded where headlines are formed** ✅ 2026-09-08
-      (this page, `docs/design/champion-max-performance-20260908.md`, and the wiki compile).
 
 **RATIFIED INTO THE CONSTITUTION BY THE OPERATOR, 2026-09-08 — this rule is no longer campaign-local.**
 The operator ran `scripts/operator/ratify_measurement_bench_vs_serving_20260908.sh --apply`; committed as
@@ -1775,6 +1794,25 @@ Open kernel-fix boxes re-homed by INF48-FOLD-PLAN (moved from INF-48 2026-11-17;
   - Operator decision 2026-11-18: do NOT fold now; HOLD the fix for **C14**, together with the q8_1 block-sum fix (`8c180a25f`, row c13-q81-sum-overflow-gpu-20261118-r4), and fold both only after q8_1 r4 passes. [no-decision-needed: operator-decided] [belief: cc]
 - [x] **INF48-FA-HS256-MMA-PRECISION** [inference] With GGML_HIP_ROCWMMA_FATTN=OFF, 5 default-corpus FA cases (hs256, mask=0, kv 512/1024, nb 32/75, 4 of 5 with sinks) exceed the 5e-4 error limit on MMA (ERR 6.8e-4..1.26e-3; GUARD run of inf48-eqv-fa-rescale-gpu-20261116-r2). Not in the C10/C12 configure (WMMA takes these there); matters if WMMA is ever disabled. model: none. est 1800 s. stop-on-answer: accumulation-precision cause identified or limit justified. [no-belief: new box] (moved from INF-48 2026-11-17)
   - ✅ 2026-11-18 fa-bugfix-c13-confirm-20261117: pass — the five hs256 cases are OK on the fix (5/5); cause was the special head-size-256 tuning (r2 pinned it). Ships with the C14 fold above. [belief: cc]
+- [ ] **MMID-HELPER-N10-GATE** [inference] Measure the n_used=10 helper fold on the Q38FN MI210 hybrid prefill: rocprof mm_ids_helper time and pp2048 throughput, C14 store versus the fold build, with op correctness first (intake-2719).
+      · done when: verdict KEEP, DROP or FAIL_CORRECTNESS filed under MMID-HELPER-N10 with per-arm helper us/call, pp2048 tok/s and paired CIs
+      · gate: MMID-HELPER-N10        · inputs: `/mnt/raid0/llm/tmp/gdn-share-mi210-20261106/out/runs.json`
+      · model: Qwen3.8-Flash-Next UD-IQ4_XS (512 experts, top-10) in the gdn-share hybrid recipe (-ncmoe 999 -ub 2048) · build: C14 store vs the fold build (content proof: mm_ids_helper<10> symbol plus verify_ggml_linkage) · harness: test-backend-ops ROCm0 MUL_MAT_ID n_used 10 cases, then llama-bench -p 2048 -n 0 under rocprofv2 kernel stats and once without the profiler, ABBA
+      · metric(dir): mm_ids_helper us/call lower, pp2048 tok/s higher · rule: KEEP iff op tests pass AND helper time per call falls >= 30% AND unprofiled pp2048 is not lower beyond the 0.84% GPU noise floor · region: gpu-q3 (numactl --membind=3 -- taskset -c 184-191) · est: ~1500 s (two profiled + two unprofiled arms of a pp2048 run, re-derived from the gdn-share run time + 25%)
+      · stop rule: question = does the fast helper cut the 7.33% generic-helper share? expected 1005 -> ~250-350 us/call vs a few-percent repeat noise; checkpoint after the first AB pair; stop-on-answer after 3 pairs with the helper-time CI clear of 30%; stop-on-futility on an op-test failure (FAIL_CORRECTNESS) or helper time within 10% after 2 pairs (DROP)
+
+
+### Done
+
+- [x] **FOLD-1** ✅ 2026-09-08 : loop stopped at the boundary (verified dead), pre-fold GPU tip
+- [x] **FOLD-2** ✅ 2026-09-08 — all PASS with real tallies on `ef81196d5`:
+- [x] **FOLD-4** ✅ 2026-09-08 . INF-70 reported
+- [x] **V6R-4** ✅ 2026-09-25 main-ak-seat
+- [x] **HEAD-1** ✅ 2026-09-08
+- [x] **HEAD-2** ✅ 2026-09-08
+- [x] **HEAD-4** ✅ 2026-09-16
+- [x] **PROD-BASE-1** ✅ 2026-09-21
+- [x] **METH-BENCH-1** ✅ 2026-09-08
 
 ## Track: fable5-window2-findings-03-portfolio-and-master-queue
 <!-- gate: none -->
@@ -1846,11 +1884,9 @@ Plus portfolio-discovered revivals: **EAGLE-3→MI210** (mtp-refresh's own trigg
 
 ##### A. NOW — this week
 
-- [x] **G0 · α from live logs (zero inference, today)** — parse per-role MTP acceptance from production llama-server logs; publish per-role α_MTP with a loud zero-lines failure. *Owner: gpu-drafter-mi200-investigation.md (retitle its Gating Measurement).* [findings-02 M0] ✅ 2026-07-17 (`scripts/benchmark/mtp_alpha_from_logs.py` `aa3b35a7`; live: worker_general draft-mtp α=0.994, frontdoor 0.603, architect 0.629; loud-fails on zero evidence)
 - [x] **G1 · Ratify P-GPU-1** (operator; measurement trust boundary — human-amendment-only). [findings-02 §5] ✅ 2026-10-29 (audit: MEASUREMENT.md:67 P-GPU-1 MI210 GPU canonical throughput "ratified 2026-07-19"; commit d0689d251 duty_cycle amendment RATIFY-PGPU1-DUTY-CYCLE-20260814) [no-belief: audit-reconciliation]
 - **[declined: ws58 2026-11-03 content-review: era-stale July proposal — the HIP build is the v10 GPU store and :8083 serves on it]** **G2 · Canonical-tree HIP build + `qwen35moe`/`qwen3next` op-coverage smoke** (no window needed; LD_LIBRARY_PATH hazard documented). [findings-02 M1-prereq]
 - [x] **G3 · Frontdoor residency bench under P-GPU-1 → Gate R decision** (≥1.8× → R12 plumbing; 1.3–1.8× → HIP-kernel track critical; <1.3× → residency demotes to eval-only hosting). [findings-02 M1] ✅ 2026-10-29 (audit: commit b34a1203c 2026-08-14 "frontdoor Gate R verdict ... GPU is 2.5x, clears gate"; wrap-up 2f13b3e8d) [no-belief: audit-reconciliation]
-- [x] **I1 · `seq_refuted` learning exclusion + strategy-store quarantine parity** (code + tests, zero inference). [findings-01 R1] ✅ 2026-07-17 (code was already wired in aa20d029; parity locked by test_seq_refuted_learning_exclusion_parity.py `0492c07a`)
 - **[declined: ws58 2026-11-03 content-review: duplicate of eval-tower-program.md R2-current]** **I2 · Ledger-derived core_v2 selection** (read-only rebuild; demote 2026-06-15 calibration lineage to prior; compare item sets). [findings-01 R2]
   - [x] Post-E8 read-only rebuild + comparison ✅ 2026-07-29 — `core_v2_select.py --source ledger --min-attempts 5` wrote the non-promoted artifact `/mnt/raid0/llm/tmp/mainc-core-v2-20260729/{core.jsonl,report.json}`. The active era fence (`1785004723.0`) retained 16 trusted rows / 50 observed items and excluded 1,317 pre-era rows, yielding only 2 eligible / selected items (shortfall 38); neither overlaps the prior 40-item `core_v2_ledger_20260703_min5` selection. `tests/unit/test_core_v2_select.py` passed 6/6. No era amendment or activation was attempted.
   - **[declined: ws58 2026-11-03 content-review: duplicate of eval-tower-program.md R2-current (same text)]** Accrue a current-era, trusted ledger that yields at least 40 eligible core items before preparing any new `autopilot_quality` era row or activating a replacement core; the present 2-item artifact is evidence of insufficiency, not a candidate for promotion.
@@ -1899,6 +1935,12 @@ On completing a row: delete it here, update owning handoff + domain index, appen
 ##### Key files
 
 `/mnt/raid0/llm/llama.cpp` (HIP: `ggml/src/ggml-cuda/`, `common/arg.cpp` spec/device flags, `tools/server/server-context.cpp`) · `epyc-orchestrator/scripts/server/{orchestrator_stack,stack_manifest,stack_numa,stack_paths}.py` + `orchestration/model_registry.yaml` (master: epyc-inference-research) · evidence plane: `scripts/autopilot/{safety_gate,eval_tower,audit_block_report,restart_readiness_report}.py`, `src/autopilot_core/{sequential_verdict,learning_exclusions}.py`, `orchestration/repl_memory/strategy_store.py` · α: `epyc-inference-research/scripts/benchmark/n5_frontdoor_drafter_retest.sh` + `scripts/utils/check_draft_compatibility.py` · MI210 artifacts: `/mnt/raid0/llm/tmp/mi210-build/`, `progress/2026-07/2026-07-02-mi210.md`.
+
+
+### Done
+
+- [x] **G0** ✅ 2026-07-17 `scripts/benchmark/mtp_alpha_from_logs.py` `aa3b35a7`; live: worker_general draft-mtp α=0.994, frontdoor 0.603, architect 0.629; loud-fails on zero evidence
+- [x] **I1** ✅ 2026-07-17 code was already wired in aa20d029; parity locked by test_seq_refuted_learning_exclusion_parity.py `0492c07a`
 
 ## Track: cpu-fused-decoder-blocks
 <!-- gate: none -->
@@ -2273,8 +2315,6 @@ Port the **Laguna** architecture (poolside/Laguna-S-2.1: 118B-total / 8B-active 
 
 #### Tasks
 
-- [x] Forward-port base Laguna arch (merged PR #25165 commits, ~350 LOC: `src/models/laguna.cpp` +332, `models.h`, 1-3-line touches to `llama-arch`/`llama-model`/`llama-vocab`, `conversion/laguna.py` +207) onto a FRESH-pulled `llama.cpp-experimental` off `production-consolidated-v7`; validate S-2.1 Q4_K_M loads + coherence/garbage smoke ✅ 2026-07-25 — landed as `afa770382` on `experimental-v8-refresh-20260724` (superset: includes the DFlash spec path NOT in the PR). Required CPU Q4 evidence is at `epyc-inference-research/data/kernel-v8-candidate/laguna-cpu-dflash-exact-tip/run-20260725T112845Z-67a433bf4-noswap/` (nested `run-20260725T113030Z`): base median `7.078103` t/s, DFlash median `8.028143` t/s, but acceptance `17.2267%` fails the lineup floor. Final hardened GPU IQ2 artifact `epyc-inference-research/data/gpu-mi210/laguna-iq2-kv-sweep-exact-tip/run-20260725T125201Z` is post-identity, `15/15`, and observation-only: A q8/FA-on `33.992845`, B f16/FA-on `35.490117`, C f16/FA-off `33.782293`; B/A `+4.404668%`. `test-llama-archs`/`test-chat-auto-parser` pass in ctest; 2026-07-25 audit verified graph idioms match sibling archs (NEOX rope group, Qwen3-style QK-RMSNorm, per-layer YaRN/plain-RoPE split sound, softplus gate width-checked on both target and drafter sides)
-- [x] Confirm the PR-author-flagged "GQA head-ratio backend dispatch" bug does not hit the CPU build ✅ 2026-07-25 — exact-tip CPU Q4 evidence completed all `5/5` base and `5/5` DFlash replicates on the real S.2 model at `data/kernel-v8-candidate/laguna-cpu-dflash-exact-tip/run-20260725T112845Z-67a433bf4-noswap/` (nested `run-20260725T113030Z`; `q4_k_m_base`/`q4_k_m_dflash` both `status=complete`). Source audit confirms `laguna.cpp` reads per-layer `n_head` (`48` full / `72` SWA) with `n_head_kv=8` and passes both values to the shared `build_qkv` graph; `afa770382` changes no `ggml/` backend code. This closes the target CPU concern with real-model execution evidence, not a claim about every hypothetical Laguna variant.
 
 ---
 
@@ -2289,22 +2329,6 @@ exact numeric equality, `finish_reason=stop`, completion floors, anti-garbage, a
 `draft_n>0` all still hard-gate — and post-relaxation the harness caught a REAL deterministic
 q8_0 model arithmetic error. Remaining items:
 
-- [x] **L-1 (silent-wrong risk) — make the SWA contract explicit in conversion.** ✅ 2026-07-25 — landed in `89d55f161`.
-  Before the fix, `conversion/laguna.py` never wrote `SLIDING_WINDOW_PATTERN` (only `add_sliding_window`,
-  `laguna.py:86-89`) — the 4-dense-first layer pattern is an implicit code-side default
-  (`laguna.cpp:39-41`); and `rope_freq_base_train_swa` silently defaults to the full-attn
-  YaRN base (500000) when `ROPE_FREQ_BASE_SWA` is absent (`laguna.cpp:47-49`) though SWA
-  layers intend θ=10000. The landed conversion writes both keys and makes the C++ fallback loud.
-- [x] **L-2 (integration gap) — validate encoder input width explicitly.** ✅ 2026-07-25 — landed in `89d55f161`. DFlash encoder
-  previously assumed draft `n_embd` == target hidden size (`dflash.cpp:15` vs `speculative.cpp:1325`);
-  `LLM_KV_TARGET_HIDDEN_SIZE` existed in `llama-arch.h` but was never read; there was no
-  divisibility assert on `n_feat = n_embd_inp_enc()/n_aux` (`dflash.cpp:128`). Mismatch
-  previously failed only indirectly via `fc` shape at load. The landed change reads the key
-  and checks explicitly.
-- [x] **L-3 (masking risk) — bound the non-finite feature sanitize.** ✅ 2026-07-25 — landed in `89d55f161`. `speculative.cpp`
-  (+1471-1490) previously unconditionally clamped target features to ±65504/NaN→0 on ALL backends
-  (comment blames Metal f16), warning once per process — after the first warning it silently
-  masks real target-model numerical bugs. The landed change bounds that sanitize behavior.
 - [x] **L-4 (harness defect) — fix `summarize()` attribution
   ordering.** ✅ 2026-07-25 — landed in `978ca540`; the exact CPU final reports semantic failure status before schema completeness. The 23:47Z "warmup" failure was a MISATTRIBUTION: all 20 cells' warmups passed;
   the real failure was 5/5 `q8_0_base` cells with `incorrect prime sum: 361` (vs 311),
@@ -2330,38 +2354,6 @@ q8_0 model arithmetic error. Remaining items:
   decode ratios and fails closed unless pooled acceptance is at least 60% with no prompt-class
   net-negative. Q4 CPU improved aggregate decode by 13.42% but its 17.23% acceptance still
   fails; IQ2-target GPU remains a NO by the March precedent's own logic.
-- [x] **L-7 (minor) — tighten the normalize prompt.** ✅ 2026-07-25 — research commit
-  `daa4c926` removes the disclosed `must be 1.0` answer while retaining the independent exact
-  normalized-vector and computed-sum validator; focused Laguna runner tests pass. Before the
-  repair, `bed4a1d4` disclosed "JSON `sum` … must be 1.0", so that sub-check did not test
-  computation even though the normalized values 0/0.2/0.3/0.5 remained independently checked.
-- [x] **L-8 (hygiene) — promote the ad-hoc GPU smoke artifact to a script.** ✅ 2026-07-29 — research
-  commit `5fd85268` makes the compatibility projection durable: `laguna_pgpu1_dflash_runner.py`
-  deterministically emits `candidate_smoke_summary.json` with schema
-  `epyc.laguna_iq2_dflash_candidate_smoke.v2` from formal-run results. It retains the historic
-  smoke's per-cell prompt/semantic/completion/cleanup evidence and DFlash acceptance totals, but
-  is explicitly `non_gating` and `observation_only`; it cannot create a promotion or performance
-  verdict. Reproduced with `/mnt/raid0/llm/epyc-orchestrator/.venv/bin/pytest -q
-  scripts/benchmark/test_laguna_pgpu1_dflash_runner.py`: 52 passed. No GPU process, production
-  server, or production-kernel tree was touched.
-- [x] **L-9 (post-v8 candidate bench) — Laguna Q4_K_M CPU quant-axis screen** ✅ 2026-07-27.
-  The operator decoupled this arm from E8 and authorized a paired quality shortcut instead
-  of an expensive full-suite discovery. Harness readiness remained complete:
-  `laguna_q4_cpu_bench_runner.py` now uses a full `taskset 0-95` /
-  `numactl --interleave=all` model prewarm before each suite, the sealed arm-neutral v4
-  capture/converter contract, free ports `18094/18095`, and semantic validation of the
-  frozen-v8 24-port both-mode stack. Concurrent HIP work is allowed only when every
-  sidecar thread is disjoint from benchmark cores; exact argv/model/executable/listener
-  identity and all thread affinities are sampled every five seconds. GPU-coexistent
-  throughput is explicitly observation-only and forbidden as a role-decision input.
-  Focused validation: `35 passed`. The completed SWE40 generation was deterministically
-  replayed through the sealed v4 converter and official evaluator: Q4 `19/40` versus IQ2
-  `17/40`, zero harness errors, paired discordants `6:4`, exact two-sided `p=.75390625`.
-  This `n=40` screen does not resolve a quant-axis difference and is not equivalence
-  evidence. The queued LCB53 arm is stopped under the operator's shortcut because the
-  quant axis no longer changes the current architect decision. Reproducible evidence:
-  `epyc-inference-research/artifacts/laguna-q4-cpu-v8-20260726/laguna-q4-swe-v4-tail-replay-20260727T165223Z/`
-  (research `f7ab3ec4`).
 - **[declined: ws58 2026-11-03 content-review: Laguna is retired (model audit 2026-11-03); no CPU-resident Laguna role decision can arise]** **L-9P — conditional CPU throughput/config discovery.** The prepared
   `laguna_q4_cpu_config_discovery.py` remains unexecuted. Trigger its bounded four-cell
   selector only if a concrete CPU-resident Laguna role decision needs the performance
@@ -2370,6 +2362,18 @@ q8_0 model arithmetic error. Remaining items:
 #### Notes
 
 Laguna evidence includes both poolside self-reported observations and the local exact-tip GPU KV artifact above; neither is decision-grade or a production-enable gate under MEASUREMENT.md. The iqk (Laguna UD-IQ2_M beneficiary), DFlash (accept-rate bench + draft-dflash port), and architect-bench rows live in the linked handoffs and are cross-indexed under the "Laguna S 2.1 experimental-kernel cluster" in [`inference-research-index.md`](inference-research-index.md) so the whole cluster can be tackled in one session.
+
+
+### Done
+
+- [x] **—** ✅ 2026-07-25 — landed as `afa770382` on `experimental-v8-refresh-20260724` (superset: includes the DFlash spec path NOT in the PR). Required CPU Q4 evidence is at `epyc-infe
+- [x] **—** ✅ 2026-07-25 — exact-tip CPU Q4 evidence completed all `5/5` base and `5/5` DFlash replicates on the real S.2 model at `data/kernel-v8-candidate/laguna-cpu-dflash-exact-tip/
+- [x] **L-1** ✅ 2026-07-25 — landed in `89d55f161`.
+- [x] **L-2** ✅ 2026-07-25 — landed in `89d55f161`. DFlash encoder
+- [x] **L-3** ✅ 2026-07-25 — landed in `89d55f161`. `speculative.cpp`
+- [x] **L-7** ✅ 2026-07-25 — research commit
+- [x] **L-8** ✅ 2026-07-29 — research
+- [x] **L-9** ✅ 2026-07-27 .
 
 ## Track: moe-spec-cpu-spec-dec-integration
 <!-- gate: none -->
@@ -2777,21 +2781,6 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
 
 #### Progress checklist
 
-- [x] **Former no-consumer blocker reassessed ✅ 2026-07-18**: the 2026-07-03 live MTP acceptance report proves current verification-batch consumers exist (`frontdoor` α=0.6582, `worker_general` α=0.8256, `architect_general` α=0.6854, failed MTP roles `[]`). Registry integration remains blocked until current sweep evidence exists.
-- [x] **REOPEN-ASSESS zero-inference decision ✅ 2026-07-18**: reopen to a current live-MTP MoE verifier B-sweep, not to registry integration.
-- [x] **Current live-MTP MoE verifier B-sweep**: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bit-exact guard before any registry integration. ✅ 2026-08-27 — **GATE MET (architect +10.7% at B=n_expert/2)**, decision-grade record at `epyc-inference-research/data/moe-spec-bsweep-2026-08-25/` (findings.md + summary.json + summary_receipt.json). Canonical run (region lock q0-q3, binary v10126 `c7c37a0d9` = MoE-Spec `6b2cbf539` on v9 `0db32c06e`, MTP posture, greedy, 3 reps/cell):
-  | role | B | t/s mean±std | Δ vs B=0 | α | α Δ |
-  |---|---|---|---|---|---|
-  | architect (122B Q4_K_M, n_expert=256) | 0 | 10.84±0.39 | ref | 0.487 | — |
-  | | 128 | 12.00±0.41 | **+10.7%** | 0.463 | −2.4pp |
-  | | 192 | 11.53±0.22 | +6.4% | 0.462 | −2.5pp |
-  | frontdoor (35B-A3B Q8, 256) | 0 | 36.19±2.19 | ref | 0.577 | — |
-  | | 128 | 32.05±2.98 | −11.4% | 0.517 | −6.0pp |
-  | | 192 | 33.09±0.55 | −8.6% | 0.533 | −4.4pp |
-  | worker (gemma4-26B Q4, 128) | 0 | 57.25±4.09 | ref | 0.570 | — |
-  | | 64 | 55.77±19.16 | −2.6% | 0.548 | −2.2pp |
-  | | 96 | 51.24±13.58 | −10.5% | 0.461 | −10.9pp |
-  | | 128 (gate-skip) | 58.54±4.75 | +2.3% (noise) | 0.570 | 0 |
 
   **Verdict + caveats**: Phase-1 shape reproduces (heaviest DRAM-bound role wins; lighter roles negative). (1) n=3/cell — architect Δ≈2.9σ; operator declined the 5-rep confirm. (2) α −2.4pp on the winner; budgeted arms' outputs differ from B=0 by construction — mechanism-fire control passed (worker B=n_expert bit-exact to B=0, 3/3). (3) Cross-run MTP non-determinism: same-seed B=0 reps differ across runs on every role → strict bit-exact guard enforceable only via the gate-skip control. **Registry implication (PROPOSED, NOT applied — E8-reseed/OP-19 gate)**: `architect_critic` (122B Q4_K_M, :8074 — the measured "architect" role since the 2026-07-31 swap; architect_general is now GPU 27B) → `moe_spec_budget: 128`; frontdoor/worker stay 0; launcher must env-pass `LLAMA_ARG_MOE_SPEC_BUDGET=128`; patch text: `data/moe-spec-bsweep-2026-08-25/registry_patch_proposal.yaml`.
   *Note 2026-09-16: the "E8-reseed/OP-19 gate" above is resolved by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json) (root `1ee8bd7c`). The ruling retires the E8 chain and re-anchors the reseed gate to the current eras; the gate binds only at promotion.*
@@ -2932,6 +2921,13 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
       qwen4exp MTP path exists only on the experimental champion, so a production-meaningful measurement
       needs that drafter path to reach a serving binary (INF-70 Axis E). It needs its own B sweep
       (512 experts), at `--spec-draft-n-max` ≥ 3 so the verification batch meets `min_batch` 4.
+
+
+### Done
+
+- [x] **—** ✅ 2026-07-18 **: the 2026-07-03 live MTP acceptance report proves current verification-batch consumers exist (`frontdoor` α=0.6582, `worker_general` α=0.8256, `architect_gen
+- [x] **REOPEN-ASSESS** ✅ 2026-07-18 **: reopen to a current live-MTP MoE verifier B-sweep, not to registry integration.
+- [x] **—** ✅ 2026-08-27 — **GATE MET (architect +10.7% at B=n_expert/2)**, decision-grade record at `epyc-inference-research/data/moe-spec-bsweep-2026-08-25/` (findings.md + summary.js
 
 ## Track: v9-kernel-per-request-speculative-params
 <!-- gate: none -->
@@ -3084,3 +3080,7 @@ Compatibility pointer (restored 2026-11-07): the INF-75 body was archived at
 `handoffs/completed/autokernel-cross-workload-keep-gate.md`, which retains the
 original track verbatim. References resolve through this pointer; no work is
 tracked here.
+
+## History
+
+- 2026-11-20 compacted 22 ticked box(es) older than 30 d -> [kernel-champion-and-promotion-history-2026-11-20.md](../archived/kernel-champion-and-promotion-history-2026-11-20.md) (handoff_compact.py)

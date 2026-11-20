@@ -187,7 +187,15 @@ def run(wt: str, flags: str, dry_run: bool, force: bool = False) -> int:
                 changed = regen(wt)
                 if not changed:
                     return 0
-            git(wt, "commit", "-q", "-m", "Regenerate handoff index files (index_regen.py)\n\n" + TRAILERS, "--", *changed)
+            _env = os.environ.get("EPYC_INDEX_WRITER")
+            os.environ["EPYC_INDEX_WRITER"] = "hub"   # Rule G (check_commit_hygiene.py): the hub is the one allowed writer
+            try:
+                git(wt, "commit", "-q", "-m", "Regenerate handoff index files (index_regen.py)\n\n" + TRAILERS, "--", *changed)
+            finally:
+                if _env is None:
+                    os.environ.pop("EPYC_INDEX_WRITER", None)
+                else:
+                    os.environ["EPYC_INDEX_WRITER"] = _env
             p = sp(wt, "--fetch", "--push")
             if p.returncode == 0:
                 log(f"pushed {git(wt, 'rev-parse', 'HEAD').stdout.strip()[:12]} {changed}")

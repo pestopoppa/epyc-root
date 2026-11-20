@@ -21,6 +21,11 @@
 ## Track: coordination-and-churn-pipeline
 <!-- gate: none -->
 
+### Backlog
+- [ ] **AMDSK-SKILLCARD-EVALS-1** [non-inference] Adopt the AMD skill-card plus evals/evals.json layout for our project skills, starting with row-owner-loop and kernel-promotion (intake-2745).
+      · done when: both skills carry skill-card.md and an evals.json with at least three prompts using skill_should_trigger, expected_behavior and unexpected_behavior
+      · gate: none
+
 > Folded from the body of `handoffs/active/coordination-and-churn-pipeline.md` (row RTG-34), from its first `##` section on, @ `bd2406f3ccb0` on 2026-11-03 (BRF-T7-F11, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
 #### Current executor start here — 2026-11-03

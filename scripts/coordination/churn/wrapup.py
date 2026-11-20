@@ -323,6 +323,25 @@ def check_box_cap(lane: str) -> None:
                           f"remove them from the handoff, then re-run wrapup.py")
 
 
+def generated_commit_check(lane: str, pathspec: list[str]) -> None:
+    """Rule G (S1): this subprocess commit is invisible to the Claude hook, so run the hook's own staged-surface check
+    here. Warns + logs by default; EPYC_GENERATED_COMMIT_MODE=refuse refuses."""
+    for path in (os.path.join(lane, "scripts", "hooks", "check_commit_hygiene.py"),
+                 os.path.join(os.path.dirname(os.path.dirname(_HERE)), "hooks", "check_commit_hygiene.py")):
+        if not os.path.isfile(path):
+            continue
+        try:
+            mod = _load_sibling("check_commit_hygiene", path)
+        except (OSError, ImportError, SyntaxError) as ex:
+            log("generated", f"check_commit_hygiene unavailable ({ex}); Rule G not applied")
+            return
+        if mod.check_generated_commit(lane, extra_paths=pathspec, worktree=True) == 2:
+            raise WrapupError("Rule G (generated-file commit guard) refused the commit: generated index surface(s) in the "
+                              "pathspec/index; the hub regenerates them. Drop them from the pathspec (EPYC_GENERATED_COMMIT_MODE=refuse)")
+        return
+    log("generated", "check_commit_hygiene.py not found; Rule G not applied")
+
+
 def commit(lane: str, pathspec: list[str], message: str, trailers: list[str]) -> str:
     junk = [l[3:] for l in _git(lane, "status", "--porcelain", "--untracked-files=all", "--", "artifacts/").stdout.splitlines() if l.startswith("??")]
     if junk:
@@ -334,6 +353,7 @@ def commit(lane: str, pathspec: list[str], message: str, trailers: list[str]) ->
     bloat = bloat_errors(lane)
     if bloat:
         raise WrapupError("D9 evidence-by-SHA guard refused the commit: " + "; ".join(bloat) + ". " + _bloat_hint())
+    generated_commit_check(lane, pathspec)
     text = message.rstrip() + ("\n\n" + "\n".join(trailers) if trailers else "") + "\n"
     r = subprocess.run(["git", "-C", lane, "commit", "-q", "-F", "-", "--", *pathspec], input=text,
                        capture_output=True, text=True, timeout=600,

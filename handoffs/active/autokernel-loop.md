@@ -1,4 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
+**Row**: INF-06
+**Domain**: inference-research
 
 **Completed Scope:** ticked-box detail compacted 2026-11-20 into [`autokernel-loop-completed-through-2026-11-20.md`](../completed/autokernel-loop-completed-through-2026-11-20.md) (667 blocks; each keeps a one-line stub here, grep the box ID in the ledger for the full text). Open boxes were not moved.
 
@@ -28,6 +30,13 @@
 
 ## Track: autokernel-research-loop
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
+
+### Backlog
+- [ ] **AK-ASM-H11-UNIQ** [inference] Add an op-level test that the gfx90a AITER topksoftmax asm and the topk-moe fusion emit unique expert IDs on rows with exact ties, -inf and NaN logits, because the C14 MUL_MAT_ID helper silently drops duplicate slots (intake-2719).
+      · done when: test-backend-ops cases for tie/-inf/NaN router rows exist and a ROCm0 run reports PASS (unique IDs) or a filed FAIL with the offending kernel
+      · gate: none
+      · model: none (op level) · build: frozen C14 HIP build pinned by sha · harness: test-backend-ops ROCm0 vs CPU on the router ops · metric: unique-ID check per row (pass/fail) · rule: any duplicate ID on any degenerate row = FAIL · region: gpu-q3 short window · est: <= 600 s
+      · stop rule: question = can the asm or fusion router emit duplicate IDs? single run is decisive (deterministic); stop-on-answer after the case set runs; stop-on-futility on a build/residency proof failure
 
 > Folded from the body of `handoffs/active/autokernel-research-loop.md` (row INF-06), from its first `##` section on, @ `8012aabb5781` on 2026-11-03 (BRF-T7-F5, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
@@ -95,8 +104,6 @@ comparator closure `cffb98d3`. Research `caa22f42` also fixes the ordinary-refus
 never binding cumulative-terminal fields to a non-composition row. Do not promote the accumulated
 experimental branches wholesale: every later launch candidate below still has a strict audit NO-GO.
 
-- [x] **AK-V27-RCV — keep ordinary governed refusals out of cumulative-terminal recovery.** Exact ✅ 2026-08-22 _(detail → completed ledger)_
-- [x] **AK-V27-CMP — authenticate the frozen-v9 comparator without executing production artifacts.** ✅ 2026-08-22 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: superseded — the 2026-08-22 V27 restart checkpoint was replaced by the AKU unified-loop slices (AKU-01..12), which carry trust-boundary, performance binding and dashboard acceptance]** **AK-V27-C6 — finish the live C6 trust boundary before launch.** `8a0ffc7d` is only a bounded
       checkpoint: retain its C6-before-targeted ordering, recursive restart, Q5_0 route, >=11 S1
       capacity, float64 precision gate, derived seed, source recheck, and roofline cap; replace the
@@ -188,10 +195,6 @@ planner logs; it currently reports `active=false` because no campaign is running
       same-graph restart tests proving completed stages never repeat. Graph upgrades require a
       versioned carry-forward receipt rather than copying state or weakening deployment identity.
   - 2026-11-10 PARTIAL (research `2962c4c6c`, branch `ak/rsm1-20261110`, merged into epyc-inference-research origin/main at `9c1a3a421`; box stays OPEN). `stage_receipts.py`: content-addressed stage receipts over the nine-stage graph, a file-backed graceful stop latch checked at stage boundaries, same-graph restart replay (completed stages never repeat); 9 tests pass. Remaining: (a) route the live executors through `StageRunner`, (b) wire the latch into `UnifiedCampaignDriver.tick`, (c) the versioned carry-forward receipt for graph upgrades. [no-belief: code change, no measurement]
-- [x] **AK-RUN-V3 — operationally launch from a fresh state root.** Fulfilled by versioned successors; ✅ 2026-08-20 _(detail → completed ledger)_
-- [x] **AK-V19-SEED — bind identical seeds across timed-output-oracle arms and prove the seam live.** ✅ 2026-08-20 _(detail → completed ledger)_
-- [x] **AK-V19-PORTFOLIO — advance the repaired live loop through Q5 and Q8 without leaking claims.** ✅ 2026-08-20 _(detail → completed ledger)_
-- [x] **AK-V19-FA-AUTH — make controller-owned FA route geometry uncopyable planner context and recover** ✅ 2026-08-20 _(detail → completed ledger)_
 - [x] ~~**AK-V20-LIVE — monitor the fresh v20 receipt chain through its next terminal or safe boundary.**~~ (closed 2026-10-29 audit: OBSOLETE → watch target PID 469246 is dead (ps), v20 deployment dir last touched 2026-08-20, campaign moved to v27/DS41 (handoff:Status header 2026-09-27); no live …  _(detail → completed ledger)_
 - [x] **AK-ADM-1 — promote the six planner-memory limitations into typed pre-model enforcement.** ✅ 2026-11-10 [no-belief: code change, no measurement] _(detail → completed ledger)_
 
@@ -549,19 +552,9 @@ not campaign provenance. The next campaign therefore has one strict dependency c
 
 The durable diagnostics remain useful inputs and regressions; none substitutes for those four gates.
 
-- [x] **AK-AUD-3 — Reconcile the durable diagnostics against clean-source campaign authority.** ✅ 2026-08-12 _(detail → completed ledger)_
 - [x] **AK-AUD-4 — Reconcile executed diagnostic rows without upgrading their authority.** ✅  _(detail → completed ledger)_
 - [x] **AK-AUD-5 — Make the real-process fault rehearsal independent of caller import state.** ✅  _(detail → completed ledger)_
-- [x] **AK-AUD-6 — Classify every remaining AutoKernel-family checkbox at the integrated checkpoint.** ✅ 2026-08-12 _(detail → completed ledger)_
 - [x] **AK-AUD-7 — Retract INF-03 r4 after tracing the controller-to-evaluator feedback path.** ✅  _(detail → completed ledger)_
-- [x] **AK-AUD-8 — Close the INF-03 broker/isolation implementation gap and admit exact-source** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-AUD-9 — Drive the isolated INF-03 pilot to a real model request without upgrading failed** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-AUD-10 — Close the governed INF-03 compatibility pilot and preserve its non-authority** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-AUD-11 — Correct the parser false positive and audit the first two seven-arm launch** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-AUD-12 — Close the r8-r10 actor-cell implementation defects and prove one full real** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-AUD-13 — Prove measured critic feedback changes the next live proposal and close the** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-AUD-14 — Prove the call-scoped model runtime across repeated live calls without declaring** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-AUD-15 — Close the pre-reboot evidence-product implementation audit and relaunch from an** ✅ 2026-08-12 _(detail → completed ledger)_
 
 **Current-main runnable-loop audit (2026-08-12, no inference):** the accepted research baseline is
 `730adb1d31fe12eb1a49d98210f93467911aaef0`. A clean detached checkout passed the focused campaign,
@@ -574,14 +567,12 @@ historical 2026-08-03 checkboxes described were removed on 2026-08-04 and surviv
 `autokernel-preserve-20260804`. The implementation order below is therefore part of the live path,
 not a reopening of empirical work:
 
-- [x] **AK-AUD-5 — Audit the runnable loop against current research `main`, not historical completion** ✅ 2026-08-12 _(detail → completed ledger)_
 - [x] **AK-RUN-1 — Emit governed candidate and evaluation records from the executing campaign.** Bind  _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: merged into AKU-06l (source/build dispatch with content-addressed patch binding)]** **AK-RUN-2 — Execute generic source candidates through a content-addressed patch binding.**
   Validate proposal/change-class/files/symbols before mutation, apply only in an isolated experimental
   worktree, commit exact pathspecs, build a fresh detached snapshot, derive T0 evidence, and journal the
   immutable patch/build/candidate identity. Raw mutable paths and production trees remain forbidden.
   **Prep is already staged 2026-08-13 — do not redo it** (verified on disk 2026-08-16): `/mnt/raid0/llm/autokernel/campaigns/ak-run2-generic-20260813/prep/` holds `akrun2-proposal-manifest.json` (`epyc.autokernel.proposal.v4`, `akp-run2-generic-0001`), `akrun2-source-patch-manifest.json` (`epyc.autokernel.source-patch.v1`, candidate `akc-run2-generic-0001`, change class `dispatcher`, production base `0db32c06`), `akrun2-generic.patch` (a comment-only `common/arg.cpp` diff that exercises the content-addressed patch binding with no behavioral change), and `akrun2-fresh-source-plan.json` (CPU backend, `MUL_MAT`/`MUL_MAT_ID`, suite seeds 4711–4713); what remains is execution, not authoring.
-- [x] **AK-RUN-3 — Restore the lean sequencer and champion-maintenance path.** Consume proposal, ✅ 2026-08-12 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: merged into the AK6 row (operator-triggered package plane is its exit)]** **AK-RUN-4 — Restore a separate operator-triggered package/release plane.** Reuse only the
   validated plan/readiness/T3/packager parts needed to seal a champion and construct a dry-run release
   package; keep it outside campaign-one imports, with no production mutation, signing, freeze, cutover,
@@ -778,8 +769,6 @@ The operator-approved targeting order is explicit:
 This keeps module-level search broad while keeping promotion narrow. Serving concurrency and
 scheduler work remains a separate `serving_runtime` campaign under AK-D9/AK-D23.
 
-- [x] **AK-D39-1 — Enforce the provider-not-champion boundary in records, execution setup, C3, and** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-D39-2 — Implement governed source-available ROCm module execution.**  — ✅ 2026-08-12 _(detail → completed ledger)_
 
 ##### 1.6 The objective is per-backend, per-phase non-inferiority plus improvement
 
@@ -1139,7 +1128,6 @@ Known exposure to clear before AK1 hashes anything:
 - this handoff and its index rows are untracked while `master-handoff-index.md:459` (committed)
   already links them.
 
-- [x] **AK-X-11 — Track the two remaining cited-but-untracked `docs/design/` files**, or record why not. ✅ 2026-08-10 _(detail → completed ledger)_
 
 **Required:** AK1 records a **durability class** per artifact — *carried-in-git*,
 *durable-untracked*, or *hash-and-provenance-only* — so a verifier can distinguish a defect from an
@@ -2681,10 +2669,6 @@ that makes the bundle reviewable.
 
 ##### Phase AK0 — policy package (drafted in parallel with AK1–AK3)
 
-- [x] Audit the source draft against the current scaffold, freeze path, measurement constitution, and ✅ 2026-08-01 _(detail → completed ledger)_
-- [x] Write this owning build handoff and supersession map ✅ 2026-08-01
-- [x] Full design audit; corrections folded into §§2–15; freeze authority withdrawn ✅ 2026-08-02
-- [x] Move the source draft out of gitignored `tmp/` to a durable tracked path ✅ 2026-08-02
 - [x] Establish the staging area with its sequencing plan —
   [`artifacts/operator/autokernel-policy-draft/README.md`](../../artifacts/operator/autokernel-policy-draft/README.md),
   which carries the two-attestation split, the per-item blocking table, the bundle-contents checklist
@@ -2705,16 +2689,10 @@ and has been validated.
 **Attestation 1 — search authorization (present after AK3).** Unblocks autonomous research; every
 referent exists once AK1–AK3 land.
 
-- [x] **Annex question resolved (operator, 2026-08-02): create Annex K (kernel research and release)** ✅ 2026-08-02 _(detail → completed ledger)_
 - [x] Draft Annex K plus the `P-AK-SEARCH-1` skeleton — scope, authority grant and its limits,
   preconditions, statistical requirements, record grammar, void conditions — with numeric bindings
   marked `[BLOCKED-ON AKn]` ✅ 2026-08-02 —
   [`Annex-K-kernel-research-and-release.draft.md`](../../artifacts/operator/autokernel-policy-draft/Annex-K-kernel-research-and-release.draft.md)
-- [x] Fill `P-AK-SEARCH-1`'s numeric bindings from the four controls — e-process threshold, per-backend ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Draft the `pgrep` substitute (§3.5) as an equivalent P-BENCH-1/P-GPU-1 precondition. ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Draft the evidence-retention rule for expirable classes (§5.8) — needed because ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Prepare the `human_only_paths.yaml` additions (evaluator bundle, both protocol IDs, ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Assemble attestation 1 through the AK6 bundle assembler: RATIFICATION_LEDGER of every semantic ✅ 2026-08-10 _(detail → completed ledger)_
 
 **Attestation 2 — release authorization (present before the first freeze, after AK5).**
 
@@ -2722,7 +2700,6 @@ referent exists once AK1–AK3 land.
   ✅ 2026-08-11 — the complete draft converted all five former markers into artifact contracts;
   `P-GPU-1-sealed-candidate-amendment.draft.md` contains no unresolved normative binding. Presentation
   remains correctly gated on a real seal and the operator's attestation-2 action.
-- [x] Draft `epyc.autokernel.operator_waiver.v1`, generalized from ✅ 2026-08-10 _(detail → completed ledger)_
 
 **Both attestations must carry** the amended text appended to its owning annex (never a silent edit),
 a one-line `MEASUREMENT.md` CHANGELOG entry, an explicit supersession naming the prior receipt path
@@ -2730,7 +2707,6 @@ and SHA-256, a `RATIFICATION_LEDGER.md` enumerating every semantic delta, a §2 
 per new ID, in-repo evidence hashes, a pre-validated end-to-end command sequence, and presentation as
 one attestation listing each item separately.
 
-- [x] File `worktree_manager.py`'s in-memory-restore data-loss bug (§2.3) as a defect against the ✅ 2026-08-10 _(detail → completed ledger)_
 
 **Exit (attestation 1):** the search loop can legally learn from experimental results, and no freeze
 authority has been delegated to any process.
@@ -2739,106 +2715,30 @@ can act on a waiver-bearing verdict.
 
 ##### Phase AK1 — contracts, event substrate, and bootstrap corpus (no inference)
 
-- [x] Implement versioned campaign/proposal/candidate/evaluation/champion/release-package schemas ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] **Journal prospective live evaluation events from the executed campaign evidence.**  — ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **Bind source-changing proposals to an immutable source-to-candidate lifecycle.**  — ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] Implement typed research-prior, campaign-seed, constraint/negative, and legacy-import events ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Enumerate and content-hash the historical knowledge source manifest across root/research ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **Quarantine the existing `kernel_store.py` rows** as `legacy_unverified`: `kernel_eval.sh` ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Mark `kernel_eval.sh` deprecated-and-unrunnable so no further contaminated rows are produced ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Atomize the source draft and historical research without upgrading evidence grade; link ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Require a receipt on every suppressing ledger entry, bound to the current production commit, ✅ 2026-08-10 _(detail → completed ledger)_
 - [x] Compile the three derived memory products and prove regime-matched retrieval for fixed
   planner/critic fixtures.
   ✅ 2026-08-10 — superseded by the lean-loop retrieval boundary: the reviewed prior-art catalogue
   is the sole pre-campaign memory product; the deferred autonomous planner has no live retrieval API.
-- [x] Add validators refusing mutable evaluator IDs, stale production anchors, undeclared change ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Replace SQLite-as-source with fsync append-only **sharded** events plus content-addressed ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Add supersession/tombstone events; deprecate destructive primary-record purge. ✅ 2026-08-03 (incl. RETRIEVAL_SUPERSEDED)
-- [x] Add failure/mechanism/do-not-repeat/context/champion views consumed by the planner. ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Implement the storage plane: durability classes, per-campaign quota, retention classes, ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Land the evidence root under `epyc-inference-research/data/<campaign>/` with `SHA256SUMS` and ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Clear the §3.7 durability exposures: copy the np_context decision surface out of ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Add deterministic reconstruction test from journal plus immutable artifacts only. ✅ 2026-08-03 (journal + integration suites)
-- [x] Fix the `kernel_store.py:88` file-handle warning; add both `kernel_rnd` suites to ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **Measure achievable MI210 bandwidth (STREAM/BabelStream-class) — §8.3.1's second denominator now EXISTS** . **1433.3 GB/s achievable = 87.5% of the 1638 GB/s datasheet peak**; triad 1371.1; ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Put both denominators into the P0.1 profile manifest as substrate constants, with the basis of each ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Measure **H2D/D2H** on the Gen4 x16 link  — **H2D 28.89 GB/s, D2H 28.20 GB/s** ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Import the MI210 roofline constants as substrate facts. **All three are now MEASURED (2026-08-03)**, ✅ 2026-08-10 _(detail → completed ledger)_
 
 **Exit:** crash/restart/rewind never loses a candidate or its negative lesson; the loop starts with the
 project's prior knowledge rather than an empty memory; no contaminated legacy row can reach the planner.
 
 ##### Phase AK2 — worktree, build, resource, process, and bus control (mostly no inference)
 
-- [x] Build backend worktree managers that start from the current production tip, namespace worktrees ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Build candidate-local build/cache layout and full build identity receipts.  — the ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **Build the cross-process MI210 device claim** — the single largest missing substrate: ✅ 2026-08-03 (device_claim.py, 48 tests, independently probed)
-  - [x] Decide the mechanism: an on-disk lock under the same root as `cpu_region.*.lock`, keyed by ✅ 2026-08-03 _(detail → completed ledger)_
-  - [x] Acquire is atomic (`O_CREAT|O_EXCL` plus `flock`), never advisory-by-convention. ✅ 2026-08-03
-  - [x] Liveness is PID plus process-start-time, not a heartbeat, so a stale lock from a dead holder is ✅ 2026-08-03 _(detail → completed ledger)_
-  - [x] Crash recovery: a lock whose PID is gone or whose start time mismatches is reclaimable after a ✅ 2026-08-03 _(detail → completed ledger)_
-  - [x] Revocation follows `BUS_PROTOCOL.md:47-51` — mark `revoking`, holder drains at its boundary, ✅ 2026-08-03 _(detail → completed ledger)_
-  - [x] Extend `region_lock_cli.py` with a device verb, or add a sibling CLI sharing its lock root;
-    do not fork the lock semantics. **BLOCKED — epyc-orchestrator was held by another session on 2026-08-03; the claim was built in the research repo sharing the same on-disk lock root, so exclusion already works cross-repo. This verb is a convenience wrapper owned by whoever holds that repo.**
-    ✅ 2026-08-10 — superseded as a convenience wrapper: AutoKernel's direct `device_claim.py` API is
-    the authoritative cross-process claimant at the shared lock root; no second CLI semantics are needed.
-  - [x] Retire `src/gpu_lease.py`'s process-local lease for cross-process use, or clearly scope it as ✅ 2026-08-10 _(detail → completed ledger)_
-  - [x] Emit a claim receipt id that lands in every evaluation event. ✅ 2026-08-03 (akd- receipt)
-  - [x] Acceptance: two processes contend and the second blocks or fails cleanly; a killed holder's ✅ 2026-08-03 _(detail → completed ledger)_
-  - [x] **Arm the campaign-wide device-claim expiry check from the shared resource window.** ✅  _(detail → completed ledger)_
-- [x] Integrate CPU region claims and co-residency policy.  — `campaign.py` acquires the ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Build the single audited read-only preflight wrapper (§3.5) and remove every other name-pattern ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Run every candidate process in an owned scope/cgroup with PID/start-time receipts and verified ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Integrate host-health/reboot-required and cache-preparation states, including the one-week ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Register AutoKernel on the session bus: roster id, heartbeat at every task boundary, outbox, ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Wire `scripts/utils/agent_log.sh` task start/decision/end logging, and log rollback commands ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] Verify the C6 sandbox on the real host; remove unsandboxed operation from live AutoKernel. ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] Extend the sandbox to **candidate binary execution**, not just the evaluator: no write access ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] Add resource starvation/drain/resume tests and campaign checkpointing.  — append-only ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **Import the MI210's actual NUMA attachment as a resource-plane fact: the device is on node 1, not** ✅ 2026-08-10 _(detail → completed ledger)_
 
 **Exit:** the controller can safely author, build, acquire and release CPU **and GPU** resources, be
 revoked, and be seen — without inference or production mutation.
 
 ##### Phase AK3 — trusted tiered evaluator
 
-- [x] Replace `kernel_eval.sh` behind a typed evaluator API; do not grow the old shell script. ✅ 2026-08-03 (evaluator/api.py; verdict cannot be stamped)
-- [x] Require an explicit anchor for every performance/coherence comparison; no-baseline is `INVALID`. ✅ 2026-08-03 (anchor-less is INVALID)
-- [x] Make status a computed verdict, never an unconditional literal. ✅ 2026-08-03 (re-derived in __post_init__; VerdictTampering)
-- [x] Build the codified operator-microbenchmark recipe constructor so T1 argv is constructed, and ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Implement the affected-surface derivation and dispatch-trace reconciliation (§6.4). ✅ 2026-08-03 (evaluator/surface.py)
-- [x] Implement the §8.5.1 source-integrity gates: symbol/registration-table extraction and diffing ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Red-team those gates specifically: a candidate that deletes a template specialization, one that ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Add full correctness surfaces: relevant ops including `MUL_MAT_ID`, exact/unseen shapes, ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Add the mandatory ASAN/UBSAN path for memory/threading changes and the diff-complexity ceiling. ✅ 2026-08-03
-- [x] Record absolute single-stream, batched/aggregate, latency, variability, capacity, mechanism, and ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Implement T0/T1/T2 adapters for llama CPU/GPU first; STT/TTS after their protocols exist. ✅ 2026-08-03 (STT/TTS deferred to AK9 as designed)
 - [x] **Add an immutable archive/resume package for source-candidate T0 prerequisites.** ✅  _(detail → completed ledger)_
-- [x] **Complete full-suite acceptance and promotion of the fresh-source prerequisite capture** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] Implement the e-process reducer, pre-committed stopping rule enforcement, and the anchor gate. ✅ 2026-08-03 (evaluator/statistics.py; alpha derived, none supplied)
-- [x] Red-team the evaluator with deliberately wrong, test-shape-specialized, fake-score, fallback, ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Add four controls: positive, neutral, degraded-negative, and periodic **A/A**. ✅ 2026-08-03 (five — the accept-side historical-win replay joined them)
-- [x] **Emit a PRE-CORRECTNESS PROGRESS LADDER, not a single failure verdict.** Today every non-verifying ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **Record CGRE — normalized gap closure `(T_base − T_cand)/(T_base − T_ref)`, clipped to [0,1] —** ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **Adopt the epsilon-separated staircase so every correct candidate outranks every failed one** ✅ 2026-08-10 _(detail → completed ledger)_
 
 **Exit:** controls reach their expected deterministic states, the actor cannot tamper with the
 evaluator or its own scope, and T1 may legally guide search.
 
 ##### Phase AK4 — planner/critic/controller
 
-- [x] Implement the explicit state machine and journal every transition. ✅ 2026-08-03 (controller/state_machine.py; journal-then-act)
-- [x] Build the structured source/profile/workload/negative-history/oracle context compiler with ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Build planner and pre-/post-run critic adapters; prefer distinct providers for the two roles. ✅ 2026-08-03 (controller/planner.py + critic.py, fake-provider tested)
-- [x] Implement **operator hypotheses and still-open hypothesis tracking** (§8.4.0): the operator-facing ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Enforce proposal schema, one-concept rule, wall-share ceiling, novelty, budget, hierarchy, and ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Build store-guided next-experiment selection using information gain plus expected value. ✅ 2026-08-03 (incl. harvest/explore phases)
-- [x] Build champion composition and mandatory combined-candidate reevaluation. ✅ 2026-08-03 (controller/composition.py)
 - [x] **Restore the lean bank/frontier/champion sequencer on the runnable journal plane.** ✅  _(detail → completed ledger)_
-- [x] Implement deterministic stop/plateau/budget/storage/integrity/evaluator-gap guards. ✅ 2026-08-03 (controller/guards.py; 13 stop states)
-- [x] Add planner regression fixtures proving it consults failures and does not repeat known negatives. ✅ 2026-08-03
-- [x] **Settle WHICH gate form this loop uses — the literature does not, and we should not inherit the** ✅ 2026-08-10 _(detail → completed ledger)_
 - [x] **Add `KIND_STATE_TRANSITION` to `journal.py` and rewire the controller's `TransitionRecorder`.**
   `journal.KINDS` is a closed vocabulary with no state-transition kind, and `journal.py` was outside
   AK4's write scope, so non-stop transitions land in a sibling `TransitionLedger` with the same
@@ -2848,8 +2748,6 @@ evaluator or its own scope, and T1 may legally guide search.
   behind the existing seam. ✅ 2026-08-10 — superseded: the Python controller/state-transition plane
   is deferred and is outside the lean campaign import path; the live driver journals proposal and terminal
   campaign records directly, so adding a dead vocabulary member would restore no behavior.
-- [x] **Re-derive that a capture actually ran against the anchor it names.** The five T0 evidence ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **Apply the AutoPilot operator-hypothesis integration patch** — epyc-orchestrator ✅ 2026-08-10 _(detail → completed ledger)_
 
 - [x] **AK-WM-0 — Existing least-commitment prerequisites audited. ** `ProposalManifest` ✅ 2026-08-05 _(detail → completed ledger)_
 
@@ -2889,45 +2787,22 @@ memory, and champion maintenance without human steering.
 
 ##### Phase AK5 — readiness estimator and release gate
 
-- [x] Implement per-backend, per-phase T2 scope and weights from compiled facts, including the ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Implement the readiness signal and its coverage/non-target/mechanism guards. It reports; it does ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Implement the capability objective with an immutable campaign-start utility model. ✅ 2026-08-03
-- [x] Extend `kernel_freeze_scope.py` into a complete deduplicated release-plan compiler keyed by ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Implement the generic T3 runner and release-bundle schema across CPU/GPU llama first. ✅ 2026-08-03
-- [x] Implement `PASS_WITH_WAIVER` and waiver hash/predicate verification. ✅ 2026-08-03
-- [x] Port v8/speech transaction integrity patterns into generic validation — not hard-coded evidence. ✅ 2026-08-03
-- [x] Dry-run the T3 compiler/validator against preserved v8 and speech freeze artifacts; **expect the** ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Add failed-gate replay/cooldown/idempotence behaviour. ✅ 2026-08-03
-- [x] **Restore the release/readiness evaluator as a separate operator-triggered plane after the lean** ✅ 2026-08-12 _(detail → completed ledger)_
 
 **Exit:** a sealed fixture champion yields one reproducible PASS/FAIL/PASS_WITH_WAIVER bundle and
 cannot retrigger the expensive gate unchanged.
 
 ##### Phase AK6 — release packager and operator handoff
 
-- [x] Implement the packager: transaction plan, rollback plan, draft era row, draft AutoPilot ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Prove it refuses missing hashes, evaluator drift, dirty ancestry, reused version names, ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Reconstruct the expected v8 and speech transactions from fixtures without applying them. ✅ 2026-08-03
-- [x] Route the cutover request through the bus to whoever owns inference (§11.3). ✅ 2026-08-03
-- [x] Render the package as a four-part decision package (`OPERATING_CONSTRAINTS.md:69-78`). ✅ 2026-08-03
-- [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
+- [ ] **AKU-13** Run an end-to-end campaign that stops at a validated package with zero production writes.
   - [x] **Complete the offline operator-closeout integration fixture.**  — research ✅ 2026-08-12 _(detail → completed ledger)_
-- [ ] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
+- [ ] **AKU-14** Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
   fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
   empirical receipts.
   - [x] **Complete the offline fault-injection acceptance matrix.**  — research ✅ 2026-08-12 _(detail → completed ledger)_
   - [x] **Publish and verify the governed real host-process rehearsal receipt.**  — ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] Give the operator surface a freshness and health contract, not just data. Today's `/kernel` page is ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Replace the `/kernel` dashboard JSON contract. The existing one exposes a partial Pareto and ✅ 2026-08-03 _(detail → completed ledger)_
 - [x] **Repair the Kernel-R&D dashboard's current-receipt selector and live runs producer.** ✅  _(detail → completed ledger)_
-- [x] **Execute the Kernel-R&D current-state renderer in the static-JavaScript gate and restore the** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **Teach Kernel-R&D to select current v2 AutoKernel attempts and classify live versus unresolved** ✅ 2026-08-12 _(detail → completed ledger)_
 
-- [x] **Project the terminal raw-HIP r6 decision receipt on Kernel-R&D without manufacturing a** ✅ 2026-08-12 _(detail → completed ledger)_
 - [x] **Surface current loop-engineering and host-process recovery evidence on Kernel-R&D.** ✅  _(detail → completed ledger)_
-- [x] **Make frozen-kernel working-tree drift a first-class production-set alarm.**  — ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] Add a non-recursive, panel-specific Kernel-R&D data-health probe so registry consumers can ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] Extend production-kernel-set projection from the attested llama.cpp v9 anchor to the separately ✅ 2026-08-12 [declined: ws58 2026-11-03 content-review: stale reboot item (reboot 2026-08-13 done)] _(detail → completed ledger)_
 
 **Exit:** campaigns produce correct, idempotent, operator-executable release packages and never write
 production.
@@ -2953,11 +2828,6 @@ document; this phase is the checklist.
 
 **Gating tasks — the campaign cannot produce a result until these close:**
 
-- [x] **THE BLOCKER — no candidate could cross the evidence threshold.** Calibration solves ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] Extension-round order schedule settled — **extended**, keyed on attempt parity, so ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] Anchor triple bound for **two tools** (T0 hashes `llama-cli`, microbench compares against ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] `cpu_region_claim` prefix collision with the candidate-id space closed. ✅ 2026-08-04
-- [x] T0 producers wired (`extract_elf_symbols`, `parse_unified_diff`, the `surface.py` ✅ 2026-08-04 _(detail → completed ledger)_
 
 > **✅ CLOSED 2026-08-05 — the α budget is machine-protected at the completed-run seam.**
 > Previously, a **declared round could be re-run until it crossed**. The pooling seam refused the same round
@@ -2979,26 +2849,13 @@ document; this phase is the checklist.
 > and the stock executing path refuses a missing durable `--journal-root` during preflight. A repeat
 > is `attempt + 1` with the retry schedule, never a re-roll of observed evidence.
 
-- [x] Build the per-candidate run ledger that makes the above machine-enforced rather than ✅ 2026-08-05 _(detail → completed ledger)_
 
 **Built 2026-08-04 — the loop gained a composable driver:**
 
-- [x] **`campaign.py` — the entrypoint the package spent 94k lines not having.** A `grep` for ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] The accept rule, in four conditions rather than a statistics module: T0 all-PASS ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] **The first real A/A this package has ever had** — four runs of identical code, between-run CV ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] `program.md` — the human control surface: the loop procedure plus a hypothesis inbox, modelled ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] Hypothesis path end to end: falsifier optional at entry and **mandatory before compute**; ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] `--hypothesis` wired to the claim, closing the FIFTH "guard defined and never wired" in this ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] **~79,600 lines deleted** (`release/`, `adapters/`, `surface/`, the AK4 strategy plane), tag ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] Refactor plan Steps 0–2 executed: placeholder digests refused (`BuildProvenance.` ✅ 2026-08-04 _(detail → completed ledger)_
 
 **Discovered 2026-08-04 — current disposition:**
 
-- [x] **Answer whether the decode drift recovers after rest** (Step 1 below). Under one q0–q3 claim, ✅ 2026-08-05 _(detail → completed ledger)_
-- [x] Replace the placeholder accept threshold (2.1310%, from four runs on one model) with the first ✅ 2026-08-05 _(detail → completed ledger)_
-- [x] Bind `evaluator/api.py`'s **supplied-source** audit to the module it claims to inspect.  — fixed: ✅ 2026-08-10 _(detail → completed ledger)_
 - [x] The `capability.py` hoist itself: 11 audit functions, ~631 lines, 5 denylist tables → one ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] A structural audit that every declared guard has a caller. Five instances of "declared and ✅ 2026-08-10 _(detail → completed ledger)_
 
 ---
 
@@ -3022,8 +2879,6 @@ parallel session brought up the orchestration stack mid-measurement — seven `l
 processes, load 3.3 → 23.9, memory 54 → 306 GB — and the readings collapsed 26%. **The co-tenant did
 nothing wrong. We held no claim.**
 
-- [x] Confirm no material CPU contention and that whoever owns the stack knows the host is being ✅ 2026-08-05 _(detail → completed ledger)_
-- [x] Verify host canonical state — governor `performance`, THP `always/always`, `numa_balancing=0`. ✅ 2026-08-05 _(detail → completed ledger)_
 **Standing guardrail — do not trust the boost gate at idle.** Measured 2026-08-04: 16 cores above
 2.5 GHz idle versus **117 under load**, against a required 80. The gate is evaluated only at
 `load/core ≥ 0.25`; a preflight that reads it at idle aborts on a healthy machine. The claimed probe
@@ -3036,55 +2891,26 @@ future sweep.)*
 
 ##### Step 1 — answer the one open measurement question (≈20 min, cheap, do it first)
 
-- [x] **Does the decode decline recover after rest?** The previous monotone trajectory did not ✅ 2026-08-05 _(detail → completed ledger)_
 
 ##### Step 2 — calibrate the instrument before trusting it
 
-- [x] **Bind the hardened instrument to clean, committed provenance before inference.**  — ✅ 2026-08-12 _(detail → completed ledger)_
 
-- [x] **Run the five fixed controls (§15.2) before any real search**: positive, neutral, negative, ✅ 2026-08-05 _(detail → completed ledger)_
-- [x] Solve the calibration block off the A/A pool and record φ, α_sel, α_conf, the noise floor and ✅ 2026-08-05 _(detail → completed ledger)_
-- [x] **Make calibration authority era- and instrument-local.** The executing CLI now requires ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **Close package-power admission without broadening host privilege.**  — research ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **Require a fresh campaign identity and self-consistent evidence root.**  — ✅ 2026-08-12 _(detail → completed ledger)_
 - [x] **Run the five controls against frozen v9 plus the hardened measurement instrument.** ✅  _(detail → completed ledger)_
 - [x] **Recalibrate the final direct-child IQK instrument after empirical T0 repairs.** ✅  _(detail → completed ledger)_
 
 ##### Step 3 — the first candidate
 
-- [x] **Close the first-campaign `HostOps` adapter before taking a claim.** Supply the candidate ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **Turn the six reference-leg T0 unknowns into real evidence for the first parameter candidate.** Close exact reference, ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **Live-validate the stateful T0 integrity pass.**  — with suite seed `4711`, all ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **Live-validate the independent host-double fp64 oracle.**  — direct GGUF-wire ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **Prepare and fail-closed preflight the first CPU IQK campaign.**  — rebound ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **After a compliant host reboot, rerun the prepared full-host CPU IQK campaign.**  — ✅ 2026-08-13 ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **Close empirical T0 defects surfaced by the post-reboot IQK rehearsal.**  — ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Reboot and execute the fresh bootstrap-pair attempts through r29.**  — r25 reached ✅ 2026-08-13 _(detail → completed ledger)_
 - [x] **Make the CPU IQK instrument and T0→T1 boundary fail closed on the observed failures.** ✅  _(detail → completed ledger)_
-- [x] **Harden and calibrate the IQK bootstrap frame through r36.**  — r2/r3 exposed ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Land the sealed T0 and decode-cell producer prerequisites for the final pair.**  — ✅ 2026-08-13 _(detail → completed ledger)_
 - [x] **Execute the r41 IQK intervention and preserve the matched control's exact refusal.** ✅  _(detail → completed ledger)_
 - [x] **Seal evaluator identity at campaign start and add the nonpromotable discovery tier.** ✅  _(detail → completed ledger)_
-- [x] **Prepare a fresh r42 pair instead of mutating the terminal r41 identity.**  — ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Execute r42 and preserve its pre-compute evaluator-closure refusal.**  — the ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Execute r43 and preserve both terminal outcomes.**  — the intervention reached ✅ 2026-08-13 _(detail → completed ledger)_
 - [x] ~~**Reconcile the strict load/boost preflight mode, then execute a fresh matched prefill pair.**~~ **SUPERSEDED 2026-11-17 (autokernel, INF-06 box sweep): pinned to the 2026-08 bootstrap controller (r43 prefill pair on a pre-v10 candidate). The prefill floor work moved to R18-D (pp512 floor recalibration, still open below), and the controller was rebuilt under AKU-01..12. No C12 decision depends on this pair.** [no-belief: superseded]
       Preserve r43 unchanged; prove the strict checker does not request contradictory load policy,
       re-establish a compliant host state if the frequency finding persists, and mint fresh immutable
       identities for both arms before archive projection.
 - [x] **Finish the candidate-only discovery-throughput primitive without weakening confirmation.** ✅  _(detail → completed ledger)_
-- [x] **Produce and seal the first real amortized discovery baseline banks.**  — the ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Run the first live MI210 discovery-first screen with residency proof.**  — ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Expose and repair the IQ3_XXS MMID correctness boundary before spending more strict** ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Checkpoint the fresh post-fix decode calibration and release all compute on operator stop.** ✅ 2026-08-13 _(detail → completed ledger)_
 - [x] ~~**Land and independently review the controller-first discovery loop before resuming campaigns.**~~ **SUPERSEDED 2026-11-17 (autokernel, INF-06 box sweep): the Terra-worktree controller it names was replaced by the AKU rebuild program (AKU-01 enrollment through AKU-12 cutover, this file), …** [no-belief: superseded] _(detail → completed ledger)_
 - [x] ~~**Continue GPU candidate-only throughput discovery from the MMQ-MFMA-off nomination.**~~ **SUPERSEDED 2026-11-17 (autokernel, INF-06 box sweep): the nomination was against the 2026-08 pre-v10 GPU baseline, and its decode calibration was rejected (sub-box below). GPU discovery since then …** [no-belief: superseded] _(detail → completed ledger)_
-- [x] **Preserve the rejected decode r2 calibration as terminal non-authority.**  — its ✅ 2026-08-13 _(detail → completed ledger)_
 - [x] ~~**Establish a fresh accepted decode calibration, then run the governed CPU decode IQK holdout.**~~ **SUPERSEDED 2026-11-17 (autokernel, INF-06 box sweep): gated on the 2026-08 "final bootstrap prefill pair" (superseded above). CPU decode calibration now lives in the floor-unit / CPU A/A …** [no-belief: superseded] _(detail → completed ledger)_
-- [x] **CPU first.**  — the r41 intervention and control both ran on `llama_cpu` under ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Reproduce a known-real CPU win as candidate #1 — the IQK replay.**  — r41 ✅ 2026-08-13 _(detail → completed ledger)_
-- [x] **Keep the 2026-07-04 async-prefetch replay in the GPU lane.**  — the +3% / MemUnitStalled ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **Repeat the governed v9 async-prefetch replay under an independent 20-block campaign.** ✅ 2026-08-12 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: vague run instruction; the seed ledger (DS41-C107) and R21-5 pipeline supply hypotheses]** Then a real one. Drop a hypothesis into the store (`HYPOTHESES.md` has the shape), or run
       exploratory with no `--hypothesis` at all.
 
@@ -3140,8 +2966,6 @@ evidence, and the loop has re-anchored cleanly.
 
 ##### Phase AK8 — serving-runtime adapter and research queue activation
 
-- [x] Build the serving-runtime adapter against the three-gate stack-change path (§11.6), reusing ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Prove the adapter **refuses** the kernel-freeze path rather than degrading to it. ✅ 2026-08-03
 - **[declined: ws58 2026-11-03 content-review: unbounded; DS41-C107 is the seed ledger]** Populate campaigns from the §19.8 seed queue after fresh profiling.
 - **[declined: ws58 2026-11-03 content-review: no trigger; rocm-kernel-authoring RVP-C5 owns oracle substrates]** Activate `oracle_port` campaigns; consider an upstream-delta scanner once the manual path works.
 - **[declined: ws58 2026-11-03 content-review: conditional; rocm-kernel-authoring RVP-C5-4/5 own it]** Seed external kernel-authoring suites only after license, gfx90a, honest baseline, quarantine,
@@ -3158,29 +2982,8 @@ It also carries the ggml-generation hazard: the three trees run three ggml gener
 launcher sets its own `LD_LIBRARY_PATH` and proves it, or a binary silently runs against another
 tree's ggml.
 
-- [x] Author the STT protocol: correctness corpus and output normalization (what counts as a ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Author the TTS protocol: text/audio identity, deterministic and numerical checks, an ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Decide each protocol's annex placement at drafting time, per the §14 AK0 precedent. ✅ 2026-08-03
-- [x] Build the `whisper_stt` and `qwentts_tts` adapters on their own experimental trees. ✅ 2026-08-03
-- [x] Wire linkage verification through the research repo's `scripts/utils/verify_ggml_linkage.sh` for ✅ 2026-08-03 _(detail → completed ledger)_
 - [x] **Extend the release-plan compiler to the independently freezable speech trees.** ✅  _(detail → completed ledger)_
 
-- [x] ✅ 2026-09-08 Extend the release-plan compiler to the speech trees — note these two *are* independently
-  freezable, unlike CPU and GPU (§1.5). **UNBLOCKED 2026-08-03**: Annex S is ratified, so
-  `P-STT-1`/`P-TTS-1` are in force and `PHASES_BY_BACKEND` can now carry the speech phase
-  vocabulary honestly. It was withheld only because the compiler cannot grade a cell under an
-  unratified protocol; that reason is gone. Note the whole speech plane (`adapters/`) was deleted
-  on 2026-08-04 and lives at tag `autokernel-preserve-20260804` — restore from there rather than
-  rewriting. Research branch `codex/ak9-speech-compiler-20260812` at `b367d09f` is a pushed proposal
-  under primary review; this checkbox remains open until that implementation is accepted and merged.
-  **✅ 2026-09-08 — THE STATED CONDITION IS MET AND VERIFIED.** `b367d09f` is an ancestor of the research
-  repo's `origin/main` (`git merge-base --is-ancestor b367d09f origin/main` → 0), i.e. accepted and merged;
-  the sibling `[x]` above records the same work landing via research `99fe3014` (783 tests, 132 subtests).
-  Ticked at the 2026-09-08 wrap-up reconciliation against git, not against prose — the item wrote its own
-  release condition, which is why it could be closed mechanically.
-- [x] `Annex S` ratified — `measurement/protocols/speech.md`, 86 KB, five annexes in ✅ 2026-08-03 _(detail → completed ledger)_
-- [x] Speech WER supersession ratified — `ratify_speech_wer_correction_20260804.json`, 2.35 → 3.37. ✅ 2026-08-04 _(detail → completed ledger)_
-- [x] `latency_s_11s_clip` audited and found CORRECT — 11 s / `xrt_overall` 51.86 = 0.212 s against ✅ 2026-08-04 _(detail → completed ledger)_
 
 ###### What remains open after AK9, and why
 
@@ -3827,19 +3630,6 @@ imports *the project's own* historical research. Neither gates against **upstrea
 that cannot tell "nobody has done this" from "this is mainline elsewhere and we simply do not have it"
 will spend kernel-authoring budget rediscovering ports.
 
-- [x] **AK-CAT-1 — Add a four-way prior-art classification to §8.4 PROPOSE.** ✅ 2026-08-10. Before a finding may be
-  called novel, classify it as exactly one of: (a) an existing path that should already apply here;
-  (b) an existing path that appears disabled, unsupported or regressed in this trace; (c) a pattern
-  mainline upstream but missing locally, or still open upstream; (d) genuinely new, only when no
-  catalogue row fits. **Buckets a–c exit to a config, flag or port change**, not to a campaign.
-- [x] **AK-CAT-2 — Build a gfx90a/llama.cpp prior-art catalogue (§19 corpus).** . Copy the reference ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-CAT-3 — Build the expected-absence register BEFORE the catalogue rows.** . The reference ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-CAT-4 — Adopt the pinned-head refresh discipline.** . The reference pins the upstream head of ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-CAT-5 — Add a cumulative GPU-time-share floor as a proposal-space pruner**  (reference ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-C6-1 — Name syscall confinement explicitly in C6's acceptance criteria.** . intake-1028 is a ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-C6-2 — Harvest the controller/dispatcher/router/worker + SQL job-store split as a design** ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-KM-1 — Record the model-tree-vs-kernel-tree search rule in the §19 corpus.** . Verifying a ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-DEL-1 — SCOPE-REDUCTION GATE: measure the bucket split before building any novel-kernel** ✅ 2026-08-11 _(detail → completed ledger)_
 - [x] **AK-DEL-2 — Review and integrate the next bounded gfx90a prior-art catalogue expansion.** ✅  _(detail → completed ledger)_
 
 Implementation evidence for AK-CAT-1–5 and AK-KM-1 is
@@ -3883,12 +3673,6 @@ Recorded because they are load-bearing and because I asserted the opposite earli
 
 ##### AK-TR — the transfer machinery
 
-- [x] **AK-TR-1 — Record a per-change-class transfer ratio on the evaluation event.** . Add ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-TR-2 — Print the self-spread noise floor adjacent to every per-case delta.** . §9.2 already ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-TR-3 — Per-turn productivity accounting** — see ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-TR-4 — Extend roofline utilisation (§8.3.1) to a per-quant surface, anchored on** ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-TR-5 — Fresh process per arm, and size the working set so memoization cannot pay.** Where a ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-TR-6 — Compile-only artifact-diff veto in T0 (§8.6).** . Before spending any GPU wall-time, ✅ 2026-08-10 _(detail → completed ledger)_
 
 Implementation evidence: evaluation-event schema v4 and `evaluator/api.py` realize AK-TR-1/2;
 `artifact_diff.py` parses captured resource metadata/disassembly, and `campaign.py` refuses a GPU T0
@@ -3900,11 +3684,6 @@ Enabled by corrections 2 and 3 above. The governing rule, from operator steering
 **lanes screen, the full instance verifies.** A lane may rank; only a full-instance measurement under
 the standing protocol may make a claim.
 
-- [x] **AK-LN-1 — Lane registry.** . Each lane declares its cost, its capacity, and **what it is a proxy** ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-LN-2 — Partition-depth calibration.** . Run one fixed candidate set at full-machine and at ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-LN-3 — Cross-lane A/A control — necessary, and NOT sufficient.** . §15.2's A/A control run ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-LN-4 — Op-level screening on profiled bottlenecks.** . Operator steering: profile ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-LN-5 — Isolation requirement for concurrent CPU lanes.** . Concurrent instances contend ✅ 2026-08-10 _(detail → completed ledger)_
 
 Implementation evidence: `lanes.py` records each lane's physical-core-share cost, capacity, proxy,
 CPU set, memory binding and historical evidence reference. It refuses mmap and physical-core overlap,
@@ -3918,40 +3697,11 @@ narrower change-class calibration later clears the same gates.
 Sequence **RVP-T0-1 → RVP-T0-2 → AK-BH-1 → AK-BH-2**, so two thirds of this block can falsify at zero
 GPU cost before any GPU claim is filed.
 
-- [x] **AK-BH-1 — hipBLASLt vs rocBLAS microbench at our prefill shapes, standalone.**  — ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-BH-1a — Sustain the nine-shape vendor-baseline comparison long enough to attest loaded** ✅ 2026-08-12 _(detail → completed ledger)_
-- [x] **AK-BH-2 — Baseline-honesty factorial: `-fa 0|1` × `ROCWMMA_FATTN` × `MMQ_MFMA`.** ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-BH-3 — CPU-lane baseline-honesty arm, run concurrently with AK-BH-2. ** The ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-BH-4 — Encode strongest-baseline selection by exact measured surface. ** ✅ 2026-08-11 _(detail → completed ledger)_
 
 ##### AK-OP — operator-only (measurement trust boundary is human-amendment-only)
 
 Neither of these may be executed by a session; both are decision packages for the operator.
 
-- [x] **AK-OP-1 — P-GPU-1 `duty_cycle` amendment (operator decision).** ✅ 2026-08-14 — RATIFIED
-  (option a) by `RATIFY-PGPU1-DUTY-CYCLE-20260814` (receipt
-  `artifacts/operator/ratify_pgpu1_duty_cycle_20260814.json`, amended sha256
-  `9f6f033ed363a8322e082f8933a7be01c3abf9c5eb7f05ea3a10bbf6b99de3fc`). Mandatory field 7
-  `duty_cycle: bursty | sustained` added to P-GPU-1; the canonical `fresh server per rep` recipe is
-  declared `bursty`. Pure labelling — no existing number invalidated. Sustained variant (option b)
-  deferred until a sustained-serving claim needs it. Historical rationale below.
-  - **Observation.** P-GPU-1 field 4 specifies a fresh server per repetition. A fresh server per rep
-    necessarily inserts a multi-second gap between reps — i.e. the protocol measures the **bursty**
-    duty cycle, while production serves in the **sustained** one.
-  - **Why it matters.** The reference ablation this batch surfaced reports the bursty regime reading
-    meaningfully lower latency with substantially lower variance than sustained operation on the same
-    hardware. Both regimes are legitimate to measure; **conflating them is not**, and a protocol that
-    does not name its duty cycle cannot be compared against one that does.
-  - **Options.** (a) Add a `duty_cycle: bursty | sustained` field to P-GPU-1 and declare the current
-    protocol `bursty`, leaving every existing number valid and correctly labelled. (b) Additionally
-    author a sustained variant for claims about production-like load. (c) Decline and record that
-    P-GPU-1 numbers are bursty-regime by construction.
-  - **Recommendation: (a) now, (b) when a sustained claim is first needed.** (a) is a pure labelling
-    amendment that invalidates nothing and makes the limitation visible; (b) costs a protocol
-    authoring cycle and should be paid when there is a claim that needs it.
-  - **Requires a human amendment to `MEASUREMENT.md`** — AK-D10 and the constitution's trust boundary.
-    No session may self-apply it.
-- [x] **AK-OP-2 — Decline root-side `--setperfdeterminism` capability.**  — RVP-T0-1 ✅ 2026-08-11 _(detail → completed ledger)_
 
 ##### Recorded declines (so they are not re-derived)
 
@@ -3972,14 +3722,6 @@ Neither of these may be executed by a session; both are decision packages for th
 _The analyst reports were recovered from the session transcript **after** the Stage-3 plan was written,
 so they carry derived actionables the plan predates._
 
-- [x] **AK-X-1 — Add `INSTRUMENT_TAMPERED` to the §12 failure-and-abuse table.** . RVP-C6-1 builds the ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-X-2 — Add a parsed `device_state` block to the §7.4 evaluation event**, populated from ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-X-3 — Add `min_measurable_us` to the §9.3 T1a recipe, derived from OUR OWN A/A spread.** ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-X-4 — Add `cache_state: warm | cold` to the §9.3 T1a recipe and hold it fixed across arms.** . ✅ 2026-08-10 _(detail → completed ledger)_
-- [x] **AK-X-5 — Per-partition CPU frequency / package-power attestation in the §7.4 `host_receipt`.** ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-X-5a — Run the cross-lane package-power/frequency acceptance.** . Exercise the same fixed ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-X-6 — Turn-budget stopping rule driven by AK-PT-1.** Refine turns continue only while the ✅ 2026-08-11 _(detail → completed ledger)_
-- [x] **AK-X-7 — Edit-type classifier over adjacent candidate diffs** (no-op / mask fix / delegated-op ✅ 2026-08-10 _(detail → completed ledger)_
 - [x] **AK-X-8 — Add an intent/targeting axis to §9.6 banking.** Classify each banked candidate as
   right-target-good-perf / right-target-bad-perf / **wrong-target-good-perf** / wrong-target-bad-perf.
   A wrong-target speedup is a "lucky win" — **quarantined, not banked**. This is a *mis-targeting*
@@ -3993,7 +3735,6 @@ so they carry derived actionables the plan predates._
   promotion under the lean-loop decision. T0 already requires anchor-bound generation/coherence and full
   op correctness; task-level accuracy becomes mandatory when a real serving-path champion reactivates the
   release plane, not as synthetic machinery before candidate #1.
-- [x] **AK-X-10 — Record external evidence that C4 is on the critical path**, not more refine turns: ✅ 2026-08-10 _(detail → completed ledger)_
 
 **Declined, recorded so they are not re-derived:** compilation-flag pinning across candidate and anchor
 (**already covered** by §7.3's candidate record, which binds compiler/toolchain/build command and
@@ -4062,7 +3803,6 @@ they pay.
 
 ##### 22.2 Tasks
 
-- [x] **AK-QL-1 — Catalogue the missing rungs.**  — research `02307322d166...` adds ✅ 2026-08-16 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7]** **AK-QL-2 — Re-state every ranked IQ2/IQ3 lever with an explicit VGPR target and a
       threshold-shaped payoff.** A lever that does not cross 64 does not regain the 8th wave and
       should say so in its own value case. Levers whose stated benefit is "fewer instructions" without
@@ -4081,14 +3821,12 @@ they pay.
       Before activation, codify the comparator plus `min_measurable_us`, declared `cache_state`, A/A,
       randomized/interleaved blocks and correctness; below the floor a cell is `inconclusive`.
       **Activation condition:** a practical serving or ranking decision depends on the ladder.
-- [x] **AK-QL-4 — Retain IQ1_S as an inactive discriminator, not an execution task.**  — ✅ 2026-08-16 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7]** **AK-QL-5 — Pair the ladder with correctness before any rung is proposed for production.**
       The ladder is speed-only; the IQ2/IQ3 rungs were built on a 1.23 MB / 30-chunk imatrix and are
       performance probes, explicitly not quality-grade models. Standing project rule is to pair speed
       with a correctness check. **No rung on this ladder may be cited in a promotion argument until
       this runs** — the throughput ranking says nothing about whether IQ4_XS is usable, only that it
       is fast.
-- [x] **AK-QL-6 — Record the refuted blanket batching premise.**  — `02307322d166...` ✅ 2026-08-16 ✅ 2026-09-15 _(detail → completed ledger)_
 - [ ] **AK-QL-7 — Run AK-H-QL-1's second falsifier on the unroll(disable) candidate.** TRIPWIRE-gated:
       activate only when an IQ2/IQ3 GGUF becomes GPU-resident (mi210 handoff TRIPWIRE; current ROCm0
       residents are Q8_0/Q4_K, already ≤64 VGPR). Fresh production → `llama.cpp-experimental` full build
@@ -4346,7 +4084,6 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       Hardware-independent, and it yields the **diagnosis-accuracy statistic the loop currently cannot
       compute** — the exact complement to GPA's estimate-vs-achieved discipline (RVP-C4-11). Land the two together.
   - 2026-11-10 PARTIAL (research `dcf4fd313`, branch `ak/pm-boxes-20261110`, merged into epyc-inference-research origin/main at `9c1a3a421`; box stays OPEN). Every attempt row with a Comparison (or a declaration) now carries `reflexion` = {schema `reflexion.v1`, expected_outcome, actual_outcome, was_fix_effective, was_diagnosis_correct, lessons[], avoid_patterns[], try_patterns[], lint_violations}. `actual_outcome` and `was_fix_effective` are DERIVED from the measured Comparison only (decisive improvement true; decisive non-improvement or inside-floor false; undecidable null); `was_diagnosis_correct` compares a DECLARED expected_outcome with the actual one and is null when nothing was declared, never invented. `reflexion.diagnosis_accuracy(rows)` computes the correct/known statistic with coverage; `broadcast_view(rows)` is the pure next-round digest. Tests: `test_reflexion` 6 passed; neighbouring loop suites 216 passed. Remaining: (a) the planner reply schema has no expected-outcome field, so accuracy coverage is 0% until the planner declares one (adding it changes what the planner is asked); (b) broadcast is not wired into any worker prompt; (c) RVP-C4-11 (GPA estimate-vs-achieved) lives in INF48-LIVE-3, so "land the two together" holds on the loop-record side only. [no-belief: write-side schema, no measurement]
-- [x] **AK-PM-18 — AK lesson-entry write-side schema and lint addendum to AK-PM-17 (schema and write-side lint only: no read side, no retrieval, no build before the AK-PM-11 ablation returns).** No LLM-authored AK lesson library exists today (the planner's memory is the deterministic do-not-repeat … ✅ 2026-10-20 _(detail → completed ledger)_
 
 _Recorded, not filed: the off-NVIDIA collapse KernelGenBench measured for AutoKernel (87%→25%) is
 **over-determined by the artifact's own published design** and needs no exotic explanation — playbook tier 1
@@ -4388,9 +4125,6 @@ loops.
 
 The operator directed (2026-09-17) that the agentic kernel-porting methodology be adopted into autokernel. The three items below are generic engineering practices (standard CUDA/CUTLASS tooling docs); the operator digest of the source threads (intake-1461#record) and its consolidating essay (intake-1480#record) remain stage1-unverified and their port speed/latency claims are NON-CITABLE.
 
-- [x] **AK-PORT-1 — Correctness-gated optimization order in the loop spec.** Compile → operation-specific reference comparison under that operation's validated metric and tolerance → only then timing; a fast wrong variant is discarded. Cosine/PSNR and max-abs/MSE become gates only for operations … ✅ 2026-09-17 _(detail → completed ledger)_
-- [x] **AK-PORT-2 — Ordered test ladder with failure localization** (host wiring → kernel-side units → reference comparison), so a high-rung failure is not diagnosed at the wrong layer. ✅ 2026-09-17: research lane `032db5e5` routes actual changed source to native selected op, requires nonempty passing cases, then applies the independent GDN scalar fixture before timing. Unknown CPU edits refuse before build (`c8e79e4c`), and unavailable/wrong/oracle-routing outcomes remain distinct. Existing 28-keep history is not rejudged as a new source edit.
-- [x] **AK-PORT-3 — Native-code diagnostic on prospective source keeps.** Attach a bounded native-code summary, or an explicit unavailable record, to every new source keep; bind it to the retained tree, build recipe/toolchain and code-object bytes. State unsupported spills, occupancy, vectorization … ✅ 2026-09-17 _(detail → completed ledger)_
 
 **Implementation checkpoint (2026-09-17).** AK-PORT-1's ordering is live for admitted source routes, including exact independent F32 GDN reference comparison (16,896 outputs), the bounded Q4_K/Q5_K IQK fixture and the native GPU reference path. The operator accepted the validated per-operation metric/tolerance as the completion criterion; a universal cosine/PSNR or max-abs/MSE policy is **not** installed or implied. CPU IQK/x86/graph edits outside the admitted witness routes refuse before expensive build/timing. AK-PORT-3 has a bounded diagnostic sidecar and write-side ClaimTuple on prospective source KEEPs (`09bc8fc3`), with strict advisory Vidya reader (`7e46f3ca`). Research `44c3dae1` and root `36c378c6` add bounded CPU ELF/symbol instruction-mix evidence; an existing GLM anchor build yielded GDN and Q4_K/Q5_K/Q6_K dot summaries. Research `004de151` samples bounded gfx90a ELF objects in candidate HIP fatbins; root `2f49a783` strictly checks their DSO container/offset bindings. Runtime-only no-new-build variants and legacy campaign summaries remain explicit coverage limits. Embedded samples are not a full fatbin census or per-kernel attribution. Do not infer PTX/SASS/CUBIN, spills, occupancy, or vectorization from AMD objects or the CPU symbol mix.
 
@@ -4398,9 +4132,7 @@ The operator directed (2026-09-17) that the agentic kernel-porting methodology b
 
 **v25 observation route and source metric receipts.** Research `bf9b85ae` permits full-target CPU runtime A/B as `runtime_observed` without strict-statistics admission; it cannot select a recipe or move the champion. Reduced screens and strict budget-exhausted campaigns retain their exclusions. v25 launched at 17:18 UTC from the same 28-keep source/store and selected FULL on its first batch. Its first real observation, `akm-32-thread-balanced-partition`, estimated **−4.487%** versus the selected 48-thread recipe; the second, `akm-omp-numa-roundrobin-places`, estimated **−3.176%**. Both are uncalibrated and inside the existing 6.351% floor, so neither is a decisive negative or a keep. The serial controller then refused the completed two-iteration child with `scheduled child must cover exactly one research iteration`; v25 ended failed after preserving both observations. The guard and v26 relaunch are recorded below. Research `37d326ac` requires per-case `AK_REF_V1` metrics under native thresholds for GPU source gates when the enhanced test binary advertises them; malformed/missing receipts are oracle-unavailable. Research `53bc979c` retains observed errors and relative-to-existing-limit values from the independently admitted Q4_K/Q5_K CPU scalar fixture, without changing its thresholds. The native generic backend-op comparator is per-case NMSE or an operation override, not a validated universal cosine/PSNR rule.
 
-- [x] **AK-SERIAL-25 — Refuse multi-iteration serial children before launch and resume GLM with one iteration per scheduled child.** ✅ 2026-09-17: research `67c90866` applies the pre-launch guard to both scheduler-manifest and resolved-campaign serial mode (four focused tests pass). v26 started from the same source/store in a fresh state at 19:38 UTC with `batch_iterations=1`, an active first child and no failed targets. The two v25 runtime observations remain distinct; no false one-stage settlement was inferred. First completed v26 stage remains to be checked.
 - [x] ~~**[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores remain as history. Unrunnable as written; left unticked. **AK-SERIAL-26 — Verify completed GLM serial stages …**  _(detail → completed ledger)_
-- [x] **AK-SERIAL-26-stop — Stop the unproductive GLM serial watch and verify no AutoKernel process remains.** v28 stopped cleanly after 37 settled one-iteration batches (36 abstentions, one observation-only runtime arm), with zero new source-candidate measurements or keeps. The semantic 20-loop health criterion was not met; this checkbox records the operator-directed stop, not successful completion of AK-SERIAL-26. Retained evidence was not purged. ✅ 2026-09-18
 - [x] ~~**AK-SERIAL-26 — Semantic GLM health criterion remains unmet; resume only on a new operator instruction.** **[Subject deleted 2026-09-22]** GLM-5.3-Flash (model, DFlash2 drafters, `llama.cpp-experimental-glm53-*` worktrees) was removed from disk by operator direction; branches and stores …  _(detail → completed ledger)_
 
 **GLM v26 recovery checkpoint (2026-09-17, 23:49 UTC).** v26 was stopped cleanly after 71 one-iteration batches without a new keep: the retained store records 68 abstentions, two `keep_candidate` holds awaiting unseen confirmation, and one planner transient. Repeated refusals identified the search gap: hot fused `iqk_moe_fused_up_gate` Q4_K/Q5_K and dense Q8/F32 dot were outside admitted independent source witnesses; the earlier `iqk_mul_mat_moe_rows` route covered only preflight/dispatch. Research `9eee67c1` adds a body-confined fused Q4_K/Q5_K route, exact candidate-DSO helper hit, independent fused-graph scalar comparison, and a distinct request-bound held-out CPU confirmation path. It does not widen generic IQK or x86 edits. Eighty-six focused tests and the v27 launch dry run passed. Fresh GLM serial v27 started from the retained 28-keep source/store and was calibrating at this checkpoint (batch 0, zero settled iterations). Neither held candidate nor the new route is a keep or champion promotion. Verify real v27 dispositions before checking this task off.
@@ -4597,15 +4329,12 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
 - [x] **AK-MMQ-H5 — nthreads / per-wave-tile sweep in mmq-config-cdna.cuh** (256 vs 512 threads at I=128; CLOSED 2026-11-09 operator decision: all 147 kernels fail the static ISA gate as predicted, 62 lose occupancy (a0a592182). ✅ [no-belief: static gate only, no timing] [no-belief: operator decision 2026-11-09] [no-belief: static ISA gate, no timing] _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: "GATED, low prior" by its own text]** **AK-MMQ-SK — GATED, low prior. Stream-K off for MUL_MAT_ID small-M on CDNA MMQ.** Transfer is weak: intake-1825
   reports that split-K hurts BS1 small-M MoE in CKTile, not in MMQ.
-- [x] **Recorded so it is not re-derived (dives 2026-09-26).** ✅ 2026-09-26 _(detail → completed ledger)_
 
 #### Research Intake Update — 2026-10-20 (AK methodology cluster: forgetting, fork-and-flush, stateless agents, mode collapse, Elo-per-token, learned pre-screens)
 
 _Via /research-intake Stage 4 (operator-approved plan 2026-10-20). All sources dive-verified. Offline and read-only unless a line says otherwise; no campaign is launched and no live search policy changes. The census and diagnostic read closed stores that have no producer hook and therefore emit descriptive reports, not claims._
 
-- [x] **AK-HR-1 — Closed-store history census and read-only exporter: settle which restart, surrogate and diversity analyses the existing AK history can answer.** In a research-repo worktree (new offline package `scripts/kernel_rnd/autokernel/history_replay/`, no GPU and no timing), open every … ✅ 2026-10-20 _(detail → completed ledger)_
 - [x] ~~**AK-HR-2 — Search-diversity, faithfulness and repeat-null diagnostic over the closed AK history: decide whether the keep drought is mode collapse or space exhaustion.** After AK-HR-1, reading its `history_records.jsonl` only. Freeze a kernel mechanism taxonomy (8-10 classes, e.g. …  _(detail → completed ledger)_
-- [x] **AK-HR-2.1 — flip planner prior-experiment recall to ranked by default (operator 2026-10-20).** research `5c9cbbb66` (`loop/run.py`, `serial_roster.py`, `test_ranking.py`); effective at the next campaign launch. ✅ 2026-10-20
 - [ ] **AK-HR-2.2 — compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rates against the recorded pre-flip history (AK-HR-1/AK-HR-2 outputs).** Event: next DS41 or Q38FN campaign launch (the first with ranked-prior recall default-on, AK-HR-2.1). Record keep yield, structural repeat-null rate and the harness-event share of the `Already tried` window beside the AK-HR-1/AK-HR-2 baselines (repeat-null DS41 0.036, Q38FN 0.030; 81.2% of planner calls with no measured answer under recency recall). Done when the three numbers sit beside the baselines; no policy change from it alone. (filed 2026-10-20)
 - [ ] **AK-HR-3 — Close the prospective write-side gaps that AK-HR-1 lists, as nullable additive fields with no behavior change.** [too-big: source landed; owner review and real campaign canary remain] After AK-HR-1's gap table and after VB-AK-HISTORY lands its source row. Candidates, each added only if AK-HR-1 shows it absent: an attempt-to-call key (`attempt_id` on the `actor_call_metrics.v1` sibling line, or the inverse key on the experiments payload) so a planner, critic or author call maps to its attempt; a per-campaign monotone cumulative token and evaluation counter plus a stable trial id on each experiments payload; failure class and per-stage seconds (planner, critic, build, correctness, measure) on the candidate record; a typed knob or edit descriptor (type tag plus numeric parameters) written BEFORE build for runtime arms and for source candidates that declare parameters. Follow the nullable-field pattern of RB-lineage telemetry (`85c7b91e`): old rows stay valid and the closed self-hashed `actor_call.v1` schema is not widened (use a sibling line as `actor_metrics.py` does). Run `gitnexus impact` on every touched loop symbol first and report the blast radius; the INF-73 loop owner reviews the merge. Done when focused tests show old rows still read and the new fields populated on a dry-run attempt, and a re-run of AK-HR-1 on the post-change store reports the call-to-attempt join and the budget axis as answerable.
   - 2026-10-31 source checkpoint: ROOT `ff06bd505a0025b8b27796896767e7b39e65fbfc` and research `7663de4233bda269def61c132b696b4a6c9c6775` are published. ROOT64/research50 focused tests pass; model-free two-attempt writer/exporter emits two re-openable receipts, joins two calls and reports cumulative tokens100/200. Custody: `/mnt/raid0/llm/tmp/refactor-research-code-integration-20261031/HR3-QUALIFICATION.json`. Required INF-73 loop-owner review is being routed; box remains open. Runtime source adoption and actual campaign/planning canaries are unclaimed; VB-AK-HISTORY stays open. [no-belief: prospective source/fixture qualification]
@@ -4724,6 +4453,30 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 
 - [x] **JEV-4** ✅ 2026-11-02 epyc-inference-research `3ab4ffbf1` [belief: cc] [S] `resume.ineligible_reason` (`scripts/kernel_rnd/autokernel/loop/resume.py:991`) returns one exhaustive code enum plus text; audit that every critic/panel call records asked / answered / unavailable (intake-2604#record). removes: free-text ineligibility strings matched by callers.
 - **[declined: ws58 2026-11-03 content-review: merged into the red-suite triage]** **JEV-4-FU** [S] 13 pre-existing loop/resume test failures (same set on clean origin/main, e.g. 'candidate disposition has no recorder'); and critic pass 1 writes no durable 'asked' checkpoint when hypothesis.runtime_pair is set. removes: the standing red test set and the unrecorded critic-ask state.
+- [ ] **AK-HACKSCAN-SOLX** [non-inference] Audit the reward-hack and integrity scanners against the SOL-ExecBench exploit classes and the amd/skills wave64 hazard sweep, then add the missing static detectors with mutant fixtures (intake-2732, intake-2745).
+      · done when: a diff of covered vs missing classes is filed (precision downgrade with matching dtypes, timer tamper, cached output across timed iterations, work outside the timed region, 32-bit ballot/mask destinations, 1<< on 64-bit masks, logical 32-lane warps calling wave-wide collectives, smid-indexed pools, size-threshold selectors without an above-threshold case); each added detector catches its mutant with 0 hits on the current champion HIP tree
+      · gate: none
+- [ ] **AK-ISA-IDENT-1** [non-inference] Prototype a device-ISA identity check (exported symbols plus normalized gfx90a code object of candidate vs anchor HIP builds) as an eligibility test that skips GPU re-measurement of candidates whose compiled GPU code is byte-identical (intake-2746).
+      · done when: the check runs on the stored candidate records and reports the fraction of rejected or no-op candidates with identical device ISA; indeterminate results are treated as differing
+      · gate: none
+- [ ] **AK-BLOCKED-VS-FAILED** [non-inference] Audit the row verdict classifier so a run with no GPU, a residency failure or a missing host resource is recorded as blocked (host fact) and never as a candidate failure (code fact) (intake-2746).
+      · done when: the classifier source paths and their case table (GPU absent, residency fail, OOM, candidate wrong) are filed, with any mis-classifying branch fixed and tested
+      · gate: none
+- [ ] **AMDSK-OCC-CALC-1** [non-inference] Add a gfx90a occupancy calculator (unified 512 VGPR+AGPR pool at granularity 8, 64 KB LDS, SGPR limit) fed by the static code-object register reader, validated against the a10 VGPR lever table (intake-2745).
+      · done when: a test reproduces 63->8, 78->6, 90->5 and 125->4 waves per SIMD from a10_iq2_vgpr_lever_20260812.md
+      · gate: none
+- [ ] **AMDSK-AUTOTUNE-CFG-1** [non-inference] Add a declared-config autotune pattern (config set, retrigger key args, cached best, proof that waves_per_eu and similar hints reached codegen) to the AutoKernel GPU knob sweeps (intake-2745).
+      · done when: a design note maps the pattern onto the sweep driver and names the codegen proof for each hint
+      · gate: AMDSK-OCC-CALC-1
+- [ ] **DFLASH2-DRAFT-FLOOR-FUSE** [inference] Cut the 27B DFlash2 drafter's tiny-kernel floor (488 of 560 dispatches per round under 6 us, 2.14 ms or 3.6% of the round) by fusing the per-round conv taps and the selector lattice loop into a few HIP kernels behind a default-off knob, after a zero-compute attribution step (intake-2725).
+      · done when: the step-1 attribution table (dispatches per graph node: conv, selector, other) is filed, then either a fused-op A/B row (op-level and end-to-end 27B DFlash2) or a futility close
+      · gate: none        · inputs: `/mnt/raid0/llm/tmp/ak-gap-1-trace-gpu-20261119/out/trace/27B-dflash2/k_kernel_trace.csv`
+      · code @ C14 eee3da838 (/mnt/raid0/llm/worktrees/llama-c14-pin-20261119): `src/models/dflash.cpp` build_dflash2_conv L775 (called at L1146/1203/1216/1229, 20 calls per round, 2 taps each) and the selector lattice loop L1312-1378; step 1 matches a GGML_SCHED_DEBUG node dump to rocprofv3 dispatch order in the AK-GAP-1 trace
+      · expected gain: upper +3.4% of the 27B DFlash2 round (448 removable dispatches x 4.38 us = 1.96 ms of 59.3 ms), realistic +1.5% to +2.5% (inferred, profiler inflates tiny kernels); confidence low
+      · model: Qwen3.8-27B Q8_0 + DFlash2 Q8_0, served recipe · build: experimental from champion C14, default-off knob · harness: NMSE check of fused vs unfused subgraph, then end-to-end decode A/B, 5 interleaved reps
+      · metric(dir): drafter subgraph us/round lower, tok/s higher · rule: greedy token identity, then end-to-end above the 0.84% GPU noise floor carries to the champion gate · region: gpu-q3 (host threads 184-191) · est: 3600 s (inferred) + 25%
+      · stop rule: question = is >= 2% of the round recoverable from drafter dispatch overhead? upper bound 1.96 ms vs a 0.50 ms floor; checkpoint after step 1 (no compute); stop-on-answer: fused subgraph >= 1.30x and end-to-end above 0.84% carries, op < 1.10x drops; stop-on-futility: step 1 shows < 270 conv+selector dispatches per round
+      · seeded as AK hypothesis AK-H-DF2FLOOR-1 (research seeds/hypotheses/16-kspec-sub3pct-levers-20261120.md) (operator 2026-11-20: <3% → AK loop, not hand-prepped)
 
 ### Moved from INF-48 (2026-11-19)
 
@@ -4735,6 +4488,239 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [x] **C15-EPI-Q8** [inference] Producer-epilogue q8_1 write for MI210 decode (from INF48-GATEUP-PROBE: standalone quantize_q8_1 = 3.56% of 27B Q8_0 decode). RMSNorm+mul and gated-unary+mul fused kernels also write the q8_1 block their Q8_0/Q6_K MMVQ consumer needs, pre-registering the … [no-belief: planning] ✅ 2026-11-19 [belief: cc] [no-belief: row verdict filed by agent] [no-belief: source estimate] _(detail → completed ledger)_
 - [ ] **RKA-A3B-ROUTER-MMVF** [inference] [origin: autokernel-session self-scouting 2026-11-18, NOT backlog-mandated; boxed per operator so it is documented] A3B router F32/BF16 matmuls kept on MMVF up to ne11=8 on CDNA (knob GGML_HIP_MMVF_CDNA_MAX_NE11, 79650eeab; carried default-off in C16 13d6fc150). Measured: rka-a3b-n4-trace-gpu-20261118 removes 76-95% of the n3->4 step; rka-a3b-mmvf8-e2e-gpu-20261118-r2 KEEP (D4 +14%, D2 0%). model: Qwen3.6-35B-A3B MTP Q8_0 on MI210. Remaining: default-on decision at C16 fold (operator). stop-on-answer: C16 fold gate verdict; stop-on-futility: n/a (KEEP measured); gate-class = futility-only. Parent: RKA-A3B-N4-STEP. [no-belief: planning]
 - [ ] **RKA-A3B-ROUTER-WIDE** [inference] [origin: autokernel-session self-scouting 2026-11-18, NOT backlog-mandated; boxed per operator so it is documented] extend the MMVF router path to ne11 9..64 by column-tiling 8-wide launches (knob GGML_HIP_ROUTER_WIDE=1, branch llama.cpp-experimental-c15-a3b-router-wide-20261118 @ bb3294c71) so multi-session verify batches benefit. model: Qwen3.6-35B-A3B MTP Q8_0 on MI210. Row rka-a3b-router-wide-gpu-20261118. stop-on-answer: KEEP iff np4 or np8 D2 aggregate >= +3% with no cell < -1%; stop-on-futility: F32 op gain < 5% at n=12 and n=24; gate-class = futility-only. Parent: RKA-A3B-N4-STEP. [no-belief: planning] 2026-11-19 row rka-a3b-router-wide-gpu-20261118 INCONCLUSIVE (FUTILITY_INSTRUMENT): baseline test rc=0, 16/16 passed; parser counted 12 because warmup diagnostics split four case/OK lines. WIDE and timing did not run. Repair parser and republish. RESULT.json SHA-256 c457fa71b45950a43423e9b29c6ba9c5d3fa887e2fc4a6edf88e323649d1196b. [no-belief: instrument failure]
+
+
+### Done
+
+- [x] **AK-V27-RCV** ✅ 2026-08-22 _(detail → completed ledger)_
+- [x] **AK-V27-CMP** ✅ 2026-08-22 _(detail → completed ledger)_
+- [x] **AK-RUN-V3** ✅ 2026-08-20 _(detail → completed ledger)_
+- [x] **AK-V19-SEED** ✅ 2026-08-20 _(detail → completed ledger)_
+- [x] **AK-V19-PORTFOLIO** ✅ 2026-08-20 _(detail → completed ledger)_
+- [x] **AK-V19-FA-AUTH** ✅ 2026-08-20 _(detail → completed ledger)_
+- [x] **AK-AUD-3** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-6** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-8** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-9** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-10** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-11** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-12** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-13** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-14** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-15** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-AUD-5** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-RUN-3** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-D39-1** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-D39-2** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-X-11** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-01 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-01
+- [x] **—** ✅ 2026-08-02
+- [x] **—** ✅ 2026-08-02
+- [x] **—** ✅ 2026-08-02 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 incl. RETRIEVAL_SUPERSEDED
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 journal + integration suites
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 device_claim.py, 48 tests, independently probed
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 evaluator/api.py; verdict cannot be stamped
+- [x] **—** ✅ 2026-08-03 anchor-less is INVALID
+- [x] **—** ✅ 2026-08-03 re-derived in __post_init__; VerdictTampering
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 evaluator/surface.py
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 STT/TTS deferred to AK9 as designed
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 evaluator/statistics.py; alpha derived, none supplied
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 five — the accept-side historical-win replay joined them
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 controller/state_machine.py; journal-then-act
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 controller/planner.py + critic.py, fake-provider tested
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 incl. harvest/explore phases
+- [x] **—** ✅ 2026-08-03 controller/composition.py
+- [x] **—** ✅ 2026-08-03 controller/guards.py; 13 stop states
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **Re-derive** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 [declined: ws58 2026-11-03 content-review: stale reboot item (reboot 2026-08-13 done)] _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-05 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-05 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-05 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-05 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-05 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-05 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-05 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-05 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **Live-validate** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **Live-validate** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-13 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-08 Extend the release-plan compiler to the speech trees — note these two *are* independently
+- [x] **—** ✅ 2026-08-03 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-04 _(detail → completed ledger)_
+- [x] **AK-CAT-1** ✅ 2026-08-10 . Before a finding may be
+- [x] **AK-CAT-2** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-CAT-3** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-CAT-4** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-CAT-5** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-C6-1** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-C6-2** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-KM-1** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-DEL-1** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-TR-1** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-TR-2** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-TR-3** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-TR-4** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-TR-5** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-TR-6** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-LN-1** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-LN-2** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-LN-3** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-LN-4** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-LN-5** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-BH-1** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-BH-1a** ✅ 2026-08-12 _(detail → completed ledger)_
+- [x] **AK-BH-2** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-BH-3** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-BH-4** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-OP-1** ✅ 2026-08-14 — RATIFIED
+- [x] **AK-OP-2** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-X-1** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-X-2** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-X-3** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-X-4** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-X-5** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-X-5a** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-X-6** ✅ 2026-08-11 _(detail → completed ledger)_
+- [x] **AK-X-7** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-X-10** ✅ 2026-08-10 _(detail → completed ledger)_
+- [x] **AK-QL-1** ✅ 2026-08-16 _(detail → completed ledger)_
+- [x] **AK-QL-4** ✅ 2026-08-16 _(detail → completed ledger)_
+- [x] **AK-QL-6** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **AK-PM-18** ✅ 2026-10-20 _(detail → completed ledger)_
+- [x] **AK-PORT-1** ✅ 2026-09-17 _(detail → completed ledger)_
+- [x] **AK-PORT-2** ✅ 2026-09-17 : research lane `032db5e5` routes actual changed source to native selected op, requires nonempty passing cases, then applies the independent GDN scalar fixture
+- [x] **AK-PORT-3** ✅ 2026-09-17 _(detail → completed ledger)_
+- [x] **AK-SERIAL-25** ✅ 2026-09-17 : research `67c90866` applies the pre-launch guard to both scheduler-manifest and resolved-campaign serial mode (four focused tests pass). v26 started from the
+- [x] **AK-SERIAL-26-stop** ✅ 2026-09-18
+- [x] **—** ✅ 2026-09-26 _(detail → completed ledger)_
+- [x] **AK-HR-1** ✅ 2026-10-20 _(detail → completed ledger)_
+- [x] **AK-HR-2.1** ✅ 2026-10-20
 
 ## Track: agent-collab-rnd-harness
 <!-- gate: none -->
@@ -4784,8 +4770,6 @@ Related existing work (do NOT duplicate — this stub is about the *collaboratio
 #### Research-intake integration — 2026-07-22 (R&D-harness patterns from orx / HyRA / OpenHyra)
 _Via /research-intake Stage-2 (intake-882#record + intake-883#record orx, intake-884#record HyRA, intake-885#record OpenHyra). NOTE: the HyRA/OpenHyra R&D-harness descriptor + scoring items were routed here rather than to the meta-harness completed ledger, which forbids new task checkboxes (the active compatibility pointer was retired 2026-08-23)._
 - [x] Compare OpenHyra's all-outcomes Experience Bank + LLM Context-Agent cross-round memory (`eb.py`, `context_agent.py`) against StructuralLab / agent-collab archive design ✅ 2026-07-22
-- [x] Adopt a uniform per-task descriptor {seed/baseline solution, run script -> solution.json, fixed objective scorer, always-valid fallback} for the R&D harness (HyRA cross-domain contract) ✅ 2026-07-22
-- [x] Feature-mine OpenHyra's trusted-evaluator-outside-sandbox + anti-TOCTOU immutable-snapshot scoring (`sandbox.py:80-134,255`) as a reusable scoring-integrity pattern (general R&D-harness version of the C6 kernel-loop item in [rocm-verify-profile-backend.md](rocm-kernel-authoring.md#track-rocm-verify-profile-backend)) ✅ 2026-07-22 (research `2d5b1f6e`; `kernel_rnd/c6_reward_integrity.py` and task descriptor)
 - **[declined: ws58 2026-11-03 content-review: optional spike gated on operator interest]** (Optional spike, gate on operator interest) Point orx at EPYC's llama.cpp via OpenCode as a DISPOSABLE test vehicle (`--backend local`, custom OpenAI provider in `~/.config/opencode/opencode.json`) to validate the loop end-to-end. NOT a harness commitment — mining orx's patterns is unconditional and re-targeting to our eventual chosen harness is ~1 `impl Harness` file (`src/local/harness/mod.rs:1135`). Gate any long-term harness choice on [harness-selection-and-integration.md](harness-program.md#track-harness-selection-and-integration) **Constraint if ever authorized:** SINGLE-USER only on this shared host (orx's own README states the dashboard binds loopback with no application-level authentication, so other host users can reach it), and built from source (channel development) so telemetry is compile-time disabled. Strip overleaf_live / browser_cookies at import (intake-883#record).
 - **[declined: ws58 2026-11-03 content-review: optional spike]** (Optional spike) Add a 3rd OpenHyra llm_backend adapter (~30-60 LOC) targeting a local OpenAI-compatible coding agent -> llama.cpp; needs `OPENHYRA_ALLOW_UNSANDBOXED=1` + an external container (sandbox is macOS-only)
 - [x] **S3-ACH-01 — spike a PreToolUse read-only allowlist gate for planner/critic actors.** An actor may inspect evidence freely but cannot launch a build or benchmark until authorized. Classification is allowlist-only (unknown ⇒ gated), with a test asserting every allowlisted verb names a real … ✅ 2026-10-31 [no-belief: source prototype and regression controls] _(detail → completed ledger)_
@@ -4814,6 +4798,12 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-09-17). Sources dive-
 **ACH-ALE-1 trigger record — private grader for a selected ALE-style campaign.** Activate only when the shared `SEQ-SHINKA-1` / `AP-DGM-SEL` replay beats matched simple controls, or a live long-horizon engineering campaign requires ALE-style evaluation. Then run private grading in a separate process or service with inaccessible instances, seeds, and standings, immutable one-shot receipts, and a non-resettable private-call budget. The search process may consume only the returned verdict; it may not inspect or tune against hidden cases. Until the trigger fires this record creates no active grader service or campaign. Sources: intake-1597#record, intake-1598#record, intake-1599#record.
 
 ✅ 2026-10-06 MAIN adopted the [closed triage metadata contract](../../docs/reference/agent-run-failure-triage.md), explicit unknown and non-exclusive semantics, with MHS-5 cross-link. Documentation only; no rates, classifier, score or runtime ErrorCategory changes.
+
+
+### Done
+
+- [x] **—** ✅ 2026-07-22
+- [x] **—** ✅ 2026-07-22 research `2d5b1f6e`; `kernel_rnd/c6_reward_integrity.py` and task descriptor
 
 ## Track: autokernel-restart-and-strip
 <!-- gate: none -->
@@ -4850,31 +4840,21 @@ within seconds — clean, no crash.
 
 #### Fixed this session (all committed + unit-tested; suite fully green, 779/779)
 
-- [x] **Planner backoff** — consecutive `PlannerProviderTransient`s back off exponentially ✅ 2026-08-27 _(detail → completed ledger)_
-- [x] **Actor timeout** — `codex_container_actor.run_actor(timeout=1800)` bounds one invocation ✅ 2026-08-27 _(detail → completed ledger)_
-- [x] **Transport→transient** — docker/timeout/staging failures reclassified as ✅ 2026-08-27 _(detail → completed ledger)_
-- [x] **Restart clamp lifted** — removed `max_restarts==0` for `kind==deployment` (commit ✅ 2026-08-27 _(detail → completed ledger)_
-- [x] **KFD sampler self-flagging + no wait-out** (caused 4 of 11 v27 crashes). `_belongs` only ✅ 2026-08-27 _(detail → completed ledger)_
-- [x] **Worktree name collision on crash-orphaned branch** (crash #6). `create_campaign_worktree(` ✅ 2026-08-27 _(detail → completed ledger)_
 - [x] **Rotted Claude critic pin** (discovered at launch; blocked EVERY new deployment).
   `_SITE_CRITIC_WRAPPER` pinned `claude/versions/2.1.231`, orphaned by Claude auto-updates
   (2.1.238/240/241 installed) — every bundle init died with `FileNotFoundError`, and it was also
   the cause of the 3 "pre-existing" test failures. Now resolves the stable launcher. ✅ 2026-08-27
-- [x] **Stopped v27 and reclaimed disk** — supervisor/factory/build/watcher/kfd-watchdog ✅ 2026-08-27 _(detail → completed ledger)_
 
 #### Open
 
-- [x] **v28 reached a real screen disposition — `scientific_attempts: 1` at 15:19Z.** The milestone ✅ 2026-08-27 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: an August run instruction]** **Let the campaign run to its disposition budget** (`max_iterations: 100`, ~35 min/iteration
   ⇒ multi-day). Monitor wakes the owning session on a science increase, a crash, or a genuine
   stall. No action needed unless it wakes.
 - [x] **Re-screen the 19 historically proposed deletion modules individually and strip only proven-safe files** (10,500 LOC + 19 test files ~4,870 LOC + ✅ 2026-10-25 [no-belief: committed conclusion prepared; register capture not yet applied] [no-belief: tooling] _(detail → completed ledger)_
-- [ ] **Add build/runtime disk expiry.** `deployments/*/builds/` (14 G) + `runtime/` (4.4 G) are
+- [ ] **AKU-15** **Add build/runtime disk expiry.** `deployments/*/builds/` (14 G) + `runtime/` (4.4 G) are
   pinned by `materialization.json` digests; `storage.expire_artifact` has zero callers. Also run
   `_recover_incomplete_attempt` at controller start for ALL incomplete attempts, not only on
   re-proposal (that is why 6 orphan worktrees survived). Not a crash — disk growth.
-- [x] **Merged `lane/autokernel-restructure-20260827` to research `main`** — future launches now get ✅ 2026-08-27 _(detail → completed ledger)_
-- [x] **Reconciled the epyc-root divergence** (operator-directed). Local `main` 17 ahead / 11 behind ✅ 2026-08-27 _(detail → completed ledger)_
 
 Not live at HEAD (closures already refactored these away — do not re-add): preauthored-provenance
 raise, C6-admission path-embedded identity, C6-policy-refusal-as-crash. If they reappear:
@@ -4924,8 +4904,6 @@ failing to suppress re-proposals — was **wrong**. The ledger and the bounded-s
 `scientific_terminal: false` (campaign-scoped, not permanent), and provider transients are
 explicitly excluded from the count, as they should be. The ledger was fine; the planner was blind.
 
-- [x] **AK-VIS-1 — authoring refusals rendered as NOTHING on the command band.** ✅ 2026-08-28 _(detail → completed ledger)_
-- [x] **AK-VIS-2 — `critic_revise` consumed an authoring-failure strike.** ✅ 2026-08-28 _(detail → completed ledger)_
 
 
 #### 2026-08-28 — v36 died at preflight: the champion-as-instrument ruling was refused in code
@@ -4956,9 +4934,6 @@ that unchanged contract blob is the same guarantee equality gave; equality merel
 champion. **The gate keeps its teeth**: frozen production v9 predates the instrument and is still
 refused, asserted rather than assumed.
 
-- [x] **AK-INST-1 — the timed-output gates must accept a champion instrument.** ✅ 2026-08-28 _(detail → completed ledger)_
-- [x] **AK-MSG-1 — make the authoring-refusal message actionable.**  (research ✅ 2026-08-28 _(detail → completed ledger)_
-- [x] **AK-INST-2 — audit for OTHER hardcoded instrument pins.**  — audited every 40-hex / `*_COMMIT` comparison in the discovery plane: no other champion-drift pin (the rest are exact freeze/seal/vendor/replay identities or already ancestry checks). It surfaced a DIFFERENT v10 defect, fixed in … ✅ 2026-09-23 _(detail → completed ledger)_
 
 #### 2026-08-28 — dashboard deployment gap (the reason four fixes were invisible)
 
@@ -4987,6 +4962,25 @@ MAIN independently reopens Research01d36835 and confirms three noncandidate loop
 
 
 ✅ 2026-10-07 INF64-REACHABILITY-MANIFEST: [MAIN completed19-row conservative source audit](../../artifacts/ni08/inf64-source-reachability-review-20261007/completed-manifest.md),64unique source blobs/145exact incoming refs plus outgoing imports/path/CLI edges. All19retain; none cleared for deletion. Existing strip/owner boundaries and prospective native controls remain separate.
+
+
+### Done
+
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **v28** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-08-27 _(detail → completed ledger)_
+- [x] **AK-VIS-1** ✅ 2026-08-28 _(detail → completed ledger)_
+- [x] **AK-VIS-2** ✅ 2026-08-28 _(detail → completed ledger)_
+- [x] **AK-INST-1** ✅ 2026-08-28 _(detail → completed ledger)_
+- [x] **AK-MSG-1** ✅ 2026-08-28 _(detail → completed ledger)_
+- [x] **AK-INST-2** ✅ 2026-09-23 _(detail → completed ledger)_
 
 ## Track: autokernel-rebuild-program
 <!-- gate: INF-06#autokernel-research-loop, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip, INF-65 -->
@@ -5413,9 +5407,7 @@ failure mode this program exists to end.
 
 - [x] **P1 — Close the feedback loop.** . Research `e1ebf691` (P1.1), `8248e3d7` ✅ 2026-08-28 ✅ 2026-10-29 [no-belief: audit-reconciliation] _(detail → completed ledger)_
 
-- [x] **P2 — Fix the measurement surface.** , research `abcdf787` + the recipe/ ✅ 2026-08-28 _(detail → completed ledger)_
 
-- [x] **P3 — Throughput.** , research `c05b1bdb` — **except two items** ✅ 2026-08-28 _(detail → completed ledger)_
 
 - **[declined: ws58 2026-11-03 content-review: superseded by the AKU unified-loop slices]** **P4 — Rebuild the loop** (~1,500 LOC), in a lane alongside the current one, never in place.
       Two-pass critic with explicit loopbacks (below). Seed Champion₀ = frozen v9 + the build recipe;
@@ -5566,27 +5558,6 @@ program**; each phase proceeds without them.
 **STATUS 2026-08-30: all three are resolved. D1 approved (operator write outstanding), D2 declined
 on measurement, D3 approved and shipped.** Detail in each entry.
 
-- [x] **D1 — RATIFIED AND BUILT** . The operator applied the amendment (root ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **D2 — DECLINED ON MEASUREMENT 2026-08-30.** ✅ 2026-08-30 — resolved to a decline, not
-      deferred. **The deciding number is 0.0 s per iteration.** D2 proposed dropping four T0
-      preconditions for screening; **none of the four is implemented in the rebuilt loop at all**,
-      so the time they cost is zero and the saving D2 was justified by does not exist. What
-      survives is a *conformance* question, not a throughput one — the loop produces records that
-      no ratified tier authorizes — and that is a different request needing its own framing.
-      Separately, **D2's precondition 4 (byte-for-byte anchor re-verification at both window edges)
-      is unsatisfiable by construction** while the anchor advances mid-run, which it does by design
-      (CH-3). Do not re-file D2 as written. Original request retained below for the conformance
-      question's benefit.
-      *(original)* **add a `T-screen` tier below T0**, requiring only: held claim, residency evidence, named
-      anchor commit, codified recipe, and a once-per-host-state A/A noise floor. Drops, **for
-      screening only**, the per-campaign calibration solve, byte-for-byte anchor re-verification at
-      both window edges, evaluator runtime source-label attestation, and the storage-floor re-check.
-      Every denial in *"what this protocol does NOT authorize"* stays verbatim.
-      Context: P-GPU-1, the inherited rule, gates the **claim class, not the run**. The eight
-      experiment-time preconditions come from P-AK-SEARCH-1, ratified 2026-08-03T08:30:05Z — six
-      hours after this program's first commit (`75764052`, 02:15) and cited as a requirement by its
-      third (`10843b6f`, 11:29, *"conforming to the ratified P-AK-SEARCH-1"*).
-- [x] **D3 — build recipe as a champion arm. APPROVED AND SHIPPED**  (research ✅ 2026-08-30 _(detail → completed ledger)_
 
 ---
 
@@ -5594,9 +5565,6 @@ on measurement, D3 approved and shipped.** Detail in each entry.
 
 ##### Landed this pass
 
-- [x] **R18-L1 — the promotion A/A guard, and the abort that was being swallowed.** ✅ 2026-08-30 _(detail → completed ledger)_
-- [x] **R18-L2 — the champion headline is one number against one named anchor.** ✅ 2026-08-30 _(detail → completed ledger)_
-- [x] **R18-L3 — epyc-root CI had failed 8 of 8 runs since creation.**  (root ✅ 2026-08-30 _(detail → completed ledger)_
 
 ##### Open
 
@@ -5679,8 +5647,6 @@ on measurement, D3 approved and shipped.** Detail in each entry.
   - 2026-11-01 source preparation: Research `26d89b6ea20f21675d9cc4bc07a8db11ec42199e` instruments monotonic gate verdicts, publishes active pooled-tail time and retains claim-scoped ROCm cumulative GFX counter observations with native raw samples, phase markers, library digest/BDF and refusal reasons. Guarded synthetic tests exercise claim acquisition and release, oracle/benchmark warmup paths, reset/clock/identity/error cases and missing trace. A single read-only ROCm capability query established API availability only. Full-claim busy/idle remain UNKNOWN; the observed-window GFX activity-weighted estimate is not binary device busy or per-process attribution. Source carrier/reader and real planning canary are OPEN under `VB-AK-R18-GFX-OBSERVATION`; qualifying physical validation has not been run. R18-E stays OPEN.
   - 2026-11-19 R18-E: source parts 1-2 and the retained GFX observation are on research main (26d89b6ea); the remaining step is the qualifying physical validation under `VB-AK-R18-GFX-OBSERVATION` (a GPU window; busy/idle stays UNKNOWN until it runs). No code left to write.
   - 2026-11-19 R18-E row pointer (autokernel): the qualifying physical validation is already a published row, `vb-ak-r18-gfx-observation-20261118` (owner handoff-vidya-belief-substrate; task `vidya-belief-substrate-program.md:VB-AK-R18-GFX-OBSERVATION`; model: Qwen3.8-27B-Q8_0 + Q8_0 DFlash2 drafter on v10 `ffc1bac82`; stop-on-answer after two valid request-boundary samples and the exact-weight canary, stop-on-futility on the first source/custody/native refusal). No second row is filed: a duplicate would take a second exclusive GPU window for the same observation. This box ticks when that row's official result lands.
-- [x] **R18-F — the loop code budget is freed, not bumped.**  (research `33715a7e` → ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R18-G — the ranking capability D1 authorizes is BUILT.**  (research ✅ 2026-08-31 _(detail → completed ledger)_
 
 ---
 
@@ -5690,15 +5656,6 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
 
 ##### Landed this pass
 
-- [x] **R21-L1 — single-champion invariant ratified and ENFORCED.** . Ratification ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R21-L2 — the reconciliation merge and its measurement.** . `a2728701` = ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R21-L3 — run-20 drain flaw fixed (drain tiers).**  (research `95eeb0ae`). ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R21-L4 — dashboard: the anchor is resolved, staleness is semantic, the champion is the** ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R21-L5 — CI identity fix.**  (research `af43cfb0`). Champion-keep tests drove ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R21-L6 — run 21: the loop advanced the champion TWICE, unattended, end-to-end.** ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R21-L7 — the two operator-gated-card fixes.**  (root `9425eaef`, ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R21-L8 — run-22 prep landed.**  (research `a95581c8`, pushed). `dec-b2/4/8` ✅ 2026-08-31 _(detail → completed ledger)_
-- [x] **R21-L9 — serving-evidence refresh package.**  (research `8179dde0`, pushed; ✅ 2026-08-31 _(detail → completed ledger)_
 
 ##### Open
 
@@ -5719,12 +5676,9 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
   - [x] All 13 seeds from the two sweeps injected into the live hypothesis inbox ✅ 2026-08-31 _(detail → completed ledger)_
   - [x] Decide the upstream-rebase cadence for the experimental branch (filed 2026-08-31): the ✅ 2026-11-18 [no-belief: operator decision] _(detail → completed ledger)_
   - 2026-11-19 R21-5: STANDING by design. All pilot sub-items are done and the upstream-rebase cadence was decided 2026-11-18 (port-as-hypothesis is the standing answer); the row stays open only as the standing pipeline, with nothing left to build.
-- [x] **OP-34 RESOLVED 2026-08-31** (minted as OP-32; renumbered 2026-09-01 — the queue reconciliation reassigned OP-32 to the uniform-IQ4_XS decision and this lane's third minted ID was missed) — operator: "pre-authorize run 22 if all boundary steps are green." The boundary driver launches run 22 iff the exact all-green conjunction holds (run 21 dead · flag A/B clean exit either verdict · all three dec-b* calibrations written · serving bundle sealed · final-champion --dry-run verified); any single non-green holds for morning. ✅ 2026-08-31
 - [x] ~~**R21-6 — BOUNDARY tonight, 2026-08-31 22:00Z (operator-ordered).** Driver~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists R21-6 stale by event (boundary 2026-08-31 22:00Z passed; driver scripts/benchmark/boundary_20260831.sh exists; later runs …  _(detail → completed ledger)_
-- [x] **R21-10 RESOLVED 2026-09-01 — the +1.765% was the INSTRUMENT, not the build.** Read-only ✅ 2026-09-01 _(detail → completed ledger)_
 - [x] **R22-6 — Harden `read_inbox` (3-line fix, coordinate with R22-3's lane work).**  (audit: research 68557dac8 (2026-09-01) "R22-6: operator injection channel no longer a kill switch": controller/inbox.py per-file try/except + inbox_file_unreadable note; tests test_inbox.py:69,81) ✅ 2026-10-29 [no-belief: audit-reconciliation] _(detail → completed ledger)_
 - [x] **R23-2 — Demote/annotate the two benign-but-alarming DFlash2 load warnings.** "failed  — IMPLEMENTS llama.cpp-experimental `2d4e3225e13178674d27ef57b899f0255f15bf40`; [source, controls and … ✅ 2026-10-31 [no-belief: software implementation and model-free controls] _(detail → completed ledger)_
-- [x] **R23-5 — H1 transfer falsifier EXECUTED (H1-first, operator-approved) .** ✅ 2026-09-01 _(detail → completed ledger)_
 - [x] **R23-6 — H6 prompt-class ranking stability** (cheap, piggybacks R23-3's instrument work): [no-belief: operator decision] _(detail → completed ledger)_
 - [x] **R23-4 — One-factor sweep: config vs draft acceptance and run-over-run stability**  (rc=0 inconclusive; Complete v10 descriptive sweep63/63; attribution INCONCLUSIVE (18/18 treatment/prompt metric ranges overlap adjacent baselines). Native evidence: … ✅ 2026-11-04 [belief: cc] _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: its consumer (mi210 P3-4) was retired by the operator rule 27B ALWAYS DFlash2]** **R23-3 — probe.py client-side instrument for the MTP-vs-DFlash2 serving A/B** (feeds
@@ -5770,12 +5724,11 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
     - 2026-11-02: the original docstring case is fixed on root main `b7e4a225c`; with both custody patches applied, the exact gate reported 66 passed / 1 failed on two newer byte-pinned, actively consumed source snapshots containing boundary references and caller-directed writes. Archiving their executable bytes to evade the scanner would weaken its invariant. The protected exemption list was not changed; resolve those findings under the existing human-only boundary, then rerun the gate. Log: `/mnt/raid0/llm/tmp/inf66-ci-ratification-check.log`. [no-belief: test result only]
   - 2026-11-19 R22-2: still needs the `--calibrate-surface` floor calibration of `llama-batched-bench` (a GPU window) before any verdict may cite it; the CUSTODY-QUAL and CI-RATIFICATION children are merged here and sit behind the human-only boundary exemption list. No code left to write.
   - 2026-11-19 R22-2 row (autokernel): `r22-2-batched-floor-gpu-20261119`. model: DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M (the loop's keyed calibration workload); build identity: production v10 `ffc1bac82` GPU store `llama-batched-bench` (sha 3a13b19f, HIP lib f26a166b). Same-binary A/A floor per parallel shape npl 1/2/4/8 (pp128/tg128, -fa off, -t/-tb 8): SETTLED (300 s settle, 1 warm-up) and PREHEATED (6 warm-ups), 20 measured pairs each, bootstrap p95 at k 1/3/5/9/20, residency sampler in-window at the loop's 0.25 s. The D8 post-build condition is NOT run (recorded adaptation). Raw floors land in the row's out/ only; promotion into `bench.py` stays a reviewed step. Stop-on-answer: RESULT CALIBRATED after the 4th shape. Stop-on-futility: first residency/digest/parse failure (FUTILITY_*) stops with nothing claimed; rc 75 only on STOP or deadline. Gate-class futility-only.
+  - 2026-11-20 (autokernel box audit) row `r22-2-batched-floor-gpu-20261119` filed **pass, CALIBRATED** (2026-11-19T02:09Z): all four npl shapes settled + preheated, 20 A/A pairs each, pinned binary/HIP digests; k=1 p95 floors settled/preheated npl1 15.61/16.41%, npl2 10.79/10.42%, npl4 7.67/8.17%, npl8 4.50/4.80%. NOT ticked: the box evaluates llama-batched-bench as the parallel-sequence surface; remaining = the reviewed promotion of these floors into `bench.py` (no post-build floor claimed). [no-belief: row verdict filed by agent]
 - [x] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.**  <!-- evidence-integrity: Research `bebe42b9a56d9cf6c951fc75a227c8666a194080`; artifact: artifacts/compute/task-evidence-repair-20261031/r21-1/EVIDENCE.json; hygiene, not quota --> ✅ 2026-10-30 [no-belief: code and test
       closure; no performance measurement] _(detail → completed ledger)_
-- [x] **R21-2 — promote the reconciliation A/B evidence out of volatile tmp.**  — ✅ 2026-09-01 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: bookkeeping]** **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
       boundary the bundle is rewritten anyway (never touch the live bundle mid-run).
-- [x] **R21-3 — RETIRED  (operator executed).** `ak-loop-tree`, `-b`, `-c` worktrees ✅ 2026-09-02 _(detail → completed ledger)_
 - [x] **R21-4 — the non-hermetic dashboard tests (4 red loop-down).** They assert on LIVE loop  — implementation ROOT `c5f799ba77dc423d51fb0c9cabb8a6ae66e1a8f1`; `tests/test_dashboard_r21_4_fixtures.py` and four original suites, 109 PASS / 156 subtests; committed evidence … ✅ 2026-10-31 [no-belief: source-bound deterministic fixture/guard controls; no measurement] _(detail → completed ledger)_
 
 ##### Declined 2026-08-31 — deliberate
@@ -5816,31 +5769,14 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
 
 ##### Open (R23 follow-ups)
 
-- [x]  **R23-7 — fix stale `PRODUCTION_QUANT_FAMILY` (`workload_contract.py:58` refuses** ✅ 2026-09-02 _(detail → completed ledger)_
-- [x]  **R23-8 — floor keying (surface, workload-class) per rung design §5.1/R21-8.** ✅ 2026-09-02 _(detail → completed ledger)_
 - [x] **R23-9 — DFlash2 standalone llama-bench smoke (2 min GPU) + 27B confirm-surface A/A** ✅ 2026-11-02 [belief: cc] _(detail → completed ledger)_
 
-- [x] **R23-14 — boundary driver drafted, reviewed, armed**  — ✅ 2026-09-01 _(detail → completed ledger)_
-- [x] **OP-35 RESOLVED 2026-09-01 — operator: run 24 PRE-AUTHORIZED on the all-green** ✅ 2026-09-01 _(detail → completed ledger)_
 - [x] **R23-10 — production-shaped rung decision package drafted**
       (`docs/design/autokernel-production-shaped-rung.md`, research `b15c480b`) ✅ 2026-09-01 —
       **RULED 2026-09-01: operator approved the two-rung screen/confirm recommendation** — D1(iii)
       two-rung · D2 confirm gate on dec-b4+dec-b8, tg128 kept for headline context · D3 pairs=5
       gate / 20 headline · D4 headline MOVES to the 27B rung · D5 screen swap deferred to the
       §5.6 smokes (DFlash2 first if it passes) · D6 window scheduling stays the operator's call.
-- [x] **R23-11 — implement the approved rung design in loop code**  (§5.1 census-based ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-12 — re-anchor inbox seeds to the rung they will be measured on (§5.4)**  — ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-13 — rung identity artifact (§5.6 step 2)**  — production dispatch tables ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-15 — boundary step2 gate defect found + repaired (operator-approved)**  — ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-16 — DFlash2 smoke result (D5 settled for run 24)**  — smoke FAILED ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-17 — DFlash2 capability verification on the post-keep champion: PASS**  (OWNED here — ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-19 — MEASURED  — the +27.363% headline is a SCREEN-RUNG number; the production-facing headline** ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-22 — DONE  — re-measure the production-rung headline on a SETTLED device.** The 12:49Z run is ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-23 — RESOLVED  — OPERATOR DECISION: what to do with the regressing champion lineage before run 24.** ✅ 2026-09-02 _(detail → completed ledger)_
-- [x]  **R23-26 — the champion-vs-production HEADLINE SURFACE is wrong for this aggregate.** ✅ 2026-09-04 _(detail → completed ledger)_
-- [x] **R23-27 — run 24 STOPPED and reconfigured to hunt ON the confirm rung** ✅ 2026-09-03 _(detail → completed ledger)_
-- [x] **R23-31 — Q4_K SIGNAL PROBE: +7.066%. The banked-gains thesis is CONFIRMED** ✅ 2026-09-03 _(detail → completed ledger)_
-- [x] **R23-32 — DONE  — step 2: calibrate the Q4_K surface and convert the +7.066% signal into a claim.** ✅ 2026-09-03 _(detail → completed ledger)_
 - [x] **R23-34 — planner/critic model split (operator directive 2026-09-03: "swap the models
       used by planner/critic. Use Fable-5.1-medium for the planner and gpt-5.6-sol-high for
       critic") — DONE, NOT launched** ✅ 2026-09-03. Research lane `f81bbeb6`.
@@ -5891,12 +5827,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       target the 1.5B could never have surfaced. Not guarded: decode. tg128 has no 27B floor
       (each floor is per (surface, model) — see the operator Q&A in progress 2026-09-03); the
       DFlash2 path is llama-server-only and is guarded by R23-18's smoke, still open.
-- [x] **R23-35 — first confirm-gate keep + the planner-backend evolution** . ✅ 2026-09-03 _(detail → completed ledger)_
-- [x] **R23-36 — actor exit-1 storm made diagnosable**  (`b5cd2817`). Run 27 logged 74 ✅ 2026-09-03 _(detail → completed ledger)_
-- [x] **R23-37 — planner backend is now DeepSeek V4 Flash @max via opencode** ✅ 2026-09-03 _(detail → completed ledger)_
-- [x] **R23-40 — FIXED+CONFIRMED  — INCIDENT: Run-18 build-non-determinism fault recurred on the 445e93a8 anchor** ✅ 2026-09-04 _(detail → completed ledger)_
 - [x] **R23-42 — the dec-b4 keeps do NOT move DFlash2 decode; run 29 pivoted to tg128 (operator  (audit: commit 6e4f00599 (2026-09-04) "R23-42: DFlash2 decode measured flat ... run 29 pivots to tg128"; box text records measured 71.22 t/s and the operator pivot to tg128 (open sub-question is a note))** ✅ 2026-10-29 [no-belief: audit-reconciliation] _(detail → completed ledger)_
-- [x] **R23-43 — RE-ARCHITECT  (a-d BUILT; serving floor tightened via option (2)): keeps demonstrated on llama-server under the champion's CANONICAL** ✅ 2026-09-04 _(detail → completed ledger)_
 - [x] **R23-44 — COMPOUND-THEN-GATE ✅ 2026-09-04 (BUILT+WIRED; run 29 operator-gated): batch bench keeps until they compound past the serving floor, then gate once (operator directive 2026-09-04:
       "collect llama-bench keeps until they compound to 2x-3x noise floor before the llama-server
       final champion advancement gate").** WHY: the serving floor is 3.5% (R23-43(2)) and a single
@@ -6569,10 +6500,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       calibration was still running). Baseline reuses the cached `v9v-build-base` (no rebuild).
       SEAM ORDER: DFlash2 smoke first (~10 min, gating for run 24), then this (~1 h, dec-b4).
   - 2026-11-19 R23-25: the classification is on research main (`531cea64a`: `controller/rung_routing.py`, size-dependent families launch geometry / occupancy / tiling go to the confirm rung, size-independent screen first, UNCLASSIFIED keeps today's screen-first; 8 tests). Not yet wired: the screen-rung selector in `loop/run.py` does not call `rung_routing.skips_screen`; wiring it spends loop-code budget (guard already reports a baseline violation) and needs the confirm-rung-only path exercised on a GPU window.
-- [x] **R23-19a — the confirm-rung headline instrument built and proven**  — ✅ 2026-09-02 _(detail → completed ledger)_
-- [x] **R23-20 — the 27B dec-b4 keyed floor landed and was verified sane**  (10:03Z) ✅ 2026-09-02 _(detail → completed ledger)_
 - [x] ~~**R23-21 — decide whether the confirm-rung headline also gets measured on dec-b8** — dec-b4~~ (closed 2026-10-29 audit: SUPERSEDED → dec-b4 confirm-rung scope abandoned: run 29 pivoted to tg128 (R23-42, autokernel-rebuild-program.md:1620, commit 6e4f00599); dec-b8 decision never recorded)  _(detail → completed ledger)_
-- [x]  **R23-18 — standing rule candidate: DFlash2 smoke joins the confirm gate** — any future ✅ 2026-09-04 _(detail → completed ledger)_
 
 ---
 
@@ -6585,11 +6513,6 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
 
 ##### Open (R24)
 
-- [x] **R24-1 — wire the existing hardened bench into the live loop.**  — `loop/bench.py:219-221` runs plain ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **R24-2 — measure with a TRUSTED instrument and review the WHOLE tree.** ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **R24-3 — the critic must not be able to edit the candidate.**  — `actors.py:84-87` runs the Claude critic with ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **R24-4 — wire the no-fallback dispatch proof into the correctness gate.**  — Two checks exist: ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **R24-5 — fix or delete `gates.deterministic`.**  — `loop/gates.py:127-150` adds each run's RETURN CODE to a set ✅ 2026-09-15 _(detail → completed ledger)_
 - [x] **R24-6 — anti-gaming clause in the planner/author prompt.** Neither `actors.py:407-422` nor `program.md`  — Research `57f6db044ba4b512bbc89b0025edeec52fe740cf`; [planner/author prompt … ✅ 2026-10-31 [no-belief: advisory prompt implementation] _(detail → completed ledger)_
 - [ ] **R24-7 — keep-drought trigger → clean-context diagnostician (advisory, never a gate).**
       **Trigger:** K consecutive measured candidates fail to keep (K pre-registered), or the window-best effect stays
@@ -6890,6 +6813,64 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 
 - [x] **AK-FAILRULE-1 — Turn recurring AK rejection reasons into pre-GPU rules from existing records (intake-2589#record, intake-2588#record).** Zero inference: classify every rejected candidate in the existing CPU and GPU campaign stores by failure reason (compile, correctness gate and which gate, … [no-belief: loop code change; evidence in commits] ✅ 2026-11-06 _(detail → completed ledger)_
 
+
+### Done
+
+- [x] **P2** ✅ 2026-08-28 _(detail → completed ledger)_
+- [x] **P3** ✅ 2026-08-28 _(detail → completed ledger)_
+- [x] **D1** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **D2** ✅ 2026-08-30 — resolved to a decline, not
+- [x] **D3** ✅ 2026-08-30 _(detail → completed ledger)_
+- [x] **R18-L1** ✅ 2026-08-30 _(detail → completed ledger)_
+- [x] **R18-L2** ✅ 2026-08-30 _(detail → completed ledger)_
+- [x] **R18-L3** ✅ 2026-08-30 _(detail → completed ledger)_
+- [x] **R18-F** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R18-G** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L1** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L2** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L3** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L4** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L5** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L6** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L7** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L8** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **R21-L9** ✅ 2026-08-31 _(detail → completed ledger)_
+- [x] **OP-34** ✅ 2026-08-31
+- [x] **R21-10** ✅ 2026-09-01 _(detail → completed ledger)_
+- [x] **R23-5** ✅ 2026-09-01 _(detail → completed ledger)_
+- [x] **R21-2** ✅ 2026-09-01 _(detail → completed ledger)_
+- [x] **R21-3** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-7** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-8** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-14** ✅ 2026-09-01 _(detail → completed ledger)_
+- [x] **OP-35** ✅ 2026-09-01 _(detail → completed ledger)_
+- [x] **R23-11** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-12** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-13** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-15** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-16** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-17** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-19** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-22** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-23** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-26** ✅ 2026-09-04 _(detail → completed ledger)_
+- [x] **R23-27** ✅ 2026-09-03 _(detail → completed ledger)_
+- [x] **R23-31** ✅ 2026-09-03 _(detail → completed ledger)_
+- [x] **R23-32** ✅ 2026-09-03 _(detail → completed ledger)_
+- [x] **R23-35** ✅ 2026-09-03 _(detail → completed ledger)_
+- [x] **R23-36** ✅ 2026-09-03 _(detail → completed ledger)_
+- [x] **R23-37** ✅ 2026-09-03 _(detail → completed ledger)_
+- [x] **R23-40** ✅ 2026-09-04 _(detail → completed ledger)_
+- [x] **R23-43** ✅ 2026-09-04 _(detail → completed ledger)_
+- [x] **R23-19a** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-20** ✅ 2026-09-02 _(detail → completed ledger)_
+- [x] **R23-18** ✅ 2026-09-04 _(detail → completed ledger)_
+- [x] **R24-1** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **R24-2** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **R24-3** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **R24-4** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **R24-5** ✅ 2026-09-15 _(detail → completed ledger)_
+
 ## Track: autokernel-unified-surface-program
 <!-- gate: INF-06#autokernel-rebuild-program, INF-65, INF-70#cpu-decode-roofline-program -->
 
@@ -7043,7 +7024,6 @@ Fresh CPU deployment continues at the real batch boundary. At the authenticated 
 
 Evidence: original raw JUnit/stdout, `.validated` (SHA256 `eedf0436b6f0180be1a15155502d937e5d33794ec7a39544afea49b6a7cdc5ae`) and original waits under `consolidated-harness/runtime-results/consolidated-20261007T163031Z-r8/`; original driver wait under `capacity-retry/runtime-supervision/consolidated-20261007T163031Z-r8/`; the prepared recovery audit is retained separately, and ROOT's actual acceptance is named above.
 
-- [x] **2026-10-07 bounded checkpoint: complete the exact r8 whole-candidate harness gate.** ✅ 2026-10-07 Focused495/full5245 plus287 subtests, original waits0, held two-empty-census cleanup and unchanged source/reader/provider. Activation and GPU live warrant remain separate.
 
 
 #### 2026-10-07 16:27 UTC — r7 full outcome and r8 repair preparation
@@ -7072,7 +7052,6 @@ Fresh r6 launcher telemetry passed under genuine q1 build/CPU24–25 ownership: 
 
 The read-only owner status finds zero exact correlated replies from registered resource owner `inference` to ROOT's actual request `msg-20261007T123832Z-3-codex-ak-main-01a11473`, and no owner reply/window authorization artifact. The prior :8083 owner reports quota unavailable until October9; an available registered executor and authentic window/grant are still required for live GPU work. This external owner-route dependency does not prevent preparation or the eventual CPU-only dry-run. The ten original assets remain unchanged; runtime clearance, installation and actual dry-run still await the full original wait 0 and ROOT's exact clearance review.
 
-- [x] **2026-10-07 bounded checkpoint: fresh exact-r6 launcher telemetry controls.** ✅ 2026-10-07 Eight observations and sixteen original child waits/deaths under q1 build ownership; ROOT accepted source/native conformance only. Full-runtime clearance, installation, dry-run and live GPU remain uncompleted.
 
 #### Current r6 repair boundary, original G3 refusal and capacity acknowledgment — 2026-10-07
 
@@ -7086,15 +7065,10 @@ The genuine NI08 owner acknowledged the new capacity request at **14:44:24Z**, m
 
 ROOT accepted the prospective GPU generator reader rebind at `ROOT_GPU_GENERATION_READER_REBIND_SOURCE_REVIEW.json` (SHA256 `29ad9aa4ed1ac6115e8b6c85ad2cfc6961415e537c03d3fd5ce3bc71000ba806`). Final whole-candidate approval, actual full-runtime wait 0 and fresh generated-launcher telemetry controls remain prerequisites. The original ten GPU assets, prior revocation and failed generations remain unchanged; no installation, dry-run, live GPU, production park/reload, owner grant, wide CPU v2 activation or corpus publication is claimed.
 
-- [x] **2026-10-07 bounded checkpoint: preserve and inventory the original r5 full failure.** ✅ 2026-10-07 All 103 traces and original waits/cleanup distinctions are retained; no runtime PASS is inferred.
-- [x] **2026-10-07 bounded checkpoint: source-review the narrow canonical-path producer and reader checksum correction.** ✅ 2026-10-07 Exact prospective sources and all three native positive/negative controls are retained; original G3 refusal remains immutable.
-- [x] **2026-10-07 bounded checkpoint: authenticate the new NI08 capacity acknowledgment through the genuine owner outbox.** ✅ 2026-10-07 Exact correlation proves receipt only, not an applied recovery or serving/compute grant.
-- [x] **2026-10-07 bounded checkpoint: complete the disjoint four-plus-six targeted evidence and commit the exact seven-file GPU repair.** ✅ 2026-10-07 ROOT accepted both original source/cleanup scopes; clean commit `b1d49999` is ready for normal r6 integration. Failed V1/V2 runs retain their original results.
 - **[declined: ws58 2026-11-03 content-review: launcher/custody residue]** Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native runtime wait 0, and then review GPU clearance and fresh generation telemetry.
   - source a3bdc4860 merged; native/materialization still unapproved
   - [x] 2026-10-28 satisfied part (CPU source+runtime): superseded by r10 `bdb52d951`; SOURCE_AND_RUNTIME_PASS, full/native waits 0, receipt fd9043db (26 refs) and CPU activation/monitor 36bdfe14 (9 refs) re-hashed by ws58 from `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/`. DRY 52fa5afb is receipt-supported but only 17 of 23 refs reproducible (6 original /tmp/ak-27b assets missing). [belief: cc]
-  - [ ] LIVE GPU leg: GPU clearance review and fresh generation telemetry from a real serving-owner run; needs serving-owner grant (no park of :8083 by this session). Parent box stays open.
-- [x] **2026-10-07 bounded checkpoint: reverify the sixteen original G3 masks under the corrected producer/reader.** ✅ 2026-10-07 New original native/inner waits 0, 98 native terminal observations, original35 unchanged and shared Judged/Located grade; scope is same-build self-conformance.
+  - [ ] **AKU-28** LIVE GPU leg: GPU clearance review and fresh generation telemetry from a real serving-owner run; needs serving-owner grant (no park of :8083 by this session). Parent box stays open.
 - **[declined: ws58 2026-11-03 content-review: custody residue]** Publish the ROOT-reviewed exact original35 corpus and new native verification record at the owned paused boundary, retaining original failures and grade qualifications.
 
 Earlier checkpoint entries retain their original dated scope.
@@ -7213,95 +7187,49 @@ settled, the continuous supervisor automatically launched batch 25; it was stopp
 requested monitoring boundary and is excluded from the 50-loop evidence. No production kernel
 was changed or promoted.
 
-- [x] **Required-target validation aggregate follows the current shared tip**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Targets author against the shared source tip, retaining their own baseline/history**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Original GPU positive/historical control supplier is connected**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Completed serial campaigns retain selectable target details**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Last completed outcome retains an optional original-evidence pointer**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Distinct common-Git worktrees receive target-recipe source validation**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Aggregate serving gates feed the original archive and belief consumer**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Original GPU runtime path uses both held contexts and numeric device observations**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Fresh unified CPU source measurements use matched process-pair calibration**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Shared-worktree source changes receive original-owner cross-target validation**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Serial selection learns bounded cost forecasts from original held receipts**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Existing dashboard operates the original serial controls**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Original serial owner accepts authenticated pause/resume/drain**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Original-owner runtime interruption recovery**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Existing dashboard shows dated runtime preparation and selected recipe**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Fresh selected CPU/GPU targets prepare their missing source floor automatically**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Shared-source target switching and all-eight-target serial startup**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Automatic CPU screening connects selection to same-build full confirmation**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Inherited CPU recipes use explicitly declared campaign affinity**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Existing serial CPU+GPU owned-roster dry run passes**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Build rebinding follows actual ELF loader names across version changes**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Actual production command grammar resolves all seven exported targets**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Existing serial owner selects and accounts original held resources**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Split-model import preserves the launch entry shard**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Completed dashboard runs no longer look like stalled measurements**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Shared historical mechanisms reach the existing planner automatically**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Production enrollment includes every split-GGUF shard**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Five actual GLM CPU research iterations completed unattended**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Serial dashboard accepts the restart producer's process identity**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Interrupted source survives the existing lane reset**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Serial restart reuses a completed child without replay**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Existing-loop CPU factual noise and bounded original-arm recovery**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Existing-loop same-binary runtime observation and readers**: . ✅ 2026-09-10 _(detail → completed ledger)_
-- [x] **Prevalidated runtime options bypass routine critics**: . ✅ 2026-09-10 _(detail → completed ledger)_
-- [x] **Same-owner runtime admission and serial recipe transport**: . ✅ 2026-09-10 _(detail → completed ledger)_
-- [ ] **Complete runtime fast-path admission and continuation**: finish interrupted-owner recovery; use original applicable calibration/evidence and
+- [ ] **AKU-16** **Complete runtime fast-path admission and continuation**: finish interrupted-owner recovery; use original applicable calibration/evidence and
   retain/select/resume an accepted runtime recipe without a source promotion. Runtime
   observations alone do not complete AK-AUTO-07 or the runtime champion requirement.
 
-- [x] **Existing-loop CPU profile observation reaches actor and belief readers**: . ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **First actual CPU source-to-measurement iteration and automatic continuation**: ✅ 2026-09-10 _(detail → completed ledger)_
 
-- [x] **Dashboard restart configuration and observed false benchmark detection**: ✅ 2026-09-09 _(detail → completed ledger)_
 
-- [x] **Actual CPU actor-template failure repaired**: . ✅ 2026-09-09 _(detail → completed ledger)_
 
-- [x] **Separate live trial from retained champion/history readers**: . ✅ 2026-09-09 _(detail → completed ledger)_
 
-- [x] **Live CPU trial dashboard selection**: . Orchestrator ✅ 2026-09-09 _(detail → completed ledger)_
 
-- [x] **Existing-loop CPU serving and request-bound calibration**: . ✅ 2026-09-09 _(detail → completed ledger)_
-- [x] **Original experimental CPU anchor identity and unwaived dry run**: . ✅ 2026-09-09 _(detail → completed ledger)_
-- [x] **CPU-specific actor instructions and workload-scoped evidence epoch**: . ✅ 2026-09-09 _(detail → completed ledger)_
 
-- [x] **Compatibility repair — fresh legacy stores and anchor pruning**: . ✅ 2026-09-09 _(detail → completed ledger)_
-- [x] **GLM request transport and original topology order**: . ✅ 2026-09-09 _(detail → completed ledger)_
 
 > **Implementation authorization, 2026-09-08:** the operator has now directed implementation of this
 > handoff, using **GPT-5.6-sol medium** workers for bounded work and the main thread for coordination,
@@ -7605,7 +7533,6 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
   - [x] **S3-AKU-08 (U3-PROPOSER) — write the RUNTIME_CONFIG proposer ownership split into U3-SEED.** (a) ✅ 2026-09-15 _(detail → completed ledger)_
   - 2026-11-19 U3-SEED: no code possible until OP-AKU-U3 is decided (variance estimand/test, alpha/N/multiplicity, mean-throughput guard); `_spread()` stays reporting-only. The recommended narrow rule above stands as the proposal.
   - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `ee4149f75` `loop/variance_input_producer.py` `produce(record, candidate_id=, floor=, unit=)` emits the closed `variance_input.v1` from the `serving_runtime_ab.v1` record of paired RUNTIME_CONFIG launches (pairing from `launch_membership`), refusing typed (unpaired, recipe-hash/unit mismatch, missing floor, bad value, unsupported schema), n<14 through `variance_keep`'s own `insufficient_n`; end-to-end test on SYNTHETIC launches (19 tests with variance_keep). Remaining: >=14 real paired RUNTIME_CONFIG launches with a session-unit floor record for a real verdict (CPU A/A calibration row `ak-cpu-aa-calibration-20261118`). [no-belief: code]
-- [x] **U3-DEFAULTS — RESOLVED 2026-09-08: NOT APPLICABLE. R23-58 did NOT confirm the shim on the GPU** ✅ 2026-09-08 _(detail → completed ledger)_
 > ### THE RECIPE FORMAT — NOT THE KERNELS — IS THE BINDING CONSTRAINT ON WHAT THIS CAMPAIGN CAN ASK
 >
 > **Three expressiveness gaps in the recipe schema were found and fixed on ONE DAY, 2026-09-08.** Each one
@@ -7633,7 +7560,6 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
 > exactly the configuration frozen production supports for that model — the missing PROD-BASE-1 denominator.
 > Tracked as **MTP-27B-1** in `autokernel-champion-aggregate.md`.
 
-- [x] **U3-EXPRESS-3 — a self-drafting model is expressible as a recipe** ✅ 2026-09-08 _(detail → completed ledger)_
 - [x] ✅ 2026-11-01 — Research `138f47a5c67c3b197c8a0791c9f90c50d0ac51be`; [pre-fix audit and regression cases](https://github.com/pestopoppa/epyc-inference-research/blob/138f47a5c67c3b197c8a0791c9f90c50d0ac51be/scripts/kernel_rnd/autokernel/loop/readiness/U3_EXPRESS_AUDIT.md). [belief: cc] **U3-EXPRESS — run a DELIBERATE expressiveness pass over the recipe schema instead of waiting for the
       next question to expose the next gap.** Three gaps in one day (env var, identity hash, self-draft), each
       found by tripping over it mid-measurement, each blocking a measurement outright. Enumerate what a
@@ -7848,20 +7774,12 @@ sequencing: measurement first, authoring later).
 #### 4. Phases, exit criteria, tasks
 
 ##### P0 — directive relayed, handoff filed ✅ 2026-09-07
-- [x] Directive sent to `workspace-1c` with concrete instructions (rebase onto champion tip, opt-in the two ✅ 2026-09-07 _(detail → completed ledger)_
-- [x] This handoff + index row ✅ 2026-09-07
 
 ##### P1 — the fold at run 30's next boundary (U1)  · exit: ONE champion tip carrying both lineages, GPU floors unchanged
-- [x] **UD-0**: operator confirmed the fold DIRECTLY to `workspace-1c` ✅ 2026-09-07 — gate 1 (their windows clear) is theirs to signal; gate 2 (run 30 boundary) is ours
-- [x] **FOLD-2 additions (UD-4)** : on candidate `ef81196d5` — `test-backend-ops -o SSM_SCAN -b ROCm0` **7/7 OK** ✅ 2026-09-08 _(detail → completed ledger)_
-- [x] Champion branch + orphan tag pushed to the GitHub fork ✅ 2026-09-08 (`ak-loop-tree` was swept from scratch mid-fold; `champ2` was one sweep from the same)
 - [x] ~~INF-70 **RETEST-1 turn in progress** (A/A first, then RETEST-1 in priority order); **next fold = their keeps off `ef81196d5`** — they stage~~ (closed 2026-10-29 audit: SUPERSEDED → RETEST-1 close-out 1fc2e2d45 (2026-09-08): no CPU keeps, sync17-fix2 DO-NOT-FOLD, consolidation complete at …  _(detail → completed ledger)_
 - [x] ~~FOLD-0 (`inf70-audit`): fold-ready commit with both blockers opt-in; bit-identity + `test-backend-ops -b CPU`.~~ (closed 2026-10-29 audit: SUPERSEDED → fold executed instead via FOLD-1..3 (ticked box below, e5d1846d2): champion3 9c4f73e29 ancestor of ef81196d5; also in v10 base …  _(detail → completed ledger)_
 - [x] ~~Do not schedule the boundary under INF-70's live chains (SYNC-19/20 window 1 ~21:30Z + a second window,~~ (closed 2026-10-29 audit: SUPERSEDED → boundary scheduling moot: fold completed 2026-09-08 (e5d1846d2) and INF-70 campaign closed (f53fa4908))  _(detail → completed ledger)_
-- [x] FOLD-1..3 (champion owner) per `autokernel-champion-aggregate.md` : fold executed, all FOLD-2 gates ✅ 2026-09-08 _(detail → completed ledger)_
-- [x] **R23-51a in the same window** : cor `445e93a8` seeded with a **MEASURED** tip-vs-cor tg128 bench, ✅ 2026-09-08 _(detail → completed ledger)_
-- [x] **R23-49 pin + re-calibration in the same window** : `cpu_list` pinned `184-191` on the GPU serving recipe ✅ 2026-09-08 _(detail → completed ledger)_
-- [ ] CPU keeps present in the fold recorded as `accumulator-bundle.cpu.<recipe>.json` (schema v1) — **with their
+- [ ] **AKU-17** CPU keeps present in the fold recorded as `accumulator-bundle.cpu.<recipe>.json` (schema v1) — **with their
       magnitude flagged `provisional` and the contention label `pre-hook`**: every INF-70 arm before 2026-09-07
       carries a WRONG contention label (sampler read `184-191` as disjoint), and +4.50% is at or below its
       instrument's floor (sign solid, magnitude not). A bundle must never launder a non-claim into a settled number.
@@ -7872,7 +7790,6 @@ sequencing: measurement first, authoring later).
       bundle ingests must carry which statistic produced it; (iii) linear within-block drift is ruled out (slope
       +0.03%/slot, R² 0.004), so CPU-surface scatter is contention (OP-40), not drift.
       2026-11-18 (autokernel, box note, NOT ticked): Research `d3b512b74` adds `loop/cpu_keep_bundle.py` + `test_cpu_keep_bundle.py` (13 tests): schema `epyc.autokernel.cpu_accumulator_bundle.v1`, file `accumulator-bundle.cpu.<recipe>.json` (`filename`/`write`, atomic), each keep carries `magnitude` (provisional|settled), `contention_label` (`pre-hook` can never be settled) and the producing `statistic` (only `arm_level_permutation` can settle; an effect at or below its floor cannot), strict reader re-derives the compounded figure, `cpu_keeps_in_fold` filters a fold by explicit surface. **Remaining for the tick:** write the actual per-recipe bundles for the CPU keeps currently in the fold (needs each keep's effect, label and statistic read from the journal; none invented). [no-belief: code]
-- [x] ~~NO relaunch by default (operator 2026-09-08). **Consolidation exit ACHIEVED for the GPU side **: one tip~~ (closed 2026-10-29 audit: SUPERSEDED → consolidation exit achieved 2026-09-08 per the box; unified status header (line 250) says live campaign is DS41 (INF-77) and relaunch GLM moot; … ✅ 2026-09-08 _(detail → completed ledger)_
 
 ##### P1b — consolidation phase 2: rescued-ref candidates (each behind its own gate; measurement that serves consolidation is allowed)
 
@@ -7902,7 +7819,6 @@ Source of truth for the classification of all 31 `fork/rescued-*` refs:
         Sources: intake-1434#record (supersedes intake-1430#record's hoist line), intake-1430#record.
 - [x] **QUANT-RECIP-9f85ba2fb — Quantize reciprocal — `rescued-ak-discovery-7e8da8ea-attempt1` @ `9f85ba2fb`** (`ggml/src/ggml-cuda/quantize.cu` ✅ 2026-11-19 [belief: cc] [no-belief: triage] [no-belief: row preparation] _(detail → completed ledger)_
 - [x] ~~**Q5_0 `vecdotq.cuh` variants — `f9d74a2a3`, `d4b0a04e4`, `580e8d090`, `5d22a5463`: DECLINE.** Q5_0 is not a~~ (closed 2026-10-29 audit: SUPERSEDED → box itself records DECLINE; consolidation audit d33bd5548 / docs/design/champion-consolidation-audit-20260908.md classified Q5_0 variants as …  _(detail → completed ledger)_
-- [x] Single-copy refs pushed to the fork  (`ak/orphan-keeps-quantize-20260829`, ✅ 2026-09-08 _(detail → completed ledger)_
 
 **REFUTED — do not fold. A measured refutation is not a keep, and re-measuring a refuted lever is new research
 (stopped by the operator).** Both read as candidates on the audit's first pass because absence from the champion is
@@ -7927,10 +7843,8 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [x] `Bundle.surface`; per-surface store filenames; `load_bundle()` per surface; shared cor invariant test  — Research `a25f5ff79b2db6c4c883d7eb1402ada87ca46c63` + `064d758ee4218014628eb021d9526eaafff7f456`: opt-in typed CPU/GPU v3 snapshots and separate bundle/journal paths; shared COR … ✅ 2026-11-01 [no-belief: source implementation and synthetic correctness verification only; no native measurement, live-store mutation, or production promotion] _(detail → completed ledger)_
 - [x] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified   <!-- evidence-integrity: Research `6cf25cfab8e45e760cbe4291134b58730ae1eb70`; artifact: artifacts/compute/task-evidence-repair-20261031/serving-recipe-cpu/EVIDENCE.json; hygiene, not … ✅ 2026-10-30 [no-belief: source identity/launch validation] _(detail → completed ledger)_
 - [x] **AK-CPU-AA-CALIB** CPU A/A calibration: screen floor + serving floor, unit and host-state hash recorded; gating-floor calibration n≥24 with interval (FLOOR-UNIT-1 supersedes the earlier n=20 proposal) Row ak-cpu-aa-calibration-20261118: model: Qwen3.8-Flash-Next (Q38FN) + MTP, C14 CPU store … [no-belief: code] [belief: cc] _(detail → completed ledger)_
-- [x] **Every floor record carries `unit` (arm | session | process)** alongside harness, n, contention model and host-state hash; a gate comparing an effect to a floor of a different unit REFUSES  — research `eb8a88de`: `unit` + `n` are required fields of `serving_floor.v1`/`.v2` and of the bench … ✅ 2026-09-14 _(detail → completed ledger)_
-- [x] **Headline admissibility: ≥N independent launches with a session-unit CI**, N sized from the ✅ 2026-09-15 _(detail → completed ledger)_
 - [x] **GPU-LAUNCH-VAR-COVARIATE — Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP ✅ 2026-11-19 [belief: cc] [no-belief: cross-reference] [no-belief: triage] [no-belief: row preparation] _(detail → completed ledger)_
-- [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
+- [ ] **AKU-18** Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
 - [x]  — Research `2f047a7b1a1a47f30d97e27ddd4c4153d11f911f`; [354-test committed-source suite](https://github.com/pestopoppa/epyc-inference-research/blob/f7061c0cecfc279cf1a1436227ef00285fd2c306/artifacts/engineering/aku-stale-baseline-20261101/README.md).  **Re-baseline on cor advance**: … ✅ 2026-11-01 [belief: cc] _(detail → completed ledger)_
 - [x] **S3-AKU-07 — promotion evidence from held-out launches.** The promotion record's compounded gain, and ✅ 2026-11-17 [no-belief: tooling landing, no measurement] _(detail → completed ledger)_
 - [ ] **S3-AKU-13 — Goodharted-keep count at PROMOTE.** Beside each LOO arm (R23-48) record that keep's
@@ -7942,7 +7856,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
   - 2026-11-19 (autokernel) real LOO row `s3-aku-13-loo-cpu-c14-20261118` published: C14 `eee3da838` full bundle F vs five CPU LOO arms (L1-L4 `git apply -R` own builds, L5 `GGML_CPY_BALANCE=0`), paired ABBA x2 per arm on P4K and P32K. model: Qwen3.8-Flash-Next UD-IQ4_XS (Q38FN) + shared MTP Q8_0. Stop-on-answer: all 40 visits -> RESULT.json arms/full_bundle in the `count_goodharted` input shape (verdict computed by the owning session, tie counts). Stop-on-futility: missing input/proof failure, or L/F < 0.90 on both surfaces in block 1 skips that arm's block 2. Gate-class futility-only; other re-baselined surfaces (GPU) not in this row. [no-belief: tooling landing]
   - 2026-11-19 (autokernel) FILED `s3-aku-13-loo-cpu-c14-20261118` **inconclusive** (box stays OPEN). `count_goodharted` = 4/5 (0d270f99b, 7a5db485e, a331665d4, 4348de400 goodharted; 8b9bf3031 not). loo/full P4K/P32K: L1 1.059/1.046, L2 1.029/0.984, L3 1.077/1.004, L4 1.014/1.014, L5 0.809/0.873 (block-1 futility). Only 2 blocks/arm, no arm clears the 3.84% floor on every block and surface, and host foreign busy_p50 was 35-52% on every visit (spikes on F visits inflate L1/L3). Greedy outputs byte-identical F vs every arm. L5 (GGML_CPY_BALANCE) clearly positive. Confirmation: AK-LOO-CONFIRM-C14. [no-belief: inconclusive row verdict]
   - [x] **AK-LOO-CONFIRM-C14 — contention-gated confirmation of the C14 CPU LOO signal.** model: Q38FN Q8 CPU (Qwen3.8-Flash-Next UD-IQ4_XS + MTP Q8_0), 48t pinned 24-71, booked q0-q2. Row `ak-loo-confirm-cpu-c14-20261119`: arms full C14 vs R1 (-0d270f99b), R3 (-a331665d4), R1234 (-L1..L4), >= 8 … ✅ 2026-11-19 [no-belief: row verdict filed by agent] _(detail → completed ledger)_
-- [ ] First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
+- [ ] **AKU-19** First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
 
   - 2026-11-01 codex3 acceptance: Staleness is derived from the existing shared-COR authority and checked by already-loaded readers, status/quotes and decision entry points. The explicit own-surface rebaseline runs the existing native CPU/GPU harness after resource admission, binds intent before measurement, retains native failure/aborted raw records, then checks COR, tip and the original surface-journal snapshot under the existing authority lock before saving a current measurement. Only a complete typed native comparison clears the stale state. Late initialization and seed cannot erase existing state or bypass recovery; incompatible recovery flags refuse. The final frozen eight-file suite passed 354 with original source hashes and drained processes. No actual COR promotion, model execution, deployment, threshold/grade change or planning-canary claim. [belief: cc]
 
@@ -7968,18 +7882,16 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [x] Known-good and known-null config patches classify correctly ✅ 2026-11-19 (autokernel, code-only): the P1d fixtures are the pair. Known-good: `GGML_FIXTURE_KNOB` OFF->ON default flip classifies TOUCHED on every workload (`test_knob_set_in_effective_env_is_touched`, `exercised_knob_flips`). Known-null: a knob read with no default change is not an exercised change and is INERT only through a T1 witness (`test_unset_knob_inert_only_with_t1_witness`, `test_knob_read_no_default_change_inert_where_unset`). 27 passed, research `93445e31e`. [no-belief: code]
 
 ##### P4 — broker + budgets (U4)  · exit: 10 consecutive iterations mixing surfaces with zero unlocked builds and foreign load under bound on every arm
-- [ ] Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap
-- [ ] CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock
-- [x] **P4-0 precondition**  (INF-70 took it): `scripts/utils/foreign_load.py` + `test_foreign_load.py` on ✅ 2026-09-07 _(detail → completed ledger)_
+- [ ] **AKU-20** Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap
+- [ ] **AKU-21** CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock
 - [ ] **P4-0a (filed 2026-09-07, derived from the P4-0 merge)** — the shared, un-lane-owned research clone
       `/mnt/raid0/llm/epyc-inference-research` is **187 commits behind `origin/main` with 9 dirty tracked
       files** left by other sessions (a merge there failed on `ort`). Surfaced merging P4-0 in; no owner,
       so nobody syncs it. Do NOT `checkout`/`reset` it (destroys other sessions' uncommitted work) — needs
       an operator-assigned owner or a scheduled sweep session before it grows further.
-- [ ] Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
-- [x] LOO + re-baseline receipts are REQUIRED fields before shared-source advancement; the ✅ 2026-09-10 _(detail → completed ledger)_
-- [ ] Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
-- [ ] Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
+- [ ] **AKU-22** Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
+- [ ] **AKU-23** Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
+- [ ] **AKU-24** Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
 
 ##### P5 — single monitoring session (U5)  · exit: one roster entry monitors both surfaces; CPU session files hypotheses, measures nothing by hand
 - **[declined: ws58 2026-11-03 content-review: bookkeeping]** Roster/ownership update; inbox is the CPU session's output surface
@@ -8100,10 +8012,6 @@ by this audit. Current evidence and corrections are consolidated in §8.16.
 
 Documentation checklist (only these boxes describe this session's work):
 
-- [x] **PLAN-DOC-1** — capture audit, accepted choices, implementation proposals, tests and provisional defaults in the owning handoff. ✅ 2026-09-08
-- [x] **PLAN-DOC-2** — iterate §8 with the operator before converting proposals into an implementation queue. ✅ 2026-09-08: operator authorized implementation; §9 records execution and retained boundaries. No production or live-research authorization inferred.
-- [x] **PLAN-DOC-3** — audit both final September 8 close-outs and refine the notebook with evidence-scoped implementation contracts and tests (§8.16). ✅ 2026-09-08
-- [x] **PLAN-DOC-4** — fresh independent audit; reconcile protocol/cadence contradictions and delineate scheduler, evidence, validation and lifecycle implementation contracts (§8.17). ✅ 2026-09-08
 
 ##### 8.2 Dated audit findings and corrections
 
@@ -9645,16 +9553,8 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       - 2026-11-18 (autokernel, AKU bulk pass) NEEDS DECISION (box stays OPEN): the remaining step (write spread onto the live keep record in `loop/run.py` and apply `keep_frontier.retain` at keep time) changes which keeps are retained, i.e. scientific admission authority; blocked on OP-AKU-U3 (variance-only keep rule). Not implemented to avoid a silent policy change.
   - 2026-11-18 operator decision (decision tool): OP-AKU-U3 approved as packaged (option A: additive versioned records, legacy preserved). Rule: log downside-semideviation ratio, paired-bootstrap one-sided 95% UB < 0, n>=14 per arm, throughput LCB above the session floor. [no-belief: operator decision]
   - 2026-11-19 (autokernel) DONE (code): research `epyc-inference-research` `4676c07b6` `loop/variance_keep.py` (`epyc.autokernel.variance_keep.v1`) and an additive, default-off-identity `--variance-input` wiring in `loop/run.py` that writes spread + verdict onto the live keep record and applies `keep_frontier.retain` at keep time (`<store>/keep-frontier.json`). 12 new tests incl. default-off identity (source-structural; run.py keep path not run hermetically). A producer of real `variance_input` is U3-SEED. [no-belief: tooling landing]
-- [x] **S3-AKU-05 — validator provenance on every critic verdict and every keep.** Record per decision: ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **S3-AKU-09 — split every keep record into EFFECT and MECHANISM claims.** EFFECT is gated by oracle + ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **S3-AKU-10 — retrospective process metrics over existing autokernel stores (do first).** ✅ 2026-09-15 _(detail → completed ledger)_
 - [x] **S3-AKU-11 — costed design (no launch) for a strategy-only ablation on one frozen champion.** Arm A: ✅ 2026-11-04 [belief: cc] _(detail → completed ledger)_
-- [x] **S3-AKU-12 — journal a per-target stagnation signal, OBSERVE-ONLY.** Record the slope of best-so-far ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **S3-AKU-14 — rejection-round telemetry for the planner.** Record on every Outcome the ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **S3-AKU-15 — diff-scope equality and oracle/bench-source immutability, before critic pass 2 (binding** ✅ 2026-09-15 _(detail → completed ledger)_
-- [x] **S3-AKU-16 — special-casing screen on keeps, binding together with S3-AKU-15.** Per kept patch, ✅ 2026-09-15 _(detail → completed ledger)_
 - [x] **S3-AKU-17 — objective ledger for autokernel campaigns (design item).** A structured record per  _(detail → completed ledger)_
-- [x] **S3-AKU-18 (AK-RH-3) — first-class planner abstain.** Accept {"abstain": "<reason>"} as a valid reply ✅ 2026-09-15 ✅ 2026-09-16 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: merged into AK-QL-7 (its own conditional)]** **S3-AKU-19 — conditional on AK-QL-7 retaining a throughput win: make BUILD_RECIPE a
       planner-selectable per-arm A/B.** Do not implement or activate this arm before that tripwire.
       Split the currently sealed
@@ -9706,7 +9606,7 @@ compaction and wiki compilation are not part of this implementation request's ro
 Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`), gated by `EPYC_LOCK_FIFO` (default OFF). Ticket queue over role and GLOBAL per-region locks plus gpu-quiet writer preference. Reviewed by ak-ds41-main and workspace-ec. All tests passed (125 passed, 3 xfailed), validated against origin/main.
 
 - [x] Deterministic FIFO-off control (barrier or fake-poll harness: the releaser re-requests while the waiter is provably parked), so the 3 starvation/barging xfails become strict. Required before default ON. ✅ 2026-10-31, orchestrator `9e1155a10f809d9c63a818fd95b5e02276d0e43a`; `tests/unit/test_lock_fifo_queue.py` (24 passed; original fairness negative control fails exactly 3 FIFO-off assertions); artifact `artifacts/engineering/autokernel-rebuild-s-batch-20261031/fifo-control/receipt.json`. [belief: cc]
-- [ ] Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops (DS41, Q38FN) have restarted on the new code (old clients barge).
+- [ ] **AKU-25** Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops (DS41, Q38FN) have restarted on the new code (old clients barge).
 
 2026-10-07 Codex checkpoint: deterministic controls are prepared in orchestrator `56fabf52`
 (`codex/ak-fifo-controls-20261007`); real tickets/flocks remain active and barriers control only
@@ -9853,6 +9753,91 @@ Candidate `56fabf52ba832315cf9b0896650e2267d3fa4773` passed the r2 native unit g
 
 2026-10-30 original-event filing: Original AK29 native token-profile event completed rc0 at18:48:01Z: prefill102 and short_decode255; concurrent_decode,long_decode,prefill_at_depth remain null. Exact b0ba1d427/model/draft identity and own live HIP linkage verified; clock:boot fiducial14.98ms accepted and per-window launches/token ×ns/launch retained. This completes its bounded native capture only, with no keep,speed,performance,selection or promotion verdict. Existing29.2 candidate-ordering and timing gates remain unchanged. [Original event audits](../../artifacts/compute/results-filing-20261030-1842.json). [belief: cc]
 
+
+### Done
+
+- [x] **2026-10-07** ✅ 2026-10-07 Focused495/full5245 plus287 subtests, original waits0, held two-empty-census cleanup and unchanged source/reader/provider. Activation and GPU live warrant remai
+- [x] **2026-10-07** ✅ 2026-10-07 Eight observations and sixteen original child waits/deaths under q1 build ownership; ROOT accepted source/native conformance only. Full-runtime clearance, insta
+- [x] **2026-10-07** ✅ 2026-10-07 All 103 traces and original waits/cleanup distinctions are retained; no runtime PASS is inferred.
+- [x] **2026-10-07** ✅ 2026-10-07 Exact prospective sources and all three native positive/negative controls are retained; original G3 refusal remains immutable.
+- [x] **2026-10-07** ✅ 2026-10-07 Exact correlation proves receipt only, not an applied recovery or serving/compute grant.
+- [x] **2026-10-07** ✅ 2026-10-07 ROOT accepted both original source/cleanup scopes; clean commit `b1d49999` is ready for normal r6 integration. Failed V1/V2 runs retain their original results.
+- [x] **2026-10-07** ✅ 2026-10-07 New original native/inner waits 0, 98 native terminal observations, original35 unchanged and shared Judged/Located grade; scope is same-build self-conformance.
+- [x] **Required-target** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **Shared-worktree** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **Original-owner** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **Shared-source** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **Split-model** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **Existing-loop** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **Existing-loop** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **Same-owner** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **Existing-loop** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **Existing-loop** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **CPU-specific** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-09 _(detail → completed ledger)_
+- [x] **U3-DEFAULTS** ✅ 2026-09-08 _(detail → completed ledger)_
+- [x] **U3-EXPRESS-3** ✅ 2026-09-08 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-07 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-07
+- [x] **UD-0** ✅ 2026-09-07 — gate 1 (their windows clear) is theirs to signal; gate 2 (run 30 boundary) is ours
+- [x] **FOLD-2** ✅ 2026-09-08 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-08 `ak-loop-tree` was swept from scratch mid-fold; `champ2` was one sweep from the same
+- [x] **—** ✅ 2026-09-08 _(detail → completed ledger)_
+- [x] **R23-51a** ✅ 2026-09-08 _(detail → completed ledger)_
+- [x] **R23-49** ✅ 2026-09-08 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-08 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-08 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-14 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **P4-0** ✅ 2026-09-07 _(detail → completed ledger)_
+- [x] **—** ✅ 2026-09-10 _(detail → completed ledger)_
+- [x] **PLAN-DOC-1** ✅ 2026-09-08
+- [x] **PLAN-DOC-2** ✅ 2026-09-08 : operator authorized implementation; §9 records execution and retained boundaries. No production or live-research authorization inferred.
+- [x] **PLAN-DOC-3** ✅ 2026-09-08
+- [x] **PLAN-DOC-4** ✅ 2026-09-08
+- [x] **S3-AKU-05** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **S3-AKU-09** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **S3-AKU-10** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **S3-AKU-12** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **S3-AKU-14** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **S3-AKU-15** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **S3-AKU-16** ✅ 2026-09-15 _(detail → completed ledger)_
+- [x] **S3-AKU-18** ✅ 2026-09-16 _(detail → completed ledger)_
+
 ## Track: autokernel-concurrent-target-coordination
 <!-- gate: INF-06#autokernel-unified-surface-program -->
 
@@ -9872,8 +9857,7 @@ This is a documentation checkpoint. Do not interpret open implementation tasks b
 
 ##### Review checklist
 
-- [x] CTC-DOC: capture generic requirements, current code seams, evidence limitations, and proposed acceptance criteria. ✅ 2026-09-14
-- [ ] CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session. (parked 2026-10-29 (operator): deferred with the AutoKernel hold; not blocked on the operator until the AK hold lifts) The implementation sequence (absorbed: CTC-1..8, CTC-Q-D, CTC-Q-F) stays in the proposal document and is filed as boxes only if the operator authorizes the implementation session.
+- [ ] **AKU-26** CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session. (parked 2026-10-29 (operator): deferred with the AutoKernel hold; not blocked on the operator until the AK hold lifts) The implementation sequence (absorbed: CTC-1..8, CTC-Q-D, CTC-Q-F) stays in the proposal document and is filed as boxes only if the operator authorizes the implementation session.
 
 ##### Proposed implementation sequence (gated by CTC-REVIEW)
 
@@ -10044,13 +10028,18 @@ Still subject to review: the staged concurrency proposal, its FIFO admission beh
 
 The previously reported LOW GitNexus impact on `_drive`, `hold_cpu` and `publish_intervals` is only a static callgraph observation. Closure callbacks and runtime claim consumers above show why it is not a correctness assurance. Re-index the implementation checkout and review these consumers before editing.
 
-- [ ] GPUQUIET-WRITER-PREFERENCE: gpu-quiet EXCLUSIVE starves under AK lanes' back-to-back shared claims (timed out at 600 s on 2026-10-07 02:42Z, FIFO off). Needs FIFO default-on or writer preference. Owner: workspace-ec, coordinate with workspace-89. Done when an EXCLUSIVE acquire succeeds within its timeout while AK shared lanes are running.
+- [ ] **AKU-27** GPUQUIET-WRITER-PREFERENCE: gpu-quiet EXCLUSIVE starves under AK lanes' back-to-back shared claims (timed out at 600 s on 2026-10-07 02:42Z, FIFO off). Needs FIFO default-on or writer preference. Owner: workspace-ec, coordinate with workspace-89. Done when an EXCLUSIVE acquire succeeds within its timeout while AK shared lanes are running.
   - 2026-11-19 GPUQUIET-WRITER-PREFERENCE: writer preference already exists (orchestrator `11e6d86`, `gpu_quiet_lock.py`) and passes `TestGpuQuietFifoOrdering::test_writer_preference` (re-run 2026-11-19: passed), but only under `EPYC_LOCK_FIFO=1`, default OFF. The remaining step is the sibling box at the FIFO section ("Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops have restarted on the new code", because old clients barge); the named event is that loop restart. The done condition (EXCLUSIVE succeeds within its timeout under live AK shared lanes) is a live check after the flip.
 
 ##### 2026-10-28 INF-74 / RUN14 joint gate result - no deployment
 
 - Private direct-gate cross-contract controls passed (unresolved matching-peer refusal at registration and grant including a forged recomputed receipt, explicit separation, stale-catalog refusal), plus 53 existing integration controls; synthetic controls only. The joint RUN14/NI interface audit then reproduced a same-UID child escaping the proposed cgroup (`cgroup.procs` empty while the child lived), false acceptance of asserted `attachment_fenced=true`, an owner-death/pidfd-check-to-spawn race, and region/publication-lock self-block. So `MUTATORS_SHARE_LEASE=false`; no live deployment is safe. Before reconsideration: protected cgroup authority or proven equivalent, an owner-bound grant -> quiet -> receipt handoff, and tests proving descendants cannot escape and cleanup/lock release is verified. Fixture children all reaped. Evidence: `/mnt/raid0/llm/tmp/codex-ni-20261028-coordination/inf74-0303.txt`, `gpu-fence-defect-0306.txt`, `/mnt/raid0/llm/tmp/refactor-01a16fc3/gpu-lock-handoff-20261028/RUN14-NI-INTERFACE.md`. No deployment or checkbox claim. [belief: cc]
 - [ ] **INF-74-CGROUP-ROOT — land the root-owned cgroup delegation script.** (filed 2026-10-28, workspace-58 wrap-up) Operator chose root-owned cgroup delegation as the fix for the same-UID descendant escape above. Codex delivers the script (operator runs it, it is a protected-authority change); then add the escape/cleanup tests named above and re-run the INF-74 gate before any cutover. Cutover stays rejected until this box and the owner-bound grant→quiet→receipt handoff land. [no-belief: not-a-result]
+
+
+### Done
+
+- [x] **—** ✅ 2026-09-14
 
 ## Track: autokernel-orchestrator-actor-backend
 <!-- gate: INF-77, INF-06#autokernel-rebuild-program, UFH-01#repl-turn-efficiency, UFH-01#qwen-chat-template-evaluation, RTG-09#routing-program, RTG-09#internal-interaction-lifecycle, RTG-09#learned-routing-controller, RTG-09#model-capability-descriptors, RTG-09#retrain-routing-models, RTG-09#tri-role-coordinator-architecture, RTG-09#typed-decision-plane, RTG-09#x-mas-text-routing, UFH-01#harness-selection-and-integration -->
@@ -10164,10 +10153,6 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
 
 #### Tasks
 
-- [x] **OAB-0 — Do not start until DS41-C20 has recorded the seat A/B.**  (DS41-C20c; §Baseline) The reference must exist ✅ 2026-09-24 _(detail → completed ledger)_
-- [x] **OAB-1 — per-call worktree root + edit mode on `/chat`** (orchestrator).  — orchestrator ✅ 2026-09-25 _(detail → completed ledger)_
-- [x] **OAB-2 — `orchestrator` Backend kind** (research, `loop/actors.py`).  — research `751ec730` ✅ 2026-09-25 _(detail → completed ledger)_
-- [x] **OAB-3 — trailing-work witness (R2).**  — orchestrator `9124c7f1`: ✅ 2026-09-25 _(detail → completed ledger)_
 - [ ] **OAB-4 — A/B against the bounded seat on the same driver.** Extend
   `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py` with an `orch` arm; same prompt, same 27B :8083 (via the
   orchestrator's `x_force_role` / `force_role` if needed), one arm at a time, report steps / tool calls
@@ -10447,13 +10432,7 @@ Not measured:
 
 ##### Tasks
 
-- [x] **OAB-7s — seat-side precursor of OAB-7: the context bundle as files.**  — research ✅ 2026-09-24 _(detail → completed ledger)_
-- [x] **OAB-4m — seat-side precursor of the OAB-4/S4-T1 columns: per-call metrics.**  — research ✅ 2026-09-24 _(detail → completed ledger)_
-- [x] **R4c — seat-side precursor of R4: cache tool output keyed by exact argv + input identity.** ✅ 2026-09-24 _(detail → completed ledger)_
-- [x] **OAB-9 — live A/B: plain inline vs plain variable, AFTER run-9 calibration.**  — **INLINE** ✅ 2026-09-25 _(detail → completed ledger)_
 - [x] ~~**OAB-9b — re-open the context-placement question only when a precondition changes.** The trigger is any~~ (closed 2026-10-29 audit: SUPERSEDED → PARKED 2026-09-27 (operator): revisit folded into OAB-4 first orch run (actor-backend:445))  _(detail → completed ledger)_
-- [x] **OAB-10 — trim the lane `AGENTS.md` out of the planner's fixed overhead.**  — research ✅ 2026-09-25 _(detail → completed ledger)_
-- [x] **OAB-11 — the planner must read its OWN lane, not the anchor build tree, and must not build.**  — ✅ 2026-09-25 _(detail → completed ledger)_
 - [ ] **OAB-12 — pull accounting: count and cap what the planner pulls from the bundle.** opencode cannot report
   which bundle files a model read, or how many bytes, except by parsing `read`/`grep` tool parts after the fact.
   First, have the metrics exporter derive per-section pull counts and bytes from the export's tool parts. Then
@@ -10474,8 +10453,6 @@ Not measured:
 
 ##### Tasks filed 2026-09-25 (integration, opencode store, planner timeline)
 
-- [x] **OAB-13 — integrate OAB-2/7/8, review, deploy.**  — integration lanes ✅ 2026-09-25 _(detail → completed ledger)_
-- [x] **OAB-14 — the opencode store fault that failed an author call.**  — root cause: the event ✅ 2026-09-25 _(detail → completed ledger)_
 - [ ] **OAB-15 — operator decisions on the opencode store** (decision package; OP-59 when the index row lands).
   (a) Global `snapshot: false` for every opencode use: per-call configs already carry it; making it global
   would disable TUI undo. Recommendation: keep it per-call only. (b) A store retention policy: `opencode.db` is
@@ -10498,17 +10475,10 @@ Not measured:
   - PARKED 2026-09-27 (operator): `PREFIX_STABLE_ORDER` is still OFF in production (`src/features.py`, `prefix_stable_order` defaults to False). The only data is the `88e22777` DS41 control-prompt measurement quoted above. No scoped OAB-4 call and no REPL-suite reply check has run; resume by enabling the flag for scoped REPL calls and verifying per-turn uncached prefill and unchanged REPL-suite replies.
   - 2026-11-19 OAB-18: needs the run: enable `prefix_stable_order` for scoped REPL calls, run one scoped OAB-4 call to read per-turn uncached prefill, and compare the REPL-suite replies flag-on vs off. No code is missing; the flag exists in `src/features.py`.
 - [x] **OAB-19 — the compaction worker summarizes text no prompt shows.** Compaction measures and summarizes [no-belief: code change and tests, no run] [no-belief: operator decision] _(detail → completed ledger)_
-- [x] **OAB-20 — planner timeline audit (why a planner call takes 30-60 min).**  — from the :8083 logs ✅ 2026-09-25 _(detail → completed ledger)_
 - [x] **OAB-21 — fix reasoning-token accounting in `actor_call_metrics`.**   `tokens.reasoning` reads 0 while the <!-- evidence-integrity: Research `3e9c00e534ae29f138d13ec8962fe0d44fd86b41`; artifact: artifacts/compute/task-evidence-repair-20261031/oab-21/EVIDENCE.json; hygiene, not quota --> ✅ 2026-10-30 [belief: cc] ✅ 2026-10-29 [no-belief: parser implementation and fixture correctness] _(detail → completed ledger)_
-- [x] **OAB-22 — planner concision rule plus an 8k per-turn cap, together.**  — first run-10h planner call: 15 steps, max turn 9,801 decoded (cap 16384, 0 capped steps), schema-valid, 31.4 min vs 32.8. Note: step 1 at 9.8k exceeds the rule's ~4k analysis aim (below the cap that replaced 8k). Add to … ✅ 2026-09-26 _(detail → completed ledger)_
-- [x] **OAB-23 — a total budget per planner call.**  — landed research `eeab67ba`, live in `d643d794`; acceptance met by `test_actor_budgets.py` (30 passed on d643d794): `test_an_incomplete_reply_raises_budget_exhausted`, `test_the_planner_is_never_relaunched_after_its_budget`, … ✅ 2026-09-26 _(detail → completed ledger)_
 
 ##### Tasks filed 2026-09-26 (DS41 six-lane integration, research main `d643d794`)
 
-- [x] **OAB-24 — author budgets and the opencode output cap.**  — lane `ak-author-medium`. ✅ 2026-09-26 _(detail → completed ledger)_
-- [x] **OAB-25 — `ak-check` sandbox for authors.**  — lane `ak-sandbox`. ✅ 2026-09-26 _(detail → completed ledger)_
-- [x] **OAB-26 — best-of-2 with mixed authors.**  — lane `ak-bestof`. ✅ 2026-09-26 _(detail → completed ledger)_
-- [x] **OAB-27 — scope GitNexus to the lane's anchor.**  — research `a1c5812b`. ✅ 2026-09-26 _(detail → completed ledger)_
 - [x] **OAB-28 — best-of member `ak-check` fence sits outside the lane fence set.** ✅ 2026-10-24. The fence is created beside
   the member tree, not in the set the lane scheduler locks.
   - It is harmless under `--workers 1`, which best-of currently requires.
@@ -10556,7 +10526,6 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
 
 ##### Tasks filed 2026-10-01 (OAB-7 `context` API in production)
 
-- [x] **OAB-35 — `context.get(name, '')` (the dict idiom) crashed REPL calls with HTTP 500.**  — ✅ 2026-10-01 _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: documentation of an idiom; no behaviour change]** **OAB-36 — document the dict idiom in the `context` root block.** OAB-35 shows that models reach for dict
   idioms on `context` by default. The root block (`context_bundle.py` ~810, `render_root_block`) and the short
   namespace line (~1023) list only `context.get(name, max_chars=None, offset=0)`; the `default=` form appears only in
@@ -10608,3 +10577,31 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
 
 - [x] **AK-TESTS-RESEARCH-MAIN-RED — get the loop/controller test suite on epyc-inference-research main back to green (130 failed, 104 errors as measured 2026-11-19, all pre-existing, none from the code-budget trims).** [code, tests] Three causes found: (1) `numpy` is missing from the system `python3` that the suite runs under, so every numpy-importing module errors at collection (use the project venv, or declare the dependency and have the runner pick the interpreter); (2) the `test_maintenance_execution` fakes lack the `ignore_errors` argument the real call now passes; (3) the yaml fault-injection tests fail on the current yaml handling. Done when `python3 -m pytest` over `scripts/kernel_rnd/autokernel/loop` and the controller tests reports 0 failed / 0 errors from the interpreter the code-budget gate uses, or each remaining failure has a written reproducer and an owner. The code-budget boxes above gate on this suite, so a red baseline hides real regressions from them. (filed 2026-11-19) [no-belief: tooling-repair] **DONE 2026-11-20 ✅ 2026-11-20** (before: 247 failing items per the 2026-11-19 baseline (box text: 130 failed, 104 errors) -> after: 1 failed, 0 errors, 111 skipped, 8262 passed over 440 per-file loop+controller runs on research `1108b6ec1`, system python3, root `ec5857e32` pin via EPYC_ROOT worktree, q1 claim, nice; `cpu_fa_verifier_record` 14 passed). Skips: 111 in two justified groups (numpy-dependent suites skip with a reason on the numpy-less interpreter, `221070f88`; historical v9 bundle acceptance tests not re-sealed for v10). The one failure is an intermittent `test_discovery_static_registry` cgroup-identity test (a different test each full run: 2, 4, then 1 of 54; 54/54 when the file runs alone), filed as its own box below with reproducer. Commits: research `4a59d7b0c..1108b6ec1` (17: `4a59d7b0c 6dc80bb77 cec5bcb30 de8ccb95f 9b1b6f30d 408ba54e6 d548ac8bc 17f62bc7a 5583f34a9 30e8cd8d3 e03c7402e ab13d5462 221070f88 cf0fe7479 a95d0558e 1108b6ec1`, incl. one real product bug `cec5bcb30` hip_routes parse); root `ec5857e32` (real-mask pin). Last three test-side fixes in `1108b6ec1`: conftest EPYC_ORCHESTRATOR_REPO outranks the fixture root, the reader C1 pin needs a git fixture root, a same-size same-tick DSO rewrite needs an explicit mtime. `check_regrowth_guards.py`: 0 violations. [no-belief: tooling-repair]
 - [ ] **AK-STATIC-REGISTRY-CGROUP-NLINK-FLAKE — make `controller/test_discovery_static_registry.py` deterministic under load.** [code, tests] Reproducer: run the full per-file loop+controller suite 4-6 files in parallel on research `1108b6ec1`; 1-4 of the 54 `StaticBuildCacheTests` fail with `supervised controller cgroup identity changed` (`discovery_static_registry.py` ~L560), a different set each run; the file alone passes 54/54. Likely cause: the identity compares the cgroup directory `nlink`, which changes whenever a sibling creates or removes a child cgroup under the shared container cgroup, so it is host churn and not a controller identity change. Done when dev/ino/uid/mode (the identity-bearing fields) are compared and nlink is dropped or snapshotted per transaction, with a test that creates a child cgroup mid-transaction, and the full suite is 0 failed on two consecutive parallel runs. Owner: autokernel. (filed 2026-11-20) [no-belief: tooling-repair]
+
+
+### Done
+
+- [x] **OAB-0** ✅ 2026-09-24 _(detail → completed ledger)_
+- [x] **OAB-1** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-2** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-3** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-7s** ✅ 2026-09-24 _(detail → completed ledger)_
+- [x] **OAB-4m** ✅ 2026-09-24 _(detail → completed ledger)_
+- [x] **R4c** ✅ 2026-09-24 _(detail → completed ledger)_
+- [x] **OAB-9** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-10** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-11** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-13** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-14** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-20** ✅ 2026-09-25 _(detail → completed ledger)_
+- [x] **OAB-22** ✅ 2026-09-26 _(detail → completed ledger)_
+- [x] **OAB-23** ✅ 2026-09-26 _(detail → completed ledger)_
+- [x] **OAB-24** ✅ 2026-09-26 _(detail → completed ledger)_
+- [x] **OAB-25** ✅ 2026-09-26 _(detail → completed ledger)_
+- [x] **OAB-26** ✅ 2026-09-26 _(detail → completed ledger)_
+- [x] **OAB-27** ✅ 2026-09-26 _(detail → completed ledger)_
+- [x] **OAB-35** ✅ 2026-10-01 _(detail → completed ledger)_
+
+## History
+
+- 2026-11-20 compacted 402 ticked box(es) older than 30 d -> [autokernel-loop-history-2026-11-20.md](../archived/autokernel-loop-history-2026-11-20.md) (handoff_compact.py)

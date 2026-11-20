@@ -233,6 +233,20 @@ if [[ -n "${regen_reason}" ]]; then
   fi
 fi
 
+# --- 5. C6 daily sample (handoff standard Stage C) ------------------------- #
+# stale_next_action.py --compare-generated --daily appends ONE hand-vs-generated
+# Next action sample per UTC day to the C6 ledger (the 7-day hand-row-drop
+# criteria). Every pass asks; --daily makes all but the first of the day a cheap
+# tail read. Read-only on the view; a failure is logged, never fatal to the hub.
+C6_SAMPLER="${VIEW}/scripts/handoffs/stale_next_action.py"
+if [[ "${HUB_C6_SAMPLE:-1}" == "1" && -n "${PY}" && -f "${C6_SAMPLER}" && "${deferred}" == "0" ]]; then
+  c6rc=0
+  (cd "${VIEW}" && nice -n 19 "${PY}" "${C6_SAMPLER}" --compare-generated --daily --quiet \
+      ${HUB_C6_LEDGER:+--ledger "${HUB_C6_LEDGER}"} >/dev/null 2>>"${LOG_FILE:-/dev/stderr}") || c6rc=$?
+  # exit 1 = criteria not yet met (normal until 7 passing days); anything else is a sampler failure
+  if [[ "${c6rc}" != "0" && "${c6rc}" != "1" ]]; then log "WARN: C6 sample failed rc=${c6rc}"; fi
+fi
+
 [[ "${gated}" == "yes" ]] && regen="no(gated)"
 [[ "${deferred}" == "1" ]] && regen="no(quiet-host-deferred)"
 log "refresh view=${VIEW} head=${moved} regen=${regen} rc=${rc}"

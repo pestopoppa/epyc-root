@@ -446,9 +446,10 @@ def build(flags: str, priority_path: str, keeper_log: str, now: _dt.datetime | N
                                f"`python3 scripts/coordination/rowflow/rowflow.py publish --migrate {F}ready/{rid}.json` "
                                "(fills result_path/decision_rule if the manifest lacks them; repoints the engine to filler_run15.sh in a new launch.v15.sh)")
         prep_entry = next((e for e in prep if e.get("filler") == rid), None)
-        row_id = (prep_entry or {}).get("row") or d.get("row") or (str(d.get("handoff_task") or "").split(":")[-1] if v3 else None)
-        hfile = handoff_file_of(d.get("handoff") or d.get("handoff_task")) or row_handoff.get(row_id or "")
-        w = bucket_for(rid, row_id, d.get("handoff") or (str(d.get("handoff_task") or "").split(":")[0] if v3 else None))
+        ht_now = handoff_ref.repoint(str(d.get("handoff_task") or ""), sha=d.get("handoff_task_sha"))  # C4: moved box -> new file
+        row_id = (prep_entry or {}).get("row") or d.get("row") or (ht_now.split(":")[-1] if v3 else None)
+        hfile = handoff_file_of(d.get("handoff") or ht_now) or row_handoff.get(row_id or "")
+        w = bucket_for(rid, row_id, d.get("handoff") or (ht_now.split(":")[0] if v3 else None))
         if state == "qualified-armed":
             per[w]["qual"][lane] += 1
         rec = {"id": rid, "lane": lane, "rank": d.get("priority_rank") or (prep_entry or {}).get("rank") or 999,

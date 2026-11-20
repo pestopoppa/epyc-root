@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "gate_id": "RATIFY-HANDOFF-STANDARD-20261120",
+  "status": "ratified",
+  "ratified_at": "2026-11-20T13:23:20Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1-6": "2026-11-19 handoff standard decisions (HANDOFF-STANDARD.md 'Operator decisions')",
+    "stage-c": "2026-11-20 Stage C brief §C7 ratify package"
+  },
+  "base_origin_main": "951155f520b6b3aaa166e03a09f88324c31a75c6",
+  "consolidated_receipt": "artifacts/operator/ratify_handoff_standard_20261120.receipt.json",
+  "state": {
+    "CLAUDE.md": {
+      "sha256_before": "7bebaeb7167415b3c85e2a663e1c002cfd8f19b912d8a78c1b90ece6132a6e6c",
+      "sha256_after": "5e7b8b5a0f0e102d8576b625a399ab2aa9a723e8cd84b4bbbe73abc88c38f7f5"
+    },
+    "agents/shared/SESSION_LIFECYCLE.md": {
+      "sha256_before": "5926bf19a8f8c7996ca7bd1ddfc663cf2e4caa5b6e96c70a6adffc93e60f7dfb",
+      "sha256_after": "8cd48b8cbeff9489be9963535f4ddb5114d4682fbc3b8e610939726e60f74eb8"
+    },
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "b6ff16c9f66eea35dbbfc72de3704f56f499578a2edaaf558464f0939650c0d4",
+      "sha256_after": "33e405bcab00eb8cc0ea8437dea395320801c1bff382c76163134d4f30a5c575"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_handoff_standard_20261120.sh",
+  "ratify_script_sha256": "086a29ed005f99cbb746a07acc75cc405f33e983cb17763e0fa3a4c04ff960d4",
+  "processes_touched": []
+}

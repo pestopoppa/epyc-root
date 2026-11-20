@@ -145,3 +145,7 @@ Validation: seven model-free unittests PASS, including generated-control executi
 README preregisters diagnostic capture and stopping semantics only. A future qualification must separately freeze its metrics, controls, gates and stopping rules before publication; original r1 results/thresholds remain intact. Existing VB-YARN-E1 source family remains the prospective wiring owner. Parent acceptance, champion fold and upstream draft remain open.
 
 Next: adapt diagnostic_job.py to opt into calibration, strictly reduce native records per unit, and publish a bounded candidate/baseline native-f16 calibration row with smoke PASS. Preserve original library pins and actual mapped-library proofs, prepare model inputs before publication, and stop after the pair or first failure without retry.
+
+## 13:04Z — Filed am-port3-native-capturefix-gpu-20261120 measured screen verdict
+
+AM-PORT-3: filed row am-port3-native-capturefix-gpu-20261120, rc=0, fail at compact-quality. CPU/HIP exact-logit controls passed; median patched/baseline throughput ratios 1.006103 and 1.001668. Native integrity and prefix quality screens failed; 0/16 layers reached minimum-head cosine 0.95, one compact token decoded, and 32K stability was not run. Integrity failure prevents attribution of quality to fitting. Attempt RESULT.json SHA-256 31bab49cfcd7e71f8e50fc92d3cf0fe96e723b17e1b06e23319db8cffb4099d9; reload/CHECK.json SHA-256 94b573829ae846919e44211a576e161e50c9bde922bf4d8be2daad620d492cb1. [belief: cc]

@@ -84,6 +84,17 @@ if _HERE not in sys.path:   # the keeper runs `python3 -I`: isolated mode does n
 import hostutil  # noqa: E402  - measured CPU%/GPU% for every status surface (2026-11-03 session review item 2)
 import diskpause  # noqa: E402  - disk floor = pause with hysteresis + HOLD-ADMISSIONS (operator 2026-11-07)
 import notify  # noqa: E402  - push every terminal event / smoke FAIL / disk-floor crossing (incident 2026-11-04)
+try:
+    import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
+except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
+    sys.path.insert(0, os.path.dirname(_HERE))
+    try:
+        import handoff_ref  # noqa: E402
+    except ImportError:  # a copied candidate dir (replay gate) has no sibling: repointing degrades to identity
+        class handoff_ref:  # noqa: N801
+            @staticmethod
+            def repoint(ref, root=None, sha=None, moves=None):
+                return ref
 
 SCHEMA = "epyc.row.v3"
 ADMISSION_CLASSES = {"correctness", "diagnostic", "block-correctness",
@@ -925,7 +936,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -1141,8 +1152,8 @@ def legacy_handoff_task(m):
         return "FILLERS:" + str(m.get("id"))
     head, sep, tail = ht.partition(":")
     if head.endswith(".md") and "/" not in head:
-        return "handoffs/active/" + head + sep + tail
-    return ht
+        ht = "handoffs/active/" + head + sep + tail
+    return handoff_ref.repoint(ht, sha=m.get("handoff_task_sha"))   # C4: a moved box migrates to its new file
 
 
 def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
@@ -1181,7 +1192,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
               "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by",
-              "resumable", "max_window_s"):
+              "resumable", "max_window_s", "whole_host_need"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -2041,6 +2052,60 @@ def grant_regions(d, option):
     return regs
 
 
+# ---------------------------------------------------------------- BUILD-POCKET carve-out (pipeline-mgmt 2026-11-20)
+# filler-ak-q38fn-draftfa-window-cpu-20261119 (multi-quarter(3), 28000 s) held q0-q2 for ~7.8 h; q3 is the MI210's host
+# threads, so a short build region-lock claim waited >45 min with no pocket. Thresholds live in build_pocket_policy.json
+# (override: <flags>/allocator.json {"build_pocket": {...}}). See the JSON's _doc for the rule.
+BUILD_POCKET_POLICY_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "build_pocket_policy.json")
+BUILD_WAIT_DIR = "build-wait"   # <flags>/build-wait/<owner>-<ts>.json: a refused `claim --build` (it had no pocket)
+
+
+def build_pocket_policy(flags=None):
+    pol = {"long_hold_s": 7200, "max_hold_s": 7200, "waiter_ttl_s": 7200, "queue_dir": TMP.rstrip("/") + "/queue"}
+    pol.update({k: v for k, v in (load_json(BUILD_POCKET_POLICY_FILE) or {}).items() if not k.startswith("_")})
+    if flags:
+        pol.update((load_json(os.path.join(flags, "allocator.json")) or {}).get("build_pocket") or {})
+    return pol
+
+
+def _pid_live(pid):
+    try:
+        return os.path.isdir(f"/proc/{int(pid)}")
+    except (TypeError, ValueError):
+        return False
+
+
+def build_waiters(flags, now=None, rowids=()):
+    """Build claims waiting for a q0-q2 pocket: a live FIFO lock ticket on q0-q2 (region-lock queue dir; the tag is not a
+    row id) or an unexpired build-wait record whose owner pid is alive. [{src, who, since}]."""
+    now = time.time() if now is None else now
+    pol = build_pocket_policy(flags)
+    ttl = float(pol["waiter_ttl_s"])
+    out = []
+    for p in glob.glob(os.path.join(str(pol["queue_dir"]), "*.json")):
+        t = load_json(p) or {}
+        regs = {str(r) for r in (t.get("regions") or [])}
+        if not (regs & {"q0", "q1", "q2"}) or not _pid_live(t.get("pid")) or str(t.get("tag") or "") in rowids:
+            continue
+        since = float(t.get("created_at") or now)
+        if now - since <= ttl:
+            out.append({"src": "ticket", "who": str(t.get("tag") or t.get("pid")), "since": since})
+    for p in glob.glob(os.path.join(flags, BUILD_WAIT_DIR, "*.json")):
+        t = load_json(p) or {}
+        since = float(t.get("at_epoch") or 0)
+        if now - since <= ttl and (t.get("pid") is None or _pid_live(t.get("pid"))):
+            out.append({"src": "build-wait", "who": str(t.get("owner") or "?"), "since": since})
+    return out
+
+
+def long_q012_cand(c, flags_pol):
+    """A long, undeclared CPU row that books all of q0-q2 (the build-pocket rule applies to it)."""
+    if c.get("whole_host_need") or c.get("lane") == "gpu" or c.get("shape") in ("host", "quiet-host"):
+        return False
+    return hold_s(c) > float(flags_pol["long_hold_s"]) and any(
+        {"q0", "q1", "q2"} <= set(o) and GPU not in o for o in c["options"])
+
+
 DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long drains the host (age boost; never preempts)
 DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
 # D9 2026-11-18 (KEEPER-DRAIN-HOLDS-GPU): a drain target whose earliest start lies beyond this horizon gets NO reservation
@@ -2383,6 +2448,14 @@ def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_po
     return min(better, key=plan_order) if better else None
 
 
+def _placeable_now(x, free, ram, gpu_grant_open, drain, need_r, now, T):
+    """x has a fitting option this tick that a drain does not refuse it (drain-late rows only take non-drain regions)."""
+    opts = _fits(x, free, ram, gpu_grant_open)
+    if drain is not None and x is not drain and (now + book_s(x) > T or now + hold_s(x) > T) and not cap_ok(x, now, T):
+        opts = [o for o in opts if not (o & need_r)]
+    return bool(opts)
+
+
 def _fits(c, free, ram, gpu_grant_open):
     opts = [o for o in c["options"] if o and o <= free]
     if c.get("bench") and gpu_grant_open:
@@ -2523,7 +2596,7 @@ def gpu_q3_guard(c):
 
 
 def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None,
-         region_ends=None, region_holders=None, gpu_queued=False):
+         region_ends=None, region_holders=None, gpu_queued=False, build_waiting=False, build_policy=None):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
@@ -2543,6 +2616,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     BACKFILL-IF-FITS (operator 2026-11-07): T is the drain row's earliest feasible start (earliest_start:
     region_ends {token: end | None}); unknown, expired or beyond the longest busy window -> no reservation
     (plan.no_reserve = [(row, why)]); a persisted T is used only while it is still in the future.
+    BUILD-POCKET (2026-11-20): a long (> long_hold_s) undeclared q0-q2 row is not placed while build_waiting (plan.build_held);
+    a resumable one is placed with a hard end at max_hold_s (build_policy; plan.hard_end) so the pocket reopens at the cut.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
     now = time.time() if now is None else now
     free = set(free)
@@ -2558,6 +2633,12 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     plan.gpu_q3_guard = bool(gpu_queued) or any(gpu_lane_cand(c) for c in cands)
     if plan.gpu_q3_guard:
         cands = [dict(c, options=gpu_q3_guard(c)) for c in cands]
+    bp = dict(build_policy or build_pocket_policy())
+    plan.build_held = []
+    if build_waiting:   # BUILD-POCKET (a): a build claim is waiting - a long undeclared q0-q2 row is not booked over its pocket
+        held = [c for c in cands if long_q012_cand(c, bp)]
+        plan.build_held = [c["id"] for c in held]
+        cands = [c for c in cands if c not in held]
     pending = sorted(cands, key=plan_order)
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
@@ -2632,9 +2713,13 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 # (GPU-Q3-GUARD: a quarter row's q3-narrow option is its whole-quarter grant, not sub-quarter packing)
                 # PACKING (operator "fix it" 2026-11-05): a sub-quarter row goes onto a partly used quarter; it breaks a
                 # whole free quarter only while more are free than the whole-quarter rows that fit now need
-                keep = [x for x in opts if not any(q in free and expand({q}) & x for q in QUARTERS)]
+                # AK audit 2026-11-20 (PACKING-GPU-INVERSION, MI210 idle 11:50-12:11Z): a GPU option (gpu-quiet + q3's
+                # host threads 88-95/184-191) never "breaks" q3 - under GPU-Q3-GUARD no CPU row may take those cores -
+                # and wq counts only whole-quarter rows that can really be placed now (not drain-late on every fitting
+                # option); drain-late rank-45/57 quarter rows held rank-30 gpu-q3 rows off an idle MI210.
+                keep = [x for x in opts if GPU in x or not any(q in free and expand({q}) & x for q in QUARTERS)]
                 wq = sum(1 for x in pending if x is not c and any(t in QUARTERS for o2 in x["options"] for t in o2)
-                         and _fits(x, free, ram, gpu_grant_open))
+                         and _placeable_now(x, free, ram, gpu_grant_open, drain, need_r, now, T))
                 opts = keep or (opts if sum(1 for q in QUARTERS if q in free) > wq else [])
             if not opts:
                 continue
@@ -2659,6 +2744,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             caps.append(T)
         if dfr_T is not None and (now + hold_s(c) > dfr_T or now + book_s(c) > dfr_T) and o & dfr_r:
             caps.append(dfr_T)
+        if c.get("resumable") and long_q012_cand(c, bp) and {"q0", "q1", "q2"} <= set(o) and GPU not in o:
+            caps.append(now + float(bp["max_hold_s"]))   # BUILD-POCKET (b): a resumable long row yields its pocket at a checkpoint
         if caps:
             plan.hard_end[c["id"]] = min(caps)
         out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
@@ -2759,6 +2846,7 @@ plan.drain_deferred = []
 _DRAIN_DEFERRED_LOGGED = {}   # {row id: S} last logged DRAIN-DEFERRED state (keeper process lifetime)
 plan.caps = []
 plan.hard_end = {}
+plan.build_held = []
 plan.idle_entries = {}
 
 
@@ -4919,6 +5007,24 @@ def _cmdline(pid):
         return ""
 
 
+def record_build_wait(flags, owner, now=None):
+    """A refused `claim --build` leaves a build-wait record (TTL waiter_ttl_s, removed when the owner's next claim succeeds): the planner stops booking long
+    undeclared q0-q2 rows over the pocket while it lives (BUILD-POCKET)."""
+    now = time.time() if now is None else now
+    d = os.path.join(flags, BUILD_WAIT_DIR); os.makedirs(d, exist_ok=True)
+    atomic_json(os.path.join(d, f"{owner}.json"), {"owner": owner, "pid": None, "at_epoch": now, "at": now_iso()})
+
+
+def free_cores(q, free):
+    """Physical-core tokens of quarter q that are free in this snapshot, ascending (a partly-held quarter: the unheld cores)."""
+    return sorted((c for c in qcores(q) if c in free), key=lambda c: int(c[1:]))
+
+
+def partial_tokens(cores, free):
+    """Core tokens plus their SMT-sibling thread tokens that are also free (a sibling a smoke/other row holds is left out)."""
+    return set(cores) | {f"t{int(c[1:]) + 96}" for c in cores if f"t{int(c[1:]) + 96}" in free}
+
+
 def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None):
     """`rowflow.py claim --build`: a short `build` grant (grants/build-<owner>-<ts>.grant, holds one quarter) so a build
     is a lane the planner sees instead of contamination. cpus = a count (<= 24: the first whole-free quarter q0-q2)
@@ -4933,26 +5039,46 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
     tq = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX)], allrows)
     holder = {q: g["id"] for g in grants for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
     s = str(cpus).strip()
+    part = None   # PARTIAL-QUARTER: core (+free sibling) tokens a build holds inside a quarter other grants hold only in part
     if re.fullmatch(r"\d+", s):
         n = int(s)
         need(1 <= n <= BUILD_MAX_CPUS, f"--cpus {n}: a build lane is at most one quarter ({BUILD_MAX_CPUS} cores)")
         pick = [q for q in QUARTERS[:3] if q in free and q not in tq]
-        need(pick, "no whole-free quarter q0-q2 for a build now (" + ", ".join(f"{q}: {holder.get(q, 'busy')}"
-             + (" [timing]" if q in tq else "") for q in QUARTERS[:3]) + "); retry later, never run it unclaimed")
+        if not pick:   # a quarter held only in part still has free cores: take n of them, never the whole quarter
+            for q in QUARTERS[:3]:
+                fc = free_cores(q, free)
+                if q not in tq and len(fc) >= n:
+                    part = partial_tokens(fc[:n], free); pick = [q]; break
+        if not pick:   # BUILD-POCKET: remember the unmet claim so the planner leaves the next pocket for it
+            record_build_wait(flags, owner, now)
+        need(pick, f"no whole-free quarter q0-q2 and none with >= {n} free cores for a build now (" + ", ".join(
+             f"{q}: {holder.get(q, 'busy')}" + (" [timing]" if q in tq else "") for q in QUARTERS[:3])
+             + "); retry later, never run it unclaimed")
         qs = [pick[0]]
     else:
         need(re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", s), f"--cpus {s!r}: a count or a literal cpu list")
         qs = sorted(quarters_of(s, fold=True))
         need(len(qs) == 1, f"--cpus {s} spans {qs or 'no quarter'}; a build lane is one quarter")
+        if qs[0] not in free and qs[0] not in tq and free_cores(qs[0], free):   # held in part: the listed cores must be free
+            want = {t for t in cpu_tokens(s) if t in CORES or t in THREADS}
+            miss = sorted(want - free)
+            if want and not miss:
+                part = want
     for q in qs:
         need(q not in tq, f"BUILD-REFUSED: {q} is held by timing grant {holder.get(q, '?')}; a build there would perturb "
                           "its measurement. Pick another quarter (or --cpus N to let the keeper pick)")
-        need(q in free, f"BUILD-REFUSED: {q} is held by {holder.get(q, 'another job')}; pick a free quarter")
+        need(part or q in free, f"BUILD-REFUSED: {q} is held by {holder.get(q, 'another job')}; pick a free quarter")
     t = dt.datetime.now(dt.timezone.utc) if now is None else dt.datetime.fromtimestamp(now, dt.timezone.utc)
     gid = f"{BUILD_PREFIX}{owner}-{t:%Y%m%dT%H%M%SZ}"
-    line = write_grant(flags, gid, ",".join(qs), set(qs), minutes * 60)
-    rec = {"id": gid, "owner": owner, "kind": "build", "quarters": qs, "cpus": ",".join(cpu_list(q) for q in qs),
-           "minutes": minutes, "at": now_iso()}
+    _rm(os.path.join(flags, BUILD_WAIT_DIR, f"{owner}.json"))
+    if part:   # core-granular hold: explicit cpus + core/thread tokens, so the rest of the quarter stays claimable
+        cl = tokens_cpus(part)
+        line = write_grant(flags, gid, cl, set(part), minutes * 60)
+    else:
+        cl = ",".join(cpu_list(q) for q in qs)
+        line = write_grant(flags, gid, ",".join(qs), set(qs), minutes * 60)
+    rec = {"id": gid, "owner": owner, "kind": "build", "quarters": qs, "cpus": cl,
+           "minutes": minutes, "at": now_iso(), **({"partial": sorted(part)} if part else {})}
     atomic_json(os.path.join(flags, "grants", gid + ".build.json"), rec)
     log(f"BUILD-GRANT {gid}: {','.join(qs)} for {minutes} min (owner={owner}); run it pinned: taskset -c {rec['cpus']} ...")
     return gid, line
@@ -5572,6 +5698,9 @@ def reconcile_dryruns(flags, log=print, now=None, allrows=None):
     return out
 
 
+UNTRACKED_HOLDER = "untracked (no grant or smoke record: a region-lock hold or a smoke still exiting; resolves within a tick or two)"
+
+
 def idle_partial_quarters(flags, free, busy, grants, holders):
     """IDLE-WHY for CPU quarters that are not whole-free but not held by a whole-quarter holder either: name the cores
     that keep each one off the free list and who holds them (grant / smoke / '?'), so a stuck hold is visible."""
@@ -5592,7 +5721,7 @@ def idle_partial_quarters(flags, free, busy, grants, holders):
         toks = sorted((expand({q}) & busy) - {q}, key=lambda t: (t[0], int(t[1:]) if t[1:].isdigit() else 0))
         if not toks:
             continue
-        who = sorted(set().union(*[owners.get(t, {"?"}) for t in toks]))
+        who = sorted(set().union(*[owners.get(t, {UNTRACKED_HOLDER}) for t in toks]))
         nfree = len([c for c in qcores(q) if c in free])
         out[q] = f"not whole-free: {','.join(compress(set(toks)))} held by {', '.join(who)}; {nfree} cores free"
     return out
@@ -5695,7 +5824,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": k["bench"], "options": k["options"], "shape": k["shape"], "window_s": window,
                       "estimate_s": int(d.get("estimate_s") or 0), "min_window_s": int(d.get("min_window_s") or 0),
-                      "book_s": int(book_s(d)), "resumable": bool(d.get("resumable")),
+                      "book_s": int(book_s(d)), "resumable": bool(d.get("resumable")), "whole_host_need": bool(d.get("whole_host_need")),
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "lock": k["lock"],
                       "claim": k["claim"], "threads": k["threads"], "explicit": bool(k["explicit_cpus"])})
@@ -5829,10 +5958,15 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     # planned for it until the next tick - the tick re-plans the still-free regions without it (bounded by the number
     # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
     for _pass in range(len(cands) + 1):
+        bpol = build_pocket_policy(flags)
+        bw = build_waiters(flags, rowids=set(allrows))
         assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
                                         grant_ends=[e for e in ends if e], quiet_ok=quiet_ok, held_ports=held_ports,
                                         drain_prev=drain_prev, region_ends=r_ends, region_holders=holders,
-                                        gpu_queued=gpu_queued)
+                                        gpu_queued=gpu_queued, build_waiting=bool(bw), build_policy=bpol)
+        for rid_h in plan.build_held:
+            log(f"BUILD-POCKET-HELD {rid_h}: long q0-q2 row not booked while a build claim waits "
+                f"({'; '.join(w['who'] for w in bw)}); declare whole_host_need to opt out")
         if not dry:
             atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
         for hc, bc in plan.drain_held:
@@ -6435,6 +6569,7 @@ def main(argv=None):
                 if ":" not in task:
                     print(f"REFUSED: {unfiled} has no handoff_task <handoff.md>:<BOX-ID> in its manifest; run file_result.py {unfiled} --receipt <commit>:<handoff>#<BOX> yourself")
                     return 2
+                task = handoff_ref.repoint(task)   # C4: file the receipt against the box's CURRENT handoff
                 hp, box = task.rsplit(":", 1)
                 fr_py = next((p for p in (os.path.join(_HERE, "..", "churn", "file_result.py"), "/workspace/scripts/coordination/churn/file_result.py") if os.path.isfile(p)), None)
                 if not fr_py:

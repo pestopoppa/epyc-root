@@ -1577,88 +1577,88 @@ BK-1..5 are ticked, two consecutive nightly snapshots exist with valid manifests
 
 ### Backlog
 
-- [ ] RESUME-5: repair CI infrastructure early; keep K4's post-prune size ratchet after K3. Reconcile baseline collection/failure identities rather than accepting aggregate counts.
+- [ ] **LOOP-60** RESUME-5: repair CI infrastructure early; keep K4's post-prune size ratchet after K3. Reconcile baseline collection/failure identities rather than accepting aggregate counts.
   - [x] **B2-PRODUCER-E-NEXT-01a16fc3:** prepared and delivered the q2 candidate/baseline comparison packet; source-bound two-core preflight passed, NEXT receipt `f7e9e236-f6d5-4034-a609-7bf03f181ee1`. No official comparison was run; compare the known baseline failures individually. Parent work remains open. ✅ 2026-10-27 [no-belief: packet preparation]
   - *(2026-10-27 21:35Z, ws58 results filing, B2 producer E.)* `refactor-b2-producer-e-q2-20261027` ended rc1 at 19:04:07Z by design of its comparison: candidate `411 passed, 4 warnings in 49.03s` (candidate-research.status 0, cleanup-integrity 0, model-free violation count 0); baseline `2 failed, 394 passed` (baseline-research.status 1; the two known historical failures, a containment case and `test_python_hook_flags_out_of_root_writes_and_not_in_root_ones` on EXDEV `os.rename` to `/var/tmp`). Terminal rc1 is the baseline's, comparison only, no zero-failure claim. Results `/mnt/raid0/llm/tmp/refactor-01a16fc3/b2-cpu-ready-1728/results/run-20261027T190217308687691/`. Not a merge; B2 producer E stays open. [no-belief: model-free test comparison, no measurement]
   - *(2026-10-28, scoped re-derivation.)* A private fail-closed comparator matched all 396 baseline test identities to passing candidate cases and found 15 additional passing candidate cases. The baseline has 394 passes and the same two historical containment/EXDEV failures; the original row named those categories, while their exact test identities and signatures were established from the prior and current logs. Fixtures reject missing/duplicate tests, changed failure signatures, candidate failures and custody/guard changes. This is a scoped comparison, not a clean baseline, full B2 result or merge. Evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/b2-producer-e-comparison-20261028/actual-comparison.log`. [belief: cc]
       · inputs-missing: `/mnt/raid0/llm/tmp/refactor-01a16fc3/b2-producer-e-comparison-20261028/actual-comparison.log`
       · section: Resumed execution (2026-10-24, session 01a16fc3)
-- [ ] RESUME-6: reconcile current INF64 retained-module manifest and live belief-source contracts before each deletion stage; include retained `campaign.py` and dynamic/cross-repo consumers as closure roots.
+- [ ] **LOOP-61** RESUME-6: reconcile current INF64 retained-module manifest and live belief-source contracts before each deletion stage; include retained `campaign.py` and dynamic/cross-repo consumers as closure roots.
       · section: Resumed execution (2026-10-24, session 01a16fc3)
-- [ ] RESUME-7: fix the separate mixed-alias cold-import cycle. Randomized 16 aliases fail when imported concurrently at orchestrator baseline `84f6f6f1` and O3; same-alias 24-thread races and canonical identity tests pass. Original mixed test is at orchestrator `5886e5ae:tests/unit/test_inference_lock_concurrent_import.py`; existing O3 tests do not establish cross-module cold-import safety.
+- [ ] **LOOP-62** RESUME-7: fix the separate mixed-alias cold-import cycle. Randomized 16 aliases fail when imported concurrently at orchestrator baseline `84f6f6f1` and O3; same-alias 24-thread races and canonical identity tests pass. Original mixed test is at orchestrator `5886e5ae:tests/unit/test_inference_lock_concurrent_import.py`; existing O3 tests do not establish cross-module cold-import safety.
       · class: non-inference
       · section: Resumed execution (2026-10-24, session 01a16fc3)
-- [ ] Merge `refactor/hermetic-tests` into epyc-orchestrator main (every orchestrator branch contains it)
+- [ ] **LOOP-63** Merge `refactor/hermetic-tests` into epyc-orchestrator main (every orchestrator branch contains it)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] Adversarial review, then merge, of `refactor/config-registry` (O3)
+- [ ] **LOOP-64** Adversarial review, then merge, of `refactor/config-registry` (O3)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] Adversarial review, then merge, of `refactor/request-path` (O1 stage 1)
+- [ ] **LOOP-65** Adversarial review, then merge, of `refactor/request-path` (O1 stage 1)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] Adversarial review, then merge, of `refactor/test-hazards` (O7 partial; its 3 commits have no test report: run the suites first)
+- [ ] **LOOP-66** Adversarial review, then merge, of `refactor/test-hazards` (O7 partial; its 3 commits have no test report: run the suites first)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] Adversarial review, then merge, of `refactor/autopilot-gate` (P2; B2-03 changes what is admitted to learning: review as a decision-semantics change)
+- [ ] **LOOP-67** Adversarial review, then merge, of `refactor/autopilot-gate` (P2; B2-03 changes what is admitted to learning: review as a decision-semantics change)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] Adversarial review, then merge, of `refactor/autopilot-loop` (P1 stage 1, test harness)
+- [ ] **LOOP-68** Adversarial review, then merge, of `refactor/autopilot-loop` (P1 stage 1, test harness)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] Adversarial review, then merge, of `refactor/scripts-cleanup` (O6; finish the A5-11 WIP commit and run the suites for the A5-01/A6-19/A5-05 deletions first)
+- [ ] **LOOP-69** Adversarial review, then merge, of `refactor/scripts-cleanup` (O6; finish the A5-11 WIP commit and run the suites for the A5-01/A6-19/A5-05 deletions first)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] Merge `refactor/autokernel-loop-bugs` only after the AutoKernel launch hold lifts, with a deliberate re-pin (workspace-58); finish the C1-05 WIP first (regression test + loop suite)
+- [ ] **LOOP-70** Merge `refactor/autokernel-loop-bugs` only after the AutoKernel launch hold lifts, with a deliberate re-pin (workspace-58); finish the C1-05 WIP first (regression test + loop suite)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] Delete the superseded `claude/vigilant-thompson-shpyh0` branches in epyc-root and epyc-orchestrator (operator)
+- [ ] **LOOP-71** Delete the superseded `claude/vigilant-thompson-shpyh0` branches in epyc-root and epyc-orchestrator (operator)
       · class: non-inference
       · section: Review and merge what is already pushed
-- [ ] O1 (rest): [A2-02, A2-M1, A2-M2, A2-03, A2-05, A2-11, A2-16]
+- [ ] **LOOP-72** O1 (rest): [A2-02, A2-M1, A2-M2, A2-03, A2-05, A2-11, A2-16]
       · section: Wave 1: bugs, hazards, ruled deletions
-- [ ] O5: Dashboard request-path cost and silent-empty panels [A1-04, A1-08, A1-13, A1-11, A1-21]
+- [ ] **LOOP-73** O5: Dashboard request-path cost and silent-empty panels [A1-04, A1-08, A1-13, A1-11, A1-21]
       · section: Wave 1: bugs, hazards, ruled deletions
-- [ ] O7 (rest): [A6-M1, A6-03, A6-12, A6-11, A6-17]; A6-13 belongs to O8 only.
+- [ ] **LOOP-74** O7 (rest): [A6-M1, A6-03, A6-12, A6-11, A6-17]; A6-13 belongs to O8 only.
       · section: Wave 1: bugs, hazards, ruled deletions
-- [ ] P4: Autopilot satellites: one-shot scripts, dead modules, small bugs [B4-03, B4-02, B4-19, B4-20, B4-13, B2-16, B4-16, B4-12, B4-06, B4-08, B4-09, B4-15, B4-M1, B4-M2, B4-04, B4-05]
+- [ ] **LOOP-75** P4: Autopilot satellites: one-shot scripts, dead modules, small bugs [B4-03, B4-02, B4-19, B4-20, B4-13, B2-16, B4-16, B4-12, B4-06, B4-08, B4-09, B4-15, B4-M1, B4-M2, B4-04, B4-05]
       · section: Wave 1: bugs, hazards, ruled deletions
-- [ ] K1: AutoKernel live-loop bugs and red tests; remaining [C1-24, C2-06]; C1-05 tested/reviewed on `refactor/autokernel-rollback-reviewed-01a16fc3`, held unmerged (RESUME-3).
+- [ ] **LOOP-76** K1: AutoKernel live-loop bugs and red tests; remaining [C1-24, C2-06]; C1-05 tested/reviewed on `refactor/autokernel-rollback-reviewed-01a16fc3`, held unmerged (RESUME-3).
       · class: non-inference
       · section: Wave 1: bugs, hazards, ruled deletions
-- [ ] K2: AutoKernel evaluator/execution integrity package remains open; C4-05 remains incomplete.
+- [ ] **LOOP-77** K2: AutoKernel evaluator/execution integrity package remains open; C4-05 remains incomplete.
       · section: Wave 1: bugs, hazards, ruled deletions
-- [ ] P5: Autopilot evaluator: ONE batched era event (operator decision 2026-10-24) [B5-03, B2-01, B2-M1, B2-M2, B2-10, B5-06, B5-07, B2-19, B2-04, B2-05, B2-06, B2-07, B2-08, B2-14, B2-15, B2-18, B2-12, B2-13, B5-14, B3-09]
+- [ ] **LOOP-78** P5: Autopilot evaluator: ONE batched era event (operator decision 2026-10-24) [B5-03, B2-01, B2-M1, B2-M2, B2-10, B5-06, B5-07, B2-19, B2-04, B2-05, B2-06, B2-07, B2-08, B2-14, B2-15, B2-18, B2-12, B2-13, B5-14, B3-09]
       · section: Wave 2: decision-dependent and structural
-- [ ] K3: AutoKernel prune of the three approved planes, after fresh closure and retained-contract checks [C2-01, C1-04, C2-03, C2-05, C2-08, C2-12, C2-M2, C2-13, C3-03, C3-01, C3-M1, C3-13, C3-14, C3-18, C5-03, C5-15, C4-01, C4-02, C4-03, C4-11, C5-13, C5-12, C6-09, C5-06, C6-08, C2-09, C5-07, C2-M1]; C4-01's old deletion advice is superseded by INF64's retained manifest.
+- [ ] **LOOP-79** K3: AutoKernel prune of the three approved planes, after fresh closure and retained-contract checks [C2-01, C1-04, C2-03, C2-05, C2-08, C2-12, C2-M2, C2-13, C3-03, C3-01, C3-M1, C3-13, C3-14, C3-18, C5-03, C5-15, C4-01, C4-02, C4-03, C4-11, C5-13, C5-12, C6-09, C5-06, C6-08, C2-09, C5-07, C2-M1]; C4-01's old deletion advice is superseded by INF64's retained manifest.
       · section: Wave 2: decision-dependent and structural
-- [ ] K4: AutoKernel regrowth guard and CI repair (operator decision 2026-10-24) [C2-04, C5-02, C3-05, C1-02, C1-M3, C5-01, C6-01, C5-14, C6-13, C3-11, C2-02, C6-16]
+- [ ] **LOOP-80** K4: AutoKernel regrowth guard and CI repair (operator decision 2026-10-24) [C2-04, C5-02, C3-05, C1-02, C1-M3, C5-01, C6-01, C5-14, C6-13, C3-11, C2-02, C6-16]
       · section: Wave 2: decision-dependent and structural
-- [ ] O8: Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24) [A6-04, B1-M3, B5-10, B5-17, A6-13]
+- [ ] **LOOP-81** O8: Orchestrator CI, honest gates, and the ni63 pin design (operator decision 2026-10-24) [A6-04, B1-M3, B5-10, B5-17, A6-13]
       · section: Wave 2: decision-dependent and structural
-- [ ] D1: Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net [B1-02, B1-05, B1-12, B1-10, B1-06, B1-07, B1-11, B1-16, B1-18, B1-19]
+- [ ] **LOOP-82** D1: Decompose the autopilot loop (_run_loop_inner) behind the P1 safety net [B1-02, B1-05, B1-12, B1-10, B1-06, B1-07, B1-11, B1-16, B1-18, B1-19]
       · section: Wave 2: decision-dependent and structural
-- [ ] D2: API layer: openai_compat and /chat de-duplication [A1-05, A1-06, A1-15, A1-19, A1-20, A1-12, A1-10, A1-14, A1-16, A1-18, A1-09, A1-07]
+- [ ] **LOOP-83** D2: API layer: openai_compat and /chat de-duplication [A1-05, A1-06, A1-15, A1-19, A1-20, A1-12, A1-10, A1-14, A1-16, A1-18, A1-09, A1-07]
       · section: Wave 2: decision-dependent and structural
-- [ ] D3 (rest): [A2-22, A2-06, A2-09, A2-07, A2-08, A2-10, A2-14, A2-15, A2-17, A2-18, A2-19, A2-20, A2-21]
+- [ ] **LOOP-84** D3 (rest): [A2-22, A2-06, A2-09, A2-07, A2-08, A2-10, A2-14, A2-15, A2-17, A2-18, A2-19, A2-20, A2-21]
       · section: Wave 2: decision-dependent and structural
-- [ ] D4: AutoKernel run.main decomposition [C1-03, C1-M1, C1-01, C1-08, C1-10, C1-11, C1-12, C1-13, C1-16, C1-17, C1-18, C1-19, C1-20, C1-21, C1-23, C1-09, C1-07, C2-14, C2-15, C2-16]
+- [ ] **LOOP-85** D4: AutoKernel run.main decomposition [C1-03, C1-M1, C1-01, C1-08, C1-10, C1-11, C1-12, C1-13, C1-16, C1-17, C1-18, C1-19, C1-20, C1-21, C1-23, C1-09, C1-07, C2-14, C2-15, C2-16]
       · section: Wave 2: decision-dependent and structural
-- [ ] D5: Config / registry / runtime consolidation [A3-03, A3-10, A3-11, A3-12, A3-13, A3-14, A3-17, A3-18, A3-20, A3-21, A3-22, A3-23, A3-24, A3-25]
+- [ ] **LOOP-86** D5: Config / registry / runtime consolidation [A3-03, A3-10, A3-11, A3-12, A3-13, A3-14, A3-17, A3-18, A3-20, A3-21, A3-22, A3-23, A3-24, A3-25]
       · section: Wave 2: decision-dependent and structural
-- [ ] D6: REPL / tools consolidation [A4-09, A4-12, A4-10, A4-17, A4-05, A4-11, A4-13, A4-15, A4-16, A4-18, A4-19, A4-20, A4-21, A4-22, A4-23, A4-M2]
+- [ ] **LOOP-87** D6: REPL / tools consolidation [A4-09, A4-12, A4-10, A4-17, A4-05, A4-11, A4-13, A4-15, A4-16, A4-18, A4-19, A4-20, A4-21, A4-22, A4-23, A4-M2]
       · section: Wave 2: decision-dependent and structural
-- [ ] D7: Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers) [A5-03, A5-08, A5-09, A5-13, A5-14, A5-15, A5-20, A5-24, A5-25, A5-M3]
+- [ ] **LOOP-88** D7: Orchestrator scripts structure (src<->scripts layering, sys.path, duplicated helpers) [A5-03, A5-08, A5-09, A5-13, A5-14, A5-15, A5-20, A5-24, A5-25, A5-M3]
       · section: Wave 2: decision-dependent and structural
-- [ ] D8: Orchestrator test-suite consolidation [A6-10, A6-05, A6-06, A6-07, A6-08, A6-14, A6-15, A6-16, A6-20, B5-18]
+- [ ] **LOOP-89** D8: Orchestrator test-suite consolidation [A6-10, A6-05, A6-06, A6-07, A6-08, A6-14, A6-15, A6-16, A6-20, B5-18]
       · section: Wave 2: decision-dependent and structural
-- [ ] D9: Autopilot remaining structure (actions, planner, journal, reports) [B3-10, B3-11, B3-13, B3-14, B3-17, B3-18, B3-19, B3-20, B3-21, B3-22, B3-24, B3-25, B4-07, B4-10, B4-11, B4-14, B4-17, B4-18, B5-04, B5-05, B5-11, B5-15]
+- [ ] **LOOP-90** D9: Autopilot remaining structure (actions, planner, journal, reports) [B3-10, B3-11, B3-13, B3-14, B3-17, B3-18, B3-19, B3-20, B3-21, B3-22, B3-24, B3-25, B4-07, B4-10, B4-11, B4-14, B4-17, B4-18, B5-04, B5-05, B5-11, B5-15]
       · section: Wave 2: decision-dependent and structural
-- [ ] D10: AutoKernel remaining structure (controller, evaluator, execution, schemas, tests) [C3-04, C3-06, C3-07, C3-08, C3-09, C3-10, C3-12, C3-15, C3-16, C3-17, C3-19, C3-20, C3-21, C3-22, C3-M2, C4-04, C4-07, C4-09, C4-12, C4-13, C4-14, C4-15, C4-17, C4-18, C5-09, C5-10, C5-11, C6-02, C6-06, C6-10, C6-11, C6-12, C6-14, C6-15, C6-18, C2-07, C2-10, C2-11]
+- [ ] **LOOP-91** D10: AutoKernel remaining structure (controller, evaluator, execution, schemas, tests) [C3-04, C3-06, C3-07, C3-08, C3-09, C3-10, C3-12, C3-15, C3-16, C3-17, C3-19, C3-20, C3-21, C3-22, C3-M2, C4-04, C4-07, C4-09, C4-12, C4-13, C4-14, C4-15, C4-17, C4-18, C5-09, C5-10, C5-11, C6-02, C6-06, C6-10, C6-11, C6-12, C6-14, C6-15, C6-18, C2-07, C2-10, C2-11]
       · section: Wave 2: decision-dependent and structural
-- [ ] A5-10, A5-16, A5-17, A5-19: restructure `scripts/server/orchestrator_stack.py`. Blocked: a live path on the host (workspace-58, 2026-10-24); run when that file is quiet
+- [ ] **LOOP-92** A5-10, A5-16, A5-17, A5-19: restructure `scripts/server/orchestrator_stack.py`. Blocked: a live path on the host (workspace-58, 2026-10-24); run when that file is quiet
       · section: Deferred, each with its blocker
-- [ ] Re-enable the AutoKernel guards workflow in GitHub after K4 lands (operator click)
+- [ ] **LOOP-93** Re-enable the AutoKernel guards workflow in GitHub after K4 lands (operator click)
       · section: Deferred, each with its blocker
 
 > **Sequenced by operator 2026-11-09:** do not start this track until the production kernel promotion and the AutoPilot loop relaunch are done.
@@ -2259,6 +2259,10 @@ C1-22 disappears with the unified plane.
   - [ ] **TOOLPERM-DENY-DEFAULT.p4** [inference] Record in the production relaunch queue README that item 1 is complete, and request the orchestrator API reload from the inference owner's boundary. NEEDS-OWNER
         · done when: `/mnt/raid0/llm/tmp/relaunch-queue-20261111/README.md` marks item 1 done with the commit sha, and the reload request is logged to the inference owner.
         · proposed-by: taskflow 2026-11-20T11:13Z        · parent: TOOLPERM-DENY-DEFAULT
+- [x] **TASKFLOW-CANARY-LESSONS-ORCH — check the orchestrator's local-model loops (REPL, worker, fan-out) against the 2026-11-20 taskflow canary r1 harness failures (0/10 verified, all harness-caused; `788972cbf` scripts/coordination/taskflow/harness/local_llm.py).** Code work only, no stack reload. Check: (a) any eval/JS tool exposed to local models loops on syntax errors (drop or guard); (b) a turn ending with no tool call, result or change gets one same-session continue-nudge; (c) a run with >=50% erroring tool calls is classified harness, not model limit (keeps model-tier escalation honest); (d) read-only shell helpers allowlisted and unused tools denied, folded into TOOLPERM-DENY-DEFAULT (schema 12.1k->7.8k chars aided prefix caching). Source: pipeline-mgmt note 2026-11-20; r2 results may revise. owner: autopilot (workspace-bb implements and ticks, operator request 2026-11-20); items (d) stay with RTG-22 in TOOLPERM-DENY-DEFAULT. Fallback: if bb does not pick it up, RTG-22 implements. ✅ 2026-11-20 [no-belief: code landing, no measurement]
+  - 2026-11-20 DONE (autopilot-backlog-session), items (a)-(c) on epyc-orchestrator main `54f1764f` + `427008f7`, three flags, all default OFF, on the autopilot surface (`config_applicator.py`, `program.md`, `runtime_flags.spec.yaml`): (a) `repl_syntax_loop_breaker`: the 2nd consecutive SyntaxError turn gets a one-shot "minimal valid snippet" hint, and the 3rd ends the task as harness failure (`_infra_failure`, reason `harness:syntax_loop`, no retry/escalation); (b) `repl_plan_narration_nudge`: plan-shaped prose ("I will", "Let me", "Plan:") is not rescued as a bogus FINAL and gets the continue-nudge instead (counted by MAX_CONSECUTIVE_NUDGES=3; real prose answers are still rescued); (c) `harness_failure_ratio_guard`: REPL+tool failures/turns >= 0.5 over >= 4 turns sets `harness_suspect` and blocks tier escalation in `_should_escalate` AND early-abort admission. Tests: `tests/unit/test_repl_harness_guards.py` (35); the broad graph/repl/flag/config run gave 2255 passed, 0 failed. Pre-existing coverage found by the audit: the read-only shell runs in a Landlock sandbox (not a name deny); turn budget 8-15; the no-progress loop guard (`ORCHESTRATOR_REPL_LOOP_GUARD`) and `tool_surface_cap` exist but default off. Not served until the next API reload (STACK-UP-RELOAD-QUEUE step 3).
+  - [ ] **TASKFLOW-CANARY-FLAG-AB — measure the three guards (`repl_syntax_loop_breaker`, `repl_plan_narration_nudge`, `harness_failure_ratio_guard`) on a local-model agentic suite before any default-ON.** Needs inference with the stack up; on-vs-off, paired; reuse the taskflow canary r2 suite if it lands. Filed 2026-11-20.
+
 - [ ] **AGENTFILE-INJECT-DEPLOY — deliver the measured agent-file operating point to worker_general and architect_general in production.** Before this change, no production path gave a local model any agent file: `agent_file_compression_operating_point` was validated, never applied (trace 2026-11-12). Operator decision 2026-11-12: wire it for both roles.
   - **External gate:** production relaunch (Pipeline relaunch queue item 1) plus the `contention_matrix.yaml` refresh; lands with TOOLPERM-DENY-DEFAULT. Signed package backup: `/mnt/raid0/llm/tmp/toolperm-deny-default-signed-20261111.patch`.
   - Code is landed on epyc-orchestrator 440ed243c, behind `agent_file_injection`, which defaults OFF (flag-off prompts are byte-identical; this is tested):

@@ -16,9 +16,21 @@ This directory is organized for agent legibility and low drift.
 
 | Role | File | Primary Use |
 |---|---|---|
-| Coordinator Agent | `agents/coordinator-agent.md` | Cross-main sequencing on the session bus; the only role with cross-main authority |
+| Coordinator Agent | `agents/coordinator-agent.md` | The operator's single point of entry over the dispatcher: routes to handoff owners, spawns replaceable owner sessions, escalates decisions as option packages |
 | Inference Main | `agents/inference-main.md` | Inference compute ownership, leases, and persistent-idle recovery (roster id `inference`; `role: inference-main` after the 2026-08-16 merge — see the note below) |
 | Auditor | `agents/auditor-main.md` | The review CONTRACT carried out under the `auditor` identity. **P3-7 retired the interactive auditor SESSION** (roster `auditor` is `role: service`); the reviewer function now runs as per-packet headless invocations, so read this file as a contract, not as a session to route to |
+| AutoKernel Owner | `agents/autokernel.md` | Owner role (thin): kernel lineage custody, champion currency, AK stop/continue (roster `autokernel`); never promotes |
+| Autopilot Owner | `agents/autopilot.md` | Owner role: autopilot backlog while autopilot stays on operator HOLD (proposed roster `autopilot`) |
+| Speech Owner | `agents/speech.md` | Owner role, spawned on demand: speech kernel set, vision D1-D8, human-ear acceptance |
+| Harness Integrator | `agents/harness-integrator.md` | RESERVED stub, not active: final user-facing integration only |
+| Pipeline Management Owner | `agents/pipeline-mgmt.md` | Owner role: dispatcher, rowflow, filing, disk, holds, handoff standard, D9 (proposed roster `pipeline-mgmt`) |
+
+### Owner roles
+
+Owner roles are harness-neutral: any fresh session (Claude, Codex, opencode) that takes the role
+loads the file and builds on it. Only six roles have agent files (coordinator, pipeline-mgmt, autokernel,
+autopilot, speech, reserved harness-integrator); every other handoff is owned by a replaceable
+dispatcher-spawned session with no agent file. Edits to a role file are reviewed by its live owner.
 
 The roster is the authority on who holds which role: `coordination/session-bus/config.yaml`
 assigns every agent a roster id and one role from a closed set — `main`, `coordinator-agent`,

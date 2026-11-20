@@ -125,6 +125,50 @@ def test_scaffold_then_lint(tmp_path):
                     "--threads", "24", "--units", "1", "--unit-s", "1", "--model", "m", "--root", str(tmp_path)]) == 1
 
 
+def _git(*a, cwd=None):
+    return subprocess.run(["git", *a], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
+
+
+def test_scaffold_gpu_copies_harness_from_origin_main(tmp_path):
+    hf = tmp_path / "h.md"
+    hf.write_text("- [ ] **BOX-3** x. model: none. stop-on answer. est 150 s\n")
+    up = tmp_path / "up"
+    hp = up / "scripts/kernel_rnd/autokernel/harness"
+    hp.mkdir(parents=True)
+    env_id = ["-c", "user.name=t", "-c", "user.email=t@t"]
+    _git("init", "-q", "-b", "main", cwd=up)
+    (hp / "gpu_common.py").write_text("X = 1\n")
+    (hp / "gpuproof_row.py").write_text("P = 1\n")
+    _git("add", "-A", cwd=up)
+    _git(*env_id, "commit", "-q", "-m", "v1", cwd=up)
+    clone = tmp_path / "clone"
+    _git("clone", "-q", str(up), str(clone))
+    (hp / "gpu_common.py").write_text("X = 2\n")  # origin/main moves past the clone's checkout
+    _git(*env_id, "commit", "-qam", "v2", cwd=up)
+    head, status = _git("rev-parse", "HEAD", cwd=clone), _git("status", "--porcelain", cwd=clone)
+    rc = rs.main(["new", "row-g", "--handoff", str(hf), "--box", "BOX-3", "--lane", "gpu", "--regions", "88-95,184-191",
+                  "--threads", "8", "--units", "1", "--unit-s", "120", "--model", "model: none", "--root", str(tmp_path),
+                  "--research-repo", str(clone)])
+    assert rc == 0
+    d = tmp_path / "row-g"
+    assert (d / "gpu_common.py").read_text() == "X = 2\n"  # origin/main, not the clone's stale checkout
+    job = (d / "job.py").read_text()
+    assert hashlib.sha256(b"X = 2\n").hexdigest() in job and "import gpu_common as G" in job
+    assert _git("rev-parse", "HEAD", cwd=up) in job  # pinned commit = the fetched origin/main tip
+    seal = (d / "SOURCE.sha256").read_text()
+    assert "gpu_common.py" in seal and "gpuproof_row.py" in seal
+    assert _git("rev-parse", "HEAD", cwd=clone) == head and _git("status", "--porcelain", cwd=clone) == status
+    assert (clone / "scripts/kernel_rnd/autokernel/harness/gpu_common.py").read_text() == "X = 1\n"
+    compile(job, "job.py", "exec")
+    r = subprocess.run([sys.executable, "-I", "-c", job.split("raise SystemExit(\"TODO")[0].split('"""', 2)[2]],
+                       cwd=str(d), capture_output=True, text=True, env={"PYTHONPATH": ""})
+    assert "FUTILITY_MISSING_INPUT" not in r.stderr
+    assert rs.main(["new", "row-h", "--handoff", str(hf), "--box", "BOX-3", "--lane", "gpu", "--regions", "88-95",
+                    "--threads", "8", "--units", "1", "--unit-s", "1", "--model", "m", "--root", str(tmp_path),
+                    "--research-repo", str(tmp_path / "nope")]) == 1
+    assert not (tmp_path / "row-h").exists()
+
+
 # ---------------------------------------------------------------- brief
 def test_brief_forces_build_and_rules():
     class A:

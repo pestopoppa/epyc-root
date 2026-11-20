@@ -11,6 +11,9 @@ The task record is what a worker sees and what the verifier checks. It is determ
   forbidden    globs the worker must never touch (FORBIDDEN + any `holds.yaml` `files` targets)
   repo         the git tree the paths resolve in (epyc-root | epyc-orchestrator | epyc-inference-research | …)
   tier/budget  model tier hint and hard caps (turns, tokens, wall seconds)
+  brief        task-brief layer P3 (docs/design/task-brief-layer.md §7): the deterministic `brief.compile_brief`
+               merged in -- where, approach, acceptance, non_goals, inputs_ext, brief_state, stale (the stale-list),
+               brief_accepted, brief_author, acceptance_matches_done_when, blast_radius, brief_path
 
     python3 scripts/coordination/taskflow/schema.py <box-key> [...]     # print task records as JSON
 """
@@ -20,6 +23,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -38,7 +42,8 @@ FORBIDDEN = (
     "scripts/hooks/**", "artifacts/**", "docs/reports/**", "kernels/**", "progress/**", "MEASUREMENT.md",
     "measurement/**", ".git/**",
 )
-DEFAULT_BUDGET = {"turns": 14, "tokens": 60000, "wall_s": 900, "excerpt_chars": 9000}
+DEFAULT_BUDGET = {"turns": 30, "tokens": 120000, "wall_s": 600,  # r7: one 839 s task ate a third of a booking;  # r1: 14 steps all went to exploration
+                  "excerpt_chars": 9000}
 TIER_BY_CLASS = {"non-inference": "terra", "inference": "terra"}
 
 _PATH = re.compile(r"`([A-Za-z0-9_.][\w./-]*(?:\.[A-Za-z0-9]{1,6}|/))(?::\d+(?:-\d+)?)?`")
@@ -83,13 +88,46 @@ def find_box(lines: list[str], rec: dict) -> int:
     return -1
 
 
+_SKILL = re.compile(r"`?([a-z0-9][a-z0-9-]+)`?\s+skill\b", re.I)
+
+
 def named_paths(text: str) -> list[str]:
     seen: list[str] = []
+    for m in _SKILL.finditer(text):           # "the kernel-promotion skill" -> .claude/skills/kernel-promotion/
+        seen.append(f".claude/skills/{m.group(1).lower()}/")
     for m in list(_PATH.finditer(text)) + list(_BARE_PATH.finditer(text)):
         p = m.group(1).rstrip(".")
         if p not in seen and not p.startswith("/"):
             seen.append(p)
     return seen
+
+
+_REV_PATH = re.compile(r"`([0-9a-f]{7,40}):([\w./-]+\.\w+)`|`([\w./-]+\.\w+)@([0-9a-f]{7,40})`")
+
+
+def rev_paths(text: str) -> list[tuple[str, str]]:
+    out = []
+    for m in _REV_PATH.finditer(text):
+        out.append((m.group(1), m.group(2)) if m.group(1) else (m.group(4), m.group(3)))
+    return out
+
+
+def git_show(root: Path, rev: str, path: str) -> bytes | None:
+    try:
+        r = subprocess.run(["git", "-C", str(root), "show", f"{rev}:{path}"], capture_output=True, timeout=20)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout if r.returncode == 0 else None
+
+
+def resolve_basename(root: Path, name: str) -> str | None:
+    """A bare file name the box cites -> its tracked path when exactly one tracked file has that name."""
+    try:
+        out = subprocess.run(["git", "-C", str(root), "ls-files", f"*/{name}", name], capture_output=True,
+                             text=True, timeout=20).stdout.split()
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return out[0] if len(out) == 1 else None
 
 
 def pick_repo(paths: list[str], text: str) -> str:
@@ -108,6 +146,63 @@ def done_when_text(goal: str, rec: dict) -> str | None:
     return " ".join(m.group(1).split()) if m else None
 
 
+# Repos a taskflow worker can change. Kernel / llama.cpp-tree work is never dispatched here (r3 CLOSE-6).
+SUPPORTED_REPOS = ("epyc-root", "epyc-orchestrator", "epyc-inference-research")
+_KERNEL = re.compile(r"\b(?:ggml|llama\.cpp|llama-server|GGML_[A-Z_]+|CUDA|HIP|ROCm|iqk|kernel tree|champion|"
+                     r"fold(?:ed|ing)? into|tg128|llama-bench|top-k renorm|SYNC-\d+|INF-?\d+)\b", re.I)
+
+
+def unsupported(task: dict) -> str | None:
+    """Why the harness must not take this task, or None."""
+    if task["repo"] not in SUPPORTED_REPOS:
+        return f"repo {task['repo']} not supported"
+    hits = _KERNEL.findall(task["goal"])
+    if len(hits) >= 2 and not task["inputs"]:
+        return "kernel/llama.cpp-tree work (" + ",".join(sorted(set(h.lower() for h in hits))[:4]) + ")"
+    return None
+
+
+BRIEF_KEYS = ("where", "approach", "acceptance", "non_goals", "inputs_ext", "brief_state", "stale", "brief_accepted",
+              "brief_author", "brief_review", "acceptance_matches_done_when", "blast_radius", "brief_path")
+
+
+def merge_brief(task: dict, root: Path) -> dict:
+    """Fill the BRIEF_KEYS of an epyc.task.v1 record from the box's sidecar (compile is deterministic, 0 tokens).
+    A box without an ID, or a compile that cannot run, is `brief_state: none` (the worker self-briefs, §5)."""
+    empty = {"where": [], "approach": None, "acceptance": None, "non_goals": [], "inputs_ext": [],
+             "brief_state": "none", "stale": [], "brief_accepted": None, "brief_author": None, "brief_review": None,
+             "acceptance_matches_done_when": False, "blast_radius": {}, "brief_path": None}
+    task.update(empty)
+    bid = task.get("id")
+    if not bid:
+        return task
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    try:
+        from taskflow import brief as B
+        r = B.compile_brief(bid, Path(root))
+        doc = {}
+        p = Path(root) / r["brief"]
+        if p.exists() and r["state"] != "none":
+            try:
+                doc = B.parse_text(p.read_text(encoding="utf-8"))
+            except ValueError:
+                doc = {}
+    except Exception as e:  # noqa: BLE001 - a broken sidecar never stops the task build; it routes to self-brief
+        task["stale"] = [f"compile unavailable: {type(e).__name__}: {e}"[:200]]
+        return task
+    finally:
+        sys.path.pop(0)
+    task.update(brief_state=r["state"], stale=list(r.get("stale_list") or []), brief_path=r["brief"],
+                brief_accepted=r.get("accepted"), brief_author=r.get("author"), brief_review=r.get("review"),
+                acceptance_matches_done_when=bool(r.get("acceptance_matches_done_when")),
+                inputs_ext=list(r.get("inputs_ext") or []), blast_radius=dict(r.get("blast_radius") or {}))
+    if doc:
+        task.update(where=[str(w) for w in doc.get("where") or []], approach=(doc.get("approach") or "").strip() or None,
+                    acceptance=(str(doc["acceptance"]).strip() if doc.get("acceptance") else None),
+                    non_goals=[str(x) for x in doc.get("non_goals") or []])
+    return task
+
+
 def build(rec: dict, root: Path | None = None, held_files: list[str] | None = None,
           budget: dict | None = None) -> dict:
     """epyc.task.v1 from a box-index record. Raises LookupError when the box text no longer resolves."""
@@ -121,12 +216,37 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
     repo = pick_repo(paths, goal)
     rroot = REPOS[repo]
     inputs = [p for p in paths if (rroot / p).exists()]
+    for p in [p for p in paths if "/" not in p and not (rroot / p).exists()]:
+        hit = resolve_basename(rroot, p)          # r3 DHM-8: `m2_guards.py` lives at scripts/dev_harness/
+        if hit:
+            inputs.append(hit)
+            paths.remove(p)
     for p in rec.get("inputs") or []:
         if p not in inputs and (rroot / p).exists():
             inputs.append(p)
+    refs = []                                   # cross-repo inputs: copied read-only into the lane (.taskflow-refs/)
+    for p in paths:
+        if p in inputs or (rroot / p).exists():
+            continue
+        for name, other in REPOS.items():
+            if name != repo and other.exists() and (other / p).is_file():
+                refs.append({"repo": name, "path": p})
+                break
+    for p in [p for p in paths if "/" not in p and p not in inputs and not any(r["path"] == p for r in refs)]:
+        for name, other in REPOS.items():         # bare name living in ANOTHER repo (r3 HS-OD-4 decision doc)
+            if name != repo and other.exists():
+                hit = resolve_basename(other, p)
+                if hit:
+                    refs.append({"repo": name, "path": hit})
+                    break
+    for rev, p in rev_paths(goal):                # `<sha>:<path>` / `<path>@<sha>` (r3 RESUME-7)
+        for name, other in REPOS.items():
+            if other.exists() and git_show(other, rev, p) is not None:
+                refs.append({"repo": name, "path": p, "rev": rev})
+                break
     dw = done_when_text(goal, rec)
     cmds = _CMD.findall(dw or "") or _CMD.findall(goal)
-    return {
+    task = {
         "schema": SCHEMA,
         "key": rec.get("key") or rec.get("id") or f"{rec['file']}#{rec.get('text_sha')}",
         "id": rec.get("id"),
@@ -140,12 +260,37 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
         "done_when": dw,
         "test_cmds": [" ".join(c.split()) for c in cmds][:3],
         "inputs": inputs,
-        "outputs": [p for p in paths if p not in inputs],   # named but not yet existing = may be created
+        "outputs": [p for p in paths if p not in inputs and p not in {r["path"] for r in refs}],
+        "refs": refs,   # named but not yet existing = may be created
         "forbidden": list(FORBIDDEN) + list(held_files or []),
         "repo": repo,
         "tier": rec.get("tier"),   # the box `tier:` hint only; dispatch.pick_tier fills the default by kind
         "budget": dict(DEFAULT_BUDGET, **(budget or {})),
     }
+    merge_brief(task, root)
+    return follow_brief_repo(task)
+
+
+def follow_brief_repo(task: dict) -> dict:
+    """The lane follows the brief: when a supported repo other than the task's holds MORE `where` entries than the
+    task's repo, run the task there; the other repos' existing files become read-only refs (r7 TU-GR-1: box text
+    names no path -> epyc-root lane; brief `where` = 3 orchestrator code paths + 1 root design doc)."""
+    import collections
+    ents = [(str(w).split(":", 1)[0], str(w).split(":", 1)[1].split("::")[0]) for w in task.get("where") or []
+            if ":" in str(w).split("::")[0]]
+    cnt = collections.Counter(r for r, _ in ents)
+    if not cnt:
+        return task
+    best, n = cnt.most_common(1)[0]
+    if (best != task["repo"] and n > cnt.get(task["repo"], 0) and best in SUPPORTED_REPOS and REPOS.get(best)
+            and Path(REPOS[best]).exists()):
+        task["repo_from_box"] = task["repo"]
+        task["repo"] = best
+        have = {(r.get("repo"), r.get("path")) for r in task.get("refs") or []}
+        for r, p in ents:
+            if r != best and REPOS.get(r) and (Path(REPOS[r]) / p).is_file() and (r, p) not in have:
+                task.setdefault("refs", []).append({"repo": r, "path": p})
+    return task
 
 
 def main(argv=None) -> int:

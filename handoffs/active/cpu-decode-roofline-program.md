@@ -1988,6 +1988,24 @@ append forever across 10+ arms.**
 defect propagated in the first place. And **`arm_hot.sh` samples PER ARM, not per session**: the agent had
 originally omitted the sampler from the hot script entirely, and with 10 arms inside one process that was a
 real gap, since **knowing WHICH arm was contended is exactly what a hot session buys.**
+- [ ] **Q8PK-DECODE-OPBW** [inference] Measure achieved GB/s of the plain ggml_vec_dot_q8_0_q8_0 decode path at the real dense-Q8_0 shapes for N 1..5 against a same-bytes streaming read, to decide whether an AVX-512 VNNI interleaved Q8_0 GEMV is worth writing (intake-2718).
+      · done when: a table of per-op us and GB/s versus the same-bytes bench_readbw gemv pattern at t48 for 6 shapes and N in {1,2,3,5} is filed with the verdict 'dense-Q8_0 ops reach >= 85% of streaming read: YES/NO'
+      · gate: Q38P-1
+      · expected gain: if dense-Q8_0 decode ops run at ~60% of streaming and a VNNI GEMV reaches 85%, 25% of step x (1 - 60/85) = ~7% upper bound, likely 2-4% (inferred); confidence low
+      · model: none (synthetic Q8_0 weights at real shapes) · build: C14 eee3da838 (content proof by symbol grep) · harness: standalone op loop under OMP t48 spread with the C0 bench_readbw gemv kernel as the reference
+      · metric(dir): GB/s higher, us per op lower · rule: streaming read on the same cores as the floor, all arms in one window, A/A recorded · region: CPU half A node-local · est: ~10 min + 25%
+      · stop rule: question = is dense-Q8_0 decode far enough below the bandwidth ceiling to leave a >= 10% per-op win? checkpoint after 3 shapes; stop-on-answer: >= 85% of streaming on all >= 10 MB shapes closes the GEMV idea; stop-on-futility: if the harness cannot reproduce ~156 GB/s on the 28 MB [2560,10240] node, fix the harness first
+- [ ] **Q6K-HEAD-CALLCOST** [inference] Split the Q6_K lm_head call into per-thread compute versus straggler and dispatch cost at t48 on the existing C14 profiler data, to decide whether an AVX-512 Q6_K GEMV could lower the head cost (intake-2718).
+      · done when: a table of thr_max/thr_mean/thr_min and wall for the result_output node (trunk and draft) at 1k and 32k depth is filed with the verdict 'straggler/dispatch-dominated: YES/NO' and the implied GEMV ceiling
+      · gate: none        · inputs: `/mnt/raid0/llm/tmp/q38fn-cpu-perop-profile-20261118-r2/out/servers/d1k-L1.prof.json`
+      · model: Qwen3.8-Flash-Next UD-IQ4_XS + shared Q8_0 MTP head · build: C14 GGML_CPU_PROF build used by the r2 profile row · harness: read per-thread fields of the existing d1k/d32k units; re-run one ~15 min unit only if fields are missing
+      · metric(dir): us per call lower, imbalance max/mean · rule: reuse existing units first · region: same as the source row · est: 0 new compute if fields exist, else ~15 min + 25%
+      · stop rule: question = is the head cost instruction-bound dequant (kernel helps) or fixed per-call cost (it cannot)? stop-on-answer: max/mean < 1.1 and wall within 5% of bytes/read-BW opens a Q6_K GEMV box, otherwise close; stop-on-futility: the unit captured only the draft copy, so move to a unit with the trunk head
+      · seeded as AK hypothesis AK-H-Q6KHEAD-1 (research seeds/hypotheses/16-kspec-sub3pct-levers-20261120.md) (operator 2026-11-20: <3% → AK loop, not hand-prepped)
+- [ ] **IQ4NL-GEMV-ZMM** [non-inference] Widen ggml_gemv_iq4_nl_8x8_q8_0 from the 256-bit AVX2 LUT path to a 512-bit vpshufb plus vpdpbusd path for the Q38FN IQ4_NL expert-down tensors, if XFER-4b keeps IQ4_NL on the repack path (intake-2718).
+      · done when: a patch on an experimental branch from fresh C14 with a bit-exact unit test against the AVX2 GEMV on the expert-down shapes, strings proof of the new symbol, and a filed decode micro A/B
+      · gate: XFER-4b
+      · seeded as AK hypothesis AK-H-IQ4NLZMM-1 (research seeds/hypotheses/16-kspec-sub3pct-levers-20261120.md) (operator 2026-11-20: <3% → AK loop, not hand-prepped)
 
 ### ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 
@@ -5526,6 +5544,14 @@ For multi-tenant scenarios (not our current deployment): the Sarathi trade-off M
         · proposed-by: taskflow 2026-11-20T11:13Z        · parent: PC-4
 
 > Folded from `handoffs/active/cpu-prefill-compute-large-models.md` @ `2ef4bc374799` on 2026-11-02 (BRF-T1-F16, route 1a, operator D1/D5; retired row INF-09 → INF-49). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **Q8PK-GEMM-AB** [inference] Microbench PR #32613's AVX-512 Q8_0 8x8 GEMM with a persistent interleaved layout against C14's per-call iqk Q8_0_R8 route at the Q38FN and frontdoor dense-Q8_0 and expert shapes (intake-2718).
+      · done when: a per-shape table (ns/tile, Gops, paired with an A/A floor) over N 32/64/256/512/2048 and shapes [2560x10240], [2560x12288], [10240x2560], [2560x640] is filed with the verdict 'PR kernel faster than R8 by >= 10% on >= 3 of 5 shapes: YES/NO'
+      · gate: none        · inputs: `/mnt/raid0/llm/tmp/dive-kspec-20261120/src/pr32613.diff`
+      · code: PR kernels from `/mnt/raid0/llm/tmp/dive-kspec-20261120/src/pr32613.diff` (arch/x86/repack.cpp GEMM AVX512 body under __AVX512BW__ && __AVX512DQ__, block_q8_0x8 layout, ggml_quantize_mat_q8_0_4x8); comparator @ C14 eee3da838 (/mnt/raid0/llm/worktrees/llama-c14-pin-20261119): Option R route `ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp` L87-118, L361 (Q8_0 -> Q8_0_R8, Q8_2_X4_H activations, threshold GGML_IQK_Q8_0_PREFILL_MIN_ROWS); harness lives in a scratch dir on the experimental branch, never in production trees
+      · expected gain: frontdoor (all-Q8_0 Qwen3.6-35B-A3B) prefill up to ~6% if the PR GEMM beats iqk R8 by 10% (inferred, matmul ~60% of prefill); Q38FN ~0.8%; embedding pools similar fraction to frontdoor; confidence low-medium
+      · model: none (synthetic weights at real shapes) · build: experimental standalone harness from fresh C14 plus the PR's two kernels; content proof via strings for the 8x8 symbols · harness: standalone MUL_MAT microbench, 6 interleaved rounds, 1 thread then 24 threads
+      · metric(dir): ns per tile lower, Gops higher · rule: verdict only if the effect exceeds 2x the same-window A/A band · region: CPU quarter q0-q2 (never threads 88-95) · est: ~25 min (5 shapes x 5 N x 6 rounds x ~5 s) + 25%
+      · stop rule: question = does a persistent-layout AVX-512 8x8 Q8_0 GEMM beat per-call-repack iqk R8 on Zen 5? expected 0 to +10% vs a 2-3% A/A band; checkpoints after rounds 3 and 6; stop-on-answer at >= 10% beyond 2x A/A on 3 of 5 shapes or all within the band after round 6; stop-on-futility if slower on 4 of the first 5 shapes after round 3
 
 ### CPU Prefill-Compute for Large Models
 

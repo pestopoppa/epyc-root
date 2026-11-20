@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-HANDOFF-STANDARD-20261120",
+  "indexed_by": "ratify",
+  "receipt": "artifacts/operator/ratify_handoff_standard_20261120.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

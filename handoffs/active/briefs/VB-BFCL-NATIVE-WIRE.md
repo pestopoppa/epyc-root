@@ -1,0 +1,33 @@
+---
+schema: epyc.brief.v1
+id: VB-BFCL-NATIVE-WIRE
+box_text_sha: t:9775a97d48040a2d
+author: backfill
+written: '2026-11-20'
+accepted: pending
+review: backfill
+where:
+- epyc-root:proposed/cj567/bfcl_native.py
+- epyc-root:proposed/cj567/bfcl_capture_run.py
+- epyc-root:proposed/cj567/test_bfcl_native.py
+- epyc-root:scripts/vidya/ingest_sources.py
+approach: 'Add adapter for the BFCL V3 native capture journal: input-only requests/raw completions, case and private gold
+  digests, pinned checker commit, model/kernel identities; grade via claim_tuple.grade(). Box (head VB-BFCL-NATIVE-WIRE, renumbered
+  by assign-id) has no done-when; acceptance is the closest check: new adapter test on a synthetic journal plus existing producer
+  tests.
+
+  '
+acceptance: python3 -m pytest -q tests/vidya/test_bfcl_native_adapter.py proposed/cj567/test_bfcl_native.py proposed/cj567/test_bfcl_capture_run.py
+new_tests:
+- tests/vidya/test_bfcl_native_adapter.py
+non_goals:
+- no fleet capture run
+tier: luna
+grounded:
+  at: '2026-11-20'
+  blobs:
+    epyc-root:proposed/cj567/bfcl_native.py: 17bc062641120b98267aef0e58d0c8a11003de4e
+    epyc-root:proposed/cj567/bfcl_capture_run.py: 670e72c36a1adb778b3c99535637dae815e4fbcc
+    epyc-root:proposed/cj567/test_bfcl_native.py: 485b99234b12813572eea5a1b4667b055f9a32da
+    epyc-root:scripts/vidya/ingest_sources.py: d2da53a6a45f78f20c2426ff20bb4b15cfbdad61
+---

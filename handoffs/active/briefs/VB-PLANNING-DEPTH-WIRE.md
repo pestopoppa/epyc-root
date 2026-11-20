@@ -1,0 +1,33 @@
+---
+schema: epyc.brief.v1
+id: VB-PLANNING-DEPTH-WIRE
+box_text_sha: t:47dd0a91f312614f
+author: backfill
+written: '2026-11-20'
+accepted: pending
+review: backfill
+where:
+- epyc-root:scripts/experiments/planning_depth/episode.py
+- epyc-root:scripts/experiments/planning_depth/native.py
+- epyc-root:tests/experiments/test_planning_depth.py
+- epyc-root:scripts/vidya/ingest_sources.py
+approach: 'Add a quality-gate-carrier adapter for planning_depth episode records: bind protocol/case/model/source/build custody
+  from the request/reply/tool-event envelope, keep environment-state scoring, UNKNOWN dispositions and incomplete usage; grade
+  via claim_tuple.grade(). Box has no done-when; acceptance is the closest check: new adapter test on synthetic envelopes
+  (software controls only, no model warrant).
+
+  '
+acceptance: python3 -m pytest -q tests/vidya/test_planning_depth_adapter.py tests/experiments/test_planning_depth.py
+new_tests:
+- tests/vidya/test_planning_depth_adapter.py
+non_goals:
+- no model warrant from software controls
+tier: luna
+grounded:
+  at: '2026-11-20'
+  blobs:
+    epyc-root:scripts/experiments/planning_depth/episode.py: 608b1ab7e03cc3c11c8eef449c7aed386d0f5bb3
+    epyc-root:scripts/experiments/planning_depth/native.py: 6800dbc82985bcf56a5aa71fe2c39472d8803308
+    epyc-root:tests/experiments/test_planning_depth.py: be147bb519b1109f4cf7c0be8c429bf7bad71c8e
+    epyc-root:scripts/vidya/ingest_sources.py: d2da53a6a45f78f20c2426ff20bb4b15cfbdad61
+---

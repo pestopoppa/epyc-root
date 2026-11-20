@@ -3,6 +3,8 @@
 > **Fold destination** (BRF-T7-F7, BRF-T7-1, route 1b, 2026-11-03): renamed from `yarn-context-extension-research.md`; every former handoff of this plan target is a `## Track:` with its own gate marker: `yarn-context-extension-research`, `attention-matching-kv-compaction` (rows INF-05 retired into INF-59). The former `yarn-context-extension-research.md` body is `## Track: yarn-context-extension-research`; tracks those handoffs already had are lifted verbatim after their owner.
 
 **Status**: ACTIVE. ADAPTED on 2026-10-04: the scope is now Qwen3.8-27B under YaRN factor 2 (524,288 tokens) as a
+**Row**: INF-59
+**Domain**: inference-research
 dedicated np 1 MI210 mode. The operator approved running E0 and E1 on 2026-10-04. **E1 ran 2026-10-04: quality PASS to 500K, FAIL by
 C4 memory (A1 63.9 GiB vs ≤ 55); next is YARN-E1-MEM.** The 2026-03-09 → 2026-09-07 scope
 below is historical: its model targets are retired, its flag recipe is defeated by the v10 slot clamp, and its memory
@@ -59,38 +61,9 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
 
 ##### Tasks
 
-- [x] **YARN-E0 — the zero-compute preparation (operator-approved 2026-10-04).** ✅ 2026-10-04 (the runner and
-  runbook carried E1 end to end; see below) Subagents are preparing it
-  in `/mnt/raid0/llm/tmp/yarn-e1-20261004/`. It has three parts:
-  - **The runner.** Fork Q38-T7's cached-prefix needle logic into a long-context runner, and write truth rows in
-    `coherence_gate` form (`{"grader":"needle","expected":[…]}`).
-    - **Neutral haystack only:** RULER noise, or essays with sentence ids. Q38-T7's 80k needle failed because the
-      model refused an "injected" fact planted in an AutoKernel context.
-    - **One prefill per (arm, length):** 5 needles at depths of 10/30/50/70/90%, each asked as a short continuation on
-      the cached prefix.
-  - **The launch lines** on a scratch port (e.g. 18083), with the production env and `LD_LIBRARY_PATH`:
-    - **A0 (native):** `-np 1 -c 262144 -ctk q8_0 -ctv q8_0 -ub 2048 --flash-attn on --no-mmap -ngl all --cache-ram 0`,
-      with no `-md`.
-    - **A1 (YaRN f2):** A0 plus `-c 524288 --rope-scaling yarn --rope-scale 2 --yarn-orig-ctx 262144 --override-kv
-      qwen35.context_length=int:524288`.
-    - **A2 (negative control):** A1 without the rope flags.
-  - **The required bring-up proof lines:** `n_ctx_orig_yarn = 262144`, `freq_scale = 0.5`, `rope scaling = yarn`,
-    and `n_ctx_slot = 524288` with no capping warning. KFD at load must be ≤ ~50 GiB.
-  - **Stale-geometry caches** (intake-1347#record): the instance uses its own empty cache and a scratch slot path,
-    and never restores production slots.
-  - **Belief-kernel write side:** VB-YARN-E1 in `vidya-belief-substrate-program.md`.
 
   Done when the runner passes a dry run (and a self-test on a small model), and the launch lines and proof greps are
   in a runbook beside it.
-- [x] **YARN-E1 — the GPU experiment, ~2.5–3 h of a parked-:8083 window (operator-approved 2026-10-04).** ✅ 2026-10-04
-  RUN — **FAIL by C4 (memory) only**; results below. The
-  pre-registered cells (ASSESSMENT §6), all greedy with thinking off and real token ids:
-  1. **Short context:** ~60 `question_pool` items under 4K, A0 vs A1. A `coherence_gate` PASS means 0 REGRESSION.
-  2. **Native range:** 128K and 240K haystacks with 5 needles each, A0 vs A1. A1 must score ≥ A0 − 1 correct out of
-     10, with a clean `degeneracy.v2`. A0 at 240K is also the first ground truth near 262K for this model.
-  3. **Beyond native:** 400K (A1, plus A2) and 500K (A1) haystacks. A1 needs ≥ 4/5 at each length, and A2 must
-     score clearly worse, or the test is not discriminating.
-  4. **Memory:** the KFD peak stays ≤ 55 GiB.
 
   Coordinate the window with the GPU-block owner, and never run it during another session's measurement window.
   Done when the four results are recorded here with the runner's output path. Outcome: pass → YARN-E2; fail →
@@ -268,20 +241,6 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     the offset is attributed or removed.
     - [parked: operator 2026-11-07 — re-open when C8 long-context attention decode/verify fix lands; measured 27B decode 17/12/7 tok/s at 128k/240k/500k, attention KV reads ~10% of HBM; /mnt/raid0/llm/tmp/inf22-strategy-memo-20261107/MEMO.md] [no-belief: operator decision]
     - *(2026-11-07, main-inf22, operator decision B: adopted as the C8 fold ledger owner; not ticked)* Owner: **main-inf22**. Triage: needs measurement: a paired CPU-vs-GPU PPL run before any cross-device number is quoted. [no-belief: ownership/triage note]
-- [x] **YARN-FA-INT64 — fix the int32 mask/K offsets in GPU FlashAttention (probable llama.cpp #27090).** ✅ 2026-10-04
-  (workspace-ec; coordinator add-on to the DCA work)
-  - Branch `experimental/fa-int64-offset-20261004`, on the champion, three commits:
-    - `6152cdf7a` fixes the WMMA kernel;
-    - `0c4801127` fixes tile, MMA and vec, and adds `launch_fattn` truncation asserts;
-    - `4f21c3477` adds the `test-backend-ops` `mask_ne0` cases.
-  - CPU proof: the first wrapped mask offset is at n_kv 526,592 (ub 2048), 262,912 (ub 4096) and 1,057,024 (ub 1024);
-    nothing wraps at ub 512.
-  - GPU slot `gpu-slot-20261004T145625Z`: **PASS** (durable copy `artifacts/dca-yarn-kernel-20261004/fa-int64/`).
-    - `mask_ne0` cases: the fixed build passes 4/4; the champion passes 1/4 (3 FAIL, ERR 0.03-0.59).
-    - Full `FLASH_ATTN_EXT` suite on the fixed build: 2872/2872.
-    - Existing cases: 119/119 bit-identical to the champion (worst nmse 0).
-  - The v11 carry is `fork/experimental/fa-int64-offset-master-20261004`: the revert of #26046 plus the picks. It is
-    not compile-verified on master.
 - [x] **YARN-FA-INT64-fold — fold the three FA-INT64-OFFSET commits into the champion before any run past 512K ✅ 2026-10-29 (audit: kernel-manifests/llama-v11-manifest.md V11-017 FA-INT64-OFFSET commits 2152c39b1, 3c9b0bb4f IN champion @ dd3d9721c (G-ANC)) [no-belief: audit-reconciliation]
   cells.** (filed 2026-10-04, workspace-ec) Use the guarded CAS fold route with workspace-89: G0, `test-backend-ops`
   on ROCm0, and the `mask_ne0` cases. Done when the champion tip carries them.
@@ -289,25 +248,6 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
   workspace-ec) Master `11fe02151` still multiplies int32 strides in tile, MMA and vec; the WMMA half is moot upstream
   (#26046). Done when the draft sits in the artifact dir for the operator.
   - Draft for operator review: [`UPSTREAM-ISSUE-DRAFT.md`](../../artifacts/dca-yarn-kernel-20261004/fa-int64/UPSTREAM-ISSUE-DRAFT.md). The draft limits its upstream source claim to `11fe02151`; the historical GPU failure was measured on downstream WMMA, not upstream tile/MMA/vec. It has not been posted.
-- [x] **YARN-FN-FIX — Flash-Next fused decode must honour the rope parameters (in flight).** ✅ 2026-10-04 `qwen4exp-fused.cpp:1709-1717`
-  hardcodes `freq_scale=1, ext_factor=0, n_ctx_orig=0`. Pass the model's real `freq_scale`, `ext_factor`,
-  `n_ctx_orig_yarn`, `attn_factor` and `beta_*` through to the fused path. This is latent at native length as well,
-  where `n_ctx_orig=0` is harmless only while `ext_factor` is 0. It is being built on `llama.cpp-experimental` in the
-  same subagent dir. Done when the fused decode matches the graph path bit-for-bit (or within the fused path's
-  existing tolerance) under a YaRN configuration in a CPU test, with no regression at native length.
-  - *(2026-10-04, workspace-ec.)* **Fixed** in `5bfdcd18c` on `experimental/fused-yarn-20261004`.
-    - The fused decode now takes the context's rope/YaRN parameters. `freq_base` was hardcoded as well, so
-      `--rope-freq-base` had also been ignored.
-    - `6c126e975` gates two per-token debug leftovers behind `GGML_FUSED_DECODE_TRACE`: a stderr line, and `/tmp`
-      file writes on every token.
-    - Test `tests/test-qwen4exp-fused-rope.cpp`: K nmse 6e-9 (YaRN) and 8e-9 (freq-base), against 0.53 and 1.09
-      before; logits 1.7e-11; native OK; 56/56 steps fused.
-    - Notes: `artifacts/dca-yarn-kernel-20261004/NOTES.md`.
-    - A separate fidelity gap at non-production weight scales is FD-DIV-1 in `cpu-fused-decoder-blocks.md`.
-  - [x] **YARN-FN-FIX-fold — fold `5bfdcd18c` + `6c126e975` into the champion.** (filed 2026-10-04, workspace-ec) ✅ 2026-10-23 (triage by 3c4ca599's fold-prep subagent; ec's box, ticked on the coordinator's instruction): already folded, nothing to do. `git cherry 141e4bcf5 fork/experimental/fused-yarn-20261004` marks `5bfdcd18c`, `6c126e975` and `45d8f2937` patch-equivalent to champion commits `b86c725e2`, `39c7209e4`, `b0ba1d427` (manifest V11-019 IN; `test-qwen4exp-fused-rope` 3/3, OK again on candidate C's final build). Evidence: `/mnt/raid0/llm/tmp/c3-fold-prep/PLAN.md` section 1.
-    Production keeps `GGML_FUSED_DECODE_OFF=1`, but the champion's fused path still writes `/tmp` files on every
-    token and ignores rope parameters. Done when the champion tip carries both commits, with the fused-rope test
-    green.
 - [ ] **YARN-1M — research: what fits 1M, and how the hybrid recurrent layers behave past 262K (in flight).** A
   research subagent is answering two questions in `/mnt/raid0/llm/tmp/yarn-e1-20261004/`:
   - [parked: operator 2026-11-07 — re-open when C8 long-context attention decode/verify fix lands; measured 27B decode 17/12/7 tok/s at 128k/240k/500k, attention KV reads ~10% of HBM; /mnt/raid0/llm/tmp/inf22-strategy-memo-20261107/MEMO.md] [no-belief: operator decision]
@@ -320,22 +260,6 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
   - *(2026-10-04 note, after E1.)* **Memory is now the blocker for 1M, not quality:** A1 retrieved 5/5 at 500K, but
     measured 63.9 GiB against a 48.9 GiB estimate, and A0 overshot by the same ~15 GiB. Every 1M memory estimate
     above (≈ 54 GiB with q4_0 KV, ≈ 69.9 GiB lean) is optimistic by that amount until YARN-E1-MEM attributes it.
-- [x] **YARN-INERT-PRIORART — prior-art audit of how production stacks (vLLM/SGLang/TGI/TRT-LLM/llama.cpp upstream/HF dynamic+longrope) and Qwen guidance avoid native-window regression, and whether YaRN is still SOTA.** Write-up: `/mnt/raid0/llm/tmp/yarn-inert-design-20261006/OPTIONS.md` (in progress). Coordinate with YARN-OPTION-D-DECISION after the audit is complete. ✅ 2026-10-06
-  - *(2026-10-06 correction, intake-1911 REDO)* "Nobody re-ropes at the crossing" is false for llama.cpp itself: `llama-memory_seq_div` plus the K-shift graph (`build_rope_shift`) re-rope cached K for Self-Extend (completion/passkey only; llama-server does not use it). Jet-Long keeps base-roped K and rotates distant K on the fly, so it avoids a cache rewrite.
-  - *(2026-10-06, workspace-ec)* Prior-art audit complete; write-up `artifacts/yarn-ctx-20261006/OPTIONS.md` (durable copy). Root cause: mscale 1.0693 sharpens logits at all positions; feeds YARN-OPTION-D-DECISION.
-- [x] **YARN-MSCALE-AB — mscale-neutral YaRN 3-arm greedy A/B (no-YaRN / static / attn-factor-cancelled) on experimental branch `llama.cpp-experimental/yarn-mscale-20261006`.** Includes the fix for `--yarn-attn-factor` being discarded when `ext_factor != 0` (`llama-context.cpp:220-228`). Done when the three arms are measured on a production-shaped Qwen3.8-27B prompt set (same as E1 short context) and the attn-factor test shows whether cancelling it recovers the native-window performance. ✅ 2026-10-06
-  - *(2026-10-06, workspace-ec)* **VERDICT: the CTX-1 gate FAILS.** Fix `--yarn-attn-factor` is `720a98e2a` on `llama.cpp-experimental-yarn-mscale-20261006` (cancel factor 0.935190). Greedy identity vs no-YaRN: N 20/20, Y 13/20, YM 13/20; MTP@34k acceptance 0.514 / 0.490 / 0.468. Drift comes from frequency interpolation, not mscale, so cancelling mscale does not make YaRN inert. Evidence: `artifacts/yarn-ctx-20261006/yarn-mscale-ab-summary.md`.
-- [x] **YARN-OPTION-D-DECISION ✅ 2026-10-06 — decide between the length-routed second server (D) and in-process per-request YaRN (A) after the prior-art audit and the mscale A/B.** Operator concerns to address: RAM cost of a second weights copy (production :8083 uses `--no-mmap --mlock`, so weights are private per process) and the re-prefill cost on crossing. Write the decision and its rationale into the stack-change plan template.
-  - *(2026-10-06)* The package must state D's added RAM as a number (a second private weights copy under the canonical `--no-mmap --mlock` recipe, plus extended-server KV and compute buffers) and the F and Jet-Long-cached alternatives against the gates G1-G3 in the intake plan; the operator's rule (no regression inside the native window) and the CPU-first 1M order apply.
-  Owner: workspace-ec
-  - *(2026-10-06 inputs)* CTX-1 FAILED (inertness is not cheap via mscale), CTX-KSHIFT gate G2 fails (K-shift is not a re-rope primitive at v10), Jet-Long cost PASS on paper. Decision can now be written; see CTX-JETLONG-PROTO limits.
-  - *(2026-10-06 evening, workspace-ec)* Decided by the operator 2026-10-06: cached Jet-Long (J) is the long-context target, no interim D, conditional on above-native recall >= static YaRN (D RAM would add ~49-52 GiB; host 778 GiB free). Evidence: `artifacts/ec-wrapup-20261006/DECISION_CTX4.md`.
-- [x] **CTX-KSHIFT — three source-then-unit probes on the llama.cpp K-shift path (H1 mscale re-applied per shift under YaRN; H2 `pos_div` records shift += old-new vs `pos_add` += d; H3 quantized-K Hadamard `nrot` from the full head dim vs partial-rotary n_rot).** (filed 2026-10-06, from intake-1911 REDO) Experimental branch only, CPU, synthetic fixtures, f16 control. Done when each hypothesis is CONFIRMED or REFUTED with the max-abs error recorded and thresholds as predeclared (H1 norm ratio 1.000 +/- 1e-3; H2 error <= 1e-6; H3 <= 2x plain q8_0 round-trip error). A confirmed one becomes a defect ticket on the experimental branch; K-shift is not reused by F/A/Jet-Long until all three are closed. ✅ 2026-10-06
-  - Owner: workspace-ec
-  - *(2026-10-06, workspace-ec)* H1/H2/H3 all CONFIRMED at `ffc1bac82`. H1 K-shift re-applies YaRN mscale, ratio 1.0693^n (`llama-kv-cache.cpp:1992`). H2 `pos_div` sign error (`llama-kv-cells.h:478`; err 4.711 vs 1.7e-6). H3 q8_0 Hadamard nrot taken from the full head dim (`llama-kv-cache.cpp:1454-1461`; 84.7x/120.8x round-trip error); the CPU quantized shift also aborts (`ggml-cpu/ops.cpp:323`). Fixes on `llama.cpp-experimental-kshift-probe-20261006` (tip `f9cb7cd32`), unit-verified only; the H3 fix is marginal at 2.08x. Production NOT exposed (v10 defaults ctx_shift=false, n_cache_reuse=0; no production argv sets them). Gate G2 FAILS. Evidence: `artifacts/yarn-ctx-20261006/CTX2_KSHIFT.md`.
-- [x] **CTX-JETLONG-COST — arithmetic plus CPU microbenchmark of the Jet-Long correction rotation (uncached vs per-G-epoch cached), n_rot=64, at 32K/128K/262K/1M.** (filed 2026-10-06, from intake-1900/1919 REDO) Done when bytes/step and measured ms/step on 96 threads under `region-lock` are filed; passes if the cached variant adds <= 10% decode at 262K and <= 25% at 1M, else the Jet-Long port is parked. ✅ 2026-10-06
-  - Owner: workspace-ec
-  - *(2026-10-06, workspace-ec)* PASS, measured. Uncached +13.5 ms/step at 262K and +46 ms at 1M (10 layers); cached +2.4 and +9.4 ms. About 9% uncached and 2% cached against EXTRAPOLATED baselines (143 ms, 500 ms), so the percentages are estimates. Evidence: `artifacts/yarn-ctx-20261006/ctx3a/COST.md`, `artifacts/yarn-ctx-20261006/ctx3a/results_20261006T054613Z.csv`.
 - [ ] **CTX-JETLONG-PROTO — (only if CTX-JETLONG-COST passes) CPU-first non-fused Jet-Long prototype on an experimental branch, with a bit-exact in-window gate.** Done when logits at L <= native window are max-abs diff 0 versus the stock binary (np 1 and np 4 mixed batch, prefill and decode) and `strings` confirms the knob; otherwise rejected for in-window use.
   Owner: autokernel (operator handover 2026-11-10; was main-inf22, closed; earlier workspace-ec); re-scoped to champion C10 `7f1bd044b` (2026-11-10; was C9 `d210f85c2`, C7r `62cb6a6af`)
   - [parked: operator 2026-11-07 — re-open when C8 long-context attention decode/verify fix lands; measured 27B decode 17/12/7 tok/s at 128k/240k/500k, attention KV reads ~10% of HBM; /mnt/raid0/llm/tmp/inf22-strategy-memo-20261107/MEMO.md] [no-belief: operator decision]
@@ -343,8 +267,6 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
   - [x] Synthetic-test part ✅ 2026-10-06 — branch `llama.cpp-experimental-jetlong-proto-20261006`, tip `b216a5deb` (impl `a2e129fcc`). T1 in-window max-abs exactly 0 (np 1, mixed np 4, co-batched with an above-native sequence; q8_0+Hadamard and f16). T2: f32 1.3e-6, f16 <=7.5e-5, q8_0 1.55e-3 (gated at 2x stock error). T3: cached == uncached exactly across 4 epoch changes. Evidence: `artifacts/yarn-ctx-20261006/jetlong/DESIGN.md`, `TESTS.md`, `LONGCTX_PLAN.md`. Limits: end-to-end wiring not run; above native needs `-ub 32` (1M prefill takes hours); f32 side cache ~5 GiB at 1M.
   - **[declined: ws58 2026-11-03 content-review: duplicate pointer to JETLONG-LONGCTX-RUN]** End-to-end long-context runs (tracked as JETLONG-LONGCTX-RUN below); this task stays open until they pass.
 
-- [x] **YARN-ATTN-FACTOR-CARRY ✅ 2026-10-06 — carry the `--yarn-attn-factor` fix `720a98e2a` (llama.cpp-experimental-yarn-mscale-20261006) onto the champion branch via the champion fold.** Owner: workspace-ec. (filed 2026-10-06) Done when the champion carries the fix, `strings` confirms it, and a re-run of the YM arm reproduces cancel factor 0.935190. Never on production.
-  - *(2026-10-06 evening, workspace-ec)* Carried to the champion candidate llama.cpp-experimental-champion-specwidth-20261006 @ `8e597b701` (version 10342; CPU+HIP builds and linkage PASS). The fold itself is pending workspace-89 regression gates (`artifacts/ec-wrapup-20261006/FOLD.md`). Upstream draft: `artifacts/ec-wrapup-20261006/ISSUE_ATTNFACTOR.md`.
 
 - [ ] **KSHIFT-FIX-MODEL-TEST — model-level K-shift test, then carry the H1-H3 fixes to the champion, then draft an upstream bug report.** Owner: autokernel (operator handover 2026-11-10; was main-inf22, closed; earlier workspace-ec); re-scoped to champion C10 `7f1bd044b` (2026-11-10; was C9 `d210f85c2`, C7r `62cb6a6af`). (filed 2026-10-06) Fixes on `llama.cpp-experimental-kshift-probe-20261006` (tip `f9cb7cd32`) are unit-verified only. Done when (1) a real-model shift test (CPU, region-locked) shows post-shift logits match a re-prefill within the predeclared thresholds, (2) fixes are folded into the champion, (3) an upstream bug report draft is filed under `docs/` for operator review. Production is not exposed; no urgency beyond the champion fold.
   - [x] **KSHIFT-OFFSET-CALIBRATION-CODE — implement offset-matched fresh-prefill repeats and strict diagnostic reduction with passing model-free tests.** Result: opt-in generator captures three fresh references at each of 0/d/4d and 15 directional comparisons, preserving historical code; strict reducer retains every position, refuses malformed/incomplete inputs, and returns qualification=false. Seven model-free tests PASS (generated controls under UBSan); complete generated harness syntax PASS. Protocol and future qualification separation: `scripts/diagnostics/kshift-model/README.md`. Evidence: `/mnt/raid0/llm/tmp/triattention-kv-selection/offset-calibration-20261120/TEST.json`, SHA-256 `6e7074557a84c8c5f94b51c393987ded79cb8c94837d6e17d24ae3a8813c6dbc`. No inference or new acceptance thresholds; parent steps (1)–(3) remain open. ✅ 2026-11-20 [no-belief: model-free code validation; no model measurement]
@@ -369,9 +291,7 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
   - [parked: operator 2026-11-07 — re-open when C8 long-context attention decode/verify fix lands; measured 27B decode 17/12/7 tok/s at 128k/240k/500k, attention KV reads ~10% of HBM; /mnt/raid0/llm/tmp/inf22-strategy-memo-20261107/MEMO.md] [no-belief: operator decision]
   - *(2026-11-07, main-inf22, operator decision B: adopted as the C8 fold ledger owner; not ticked)* Owner: **main-inf22**. Triage: C8-fold prerequisite (code fix on the jetlong-proto branch); rebase it onto C7r (2026-11-09 note: current champion is C9 `d210f85c2`; rebase target is C9). [no-belief: ownership/triage note]
 
-- [x] **JETLONG-SMALL-UB-BUG — fix the Jet-Long get_rows OOB assert (`ggml-cpu/ops.cpp:5350`) for ubatch < window at positions beyond native (IMRoPE).** Owner: workspace-ec. (filed 2026-10-06) Hits 4-token tails and likely decode on Qwen3.8-27B (qwen35); no repro on Qwen3-0.6B (NeoX). Evidence `artifacts/ec-wrapup-20261006/SAVE_RESTORE_TEST.md`. Done when ubatch 1/4/32 above native run without the assert on qwen35 and T1-T3 stay exact. Blocks the two items below. ✅ 2026-10-07 Fixed at `e6ea79421` (llama.cpp-experimental-jetlong-hip-20261006): root cause was `llm_graph_input_mem_hybrid::set_input` never filling Jet-Long inputs and `can_reuse` never blocking reuse; every pre-fix above-native hybrid result is INVALID. T4 tests ub 1/4/16/64, tail, decode, IMRoPE+NeoX, q8_0+f16 pass; evidence `artifacts/ec-wrapup-20261007/SAVE_RESTORE_TEST.md`.
 
-- [x] **JETLONG-SAVERESTORE-PRETEST — order-(ii) slot save at the ack plus the within-window context-checkpoint hit (after JETLONG-SMALL-UB-BUG).** Owner: workspace-ec. (filed 2026-10-06) Checkpoint creation at the expected positions already observed; reuse on hybrid models was never observed historically (`progress/2026-09/2026-09-16-sub-op42-readiness.md:131-143`). Done when a restored slot resumes with a checkpoint hit and identical continuation. ✅ 2026-10-07 Prefill-only boundary trick passed on CPU 27B: save 280.8 MB/70 ms, restore 36 ms, extension prompt_n 2203 == delta, byte-identical, acceptance 33/41 both; first observed hybrid prefix reuse (follow-on HYBRID-PREFIX-REUSE, kv-unified-stack-rollout.md).
 
 - [ ] **JETLONG-GPU27B-WINDOWS — two GPU windows for the Qwen3.8-27B Jet-Long run with slot save/restore, via `operator_authorize.sh`, :8083 stopped.** Owner: autokernel (operator handover 2026-11-10; was main-inf22, closed; earlier workspace-ec); re-scoped to champion C10 `7f1bd044b` (2026-11-10; was C9 `d210f85c2`, C7r `62cb6a6af`). (filed 2026-10-06) Design `artifacts/ec-wrapup-20261006/GPU27B_JETLONG_TEST.md`; branch llama.cpp-experimental-jetlong-hip-20261006 (`cd2d65d94`, `ebbf9ad0c`); scripts `/mnt/raid0/llm/tmp/jetlong-gpu27b-20261006/`. Executor caps windows at 60 min (MAX_WINDOW_S). AK GPU run 2 waits for it. Done when both windows complete and needle/decode results are recorded. 2026-10-07: entry `jetlong-gpu27b-20261007T023630Z` UNUSED — window A stopped :8083 but gpu-quiet EXCLUSIVE timed out at 600 s (AK shared claims starve it, FIFO off); rerun cancelled for token budget; scripts now prefill-only with 1800 s acquire timeout. Needs a new entry plus GPUQUIET-WRITER-PREFERENCE (autokernel-concurrent-target-coordination.md) or a lane pause.
   - [parked: operator 2026-11-07 — re-open when C8 long-context attention decode/verify fix lands; measured 27B decode 17/12/7 tok/s at 128k/240k/500k, attention KV reads ~10% of HBM; /mnt/raid0/llm/tmp/inf22-strategy-memo-20261107/MEMO.md] [no-belief: operator decision]
@@ -675,6 +595,22 @@ The operational YARN-128K-MI210 checkbox remains open until CPU-v3 shard withdra
 
 - [x] Reconcile S0/v27 adopted qualification notification. ✅ 2026-11-01 The [receipt](../../artifacts/compute/yarn-s0-v27-adopted-receipt-20261101/PASS.json) explicitly records an old-flow adoption at 17:09:13Z, not a new native dry run. `rowflow.py status` reported `done`; its earlier October 30 rc75 result is already filed above. No fresh inference result or grant is implied. Current E1 and S2 successor drafts remain disabled; the former still needs source binding and native qualification, and the latter has a reproduced parent-death custody defect. A2 is the 27B GPU negative-control arm despite the generated backlog's CPU label; its launcher must be bound to the correct lane and recipe before publication. [no-belief: receipt and queue state only]
 
+
+### Done
+
+- [x] **YARN-E0** ✅ 2026-10-04 (the runner and
+- [x] **YARN-E1** ✅ 2026-10-04
+- [x] **YARN-FA-INT64** ✅ 2026-10-04
+- [x] **YARN-FN-FIX** ✅ 2026-10-04 `qwen4exp-fused.cpp:1709-1717`
+- [x] **YARN-INERT-PRIORART** ✅ 2026-10-06
+- [x] **YARN-MSCALE-AB** ✅ 2026-10-06
+- [x] **YARN-OPTION-D-DECISION** ✅ 2026-10-06 — decide between the length-routed second server (D) and in-process per-request YaRN (A) after the prior-art audit and the mscale A/B.** Operator concerns to ad
+- [x] **CTX-KSHIFT** ✅ 2026-10-06
+- [x] **CTX-JETLONG-COST** ✅ 2026-10-06
+- [x] **YARN-ATTN-FACTOR-CARRY** ✅ 2026-10-06 — carry the `--yarn-attn-factor` fix `720a98e2a` (llama.cpp-experimental-yarn-mscale-20261006) onto the champion branch via the champion fold.** Owner: workspac
+- [x] **JETLONG-SMALL-UB-BUG** ✅ 2026-10-07 Fixed at `e6ea79421` (llama.cpp-experimental-jetlong-hip-20261006): root cause was `llm_graph_input_mem_hybrid::set_input` never filling Jet-Long inputs and `ca
+- [x] **JETLONG-SAVERESTORE-PRETEST** ✅ 2026-10-07 Prefill-only boundary trick passed on CPU 27B: save 280.8 MB/70 ms, restore 36 ms, extension prompt_n 2203 == delta, byte-identical, acceptance 33/41 both; firs
+
 ## Track: attention-matching-kv-compaction
 <!-- gate: none -->
 
@@ -969,7 +905,7 @@ Online compaction (repeated 50% compactions preserving reasoning state) opens a 
   - [x] **AM-PORT-2B** [inference] (GPU) EA/L4 compression-ratio ladder on the 27B (row `am-port-ea-ladder-gpu-20261119`, gpu-q3, priority_rank 40, est 106000 s worst case; stops far earlier when ladders end). model: Qwen3.8-27B-Q8_0, the retained AM-PORT-2 HIP build of `c9f2e34ce`, same 60 items, seed 20261119 and server flags; EA and L4 at keep_ratio 0.8 / 0.5 / 0.33 (1.25x / 2x / 3x); FULL (60/60) and the 5x point (EA 0/60, L4 0/60) are reused from AM-PORT-2, digest-pinned. Question: where does each selector stay within 5 points of full? Report accuracy per ratio and arm and the highest compression within 5 points of full per method; sizes the [EA-HYBRID-FOLD-GUARD](kernel-champion-and-promotion.md). Stop-on-answer: a method's ladder stops at its first ratio below 50% (also mid-ratio once 30/60 is unreachable); verdict LADDER_DONE when both stopped or all ratios done. Stop-on-futility: FUTILITY_INPUT (missing model/build/inputs or reused-evidence digest change), FUTILITY_RESIDENCY, FUTILITY_CONTROL (reused FULL < 90%), FUTILITY_PROTOCOL (2 units with n_evicted 0 or misaligned, or L4 n_beta_set 0 on 2 items). est 106000 s. [no-belief: new box] ✅ 2026-11-19 (rc=0 fail; am-port-ea-ladder-gpu-20261119-r2 rc=0; LADDER_DONE, no safe tested compressed ratio for EA or L4. FULL reused 60/60 (100%); within-5-point threshold 57/60 (95%). EA keep0.8: 1/32 (3.125% observed), at most 29/60; L4 keep0.8: 45/60 (75%); L4 keep0.5: 2/33 (6.06% observed), at most 29/60. Partial arms stopped by preregistered below50-unreachable rule; EA0.5/0.33 and L4 0.33 not run. Reused keep0.2: both 0/60. Results: /mnt/raid0/llm/tmp/am-port-ea-ladder-gpu-20261119/out/results.jsonl SHA256 1a73d4cd64286224534f73e5ffa0593884de0ca6ccb902e7b854cca1727b4ec5. All 125 observed units ok/aligned with nonzero evictions; L4 beta nonzero; RESULT.json reports in-run HIP mapping, KFD PID and >31GB VRAM. Descriptive screen only; EA-HYBRID-FOLD-GUARD stays open, EA_HYBRID_MIN_KEEP_RATIO=None remains required. [belief: cc])
     - *(2026-11-19)* RESULT LADDER_DONE (row -r2 rc=0 complete, same build c9f2e34ce, HIP residency proven; auto-filed `fail` = below-50 stop). FULL 60/60. EA: 0.8 = 1/32, 0.2 = 0/60. L4: 0.8 = 45/60 (75%), 0.5 = 2/33, 0.2 = 0/60. Safe keep_ratio within 5 points of full: EA NONE, L4 NONE (0.33 not run, by the stop rule). EA_HYBRID_MIN_KEEP_RATIO stays None (sent to bb); EA-HYBRID-FOLD-GUARD stays open. Evidence: `/mnt/raid0/llm/tmp/am-port-ea-ladder-gpu-20261119/out/RESULT.json`. Next: AM-PORT-3 (real AM refit). [no-belief: ladder result, no claim-tuple adapter for this row]
     - *(2026-11-19)* EA n_beta_set=0 diagnosis (autokernel): BY DESIGN, not a bug. Expected Attention has no bias term, and AM-PORT-1 wires beta only into `uniform_l4`. EA evicts the intended ~20% at keep 0.8. Failures are digit-dropped near-misses ('6910' for 6906140): scattered per-token eviction removes the needle's single-digit tokens. L4 at 0.5 (stride 2) fails the same way (0/8, '690614'). L4@0.8 = 45/60 only because stride 1 makes it contiguous truncation of the last ~20% of the middle. No fix, no rebuild. Interim: EA@0.8 1/32 (below50 certain, EA ladder stopped); L4@0.8 45/60 (75%, not within 5 pts). Original row ended rc75; continuation `am-port-ea-ladder-gpu-20261119-r2` (same build/checkpoint) published for the L4@0.5 tail. Safe EA ratio: NONE, sent to bb. [no-belief: interim, verdict pending r2]
-  - [ ] **AM-PORT-3** [inference] (GPU + non-inference) NNLS beta and OLS value refit from dumped queries. model: Qwen3.8-27B Q8_0 (16 global-attention layers) on C14 + AM-PORT-1 branch. Dump per-layer, per-KV-head reference queries from a calibration pass, fit beta (NNLS, log of clamped lstsq) and C2 (OLS) offline with `attention_matching.py` mathematics, then load per-layer-head beta and rewritten V into the cache (needs a per-layer/head bias carrier beyond the per-cell beta of PORT-1). Question: does the fitted compact cache reproduce the full-KV attention output (cosine vs the numpy reference per layer) and survive a 32K decode? Stop-on-answer: per-layer output cosine >= 0.95 at 5x on >= 14 of 16 layers and the compact cache decodes without refusal. Stop-on-futility: the carrier cannot hold per-layer-head beta without a graph change that regresses default-off decode (any default-off throughput or KLD change), or queries cannot be captured on the hybrid within the 36 GiB budget. [no-belief: new box]
+  - [x] **AM-PORT-3** [inference] (GPU + non-inference) NNLS beta and OLS value refit from dumped queries. model: Qwen3.8-27B Q8_0 (16 global-attention layers) on C14 + AM-PORT-1 branch. Dump per-layer, per-KV-head reference queries from a calibration pass, fit beta (NNLS, log of clamped lstsq) and C2 (OLS) offline with `attention_matching.py` mathematics, then load per-layer-head beta and rewritten V into the cache (needs a per-layer/head bias carrier beyond the per-cell beta of PORT-1). Question: does the fitted compact cache reproduce the full-KV attention output (cosine vs the numpy reference per layer) and survive a 32K decode? Stop-on-answer: per-layer output cosine >= 0.95 at 5x on >= 14 of 16 layers and the compact cache decodes without refusal. Stop-on-futility: the carrier cannot hold per-layer-head beta without a graph change that regresses default-off decode (any default-off throughput or KLD change), or queries cannot be captured on the hybrid within the 36 GiB budget. [no-belief: new box] ✅ 2026-11-20 [belief: cc] fail rc=0; **AM-PORT-3** [inference] (GPU + non-inference) NNLS beta and OLS value refit from dumped queries. model: Qwen3.8-27B Q8_0 (16 global-attention layers) on C14 + AM-PORT-1 branch. Dump per-layer, per-KV-head reference queries from a calibration pass, fit beta (NNLS, log of clamped lstsq) and C2 (OLS) offline with `attention_matching.py` mathematics, then load per-layer-head beta and rewritten V into the cache (needs a per-layer/head bias carrier beyond the per-cell beta of PORT-1). Question: does the fitted compact cache reproduce the full-KV attention output (cosine vs the numpy reference per layer) and survive a 32K decode? Stop-on-answer: per-layer output cosine >= 0.95 at 5x on >= 14 of 16 layers and the compact cache decodes without refusal. Stop-on-futility: the carrier cannot hold per-layer-head beta without a graph change that regresses default-off decode (any default-off throughput or KLD change), or queries cannot be captured on the hybrid within the 36 GiB budget. [no-belief: new box]; result /mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-capturefix-row-20261120/out/native/RESULT.json
     - 2026-11-19 engineering increment: landed `scripts/benchmark/am_port3/fit.py`, the per-layer/KV-head offline log-clamped-lstsq beta and OLS C2 solver, with float32 export, capture/carrier content binding, disjoint held-out query IDs and cosine/L2 diagnostics. Seven model-free tests PASS, including an analytic 5x duplicate-cache case (beta=log(5), original values recovered, held-out cosine >0.999999) and an independent normal-equations oracle. Native capture, graph carrier, cache loading and the bounded GPU row remain to implement; this is no real-model quality/decode verdict and does not close AM-PORT-3. Shared native cells require identical retained indices across all layers/heads; independent head selections cannot be loaded. Contract and immutable reference locator: `scripts/benchmark/am_port3/README.md`. [belief: cc]
     - 2026-11-19 native-capture increment: `scripts/benchmark/am_port3/native_capture.h` implements bounded optional evaluation-callback capture of the flash node Q, actual dequantized cached K/V, padded mask and output without graph operations. Real ggml CPU scheduler test PASS with noncontiguous Q, Q8_0 K/V, 4 query/2 KV heads; captured-vs-numpy relative L2 0.0001949131192, max abs 0.0005026979804; active/inactive output byte parity in that model-free test. Duplicate ubatches, unknown/missing layers and total-byte-limit violations refuse completion; atomic COMPLETE marker required. Eleven Python tests PASS. Native model source pinned to c9f2e34ce via BUILD.json, public header blobs checked and CPU library digest verified. Evidence stays in `/mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-native/TEST.json` (SHA-256 `8f8ddea46f8af66f4dae2f11a68916a1d82a52a0628a5e511b4efcd1b84f085d`) and `final-test/CHECK.json` (SHA-256 `e10c29a109e08d1610ae1a76ec6e67347c5d0f70292e54041f69c046daf4e975`); code/contract in the lane, no source trees or binaries copied. Capture driver, query-position/NPZ conversion, shared selection, graph bias/value loading and real-model row still open; no model/GPU quality verdict. [belief: cc]
     - 2026-11-19 carrier increment: `scripts/benchmark/am_port3/native_carrier.h` implements standalone per-layer/query-head beta graph inputs (contiguous GQA groups, causal/padding mask preserved, default-off mask pointer unchanged) and validation-atomic C2 writes to F32/F16/Q8_0 raw cache storage. Real CPU scheduler test PASS for two layers, 4Q/2KV GQA and sparse physical rows: maximum attention absolute error versus independent oracle `4.62855e-06`, distinct layer-beta output effect `1.71148`, max Q8_0 C2 round-trip error `0.00484622`. Untouched rows remain byte-identical; malformed bindings, nonfinite inputs, inconsistent selections and late F16 overflow refuse without writes. Eleven existing Python tests PASS. This is a standalone native primitive, not an installed kernel patch: context/graph-input integration, actual native cell bindings, calibration driver/NPZ conversion, GPU support/budget and full-model quality/decode verdict remain open. Contract and reproduction: `scripts/benchmark/am_port3/README.md`; native test evidence in `/mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-carrier/TEST.json`. [belief: cc]
@@ -1010,20 +946,6 @@ Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust
 
 **Already fixed in this pass (2026-08-20), recorded so the reasoning is not re-derived:**
 
-- [x] **KV-0a — Every KV slot save was failing; fixed.** ✅ 2026-08-20 `prefix_cache.py` built the filename with `os.path.join(...)`,
-  producing a `/`-containing string; llama-server rejects those via
-  `fs_validate_filename(allow_subdirs=false)` before it concatenates `--slot-save-path`. Proof it
-  never worked: the 75 retained slot artifacts on disk are **all** `kv_migrate_*` from the sibling
-  `concurrency_aware.py` path, and there are **zero** `slot_<id>_<hash>.bin` files anywhere. Fixed by
-  emitting a bare filename (`_slot_state_filename`, mirroring `concurrency_aware._slot_filename`).
-  Two compounding defects fixed alongside: the restore path did a **client-side** `os.path.exists()`
-  on a **server-side** filename, and both backend methods caught `httpx.RequestError`, which does
-  **not** cover `HTTPStatusError` — so a 4xx propagated instead of returning `False` as documented.
-- [x] **KV-0b — Roles sharing one llama-server were evicting each other; fixed.** ✅ 2026-08-20 Under `shared_with`, several roles
-  resolve to one physical server, but the legacy loop built a **separate `PrefixRouter` per role**,
-  each allocating `id_slot` in `[0, num_slots)` from its own private LRU — so two roles both emitted
-  `id_slot=0` and silently clobbered each other, unobservably. Now one router per physical URL
-  (`_router_for`), matching the shape the fleet layer already had. 3 regression tests added.
 - [x] **KV-0c — `radix_cache.py` deleted** (480 lines + shim). ✅ 2026-08-20 Verified dead: its only two importers were the
   file importing itself. It also carried an unexercised stale-slot bug and a docstring claiming path
   compression it did not implement. 20 tests that exercised the unwired module went with it — green
@@ -1078,11 +1000,13 @@ Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust
     on-device, identical to full attention, because they hold the FULL cache) and therefore cannot
     serve this handoff's 10× KV-**memory** objective at all — they leave the candidate set.
     `intake-1334#05`.
-- [x] **KV-5 — Correct `wiki/kv-cache.md`** ✅ 2026-08-20 (done in the wrap-up wiki sweep) so KVFlow is named as the ORIGIN of workflow-aware KV
-  residency, with its own venue (NeurIPS 2025), its own 1.11× ablation and its Apache-2.0
-  implementation — not solely as the denominator of PBKV's self-reported 1.26×. Note also that 1.26×
-  **on static workflows** means KVFlow retains most of the gain on declared topologies, which is
-  exactly what our delegation path is; filing it as "beaten" inverts the reading for our own use case.
+
+
+### Done
+
+- [x] **KV-0a** ✅ 2026-08-20 `prefix_cache.py` built the filename with `os.path.join(...)`,
+- [x] **KV-0b** ✅ 2026-08-20 Under `shared_with`, several roles
+- [x] **KV-5** ✅ 2026-08-20 (done in the wrap-up wiki sweep) so KVFlow is named as the ORIGIN of workflow-aware KV
 
 ## Track: multiscreen-attention-evaluation
 <!-- gate: none -->
@@ -1838,14 +1762,18 @@ The hybrid/recurrent `can_shift` guard (V11-098, `experimental/hybrid-cache-reus
 #### Progress checklist
 
 - [x] StreamingLLM sink+window scaffold landed in epyc-llama (commit 632ce0f92, disabled by default) ✅
-- [x] Current-v7 source/build surface reconciled at `111bff89d` + `cf051d3e1` on `fork/experimental-v7-refresh-20260716` ✅ 2026-07-18
-- [x] CPU mechanical smoke completed for baseline and StreamingLLM lanes; both passed mechanics but failed prompt-quality, so no admission/performance claim ✅ 2026-07-18
-- [x] Pre-v7 floor/admission sweep completed on Qwen3-1.7B Q8 CPU-only: all arms exited cleanly, no sink/window cluster passed quality+speed floor, and no KV cluster is admitted before v7 promotion ✅ 2026-07-20
 - **[declined: main-inf22 2026-11-07: futile on the current stack — (1) the pre-v7 floor sweep already returned admit_cluster=false (no sink/window arm passed quality, speed 0.990-1.011x); (2) the 2026-09-07 Table-4 ruling reduced the question to accuracy only; (3) both re-scoped models are hybrid GDN and champion C7r `62cb6a6af` disables server ctx_shift when `llama_memory_can_shift` is false (tools/server/server-context.cpp:1616), and the sink+window path rides ctx_shift, so the sweep needs an attention-only eviction workaround (2-4 days) before it can run on them; kept closed per memo (/mnt/raid0/llm/tmp/inf22-strategy-memo-20261107/MEMO.md Q5); re-open triggers: TOC-CMP-4 shows compaction collapse on 27B, a >262k streaming workload, or KV-reduction reprioritised; (4) zero of 72 cells ran in 2.5 months. No decisive measurement kept for this track]** Run 4-axis inference sweep: 3 workloads (retrieval/reasoning/dialogue) x 3 budgets (25/50/75%) x 2 models — *(2026-08-25: 72-cell design + daemon built and launched by the INF-51 churn session — 3 workloads × 3 budgets × 3 K_win {1024,2048,4096} × 2 models + 6 full-KV baselines + 12 gemma4 F16 controls; harness extended from streamingllm_floor_sweep.py; SWA finding: gemma4 needs `--swa-full` on v9 or context-shift silently disables. Zero cells completed — lease/region held by inf42-g1; daemon reconciled 2026-08-27, relaunch gated on q0-q3 release.)* Read-out (absorbs the two rows below): evaluate <= 10% loss at 50% budget and <= 25% at 25% per workload, track per-head attention entropy, then apply the cluster-prioritization gate (demote LU-KV/KVP/ForesightKV or promote LU-KV on the floor).
   - Sweep design REWRITTEN 2026-09-07 — before any cell runs, re-read § Spike Plan → *Binding design constraints* (generation ≥4×W, `-c = prefix + W + chunk`, W ∈ {2048,4096,8192} with W=2048 RETAINED, AIME-24+25 pooling, workload-split hypothesis + sink+window control arm, instrument-mismatch rule, paired-recovery reporting) and § Research Intake Update — 2026-09-07. Box unchanged; the design under it is not. (re-scoped 2026-11-03 from 2 models + gemma4 F16 controls: gemma4 deleted; now Qwen3.8-27B + Qwen3.6-35B-A3B-MTP-Q8_0, gemma4 controls dropped)
 - **[declined: ws58 2026-11-03 content-review: merged into the sweep as its read-out]** Evaluate success criteria (<=10% loss at 50% budget, <=25% at 25%) per-workload, track per-head attention entropy
 - **[declined: ws58 2026-11-03 content-review: merged into the sweep as its decision step]** Apply cluster-prioritization gate: demote LU-KV/KVP/ForesightKV or promote LU-KV based on floor
-- [x] Resolve user questions: K_sink/K_win sweep values, F16 KV scope, PBKV order-of-operations ✅ 2026-08-25 — **operator decisions**: (1) full K_win sweep {1024, 2048, 4096} — 54 streaming cells; (2) F16 KV control on gemma4 only (smallest model); (3) PBKV runs in parallel — no sequential gate (lease/region serialization prevents concurrency poisoning; no PBKV spike currently in flight, so the floor still lands first de facto)
+
+
+### Done
+
+- [x] **—** ✅ 2026-07-18
+- [x] **—** ✅ 2026-07-18
+- [x] **—** ✅ 2026-07-20
+- [x] **—** ✅ 2026-08-25 — **operator decisions**: (1) full K_win sweep {1024, 2048, 4096} — 54 streaming cells; (2) F16 KV control on gemma4 only (smallest model); (3) PBKV runs in par
 
 ## Track: triattention-kv-selection
 <!-- gate: none -->
@@ -2023,3 +1951,7 @@ Execution controls and acceptance: [approved plan](../../research/deep-dives/lsa
 
 
   - Takeover checkpoint 2026-11-05 (operator Codex session agent:3 hit its usage limit 11-04 ~23:23Z; goal "Assess latent attention transplant" stalled, not complete). Filed: all three 21bebb spec-guard rows (server-build, probe-compile, build) are ended+complete+FILED pass. NOT run: the 32K GPU pair `lsa-32k-dev00-onepair-2ace-20261104` (spec `/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-32k-dev00/spec.DRAFT.json`); no ready row exists and its keeper dry run FAILED at 23:23:13Z (`compute-flags/dryrun/<id>/FAIL-1.json`, `partial-native-incomplete`). Mechanical cause: `smoke_predicate.py` is mode 0644 and the keeper runs the predicate via `bash -c <path>` (rc=126 permission denied), although the smoke probe itself passed (valid synthetic HIP record, 346 MiB own-PID VRAM). Fix: `chmod +x` that file (or set `smoke_predicate` to `python3 <path>`), then `python3 /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py <spec.json>`. The draft spec notes say do not publish until readiness is established, and the `STOP.reviewed-20261104T2307Z` fence remains (job.sh exits 75 on a real run until the owner removes it after shorter-timing and exact-cell 32K capacity approval). Open scientific item: full Qwen3.8-27B model+KV fit at 32K is unproven (CPU selector/runtime controls passed). Row decision rule: futility-only; one dense-then-PCA pair, stop PCA at prompt_progress > 1.10x dense prompt_ms; no speedup or population claim.
+
+## History
+
+- 2026-11-20 compacted 19 ticked box(es) older than 30 d -> [long-context-program-history-2026-11-20.md](../archived/long-context-program-history-2026-11-20.md) (handoff_compact.py)

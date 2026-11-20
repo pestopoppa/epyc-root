@@ -1,33 +1,46 @@
 {
   "by_type": {
-    "docs": 505,
+    "docs": 509,
     "handoff-active": 33,
     "handoff-blocked": 1,
-    "handoff-completed": 377,
-    "progress": 1425,
-    "research": 335
+    "handoff-completed": 380,
+    "progress": 1426,
+    "research": 366
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-18T15:49:03Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 3,
+      "added": 39,
+      "changed": 7,
       "removed": 0
     },
-    "at": "2026-11-20T10:31:17Z",
+    "at": "2026-11-20T12:56:49Z",
     "scope_paths": [
-      "docs/reports/ea-27b-evict-audit-20261120.md",
+      "docs/reports/df2-dtree-p5-27b-20261120.md",
+      "docs/reports/df2-dtree-p5-a3b-20261120.md",
+      "docs/reports/df2-dtree-scheduler-diag-20261120.md",
+      "docs/reports/df2-wvsk-opgate-verdict-20261120.md",
       "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/kernel-champion-and-promotion.md",
+      "handoffs/active/long-context-program.md",
+      "handoffs/active/rocm-kernel-authoring.md",
       "handoffs/active/speculative-decoding.md",
-      "progress/2026-11/2026-11-19-autokernel.md"
+      "handoffs/completed/autokernel-akx-program-completed-through-2026-11-20.md",
+      "handoffs/completed/autokernel-loop-completed-through-2026-11-20.md",
+      "handoffs/completed/speculative-decoding-ak-dtree-completed-through-2026-11-20.md",
+      "progress/2026-11/2026-11-19-autokernel.md",
+      "progress/2026-11/2026-11-20-autokernel.md",
+      "research/deep-dives/intake-digests/2026-11-20-ids-2718-2746.md",
+      "research/deep-dives/intake-kspec-20261120"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-20T10:31:17Z",
+  "scan_time": "2026-11-20T12:56:49Z",
   "schema_version": 1,
-  "source_set_hash": "b5a12f582177996636d665e2c7e64c21cab0f78575f96e871b4112845e30190d",
+  "source_set_hash": "96b77409190e2203ca61b21a220ba23d5751cf3fe7d6895fe1894a0da9a5902a",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -38,18 +51,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9e1c1482d8f5a8d01d833ae5c310655793e35b80fd749bf4e2076ca47045af10",
-      "modified": "2026-11-20T10:26:33Z",
+      "content_hash": "b00e497aa88db831e91714d145d1b79957efd9d41ac77619ecdb3b04fc68ce8e",
+      "modified": "2026-11-20T12:40:58Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 402351,
+      "size": 405861,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
     {
-      "content_hash": "d2aed5fcfbe385c1adb42c6a5eb02ff0cbe51dba61603ff2da827e562808d2fb",
-      "modified": "2026-11-20T10:26:33Z",
+      "content_hash": "b01b290b7cf71fbb9b76a63964e85cb81fef46e0be4cd46cc53bbcd458e373cf",
+      "modified": "2026-11-20T12:56:09Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1219359,
+      "size": 1227335,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -134,10 +147,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ae722e64ff70ab3400f328c71db6748e27fa64015253a761bf52e84ca6a7807d",
-      "modified": "2026-11-19T09:29:25Z",
+      "content_hash": "32b6e630c3c517575b23c2c714fc5fdf3a0be26c47379eacc2ac48bc395f8fb9",
+      "modified": "2026-11-20T12:56:09Z",
       "path": "handoffs/active/kernel-champion-and-promotion.md",
-      "size": 728837,
+      "size": 739152,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -158,10 +171,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cb417cf9c2125005ee02848aa15d7216f7def0d6158c18511b35f218d177c350",
-      "modified": "2026-11-19T09:30:41Z",
+      "content_hash": "db73cb6c0a79601b4fd5b78ab44d48032523ef86fc302542983cc52cac8e9b05",
+      "modified": "2026-11-20T12:40:58Z",
       "path": "handoffs/active/long-context-program.md",
-      "size": 357988,
+      "size": 404713,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -206,10 +219,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "67d195864b287a18b72b153260d92bfa320b7bcbd7454f49fa66947128844fd3",
-      "modified": "2026-11-18T15:40:34Z",
+      "content_hash": "9faac249b36a58b7b04710ed366de71b8564ebeff923b2e90d6ac9a5b5e720a7",
+      "modified": "2026-11-20T12:56:09Z",
       "path": "handoffs/active/rocm-kernel-authoring.md",
-      "size": 593017,
+      "size": 607844,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -222,10 +235,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f3a98dbf7cbac31fe3962ab1cf1eef555c2b5ab4b7a3bf43deb1a551b486e0c2",
-      "modified": "2026-11-20T10:27:46Z",
+      "content_hash": "209aca4aa3f61be6e16838235566689a64df43c1ab78270c2e953b3725f4c714",
+      "modified": "2026-11-20T12:56:15Z",
       "path": "handoffs/active/speculative-decoding.md",
-      "size": 501727,
+      "size": 536053,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -422,6 +435,14 @@
       "type": "handoff-completed"
     },
     {
+      "content_hash": "2cb8ce6ee6bb838885d279e672288ed8b69765acb68985e66665298bb90cd749",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "handoffs/completed/autokernel-akx-program-completed-through-2026-11-20.md",
+      "size": 217834,
+      "title": "AutoKernel AKX program \u2014 completed ledger through 2026-11-20",
+      "type": "handoff-completed"
+    },
+    {
       "content_hash": "2f77435ad63cc27a11919601c958859dd004f28590a2a02aa4e67bda4234074f",
       "modified": "2026-11-18T15:37:08Z",
       "path": "handoffs/completed/autokernel-all-devices-all-dimensions.md",
@@ -451,6 +472,14 @@
       "path": "handoffs/completed/autokernel-cross-workload-keep-gate.md",
       "size": 695,
       "title": "AutoKernel Cross-Workload Keep Gate \u2014 census, blast-radius screen, multi-workload non-regression",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "3e42c32ba0a3579e3cc504d42beb8db07f94d1cdcf60636e63964dbc24e9f864",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "handoffs/completed/autokernel-loop-completed-through-2026-11-20.md",
+      "size": 733495,
+      "title": "AutoKernel research loop \u2014 completed ledger through 2026-11-20",
       "type": "handoff-completed"
     },
     {
@@ -2998,6 +3027,14 @@
       "type": "handoff-completed"
     },
     {
+      "content_hash": "dc5be4e49411d2fa7a76c27eb896b5f13e434c5512c16ccbe40d81aa118bc42f",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "handoffs/completed/speculative-decoding-ak-dtree-completed-through-2026-11-20.md",
+      "size": 11429,
+      "title": "Speculative decoding, AK-DTREE section \u2014 completed ledger through 2026-11-20",
+      "type": "handoff-completed"
+    },
+    {
       "content_hash": "a78364a6a363ef0c376ac5b7ed5858b3f8a3acc94d4300d41fc0dc3a778f6098",
       "modified": "2026-11-18T15:37:08Z",
       "path": "handoffs/completed/ssm-checkpoint-speculation.md",
@@ -4963,6 +5000,254 @@
       "path": "research/deep-dives/intake-digests/2026-11-17-ids-2675-2693.md",
       "size": 42136,
       "title": "Intake dive digest \u2014 2026-11-17, intake-2675#record .. intake-2693#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "95ddc1284adc718cfdf57db3a2e3ed8c381d3282045d23aa6a2e35abaa50bfd4",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-digests/2026-11-20-ids-2718-2746.md",
+      "size": 100821,
+      "title": "Intake dive digest \u2014 2026-11-20, intake-2718#record .. intake-2746#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "deb3da9ba9ce1cd49ddcab1b64cc0a0912f724555dd712d0ec9ab5c247e0b1d7",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2718.md",
+      "size": 3361,
+      "title": "llama.cpp PR #32613: Q8_0 - Block Interleaving Implementation for x86 SIMD (AVX512/AVX2)",
+      "type": "research"
+    },
+    {
+      "content_hash": "f7192bc203fc50abefead41583318335c49ee7a4596ab02fd34c786d90f49169",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2719.md",
+      "size": 5122,
+      "title": "llama.cpp PR #32505: CUDA: implement support for duplicate expert IDs",
+      "type": "research"
+    },
+    {
+      "content_hash": "c8873355f33a88b0874cc9bef7aa6ccd192a3b41a775e4711a1d7a0a0354006b",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2720.md",
+      "size": 3083,
+      "title": "llama.cpp PR #32266: ggml-cuda : hip few mmq on non wmma arch",
+      "type": "research"
+    },
+    {
+      "content_hash": "4c14fcdbdf357b0778341838300252fe7c04e051971806225156db329fa5684f",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2721.md",
+      "size": 3844,
+      "title": "NariQ: Sub-3-Bit Quantization for Long-Horizon Agentic Tasks",
+      "type": "research"
+    },
+    {
+      "content_hash": "1f5fd92e54de066dacd3ba08af178e9d45f4d44f240aee45c3cb503275062429",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2722.md",
+      "size": 1703,
+      "title": "nari-labs/Qwen3.8-27B-NariQ-GGUF (model card)",
+      "type": "research"
+    },
+    {
+      "content_hash": "70ab41289f48f29409ce4faa691c1c39283a6ef98d5f427ad1c1d1cdabaa1aa5",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2723.md",
+      "size": 3296,
+      "title": "RSIBench-Infra: Can Agents Optimize Their Own Training and Inference Infrastructure at Production Scale?",
+      "type": "research"
+    },
+    {
+      "content_hash": "45cd6ef8ae8f7b994e85f72235c1705f7e0fafe8d37291e2ff3baf1361bb8bd4",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2724.md",
+      "size": 3371,
+      "title": "ROCm 10.2.0: Advancing Performance, Stability, and Developer Experience (AMD blog)",
+      "type": "research"
+    },
+    {
+      "content_hash": "882e8f10230f0ffd9daccafd5561c5264759c5e06eba0cf258c60b70744719fc",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2725.md",
+      "size": 4005,
+      "title": "NarrowSpec: Draft Hidden Width Need Not Match the Target in Speculative Decoding",
+      "type": "research"
+    },
+    {
+      "content_hash": "0ef4676b50c8020a42fd36e0bf490969aa4f9e66bcee2f48515a869bcfd6dde9",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2726.md",
+      "size": 3865,
+      "title": "Memory-Efficient Speculative Decoding with Quantized Draft KV Cache",
+      "type": "research"
+    },
+    {
+      "content_hash": "bb9005be3c4bb7d7621460d9b5a04ac5224934ec31c8c5d73faf2d005544db12",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2727.md",
+      "size": 3834,
+      "title": "Efficient and Robust Drafting with Multi-Token Prediction",
+      "type": "research"
+    },
+    {
+      "content_hash": "ca34db4ab4c519cee4d33f80517f2672f4a0f2eb10fa01540d8aa254f0e02c10",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2728.md",
+      "size": 4040,
+      "title": "Budget Internalization: Fixed-Budget RLVR Trades Test-Time Scaling for In-Budget Accuracy",
+      "type": "research"
+    },
+    {
+      "content_hash": "9dba8297da84d68138e686f63ce11a4c771bea0f701f7afdfe284615ec5b30dd",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2729.md",
+      "size": 3577,
+      "title": "Forget Freely, Grep Later: Lossless, Index-Free Memory for Long-Horizon LLM Agents",
+      "type": "research"
+    },
+    {
+      "content_hash": "8c8f607712b2fbd5bf1041e7c7b4dbc342a80990d239279e8f27199761e6a9e9",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2730.md",
+      "size": 3186,
+      "title": "QDA: Closed-Loop LLM Quantization Design with Agents",
+      "type": "research"
+    },
+    {
+      "content_hash": "ed832adfc6f89089a6efb14d0db3a41c7f17e03b321020d3d3b88bfd98ec4e07",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2731.md",
+      "size": 2624,
+      "title": "On-Policy Morphing into Hybrid Attention Models",
+      "type": "research"
+    },
+    {
+      "content_hash": "6ac1ea4fe3cc526f311033881736043b3c27284b24849d768963502510c4bd58",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2732.md",
+      "size": 3702,
+      "title": "SOL-ExecBench: Speed-of-Light Benchmarking for Real-World GPU Kernels Against Hardware Limits",
+      "type": "research"
+    },
+    {
+      "content_hash": "567a6ef22784a6dd187d7d266ddd0c90b128c67b95b7c83123b8a0b77366346f",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2733.md",
+      "size": 2731,
+      "title": "nari-labs/nari-llama.cpp (NariQ llama.cpp fork)",
+      "type": "research"
+    },
+    {
+      "content_hash": "d302f903715696abcd91255614e041a17ebd80565328e248fc19ab39ca1ad415",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2734.md",
+      "size": 2527,
+      "title": "Skills catalog - AMD Skills documentation",
+      "type": "research"
+    },
+    {
+      "content_hash": "ec82eea5fe9623b690c58597e827ffcb171d9054317fc304147c4038d7c9cc97",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2735.md",
+      "size": 1859,
+      "title": "FlyDSL documentation (landing page)",
+      "type": "research"
+    },
+    {
+      "content_hash": "8013681877146255801abda0147e40369faa5d9ff6cbddf73491ec4d0706d6d0",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2736.md",
+      "size": 1562,
+      "title": "FlyDSL: Expert GPU Kernel Development with the Ease of MLIR Python Native DSL on AMD GPUs",
+      "type": "research"
+    },
+    {
+      "content_hash": "e54ce4a36902b54654366308639e9d483f9b32f0812a0bafeb17d547213b2b07",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2737.md",
+      "size": 2963,
+      "title": "When Your Agent Opens the Chat App: Agent-Controlled Search over Raw Chat Logs Rivals Structured Memory",
+      "type": "research"
+    },
+    {
+      "content_hash": "45f65e4550f6334c1d09e12d895c16c83c7660af17e66e4412f3b29aa54dc4b3",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2738.md",
+      "size": 2555,
+      "title": "Is Grep All You Need? How Agent Harnesses Reshape Agentic Search",
+      "type": "research"
+    },
+    {
+      "content_hash": "472fe17ff4ead91992410fdac4761a81a94d1a310ac6c5e778e29d6f0f7635c2",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2739.md",
+      "size": 4123,
+      "title": "Windowed-MTP: Removing the Full-Context Draft-KV Tax at Million-Token Context",
+      "type": "research"
+    },
+    {
+      "content_hash": "efd3d00c7bd1801dc347e562a498d8f0e9476640f7037bf647fdd7750562f83d",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2740.md",
+      "size": 3136,
+      "title": "SlimSpec: Low-Rank Draft LM-Head for Accelerated Speculative Decoding",
+      "type": "research"
+    },
+    {
+      "content_hash": "ad0fa49ef3bcde7db4a0aea41dcc39c2956e71021ba75e357c84dceb4fcf4033",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2741.md",
+      "size": 3029,
+      "title": "DynaSpec: Context-aware Dynamic Speculative Sampling for Large-Vocabulary Language Models",
+      "type": "research"
+    },
+    {
+      "content_hash": "981d6170b539d99a3757c4620736444be50b838b35ce5f4e64d67a0679d34a00",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2742.md",
+      "size": 2888,
+      "title": "NVlabs/SOLAR: Speed of Light Analysis for ML Model Runtime",
+      "type": "research"
+    },
+    {
+      "content_hash": "babffa286b8ef78579cef7ad97de11bcdcdb729ec59ae0165838fab829eab417",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2743.md",
+      "size": 2707,
+      "title": "BM25 Wins at Scale: A Scaling Study of Retrieval-Augmented Generation Paradigms",
+      "type": "research"
+    },
+    {
+      "content_hash": "59a1c3caffc487967e51f877674503bf4adeb7ff816a144705805436c8137740",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2744.md",
+      "size": 3159,
+      "title": "Attention Drift: What Autoregressive Speculative Decoding Models Learn",
+      "type": "research"
+    },
+    {
+      "content_hash": "0ca38607c24b4fc1756cb6a2e0d5c051dd4dc553a3a4c06318a16ea9347b9d68",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2745.md",
+      "size": 2863,
+      "title": "amd/skills: Official AMD catalog of AI agent skills",
+      "type": "research"
+    },
+    {
+      "content_hash": "7feaa7107feddfd685d9e10751688c4df8f5e511a28b378dbc29a7174eb1dad4",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/intake-2746.md",
+      "size": 2872,
+      "title": "MOAT: Migration Orchestration via Automated Translation (AMD-Ecosystem/moat)",
+      "type": "research"
+    },
+    {
+      "content_hash": "05426016d7676c3e934d3448fc4c024e278f076d28dc2dfa718e18b260c81624",
+      "modified": "2026-11-20T12:40:58Z",
+      "path": "research/deep-dives/intake-kspec-20261120/run-summary.md",
+      "size": 5023,
+      "title": "Research intake intake-kspec-20261120 (kernel PRs, NariQ, spec-decode draft heads, harness)",
       "type": "research"
     },
     {
@@ -17214,10 +17499,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "5668b0c2661e2f38cfb82201a19368cbbcec09f20e38a361bc20809cb836701c",
-      "modified": "2026-11-20T10:26:12Z",
+      "content_hash": "591c634ab1083df0517013e6553b5392b30402d1f0619338a8f42edcbdba0275",
+      "modified": "2026-11-20T12:40:58Z",
       "path": "progress/2026-11/2026-11-19-autokernel.md",
-      "size": 12098,
+      "size": 15963,
       "title": "2026-11-19 \u2014 autokernel session (roster id `autokernel`, no lane: ad-hoc session in the shared clone)",
       "type": "progress"
     },
@@ -17243,6 +17528,14 @@
       "path": "progress/2026-11/2026-11-19-handoff-yarn.md",
       "size": 8510,
       "title": "2026-11-19 \u2014 handoff yarn",
+      "type": "progress"
+    },
+    {
+      "content_hash": "eed6aa4db8aa9811a39bc705a068fec95dcf4408f70d6e98cf0955c5ecc8f3f7",
+      "modified": "2026-11-20T12:56:09Z",
+      "path": "progress/2026-11/2026-11-20-autokernel.md",
+      "size": 3999,
+      "title": "2026-11-20 autokernel (wrap-up 5; covers work since wrap-up 4 root 83387347a and the cadence sweep a8b94439f)",
       "type": "progress"
     },
     {
@@ -20214,6 +20507,38 @@
       "type": "docs"
     },
     {
+      "content_hash": "c79b5a0a7ad720314372dba08c9b169add134d9c99807abbee01cb44b1bcf2af",
+      "modified": "2026-11-20T12:40:57Z",
+      "path": "docs/reports/df2-dtree-p5-27b-20261120.md",
+      "size": 2363,
+      "title": "DTREE P5 27B: incomplete first pair (2026-11-20)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "307ae8057a6fa436ac6ad4779a92ad01a79c232e23dbebfd24e5eff1cc3de624",
+      "modified": "2026-11-20T12:40:57Z",
+      "path": "docs/reports/df2-dtree-p5-a3b-20261120.md",
+      "size": 2666,
+      "title": "DTREE P5 A3B: below-baseline futility (2026-11-20)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "31cef1e1f50b15c327f9091293fade4ad1775700e05909dad4dc36e6ca491e91",
+      "modified": "2026-11-20T12:40:57Z",
+      "path": "docs/reports/df2-dtree-scheduler-diag-20261120.md",
+      "size": 8585,
+      "title": "Batch-tree scheduler diagnostic, 2026-11-20",
+      "type": "docs"
+    },
+    {
+      "content_hash": "0d53b122d0a49ee3376ea5c9ae4cd85e305dfac321caa2316e01c5a8cbfeae46",
+      "modified": "2026-11-20T12:40:57Z",
+      "path": "docs/reports/df2-wvsk-opgate-verdict-20261120.md",
+      "size": 1952,
+      "title": "WVSK op-level correctness verdict, 2026-11-20",
+      "type": "docs"
+    },
+    {
       "content_hash": "7707f5c71b2a78f8c1cc6ab9fc30e947d0bee963eade2af239602f24eb585c4c",
       "modified": "2026-11-19T08:54:37Z",
       "path": "docs/reports/dripreview12-futility-20261119.md",
@@ -21438,7 +21763,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2676,
+  "total_new": 2715,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

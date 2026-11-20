@@ -124,6 +124,15 @@ def fetch_origin(repo):
         pass
 
 
+def current_handoff_task(m, repo=None):
+    """The manifest's handoff_task resolved through handoff_ref (C4 .moves.jsonl): a box moved by a track split since
+    publish is recorded against the file it lives in NOW, so the verdict routes to the new owner."""
+    ht = (m or {}).get("handoff_task")
+    if not isinstance(ht, str) or not ht.strip():
+        return ht
+    return handoff_ref.repoint(ht, root=repo, sha=(m or {}).get("handoff_task_sha"))
+
+
 def verify_receipt(repo, receipt, rid, lineage, ref="origin/main", fetch=True):
     """`<commit>:<handoff>#<BOX-ID>` -> (ok, info dict | error str). The commit must (1) be an ancestor of origin/main,
     (2) touch the named box line in the handoff, (3) leave a box line that mentions the row id or its lineage."""
@@ -408,7 +417,7 @@ def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answe
            "at": now_iso(), "outcome_class": "NO-RESULT", "phase": "filing", "compute_burned": rc == 0, "root_cause_family": None,
            "verdict": {"status": "filed", "kind": verdict.lower(), "result": verdict, "superseded_by": superseded_by},
            "row_verdict": verdict, "superseded_by": superseded_by, "answer": answer, "rc": rc, "end_line": endline,
-           "end_record": ep, "source": end_source(ep), "handoff_task": m.get("handoff_task"), "manifest": mp, "filed_by": by, "reason": note, "machine_checkable": False}
+           "end_record": ep, "source": end_source(ep), "handoff_task": current_handoff_task(m), "manifest": mp, "filed_by": by, "reason": note, "machine_checkable": False}
     summary = f"FILED {rid}: {verdict}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "") + f" rc={rc} by={by}" + (" source=smoke-complete" if end_source(ep) == "smoke-complete" else "") + (f" ({note})" if note else "")
     if not write_filed(flags, rid, summary, rec):
         return "NOOP"
@@ -498,7 +507,8 @@ def supersede_lineage(flags, new_id=None, *, by="filing.supersede", reclaim=True
     attempt -> SUPERSEDED-BY that attempt. Ended-unfiled rows in ready/.withdrawn -> WITHDRAWN. A different family is never touched.
     -> {'superseded': [...], 'withdrawn': [...], 'noop': [...], 'skipped': [...]}"""
     mans = load_all_manifests(flags)
-    rep = {"superseded": [], "withdrawn": [], "noop": [], "skipped": []}
+    rep = {"superseded": [], "withdrawn": [], "noop": [], "skipped": [], "successor": {}}
+    sweep_by = f"{by}:sweep"   # a row this publish processes but whose successor is a different row: labelled, never the publisher's
     wd = os.path.join(flags, "ready", ".withdrawn") + os.sep
     for rid in ended_unfiled(flags):
         if rid not in mans:
@@ -509,7 +519,8 @@ def supersede_lineage(flags, new_id=None, *, by="filing.supersede", reclaim=True
             reason = _end_info(flags, rid)[2]
             mm = re.search(r"reason=superseded-by:(\S+)", reason)
             if mm:   # rowflow.withdraw recorded WHY: a predecessor withdrawn by a successor's publish is SUPERSEDED-BY it
-                r = file_terminal(flags, rid, "SUPERSEDED", by=by, superseded_by=mm.group(1), note="withdrawn by successor publish",
+                rep["successor"][rid] = mm.group(1)
+                r = file_terminal(flags, rid, "SUPERSEDED", by=by if new_id in (None, mm.group(1)) else sweep_by, superseded_by=mm.group(1), note="withdrawn by successor publish",
                                   reclaim=reclaim, no_reclaim_globs=no_reclaim_globs, dry_run=dry_run, log=log)
                 (rep["superseded"] if r == "FILED" else rep["noop" if r == "NOOP" else "skipped"]).append(rid)
                 continue
@@ -523,7 +534,8 @@ def supersede_lineage(flags, new_id=None, *, by="filing.supersede", reclaim=True
         if not pick and os.path.exists(os.path.join(flags, "grants", rid + ".complete")) and not _names_as_superseded(mans, succ, rid):
             rep["skipped"].append(rid)   # a complete result is its owner's to file; only an explicit supersedes retires it
             continue
-        r = file_terminal(flags, rid, "SUPERSEDED", by=by, superseded_by=succ, note=f"family {group_of(rid, m)}",
+        rep["successor"][rid] = succ
+        r = file_terminal(flags, rid, "SUPERSEDED", by=by if new_id in (None, succ) else sweep_by, superseded_by=succ, note=f"family {group_of(rid, m)}",
                           reclaim=reclaim, no_reclaim_globs=no_reclaim_globs, dry_run=dry_run, log=log)
         (rep["superseded"] if r == "FILED" else rep["noop" if r == "NOOP" else "skipped"]).append(rid)
     return rep
@@ -534,8 +546,13 @@ def supersede_on_publish(flags, new_id, log=print):
     try:
         globs = read_no_reclaim(flags)
         rep = supersede_lineage(flags, new_id, no_reclaim_globs=globs, log=log)
-        if rep["superseded"] or rep["withdrawn"]:
-            log(f"SUPERSEDE-FILED {new_id}: superseded={rep['superseded']} withdrawn={rep['withdrawn']}")
+        succ = rep.get("successor", {})
+        own = [r for r in rep["superseded"] if succ.get(r) == new_id]
+        if own or rep["withdrawn"]:
+            log(f"SUPERSEDE-FILED {new_id}: superseded={own} withdrawn={rep['withdrawn']}")
+        for r in rep["superseded"]:
+            if succ.get(r) != new_id:   # swept up by this publish, declared by another row: name the real successor
+                log(f"SUPERSEDE-SWEEP {r}: superseded-by={succ.get(r)} (processed during the publish of {new_id}; not its supersede)")
         return rep
     except BaseException as e:  # noqa: BLE001
         log(f"WARN supersede_on_publish {new_id}: {type(e).__name__}: {e}")
@@ -665,7 +682,7 @@ def file_receipt(flags, rid, receipt, *, repo, verdict="RECEIPT", answer=None, b
     rec = {"$schema": "epyc.filed.verdict.v1", "id": rid, "row": rid, "owner": str(m.get("owner") or "?"), "filed_at": now_iso(),
            "at": now_iso(), "outcome_class": "RECEIPT", "phase": "filing", "compute_burned": True, "root_cause_family": None,
            "verdict": {"status": "filed", "kind": "receipt", "result": verdict}, "row_verdict": verdict, "answer": answer,
-           "rc": rc, "end_line": endline, "handoff_task": m.get("handoff_task"), "manifest": mp, "filed_by": by,
+           "rc": rc, "end_line": endline, "handoff_task": current_handoff_task(m, repo), "manifest": mp, "filed_by": by,
            "receipt": info, "reason": f"verdict commit {info['commit'][:12]} box {info['box']}", "machine_checkable": False}
     summary = (f"FILED {rid}: {verdict}" + (f" answer={answer}" if answer else "") + f" rc={rc} by={by} receipt={info['commit'][:12]}:"
                f"{info['handoff']}#{info['box']} box-line: {info['box_line']}")

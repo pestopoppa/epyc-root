@@ -31,6 +31,7 @@ drain-at-boundary safety.
 - Grant, renew, decline, drain, and release physical-claim resource leases through typed bus
   records so the state is reconstructible. Coordinator-agent prioritizes and routes work; it does
   not silently take resource ownership or reload around the Inference Main.
+- **Briefs** (`docs/design/task-brief-layer.md`): every box you add or split carries a brief (`handoff_box.py add --brief` / `brief.py write`; split children get their own); accept or reject `pending` self/backfill briefs and their held ticks with `handoff_box.py brief accept|reject <ID>`; repair an orphaned brief with `brief.py write`.
 
 ## Workflow
 

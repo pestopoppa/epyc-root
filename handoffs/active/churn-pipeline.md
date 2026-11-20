@@ -214,15 +214,23 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: taskflow Stage 1 runs beside the old dispatcher on the live registry for one week and a dated report shows its verdict-ticks-per-token beating the old 82 per 11.6B
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **TASKFLOW-STAGE1-CANARY** [inference] Run the Stage 1 canary: 10 select.py boxes (TASKS.json in the row dir) through taskflow dispatch with opencode workers on a row-owned llama-server; measure verified/attempted, uncached+cached tokens per task, wall per task, decode/prefill tok/s, draft acceptance, VRAM; classify failures model-limitation vs harness vs task.
+      · done when: verdict: STAY-35B|TRY-27B|FIX-HARNESS
+      · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: champion C14 GPU store gpu-20261118-eee3da838-c14 · harness: opencode 2.2.5 + taskflow dispatch (origin/main 104a8f154) · metric: verified/attempted, tokens per verified task · rule: >=0.3 verified with model-limitation the minority failure -> STAY-35B; <0.3 with >=50% model-limitation -> TRY-27B; >=50% harness failures -> FIX-HARNESS · region: gpu-q3 (mi210_0,88-95,184-191) · est 4200 s, from 10 tasks x 300 s x 1.25 + 450 s load
+      · Stop rule: stop on answer when all 10 tasks are attempted; stop on futility when the first 4 tasks are all harness-class; STOP file / deadline / grant loss.
+      · 2026-11-20 status: 7 GPU rounds (r1-r7d), current verdict FIX-HARNESS (no model verdict yet); round log, A/B r6c vs r7d and perf in docs/design/taskflow-stage1-canary-findings.md; next = path-garbling + shell-compose fixes, CPU rounds from tf1-cpu-s1 rate.
+      · gate: none
+      · owner: pipeline-mgmt
 - [ ] **HS-STAGE-C** [non-inference] Handoff standard Stage C (spec /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/HANDOFF-STANDARD.md): content rewrites of failing boxes so the lint-OK canary reaches 45 percent (Stage B left it at 21.6), LLM proposals as NEEDS-OWNER children, compaction, generated index rows, ratify package for human-only docs.
       · done when: box_index lint-OK canary reads at least 45 percent on origin/main and the Stage C ratify package is filed for the operator
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **AK-FIXES-F2-F9** [non-inference] Build AK-audit fixes F2-F9 (D9-acked) from /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/AK-REQS-FIXES.md; 14 requirements triaged.
+      · 2026-11-20 PARTIAL: Stage C code C0-C8 landed (cbc7f4908..9557039f6) plus fixes 1a279e306 (holds fail closed), f5938d39b, c8f6e858d, 9a1fd1f8b, 4759de3fa, 154a4e4ed; 51 NEEDS-OWNER proposal children (66.9k haiku tokens). Not ticked: ratify signature pending (RTG100-HS-RATIFY), C6 sample 86.7 percent (RTG100-HS-C6-DROP), canary not re-read. Design: docs/design/handoff-standard.md.
+- [x] **AK-FIXES-F2-F9** [non-inference] Build AK-audit fixes F2-F9 (D9-acked) from /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/AK-REQS-FIXES.md; 14 requirements triaged. ✅ 2026-11-20 [belief: cc] F2-F9 landed 3be7715e1..06d920bfd plus review fixes, zombie-pid b2cc849a4, GPU packing c0cf5d5a2, allocator test c0eff9bbf, manifest f397a4b59
       · done when: each of F2-F9 is merged on origin/main with a test, and the AK-REQS-FIXES.md rows are marked landed with commit SHAs
       · gate: none
       · owner: pipeline-mgmt
-- [ ] **AK-HOOKS-C1-C6** [non-inference] Build AK-audit hooks C1-C6 (D9-acked) from AK-REQS-FIXES.md.
+- [x] **AK-HOOKS-C1-C6** [non-inference] Build AK-audit hooks C1-C6 (D9-acked) from AK-REQS-FIXES.md. ✅ 2026-11-20 [belief: cc] hooks C1-C6 landed 66eb1ad91..c1d3a8da6
       · done when: each of hooks C1-C6 is live in the hook chain on origin/main with a test that trips it, SHAs recorded in AK-REQS-FIXES.md
       · gate: none
       · owner: pipeline-mgmt
@@ -241,3 +249,26 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
 - [x] **HS-STAGE-A** Handoff standard Stage A ba3adabf1 plus hotfix 671a6adf7 (`handoff_box.py`, `box_index.py`, lint). ✅ 2026-11-19 [no-belief: build/landing]
 - [x] **HS-STAGE-B** Handoff standard Stage B e14edec25..e5784a93f; lint-OK canary 20.5 to 21.6 percent, short of the 45 percent target because the remaining failures need content rewrites (box HS-STAGE-C). ✅ 2026-11-20 [belief: cc]
 - [x] **MODEL-Q8-REGISTERED** Q8 model registered (epyc-inference-research 1c8d54874). ✅ 2026-11-20 [no-belief: build/landing]
+- [x] **RTG100-HS-RATIFY** [operator-decision] Operator signs the handoff-standard ratify package (human-only docs) by running scripts/operator/ratify_handoff_standard_20261120.sh. ✅ 2026-11-20 [belief: cc] signed 98342afc8; --verify VERIFIED (CLAUDE.md, SESSION_LIFECYCLE.md, OPERATING_CONSTRAINTS.md at post-state, receipts on origin/main)
+      · done when: the ratify script has run and its receipt is committed on origin/main
+      · gate: none
+- [ ] **RTG100-HS-C6-DROP** [non-inference] Drop the hand-written index rows once generated rows meet the C6 criteria (7 days at or above 90 percent; first sample 86.7 percent, not met).
+      · done when: python3 scripts/handoffs/stale_next_action.py --compare-generated reports at least 90 percent for 7 consecutive days and the hand rows are removed
+      · gate: none
+- [ ] **RTG100-OWNER-ROLES** [operator-decision] Operator decides the owner-roles proposal (coordinator, pipeline-mgmt, thin autokernel, speech, reserved harness stub); 3 role-file drafts sit on local branch pm-owner-roles, unpushed (docs/design/owner-roles-*-20261120.md).
+      · done when: verdict: APPROVE|AMEND|REJECT recorded and, on APPROVE, the role files are on origin/main
+      · gate: none
+- [ ] **RTG100-TASKFLOW-CANARY-RESULT** [inference] Record the result of canary row tf1-canary-35b-c14-gpu-r1-20261120 (C14, qwen3.6-35b-a3b-q8-gpu-mtp, 10 tasks) against TASKFLOW-STAGE1.
+      · done when: verdict: STAY-35B|TRY-27B|FIX-HARNESS filed from the row's result
+      · gate: TASKFLOW-STAGE1-CANARY
+- [ ] **RTG100-GENFILE-HOOK-REFUSE** [non-inference] Flip the generated-index-file pre-commit hook from warn to refuse one week after it went live.
+      · done when: the hook refuses a commit touching generated index files on origin/main and a test trips it
+      · gate: none
+- [x] **TASKFLOW-NEEDS-BRIEF-TAG** [non-inference] Close the NEEDS-BRIEF loop: when taskflow dispatch ends a run `needs-brief` (two failed self-briefs), record it where box_index reads it (`needs_brief`) so select.py skips the box until its owner briefs it; today the verdict reaches only the ledger and the box is reselected. ✅ 2026-11-20 [belief: cc] needs-brief now writes a `· NEEDS-BRIEF:` line onto the box (handoff_box.py needs-brief, via a fresh epyc-root lane branch; pushed under --apply), box_index reads only that tagged line and select.py skips it; `brief accept` clears it; tests/coordination/test_taskflow_needs_brief_tag.py 4 pass
+      · done when: `pytest -q tests/coordination/test_taskflow_needs_brief_tag.py`
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **GNX-REINDEX** [non-inference] Keep the gitnexus index fresh: scripts/gitnexus-reindex.py publishes keeper rows (host / q3-pocket options) when the index is stale
+      · done when: python3 scripts/gitnexus-reindex.py check reports fresh after a keeper-run reindex
+      · gate: none
+      · tier: sonnet   · owner: pipeline-mgmt

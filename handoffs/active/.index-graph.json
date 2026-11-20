@@ -219,7 +219,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-48",
-      "weight": 13
+      "weight": 12
     },
     {
       "from": "INF-06",
@@ -272,8 +272,8 @@
     {
       "from": "INF-48",
       "kind": "ref",
-      "to": "EVL-47",
-      "weight": 4
+      "to": "INF-50",
+      "weight": 3
     },
     {
       "from": "INF-48",
@@ -321,7 +321,7 @@
       "from": "INF-50",
       "kind": "ref",
       "to": "INF-65",
-      "weight": 11
+      "weight": 10
     },
     {
       "from": "INF-59",
@@ -387,7 +387,7 @@
       "from": "INF-65",
       "kind": "ref",
       "to": "INF-83",
-      "weight": 43
+      "weight": 40
     },
     {
       "from": "INF-65",
@@ -447,7 +447,7 @@
       "from": "INF-80",
       "kind": "ref",
       "to": "INF-70",
-      "weight": 1
+      "weight": 2
     },
     {
       "from": "INF-82",
@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T11:45:24Z",
+  "generated_at": "2026-11-20T19:36:30Z",
   "nodes": [
     {
       "age_days": 10,
@@ -986,6 +986,7 @@
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
+            "RTG-34#coordination-and-churn-pipeline",
             "UFH-01"
           ],
           "dispatchable": 1,
@@ -1084,7 +1085,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1010,
+          "line": 1036,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1093,7 +1094,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1322,
+          "line": 1348,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1102,7 +1103,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1529,
+          "line": 1555,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1111,7 +1112,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1855,
+          "line": 1881,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1120,7 +1121,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2090,
+          "line": 2116,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1132,14 +1133,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 139,
-      "dispatchable": 36,
+      "dispatchable": 37,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-20",
       "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
-      "open": 37,
+      "open": 38,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1161,7 +1162,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 36,
+          "line": 38,
           "name": "memory-program",
           "open": 11,
           "readiness": "ready"
@@ -1170,18 +1171,18 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 947,
+          "line": 949,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 10,
           "gates": [],
-          "line": 1422,
+          "line": 1424,
           "name": "unified-trace-memory-service",
-          "open": 10,
+          "open": 11,
           "readiness": "ready"
         },
         {
@@ -1196,7 +1197,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1889,
+          "line": 1896,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1205,10 +1206,10 @@
     },
     {
       "age_days": 17,
-      "blocked": 2,
+      "blocked": 0,
       "blocked_by": [],
       "closed": 215,
-      "dispatchable": 40,
+      "dispatchable": 42,
       "domain": "research-evaluation",
       "guarded": 1,
       "handoff": "eval-tower-program.md",
@@ -1235,7 +1236,7 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 19,
+          "dispatchable": 21,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
@@ -1330,14 +1331,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 485,
-      "dispatchable": 129,
+      "dispatchable": 131,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-19",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 129,
+      "open": 131,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1372,15 +1373,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 816,
-      "dispatchable": 121,
+      "closed": 806,
+      "dispatchable": 128,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-20",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 123,
+      "open": 130,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1417,23 +1418,23 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 37,
+          "dispatchable": 44,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
             "INF-06#agent-collab-rnd-harness",
             "INF-06#autokernel-restart-and-strip"
           ],
-          "line": 29,
+          "line": 31,
           "name": "autokernel-research-loop",
-          "open": 39,
+          "open": 46,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 4739,
+          "line": 4725,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1442,7 +1443,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 4818,
+          "line": 4808,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1461,7 +1462,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 4991,
+          "line": 4985,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1478,7 +1479,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 6893,
+          "line": 6874,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1491,7 +1492,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 9856,
+          "line": 9841,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1525,7 +1526,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10055,
+          "line": 10044,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -1605,6 +1606,7 @@
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
+            "RTG-34#coordination-and-churn-pipeline",
             "UFH-01"
           ],
           "dispatchable": 1,
@@ -1649,20 +1651,21 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
-        "EVL-47"
+        "EVL-47",
+        "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 372,
-      "dispatchable": 1,
+      "closed": 296,
+      "dispatchable": 5,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 1,
+      "open": 5,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1697,13 +1700,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [
             "EVL-47"
           ],
           "line": 60,
           "name": "rocm-verify-profile-backend",
-          "open": 1,
+          "open": 2,
           "readiness": "blocked"
         },
         {
@@ -1711,36 +1714,36 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 0,
+          "dispatchable": 2,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1585,
+          "line": 1165,
           "name": "agentic-rocm-kernel-authoring",
-          "open": 0,
-          "readiness": "no_open"
+          "open": 2,
+          "readiness": "blocked"
         },
         {
           "blocked_by": [
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 0,
+          "dispatchable": 1,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2742,
+          "line": 2267,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 0,
-          "readiness": "no_open"
+          "open": 1,
+          "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3146,
+          "line": 2600,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1749,7 +1752,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3659,
+          "line": 3036,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1758,7 +1761,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3754,
+          "line": 3131,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1769,15 +1772,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 179,
-      "dispatchable": 35,
+      "closed": 195,
+      "dispatchable": 44,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 37,
+      "open": 46,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1808,11 +1811,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 10,
           "gates": [],
-          "line": 13,
+          "line": 15,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 10,
+          "open": 11,
           "readiness": "ready"
         },
         {
@@ -1820,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 26,
+          "dispatchable": 34,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 842,
+          "line": 845,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 27,
+          "open": 35,
           "readiness": "blocked"
         }
       ]
@@ -1837,14 +1840,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 117,
-      "dispatchable": 34,
+      "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-20",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 35,
+      "open": 34,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1870,25 +1873,25 @@
           "gates": [
             "RTG-58"
           ],
-          "line": 17,
+          "line": 19,
           "name": "yarn-context-extension-research",
           "open": 19,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
-          "line": 678,
+          "line": 614,
           "name": "attention-matching-kv-compaction",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1087,
+          "line": 1011,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1897,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1703,
+          "line": 1627,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1906,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1850,
+          "line": 1778,
           "name": "triattention-kv-selection",
           "open": 12,
           "readiness": "ready"
@@ -1914,18 +1917,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 231,
-      "dispatchable": 24,
+      "closed": 235,
+      "dispatchable": 32,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 26,
+      "open": 34,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1959,23 +1962,23 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 22,
+          "dispatchable": 30,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
             "INF-06#agent-collab-rnd-harness",
             "INF-06#autokernel-restart-and-strip"
           ],
-          "line": 20,
+          "line": 22,
           "name": "autokernel-champion-aggregate",
-          "open": 24,
+          "open": 32,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1779,
+          "line": 1817,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1984,7 +1987,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1903,
+          "line": 1945,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1993,7 +1996,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2235,
+          "line": 2277,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2002,7 +2005,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2374,
+          "line": 2378,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2011,7 +2014,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2936,
+          "line": 2932,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2023,7 +2026,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3074,
+          "line": 3070,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2035,7 +2038,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3081,
+          "line": 3077,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2047,14 +2050,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 153,
-      "dispatchable": 35,
+      "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "last_advanced": "2026-11-17",
       "next_action": "Q38P-1 r4 on C13 queued (profiler path inside Landlock fence); XFER-4b prefill A/B + task eval; G2-CONC on candidate; WRAP-8 rerun",
-      "open": 35,
+      "open": 39,
       "priority": 0.9191,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): G2-CONC \u2014 BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an a",
@@ -2082,38 +2085,38 @@
           "blocked_by": [
             "INF-65"
           ],
-          "dispatchable": 22,
+          "dispatchable": 25,
           "gates": [
             "INF-65"
           ],
           "line": 100,
           "name": "cpu-decode-roofline-program",
-          "open": 22,
+          "open": 25,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5116,
+          "line": 5134,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 6,
           "gates": [],
-          "line": 5269,
+          "line": 5287,
           "name": "cpu-prefill-compute-large-models",
-          "open": 5,
+          "open": 6,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5776,
+          "line": 5802,
           "name": "large-moe-expert-parallelism",
           "open": 0,
           "readiness": "no_open"
@@ -2126,7 +2129,7 @@
           "gates": [
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 5890,
+          "line": 5916,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 8,
           "readiness": "blocked"
@@ -2229,14 +2232,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
-      "dispatchable": 25,
+      "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "last_advanced": "2026-11-07",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 25,
+      "open": 39,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2265,18 +2268,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 19,
           "gates": [],
-          "line": 235,
+          "line": 238,
           "name": "iqk-iquant-enablement",
-          "open": 5,
+          "open": 19,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 690,
+          "line": 751,
           "name": "tq3-quantization-evaluation",
           "open": 3,
           "readiness": "ready"
@@ -2296,15 +2299,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 127,
-      "dispatchable": 54,
+      "closed": 128,
+      "dispatchable": 57,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-20",
       "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
-      "open": 55,
+      "open": 58,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2334,15 +2337,15 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 7,
+          "dispatchable": 8,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 19,
+          "line": 21,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 7,
+          "open": 8,
           "readiness": "blocked"
         },
         {
@@ -2354,7 +2357,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 47,
+          "dispatchable": 49,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2363,9 +2366,9 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 800,
+          "line": 810,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 48,
+          "open": 50,
           "readiness": "blocked"
         }
       ]
@@ -2621,10 +2624,10 @@
     },
     {
       "age_days": 1,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 296,
-      "dispatchable": 81,
+      "dispatchable": 82,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
@@ -2654,7 +2657,7 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 47,
+          "dispatchable": 48,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
@@ -2665,7 +2668,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 19,
+          "line": 21,
           "name": "autopilot-program",
           "open": 0,
           "readiness": "no_open"
@@ -2674,7 +2677,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1059,
+          "line": 1061,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 2,
           "readiness": "ready"
@@ -2683,7 +2686,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1469,
+          "line": 1471,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1,
           "readiness": "ready"
@@ -2692,7 +2695,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2167,
+          "line": 2169,
           "name": "batched-edit-parallel-apply",
           "open": 2,
           "readiness": "ready"
@@ -2701,7 +2704,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2304,
+          "line": 2306,
           "name": "bep-dcp-falsification-harness",
           "open": 1,
           "readiness": "ready"
@@ -2710,7 +2713,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2374,
+          "line": 2376,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2,
           "readiness": "ready"
@@ -2719,7 +2722,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2568,
+          "line": 2570,
           "name": "evidence-plane-instrument-repair",
           "open": 3,
           "readiness": "ready"
@@ -2728,7 +2731,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2728,
+          "line": 2730,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1,
           "readiness": "ready"
@@ -2737,7 +2740,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 3113,
+          "line": 3115,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1,
           "readiness": "ready"
@@ -2746,7 +2749,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 3505,
+          "line": 3507,
           "name": "objective-task-rate-goodput",
           "open": 5,
           "readiness": "ready"
@@ -2755,7 +2758,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3850,
+          "line": 3852,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4,
           "readiness": "ready"
@@ -2764,7 +2767,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 4105,
+          "line": 4107,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7,
           "readiness": "ready"
@@ -2798,7 +2801,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4339,
+          "line": 4341,
           "name": "autopilot-sequential-allocation",
           "open": 4,
           "readiness": "blocked"
@@ -2832,7 +2835,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4802,
+          "line": 4804,
           "name": "promptforge-mutation-safety-contract",
           "open": 1,
           "readiness": "blocked"
@@ -2841,7 +2844,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": null,
-          "line": 5079,
+          "line": 5081,
           "name": "lab-reliability-ladder",
           "open": 1,
           "readiness": "ready"
@@ -2853,14 +2856,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 205,
-      "dispatchable": 39,
+      "dispatchable": 45,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-19",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 41,
+      "open": 47,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2907,18 +2910,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [],
           "line": 876,
           "name": "per-request-reasoning-budget",
-          "open": 4,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1381,
+          "line": 1388,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -2927,7 +2930,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1918,
+          "line": 1925,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -2936,25 +2939,25 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2680,
+          "line": 2687,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 8,
           "gates": [],
-          "line": 3107,
+          "line": 3114,
           "name": "tool-output-compression",
-          "open": 3,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3764,
+          "line": 3790,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
@@ -3111,15 +3114,15 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 88,
-      "dispatchable": 31,
+      "closed": 92,
+      "dispatchable": 35,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-20",
-      "next_action": "Build TASKFLOW-STAGE1 beside the old dispatcher; then HS-STAGE-C, AK-FIXES-F2-F9, AK-HOOKS-C1-C6",
-      "open": 31,
+      "next_action": "Run TASKFLOW-STAGE1 canary (tf1-canary-35b-c14-gpu-r1-20261120); then HS ratify signature, C6 7-day drop, owner-roles decision",
+      "open": 35,
       "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
@@ -3132,18 +3135,18 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 3,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 310,
-      "dispatchable": 85,
+      "closed": 311,
+      "dispatchable": 86,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-20",
       "next_action": "TOOLPERM+AGENTFILE-INJECT after prod relaunch+matrix refresh; CTX-DEPTH after v11; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
-      "open": 85,
+      "open": 86,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3217,11 +3220,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 15,
           "gates": [],
           "line": 2201,
           "name": "repo-readiness-scorer",
-          "open": 14,
+          "open": 15,
           "readiness": "ready"
         }
       ]
@@ -3231,14 +3234,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 357,
-      "dispatchable": 2,
+      "dispatchable": 3,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-19",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
-      "open": 2,
+      "open": 3,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3263,18 +3266,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 0,
+          "dispatchable": 1,
           "gates": [],
           "line": 21,
           "name": "coordination-and-churn-pipeline",
-          "open": 0,
-          "readiness": "no_open"
+          "open": 1,
+          "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2464,
+          "line": 2469,
           "name": "churn-pipeline",
           "open": 0,
           "readiness": "no_open"
@@ -3283,7 +3286,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2472,
+          "line": 2477,
           "name": "dashboard-architecture-restructure",
           "open": 0,
           "readiness": "no_open"
@@ -3292,13 +3295,15 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2944,
+          "line": 2949,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
         },
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "RTG-34#coordination-and-churn-pipeline"
+          ],
           "dispatchable": 0,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -3306,13 +3311,15 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3389,
+          "line": 3394,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0,
           "readiness": "no_open"
         },
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "RTG-34#coordination-and-churn-pipeline"
+          ],
           "dispatchable": 0,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -3321,13 +3328,15 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4905,
+          "line": 4910,
           "name": "loop-owned-fleet-implementation",
           "open": 0,
           "readiness": "no_open"
         },
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "RTG-34#coordination-and-churn-pipeline"
+          ],
           "dispatchable": 2,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -3336,13 +3345,15 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5565,
+          "line": 5570,
           "name": "fleet-fanout-measurement",
           "open": 2,
-          "readiness": "ready"
+          "readiness": "blocked"
         },
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "RTG-34#coordination-and-churn-pipeline"
+          ],
           "dispatchable": 0,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -3351,7 +3362,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5772,
+          "line": 5777,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3360,7 +3371,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6328,
+          "line": 6333,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
@@ -3422,7 +3433,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 373,
+          "line": 375,
           "name": "capability-registry-and-promotion",
           "open": 3,
           "readiness": "ready"
@@ -3431,7 +3442,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 521,
+          "line": 523,
           "name": "model-artifact-integrity",
           "open": 5,
           "readiness": "ready"
@@ -3440,7 +3451,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 691,
+          "line": 693,
           "name": "model-exec-containment",
           "open": 4,
           "readiness": "ready"
@@ -3449,7 +3460,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 797,
+          "line": 799,
           "name": "model-stack-single-source-update-pipeline",
           "open": 4,
           "readiness": "ready"
@@ -3458,7 +3469,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1360,
+          "line": 1362,
           "name": "model-stack-update-pipeline-audit",
           "open": 2,
           "readiness": "ready"
@@ -3467,7 +3478,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2021,
+          "line": 2023,
           "name": "standardized-stack-update-pipeline-finalization",
           "open": 1,
           "readiness": "ready"
@@ -3476,7 +3487,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2366,
+          "line": 2368,
           "name": "wp12-fleet-layer-design",
           "open": 1,
           "readiness": "ready"
@@ -3559,18 +3570,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 263,
-      "dispatchable": 86,
+      "closed": 267,
+      "dispatchable": 96,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "next_action": "Land CODEMODE-AB-V2 r2 rows, then CODEMODE-REL-FLIP; measure CM-2..CM-5; then UFH-TE-2 dispatch guard, HIL-RE-1",
-      "open": 87,
+      "open": 97,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3622,18 +3633,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 20,
+          "dispatchable": 30,
           "gates": [],
           "line": 444,
           "name": "repl-turn-efficiency",
-          "open": 20,
+          "open": 30,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 914,
+          "line": 929,
           "name": "qwen-chat-template-evaluation",
           "open": 6,
           "readiness": "ready"
@@ -3646,7 +3657,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1695,
+          "line": 1710,
           "name": "harness-improvement-loop",
           "open": 9,
           "readiness": "blocked"
@@ -3659,7 +3670,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2400,
+          "line": 2415,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3680,7 +3691,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2489,
+          "line": 2504,
           "name": "repl-embedding-retrieval",
           "open": 16,
           "readiness": "blocked"
@@ -3695,7 +3706,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2968,
+          "line": 2983,
           "name": "agentic-serving-harness-fixes",
           "open": 26,
           "readiness": "blocked"
@@ -3706,7 +3717,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3882,
+          "line": 3897,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"

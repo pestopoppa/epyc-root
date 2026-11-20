@@ -1345,10 +1345,10 @@ One pattern lifted from `strukto-ai/mirage` source audit. Apply when designing t
 #### Progress checklist
 
 - [x] AW-1..AW-5 env_synth module, 5th-species wiring, gap diagnosis, safety gate, EvalTower projection (NIB2-44) ✅
-- [ ] AW-6: 48h bootstrap discovery run (>=50 envs / >=500 tools / >=500 tasks) with incremental persistence
-- [ ] AW-7: pull obiwan96/endless-terminals dataset + PPL checkpoints; re-eval TB-2.0 transfer gap
-- [ ] AW-8: Qwen3.6-35B-A3B-MTP-Q8_0-as-filter reproduction of Endless-Terminals Stages I-IV (~50-100 wall-hr) (re-scoped 2026-11-03 from gemma4-26B-A4B: deleted 2026-09-23)
-- [ ] AW-8 Phase 1.5: corroboration probe on released Agent-World-8B/14B weights (SWE-Bench/GAIA)
+- [ ] **CJ-25** AW-6: 48h bootstrap discovery run (>=50 envs / >=500 tools / >=500 tasks) with incremental persistence
+- [ ] **CJ-20** AW-7: pull obiwan96/endless-terminals dataset + PPL checkpoints; re-eval TB-2.0 transfer gap
+- [ ] **CJ-22** AW-8: Qwen3.6-35B-A3B-MTP-Q8_0-as-filter reproduction of Endless-Terminals Stages I-IV (~50-100 wall-hr) (re-scoped 2026-11-03 from gemma4-26B-A4B: deleted 2026-09-23)
+- [ ] **CJ-23** AW-8 Phase 1.5: corroboration probe on released Agent-World-8B/14B weights (SWE-Bench/GAIA)
 - **[declined: ws58 2026-11-03 content-review: GPU-gated GRPO training; training is out of scope for this stack]** AW-9 (GPU-gated): multi-env GRPO training, deferred on MI210 GRPO smoke
 
 #### Research intake 2026-10-21 — open-model backdoors, control-vector projection, Qwen3.8 post-train (research intake entries 2191–2213, see research/intake_index.yaml)
@@ -1472,18 +1472,18 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 - [x] Run the free/local artifact scan path: `huggingface-cli scan-cache` was unavailable because `huggingface-cli` is not installed; fallback local cache search under `~/.cache/huggingface` and `/root/.cache/huggingface` found no `MathSmith`/`Jasaxion`/HC artifacts; `/mnt/raid0/llm/models` contains only `MathSmith-Hard-Problem-Synthesizer-Qwen3-8B.Q4_K_M.gguf`. **Decision**: no local HC artifact exists, so S2 cannot advance without operator/network action. ✅ 2026-07-14
 - [x] Operator/network availability check: inspect HF for pre-made GGUFs or upstream weights for `Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B`. ✅ 2026-07-29 — the [upstream repository](https://huggingface.co/Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B) is public, Apache-2.0, and exposes the Qwen3-8B HC BF16/safetensors weights; the public [GGUF mirror](https://huggingface.co/mradermacher/MathSmith-HC-Problem-Synthesizer-Qwen3-8B-GGUF) documents `Q4_K_M` and exposes `Q4_K_S` / `IQ4_XS` artifacts. This was a read-only availability check only: no artifact was downloaded, loaded, converted, benchmarked, or registered.
 - [x] HC-to-FormalizationIR schema preflight ✅ 2026-07-29 — the public HC card declares `<rationale>` / `<problem>` output, whereas `src/formalizer.py::_parse_formalizer_output()` accepts only JSON objects containing `problem_type`; the current injection path then requires variables, constraints, objective, edge cases, and acceptance criteria. Compatibility is therefore unproven, not implied by the shared Qwen3-8B base. The first approved local run must be a zero-question contract probe; only a passing `FormalizationIR` result (or a separately specified and tested adapter) unlocks S3/S4.
-- [ ] If the repo exists but no GGUF is available, convert from HF weights: `convert_hf_to_gguf.py` + `llama-quantize` for Q4_K_M and Q8_0
+- [ ] **CJ-21** If the repo exists but no GGUF is available, convert from HF weights: `convert_hf_to_gguf.py` + `llama-quantize` for Q4_K_M and Q8_0
 - **[declined: ws58 2026-11-03 content-review: merged into the S2 artifact step]** Verify speed is normal (12-15+ t/s for Q8_0) — if so, confirms mradermacher conversion was the old speed bug
 - **[declined: ws58 2026-11-03 content-review: merged into the S2 artifact step]** Benchmark on existing formalizer test suite (summary.csv rows 15-16 baseline)
 
 ##### S3: Spec decode validation
-- [ ] Test Qwen3-0.6B as drafter for HC-8B (tokenizer-compatible, vanilla Qwen3) One comparison (absorbs the three rows below): drafters Qwen3-0.6B, Qwen3-1.7B and MathSmith-HC-Qwen3-1_7B-ShortCoT against the current Q4_K_M + spec n3 ceiling (16.1 t/s); metric decode tok/s and acceptance, higher is better.
+- [ ] **CJ-19** Test Qwen3-0.6B as drafter for HC-8B (tokenizer-compatible, vanilla Qwen3) One comparison (absorbs the three rows below): drafters Qwen3-0.6B, Qwen3-1.7B and MathSmith-HC-Qwen3-1_7B-ShortCoT against the current Q4_K_M + spec n3 ceiling (16.1 t/s); metric decode tok/s and acceptance, higher is better.
 - **[declined: ws58 2026-11-03 content-review: merged into one drafter comparison]** Test Qwen3-1.7B as drafter
 - **[declined: ws58 2026-11-03 content-review: merged into one drafter comparison]** Compare against current Q4_K_M + spec decode n3 (16.1 t/s ceiling)
 - **[declined: ws58 2026-11-03 content-review: merged into one drafter comparison]** Consider MathSmith-HC-Qwen3-1_7B-ShortCoT as domain-matched drafter
 
 ##### S4: A/B benchmark — formalize-then-solve vs direct solve
-- [ ] Design test protocol using new `aime` suite (60 questions, AIME2024+2025) and `olympiadbench` suite (674 questions) Protocol (absorbs the seven rows below): arms A (raw problem -> solver) and B (MathSmith-HC formalizes -> solver, only after the HC contract probe passes); solvers Qwen2.5-Math-7B, Qwen3-8B and the current production worker; measure accuracy delta, latency, total pipeline time and total token cost with per-problem breakdown (formalizer overhead ~300-500 tokens fixed); answer comparison via Math-Verify; decision question: does formalization help more as difficulty rises (AIME > OlympiadBench > MATH-500)?
+- [ ] **CJ-24** Design test protocol using new `aime` suite (60 questions, AIME2024+2025) and `olympiadbench` suite (674 questions) Protocol (absorbs the seven rows below): arms A (raw problem -> solver) and B (MathSmith-HC formalizes -> solver, only after the HC contract probe passes); solvers Qwen2.5-Math-7B, Qwen3-8B and the current production worker; measure accuracy delta, latency, total pipeline time and total token cost with per-problem breakdown (formalizer overhead ~300-500 tokens fixed); answer comparison via Math-Verify; decision question: does formalization help more as difficulty rises (AIME > OlympiadBench > MATH-500)?
 - **[declined: ws58 2026-11-03 content-review: merged into the S4 protocol]** Pipeline A (baseline): solver model receives raw problem, produces answer
 - **[declined: ws58 2026-11-03 content-review: merged into the S4 protocol]** Pipeline B (formalizer): only after the HC contract probe passes, MathSmith-HC formalizes → solver receives formalized problem → answer
 - **[declined: ws58 2026-11-03 content-review: merged into the S4 protocol]** Solver candidates: Qwen2.5-Math-7B, Qwen3-8B, current production worker
@@ -1862,7 +1862,7 @@ _Via `/research-intake` Stage-4 (intake-916/917). **Not** a reopening of the mod
 - [x] edit_transaction module + force_mode=edit wiring + 5-point hardening (built/validated 2026-05-27) ✅
 - [x] Explicit target-file selection (994f168) + functional-verifier-in-loop (2026-06-28) ✅
 - **[declined: ws58 2026-11-03 content-review: merged into the A/B as its decision]** Production rollout decision: when/how routine coding edits auto-route to edit-mode
-- [ ] Clean-window A/B evidence: >=50 routine edit tasks, quality/reliability/speed gates Decision (absorbs the two rows beside it): on passing quality/reliability/speed gates over >= 50 routine edit tasks, decide when routine coding edits auto-route to edit-mode and promote the edit_transaction_auto_routing row from actionable_by=operator toward autopilot.
+- [ ] **CJ-26** Clean-window A/B evidence: >=50 routine edit tasks, quality/reliability/speed gates Decision (absorbs the two rows beside it): on passing quality/reliability/speed gates over >= 50 routine edit tasks, decide when routine coding edits auto-route to edit-mode and promote the edit_transaction_auto_routing row from actionable_by=operator toward autopilot.
 - **[declined: ws58 2026-11-03 content-review: merged into the A/B as its consequence]** Promote edit_transaction_auto_routing row from actionable_by=operator toward autopilot
 
 #### Research Intake Update — 2026-09-14 (intake-1346…1366)
@@ -1952,7 +1952,7 @@ this repo, and settle two that nobody owns at all.
 
 - [x] E0 — Primaries read directly, with an independent adversarial re-read of every verdict ✅
       2026-07-27. **Result: this changes what E1 should measure.** Findings in *E0 results* below.
-- [ ] E1 — **RESCOPED BY E0**: measure **Base vs Depth-1 first**, not depth-1 vs depth-2. E0 showed
+- [ ] **CJ-27** E1 — **RESCOPED BY E0**: measure **Base vs Depth-1 first**, not depth-1 vs depth-2. E0 showed
       the cost is a *step function at the Base→RLM boundary* (24.8× then 3.86× for DeepSeek S-NIAH),
       so the large, decision-relevant effect is the first step — and it is the comparison neither
       source reads cleanly. Start with synthetic NIAH (fast-rlm `benchmarks/niah_benchmark.py` is
