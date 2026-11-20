@@ -36,6 +36,8 @@ TIER_MODELS = {
     "claude": {"luna": "haiku", "terra": "sonnet", "sol": "opus"},
 }
 # Global deny-list carried over from /workspace/opencode.json (the per-run XDG config dir replaces the global config).
+# r1 canary: a piped test command (`cmd | head`) was denied by "*": deny -> read-only helpers are allowed.
+READ_ONLY = ["ls*", "cat *", "head *", "tail *", "wc *", "grep *", "rg *", "git diff*", "git status*", "git log*"]
 BASH_DENY = ["sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
              "git commit*", "curl*", "wget*", "systemctl*", "reboot*", "shutdown*"]
 
@@ -43,15 +45,19 @@ POLICY = """\
 # taskflow worker contract (identical for every task)
 You are a code worker on ONE handoff box in a disposable git worktree (your cwd). Rules:
 1. Do exactly what the box asks, nothing more. Smallest correct change. Keep the repo's style.
-2. Read only what you need: use grep/glob to locate, then read narrow line ranges. Never read whole large files.
-3. Edit with the edit tool (exact old/new strings). Create files with write only when the box asks for a new file.
-4. Never touch files listed as FORBIDDEN. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
-5. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
-6. bash is limited to the ALLOWED COMMANDS in the task. Run them to check your work when given.
-7. Stop as soon as the box's done-when is met. Do not explore further.
-8. Finish with ONE final line, exactly:  TASKFLOW-RESULT {"claimed_done": true|false, "summary": "<=200 chars", "paths": ["changed/file", ...]}
-   claimed_done=false with a reason when the box is blocked, unclear, or needs a decision you cannot make.
+2. Locate fast: at most 6 grep/glob/read calls, then EDIT. Read narrow line ranges, never whole large files.
+3. Edit with the edit tool (exact old/new strings). Create a file with write only when the box needs a new file.
+4. Every turn must call a tool until you finish. Never describe a plan without calling a tool in the same turn.
+5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
+6. The shell runs only the ALLOWED COMMANDS (plus ls, cat, head, tail, wc, grep, git diff, git status). No pipes needed.
+7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
+8. Stop as soon as the box's done-when is met.
+9. Finish with ONE final line, exactly:  TASKFLOW-RESULT {"claimed_done": true|false, "summary": "<=200 chars", "paths": ["changed/file", ...]}
+   claimed_done=false with a reason when the box is blocked, unclear, too large for one change, or needs a decision.
 """
+
+
+NUDGE = "Continue now: call a tool in this turn (grep, read or edit). Do not describe a plan.\n"
 
 
 def model_for(tier: str | None, family: str = "local") -> str:
@@ -105,6 +111,8 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
     if not pol.exists():
         pol.write_text(POLICY, encoding="utf-8")
     bash = {"*": "deny"}
+    for ro in READ_ONLY:
+        bash[ro] = "allow"
     for c in task.get("test_cmds") or []:
         bash[c] = "allow"
         bash[c + " *"] = "allow"
@@ -131,7 +139,9 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
             "description": "taskflow single-box worker", "mode": "primary",
             "steps": int(task["budget"]["turns"]),
             "permission": {"read": "allow", "edit": "allow", "glob": "allow", "grep": "allow", "list": "allow",
-                           "bash": bash, "shell": bash, "execute": bash, "question": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny",
+                           "bash": bash, "shell": bash, "question": "deny",
+                           # r1 canary: the JS `execute` sandbox ate 13 of 14 steps on syntax errors; image tool is noise
+                           "execute": "deny", "experimental_image_generate": "deny", "opencode_*": "deny", "opencode_worktree_remove": "deny", "opencode_worktree_create": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny",
                            "todowrite": "deny", "todoread": "deny", "skill": "deny",
                            "external_directory": "deny"},
         }},
@@ -147,6 +157,8 @@ def parse_events(path: Path) -> dict:
     texts: list[str] = []
     errors: list[str] = []
     tools: list[str] = []
+    tool_errors: list[str] = []
+    edits = 0
     try:
         lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     except OSError:
@@ -173,7 +185,14 @@ def parse_events(path: Path) -> dict:
         elif typ == "text" and part.get("text"):
             texts.append(str(part["text"]))
         elif typ in ("tool_use", "tool"):
-            tools.append(str(part.get("tool") or "?"))
+            name = str(part.get("tool") or "?")
+            tools.append(name)
+            st = part.get("state") or {}
+            out_txt = str(st.get("output") or st.get("error") or "")
+            if st.get("status") == "error" or out_txt.startswith(("SyntaxError", "ReferenceError", "Permission denied")):
+                tool_errors.append(f"{name}: {out_txt[:120]}")
+            if name in ("edit", "write", "patch", "apply_patch"):
+                edits += 1
         elif typ == "error":
             errors.append(json.dumps(ev.get("error") or ev)[:300])
     final = "\n".join(texts)
@@ -186,7 +205,8 @@ def parse_events(path: Path) -> dict:
             except ValueError:
                 result = {"claimed_done": None, "summary": "unparseable TASKFLOW-RESULT", "raw": raw[:300]}
             break
-    return {"usage": usage, "result": result, "text_tail": final[-1500:], "errors": errors, "tools": tools}
+    return {"usage": usage, "result": result, "text_tail": final[-1500:], "errors": errors, "tools": tools,
+            "tool_errors": tool_errors, "edits": edits}
 
 
 def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "local",
@@ -222,8 +242,28 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
                 proc.kill()
                 proc.wait(15)
     ev = parse_events(out_p)
+    nudged = False
+    if (not timed_out and ev["result"] is None and ev["usage"]["steps"] <= 2
+            and not subprocess.run(["git", "-C", str(cwd), "status", "--porcelain"], capture_output=True, text=True).stdout.strip()):
+        # r1 canary: the 35B narrated a plan without a tool call and opencode ended the run after 1 step.
+        # One continuation in the SAME session (cached prefix), never a fresh thread.
+        nudged = True
+        with out_p.open("ab") as out, err_p.open("ab") as err:
+            proc = subprocess.Popen(argv + ["--continue"], cwd=str(cwd), env=env, stdin=subprocess.PIPE, stdout=out, stderr=err)
+            try:
+                proc.communicate(NUDGE.encode(), timeout=max(60, timeout_s - int(time.time() - t0)))
+            except subprocess.TimeoutExpired:
+                timed_out = True
+                proc.terminate()
+                try:
+                    proc.wait(15)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait(15)
+        ev = parse_events(out_p)
     u = ev["usage"]
     return {"rc": proc.returncode, "timed_out": timed_out, "wall_s": round(time.time() - t0, 1),
             "family": family, "tier": task.get("tier"), "model": model_id, "prompt_chars": len(prompt),
             "usage": u, "uncached_input": u["input"],  # opencode reports input net of cache reads
-            "result": ev["result"], "errors": ev["errors"], "tools": ev["tools"], "text_tail": ev["text_tail"]}
+            "result": ev["result"], "errors": ev["errors"], "tools": ev["tools"], "nudged": nudged,
+            "tool_errors": ev["tool_errors"], "edits": ev["edits"], "text_tail": ev["text_tail"]}
