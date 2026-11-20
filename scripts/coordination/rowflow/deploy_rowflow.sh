@@ -127,6 +127,14 @@ if ! (cd "$STAGE" && python3 -m pytest -q -p no:cacheprovider "${UNIT[@]}" > "$S
   tail -30 "$SCRATCH/deploy-$TS-unit.log"; echo "REFUSED: unit tests failed ($SCRATCH/deploy-$TS-unit.log); nothing installed" >&2; exit 1
 fi
 tail -1 "$SCRATCH/deploy-$TS-unit.log"
+# NIB2-108 scan gate: a deployed script the repo hook would refuse (delete primitive + literal scratch root) can never be run by an agent
+for pub in "${ENTRIES[@]}"; do
+  src=${SRC_OF[$pub]}; case "$src" in *.sh) interp=bash ;; *.py) interp=python3 ;; *) continue ;; esac
+  if ! printf '%s %s\n' "$interp" "$STAGE/$src" | python3 "$REPO/scripts/hooks/destructive_scratch_scan.py" >/dev/null 2>&1 \
+     && ! python3 -c 'import json,os,sys; sys.exit(0 if os.path.realpath(sys.argv[1]) in json.load(open(sys.argv[2])) else 1)' "$FLAGS/$pub" "$REPO/scripts/hooks/destructive_scratch_pins.json" 2>/dev/null; then
+    echo "REFUSED: $src would be blocked by the NIB2-108 hook (delete primitive + literal scratch root); reword it or pin $FLAGS/$pub in scripts/hooks/destructive_scratch_pins.json; nothing installed" >&2; exit 78
+  fi
+done
 echo "deploy_rowflow: replay gate (harness $REPLAY_DIR)"
 if ! ROWFLOW_CANDIDATE="$CAND" REPLAY_SCRATCH="$SCRATCH/deploy-$TS-replay" python3 -m pytest -q -p no:cacheprovider "$REPLAY_DIR/test_replay_gate.py" > "$SCRATCH/deploy-$TS-replay.log" 2>&1; then
   sed -n "/^\(FAILED\|E  \)/p" "$SCRATCH/deploy-$TS-replay.log" | sed -n 1,30p; echo "REFUSED: replay gate failed ($SCRATCH/deploy-$TS-replay.log); nothing installed" >&2; exit 1

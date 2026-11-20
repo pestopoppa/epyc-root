@@ -375,5 +375,17 @@ class Preflight(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(rf.dry_dir(self.fx.flags, self.rid), "SMOKE-QUEUED.json")))
 
 
+class ScratchHookScan(unittest.TestCase):
+    """NIB2-108: the deployed rowflow scripts must not trip the destructive-scratch hook (F8 docstring regression)."""
+    def test_deployed_scripts_pass_scanner(self):
+        import subprocess
+        repo = os.path.dirname(os.path.dirname(os.path.dirname(_TESTS)))
+        scan = os.path.join(repo, "scripts", "hooks", "destructive_scratch_scan.py")
+        co = os.path.join(repo, "scripts", "coordination")
+        for rel in ("rowflow/publish_row.py", "rowflow/notify.py", "rowflow/rowflow.py", "churn/filing.py"):
+            r = subprocess.run([sys.executable, scan], input="python3 " + os.path.join(co, rel), text=True, capture_output=True)
+            self.assertEqual(r.returncode, 0, rel + ": " + r.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

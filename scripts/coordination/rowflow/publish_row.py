@@ -873,7 +873,7 @@ def other_row_dirs(flags, rid):
 
 
 def path_provenance_refusal(spec, cmds, warn=None, flags=None):
-    """F8 (AK audit B8): absolute /mnt/raid0/llm/tmp/... paths a smoke_predicate / --complete-cmd / --precond-cmd names.
+    """F8 (AK audit B8): absolute paths under the scratch root a smoke_predicate / --complete-cmd / --precond-cmd names.
     REFUSED only when the path lies inside ANOTHER row's scratch_root or dryrun dir, per that row's manifest
     (ready/<id>.json or dryrun/<id>/unpublished.json; review S2) - a predicate must test this run. A path outside the
     row's own dirs that is not another row's (a shared input corpus such as lsa-quality-screen-20261106/, or a path

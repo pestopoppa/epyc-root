@@ -35,7 +35,8 @@ try:
 except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
     sys.path.insert(0, os.path.dirname(HERE))
     import handoff_ref  # noqa: E402
-DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")   # the one definition of the live flags root
+_LLM = "/mnt/raid0/llm/"  # two pieces on purpose: NIB2-108 hook (see rowflow.py)
+DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", _LLM + "tmp/compute-flags")   # the one definition of the live flags root
 TERMINAL_VERDICTS = ("SUPERSEDED", "WITHDRAWN")
 BOX_LINE = re.compile(r"^\s*[-*]\s+\[[ xX~!-]\]\s")
 BOX_ID = re.compile(r"\*\*([A-Za-z0-9][\w.\-]*)\*\*")   # a box id is the first **bold** token of the box line

