@@ -1723,6 +1723,70 @@ def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -
     return warns, errs
 
 
+GENERATED_FILES = ("handoffs/active/.index-state.json", "handoffs/active/.index-graph.json",
+                   "handoffs/active/master-handoff-index.md")
+_ROW_SCOPED = re.compile(r"^(PROSE|BAD DEP|DEAD LINK): row (\S+)")
+
+
+def writer_allowed() -> bool:
+    """C5: the generated index files have ONE writer -- the hub regen (`EPYC_INDEX_WRITER=hub`, set by index_regen.py
+    and refresh_hub_view.sh) or a run inside the hub view checkout itself (the cron-pinned refresh script predates the
+    env var)."""
+    if os.environ.get("EPYC_INDEX_WRITER") == "hub":
+        return True
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts" / "coordination"))
+        import toolroot  # noqa: PLC0415
+        return REPO_ROOT.resolve() == Path(toolroot.HUB).resolve()
+    except Exception:  # noqa: BLE001
+        return False
+    finally:
+        sys.path.pop(0)
+
+
+def commit_diff(diff_base: str | None) -> tuple[set[str], dict[str, set[int]]]:
+    """(paths the commit touches, {path: added line numbers}) -- the staged diff, or the diff since --diff-base."""
+    args = ["diff", "--unified=0", "--no-color"] + ([diff_base] if diff_base else ["--cached"])
+    try:
+        out = subprocess.run(["git", "-C", str(REPO_ROOT), *args], capture_output=True, text=True, timeout=60,
+                             env=_git_env()).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return set(), {}
+    paths, added, cur = set(), {}, None
+    for line in out.split("\n"):
+        if line.startswith("+++ b/"):
+            cur = line[6:]
+            paths.add(cur)
+        elif line.startswith("@@") and cur:
+            m = re.search(r"\+(\d+)(?:,(\d+))?", line)
+            if m:
+                a, n = int(m.group(1)), int(m.group(2) or 1)
+                added.setdefault(cur, set()).update(range(a, a + n))
+    return paths, added
+
+
+def diff_scope(errs: list[str], state: dict, diff_base: str | None) -> tuple[list[str], list[str]]:
+    """C5 / AK audit B10-B11: FRESHNESS fails only a commit that touches the generated files; PROSE / BAD DEP / DEAD
+    LINK fail only for rows whose index line the commit adds or edits. Everything else stays a hard error. Returns
+    (errors, downgraded-to-warnings)."""
+    paths, added = commit_diff(diff_base)
+    keep, warn = [], []
+    touches_generated = bool(paths & set(GENERATED_FILES))
+    for e in errs:
+        if e.startswith("FRESHNESS:") and not touches_generated:
+            warn.append(e + " (commit does not touch the generated files: warning; the hub regen refreshes them)")
+            continue
+        m = _ROW_SCOPED.match(e)
+        if m:
+            r = state.get("rows", {}).get(m.group(2)) or {}
+            rel = f"handoffs/active/{r.get('index')}" if r.get("index") else None
+            if not rel or r.get("line") not in added.get(rel, set()):
+                warn.append(e + " (pre-existing row, not in this commit: warning)")
+                continue
+        keep.append(e)
+    return keep, warn
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true",
@@ -1770,6 +1834,9 @@ def main(argv: list[str] | None = None) -> int:
         for warning in priority_file_warnings(state):
             print(f"ADVISORY WARNING: {warning}", file=sys.stderr)
         errs += citation_check()
+        errs, scoped = diff_scope(errs, state, args.diff_base)
+        for w in scoped:
+            print(f"ADVISORY WARNING: {w}", file=sys.stderr)
         bwarn, berr = box_index_check(state, args.diff_base, args.box_gate)
         errs += berr
         for w in bwarn:
@@ -1783,6 +1850,14 @@ def main(argv: list[str] | None = None) -> int:
                 print(line, file=sys.stderr)
         print(f"\n{len(errs)} problem(s)")
         return 1 if errs else 0
+
+    if not writer_allowed():
+        print("REFUSING to write the generated index files: one writer only (handoff standard C5 / AK audit B10). "
+              "The hub regen does it: scripts/coordination/index_regen.py (dispatcher, every 10 min) or "
+              "scripts/dashboard/refresh_hub_view.sh. Sessions run `index_state.py --check` only (its FRESHNESS is a "
+              "warning for a commit that does not touch the generated files). Override for the hub job: "
+              "EPYC_INDEX_WRITER=hub.", file=sys.stderr)
+        return 3
 
     # REFUSE to generate from a truncated history. This is the path the old failure message
     # sent people down ("run without --check"), and in a shallow clone it rewrites the

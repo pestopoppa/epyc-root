@@ -204,7 +204,7 @@ if [[ -n "${regen_reason}" ]]; then
     }
     for step in index_state build_handoff_timeline; do
       if [[ "${step}" == "index_state" ]]; then
-        cmd=("${PY}" scripts/handoffs/index_state.py)
+        cmd=(env EPYC_INDEX_WRITER=hub "${PY}" scripts/handoffs/index_state.py)   # C5: the hub is the one writer
       else
         cmd=("${PY}" scripts/handoffs/build_handoff_timeline.py --repo "${VIEW}")
       fi

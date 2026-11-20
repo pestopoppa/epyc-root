@@ -77,7 +77,8 @@ def regen(wt: str) -> list[str]:
     git(wt, "reset", "-q", "--hard", "origin/main")
     expired = expire_proposals(wt)
     r = subprocess.run([sys.executable, os.path.join(wt, "scripts/handoffs/index_state.py")], cwd=wt,
-                       capture_output=True, text=True, timeout=900)
+                       capture_output=True, text=True, timeout=900,
+                       env=dict(os.environ, EPYC_INDEX_WRITER="hub"))   # C5: the ONE writer of the generated files
     if r.returncode:
         raise RuntimeError(f"index_state.py rc={r.returncode}: {(r.stdout + r.stderr).strip()[-300:]}")
     changed = [g for g in GENERATED if git(wt, "status", "--porcelain", "--", g).stdout.strip()] + expired

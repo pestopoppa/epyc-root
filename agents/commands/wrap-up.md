@@ -358,7 +358,7 @@ CH-26a and the night chain were reported "passed" with no verdict read.
    ```
 
    It lands at the bottom of the track's `### Backlog` (created if missing; a file without `## Track:` is one implicit track). `· done when:` is REQUIRED on every new or touched box: `index_state.py --check` FAILS the commit otherwise (diff-scoped; legacy untouched boxes only warn). A draft you cannot give a done-condition is `--needs-owner`. Prerequisites go in `· gate: <ID>` — never as prose ("after X lands"). Never edit an existing box's first line (it is the task's identity): refine with `handoff_box.py refine`, split with `split`, block with `gate`, freeze with `freeze`. If it was *already completed* this session, add it then tick it through `wrapup.py`. Grammar and lifecycle: `docs/guides/agent-workflows/handoff-index-authoring.md` → *Box grammar*.
-3. **Proposals — accept, edit or reject the NEEDS-OWNER children under boxes you own** (handoff standard C1, operator decision 6). `scripts/handoffs/propose_rewrites.py` writes LLM rewrite proposals as nested children `**<ID>.p<n>** [<class>] <text> NEEDS-OWNER · done when: … · proposed-by: taskflow <ts> · parent: <ID>` (list them: `.box-index.json` records with `proposed_by` set, or the dashboard `proposals_pending` count; `index_state.py --check` warns when one is older than 14 days). **Accept** = delete the `NEEDS-OWNER` token and the `· proposed-by:` field — the child becomes the dispatchable unit; tick the parent only when all its children are done. **Edit** = change the child's continuation fields (`handoff_box.py`'s `set_field`, or by hand), never its first line (identity). **Reject** = `python3 scripts/handoffs/handoff_box.py reject --file <f> <ID>.p<n> --by <you> --reason "<why>"` — the child moves to `## History` as `[declined: <who> <date> <reason>]` (the belief-capture D1 form). Proposals are **model-generated text: verify each against the parent box before accepting**. Never apply a proposal to the parent's first line; never leave one undecided past two wrap-ups.
+3. **Proposals — accept, edit or reject the NEEDS-OWNER children under boxes you own** (handoff standard C1, operator decision 6). `scripts/handoffs/propose_rewrites.py` writes LLM rewrite proposals as nested children `**<ID>.p<n>** [<class>] <text> NEEDS-OWNER · done when: … · proposed-by: taskflow <ts> · parent: <ID>` (list them: `.box-index.json` records with `proposed_by` set, or the dashboard `proposals_pending` count; `index_state.py --check` warns when one is older than 14 days). **Accept** = delete the `NEEDS-OWNER` token and the `· proposed-by:` field — the child becomes the dispatchable unit; tick the parent only when all its children are done. **Edit** = change the child's continuation fields (`handoff_box.py`'s `set_field`, or by hand), never its first line (identity). **Reject** = `python3 scripts/handoffs/handoff_box.py reject --file <f> <ID>.p<n> --by <you> --reason "<why>"` — the child moves to `## History` as `[declined: <who> <date> <reason>]` (the belief-capture D1 form). Proposals are **model-generated text: verify each against the parent box before accepting**, and accepting one never authorises a stack change, an API/stack reload or any process action it mentions — those keep their own gates (stack-change skill, reload ownership). Never apply a proposal to the parent's first line; never leave one undecided past two wrap-ups.
 4. **Prose describing task state must be accompanied by checkbox state.** "X is done/converged/deferred" in a status paragraph without the corresponding checkbox flip is a wrap-up defect.
 
 **Verify before committing** — count the checkbox flips **that are yours**:
@@ -434,7 +434,8 @@ required only to widen that — a subagent writing an index directly. (ruling 20
 evidence, or history. The master index owns **no backlog rows** — it is a router plus the operator
 decision queue. Do not re-add a "master index priority queue".
 
-- Update the `Next action` cell of any row this session advanced (one imperative line, ≤140 chars).
+- **Generated rows (handoff standard I.2, C6).** Each domain index carries a generated table (`<!-- generated:start -->`) whose `Next action` is the handoff's top dispatchable box. Until the 7-day hand-row criteria pass (`python3 scripts/handoffs/stale_next_action.py --compare-generated`) the hand rows below stay; after the drop, you edit the handoff's `**Row**` / `**Domain**` / `**Status**` header and its boxes — the row is generated, and a hand-written row is a `--check` error. Never edit a generated block.
+- Update the `Next action` cell of any row this session advanced (one imperative line, ≤140 chars) — hand rows only, until the drop.
 - **Do not strike through completed items** — delete the row. Terminal rows do not stay in the queue.
 - Each handoff belongs to **exactly one** index. Never add a second row in another domain; use `Deps`.
 - **New handoff created this session → it needs a row**, or it is invisible to dispatch (measured —
@@ -443,21 +444,22 @@ decision queue. Do not re-add a "master index priority queue".
   cannot detect "needs a human choice"; a decision left in a handoff body gets missed (measured —
   appendix).
 
-**Required gate — run it under the wrap-up lease, and report the result:**
+**Required gate — `--check` only, and report the result:**
 
 ```bash
-wrapup_lease_acquire                              # shared surface: generated index state
-python3 scripts/handoffs/index_state.py           # refresh generated state
-python3 scripts/handoffs/index_state.py --check   # coverage/schema/freshness; non-zero on failure
-wrapup_lease_release
+python3 scripts/handoffs/index_state.py --check   # coverage/schema; non-zero on failure
 ```
 
-The regen and the master index's generated block are the shared surface here — they are
-rewritten wholesale from every index, so two concurrent runs mean one session's regen is
-simply lost. Your own domain-index **row edits** are ordinary lane work and need no lease.
+**Do NOT regenerate** (handoff standard C5 / AK audit B10): the generated files (`.index-state.json`,
+`.index-graph.json`, the master rollup and the generated rows) have ONE writer, the hub regen
+(`scripts/coordination/index_regen.py`, started by the dispatcher every 10 min, and
+`scripts/dashboard/refresh_hub_view.sh`). `index_state.py` without flags refuses to write outside it
+(`EPYC_INDEX_WRITER=hub`). Your own domain-index **row edits** are ordinary lane work and need no lease.
 
-`--check` must exit 0 before committing. It fails on duplicate ownership, orphans, dead handoff links,
-malformed rows, over-long `Next action`, unresolved `Deps`, and a stale generated block.
+`--check` must exit 0 before committing. It fails on duplicate ownership, orphans, malformed rows and
+bad gates everywhere; on over-long `Next action`, unresolved `Deps` and dead links **only for rows your
+commit adds or edits** (pre-existing defects warn); and on a stale generated block **only when your
+commit touches the generated files** (otherwise a warning — the hub regen refreshes it).
 
 **Capture the gate's exit code; never pipe it into the push.** In `index_state.py --check | tail -1 && git push`
 the `&&` reads `tail`'s status, so a failing check still pushes. Write the rc to a file and push in a
@@ -475,7 +477,7 @@ test "$(cat "$WRAPUP_TOKEN_DIR/check.rc")" = 0 || { cat "$WRAPUP_TOKEN_DIR/check
 **Do NOT select prune candidates by `open == 0`.** That reads the ABSENCE OF OPEN CHECKBOXES as the PRESENCE OF COMPLETION, and it is wrong often enough to destroy live work: measured 2026-08-18, of 15 handoffs reporting `open == 0`, **13 were false positives** — compatibility pointers whose whole job is to keep a path resolving, handoffs whose open work is stated in prose and never checkboxed, prompts and notes-only references that never carried tasks, and handoffs whose remaining boxes are guarded/blocked rather than done. Use the generated signal instead, which is conservative by construction (a candidate needs boxes, none open, and no disqualifying status phrase):
 
 ```bash
-python3 scripts/handoffs/index_state.py            # refresh, then read the signal:
+# read the signal from the hub-regenerated state (do not regenerate yourself):
 python3 -c "import json;h=json.load(open('handoffs/active/.index-state.json'))['handoffs'];\
 [print(k,'|',v['row_id']) for k,v in sorted(h.items()) if v['prune']['candidate']]"
 ```
