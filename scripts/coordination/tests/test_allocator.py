@@ -255,7 +255,9 @@ class Incident20261101(unittest.TestCase):
         for base, _, files in os.walk(self.flags):
             for f in files:
                 written.add(os.path.relpath(os.path.join(base, f), self.flags))
-        self.assertEqual(written, {"ws58-keeper-state/allocator/usage.json", "dryrun/fetch-row/UNDERUSED.json"})
+        # F9 (f09279cd1): the first UNDERUSED per region+row is also emitted to the owner via notify
+        alert_files = {w for w in written if w == "rowflow-alerts.jsonl" or w.startswith("notify/")}
+        self.assertEqual(written - alert_files, {"ws58-keeper-state/allocator/usage.json", "dryrun/fetch-row/UNDERUSED.json"})
 
     def test_heal_grants(self):
         G = os.path.join(self.flags, "grants")
