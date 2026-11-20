@@ -108,21 +108,50 @@ def sections(lines: list[str]) -> list[tuple[str | None, bool, int, str | None, 
 _OWNER_PREFIX = re.compile(r"^(handoff-|h-)")
 
 
-def load_holds(root: Path) -> list[dict]:
+HOLDS_UNAVAILABLE = "HOLDS-UNAVAILABLE"   # sentinel hold id: holds.yaml missing/unreadable -> every box held (fail closed)
+
+
+def holds_file(root: Path) -> Path | None:
+    """Where holds.yaml is read from. For the REAL checkout: $EPYC_HOLDS_ROOT if set, else the HUB VIEW first
+    (toolroot, tracks origin/main; publish_row and holds.py resolve the same way), then the checkout. Any other root
+    (a fixture) reads only its own copy."""
+    here = Path(__file__).resolve().parents[2]
+    bases = [Path(root)]                         # a fixture / foreign root is hermetic: its own copy only
+    if Path(root).resolve() == here:             # the real checkout: $EPYC_HOLDS_ROOT, else the hub view first
+        env = os.environ.get("EPYC_HOLDS_ROOT")
+        if env:
+            bases = [Path(env)]
+        else:
+            try:
+                sys.path.insert(0, str(here / "scripts" / "coordination"))
+                import toolroot
+                bases = [Path(toolroot.HUB), Path(root)]
+            except Exception:  # noqa: BLE001
+                pass
+            finally:
+                sys.path.pop(0)
+    for b in bases:
+        for rel in HOLDS_CANDIDATES:
+            if (b / rel).exists():
+                return b / rel
+    return None
+
+
+def load_holds(root: Path) -> list[dict] | None:
     """holds.yaml in F4's FLAT shape (publish_row.load_holds / scripts/coordination/holds.py document it):
     `sessions / handoffs / rows / boxes / files` + `scope`. Returns [{id, scope, targets}] where targets is the set of
     handoff basenames, file stems (a session slug names its `<slug>.md` handoff, `handoff-`/`h-` normalised), row ids,
     box ids and text_shas a box is matched against. Legacy nested `targets:` maps are read too."""
-    for rel in HOLDS_CANDIDATES:
-        p = root / rel
-        if not p.exists():
-            continue
+    p = holds_file(root)
+    if p is not None:
         try:
             import yaml
             doc = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-        except Exception:  # noqa: BLE001 — a broken holds file degrades to no holds, never a crash
-            return []
-        items = doc.get("holds", doc) if isinstance(doc, dict) else doc
+            if not isinstance(doc, dict) or not isinstance(doc.get("holds"), list):
+                raise ValueError("no top-level holds list")
+        except Exception:  # noqa: BLE001 — unreadable = NO SOURCE (None): select fails closed, never "no holds"
+            return None
+        items = doc.get("holds")
         if isinstance(items, dict):
             items = [{"id": k, **(v if isinstance(v, dict) else {})} for k, v in items.items()]
         out = []
@@ -135,13 +164,16 @@ def load_holds(root: Path) -> list[dict]:
             t |= {f"session:{_OWNER_PREFIX.sub('', str(x))}" for x in (src.get("sessions") or src.get("owners") or [])}
             out.append({"id": str(h["id"]), "scope": str(h.get("scope") or "loop-launch"), "targets": t})
         return out
-    return []
+    return None
 
 
 def holds_on(holds: list[dict], name: str, row: str | None, bid: str | None, sha: str) -> list[str]:
     """Hold ids covering a box: its handoff basename, its file stem as a held session, its row, its ID or text_sha.
     Every scope holds the box for the DISPATCHER (loop-launch holds the handoff's agent sessions, which is what
-    taskflow/select is); scope only differs for rowflow rows (publish_row.hold_refuses)."""
+    taskflow/select is); scope only differs for rowflow rows (publish_row.hold_refuses). holds.yaml missing or
+    unreadable -> [HOLDS-UNAVAILABLE] on every box (fail closed)."""
+    if any(h.get("unavailable") for h in holds):
+        return [HOLDS_UNAVAILABLE]
     keys = {name, f"session:{Path(name).stem}", sha} | ({row} if row else set()) | ({bid} if bid else set())
     return sorted(h["id"] for h in holds if keys & h["targets"])
 
@@ -149,7 +181,9 @@ def holds_on(holds: list[dict], name: str, row: str | None, bid: str | None, sha
 def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None],
           row_open: dict[str, bool], priority: dict, track_open: dict[str, bool] | None = None) -> dict:
     """files: {name: path}; handoff_rows: {name: row id}; row_open: {row id: has open work}; priority: backlog doc."""
-    holds = load_holds(root)
+    holds_list = load_holds(root)
+    holds = holds_list if holds_list is not None else [{"id": HOLDS_UNAVAILABLE, "scope": "all-rows", "targets": set(),
+                                                        "unavailable": True}]
     prows = priority.get("rows", {}) if isinstance(priority, dict) else {}
     recs, open_ids, known_ids = [], set(), set()
     for name, path in sorted(files.items()):
@@ -240,7 +274,7 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
     counts["outside_backlog"] = sum(1 for r in recs if r.get("outside_backlog"))
     counts["held"] = sum(1 for r in recs if r.get("holds") and r["state"] != "done")
     return {"schema": SCHEMA, "include_done": INCLUDE_DONE, "counts": counts, "limits": limit_findings(files, recs, root),
-            "holds_source": next((h for h in HOLDS_CANDIDATES if (root / h).exists()), None),
+            "holds_source": (str(holds_file(root)) if holds_list is not None else None),
             "holds": [{"id": h["id"], "scope": h["scope"]} for h in holds], "boxes": boxes}
 
 

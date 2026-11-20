@@ -40,7 +40,7 @@ def test_held_box_or_file_renders_hold():
 
 def test_select_and_generated_rows_agree():
     boxes = [rec(1, outside_backlog=True), rec(2, proposed_by="taskflow"), rec(3, holds=["h"]), rec(4)]
-    doc = {"boxes": {b["id"]: b for b in boxes}}
+    doc = {"boxes": {b["id"]: b for b in boxes}, "holds_source": "handoffs/active/holds.yaml"}
     cands, hist = S.candidates(doc, set())
     assert [k for k, _ in cands] == ["X-4"]
     assert I.generated_next_action(boxes, exclude=set()).startswith("**X-4**")

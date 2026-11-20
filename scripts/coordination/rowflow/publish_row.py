@@ -394,7 +394,6 @@ def load_holds(repo=None):
             since: 2026-11-20T00:00Z
             reason: free text
     Returns [{id, scope, targets, row_prefixes, since, reason, source}]. A broken file -> no holds (WARN)."""
-    repo = repo or os.environ.get("EPYC_HOLDS_ROOT") or None   # C3: tests / lane trees pin the holds root
     for rel in HOLDS_CANDIDATES:
         p = config_path(rel, repo)
         if not os.path.exists(p):
@@ -418,6 +417,8 @@ def load_holds(repo=None):
                             "row_prefixes": [str(x) for x in (h.get("row_prefixes") or []) if x],
                             "since": h.get("since"), "reason": h.get("reason"), "source": p})
         return out
+    print("HOLDS-SOURCE-MISSING: no holds.yaml found; registry operator_gate view + default row prefixes apply",
+          file=sys.stderr)   # C3 fail closed: the registry gates and DEFAULT_GATED_ROW_PREFIXES still refuse
     return []
 
 

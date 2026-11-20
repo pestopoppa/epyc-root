@@ -1,5 +1,15 @@
-# Operator holds — the single exclusion source (handoff standard decision 3; schema: scripts/coordination/holds.py).
+# Operator holds -- the single exclusion source (handoff standard decision 3; schema: scripts/coordination/holds.py).
 # Written by the operator and by `handoff_sessions.py gate|unpark`; every reader derives from this file.
+#
+# Keys per hold: id, scope, sessions, handoffs, rows, boxes (ID or text_sha), files, row_prefixes, since, by, reason.
+# Scope semantics PER READER:
+#   dispatcher (handoff_sessions launch gate, taskflow/select, generated index rows, backlog_row_check):
+#       EVERY scope holds -- a held session is never spawned, a held handoff/box is never selected.
+#   rowflow publish_row (F4): loop-launch admits a row by its OWN owner (refused only when the owner is a held
+#       session, or the row names no owner); all-rows also refuses every row whose handoff/id/box is a target;
+#       row_prefixes refuse any matching row id whatever its scope. Release: operator-ratify/<hold id>.json.
+# FAIL CLOSED: a missing or unreadable file never means "no holds" -- registry gates + default row prefixes stay,
+# every box is marked HOLDS-UNAVAILABLE and `index_state.py --check` fails with BAD HOLD.
 holds:
 - id: akagg
   sessions:
@@ -169,3 +179,13 @@ holds:
   since: '2026-11-18'
   by: publish_row.DEFAULT_GATED_ROW_PREFIXES
   reason: production kernel promotion rows; released only by operator-ratify/rowprefix-v14-.json
+- id: rocm-kernel-authoring
+  scope: loop-launch
+  handoffs:
+  - rocm-kernel-authoring.md
+  sessions:
+  - agentic-rocm-kernel-authoring
+  since: '2026-11-20'
+  by: coordinator (Fable C3 review S2)
+  reason: keep Codex/dispatcher loops off INF-48; rows owned by autokernel stay admitted
+    (loop-launch)

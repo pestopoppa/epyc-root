@@ -20,6 +20,19 @@ SCOPES = ("loop-launch", "all-rows", "boxes")
 TARGET_KEYS = ("sessions", "handoffs", "rows", "boxes", "files")
 OWNER_PREFIX_RX = re.compile(r"^(handoff-|h-)")
 CACHE_SOURCE = "holds.yaml"
+HEADER = """# Operator holds -- the single exclusion source (handoff standard decision 3; schema: scripts/coordination/holds.py).
+# Written by the operator and by `handoff_sessions.py gate|unpark`; every reader derives from this file.
+#
+# Keys per hold: id, scope, sessions, handoffs, rows, boxes (ID or text_sha), files, row_prefixes, since, by, reason.
+# Scope semantics PER READER:
+#   dispatcher (handoff_sessions launch gate, taskflow/select, generated index rows, backlog_row_check):
+#       EVERY scope holds -- a held session is never spawned, a held handoff/box is never selected.
+#   rowflow publish_row (F4): loop-launch admits a row by its OWN owner (refused only when the owner is a held
+#       session, or the row names no owner); all-rows also refuses every row whose handoff/id/box is a target;
+#       row_prefixes refuse any matching row id whatever its scope. Release: operator-ratify/<hold id>.json.
+# FAIL CLOSED: a missing or unreadable file never means "no holds" -- registry gates + default row prefixes stay,
+# every box is marked HOLDS-UNAVAILABLE and `index_state.py --check` fails with BAD HOLD.
+"""
 
 
 def slug_of(x) -> str:
@@ -27,7 +40,9 @@ def slug_of(x) -> str:
 
 
 def path(root: str | None = None) -> str:
-    """root pinned -> <root>/handoffs/active/holds.yaml; else the hub view first (toolroot.resolve, F5)."""
+    """root pinned (or $EPYC_HOLDS_ROOT) -> <root>/handoffs/active/holds.yaml; else the HUB VIEW first
+    (toolroot.resolve, F5: /mnt/raid0/llm/views/epyc-root-main tracks origin/main), never a stale shared checkout."""
+    root = root or os.environ.get("EPYC_HOLDS_ROOT") or None
     if root:
         return os.path.join(root, REL)
     try:
@@ -41,17 +56,22 @@ def path(root: str | None = None) -> str:
 
 
 def load(root: str | None = None) -> list[dict] | None:
-    """The hold list, or None when the file does not exist (callers keep legacy behaviour). Broken file -> [] + WARN."""
+    """The hold list, or None when the file is MISSING or UNREADABLE. FAIL CLOSED: None means "no source", never
+    "no holds" -- callers keep the registry gate cache and DEFAULT_GATED_ROW_PREFIXES and log HOLDS-SOURCE-MISSING."""
     p = path(root)
     if not os.path.exists(p):
+        print(f"HOLDS-SOURCE-MISSING: {p} absent; keeping registry gates + default prefixes", file=sys.stderr)
         return None
     try:
         import yaml
-        doc = yaml.safe_load(open(p, encoding="utf-8").read()) or {}
+        doc = yaml.safe_load(open(p, encoding="utf-8").read())
+        if not isinstance(doc, dict) or not isinstance(doc.get("holds"), list):
+            raise ValueError("no top-level `holds:` list")
     except Exception as e:  # noqa: BLE001
-        print(f"WARN: holds file {p} unreadable ({type(e).__name__}); no holds applied", file=sys.stderr)
-        return []
-    items = doc.get("holds", doc) if isinstance(doc, dict) else doc
+        print(f"HOLDS-SOURCE-MISSING: {p} unreadable ({type(e).__name__}: {e}); keeping registry gates + default "
+              f"prefixes", file=sys.stderr)
+        return None
+    items = doc.get("holds")
     if isinstance(items, dict):
         items = [{"id": k, **(v if isinstance(v, dict) else {})} for k, v in items.items()]
     return [h for h in (items or []) if isinstance(h, dict) and h.get("id")]
@@ -90,8 +110,7 @@ def _write(holds: list[dict], root: str | None) -> str:
     p = path(root)
     tmp = f"{p}.{os.getpid()}.tmp"
     with open(tmp, "w", encoding="utf-8") as f:
-        f.write("# Operator holds — the single exclusion source (handoff standard decision 3; schema: scripts/coordination/holds.py).\n"
-                "# Written by the operator and by `handoff_sessions.py gate|unpark`; every reader derives from this file.\n")
+        f.write(HEADER)
         f.write(yaml.safe_dump({"holds": holds}, sort_keys=False, allow_unicode=True))
     os.replace(tmp, p)
     return p
@@ -100,6 +119,8 @@ def _write(holds: list[dict], root: str | None) -> str:
 def add_session_hold(slug: str, reason: str, since: str, by: str = "handoff_sessions gate",
                      handoff: str | None = None, root: str | None = None) -> str:
     holds = load(root) or []
+    if not os.path.isdir(os.path.dirname(path(root))):
+        raise FileNotFoundError(path(root))
     if slug in held_sessions(holds):
         return path(root)
     h = {"id": slug, "scope": "loop-launch", "sessions": [slug], "since": since, "by": by, "reason": reason}
@@ -130,8 +151,9 @@ def remove_session_hold(slug: str, root: str | None = None) -> bool:
 
 def sync_registry(reg: dict, holds: list[dict] | None) -> list[str]:
     """Make registry `operator_gate` a cache of holds.yaml: a held session gets `operator_gate` (source holds.yaml); a
-    cached gate whose hold is gone is dropped. Legacy gates without `source` are left alone. No-op when the file is
-    absent (holds is None). Returns the slugs changed."""
+    cached gate whose hold is gone is dropped -- ONLY gates this function derived (source holds.yaml); gates set by the
+    `gate` subcommand (source operator) and legacy gates are never dropped here. FAIL CLOSED: no-op when the file is
+    missing or unreadable (holds is None). Returns the slugs changed."""
     if holds is None:
         return []
     hs = held_sessions(holds)

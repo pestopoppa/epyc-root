@@ -628,7 +628,8 @@ def collect() -> dict:
 
 def collect_light() -> dict:
     """Box-index-only state (C0.2): rows + per-handoff row_id/open/tracks WITHOUT `classify()` (27 s) or the
-    `last_advanced` pickaxe. `open` here = unticked, non-roll-up, non-frozen boxes (any of them keeps a row ref
+    `last_advanced` pickaxe. `open` here = unticked, non-roll-up, non-frozen, non-guarded boxes (= collect()'s
+    open + blocked, the only thing box_index.build reads; any of them keeps a row ref
     unresolved), which is what `box_index.build` needs for gate resolution; the full counts stay in `collect()`."""
     rows = [r for i in DOMAIN_INDICES for r in parse_index_rows(ACTIVE / i)]
     owner = {}
@@ -646,6 +647,8 @@ def collect_light() -> dict:
                 continue
             std = _box_std_state(lines, lineno)
             if std in ("rollup", "frozen"):
+                continue
+            if brc.box_is_guarded(p, lineno):   # review: same exclusion collect() applies (guarded != open/blocked)
                 continue
             n_open += 1
             sec = next((t for t in secs if t["line"] < lineno <= t["end"]), None)
@@ -1244,11 +1247,13 @@ def hold_problems(state: dict, paths: dict | None = None) -> list[str]:
     ID). Sessions are not resolved here (the registry lives under the flags dir); text_sha box targets are accepted."""
     hp = REPO_ROOT / "handoffs" / "active" / "holds.yaml"
     if not hp.exists():
-        return []
+        return ["BAD HOLD: handoffs/active/holds.yaml is missing — the dispatcher and taskflow fail closed without it"]
     sys.path.insert(0, str(REPO_ROOT / "scripts" / "coordination"))
     try:
         import holds as _H  # noqa: PLC0415
-        hl = _H.load(str(REPO_ROOT)) or []
+        hl = _H.load(str(REPO_ROOT))
+        if hl is None:      # present but unreadable (missing returned above): fail the commit, never "no holds"
+            return [f"BAD HOLD: unreadable {hp.relative_to(REPO_ROOT)} — every reader fails closed until it parses"]
         errs = [f"BAD HOLD: {e}" for e in _H.validate(hl)]
     finally:
         sys.path.pop(0)

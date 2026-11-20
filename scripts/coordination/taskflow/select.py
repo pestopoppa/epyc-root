@@ -77,6 +77,11 @@ def candidates(doc: dict, exclude: set[str] | None = None) -> tuple[list[tuple[s
     exclude = set(EXCLUDE_FILES) | set(exclude or ())
     hist: collections.Counter = collections.Counter()
     out = []
+    if doc.get("boxes") and not doc.get("holds_source"):
+        # C3 FAIL CLOSED: without holds.yaml no box can be shown un-held, so nothing is admitted
+        hist["holds-source-missing"] = len(doc["boxes"])
+        hist["admitted"] = 0
+        return out, hist
     for key, rec in sorted((doc.get("boxes") or {}).items(), key=order_key):
         why = skip_reason(rec, exclude)
         if why:
