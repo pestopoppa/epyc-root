@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T11:10:48Z",
+  "generated_at": "2026-11-20T11:16:48Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1084,7 +1084,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 953,
+          "line": 963,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1093,7 +1093,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1265,
+          "line": 1275,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1102,7 +1102,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1472,
+          "line": 1482,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1111,7 +1111,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1798,
+          "line": 1808,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1120,7 +1120,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2033,
+          "line": 2043,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1825,7 +1825,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 832,
+          "line": 834,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 27,
           "readiness": "blocked"
@@ -1879,7 +1879,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 671,
+          "line": 676,
           "name": "attention-matching-kv-compaction",
           "open": 4,
           "readiness": "ready"
@@ -1888,7 +1888,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1080,
+          "line": 1085,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1897,7 +1897,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1696,
+          "line": 1701,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1906,7 +1906,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1843,
+          "line": 1848,
           "name": "triattention-kv-selection",
           "open": 12,
           "readiness": "ready"
