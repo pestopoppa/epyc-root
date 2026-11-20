@@ -3,6 +3,8 @@
 #include <cstring>
 #include <cstdio>
 #include <string>
+#include <cmath>
+#include <cstdint>
 
 namespace cafe4 {
 struct Options {
@@ -58,6 +60,28 @@ inline bool parse(int argc, char ** argv, Options & out) {
 inline int finish(bool nonfault_ok, bool fault_detected, bool injected) {
     if (!nonfault_ok || !fault_detected) return 2;
     return injected ? 1 : 0;
+}
+
+// Read-only exact float-bit fingerprint. Never samples, changes state, or
+// substitutes inputs. Invalid/missing native buffers cannot qualify a trial.
+inline bool float_witness(int mode, int width, const char * stage,
+                          const float * values, int count) {
+    if (!values || count <= 0) return false;
+    uint64_t hash = 14695981039346656037ULL;
+    for (int i = 0; i < count; ++i) {
+        if (!std::isfinite(values[i])) return false;
+        uint32_t bits;
+        static_assert(sizeof(bits) == sizeof(values[i]), "float width");
+        std::memcpy(&bits, values + i, sizeof(bits));
+        // Explicit byte order makes the fingerprint independent of host order.
+        for (int shift = 0; shift < 32; shift += 8) {
+            hash ^= (bits >> shift) & 255U;
+            hash *= 1099511628211ULL;
+        }
+    }
+    std::fprintf(stderr, "CAFE4_FLOAT_WITNESS mode=%d width=%d stage=%s count=%d fnv1a64=%016llx\n",
+                 mode, width, stage, count, (unsigned long long)hash);
+    return true;
 }
 
 // These are the tokens already chosen by the native path. Printing them must

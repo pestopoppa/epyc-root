@@ -228,3 +228,51 @@ treat that as pre-intervention variation and localize hidden-state/draft-logit
 inputs; do not relax matched controls or claim a snapshot-mode cause. Existing
 CAFE-4 source registration and VB-SERVING-DF2 wiring task apply.
 [no-belief: harness isolation correction and model-free tests only]
+
+Pre-intervention floating-point witnesses (2026-11-20)
+-----------------------------------------------------
+
+R7 repeats R6's mode1 proposal mismatch with all pre-rollback snapshot modes
+set to zero. The existing tokens do not establish whether native hidden/logit
+inputs matched. Root cause remains unproven; the historical UNKNOWN stands.
+
+The source port now fingerprints the last target prefill hidden row and full
+last target logits immediately before proposal, then the full last draft logits
+after proposal and before draft rewind / target verification. These are read-only
+FNV-1a-64 fingerprints of finite float bits with explicit byte order, labelled by
+mode, width, stage and count. They are diagnostic witnesses, not cryptographic
+content identities or a numerical accuracy gate. A differing fingerprint proves
+the recorded buffers differ; matching fingerprints do not prove full context
+identity or exclude collisions. Earlier prompt rows, draft KV, and intermediate
+draft logits are not captured. The target hidden getter uses the explicit raw
+last prompt index: unmasked NextN getters reject negative indices.
+
+Null, empty or nonfinite native buffers return UNKNOWN with target-provenance or
+draft-provenance failure stages. No token substitution, sampler calls, acceptance
+change or tolerance change is introduced. Independent trials, matched prefix /
+draft controls, fixed **0.743863867** tolerance (lower error is better), and
+explicit fault exit semantics remain unchanged.
+
+**11/11 model-free tests PASS** (`python3 -m unittest discover -s
+scripts/diagnostics -p test_cafe4_modes.py -v`). A compiled spy executes the actual
+generated provenance helper, checking raw hidden-row selection, getter order,
+unchanged input buffers, stable/changed fingerprints, and missing/nonfinite
+refusals. The 21 existing token-witness scenarios now also check provenance call
+order and boundary-failure early exit. Full generated candidate C++17 syntax PASS
+against the retained detached experimental v10 diagnostic source with local
+bridge and updated header. No models loaded or full build run.
+
+Generated candidate: `/mnt/raid0/llm/tmp/df2/cafe4-provenance-20261120/candidate.cpp`,
+SHA-256 `ef0c9a46421ad2c6414eab8dab316985b80b065315875ef9d118c7a4daf72260`;
+header SHA-256 `0cbd694c9bf74495d1c76a700b5a43a4f1c0a5583a492eaa9740e030498540b2`.
+Base source blob remains `53035f75429327e82454f7d26f7dd67f65c80c16`.
+GitNexus status/impact unavailable: lane unindexed. Direct call inspection bounds
+the change to the CAFE-4 generator and header; sealed historical packets and
+production kernels unchanged. Existing CAFE-4 source registration and
+VB-SERVING-DF2 wiring task apply.
+
+Next publish a fresh hash-bound full HIP build requiring the float-witness
+marker, then qualify native controls before using these diagnostics to localize
+the original mismatch. Do not retry the old R7 binary or claim its root cause is
+fixed. Parent CAFE-4 remains open.
+[no-belief: diagnostic code and model-free tests only; native cause unproven]

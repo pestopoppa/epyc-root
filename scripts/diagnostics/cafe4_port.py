@@ -91,10 +91,26 @@ def materialize(source):
             ' if(!logits(batched.get(),n,o.batched))return o;')
     replace('if(!off.ok||!observe.ok||!fault.ok||off.prefix!=observe.prefix||off.prefix!=fault.prefix||off.draft!=observe.draft||off.draft!=fault.draft)',
             'if(!cafe4::matched_controls(off,observe,fault))')
+    # Record actual hidden inputs and last draft output before target verify.
+    # Getters synchronize native buffers; these diagnostics never choose tokens.
+    replace('static Observation trial(',
+            'static bool cafe4_provenance(llama_context *c,llama_model *m,int mode,int width,bool target,int row=0) {\n'
+            ' if(target) {\n'
+            '  if(!cafe4::float_witness(mode,width,"target-hidden",llama_get_embeddings_nextn_ith(c,row),llama_model_n_embd_out(m)))return false;\n'
+            ' }\n'
+            ' return cafe4::float_witness(mode,width,target?"target-logits":"draft-logits",llama_get_logits_ith(c,-1),llama_vocab_n_tokens(llama_model_get_vocab(m)));\n'
+            '}\nstatic Observation trial(')
+    replace('if(!cafe4_mtp_draft(',
+            'if(!cafe4_provenance(ctx.get(),m,mode,width,true,(int)prompt.size()-1))return o;\n'
+            ' if(!cafe4_mtp_draft(')
+    replace(' cafe4::proposal_witness(mode,width,o.draft);',
+            ' cafe4::proposal_witness(mode,width,o.draft);\n'
+            ' if(!cafe4_provenance(dft->context(),m,mode,width,false))return o;')
     stages = (
         'target-context-or-capacity', 'draft-context', 'draft-target-alias',
         'speculative-init-or-embedding', 'target-configure', 'prompt-process',
-        'boundary-logits', 'draft-proposal', 'draft-too-short', 'draft-rewind',
+        'boundary-logits', 'target-provenance', 'draft-proposal', 'draft-provenance',
+        'draft-too-short', 'draft-rewind',
         'preverify-counts-read', 'preverify-counts-nonzero', 'verify-process',
         'verify-logits', 'strict-partial-acceptance', 'correction-logits',
         'rollback-configure', 'target-suffix-remove', 'draft-suffix-remove', 'correction-process',

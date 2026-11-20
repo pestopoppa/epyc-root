@@ -225,7 +225,7 @@ int main(int argc,char**argv) {
         trial = generated[generated.index('static Observation trial('):generated.index('static double error(')]
         self.assertEqual(trial.count('return o;'), 1)
         self.assertIn('o.ok=true;return o;', trial)
-        self.assertEqual(trial.count('return cafe4::trial_failure('), 31)
+        self.assertEqual(trial.count('return cafe4::trial_failure('), 33)
         self.assertIn('if(!cafe4::matched_controls(off,observe,fault))', generated)
         self.assertIn('ef<=10*tol||delta<=10*tol', generated)
         self.assertIn('tol=0.743863867,', generated)
@@ -298,6 +298,69 @@ int main() {
             with self.subTest(anchor=anchor), self.assertRaises(ValueError):
                 port.materialize(source.replace(anchor, 'BROKEN'))
 
+    def test_compiled_float_provenance_and_refusals(self):
+        source = subprocess.check_output(['git', '-C', str(port.ROOT), 'cat-file', 'blob', port.BASE_BLOB], text=True)
+        generated = port.materialize(source)
+        helper = generated[generated.index('static bool cafe4_provenance('):generated.index('static Observation trial(')]
+        directory = Path(self.scratch.name)
+        cpp = directory / 'provenance.cpp'
+        cpp.write_text(r'''#include "cafe4_modes.hpp"
+#include <cassert>
+#include <limits>
+#include <vector>
+using llama_context=int;using llama_model=int;
+float hidden[]={1.0f,-2.0f},logits[]={3.0f,4.0f};
+std::vector<int> calls;
+bool missing=false;
+float* llama_get_embeddings_nextn_ith(int*,int row) {
+ assert(row==7);calls.push_back(1);return missing?nullptr:hidden;
+}
+int llama_model_n_embd_out(int*) { return 2; }
+float* llama_get_logits_ith(int*,int row) {
+ assert(row==-1);calls.push_back(2);return logits;
+}
+int* llama_model_get_vocab(int*m) { return m; }
+int llama_vocab_n_tokens(int*) { return 2; }
+''' + helper + r'''
+int main() {
+ int c=0,m=0;
+ assert(cafe4_provenance(&c,&m,1,2,true,7));
+ assert((calls==std::vector<int>{1,2}));
+ calls.clear();assert(cafe4_provenance(&c,&m,1,2,false));
+ assert((calls==std::vector<int>{2}));
+ assert(hidden[0]==1.0f && hidden[1]==-2.0f);
+ assert(logits[0]==3.0f && logits[1]==4.0f);
+ // Same bits -> same fingerprint, a changed bit -> a different fingerprint.
+ assert(cafe4::float_witness(0,2,"same",hidden,2));
+ assert(cafe4::float_witness(0,2,"same",hidden,2));
+ hidden[0]=1.5f;assert(cafe4::float_witness(0,2,"changed",hidden,2));
+ assert(!cafe4::float_witness(0,2,"null",nullptr,2));
+ assert(!cafe4::float_witness(0,2,"empty",hidden,0));
+ for(float bad : {std::numeric_limits<float>::infinity(),
+                  std::numeric_limits<float>::quiet_NaN()}) {
+  hidden[0]=bad;calls.clear();
+  assert(!cafe4_provenance(&c,&m,1,2,true,7));
+  assert((calls==std::vector<int>{1}));
+ }
+ missing=true;calls.clear();assert(!cafe4_provenance(&c,&m,1,2,true,7));
+ assert((calls==std::vector<int>{1}));
+ logits[0]=std::numeric_limits<float>::infinity();
+ assert(!cafe4_provenance(&c,&m,1,2,false));
+}
+''')
+        binary = directory / 'provenance'
+        subprocess.run(['c++', '-std=c++17', '-Wall', '-Wextra', '-Werror',
+                        '-I', str(HERE), str(cpp), '-o', str(binary)], check=True)
+        result = subprocess.run([str(binary)], check=True, capture_output=True, text=True)
+        lines = result.stderr.splitlines()
+        self.assertEqual(len(lines), 6)
+        fingerprints = [line.split('fnv1a64=')[1] for line in lines]
+        self.assertEqual(fingerprints[0], fingerprints[3])
+        self.assertEqual(fingerprints[3], fingerprints[4])
+        self.assertNotEqual(fingerprints[4], fingerprints[5])
+        self.assertNotIn('stage=null', result.stderr)
+        self.assertNotIn('stage=empty', result.stderr)
+
     def test_native_token_witnesses_preserve_acceptance_and_early_exits(self):
         source = subprocess.check_output(['git', '-C', str(port.ROOT), 'cat-file', 'blob', port.BASE_BLOB], text=True)
         generated = port.materialize(source)
@@ -319,6 +382,11 @@ struct Observation {
  llama_tokens draft;
 };
 int scenario=0,top_calls=0,process_calls=0;
+std::vector<bool> provenance;
+bool cafe4_provenance(int*,int*,int,int,bool target,int row=0) {
+ assert(!target || row==2);
+ provenance.push_back(target);return true;
+}
 std::vector<int> queried;
 struct Draft { int* context() { static int c; return &c; } };
 void common_speculative_begin(int*,int,const llama_tokens&) {}
@@ -364,6 +432,8 @@ int main(int argc,char**argv) {
   for(int i=0;i<63;++i)assert(queried[i+1]==i);}
  assert(process_calls==((scenario==4 || scenario==5)?0:1));
  assert(top_calls==(int)queried.size());
+ if(scenario==4)assert(provenance.empty());
+ else assert((provenance==std::vector<bool>{true,false}));
 }
 ''')
         binary = directory / 'tokens'
