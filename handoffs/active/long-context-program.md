@@ -158,6 +158,23 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     workspace-ec) Resume from the turn-42 slot in the scratch `slots/` if it is still there and its build and argv
     digest match; otherwise re-prefill. At ~600+ s per 8K turn, the remaining ~24 turns need ~4.5 h or more. Done when
     CY2's needle score and decode rate at ≥ 500K are recorded beside the 323K row.
+    - **2026-11-20 result — INCOMPLETE, not a ≥500K verdict.** Row `yarn-cpu-512k-20261119`
+      ended with wrapper rc=0, but its native `RESULT.json` reports rc=75, verdict=INCOMPLETE,
+      error=null and own_server_reaped=true. The wrapper's completion check only requires that
+      result file to exist. Last saved turn 40 reached 350,940 tokens; no 510K probe exists.
+      Last scored checkpoint: 323,527 tokens, needles 5/5, local OK, decode HTTP 200,
+      128 predicted tokens at 2.750800058 tok/s. Historical CY2 at 323K was 5/5 and
+      2.9 tok/s; these are separate diagnostic runs, not a paired speed comparison.
+      Native result `/mnt/raid0/llm/tmp/yarn/cpu-resume-20261119/RESULT.json`, SHA-256
+      `912aacede4377c89a6dfb899930b12d73b1ec0333d63a5e47fdbe7027ef83079`;
+      attempt-relative `CY2/probe_320000.json` SHA-256
+      `88399a0634c7a0383206f263c4c24783667f02d3c84a8d448af29c7d0df52d0d`, under
+      the `attempt` directory named in that native result. Existing filing receipt records SUPERSEDED by
+      `yarn-cpu-512k-20261120-banked`; the owner filing command returned NOOP, preserving it.
+      That successor records the 2026-11-20 operator directive: bank until AKX-ALL-21/24
+      CPU FA depth work lands in the champion, freeing the host for AK-DTREE P2/P5,
+      H15 verification and DF2. Retain the saved slot; the current launcher starts fresh
+      and cannot yet reuse it. The ≥500K done-when remains unmet. [belief: cc]
     Continuation recipe: original Qwen3.6-35B-A3B-MTP-Q8_0, verified v10 CPU store
     `ffc1bac82`, research runner `0e4321f24bae29355333fcf2cb712a41ce080e2f`, original CY2 fixtures;
     whole-host physical CPUs 0-95 (smoke: four keeper CPUs); re-prefill from zero when the historical
