@@ -395932,7 +395932,7 @@
 
 - id: intake-2747
   arxiv_id: "2404.00242"
-  url: https://arxiv.org/abs/2404.00242
+  url: https://arxiv.org/abs/2404.00242v4
   source_type: paper
   title: "DeFT: Decoding with Flash Tree-attention for Efficient Tree-structured LLM Inference"
   categories:
@@ -395960,12 +395960,27 @@
     - intake-2720
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  read_depth: DIGEST
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): prefix-KV sharing is already the single-sequence verify baseline; recorded in seeds/hypotheses/17 declined list"
+  verification: dive-verified
+  read_depth: PARTIAL
   notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Abstract only read in Stage 1 (v4, ICLR 2025)."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): DeFT v4 read from arXiv HTML: prefix-KV-once grouping, tree KV splitting with per-query bit masks, flash-decoding-style global reduction confirmed. For one sequence with 12-16 verify rows the prefix is already read once by our FA, so DeFT adds ~0 ms; small-tree (t=32) gain over Radix only 1.24x on A100. Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 3.3 Q-Guided vs. KV-Guided Grouping"
+    quote: 'prefix KV cache is only loaded once'
+    quote_sha256: dd81991f5558cf5d1fe057007d1a024b6a15ebe417c67797007fab7a2ee87eb6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c250b7451329714ba9e5c99466c16e96b64dcfd3f2a8e0af4a203195d93e0723, found: true}
+    source_revision: https://arxiv.org/html/2404.00242v4
+    source_artifact: {"byte_length": 662198, "effective_url": "https://arxiv.org/html/2404.00242v4", "entry_url": "https://arxiv.org/abs/2404.00242v4", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c250b7451329714ba9e5c99466c16e96b64dcfd3f2a8e0af4a203195d93e0723", "relative_path": "sha256/c2/c250b7451329714ba9e5c99466c16e96b64dcfd3f2a8e0af4a203195d93e0723.raw", "requested_url": "https://arxiv.org/html/2404.00242v4", "retrieved_at_utc": "2026-11-20T13:36:56.525314Z", "schema_version": 1, "snapshot_id": "sha256:c250b7451329714ba9e5c99466c16e96b64dcfd3f2a8e0af4a203195d93e0723"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+
 - id: intake-2748
   arxiv_id: "2402.05099"
-  url: https://arxiv.org/abs/2402.05099
+  url: https://arxiv.org/abs/2402.05099v2
   source_type: paper
   title: "Hydragen: High-Throughput LLM Inference with Shared Prefixes"
   categories:
@@ -395992,9 +396007,24 @@
     - intake-2720
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  read_depth: DIGEST
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): prefix-KV sharing is already the single-sequence verify baseline; recorded in seeds/hypotheses/17 declined list"
+  verification: dive-verified
+  read_depth: PARTIAL
   notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Abstract only read. Merge rule assumed LSE, unconfirmed."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): Hydragen v2: prefix/suffix split recombined by LSE denominator rescaling confirmed. Targets many sequences sharing a prefix; single-sequence verify already shares prefix K/V, so no lever for our verify path. Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 3 attention decomposition"
+    quote: 'allows many matrix vector products to be replaced with fewer matrix-matrix products'
+    quote_sha256: 580b4d91b36d301b020d8f24d0b35ae92d518343e669f0fe5ebf828bfd6750b2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8c6ca78704ed091136f50ac267ae5b9aab898277f01e919c55fbf5b9b46c3ba5, found: true}
+    source_revision: https://arxiv.org/html/2402.05099v2
+    source_artifact: {"byte_length": 660266, "effective_url": "https://arxiv.org/html/2402.05099v2", "entry_url": "https://arxiv.org/abs/2402.05099v2", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "8c6ca78704ed091136f50ac267ae5b9aab898277f01e919c55fbf5b9b46c3ba5", "relative_path": "sha256/8c/8c6ca78704ed091136f50ac267ae5b9aab898277f01e919c55fbf5b9b46c3ba5.raw", "requested_url": "https://arxiv.org/html/2402.05099v2", "retrieved_at_utc": "2026-11-20T13:36:56.653318Z", "schema_version": 1, "snapshot_id": "sha256:8c6ca78704ed091136f50ac267ae5b9aab898277f01e919c55fbf5b9b46c3ba5"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+
 - id: intake-2749
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/30370
@@ -396024,9 +396054,33 @@
     - intake-2720
   handoffs_updated: []
   handoffs_created: []
-  verification: stage1-unverified
-  read_depth: DIGEST
+  integration_disposition: declined
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): dive-overturned: GCN4/5-only gate and dense-prefix tree masks never qualify for the sparse path"
+  verification: dive-overturned
+  read_depth: PARTIAL
   notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Open at llama.cpp head 4b69c79cca4b (2026-11-20); diff not read. Related: closed #28943 (interior fully-masked tile skip, RDNA3), merged #27970 sparse-fa, mask-to-KV_max tail skip in fattn-common.cuh."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): PR diff @8dbc504 read: device code and host gate are GCN4/5 only (GGML_CUDA_CC_IS_GCN excludes CDNA2), so it neither compiles nor selects on gfx90a. Sparsity is a top-n_kv_max hint refused above 25% of KV; a tree mask with a dense prefix never qualifies. NO-GO for tree verify. Also: llama.cpp mask-to-KV_max only trims tail tiles and is not run for a 16-row verify (fattn-common.cuh:1176 @36cd3af). Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "fattn host selection hunk"
+    quote: 'if (GGML_CUDA_CC_IS_GCN(cc)) {'
+    quote_sha256: d15b78876728ca1aea5a4fcd264daf34957c468a6f7e7e7f616341d5484c3776
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d, found: true}
+    source_revision: https://patch-diff.githubusercontent.com/raw/ggml-org/llama.cpp/pull/30370.diff
+    source_artifact: {"byte_length": 21559, "effective_url": "https://patch-diff.githubusercontent.com/raw/ggml-org/llama.cpp/pull/30370.diff", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/30370", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d", "relative_path": "sha256/aa/aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/30370.diff", "retrieved_at_utc": "2026-11-20T13:36:57.337026Z", "schema_version": 1, "snapshot_id": "sha256:aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "n_kv_max refusal hunk"
+    quote: 'if (n_kv_max > n_kv/4) {'
+    quote_sha256: 1cb69aed25db424778fb7f08760d43b3d4db5a1d30586dcf5330ace5db6523a6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d, found: true}
+    source_revision: https://patch-diff.githubusercontent.com/raw/ggml-org/llama.cpp/pull/30370.diff
+    source_artifact: {"byte_length": 21559, "effective_url": "https://patch-diff.githubusercontent.com/raw/ggml-org/llama.cpp/pull/30370.diff", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/30370", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d", "relative_path": "sha256/aa/aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/30370.diff", "retrieved_at_utc": "2026-11-20T13:36:57.710005Z", "schema_version": 1, "snapshot_id": "sha256:aaf5a394f3a4b3b94c5f5802bbfe317d109aec87dc04fe25c18515155dbe7e7d"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+
 - id: intake-2750
   arxiv_id: null
   url: https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/attention/verify_splitkv.py
@@ -396055,11 +396109,27 @@
     - speculative-decoding.md
     intake_entries:
     - intake-2720
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
-  verification: stage1-unverified
-  read_depth: DIGEST
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): filed DTREE-ATTN-SHARE and DTREE-ATTN-ROUTE under AK-DTREE in speculative-decoding.md; sub-3% levers seeded in research seeds/hypotheses/17"
+  verification: dive-overturned
+  read_depth: PARTIAL
   notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Pinned ea442ff4ab19. Also FlashInfer c7e4de0b13ad packed bit custom mask + cascade merge_state seen (already intake-458 family)."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): verify_splitkv @ea442ff confirmed (split prefix KV + LSE merge, topk==1 only, HIP gate gfx95 only, mask is bool not int8). The baseline it fixes (serial prefix per seq/head) does not exist in llama.cpp HIP FA, which already splits KV (tile parallel_blocks, MMA stream-k). On gfx90a a 12-16-row verify with D=256 lands on the TILE kernel (fattn.cu:753/782 @36cd3af, inferred from selector). Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "verify_splitkv.py:8 @ea442ff"
+    quote: 'which loops the (long) prefix KV serially per'
+    quote_sha256: d31d786cd109f2858af86ecb931177114de74c8242ca58d450a95b7701a51219
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fc3c06b58c2ee7ca0395ed01fe5a7e87b600cc2d104c1f16a2df48b2ba632745, found: true}
+    source_revision: https://raw.githubusercontent.com/sgl-project/sglang/ea442ff4ab19171212a9ecaa0e175d0f2dd2a595/python/sglang/kernels/ops/attention/verify_splitkv.py
+    source_artifact: {"byte_length": 29773, "effective_url": "https://raw.githubusercontent.com/sgl-project/sglang/ea442ff4ab19171212a9ecaa0e175d0f2dd2a595/python/sglang/kernels/ops/attention/verify_splitkv.py", "entry_url": "https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/attention/verify_splitkv.py", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "fc3c06b58c2ee7ca0395ed01fe5a7e87b600cc2d104c1f16a2df48b2ba632745", "relative_path": "sha256/fc/fc3c06b58c2ee7ca0395ed01fe5a7e87b600cc2d104c1f16a2df48b2ba632745.raw", "requested_url": "https://raw.githubusercontent.com/sgl-project/sglang/ea442ff4ab19171212a9ecaa0e175d0f2dd2a595/python/sglang/kernels/ops/attention/verify_splitkv.py", "retrieved_at_utc": "2026-11-20T13:36:57.742737Z", "schema_version": 1, "snapshot_id": "sha256:fc3c06b58c2ee7ca0395ed01fe5a7e87b600cc2d104c1f16a2df48b2ba632745"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+
 - id: intake-2751
   arxiv_id: null
   url: https://github.com/ROCm/composable_kernel
@@ -396088,8 +396158,23 @@
     - speculative-decoding.md
     intake_entries:
     - intake-2720
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
-  verification: stage1-unverified
-  read_depth: DIGEST
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-dtree-verify-20261120 Stage 4 (operator: file directly, 2026-11-20): filed DTREE-ATTN-SHARE and DTREE-ATTN-ROUTE under AK-DTREE in speculative-decoding.md; sub-3% levers seeded in research seeds/hypotheses/17"
+  verification: dive-verified
+  read_depth: PARTIAL
   notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Pinned 6cb06034c56d; grep-level read only, nothing built for gfx90a. aiter 1ff8c8f61247: MTP multi-query PA/MLA asm is gfx942-only; FA mask limited to none/causal."
+  dive_corrections: "2026-11-20 (intake-dtree-verify-20261120 Stage 2): CK @6cb06034c56d: mask kinds are geometric only (no tree mask), split-KV + LSE combine kernels exist, gfx9 splitkv bm0 is 32 (hdim 32) or 64 (others); bm0=16 variants exist only for gfx11/12. Tile/split reference only. Dive-surfaced github.com/LINs-lab/DeFT declined (prefix sharing already baseline)."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "block_masking.hpp:16 @6cb0603"
+    quote: 'MASK_FROM_BOTTOM_RIGHT = 2,'
+    quote_sha256: 6b6a3ceab466aa3493af63eba3fea65b47775f519d3acc88003b5fdca68f96bf
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7, found: true}
+    source_revision: https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp
+    source_artifact: {"byte_length": 35340, "effective_url": "https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp", "entry_url": "https://github.com/ROCm/composable_kernel", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7", "relative_path": "sha256/9a/9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7.raw", "requested_url": "https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp", "retrieved_at_utc": "2026-11-20T13:36:57.773711Z", "schema_version": 1, "snapshot_id": "sha256:9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7"}
+    verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
