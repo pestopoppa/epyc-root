@@ -21,6 +21,32 @@ class CorrelationTest(unittest.TestCase):
   self.one['birth']=8
   self.assertEqual(correlate(calls=[self.call],samples=[self.one,self.two],pid=42,birth=7,gpu_id=22)[0]['status'],'UNKNOWN')
 
+class AttributionTest(CorrelationTest):
+ def join(self,samples):
+  return correlate(calls=[self.call],samples=samples,pid=42,birth=7,gpu_id=22)[0]
+ def test_bounded_join_has_no_failure(self):
+  r=self.join([self.one,self.two])
+  self.assertEqual(r['failure_reasons'],[])
+  self.assertEqual(r['distinct_sample_count'],2)
+ def test_duplicate_overlapping_sample_fails_persistence_only(self):
+  r=self.join([self.one,dict(self.one)])
+  self.assertEqual(r['status'],'UNKNOWN')
+  self.assertEqual(r['distinct_sample_count'],1)
+  self.assertEqual(r['failure_reasons'],['insufficient_distinct_in_invocation_observations'])
+ def test_gap_with_two_observations_fails_overlap_only(self):
+  before=dict(self.one,observation_start=1.5,observation_end=1.6)
+  r=self.join([before,self.two])
+  self.assertEqual(r['status'],'UNKNOWN')
+  self.assertEqual(r['failure_reasons'],['dispatch_outside_complete_observations'])
+ def test_wrong_identity_and_outside_window_fail_both(self):
+  for invalid in (dict(self.one,birth=8),dict(self.one,observation_end=3.1),dict(self.one,own_vram_bytes=0)):
+   r=self.join([invalid,self.two])
+   self.assertEqual(r['failure_reasons'],['insufficient_distinct_in_invocation_observations','dispatch_outside_complete_observations'])
+ def test_no_observations_fails_both(self):
+  r=self.join([])
+  self.assertEqual(r['distinct_sample_count'],0)
+  self.assertEqual(len(r['failure_reasons']),2)
+
 class FixtureTest(unittest.TestCase):
  def test_process_identity_backend_and_own_gpu_binding(self):
   import os,tempfile

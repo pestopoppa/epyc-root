@@ -90,7 +90,17 @@ def correlate(*, calls, samples, pid, birth, gpu_id):
                and a <= s['observation_start'] <= s['observation_end'] <= b]
         distinct={(s['observation_start'],s['observation_end']) for s in valid}
         hit=[s for s in valid if s['observation_start']<=t<=s['observation_end']]
+        bounded = len(distinct) >= 2 and bool(hit)
+        # Attribute failed joins without weakening the two-observation or
+        # dispatch-overlap requirements. Counts refer only to identity-valid,
+        # positive-residency observations fully inside this invocation.
+        failures = []
+        if len(distinct) < 2:
+            failures.append('insufficient_distinct_in_invocation_observations')
+        if not hit:
+            failures.append('dispatch_outside_complete_observations')
         out.append({'invocation':call['invocation'],'native_dispatch':t,
-                    'status':'BOUNDED_OBSERVATION' if len(distinct)>=2 and hit else 'UNKNOWN',
-                    'valid_sample_count':len(valid),'overlap_count':len(hit)})
+                    'status':'BOUNDED_OBSERVATION' if bounded else 'UNKNOWN',
+                    'valid_sample_count':len(valid),'overlap_count':len(hit),
+                    'distinct_sample_count':len(distinct), 'failure_reasons':failures})
     return out
