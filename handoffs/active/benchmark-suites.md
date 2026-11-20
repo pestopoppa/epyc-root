@@ -334,6 +334,20 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       [Source finding](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/sql-boundary.json);
       24 existing controls PASS, including SQL refusal. Parent remains open; advance the
       official multi-turn execution path next. No SQL or fleet score claimed.
+  - [x] **CJ-3d-SCHEMA — Resolve official catalog/simulator version skew and pass all ten selected multi-turn cases through durable capture and original V3 replay.** ✅ 2026-11-20 [no-belief: model-free software controls]
+      Bind the whole official Twitter catalog from Gorilla
+      `f64916eb4092aef76fc8609bd53eb594b5e84bd0` (13 methods), whose Twitter
+      simulator blob equals the original V3 `e8a64e6ee76702a948435ffed6345f9cd9468322`.
+      The later catalog's `posting_get_login_status` arrived with changed defaults
+      and execution behavior; substituting that simulator would change the instrument.
+      No methods filtered or renamed; HF corpus, filesystem schema and original
+      checker/simulator remain unchanged. Per-file catalog provenance is journaled.
+      **42 controls PASS** (28.974s): all ten selected multi-turn cases now capture
+      and replay with official schemas;
+      wrong-version catalogs and unknown methods still refuse before transport.
+      [Software qualification and source identities](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/catalog-alignment-20261120.json).
+      Parent CJ-3d remains open for actual server/model residency proofs and fleet capture;
+      these scripted controls establish no model score or representativeness.
   - [x] **CJ-3d-CUSTODY — Integrate released-schema bindings and durable native capture with content identities, official replay and refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
       Released catalog acquired at HF `61fc0608cfd831fcfbbaa676ebdfef0ed963eeda`;
       all five selected input/gold source pairs match byte-for-byte. The new

@@ -29,9 +29,16 @@ def digest(value):
 
 
 def released_catalog(case, directory):
-    """Read exact released schema bytes, preserving class/file order."""
+    """Read whole official catalogs with per-file provenance and exact bytes.
+
+    Corpus and schema versions are independent: the historical Twitter catalog
+    matches the original V3 simulator; the later HF catalog requires newer code.
+    Never filter an incompatible catalog into apparent compatibility.
+    """
     lock = json.loads(LOCK.read_bytes())
-    functions, bindings, names = [], {}, set()
+    if lock['simulator_compatibility']['checker_commit'] != UPSTREAM:
+        raise ValueError('catalog/checker revision mismatch')
+    functions, bindings, sources, names = [], {}, {}, set()
     for cls in case['involved_classes']:
         if cls not in CATALOGS:
             raise ValueError('unbound schema class: ' + cls)
@@ -46,8 +53,10 @@ def released_catalog(case, directory):
             names.add(schema['name'])
             functions.append(schema)
         bindings[name] = sha
-    return functions, {'repository': lock['repository'], 'revision': lock['revision'],
-                       'files': bindings, 'lock_sha256': hashlib.sha256(LOCK.read_bytes()).hexdigest()}
+        sources[name] = copy.deepcopy(lock['files']['multi_turn_func_doc/' + name])
+    return functions, {'files': bindings, 'sources': sources,
+                       'simulator_compatibility': copy.deepcopy(lock['simulator_compatibility']),
+                       'lock_sha256': hashlib.sha256(LOCK.read_bytes()).hexdigest()}
 
 
 class Journal:

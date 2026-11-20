@@ -1,0 +1,87 @@
+{
+  "box": "CJ-3d",
+  "scope": "Model-free schema compatibility and durable official replay; no fleet score, live server attestation or representative sampling claim.",
+  "resolution": "Use the whole 13-method official Twitter catalog at f64916eb4092aef76fc8609bd53eb594b5e84bd0 with the unchanged original V3 simulator. No schema filtering, local method implementation, renaming, grader changes or simulator substitution.",
+  "catalog_files": {
+    "multi_turn_func_doc/gorilla_file_system.json": {
+      "sha256": "26c01bed25bf7affbc8d281cc8124ccdc220a64c374ac4a7a9181dea0a0468ee",
+      "repository": "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
+      "revision": "61fc0608cfd831fcfbbaa676ebdfef0ed963eeda",
+      "path": "multi_turn_func_doc/gorilla_file_system.json"
+    },
+    "multi_turn_func_doc/posting_api.json": {
+      "sha256": "21053f4ed9ee0f0206291b6ea5b319117dfe6f1248d02a997493469abbccc83c",
+      "repository": "https://github.com/ShishirPatil/gorilla",
+      "revision": "f64916eb4092aef76fc8609bd53eb594b5e84bd0",
+      "path": "berkeley-function-call-leaderboard/data/multi_turn_func_doc/posting_api.json",
+      "blob": "ef3dbb6d64c68a0456c2337cb9082b638997328d"
+    }
+  },
+  "twitter_simulator_compatibility": {
+    "checker_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+    "twitter_source_path": "berkeley-function-call-leaderboard/bfcl/eval_checker/multi_turn_eval/func_source_code/posting_api.py",
+    "twitter_blob": "e8a64e6ee76702a948435ffed6345f9cd9468322",
+    "catalog_source_revision": "f64916eb4092aef76fc8609bd53eb594b5e84bd0",
+    "policy": "Whole official original-era Twitter catalog; no per-method filtering or simulator substitution. HF corpus and filesystem schema unchanged."
+  },
+  "source_findings": {
+    "catalog_source": "Gorilla f64916eb4092aef76fc8609bd53eb594b5e84bd0 separated multi-turn function docs into standalone files; Twitter source is byte-identical to original V3 (same Git blob).",
+    "later_simulator": "Gorilla 2101b11 adds posting_get_login_status alongside default password/tweet-counter and initialization changes; 4c16dbb2cffb65a56c95f9c06053dd205f663142 also changes authentication error behavior. A blanket upgrade would change original execution semantics.",
+    "original_twitter_blob": "e8a64e6ee76702a948435ffed6345f9cd9468322",
+    "historical_catalog_twitter_blob": "e8a64e6ee76702a948435ffed6345f9cd9468322",
+    "later_twitter_blob": "aef5902608d7cf5a3b5c9ef9df91af58ece0736c",
+    "later_official_catalog_blob": "ac3ba38dfe7242dbce6ef4062cf5fd03268edd56"
+  },
+  "unchanged": {
+    "checker_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+    "native_bridge_sha256": "26c56cda41f57040edd1f1f79bb478c33868f68ef576b8a2dbadd3245b784cf3",
+    "selection_manifest_sha256": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0",
+    "corpus_repository": "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
+    "corpus_revision": "61fc0608cfd831fcfbbaa676ebdfef0ed963eeda",
+    "filesystem_schema_sha256": "26c01bed25bf7affbc8d281cc8124ccdc220a64c374ac4a7a9181dea0a0468ee",
+    "corpus_and_gold_bindings": "All ten file digests and selected case/gold digests unchanged from catalog-custody-20261120.json; original corpus/checker/simulator not edited."
+  },
+  "tests": {
+    "command": "BFCL_CHECKOUT=/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104 BFCL_CATALOG=/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-catalog PYTHONPATH=proposed/cj567 PYTHONWARNINGS=ignore /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python -B -m unittest test_bfcl_capture_run test_bfcl_native test_openai_tool_calls -q",
+    "result": "PASS",
+    "count": 42,
+    "elapsed_s": 28.974,
+    "test_output_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-catalog/alignment-final-tests.txt",
+    "test_output_sha256": "8c50ae6bf7d818c57d496a55e0248381395bbe5e24de67fcea0bc558654ff765",
+    "durable_official_positive_cases": 10,
+    "previous_durable_official_positive_cases": 5,
+    "controls": [
+      "Exact 13-method catalog equality to official Git blob; Twitter simulator blob equality across original and catalog revisions.",
+      "All ten selected multi-turn cases capture and replay using bound official schemas, with per-file revision and compatibility in the fsynced identity record.",
+      "Later official 4c16dbb catalog refuses before output/exposure; injected posting_get_login_status refuses before transport on all five Twitter-containing cases.",
+      "Existing state, parser, transport, identity, fsync, tamper and no-redraw controls retained."
+    ],
+    "released_hf_catalog_refusal": {
+      "source_sha256": "87f9fc404a06e4107d7c366f1399c596440e84c16cb119faf374b2f532d86e8b",
+      "refused_case_ids": [
+        "multi_turn_base_0",
+        "multi_turn_composite_0",
+        "multi_turn_long_context_0",
+        "multi_turn_miss_func_0",
+        "multi_turn_miss_param_0"
+      ]
+    }
+  },
+  "software_sha256": {
+    "proposed/cj567/bfcl-catalog-lock.json": "5c7f748a3991c7b2de2125cc8f1199b9dfb8577f9c6fffd5d443e283afea32f0",
+    "proposed/cj567/bfcl_capture_run.py": "a3f24021dac94c35f4f8e1530b04b9dd6bd443f850b88376624d2891d7c80f38",
+    "proposed/cj567/test_bfcl_capture_run.py": "2ca8bb46b001123f76c4a1c31548155a78a5b4f4e955783450b5034f054657e9",
+    "proposed/cj567/bfcl_native.py": "26c56cda41f57040edd1f1f79bb478c33868f68ef576b8a2dbadd3245b784cf3",
+    "data/benchmarks/bfcl-v3-cj3d-prep-20261104/sample-manifest.json": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0"
+  },
+  "limitations": [
+    "The 26-case manifest is a coverage smoke, not a representative fleet ranking sample.",
+    "Historical Twitter catalog and HF filesystem catalog are separate sources, explicitly journaled; no claim that the later HF Twitter schema was made executable.",
+    "Original upstream response/order checks disabled and irrelevance-helper blind spot retained.",
+    "Launch-time server/model residency and fleet row publication remain next; no model invoked."
+  ],
+  "analysis_tools": {
+    "gitnexus": "status: no lane index; wrapper denied CPU admission (cross-role global locks disabled); impact unavailable; direct call-site inspection found runner/loader references only in focused tests.",
+    "bus": "Boundary drain rejected dispatcher slug because it is not a configured roster ID; no other agent identity used."
+  }
+}

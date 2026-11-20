@@ -3,6 +3,7 @@ import copy
 import hashlib
 import json
 import os
+import subprocess
 from pathlib import Path
 import tempfile
 import unittest
@@ -39,11 +40,9 @@ class CustodyControls(unittest.TestCase):
             previous = sha
         return [r['event'] for r in records]
 
-    def test_released_catalog_five_filesystem_cases_through_durable_official_replay(self):
+    def test_official_catalog_all_ten_cases_through_durable_official_replay(self):
         with tempfile.TemporaryDirectory() as tmp:
             for row in self.rows:
-                if 'TwitterAPI' in row['case']['involved_classes']:
-                    continue
                 output = Path(tmp) / row['case']['id']
                 script = iter(self.helpers.script(self.helpers.native_turns(row)))
                 def query(payload):
@@ -59,20 +58,60 @@ class CustodyControls(unittest.TestCase):
                 self.assertEqual(events[-1]['kind'], 'verdict')
                 self.assertEqual(events[-1]['verdict'], verdict)
                 self.assertTrue(events[0]['catalog']['files'])
+                sources = events[0]['catalog']['sources']
+                if 'TwitterAPI' in row['case']['involved_classes']:
+                    self.assertEqual(sources['posting_api.json']['revision'],
+                                     'f64916eb4092aef76fc8609bd53eb594b5e84bd0')
+                self.assertEqual(events[0]['catalog']['simulator_compatibility']['checker_commit'],
+                                 events[0]['upstream_commit'])
                 with self.assertRaises(FileExistsError):
                     self.run_case(row, output, lambda p: self.fail('redrawn'))
 
-    def test_five_twitter_cases_refuse_schema_simulator_mismatch(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            for row in self.rows:
-                if 'TwitterAPI' not in row['case']['involved_classes']:
-                    continue
-                output = Path(tmp) / row['case']['id']
-                with self.assertRaisesRegex(ValueError, 'exact simulator method schemas'):
-                    self.run_case(row, output, lambda p: self.fail('incompatible exposure'))
-                events = self.read(output)
-                self.assertEqual([e['kind'] for e in events], ['identity', 'aborted'])
-                self.assertIsNone(events[-1]['valid'])
+    def test_official_twitter_catalog_matches_original_simulator_without_filtering(self):
+        repo = os.environ['BFCL_CHECKOUT']
+        functions, binding = released_catalog({'involved_classes': ['TwitterAPI']}, self.catalog)
+        source = binding['sources']['posting_api.json']
+        raw = subprocess.check_output(['git', '-C', repo, 'show',
+                                       source['revision'] + ':' + source['path']])
+        self.assertEqual(raw, Path(self.catalog, 'posting_api.json').read_bytes())
+        self.assertEqual(functions, list(map(json.loads, raw.splitlines())))
+        self.assertEqual(len(functions), 13)
+        self.assertNotIn('posting_get_login_status', {f['name'] for f in functions})
+        compat = binding['simulator_compatibility']
+        for revision in (compat['checker_commit'], source['revision']):
+            blob = subprocess.check_output(['git', '-C', repo, 'rev-parse',
+                revision + ':' + compat['twitter_source_path']], text=True).strip()
+            self.assertEqual(blob, compat['twitter_blob'])
+
+    def test_later_twitter_catalog_refused_before_exposure(self):
+        # Bind the exact historical catalog; do not silently strip an extra method.
+        with tempfile.TemporaryDirectory() as catalog:
+            raw = subprocess.check_output(['git', '-C', os.environ['BFCL_CHECKOUT'], 'show',
+                '4c16dbb2cffb65a56c95f9c06053dd205f663142:'
+                'berkeley-function-call-leaderboard/data/multi_turn_func_doc/posting_api.json'])
+            self.assertIn('posting_get_login_status', {json.loads(line)['name']
+                                                     for line in raw.splitlines()})
+            Path(catalog, 'posting_api.json').write_bytes(raw)
+            Path(catalog, 'gorilla_file_system.json').write_bytes(
+                Path(self.catalog, 'gorilla_file_system.json').read_bytes())
+            row = next(r for r in self.rows if 'TwitterAPI' in r['case']['involved_classes'])
+            with tempfile.TemporaryDirectory() as tmp:
+                output = Path(tmp) / 'result'
+                with self.assertRaisesRegex(ValueError, 'digest mismatch'):
+                    capture_case(self.bridge, row, 'scripted-control', self.identity,
+                                 catalog, output, lambda p: self.fail('exposed'))
+                self.assertFalse(output.exists())
+
+    def test_unknown_method_still_refuses_before_transport(self):
+        for row in self.rows:
+            if 'TwitterAPI' not in row['case']['involved_classes']:
+                continue
+            functions, _ = released_catalog(row['case'], self.catalog)
+            functions.append({'name': 'posting_get_login_status'})
+            with self.assertRaisesRegex(ValueError, 'exact simulator method schemas'):
+                self.bridge.capture_multi_turn(row['case'], row['category'], 'scripted-control',
+                    functions, lambda p: self.fail('incompatible exposure'),
+                    lambda e: self.fail('incompatible event'))
 
     def test_binding_refusals_before_exposure(self):
         with tempfile.TemporaryDirectory() as tmp:

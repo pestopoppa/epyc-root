@@ -3,10 +3,17 @@
   "revision": "61fc0608cfd831fcfbbaa676ebdfef0ed963eeda",
   "files": {
     "multi_turn_func_doc/gorilla_file_system.json": {
-      "sha256": "26c01bed25bf7affbc8d281cc8124ccdc220a64c374ac4a7a9181dea0a0468ee"
+      "sha256": "26c01bed25bf7affbc8d281cc8124ccdc220a64c374ac4a7a9181dea0a0468ee",
+      "repository": "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
+      "revision": "61fc0608cfd831fcfbbaa676ebdfef0ed963eeda",
+      "path": "multi_turn_func_doc/gorilla_file_system.json"
     },
     "multi_turn_func_doc/posting_api.json": {
-      "sha256": "87f9fc404a06e4107d7c366f1399c596440e84c16cb119faf374b2f532d86e8b"
+      "sha256": "21053f4ed9ee0f0206291b6ea5b319117dfe6f1248d02a997493469abbccc83c",
+      "repository": "https://github.com/ShishirPatil/gorilla",
+      "revision": "f64916eb4092aef76fc8609bd53eb594b5e84bd0",
+      "path": "berkeley-function-call-leaderboard/data/multi_turn_func_doc/posting_api.json",
+      "blob": "ef3dbb6d64c68a0456c2337cb9082b638997328d"
     }
   },
   "corpus": {
@@ -82,5 +89,12 @@
       "case_sha256": "8992219cc7d700cf95978cff8e00009f225745c0810aaf8512bd2eeba739b405",
       "gold_sha256": "5e8db5cf22fa774373082e63d48a7a5a6cd825663631b4448f60cfad4a3b4c4a"
     }
+  },
+  "simulator_compatibility": {
+    "checker_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+    "twitter_source_path": "berkeley-function-call-leaderboard/bfcl/eval_checker/multi_turn_eval/func_source_code/posting_api.py",
+    "twitter_blob": "e8a64e6ee76702a948435ffed6345f9cd9468322",
+    "catalog_source_revision": "f64916eb4092aef76fc8609bd53eb594b5e84bd0",
+    "policy": "Whole official original-era Twitter catalog; no per-method filtering or simulator substitution. HF corpus and filesystem schema unchanged."
   }
 }
