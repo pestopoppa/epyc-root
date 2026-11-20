@@ -1,0 +1,35 @@
+{
+  "box": "CJ-3d",
+  "scope": "Model-free software controls with real local HTTP/process/mmap fixture; no model weights, model-quality score, representative sample or GPU-residency claim.",
+  "behavior": "Live multi-turn capture requires PID-bound native transport. Verify prepared model metadata and mmap inode, executable/library content, exact argv, listener ownership and process generation. Durable before/after proofs; failure aborts without scoring. Preparation isolated from runtime import graph.",
+  "software_sha256": {
+    "proposed/cj567/bfcl_capture_run.py": "b0bbdb1e875473e7305b7cabdb55be0f20747452d574f86ad88f474280713865",
+    "proposed/cj567/bfcl_residency.py": "7bde5ddb3cdf5d092b6ff1bc50a02ee7f3b39a489222f10437df7f13468e5482",
+    "proposed/cj567/bfcl_prepare_model.py": "5b76a9d5a2ba943693c6c1a188f34e66c74729c35ce1110cd91cff0cbba06045",
+    "proposed/cj567/test_bfcl_capture_run.py": "be0d0ea0f53d2b653e7b11654f0ef590998699b9f49f6ebe988dced5608cbbc3",
+    "proposed/cj567/test_bfcl_residency.py": "5dc556ae39da05c779a356cbe55746bf41a8ac6fc69385d1b4e095f318ea897e",
+    "docs/design/bfcl-local-residency.md": "6442fff4de12e91238c41deed55aca3bc0312c390d7b201dea1e245163053b2d"
+  },
+  "unchanged_instrument": {
+    "upstream_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+    "native_bridge_sha256": "26c56cda41f57040edd1f1f79bb478c33868f68ef576b8a2dbadd3245b784cf3"
+  },
+  "validation": {
+    "command": "BFCL_CHECKOUT=/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104 BFCL_CATALOG=/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-catalog PYTHONPATH=proposed/cj567 PYTHONWARNINGS=ignore /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python -B -m unittest test_bfcl_residency test_bfcl_capture_run test_bfcl_native test_openai_tool_calls -q",
+    "result": "PASS",
+    "tests": 51,
+    "elapsed_s": 38.897,
+    "output_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-catalog/residency-tests.txt",
+    "output_sha256": "3671759c4521adfcfb19156a6a60471e7a3aade961bbf64854691ad3101758fd"
+  },
+  "limitations": [
+    "Trusted local kernel and immutable preparation; no adversarial server/root attestation.",
+    "Single mmap model file and explicit CPU launch only; no split-GGUF, no-mmap or GPU qualification.",
+    "Actual fleet launcher and publish_row.py smoke remain next. No inference row published this turn.",
+    "Original upstream response/order and irrelevance limitations unchanged."
+  ],
+  "analysis_tools": {
+    "gitnexus": "No lane index; upstream impact unavailable; wrapper denied CPU admission (cross-role global locks disabled). Direct call-site inspection: capture_case callers only in focused tests.",
+    "bus": "Boundary drain rejected dispatcher slug as an unconfigured roster ID; no other session identity used."
+  }
+}

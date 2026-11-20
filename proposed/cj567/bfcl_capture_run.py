@@ -1,7 +1,7 @@
 """Fail-closed BFCL native multi-turn capture custody; no local grading rule.
 
 Model/build digests must come from independently verified launcher manifests.
-This module binds those assertions; it does not attest a running server's identity.
+Live capture requires local process residency proofs; scripted controls opt out explicitly.
 Never expose the journal, selection manifest or checker workspace to the model.
 """
 import copy
@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 
 from bfcl_native import UPSTREAM
+from bfcl_residency import LocalNativeTransport
 
 LOCK = Path(__file__).with_name('bfcl-catalog-lock.json')
 CATALOGS = {'GorillaFileSystem': 'gorilla_file_system.json',
@@ -106,12 +107,16 @@ class Journal:
 
 
 def capture_case(bridge, row, model, identity, catalog_directory, output, query,
-                 should_stop=lambda: False):
+                 should_stop=lambda: False, *, software_control=False):
     """Capture once with write-time custody, then call unmodified official replay.
 
-    Identity is an assertion from the launcher's verified model/build manifests.
+    Live identity is checked against prepared manifests and local process mappings.
     No resume/retry is supported; an existing output always refuses the attempt.
     """
+    if not software_control:
+        if not isinstance(query, LocalNativeTransport) or query.identity != identity:
+            raise ValueError('live capture requires bound local residency transport')
+        query.probe()
     identity = copy.deepcopy(identity)
     for key in ('model_sha256', 'server_binary_sha256', 'build_manifest_sha256',
                 'runtime_manifest_sha256'):
@@ -138,16 +143,24 @@ def capture_case(bridge, row, model, identity, catalog_directory, output, query,
         journal.append({'kind': 'identity', 'benchmark': 'bfcl_v3',
             'instrument': 'native-multi-turn', 'upstream_commit': UPSTREAM,
             'software_sha256': {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-                                for name in ('bfcl_capture_run.py', 'bfcl_native.py', 'openai_tool_calls.py')},
+                                for name in ('bfcl_capture_run.py', 'bfcl_residency.py', 'bfcl_native.py', 'openai_tool_calls.py')},
             'identity': identity, 'case_id': row['case']['id'], 'category': category,
             'case_sha256': digest(row['case']), 'gold_sha256': digest(row['gold']),
             'catalog': catalog_binding, 'corpus': lock['corpus'],
             'protocol': {'temperature': 0, 'seed': 20261031, 'max_tokens': 4096},
             'limitations': ['official response/order checks disabled',
                            'official irrelevance helper nested-call blind spot'],
-            'identity_scope': 'launcher assertions; server residency proof required externally'})
+            'identity_scope': ('scripted software control; no server proof' if software_control
+                               else 'local CPU process with per-request residency proofs')})
+        def record(event):
+            if not software_control and event['kind'] == 'exposure':
+                journal.append({'kind': 'residency', 'phase': 'before', 'proof': query.probe()})
+            journal.append(event)
+            if not software_control and event['kind'] == 'response':
+                journal.append({'kind': 'residency', 'phase': 'after', 'proof': query.probe()})
+
         result = bridge.capture_multi_turn(row['case'], category, model, functions,
-                                          query, journal.append, should_stop)
+                                          query, record, should_stop)
         journal.append({'kind': 'capture_result', 'result': result})
         if result['status'] == 'captured':
             verdict = bridge.score_multi_turn(row['case'], category, row['gold'], result['turns'])

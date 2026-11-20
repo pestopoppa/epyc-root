@@ -334,6 +334,15 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       [Source finding](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/sql-boundary.json);
       24 existing controls PASS, including SQL refusal. Parent remains open; advance the
       official multi-turn execution path next. No SQL or fleet score claimed.
+      2026-11-20 local CPU residency implementation: live capture now requires a
+      PID-bound loopback transport, executable/library content bindings, prepared
+      model inode mappings, exact launch argv, and durable before/after request
+      proofs. **51 controls PASS** (38.897s). Scripted controls explicitly opt out;
+      lost proof aborts before scoring.
+      [Contract](../../docs/design/bfcl-local-residency.md) and
+      [software qualification](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/residency-20261120.json).
+      Parent remains open for publishing actual fleet capture; no model was run,
+      no GPU residency or fleet score claimed. [no-belief: model-free software controls]
   - [x] **CJ-3d-SCHEMA — Resolve official catalog/simulator version skew and pass all ten selected multi-turn cases through durable capture and original V3 replay.** ✅ 2026-11-20 [no-belief: model-free software controls]
       Bind the whole official Twitter catalog from Gorilla
       `f64916eb4092aef76fc8609bd53eb594b5e84bd0` (13 methods), whose Twitter

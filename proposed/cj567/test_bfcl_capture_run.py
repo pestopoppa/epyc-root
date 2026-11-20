@@ -7,9 +7,10 @@ import subprocess
 from pathlib import Path
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from bfcl_capture_run import Journal, capture_case, encoded, released_catalog
+from bfcl_residency import LocalNativeTransport
 import test_bfcl_native as controls
 
 
@@ -27,7 +28,7 @@ class CustodyControls(unittest.TestCase):
 
     def run_case(self, row, output, query, **kw):
         return capture_case(self.bridge, row, 'scripted-control', self.identity,
-                            self.catalog, output, query, **kw)
+                            self.catalog, output, query, software_control=True, **kw)
 
     def read(self, output):
         records = [json.loads(line) for line in output.read_bytes().splitlines()]
@@ -99,7 +100,7 @@ class CustodyControls(unittest.TestCase):
                 output = Path(tmp) / 'result'
                 with self.assertRaisesRegex(ValueError, 'digest mismatch'):
                     capture_case(self.bridge, row, 'scripted-control', self.identity,
-                                 catalog, output, lambda p: self.fail('exposed'))
+                                 catalog, output, lambda p: self.fail('exposed'), software_control=True)
                 self.assertFalse(output.exists())
 
     def test_unknown_method_still_refuses_before_transport(self):
@@ -122,7 +123,7 @@ class CustodyControls(unittest.TestCase):
                     self.run_case(row, output, lambda p: self.fail('exposed'))
             with self.assertRaisesRegex(ValueError, 'content identity'):
                 capture_case(self.bridge, self.rows[1], 'scripted-control', {'model': 'scripted-control'},
-                             self.catalog, output, lambda p: self.fail('exposed'))
+                             self.catalog, output, lambda p: self.fail('exposed'), software_control=True)
             self.assertFalse(output.exists())
             Path(tmp, 'gorilla_file_system.json').write_text('{}')
             Path(tmp, 'posting_api.json').write_bytes(Path(self.catalog, 'posting_api.json').read_bytes())
@@ -154,6 +155,29 @@ class CustodyControls(unittest.TestCase):
                                     lambda p: self.fail('exposed'), should_stop=lambda: True)
             self.assertEqual(verdict['status'], 'interrupted')
             self.assertIsNone(verdict['valid'])
+
+    def test_live_proofs_bracket_exposure_and_raw_response_before_scoring(self):
+        transport = object.__new__(LocalNativeTransport)
+        transport.identity = self.identity.copy()
+        transport.probe = Mock(return_value={'fixture': 'software proof control'})
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / 'live-control'
+            with patch.object(LocalNativeTransport, '__call__', return_value={'choices': []}):
+                verdict = capture_case(self.bridge, self.rows[1], 'scripted-control', self.identity,
+                    self.catalog, output, transport)
+            self.assertIsNone(verdict['valid'])
+            self.assertEqual([e['kind'] for e in self.read(output)],
+                ['identity', 'residency', 'exposure', 'response', 'residency', 'capture_result', 'verdict'])
+            self.assertEqual(transport.probe.call_count, 3)
+            transport.probe = Mock(side_effect=[{}, {}, ValueError('server changed')])
+            output = Path(tmp) / 'lost-residency'
+            with patch.object(LocalNativeTransport, '__call__', return_value={'choices': []}):
+                with self.assertRaisesRegex(ValueError, 'server changed'):
+                    capture_case(self.bridge, self.rows[1], 'scripted-control', self.identity,
+                        self.catalog, output, transport)
+            self.assertEqual([e['kind'] for e in self.read(output)],
+                             ['identity', 'residency', 'exposure', 'response', 'aborted'])
+            self.assertIsNone(self.read(output)[-1]['valid'])
 
     def test_fsync_failure_prevents_query_and_poisoned_journal(self):
         with tempfile.TemporaryDirectory() as tmp:
