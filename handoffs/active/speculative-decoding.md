@@ -883,6 +883,14 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · metric(dir): us/op lower, converted to ms saved per round · rule: CLOSE if half width saves < 2.9% of the median round on both units; DECISION-PACKAGE (narrow-drafter retrain, operator-level spend) if >= 5.8%; else PARK until an upstream narrow checkpoint exists · region: gpu-q3 (host threads 184-191) · est: 900 s (inferred) + 25%
       · stop rule: question = does half width save >= 2.9% of the round even with zero acceptance loss? predicted 2.19-2.99 ms of a 58.5-63.8 ms 27B round and 0.73-1.01 ms of a 22.2-24.2 ms A3B round vs 1-2% per-op noise; checkpoint after the 27B shapes; stop-on-answer per the rule; stop-on-futility if the shapes do not land on the served route
 
+#### Verify-cost priority plan V1..V5 (AK-DTREE, operator top priority, 2026-11-20)
+Goal: make 12-16-token verify on the MI210 cheap enough that tree drafting beats chain, then unpark AK-DTREE (P6). Covers DTREE-0, DTREE-0-WVSK16-WITNESS, DTREE-0-Q8MF, DTREE-0-Q8MF-GATE, DTREE-0-A3B and P5.
+- **V1 wvsk16**: extend the wvsk small-M path M<=11 -> M<=16 on `llama.cpp-experimental-dtree-kernels-20261119` (from C14); witness fix = llama-bench `-v` (early: 1.16 ms/row 8->12 vs 4.46 default); republish ak-dtree0-wvsk16-gpu at rank 20. Gate: 27B + A3B verify at 12/16 rows + test-backend-ops MUL_MAT bit-exact/NMSE vs CPU.
+- **V2 Q8MF**: implement DTREE-0-Q8MF (MFMA small-M Q8_0, M 5-16, gfx90a) on a new branch off the dtree fork; target 12-row verify ~44 ms vs 61.3 ms; then DTREE-0-Q8MF-GATE (correctness, then speed vs default and wvsk16) at rank 20.
+- **V3**: file ak-dtree0-mmvf-a3b-gpu-20261120 and ak-dtree0-a3b-trace-gpu-20261120 when they end.
+- **V4**: pick the fastest verify route; republish P5 ak-dtree-batch-27b-gpu / ak-dtree-batch-a3b-gpu as -r3 on that build (tree T12/T16 vs auto chain, oracle kept).
+- **V5**: tree beats chain beyond the GPU W2 floor 0.84% on 27B or A3B -> unpark AK-DTREE (P6), tick boxes; else file the new measured ceiling with the per-row cost model.
+
 ### dFlash2 block drafter — experimental build + measured comparison vs MTP
 
 **Status**: active (created 2026-08-20) — build/regression/np1 complete; np2/4/8 and greedy parity remain
