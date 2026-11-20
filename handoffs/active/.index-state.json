@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 602
+      "open": 601
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 3,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 232
+      "open": 233
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -34,7 +34,7 @@
       "blocked": 1,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 99
+      "open": 100
     }
   },
   "duplicates": {},
@@ -1055,12 +1055,12 @@
     },
     "harness-program.md": {
       "blocked": 1,
-      "closed": 266,
+      "closed": 267,
       "frozen": 14,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "needs_owner": 8,
-      "open": 92,
+      "open": 93,
       "owner_index": "user-facing-harness-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -1070,7 +1070,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 373,
+      "total": 375,
       "tracks": [
         {
           "blocked": 0,
@@ -1094,20 +1094,20 @@
         },
         {
           "blocked": 0,
-          "closed": 38,
+          "closed": 39,
           "gates": [],
           "guarded": 0,
           "line": 444,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 26
+          "open": 27
         },
         {
           "blocked": 0,
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 924,
+          "line": 926,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 6
@@ -1119,7 +1119,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1705,
+          "line": 1707,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 8
@@ -1131,7 +1131,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2410,
+          "line": 2412,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1148,7 +1148,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2499,
+          "line": 2501,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 16
@@ -1161,7 +1161,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2978,
+          "line": 2980,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 26
@@ -1171,7 +1171,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3892,
+          "line": 3894,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1214,7 +1214,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1800,
+          "line": 1802,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1928,
+          "line": 1930,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1234,7 +1234,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2260,
+          "line": 2262,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2361,
+          "line": 2363,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2915,
+          "line": 2917,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3053,
+          "line": 3055,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3060,
+          "line": 3062,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2351,10 +2351,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 184,
+      "closed": 185,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 44,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2377,7 +2377,7 @@
         },
         {
           "blocked": 1,
-          "closed": 68,
+          "closed": 69,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2386,7 +2386,7 @@
           "line": 845,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 34
+          "open": 33
         }
       ]
     },
@@ -2567,7 +2567,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "needs_owner": 8,
-      "open": 129,
+      "open": 130,
       "owner_index": "research-evaluation-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -2577,7 +2577,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 617
+      "total": 618
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
