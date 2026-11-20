@@ -23,6 +23,7 @@ a phase closed and the operator owes a decision. Read before you rewrite.
 
 Usage:
     python3 scripts/handoffs/stale_next_action.py            # report, exit 1 if any
+    python3 scripts/handoffs/stale_next_action.py --compare-generated   # C6: hand vs generated, 7-day drop verdict
     python3 scripts/handoffs/stale_next_action.py --quiet    # exit code only
 """
 from __future__ import annotations
@@ -92,10 +93,117 @@ def scan(active: pathlib.Path = ACTIVE) -> list[tuple[str, str, list[str], str]]
     return findings
 
 
+DEFAULT_LEDGER = "/mnt/raid0/llm/tmp/compute-flags/handoff-standard-c6-compare.jsonl"
+C6_DAYS, C6_AGREE = 7, 0.90
+
+
+def _rows(text: str, generated: bool) -> dict[str, tuple[str, str]]:
+    """{row id: (handoff file, Next action cell)} from the hand table (generated=False) or the generated block."""
+    m = re.search(r"<!-- generated:start -->(.*?)<!-- generated:end -->", text, flags=re.S)
+    body = (m.group(1) if m else "") if generated else re.sub(
+        r"<!-- generated:start -->.*?<!-- generated:end -->", "", text, flags=re.S)
+    out = {}
+    for line in body.split("\n"):
+        if not line.startswith("| ") or line.startswith("| ID"):
+            continue
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if len(cells) < 4:
+            continue
+        hcell, nxt = (cells[1], cells[2]) if generated else (cells[2], cells[3])
+        link = re.search(r"\(([^)]+\.md)\)", hcell)
+        if link:
+            out[cells[0]] = (link.group(1), nxt)
+    return out
+
+
+def compare_generated(active: pathlib.Path = ACTIVE, boxes: dict | None = None) -> dict:
+    """C6 criteria, one sample: per row, does the GENERATED Next action agree with the hand cell (it names a box the
+    hand cell names) or is it strictly fresher (every box the hand cell names is ticked / not dispatchable / absent)?
+    Also: generated cells naming a lint-failing box (must be 0), and active handoffs missing **Row**/**Domain**."""
+    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+    import box_index as _bi
+    boxes = boxes if boxes is not None else (_bi.load(active.parents[1], regenerate=False).get("boxes") or {})
+    by_id = {r.get("id"): r for r in boxes.values() if r.get("id")}
+    rows, agree, fresher, lint_bad = [], 0, 0, []
+    for index in sorted(active.glob("*index*.md")):
+        text = index.read_text()
+        hand, gen = _rows(text, False), _rows(text, True)
+        for rid, (hf, hcell) in hand.items():
+            if rid not in gen:
+                continue
+            gcell = gen[rid][1]
+            gids = [i for i in ID_RE.findall(gcell) if i in by_id]
+            hids = [i for i in ID_RE.findall(hcell) if i in by_id or i in box_states((active / hf).read_text()
+                                                                                  if (active / hf).exists() else "")]
+            for g in gids:
+                if not (by_id[g].get("lint") or {}).get("ok"):
+                    lint_bad.append(f"{rid}:{g}")
+            if set(gids) & set(hids) or (not gids and not hids):
+                agree += 1
+                verdict = "agree"
+            elif hids and all(not _bi.dispatchable(by_id[h]) if h in by_id else True for h in hids):
+                fresher += 1
+                verdict = "fresher"
+            else:
+                verdict = "disagree"
+            rows.append({"row": rid, "verdict": verdict, "hand": hcell[:120], "generated": gcell[:120]})
+    missing = []
+    for f in sorted(active.glob("*.md")):
+        if "index" in f.name or f.name in ("CURRENT-CAMPAIGN.md",):
+            continue
+        head = "\n".join(f.read_text(errors="replace").split("\n")[:60])
+        if not re.search(r"^\*\*Row\*\*:", head, re.M) or not re.search(r"^\*\*Domain\*\*:", head, re.M):
+            missing.append(f.name)
+    n = len(rows)
+    import datetime as _d
+    return {"at": _d.datetime.now(_d.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "rows": n, "agree": agree,
+            "fresher": fresher, "agree_or_fresher_share": round((agree + fresher) / n, 3) if n else None,
+            "generated_lint_failing": lint_bad, "missing_row_domain_headers": missing,
+            "disagree": [r for r in rows if r["verdict"] == "disagree"]}
+
+
+def c6_verdict(samples: list[dict]) -> dict:
+    """The 7-consecutive-day hand-row-drop criteria over the ledger: every UTC day of the last 7 has a sample, and in
+    each: agree-or-fresher >= 90 %, zero lint-failing generated cells, zero handoffs missing **Row**/**Domain**."""
+    import datetime as _d
+    days = {}
+    for s in samples:
+        days.setdefault(s["at"][:10], []).append(s)
+    today = _d.datetime.now(_d.timezone.utc).date()
+    want = [(today - _d.timedelta(days=k)).isoformat() for k in range(C6_DAYS)]
+    per = {}
+    for d in want:
+        ss = days.get(d) or []
+        per[d] = bool(ss) and all((s.get("agree_or_fresher_share") or 0) >= C6_AGREE and not s["generated_lint_failing"]
+                                  and not s["missing_row_domain_headers"] for s in ss)
+    return {"days": per, "pass": all(per.values())}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--quiet", action="store_true", help="exit code only, no report")
+    ap.add_argument("--compare-generated", action="store_true",
+                    help="C6: sample hand vs generated Next action agreement, append it to --ledger, print the "
+                         "7-day hand-row-drop verdict (exit 0 = criteria met)")
+    ap.add_argument("--ledger", default=DEFAULT_LEDGER)
     args = ap.parse_args()
+    if args.compare_generated:
+        import json
+        sample = compare_generated()
+        try:
+            with open(args.ledger, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(sample, sort_keys=True) + "\n")
+            samples = [json.loads(l) for l in open(args.ledger, encoding="utf-8") if l.strip()]
+        except OSError as exc:
+            print(f"WARN ledger {args.ledger}: {exc}", file=sys.stderr)
+            samples = [sample]
+        v = c6_verdict(samples)
+        if not args.quiet:
+            print(json.dumps({k: sample[k] for k in ("at", "rows", "agree", "fresher", "agree_or_fresher_share")}
+                             | {"generated_lint_failing": len(sample["generated_lint_failing"]),
+                                "missing_row_domain_headers": sample["missing_row_domain_headers"],
+                                "disagree": [d["row"] for d in sample["disagree"]], "c6": v}, indent=1))
+        return 0 if v["pass"] else 1
 
     findings = scan()
     if not args.quiet:
