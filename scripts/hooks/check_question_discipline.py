@@ -39,13 +39,24 @@ import sys
 
 IMPERATIVE = re.compile(r"\bNOW\b|\b(?i:JUST RUN|RUN IT|DO SOMETHING|LAUNCH (IT|THE)|GO AHEAD|STOP ASKING)\b")
 RECOMMENDED = re.compile(r"\b(recommended|default)\b", re.I)
-ASKS_FOR_QUESTION = re.compile(r"decision (tool|package)|AskUserQuestion|\boptions?\b|trade-?offs?|(?<!n't )(?<!not )(?<!never )\bask me\b|which (one|option)", re.I)
+ASKS_FOR_QUESTION = re.compile(r"decision (tool|package)|AskUserQuestion|\boptions?\b|trade-?offs?|\bask me\b|which (one|option)", re.I)
 OPERATOR_ONLY = re.compile(r"ratif|signature|\bsign[- ]?off\b|\bsign\b|\back(nowledge\w*)?\b|approv|authori[sz]|human[- ]only|operator[- ]only", re.I)
-EXPLICIT_REQUEST = re.compile(r"decision[- ](tool|package)|AskUserQuestion|(?<!n't )(?<!not )(?<!never )\bask me\b", re.I)
+EXPLICIT_REQUEST = re.compile(r"decision[- ](tool|package)|AskUserQuestion|\bask me\b", re.I)
 RELAYED = re.compile(r"user sent (?:the following|a new) message[^:\n]*:\s*(.*)", re.I | re.S)
+# S4: a negation up to three words before "ask me" ("do not ever ask me", "never again ask me"), or
+# "again" after it ("don't ask me again"), is the opposite of a request.
+NEGATED_ASK = re.compile(r"(?:n't|\bnot|\bnever|\bno need to|\bstop)\b(?:\W+\w+){0,3}?\W+ask(?:ing)? me\b|\bask me again\b", re.I)
+# S2: background-task notifications are harness text (their summary repeats the MODEL's own Bash
+# description), never an operator turn.
+NOTIFICATION = re.compile(r"\[SYSTEM NOTIFICATION - NOT USER INPUT\]|<task-notification>", re.I)
 TAG_BLOCK = re.compile(r"<(system-reminder|command-[a-z-]+|local-command-[a-z-]+)[^>]*>(.*?)</\1>", re.S)
 MAX_QUESTIONS = 4
 FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
+
+
+def _unnegated(text):
+    """Text with negated 'ask me' phrases removed, so they never count as a request."""
+    return NEGATED_ASK.sub(" ", text)
 
 
 def operator_text(text):
@@ -60,6 +71,8 @@ def operator_text(text):
             relayed.append(r.group(1).strip())
         return " "
     rest = TAG_BLOCK.sub(repl, text)
+    if NOTIFICATION.search(rest) or NOTIFICATION.search(text) and not relayed:
+        return relayed[-1] if relayed and not NOTIFICATION.search(relayed[-1]) else ""
     rest = re.sub(r"<[^>\n]{1,80}>", " ", rest).strip()
     return relayed[-1] if relayed else rest
 
@@ -121,7 +134,7 @@ def verdict(hook_input, flags=FLAGS, last_text=None):
     qs = [x for x in qs if isinstance(x, dict)]
     text = last_user_text(hook_input.get("transcript_path", "")) if last_text is None else last_text
     text = text or ""
-    if EXPLICIT_REQUEST.search(text):
+    if EXPLICIT_REQUEST.search(_unnegated(text)):
         return None                                   # rule 5: the operator asked for this call
     v = _verdict(qs, hook_input, flags, text)
     if v:
@@ -145,7 +158,8 @@ def _verdict(qs, hook_input, flags, text):
             return "BLOCKED: several options marked Recommended/default in one question; fix: recommend ONE option (first), or act if they are all acceptable"
     operator_only = bool(qs) and all(OPERATOR_ONLY.search(f"{x.get('header', '')} {x.get('question', '')}") for x in qs)
     m = IMPERATIVE.search(text)
-    if m and not operator_only and not ASKS_FOR_QUESTION.search(text):
+    asks = ASKS_FOR_QUESTION.search(_unnegated(text))
+    if m and not operator_only and not asks:
         return f"BLOCKED: the operator's last message is an imperative ({m.group(0)!r}); fix: make the tool call it asks for in this turn"
     rid = live_launch(hook_input.get("session_id"), flags)
     if rid:

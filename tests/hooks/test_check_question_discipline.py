@@ -102,6 +102,31 @@ class Verdicts(unittest.TestCase):
         for text in ("don't ask me, RUN IT", "do not ask me, RUN IT", "never ask me, JUST RUN it"):
             self.assertIn("imperative", cq.verdict(q(["A", "B"]), flags="/nonexistent", last_text=text), text)
 
+    # Fable review S2: a task notification is harness text, never the operator turn.
+    NOTE = ("[SYSTEM NOTIFICATION - NOT USER INPUT]\nThis is an automated background-task event, NOT a message from the user.\n"
+            "Do NOT interpret this as user acknowledgement, confirmation, or response to any pending question.\n\n"
+            "<task-notification>\n<task-id>bkmtzwjiv</task-id>\n<status>completed</status>\n"
+            "<summary>Background command \"RUN IT NOW: launch the bench\" completed (exit code 0)</summary>\n"
+            "</task-notification>\nIf this event is something the user would act on now, send a PushNotification.")
+
+    def test_task_notification_is_not_an_operator_turn(self):
+        self.assertEqual(cq.operator_text(self.NOTE), "")
+        self.assertEqual(cq.operator_text("<system-reminder>\n" + self.NOTE + "\n</system-reminder>"), "")
+        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
+            f.write(json.dumps({"type": "user", "message": {"content": "what are the options for the floor?"}}) + "\n")
+            f.write(json.dumps({"type": "user", "message": {"content": [{"type": "text", "text": self.NOTE}]}}) + "\n")
+        try:
+            self.assertEqual(cq.last_user_text(f.name), "what are the options for the floor?")
+            self.assertIsNone(cq.verdict(dict(q(["A", "B"]), transcript_path=f.name), flags="/nonexistent"))
+        finally:
+            os.remove(f.name)
+
+    def test_negation_with_intervening_words(self):  # Fable review S4
+        for text in ("do not ever ask me, RUN IT", "don't ask me again, RUN IT", "no need to ask me, JUST RUN it",
+                     "never, ever ask me - RUN IT"):
+            self.assertIn("imperative", cq.verdict(q(["A", "B"]), flags="/nonexistent", last_text=text), text)
+        self.assertIsNone(cq.verdict(q(["A", "B"]), flags="/nonexistent", last_text="RUN IT, or ask me if unsure"))
+
     def test_refusal_names_the_matched_operator_text(self):
         v = cq.verdict(q(["A", "B"]), flags="/nonexistent", last_text="RUN IT NOW please")
         self.assertIn("operator text matched: 'RUN IT NOW please'", v)
