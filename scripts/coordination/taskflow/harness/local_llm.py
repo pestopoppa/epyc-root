@@ -133,6 +133,19 @@ class DegenerationGuard:
         return None
 
 
+_XML_IN_ARGS = ("<parameter=", "<function=", "<tool_call>", "</parameter>", "</function>", "</tool_call>")
+TOOL_ARG_CORRECTION = ("Your last tool call's arguments contained raw XML tags (<parameter=...>). Call the tool again "
+                       "with plain JSON argument values only, one tool call per turn.")
+
+
+def invalid_tool_args(arguments: str) -> str | None:
+    """Client-side tool-argument check (r3/r4: Qwen XML tool-call markup leaked into argument values)."""
+    for tag in _XML_IN_ARGS:
+        if tag in (arguments or ""):
+            return f"tool arguments contain {tag}"
+    return None
+
+
 def request_digest(body: dict) -> dict:
     """H5: what the metering proxy logs per request -- enough to locate a prefix break without storing prompts."""
     msgs = body.get("messages") or []

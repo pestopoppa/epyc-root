@@ -96,3 +96,19 @@ Keep: `wrapup.py`, `file_result.py`, `rowflow/*`, `token_guards` budget/width/en
 4. **Tier floor for Codex**: default to luna/terra by class with sol only on retry, or keep sol for implement/fix as today?
 5. **Reviewer family**: cross-family review (Claude reviews Codex and vice versa) from Stage 1, at the cost of spending both budgets, or same-family until Stage 3?
 6. **Which six handoffs first**: the six above, or swap in `df2`/CAFE-3 and `kernel-champion` where run-end filing already works?
+
+## Worktree lifecycle (taskflow Stage 1, enforced in `scripts/coordination/taskflow/dispatch.py`)
+
+| Rule | Enforcement | Since |
+|---|---|---|
+| Created fresh: `git worktree add -b taskflow/<run>/<n>-<hash>` at the repo's `origin/main` | `make_lane` | Stage 1 (104a8f154) |
+| Short path `/mnt/raid0/llm/tf/<4 hex>` (`TASKFLOW_LANE_ROOT`); the 35B miscopied long digit-heavy paths | `make_lane` | 1cf100405 |
+| One worker per worktree: an existing lane path is refused (`LaneRefused`) | `make_lane` | new |
+| No branch switching, no commit, no push by the worker: POLICY plus the shell deny list (`git checkout/commit/push/reset/stash/restore`) | `harness/local_llm.py` | Stage 1 |
+| The DISPATCHER commits the worker's tree on the lane branch (pathspec from `git status`, `.taskflow-refs/` excluded); only `--apply` (`churn/wrapup.py`) pushes, under the owning handoff's slug | `commit_lane`, `apply_tick` | Stage 1 |
+| Disposal after verify: `git worktree remove` without `--force` and never `prune`; a dirty lane is first committed as WIP on its own branch, so nothing is lost | `drop_lane` | new (dirty-lane commit) |
+| Failed or aborted lanes with work (`rejected`/`error`/`unchecked`, not `no-change`) are kept for `TASKFLOW_KEEP_FAILED_H` (24 h) for forensics; `diff.patch` and the local branch are kept too | `keep_lane` | new |
+| Disk caps: at most `TASKFLOW_MAX_LANES` (16) live lanes and at least `TASKFLOW_MIN_FREE_GIB` (50) GiB free, otherwise the lane is refused | `make_lane` | new |
+| Orphan sweep: `dispatch.py sweep` removes kept lanes past their keep-until time, live lanes older than the keep window (dead dispatcher), and lane dirs with no metadata | `sweep_lanes` | new |
+
+Each lane has `<root>/<hex>.lane.json` (repo, branch, base, created, state, keep_until). Tests: `tests/coordination/test_taskflow_stage1.py::test_lifecycle_*`.

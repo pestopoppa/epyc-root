@@ -1,6 +1,7 @@
 """taskflow Stage 1: schema (verbatim box, done-when, paths), tier selection, verify mechanical checks, opencode config."""
 import json
 import subprocess
+import time
 import sys
 from pathlib import Path
 
@@ -273,3 +274,47 @@ def test_degeneration_guard():
     ok = local_llm.DegenerationGuard()
     ok.feed(timings={"predicted_n": 10, "draft_n": 10, "draft_n_accepted": 9})
     assert ok.feed(timings={"predicted_n": 700, "draft_n": 900, "draft_n_accepted": 720}) is None
+
+
+def test_invalid_tool_args():
+    assert local_llm.invalid_tool_args('{"path": "src/a.py"}') is None
+    assert local_llm.invalid_tool_args('{"path": "<parameter=../docs/x.md"}') == "tool arguments contain <parameter="
+    assert local_llm.invalid_tool_args('{"pattern": "a</function>"}')
+
+
+def _lane_env(tmp_path, monkeypatch, **env):
+    _repo(tmp_path / "r", {"a.py": "x\n"})
+    monkeypatch.setitem(schema.REPOS, "epyc-root", tmp_path / "r")
+    monkeypatch.setenv("TASKFLOW_LANE_ROOT", str(tmp_path / "tf"))
+    for k, v in env.items():
+        monkeypatch.setattr(dispatch, k, v)
+
+
+def test_lifecycle_one_worker_per_lane_and_caps(tmp_path, monkeypatch):
+    _lane_env(tmp_path, monkeypatch, MAX_LANES=1, MIN_FREE_GIB=0)
+    r, lane, base = dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t0", "l1")
+    assert (lane.parent / f"{lane.name}.lane.json").exists()
+    import pytest
+    with pytest.raises(dispatch.LaneRefused):              # same task dir -> same lane: one worker per worktree
+        dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t0", "l1b")
+    with pytest.raises(dispatch.LaneRefused):              # lane cap
+        dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t1", "l2")
+    monkeypatch.setattr(dispatch, "MIN_FREE_GIB", 10**9)
+    monkeypatch.setattr(dispatch, "MAX_LANES", 99)
+    with pytest.raises(dispatch.LaneRefused):              # disk cap
+        dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t2", "l3")
+    assert dispatch.drop_lane(r, lane) and not lane.exists()
+
+
+def test_lifecycle_dirty_lane_kept_then_swept_without_force(tmp_path, monkeypatch):
+    _lane_env(tmp_path, monkeypatch, MIN_FREE_GIB=0)
+    r, lane, base = dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t0", "l4")
+    (lane / "a.py").write_text("worker change\n")          # aborted worker: uncommitted change
+    dispatch.keep_lane(lane, "error:test", hours=1)
+    assert dispatch.sweep_lanes()["kept"] == [str(lane)] and lane.exists()
+    out = dispatch.sweep_lanes(now=time.time() + 7200)
+    assert out["removed"] == [str(lane)] and not lane.exists()
+    log = subprocess.run(["git", "-C", str(r), "log", "--format=%s", "l4"], capture_output=True, text=True).stdout
+    assert "WIP left in lane" in log                      # the change survives on the lane branch
+    shown = subprocess.run(["git", "-C", str(r), "show", "l4:a.py"], capture_output=True, text=True).stdout
+    assert shown == "worker change\n"

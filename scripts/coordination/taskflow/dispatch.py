@@ -21,6 +21,7 @@ import argparse
 import datetime as dt
 import hashlib
 import os
+import shutil
 import json
 import re
 import subprocess
@@ -99,17 +100,49 @@ def _git(repo: Path, *a: str, check=True) -> subprocess.CompletedProcess:
     return subprocess.run(["git", "-C", str(repo), *a], capture_output=True, text=True, check=check)
 
 
+# ------------------------------------------------------------------------------------------- worktree lifecycle
+# docs/design/taskflow-dispatcher.md -> "Worktree lifecycle". One worker per worktree; created fresh from origin/main
+# at a short path; the worker never commits, pushes or switches branches (POLICY + shell deny list); the DISPATCHER
+# commits the worker's tree on the lane branch and only `--apply` (wrapup.py) pushes. Disposal = `git worktree remove`
+# (never --force, never prune); a dirty lane is committed as WIP on its own branch first so nothing is lost.
+KEEP_FAILED_H = float(os.environ.get("TASKFLOW_KEEP_FAILED_H", "24"))   # failed / aborted lanes kept for forensics
+MAX_LANES = int(os.environ.get("TASKFLOW_MAX_LANES", "16"))             # live lanes under the lane root
+MIN_FREE_GIB = float(os.environ.get("TASKFLOW_MIN_FREE_GIB", "50"))     # free space required to create a lane
+
+
+class LaneRefused(RuntimeError):
+    pass
+
+
+def lane_root() -> Path:
+    return Path(os.environ.get("TASKFLOW_LANE_ROOT", "/mnt/raid0/llm/tf"))
+
+
+def _meta(lane: Path) -> Path:
+    return lane.parent / f"{lane.name}.lane.json"
+
+
 def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]:
     repo = schema.REPOS[task["repo"]]
     # r3: the 35B miscopied long digit-heavy lane paths (".../canary-r3-2026120/.../t00/lane" for t02) ->
-    # short lane roots: /mnt/raid0/llm/tf/<4 hex>/w<n>
-    root = Path(os.environ.get("TASKFLOW_LANE_ROOT", "/mnt/raid0/llm/tf"))
+    # short lane roots: /mnt/raid0/llm/tf/<4 hex>
+    root = lane_root()
     root.mkdir(parents=True, exist_ok=True)
     lane = root / hashlib.sha1(str(base_dir).encode()).hexdigest()[:4]
+    if lane.exists():
+        raise LaneRefused(f"{lane} exists: one worker per worktree")
+    live = [m for m in root.glob("*.lane.json")]
+    if len(live) >= MAX_LANES:
+        raise LaneRefused(f"{len(live)} live lanes >= cap {MAX_LANES}; run `dispatch.py sweep`")
+    free = shutil.disk_usage(root).free / 2**30
+    if free < MIN_FREE_GIB:
+        raise LaneRefused(f"{free:.0f} GiB free < {MIN_FREE_GIB} GiB")
     base_dir.mkdir(parents=True, exist_ok=True)
     (base_dir / "lane.path").write_text(str(lane))
     base = _git(repo, "rev-parse", "origin/main").stdout.strip()
     _git(repo, "worktree", "add", "-q", "-b", branch, str(lane), base)
+    _meta(lane).write_text(json.dumps({"lane": str(lane), "repo": str(repo), "branch": branch, "base": base,
+                                       "created": time.time(), "state": "live", "task": task.get("key")}))
     for r in task.get("refs") or []:
         dst = lane / REFS / (r["repo"] + (f"@{r['rev']}" if r.get("rev") else "")) / r["path"]
         data = (schema.git_show(schema.REPOS[r["repo"]], r["rev"], r["path"]) if r.get("rev")
@@ -137,7 +170,7 @@ def commit_lane(lane: Path, task: dict) -> bool:
     return True
 
 
-def drop_lane(repo: Path, lane: Path) -> None:
+def _clear_refs(lane: Path) -> None:
     refs = lane / REFS
     if refs.exists():                   # our own read-only copies; the worktree is otherwise clean after commit
         for f in sorted(refs.rglob("*"), reverse=True):
@@ -147,7 +180,59 @@ def drop_lane(repo: Path, lane: Path) -> None:
             else:
                 f.rmdir()
         refs.rmdir()
-    _git(repo, "worktree", "remove", str(lane), check=False)
+
+
+def drop_lane(repo: Path, lane: Path) -> bool:
+    """Remove a lane: commit any leftover worker change as WIP on the lane branch, then plain `worktree remove`."""
+    if not lane.exists():
+        _meta(lane).unlink(missing_ok=True)
+        return True
+    _clear_refs(lane)
+    if _git(lane, "status", "--porcelain", "-uall", check=False).stdout.strip():
+        st = _git(lane, "status", "--porcelain", "-uall", check=False).stdout
+        left = [ln[3:].split(" -> ")[-1] for ln in st.splitlines() if ln.strip()]
+        _git(lane, "add", "--", *left, check=False)
+        _git(lane, "-c", "user.name=taskflow", "-c", "user.email=taskflow@localhost", "commit", "-q", "--no-verify",
+             "-m", "taskflow: WIP left in lane at disposal", check=False)
+    ok = _git(repo, "worktree", "remove", str(lane), check=False).returncode == 0
+    if ok:
+        _meta(lane).unlink(missing_ok=True)
+    return ok
+
+
+def keep_lane(lane: Path, reason: str, hours: float | None = None) -> None:
+    """Failed / aborted lane: keep for forensics, the sweep removes it after KEEP_FAILED_H."""
+    m = _meta(lane)
+    d = json.loads(m.read_text()) if m.exists() else {"lane": str(lane), "created": time.time()}
+    d.update(state="kept", reason=reason, keep_until=time.time() + 3600 * (KEEP_FAILED_H if hours is None else hours))
+    m.write_text(json.dumps(d))
+
+
+def sweep_lanes(now: float | None = None) -> dict:
+    """Orphan / expiry sweep over the lane root: kept lanes past keep_until, and live lanes (or lane dirs with no
+    metadata) older than KEEP_FAILED_H -- i.e. left by a dead dispatcher. Removal is drop_lane (no --force/prune)."""
+    now = now or time.time()
+    out = {"removed": [], "kept": [], "failed": []}
+    root = lane_root()
+    if not root.exists():
+        return out
+    seen = set()
+    for m in root.glob("*.lane.json"):
+        d = json.loads(m.read_text())
+        lane = Path(d["lane"])
+        seen.add(lane.name)
+        due = d.get("keep_until") if d.get("state") == "kept" else d.get("created", now) + 3600 * KEEP_FAILED_H
+        if now < due:
+            out["kept"].append(str(lane))
+            continue
+        repo = Path(d.get("repo") or ".")
+        (out["removed"] if drop_lane(repo, lane) else out["failed"]).append(str(lane))
+    for lane in root.iterdir():
+        if lane.is_dir() and lane.name not in seen and now - lane.stat().st_mtime > 3600 * KEEP_FAILED_H:
+            common = _git(lane, "rev-parse", "--path-format=absolute", "--git-common-dir", check=False).stdout.strip()
+            repo = Path(common).parent if common else None
+            (out["removed"] if repo and drop_lane(repo, lane) else out["failed"]).append(str(lane))
+    return out
 
 
 def reviewer_for(endpoint: str, model: str):
@@ -223,8 +308,9 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                "tier": task.get("tier"), "family": family}
         try:
             repo, lane, base = make_lane(task, tdir, f"taskflow/{run_id}/{n:02d}-{hashlib.sha1(str(tdir).encode()).hexdigest()[:6]}")  # r4: same-second collision
-        except subprocess.CalledProcessError as e:
-            row.update(verdict="error", reason="lane", failure_class="harness", detail=e.stderr[-300:])
+        except (subprocess.CalledProcessError, LaneRefused) as e:
+            row.update(verdict="error", reason="lane", failure_class="harness",
+                       detail=(getattr(e, "stderr", None) or str(e))[-300:])
             rows.append(row); ledger.open("a").write(json.dumps(row) + "\n")
             continue
         try:
@@ -248,7 +334,12 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
         except Exception as e:  # noqa: BLE001 - one task never stops the batch
             row.update(verdict="error", reason=type(e).__name__, failure_class="harness", detail=str(e)[:300])
         finally:
-            drop_lane(repo, lane)
+            failed_with_work = row.get("verdict") in ("rejected", "error", "unchecked") and row.get("reason") != "no-change"
+            if failed_with_work:
+                keep_lane(lane, f"{row.get('verdict')}:{row.get('reason')}")
+                row["lane_kept"] = str(lane)
+            else:
+                drop_lane(repo, lane)
         row["wall_s"] = round(time.time() - t0, 1)
         rows.append(row)
         with ledger.open("a") as f:
@@ -269,7 +360,11 @@ def main(argv=None) -> int:
     r.add_argument("--out", required=True)
     r.add_argument("--apply", action="store_true")
     r.add_argument("--reviewer", action="store_true")
+    sub.add_parser("sweep")
     a = ap.parse_args(argv)
+    if a.cmd == "sweep":
+        print(json.dumps(sweep_lanes(), indent=1))
+        return 0
     if a.cmd == "plan":
         tasks = plan([k for k in a.keys.split(",") if k] or None, a.top)
         s = json.dumps(tasks, indent=1)
