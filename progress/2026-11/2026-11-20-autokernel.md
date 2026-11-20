@@ -72,3 +72,15 @@
 - **Lineage/tooling**: composite rebased on C16 (branch llama.cpp-experimental-dtree-v4c16-20261120); row_scaffold reads origin/main (`0b96e0a87`, research `41119de1b`); AK journal program.md learnings (research `86167b529`, `3ab8362e5`).
 - **Memory rules added**: compounded-gain threshold; write the hand-back ledger before respawning.
 - Follow-up to Pipeline: publisher withdrew row tf1-cpu-s1b-35b-c14-q1q2-20261120 as "superseded" during our publish.
+
+## Wrap-up 9 (after fa2aa116a) — GDN-ROWS KEEP, greedy builder, r3 NOT_JUDGEABLE
+
+- **GDN-ROWS gate r2 KEEP** (tick `810837134`): 267/0 both arms; tree-verify GDN ms W1/4/8/12/16 0.43/2.13/2.12/3.56/4.76 -> 0.31/1.86/1.86/2.59/3.97; llama-bench G1/G0 within noise.
+- **Greedy tree builder**: fork `74de2c3e7` (common_dtree_build_greedy, LLAMA_DTREE_POLICY=greedy, test-dtree-greedy 288/288) + `fa9191562` (drafter/server wiring); v4c16 fast-forwarded.
+- **v4c16 build fix**: llguidance OFF; build rc=0 at 21:48Z, test-dtree-ops PASS.
+- **r3 published** (box `bde142ba3`); smoke 27B L chain 116 tok/s (r2: 86), A3B L 119.
+- **r3 BOTH rows NOT_JUDGEABLE** (22:00/22:06Z): first greedy arm (27B G12, A3B G6) HTTP 500 -> row aborted. Cause: greedy-builder position bookkeeping bug (fa9191562). Result notes added to AK-DTREE-2e-REOPEN and DTREE-TREE-QUALITY (both open).
+- **In flight**: fresh agent's r4 (no G arms, per-arm isolation) and the greedy position fix.
+- **rowflow release verb live** (`466e6b97a`) after a hand-release incident (grant file edited by hand).
+- **Stopped two stale agents** (Q38FN TOPK-EXACT/W8192 agent; superseded greedy-builder agent). Rows `ak-q38fn-draftfa-w8192-cpu-20261120` (granted/running) and `ak-q38fn-indexer-topk-exact-cpu-20261120` (queued) still need filing at verdict.
+- **Memory rule added**: no hand edits to grant files; use the rowflow release verb.
