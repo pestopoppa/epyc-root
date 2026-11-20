@@ -88,7 +88,13 @@ try:
     import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
 except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
     sys.path.insert(0, os.path.dirname(_HERE))
-    import handoff_ref  # noqa: E402
+    try:
+        import handoff_ref  # noqa: E402
+    except ImportError:  # a copied candidate dir (replay gate) has no sibling: repointing degrades to identity
+        class handoff_ref:  # noqa: N801
+            @staticmethod
+            def repoint(ref, root=None, sha=None, moves=None):
+                return ref
 
 SCHEMA = "epyc.row.v3"
 ADMISSION_CLASSES = {"correctness", "diagnostic", "block-correctness",
