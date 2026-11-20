@@ -149,3 +149,7 @@ Next: adapt diagnostic_job.py to opt into calibration, strictly reduce native re
 ## 13:04Z — Filed am-port3-native-capturefix-gpu-20261120 measured screen verdict
 
 AM-PORT-3: filed row am-port3-native-capturefix-gpu-20261120, rc=0, fail at compact-quality. CPU/HIP exact-logit controls passed; median patched/baseline throughput ratios 1.006103 and 1.001668. Native integrity and prefix quality screens failed; 0/16 layers reached minimum-head cosine 0.95, one compact token decoded, and 32K stability was not run. Integrity failure prevents attribution of quality to fitting. Attempt RESULT.json SHA-256 31bab49cfcd7e71f8e50fc92d3cf0fe96e723b17e1b06e23319db8cffb4099d9; reload/CHECK.json SHA-256 94b573829ae846919e44211a576e161e50c9bde922bf4d8be2daad620d492cb1. [belief: cc]
+
+## 22:40Z — File LSA CPU sparse op-level gate result
+
+Filed lsa-cpu-sparse-opgate-20261119-r1 as KEEP_OP (rc=0): 32k KV 24-thread median dense/LSA 3.97184x, rounds 3.97184/3.95898/3.97640; correctness checks passed. This is an op-level geometry-only result; integration, quality gate and >=3% end-to-end criterion remain open in LSA-CPU-SPARSE-E2E. Results SHA-256 12f1b1df7c42c246cbb2b4bff9777a9da19b6e197f35edc1b1b7b6d38283ab86. [belief: cc]
