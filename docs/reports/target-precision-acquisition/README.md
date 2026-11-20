@@ -173,3 +173,38 @@ add an external supervisor that survives worker OOM/SIGKILL and writes a failure
 event, and implement receipt-validated source release. In-process exception
 handling cannot guarantee an event if the kernel kills the entire worker group.
 The matrix remains unpublished until matched outputs and the native floor qualify.
+
+
+## External acquisition supervisor (2026-11-20)
+
+`scripts/diagnostics/target-precision/acquisition_supervisor.py` is now the
+acquisition entry point, taking the same six required arguments as the worker.
+It remains outside the dedicated worker leaf and admits the leaf before launch.
+It independently samples per-volume remaining source/control obligations, the
+250 GiB host floor, cgroup memory events and the elapsed deadline at most every
+second (default 250 ms), including while the worker blocks in network reads.
+The worker retains its own checks. No shared resource capacity is reserved.
+
+Before launch it preallocates a 256 KiB terminal receipt on durable controls.
+It fsyncs the padded JSON, publishes by exclusive hard link, and fsyncs the
+containing directory. A worker SIGKILL or leaf OOM therefore does not prevent
+the parent writing FAILED. It captures one process group, escalates TERM to KILL,
+and reaps the worker before publication. Success additionally requires exit zero,
+a plan-bound COMPLETE worker event, source inventory/identity records and existing
+complete source files. This source-only receipt does not qualify converted weights.
+A host crash or death of the supervisor itself remains outside this guarantee;
+an existing reserved file without the final event is incomplete, never success.
+
+Validation: **81 focused tests PASS** across acquisition, preparation and the
+supervisor. New tests include real child SIGKILL, parent-observed disk/host/OOM/
+deadline failures with child reaping, root-cgroup admission refusal, changed-plan
+refusal, and absent/foreign/incomplete/malformed completion receipts. Tests use
+tiny files and synthetic workers; no weights, network transfer, real cgroup OOM,
+conversion or inference ran. Supervisor SHA-256
+`f09a89e0ce22f0edba5e3c3ef6f9662d68a952614c79d42ffb9ee9698ea7bb1f`;
+test SHA-256
+`6f5a135f07d60c57916111e53ab83f7fbe195197b9d3aa99640a90f7fd58908c`.
+
+Receipt-validated task-owned source release is still unimplemented. A dedicated
+configured leaf is still required and no live acquisition is admitted or launched.
+The target-precision matrix remains unpublished.
