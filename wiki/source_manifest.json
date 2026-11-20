@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 504,
+    "docs": 505,
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 377,
@@ -11,20 +11,23 @@
   "last_compile": "2026-11-18T15:49:03Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 1,
+      "added": 1,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-11-20T10:29:39Z",
+    "at": "2026-11-20T10:31:17Z",
     "scope_paths": [
-      "handoffs/active/autokernel-loop.md"
+      "docs/reports/ea-27b-evict-audit-20261120.md",
+      "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/speculative-decoding.md",
+      "progress/2026-11/2026-11-19-autokernel.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-20T10:29:39Z",
+  "scan_time": "2026-11-20T10:31:17Z",
   "schema_version": 1,
-  "source_set_hash": "1b22f015809dd45eb6e6e417335584597dcc724ffed8874ce715b17c281555f7",
+  "source_set_hash": "b5a12f582177996636d665e2c7e64c21cab0f78575f96e871b4112845e30190d",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -35,10 +38,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e4d529892c5cd8ae869610027453339b59dfa213199db7b5ae5638f8843520f8",
-      "modified": "2026-11-19T09:29:25Z",
+      "content_hash": "9e1c1482d8f5a8d01d833ae5c310655793e35b80fd749bf4e2076ca47045af10",
+      "modified": "2026-11-20T10:26:33Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 575275,
+      "size": 402351,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
@@ -219,10 +222,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ae6ed41b5405fda98111364de676de12cc02d849393d04677fde77585a717a13",
-      "modified": "2026-11-18T15:37:08Z",
+      "content_hash": "f3a98dbf7cbac31fe3962ab1cf1eef555c2b5ab4b7a3bf43deb1a551b486e0c2",
+      "modified": "2026-11-20T10:27:46Z",
       "path": "handoffs/active/speculative-decoding.md",
-      "size": 380773,
+      "size": 501727,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -17211,10 +17214,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "b958551a13888f1d697b0a94d5c2861f8d302e35f8b8e295ae04d83d5105d7de",
-      "modified": "2026-11-19T09:34:15Z",
+      "content_hash": "5668b0c2661e2f38cfb82201a19368cbbcec09f20e38a361bc20809cb836701c",
+      "modified": "2026-11-20T10:26:12Z",
       "path": "progress/2026-11/2026-11-19-autokernel.md",
-      "size": 5427,
+      "size": 12098,
       "title": "2026-11-19 \u2014 autokernel session (roster id `autokernel`, no lane: ad-hoc session in the shared clone)",
       "type": "progress"
     },
@@ -20219,6 +20222,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "4813105e7b85a464964c34b333071046fae998aa74d37dcc8055ececad8964a6",
+      "modified": "2026-11-20T10:26:11Z",
+      "path": "docs/reports/ea-27b-evict-audit-20261120.md",
+      "size": 5753,
+      "title": "Expected-Attention hybrid-27B eviction audit \u2014 2026-11-20",
+      "type": "docs"
+    },
+    {
       "content_hash": "0c5f81c9bd26fc530b095476aad1b6d8be7b015f09f71cef209bd9fbdae74153",
       "modified": "2026-11-18T15:37:07Z",
       "path": "docs/reports/evl38-schedule-retirement-20261101.md",
@@ -21427,7 +21438,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2675,
+  "total_new": 2676,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
