@@ -121,7 +121,8 @@ def task_suffix(task: dict, excerpts: dict[str, str]) -> str:
     out.append("## ALLOWED COMMANDS\n" + ("\n".join(allowed) if allowed else "(none: do not use bash)"))
     if task.get("refs"):
         out.append("## REFERENCE FILES (read-only copies from other repos)\n" + "\n".join(
-            f".taskflow-refs/{r['repo']}/{r['path']}" for r in task["refs"]))
+            f".taskflow-refs/{r['repo']}" + (f"@{r['rev']}" if r.get("rev") else "") + f"/{r['path']}"
+            for r in task["refs"]))
     out.append("## FORBIDDEN\n" + ", ".join(task["forbidden"][:12]) + " …")
     out.append(f"## LIMITS\n{b['turns']} tool turns max. Be brief.")
     if excerpts:

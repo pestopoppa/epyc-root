@@ -78,7 +78,8 @@ def plan(keys: list[str] | None, top: int) -> list[dict]:
     out = []
     for k, rec in chosen:
         if rec is None:
-            raise SystemExit(f"{k} is not dispatchable now (select.py skips it)")
+            print(f"skip {k}: not dispatchable now (select.py skips it)", file=sys.stderr)
+            continue
         t = schema.build(dict(rec, key=k))
         why = schema.unsupported(t)
         if why:
@@ -110,10 +111,13 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     base = _git(repo, "rev-parse", "origin/main").stdout.strip()
     _git(repo, "worktree", "add", "-q", "-b", branch, str(lane), base)
     for r in task.get("refs") or []:
-        src = schema.REPOS[r["repo"]] / r["path"]
-        dst = lane / REFS / r["repo"] / r["path"]
+        dst = lane / REFS / (r["repo"] + (f"@{r['rev']}" if r.get("rev") else "")) / r["path"]
+        data = (schema.git_show(schema.REPOS[r["repo"]], r["rev"], r["path"]) if r.get("rev")
+                else (schema.REPOS[r["repo"]] / r["path"]).read_bytes())
+        if data is None:
+            continue
         dst.parent.mkdir(parents=True, exist_ok=True)
-        dst.write_bytes(src.read_bytes())
+        dst.write_bytes(data)
         dst.chmod(0o444)
     return repo, lane, base
 

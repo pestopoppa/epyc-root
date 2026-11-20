@@ -99,6 +99,24 @@ def named_paths(text: str) -> list[str]:
     return seen
 
 
+_REV_PATH = re.compile(r"`([0-9a-f]{7,40}):([\w./-]+\.\w+)`|`([\w./-]+\.\w+)@([0-9a-f]{7,40})`")
+
+
+def rev_paths(text: str) -> list[tuple[str, str]]:
+    out = []
+    for m in _REV_PATH.finditer(text):
+        out.append((m.group(1), m.group(2)) if m.group(1) else (m.group(4), m.group(3)))
+    return out
+
+
+def git_show(root: Path, rev: str, path: str) -> bytes | None:
+    try:
+        r = subprocess.run(["git", "-C", str(root), "show", f"{rev}:{path}"], capture_output=True, timeout=20)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout if r.returncode == 0 else None
+
+
 def resolve_basename(root: Path, name: str) -> str | None:
     """A bare file name the box cites -> its tracked path when exactly one tracked file has that name."""
     try:
@@ -169,6 +187,18 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
         for name, other in REPOS.items():
             if name != repo and other.exists() and (other / p).is_file():
                 refs.append({"repo": name, "path": p})
+                break
+    for p in [p for p in paths if "/" not in p and p not in inputs and not any(r["path"] == p for r in refs)]:
+        for name, other in REPOS.items():         # bare name living in ANOTHER repo (r3 HS-OD-4 decision doc)
+            if name != repo and other.exists():
+                hit = resolve_basename(other, p)
+                if hit:
+                    refs.append({"repo": name, "path": hit})
+                    break
+    for rev, p in rev_paths(goal):                # `<sha>:<path>` / `<path>@<sha>` (r3 RESUME-7)
+        for name, other in REPOS.items():
+            if other.exists() and git_show(other, rev, p) is not None:
+                refs.append({"repo": name, "path": p, "rev": rev})
                 break
     dw = done_when_text(goal, rec)
     cmds = _CMD.findall(dw or "") or _CMD.findall(goal)

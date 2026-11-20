@@ -220,3 +220,41 @@ def test_unsupported_and_refs(tmp_path, monkeypatch):
     assert dispatch.commit_lane(lane, task) is False           # refs are never committed
     dispatch.drop_lane(r, lane)
     assert not lane.exists()
+
+
+def _repo(path, files):
+    path.mkdir(parents=True)
+    for k, v in files.items():
+        (path / k).parent.mkdir(parents=True, exist_ok=True)
+        (path / k).write_text(v)
+    subprocess.run(["git", "init", "-q", str(path)], check=True)
+    subprocess.run(["git", "-C", str(path), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(path), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "b"], check=True)
+    subprocess.run(["git", "-C", str(path), "update-ref", "refs/remotes/origin/main", "HEAD"], check=True)
+    return subprocess.run(["git", "-C", str(path), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+
+
+def test_cross_repo_bare_name_becomes_ref(tmp_path, monkeypatch):
+    _repo(tmp_path / "root", {"handoffs/active/h.md": "# H\n- [ ] **Q-1** fix `src/a.py` per `prep-doc.md`\n",
+                              "progress/x/prep-doc.md": "decision\n"})
+    _repo(tmp_path / "orch", {"src/a.py": "x\n"})
+    for k, v in (("epyc-root", tmp_path / "root"), ("epyc-orchestrator", tmp_path / "orch"),
+                 ("epyc-inference-research", tmp_path / "none"), ("epyc-web", tmp_path / "none")):
+        monkeypatch.setitem(schema.REPOS, k, v)
+    t = schema.build({"file": "handoffs/active/h.md", "line": 2, "id": "Q-1"}, root=tmp_path / "root")
+    assert t["repo"] == "epyc-orchestrator" and {"repo": "epyc-root", "path": "progress/x/prep-doc.md"} in t["refs"]
+
+
+def test_rev_path_ref_packaged_via_git_show(tmp_path, monkeypatch):
+    sha = _repo(tmp_path / "orch", {"tests/test_old.py": "old\n", "src/a.py": "x\n"})
+    subprocess.run(["git", "-C", str(tmp_path / "orch"), "rm", "-q", "tests/test_old.py"], check=True)
+    subprocess.run(["git", "-C", str(tmp_path / "orch"), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "rm"], check=True)
+    subprocess.run(["git", "-C", str(tmp_path / "orch"), "update-ref", "refs/remotes/origin/main", "HEAD"], check=True)
+    assert schema.rev_paths(f"test at `{sha[:8]}:tests/test_old.py` and `src/b.py@{sha[:8]}`") == [
+        (sha[:8], "tests/test_old.py"), (sha[:8], "src/b.py")]
+    monkeypatch.setitem(schema.REPOS, "epyc-orchestrator", tmp_path / "orch")
+    monkeypatch.setenv("TASKFLOW_LANE_ROOT", str(tmp_path / "tf"))
+    task = {"repo": "epyc-orchestrator", "refs": [{"repo": "epyc-orchestrator", "path": "tests/test_old.py", "rev": sha[:8]}]}
+    r, lane, base = dispatch.make_lane(task, tmp_path / "run/t0", "b3")
+    assert (lane / f".taskflow-refs/epyc-orchestrator@{sha[:8]}/tests/test_old.py").read_text() == "old\n"
+    dispatch.drop_lane(r, lane)
