@@ -110,7 +110,8 @@ def test_prefix_cache_fixes_h1_h3(tmp_path, monkeypatch):
     t = {"budget": dict(schema.DEFAULT_BUDGET), "test_cmds": []}
     c = json.loads(local_llm.write_config(tmp_path / "a", "http://x/v1", "m", t).read_text())
     bash = c["agent"][local_llm.AGENT]["permission"]["bash"]
-    assert "cat *" not in bash and bash["*"] == "deny" and bash["head *"] == "allow"            # H1 no unbounded cat
+    assert bash["*"] == "deny" and bash["head *"] == "allow"            # H1: output bounded by tool_output (r8: cat allowed)
+    assert c["tool_output"] == {"max_lines": local_llm.TOOL_MAX_LINES, "max_bytes": local_llm.TOOL_MAX_BYTES}
     assert c["tool_output"] == {"max_lines": local_llm.TOOL_MAX_LINES, "max_bytes": local_llm.TOOL_MAX_BYTES}
     assert c["provider"][local_llm.PROVIDER]["models"]["m"]["limit"]["context"] == 65536       # H1 ctx 64k
     assert c["agent"]["title"] == {"disable": True}                                            # H2 no title call

@@ -23,6 +23,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -38,13 +39,19 @@ TIER_MODELS = {
 }
 # Global deny-list carried over from /workspace/opencode.json (the per-run XDG config dir replaces the global config).
 # r1 canary: a piped test command (`cmd | head`) was denied by "*": deny -> read-only helpers are allowed.
-READ_ONLY = ["ls*", "head *",  # H1: no `cat` (unbounded); read with line ranges
-             "tail *", "wc *", "grep *", "rg *", "git diff*", "git status*", "git log*"]
+# r7d canary: 10 of 21 shell denials were `cat` (POLICY rule 6 promised it; READ_ONLY omitted it) plus `sed -n`,
+# `pwd`, `git show` and `cmd | head`. tool_output (200 lines / 8 KiB) bounds every output, so `cat` is safe now.
+READ_ONLY = ["ls*", "cat *", "head *", "tail *", "wc *", "grep *", "rg *", "sed -n *", "pwd", "find *",
+             "git diff*", "git status*", "git log*", "git show *", "git branch*"]
+# Pipe/redirect tails the model composes onto an allowed command (r7d: `cat f | head -100`, `cmd 2>&1`).
+PIPE_TAILS = [" 2>&1", " | head *", " | tail *", " | wc *", " | grep *", " 2>&1 | head *", " 2>&1 | tail *",
+              " 2>&1 | grep *"]
 # Task-brief layer P3 (§7): retrieval tools for locating code and for self-briefing (read-only, zero cloud tokens).
 RETRIEVAL = ["gitnexus query *", "gitnexus context *", "gitnexus impact *",
              "/workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query *"]
 KB_SEARCH = RETRIEVAL[-1][:-2]
-BASH_DENY = ["sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
+BASH_DENY = ["sed *-i*", "sed *--in-place*", "find *-delete*", "find *-exec*", "* > *", "* >> *", "* | sh*", "* | bash*",
+             "sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
              "git commit*", "curl*", "wget*", "systemctl*", "reboot*", "shutdown*"]
 
 POLICY = """\
@@ -55,8 +62,8 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 3. Edit with the edit tool (exact old/new strings). Create a file with write only when the box needs a new file.
 4. Every turn must call a tool until you finish. Never describe a plan without calling a tool in the same turn.
 5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
-6. The shell runs only the ALLOWED COMMANDS (plus ls, cat, head, tail, wc, grep, git diff, git status), exactly as written:
-   no pipes, no redirects (2>&1, >), no && chains.
+6. The shell runs only the ALLOWED COMMANDS plus read-only helpers (ls, cat, head, tail, wc, grep, sed -n, find, pwd,
+   git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc or grep. No `>` files, no && chains, no cd.
 10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
     Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
@@ -150,6 +157,70 @@ def invalid_tool_args(arguments: str) -> str | None:
         if tag in (arguments or ""):
             return f"tool arguments contain {tag}"
     return None
+
+
+LANES_ROOT = os.environ.get("TASKFLOW_LANES_ROOT", "/mnt/raid0/llm/tf")
+# r5-r7d canary: the 35B types the lane's absolute path with a mangled prefix while keeping the hex lane id intact:
+# `<mnt/raid0/llm/tf/e9f8`, `.mnt/...`, `mnt/raid0/tf/...`, `/mnt/raid0/84fd/...`, `/mnt/raid0/llm/t/65a8/...`.
+_MANGLED_LANE = re.compile(r"(?<![\w/])[<.>]?/?mnt/raid0/(?:llm/)?(?:tf?/)?([0-9a-f]{4,8})(?=/|$|[\s\"'`])")
+
+
+def repair_lane_paths(text: str, lane_exists=None) -> tuple[str, int]:
+    """Rewrite mangled lane-prefix paths to LANES_ROOT/<id>. Only rewrites when the lane id names an existing lane
+    (lane_exists(id) -> bool, default: a directory under LANES_ROOT), so unrelated /mnt/raid0 paths are untouched."""
+    lane_exists = lane_exists or (lambda h: os.path.isdir(os.path.join(LANES_ROOT, h)))
+    n = 0
+
+    def sub(m):
+        nonlocal n
+        good = f"{LANES_ROOT}/{m.group(1)}"
+        if m.group(0) == good or not lane_exists(m.group(1)):
+            return m.group(0)
+        n += 1
+        return good
+    return _MANGLED_LANE.sub(sub, text or ""), n
+
+
+def rewrite_sse_tool_args(chunks: list[bytes], lane_exists=None) -> tuple[list[bytes], int]:
+    """Proxy side of repair_lane_paths: reassemble each streamed tool call's arguments, repair them, and if anything
+    changed re-emit the stream with the whole repaired argument string in that call's first delta (later argument
+    deltas emptied). Unchanged streams are returned byte-identical."""
+    raw = b"".join(chunks)
+    lines = raw.split(b"\n")
+    evs: list = []
+    args: dict = {}
+    for ln in lines:
+        ev = None
+        if ln.startswith(b"data: {"):
+            try:
+                ev = json.loads(ln[6:])
+            except ValueError:
+                ev = None
+        evs.append(ev)
+        for ch in (ev or {}).get("choices") or []:
+            for tc in (ch.get("delta") or {}).get("tool_calls") or []:
+                k = (ch.get("index", 0), tc.get("index", 0))
+                args[k] = args.get(k, "") + str((tc.get("function") or {}).get("arguments") or "")
+    fixed, total = {}, 0
+    for k, a in args.items():
+        a2, n = repair_lane_paths(a, lane_exists)
+        if n:
+            fixed[k], total = a2, total + n
+    if not total:
+        return chunks, 0
+    seen, out = set(), []
+    for ln, ev in zip(lines, evs):
+        touched = False
+        for ch in (ev or {}).get("choices") or []:
+            for tc in (ch.get("delta") or {}).get("tool_calls") or []:
+                k = (ch.get("index", 0), tc.get("index", 0))
+                fn = tc.get("function")
+                if k in fixed and isinstance(fn, dict) and "arguments" in fn:
+                    fn["arguments"] = "" if k in seen else fixed[k]
+                    seen.add(k)
+                    touched = True
+        out.append(b"data: " + json.dumps(ev).encode() if touched else ln)
+    return [b"\n".join(out)], total
 
 
 def request_digest(body: dict) -> dict:
@@ -276,6 +347,9 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
     for c in allowed_commands(task):
         bash[c] = "allow"
         bash[c + " *"] = "allow"
+    for base in [k for k, v in bash.items() if v == "allow"]:
+        for tail in PIPE_TAILS:
+            bash[base + tail] = "allow"
     for d in BASH_DENY:
         bash[d] = "deny"
     cfg = {
