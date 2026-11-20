@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T11:45:24Z",
+  "generated_at": "2026-11-20T12:27:38Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1084,7 +1084,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1010,
+          "line": 1036,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1093,7 +1093,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1322,
+          "line": 1348,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1102,7 +1102,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1529,
+          "line": 1555,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1111,7 +1111,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1855,
+          "line": 1881,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1120,7 +1120,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2090,
+          "line": 2116,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1769,15 +1769,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 179,
-      "dispatchable": 35,
+      "closed": 180,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 37,
+      "open": 36,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1820,14 +1820,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 26,
+          "dispatchable": 25,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 842,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 27,
+          "open": 26,
           "readiness": "blocked"
         }
       ]
@@ -3112,14 +3112,14 @@
         "RTG-34"
       ],
       "closed": 88,
-      "dispatchable": 31,
+      "dispatchable": 32,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-20",
       "next_action": "Build TASKFLOW-STAGE1 beside the old dispatcher; then HS-STAGE-C, AK-FIXES-F2-F9, AK-HOOKS-C1-C6",
-      "open": 31,
+      "open": 32,
       "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
