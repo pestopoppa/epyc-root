@@ -2438,6 +2438,13 @@ def placeable(x, free, ram, gpu_grant_open=False, held_ports=()):
     return bool(_fits(x, free, ram, gpu_grant_open))
 
 
+def drain_outranks(c, drain):
+    """PM-INVERSION 2026-11-20: a drain reserved for row `drain` never binds a row with a STRICTLY better rank (lower
+    number) - better-ranked rows always take precedence and the drain re-forms after them. Only rows of equal or worse
+    rank are drain-late (the whole-host starvation protection the replay gate checks)."""
+    return drain is not None and c is not drain and float(c["rank"]) >= float(drain["rank"])
+
+
 def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_ports=()):
     """The best-ranked pending row (strictly better rank than c) that wants any region c's drain would hold, or None.
     A drain is never set for c while such a row is runnable: rank decides who gets the regions when they free.
@@ -2453,9 +2460,29 @@ def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_po
 def _placeable_now(x, free, ram, gpu_grant_open, drain, need_r, now, T):
     """x has a fitting option this tick that a drain does not refuse it (drain-late rows only take non-drain regions)."""
     opts = _fits(x, free, ram, gpu_grant_open)
-    if drain is not None and x is not drain and (now + book_s(x) > T or now + hold_s(x) > T) and not cap_ok(x, now, T):
+    if drain_outranks(x, drain) and (now + book_s(x) > T or now + hold_s(x) > T) and not cap_ok(x, now, T):
         opts = [o for o in opts if not (o & need_r)]
     return bool(opts)
+
+
+def rank_fragment_ok(c, o, contenders, free, ram, gpu_grant_open, held_ports=(), eff=None):
+    """PM-INVERSION 2026-11-20 (22:54Z: rank-35 quarter row lsa took q0, rank-22 multi-quarter(3) c16-fold-cpu could no
+    longer fit, q1+q2 idled): option o of c is refused when a STRICTLY better-ranked contender that fits the free set now
+    would have no fitting option left once o is taken. contenders: pending rows plus build-pocket-held rows (held rows
+    keep their regions for the build claim and their own rank, never for a worse row to fragment). Only MULTI-QUARTER
+    contenders (an option spanning >= 2 quarters) count: same-width contention keeps the starved-lane order. eff(h, opts)
+    drops options a drain / deferred horizon would refuse h anyway (a refused contender reserves nothing)."""
+    for h in contenders:
+        if h is c or float(h["rank"]) >= float(c["rank"]) or not placeable(h, free, ram, gpu_grant_open, held_ports):
+            continue
+        if not any(sum(1 for q in QUARTERS if q in x) >= 2 for x in h["options"]):
+            continue
+        opts = _fits(h, free, ram, gpu_grant_open)
+        if eff is not None:
+            opts = eff(h, opts)
+        if opts and not any(not (x & o) for x in opts):
+            return False
+    return True
 
 
 def _fits(c, free, ram, gpu_grant_open):
@@ -2637,10 +2664,12 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         cands = [dict(c, options=gpu_q3_guard(c)) for c in cands]
     bp = dict(build_policy or build_pocket_policy())
     plan.build_held = []
+    held = []
     if build_waiting:   # BUILD-POCKET (a): a build claim is waiting - a long undeclared q0-q2 row is not booked over its pocket
         held = [c for c in cands if long_q012_cand(c, bp)]
         plan.build_held = [c["id"] for c in held]
         cands = [c for c in cands if c not in held]
+    plan.build_held_rows = held
     pending = sorted(cands, key=plan_order)
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
@@ -2663,7 +2692,10 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             if row_busy(c) < DRAIN_MIN_BUSY:   # operator 2026-11-03: a mostly idle row never books a quiet/whole host
                 plan.drain_lowbusy.append(c)
                 continue
-            blocker = drain_blocker(c, pending, free, ram, gpu_grant_open, ports)
+            # PM-INVERSION 2026-11-20: build-pocket-held rows still outrank a drain target - they are off the plan only
+            # for the build claim, so the drain must not form for a worse row and lock them out once the claim clears
+            # (22:50Z: rank-22/40 q0-q2 rows build-held, invisible here; the rank-110 host row drained q0-q2 for 2.75 h)
+            blocker = drain_blocker(c, pending + held, free, ram, gpu_grant_open, ports)
             if blocker is not None:   # ws58 2026-11-02: a better-ranked row wants these regions; no promotion, no drain
                 plan.drain_held.append((c, blocker))
                 continue
@@ -2687,13 +2719,14 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     need_r = set().union(*drain["options"]) if drain is not None else set()
     if drain is not None:  # best fit: the longest backfill that still ends by T goes first, so the gap is packed
         dur = book_s
-        pending = [drain] + sorted([c for c in pending if c is not drain], key=lambda c: (now + dur(c) > T, -dur(c)))
+        pending = [drain] + sorted([c for c in pending if c is not drain], key=lambda c: (drain_outranks(c, drain), now + dur(c) > T, -dur(c)))
+        # (PM-INVERSION: strictly better-ranked rows first - the drain never binds them)
     while pending:
         placed = None
         for c in pending:
             # D9 2026-11-11 (operator "Cap backfill at T"): a row whose booking or hold overruns T is admitted capped at T
             # when the cap clears its min window (cap_ok); only a row the cap would starve below min_window stays late
-            over = drain is not None and c is not drain and (now + book_s(c) > T or now + hold_s(c) > T)
+            over = drain_outranks(c, drain) and (now + book_s(c) > T or now + hold_s(c) > T)
             late = over and not cap_ok(c, now, T)
             capd = over and not late
             opts = _fits(c, free, ram, gpu_grant_open)
@@ -2711,6 +2744,14 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 opts = kept
                 if opts:
                     plan.rank_skips += [(c, h, why) for h, why in skips]
+            if opts:   # PM-INVERSION: a worse row never fragments the quarters a better-ranked fitting row needs
+                def _eff(h, hopts):
+                    if drain_outranks(h, drain) and (now + book_s(h) > T or now + hold_s(h) > T) and not cap_ok(h, now, T):
+                        hopts = [x for x in hopts if not (x & need_r)]
+                    if dfr_T is not None and (now + book_s(h) > dfr_T or now + hold_s(h) > dfr_T) and not cap_ok(h, now, dfr_T):
+                        hopts = [x for x in hopts if not (x & dfr_r)]
+                    return hopts
+                opts = [o for o in opts if rank_fragment_ok(c, o, pending + held, free, ram, gpu_grant_open, ports, _eff)]
             if opts and not any(t in QUARTERS for x in opts for t in x) and not (plan.gpu_q3_guard and Q3_NARROW in opts):
                 # (GPU-Q3-GUARD: a quarter row's q3-narrow option is its whole-quarter grant, not sub-quarter packing)
                 # PACKING (operator "fix it" 2026-11-05): a sub-quarter row goes onto a partly used quarter; it breaks a
@@ -2742,7 +2783,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             break
         c, o = placed
         caps = [t for rid, need, t in plan.caps if rid == c["id"] and need & o]
-        if drain is not None and c is not drain and (now + hold_s(c) > T or now + book_s(c) > T) and o & need_r:
+        if drain_outranks(c, drain) and (now + hold_s(c) > T or now + book_s(c) > T) and o & need_r:
             caps.append(T)
         if dfr_T is not None and (now + hold_s(c) > dfr_T or now + book_s(c) > dfr_T) and o & dfr_r:
             caps.append(dfr_T)
@@ -2756,6 +2797,14 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     plan.idle_entries = {}   # {region: (head, [other rows' reasons])}: the keeper appends WAIT-FOR-SMOKE rows
     for r in sorted(x for x in free if x in REGIONS):
         want = [c for c in pending if any(r in o for o in c["options"])]
+        # PM-INVERSION: the REAL fit reason - build-pocket-held rows wanting r, and rows that do not fit the free shape
+        hw = [f"{x.get('shape') or x['kind']} row {x['id']} (rank {float(x['rank']):g}) BUILD-POCKET-HELD: long q0-q2 "
+              f"row not booked while a build claim waits" for x in sorted(held, key=lambda x: (float(x["rank"]), x["id"]))
+              if any(r in o for o in x["options"])]
+        if not want and hw:
+            plan.idle_entries[r] = (hw[0], hw[1:])
+            idle[r] = idle_why_line(hw[0], hw[1:])
+            continue
         if not want:
             idle[r] = "no runnable row needs it (every grantable/dry-runnable row is placed, running, failed or parked)"
             continue
@@ -2778,7 +2827,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         # pipeline-mgmt 2026-11-11: EVERY other ready row that could use r, each with its own blocker (the drain row plus
         # one other row hid busy q3 cores, port/RAM holds and drain-late rows). Diagnostics only: placement is above.
         rest = [_idle_row_why(x, r, free, ram, gpu_grant_open, ports, drain, T, now, region_ends, region_holders)
-                for x in sorted(want, key=lambda x: (float(x["rank"]), x["id"])) if x is not c]
+                for x in sorted(want, key=lambda x: (float(x["rank"]), x["id"])) if x is not c] + hw
         plan.idle_entries[r] = (head, rest)
         idle[r] = idle_why_line(head, rest)
     return out, idle, pending
@@ -2798,7 +2847,7 @@ def _idle_row_why(c, r, free, ram, gpu_grant_open, ports, drain, T, now, region_
     """Why ready row c is not on idle region r this tick, from c's OWN constraint: drain-late, arming, port, RAM, a busy
     region (holder + end), the timing-row q3 rule, or a rank reservation."""
     head = f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g})"
-    if drain is not None and c is not drain and now is not None and T is not None:
+    if drain_outranks(c, drain) and now is not None and T is not None:
         need_r = set().union(*drain["options"]) if drain["options"] else set()
         over = now + book_s(c) > T or now + hold_s(c) > T
         if over and not cap_ok(c, now, T) and any(r in o and o & need_r for o in c["options"]):
@@ -2850,6 +2899,7 @@ plan.caps = []
 plan.hard_end = {}
 plan.build_held = []
 plan.idle_entries = {}
+plan.build_held_rows = []
 
 
 def quiet_ok_now(flags, now=None):
