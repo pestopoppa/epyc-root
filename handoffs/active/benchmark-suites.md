@@ -356,6 +356,16 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       exact rowflow native-result output. Two smoke integration failures were fixed
       before publication (missing native result, then stale smoke completion).
       [Launcher qualification and content-bound evidence](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/fleet-launcher-20261120.json).
+      2026-11-20 live multi-turn verdict: `codex-bfcl-cj3d-27b-v1-20261120`
+      ended **rc=1, INCONCLUSIVE**: HTTP timeout on the first case; terminal
+      `RESULT.json` absent, `ABORTED.json` reports completed=0. The intact
+      121-record hash chain contains 25 exposures, 24 responses and 25 before /
+      24 after residency records, then aborts without a checker verdict.
+      Completed=0, known=0, exposed UNKNOWN=1, unexposed=9, passed known
+      verdicts=0; **no quality score**. [Verdict and SHA-256 source bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/multi-turn-verdict-20261120.json).
+      No retry/redraw; parent stays open. Repair and offline-test prospective
+      request budgeting before separately declaring any fresh multi-turn exposure.
+      [belief: cc]
       Granted work captures the ten selected multi-turn cases; this smoke supplies
       no BFCL quality score. Parent stays open for the live coverage verdict and
       durable single-turn fleet capture; SQL remains excluded by the official evaluator.

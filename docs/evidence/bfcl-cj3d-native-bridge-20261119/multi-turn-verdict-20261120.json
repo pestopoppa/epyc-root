@@ -1,0 +1,78 @@
+{
+  "row": "codex-bfcl-cj3d-27b-v1-20261120",
+  "box": "CJ-3d",
+  "verdict": "inconclusive",
+  "rationale": "INCONCLUSIVE: rc=1; RESULT.json absent; ABORTED.json reports TimeoutError: timed out and completed=0. The 121-record hash chain is intact: first case multi_turn_base_0 has 25 exposures, 24 responses, 25 before/24 after residency records and an aborted tail, with no capture_result or checker verdict. Completed=0, known=0, exposed UNKNOWN=1, unexposed=9, passed known verdicts=0; no quality score or representative conclusion. Published worker binds HTTP timeout=300 seconds. No retry/redraw. Parent CJ-3d remains open because representative coverage is unsatisfied.",
+  "counts": {
+    "selected": 10,
+    "completed": 0,
+    "known": 0,
+    "exposed_unknown": 1,
+    "unexposed": 9,
+    "passed_known_verdicts": 0,
+    "score": null
+  },
+  "journal": {
+    "records": 121,
+    "chain_valid": true,
+    "tail_sha256": "75b95b99e7a75b9115ed8828d543bd2458269b32a2e0c31f42555f047fd85675",
+    "events": {
+      "identity": 1,
+      "residency": 49,
+      "exposure": 25,
+      "response": 24,
+      "feedback": 21,
+      "aborted": 1
+    },
+    "case_id": "multi_turn_base_0",
+    "terminal_verdict_present": false
+  },
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run/ABORTED.json",
+      "sha256": "1a3fd7d52154d0a568133382534f56a52d2cf48353da4970de121586de39aa62"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run/multi_turn_base_0.jsonl",
+      "sha256": "c55aeb2798d18a729a302de42d0d65fba411b26b32c6703d62fbe68eee852aa0"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run/attempt.json",
+      "sha256": "9211402244fa9625462ac6ca50622d6e7b68c35f1f7f4148c70266d7328ee077"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run/runtime.json",
+      "sha256": "1cebeb4b3af5e982bebd9807eeee5e37f6a463bc501b5d7683fdb872f3b6adf5"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run/shutdown.json",
+      "sha256": "3307d4cc8348b895b1b8923289862bc1b3d4d67d02f4214c9c4f7849611554a1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/CONFIG.json",
+      "sha256": "6c970a5b1fafea1bbd13f70d91dc32bbfad7d6f795fe3275319c4c88620fe8c8"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/bfcl_fleet_run.py",
+      "sha256": "ff7c89504d59d581e761d8336bd31e48c3ed65ab952d97a00979cb8ee7bb8336"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/ws58-launcher.out",
+      "sha256": "e6ee5874f9090466ba7113446027a6918462e9a0ed00c75870905743582bc5db"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-bfcl-cj3d-27b-v1-20261120.ended",
+      "sha256": "b0c260e44476d1eb4f66b6fb7bd4990cd3f9235b9b525aeab7eb8b5644dde62b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-bfcl-cj3d-27b-v1-20261120.json",
+      "sha256": "bed4bb22273e8f6e1e515c5a9d97a19840e7f7d6b4f3a6cd1c80d2bb63a94d40"
+    }
+  ],
+  "limitations": [
+    "Counts describe interrupted capture, not model quality.",
+    "No representative or adoption claim.",
+    "No retry or successor published."
+  ],
+  "next_action": "Repair and offline-test prospective BFCL request budgeting before any separately declared fresh multi-turn exposure; retain the aborted attempt unchanged."
+}
