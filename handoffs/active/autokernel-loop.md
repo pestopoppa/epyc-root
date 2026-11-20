@@ -2793,9 +2793,9 @@ cannot retrigger the expensive gate unchanged.
 
 ##### Phase AK6 — release packager and operator handoff
 
-- [ ] Run an end-to-end campaign that stops at a validated package with zero production writes.
+- [ ] **AKU-13** Run an end-to-end campaign that stops at a validated package with zero production writes.
   - [x] **Complete the offline operator-closeout integration fixture.**  — research ✅ 2026-08-12 _(detail → completed ledger)_
-- [ ] Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
+- [ ] **AKU-14** Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
   fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
   empirical receipts.
   - [x] **Complete the offline fault-injection acceptance matrix.**  — research ✅ 2026-08-12 _(detail → completed ledger)_
@@ -4851,7 +4851,7 @@ within seconds — clean, no crash.
   ⇒ multi-day). Monitor wakes the owning session on a science increase, a crash, or a genuine
   stall. No action needed unless it wakes.
 - [x] **Re-screen the 19 historically proposed deletion modules individually and strip only proven-safe files** (10,500 LOC + 19 test files ~4,870 LOC + ✅ 2026-10-25 [no-belief: committed conclusion prepared; register capture not yet applied] [no-belief: tooling] _(detail → completed ledger)_
-- [ ] **Add build/runtime disk expiry.** `deployments/*/builds/` (14 G) + `runtime/` (4.4 G) are
+- [ ] **AKU-15** **Add build/runtime disk expiry.** `deployments/*/builds/` (14 G) + `runtime/` (4.4 G) are
   pinned by `materialization.json` digests; `storage.expire_artifact` has zero callers. Also run
   `_recover_incomplete_attempt` at controller start for ALL incomplete attempts, not only on
   re-proposal (that is why 6 orphan worktrees survived). Not a crash — disk growth.
@@ -7067,7 +7067,7 @@ ROOT accepted the prospective GPU generator reader rebind at `ROOT_GPU_GENERATIO
 - **[declined: ws58 2026-11-03 content-review: launcher/custody residue]** Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native runtime wait 0, and then review GPU clearance and fresh generation telemetry.
   - source a3bdc4860 merged; native/materialization still unapproved
   - [x] 2026-10-28 satisfied part (CPU source+runtime): superseded by r10 `bdb52d951`; SOURCE_AND_RUNTIME_PASS, full/native waits 0, receipt fd9043db (26 refs) and CPU activation/monitor 36bdfe14 (9 refs) re-hashed by ws58 from `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/`. DRY 52fa5afb is receipt-supported but only 17 of 23 refs reproducible (6 original /tmp/ak-27b assets missing). [belief: cc]
-  - [ ] LIVE GPU leg: GPU clearance review and fresh generation telemetry from a real serving-owner run; needs serving-owner grant (no park of :8083 by this session). Parent box stays open.
+  - [ ] **AKU-28** LIVE GPU leg: GPU clearance review and fresh generation telemetry from a real serving-owner run; needs serving-owner grant (no park of :8083 by this session). Parent box stays open.
 - **[declined: ws58 2026-11-03 content-review: custody residue]** Publish the ROOT-reviewed exact original35 corpus and new native verification record at the owned paused boundary, retaining original failures and grade qualifications.
 
 Earlier checkpoint entries retain their original dated scope.
@@ -7218,7 +7218,7 @@ was changed or promoted.
 
 
 
-- [ ] **Complete runtime fast-path admission and continuation**: finish interrupted-owner recovery; use original applicable calibration/evidence and
+- [ ] **AKU-16** **Complete runtime fast-path admission and continuation**: finish interrupted-owner recovery; use original applicable calibration/evidence and
   retain/select/resume an accepted runtime recipe without a source promotion. Runtime
   observations alone do not complete AK-AUTO-07 or the runtime champion requirement.
 
@@ -7778,7 +7778,7 @@ sequencing: measurement first, authoring later).
 - [x] ~~INF-70 **RETEST-1 turn in progress** (A/A first, then RETEST-1 in priority order); **next fold = their keeps off `ef81196d5`** — they stage~~ (closed 2026-10-29 audit: SUPERSEDED → RETEST-1 close-out 1fc2e2d45 (2026-09-08): no CPU keeps, sync17-fix2 DO-NOT-FOLD, consolidation complete at …  _(detail → completed ledger)_
 - [x] ~~FOLD-0 (`inf70-audit`): fold-ready commit with both blockers opt-in; bit-identity + `test-backend-ops -b CPU`.~~ (closed 2026-10-29 audit: SUPERSEDED → fold executed instead via FOLD-1..3 (ticked box below, e5d1846d2): champion3 9c4f73e29 ancestor of ef81196d5; also in v10 base …  _(detail → completed ledger)_
 - [x] ~~Do not schedule the boundary under INF-70's live chains (SYNC-19/20 window 1 ~21:30Z + a second window,~~ (closed 2026-10-29 audit: SUPERSEDED → boundary scheduling moot: fold completed 2026-09-08 (e5d1846d2) and INF-70 campaign closed (f53fa4908))  _(detail → completed ledger)_
-- [ ] CPU keeps present in the fold recorded as `accumulator-bundle.cpu.<recipe>.json` (schema v1) — **with their
+- [ ] **AKU-17** CPU keeps present in the fold recorded as `accumulator-bundle.cpu.<recipe>.json` (schema v1) — **with their
       magnitude flagged `provisional` and the contention label `pre-hook`**: every INF-70 arm before 2026-09-07
       carries a WRONG contention label (sampler read `184-191` as disjoint), and +4.50% is at or below its
       instrument's floor (sign solid, magnitude not). A bundle must never launder a non-claim into a settled number.
@@ -7843,7 +7843,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [x] `serving.Recipe` CPU variant (device, cpu_list, numa, threads) — the CPU session's canonical recipe codified   <!-- evidence-integrity: Research `6cf25cfab8e45e760cbe4291134b58730ae1eb70`; artifact: artifacts/compute/task-evidence-repair-20261031/serving-recipe-cpu/EVIDENCE.json; hygiene, not … ✅ 2026-10-30 [no-belief: source identity/launch validation] _(detail → completed ledger)_
 - [x] **AK-CPU-AA-CALIB** CPU A/A calibration: screen floor + serving floor, unit and host-state hash recorded; gating-floor calibration n≥24 with interval (FLOOR-UNIT-1 supersedes the earlier n=20 proposal) Row ak-cpu-aa-calibration-20261118: model: Qwen3.8-Flash-Next (Q38FN) + MTP, C14 CPU store … [no-belief: code] [belief: cc] _(detail → completed ledger)_
 - [x] **GPU-LAUNCH-VAR-COVARIATE — Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP ✅ 2026-11-19 [belief: cc] [no-belief: cross-reference] [no-belief: triage] [no-belief: row preparation] _(detail → completed ledger)_
-- [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
+- [ ] **AKU-18** Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
 - [x]  — Research `2f047a7b1a1a47f30d97e27ddd4c4153d11f911f`; [354-test committed-source suite](https://github.com/pestopoppa/epyc-inference-research/blob/f7061c0cecfc279cf1a1436227ef00285fd2c306/artifacts/engineering/aku-stale-baseline-20261101/README.md).  **Re-baseline on cor advance**: … ✅ 2026-11-01 [belief: cc] _(detail → completed ledger)_
 - [x] **S3-AKU-07 — promotion evidence from held-out launches.** The promotion record's compounded gain, and ✅ 2026-11-17 [no-belief: tooling landing, no measurement] _(detail → completed ledger)_
 - [ ] **S3-AKU-13 — Goodharted-keep count at PROMOTE.** Beside each LOO arm (R23-48) record that keep's
@@ -7855,7 +7855,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
   - 2026-11-19 (autokernel) real LOO row `s3-aku-13-loo-cpu-c14-20261118` published: C14 `eee3da838` full bundle F vs five CPU LOO arms (L1-L4 `git apply -R` own builds, L5 `GGML_CPY_BALANCE=0`), paired ABBA x2 per arm on P4K and P32K. model: Qwen3.8-Flash-Next UD-IQ4_XS (Q38FN) + shared MTP Q8_0. Stop-on-answer: all 40 visits -> RESULT.json arms/full_bundle in the `count_goodharted` input shape (verdict computed by the owning session, tie counts). Stop-on-futility: missing input/proof failure, or L/F < 0.90 on both surfaces in block 1 skips that arm's block 2. Gate-class futility-only; other re-baselined surfaces (GPU) not in this row. [no-belief: tooling landing]
   - 2026-11-19 (autokernel) FILED `s3-aku-13-loo-cpu-c14-20261118` **inconclusive** (box stays OPEN). `count_goodharted` = 4/5 (0d270f99b, 7a5db485e, a331665d4, 4348de400 goodharted; 8b9bf3031 not). loo/full P4K/P32K: L1 1.059/1.046, L2 1.029/0.984, L3 1.077/1.004, L4 1.014/1.014, L5 0.809/0.873 (block-1 futility). Only 2 blocks/arm, no arm clears the 3.84% floor on every block and surface, and host foreign busy_p50 was 35-52% on every visit (spikes on F visits inflate L1/L3). Greedy outputs byte-identical F vs every arm. L5 (GGML_CPY_BALANCE) clearly positive. Confirmation: AK-LOO-CONFIRM-C14. [no-belief: inconclusive row verdict]
   - [x] **AK-LOO-CONFIRM-C14 — contention-gated confirmation of the C14 CPU LOO signal.** model: Q38FN Q8 CPU (Qwen3.8-Flash-Next UD-IQ4_XS + MTP Q8_0), 48t pinned 24-71, booked q0-q2. Row `ak-loo-confirm-cpu-c14-20261119`: arms full C14 vs R1 (-0d270f99b), R3 (-a331665d4), R1234 (-L1..L4), >= 8 … ✅ 2026-11-19 [no-belief: row verdict filed by agent] _(detail → completed ledger)_
-- [ ] First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
+- [ ] **AKU-19** First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
 
   - 2026-11-01 codex3 acceptance: Staleness is derived from the existing shared-COR authority and checked by already-loaded readers, status/quotes and decision entry points. The explicit own-surface rebaseline runs the existing native CPU/GPU harness after resource admission, binds intent before measurement, retains native failure/aborted raw records, then checks COR, tip and the original surface-journal snapshot under the existing authority lock before saving a current measurement. Only a complete typed native comparison clears the stale state. Late initialization and seed cannot erase existing state or bypass recovery; incompatible recovery flags refuse. The final frozen eight-file suite passed 354 with original source hashes and drained processes. No actual COR promotion, model execution, deployment, threshold/grade change or planning-canary claim. [belief: cc]
 
@@ -7881,16 +7881,16 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [x] Known-good and known-null config patches classify correctly ✅ 2026-11-19 (autokernel, code-only): the P1d fixtures are the pair. Known-good: `GGML_FIXTURE_KNOB` OFF->ON default flip classifies TOUCHED on every workload (`test_knob_set_in_effective_env_is_touched`, `exercised_knob_flips`). Known-null: a knob read with no default change is not an exercised change and is INERT only through a T1 witness (`test_unset_knob_inert_only_with_t1_witness`, `test_knob_read_no_default_change_inert_where_unset`). 27 passed, research `93445e31e`. [no-belief: code]
 
 ##### P4 — broker + budgets (U4)  · exit: 10 consecutive iterations mixing surfaces with zero unlocked builds and foreign load under bound on every arm
-- [ ] Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap
-- [ ] CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock
+- [ ] **AKU-20** Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap
+- [ ] **AKU-21** CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock
 - [ ] **P4-0a (filed 2026-09-07, derived from the P4-0 merge)** — the shared, un-lane-owned research clone
       `/mnt/raid0/llm/epyc-inference-research` is **187 commits behind `origin/main` with 9 dirty tracked
       files** left by other sessions (a merge there failed on `ort`). Surfaced merging P4-0 in; no owner,
       so nobody syncs it. Do NOT `checkout`/`reset` it (destroys other sessions' uncommitted work) — needs
       an operator-assigned owner or a scheduled sweep session before it grows further.
-- [ ] Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
-- [ ] Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
-- [ ] Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
+- [ ] **AKU-22** Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
+- [ ] **AKU-23** Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
+- [ ] **AKU-24** Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
 
 ##### P5 — single monitoring session (U5)  · exit: one roster entry monitors both surfaces; CPU session files hypotheses, measures nothing by hand
 - **[declined: ws58 2026-11-03 content-review: bookkeeping]** Roster/ownership update; inbox is the CPU session's output surface
@@ -9605,7 +9605,7 @@ compaction and wiki compilation are not part of this implementation request's ro
 Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`), gated by `EPYC_LOCK_FIFO` (default OFF). Ticket queue over role and GLOBAL per-region locks plus gpu-quiet writer preference. Reviewed by ak-ds41-main and workspace-ec. All tests passed (125 passed, 3 xfailed), validated against origin/main.
 
 - [x] Deterministic FIFO-off control (barrier or fake-poll harness: the releaser re-requests while the waiter is provably parked), so the 3 starvation/barging xfails become strict. Required before default ON. ✅ 2026-10-31, orchestrator `9e1155a10f809d9c63a818fd95b5e02276d0e43a`; `tests/unit/test_lock_fifo_queue.py` (24 passed; original fairness negative control fails exactly 3 FIFO-off assertions); artifact `artifacts/engineering/autokernel-rebuild-s-batch-20261031/fifo-control/receipt.json`. [belief: cc]
-- [ ] Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops (DS41, Q38FN) have restarted on the new code (old clients barge).
+- [ ] **AKU-25** Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops (DS41, Q38FN) have restarted on the new code (old clients barge).
 
 2026-10-07 Codex checkpoint: deterministic controls are prepared in orchestrator `56fabf52`
 (`codex/ak-fifo-controls-20261007`); real tickets/flocks remain active and barriers control only
@@ -9856,7 +9856,7 @@ This is a documentation checkpoint. Do not interpret open implementation tasks b
 
 ##### Review checklist
 
-- [ ] CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session. (parked 2026-10-29 (operator): deferred with the AutoKernel hold; not blocked on the operator until the AK hold lifts) The implementation sequence (absorbed: CTC-1..8, CTC-Q-D, CTC-Q-F) stays in the proposal document and is filed as boxes only if the operator authorizes the implementation session.
+- [ ] **AKU-26** CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session. (parked 2026-10-29 (operator): deferred with the AutoKernel hold; not blocked on the operator until the AK hold lifts) The implementation sequence (absorbed: CTC-1..8, CTC-Q-D, CTC-Q-F) stays in the proposal document and is filed as boxes only if the operator authorizes the implementation session.
 
 ##### Proposed implementation sequence (gated by CTC-REVIEW)
 
@@ -10027,7 +10027,7 @@ Still subject to review: the staged concurrency proposal, its FIFO admission beh
 
 The previously reported LOW GitNexus impact on `_drive`, `hold_cpu` and `publish_intervals` is only a static callgraph observation. Closure callbacks and runtime claim consumers above show why it is not a correctness assurance. Re-index the implementation checkout and review these consumers before editing.
 
-- [ ] GPUQUIET-WRITER-PREFERENCE: gpu-quiet EXCLUSIVE starves under AK lanes' back-to-back shared claims (timed out at 600 s on 2026-10-07 02:42Z, FIFO off). Needs FIFO default-on or writer preference. Owner: workspace-ec, coordinate with workspace-89. Done when an EXCLUSIVE acquire succeeds within its timeout while AK shared lanes are running.
+- [ ] **AKU-27** GPUQUIET-WRITER-PREFERENCE: gpu-quiet EXCLUSIVE starves under AK lanes' back-to-back shared claims (timed out at 600 s on 2026-10-07 02:42Z, FIFO off). Needs FIFO default-on or writer preference. Owner: workspace-ec, coordinate with workspace-89. Done when an EXCLUSIVE acquire succeeds within its timeout while AK shared lanes are running.
   - 2026-11-19 GPUQUIET-WRITER-PREFERENCE: writer preference already exists (orchestrator `11e6d86`, `gpu_quiet_lock.py`) and passes `TestGpuQuietFifoOrdering::test_writer_preference` (re-run 2026-11-19: passed), but only under `EPYC_LOCK_FIFO=1`, default OFF. The remaining step is the sibling box at the FIFO section ("Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops have restarted on the new code", because old clients barge); the named event is that loop restart. The done condition (EXCLUSIVE succeeds within its timeout under live AK shared lanes) is a live check after the flip.
 
 ##### 2026-10-28 INF-74 / RUN14 joint gate result - no deployment
