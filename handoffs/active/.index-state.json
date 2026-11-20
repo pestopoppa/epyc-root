@@ -28,7 +28,7 @@
       "blocked": 13,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 424
+      "open": 423
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -1489,10 +1489,10 @@
     },
     "memory-program.md": {
       "blocked": 1,
-      "closed": 136,
+      "closed": 137,
       "guarded": 0,
-      "last_advanced": "2026-11-19",
-      "open": 37,
+      "last_advanced": "2026-11-20",
+      "open": 36,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,13 +1505,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 63,
+          "closed": 64,
           "gates": [],
           "guarded": 0,
           "line": 36,
           "markers": 1,
           "name": "memory-program",
-          "open": 12
+          "open": 11
         },
         {
           "blocked": 0,
