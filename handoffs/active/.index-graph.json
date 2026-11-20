@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T10:35:35Z",
+  "generated_at": "2026-11-20T10:39:31Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1766,7 +1766,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 171,
+      "closed": 172,
       "dispatchable": 36,
       "domain": "inference-research",
       "guarded": 0,
