@@ -392466,10 +392466,9 @@
   authors:
   - "Manogna-Sree (GitHub)"
   key_claims:
-  - "Adds Q8_0 8x8 block interleaving (repack) for x86: GEMM for AVX512 and AVX2, GEMV for AVX2 only (PR body)."
-  - "PR body table: 7B Q8_0 pp512 at 6 threads rises with the AVX512 GEMM path while tg128 is flat to slightly negative."
-  - "Perplexity is reported unchanged over 655 chunks."
-  - "Tested on a Zen 5 Ryzen 9600X; the PR is open and unreviewed, and the body states AI drafted the AVX512 path."
+  - "PR #32613 adds a Q8_0 8x8 repack for x86 with GEMM on AVX512/AVX2 and GEMV on AVX2 only."
+  - "The reported prefill gain is from the AVX512 GEMM build (7B Q8_0 pp512 73.65 -> 134.55 t/s, +82.69%, 6 threads, Ryzen 9600X); tg128 is flat to slightly negative and PPL over 655 chunks is unchanged."
+  - "The PR is open and unreviewed, the author discloses AI drafted the AVX512 path, and the branch was force-pushed after the benchmark commit."
   techniques:
   - "Q8_0 8x8 repack GEMM/GEMV"
   - "AVX512/AVX2 intrinsics in ggml-cpu arch/x86/repack.cpp"
@@ -392483,12 +392482,76 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
-  notes: "Stage-1 read of the PR page, gh JSON (body/comments) and diff file list; head 298c40be93, OPEN, retrieved 2026-11-20. Overlap to check: production/champion already carry an AVX512BW 8x8 Q8_0 kernel (memory project_q8_8x8_avx512bw_outcome)."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Cite the PR scope and its own 9600X numbers only. Do not file it as the XFER-4b A/B: on C14 with GGML_IQK=1 Q8_0 is served by iqk Option R and this repack never runs. Do not write an AVX-512 Q8_0 GEMV for decode."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "PR body Overview"
+    quote: "The GEMM function was implemented for AVX512/AVX2 and GEMV functions are implemented for the AVX2 architecture"
+    quote_sha256: 8861ef7d5af31ad939226779c33b4c1b830dee17f818cd491f5e29411c31bd2e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32613
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 269624, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8", "relative_path": "sha256/e0/e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "retrieved_at_utc": "2026-11-20T10:27:11.875561Z", "schema_version": 1, "snapshot_id": "sha256:e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "PR body benchmark table"
+    quote: "llama 7B Q8_0 6.67 GiB 6.74 B CPU 6 pp 512 134.55 \u00b1 0.44 82.69"
+    quote_sha256: d3ceb6af1e77da005f4b2aaabf9916836ac14396b0f6126149de1df21ec8d9a3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32613
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 269624, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8", "relative_path": "sha256/e0/e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "retrieved_at_utc": "2026-11-20T10:27:11.875561Z", "schema_version": 1, "snapshot_id": "sha256:e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "PR body PPL table"
+    quote: "llama 7B Q8_0 5.7996 \u00b1 0.03238"
+    quote_sha256: a70e35eccee635ecfa71c1b05972af73da76e0379df9bf4b32d7e1fbeea66303
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32613
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 269624, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8", "relative_path": "sha256/e0/e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "retrieved_at_utc": "2026-11-20T10:27:11.875561Z", "schema_version": 1, "snapshot_id": "sha256:e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "PR body AI disclosure"
+    quote: "AI usage disclosure: YES Used AI to generate an initial draft of the AVX512 path"
+    quote_sha256: f1f8306b91d77100686406916b611c2437e0cc62b1ff2a39787488b5a8f4a03d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32613
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 269624, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8", "relative_path": "sha256/e0/e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "retrieved_at_utc": "2026-11-20T10:27:11.875561Z", "schema_version": 1, "snapshot_id": "sha256:e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "timeline"
+    quote: "force-pushed the Block_Interleaving_q80 branch from 089c72a to 298c40b"
+    quote_sha256: b283ce911f63f4d15f6f954342a6ae8183e78c382563724796a7f203032b20d5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32613
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 269624, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8", "relative_path": "sha256/e0/e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "retrieved_at_utc": "2026-11-20T10:27:11.875561Z", "schema_version": 1, "snapshot_id": "sha256:e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "PR body test platform"
+    quote: "The PR was tested in AMD Granite Ridge 9600X"
+    quote_sha256: 2ecbceb28b42ff27b991ab4be2a36f1d606e77a775d2c365eb2f9712c1fba3c2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32613
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 269624, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8", "relative_path": "sha256/e0/e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32613", "retrieved_at_utc": "2026-11-20T10:27:11.875561Z", "schema_version": 1, "snapshot_id": "sha256:e0834436c39d3c90fc31ec55556920ec41e65080225b87ad1b17fdf2bf076ec8"}
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: "Stage-1 description of the kernel scope confirmed by the body and the diff guards (GEMV under __AVX2__, GEMM AVX512 under __AVX512BW__ && __AVX512DQ__)."
+  - claim_index: 1
+    effect: narrowed
+    note: "The +82.7% is AVX512-build only (AVX2 build +14.91%); numbers were measured at 089c72a, before the force-push to 298c40b."
+  - claim_index: 2
+    effect: unaffected
+    note: "Open, unreviewed, AI-drafted AVX512 path confirmed."
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; PR page, gh JSON and diff read; C14 eee3da838 and v10 ffc1bac82 read via git show). OVERTURNS the steering premise that this is an A/B candidate for XFER-4b: XFER-4b (cpu-decode-roofline-program.md:L247 @1650e3d) is the iqk IQ4_NL/MXFP4 allowlist 8c4b282ae, and this PR is Q8_0-only, non-iqk. On C14 with GGML_IQK=1 the repack picker returns nullptr for Q8_0 (repack.cpp ~L4545-4566 @eee3da8) and Option R routes Q8_0 prefill to iqk Q8_0_R8 (iqk/iqk_dispatch.cpp L87-104 @eee3da8; operator kept Option R 2026-11-11, kernel-champion-and-promotion.md:L324-330 @1650e3d), so the PR kernel is unreachable on the served config; it runs only on a GGML_IQK=0 arm. C14/v10 have no x86 Q8_0 repack (only NEON/RISC-V branches). Hunk check: arch/x86/repack.cpp hunks apply; repack.cpp/arch-fallback.h/repack.h fail only on q1_0 context lines our older upstream base lacks. tg-flat is bandwidth: 6.67 GiB x 8.18 t/s ~ 58.6 GB/s (derived); an AVX-512 Q8_0 GEMV cannot move EPYC decode (barrier/bandwidth/attention-bound, autokernel-akx-program.md:L1292-1293 @1650e3d). Natural comparator: iqk Q8_0_R8 prefill on a dense Q8_0 model. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  notes: "Stage-1 read of the PR page, gh JSON (body/comments) and diff file list; head 298c40be93, OPEN, retrieved 2026-11-20. Overlap to check: production/champion already carry an AVX512BW 8x8 Q8_0 kernel (memory project_q8_8x8_avx512bw_outcome). Stage-2: AVX2 build +14.91%; base adf554d is a fork commit without iqk."
 - id: intake-2719
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/32505
@@ -392506,10 +392569,11 @@
   authors:
   - "JohannesGaessler (GitHub)"
   key_claims:
-  - "Rewrites the MUL_MAT_ID mmid helper with __ballot/__popc and adds ggml_cuda_popc for warp size 64."
-  - "Removes the MMF MoE variant for small batches that skipped the mmid helper, because it breaks on non-unique expert IDs."
-  - "Adds a low-shared-memory fallback mmid kernel and duplicate-ID test-backend-ops cases."
-  - "A reviewer reports few-row MMQ (mmq-few) still mishandling duplicate IDs, and a Strix regression at large ubatch before a later kernel push."
+  - "PR #32505 makes CUDA/HIP MUL_MAT_ID correct for duplicate expert IDs: it rewrites the mm_ids helper with ballot/popc, adds a wave64-safe ggml_cuda_popc, and removes the small-batch MMF kernel variant that does not use mmid."
+  - "Reported gains on wave64 CDNA1 are small: MI100 granitemoe 3B Q4_0 pp4096 1.01-1.04 with the first kernel, 1.00-1.03 with the final kernel."
+  - "A reviewer showed that few-row MMQ (mmq-few) still loses duplicate-ID entries on Ampere to Blackwell; the merged diff does not touch that path."
+  - "Before the final kernel a reviewer measured a Strix regression for Qwen3.8-Flash-Next with 10 experts used (0.909 at ub2048); the final push was not re-measured for that case."
+  - "Removing the host-fallback break slows the BF16 MoE cuBLAS fallback."
   techniques:
   - "__ballot/__popc mmid helper"
   - "ggml_cuda_popc wave64"
@@ -392525,12 +392589,115 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
-  notes: "Stage-1 read of the PR page, gh JSON and diff file list; MERGED 2026-11-19 as b94959a64d, retrieved 2026-11-20. Interaction with PR #32266 (mmq-few) flagged by a reviewer."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Take this PR only with a whole upstream sync (it needs #31617, #31047, #27466). Do not claim it changes MoE top-k dispatch. No served model hits the duplicate-ID bug today; do not serve GROVEMOE or hash-routed archs on GPU before it lands."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "PR body"
+    quote: "I rewrote the mmid helper kernel to use __popc and __ballot which has the added benefit of being faster than the previous version using __shfl instructions"
+    quote_sha256: 0b80db3fc4b6a3bcf9e240e32ad700b3411a0a8c2508193816f52d3db3a3b095
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "PR body"
+    quote: "Because AMD GPUs, particularly those with a warp size of 64 need special consideration I added a function ggml_cuda_popc to handle this"
+    quote_sha256: 23b07e825bcd4110ca5c21f0d4ab11f83c8c2dad1233eed10711962ee1994699
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "PR body, MMF bullet"
+    quote: "So this PR simply removes the MMF kernel variant that does not use mmid"
+    quote_sha256: 4676caf256b32221d2ee96c7ee16f465d6a03f139e831e0c4a39689f06b3bc31
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Author comment 2026-11-18, final kernel table"
+    quote: "MI100 granitemoe 3B.A800M Q4_0 2048 pp4096 10754.51 11058.07 1.03"
+    quote_sha256: ed570c59e23ff02005fd3c49150ff9b7b0e103146c035a9ef577719dd0e3cccc
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "PR body table, first kernel"
+    quote: "MI100 granitemoe 3B.A800M Q4_0 2048 pp4096 10695.00 11092.57 1.04"
+    quote_sha256: f54748bc96e0afd4a3624a733fed688b4b7b44f3f3de8f57b27038df20271f3e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Review am17an 2026-11-18, item 1"
+    quote: "Two slots of one token that use the same expert get the same rank and write the same pair column, so one of them is lost"
+    quote_sha256: 82c6516d62f08cc1d46a8c993d0d49a873144b12c68e7134fd37b3cd1922d73d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Review am17an 2026-11-18, item 1"
+    quote: "MUL_MAT_ID uses this path on Ampere to Blackwell for Q8_0, Q3_K, Q4_K, Q5_K, Q6_K, IQ3_S, IQ4_NL and IQ4_XS with 9..24 tokens"
+    quote_sha256: c0d60de5a5b54051ab5f66e5ac8ee5226f6f9b692712b4f3f6ee4ebaf5988c75
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Comment am17an 2026-11-18, Strix table"
+    quote: "Qwen3.8-Flash-Next UD-IQ1_S 10 2048 609.0 553.8 0.909"
+    quote_sha256: 4aa9164e3cc5b5e12faf4c3d720945a07c8968fd526ad319686de59db9f68afd
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Author comment 2026-11-18"
+    quote: "I pushed a new kernel that should not run into performance issues at large batch sizes and be consistently faster"
+    quote_sha256: dee113a1604bcff212ccad27a8e150a1506692c3a86a8d46e51743d738af47fb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "Review am17an, item 3"
+    quote: "Removing the break slows the host fallback"
+    quote_sha256: 5f8ff63fdefb6779551432a4d849ab9b69c74402305173692fa7beeb2575aa48
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32505
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 603193, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd", "relative_path": "sha256/3f/3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32505", "retrieved_at_utc": "2026-11-20T10:27:15.192410Z", "schema_version": 1, "snapshot_id": "sha256:3feff37b39e44fefde3f03956f7ae790c3476d1b68d6ecef799afebe841098fd"}
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: "The removed MMF variant serves only F16/BF16/F32 weights at ncols_dst<=16; our served MoE experts are quantized (MMQ/MMVQ), so the removal is perf-neutral for us."
+  - claim_index: 1
+    effect: reattributed
+    note: "Stage-1 put 1.03-1.04 in comments; 1.01-1.04 is the PR body (first kernel), the final kernel comment shows 1.00-1.03."
+  - claim_index: 2
+    effect: unaffected
+    note: "Reviewer finding confirmed; the merged diff does not change quantize.cu or mmq-few.cu."
+  - claim_index: 3
+    effect: unaffected
+    note: "Confirmed; final Strix table re-measured only granitemoe."
+  dive_corrections: "2026-11-20 Stage-2 dive (opus; PR page, comments and diff; C14 eee3da838 and v10 ffc1bac82 via git show only). Value moves from 'rebase onto C14 for +1-4% pp' to 'take with the next whole upstream sync': C14/v10 fork from upstream a8dc0e326 (2026-07-16) and lack prerequisites #31617 (ggml_cuda_ballot / thread mask), #31047 (tile_spec MoE layout), #27466 (radix TOP_K gather) and the sparse-FA mask kernel; 4 of 9 hunks have no target, mmid.cu needs a ~200-line manual port; no hunk touches AK-changed code (mmf.cu/mmf.cuh/mmid.cu byte-identical v10 vs C14). MoE top-k dispatch is NOT changed (top-k.cu hunk only swaps a popc lambda inside GGML_OP_TOP_K; C14 routing uses ggml_argsort_top_k, the topk-moe fusion or the AITER asm). Duplicate-ID reachability on our served models: none found; argsort/top-k fusion give unique IDs on finite logits (llama-graph.cpp L2307, topk-moe.cu L137-147/L180-230 @eee3da8); GROVEMOE and deepseek4 hash routing can produce duplicates but are not served. C14 MMQ helper silently drops duplicate slots (mmid.cu L40-89 @eee3da8); host fallback asserts. Unverified: whether the AK-ASM-H11 AITER topksoftmax asm guarantees unique IDs on NaN/tie rows. mmq-few is absent from C14 and v10. Extra find: C14 mm_ids_helper templates cover n_expert_used 2/4/6/8/16/32 only (mmid.cu L146-167 @eee3da8); upstream #27978 adds <10>, so Q38FN (top-10) takes the generic per-token loop on MI210. Adversarial pass: Metal #30373, WebGPU #30451, Vulkan #29998 fixed the same bug class separately (independent); no independent HIP speed replication. Dive-surfaced #26631/#32504/#29998 declined (no zero-expert arch served; Volta-only; historical). lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  notes: "Stage-1 read of the PR page, gh JSON and diff file list; MERGED 2026-11-19 as b94959a64d, retrieved 2026-11-20. Interaction with PR #32266 (mmq-few) flagged by a reviewer. Stage-2: merged diff has one capped-store mm_ids_helper with multi-pass dump_store (the separate fallback kernel described in an earlier comment was replaced)."
 - id: intake-2720
   arxiv_id: null
   url: https://github.com/ggml-org/llama.cpp/pull/32266
@@ -392548,10 +392715,10 @@
   authors:
   - "thelittlefireman (GitHub)"
   key_claims:
-  - "Adds a HIP branch to the few-row MMQ kernel (mmq-few.cu) for non-WMMA AMD architectures."
-  - "One block covers src0 rows, one warp splits K, and each lane decodes weights once for several src1 columns (hoisted decode)."
-  - "PR body has a single-shape microbenchmark (M=127, K=2048, N=9) across many quant types; the GPU and ROCm version are not stated."
-  - "Draft PR, no maintainer review; touches tests/test-backend-ops.cpp."
+  - "PR #32266 adds a HIP branch to the few-row MMQ kernel built on the MMVQ dp4a decoders with the weight decode hoisted out of the column loop."
+  - "Its gate is GCN-only (validated on gfx906), N 9..24, K >= 2048, at most 1024 weight rows and plain MUL_MAT, so gfx90a (CDNA2) and the 27B verify GEMMs are excluded."
+  - "The only evidence is a single-shape microbenchmark (M=127, K=2048, N=9); two table rows look copied (Q6_K equals Q8_0, Q3_K approximately equals IQ3_S)."
+  - "It is a draft awaiting maintainer review."
   techniques:
   - "few-row MMQ for HIP non-WMMA"
   - "hoisted weight decode in vec_dot"
@@ -392566,12 +392733,49 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
-  notes: "Stage-1 read of the PR page, gh JSON and diff; head 23198be90e, OPEN draft, retrieved 2026-11-20."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Do not port this PR for the 27B verify band: its gate is GCN-only and caps weight rows at 1024. Never quote its microbenchmark as a gfx90a or 27B number; the Q6_K and Q3_K rows look duplicated."
+  claim_anchors:
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "PR body table"
+    quote: "Q4_K 56.44 9.68 -46.8 Q6_K 74.6 11.3 -63.3 Q8_0 74.60 11.31 -63.3 Q3_K ~86.3 ~9.0 -77.3"
+    quote_sha256: 8ee0916d24026fe02e0aaf1fd6455e2f2bb0f0b4ed8d4bc143ba285b7cfb4ac7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32266
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 271131, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca", "relative_path": "sha256/be/be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "retrieved_at_utc": "2026-11-20T10:27:18.318825Z", "schema_version": 1, "snapshot_id": "sha256:be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "PR body table"
+    quote: "Q5_K 72.83 9.67 -63.2 IQ4_NL 100.30 9.33 -91.0 IQ4_XS 100.53 8.39 -92.1 IQ3_S 86.32 9.04 -77.3"
+    quote_sha256: 87a77d29dca2d66548bab5956379ca4df8d3c1317152e0dc272651509e0bca28
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32266
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 271131, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca", "relative_path": "sha256/be/be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "retrieved_at_utc": "2026-11-20T10:27:18.318825Z", "schema_version": 1, "snapshot_id": "sha256:be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "PR page reviewers sidebar"
+    quote: "ggerganov will be requested when the pull request is marked ready for review"
+    quote_sha256: dbbd130be00735a64d0880917cbdf98a3908010c951b415d49bacebd6aeea88f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca, found: true}
+    source_revision: https://github.com/ggml-org/llama.cpp/pull/32266
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 271131, "effective_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "entry_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca", "relative_path": "sha256/be/be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca.raw", "requested_url": "https://github.com/ggml-org/llama.cpp/pull/32266", "retrieved_at_utc": "2026-11-20T10:27:18.318825Z", "schema_version": 1, "snapshot_id": "sha256:be1c772707066f843422e7d5a8311ea53ac61413314bd63a79d7e1513b8ad3ca"}
+  claim_corrections:
+  - claim_index: 1
+    effect: overturned
+    note: "Stage-1/steering said gfx90a coverage was unconfirmed and the shape matched spec verify; the diff gate is GGML_CUDA_CC_IS_GCN (cc < CDNA1, common.cuh L91 @eee3da8), so gfx90a is excluded by construction, and src0->ne[1] <= 1024 excludes the 27B K=5120 GEMMs."
+  - claim_index: 2
+    effect: narrowed
+    note: "GPU implied gfx906 by the diff comment; table has suspect duplicated rows."
+  - claim_index: 3
+    effect: unaffected
+    note: "Draft, no maintainer review; commits carry an AI-assistance trailer."
+  dive_corrections: "2026-11-20 Stage-2 dive (opus). Diff evidence (pr32266.diff @ head 23198be90e, not machine-anchorable): HIP gate in ggml_cuda_should_use_mmq_few reads 'validated on gfx906 (VEGA20) only, the other GCN targets are untested' and requires src1->ne[1] in 9..24, src0->ne[0] >= 2048, src0->ne[1] <= 1024, ggml_is_matrix (MUL_MAT only, no ids); launch grid is (src0->ne[1], ceil(N/4)), so each 4-column tile re-reads the weight row. OVERTURNED for our purpose: it cannot cover the 27B Q8_0 12-16-row verify step (DTREE-0: wvSplitK q8wv up to M=11 at 29.8 ms, mul_mat_q+stream_k_fixup from 12 rows at 46.7 ms; speculative-decoding.md L1799 @1650e3d); dp4a without MFMA re-reading K=5120 rows 3-4x would lose to wvsk, which reads weights once for all M columns. mmq-few does not exist in C14 or v10 (upstream #31533 landed 2026-11-12, after our fork base). Port cost would be small (all symbols present, wave64-clean). No duplicate-ID risk (MUL_MAT only). Adversarial pass: no replication or criticism found. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  notes: "Stage-1 read of the PR page, gh JSON and diff; head 23198be90e, OPEN draft, retrieved 2026-11-20. Stage-2: GPU gfx906 per diff comment; ROCm version not stated."
 - id: intake-2721
   arxiv_id: "2611.26157"
   url: https://arxiv.org/html/2611.26157v1
@@ -392589,10 +392793,9 @@
   authors:
   - "Doyeob Kim (Nari Labs)"
   key_claims:
-  - "Trellis-coded PTQ in the QTIP/EXL3 family, calibrated on tokens the BF16 model generated in agent sessions, with a KL loss over model-generated positions only."
-  - "Per-module bit widths come from a gradient-based loss estimate; the output layer is coded in likelihood bands."
-  - "Reports Qwen3.8-27B at 3.0 and 2.5 bpw level with BF16 on agentic benchmarks, with 2.0 bpw trailing."
-  - "Requires the authors llama.cpp fork tuned for SM120; MTP module, KV and activations are not quantized."
+  - "NariQ keeps the QTIP bitshift trellis with an EXL3-style computed codebook and changes the calibration: the end-to-end KL loss counts only model-written (BF16-generated) tokens from agent sessions, with per-module bit allocation and a banded output layer."
+  - "On Qwen3.8-27B in the authors harness (113 DeepSWE tasks, one attempt each) 3.0 and 2.5 bpw solved 47 and 46 tasks against 44 for BF16; the paper calls this level with BF16 within noise, and 2.0 bpw trails."
+  - "The runtime is the authors llama.cpp fork tuned for SM120; other GPUs run slower and GPUs older than Ampere fall back to the CPU; no x86 CPU speed is reported."
   techniques:
   - "trellis-coded PTQ"
   - "agent-trace KL calibration"
@@ -392609,12 +392812,94 @@
     - intake-873
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
-  notes: "arXiv v1 HTML; Stage-1 read of abstract, intro, tables, limitations. Single-author company preprint."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Cite the calibration recipe (model-written-token KL, per-module allocation) and the paper's own counts. Do not say 3.0/2.5 bpw match BF16; say not distinguishable at n=113. No CPU or AMD speed exists."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 2 Method"
+    quote: "First, the end-to-end loss counts only model-written tokens."
+    quote_sha256: 77c92f91355d48177056cffe0e177e0334cdf8d09880a58243f4c204dc5bae6c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e, found: true}
+    source_revision: https://arxiv.org/html/2611.26157v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 150547, "effective_url": "https://arxiv.org/html/2611.26157v1", "entry_url": "https://arxiv.org/html/2611.26157v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e", "relative_path": "sha256/96/96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e.raw", "requested_url": "https://arxiv.org/html/2611.26157v1", "retrieved_at_utc": "2026-11-20T10:27:20.396081Z", "schema_version": 1, "snapshot_id": "sha256:96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 5 Related Works"
+    quote: "bitshift trellis with a computed codebook"
+    quote_sha256: 974104d5c6d3dbc1c6e65b654652e1af7ed4e7c2a950b81ffa360b531ec7afd7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e, found: true}
+    source_revision: https://arxiv.org/html/2611.26157v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 150547, "effective_url": "https://arxiv.org/html/2611.26157v1", "entry_url": "https://arxiv.org/html/2611.26157v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e", "relative_path": "sha256/96/96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e.raw", "requested_url": "https://arxiv.org/html/2611.26157v1", "retrieved_at_utc": "2026-11-20T10:27:20.396081Z", "schema_version": 1, "snapshot_id": "sha256:96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 2 Format"
+    quote: "The codebook is computed from the trellis state, as in EXL3"
+    quote_sha256: 39b134c1fba90a82d1eea2b4bfae3d894b8faa94ab9bbd9dfa8f433e093c8e8d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e, found: true}
+    source_revision: https://arxiv.org/html/2611.26157v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 150547, "effective_url": "https://arxiv.org/html/2611.26157v1", "entry_url": "https://arxiv.org/html/2611.26157v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e", "relative_path": "sha256/96/96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e.raw", "requested_url": "https://arxiv.org/html/2611.26157v1", "retrieved_at_utc": "2026-11-20T10:27:20.396081Z", "schema_version": 1, "snapshot_id": "sha256:96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 4.1"
+    quote: "At 3.0 and 2.5 bpw, our files are level with BF16 on DeepSWE (Table 1 )."
+    quote_sha256: 300ca05a3062c24d78e238f84f0b9049f6c0045222a01df7ffe7681ff67ef90f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e, found: true}
+    source_revision: https://arxiv.org/html/2611.26157v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 150547, "effective_url": "https://arxiv.org/html/2611.26157v1", "entry_url": "https://arxiv.org/html/2611.26157v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e", "relative_path": "sha256/96/96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e.raw", "requested_url": "https://arxiv.org/html/2611.26157v1", "retrieved_at_utc": "2026-11-20T10:27:20.396081Z", "schema_version": 1, "snapshot_id": "sha256:96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 4.1"
+    quote: "within noise of it (paired by task"
+    quote_sha256: b4d0f435b9d3254fe00a028b4c305d126205884627a1b541dde2a9549f5acca0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e, found: true}
+    source_revision: https://arxiv.org/html/2611.26157v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 150547, "effective_url": "https://arxiv.org/html/2611.26157v1", "entry_url": "https://arxiv.org/html/2611.26157v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e", "relative_path": "sha256/96/96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e.raw", "requested_url": "https://arxiv.org/html/2611.26157v1", "retrieved_at_utc": "2026-11-20T10:27:20.396081Z", "schema_version": 1, "snapshot_id": "sha256:96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 3.1 DeepSWE protocol"
+    quote: "Each task gets one attempt; agent failures count as zero, and no task is rerun."
+    quote_sha256: 271549c811e2ab47dca0c701842dec96405c9b6eab1dc1e3a640b281f1cda976
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e, found: true}
+    source_revision: https://arxiv.org/html/2611.26157v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 150547, "effective_url": "https://arxiv.org/html/2611.26157v1", "entry_url": "https://arxiv.org/html/2611.26157v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e", "relative_path": "sha256/96/96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e.raw", "requested_url": "https://arxiv.org/html/2611.26157v1", "retrieved_at_utc": "2026-11-20T10:27:20.396081Z", "schema_version": 1, "snapshot_id": "sha256:96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 6 Limitations"
+    quote: "our llama.cpp fork is tuned for one GPU generation (SM120); other GPUs run it slower, and GPUs older than Ampere fall back to the CPU"
+    quote_sha256: b22911e9b8d21e2dc683b5a14baca62076fc86c0545da1cfc9b68729e7a4f6ec
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e, found: true}
+    source_revision: https://arxiv.org/html/2611.26157v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 150547, "effective_url": "https://arxiv.org/html/2611.26157v1", "entry_url": "https://arxiv.org/html/2611.26157v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e", "relative_path": "sha256/96/96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e.raw", "requested_url": "https://arxiv.org/html/2611.26157v1", "retrieved_at_utc": "2026-11-20T10:27:20.396081Z", "schema_version": 1, "snapshot_id": "sha256:96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Abstract / Conclusion"
+    quote: "inference available through our llama.cpp fork at https://github.com/nari-labs/nari-llama.cpp"
+    quote_sha256: 7f5a7b43ae998323d1dbf9ab54400a1d408a055cb21d649ef82b3caf1b1a0596
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e, found: true}
+    source_revision: https://arxiv.org/html/2611.26157v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 150547, "effective_url": "https://arxiv.org/html/2611.26157v1", "entry_url": "https://arxiv.org/html/2611.26157v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e", "relative_path": "sha256/96/96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e.raw", "requested_url": "https://arxiv.org/html/2611.26157v1", "retrieved_at_utc": "2026-11-20T10:27:20.396081Z", "schema_version": 1, "snapshot_id": "sha256:96ae0e9e1f0ea94077ed281001df349712e9b0f5b8fc8d50247ea1dd580a6c4e"}
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: "Trellis lineage and agent-trace KL objective confirmed."
+  - claim_index: 1
+    effect: narrowed
+    note: "Indistinguishable from BF16 at n=113 single attempt (paired s.e. ~3.2-3.6 points per the paper), not shown equivalent; harness differs from the Unsloth harness."
+  - claim_index: 2
+    effect: narrowed
+    note: "The CPU fallback refers to pre-Ampere NVIDIA GPUs in the fork; no EPYC-relevant CPU path or figure."
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full HTML read). The 'paper 44/47/46 vs card 38.9/41.6/40.7' is one dataset in two units (count of 113 vs percent). Offline agent KL (Appendix A, Table 3): NariQ 3.0 bpw 0.0063 vs GSQ-RCO IQ3_XXS 0.0276 at 3.00 bpw (authors metric). Novel part is the calibration/allocation recipe, not the format. EPYC grounding: our EXL3 track has CPU types EXL3_1..8 / EXL3M_1..8 and an AVX-512 int8 GEMV executor (quantization-and-low-bit.md:L135-L137 @e9ee76c); gfx90a EXL3-3/EXL3-4 unchecked (L65, L80); whether NariQ files decode with our EXL3 kernels is NOT-FOUND-IN-SOURCE (new GGML tensor types in the fork; seeded permutation, 16-band output layer). llama-quantize already supports per-tensor type maps (tools/quantize/quantize.cpp L410-L462 @ffc1bac82); llama-imatrix and --kl-divergence have no token-position mask, so agent-trace masked KLD needs a small patch. Decode upper bound from bytes: 3.0 bpw is 0.72x of UD-IQ4_XS bytes (arithmetic, unverified, before trellis decode cost). Adversarial pass not run; all numbers single-author own-harness. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  notes: "arXiv v1 HTML; Stage-1 read of abstract, intro, tables, limitations. Single-author company preprint. Stage-2: fork public at github.com/nari-labs/nari-llama.cpp (not fetched)."
 - id: intake-2722
   arxiv_id: null
   url: https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF
@@ -392631,10 +392916,8 @@
   authors:
   - "Nari Labs (org)"
   key_claims:
-  - "Ships 3.0, 2.5 and 2.0 bpw GGUF files of Qwen3.8-27B plus a BF16 vision projector."
-  - "States a NariQ-aware llama.cpp fork is required; stock llama.cpp cannot load the new tensor types."
-  - "States AMD and Intel GPUs are not supported yet and pre-Ampere NVIDIA falls back to CPU."
-  - "Accuracy table repeats the companion paper; speed table is RTX PRO 6000 only."
+  - "The card table reports DeepSWE fully solved share BF16 38.9 (44), NariQ 3-bit 41.6 (47), 2.5-bit 40.7 (46); these are the paper counts as a percent of 113, not an independent replication."
+  - "The card states pre-Ampere GPUs fall back to slow CPU execution and AMD and Intel GPUs are not supported yet."
   techniques:
   - "NariQ trellis GGUF tensor types"
   reported_results:
@@ -392648,11 +392931,36 @@
     - intake-873
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: "Companion card; its accuracy table restates the paper (not corroboration). Cite only the file list, the fork requirement and the stated backend limits."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Card results table"
+    quote: "BF16 (53.8 GB) 38.9 (44) 62.6 (154)"
+    quote_sha256: 9ecf07c65256302f2c2d1c7828d5dfa42468f5b2d5c5e577d0484933d9dec14a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b29af0f17a52b457687199e40b96c4370248f58d6fea2ea1ea63b0319c05c629, found: true}
+    source_revision: https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 271791, "effective_url": "https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF", "entry_url": "https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b29af0f17a52b457687199e40b96c4370248f58d6fea2ea1ea63b0319c05c629", "relative_path": "sha256/b2/b29af0f17a52b457687199e40b96c4370248f58d6fea2ea1ea63b0319c05c629.raw", "requested_url": "https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF", "retrieved_at_utc": "2026-11-20T10:27:22.724756Z", "schema_version": 1, "snapshot_id": "sha256:b29af0f17a52b457687199e40b96c4370248f58d6fea2ea1ea63b0319c05c629"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Card Known limits"
+    quote: "GPUs older than Ampere fall back to slow CPU execution, and AMD and Intel GPUs are not supported yet"
+    quote_sha256: a14454d7240fca54ced7d27c43e578239283fd7f00f5dfb31fa09c7cf19f91da
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b29af0f17a52b457687199e40b96c4370248f58d6fea2ea1ea63b0319c05c629, found: true}
+    source_revision: https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 271791, "effective_url": "https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF", "entry_url": "https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b29af0f17a52b457687199e40b96c4370248f58d6fea2ea1ea63b0319c05c629", "relative_path": "sha256/b2/b29af0f17a52b457687199e40b96c4370248f58d6fea2ea1ea63b0319c05c629.raw", "requested_url": "https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF", "retrieved_at_utc": "2026-11-20T10:27:22.724756Z", "schema_version": 1, "snapshot_id": "sha256:b29af0f17a52b457687199e40b96c4370248f58d6fea2ea1ea63b0319c05c629"}
+  claim_corrections:
+  - claim_index: 0
+    effect: reattributed
+    note: "Restatement of the paper (same counts); not corroboration."
+  - claim_index: 1
+    effect: unaffected
+    note: "Confirmed verbatim."
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet, together with intake-2721). PARTIAL: card tail is the verbatim base-model card (skimmed); chat-template blob skipped. Card files 10.12/8.44/6.75 GB at 3.0/2.5/2.0 bpw plus 0.93 GB BF16 mmproj; MTP not included; speed table RTX PRO 6000 only (3.0 bpw 88.9 tok/s at 4K vs UD-IQ3_XXS 94.7, so not faster on that GPU). Card BF16 size 53.8 GB vs paper 55.6 GB (minor). lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
   notes: "Companion artifact of arXiv 2611.26157 (distinct source). Card HTML retrieved 2026-11-20."
 - id: intake-2723
   arxiv_id: "2611.24395"
@@ -392674,10 +392982,10 @@
   - "Zhicheng Cai"
   - "Huan-ang Gao"
   key_claims:
-  - "A benchmark of 20 training and inference tasks on NVIDIA GPUs and Ascend NPUs, with agents starting from runnable official-recipe baselines."
-  - "Agents may modify the stack at engine, kernel and instruction level."
-  - "An OCI image-layer submission protocol captures agent changes; an independent evaluation measures end-to-end speed under quality constraints."
-  - "Abstract reports a share of task results beating a validated 1.10x speedup."
+  - "Submission is one OCI filesystem layer; the Serve/Train job rebuilds from the baseline image, verifies engine-baseline and layer digests and applies the same layer on every rank."
+  - "A separate Benchmark Job never loads the submitted layer and runs fixed quality and performance scripts through service interfaces; an LLM judge reviews trajectories for benchmark hacking."
+  - "A speedup counts only after the quality gate; the Faster threshold is strictly above 1.10x; 86 of 130 formally scored results (66.2%) exceed it."
+  - "There are no repeated-run confidence intervals; results are one run per model-task pair."
   techniques:
   - "OCI image-layer submission"
   - "independent end-to-end re-evaluation with quality constraints"
@@ -392690,12 +392998,68 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
   verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
-  notes: "No arXiv HTML rendering (404 on html/2611.24395v1); PDF v1 retrieved 2026-11-20 (sha256 prefix fd22c714cdcb). PDF-only: cannot be machine-anchored, so this entry stays stage1-unverified even after a dive."
+  read_depth: PARTIAL
+  reader_should_conclude: "Unverified PDF-only entry: do not cite its figures in plans. Its protocol description may inform design discussion; the 66.2% is 86 of 130 single runs and is not an expected success rate."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "p5 s3.3"
+    quote: "The agent is required to explicitly package its changes as an OCI filesystem layer, submit_oci.tar.gz,"
+    quote_sha256: bfb262698340b1da02a3fe80f8108430d67ce8941775cee6b5c1e198388a9e20
+    source_revision: arXiv:2611.24395v1 PDF (PyMuPDF text extract, sha256 prefix fd22c714cdcb)
+    verified_by: research-intake/stage2 (hand-checked against the PDF extract; PDF is not machine-anchorable)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "p5 s3.3"
+    quote: "baseline and layer digests before applying the layer, using the same layer on every rank. This reconstructs the"
+    quote_sha256: fc408785afd236771b054a9eee09445bded91ae3a2b533bf022338263849ac23
+    source_revision: arXiv:2611.24395v1 PDF (PyMuPDF text extract, sha256 prefix fd22c714cdcb)
+    verified_by: research-intake/stage2 (hand-checked against the PDF extract; PDF is not machine-anchorable)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "p5 s3.3"
+    quote: "Benchmark Job never loads the submitted layer"
+    quote_sha256: f31979ae1957cd5875c1f008b73a99a17e652e201164ff4a9cab5b8d6d35a3ed
+    source_revision: arXiv:2611.24395v1 PDF (PyMuPDF text extract, sha256 prefix fd22c714cdcb)
+    verified_by: research-intake/stage2 (hand-checked against the PDF extract; PDF is not machine-anchorable)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "p5-6 s3.3"
+    quote: "judge additionally reviews agent trajectories and submitted changes to identify potential benchmark hacking,"
+    quote_sha256: 9140591c58eb00b593b1e34207eecd3f84d59e7ac5c12cd8f7d6ddf97948fbe6
+    source_revision: arXiv:2611.24395v1 PDF (PyMuPDF text extract, sha256 prefix fd22c714cdcb)
+    verified_by: research-intake/stage2 (hand-checked against the PDF extract; PDF is not machine-anchorable)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "p6 s3.3"
+    quote: "strictly above 10% to reduce sensitivity to small performance fluctuations."
+    quote_sha256: a5ab04aa377e0fdf68371fd393f5c8a92a3f781ff1b3e467b3a9b332146fa538
+    source_revision: arXiv:2611.24395v1 PDF (PyMuPDF text extract, sha256 prefix fd22c714cdcb)
+    verified_by: research-intake/stage2 (hand-checked against the PDF extract; PDF is not machine-anchorable)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "p8"
+    quote: "Table 2 reports 130 formally scored results, of which 86 (66.2%) exceed"
+    quote_sha256: 260cabb9228801dc9b0fb200506d23a8aa8300513a39c970530533af94d7d969
+    source_revision: arXiv:2611.24395v1 PDF (PyMuPDF text extract, sha256 prefix fd22c714cdcb)
+    verified_by: research-intake/stage2 (hand-checked against the PDF extract; PDF is not machine-anchorable)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "p10"
+    quote: "repeated-run confidence intervals or a controlled comparison of agent budgets, so the rankings should be"
+    quote_sha256: ebb0afd713d2f55b3b62cfff269b4433d7d2519e7270256d0993af579fb31bfd
+    source_revision: arXiv:2611.24395v1 PDF (PyMuPDF text extract, sha256 prefix fd22c714cdcb)
+    verified_by: research-intake/stage2 (hand-checked against the PDF extract; PDF is not machine-anchorable)
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: "66.2% is 86 of 130 single-run results (Claude scored on 10 tasks only), not a rate over 140 pairs."
+  - claim_index: 3
+    effect: narrowed
+    note: "Independence is job isolation plus an LLM reviewer; no repeated re-evaluation of a submission and no variance protocol."
+  dive_corrections: "2026-11-20 Stage-2 read (sonnet) of the PDF text extracted with PyMuPDF (22 pages, FULL read; quotes hand-checked against the extract, not machine-anchorable, so the entry stays stage1-unverified per the PDF rule). Only one compliance rejection of 130 (Seed TTS removed the repetition penalty and passed the WER gate); 9 zeros = 4 failed deployments, 4 quality-gate fails, 1 compliance rejection. Baselines are median of 3 or 5 cold starts (OPD single sample). Behavior categories (Table 7): graph/compilation 31/35 Faster, spec decoding/MTP 22/23, specialized GEMM/GEMV 15/15, batch/microbatch 1/7. Hardware H20 and Ascend 910B2 only. Protocol elements we lack vs have: see the dive README. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  notes: "No arXiv HTML rendering (404 on html/2611.24395v1); PDF v1 retrieved 2026-11-20 (sha256 prefix fd22c714cdcb). PDF-only: cannot be machine-anchored, so this entry stays stage1-unverified even after a dive. PDF-only (no arXiv HTML); hand-checked PDF quotes."
 - id: intake-2724
   arxiv_id: null
   url: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
@@ -392716,9 +393080,9 @@
   - "John Tyler"
   - "Saad Rahim"
   key_claims:
-  - "Vendor summary of the ROCm 10.2.0 release already covered by intake-2694 (release notes)."
-  - "Adds AMD agent Skills not in the release notes, including moat-cuda-to-rocm and FlyDSL kernel authoring/trace analysis."
-  - "Prebuilt AITER kernels are named for MI300X/MI325X/MI350X/MI355X only; gfx90a is not mentioned."
+  - "AMD Skills now covers 12 AMD projects and this release adds three kernel and porting skills, including one that lets Moat port a CUDA project to ROCm and HIP; they install with npx skills add amd/skills."
+  - "Prebuilt AITER kernels are named only for Instinct MI300X, MI325X, MI350X and MI355X; on Radeon and Ryzen AI they compile at first use."
+  - "FlyDSL kernels in PyTorch are named for MI350 and TDM for MI450; the blog has no gfx90a, MI210 or ROCm 6.2 content."
   techniques:
   - "moat-cuda-to-rocm skill"
   - "FlyDSL kernel skills"
@@ -392733,11 +393097,85 @@
     - intake-2694
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Companion of intake-2694. Cite the Skills names, the install command and the AITER scope. It says nothing about gfx90a; do not infer support or exclusion from it."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "ROCm CLI and AMD Skills"
+    quote: "This release adds three new skills for kernel work and porting"
+    quote_sha256: 06037729bd1f3727300e6f0a48b6b3569f25c9d4c4c543235e3bdb3ebf5519ae
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d, found: true}
+    source_revision: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 72817, "effective_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "entry_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d", "relative_path": "sha256/91/91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d.raw", "requested_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "retrieved_at_utc": "2026-11-20T10:27:26.988030Z", "schema_version": 1, "snapshot_id": "sha256:91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "ROCm CLI and AMD Skills"
+    quote: "A third skill allows Moat to port a CUDA project to run on AMD GPUs with ROCm and HIP"
+    quote_sha256: 466d01fc1cf8853687a852e3ec205a8aaf851b6787ed6249680f84c1e9621928
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d, found: true}
+    source_revision: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 72817, "effective_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "entry_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d", "relative_path": "sha256/91/91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d.raw", "requested_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "retrieved_at_utc": "2026-11-20T10:27:26.988030Z", "schema_version": 1, "snapshot_id": "sha256:91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "ROCm CLI and AMD Skills"
+    quote: "Developers can add them all with npx skills add amd/skills"
+    quote_sha256: c8ddea59167c08a7ffe20c70c85c9ed168d3d84a258327a7c8d3df6bf84fc308
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d, found: true}
+    source_revision: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 72817, "effective_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "entry_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d", "relative_path": "sha256/91/91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d.raw", "requested_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "retrieved_at_utc": "2026-11-20T10:27:26.988030Z", "schema_version": 1, "snapshot_id": "sha256:91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "ROCm CLI and AMD Skills"
+    quote: "The collection now covers 12 AMD projects"
+    quote_sha256: 06191005883fb96bbe2e74e396104903e19547602785aeb1a1c87c3674155834
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d, found: true}
+    source_revision: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 72817, "effective_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "entry_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d", "relative_path": "sha256/91/91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d.raw", "requested_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "retrieved_at_utc": "2026-11-20T10:27:26.988030Z", "schema_version": 1, "snapshot_id": "sha256:91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Frameworks"
+    quote: "Instinct MI300X, MI325X, MI350X and MI355X GPUs get prebuilt AITER kernels"
+    quote_sha256: e6e6fb80f2de57a02458d3672278e8108607da09a5da0d5871e959a7097793b5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d, found: true}
+    source_revision: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 72817, "effective_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "entry_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d", "relative_path": "sha256/91/91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d.raw", "requested_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "retrieved_at_utc": "2026-11-20T10:27:26.988030Z", "schema_version": 1, "snapshot_id": "sha256:91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Frameworks"
+    quote: "On Radeon and Ryzen AI, the kernels compile automatically the first time they are used"
+    quote_sha256: 9b59ad42fa45610fa9b9193244d09e08c76555f7e28d124850ad064cdecd052d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d, found: true}
+    source_revision: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 72817, "effective_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "entry_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d", "relative_path": "sha256/91/91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d.raw", "requested_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "retrieved_at_utc": "2026-11-20T10:27:26.988030Z", "schema_version": 1, "snapshot_id": "sha256:91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Training / PyTorch"
+    quote: "FlyDSL kernels for MI350, Tensor Data Mover (TDM) for MI450"
+    quote_sha256: 7144c143c733b1273634ca0cc6d1183c9a2118f350567785cc16b69e8556b5d6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d, found: true}
+    source_revision: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 72817, "effective_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "entry_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d", "relative_path": "sha256/91/91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d.raw", "requested_url": "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html", "retrieved_at_utc": "2026-11-20T10:27:26.988030Z", "schema_version": 1, "snapshot_id": "sha256:91317d5f5675e4ba113b1436bbd5d9bfc209d34d9841205315f96ef633db8a0d"}
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: "Companion of intake-2694, not a duplicate: the release notes have no Skills content. The blog names no hosting URL for the skills."
+  - claim_index: 1
+    effect: unaffected
+    note: "Confirmed; Stage-1 omitted the compile-on-first-use note."
+  depends_on:
+  - entry: intake-2694
+    claim_index: 2
+    why: "The gfx90a-still-supported conclusion (release notes) is what keeps the skills applicable; this blog adds no counter-evidence."
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). grep for gfx90a / MI210 / 6.2 = 0. Search (independent of the blog): ROCm/FlyDSL is a Python DSL + MLIR stack (docs say tested on ROCm 6.x/7.x; gfx90a codegen not established); jeffdaily/moat describes porting CUDA GitHub projects to ROCm/HIP; the exact skill name moat-cuda-to-rocm was not confirmed in the official catalog. Skills are agent text packages and do not require ROCm 10.2; what they emit must still target gfx90a/ROCm 6.2. In-house consumer: rocm-kernel-authoring.md agentic-rocm-kernel-authoring track. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
   notes: "Distinct URL from intake-2694 (blog vs release notes); companion, not a duplicate. Retrieved 2026-11-20."
 - id: intake-2725
   arxiv_id: "2611.23835"
@@ -392758,10 +393196,11 @@
   - "Dheevatsa Mudigere"
   - "Jatin Mitra"
   key_claims:
-  - "DFlash and EAGLE-3 drafter residual streams can run at half or quarter of the target hidden width while largely keeping acceptance."
-  - "For DFlash the output adapter folds into the borrowed target vocabulary projection, leaving logits unchanged up to rounding."
-  - "Reports batch-1 end-to-end speedups on B200 and GB10 in SGLang; gains are attributed to faster draft iterations."
-  - "Single training run per variant; narrowing does not shrink KV attention, so gains are expected to shrink at long context."
+  - "Halving the draft residual width costs at most 3.0% acceptance and quartering costs 2.1-5.4% for DFlash and EAGLE-3 drafters (one seed each, matched data budget)."
+  - "Narrow drafts are trained from scratch at their own width with adapters; in the paper on four B200 GPUs, six epochs for DFlash."
+  - "For DFlash the output adapter folds into the borrowed target head with logits unchanged up to floating-point rounding; folding an already-quantized head was not evaluated."
+  - "End-to-end batch-1 gains were 1.06-1.12x (B200) and 1.13-1.44x (GB10); verify stays within 1%, so targets where the draft is a small share of the iteration gain less."
+  - "The paper expects narrowing to matter most for MTP drafters that read the full vocabulary head each draft step, but leaves narrow MTP training as future work."
   techniques:
   - "drafter residual-width narrowing"
   - "output-adapter folding into borrowed lm_head"
@@ -392778,11 +393217,102 @@
     - intake-1512
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Narrowing needs a from-scratch drafter retrain; do not treat it as a PTQ step or a CPU lever for DFlash2 (DFlash is NO-GO on CPU). Do not quote the B200/GB10 speedups as a 27B expectation."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 1, What we find"
+    quote: "halving costs at most 3.0% acceptance, and none in two of the four drafter\u2013target pairs, while quartering costs 2.1\u20135.4%"
+    quote_sha256: 7895c5855e52e97fcba5eb1f9ef358efd2ea16f353246f646257aafdc04366c5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 1"
+    quote: "The narrow draft is trained from scratch at its own width, with adapters wherever it meets target-width tensors and matching support in the serving engine"
+    quote_sha256: 87a1d33585f71a3cf05b87e1dbec4d3c31cd7a0dc945b99a17cd77d7f7bf70b3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 3 Training"
+    quote: "Every variant, including full width, is trained from scratch with SpecForge [ SGLang contributors, 2025 ] on four B200 GPUs, DFlash for six epochs and EAGLE-3 for three"
+    quote_sha256: f914e65ca40b811a130207a9bac202575ec235a91bdfa35a17dfeae78f704daa
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "the trained output adapter folds into it, giving one narrower projection with logits unchanged up to floating-point rounding"
+    quote_sha256: 19ec03b5572c9c275d37dc5f5a0104db3eb517baf89d96bdb0e84cbfa4736a99
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 2.3"
+    quote: "We do not evaluate folding a target head that is already quantized."
+    quote_sha256: be148e887a2fe360fb5690a850ffdfa961d28cb03c970ee549900de1faf701a8
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "narrowing the draft to half or a quarter width speeds up end-to-end decoding by 1.06\u20131.12"
+    quote_sha256: fce388e8f1288458548353f84c8cd6c27f0bf21bf40fa5ef20ac3d9273eb44b9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 9 Limitations"
+    quote: "targets where the draft is a small share of the iteration stand to gain less"
+    quote_sha256: 9d04c23d53b8a9ff8f9d139db650e9ac28a018451f728ebdfeb4e8b897f293b0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 5.1"
+    quote: "while verify stays within 1% in every cell"
+    quote_sha256: 8d1d8df2afa3458a0980350febe5201e2d8f2061d4d2f8ba1f440b18b3c46069
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "App B.1"
+    quote: "MTP layers are usually trained with the target. Training and evaluating narrow MTP drafters is future work."
+    quote_sha256: e9f67681fc547bae64720a6525bab57ece2db9ec927d28a2a3c1ad77096de236
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052, found: true}
+    source_revision: https://arxiv.org/html/2611.23835v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1421521, "effective_url": "https://arxiv.org/html/2611.23835v1", "entry_url": "https://arxiv.org/html/2611.23835v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052", "relative_path": "sha256/c6/c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052.raw", "requested_url": "https://arxiv.org/html/2611.23835v1", "retrieved_at_utc": "2026-11-20T10:27:29.196678Z", "schema_version": 1, "snapshot_id": "sha256:c692bab53d4afc0b9585ff98d093be73982ac41399275ac3a926ca8742534052"}
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: "One seed per variant at a matched data budget; needs a from-scratch retrain."
+  - claim_index: 2
+    effect: narrowed
+    note: "Fold done only from BF16 heads; our heads are GGUF-quantized."
+  - claim_index: 3
+    effect: unaffected
+    note: "Confirmed; verify within 1% (Table 5)."
+  dive_corrections: "2026-11-20 Stage-2 dive (opus; full read). OVERTURNS 'direct DFlash2 candidate cutting draft cost on CPU and MI210': (1) narrowing is a from-scratch retrain (paper: ~2.94B tokens at epoch 5 for Qwen3-8B DFlash, GPU-hours not reported); in-house estimate ~60-80 MI210-days of target forwards to match (inferred from 27B prefill 410-574 t/s, speculative-decoding.md:L1725 @1650e3d); (2) DFlash is NO-GO on CPU in-house (speculative-decoding.md:L842 @1650e3d); (3) on the 27B the drafter share of the round is ~10-19% (inferred: verify 43.5 ms at 8 rows L1799, served round ~61 ms AK-GAP-1 autokernel-loop.md:L5746), so half width caps near 1.05-1.10x before acceptance cost; DFlash2 acceptance on agentic traffic is already 0.29-0.39 (L1725). C14 drafter borrows model_other->output (src/models/dflash.cpp L1244-1255 @eee3da838). CPU analogue: Q38FN draft/MUL_MAT:lm_head 6.9 ms of 13.9 ms draft per step at d1k (q38fn-cpu-perop-profile-20261118-r2 RESULT.json; autokernel-akx-program.md:L1659). No published narrow checkpoint found (search). lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
   notes: "arXiv v1 HTML; Stage-1 read of abstract, sec 4.1, limitations."
 - id: intake-2726
   arxiv_id: "2611.20565"
@@ -392802,10 +393332,10 @@
   - "Saksham Gupta"
   - "Michael Li"
   key_claims:
-  - "Quantizes only the draft model KV cache; target cache and verifier stay BF16, so the correction rule is unchanged."
-  - "Key-versus-value bit preference depends on quantizer geometry (per-token versus grouped per-channel keys)."
-  - "Proposes K4V4 with per-channel keys and per-token values (KIVI-style) with a small mean acceptance loss."
-  - "Uses fake quantization for quality; the packed prototype is slower than BF16 SD and makes no speed claim."
+  - "Only the draft model KV cache is quantized; the tested drafters are ordinary autoregressive models of 360M-8B with their own KV; no DFlash or feature-conditioned drafter was tested."
+  - "Key-versus-value bit preference depends on quantizer layout: per-token keys favour more key bits, grouped per-channel keys remove that advantage."
+  - "K4V4 with 32-token per-channel key groups and per-token value groups cuts draft cache memory by 66.20% and combined memory by 23.95%; mean acceptance drops from 57.93% to 57.14%."
+  - "Quality was measured with fake quantization; the packed prototype is 18-33% slower than BF16 speculative decoding and the paper claims neither faster decoding nor stochastic-sampling results."
   techniques:
   - "draft-only KV quantization"
   - "per-channel key / per-token value K4V4"
@@ -392821,12 +393351,113 @@
     - intake-1256
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
-  notes: "arXiv v1 HTML; workshop paper. Contrast case: llama.cpp #25725 quantized draft K collapse (recorded in intake-1256 notes)."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Do not use this paper to explain llama.cpp #25725 (that was a rotation bug, intake-1262). Draft-only KV quantization is a quality result under fake quantization with greedy decoding; no speed claim."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 4"
+    quote: "Model sizes range from 360M to 8B parameters."
+    quote_sha256: 456519fa3d91046d37dc008d43dee3c6dde10b29b4ddd4274a427e8490fe44a5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 4"
+    quote: "The draft proposes up to four tokens per round, and each run generates 16 tokens."
+    quote_sha256: f2c5c3d3afab8ecf6a6aa6a259a9902e87664836c8b9045bd7a67fffa7230947
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 3"
+    quote: "Our simple baseline uses one symmetric scale for each token and KV head."
+    quote_sha256: 1bbd3d3b32a4cfb5ce92c378334086d751d8fa100eeae920355e218bb878b6fe
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 5.1 RQ1"
+    quote: "switching to grouped per-channel keys eliminates this advantage, shifting the contrast to"
+    quote_sha256: e5faf30d058906ed56f9d97b60aaa83950fe33d376a710eaf916f95d5ab09371
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 3"
+    quote: "our layout instead uses 32-token per-channel key groups and per-token value groups within each head"
+    quote_sha256: f96782c2227742627c80b4356ba636afd96f895245071e2db62a9dbd5af14b53
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "Across six model pairs, our method reduces draft cache memory by 66.20%, and combined memory across both caches by 23.95%."
+    quote_sha256: 0ef101db43d18ee8346c5c9e69decf12047a47dfd13fc843c94906d2287554e1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "Mean acceptance drops from 57.93% to 57.14%, only 1.36% relative."
+    quote_sha256: 5dac4634cac0d85687eb53d74dde1450a38b1f1a18404676419e8690372cf01d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 5.3 RQ3"
+    quote: "packed K4V4 stores 67% to 71% fewer draft cache bytes, but it is 18% to 33% slower than BF16 speculative decoding"
+    quote_sha256: 9354dad1ba06f0f1d58b4dc760821855ae55fc7b8d84f68846a129cfb6d11fe0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "App H"
+    quote: "We do not claim faster kernels or decoding, or lower peak GPU memory."
+    quote_sha256: 51d176a922487260a3facde1f9451ada7524c382a1fa2731f4bc17f31111f746
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "App H"
+    quote: "We do not claim that our results hold under stochastic sampling."
+    quote_sha256: 6717c8f466907115b036650b6f8ef933fc2e5d7927d7c788e5349cdd1a13a3f7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9, found: true}
+    source_revision: https://arxiv.org/html/2611.20565v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 217577, "effective_url": "https://arxiv.org/html/2611.20565v1", "entry_url": "https://arxiv.org/html/2611.20565v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9", "relative_path": "sha256/b3/b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9.raw", "requested_url": "https://arxiv.org/html/2611.20565v1", "retrieved_at_utc": "2026-11-20T10:27:31.361126Z", "schema_version": 1, "snapshot_id": "sha256:b3bb73c3b74659cce6ec535d21e4edc67ddda53b5201ecd337b8856f562450f9"}
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: "Confirmed; sequential verifier exact."
+  - claim_index: 2
+    effect: narrowed
+    note: "Greedy only, 16-token generations, drafters <= 8B, autoregressive drafters only."
+  depends_on:
+  - entry: intake-1262
+    claim_index: 2
+    why: "The verdict that this paper does not explain #25725 rests on #25725 root cause being the missing rotation."
+  dive_corrections: "2026-11-20 Stage-2 dive (opus; full read). OVERTURNS the steering contrast: the llama.cpp #25725 DFlash collapse was un-rotated injected K/V in a Hadamard-rotated quantized cache, present even at q8_0, fixed in C14 (src/models/dflash.cpp L1071-1086 @eee3da838; intake-1262 notes, research/intake_index.yaml:L110742-L110748 @1650e3d), not a key-layout effect. ggml q4_0/q8_0 cache blocks are per-token 32-channel symmetric groups (ggml-common.h L194-198/L251-255 @eee3da838) with auto Hadamard rotation when quantized and head_dim%64==0 (llama-kv-cache.cpp L322-339). Draft KV capacity is not binding (27B DFlash2 drafter SWA 2048, speculative-decoding.md:L1725 @1650e3d). What binds on CPU is Q38FN MTP draft attention bandwidth at long context (+25.2 ms/step at 32k, autokernel-akx-program.md:L1659); -ctkd/-ctvd already reach the MTP context (common/speculative.cpp L3047-3048, L3093-3097 @eee3da838). Adversarial: QuantSpec (2502.10424, already indexed) uses the same per-channel-K/per-token-V geometry (independent prior art); a NeurIPS listing restates slightly different numbers (version drift). lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  notes: "arXiv v1 HTML; workshop paper. Contrast case: llama.cpp #25725 quantized draft K collapse (recorded in intake-1256 notes). Stage-2 correction: #25725 was a rotation-injection bug (intake-1262), not a draft-KV layout effect."
 - id: intake-2727
   arxiv_id: "2611.25813"
   url: https://arxiv.org/html/2611.25813v1
@@ -392847,9 +393478,11 @@
   - "Omri Homburger"
   - "Ganesh Jawahar"
   key_claims:
-  - "G-MTP is one shared drafting head with target-activation injection, zero-copy KV-cache cross-attention and a clustered vocabulary projection."
-  - "Reports Gemma 4 family speedups on H100 (vLLM, batch 1) and a smartphone GPU."
-  - "The clustered vocabulary projection is used for the smallest drafters; distillation recipes re-align drafters under domain shift."
+  - "G-MTP is one shared drafting block fed the target final hidden state plus the next token embedding; it cross-attends to the target KV cache and needs no KV cache of its own."
+  - "The clustered projection groups the drafter unembedding into 2048 balanced k-means clusters of 128 tokens and computes exact logits only for the top-32 clusters; other tokens get a constant minimum logit."
+  - "Only the E2B/E4B drafters use it; on a Pixel 11 Edge TPU it cut drafting time about 20% but lowered acceptance, for a net end-to-end gain of 1.01x."
+  - "Headline speedups are H100, vLLM, batch 1: 3.14x for Gemma 4 31B on 2x H100 and 2.33x for E4B on one H100."
+  - "The pre-training recipe of the released drafters is out of scope."
   techniques:
   - "target activation injection"
   - "zero-copy KV cross-attention"
@@ -392866,11 +393499,117 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Cite the clustered projection mechanism and its measured net 1.01x. Both headline speedups are H100 batch 1. Do not assume the clustered head transfers to a borrowed-target-head MTP without measurement."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 3.2"
+    quote: "the drafter needs no KV cache of its own"
+    quote_sha256: 5cb707b21ab769229b612e1ee4e0900a2282b5bc96e77916ad098be54efb3faf
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 3.3"
+    quote: "then computes exact token logits only for the top-32 most probable clusters"
+    quote_sha256: ce3ba402f66fa2371f9b4d81138bccf07fae1b2ac8b676e40ec722e8e844a781
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "App A.3.1"
+    quote: "logits are computed only for tokens in the top-32 clusters, and all other tokens receive a constant minimum logit"
+    quote_sha256: 3efb2ee542facef802847a157532440498b39686f06d8658bad6493efe255c2a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 4"
+    quote: "The E2B and E4B drafters use the efficient clustered vocabulary projection while the larger models"
+    quote_sha256: aa0fbb5571fb394335e67eb20caa7a467b521e98508b2ab9e0d48c87e40db22b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 3.3"
+    quote: "On the Edge TPU of a Google Pixel 11, this reduces the drafting time of E2B and E4B by about 20%"
+    quote_sha256: 0963c603d87ace0c0979093a4c61cf408f32e7ae1f9f4d5ea3aa7c25c0ba4d3a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 4 mobile NPU"
+    quote: "but it also lowers the median acceptance rate (from 0.49 to 0.48 for E2B and from 0.52 to 0.50 for E4B), which offsets most of this saving"
+    quote_sha256: c3c46a6dea3d0d8de795b8128110aceaa03213c3e508a400e09599b31d5e0f51
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 4 mobile NPU"
+    quote: "the net end-to-end gain is 1.01"
+    quote_sha256: ce07805c435bb20b512b1f00e64a682415dd4c43667ad82d61773f27a3a2a5bb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 4"
+    quote: "a single H100 GPU for E2B, E4B and 12B, 2 \u00d7 \\times H100 for 26B and 31B"
+    quote_sha256: 822f0c38daaeb6a499c7222d90e4299c0f92a67b2d56ed0ff5b846925d852a9d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Table 1"
+    quote: "Gemma 4 31B 1024 500M 8 4.26 73.2 230.1 3.14"
+    quote_sha256: ae64607f4244d1294180d88819a57490b9c168ae35486d50b29c42a945eb0279
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Table 1"
+    quote: "Gemma 4 E4B 256 77M 9 3.45 178.0 415.5 2.33"
+    quote_sha256: 498f51d0f16b037ee93db620068b3137241138a0a7d7b4681daffa81e9bf9e07
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "Limitations"
+    quote: "the pre-training recipe of the released G-MTP drafters is out of scope"
+    quote_sha256: ad4b4e7061c4abc9f584cf12091b92fb74890bb41af3987f75317e2dfc6d8512
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50, found: true}
+    source_revision: https://arxiv.org/html/2611.25813v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 238279, "effective_url": "https://arxiv.org/html/2611.25813v1", "entry_url": "https://arxiv.org/html/2611.25813v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50", "relative_path": "sha256/d5/d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50.raw", "requested_url": "https://arxiv.org/html/2611.25813v1", "retrieved_at_utc": "2026-11-20T10:27:33.445806Z", "schema_version": 1, "snapshot_id": "sha256:d57156a186841441fc5e4a21bccae83fce19c32a019b7e4d2e9bc623c99a6d50"}
+  claim_corrections:
+  - claim_index: 2
+    effect: unaffected
+    note: "Smallest drafters only; adds that net gain was 1.01x."
+  - claim_index: 3
+    effect: reattributed
+    note: "Steering read 3.1x as server-side vs 2.3x on H100; both are H100 (31B on 2x H100; E4B on 1x H100)."
+  dive_corrections: "2026-11-20 Stage-2 dive (opus; full read). Clustered projection is lossy for the drafter (~43x fewer head MACs, >97% hit rate per the paper) with exact verification; Gemma clusters the drafter's own 256-dim head whereas Qwen3.8 MTP borrows the target head. In-house: Q38FN CPU draft/MUL_MAT:lm_head 6.906 ms/step (7.42%) at d1k, 5.931 (4.38%) at d32k (q38fn-cpu-perop-profile-20261118-r2 RESULT.json; autokernel-akx-program.md:L1659 @1650e3d); ceiling ~6.7 ms/step at d1k before centroid/gather cost and acceptance loss, marginal against the CPU W5 4.15% floor. MI210: A3B-mtp k_top_k_radix 1.29 ms per drafted token, 9.9% of decode; 27B-dflash2 3.1% (autokernel-loop.md:L5746-5749 @1650e3d); a two-stage projection also shrinks the top-k input; DFlash2 selector needs top-16 plus full-vocab probability rows (dflash.cpp L1312-1330 @eee3da838), so it fits draft-mtp better. Adversarial: Google Gemma docs restate (same org); no independent evaluation. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
   notes: "arXiv v1 HTML; Google authors."
 - id: intake-2728
   arxiv_id: "2611.26172"
@@ -392893,10 +393632,11 @@
   - "Kirill Gelvan"
   - "Sergey Titov"
   key_claims:
-  - "GRPO with a fixed rollout cap gains near the training budget but stops scaling beyond it and can fall below base at large budgets."
-  - "Stronger KL and less truncation exposure preserve scaling, KL at an in-budget cost; forcing answers on truncated rollouts removes most of both effects."
-  - "SFT on artificially truncated traces reproduces the effect."
-  - "Models are 4-5B; most experiments are math; only the main comparison uses three seeds."
+  - "Fixed-cap GRPO on Qwen3.5-4B, Gemma4-E2B and Nemotron-3-Nano-4B gains near the training cap but stops improving above it and falls below the base model at larger budgets."
+  - "SFT on artificially truncated traces reproduces the effect while SFT on naturally short traces does not; standard GRPO assigns truncated rollouts zero reward."
+  - "Stronger KL and lower training-data truncation preserve more scaling but stronger KL reduces in-budget accuracy; forcing an answer on truncated rollouts removes most of both effects; no tested intervention keeps both."
+  - "Budget forcing improves base-model accuracy at a matched token allowance, but making the trained model spend more tokens does not restore scaling; prompt-stated budgets are largely ignored."
+  - "Tested models have four to five billion active parameters, most experiments are math, and only the main comparison uses three seeds."
   techniques:
   - "fixed-cap GRPO"
   - "budget forcing evaluation"
@@ -392915,11 +393655,117 @@
     - intake-370
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Use as an evaluation rule (score thinking-budget policies at several budgets with an uncensored top budget). Do not generalize magnitudes beyond 4-5B math RL; we run no GRPO training."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "We observe it across Qwen3.5-4B, Gemma4-E2B, and Nemotron-3-Nano-4B and two reasoning training tasks"
+    quote_sha256: 7e9114a0bf47a7c4807c74d67ee7c2b0af522d74d8e63a3212c219be393a000b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "but their accuracy stops improving and falls below the base model at larger budgets"
+    quote_sha256: 1c2b399f5843cff88f8670739dca76ca08bf1e7f97cfa79a963be4f128b5124c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "SFT on artificially truncated traces reproduces budget internalization, whereas SFT on naturally short traces does not"
+    quote_sha256: bf4a7e22936e9a798c4e0b64f2041b225dd3ea0f6c1443adfa3bad4f03c2ff7f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "s3"
+    quote: "Standard GRPO assigns it zero reward"
+    quote_sha256: f611aba303b863439289e41b5689853df8b466ffaa04b9f57fc2f204e2c203ad
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "Stronger KL regularization and lower training-data truncation preserve more scaling, but stronger KL reduces in-budget accuracy."
+    quote_sha256: c53efaffb79ff7bd80b1243a80fd42b3f6a33d27395eb0adb46317028cb71350
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "Forcing an answer on truncated training rollouts largely removes budget internalization, but also removes most of the in-budget gain."
+    quote_sha256: b2bca0669a3cd321a63e4a4778d22bdfe3cd28f4809d5d995d4ebeb4dc727f4c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "s1 contribution 3"
+    quote: "no tested intervention combines the full in-budget improvement with the base model"
+    quote_sha256: 0b0b420bbe6bf7e8df9d9097ecb9201162f8a3d03612be9ff03c283d4b95a0d3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "s2.3"
+    quote: "Budget forcing can therefore improve base-model accuracy at a matched total token allowance, while making the trained model spend more tokens does not restore its test-time scaling."
+    quote_sha256: 7127b9d12ffa3e7d3f761fe47978bf09bb1aee77e4a08c88c23aea8eb9d679cb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "s2.3"
+    quote: "Stating the budget explicitly in the prompt offers no reliable alternative, as models not trained on such cues largely ignore them"
+    quote_sha256: 866e4aadebe345d020d7d714884362bc992d2f0d2aeb646d84b90ebcbae042b7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "s5 Limitations"
+    quote: "The tested models have four to five billion active parameters, and most experiments use mathematical reasoning"
+    quote_sha256: 2123f4a0716ac1e64fcd02ae00653adf90598453e8fad1678fdcbb5b33660dee
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "s2"
+    quote: "Only the main DeepScaleR/AIME comparison uses three training seeds"
+    quote_sha256: 9733d00bb424a28b78a054ed11e1e81f2b8263ee645031065abf1e8d85dccda2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7, found: true}
+    source_revision: https://arxiv.org/html/2611.26172v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 1267235, "effective_url": "https://arxiv.org/html/2611.26172v1", "entry_url": "https://arxiv.org/html/2611.26172v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7", "relative_path": "sha256/0a/0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7.raw", "requested_url": "https://arxiv.org/html/2611.26172v1", "retrieved_at_utc": "2026-11-20T10:27:35.791427Z", "schema_version": 1, "snapshot_id": "sha256:0af9d651aafd32c709243370ef65fd7845277171ead0cb23ea8b59441b4b9ca7"}
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: "Large on AIME; on GPQA/LCB the high-budget deficit is small (Qwen 8k: -2.2 and -1.0 pp at 64K) with much shorter outputs, so internalization can be an efficiency gain."
+  - claim_index: 2
+    effect: narrowed
+    note: "Each mitigation trades in-budget gain; two KL values, one seed."
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). We run no local GRPO/RLVR weights training (AP-27 RLVR eval-tower scaffolding only, Ouro withdrawn 2026-11-10, autopilot-program.md:L73-L81 @e9ee76c; eval-tower-program.md:L159 defers GRPO training). The usable content is an evaluation rule for thinking-budget routing on served models: score candidate policies at several budgets with accuracy and output length, with an uncensored top budget (TB-SEM-1b found omitted-budget thinking exhausting the ceiling, context-and-token-economy.md:L1112-L1117 @e9ee76c). Adversarial pass not run. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
   notes: "arXiv v1 HTML."
 - id: intake-2729
   arxiv_id: "2611.25123"
@@ -392941,9 +393787,10 @@
   - "Taiwei Shi"
   - "Jieyu Zhao"
   key_claims:
-  - "GrepMem appends every message and tool output to a plain-text log and exposes a regex grep_history tool after compaction; no embeddings or index."
-  - "Five context strategies are RL-trained on Qwen3.5-9B with the same recipe on top of a summarization loop."
-  - "GrepMem leads lossy compaction baselines on ContextBench, while a MemGPT-style baseline is competitive on one ContextBench split."
+  - "GrepMem is SUPO summarization plus a lossless append-only history log and an index-free grep tool using case-insensitive regular expressions."
+  - "After RL on Qwen3.5-9B (32K window) GrepMem reaches 97.4% on ContextBench KV Store and 95.3% on Log Triage; a MemGPT-style baseline with searchable history gets 99.9 and 50.0, while the lossy baselines stay low."
+  - "Prompt-only (before RL) GrepMem already reaches 93.9 KV and 75.0 Log, against 10.9 and 6.6 for SUPO."
+  - "Benefit is task-conditional: on AMA-Bench stream all non-ReAct strategies are within 1.2 points after RL; evaluation is a single model and lexical search has limits."
   techniques:
   - "append-only history log"
   - "grep_history tool"
@@ -392958,11 +393805,99 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Use the prompt-only numbers for our case. Do not repeat the abstract's lossy-baseline framing without noting that MemGPT-style searchable history matches on KV."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "s4.1"
+    quote: "GrepMem augments SUPO with a lossless, append-only history log and an index-free grep interface"
+    quote_sha256: 800b2017ede377f238368731a75b252a2227303868ea996ed2132a2c2e59cf1a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "s3.2"
+    quote: "The tool searches the persistent history log using case-insensitive regular expressions."
+    quote_sha256: ecf6fb356cd7cf188a4f28a423e3b86aa9a59e1764b4cc18f762a2cc185cf35b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "s5.1"
+    quote: "After RL, GrepMem achieves 97.4% accuracy on KV Store and 95.3% on Log Triage"
+    quote_sha256: 0da3eb28af5c4619a2b6d8ad5a0fa14c2ef190ddad9e834748a17ee11560d27f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Table 3 after RL"
+    quote: "MemGPT 39.9 46.4 45.4 99.9 50.0 56.3 GrepMem 46.9 46.3 46.1 97.4 95.3 66.4"
+    quote_sha256: 4c695518b74c5c3e4cf1f3f13779e8c9609e667faf90d1b513db2e91fd272b91
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "s4.2"
+    quote: "All strategies use a 32,768-token context window and the same interaction budgets."
+    quote_sha256: 8da8f66f34bc8afaee4f1d50337868e328d8ef12abc2888fa8adc51ec33a35bf
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Table 3 before RL"
+    quote: "GrepMem 40.9 46.9 45.8 93.9 75.0 60.5"
+    quote_sha256: 4a179acb4b5fa568363711e5dc245f22aab795fe5ad0a39ae72e6d6f7cdb151d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Table 3 before RL"
+    quote: "SUPO 45.2 45.5 41.7 10.9 6.6 30.0"
+    quote_sha256: f057a051db678ed17819c22100d4b38e656a84de3ae6587e0000be53ee709b46
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "s5.1"
+    quote: "all strategies except ReAct differ in accuracy by at most 1.2 percentage points after RL"
+    quote_sha256: 03754724cd93083a84657248d24676090139757ec4c9cb5464caef1fd10856ce
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Limitations"
+    quote: "Our evaluation focuses on controlled benchmarks and a single model"
+    quote_sha256: 8ac3148336b36ba167ff019c475349f8e6d5c4e4eb58e55f534b74396701407c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690, found: true}
+    source_revision: https://arxiv.org/html/2611.25123v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 291200, "effective_url": "https://arxiv.org/html/2611.25123v1", "entry_url": "https://arxiv.org/html/2611.25123v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690", "relative_path": "sha256/52/528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690.raw", "requested_url": "https://arxiv.org/html/2611.25123v1", "retrieved_at_utc": "2026-11-20T10:27:37.976015Z", "schema_version": 1, "snapshot_id": "sha256:528edac16fe31ae982cc260b7ccdc50110755455aaa829ecd9603fea72d88690"}
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: "Not pure log+grep: compaction (SUPO) is retained."
+  - claim_index: 1
+    effect: narrowed
+    note: "The <=21% group is SUPO and Masking only; MemGPT (searchable history) matches on KV. Training data includes 15% ContextBench-style synthetic streams."
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). Orchestrator @94cd43201: ms.search/ms.expand are FTS5/bm25 over the structured SQLite trace store (src/trace/query.py:L3-L10,L126,L170), feature trace_navigation_tools default OFF (src/features.py:L394); session_log_verbatim (default off) appends turns verbatim to session.verbatim.md (src/graph/session_summary.py:L111); context arms summary_only/summary_pointer/pointer_only/prune_pointer/full_history exist (src/graph/context_arm_ab.py:L19) and the continuation text points the model to peek()/grep() over the full log; the A7 lossless-log arm is specified but not run (context-and-token-economy.md:L187,L255 @e9ee76c). Differences: our default is summary-only; their grep has count-only mode and grouping; they RL-train, we would run prompt-only (the before-RL numbers apply). Name collision: our DCP-10 'ContextBench' (context-and-token-economy.md:L503) is a different benchmark. Adversarial pass not run. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
   notes: "arXiv v1 HTML."
 - id: intake-2730
   arxiv_id: "2611.23388"
@@ -392984,10 +393919,10 @@
   - "Song Han"
   - "Ligeng Zhu"
   key_claims:
-  - "An LLM agent designs per-model PTQ recipes in a propose-build-score-submit loop over a composable PTQ library."
-  - "Candidates are scored by output KL against the original model on held-out reasoning traces, with long-generation checks for repetition loops."
-  - "KL ranks recipe pairs by accuracy better than layer-wise error in the authors analysis."
-  - "Checkpoints run on existing vLLM kernels; the library and evaluator are promised, not yet released."
+  - "QDA scores each candidate recipe in minutes by output KL against the original model on reasoning traces the agent never sees."
+  - "KL orders 82% of 44 checkpoint pairs as their accuracy does, against 73% for layer-wise error."
+  - "Long-generation checks (up to 81,920 tokens) catch failures KL misses, counting answers that are wrong, loop or are cut off."
+  - "QDA improves average accuracy over the strongest public recipe by 0.9, 1.4 and 2.2 points; admissible recipes run on existing kernels with no new operator, in llm-compressor/vLLM formats, not GGUF."
   techniques:
   - "KL search objective on held-out traces"
   - "agentic recipe search"
@@ -393003,11 +393938,90 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: "Adopt the evaluation ideas (held-out KL, long-generation loop/truncation check). Its recipe space is vLLM/llm-compressor formats, not GGUF; do not cite its accuracy gains as GGUF expectations."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "scores each candidate in minutes by its output KL divergence from the original model on reasoning traces that the agent never sees"
+    quote_sha256: f238ee7c3c26f3980c1840a7803dc52883e39a08dfb7b150040c6af228634c44
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1, found: true}
+    source_revision: https://arxiv.org/html/2611.23388v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 423932, "effective_url": "https://arxiv.org/html/2611.23388v1", "entry_url": "https://arxiv.org/html/2611.23388v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1", "relative_path": "sha256/c4/c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1.raw", "requested_url": "https://arxiv.org/html/2611.23388v1", "retrieved_at_utc": "2026-11-20T10:27:40.169146Z", "schema_version": 1, "snapshot_id": "sha256:c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Appendix C"
+    quote: "On one GH200, a KL score takes 3.2\u20134.0 GPU-minutes on DeepSeek-R1-Distill-Llama-8B"
+    quote_sha256: 06933f85d942707a47ca552580701c5ab28001169cf531ffa23cc5fa4ac9a368
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1, found: true}
+    source_revision: https://arxiv.org/html/2611.23388v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 423932, "effective_url": "https://arxiv.org/html/2611.23388v1", "entry_url": "https://arxiv.org/html/2611.23388v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1", "relative_path": "sha256/c4/c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1.raw", "requested_url": "https://arxiv.org/html/2611.23388v1", "retrieved_at_utc": "2026-11-20T10:27:40.169146Z", "schema_version": 1, "snapshot_id": "sha256:c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 4.2"
+    quote: "The KL orders 82% of the pairs as their accuracy does, against 73% for the layer-wise error."
+    quote_sha256: 9ac213fbd76d0068248f8feef122c7977811d926d295773362e438fb82300114
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1, found: true}
+    source_revision: https://arxiv.org/html/2611.23388v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 423932, "effective_url": "https://arxiv.org/html/2611.23388v1", "entry_url": "https://arxiv.org/html/2611.23388v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1", "relative_path": "sha256/c4/c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1.raw", "requested_url": "https://arxiv.org/html/2611.23388v1", "retrieved_at_utc": "2026-11-20T10:27:40.169146Z", "schema_version": 1, "snapshot_id": "sha256:c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 4.3"
+    quote: "this checkpoint cut off 12 of 191 answers at the length limit, against 3 for the original model"
+    quote_sha256: 63b576336ca62353c6c26b74f55af8a3e53295909ea21feac2db0064d45a472c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1, found: true}
+    source_revision: https://arxiv.org/html/2611.23388v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 423932, "effective_url": "https://arxiv.org/html/2611.23388v1", "entry_url": "https://arxiv.org/html/2611.23388v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1", "relative_path": "sha256/c4/c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1.raw", "requested_url": "https://arxiv.org/html/2611.23388v1", "retrieved_at_utc": "2026-11-20T10:27:40.169146Z", "schema_version": 1, "snapshot_id": "sha256:c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "App E task statement"
+    quote: "Run long-generation checks (up to 81,920 tokens) on the top checkpoints in all four domains before submitting."
+    quote_sha256: a6574e3ef18aefbc232cf52e2004526bc181004e75cdf3edfc2b5a18cfd52ac2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1, found: true}
+    source_revision: https://arxiv.org/html/2611.23388v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 423932, "effective_url": "https://arxiv.org/html/2611.23388v1", "entry_url": "https://arxiv.org/html/2611.23388v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1", "relative_path": "sha256/c4/c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1.raw", "requested_url": "https://arxiv.org/html/2611.23388v1", "retrieved_at_utc": "2026-11-20T10:27:40.169146Z", "schema_version": 1, "snapshot_id": "sha256:c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 4.3"
+    quote: "It counts the answers that are wrong, loop or are cut off, and weighs these counts together with the KL to decide what to change."
+    quote_sha256: 2db496061bc8700546af255de4c73be6f5ab94ce4efbd453755b5cb009674d46
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1, found: true}
+    source_revision: https://arxiv.org/html/2611.23388v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 423932, "effective_url": "https://arxiv.org/html/2611.23388v1", "entry_url": "https://arxiv.org/html/2611.23388v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1", "relative_path": "sha256/c4/c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1.raw", "requested_url": "https://arxiv.org/html/2611.23388v1", "retrieved_at_utc": "2026-11-20T10:27:40.169146Z", "schema_version": 1, "snapshot_id": "sha256:c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 6.2"
+    quote: "QDA improves the average accuracy over the strongest public recipe by 0.9, 1.4 and 2.2 points"
+    quote_sha256: c5c24163ce6638e3a18dd73a4a76488b76f833e4fa2c860e01a8ef30579c194b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1, found: true}
+    source_revision: https://arxiv.org/html/2611.23388v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 423932, "effective_url": "https://arxiv.org/html/2611.23388v1", "entry_url": "https://arxiv.org/html/2611.23388v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1", "relative_path": "sha256/c4/c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1.raw", "requested_url": "https://arxiv.org/html/2611.23388v1", "retrieved_at_utc": "2026-11-20T10:27:40.169146Z", "schema_version": 1, "snapshot_id": "sha256:c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 4.1"
+    quote: "and run on their kernels with no new operator"
+    quote_sha256: ab073aac8da2b67cd91fcfc855a2a2853001041f402652ccb72f45f1b3cbcd59
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1, found: true}
+    source_revision: https://arxiv.org/html/2611.23388v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 423932, "effective_url": "https://arxiv.org/html/2611.23388v1", "entry_url": "https://arxiv.org/html/2611.23388v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1", "relative_path": "sha256/c4/c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1.raw", "requested_url": "https://arxiv.org/html/2611.23388v1", "retrieved_at_utc": "2026-11-20T10:27:40.169146Z", "schema_version": 1, "snapshot_id": "sha256:c4333f1f0f99108acb9ca7abfc43fe8cf6e22a3f7c8f0668042ea82a27ad6cb1"}
+  claim_corrections:
+  - claim_index: 3
+    effect: narrowed
+    note: "Recipe space is llm-compressor/vLLM GPU formats on 8x GH200 per search; the evaluation protocol transfers, the recipe space does not."
+  - claim_index: 1
+    effect: unaffected
+    note: "n=44 pairs, no interval."
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; PARTIAL: Appendix C/D tables skimmed, references skipped). Scoring is cached top-128 KL plus a tail bucket (a lower bound on full KL), 3-12 GPU-minutes per score on GH200 for 8-27B. Qwen3.8-27B W4A16 QDA 79.8 vs BF16 79.5 (Table 2). The transferable parts for us: a long-generation loop/truncation counter beside KLD, and calibration-data choice tested with llama-imatrix + KLD. In-house: llama-quantize per-tensor type maps exist (quantize.cpp L410-L462 @ffc1bac82); the bytes-budgeted per-tensor allocator NEW-12 is operator-held (quantization-and-low-bit.md:L687 @e9ee76c); 27B Q4_K_M vs Q8_0 mean KLD 0.007607 (L97). The 27B KLD<=0.003 threshold was not found in handoffs by grep (memory only). Adversarial pass not run. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
   notes: "arXiv v1 HTML; MIT/NVIDIA."
 - id: intake-2731
   arxiv_id: "2611.24809"
@@ -393029,9 +394043,9 @@
   - "Jianbin Zheng"
   - "Huafeng Kuang"
   key_claims:
-  - "Transformer-to-hybrid conversion needs a layer-selection step; FlashMorph selection has off-policy mismatches."
-  - "FlashMorph2 evaluates sampled discrete hybrids with their own hidden states and jointly optimizes selection scores and weights."
-  - "Reports small average RULER and LongBench gains over FlashMorph on Qwen3 0.6B-8B backbones."
+  - "FlashMorph2 replaces FlashMorph frozen-weight, teacher-forced layer scoring with on-policy discrete sampling plus joint weight adaptation, raising average RULER from 63.26 to 65.68 over six Qwen3-0.6B/1.7B configurations."
+  - "Layer selection takes 0.72-3.57 GPU-hours and is a small part of a multi-stage conversion pipeline whose post-training recovery is the real cost."
+  - "Removing both on-policy components reverts to FlashMorph; larger-scale results cover Qwen3-8B and Qwen3-30B-A3B with Lightning attention only."
   techniques:
   - "on-policy layer selection"
   - "budget-constrained straight-through estimator"
@@ -393045,9 +394059,88 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
-  disposition_evidence:
-  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
-  verification: stage1-unverified
-  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: "Conversion method for pure Transformers only; no result applies to the already-hybrid 27B. Do not cite it as evidence about EA/L4 KV compression."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "improving average scores over FlashMorph by + 2.42"
+    quote_sha256: 5e06454d87d7d93e9768cde7fc51e0257dad5a5481037112208333f5fff17438
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a, found: true}
+    source_revision: https://arxiv.org/html/2611.24809v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 966440, "effective_url": "https://arxiv.org/html/2611.24809v1", "entry_url": "https://arxiv.org/html/2611.24809v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a", "relative_path": "sha256/a1/a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a.raw", "requested_url": "https://arxiv.org/html/2611.24809v1", "retrieved_at_utc": "2026-11-20T10:27:42.464048Z", "schema_version": 1, "snapshot_id": "sha256:a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 5.2"
+    quote: "it raises the RULER score from 63.26 to 65.68"
+    quote_sha256: 218ca3bacec8b88faad6039d27bf42af851bcee69dc0ad25d33f5f8a714e2b49
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a, found: true}
+    source_revision: https://arxiv.org/html/2611.24809v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 966440, "effective_url": "https://arxiv.org/html/2611.24809v1", "entry_url": "https://arxiv.org/html/2611.24809v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a", "relative_path": "sha256/a1/a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a.raw", "requested_url": "https://arxiv.org/html/2611.24809v1", "retrieved_at_utc": "2026-11-20T10:27:42.464048Z", "schema_version": 1, "snapshot_id": "sha256:a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Sec 5.1"
+    quote: "We use Qwen3-0.6B and Qwen3-1.7B"
+    quote_sha256: d2182cc1f7b4e84037792573c745a8f169110283558d58630bab68dc6d66198a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a, found: true}
+    source_revision: https://arxiv.org/html/2611.24809v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 966440, "effective_url": "https://arxiv.org/html/2611.24809v1", "entry_url": "https://arxiv.org/html/2611.24809v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a", "relative_path": "sha256/a1/a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a.raw", "requested_url": "https://arxiv.org/html/2611.24809v1", "retrieved_at_utc": "2026-11-20T10:27:42.464048Z", "schema_version": 1, "snapshot_id": "sha256:a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "while completing layer selection in only 0.72"
+    quote_sha256: 17289946010e523821cab0722dd0118af89f3b25a65a155c71014d162b31bb31
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a, found: true}
+    source_revision: https://arxiv.org/html/2611.24809v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 966440, "effective_url": "https://arxiv.org/html/2611.24809v1", "entry_url": "https://arxiv.org/html/2611.24809v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a", "relative_path": "sha256/a1/a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a.raw", "requested_url": "https://arxiv.org/html/2611.24809v1", "retrieved_at_utc": "2026-11-20T10:27:42.464048Z", "schema_version": 1, "snapshot_id": "sha256:a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Appendix A.2 Table 5"
+    quote: "training tokens 320M 20M 1B 1B"
+    quote_sha256: 74455d15991e1269a654d85069138c6268cba0513fc596cb2fd5d85a57f90d6e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a, found: true}
+    source_revision: https://arxiv.org/html/2611.24809v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 966440, "effective_url": "https://arxiv.org/html/2611.24809v1", "entry_url": "https://arxiv.org/html/2611.24809v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a", "relative_path": "sha256/a1/a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a.raw", "requested_url": "https://arxiv.org/html/2611.24809v1", "retrieved_at_utc": "2026-11-20T10:27:42.464048Z", "schema_version": 1, "snapshot_id": "sha256:a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 5.3"
+    quote: "This overhead is confined to a one-time selection stage"
+    quote_sha256: 28f2820df5a78800d702f5358d1636d9b8514b359c37612d7c55e7d8a4c28fef
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a, found: true}
+    source_revision: https://arxiv.org/html/2611.24809v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 966440, "effective_url": "https://arxiv.org/html/2611.24809v1", "entry_url": "https://arxiv.org/html/2611.24809v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a", "relative_path": "sha256/a1/a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a.raw", "requested_url": "https://arxiv.org/html/2611.24809v1", "retrieved_at_utc": "2026-11-20T10:27:42.464048Z", "schema_version": 1, "snapshot_id": "sha256:a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 5.3 Ablation"
+    quote: "Removing both components reverts to FlashMorph"
+    quote_sha256: c362ad300bffb3fffe3eab0819b50201df1d64705485101bfa95d360292dad70
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a, found: true}
+    source_revision: https://arxiv.org/html/2611.24809v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 966440, "effective_url": "https://arxiv.org/html/2611.24809v1", "entry_url": "https://arxiv.org/html/2611.24809v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a", "relative_path": "sha256/a1/a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a.raw", "requested_url": "https://arxiv.org/html/2611.24809v1", "retrieved_at_utc": "2026-11-20T10:27:42.464048Z", "schema_version": 1, "snapshot_id": "sha256:a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Appendix"
+    quote: "we further scale our evaluation to larger dense and MoE backbones, including Qwen3-8B and Qwen3-30B-A3B with Lightning Attention"
+    quote_sha256: 0867e59340fc65e4853067dcbbfc634201366390ce9f94c74e95eae05e89e00e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a, found: true}
+    source_revision: https://arxiv.org/html/2611.24809v1
+    verified_by: research-intake/stage2 (intake-kspec-20261120 dive; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 966440, "effective_url": "https://arxiv.org/html/2611.24809v1", "entry_url": "https://arxiv.org/html/2611.24809v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a", "relative_path": "sha256/a1/a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a.raw", "requested_url": "https://arxiv.org/html/2611.24809v1", "retrieved_at_utc": "2026-11-20T10:27:42.464048Z", "schema_version": 1, "snapshot_id": "sha256:a11c42dee35120f430f1bb63703ed61a7ca9e7a0a3935657fb20f6f81fbadf1a"}
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: "Average of six small-model configs at a 3:1 ratio, single runs; some configs regress."
+  - claim_index: 1
+    effect: narrowed
+    note: "Conversion is ~2.34B tokens at the 1.7B config (320M+20M+1B+1B)."
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; PARTIAL: Appendix B/C per-task tables skimmed). Method converts a pure Transformer into a hybrid; Qwen3.8-27B is already a trained GDN+attention hybrid, and the paper has no result for re-selecting an existing hybrid. Orthogonal to AM-PORT-2B (no safe EA/L4 KV ratio on the hybrid 27B, long-context-program.md:L952 @e9ee76c): FlashMorph2 changes architecture, EA evicts KV. Adjacent observation only: full linearisation collapses RULER (Qwen3-1.7B 87.66 -> 9.57 GLA / 21.89 GDN), so the few full-attention layers carry retrieval; consistent with, not proof of, why compressing their KV hurts. Adversarial pass not run. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
   notes: "arXiv v1 HTML; ByteDance Seed / Fudan / NTU."
