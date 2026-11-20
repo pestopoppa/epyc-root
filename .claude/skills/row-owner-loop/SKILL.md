@@ -27,7 +27,9 @@ row, or after any edit: `python3 $S/row_scaffold.py --lint <dir>` must print `LI
 predicate/check path outside the row dir (copied predicates gave a false smoke PASS, §2.6), CPU
 regions touching 88-95/184-191, width wider than the literal threads, a stale seal, and box text
 without bold ID / `model:` / stop rule / `est N s`. Never copy `estimate_s`, predicates or
-`check_complete` from a predecessor.
+`check_complete` from a predecessor. GPU rows import the canonical `gpu_common.py` (research repo
+`scripts/kernel_rnd/autokernel/harness/`, sha-pinned in `job.py` by `--lane gpu`) instead of vendoring a copy;
+its `residency_from_proof` gates sub-2 s children on the in-process ROCm witness + LD_DEBUG library proof.
 
 ## 2. Publish and prove it
 `refresh_hub_view.sh` → `publish_row.py <spec>`. The proof is a file, never an exit code:

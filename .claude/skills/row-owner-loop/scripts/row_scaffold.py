@@ -4,6 +4,7 @@
   row_scaffold.py --lint <rowdir> [--box-file handoffs/active/x.md]
   row_scaffold.py new <row-id> --handoff <file.md> --box <ID> --lane cpu|gpu --regions <list>
                   --threads N --units N --unit-s S --model "<model: ...>" [--root /mnt/raid0/llm/tmp]
+                  [--gpu-common <dir>]  (gpu lane: job.py imports the canonical gpu_common.py, sha-pinned; never vendored)
 
 Lint checks (each prints `LINT <CODE>: …`; exit 1 on any):
   BOX-*       the handoff box (spec.handoff_task file:ID, or --box-file) has a bold **ID**, `model:`,
@@ -187,7 +188,19 @@ STEPS     TODO: units ({units} x ~{unit_s} s).
 RULE      TODO: pre-registered, first match wins; FUTILITY_* / FAIL(...) / PASS(...).
 STOP      on-answer: TODO. on-futility: TODO. rc 75 only on STOP file / FILLER_DEADLINE.
 """
-raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json)")
+{gpu_block}raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json)")
+'''
+GPU_COMMON = "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/harness"
+GPU_JOB_T = '''
+# GPU lane: IMPORT the canonical row helpers, never vendor a copy of gpu_common.py into the row dir. Its sha256 at scaffold
+# time is pinned here and checked at start, so a later edit to the shared file is a FUTILITY_MISSING_INPUT, not a silent change.
+import hashlib, os, sys
+GPU_COMMON = "{gpu_common}"
+GPU_COMMON_SHA256 = "{gpu_common_sha}"
+sys.path.insert(0, GPU_COMMON)
+if hashlib.sha256(open(os.path.join(GPU_COMMON, "gpu_common.py"), "rb").read()).hexdigest() != GPU_COMMON_SHA256:
+    raise SystemExit("FUTILITY_MISSING_INPUT: gpu_common.py sha256 differs from the scaffold pin")
+import gpu_common as G  # noqa: E402  (residency_from_proof gates < 2 s children on the in-process witness + LD_DEBUG proof)
 '''
 CHECK_T = '''#!/usr/bin/python3
 """rc 0 iff THIS row's out/RESULT.json is complete with a terminal verdict; smoke never counts."""
@@ -218,7 +231,14 @@ def scaffold(a) -> int:
     est = math.ceil(a.units * a.unit_s * 1.25)
     os.makedirs(os.path.join(d, "out"))
     fmt = dict(id=a.row_id, owner=a.owner, handoff=a.handoff, box=a.box, threads=a.threads, dir=d,
-               regions=a.regions, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units, unit_s=a.unit_s)
+               regions=a.regions, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units, unit_s=a.unit_s, gpu_block="")
+    if a.lane == "gpu":
+        gc = os.path.join(a.gpu_common, "gpu_common.py")
+        if not os.path.exists(gc):
+            print(f"REFUSED: canonical {gc} missing")
+            return 1
+        fmt["gpu_block"] = GPU_JOB_T.format(gpu_common=a.gpu_common,
+                                            gpu_common_sha=hashlib.sha256(open(gc, "rb").read()).hexdigest())
     for name, t, mode in (("launch.sh", LAUNCH_T, 0o755), ("job.py", JOB_T, 0o755), ("check_complete.py", CHECK_T, 0o755)):
         with open(os.path.join(d, name), "w") as f:
             f.write(t.format(**fmt))
@@ -258,6 +278,7 @@ def main(argv=None) -> int:
     n.add_argument("--model", required=True)
     n.add_argument("--owner", default="autokernel")
     n.add_argument("--root", default="/mnt/raid0/llm/tmp")
+    n.add_argument("--gpu-common", default=GPU_COMMON, help="dir holding the canonical gpu_common.py (gpu lane imports it)")
     a = ap.parse_args(argv)
     if a.cmd == "new":
         return scaffold(a)

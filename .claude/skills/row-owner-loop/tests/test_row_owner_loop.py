@@ -125,6 +125,26 @@ def test_scaffold_then_lint(tmp_path):
                     "--threads", "24", "--units", "1", "--unit-s", "1", "--model", "m", "--root", str(tmp_path)]) == 1
 
 
+def test_scaffold_gpu_imports_canonical_gpu_common(tmp_path):
+    hf = tmp_path / "h.md"
+    hf.write_text("- [ ] **BOX-3** x. model: none. stop-on answer. est 150 s\n")
+    gc = tmp_path / "harness"
+    gc.mkdir()
+    (gc / "gpu_common.py").write_text("X = 1\n")
+    rc = rs.main(["new", "row-g", "--handoff", str(hf), "--box", "BOX-3", "--lane", "gpu", "--regions", "88-95,184-191",
+                  "--threads", "8", "--units", "1", "--unit-s", "120", "--model", "model: none", "--root", str(tmp_path),
+                  "--gpu-common", str(gc)])
+    assert rc == 0
+    d = tmp_path / "row-g"
+    job = (d / "job.py").read_text()
+    assert f'GPU_COMMON = "{gc}"' in job and hashlib.sha256(b"X = 1\n").hexdigest() in job and "import gpu_common as G" in job
+    assert not (d / "gpu_common.py").exists()
+    compile(job, "job.py", "exec")
+    assert rs.main(["new", "row-h", "--handoff", str(hf), "--box", "BOX-3", "--lane", "gpu", "--regions", "88-95",
+                    "--threads", "8", "--units", "1", "--unit-s", "1", "--model", "m", "--root", str(tmp_path),
+                    "--gpu-common", str(tmp_path / "nope")]) == 1
+
+
 # ---------------------------------------------------------------- brief
 def test_brief_forces_build_and_rules():
     class A:
