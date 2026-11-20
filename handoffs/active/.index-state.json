@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 586
+      "open": 600
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,13 +28,13 @@
       "blocked": 13,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 450
+      "open": 449
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 93
+      "open": 96
     }
   },
   "duplicates": {},
@@ -501,11 +501,11 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 90,
+      "closed": 91,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "needs_owner": 1,
-      "open": 35,
+      "open": 34,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -847,9 +847,9 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 310,
+      "closed": 311,
       "guarded": 0,
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-20",
       "needs_owner": 9,
       "open": 86,
       "owner_index": "routing-and-optimization-index.md",
@@ -861,7 +861,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 396,
+      "total": 397,
       "tracks": [
         {
           "blocked": 0,
@@ -925,7 +925,7 @@
         },
         {
           "blocked": 0,
-          "closed": 24,
+          "closed": 25,
           "gates": [],
           "guarded": 0,
           "line": 2201,
@@ -1055,12 +1055,12 @@
     },
     "harness-program.md": {
       "blocked": 1,
-      "closed": 263,
+      "closed": 264,
       "frozen": 14,
       "guarded": 0,
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "needs_owner": 8,
-      "open": 86,
+      "open": 89,
       "owner_index": "user-facing-harness-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -1070,7 +1070,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 364,
+      "total": 368,
       "tracks": [
         {
           "blocked": 0,
@@ -1094,20 +1094,20 @@
         },
         {
           "blocked": 0,
-          "closed": 35,
+          "closed": 36,
           "gates": [],
           "guarded": 0,
           "line": 444,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 20
+          "open": 23
         },
         {
           "blocked": 0,
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 914,
+          "line": 919,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 6
@@ -1119,7 +1119,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1695,
+          "line": 1700,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 8
@@ -1131,7 +1131,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2400,
+          "line": 2405,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1148,7 +1148,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2489,
+          "line": 2494,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 16
@@ -1161,7 +1161,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2968,
+          "line": 2973,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 26
@@ -1171,7 +1171,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3882,
+          "line": 3887,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1183,7 +1183,7 @@
       "closed": 231,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 26,
+      "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1192,7 +1192,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 259,
+      "total": 267,
       "tracks": [
         {
           "blocked": 2,
@@ -1207,14 +1207,14 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 24
+          "open": 32
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1758,
+          "line": 1795,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1886,
+          "line": 1923,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1234,7 +1234,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2218,
+          "line": 2255,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2319,
+          "line": 2356,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2873,
+          "line": 2910,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3011,
+          "line": 3048,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3018,
+          "line": 3055,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2354,7 +2354,7 @@
       "closed": 184,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 37,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,7 +2363,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 223,
+      "total": 229,
       "tracks": [
         {
           "blocked": 1,
@@ -2386,7 +2386,7 @@
           "line": 845,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 27
+          "open": 33
         }
       ]
     },
