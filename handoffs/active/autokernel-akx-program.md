@@ -4,6 +4,8 @@
 
 **Owner**: AutoKernel (**workspace-a6**) — owner field set 2026-11-07 at the split (operator decision C); no box state was changed. Exception: boxes carrying a `2026-11-07, main-inf22` line are owned by main-inf22 (operator decision B: the unowned-recent orphaned Codex/akagg boxes go to the C8 fold ledger owner).
 **Status**: ACTIVE — two tracks moved verbatim with their gate markers.
+**Row**: INF-82
+**Domain**: inference-research
 **Scratch**: `/mnt/raid0/llm/tmp/ak-reanchor-plan-20261109/` · `/mnt/raid0/llm/tmp/ak-c9-floor-20261109/` · `/mnt/raid0/llm/tmp/ak-c9-floor-20261109-r2/` · `/mnt/raid0/llm/tmp/ak-review-20261109/` · `/mnt/raid0/llm/tmp/akx-program/` · worktrees: `/mnt/raid0/llm/worktrees/akx-program-*` (new work; each track's own inherited **Scratch** declaration below still applies to its existing dirs)
 **Index row**: INF-82, [inference-research-index.md](inference-research-index.md) (prepared by the split; applied by main-inf22).
 **Back-pointer**: split 2026-11-07 from [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) (row INF-65, the champion / C7-C8 fold ledger, owner main-inf22) by operator decision C (INF-22 handoff archive audit). Boxes moved verbatim; each source position keeps a `[moved: …]` pointer line.

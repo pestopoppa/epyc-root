@@ -3,6 +3,8 @@
 > **Fold destination** (BRF-T7-F7, BRF-T7-1, route 1b, 2026-11-03): renamed from `yarn-context-extension-research.md`; every former handoff of this plan target is a `## Track:` with its own gate marker: `yarn-context-extension-research`, `attention-matching-kv-compaction` (rows INF-05 retired into INF-59). The former `yarn-context-extension-research.md` body is `## Track: yarn-context-extension-research`; tracks those handoffs already had are lifted verbatim after their owner.
 
 **Status**: ACTIVE. ADAPTED on 2026-10-04: the scope is now Qwen3.8-27B under YaRN factor 2 (524,288 tokens) as a
+**Row**: INF-59
+**Domain**: inference-research
 dedicated np 1 MI210 mode. The operator approved running E0 and E1 on 2026-10-04. **E1 ran 2026-10-04: quality PASS to 500K, FAIL by
 C4 memory (A1 63.9 GiB vs ≤ 55); next is YARN-E1-MEM.** The 2026-03-09 → 2026-09-07 scope
 below is historical: its model targets are retired, its flag recipe is defeated by the v10 slot clamp, and its memory

@@ -6,6 +6,8 @@
 
 **Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/` (NI08 record-design review). Historical NI07 integration source is preserved by APP commit `b87998e3b5a0cbb9da36c8db9fd2fcfbb69aba0d`; the completed task no longer depends on its throwaway checkout. M-12k scratch roots: `/mnt/raid0/llm/tmp/m12k-gpu-20261119T1500Z/` (GPU rework row, predeclared rule, smoke evidence) and `/mnt/raid0/llm/tmp/m12k-20261119T0208Z/` (original spec).
 **Status**: active — **CLEARED FOR SEEDING (M-18 full-surface audit, 2026-07-28; semantic gate
+**Row**: EVL-10
+**Domain**: routing-and-optimization
 verified live 2026-07-29).** Write path FIXED and proven self-healing in production; reseed DONE;
 standing integrity gate (M-17) blocks AutoPilot on a broken store and runs in `health_check.sh`.
 The degenerate-vector guarantee extends to **every** store via `FAISSEmbeddingStore.add()`

@@ -4,6 +4,8 @@
 > **⛔ HOLD — OPERATOR GATE (2026-11-18).** No v11 prep work, gates, promotion rows or `v11-*` rows of any kind until the operator ratifies a v11 promotion in writing. Champions are still accumulating (C14, C15 in flight). Operator 2026-11-18: "we're not promoting the kernel yet! only I can approve it … it doesn't even make sense to begin v11 prep work". Do not publish, unpark, or dispatch anything that works these boxes. The only permitted edit is appending a champion carry-in log line when a champion CAS lands. The Codex v11 prep commits f25d31f5c..979f5f746 (2026-11-18) were REVERTED on operator order (f4d9a5510, 06da27d11), except the champion work: the C13 llguidance gates and evidence, the CH-17 diagnostics, and ceb114a99, 5a435264b, 10575c62a, b18252aed, d8d08f6a8. Enforced by operator_gate (270cbee0a): unpark refuses this handoff and publish_row refuses v11-..v14- rows without operator ratification.
 
 **Status**: HOLD (operator gate) — runbook keeper only. v11 is **not** being promoted. These boxes close at the promotion, not before.
+**Row**: INF-83
+**Domain**: inference-research
 **Purpose**: keep the v11 promotion runbook current so that no important work or upgrade is lost when v11 is promoted. **Update this file whenever a champion lands.** Record what the new champion carries that the promotion must prove, flip or re-select, and record the items that champion made moot.
 **Scratch**: none
 **Index row**: INF-83, [inference-research-index.md](inference-research-index.md) (prepared by the split; applied by main-inf22).

@@ -1,4 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
+**Row**: INF-06
+**Domain**: inference-research
 
 **Completed Scope:** ticked-box detail compacted 2026-11-20 into [`autokernel-loop-completed-through-2026-11-20.md`](../completed/autokernel-loop-completed-through-2026-11-20.md) (667 blocks; each keeps a one-line stub here, grep the box ID in the ledger for the full text). Open boxes were not moved.
 

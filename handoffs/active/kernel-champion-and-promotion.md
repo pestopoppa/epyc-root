@@ -1,4 +1,6 @@
 # AutoKernel — the standing aggregate candidate (champion)
+**Row**: INF-65
+**Domain**: inference-research
 
 **Model**: gpt-6.1-terra
 **Effort**: high

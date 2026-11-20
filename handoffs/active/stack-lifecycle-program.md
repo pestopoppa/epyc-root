@@ -7,6 +7,8 @@
 Accepted source is APP `b87998e3`, with durable [source and original acceptance](../../artifacts/ni08/scg-test-logdir-success-acceptance-20261007/README.md); the completed task no longer depends on its throwaway checkout.
 
 **Status**: IN PROGRESS - canonical stack-change command, generated
+**Row**: RTG-36
+**Domain**: routing-and-optimization
 stack-prior contract, guard/scanner ownership, runtime attestation, launch and
 preflight gates, promotion-gate execution, and representative swap-CI witnesses
 are live. Remaining work is high-risk consumer migration and waiver hygiene;

@@ -1,4 +1,6 @@
 # AutoPilot: Continuous Recursive Optimization
+**Row**: RTG-02
+**Domain**: routing-and-optimization
 
 > **Fold destination** (BRF-T7-F12, BRF-T7-1, route 1b, 2026-11-03): every former handoff of this plan target is a `## Track:` with its own gate marker: `autopilot-program`, `autopilot-sequential-allocation` (rows EVL-04 retired into RTG-02). The former `autopilot-program.md` body is `## Track: autopilot-program`; tracks those handoffs already had are lifted verbatim after their owner.
 
