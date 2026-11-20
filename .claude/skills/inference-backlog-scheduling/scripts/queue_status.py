@@ -252,7 +252,22 @@ def classify(flags, owner=None, now=None):
     return out
 
 
+
+def _toolroot_banner():
+    """F5: print tool-commit / stale-checkout WARN (toolroot.py beside this file when installed, else the checkout's)."""
+    try:
+        try:
+            import toolroot
+        except ImportError:
+            sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "scripts", "coordination"))
+            import toolroot
+        toolroot.banner(__file__)
+    except Exception:  # noqa: BLE001 - never blocks the tool
+        pass
+
+
 def main(argv=None) -> int:
+    _toolroot_banner()
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--flags", default=DEFAULT_FLAGS)
     ap.add_argument("--owner", help="substring filter on the owner field")

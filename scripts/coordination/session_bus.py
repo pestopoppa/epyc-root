@@ -2821,7 +2821,22 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+
+def _toolroot_banner():
+    """F5: print tool-commit / stale-checkout WARN (toolroot.py beside this file when installed, else the checkout's)."""
+    try:
+        try:
+            import toolroot
+        except ImportError:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            import toolroot
+        toolroot.banner(__file__)
+    except Exception:  # noqa: BLE001 - never blocks the tool
+        pass
+
+
 def main(argv: Optional[list[str]] = None) -> int:
+    _toolroot_banner()
     # --print-root is handled before the subparsers' `required=True` check so
     # it works with no subcommand at all (`session_bus.py --print-root`) --
     # the verification idiom a fresh worktree checkout is expected to run.

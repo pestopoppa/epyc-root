@@ -1245,7 +1245,22 @@ def repair(rid, flags):
     return 0, f"REPAIRED {rid} -> {new['id']}: " + "; ".join(changed)
 
 
+
+def _toolroot_banner():
+    """F5: print tool-commit / stale-checkout WARN (toolroot.py beside this file when installed, else the checkout's)."""
+    try:
+        try:
+            import toolroot
+        except ImportError:
+            sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            import toolroot
+        toolroot.banner(__file__)
+    except Exception:  # noqa: BLE001 - never blocks the tool
+        pass
+
+
 def main(argv=None):
+    _toolroot_banner()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("spec", nargs="?")
     ap.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")

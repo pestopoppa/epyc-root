@@ -22,6 +22,7 @@ bin/rowflow/run_direct.sh            scripts/coordination/rowflow/run_direct.sh 
 bin/rowflow/task_lint.py             scripts/handoffs/task_lint.py                        hot
 bin/rowflow/task_lint_core.py        scripts/handoffs/task_lint_core.py                   hot
 bin/rowflow/handoff_ref.py           scripts/coordination/handoff_ref.py                  hot
+bin/rowflow/toolroot.py              scripts/coordination/toolroot.py                     hot
 
 # ---- bin/churn: filing, reclaim, wrap-up (reclaim_row.py imports the scripts/system + job_templates modules from here)
 bin/churn/wrapup.py                  scripts/coordination/churn/wrapup.py                 hot
@@ -34,6 +35,7 @@ bin/churn/tokens_per_task.py         scripts/coordination/churn/tokens_per_task.
 bin/churn/scratch_guard.py           scripts/coordination/churn/scratch_guard.py          hot
 bin/churn/row_disk_budget.py         scripts/coordination/churn/row_disk_budget.py        hot
 bin/churn/handoff_ref.py             scripts/coordination/handoff_ref.py                  hot
+bin/churn/toolroot.py                scripts/coordination/toolroot.py                     hot
 bin/churn/row_worktree.py            scripts/coordination/job_templates/row_worktree.py   hot
 bin/churn/worktree_gate.py           scripts/system/worktree_gate.py                      hot
 bin/churn/worktree_salvage.py        scripts/system/worktree_salvage.py                   hot
@@ -56,6 +58,14 @@ bin/quiet_host.py                    scripts/coordination/quiet_host.py         
 bin/index_regen.py                   scripts/coordination/index_regen.py                  hot
 bin/serialized_push.py               scripts/coordination/serialized_push.py              hot
 bin/flip_checkbox.py                 scripts/coordination/flip_checkbox.py                hot
+bin/toolroot.py                      scripts/coordination/toolroot.py                     hot
+
+# ---- bin/handoffs: handoff-standard tools run from the hub copy (F5, AK audit B5/C5)
+bin/handoffs/task_lint.py            scripts/handoffs/task_lint.py                        hot
+bin/handoffs/task_lint_core.py       scripts/handoffs/task_lint_core.py                   hot
+bin/handoffs/box_index.py            scripts/handoffs/box_index.py                        hot
+bin/handoffs/handoff_box.py          scripts/handoffs/handoff_box.py                      hot
+bin/handoffs/flip_checkbox.py        scripts/coordination/flip_checkbox.py                hot
 
 bin/keeper_qual_memo.py              scripts/coordination/keeper_qual_memo.py             hot
 
