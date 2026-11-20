@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T20:18:14Z",
+  "generated_at": "2026-11-20T20:49:36Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1772,15 +1772,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 198,
-      "dispatchable": 44,
+      "closed": 200,
+      "dispatchable": 43,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 46,
+      "open": 45,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1823,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 34,
+          "dispatchable": 33,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 845,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 35,
+          "open": 34,
           "readiness": "blocked"
         }
       ]
@@ -1920,15 +1920,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 235,
-      "dispatchable": 32,
+      "closed": 238,
+      "dispatchable": 29,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-20",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 34,
+      "open": 31,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1962,7 +1962,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 30,
+          "dispatchable": 27,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1971,14 +1971,14 @@
           ],
           "line": 22,
           "name": "autokernel-champion-aggregate",
-          "open": 32,
+          "open": 29,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1817,
+          "line": 1820,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1987,7 +1987,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1945,
+          "line": 1948,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1996,7 +1996,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2277,
+          "line": 2280,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2005,7 +2005,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2378,
+          "line": 2381,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2014,7 +2014,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2932,
+          "line": 2935,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2026,7 +2026,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3070,
+          "line": 3073,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2038,7 +2038,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3077,
+          "line": 3080,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -3115,14 +3115,14 @@
         "RTG-34"
       ],
       "closed": 92,
-      "dispatchable": 35,
+      "dispatchable": 42,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-20",
-      "next_action": "Run TASKFLOW-STAGE1 canary (tf1-canary-35b-c14-gpu-r1-20261120); then HS ratify signature, C6 7-day drop, owner-roles decision",
-      "open": 35,
+      "next_action": "Compute paused for AK; resume TASKFLOW-STAGE1-CANARY at r8 calibration (CPU q1q2), then packet fixes \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
+      "open": 42,
       "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
