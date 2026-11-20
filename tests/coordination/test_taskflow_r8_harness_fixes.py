@@ -76,3 +76,9 @@ def test_r7d_denied_read_only_commands_now_allowed(tmp_path):
 def test_policy_matches_config():
     assert "cat" in L.POLICY and "sed -n" in L.POLICY and "head" in L.POLICY
     assert "no pipes" not in L.POLICY
+
+
+def test_phase2_prompt_does_not_point_at_missing_brief_section():
+    t = {"handoff": "h.md", "id": "X", "text_sha": "x", "goal": "g", "budget": {"turns": 30}, "forbidden": ["a"]}
+    assert "WRITE BRIEF FIRST" not in L.task_suffix(t, {})
+    assert "WRITE BRIEF FIRST" in L.task_suffix(dict(t, phase="brief"), {})

@@ -56,3 +56,38 @@ one retry on 5xx, full body log. Lanes are at `/mnt/raid0/llm/tf/<hex>` under th
    the per-task CPU rate; size the next full round from it at np2.
 4. The 27B arm (stack-registered Qwen3.8-27B-Q8_0 + DFlash2, recipe `qwen3.8-27b-q8-gpu-dflash2-np4` sha 17e9e51e…, research bdfab0239)
    runs only once the 35B plateaus with model capacity as the main failure.
+
+## r8 (2026-11-20): harness fixes landed; calibration round staged, not run (compute stopped by operator)
+**Harness changes (3edb0b60e + follow-up):**
+- **Lane-path repair in the proxy.** r7d evidence: the 35B types absolute paths despite POLICY rule 10. The prefix gets mangled
+  (`<mnt/raid0/llm/tf/e9f8`, `.mnt/…`, `mnt/raid0/tf/…`, `/mnt/raid0/84fd/…`, `/mnt/raid0/llm/t/65a8/…`), but the hex lane id always
+  survives. `local_llm.repair_lane_paths` and `rewrite_sse_tool_args` rewrite streamed tool-call args to `/mnt/raid0/llm/tf/<id>`,
+  only for existing lanes, and log `lane_path_repairs` per request. Repair was chosen over digit-free lane names or hiding the cwd,
+  because the damage is in the prefix and the id is intact.
+- **Shell allows.** Of 21 r7d bash errors, 10 were `cat`: POLICY rule 6 promised it, but `READ_ONLY` omitted it (a harness
+  contradiction). The rest were `sed -n`, `pwd`, `git show` and `| head`. All are now allowed, plus `2>&1` and `| head|tail|wc|grep`
+  on every allowed command. Denied: `sed -i`, `find -exec/-delete`, `>`, `| sh`. Output stays bounded by `tool_output`.
+- **Phase-2 prompt fix.** It no longer points at the "WRITE BRIEF FIRST" section, which exists only in the brief phase.
+
+**Calibration round (operator 2026-11-20; before more brief iteration), staged at `/mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8-20261120`:**
+- Easy arm: 5 trivial tasks in fixture repo `/mnt/raid0/llm/tmp/taskflow-calib-fixture-20261120` (E1 add `square`+pytest,
+  E2 rename `tmp`→`total`, E3 off-by-one with failing test, E4 constant 10→30, E5 typo). Each has an inline strong brief
+  (`brief_mode: off`, since the epyc-root brief store has no fixture briefs) and a pytest acceptance that fails on the unchanged tree.
+  The reference fixes pass all 5, and lane + verify plumbing was proven offline (`verified mechanical`).
+- Arms in this order, np2, CPU q1+q2: easy-nothink → easy-think → canary-nothink → canary-think. Thinking arms run
+  `--reasoning on` plus proxy `chat_template_kwargs.enable_thinking=true`, with the agent-turn cap at 6144 (2048 nothink).
+  The round stops with CALIBRATION FAIL if easy-nothink verifies fewer than 3 of 5.
+- Per arm it records verified rate, output tokens/task, wall, XML-leak requests, 5xx retries and lane-path repairs, and saves
+  `/props` (the loaded template/tool parser) as the format audit.
+- Classification splits **format errors** (repair misses, malformed args, oldString misses) from **task-understanding errors**.
+
+**Prefix-cache break (AK replay: step-2 cache_n = true LCP − 4 on all 8 r7d tasks).** In the r7d bodies, steps 1 and 2 are identical
+JSON up to the appended assistant/tool turns: same tools and params, no timestamp or counter. A reference Jinja render of the
+GGUF-embedded template shows the step-1 prompt as an exact byte prefix of step 2, in both nothink and think modes. So opencode's
+layout and the template are **not** the cause. The 4 tokens are lost server-side: either minja renders differently from Jinja, or
+(likelier on this hybrid recurrent model) the server restores a state checkpoint a few tokens back. C14 and AK's fork would share
+that, which fits their equal hit rates. The r8 job renders both bodies through `/apply-template` per arm to settle the minja question.
+
+**Status:** CPU row s1b (q1+q2, superseding s1, whose q0-q2 shape was blocked 2 days by codex-bfcl-cj3d) passed its smoke but was
+withdrawn before any grant (operator: free resources for AutoKernel). The CPU per-task rate is therefore still unmeasured, and r8 is
+unpublished. To resume: republish s1b (or r8 directly, resumable on q1,q2), take the measured rate, and book r8 as measured per-task rate × 26 task-runs (5+8 tasks × 2 arms) at np2, plus 4 server loads, plus 25%.

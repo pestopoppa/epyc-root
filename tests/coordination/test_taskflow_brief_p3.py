@@ -71,7 +71,7 @@ make parse strict
 ## ALLOWED COMMANDS
 pytest -q tests/test_x.py
 python3 scripts/x.py
-Read-only helpers: gitnexus query|context|impact <name>; kb-search (see WRITE BRIEF FIRST).
+Read-only helpers: gitnexus query|context|impact <name>.
 ## FORBIDDEN
 handoffs/** …
 ## LIMITS

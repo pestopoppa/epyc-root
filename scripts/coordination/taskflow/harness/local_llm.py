@@ -298,7 +298,8 @@ def task_suffix(task: dict, excerpts: dict[str, str]) -> str:
         out.append(write_brief_section(task))
     allowed = allowed_commands(task)
     out.append("## ALLOWED COMMANDS\n" + ("\n".join(allowed) if allowed else "(no test command for this box)")
-               + "\nRead-only helpers: gitnexus query|context|impact <name>; kb-search (see WRITE BRIEF FIRST).")
+               + "\nRead-only helpers: gitnexus query|context|impact <name>"
+               + ("; kb-search (see WRITE BRIEF FIRST)." if task.get("phase") == "brief" else "."))
     if task.get("refs"):
         out.append("## REFERENCE FILES (read-only copies from other repos)\n" + "\n".join(
             f".taskflow-refs/{r['repo']}" + (f"@{r['rev']}" if r.get("rev") else "") + f"/{r['path']}"
