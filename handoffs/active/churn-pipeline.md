@@ -219,6 +219,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: champion C14 GPU store gpu-20261118-eee3da838-c14 · harness: opencode 2.2.5 + taskflow dispatch (origin/main 104a8f154) · metric: verified/attempted, tokens per verified task · rule: >=0.3 verified with model-limitation the minority failure -> STAY-35B; <0.3 with >=50% model-limitation -> TRY-27B; >=50% harness failures -> FIX-HARNESS · region: gpu-q3 (mi210_0,88-95,184-191) · est 4200 s, from 10 tasks x 300 s x 1.25 + 450 s load
       · Stop rule: stop on answer when all 10 tasks are attempted; stop on futility when the first 4 tasks are all harness-class; STOP file / deadline / grant loss.
       · 2026-11-20 status: 7 GPU rounds (r1-r7d), current verdict FIX-HARNESS (no model verdict yet); round log, A/B r6c vs r7d and perf in docs/design/taskflow-stage1-canary-findings.md; next = path-garbling + shell-compose fixes, CPU rounds from tf1-cpu-s1 rate.
+      · 2026-11-20 CHECKPOINT (compute stopped for AutoKernel; not ticked): r1-r7d none above 2/10; clean A/B r6c 0/8 vs r7d 0/8; Sonnet packet-only verified 5/7, so the 35B's 0 is mostly harness/env/packet. RESUME POINT in order: (1) r8 calibration on CPU q1/q2 only when compute is released: 5 easy tasks + thinking on/off A/B + format audit (staged /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8-20261120; needs spec.json, SOURCE.sha256, measured CPU rate); (2) fix packet defects (worktree-relative acceptance, working interpreter, re-scope LOOP-62); (3) iterate until the 35B saturates; (4) run the 27B (stack-registered Qwen3.8-27B-Q8_0, DFlash2 recipe, AK champion launch) only on tasks the 35B still fails; (5) finalize brief format and resume the backfill. Detail: progress/2026-11/2026-11-20-pipeline-mgmt.md.
       · gate: none
       · owner: pipeline-mgmt
 - [ ] **HS-STAGE-C** [non-inference] Handoff standard Stage C (spec /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/HANDOFF-STANDARD.md): content rewrites of failing boxes so the lint-OK canary reaches 45 percent (Stage B left it at 21.6), LLM proposals as NEEDS-OWNER children, compaction, generated index rows, ratify package for human-only docs.
@@ -272,3 +273,31 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: python3 scripts/gitnexus-reindex.py check reports fresh after a keeper-run reindex
       · gate: none
       · tier: sonnet   · owner: pipeline-mgmt
+- [ ] **TF-ACCEPT-CD-CLEANUP** [non-inference] Deterministic cleanup of `cd X &&` acceptances in box briefs: rewrite to worktree-relative commands (86 committed + 56 uncommitted briefs fail rule f).
+      · done when: task_lint reports zero rule-f failures across committed briefs and a test trips the rewriter
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **TF-DUPID-HS4** [non-inference] Resolve the duplicate box ID HS-4 (x3 occurrences) in harness-program: give each a unique ID and fix gate references.
+      · done when: box_index reports no duplicate id HS-4
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **TF-DUPID-KPF-18-0D** [non-inference] Resolve the duplicate box ID KPF-18.0d (x4 occurrences) in kv-cache-program.
+      · done when: box_index reports no duplicate id KPF-18.0d
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **TF-DUPID-KPF-64-3** [non-inference] Resolve the duplicate box ID KPF-64.3 (x2 occurrences) in kv-cache-program.
+      · done when: box_index reports no duplicate id KPF-64.3
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **TF-DUPID-DCP6** [non-inference] Resolve the duplicate box ID DCP-6 (context-and-token-economy and autopilot-program both carry one) so each is unique.
+      · done when: box_index reports no duplicate id DCP-6
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **CODEX-BFCL-CJ3D-REPUBLISH** [non-inference] Republish codex-bfcl-cj3d-supported-27b-v1-20261120 with a measured estimate: the unmeasured estimate gave a 52 h grant on 8 cores; use about 4-6 h, a full quarter, max_window about 12 h, and re-raise when the codex lane has budget.
+      · done when: the republished row is queued with estimate_s 14400-21600 and a full-quarter region and max_window 43200
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **KEEPER-GRANT-CAP** [non-inference] Keeper cap: a maximum grant length for non-resumable rows, plus a warning on unmeasured estimates (origin: 52 h grant on 8 cores from an unmeasured estimate).
+      · done when: a keeper test shows a non-resumable row grant is capped and an unmeasured estimate emits a warning
+      · gate: none
+      · owner: pipeline-mgmt

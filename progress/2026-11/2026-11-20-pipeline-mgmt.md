@@ -60,3 +60,39 @@
 - Ticked AK-FIXES-F2-F9, AK-HOOKS-C1-C6 (belief: cc). HS-STAGE-C left open with a PARTIAL note (ratify signature, C6 and canary outstanding).
 - Added boxes: RTG100-HS-RATIFY, RTG100-HS-C6-DROP, RTG100-OWNER-ROLES, RTG100-TASKFLOW-CANARY-RESULT, RTG100-GENFILE-HOOK-REFUSE.
 - Wiki sweep deferred (see report).
+
+## Checkpoint (wrap-up 3): compute STOPPED for AutoKernel
+
+All pipeline-mgmt compute is stopped at the operator's request to free resources for AutoKernel. `tf1-cpu-s1b` was withdrawn and is TERMINAL. This section records state and the resume point.
+
+### Taskflow Stage 1 canary (GPU, rounds r1-r7d)
+- Seven GPU rounds r1-r7d; none verified more than 2/10. Verdict stays FIX-HARNESS (no model verdict). Round log: `docs/design/taskflow-stage1-canary-findings.md`.
+- Clean A/B on the same 8 boxes: r6c (no brief) 0/8; r7d (strong briefs) 0/8, with 3 tasks editing but failing verify.
+- Harness fixes pushed: `3edb0b60e` (proxy lane-path repair, shell allowlist incl. cat / `sed -n` / pipes, vidya wiring VB-TASKFLOW-CANARY-WIRE) plus the earlier ones listed in the findings doc.
+- Packet-only Sonnet calibration (`/mnt/raid0/llm/tmp/taskflow-calibration-20261120/PACKET-ONLY-SONNET.md`): Sonnet verified 5/7 from the packet alone. Recurring packet defects: (a) acceptance commands that `cd` into the shared clone; (b) no working test interpreter (system python lacks fastapi, the repo venv lacks pytest); (c) stale brief details; (d) LOOP-62 not doable as specified. Conclusion: the tasks ARE doable, so the 35B's 0 is mostly harness/env/packet, not task difficulty.
+- AutoKernel's prefix-cache replay of r7d: server-side caching is about 93%; the remaining misses are opencode's layout breaking the prefix 4 tokens early.
+
+### Task-brief layer
+- P1-P5 landed: `1f4c564f1`, `e4bca9fa0`, `3ee2a84f3..05b623695`, `5edfc86ad`, `4b11de46b` (quality gate), `951503e06` (rule f). ID restore: `61166d386`, `a86dd4db4`.
+- Brief backfill PAUSED by operator ruling until the 35B saturates. Workflow run `wf_442b998f-d7d` is stopped; its 12 worktrees `/mnt/raid0/llm/worktrees/pm-bfw-*` hold about 160 uncommitted briefs, kept on purpose for resume.
+
+### Keeper / infra
+- Keeper fixes deployed: `c0cf5d5a2` (GPU packing), `4015766ac` + `build_pocket_policy.json` (build pocket), `73f498cb2` (partial-quarter claims, supersede attribution).
+- gitnexus reindex as keeper rows: `a7001a7d3`, plus box GNX-REINDEX.
+- Keeper v13 re-pinned with operator approval.
+- Research clone fast-forwarded 330 commits; the `model_registry.yaml` comment patch is saved at `/mnt/raid0/llm/tmp/research-clone-ff-20261120/model_registry-comment.patch`.
+- Owner roles: six agent files at `a85ded1c3`, plus roster rows.
+- RATIFY-HANDOFF-STANDARD-20261120 signed (`98342afc8`). RATIFY-TASK-BRIEF-20261120 is PENDING the operator's run of `scripts/operator/ratify_task_brief_20261120.sh`.
+- In flight at checkpoint: a fix so `publish_row.py` stops tripping the NIB2-108 hook (docstring literal, plus notify/filing flag roots, plus a deploy scan gate), being built by a subagent, NOT yet deployed.
+
+### RESUME POINT (in order)
+1. Run the r8 calibration on CPU q1/q2 only, when compute is released: 5 easy tasks + thinking on/off A/B + format audit. Staged at `/mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8-20261120`; needs spec.json, SOURCE.sha256 and the measured CPU rate.
+2. Fix the packet defects Sonnet found (worktree-relative acceptance, a working interpreter, re-scope LOOP-62).
+3. Iterate until the 35B saturates.
+4. Run the 27B (stack-registered Qwen3.8-27B-Q8_0, DFlash2 recipe, AK champion launch) only on tasks the 35B still fails.
+5. Then finalize the brief format and resume the backfill.
+
+### Handoff edits (churn-pipeline.md)
+- TASKFLOW-STAGE1-CANARY: dated status/resume line added (not ticked).
+- Boxes added (with briefs): TF-ACCEPT-CD-CLEANUP, TF-DUPID-HS4, TF-DUPID-KPF-18-0D, TF-DUPID-KPF-64-3, TF-DUPID-DCP6, CODEX-BFCL-CJ3D-REPUBLISH, KEEPER-GRANT-CAP.
+- No ticks this wrap-up; checklist-sync and belief-capture gates have nothing to tag. Pruning and wiki sweep deferred to operator `/wrap-up`.
