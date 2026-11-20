@@ -495,8 +495,8 @@ Use separate clean worktrees/output directories for `baseline`/`patched` and
 remove that task's failed worktree with `git worktree remove` and recreate the
 same scratch source location at the pin; do not accumulate attempt trees.
 
-A generated CMake wrapper builds the **full kernel**, including dynamic backend
-modules, and links `am-control` in both variants plus `am-driver` in the patched
+A generated CMake wrapper builds the **full kernel**, including shared linked backend
+libraries (`GGML_BACKEND_DL=OFF`), and links `am-control` in both variants plus `am-driver` in the patched
 variant. Internal includes put installed patched `src` before the lane headers.
 `BUILD.json` binds the source commit/tree/complete tracked diff, exact injected
 headers, patch, driver/control and Python runtime tooling, actual configure/build
@@ -591,3 +591,13 @@ Eighteen new model-free tests exercise orchestration, early futility, prepared
 input/build changes, layer thresholds, live linkage/KFD/budget sampling and owned
 child termination. Full Python suite: 68 PASS, one optional native-reader SKIP.
 Actual full builds, prepared model inputs and row publication are next.
+
+The first full baseline CPU attempt reached the runner link but failed with
+unresolved CPU symbols from the pinned fused-model implementation (including
+`ggml_get_type_traits_cpu` and `ggml_compute_forward_rope`). Those symbols exist
+in its compiled CPU library, but MODULE mode does not link that library into
+the dependency graph. The wrapper now uses shared linked backends for both
+variants and both devices. A tiny real CMake/compiler regression test reproduces
+the MODULE-mode failure and verifies that the generated linked-backend wrapper
+builds and runs. Full kernel CPU/HIP rebuilds are still required; this test is
+not evidence of full kernel linking or native model quality.
