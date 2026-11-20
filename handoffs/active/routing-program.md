@@ -471,7 +471,7 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
 
 ##### DAR-LAT — ❄ FROZEN 2026-09-27 (do not dispatch; each box carries its unfreeze trigger — since 2026-09-29: autopilot has trained on the swapped stack AND UFH-13 re-opened)
 
-- [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-1 — Build the shared `SlotCapacity` snapshot and `expected_wait_s(role)` on the ONE admission ledger.**
+- [ ] **TD-36** ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-1 — Build the shared `SlotCapacity` snapshot and `expected_wait_s(role)` on the ONE admission ledger.**
   - 2026-11-09 audit: Anchors fixed inline above (`admission.py` -> `get_status`). Zero-inference code is feasible, but the box is frozen by operator ruling; trigger needs Autopilot, which is on HOLD. HOLD list.
   Role-keyed over the role's backend URLs:
   - `queued` = `AdmissionController` waiting_*, `running` = in_flight, `limit` = np (orch `src/api/admission.py`, `AdmissionController.get_status`; was :229-245; `SlotCapacity` exists only in `src/embedding_pool/busy.py`).
@@ -486,7 +486,7 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     applies its own fallback.
   - Tests: ledger/`/slots` agreement, free-slot W=0, fail-open when the ledger is absent. intake-1796#01, intake-1798#02.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND (operator ruling Q2, 2026-09-29, replacing "the UFH-13 thesis experiment shows that selection under load matters", which cannot fire while UFH-13 is PARKED) autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
-- [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-2 — Add the static per-role latency prior + saturation guard to `HybridRouter._apply_priors`
+- [ ] **TD-37** ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-2 — Add the static per-role latency prior + saturation guard to `HybridRouter._apply_priors`
   - 2026-11-09 audit: `_apply_priors` is `orchestration/repl_memory/hybrid_router.py:332` (fixed inline). Depends on DAR-LAT-1. HOLD list.
   (`orchestration/repl_memory/hybrid_router.py:332` (`_apply_priors`; was :308-327)), landed at λ_lat=0 (byte-identical, test-pinned).**
   - `score −= λ_lat·(T̂+W)/T_ref`, with `T̂ = L̂(role)/baseline_tps_by_role[role]` (provenance-labelled,
@@ -499,7 +499,7 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     off, arm-A2 live term from `/slots` (busy flags + `n_decoded`). intake-1796#02, intake-1798#04.
     - Key every prior row by (role, device, topology_hash), never by role alone: record the device (CPU region set or MI210) and the `ContentionGate._live_topology_hash()` value (orch `src/scheduling/contention_gate.py:141`) the TPOT/L̂ inputs were derived under. A row whose topology_hash differs from the live stack contributes term 0 plus a `prior_stale` flag (the same fail-open path as a missing prior), so a stack change or a Layer-2 residency swap cannot leave a CPU-era prior pricing a GPU-resident role. Re-derive the table on every stack change. RouterWise's latency model is per (model, setup) and its own router is a static prior with no live arm (intake-1815#0, intake-1815#6).
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND (operator ruling Q2, 2026-09-29, replacing "the UFH-13 thesis experiment shows that selection under load matters", which cannot fire while UFH-13 is PARKED) autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
-- [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3 — Load-sweep A/B on the single-instance saturating tier under a TTFT-bound workload:
+- [ ] **TD-38** ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3 — Load-sweep A/B on the single-instance saturating tier under a TTFT-bound workload:
   - 2026-11-09 audit: Premise matches live topology (Flash-Next :8074 -np 1, divert to :8083 per `stack_topology.yaml`; note :8083 is now the 27B). Needs a whole-host window. HOLD list.
   Qwen3.8-Flash-Next (`architect_general` :8074 since ARCHSWAP-20260927, `-np 1`) with divert target `architect_critic` (:8083, MI210).** Absorbs DAR-LAT-3a (pre-registration freeze), 3g (acquire-never-observe gate: bus-granted whole-host window, MEAS-6), 3b (W1 calibration + arm sweep + 24 A1/A1 floor pairs) and 3c (holdout W2 >= 24 h later, rho = 1.25, ABBA, fresh seeds; W1 and W2 never pooled; PAIRED-CI-1 within a window) — the sub-rows below stay as its protocol record.
   - Arms: A0 incumbent (λ_lat=0), A1 static prior + guard, A2 A1 + live `/slots` term.
@@ -551,7 +551,7 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     already runs `-t 96`). The `lane/dar-lat-3h-v2-*` lanes are NOT to be merged. Result:
     [`RESULT.md`](../../artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md) and `g1-result/verdict.json`.
     Full box text: [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md).
-  - [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29), or the operator reopens it — **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` Flash-Next server (`architect_general` since ARCHSWAP-20260927) at its served context.** The operator split it
+  - [ ] **TD-42** ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29), or the operator reopens it — **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` Flash-Next server (`architect_general` since ARCHSWAP-20260927) at its served context.** The operator split it
     - 2026-11-09 audit: SV. Kernel decision on the v10 production server: no action without explicit operator authorisation (production kernels are frozen). HOLD list.
     out of the DAR-LAT-3h package on 2026-09-26, after the GGML_* env audit. It is recorded under master registry
     `server_mode.architect_general.recipe.env_not_serving` (the Flash-Next row; renamed by ARCHSWAP-20260927).
@@ -2267,13 +2267,13 @@ intake-1890#record. Source/code grounding is pinned in the approved plan; no app
 
 #### 2026-09-26 audit follow-ups (code + live-process audit)
 
-- [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **LRC-1 — distill autopilot-generated data into episodic memory as MLP training data** (operator
+- [ ] **TD-39** ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **LRC-1 — distill autopilot-generated data into episodic memory as MLP training data** (operator
   - 2026-11-09 audit: NAR: no autopilot-generated data since 2026-08-09 (last run 1503). Projection design is zero-inference but frozen; it also needs the era (post-E18, post-07-23) and the EG2 decision before any distillation. HOLD list.
   direction 2026-09-26). Define the projection from autopilot trial records to routing memories (task, chosen
   role, outcome), keep it separate from live write-back (see `episodic-memory-integrity.md` M-21), and
   measure whether a retrain with it beats the current 81.0% retrain on the held-out split.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): retraining the routing MLP tunes a component before the thesis experiment says routing is where the value is; unfreeze trigger (operator ruling Q2, 2026-09-29; it replaces "the UFH-13 thesis experiment reaches a pre-registered verdict of SUPPORTED, and the operator names a workload class where A2's escalation gain lives", which cannot fire while UFH-13 is PARKED): autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
-- [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **LRC-2 — resolve the inert `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`.** It is set live, but the
+- [ ] **TD-40** ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **LRC-2 — resolve the inert `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`.** It is set live, but the
   - 2026-11-09 audit: SV: still inert (`src/api/services/routing_models.py:137` plus `routing_classifier` OFF at `src/features.py:133`). Check for the relaunch: `scripts/server/orchestrator_stack.py:2768` does `env.setdefault("ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE", "1")`, so a stack relaunch sets the env ON while the gate stays inert; either unset it or tie it to the classifier flag. A config edit; frozen only by the marker.
   verifier (`src/api/services/routing_models.py:131-149`) only runs in the classifier path, which is off
   (`routing_classifier`, `src/features.py:133` (was :123)). Either unset it so the environment matches behaviour, or tie
@@ -3275,7 +3275,7 @@ episodic memory writing."
     logits (intake-1487).
   - *Revisit note (operator ruling Q5):* re-decide the "written decision to drop typed routing" clause after the autopilot
     has trained on the swapped stack. TD-7 showed multi-token role labels need v11-native scoring before a fair retest.
-- [ ] ❄ FROZEN 2026-09-27 — resume only once v11 is promoted (native scoring) AND autopilot has trained on the swapped stack AND UFH-13 re-opened — **TD-28 — typed routing as ADVICE, not enforcement (operator direction 2026-09-26).** TD-10 showed typed routing ~1pp worse as an enforcer (delta -0.0104). A/B a typed routing hint in the frontdoor prompt vs no hint: measure how often frontdoor overrides the hint and whether overrides help (accuracy on overridden vs followed items). Wire the A/B's write side into the belief kernel (`vidya-belief-substrate-program.md` VB-TD-ADVICE).
+- [ ] **TD-41** ❄ FROZEN 2026-09-27 — resume only once v11 is promoted (native scoring) AND autopilot has trained on the swapped stack AND UFH-13 re-opened — **TD-28 — typed routing as ADVICE, not enforcement (operator direction 2026-09-26).** TD-10 showed typed routing ~1pp worse as an enforcer (delta -0.0104). A/B a typed routing hint in the frontdoor prompt vs no hint: measure how often frontdoor overrides the hint and whether overrides help (accuracy on overridden vs followed items). Wire the A/B's write side into the belief kernel (`vidya-belief-substrate-program.md` VB-TD-ADVICE).
   - 2026-11-09 audit: NAR, triple trigger (v11 native scoring AND Autopilot trained on the swapped stack AND UFH-13 re-opened); cannot fire under the Autopilot hold. HOLD list.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): typed advisors add a routing input before the base comparison exists, and 0/200 native scoring (TD-7) makes the advice JSON-fallback only; unfreeze trigger (operator ruling Q2, 2026-09-29; it replaces "the UFH-13 thesis experiment has a recorded verdict", which cannot fire while UFH-13 is PARKED): the v11 promotion ships native scoring (multi-token action labels scored natively) AND autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
 
