@@ -109,7 +109,7 @@ class SupportedCaptureControls(unittest.TestCase):
             health.__exit__ = Mock(return_value=False)
             opener = Mock(); opener.open.return_value = health
             with patch.dict(os.environ, {'FILLER_SMOKE': '0', 'FILLER_ID': 'fixture',
-                    'FILLER_GRANTS_DIR': str(grants), 'FILLER_DEADLINE': str(time.time() + 1000)}), \
+                    'FILLER_GRANTS_DIR': str(grants), 'FILLER_DEADLINE': str(time.time() + 10000)}), \
                  patch('bfcl_fleet_run.subprocess.Popen', return_value=process), \
                  patch('bfcl_fleet_run.build_opener', return_value=opener), \
                  patch('bfcl_fleet_run.LocalNativeTransport'), \

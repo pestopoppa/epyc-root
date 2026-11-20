@@ -120,6 +120,31 @@ class ResidencyControls(unittest.TestCase):
         with self.assertRaises((ValueError, FileNotFoundError)):
             self.transport(pid=os.getpid())
 
+    def test_request_guard_refuses_after_residency_before_http(self):
+        from unittest.mock import Mock
+        guard = Mock(side_effect=TimeoutError('no request window'))
+        transport = self.transport(request_guard=guard)
+        with patch.object(transport, 'probe') as proof, patch.object(transport.opener, 'open') as http:
+            def refuse(payload):
+                proof.assert_called_once()
+                raise TimeoutError('no request window')
+            guard.side_effect = refuse
+            with self.assertRaises(TimeoutError):
+                transport({'model': 'fixture', 'max_tokens': 4096})
+            guard.assert_called_once()
+            http.assert_not_called()
+
+    def test_transport_timeout_propagates_once_without_retry(self):
+        from unittest.mock import Mock
+        guard = Mock()
+        transport = self.transport(timeout=8312, request_guard=guard)
+        with patch.object(transport.opener, 'open', side_effect=TimeoutError('slow fixture')) as http:
+            with self.assertRaises(TimeoutError):
+                transport({'model': 'fixture', 'max_tokens': 4096})
+            guard.assert_called_once()
+            http.assert_called_once()
+            self.assertEqual(http.call_args.kwargs['timeout'], 8312)
+
     def test_manifest_tamper_and_binary_content_refuse(self):
         self.build.write_text('{}')
         with self.assertRaisesRegex(ValueError, 'manifest digest'):

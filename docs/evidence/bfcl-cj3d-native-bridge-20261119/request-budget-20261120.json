@@ -1,0 +1,66 @@
+{
+  "box": "CJ-3d-BUDGET",
+  "result": "PASS: prospective capture request budget repair; no model inference",
+  "regression": {
+    "command": [
+      "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "test_bfcl_fleet_run",
+      "test_bfcl_residency",
+      "test_bfcl_capture_run",
+      "test_bfcl_native",
+      "test_bfcl_sample",
+      "test_bfcl_sample_capture",
+      "test_openai_tool_calls",
+      "-q"
+    ],
+    "rc": 0,
+    "elapsed_s": 11.317,
+    "tests": 79,
+    "status": "PASS"
+  },
+  "bindings": {
+    "proposed/cj567/bfcl_fleet_run.py": "18b2a610c6339a27a76870dddb1d01ad12dbee958237ad4acee47c4fe253ed33",
+    "proposed/cj567/bfcl_residency.py": "81a4c92158c95b1fc366121eac81901e3de80bcbe08ac45de811f6672c98373f",
+    "proposed/cj567/test_bfcl_fleet_run.py": "83d6f60de009a66f8db0bb4ccec59263ebd6de17164cb847de37106b35c2e5e7",
+    "proposed/cj567/test_bfcl_residency.py": "49bfd7b7dbe2fbefc22a42a8b19bfebf3d4a31d467dc6847be14b89649e53c9c",
+    "proposed/cj567/test_bfcl_sample_capture.py": "42448ab4e12589736d0288046d62dc7875eacb989d4fb41e2e8b9c29e04c35b8",
+    "docs/design/bfcl-local-residency.md": "5a00050891421b3e53b6828f8837546267d0f9f3a73358003e434eafeb70d49d",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-budget-20261120/regression.txt": "c735bc90b4b08f91e55e8621c01ffabaee888c55e3a55b1a56899ba16e639089",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-budget-20261120/regression.json": "56096ecf1f3ff7784092ef0bdb8df31aad731d4a552af21aa0cffe8d9243765e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run/server.log": "cee9e040ccf5a6bb1cb7466734327652fe98ba726666256b3474611b42463ddc"
+  },
+  "budget": {
+    "full_max_tokens": 4096,
+    "full_timeout_s": 8312,
+    "smoke_max_tokens": 24,
+    "smoke_timeout_s": 300,
+    "cleanup_s": 30,
+    "worker_deadline_before_grant_s": 20,
+    "planning_tokens_per_second": 0.5,
+    "planning_prefill_s": 120,
+    "assumption": "Engineering allowance, not a measured throughput guarantee."
+  },
+  "controls": [
+    "Strict deadline and cleanup boundary; nonfinite deadline refusal",
+    "Slow non-streaming response beyond old 300-second limit through actual transport call with fake HTTP and clock",
+    "Pre-exposure admission and late guard share HTTP timeout and immutable attempt identity",
+    "STOP, grant disappearance/change and between-turn deadline block future requests",
+    "Oversized or malformed token allowance refuses before HTTP",
+    "Transport timeout propagates after one HTTP call; worker aborts without retry and reaps only captured child",
+    "Original checker, custody, supported-frame and adapter regressions"
+  ],
+  "historical_result": "docs/evidence/bfcl-cj3d-native-bridge-20261119/multi-turn-verdict-20261120.json",
+  "limitations": [
+    "No existing sealed worker, READY manifest, running row, cohort, kernel or server changed.",
+    "Aborted multi-turn first-case exposure remains UNKNOWN; no retry/redraw or quality score.",
+    "Request guard checks before HTTP; no new mid-request STOP cancellation.",
+    "Future live exposure needs a separately declared protocol and publisher smoke."
+  ],
+  "analysis_tools": {
+    "gitnexus": "Lane has no index; status and upstream impact unavailable. Direct caller inspection scoped changes to proposed worker and native transport plus focused tests.",
+    "bus": "Boundary drain refused the dispatcher slug because it is not a roster ID; no other session identity used."
+  }
+}

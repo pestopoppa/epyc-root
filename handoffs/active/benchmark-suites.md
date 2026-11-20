@@ -387,6 +387,15 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       CPUs 116–119 at 04:55Z. [Input and native-smoke content bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-republication-20261120.json).
       No manual READY edit, full cohort run or quality verdict; disappearance cause
       unestablished. The fourteen-case diagnostic is again published for granted work.
+  - [x] **CJ-3d-BUDGET — Repair prospective native BFCL request admission and transport budgeting with offline refusal controls.** ✅ 2026-11-20 [no-belief: engineering repair and model-free offline controls only]
+      **79 offline regression controls PASS** (10.376s unittest / 11.317s process).
+      Full capture now shares an 8,312-second HTTP/admission allowance plus
+      30 seconds cleanup; smoke retains 24 tokens / 300 seconds. A late transport
+      guard refuses lost grants, STOP, oversized requests and insufficient time
+      without retry. Attempt and case identities record the budget.
+      [Source hashes, original log binding and validation](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/request-budget-20261120.json).
+      Existing sealed rows and the aborted exposure are unchanged; no quality
+      score or fresh inference. Parent CJ-3d remains open.
   - [x] **CJ-3d-SUPPORTED-CAPTURE — Integrate frozen supported-frame IDs with source-bound native capture and pass original-checker/refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
       2026-11-20: offline materialization reconstructs the exact frozen selection
       from original V3 git blobs; a separate supported-frame source lock preserves

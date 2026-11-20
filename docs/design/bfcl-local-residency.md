@@ -79,6 +79,36 @@ They cover UNKNOWN/coverage semantics, malformed selections, owned-child cleanup
 and escalation, and smoke isolation from the cohort, official scorer and prior smoke attempts. Actual
 model inference is qualified exclusively through `publish_row.py`.
 
+Prospective request budgeting (2026-11-20): the original multi-turn row
+`codex-bfcl-cj3d-27b-v1-20261120` aborted on a 300-second HTTP timeout during
+its first case. Its final server-log sample still showed 312 decoded tokens at
+about 1.08 tokens/second. This supports a budget mismatch, not a quality verdict
+or a guarantee that the response would eventually complete. The aborted attempt
+remains closed; existing published workers and cohorts are unchanged.
+
+Future workers use `CaptureBudget` in `bfcl_fleet_run.py`: for 4,096 tokens,
+120 seconds for prefill plus a planning floor of 0.5 tokens/second gives
+8,312 seconds. The floor is an engineering assumption, not a measured throughput
+bound. Smoke retains its 24-token/300-second limit. Both modes require the entire
+request budget plus 30 seconds for cleanup to fit strictly before the worker's
+deadline, which already precedes the grant deadline by 20 seconds. The same
+budget governs admission before every exposure and the HTTP socket timeout.
+`LocalNativeTransport.request_guard` rechecks the request token bound, STOP,
+signal/grant state and remaining window after residency sampling and request
+serialization, immediately before HTTP. A late refusal after journaling exposure
+aborts that attempt; it never redraws. An already in-flight request retains its
+socket timeout and the external grant's enforcement; this change does not add
+mid-request STOP cancellation.
+
+The fixed budget is recorded in the attempt and per-case capture identity.
+Insufficient time before exposure leaves the remaining cases unexposed; transport
+failure remains an aborted capture without a quality score or retry. Offline
+controls exercise strict deadline boundaries, a simulated slow response through
+the actual transport call path, STOP/grant loss, late admission refusal, timeout
+propagation without retry, and worker/identity integration. No cohort generation
+is needed for these controls. A fresh exposure requires a separately declared
+protocol; changing this source does not authorize repeating the aborted cohort.
+
 Single-turn capture uses the same `capture_case` entry point for the fourteen
 pinned Python, Java and JavaScript cases. Their function schemas are embedded in
 the pinned case, so no multi-turn catalog is loaded. The lock binds the original

@@ -43,7 +43,7 @@ class LocalNativeTransport:
     split GGUF and GPU servers need additional instruments before use.
     """
     def __init__(self, pid, port, identity, build_manifest, runtime_manifest,
-                 timeout=300, proc_root='/proc'):
+                 timeout=300, proc_root='/proc', request_guard=None):
         self.pid, self.port = int(pid), int(port)
         if self.pid <= 0 or not 0 < self.port < 65536:
             raise ValueError('invalid PID or port')
@@ -61,6 +61,7 @@ class LocalNativeTransport:
             if not isinstance(sha, str) or not re.fullmatch('[a-f0-9]{64}', sha):
                 raise ValueError('invalid content digest')
         self.timeout = timeout
+        self.request_guard = request_guard
         self.opener = build_opener(ProxyHandler({}), NoRedirect())
         argv = self.runtime['argv']
         required = {'--model': self.model['path'], '--alias': identity['model'],
@@ -142,6 +143,8 @@ class LocalNativeTransport:
         endpoint = f'http://127.0.0.1:{self.port}/v1/chat/completions'
         request = Request(endpoint, data=json.dumps(payload, allow_nan=False).encode(),
                           headers={'Content-Type': 'application/json'})
+        if self.request_guard is not None:
+            self.request_guard(payload)  # recheck after residency/serialization, before HTTP
         with self.opener.open(request, timeout=self.timeout) as response:
             result = json.load(response)
         self.probe()

@@ -1,6 +1,7 @@
 """Dedicated rowflow CPU capture. Offline-prepared weights; no retries or redraws."""
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import signal
@@ -14,6 +15,33 @@ from urllib.request import build_opener, ProxyHandler
 from bfcl_capture_run import Journal, capture_case
 from bfcl_native import CATEGORIES, OfficialV3
 from bfcl_residency import LocalNativeTransport, fingerprint
+
+
+class CaptureBudget:
+    """Prospective planning allowance, shared by admission and HTTP; no retry."""
+
+    def __init__(self, smoke, deadline, stopped, clock=None):
+        if not math.isfinite(deadline):
+            raise ValueError('capture deadline must be finite')
+        self.deadline, self.stopped = deadline, stopped
+        self.clock = clock or time.time
+        self.max_tokens = 24 if smoke else 4096
+        # Engineering assumption, not a measured lower bound on throughput.
+        self.timeout = 300 if smoke else 120 + math.ceil(self.max_tokens / 0.5)
+        self.metadata = {'max_tokens': self.max_tokens, 'timeout_s': self.timeout,
+                         'cleanup_s': 30, 'planning_tokens_per_second': None if smoke else 0.5,
+                         'planning_prefill_s': None if smoke else 120}
+
+    def can_start(self):
+        return (not self.stopped() and
+                self.clock() + self.timeout + self.metadata['cleanup_s'] < self.deadline)
+
+    def guard(self, payload):
+        tokens = payload.get('max_tokens')
+        if type(tokens) is not int or not 0 < tokens <= self.max_tokens:
+            raise ValueError('request exceeds declared token budget')
+        if not self.can_start():
+            raise TimeoutError('full request and cleanup budget unavailable; do not retry')
 
 
 def sha(path):
@@ -92,6 +120,7 @@ def run(directory):
         return (ending.is_set() or stopfile.exists() or time.time() >= deadline or
                 (not smoke and (not grant_path.exists() or grant_path.read_bytes() != grant)))
 
+    budget = CaptureBudget(smoke, deadline, stop)
     # Bind failure/race refuses capture; no endpoint reuse or request retry.
     with socket.socket() as candidate:
         candidate.bind(('127.0.0.1', 0))
@@ -106,7 +135,8 @@ def run(directory):
     identity = {'model': config['model'], 'model_sha256': prepared['sha256'],
                 'server_binary_sha256': config['server_binary_sha256'],
                 'build_manifest_sha256': sha(directory / 'BUILD.json'),
-                'runtime_manifest_sha256': sha(out / 'runtime.json')}
+                'runtime_manifest_sha256': sha(out / 'runtime.json'),
+                'request_budget': budget.metadata}
     write_new(out / 'attempt.json', {'identity': identity, 'smoke': smoke,
         'grant_sha256': hashlib.sha256(grant).hexdigest() if grant else None,
         'row': os.environ['FILLER_ID'], 'affinity': sorted(os.sched_getaffinity(0)),
@@ -132,8 +162,11 @@ def run(directory):
             if not ready:
                 raise RuntimeError('owned server not ready within grant')
             transport = LocalNativeTransport(process.pid, port, identity,
-                directory / 'BUILD.json', out / 'runtime.json', timeout=300)
+                directory / 'BUILD.json', out / 'runtime.json', timeout=budget.timeout,
+                request_guard=budget.guard)
             if smoke:
+                if not budget.can_start():
+                    raise TimeoutError('smoke request and cleanup budget unavailable')
                 # Synthetic engineering input, no corpus/gold/checker exposure.
                 journal = Journal(out / 'smoke.jsonl')
                 try:
@@ -168,11 +201,11 @@ def run(directory):
                     rows = select_rows(json.loads((directory / 'SELECTION.json').read_text()),
                                        config.get('cohort', 'multi-turn'))
                 for row in rows:
-                    if stop() or time.time() + 330 >= deadline:
+                    if not budget.can_start():
                         break
                     verdict = capture_case(bridge, row, config['model'], identity,
                         config['catalog'], out / (row['case']['id'] + '.jsonl'), transport,
-                        lambda: stop() or time.time() + 330 >= deadline,
+                        lambda: not budget.can_start(),
                         **({'sample_binding': sample_binding} if sample_binding is not None else {}))
                     verdicts.append(verdict)
                     write_new(out / (row['case']['id'] + '.result.json'), verdict)
