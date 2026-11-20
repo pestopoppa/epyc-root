@@ -30,3 +30,21 @@
 ## Deferred (named blockers)
 - CH-H15-ALIAS 27B np=2 A/B and presence gate: needs the next composite build slot.
 - AK-DTREE-2e-REOPEN: waits on DTREE-0 / DTREE-0-Q8MF-GATE verdicts.
+
+## Wrap-up 6 (since 754a417ae)
+- Tree-mask intake intake-2747..2751 (`1990329a5`, `f2b734c6c`; research seeds `3744ee460`). Compounded-gain seed review (research `0d86d13f9`); new memory rule on the compounded-gain threshold.
+- AK-DTREE verify-cost program (`a7bf68d9c`, `9df7c2138`, `7abbd233a`, `7cb92ffd1`, `ecb837198`, `c58e570be`, `657455384`, `2777185ea`, `8f3d987d9`):
+  | Item | Verdict |
+  |---|---|
+  | wvsk16 witness | NO_EFFECT (2.0 ms/row) |
+  | Q8MF v1 | DROP |
+  | Q8MF v2 (5ccc76716) | NO_GAIN by rule; W16 -11%; slope 0.42-0.46 ms/row, intercept is the blocker (V2 GEMMs ~0.7 TB/s) |
+  | ATTN-SHARE | OPEN (gv_fattn served; FA 2-9% of marginal cost) |
+  | ATTN-ROUTE v1 (888470ff3) | LOSS (+1.2-2.4%) |
+  | A3B MMVF=8 | KEEP_CANDIDATE (-18 to -21%, 1.28 ms/row) |
+  In flight under a new driver: Q8MF-V3, ATTN-ROUTE-V2, GDN-ROWS.
+- DTREE-ATTN-NP gated on bb's shared-prefix measurement (~0); bb box PREFIX-GROUP-DISPATCH (`f6eeaaba7`).
+- PFXC prefix cache: boxes `c00cb899a`, `0e0e76b79`, `a9896834a`, `42eeb0b81`; fork llama.cpp-experimental-pfxc-20261120 (`62e955b9b`, `05c7c4ebf`, `947d1007d`). Probe r2: hit rate +3.0 pt, prefill 0.914x. Pending: r8 real-trace replay.
+- Seed AK-H-MTP-DEGEN-1 (research `bfba8134e`). tool_call_parse_error contract (bb, orchestrator `1a10541b`); autokernel role file edit `5511efe5c`.
+- Filler ak-q38fn-draftfa-window-cpu stopped for the build window (rc 75).
+- Wrap-up ticks: DTREE-0-Q8MF-V2 and DTREE-ATTN-ROUTE build boxes (both landed; verdicts on their gate boxes).
