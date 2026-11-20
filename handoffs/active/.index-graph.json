@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T09:25:48Z",
+  "generated_at": "2026-11-20T09:33:14Z",
   "nodes": [
     {
       "age_days": 10,
@@ -3109,7 +3109,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3120,8 +3120,8 @@
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
-      "last_advanced": "2026-11-19",
-      "next_action": "Ship PLACEMENT-DECLARE-ONLY-COST-BASED, then KEEPER-RESIDENT-TENANT-ACCOUNTING and AUTONOMY-DIGEST-REVIEW",
+      "last_advanced": "2026-11-20",
+      "next_action": "Build TASKFLOW-STAGE1 beside the old dispatcher; then HS-STAGE-C, AK-FIXES-F2-F9, AK-HOOKS-C1-C6",
       "open": 31,
       "priority": 0.0394,
       "priority_basis": {
