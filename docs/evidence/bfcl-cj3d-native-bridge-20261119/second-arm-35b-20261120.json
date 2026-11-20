@@ -1,0 +1,35 @@
+{
+  "box": "CJ-3e",
+  "row": "codex-bfcl-cj3e-single-35b-v1-20261120",
+  "scope": "Second arm, identical fourteen supported single-turn Python/Java/JavaScript native bfcl_v3 coverage IDs; no representative score.",
+  "reference_arm": "codex-bfcl-cj3d-single-27b-v1-20261120",
+  "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "prepared_model_stat_match": true,
+  "selection_matches_reference": true,
+  "bindings": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/MODEL.json": "7749241093e353c98e16eaa0219cae44a3e9d02f88dbf6503ec1180c419b7502",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/BUILD.json": "5a62c90959db4779b3d714a862a38642ab6ef9eb82c43a5149f7126adb0ded3e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/CONFIG.json": "8d50ec0b3b605d72d93b86e75c21d09b922a9409006e72aa3f0cb75034b12b22",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/SELECTION.json": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/INPUTS.sha256": "9cf7c83a3e98223fe3acbfd8d98c8a8f5391b9a59b9935533eb0de65476ca75b",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/launch.sh": "9b0cf04271f1d91153a55a51ec46a8c1f5a902cf5cb44fdaf3f0227473da1b90",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/spec.json": "1419203630be74f559e4088487220d882ecc0363369e461d302d66e6a85e1a06"
+  },
+  "limitations": [
+    "Coverage diagnostic only; fleet verdict pending.",
+    "No cohort exposure in synthetic publisher smoke.",
+    "CJ-3e discrimination remains open; no representative score, baseline or adoption conclusion."
+  ],
+  "publication": {
+    "result": "SMOKE PASS; PUBLISHED",
+    "returncode": 0,
+    "regions": "116-119",
+    "passed_at": "2026-11-20T05:01:53Z",
+    "completed_synthetic_requests": 1,
+    "result_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run/RESULT.json",
+    "pass_record": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3e-single-35b-v1-20261120/PASS.json",
+      "sha256": "ef8b487db290c5c41abd3ca7c5c9145fe4aea23822dfc48a63ac5443d1681a7f"
+    }
+  }
+}

@@ -444,6 +444,18 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       set: the published BFCL evidence is **unrankable today** (122B reports `bfcl_v4` 0.722,
       Next-80B reports `bfcl_v3` 0.703 — two keys, no comparison). A single local run under ONE key
       across ≥2 models resolves that. Baseline to beat: `tool_compliance_local`, 70.4–85.2%.
+      Native second-arm diagnostic contract (2026-11-20): Qwen3.6-35B-A3B-MTP-Q8_0
+      (`c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131`),
+      production v10 source `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, CPU native
+      `bfcl_v3`; identical fourteen supported Python/Java/JavaScript single-turn coverage
+      IDs as `codex-bfcl-cj3d-single-27b-v1-20261120`. Higher known passed count is
+      better within these IDs only; no representative score, baseline or adoption claim.
+      Stop at fourteen cases, first UNKNOWN, transport/custody failure, STOP or deadline;
+      no retries or redraws. Missing terminal or any UNKNOWN forbids a quality conclusion.
+      Publish-time smoke uses one synthetic noncohort request with 24-token bound.
+      Row `codex-bfcl-cj3e-single-35b-v1-20261120` published: **smoke PASS**,
+      rc=0 on four CPUs (116–119), one synthetic request; no cohort score.
+      [Publication bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/second-arm-35b-20261120.json).
 
 ### CJ-4 — tau-bench (multi-step agentic)
 
