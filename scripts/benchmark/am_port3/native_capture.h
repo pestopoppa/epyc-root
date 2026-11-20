@@ -4,6 +4,7 @@
 #include "ggml-backend.h"
 
 #include <cmath>
+#include <climits>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -48,16 +49,50 @@ inline void dump_tensor(const ggml_tensor * t, const std::filesystem::path & pat
     if (!out) throw std::runtime_error("capture tensor write failed");
 }
 
+// Parse only the pinned graph's post-RoPE name and, for scheduler copies,
+// the exact layout-operation suffixes emitted by ggml. Never accept a prefix
+// match on a projection (Qcur_full, Qcur_normed) or an arbitrary renamed node.
+inline int query_name_layer(const std::string & name, bool layout_suffixes) {
+    const std::string prefix = "Qcur-";
+    if (name.rfind(prefix, 0) != 0) return -1;
+    size_t pos = prefix.size();
+    const auto first_digit = pos;
+    int layer = 0;
+    while (pos < name.size() && name[pos] >= '0' && name[pos] <= '9') {
+        const int digit = name[pos++] - '0';
+        if (layer > (INT_MAX - digit)/10) return -1;
+        layer = 10*layer + digit;
+    }
+    if (pos == first_digit) return -1;
+    while (layout_suffixes && pos < name.size()) {
+        bool matched = false;
+        for (const char * suffix : {" (view)", " (reshaped)", " (permuted)",
+                                   " (transposed)", " (cont)", " (copy)"}) {
+            const size_t length = std::strlen(suffix);
+            if (name.compare(pos, length, suffix) == 0) {
+                pos += length; matched = true; break;
+            }
+        }
+        if (!matched) return -1;
+    }
+    return pos == name.size() ? layer : -1;
+}
+
 inline int query_layer(const ggml_tensor * q) {
-    // Qwen35 names the post-RoPE tensor Qcur-<layer>. Walk only unary
-    // reshape/permute/view/cast ancestors, never back into a projection.
+    // Walk only layout/cast ancestors, never back into a projection.
     for (int depth = 0; q && depth < 12; ++depth) {
         const std::string name = ggml_get_name(q);
-        const std::string prefix = "Qcur-";
-        if (name.rfind(prefix, 0) == 0) {
-            const auto suffix = name.substr(prefix.size());
-            if (!suffix.empty() && suffix.find_first_not_of("0123456789") == std::string::npos) {
-                return std::stoi(suffix);
+        const int layer = query_name_layer(name, false);
+        if (layer >= 0) return layer;
+        // ggml_backend_sched_split_graph replaces cross-backend inputs with
+        // leaf copies named "<backend>#<original-name>#<copy-index>". Per-head
+        // masks can move FA to CPU, losing Q's op/src ancestry at this boundary.
+        if (q->op == GGML_OP_NONE && !q->src[0] && !q->view_src) {
+            const auto first = name.find('#'), last = name.rfind('#');
+            if (first != std::string::npos && first > 0 && last > first &&
+                name.find('#', first + 1) == last && last + 1 < name.size() &&
+                name.find_first_not_of("0123456789", last + 1) == std::string::npos) {
+                return query_name_layer(name.substr(first + 1, last - first - 1), true);
             }
         }
         if (q->op != GGML_OP_VIEW && q->op != GGML_OP_RESHAPE &&
@@ -181,7 +216,9 @@ inline bool callback(ggml_tensor * t, bool ask, void * userdata) noexcept {
         if (t->op != GGML_OP_FLASH_ATTN_EXT) return !ask;
         const int layer = query_layer(t->src[0]);
         if (!s.expected.count(layer)) {
-            throw std::runtime_error("unidentified or unexpected flash-attention layer");
+            throw std::runtime_error("unidentified or unexpected flash-attention layer: Q=\"" +
+                                     std::string(t->src[0] ? ggml_get_name(t->src[0]) : "<null>") + "\", resolved=" +
+                                     std::to_string(layer));
         }
         if (ask) return true;
         s.capture(t, layer);

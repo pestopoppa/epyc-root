@@ -101,7 +101,12 @@ the actual global-attention layer set, use FA, bound the final batch to one
 ubatch, and keep callback state alive until context evaluation finishes. The
 callback starts disabled, does not mutate tensors or add graph nodes, and records
 the flash node's actual scale. It identifies Qwen35 global layers through the
-post-RoPE `Qcur-<layer>` name and its unary view ancestors. Unknown layers,
+post-RoPE `Qcur-<layer>` name and its unary view ancestors. Cross-backend
+scheduler copies lose that ancestry: for leaf copies only, it accepts the pinned
+`<backend>#Qcur-<layer><layout suffixes>#<copy index>` spelling, with exact ggml
+view/reshape/permute/transpose/cont/copy suffixes and bounded numeric layer IDs.
+Projection names, arbitrary suffixes and malformed/truncated names refuse.
+Unknown layers,
 multiple streams, sinks, ALiBi/softcap, duplicate layer visits, missing layers,
 unsupported tensor layout and budget overruns refuse completion. DCA and other
 architectures are not silently treated as captured: missing layers refuse at
@@ -142,8 +147,7 @@ OPENBLAS_NUM_THREADS=1 /mnt/raid0/llm/epyc-inference-research/.venv/bin/python \
 
 The test's output parent must exist and its child names must be unused. It checks
 the actual scheduler callback, quantized row reads, output parity, missing and
-unexpected layers, duplicate ubatches, and byte-budget refusal. Python tests now
-total 11, including reader failure and GQA/output-layout checks. The native test
+unexpected layers, duplicate ubatches, and byte-budget refusal. Original Python tests totalled 11, including reader failure and GQA/output-layout checks. The native test
 used the AM-PORT-2 BUILD.json source pin above and verified its CPU-library digest
 `1cdfde8202836f92cf0ed115c37a1540cf0dc880154b8ee6a1f50d37d75b48ec`
 before linking. Original evidence remains in
@@ -151,6 +155,24 @@ before linking. Original evidence remains in
 source trees are vendored here. The driver/converter below implement the capture,
 original-position/query-ID conversion, shared selection and fitted loading paths.
 Executing the fully linked patched build on a model remains a row task.
+
+The native test also accepts `--head-mask`, `--scheduler-copy` and
+`--single-query` (combinable). The copy fixture reproduces the pinned scheduler's
+layout-preserving leaf duplication/name format, then runs the real CPU scheduler
+and capture callback. It reproduces the original layer-identification refusal
+before the fix. Five direct/copied and shared/per-head cases, including singleton
+queries, pass with capture enabled/disabled parity; matching direct/copied dumps
+are byte-identical. This is model-free coverage, not a real two-device scheduler
+or HIP model run.
+
+The pinned HIP FA selector in `ggml-cuda/fattn.cu` returns unsupported when
+`mask->ne[2] != 1`; the fitted carrier expands this axis to query heads. CPU
+fallback therefore needs the copy identity handling above. Fixing capture does
+not supply GPU support for that mask. Preserve actual per-phase backend placement
+when interpreting the next row; model VRAM/KFD residency alone does not establish
+that fitted FA ran on GPU. The failed row remains inconclusive for compact
+quality and 32K stability. Updated capture headers require rebuilt driver/tooling
+receipts before publishing a replacement row.
 
 ## Native beta mask and C2 loading primitives
 
