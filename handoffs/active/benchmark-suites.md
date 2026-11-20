@@ -334,6 +334,20 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       [Source finding](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/sql-boundary.json);
       24 existing controls PASS, including SQL refusal. Parent remains open; advance the
       official multi-turn execution path next. No SQL or fleet score claimed.
+  - [x] **CJ-3d-CUSTODY — Integrate released-schema bindings and durable native capture with content identities, official replay and refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
+      Released catalog acquired at HF `61fc0608cfd831fcfbbaa676ebdfef0ed963eeda`;
+      all five selected input/gold source pairs match byte-for-byte. The new
+      `proposed/cj567/bfcl_capture_run.py` checks selected content/schema hashes,
+      records launcher model/build/runtime assertions and code/checker identities,
+      and fsyncs exclusive hash-chained events before exposure and interpretation.
+      No retry/resume; transport/disk failures abort and malformed captures stay UNKNOWN.
+      **40 controls PASS** (6 custody + 22 integration + 12 adapter).
+      Five filesystem-only cases capture and replay successfully with released schemas;
+      five Twitter cases refuse before transport because the catalog advertises
+      `posting_get_login_status`, absent from the pinned official simulator.
+      [Controls, source blobs and content bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/catalog-custody-20261120.json).
+      Parent stays open: align official catalog/simulator versions, then implement
+      fleet launch-time server residency proofs and publish capture. No fleet score.
   - [x] **CJ-3d-CAPTURE — Implement native multi-turn scheduling, official simulator feedback, and exposure/response recording with positive and refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
       2026-11-20: `capture_multi_turn` accepts an explicit schema catalog, schedules
       held-out functions with the official additional-function prompt, executes

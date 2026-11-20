@@ -1,0 +1,86 @@
+{
+  "repository": "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
+  "revision": "61fc0608cfd831fcfbbaa676ebdfef0ed963eeda",
+  "files": {
+    "multi_turn_func_doc/gorilla_file_system.json": {
+      "sha256": "26c01bed25bf7affbc8d281cc8124ccdc220a64c374ac4a7a9181dea0a0468ee"
+    },
+    "multi_turn_func_doc/posting_api.json": {
+      "sha256": "87f9fc404a06e4107d7c366f1399c596440e84c16cb119faf374b2f532d86e8b"
+    }
+  },
+  "corpus": {
+    "BFCL_v3_multi_turn_base.json": {
+      "sha256": "edaea7666e0089062c30f3ac511914d5c27414dbe9b8214488191980d873b145"
+    },
+    "possible_answer/BFCL_v3_multi_turn_base.json": {
+      "sha256": "d03b360939e3ca7fe537016349f84868971340393c3d43c1dd9527b8e43102f2"
+    },
+    "BFCL_v3_multi_turn_composite.json": {
+      "sha256": "1fda0310e176317af7184132ff5fb5daa8ee7984b1cfbf69ce4bfb58c3151ae1"
+    },
+    "possible_answer/BFCL_v3_multi_turn_composite.json": {
+      "sha256": "c832f27baaa589b15e1612c7f48d6de169b9cee4cce7ec6c32e78f20c4be6f25"
+    },
+    "BFCL_v3_multi_turn_long_context.json": {
+      "sha256": "a7c2b44cfe14e243e66acbb0737970f1085460fed5793bfa0137fb4782ff8fc4"
+    },
+    "possible_answer/BFCL_v3_multi_turn_long_context.json": {
+      "sha256": "07347ad66e4b304550b5f3b34e5b07864c0f1d738f8b59560fbd3c372255c504"
+    },
+    "BFCL_v3_multi_turn_miss_func.json": {
+      "sha256": "e6cfbd225ac1182c82bfcd0a83410babd410a8cf2050942894017829e9a57e23"
+    },
+    "possible_answer/BFCL_v3_multi_turn_miss_func.json": {
+      "sha256": "9f5a0ebb3627062be8ecfc0ffa375b4ca3cf15d9a899f3bdedea9588aa5b80eb"
+    },
+    "BFCL_v3_multi_turn_miss_param.json": {
+      "sha256": "21a850b8bb0b41aba63e0bbcd9b4af6c7997144180eadd4bcdf4bdfd98077c1a"
+    },
+    "possible_answer/BFCL_v3_multi_turn_miss_param.json": {
+      "sha256": "494068e24f5e821818040662efcbb88b15d5e34b98f5d08c62806f1463523dad"
+    }
+  },
+  "selection": {
+    "multi_turn_base_0": {
+      "case_sha256": "650a045c8399ac5a4d8584ef0d741f1360ff4633e634d0bf35cc10401b08cc89",
+      "gold_sha256": "0b12662a8b72cda787f79e865305be97af400c0745a2988331f9ac571a0e2da3"
+    },
+    "multi_turn_base_1": {
+      "case_sha256": "4338cf1ba78e5d5ffca640ab929b41c80af74cea9897a062050179c2d56d4b88",
+      "gold_sha256": "0f8d143d8ae2cb533292be8746bbc7e2d1b80966f4e7d0cd91491a507f802905"
+    },
+    "multi_turn_composite_0": {
+      "case_sha256": "ac93e06e4eb98bc3a87f9654049f5d1cf5fe7cc1b880b156310e60e8533533dc",
+      "gold_sha256": "7f1d6a2625a1f794f91adf446fdbb80382d2a9028f7834bc6e3d83d27ed0e75a"
+    },
+    "multi_turn_composite_1": {
+      "case_sha256": "d8a2300c5f48b3dc0005bc9e7e04c3ee122c55431aa47731e50e224a2f29ff28",
+      "gold_sha256": "8fc14828e09282507c566e9f75c836f1d422fdc803112e39bbf560f6262d04eb"
+    },
+    "multi_turn_long_context_0": {
+      "case_sha256": "6ad0567f54bc673fde02159382c51add469513096ee22b8f83d77e95ff858660",
+      "gold_sha256": "b910bc2f400b00e7d70d7b01bbc6547033351f7126393eef11b9943be69f72f1"
+    },
+    "multi_turn_long_context_1": {
+      "case_sha256": "7c3ee029c4a37fd5a662c93a6bae256ac98f5d23ca0a2cf29a234437b363f102",
+      "gold_sha256": "223bcf4d465406fd574e8eb02c539efb647337c9546ff6ae05e1988ed12af6eb"
+    },
+    "multi_turn_miss_func_0": {
+      "case_sha256": "69129a8efd91664fd63ca4c911ddb01d71b464e39e8e3a1e3e6e268135547f25",
+      "gold_sha256": "9d9b5c59df857ffd0980d42dba814381200902d0fd60e2b2f863cf63f5543e78"
+    },
+    "multi_turn_miss_func_1": {
+      "case_sha256": "41dcc8e78dad8caaba6dd0c0736671636adae3c3405032fc37edc11a5fb3bde1",
+      "gold_sha256": "d1fa1919e272006212daee38625c990c28e7d08f7b105b9805db58d0396c60ef"
+    },
+    "multi_turn_miss_param_0": {
+      "case_sha256": "883a79ea858907c78ae84ce54ab8022d000d453d02a4e04363148ffa1cf8a400",
+      "gold_sha256": "18e67321c99b1b7c8182c005421aefb000e582f01c75ddfdba788414d09205fb"
+    },
+    "multi_turn_miss_param_1": {
+      "case_sha256": "8992219cc7d700cf95978cff8e00009f225745c0810aaf8512bd2eeba739b405",
+      "gold_sha256": "5e8db5cf22fa774373082e63d48a7a5a6cd825663631b4448f60cfad4a3b4c4a"
+    }
+  }
+}

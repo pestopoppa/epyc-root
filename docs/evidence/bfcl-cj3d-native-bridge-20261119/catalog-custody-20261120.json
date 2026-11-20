@@ -1,0 +1,58 @@
+{
+  "box": "CJ-3d",
+  "scope": "Model-free released-schema and durable capture controls; no fleet score or server identity attestation",
+  "upstream_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+  "upstream_blobs": {
+    "berkeley-function-call-leaderboard/bfcl/eval_checker/multi_turn_eval/func_source_code/posting_api.py": "e8a64e6ee76702a948435ffed6345f9cd9468322"
+  },
+  "catalog": {
+    "repository": "gorilla-llm/Berkeley-Function-Calling-Leaderboard",
+    "revision": "61fc0608cfd831fcfbbaa676ebdfef0ed963eeda",
+    "source_url": "https://huggingface.co/datasets/gorilla-llm/Berkeley-Function-Calling-Leaderboard/tree/61fc0608cfd831fcfbbaa676ebdfef0ed963eeda/multi_turn_func_doc",
+    "bindings": "proposed/cj567/bfcl-catalog-lock.json",
+    "acquisition": "Two released schema files downloaded to external scratch. All five multi-turn input and all five gold source files downloaded from the pinned revision and SHA-256 matched against the existing selection manifest; all ten selected case/gold records also matched exactly. No source copies are filed in evidence."
+  },
+  "software_contract": {
+    "custody": "Exclusive output; directory fsync and per-event fsync; sequence/hash chain and UTC event timestamps. Identity precedes exposure, exposure precedes transport, raw response precedes parse/execution, final official replay verdict appended separately. Abort on transport or recorder errors; never retry or reuse an existing output.",
+    "identities": "Canonical selected case/gold hashes and released catalog digests are checked before exposure. Header binds upstream commit, bridge/runner/parser digests, catalog/corpus, decoding, and launcher-supplied model/server binary/build/runtime manifest digests.",
+    "boundary": "Launcher identities are assertions, not independently verified server residency. A fleet launcher must establish actual running server/model provenance externally and supply verified content manifests; this turn does not publish such a row.",
+    "grading": "Unmodified official replay only; malformed/interrupted captures remain UNKNOWN. Official response/order checks disabled and irrelevance helper blind spot retained."
+  },
+  "schema_simulator_mismatch": {
+    "released_method": "posting_get_login_status",
+    "official_source": "Pinned TwitterAPI declares no such method. Schema bytes are not filtered, renamed, invented or repaired.",
+    "disposition": "All five selected TwitterAPI cases refuse before transport. Five filesystem-only cases can capture and replay using the released schemas.",
+    "follow_up": "Align the released catalog and official simulator revisions with regression controls before fleet publication. Missing official support is an implementation/version-alignment task, not a discarded benchmark."
+  },
+  "bindings_sha256": {
+    "proposed/cj567/bfcl_capture_run.py": "8e9801802fe510e928f055b88c53c87f2ad7cbdb5895979d207d07fd96ed3c83",
+    "proposed/cj567/test_bfcl_capture_run.py": "186d197c35f3fdc1607de379ae3976f7bed0f09cea5bbecd12bdac09f95cfae3",
+    "proposed/cj567/bfcl-catalog-lock.json": "0b19a48fee98cb0ada5b4a1bbbfb47c0f0199db6b814c2a6d17921f5dc3cbf00",
+    "proposed/cj567/bfcl_native.py": "26c56cda41f57040edd1f1f79bb478c33868f68ef576b8a2dbadd3245b784cf3",
+    "data/benchmarks/bfcl-v3-cj3d-prep-20261104/sample-manifest.json": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0"
+  },
+  "tests": {
+    "command": "BFCL_CHECKOUT=/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104 BFCL_CATALOG=/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-catalog PYTHONPATH=proposed/cj567 PYTHONWARNINGS=ignore /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python -B -m unittest test_bfcl_capture_run test_bfcl_native test_openai_tool_calls -q",
+    "result": "PASS",
+    "total": 40,
+    "new_custody_tests": 6,
+    "existing_integration": 22,
+    "existing_adapter": 12,
+    "elapsed_s": 35.964,
+    "scripted_released_schema_official_positive_cases": 5,
+    "incompatible_schema_cases_refused_before_exposure": 5,
+    "output_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-catalog/final-tests.txt",
+    "output_sha256": "be8197e3c9285f3b4d808c3066ec365e5c4e4cbc53f76e9b18316552bbb82e90",
+    "controls": [
+      "Selected case/gold tampering, missing content identities and schema digest mismatches refuse before exposure",
+      "Requests fsynced before query; final official verdict persisted in a verified sequence/hash chain",
+      "Existing output refuses redraw after successful capture or transport failure",
+      "Transport failure recorded as abort; malformed/interrupted capture remains UNKNOWN",
+      "Directory/header and exposure fsync failures prevent query; poisoned journal refuses further writes"
+    ]
+  },
+  "analysis_tools": {
+    "gitnexus": "No lane index. Reindex wrapper denied CPU admission by cross-role global-lock guard. Direct call-site inspection found bridge call sites only in its existing tests; new runner adds no changes to existing bridge or grading logic.",
+    "bus": "Boundary drain attempted with handoff-canonical-judge-suite-revamp; rejected because dispatcher slug is not a configured roster ID. No other agent identity used."
+  }
+}
