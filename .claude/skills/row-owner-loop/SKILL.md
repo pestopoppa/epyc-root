@@ -57,6 +57,16 @@ names the row id and commit, and carries `[belief: clm_<id>]`, `[belief: cc]` or
 tick gets its register row in the same or the next commit: `python3 scripts/vidya/cli.py
 conclusion add --path … --line … --ref origin/main --stated-json … --actor <id>` (rows only from
 numbers on the line). `runend.py --check-cc <file.md>` lists cc ticks with no register row.
+The tick path enforces the done-when (handoff standard C2, `scripts/handoffs/done_when.py`):
+`file_result.py` FILES a result whose verdict/file/artifact-class does not meet the box's done-when but
+does NOT tick it (stderr `TICK-REFUSED`, `tick-refused` notify to the owner); `wrapup.py` and `/log`
+refuse the whole tick. When the done-when names a loop-built artifact, cite the champion / `ak-*`
+build receipt — `kernels/production/*` never satisfies it (AKX-ALL-14).
+
+Holds (C3): `handoffs/active/holds.yaml` is the only exclusion source. A `loop-launch` hold on your
+handoff still admits rows whose own `owner` is not a held session; `all-rows` refuses them; a held
+session is never spawned. A missing or unreadable holds file fails CLOSED (publish keeps the registry
+gates and the v11-v14 prefixes). Release = `operator-ratify/<hold id>.json` (operator only).
 
 ## 6. Brief a subagent
 `python3 $S/brief.py --goal … --box file.md:LINE --model sonnet --effort low --build claim|row|none

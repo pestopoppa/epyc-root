@@ -181,6 +181,37 @@ class WrapupTests(unittest.TestCase):
         self.assertEqual(rc, 0, err + out)
         self.assertNotIn("scratch_cleaned", json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json"))))
 
+    def _add_done_when_box(self):
+        p = os.path.join(self.lane, "handoffs/active/demo.md")
+        with open(p, "a") as fh:
+            fh.write("- [ ] **D-7** [non-inference] promote the keep\n"
+                     "      · done when: keep record has gpu_build_receipt.proven and recipe registered before build\n")
+
+    def test_done_when_artifact_class_refuses_production_kernel(self):
+        """C2 / AK audit B13 (AKX-ALL-14): a production kernel is never the loop-built artifact a done-when names."""
+        self._add_done_when_box()
+        rec = dict(self.rec, ticks=["D-7"], evidence={"paths": ["kernels/production/gpu"]})
+        rc, out, err = self._run(rec)
+        self.assertEqual(rc, 1)
+        self.assertIn("tick refused (done-when not met)", err)
+        self.assertEqual(_git(self.lane, "rev-parse", "HEAD"), _git(self.lane, "rev-parse", "origin/main"))
+        self.assertIn("never loop-built", err)
+        self.assertIn("- [ ] **D-7**", open(os.path.join(self.lane, "handoffs/active/demo.md")).read())
+
+    def test_done_when_artifact_class_accepts_loop_built(self):
+        self._add_done_when_box()
+        rec = dict(self.rec, ticks=["D-7"], evidence={"paths": ["artifacts/ak/champion-c14/gpu_build_receipt.json"]})
+        rc, out, err = self._run(rec)
+        self.assertEqual(rc, 0, err + out)
+        rep = json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json")))
+        self.assertEqual(rep["done_when"][0]["result"], "ok")
+
+    def test_done_when_free_text_proceeds_unchecked(self):
+        rc, out, err = self._run(self.rec)
+        self.assertEqual(rc, 0, err + out)
+        rep = json.load(open(os.path.join(self.flags, "handoff-sessions/demo/report.json")))
+        self.assertEqual(rep["done_when"][0]["result"], "unchecked")
+
     def test_tick_zero_matches_refuses(self):
         rc, out, err = self._run(dict(self.rec, ticks=["D-9 — nowhere"]))
         self._assert_no_commit(rc, err, "matches 0 open boxes")

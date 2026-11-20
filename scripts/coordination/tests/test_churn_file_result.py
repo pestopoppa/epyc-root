@@ -384,6 +384,30 @@ class TestFileResult(Base):
         self.assertIn("- [ ] **pf1-expand-r2** other", text)
         self.assertIn("TICKED akx-lb3-2-cv5-pair-r2", out)
 
+    def test_done_when_verdict_mismatch_files_but_does_not_tick(self):
+        """C2: the box says `done when: verdict: PASS`; a `fail` result is FILED, the box stays open, owner alerted."""
+        hp = Path(self.lane, "handoffs/active/h.md")
+        hp.write_text(hp.read_text().replace("tune the thing\n", "tune the thing\n      · done when: verdict: pass\n"))
+        self.row("akx-lb3-2-cv5-pair-r2", "judge by eye", {"x": 1}, rc=0)
+        vj = os.path.join(self.tmp.name, "v.json")
+        Path(vj).write_text(json.dumps({"verdict": "fail", "rationale": "repeats", "tick_text": "32k repetition seen"}))
+        code, out, err = self.run_main("akx-lb3-2-cv5-pair-r2", "--verdict-json", vj)
+        self.assertEqual(code, 0)
+        self.assertTrue(self.filed("akx-lb3-2-cv5-pair-r2"))
+        self.assertIn("- [ ] **akx-lb3-2-cv5-pair-r2** tune the thing", hp.read_text())
+        self.assertIn("TICK-REFUSED", err)
+        self.assertNotIn("TICKED", out)
+
+    def test_done_when_verdict_match_ticks(self):
+        hp = Path(self.lane, "handoffs/active/h.md")
+        hp.write_text(hp.read_text().replace("tune the thing\n", "tune the thing\n      · done when: verdict: fail|pass\n"))
+        self.row("akx-lb3-2-cv5-pair-r2", "judge by eye", {"x": 1}, rc=0)
+        vj = os.path.join(self.tmp.name, "v.json")
+        Path(vj).write_text(json.dumps({"verdict": "fail", "rationale": "repeats", "tick_text": "32k repetition seen"}))
+        code, out, _ = self.run_main("akx-lb3-2-cv5-pair-r2", "--verdict-json", vj)
+        self.assertEqual(code, 0)
+        self.assertIn("TICKED akx-lb3-2-cv5-pair-r2", out)
+
     def test_bad_verdict_json_exits_2(self):
         self.row("akx-lb3-2-cv5-pair-r2", "judge by eye", {"x": 1})
         vj = os.path.join(self.tmp.name, "v.json")

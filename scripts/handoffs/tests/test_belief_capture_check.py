@@ -328,3 +328,11 @@ def test_unified_suffix_fixture_line():
     assert bcc.same_task(bcc.identity(body_open), bcc.identity(body_done))
     assert "KEEP" in bcc.completion_evidence(body_done)
     assert bcc.TAG_ANY.search(body_done).group(2) == "clm_u1"
+
+
+def test_t4_reads_the_unified_verdict_field():
+    """Handoff standard C2: T4 reads parse_tick's verdict for the unified suffix (the belief tag is not verdict text)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    import belief_capture_check as B
+    assert B.completion_evidence("- [x] **A-1** task ✅ 2026-11-20 [belief: cc] INCONCLUSIVE at 3 reps") == "INCONCLUSIVE at 3 reps"
+    assert B.completion_evidence("- [x] **A-1** task ✅ 2026-11-20 — NOT MET").strip() == "NOT MET"

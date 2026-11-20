@@ -1,0 +1,77 @@
+{
+  "row": "codex-ifbench-cj6a-27b-v7-20261120",
+  "box": "CJ-6a",
+  "rc": 75,
+  "verdict": "inconclusive; unresolved exposure terminates this cohort under the declared no-redraw rule",
+  "valid_responses": 36,
+  "expected_responses": 300,
+  "exposures": 37,
+  "unresolved_indices": [
+    36
+  ],
+  "new_valid_responses": 0,
+  "error": {
+    "error": "TimeoutError('timed out')",
+    "exposure_sha256": "0bc34775c2dee1e68724a470629778488f038231e3fa84e41c35c132ae5ef70e",
+    "reason": "request timeout/error or server exit",
+    "status": "UNKNOWN"
+  },
+  "strict": "UNKNOWN",
+  "loose": "UNKNOWN",
+  "paired_delta": "UNCOMPUTED",
+  "adoption": "UNCLAIMED",
+  "successor_published": false,
+  "reason": "Not a resumable window-end checkpoint: request TimeoutError after exposure. Preserve all originals; do not redraw prompt 36 or present partial scoring as a full score. file_result.py already filed partial; receipt not rewritten.",
+  "drained": {
+    "birth": "103978264",
+    "drained": true,
+    "pid": 2298043,
+    "rc": 0,
+    "server_log_sha256": "a3dfa10fa377d8141d44a0699dfba78087bfdaf4a183d2338e23d110da161b54"
+  },
+  "bindings": [
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/036.exposure.json",
+      "sha256": "0bc34775c2dee1e68724a470629778488f038231e3fa84e41c35c132ae5ef70e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/036.result.json",
+      "sha256": "5095c210921f36d8b2984567ad0b65ed78c0d3c59b0c9352ae47a68af6996a8a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/PARTIAL.json",
+      "sha256": "a3a2715bc4b7e0c4ca611591f62b549fbe2150969f3c14a13530e7e2726084a3"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/server-2298043.json",
+      "sha256": "6317be479acfc75286f184db6c0726afcbd41922bdcfb06434d5a2b04c16fb30"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/server-2298043.drain.json",
+      "sha256": "37ecbcb807ddbb61adceaad98105e9377f8a686c3c2e06d541f99ab4c0dccbe1"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/worker.py",
+      "sha256": "2a29128dfdb6282a0006369597399d12a6c57c4f80d924b845a701d4395ced62"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ifbench-cj6a-27b-v7-20261120.ended",
+      "sha256": "8c706ce69e1303a45bc6f6d6f080752e0d3e0244e73909d091b73fd25659152e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-ifbench-cj6a-27b-v7-20261120.verdict.json",
+      "sha256": "9307a367efdf6be0b45577aa4b0eac029065835512f1196596dbffe2c2b8e02f"
+    },
+    {
+      "sha256": "a3dfa10fa377d8141d44a0699dfba78087bfdaf4a183d2338e23d110da161b54",
+      "directory": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run",
+      "filename_pattern": "server-*.log",
+      "resolution": "Unique existing file in this directory with the given SHA-256; also bound by server-2298043.drain.json."
+    }
+  ],
+  "timeout_diagnosis": {
+    "request_timeout_s": 1200,
+    "server_observation": "Bound server log reports n_decoded=1337, tg=1.12 t/s shortly before cancellation; generation was progressing, not proven stalled.",
+    "implication": "4096-token decoding cap can exceed the fixed 1200-second client timeout at the observed rate. This is a capture budget mismatch; it supplies no benchmark score."
+  }
+}

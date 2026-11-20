@@ -4,6 +4,7 @@
     python3 scripts/coordination/churn/wrapup.py --json <file.json> [--lane <dir>] [--flags <dir>] [--dry-run]
 
 Input = the ONE turn-record schema: {slug, state, task_text, ticks: [text], progress_md, paths: [], belief,
+[evidence: {verdict, paths, commands: [{cmd, rc}], artifact_class} -- C2: checked against each box's done-when],
 message, question, rows_published, trailers?: [lines], verdict?: str | [str per tick]}. Steps (one log line each; the first failure stops with rc 1):
 validate -> merge origin/main into the lane -> resolve ticks by TEXT (exactly one open box) -> progress append ->
 flip ticks (the ONE suffix `✅ <date> [belief: …|no-belief: …] <verdict>`, handoff standard decision 1, written via
@@ -89,6 +90,9 @@ def validate(rec: dict) -> None:
     if rec["ticks"] and not rec["belief"].startswith("no-belief:") and not all(x.strip() for x in tick_verdicts(rec)):
         raise WrapupError(f"result tick (belief {rec['belief']!r}) needs a `verdict` for every tick "
                           f"(handoff standard decision 1: `✅ date [belief] verdict`)")
+    if rec.get("evidence") is not None and not isinstance(rec["evidence"], (dict, list)):
+        raise WrapupError("`evidence` must be an object {verdict, paths, commands:[{cmd, rc}], artifact_class} "
+                          "or a list of them (one per tick)")
     if not isinstance(rec["paths"], list) or not all(isinstance(p, str) and p and not p.startswith("/") for p in rec["paths"]):
         raise WrapupError("paths must be lane-relative strings")
     if not str(rec["message"]).strip():
@@ -144,6 +148,41 @@ def resolve_ticks(lane: str, ticks: list[str], extra_md: list[str]) -> list[tupl
             where = "; ".join(f"{os.path.relpath(h[0], lane)}:{h[1] + 1}" for h in hits[:5])
             raise CheckboxFlipError(f"tick {t!r} matches {len(hits)} open boxes (need exactly 1){': ' + where if where else ''}")
         out.append(hits[0])
+    return out
+
+
+def tick_evidence(rec: dict, n: int) -> dict:
+    """The evidence a tick is judged on (C2): rec['evidence'] (dict, or list per tick) merged with the tick's verdict and
+    the record's paths. Schema: {verdict, paths: [repo-relative], commands: [{cmd, rc}], artifact_class}."""
+    ev = rec.get("evidence") or {}
+    if isinstance(ev, list):
+        ev = ev[n] if n < len(ev) and isinstance(ev[n], dict) else {}
+    out = dict(ev)
+    out.setdefault("verdict", tick_verdicts(rec)[n] if n < len(tick_verdicts(rec)) else "")
+    out["paths"] = list(out.get("paths") or []) + [p for p in rec.get("paths") or [] if p not in (out.get("paths") or [])]
+    return out
+
+
+def check_done_when(lane: str, hits: list[tuple[str, int, str]], rec: dict) -> list[dict]:
+    """C2 / AK audit B13: each ticked box's `· done when:` is checked against the tick's evidence (done_when.check).
+    `fail` REFUSES the whole wrap-up naming the box and the reason; `unchecked` (free text, or a command the record
+    did not report running) proceeds and is recorded in report.json as done_when: unchecked."""
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+                                    "handoffs"))
+    try:
+        import done_when as _dw
+    finally:
+        sys.path.pop(0)
+    out = []
+    for n, (f, i, line) in enumerate(hits):
+        lines = open(f, encoding="utf-8").read().split("\n")
+        res, why, text = _dw.check_box(lines, i, tick_evidence(rec, n), lane)
+        rel = f"{os.path.relpath(f, lane)}:{i + 1}"
+        log("done-when", f"{rel} {res}: {why}")
+        if res == "fail":
+            raise WrapupError(f"tick refused (done-when not met): {line.strip()[:160]!r} at {rel} — done when: "
+                              f"{text!r}; {why}. Put the evidence (paths / verdict / commands rc) in the record.")
+        out.append({"box": rel, "result": res, "reason": why})
     return out
 
 
@@ -368,6 +407,8 @@ def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
     hits = resolve_ticks(lane, rec["ticks"], rec["paths"])
     for (f, i, ln), t in zip(hits, rec["ticks"]):
         log("resolve", f"{os.path.relpath(f, lane)}:{i + 1} <- {t!r}")
+    if dry_run:
+        check_done_when(lane, hits, rec)       # C2: a dry run refuses exactly what the real run would
     check_box_cap(lane)
     prog = progress_target(lane, slug, now)
     pathspec = sorted((set(rec["paths"]) | {prog} | {os.path.relpath(h[0], lane) for h in hits}) - set(GENERATED))
@@ -379,6 +420,7 @@ def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
         return 0
     append_progress(lane, prog, slug, rec["task_text"], rec["progress_md"], now)
     log("progress", prog)
+    dw = check_done_when(lane, hits, rec)
     apply_ticks(lane, hits, date, rec["belief"], tick_verdicts(rec))
     sha = commit(lane, pathspec, rec["message"], [str(t) for t in rec.get("trailers", [])])
     log("commit", f"{sha[:12]} {len(pathspec)} path(s)")
@@ -390,7 +432,7 @@ def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
         raise WrapupError(f"cherry origin/main not empty after push: {left.splitlines()[0]}")
     log("cherry", "empty")
     cleaned = clean_superseded(rec)
-    out = dict(rec, box=rec.get("box"), step_sha=sha, wrapped=True, wrapped_sha=sha, wrapped_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    out = dict(rec, done_when=dw, box=rec.get("box"), step_sha=sha, wrapped=True, wrapped_sha=sha, wrapped_at=_now().strftime("%Y-%m-%dT%H:%M:%SZ"))
     if cleaned:
         out["scratch_cleaned"] = cleaned
     log("report", write_report(flags, slug, out))
