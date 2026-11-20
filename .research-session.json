@@ -1,9 +1,9 @@
 {
  "session_id": "intake-kspec-20261120",
  "started_at": "2026-11-20T00:00:00+00:00",
- "last_checkpoint": "2026-11-20T10:34:12.208267Z",
- "stage": 1,
- "phase": "stage1-complete",
+ "last_checkpoint": "2026-11-20T11:15:19.834911Z",
+ "stage": 2,
+ "phase": "stage2-closed",
  "lane": "/workspace/.worktrees/intake-kspec-20261120",
  "requester": "autokernel subagent (operator-requested intake; plan-approval gate retained before Stage 4)",
  "previous_session": {
@@ -42,19 +42,40 @@
   "intake-2728",
   "intake-2729",
   "intake-2730",
-  "intake-2731"
+  "intake-2731",
+  "intake-2732",
+  "intake-2733",
+  "intake-2734",
+  "intake-2735",
+  "intake-2736",
+  "intake-2737",
+  "intake-2738",
+  "intake-2739",
+  "intake-2740",
+  "intake-2741",
+  "intake-2742",
+  "intake-2743",
+  "intake-2744",
+  "intake-2745",
+  "intake-2746"
  ],
- "next_intake_id": 2732,
- "literature_sweeps": 0,
+ "next_intake_id": 2747,
+ "literature_sweeps": 2,
  "sweep_cap": 4,
  "expansion_refused": [
   {
    "seed": "intake-2718..intake-2731",
    "reason": "Stage-1 Phase-3 Tier-1/Tier-2 expansion not run separately: operator steering routes expansion through Stage-2 dive-surfaced sources (all recommended accepted, max four Stage-2b sweeps); the Tier-2b contradiction pass is run thoroughly inside each Stage-2 dive instead of a cheap Stage-1 pass."
+  },
+  {
+   "seed": "wave-2 entries intake-2742..2746",
+   "reason": "no ingest-and-dive recommendation surfaced; expansion closed after 2 of max 4 sweeps"
   }
  ],
  "subagents": {
-  "haiku": 4
+  "haiku": 5,
+  "sonnet": 12,
+  "opus": 4
  },
  "steering_ledger": [
   {
@@ -68,5 +89,201 @@
   }
  ],
  "entries_remaining": [],
- "validator_note": "validate_intake.sh exits 1 with 218 errors on origin/main 68d4546a as well (handoff-refactor cross-ref drift: model-architecture-readiness.md, numa-placement track); the 14 new entries add 0 errors."
+ "validator_note": "validate_intake.sh exits 1 with 218 errors on origin/main 68d4546a as well (handoff-refactor cross-ref drift: model-architecture-readiness.md, numa-placement track); the 14 new entries add 0 errors.",
+ "stage2": {
+  "dived": [
+   "intake-2718",
+   "intake-2719",
+   "intake-2720",
+   "intake-2721",
+   "intake-2722",
+   "intake-2723",
+   "intake-2724",
+   "intake-2725",
+   "intake-2726",
+   "intake-2727",
+   "intake-2728",
+   "intake-2729",
+   "intake-2730",
+   "intake-2731"
+  ],
+  "second_reader": {
+   "model": "haiku",
+   "found": "109/109",
+   "yes": 43,
+   "partial": 64,
+   "no": 2,
+   "no_rows": [
+    "intake-2726 anchor 1 (setup quote does not evidence the no-DFlash absence claim)",
+    "intake-2731 anchor 4 (token budget, not GPU-hours; supports only the pipeline-cost part)"
+   ],
+   "note": "partials are composite claims covered jointly by sibling anchors; disagreements carried to the Stage-3 plan, not auto-overturned"
+  },
+  "anchor_check": "validate_intake.py --check-anchors --write-marks: 102 marks found:true on intake-2718..2731 (2723 PDF-only, hand-checked); pre-existing mark mismatches on intake-2662..2693 are not from this run"
+ },
+ "stage2b_waves": [
+  {
+   "wave": 1,
+   "selected": [
+    "https://github.com/nari-labs/nari-llama.cpp",
+    "https://rocm.docs.amd.com/projects/amd-skills/en/latest/catalog.html",
+    "https://rocm.docs.amd.com/projects/FlyDSL/en/latest/index.html",
+    "https://rocm.blogs.amd.com/software-tools-optimization/flydsl-python-native/README.html",
+    "arXiv:2603.19173",
+    "arXiv:2608.12888",
+    "arXiv:2605.15184",
+    "arXiv:2607.21535",
+    "arXiv:2605.10453",
+    "arXiv:2510.13847"
+   ],
+   "declined": [
+    {
+     "src": "https://github.com/jeffdaily/moat",
+     "bears_on": "intake-2724",
+     "reason": "HTTP 404 and gh api 404 on 2026-11-20 (source unreachable)"
+    },
+    {
+     "src": "https://huggingface.co/ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF",
+     "bears_on": "intake-2721",
+     "reason": "covered by NEW-10 (closed FAIL for serving)"
+    },
+    {
+     "src": "https://github.com/ROCm/aiter/releases/tag/v0.1.29",
+     "bears_on": "intake-2724",
+     "reason": "already cross-referenced in index; covered by in-house AITER work"
+    },
+    {
+     "src": "arXiv:2601.00227",
+     "bears_on": "intake-2723",
+     "reason": "dive recommended decline: NVIDIA kernel focus, protocol part captured by RSIBench"
+    },
+    {
+     "src": "Muennighoff et al. 2025 budget forcing",
+     "bears_on": "intake-2728",
+     "reason": "no id in source; already implemented via thinking.budget_tokens"
+    },
+    {
+     "src": "arXiv:2609.37725",
+     "bears_on": "intake-2729",
+     "reason": "benchmark definition only"
+    },
+    {
+     "src": "https://github.com/ggml-org/llama.cpp/pull/26631",
+     "bears_on": "intake-2719",
+     "reason": "no zero-expert arch served"
+    },
+    {
+     "src": "https://github.com/ggml-org/llama.cpp/pull/32504",
+     "bears_on": "intake-2719",
+     "reason": "Volta only"
+    },
+    {
+     "src": "https://github.com/ggml-org/llama.cpp/pull/29998",
+     "bears_on": "intake-2719",
+     "reason": "historical"
+    },
+    {
+     "src": "arXiv:2605.26444",
+     "bears_on": "intake-2727",
+     "reason": "same lever as DynaSpec; reopen only if the clustered-head probe keeps"
+    }
+   ],
+   "ingested": [
+    "intake-2732",
+    "intake-2733",
+    "intake-2734",
+    "intake-2735",
+    "intake-2736",
+    "intake-2737",
+    "intake-2738",
+    "intake-2739",
+    "intake-2740",
+    "intake-2741"
+   ]
+  },
+  {
+   "wave": 2,
+   "selected": [
+    "https://github.com/NVlabs/SOLAR",
+    "https://github.com/amd/skills",
+    "https://github.com/AMD-Ecosystem/moat",
+    "arXiv:2607.26497",
+    "arXiv:2605.09992"
+   ],
+   "ingested": [
+    "intake-2742",
+    "intake-2743",
+    "intake-2744",
+    "intake-2745",
+    "intake-2746"
+   ],
+   "declined": [
+    {
+     "src": "https://github.com/NVIDIA/SOL-ExecBench",
+     "reason": "harness rules already in the paper"
+    },
+    {
+     "src": "arXiv:2601.10702 (STITCH)",
+     "reason": "comparator only"
+    },
+    {
+     "src": "arXiv:2511.18423 (GAM)",
+     "reason": "shown inferior"
+    },
+    {
+     "src": "Sen et al. Chronos",
+     "reason": "confound, no id"
+    },
+    {
+     "src": "arXiv:2507.21428 (MemTool)",
+     "reason": "tangential"
+    },
+    {
+     "src": "https://github.com/avalliappan-nvidia/windowed-mtp-b200",
+     "reason": "few-line patch; pseudocode in App A"
+    },
+    {
+     "src": "arXiv:2505.20776 (SpecExtend)",
+     "reason": "separate-draft setting"
+    },
+    {
+     "src": "arXiv:2601.02780 (MiMo-V2-Flash)",
+     "reason": "already intake-505"
+    },
+    {
+     "src": "arXiv:2602.13836 (SpecVocab)",
+     "reason": "same low CPU ceiling"
+    },
+    {
+     "src": "arXiv:2506.22694 (VocabTrim)",
+     "reason": "covered by intake-740"
+    },
+    {
+     "src": "arXiv:2502.16880 (CORAL)",
+     "reason": "same family as DynaSpec"
+    },
+    {
+     "src": "arXiv:2502.14856 (FR-Spec)",
+     "reason": "covered by intake-740"
+    },
+    {
+     "src": "arXiv:2503.10135 (Gumiho)",
+     "reason": "no decision change"
+    },
+    {
+     "src": "https://github.com/thunlp/FR-Spec",
+     "reason": "intake-740 holds a llama.cpp port"
+    },
+    {
+     "src": "https://github.com/ROCm/FlyDSL",
+     "reason": "already intake-2703"
+    }
+   ]
+  },
+  {
+   "wave": 3,
+   "selected": [],
+   "note": "not run: every wave-2 dive-surfaced source was recommended decline (2605.05253 EnterpriseRAG-Bench, 2510.10114 LinearRAG, 2603.15031 Attention Residuals, Attention-Drift code repo, AMD-AGI/Magpie, ROCm/FlyDSL, amd/skillscope, moat CONTRIBUTING.md); the operator pre-approval covers recommended dives only"
+  }
+ ]
 }
