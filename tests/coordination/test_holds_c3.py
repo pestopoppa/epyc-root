@@ -309,3 +309,23 @@ def test_index_check_flags_a_corrupt_hub_copy(tmp_path, monkeypatch):
     assert any("unreadable" in e and str(hub) in e for e in errs)
     (hub / "handoffs/active/holds.yaml").write_text("holds: []\n")
     assert I.hold_problems({"rows": {}}, {}) == []
+
+
+def test_proposals_pending_event_once_per_day(tmp_path):
+    """C1: 0 -> >0 pending proposals queues ONE proposals-pending event; again only after 24 h; retired owners skipped."""
+    import handoff_sessions as hs
+    S = {"h0": {"handoff": "handoffs/active/h0.md"}, "old": {"handoff": "handoffs/active/h1.md", "status": "retired"}}
+    st, F = {}, str(tmp_path)
+    pend = {"h0.md": ["A-1.p1", "A-2.p1"], "h1.md": ["B-1.p1"]}
+    hs.proposals_events(F, st, S, 1000.0, pend)
+    q = [x for x in st["queue"] if x["kind"] == "proposals-pending"]
+    assert [x["slug"] for x in q] == ["h0"] and q[0]["data"]["ids"] == ["A-1.p1", "A-2.p1"]
+    st["queue"] = []
+    hs.proposals_events(F, st, S, 1000.0 + 3600, pend)
+    assert st["queue"] == []                                   # within 24 h: no second turn
+    hs.proposals_events(F, st, S, 1000.0 + 25 * 3600, pend)
+    assert [x["slug"] for x in st["queue"]] == ["h0"]
+    p = hs.proposals_prompt("h0", S["h0"], F, {"ids": ["A-1.p1"]})
+    assert "accept / edit" in p.lower() or "Accept / edit" in p
+    hs.proposals_events(F, st, S, 1000.0 + 26 * 3600, {})
+    assert "h0" not in st["proposals_seen"]                    # cleared when nothing is pending

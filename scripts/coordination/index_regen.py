@@ -75,14 +75,32 @@ def regen(wt: str) -> list[str]:
     """Reset to origin/main, regenerate, return the generated paths that changed (staged)."""
     git(wt, "fetch", "-q", "origin")
     git(wt, "reset", "-q", "--hard", "origin/main")
+    expired = expire_proposals(wt)
     r = subprocess.run([sys.executable, os.path.join(wt, "scripts/handoffs/index_state.py")], cwd=wt,
                        capture_output=True, text=True, timeout=900)
     if r.returncode:
         raise RuntimeError(f"index_state.py rc={r.returncode}: {(r.stdout + r.stderr).strip()[-300:]}")
-    changed = [g for g in GENERATED if git(wt, "status", "--porcelain", "--", g).stdout.strip()]
+    changed = [g for g in GENERATED if git(wt, "status", "--porcelain", "--", g).stdout.strip()] + expired
     if changed:
         git(wt, "add", "--", *changed)
     return changed
+
+
+def expire_proposals(wt: str) -> list[str]:
+    """Handoff standard C1 expiry: proposals pending > 14 d are auto-rejected to `## History`
+    (`[declined: taskflow-expiry <date> …]`, propose_rewrites.py --expire). Returns the handoff files it changed, which
+    ride in this job's commit. Advisory: a failure is logged and never blocks the regen."""
+    tool = os.path.join(wt, "scripts/handoffs/propose_rewrites.py")
+    if not os.path.exists(tool):
+        return []
+    try:
+        r = subprocess.run([sys.executable, tool, "--expire"], cwd=wt, capture_output=True, text=True, timeout=600)
+        if r.returncode:
+            log(f"proposal expiry rc={r.returncode}: {(r.stdout + r.stderr).strip()[-200:]}")
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        log(f"proposal expiry failed: {exc}")
+    st = git(wt, "status", "--porcelain", "--", "handoffs/active", check=False).stdout.split("\n")
+    return sorted(l[3:] for l in st if l.startswith(" M") and l[3:].endswith(".md") and l[3:] not in GENERATED)
 
 
 QUIET_S = 180        # batch end = origin/main has had no non-generated commit for this long

@@ -1621,6 +1621,65 @@ Consume ALL of them in this one turn and continue your task. {TURN_END_LINE} The
 {REPORT_LINE}"""
 
 
+PROPOSALS_TURN_GAP_S = 24 * 3600   # handoff standard C1: at most ONE proposals-pending turn per handoff per day
+
+
+def pending_proposals(repo=None) -> dict:
+    """{handoff basename: [proposal box ids]} for NEEDS-OWNER children carrying `proposed-by` (.box-index.json, read
+    with regenerate=False -- the dispatcher never builds the index inline). {} when the index is unavailable."""
+    try:
+        sys.path.insert(0, os.path.join(repo or ROOT, "scripts", "handoffs"))
+        import box_index as _bi
+        doc = _bi.load(repo or ROOT, regenerate=False)
+    except Exception:  # noqa: BLE001
+        return {}
+    finally:
+        sys.path.pop(0)
+    out: dict = {}
+    for k, r in (doc.get("boxes") or {}).items():
+        if r.get("state") == "needs-owner" and r.get("proposed_by"):
+            out.setdefault(os.path.basename(r.get("file", "")), []).append(r.get("id") or k)
+    return out
+
+
+def proposals_events(flags, st, S, now, pending=None):
+    """C1 (acceptance as an event): when a session's handoff goes from 0 to >0 pending proposals, or stays >0 for 24 h,
+    queue ONE `proposals-pending` event for the owning session (same queue as awaited files); never more than one
+    such turn per handoff per day. Retired/done owners are skipped (the ownerless review queue covers them)."""
+    pending = pending_proposals() if pending is None else pending
+    seen = st.setdefault("proposals_seen", {})
+    for slug, e in S.items():
+        if not isinstance(e, dict) or e.get("status") in ("done", "retired") or not e.get("handoff"):
+            continue
+        ids = pending.get(os.path.basename(str(e["handoff"]))) or []
+        rec = seen.get(slug) or {}
+        if not ids:
+            seen.pop(slug, None)
+            continue
+        if not rec.get("since"):
+            rec["since"] = now
+        due = (not rec.get("last_turn") and (now - rec["since"] < 60 or now - rec["since"] >= PROPOSALS_TURN_GAP_S)) \
+            or (rec.get("last_turn") and now - rec["last_turn"] >= PROPOSALS_TURN_GAP_S)
+        seen[slug] = rec
+        if not due or any(x["slug"] == slug and x.get("kind") == "proposals-pending" for x in st.get("queue") or []):
+            continue
+        rec["last_turn"] = now
+        st.setdefault("queue", []).append({"slug": slug, "rid": f"proposals-{len(ids)}", "end": str(e["handoff"]),
+                                           "kind": "proposals-pending", "data": {"ids": ids}, "queued_at": now})
+        log(flags, f"PROPOSALS-PENDING {len(ids)} -> {slug}")
+
+
+def proposals_prompt(slug, e, flags, data):
+    ids = (data or {}).get("ids") or []
+    return f"""[{VERSION}] {len(ids)} NEEDS-OWNER proposal child(ren) wait under boxes you own in {e.get('handoff')}:
+{', '.join(ids[:40])}
+They are MODEL-GENERATED text (scripts/handoffs/propose_rewrites.py): verify each against its parent box. Accept / edit /
+reject the {len(ids)} NEEDS-OWNER children under boxes you own (agents/commands/wrap-up.md Step 2 -> Proposals:
+accept = delete NEEDS-OWNER and `· proposed-by:`; reject = `handoff_box.py reject --file <f> <ID> --by {slug} --reason ...`),
+then wrap up. {lane_line(slug)} {TURN_END_LINE} Then persist; print `WRAPPED <sha>` as your LAST line.
+{REPORT_LINE}"""
+
+
 INDEX_REGEN_INTERVAL_S = 600  # ruling 3 (2026-11-02): the ONE central writer of the generated index files
 
 
@@ -1845,6 +1904,10 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             st.setdefault("queue", []).append({"slug": slug, "rid": f"awaiting-{len(fired)}", "end": fired[0]["registration"] + ".fired",
                                                "kind": "awaiting", "data": fired, "queued_at": now})
         log(flags, f"AWAITED {len(fired)} file(s) -> {slug}: " + ", ".join(str(d.get("path")) for d in fired)[:300])
+    try:   # C1: proposals awaiting their owner become ONE event per handoff per day
+        proposals_events(flags, st, S, now)
+    except Exception as ex:  # noqa: BLE001 -- never break the pass over an advisory event
+        log(flags, f"PROPOSALS-EVENT failed: {type(ex).__name__}: {ex}")
     # 3. waits_on from the generated handoff backlog (context only)
     for slug, e in S.items():
         try:
@@ -1931,7 +1994,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 rest.append(ev)
                 continue
             if engine_paused(reg, e.get("engine", "codex"), now):  # quota gates RESUME only; filing by script never waits for it
-                if ev.get("kind") != "awaiting" and ev.get("rid") and "script_filed" not in ev and not filed(flags, ev["rid"]):
+                if ev.get("kind") not in ("awaiting", "proposals-pending") and ev.get("rid") and "script_filed" not in ev \
+                        and not filed(flags, ev["rid"]):
                     rc, out = file_result(flags, ev["rid"], e.get("cwd") or lane_dir(ev["slug"]))
                     ev["script_filed"] = rc
                     log(flags, f"FILED-WHILE-QUOTA-PAUSED {ev['rid']} rc={rc} (engine {e.get('engine', 'codex')} paused; owner resumes later)")
@@ -1946,6 +2010,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 push(ev["slug"], e)
             elif ev.get("kind") == "awaiting":
                 _go(flags, ev["slug"], e, awaiting_prompt(ev["slug"], e, flags, ev.get("data") or {}), runner, None)
+            elif ev.get("kind") == "proposals-pending":
+                _go(flags, ev["slug"], e, proposals_prompt(ev["slug"], e, flags, ev.get("data") or {}), runner, None)
             elif ev.get("kind") == "run-end" and superseded_by(ev["rid"], set(st.get("delivered") or {}) |
                                                               {x["rid"] for x in q if x.get("kind") == "run-end"}):
                 log(flags, f"SUPERSEDED {ev['rid']} -> {ev['slug']}: superseded by "

@@ -159,6 +159,10 @@ def test_child_text_from_legacy_bold_spanning_headline():
     t = PR.parent_headline(rec)
     assert t.startswith("port the audio encoder (PACKAGE M-4; filed ) as an mtmd projector.") and "S-19" not in t
     assert t.endswith("then measure") and len(t) <= 200
+    long = {"id": "L-1", "text": "- [ ] **L-1** " + "first clause here, " * 20 + "end (filed 2026-11-02)"}
+    lt = PR.parent_headline(long)
+    assert lt.endswith("…") and len(lt) <= 200 and "2026-11-02" not in lt
+    assert PR.shorten("do the thing (decided 2026-11-01, see X)") == "do the thing"
     assert PR.parent_headline({"id": "F-1", "text": "- [ ] **F-1** [non-inference] make it fast"}) == "make it fast"
     assert PR.parent_headline({"id": "Z-1", "text": "- [ ] **Z-1**"}) == "(proposal for Z-1)"
 
@@ -171,3 +175,35 @@ def test_recently_edited_file_is_skipped(tmp_path, monkeypatch):
     calls = []
     assert PR.main(["--stop-share", "1.0"], runner=lambda p: calls.append(p) or ("{}", {}), root=tmp_path) == 0
     assert calls == [] and "F-1.p1" not in f.read_text()
+
+
+def test_per_file_back_pressure_cap():
+    recs = {f"P-{i}": {"file": "a.md", "state": "needs-owner", "proposed_by": "t"} for i in range(8)}
+    assert PR.file_at_cap({"boxes": recs}, "a.md") == (True, 8, 8)
+    recs.pop("P-0")
+    assert PR.file_at_cap({"boxes": recs}, "a.md")[0] is False
+    assert PR.file_at_cap({"boxes": recs}, "b.md") == (False, 0, 8)
+
+
+def test_expiry_rejects_old_proposals_to_history(tmp_path, monkeypatch):
+    monkeypatch.setenv("EPYC_HOLDS_ROOT", str(tmp_path))
+    f = _root(tmp_path)
+    _propose(f, tmp_path)                                         # proposed-by taskflow 2026-11-20
+    monkeypatch.setattr(PR.BI, "load", lambda root, regenerate=True: _build(tmp_path, f))
+    assert PR.expire(tmp_path, 14, today="2026-11-30") == []
+    assert PR.expire(tmp_path, 14, today="2026-12-05") == ["F-1.p1"]
+    t = f.read_text()
+    assert "- [ ] **F-1.p1**" not in t and "[declined: taskflow-expiry 2026-12-05 pending > 14 d]" in t.split("## History")[1]
+
+
+def test_review_queue_routes_ownerless(tmp_path, monkeypatch):
+    monkeypatch.setenv("EPYC_HOLDS_ROOT", str(tmp_path))
+    f = _root(tmp_path)
+    _propose(f, tmp_path)
+    monkeypatch.setattr(PR.BI, "load", lambda root, regenerate=True: _build(tmp_path, f))
+    q = tmp_path / "queue.md"
+    assert PR.review_queue(tmp_path, {"sessions": {"old": {"handoff": "handoffs/active/f.md", "status": "retired"}}}, str(q)) == 1
+    assert "**F-1.p1**" in q.read_text() and "no owner to judge" in q.read_text()
+    assert PR.owner_of("handoffs/active/f.md", {"sessions": {"s1": {"handoff": "handoffs/active/f.md"}}}, tmp_path) == "s1"
+    f.write_text(f.read_text().replace("**Status**: ACTIVE — x\n", "**Status**: ACTIVE — x\n**Owner**: mainB\n"))
+    assert PR.owner_of("handoffs/active/f.md", {"sessions": {}}, tmp_path) == "mainB"
