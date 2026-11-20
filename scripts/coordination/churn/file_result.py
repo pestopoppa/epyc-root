@@ -272,6 +272,15 @@ def coerce_declared_nonpass(agent):
     return agent
 
 
+def record_declares_nonpass(metrics):
+    """F3 (AK audit B3): the result record's own status/rationale/answer text when it declares DROP(/FUTILITY_/diagnostic,
+    else None. Used to coerce a machine-rule or --correct pass the same way coerce_declared_nonpass coerces an agent's."""
+    if not isinstance(metrics, dict):
+        return None
+    text = "\n".join(str(metrics.get(k) or "") for k in ("status", "rationale", "answer"))
+    return text.strip() if DECLARED_NONPASS.search(text) else None
+
+
 def correct_filed(flags, rid, verdict, by, reason, dry_run=False):
     """D9 2026-11-19: the row OWNER re-files an already-FILED row. The old FILED + verdict record are kept beside the
     new ones (<rid>.FILED.superseded-<ts>, <rid>.verdict.superseded-<ts>.json). -> exit code."""
@@ -290,10 +299,19 @@ def correct_filed(flags, rid, verdict, by, reason, dry_run=False):
     old_line = open(fp).read().strip()
     old = json.load(open(vp)) if os.path.exists(vp) else {}
     old_v = old.get("row_verdict") or (old_line.split(":", 1)[1].split()[0] if ":" in old_line else "?")
+    coerced = None
+    if verdict == "pass":   # F3: --correct pass is coerced like an agent pass when the reason or the record declares DROP
+        rp, fmt = str((m or {}).get("result_path") or ""), str((m or {}).get("result_format") or "json")
+        declared = (reason if DECLARED_NONPASS.search(reason) else None) or (record_declares_nonpass(load_result(rp, fmt)[0]) if rp else None)
+        if declared:
+            coerced, verdict = "pass", "inconclusive"
+            reason = f"[coerced pass->inconclusive: declares DROP/diagnostic/FUTILITY: {declared[:120]}] {reason}"
     now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     rec = dict(old, row_verdict=verdict, filed_by=by, filed_at=now, at=now, reason=reason,
                outcome_class="SCIENCE-VERDICT" if verdict in ("pass", "fail") else "PARTIAL-VERDICT",
                corrected_from=old_v, corrected_at=now, superseded_filed_line=old_line)
+    if coerced:
+        rec["coerced_from"] = coerced
     if isinstance(rec.get("verdict"), dict):
         rec["verdict"] = dict(rec["verdict"], result=verdict)
     summary = f"FILED {rid}: {verdict} rc={old.get('rc', '?')} by={by} corrected_from={old_v} reason={reason!r}"
@@ -399,6 +417,11 @@ def main(argv=None):
     metrics = dict(metrics, rc=rc if rc is not None else "?")
     verdict, values, machine, reason = decide(rule, metrics)
     filed_by = "file_result.py"
+    coerced_from = None
+    declared = record_declares_nonpass(metrics) if machine and verdict == "pass" else None
+    if declared:   # F3: the machine rule passed but the record itself says DROP(...)/FUTILITY_/diagnostic
+        coerced_from, verdict = "pass", "inconclusive"
+        reason = f"[coerced pass->inconclusive: result record declares {declared[:120]}] {reason or ''}".strip()
     if window_end_resumable(m, rc, endline) and verdict != "pass":
         # ONE BOOKING DURATION (pipeline audit 2026-11-10 #3): a resumable row's window end is a normal end
         verdict, machine = "partial", True
@@ -424,6 +447,8 @@ def main(argv=None):
            "end_record": ep, "source": end_source(ep), "result_path": result_path, "result_format": fmt, "handoff_task": m.get("handoff_task"), "manifest": mp,
            "filed_by": filed_by, "reason": reason, "agent_verdict": agent, "dry_run": a.dry_run,
            "answer": (agent or {}).get("answer") or a.answer}
+    if coerced_from:
+        rec["coerced_from"] = coerced_from
     kt = keep_tail_report(m, metrics, rid, flags)
     if kt is not None:
         rec["keep_tail"] = kt

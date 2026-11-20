@@ -748,3 +748,49 @@ class TestDeclaredNonPassAndCorrect(Base):
     def test_correct_needs_existing_filing(self):
         self.row("r-none", "judge by eye", {"x": 1})
         self.assertEqual(self.run_main("r-none", "--correct", "fail", "--filed-by", "t", "--reason", "x")[0], 2)
+
+
+class TestF3VerdictSemanticsEveryPath(Base):
+    """F3 (AK audit B3 residual, D9 2026-11-20): --correct pass and the machine-rule path are coerced like agent verdicts."""
+
+    def _filed_fail(self, rid, result=None):
+        self.row(rid, "judge by eye", result if result is not None else {"x": 1})
+        vj = Path(self.tmp.name, f"{rid}-v.json")
+        vj.write_text(json.dumps({"verdict": "fail", "rationale": "observed"}))
+        self.assertEqual(self.run_main(rid, "--verdict-json", str(vj), "--no-reclaim")[0], 0)
+
+    def test_correct_pass_non_owner_refused(self):
+        self._filed_fail("f3-n")
+        self.assertEqual(self.run_main("f3-n", "--correct", "pass", "--filed-by", "intruder", "--reason", "ok")[0], 8)
+        self.assertEqual(self.verdict("f3-n")["row_verdict"], "fail")
+
+    def test_correct_pass_by_owner_new_record_old_kept(self):
+        self._filed_fail("f3-o")
+        code, out, _ = self.run_main("f3-o", "--correct", "pass", "--filed-by", "t", "--reason", "rule misread")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.verdict("f3-o")["row_verdict"], "pass")
+        kept = [p.name for p in Path(self.flags, "filing-done").iterdir() if ".superseded-" in p.name]
+        self.assertTrue(any(n.startswith("f3-o.FILED.superseded-") for n in kept), kept)
+
+    def test_correct_pass_with_drop_reason_coerced(self):
+        self._filed_fail("f3-r")
+        self.run_main("f3-r", "--correct", "pass", "--filed-by", "t", "--reason", "DROP(diagnostic: zero records)")
+        v = self.verdict("f3-r")
+        self.assertEqual((v["row_verdict"], v["coerced_from"]), ("inconclusive", "pass"))
+
+    def test_correct_pass_with_drop_record_coerced(self):
+        self._filed_fail("f3-d", {"x": 1, "status": "DROP(diagnostic: refused)"})
+        self.run_main("f3-d", "--correct", "pass", "--filed-by", "t", "--reason", "looked fine")
+        self.assertEqual(self.verdict("f3-d")["row_verdict"], "inconclusive")
+
+    def test_machine_rule_pass_with_drop_status_inconclusive(self):
+        self.row("f3-m", "rc==0", {"status": "DROP(diagnostic: C6 refusal)", "x": 1})
+        code, out, _ = self.run_main("f3-m", "--no-reclaim")
+        self.assertEqual(code, 0)
+        v = self.verdict("f3-m")
+        self.assertEqual((v["row_verdict"], v["coerced_from"]), ("inconclusive", "pass"))
+
+    def test_machine_rule_plain_pass_untouched(self):
+        self.row("f3-p", "rc==0", {"status": "ok", "x": 1})
+        self.run_main("f3-p", "--no-reclaim")
+        self.assertEqual(self.verdict("f3-p")["row_verdict"], "pass")
