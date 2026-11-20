@@ -121,3 +121,15 @@ Advanced KSHIFT-FIX-MODEL-TEST by publishing `kshift-tailkey-diagnostic-20261120
 ## 11:15Z — File completed repaired K-shift diagnostic pair and preserve measured control verdict
 
 Filed `kshift-tailkey-diagnostic-20261120` rc=0, two units, DIAGNOSTIC_COMPLETE / qualification inconclusive; FILED receipt written and alert35922c1bddda4d5dadfadd09 acknowledged. Dropped-prefix KLD1.356316 exceeds sensitivity0.03, while repaired tail-key-plus-query0.01466219 and original half-shift0.003770928 do not. Fresh-offset-d and translate-x1 mismatch indices52/54 and token pairs coincide in both libraries, without causal attribution; original half-shift first8/last8 KLD0.000476921/0.002318995 does not exhibit proposed early-to-late attenuation. Candidate div0 vs baseline3.025076/48 mismatches reproduces bounded H2 discrimination. Historical thresholds unchanged; parent remains open, zero checkbox flips. Evidence/native hashes and next protocol action: docs/reports/kshift-tailkey-diagnostic-20261120.md; results SHA-256 87b35e431a16de953891061279c7d50b3f583df3e55e7548799a77a23e046a6b. Existing VB-YARN-E1 prospective capture task/source row updated, no reconstructed warrant. [belief: cc]
+
+## 11:39Z — File the terminal YARN-GPU-512k r2 capability verdict and record the >=500K probe.
+
+### YARN-GPU-512k: terminal capability PASS
+
+Applied the preregistered decision rule to `yarn-gpu-512k-20261120-r2` (rc=0, complete=true). The existing filing receipt already records PASS; `file_result.py --no-reclaim` returned NOOP rather than duplicating it. Acknowledged both dispatched row alerts.
+
+At depth 517,343: needle_attempted=5, needle_correct=5, decode_tps=16.48230946, predicted_n=128, decode_http=200, local=OK. At depth 402,440: 5/5 and 20.15647408 tok/s. Historical CPU depth323,527:5/5 and2.75080006 tok/s. These are separate device runs, with no paired-speed inference. Own server reaped; live residency recorded resident=true, own_libs=true and HIP mapped from v10 store; own VRAM peak41.91 GiB over381 samples, below60 GiB, no trip. This answers the bounded single-trajectory retrieval/coherence capability question, without establishing broader quality or native-window inertness.
+
+Evidence: `/mnt/raid0/llm/tmp/yarn/gpu-512k-20261120/out/RESULT.json`, SHA-256 `2d94e62339658f03238f9ecaeffef6821ecb24a9e3d54021ef0195d48488e536`; native source/store commit `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`. Result recorded as committed conclusion [belief: cc]; no reconstructed measurement warrant. Existing prospective source-family wiring remains VB-YARN-E1.
+
+Next: resume the offset-matched KSHIFT-FIX-MODEL-TEST calibration protocol and model-free tests from the prior checkpoint, retaining r1 thresholds and separately preregistering future qualification semantics.
