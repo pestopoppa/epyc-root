@@ -240,6 +240,32 @@ def tick_line(rid, rc, verdict, values, filed_by):
             f"[no-belief: row verdict filed by {filed_by}]").replace("  ", " ")
 
 
+def done_when_refusal(lane, task, verdict, result_path, rec):
+    """C2 / AK audit B13: reason string when the row's box has a MACHINE-CHECKABLE done-when (verdict / file /
+    artifact class) that this filed result does not satisfy, else None. Free-text and command done-whens never
+    refuse here (a row result carries no command rc)."""
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), "handoffs"))
+        import done_when as _dw
+        import task_lint_core as _l1
+    except ImportError:
+        return None
+    hpath, token = task.rsplit(":", 1)
+    try:
+        lines = open(handoff_path(lane, hpath), encoding="utf-8").read().split("\n")
+    except (OSError, ValueError):
+        return None
+    idx = next((i for i, l in enumerate(lines) if _l1.CHECKBOX.match(l) and _l1.head_id(l) == token.strip()), None)
+    if idx is None:
+        return None
+    paths = [p for p in (result_path, (rec or {}).get("result_path")) if p]
+    res, why, text = _dw.check_box(lines, idx, {"verdict": verdict, "paths": paths,
+                                                "artifact_class": (rec or {}).get("artifact_class")}, lane)
+    if res == "fail" and _dw.parse(text)["kind"] in ("verdict", "file", "artifact_class"):
+        return f"done when: {text!r}; {why}"
+    return None
+
+
 def handoff_path(lane, hpath):
     """Resolve manifest basename aliases without allowing a tick outside the lane."""
     if not hpath or os.path.isabs(hpath) or ".." in hpath.split("/"):
@@ -510,6 +536,19 @@ def main(argv=None):
             fh.write(json.dumps({"row": rid, "at": now, "P_pct": kt["P_pct"], "F_pct": kt["F_pct"], "refused": kt["refused"]}, sort_keys=True) + "\n")
     tick = (agent or {}).get("tick_text")
     task = str(m.get("handoff_task") or "")
+    refused = done_when_refusal(a.lane, task, verdict, result_path, rec) if tick and ":" in task else None
+    if refused:
+        # C2: the result is FILED (verdict written, FILED below) but the box is NOT ticked; the owner is alerted
+        print(f"TICK-REFUSED {task}: {refused}", file=sys.stderr)
+        try:
+            sys.path.insert(0, os.path.join(os.path.dirname(HERE), "rowflow"))
+            import notify as _nt
+            _nt.emit(flags, "tick-refused", rid, hashlib.sha1(refused.encode()).hexdigest()[:10],
+                     f"tick refused for {task}: {refused}", "warning", owner=str(m.get("owner") or ""),
+                     detail={"handoff_task": task, "verdict": verdict, "result_path": result_path, "reason": refused})
+        except Exception as e:  # noqa: BLE001 -- the alert is best effort; the refusal itself already happened
+            print(f"WARN tick-refused alert not sent: {type(e).__name__}: {e}", file=sys.stderr)
+        tick = None
     if tick and ":" in task:
         import flip_checkbox
         hpath, token = task.rsplit(":", 1)

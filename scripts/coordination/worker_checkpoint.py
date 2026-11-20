@@ -309,6 +309,24 @@ def _child_body(req: Request, checkpoint_id: str, child_id: str | None = None) -
     )
 
 
+def _check_done_when(path: Path, lines: list[str], index: int, req: Request) -> None:
+    """C2 (AK audit B13): `/log completed` ticks only when the box's machine-checkable `done when` is met by the
+    checkpoint's evidence: paths (evidence_refs + paths), verdict (summary) and the declared validations (each counts
+    as rc 0 -- a failing validation aborts the checkpoint before commit). fail -> CheckpointError naming the box."""
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "handoffs"))
+    try:
+        import done_when as _dw
+    finally:
+        _sys.path.pop(0)
+    ev = {"paths": list(req.evidence_refs) + list(req.paths), "verdict": req.summary,
+          "commands": [{"cmd": " ".join(v), "rc": 0} for v in req.validations]}
+    root = path.resolve().parents[2] if len(path.resolve().parents) > 2 else path.parent
+    res, why, text = _dw.check_box([l.rstrip("\r\n") for l in lines], index, ev, str(root))
+    if res == "fail":
+        raise CheckpointError(f"tick refused (done-when not met): {req.task_text[:160]!r} — done when: {text!r}; {why}")
+
+
 def _handoff_box():
     import sys as _sys
     _sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "handoffs"))
@@ -388,6 +406,7 @@ def _update_handoff(path: Path, req: Request, checkpoint_id: str, day: str) -> N
                 raise CheckpointError("task is already checked by a different checkpoint")
             raise CheckpointError(f"exact task text resolved to {len(opens)} open checkboxes; expected 1")
         index, match = opens[0]
+        _check_done_when(path, lines, index, req)
         lines[index] = (
             f"{match.group('indent')}{match.group('bullet')} [x] {expected}"
             f"{match.group('nl') or ''}"

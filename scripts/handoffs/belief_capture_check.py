@@ -175,6 +175,19 @@ def same_task(a: tuple[str, str], b: tuple[str, str]) -> bool:
 
 
 def completion_evidence(body: str) -> str:
+    """T4's input: the tick's VERDICT. Handoff standard C2: for the ONE unified suffix (`✅ date [belief] verdict`) this
+    is flip_checkbox.parse_tick's `verdict` field -- the same reader wrapup/file_result/box_index use; legacy forms
+    fall back to the text after the last `✅ date`."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "coordination"))
+        from flip_checkbox import parse_tick  # noqa: PLC0415
+        t = parse_tick(body)
+        if t and t.get("form") == "unified":
+            return t.get("verdict") or ""
+    except Exception:  # noqa: BLE001 -- the legacy reader below is the fallback
+        pass
+    finally:
+        sys.path.pop(0)
     m = None
     for m in DONE_MARK.finditer(body):
         pass

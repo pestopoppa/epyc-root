@@ -721,3 +721,18 @@ def test_attach_child_ids_class_and_reverses_gate() -> None:
     assert any("**KPF-9.ck-2**" in l for l in out2)
     own2, _ = tl.L1.own_block([l.rstrip("\n") for l in out2], 0)
     assert tl.parse_fields(own2)["gate"] == "KPF-1, KPF-9.ck-1, KPF-9.ck-2"
+
+
+def test_completed_refused_when_done_when_artifact_class_not_met(lane: Path) -> None:
+    """C2: /log completed applies the same done-when check as wrapup.py (AKX-ALL-14 fixture)."""
+    p = lane / HANDOFF
+    text = p.read_text(encoding="utf-8").replace(
+        f"- [ ] {TASK}\n",
+        f"- [ ] {TASK}\n      · done when: keep record has gpu_build_receipt.proven and recipe registered before build\n")
+    p.write_text(text, encoding="utf-8")
+    git(lane, "commit", "-qam", "done-when box")
+    git(lane, "push", "-q")
+    dirty(lane)
+    with pytest.raises(wc.CheckpointError, match="done-when not met"):
+        wc.run_checkpoint(request(boundary_key="dw-prod"), repo=lane)   # paths name no loop-built artifact
+    assert f"- [ ] {TASK}" in p.read_text(encoding="utf-8")
