@@ -343,6 +343,7 @@
   <section class="backlog">
     <h2>Outstanding backlog — how far from done <span class="muted" style="text-transform:none;font-weight:400;letter-spacing:0">(context — see Flow above for movement)</span></h2>
     <div class="bk-stats" id="backlog-stats"><span class="muted">loading…</span></div>
+    <div class="bk-boxes muted" id="box-index-counts" style="margin:6px 0;font-size:12px"></div>
     <div class="bk-priority" id="backlog-priority"></div>
     <div class="bk-stall" id="backlog-stall"></div>
     <div class="bk-progress">
@@ -629,6 +630,7 @@ function renderBoard(data){
   $("#subline").textContent =
     `${data.counts.active-(data.counts.routers||0)} active · ${data.counts.blocked} blocked · ${data.counts.completed} completed · ${data.counts.archived} archived${data.counts.folded?` · ${data.counts.folded} folded`:""}${data.counts.routers?` · ${data.counts.routers} routers (not handoffs)`:""}${gen}`;
   renderBacklog(data.backlog||{}, data.activity_today);
+  renderBoxIndex(data.box_index||{});
   renderFlow(data.activity_window, data.activity_today, (data._freshness||{}).view);
 }
 
@@ -761,6 +763,17 @@ function renderFlow(win, act, view){
     }
   }
 }
+// Handoff standard C0.4/C3: box counts from the generated .box-index.json + holds.yaml, with a staleness badge.
+function renderBoxIndex(bi){
+  const el = $("#box-index-counts"); if(!el) return;
+  if(!bi.available){ el.textContent = "box index unavailable" + (bi.stale_reason ? " ("+bi.stale_reason+")" : ""); return; }
+  const c = bi.counts||{};
+  const parts = ["open","blocked","frozen","needs-owner","held","outside_backlog","lint_ok"].map(k => k+" "+(c[k]||0));
+  const holds = (bi.holds||[]).map(h => h.id).join(", ");
+  el.textContent = "Boxes: " + parts.join(" · ") + (holds ? " | holds: " + holds : "")
+    + (bi.stale ? "  [STALE: " + (bi.stale_reason||"older than sources") + "]" : "");
+}
+
 function renderBacklog(bk, act){
   const stats = $("#backlog-stats"); if(!stats) return;
   const priorityWrap = $("#backlog-priority");

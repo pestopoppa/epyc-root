@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Iterator
@@ -707,12 +708,63 @@ def build_board(handoff_root: Path, *, file_activity: dict | None = None,
     counts = {s: len(columns[s]) for s in STATES}
     counts["folded"] = len(columns["folded"])
     counts["routers"] = sum(1 for s in ("active", "blocked") for c in columns[s] if c.get("router"))
+    bix = box_index_summary(handoff_root.parent)
+    for s_ in ("active", "blocked"):
+        for c in columns[s_]:
+            got = bix.get("_per_file", {}).get(str(c.get("id", "")).split("/", 1)[-1] + ".md")
+            if got:
+                c["box_counts"] = got
+    bix.pop("_per_file", None)
     return {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "columns": columns,
         "counts": counts,
         "backlog": _backlog_summary(columns),
+        "box_index": bix,
     }
+
+
+BOX_COUNT_STATES = ("open", "blocked", "frozen", "needs-owner", "outside_backlog", "held")
+
+
+def box_index_summary(repo: Path) -> dict:
+    """Handoff standard C0.4/C3: the generated `.box-index.json` counts the hub shows -- open / blocked / frozen /
+    needs-owner / outside_backlog / held, per handoff file and in total -- plus the hold list and a staleness badge.
+    Read with regenerate=False (the hub never builds it inline; refresh_hub_view regenerates). Never raises."""
+    out = {"available": False, "stale": True, "counts": {}, "holds": [], "holds_source": None, "_per_file": {}}
+    try:
+        sys.path.insert(0, str(repo / "scripts" / "handoffs"))
+        try:
+            import box_index as _bi  # noqa: PLC0415
+        finally:
+            sys.path.pop(0)
+        doc = _bi.load(repo, regenerate=False)
+    except Exception as exc:  # noqa: BLE001
+        out["stale_reason"] = f"{type(exc).__name__}: {exc}"
+        return out
+    if not doc or not doc.get("boxes"):
+        out["stale_reason"] = (doc or {}).get("stale_reason") or "box index never built"
+        return out
+    per: dict[str, dict] = {}
+    for r in doc["boxes"].values():
+        if r.get("state") == "done":
+            continue
+        d = per.setdefault(Path(r.get("file", "")).name, {k: 0 for k in BOX_COUNT_STATES} | {"holds": []})
+        if r.get("state") in d:
+            d[r["state"]] += 1
+        if r.get("gate_open"):
+            d["blocked"] += 1
+        if r.get("outside_backlog"):
+            d["outside_backlog"] += 1
+        if r.get("holds"):
+            d["held"] += 1
+            d["holds"] = sorted(set(d["holds"]) | set(r["holds"]))
+    c = doc.get("counts") or {}
+    out.update({"available": True, "stale": bool(doc.get("stale")), "stale_reason": doc.get("stale_reason"),
+                "counts": {k: int(c.get(k, 0)) for k in BOX_COUNT_STATES} | {"lint_ok": int(c.get("lint_ok", 0)),
+                                                                           "total": int(c.get("total", 0))},
+                "holds": doc.get("holds") or [], "holds_source": doc.get("holds_source"), "_per_file": per})
+    return out
 
 
 def outstanding_cards(columns: dict[str, list[dict]]) -> list[dict]:

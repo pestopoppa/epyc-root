@@ -270,7 +270,8 @@ _PANEL_SOURCE_CATALOG = _index((
         route="/api/handoff_board",
         producer="dashboard.server.board_payload (this hub)",
         producer_repo="epyc-root",
-        evidence="handoffs/{active,blocked,completed,archived}/*.md + git status",
+        evidence="handoffs/{active,blocked,completed,archived}/*.md + git status + handoffs/active/.box-index.json "
+                 "(box counts, holds; read regenerate=False with a `stale` badge) + holds.yaml via the box index",
         timestamp_field="live-scan",
         absence_means=(
             "impossible: the board is a live directory scan performed inside the "
@@ -278,7 +279,8 @@ _PANEL_SOURCE_CATALOG = _index((
             "the request would 500 rather than render an empty board."),
         gates_health=True,
         notes="TTL-cached for _BOARD_TTL_S; the cache is a latency device, not a "
-              "producer, so it never becomes the freshness source.",
+              "producer, so it never becomes the freshness source. `box_index` (handoff standard C0.4) carries its "
+              "own `stale`/`stale_reason`: the hub never rebuilds the index inline.",
     ),
     PanelSource(
         panel="hub_view",
