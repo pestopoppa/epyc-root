@@ -168,7 +168,7 @@ def load_module(name, path):
 def integrated(panel, tmp_path):
     runner = load_module('precision_runner_test', Path(__file__).with_name('runner.py'))
     worker = tmp_path / 'worker.py'
-    worker.write_text('''import argparse, json, pathlib, sys
+    worker.write_text('''import argparse, hashlib, json, pathlib, sys
 p=argparse.ArgumentParser()
 p.add_argument('--plan'); p.add_argument('--cell-id'); p.add_argument('--output')
 a=p.parse_args(); plan=json.loads(pathlib.Path(a.plan).read_text())
@@ -181,10 +181,16 @@ if mode in ('failed', 'invalid', 'abstained'):
 else:
     value={'status':'ok', 'positions':[{'position':0,'accepted':1,'drafted':2}],
            'accepted':1,'drafted':2,'numerical_divergence':{'max_abs':0.001}}
+value['request']={'plan_sha256':hashlib.sha256(pathlib.Path(a.plan).read_bytes()).hexdigest(),
+                  'case':next(c for c in plan['cells'] if c['cell_id']==a.cell_id),
+                  'settings':{k:plan[k] for k in ('drafter_sha256','backend','binary_sha256','libraries_sha256',
+                    'verification','sampling','prompt_manifest_sha256','holdout_sha256','protocol_sha256',
+                    'source_sha256','decision_rule','numerical_floor')}, 'runtime':plan['native_worker']}
 pathlib.Path(a.output).write_text(json.dumps(value))
 if mode == 'nonzero': sys.exit(3)
 ''')
-    plan = json.loads(panel[0].read_text())
+    admission_fixture = load_module('precision_admission_fixture', Path(__file__).with_name('test_admission.py'))
+    plan, _, _ = admission_fixture.make_panel(tmp_path)
     plan.update(origin='native_claimed', measurement_labels=dict(
         id_prefix='test-only', date='2026-11-20', category='CANDIDATE',
         claim='successful-cell acceptance in the declared precision panel'))

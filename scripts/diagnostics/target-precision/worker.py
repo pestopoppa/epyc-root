@@ -23,6 +23,7 @@ SCHEMA = 'epyc.target-precision.native-trace.v1'
 def request_for(plan_path, cell_id):
     plan, identity = capture._read(plan_path)
     capture._plan(plan)
+    capture.admit_native(plan)
     cases = [c for c in plan['cells'] if c['cell_id'] == cell_id]
     if len(cases) != 1:
         raise ValueError('unknown cell')

@@ -7,6 +7,7 @@ weight equivalence. Existing DFlash concurrency carriers remain unchanged.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import math
 from pathlib import Path
@@ -110,6 +111,13 @@ def _plan(plan):
     return plan
 
 
+def admit_native(plan):
+    module_spec = importlib.util.spec_from_file_location('precision_admission', Path(__file__).with_name('admission.py'))
+    module = importlib.util.module_from_spec(module_spec)
+    module_spec.loader.exec_module(module)
+    module.admit(plan, _read)
+
+
 def _exclusive(path, value):
     with Path(path).open('xb') as stream:
         stream.write(_encode(value) + b'\n')
@@ -124,6 +132,8 @@ def open_capture(plan_path, opened_path):
     _plan(plan)
     record = {'schema': SCHEMA, 'phase': 'opened', 'plan': plan,
               'plan_file': identity, 'producer_sha256': _digest(Path(__file__).read_bytes())}
+    if 'admission' in plan:
+        record['admission_producer_sha256'] = _digest(Path(__file__).with_name('admission.py').read_bytes())
     _exclusive(opened_path, record)
     return record
 
@@ -142,6 +152,10 @@ def _finalized(opened_path, cell_paths):
     if opened['producer_sha256'] != _digest(Path(__file__).read_bytes()):
         raise ValueError('producer bytes changed')
     plan = _plan(opened['plan'])
+    if 'admission' in plan:
+        if opened.get('admission_producer_sha256') != _digest(Path(__file__).with_name('admission.py').read_bytes()):
+            raise ValueError('admission producer bytes changed')
+        admit_native(plan)
     current_plan, identity = _read(opened['plan_file']['path'])
     if identity['sha256'] != opened['plan_file']['sha256'] or current_plan != plan:
         raise ValueError('plan bytes changed')

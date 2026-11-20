@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T03:13:23Z",
+  "generated_at": "2026-11-20T03:46:05Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1048,7 +1048,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 71,
+      "closed": 72,
       "dispatchable": 32,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -1089,7 +1089,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 834,
+          "line": 872,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1098,7 +1098,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1146,
+          "line": 1184,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1107,7 +1107,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1353,
+          "line": 1391,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1116,7 +1116,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1679,
+          "line": 1717,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1125,7 +1125,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1914,
+          "line": 1952,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1772,7 +1772,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 157,
+      "closed": 158,
       "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 815,
+          "line": 816,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29,
           "readiness": "blocked"
