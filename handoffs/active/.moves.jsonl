@@ -53,3 +53,4 @@
 {"at": "2026-11-20", "box_id": "CJ-27", "from": "benchmark-suites.md", "line": 1945, "new_text_sha": "1eeb86126d34e58f", "old_head": null, "op": "assign-id", "text_sha": "fd0e8a5b30ef4fbe", "to": "benchmark-suites.md"}
 {"at": "2026-11-20", "box_id": "CJ-28", "from": "benchmark-suites.md", "line": 953, "new_text_sha": "2ad4b724cfcbf91c", "old_head": "CJ-GATE", "op": "assign-id", "text_sha": "4aa9ffe8c72ddbd3", "to": "benchmark-suites.md"}
 {"at": "2026-11-20", "box_id": "CJ-29", "from": "benchmark-suites.md", "line": 1994, "new_text_sha": "25b8e411662dcc92", "old_head": "E3b", "op": "assign-id", "text_sha": "337c2c9859bf47e2", "to": "benchmark-suites.md"}
+{"at": "2026-11-20", "box_id": "EV-21", "from": "eval-tower-program.md", "line": 2751, "new_text_sha": "215c0beae52ab41e", "old_head": null, "op": "assign-id", "text_sha": "808c04c827c451e6", "to": "eval-tower-program.md"}
