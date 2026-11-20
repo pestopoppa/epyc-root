@@ -311,3 +311,13 @@ editing a trace or runtime record after opening refuses closure. Digests and
 consistent declarations do not independently attest model provenance or prove
 that residency observations overlapped the verification kernel specifically.
 There has been no model-backed floor measurement or causal precision finding.
+
+`plan_weights.tensor_storage_plan` optionally refines storage planning from bounded
+safetensors headers fetched at the same immutable revision as the shard index.
+It checks exact tensor coverage, dtype/shape byte counts, contiguous offsets, and
+full shard lengths without reading tensor payloads. Header SHA-256 receipts do
+not verify the LFS payloads. The BF16 payload estimate is descriptive; the disk
+envelope uses four bytes per source element for each output, including mixed
+quantization retention, plus alignment and metadata reserves. Converter-added
+tensors and temporary workspace require a separate source audit; execution stays
+unadmitted even if that envelope fits. The 150 GiB disk floor is unchanged.

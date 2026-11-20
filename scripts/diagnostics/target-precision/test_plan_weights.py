@@ -57,3 +57,50 @@ def test_floor_and_converter_refuse():
     a,b=fixture()
     with pytest.raises(ValueError): run(a,b,disk_floor=149*GIB)
     with pytest.raises(ValueError): plan_weights(a,b,'main',1000*GIB)
+
+
+def tensor_fixture():
+    import struct
+    from plan_weights import tensor_storage_plan
+    api, index = fixture()
+    headers = {}
+    for name, shard in [('a', 'a.safetensors'), ('b', 'b.safetensors')]:
+        raw = json.dumps({name: {'dtype':'BF16', 'shape':[2, 16], 'data_offsets':[0,64]}}).encode()
+        headers[shard] = struct.pack('<Q', len(raw)) + raw
+        item = next(s for s in api['siblings'] if s['rfilename'] == shard)
+        item['size'] = item['lfs']['size'] = len(headers[shard])+64
+    return run(api,index), index, headers, tensor_storage_plan
+
+
+def test_tensor_sizing_and_floor_boundary():
+    plan, index, headers, size = tensor_fixture()
+    result = size(plan,index,headers,1000*GIB)
+    assert result['elements'] == 64 and result['bf16_payload_bytes'] == 128
+    assert result['source_payload_bytes'] == 128
+    assert not result['execution_admitted']
+    need = result['peak_additional_bytes'] + 150*GIB
+    assert size(plan,index,headers,need)['disk_envelope_fits']
+    assert not size(plan,index,headers,need-1)['disk_envelope_fits']
+
+
+@pytest.mark.parametrize('mutation', ['coverage','index','prefix','length','dtype','shape','offset','size','name','duplicate','floor'])
+def test_tensor_header_refusals(mutation):
+    import struct
+    plan,index,headers,size = tensor_fixture()
+    shard = 'a.safetensors'
+    obj = json.loads(headers[shard][8:])
+    if mutation == 'coverage': headers.pop(shard)
+    if mutation == 'index': index += b' '
+    if mutation == 'prefix': headers[shard] = b'bad'
+    if mutation == 'length': headers[shard] += b' '
+    if mutation == 'dtype': obj['a']['dtype'] = 'UNKNOWN'
+    if mutation == 'shape': obj['a']['shape'] = [True,32]
+    if mutation == 'offset': obj['a']['data_offsets'] = [1,65]
+    if mutation == 'size': next(s for s in plan['sources'] if s['path'] == shard)['size'] += 1
+    if mutation == 'name': obj['other'] = obj.pop('a')
+    if mutation == 'floor': plan['storage']['disk_floor_bytes'] = 0
+    if mutation in ['dtype','shape','offset','name','duplicate']:
+        raw = json.dumps(obj).encode()
+        if mutation == 'duplicate': raw = b'{"a":{},"a":{}}'
+        headers[shard] = struct.pack('<Q',len(raw)) + raw
+    with pytest.raises(ValueError): size(plan,index,headers,1000*GIB)

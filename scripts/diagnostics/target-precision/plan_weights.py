@@ -78,3 +78,80 @@ def plan_weights(api, index_bytes, source_commit, available_bytes, *, disk_floor
                            'retain original conversion/quantization logs and output hashes',
                            'verify tensor and tokenizer correspondence', 'bind fixed drafter to pinned upstream',
                            'prepare weight receipt only after successful derivation'])
+
+
+def tensor_storage_plan(plan, index_bytes, headers, available_bytes):
+    """Size native tensors from bounded safetensors headers, without weight reads.
+
+    Header digests identify fetched metadata, not the shard payload. F32 ceilings
+    allow retained nonquantized tensors in every arm. Converter-added tensors and
+    temporary workspace still require a converter-specific audit before execution.
+    """
+    import json
+    import math
+    import struct
+    _require(type(available_bytes) is int and available_bytes >= 0, 'invalid available bytes')
+    index_source = next(s for s in plan['sources'] if s['path'] == 'model.safetensors.index.json')
+    blob = hashlib.sha1(b'blob ' + str(len(index_bytes)).encode() + b'\0' + index_bytes).hexdigest()
+    _require(blob == index_source['git_blob_sha1'], 'index identity mismatch')
+    mapping = json.loads(index_bytes)['weight_map']
+    shards = {s['path']: s for s in plan['sources'] if s['path'].endswith('.safetensors')}
+    _require(set(headers) == set(shards), 'header shard coverage mismatch')
+    widths = {'BF16': 2, 'F16': 2, 'F32': 4, 'F64': 8,
+              'I64': 8, 'I32': 4, 'I16': 2, 'I8': 1, 'U8': 1, 'BOOL': 1}
+    seen, receipts = set(), []
+    elements = payload = 0
+    for shard, source in sorted(shards.items()):
+        raw = headers[shard]
+        _require(len(raw) >= 8, 'truncated header prefix')
+        n = struct.unpack('<Q', raw[:8])[0]
+        _require(0 < n <= 16 * 1024 * 1024 and len(raw) == n + 8, 'invalid header length')
+        def unique(pairs):
+            d = {}
+            for key, value in pairs:
+                _require(key not in d, 'duplicate header key')
+                d[key] = value
+            return d
+        catalog = json.loads(raw[8:], object_pairs_hook=unique)
+        _require(isinstance(catalog, dict), 'invalid tensor catalog')
+        spans = []
+        for name, tensor in catalog.items():
+            if name == '__metadata__':
+                continue
+            _require(name not in seen and mapping.get(name) == shard, 'tensor index correspondence mismatch')
+            seen.add(name)
+            shape, dtype, offsets = tensor.get('shape'), tensor.get('dtype'), tensor.get('data_offsets')
+            _require(isinstance(shape, list) and all(type(d) is int and d >= 0 for d in shape), 'invalid tensor shape')
+            _require(dtype in widths, 'unsupported source dtype')
+            _require(isinstance(offsets, list) and len(offsets) == 2 and
+                     all(type(o) is int and o >= 0 for o in offsets), 'invalid data offsets')
+            count = math.prod(shape)
+            _require(offsets[1] - offsets[0] == count * widths[dtype], 'tensor byte count mismatch')
+            spans.append(tuple(offsets))
+            elements += count
+        cursor = 0
+        for start, end in sorted(spans):
+            _require(start == cursor, 'overlap or gap in shard payload')
+            cursor = end
+        _require(cursor + len(raw) == source['size'], 'shard size mismatch')
+        payload += cursor
+        receipts.append(dict(path=shard, header_bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest()))
+    _require(seen == set(mapping), 'missing indexed tensor')
+    # No optimistic Q4 bits-per-weight admission: mixed quantization may retain
+    # F32 tensors. Explicit metadata reserve and per-tensor alignment in all arms.
+    cap = 4 * elements + 32 * len(seen) + GIB
+    peak = plan['storage']['source_bytes'] + 3 * cap
+    floor = plan['storage']['disk_floor_bytes']
+    _require(type(floor) is int and floor >= 150 * GIB, 'disk floor cannot be lowered')
+    return dict(schema='epyc.target-precision.tensor-sizing.v1', base=plan['base'],
+                converter_commit=plan['converter_commit'], headers=receipts,
+                tensor_count=len(seen), elements=elements, source_payload_bytes=payload,
+                bf16_payload_bytes=2 * elements, f32_payload_ceiling_bytes=4 * elements,
+                per_output_cap_bytes=cap, peak_additional_bytes=peak,
+                disk_floor_bytes=floor, available_bytes=available_bytes,
+                disk_envelope_fits=available_bytes >= floor + peak,
+                execution_admitted=False,
+                limitations=['headers are not verified shard payloads',
+                             'audit converter tensor additions and temporary workspace',
+                             'verify tool/output, tokenizer and drafter correspondence',
+                             'recheck all resource floors immediately before acquisition'])
