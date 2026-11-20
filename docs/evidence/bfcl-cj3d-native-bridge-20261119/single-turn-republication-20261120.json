@@ -1,0 +1,27 @@
+{
+  "box": "CJ-3d",
+  "row": "codex-bfcl-cj3d-single-27b-v1-20261120",
+  "action": "Republished through publish_row.py --smoke-now after prior PASS was found without a READY manifest. --repair refused because no FAIL existed; no control-plane files were edited by hand.",
+  "verdict": "SMOKE PASS; PUBLISHED",
+  "returncode": 0,
+  "regions": "116-119",
+  "passed_at": "2026-11-20T04:55:41Z",
+  "smoke_units": 1,
+  "job_complete": false,
+  "evidence": {
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3d-single-27b-v1-20261120/PASS.json": {
+      "sha256": "2baec8bac73f59d4eeeed8e97fbb85072df7065ce59f384de9429d3cdf2b17e7"
+    },
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3d-single-27b-v1-20261120/native-attempts/attempt-i0c__t1h/native-result.json": {
+      "sha256": "794839fccd3e3321a11ad7777588c86a2a27b13eba7db073bedfac288f5f9d77"
+    },
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/spec.json": {
+      "sha256": "5c652e05be05ef42be4a32b63984ab1ba995aba920515a1481c8e6aad535ef7a"
+    }
+  },
+  "limitations": [
+    "Synthetic noncohort native request only; no BFCL score or adoption claim.",
+    "Prior missing-manifest cause was not established.",
+    "No repeated cohort exposure; full run remains granted work."
+  ]
+}

@@ -371,6 +371,12 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       [Source and input bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-fleet-20261120.json).
       Parent remains open for live coverage verdicts.
       [no-belief: software controls; no benchmark quality claim]
+      2026-11-20 republication: the single-turn row's prior PASS had no READY
+      manifest. Publisher repair refused (no FAIL record); republishing through
+      `publish_row.py --smoke-now` returned **SMOKE PASS and PUBLISHED**, rc=0,
+      CPUs 116–119 at 04:55Z. [Input and native-smoke content bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-republication-20261120.json).
+      No manual READY edit, full cohort run or quality verdict; disappearance cause
+      unestablished. The fourteen-case diagnostic is again published for granted work.
   - [x] **CJ-3d-SINGLE-CAPTURE — Pass all fourteen supported single-turn coverage cases through durable native capture and the original checker with refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
       Single-turn Python/Java/JavaScript capture now shares the exclusive journal,
       content-pinned inputs and local residency transport. Embedded schemas and lock
