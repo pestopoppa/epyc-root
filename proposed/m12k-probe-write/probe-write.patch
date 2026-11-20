@@ -1,0 +1,20 @@
+--- a/src/api/routes/chat_review.py
++++ b/src/api/routes/chat_review.py
+@@ -336,8 +336,16 @@
+     # Recompute phase
+     state.plan_review_phase = _compute_plan_review_phase(stats)
+ 
++    # Diagnostic requests still receive review, logging and phase accounting,
++    # but must not train episodic memory through this external-scoring path.
++    from src.backends.prompt_layout import current_request_source, is_non_learning_source
++
++    non_learning = (
++        is_non_learning_source(task_ir.get("request_source"))
++        or is_non_learning_source(current_request_source())
++    )
+     # Store as MemRL episode for Q-learning (expert demonstration)
+-    if state.q_scorer and state.hybrid_router:
++    if not non_learning and state.q_scorer and state.hybrid_router:
+         try:
+             reward = review.score * 2 - 1  # Map 0-1 to -1..+1
+             state.q_scorer.score_external_result(
