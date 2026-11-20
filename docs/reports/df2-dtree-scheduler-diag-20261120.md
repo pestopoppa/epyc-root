@@ -45,3 +45,13 @@ Both 27B and A3B completed two 64-token tree requests with verified tree rounds.
 Df2 filed PASS with `file_result.py --no-reclaim`, which created the filing receipt; alert `246658bb188c1080360c4bf4` was acknowledged. The parent P5 checkbox remains open because this row did not execute its timing protocol.
 
 Evidence: original `/mnt/raid0/llm/tmp/ak-dtree-build-gpu-20261120-r4/out/results.jsonl`, SHA-256 `670a2dab8dc897f311cc4effe50df25ed87b3cb9f070349ade21edd5d3bef759`. Recorded artifacts: `llama-server` SHA-256 `282b53f5db8670a27a39c4de9ef1ee70c5faed07e826777a6f568cb644a6f32c`; `libllama-server-impl.so` `efb1417a3ea0cfc2aafb3f851573e472d07e72407a6d49d8e817f56361485849`; `libllama.so.0.0.10614` `d9b416a842ddd3a614b94c268e6f23b58e694c61592eb67eeb6258a095f72121`; `libggml-hip.so.0.16.0` `e5535fc3dbde65a6bec841c8c54801954648211624f67b467d40c21dc413d013` (R3: `3b243ee959e627fb8715f5c67ad838c23a81eb579dba137b77f1866d31b4e690`).
+
+## R6: deferred-commit build and long server smoke
+
+Row `ak-dtree-build-gpu-20261120-r6` ended rc=0 at 11:45:58Z. Applying the R5/R6 amendments gives **PASS** for build/content proof and server smoke at experimental source `51b885a8cbd32ee8b0105dea54a18260fb3adbec`. The final build record reports all content gates true, including matching version, rebuilt implementation, reservation marker, tree-accept symbol, changed HIP library and linkage rc=0. R6 replaces R5's reclaimed baseline-file dependency. [belief: cc]
+
+Both models completed three 256-token tree requests: 27B at 12 columns, A3B at 6. Every request logged verified tree rounds; neither model hit the HTTP failure gate. Chain identity was 2/3 for 27B and 1/3 for A3B, recorded rather than gated by the registered rule. These observations establish the amended smoke pass, not general correctness, causal attribution or a speed verdict. P5 remains open for the already-published 27B r2 oracle-qualified measured A/B. The A3B timing lineage remains stopped by its previously filed futility result. [belief: cc]
+
+The owner had already filed PASS/FILED; df2's filing returned NOOP and acknowledged alert `a248b4fb0e7e3ca718bb6682`. No replacement row is needed for this completed build gate.
+
+Evidence: original `/mnt/raid0/llm/tmp/ak-dtree-build-gpu-20261120-r6/out/results.jsonl`, SHA-256 `0a24a339e5fb0fe44f2eb8f6e4e830cc6f6d3796399b47064e2b66d01ac2e6aa`. Recorded artifact SHA-256 values: `llama-server` `288a2b5fcba1d75207b0c2f8e64954f9624f507dd50f369ed3f189ecc3570000`; `libllama-server-impl.so` `df1414081515b599153c2e49a267accc624cf607aac301fbdc169885ee8e1ea6`; `libllama.so.0.0.10615` `d9b416a842ddd3a614b94c268e6f23b58e694c61592eb67eeb6258a095f72121`; `libggml-hip.so.0.16.0` `e5535fc3dbde65a6bec841c8c54801954648211624f67b467d40c21dc413d013`.
