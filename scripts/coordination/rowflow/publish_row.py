@@ -845,40 +845,72 @@ def _under(p, root):
     return bool(root) and (os.path.normpath(p) == root or os.path.normpath(p).startswith(root + "/"))
 
 
-def path_provenance_refusal(spec, cmds, warn=None):
-    """F8 (AK audit B8): every absolute /mnt/raid0/llm/tmp/... path a smoke_predicate / --complete-cmd / --precond-cmd
-    names must (1) sit inside THIS row's own dirs (scratch_root, result_path's dir, the launcher's dir, --workdir), (2) not
-    name a different row id, and (3) exist now or be declared under spec `expects_created: [paths]`. Paths outside the
-    tmp root (binaries, models) are not judged. (3) inside the row's own dirs is a WARN appended to `warn` (a completion
-    marker never exists before its run); (1) and (2) refuse. Returns the refusal text, or None."""
+def other_row_dirs(flags, rid):
+    """{dir: row id} of every OTHER row with a manifest (ready/<id>.json or dryrun/<id>/unpublished.json): its
+    scratch_root (when under the tmp root) and its dryrun dir. Used by F8: only these are refused."""
+    out = {}
+    if not flags:
+        return out
+    mans = glob.glob(os.path.join(flags, "ready", "*.json")) + glob.glob(os.path.join(flags, "dryrun", "*", "unpublished.json"))
+    for m in mans:
+        oid = os.path.basename(m)[:-5] if os.path.basename(m) != "unpublished.json" else os.path.basename(os.path.dirname(m))
+        if oid == rid:
+            continue
+        d = rf.load_json(m) or {}
+        sr = str(d.get("scratch_root") or "")
+        if sr.startswith(rf.TMP) and os.path.normpath(sr) != os.path.normpath(rf.TMP):
+            out[os.path.normpath(sr)] = oid
+        out[os.path.normpath(rf.dry_dir(flags, oid))] = oid
+    return out
+
+
+def path_provenance_refusal(spec, cmds, warn=None, flags=None):
+    """F8 (AK audit B8): absolute /mnt/raid0/llm/tmp/... paths a smoke_predicate / --complete-cmd / --precond-cmd names.
+    REFUSED only when the path lies inside ANOTHER row's scratch_root or dryrun dir, per that row's manifest
+    (ready/<id>.json or dryrun/<id>/unpublished.json; review S2) - a predicate must test this run. A path outside the
+    row's own dirs that is not another row's (a shared input corpus such as lsa-quality-screen-20261106/, or a path
+    naming a row id with no manifest) is a WARN. Declared inputs are quiet: `expects_created: [paths]` and the existing
+    `scratch_inputs` ([{path relative to scratch_root}]). A not-yet-existing path in the row's own dirs is a WARN too
+    (never for --complete-cmd: a completion marker is absent until its run ends). Paths outside the tmp root are not
+    judged. Returns the refusal text, or None; warnings are appended to `warn`."""
     rid = str(spec.get("id") or "")
     stem = rf.id_stem(rid) if rid else ""
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
-    own = [str(spec.get("scratch_root") or ""), os.path.dirname(str(spec.get("result_path") or "")), os.path.dirname(launcher)]
+    sroot = str(spec.get("scratch_root") or "")
+    own = [sroot, os.path.dirname(str(spec.get("result_path") or "")), os.path.dirname(launcher)]
     own += [str(w) for w in (spec.get("_workdir"),) if w]
     own = [x for x in own if x.startswith(rf.TMP) and os.path.normpath(x) != os.path.normpath(rf.TMP)]
     exp = [os.path.normpath(str(x)) for x in (spec.get("expects_created") or [])]
+    exp += [os.path.normpath(os.path.join(sroot, str(x.get("path")))) for x in (spec.get("scratch_inputs") or [])
+            if isinstance(x, dict) and x.get("path") and sroot]
+    others = None
+    w = warn if warn is not None else []
     for kind, cmd in cmds:
         for p in rf._ABS_TOKEN.findall(cmd or ""):
             p = p.rstrip(",:")
             if not p.startswith(rf.TMP):
                 continue
-            fix = (f"FIX: point {kind} at this row's own output (under {own[0] if own else 'its scratch_root'}), or, for a "
-                   f"file the job itself creates, list it under \"expects_created\": [\"{p}\"]; then re-run publish_row.py")
-            other = [seg for seg in p[len(rf.TMP):].split("/") if _ROW_ID_SEG.fullmatch(seg)
-                     and not (seg == rid or seg.startswith(rid) or rf.id_stem(seg) == stem)]
-            if other:
-                return f"{kind} `{cmd[:80]}` reads {p}, which names a different row ({other[0]}); a predicate must test THIS run. {fix}"
+            declared = any(_under(p, e) for e in exp)
+            fix = (f"FIX: point {kind} at this row's own output (under {own[0] if own else 'its scratch_root'}), or declare "
+                   f"it under \"expects_created\" / \"scratch_inputs\"; then re-run publish_row.py")
             if not any(_under(p, r) for r in own):
-                return (f"{kind} `{cmd[:80]}` reads {p}, outside this row's dirs ({', '.join(own) or 'none declared'}); "
-                        f"another row's output can make it pass or fail. {fix}")
+                if others is None:
+                    others = other_row_dirs(flags, rid)
+                hit = next(((d, o) for d, o in others.items() if _under(p, d) and rf.id_stem(o) != stem), None)
+                if hit and not declared:
+                    return (f"{kind} `{cmd[:80]}` reads {p}, inside row {hit[1]}'s dir {hit[0]} (its manifest is published); "
+                            f"another row's output can make it pass or fail - a predicate must test THIS run. {fix}")
+                if not declared:
+                    named = [seg for seg in p[len(rf.TMP):].split("/") if _ROW_ID_SEG.fullmatch(seg)
+                             and not (seg == rid or seg.startswith(rid) or rf.id_stem(seg) == stem)]
+                    w.append(f"provenance: {kind} reads {p}, outside this row's dirs"
+                             + (f" (names {named[0]}, which has no published manifest)" if named else "")
+                             + "; if it is a shared input, declare it under \"scratch_inputs\"/\"expects_created\" (publish continues)")
+                continue
             exists = os.path.exists(p) or (any(c in p for c in "*?[") and glob.glob(p))
-            if not exists and not any(_under(p, e) for e in exp):
-                # inside the row's own dirs a not-yet-existing file is usually the job's own output: WARN, never refuse
-                # (refusing would make every completion marker a publish failure); outside them it is refused above
-                if warn is not None and kind != "--complete-cmd":   # a completion marker is absent until its run ends
-                    warn.append(f"provenance: {kind} reads {p}, which does not exist yet; if the job creates it, declare "
-                                f"\"expects_created\": [\"{p}\"] (publish continues)")
+            if not exists and not declared and kind != "--complete-cmd":
+                w.append(f"provenance: {kind} reads {p}, which does not exist yet; if the job creates it, declare "
+                         f"\"expects_created\": [\"{p}\"] (publish continues)")
     return None
 
 
@@ -900,7 +932,7 @@ def preflight(spec, flags, rerun=False):
     pwarn = []
     bad = path_provenance_refusal(dict(spec, _workdir=o.get("workdir")),
                                   [("smoke_predicate", pred0), ("--complete-cmd", o.get("complete_cmd")),
-                                   ("--precond-cmd", o.get("precond_cmd"))], warn=pwarn)
+                                   ("--precond-cmd", o.get("precond_cmd"))], warn=pwarn, flags=flags)
     rf.need(not bad, bad)
     for w in pwarn:
         _warn(spec, w)

@@ -224,15 +224,51 @@ class Preflight(unittest.TestCase):
         self.run_pf(self.spec(smoke_predicate="test -s out/results.jsonl"))
 
     # F8 (AK audit B8): predicate / completion-check provenance
+    def other_row(self, oid, unpublished=False):
+        d = os.path.join(rf.TMP, oid)
+        os.makedirs(os.path.join(d, "out"), exist_ok=True)
+        man = {"id": oid, "owner": "t", "scratch_root": d}
+        if unpublished:
+            rf.atomic_json(os.path.join(rf.dry_dir(self.fx.flags, oid), "unpublished.json"), man)
+        else:
+            rf.atomic_json(rf.ready_path(self.fx.flags, oid), man)
+        return d
+
     def test_f8_predicate_on_other_rows_output_refused(self):
-        other = os.path.join(rf.TMP, "other-row-20261119", "out", "results.jsonl")
+        other = os.path.join(self.other_row("other-row-20261119"), "out", "results.jsonl")
         msg = self.refused(self.spec(smoke_predicate=f"grep -q pass {other}"), other)
-        self.assertIn("different row (other-row-20261119)", msg)
+        self.assertIn("row other-row-20261119's dir", msg)
         self.assertIn("expects_created", msg)
 
-    def test_f8_path_outside_row_dirs_refused(self):
+    def test_f8_unpublished_row_dir_and_dryrun_dir_refused(self):
+        other = os.path.join(self.other_row("queued-row-20261119", unpublished=True), "x")
+        self.refused(self.spec(smoke_predicate=f"test -e {other}"), "queued-row-20261119")
+        dd = os.path.join(rf.dry_dir(self.fx.flags, "queued-row-20261119"), "PASS.json")
+        self.refused(self.spec(smoke_predicate=f"test -e {dd}"), "queued-row-20261119")
+
+    def test_f8_review_s2_shared_corpus_warns_not_refused(self):
+        """lsa-quality-32k-20261106-r* predicates read the shared corpus dir lsa-quality-screen-20261106/ (no manifest)."""
+        corpus = os.path.join(rf.TMP, "lsa-quality-screen-20261106", "corpus.jsonl")
+        os.makedirs(os.path.dirname(corpus), exist_ok=True)
+        open(corpus, "w").write("{}\n")
+        out = self.run_pf(self.spec(smoke_predicate=f"test -s {corpus} && test -s out/results.jsonl"))
+        self.assertIn("outside this row's dirs", out)
+        self.assertIn("names lsa-quality-screen-20261106, which has no published manifest", out)
+
+    def test_f8_path_outside_row_dirs_warns(self):
         p = os.path.join(rf.TMP, "shared", "flag")
-        self.refused(self.spec(smoke_predicate=f"test -e {p}"), "outside this row's dirs")
+        self.assertIn("outside this row's dirs", self.run_pf(self.spec(smoke_predicate=f"test -e {p}")))
+
+    def test_f8_scratch_inputs_is_a_declared_input(self):
+        os.makedirs(os.path.join(self.d, "inputs"), exist_ok=True)
+        p = os.path.join(self.d, "inputs", "m.jsonl")
+        out = self.run_pf(self.spec(smoke_predicate=f"test -s {p}", scratch_root=self.d,
+                                    scratch_inputs=[{"path": "inputs", "kind": "sha-manifest"}]))
+        self.assertNotIn("provenance", out)
+
+    def test_f8_other_row_path_declared_is_admitted(self):
+        other = os.path.join(self.other_row("feed-row-20261119"), "out", "r.jsonl")
+        self.run_pf(self.spec(smoke_predicate=f"test -s {other}", expects_created=[other]))
 
     def test_f8_missing_own_path_warns_unless_expects_created(self):
         p = os.path.join(self.d, "out", "new.jsonl")
@@ -246,7 +282,7 @@ class Preflight(unittest.TestCase):
         self.run_pf(self.spec(smoke_predicate=f"grep -q pass {p}", expects_created=[p]))
 
     def test_f8_complete_cmd_checked_too(self):
-        other = os.path.join(rf.TMP, "zz-row-20261118", "COMPLETE")
+        other = os.path.join(self.other_row("zz-row-20261118"), "COMPLETE")
         self.relaunch(f"--complete-cmd 'test -e {other}'")
         self.refused(self.spec(), "--complete-cmd")
 
