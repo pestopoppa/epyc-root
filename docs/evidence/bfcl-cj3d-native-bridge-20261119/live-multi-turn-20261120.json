@@ -1,0 +1,50 @@
+{
+  "box": "CJ-3d",
+  "scope": "Model-free multi-turn native capture software controls; no fleet result or official-schema representativeness claim",
+  "upstream_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+  "upstream_blobs": {
+    "berkeley-function-call-leaderboard/bfcl/model_handler/base_handler.py": "fdb88d2abb4c8752aeaa7c50a0199a188d9e9cbe",
+    "berkeley-function-call-leaderboard/bfcl/model_handler/proprietary_model/openai.py": "20a2f99abff216f801c840deb33e5a459b0c7467",
+    "berkeley-function-call-leaderboard/bfcl/model_handler/constant.py": "f70e6da8e99196288afd9ac22a26e09372e04b2d",
+    "berkeley-function-call-leaderboard/bfcl/eval_checker/multi_turn_eval/multi_turn_utils.py": "e2fae774169f646d0149a254445e4d260b489a35"
+  },
+  "tests": {
+    "command": "BFCL_CHECKOUT=/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104 PYTHONPATH=proposed/cj567 PYTHONWARNINGS=ignore /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python -B -m unittest test_bfcl_native test_openai_tool_calls -q",
+    "result": "PASS",
+    "total": 34,
+    "integration": 22,
+    "adapter": 12,
+    "elapsed_s": 24.973,
+    "multi_turn_scripted_positive_cases": 10,
+    "positive_check": "Captured scripted native completions replay successfully through the unmodified official state checker. These are engineering controls, not model outputs.",
+    "controls": [
+      "Withheld schemas absent until scheduled release and official additional-function prompt",
+      "Persistent official execution state and ordered parallel call feedback IDs in subsequent requests",
+      "Input case and schemas not mutated; private gold and initial configuration excluded from requests",
+      "Request exposure recorded before query, raw completion before parse and execution",
+      "Malformed native calls, missing/duplicate call IDs, unsupported methods and invalid keywords remain UNKNOWN",
+      "Transport and durable-recorder failures abort without retry; failed exposure recorder prevents query",
+      "Stop prevents next exposure; 21-step upstream bound; simulator namespace cleanup on all tested exits",
+      "Missing/colliding schema catalogs rejected before exposure"
+    ]
+  },
+  "interface_contract": {
+    "functions": "Caller supplies provenance-bound full native method schema catalog; this bridge never infers schemas from paths, answers or signatures.",
+    "record": "Caller must synchronously and durably append each event before returning; recorder/transport exceptions propagate. Actual model/kernel/build and input/gold identity bindings belong to the fleet runner.",
+    "query": "Input-only payload callback, e.g. existing capture(endpoint, payload). No retry or benchmark execution is performed by these tests.",
+    "score": "Separate score_multi_turn replay; capture valid is always null."
+  },
+  "limitations": [
+    "Tests use deliberately synthetic schemas; the released multi-turn function catalog must be acquired and content-bound before fleet publication.",
+    "No fleet row or benchmark quality result produced this turn. Parent CJ-3d remains open.",
+    "SQL remains excluded by the pinned evaluator.",
+    "Official response/order checks and irrelevance helper blind spot are unchanged; see multi-turn.json.",
+    "Host-executing xargs and unsupported simulator calls return parser UNKNOWN.",
+    "Durable file writer, resume policy and actual model/build custody remain fleet runner responsibilities."
+  ],
+  "bindings_sha256": {
+    "proposed/cj567/bfcl_native.py": "26c56cda41f57040edd1f1f79bb478c33868f68ef576b8a2dbadd3245b784cf3",
+    "proposed/cj567/test_bfcl_native.py": "dd28f66831db2a77eccb8b3adfc2747fe1c2ea400bb41fd2d24cc1c049fe59b6",
+    "data/benchmarks/bfcl-v3-cj3d-prep-20261104/sample-manifest.json": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0"
+  }
+}

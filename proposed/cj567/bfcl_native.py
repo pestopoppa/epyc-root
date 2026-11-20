@@ -1,7 +1,7 @@
 """BFCL V3 native single-turn bridge and multi-turn replay; scoring stays upstream.
 
-No gold is included in HTTP requests. Multi-turn replay uses official state
-and irrelevance checks. Live multi-turn requests and SQL remain unsupported.
+No gold is included in HTTP requests. Multi-turn capture and replay use the
+official simulator. SQL remains excluded by the pinned evaluator.
 """
 import copy
 import importlib
@@ -151,6 +151,115 @@ class OfficialV3:
                            else {'valid': True})
             return {'status': 'scored', 'valid': state['valid'] and irrelevance['valid'],
                     'official': {'state': state, 'irrelevance': irrelevance}}
+        finally:
+            for name in list(vars(self.execution)):
+                if name.startswith(namespace + '_'):
+                    delattr(self.execution, name)
+
+    def capture_multi_turn(self, case, category, model, functions, query, record,
+                           should_stop=lambda: False):
+        """Capture native turns with official tool scheduling and simulator feedback.
+
+        ``functions`` must be the caller's provenance-bound full schema catalog;
+        this method never infers schemas from answers, paths, or signatures.
+        ``record`` must durably append each event before returning. Exposure is
+        recorded before query, and raw response before parsing/execution. Neither
+        transport nor record failures are retried. Scoring is a separate replay.
+        """
+        categories = {'multi_turn_base', 'multi_turn_composite',
+                      'multi_turn_long_context', 'multi_turn_miss_func',
+                      'multi_turn_miss_param'}
+        if category not in categories or case['id'].rsplit('_', 1)[0] != category:
+            raise ValueError('requires a supported multi-turn category')
+        constants = importlib.import_module('bfcl.model_handler.constant')
+        allowed = set()
+        for class_name in case['involved_classes']:
+            module = importlib.import_module(self.execution.CLASS_FILE_PATH_MAPPING[class_name])
+            cls = getattr(module, class_name)
+            allowed.update(name for name in dir(cls)
+                           if not name.startswith('_') and callable(getattr(cls, name)))
+        catalog = {f['name']: copy.deepcopy(f) for f in functions}
+        if not catalog or len(catalog) != len(functions) or not set(catalog) <= allowed:
+            raise ValueError('requires unique exact simulator method schemas')
+        holdouts = copy.deepcopy(case.get('missed_function', {}))
+        hidden = set()
+        for index, names in holdouts.items():
+            if (str(int(index)) != index or not 0 <= int(index) < len(case['question'])
+                    or case['question'][int(index)] or not isinstance(names, list)
+                    or any(not isinstance(name, str) or name not in catalog for name in names)):
+                raise ValueError('invalid holdout schedule or missing schema')
+            if hidden.intersection(names) or len(set(names)) != len(names):
+                raise ValueError('duplicate holdout method')
+            hidden.update(names)
+        active = [f for name, f in catalog.items() if name not in hidden]
+        messages, turns, seen_ids = [], [], set()
+        namespace = 'epyc_capture_' + uuid.uuid4().hex
+
+        def result(status, error=None):
+            return {'status': status, 'valid': None, 'turns': turns, 'error': error}
+
+        try:
+            for turn_index, question in enumerate(case['question']):
+                if str(turn_index) in holdouts:
+                    active.extend(catalog[name] for name in holdouts[str(turn_index)])
+                    question = [{'role': 'user', 'content':
+                                 constants.DEFAULT_USER_PROMPT_FOR_ADDITIONAL_FUNCTION_FC}]
+                messages.extend(copy.deepcopy(question))
+                tools = self.utils.convert_to_tool(copy.deepcopy(active), self.mapping, self.style)
+                turns.append([])
+                for step in range(constants.MAXIMUM_ROUND_LIMIT + 1):
+                    if should_stop():
+                        return result('interrupted', 'stop before next exposure; do not redraw')
+                    payload = {'model': model, 'messages': copy.deepcopy(messages),
+                               'tools': copy.deepcopy(tools), 'tool_choice': 'auto',
+                               'temperature': 0, 'seed': 20261031,
+                               'max_tokens': 4096, 'stream': False}
+                    position = {'case_id': case['id'], 'turn': turn_index, 'step': step}
+                    record({**position, 'kind': 'exposure', 'request': copy.deepcopy(payload)})
+                    raw = query(payload)
+                    record({**position, 'kind': 'response', 'response': copy.deepcopy(raw)})
+                    turns[-1].append(copy.deepcopy(raw))
+                    choices = raw.get('choices') if isinstance(raw, dict) else None
+                    if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
+                        return result('parse_error', 'expected exactly one choice')
+                    choice = choices[0]; message = choice.get('message')
+                    if (choice.get('finish_reason') == 'stop' and isinstance(message, dict)
+                            and message.get('tool_calls') in (None, [])
+                            and isinstance(message.get('content'), str)):
+                        messages.append({'role': 'assistant', 'content': message['content']})
+                        break
+                    parsed = adapt_openai_tool_calls(choice)
+                    if not parsed.ok:
+                        return result('parse_error', parsed.error)
+                    ids = [call.get('id') for call in message['tool_calls']]
+                    if (any(not isinstance(i, str) or not i for i in ids)
+                            or len(set(ids)) != len(ids) or seen_ids.intersection(ids)):
+                        return result('parse_error', 'missing or duplicate tool call IDs')
+                    for call in parsed.calls:
+                        for name, args in call.items():
+                            if (name not in allowed or name == 'xargs'
+                                    or any(not key.isidentifier() or keyword.iskeyword(key) for key in args)):
+                                return result('parse_error', 'unsupported method or invalid keyword')
+                    seen_ids.update(ids)
+                    decoded = self.utils.convert_to_function_call([
+                        {name: json.dumps(args, allow_nan=False)}
+                        for call in parsed.calls for name, args in call.items()])
+                    feedback, _ = self.execution.execute_multi_turn_func_call(
+                        decoded, copy.deepcopy(case['initial_config']), case['involved_classes'],
+                        namespace, case['id'],
+                        long_context=('long_context' in category or 'composite' in category),
+                        is_evaL_run=False)
+                    if len(feedback) != len(ids):
+                        raise RuntimeError('official feedback/tool call count mismatch')
+                    messages.append({'role': 'assistant', 'content': message.get('content'),
+                                     'tool_calls': copy.deepcopy(message['tool_calls'])})
+                    tool_messages = [{'role': 'tool', 'content': text, 'tool_call_id': call_id}
+                                     for call_id, text in zip(ids, feedback, strict=True)]
+                    record({**position, 'kind': 'feedback', 'messages': copy.deepcopy(tool_messages)})
+                    messages.extend(tool_messages)
+                else:
+                    return result('step_limit', 'official maximum round limit reached')
+            return result('captured')
         finally:
             for name in list(vars(self.execution)):
                 if name.startswith(namespace + '_'):

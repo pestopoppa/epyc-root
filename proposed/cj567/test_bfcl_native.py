@@ -242,6 +242,148 @@ class OfficialControls(unittest.TestCase):
         turns[0] = [{'choices': [{}]}]
         self.assertEqual(self.multi_score(row, turns)['status'], 'parse_error')
 
+    def synthetic_catalog(self, row):
+        # Engineering-only schemas. These deliberately do NOT attest the released
+        # BFCL function catalog, which must be acquired and bound before fleet use.
+        names = set()
+        for class_name in row['case']['involved_classes']:
+            module = importlib.import_module(self.bridge.execution.CLASS_FILE_PATH_MAPPING[class_name])
+            cls = getattr(module, class_name)
+            names.update(name for name in dir(cls)
+                         if not name.startswith('_') and callable(getattr(cls, name)))
+        return [{'name': name, 'description': 'Synthetic transport control only',
+                 'parameters': {'type': 'dict', 'properties': {}, 'required': []}}
+                for name in sorted(names)]
+
+    def script(self, turns):
+        responses = []
+        for turn in copy.deepcopy(turns):
+            for raw in turn:
+                for call in raw['choices'][0]['message']['tool_calls']:
+                    call['id'] = 'control_' + str(len(responses))
+                responses.append(raw)
+            responses.append({'choices': [{'finish_reason': 'stop', 'message': {'content': 'Done'}}]})
+        return responses
+
+    def test_capture_all_ten_state_replays_and_holdout_scheduling(self):
+        for row in self.rows[16:]:
+            with self.subTest(case=row['case']['id']):
+                before = copy.deepcopy(row); globals_before = set(vars(self.bridge.execution))
+                events = []; script = iter(self.script(self.native_turns(row)))
+                result = self.bridge.capture_multi_turn(
+                    row['case'], row['category'], 'scripted-control', self.synthetic_catalog(row),
+                    lambda payload: next(script), events.append)
+                self.assertEqual(result['status'], 'captured')
+                self.assertIsNone(result['valid'])
+                self.assertIs(self.multi_score(row, result['turns'])['valid'], True)
+                self.assertEqual(set(vars(self.bridge.execution)), globals_before)
+                self.assertEqual(row, before)
+                requests = [e for e in events if e['kind'] == 'exposure']
+                self.assertEqual(len(requests), sum(map(len, result['turns'])))
+                for index, event in enumerate(events):
+                    if event['kind'] == 'response':
+                        self.assertEqual(events[index - 1]['kind'], 'exposure')
+                for event in requests:
+                    payload = event['request']
+                    self.assertFalse({'initial_config', 'ground_truth', 'path'} & set(payload))
+                    self.assertNotIn('ground_truth', json.dumps(payload))
+                    names = {tool['function']['name'] for tool in payload['tools']}
+                    for turn, withheld in row['case'].get('missed_function', {}).items():
+                        self.assertEqual(names.intersection(withheld),
+                                         set(withheld) if event['turn'] >= int(turn) else set())
+                    if str(event['turn']) in row['case'].get('missed_function', {}):
+                        self.assertIn('I have updated some more functions', json.dumps(payload['messages']))
+                feedback = [e for e in events if e['kind'] == 'feedback']
+                self.assertTrue(feedback)
+                # Exact feedback, including call ID, reaches subsequent requests.
+                for event in feedback:
+                    later = next(e for e in requests if
+                                 (e['turn'], e['step']) > (event['turn'], event['step']))
+                    for message in event['messages']:
+                        self.assertIn(message, later['request']['messages'])
+
+    def test_capture_parallel_feedback_ids_and_order(self):
+        row = self.rows[17]; events = []; requests = []
+        raw = completion('pwd', {})
+        raw['choices'][0]['message']['tool_calls'].append(
+            completion('ls', {})['choices'][0]['message']['tool_calls'][0])
+        for index, call in enumerate(raw['choices'][0]['message']['tool_calls']):
+            call['id'] = f'parallel_{index}'
+        responses = iter([raw] + [{'choices': [{'finish_reason': 'stop',
+                                              'message': {'content': 'done'}}]}] * 4)
+        def query(payload):
+            requests.append(payload)
+            return next(responses)
+        result = self.bridge.capture_multi_turn(row['case'], row['category'], 'test',
+            self.synthetic_catalog(row), query, events.append)
+        self.assertEqual(result['status'], 'captured')
+        feedback = next(e['messages'] for e in events if e['kind'] == 'feedback')
+        self.assertEqual([m['tool_call_id'] for m in feedback], ['parallel_0', 'parallel_1'])
+        self.assertEqual(requests[1]['messages'][-2:], feedback)
+
+    def test_capture_parse_errors_remain_unknown_and_cleanup(self):
+        row = self.rows[16]; base = completion('ls', {})
+        invalid = [copy.deepcopy(base), completion('xargs', {'command': 'sh'}),
+                   completion('__import__', {'name': 'os'}), completion('ls', {'bad(': 1}),
+                   {'choices': []}, {'choices': [{'finish_reason': 'length', 'message': {}}]}]
+        duplicate = copy.deepcopy(base)
+        duplicate['choices'][0]['message']['tool_calls'] *= 2
+        for call in duplicate['choices'][0]['message']['tool_calls']: call['id'] = 'same'
+        invalid.append(duplicate)
+        for raw in invalid:
+            for call in raw.get('choices', [{}])[0].get('message', {}).get('tool_calls', []) if raw.get('choices') else []:
+                if raw != base: call.setdefault('id', 'control')
+            events = []; globals_before = set(vars(self.bridge.execution))
+            result = self.bridge.capture_multi_turn(row['case'], row['category'], 'test',
+                self.synthetic_catalog(row), lambda payload: raw, events.append)
+            self.assertEqual(result['status'], 'parse_error')
+            self.assertIsNone(result['valid'])
+            self.assertEqual([e['kind'] for e in events], ['exposure', 'response'])
+            self.assertEqual(set(vars(self.bridge.execution)), globals_before)
+
+    def test_capture_transport_and_recorder_failures_never_retry(self):
+        row = self.rows[16]; events = []; calls = []
+        def fail(payload):
+            calls.append(payload)
+            raise TimeoutError('exposed unresolved')
+        with self.assertRaises(TimeoutError):
+            self.bridge.capture_multi_turn(row['case'], row['category'], 'test',
+                self.synthetic_catalog(row), fail, events.append)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual([e['kind'] for e in events], ['exposure'])
+        def record_fail(event):
+            raise OSError('durable append failed')
+        with self.assertRaises(OSError):
+            self.bridge.capture_multi_turn(row['case'], row['category'], 'test',
+                self.synthetic_catalog(row), fail, record_fail)
+        self.assertEqual(len(calls), 1)
+
+    def test_capture_stop_and_step_bound_cleanup(self):
+        row = self.rows[16]; events = []; globals_before = set(vars(self.bridge.execution))
+        def query(payload):
+            raw = completion('ls', {})
+            raw['choices'][0]['message']['tool_calls'][0]['id'] = str(len(events))
+            return raw
+        result = self.bridge.capture_multi_turn(row['case'], row['category'], 'test',
+            self.synthetic_catalog(row), query, events.append, lambda: bool(events))
+        self.assertEqual(result['status'], 'interrupted')
+        self.assertEqual(sum(e['kind'] == 'exposure' for e in events), 1)
+        events.clear()
+        result = self.bridge.capture_multi_turn(row['case'], row['category'], 'test',
+            self.synthetic_catalog(row), query, events.append)
+        self.assertEqual(result['status'], 'step_limit')
+        self.assertEqual(sum(e['kind'] == 'exposure' for e in events), 21)
+        self.assertEqual(set(vars(self.bridge.execution)), globals_before)
+
+    def test_capture_missing_or_colliding_schemas_refused_before_exposure(self):
+        row = self.rows[22]; catalog = self.synthetic_catalog(row); events = []
+        missing = row['case']['missed_function']; name = next(iter(missing.values()))[0]
+        for functions in ([f for f in catalog if f['name'] != name], catalog + catalog[:1]):
+            with self.assertRaises(ValueError):
+                self.bridge.capture_multi_turn(row['case'], row['category'], 'test',
+                    functions, lambda payload: self.fail('unexpected request'), events.append)
+        self.assertEqual(events, [])
+
     def test_wrong_source_refused(self):
         with self.assertRaisesRegex(ValueError, 'source commit mismatch'):
             OfficialV3(ROOT)

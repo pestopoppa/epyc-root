@@ -334,6 +334,20 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       [Source finding](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/sql-boundary.json);
       24 existing controls PASS, including SQL refusal. Parent remains open; advance the
       official multi-turn execution path next. No SQL or fleet score claimed.
+  - [x] **CJ-3d-CAPTURE — Implement native multi-turn scheduling, official simulator feedback, and exposure/response recording with positive and refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
+      2026-11-20: `capture_multi_turn` accepts an explicit schema catalog, schedules
+      held-out functions with the official additional-function prompt, executes
+      native calls in persistent official simulator state, and sends ordered results
+      back with exact tool-call IDs. Exposure precedes transport; raw response precedes
+      parsing/execution. Transport/recorder failures abort without retry; malformed
+      calls remain UNKNOWN. Stop and official 21-step bound prevent further requests;
+      isolated simulator namespaces are cleaned on exits. **22 integration + 12 adapter
+      tests PASS**, including capture-to-official-replay controls for all ten selected
+      multi-turn cases, parallel feedback, failure paths and schema refusal.
+      [Source blobs, validation and interface contract](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/live-multi-turn-20261120.json).
+      Synthetic schemas test software only; acquire/bind the released catalog and
+      integrate durable model/build custody before publishing fleet capture.
+      Parent CJ-3d stays open; no model quality or fleet score claimed.
   - [x] **CJ-3d-REPLAY — Bind official multi-turn state/execution replay with positive and negative controls.** ✅ 2026-11-19 [no-belief: model-free software controls]
       Native completion replay passes all ten selected cases twice with isolated state;
       **16 integration + 12 adapter tests PASS**. Missing/changed state fails; malformed
