@@ -140,8 +140,8 @@ TOOL_ARG_CORRECTION = ("Your last tool call's arguments contained raw XML tags (
 
 def invalid_tool_args(arguments: str) -> str | None:
     """Client-side tool-argument check (r3/r4: Qwen XML tool-call markup leaked into argument values).
-    MEASURE-ONLY by default (operator 2026-11-20: fix at the source -- AK strict server parser); the r6 proxy logs
-    `bad_tool_args` and blocks only when its config sets tool_arg_filter=true (kept for the before/after comparison)."""
+    The r6 proxy (tool_arg_filter=true, operator 2026-11-20 "can't hurt") rejects such a response, retries upstream
+    once with TOOL_ARG_CORRECTION appended, and logs `bad_tool_args`; the strict server parser (AK) is the real fix."""
     for tag in _XML_IN_ARGS:
         if tag in (arguments or ""):
             return f"tool arguments contain {tag}"
