@@ -12,13 +12,17 @@ Make the continuous optimizer correct, fully wired and restart-ready. Autopilot 
 
 - You own the autopilot backlog session, or the work is a box in `handoffs/active/autopilot-program.md`
   (all `## Track:` sections) or an autopilot-surface box in `handoffs/active/harness-program.md`.
+- Also owns the orchestrator's local-model loop harness (REPL / code mode / worker turn loop: CODEMODE-REL,
+  TASKFLOW-CANARY-LESSONS-ORCH); tool permissions and the read-only allowlist stay with TOOLPERM-DENY-DEFAULT.
 - Not for kernel/AK work (`agents/autokernel.md`) or dispatcher/rowflow code (`agents/pipeline-mgmt.md`).
 
 ## Inputs Required
 
 - Code: `epyc-orchestrator/scripts/autopilot/`, `orchestration/autopilot_journal*.jsonl`, `orchestration/repl_memory/strategies/`.
 - State: newest autopilot-backlog progress file; the 2026-11-09 audit refresh and AP-HOLD-RELEASE-REVIEW in the handoff.
-- Roster id `autopilot` is proposed (pipeline-mgmt adds it); until then use `SendMessage` plus the handoff.
+- Work parked on the down stack: box STACK-UP-RELOAD-QUEUE in `harness-program.md`; check it at session start.
+- Roster id `autopilot` is proposed (pipeline-mgmt adds it); until then use `SendMessage` plus the handoff, and
+  push with `serialized_push.py --agent autopilot-backlog-session`.
 
 ## Outputs
 
