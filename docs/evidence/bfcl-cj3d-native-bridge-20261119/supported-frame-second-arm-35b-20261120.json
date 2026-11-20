@@ -1,0 +1,107 @@
+{
+  "box": "CJ-3e",
+  "contract": {
+    "benchmark": "bfcl_v3_native_supported_frame_local",
+    "box": "CJ-3e",
+    "build_source": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "checkpoints": "Exclusive journal per case; technical validity only, no interim quality decisions.",
+    "direction": "Higher per-stratum known pass fraction is better.",
+    "limits": [
+      "Per-stratum reporting; no automatic pooled score.",
+      "No full BFCL, production REPL, baseline-beating, adoption or formal discrimination claim.",
+      "Coverage overlap disclosed; identical IDs fixed, no model-output-based tuning.",
+      "Formal-gate class futility-only."
+    ],
+    "model": {
+      "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+      "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+      "stat": {
+        "st_ctime_ns": 1782411254270412235,
+        "st_dev": 2431,
+        "st_ino": 96242023,
+        "st_mtime_ns": 1782411254270412235,
+        "st_size": 37801097504
+      },
+      "verified_epoch": 1795069688.4616542
+    },
+    "protocol": {
+      "attempts_per_id": 1,
+      "max_tokens": 4096,
+      "request_timeout_s": 8312,
+      "seed": 20261031,
+      "temperature": 0
+    },
+    "question": "Describe second-arm per-stratum native-call outcomes on the same frozen 120 IDs as the 27B arm; inspect coarse differences without a formal fleet discrimination/adoption conclusion.",
+    "reference_arm": "codex-bfcl-cj3d-supported-27b-v1-20261120",
+    "selection_sha256": "4b45552622e4d7d612cca4331a1092aeb491013e5c79bd836d845579e2b30616",
+    "smoke": "One synthetic noncohort request with 24-token bound; no cohort quality evidence.",
+    "stop_on_answer": "All 120 known checker verdicts. Compare descriptively only after both arms have 120 known verdicts.",
+    "stop_on_futility": "First UNKNOWN, transport/custody/checker failure, lost residency, STOP, grant or deadline boundary. No retries/redraw/continuation; any missing terminal/UNKNOWN/incomplete arm forbids success-rate estimate and fleet quality conclusion.",
+    "sufficiency": "120 IDs, 20 per stratum, coarse descriptive ~30 percentage point scale only. No established power for fleet difference. Conditional single-arm bounds in BFCL-SAMPLING.md do not become a paired-difference significance test."
+  },
+  "overlap": {
+    "coverage_disclosure": "All selected coverage IDs treated as prospectively exposed, whether or not their running journals have reached them. No redraw or exclusion. Supported-frame first arm may run before this arm; no tuning or selection changes permitted.",
+    "coverage_selected_count": 26,
+    "coverage_selected_overlap": [
+      "java_1",
+      "javascript_1",
+      "parallel_1"
+    ],
+    "prior_snapshot": {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/OVERLAP.json",
+      "sha256": "3118f1c740edf1384aa774d0a60a351ba2cda4d2f113f67bf411d0f3a9919eb6"
+    },
+    "reference_arm": "codex-bfcl-cj3d-supported-27b-v1-20261120",
+    "reference_selection_sha256": "4b45552622e4d7d612cca4331a1092aeb491013e5c79bd836d845579e2b30616",
+    "selected_cases": 120,
+    "snapshot_utc": "2026-11-20T11:28:30.028838+00:00"
+  },
+  "prepared_inputs": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/BFCL-SAMPLING.md": "ba13d8c7f8e1841aef82884f4934009d57109d977fcb76449bd5ae438540d3a5",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/BUILD.json": "5a62c90959db4779b3d714a862a38642ab6ef9eb82c43a5149f7126adb0ded3e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/CONFIG.json": "2add434104bde869190fdb8fc37db5fd0b293c9e397dea335b051820b9bccf60",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/CONTRACT.json": "73b74b3bbf3d5d46da2fa361bb244074e0f83bf0b14f1364e6fc9a0fec073c65",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/INPUTS.sha256": "ed6e476cc7aa0d6d582f44d57cafd76c561eb019953e1e1cad1d495c171f587c",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/MODEL.json": "4e12c0aa965df13272728ad0af1dd03333535bcda5d099dfd65b27616c005854",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/OVERLAP.json": "04004894bcf2e95b9733fbae440ab62a794f68ef06872e47073e7883a2a2894a",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/PREPARATION.json": "fad0d14011a00736ddf44f755e251626be77bef64124ee6fc4b9bcb4f230993b",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/SELECTION.json": "4b45552622e4d7d612cca4331a1092aeb491013e5c79bd836d845579e2b30616",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/bfcl-catalog-lock.json": "bbe8ef47dc600a732f55835d3c2827efae336c4733f34b338c1e69423990bfdc",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/bfcl-supported-frame-lock.json": "0207547d36f00ea537e4167f582807e286f05ff60dc0cef91eb8d7f0f9d58476",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/bfcl_capture_run.py": "9cd77c007b1e2959842c6b74a0526206c96e6d2ad6efc23bb9ac7b6a83219223",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/bfcl_fleet_run.py": "18b2a610c6339a27a76870dddb1d01ad12dbee958237ad4acee47c4fe253ed33",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/bfcl_native.py": "26c56cda41f57040edd1f1f79bb478c33868f68ef576b8a2dbadd3245b784cf3",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/bfcl_residency.py": "81a4c92158c95b1fc366121eac81901e3de80bcbe08ac45de811f6672c98373f",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/bfcl_sample.py": "25695d0a5d1f7ea4342ae7f2d33000497f31632098fb4c4e81c02075a4afbd8b",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/bfcl_sample_capture.py": "3474207a3afebdb42a8f5ae32e675c4020ca9fdbd4e1b5b8d2ca12f13f878c33",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/launch.sh": "c8e8e4dcc0b5ac4283fe82d55fd833661e342934a9a1a5a59ca460e7e641e79f",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/openai_tool_calls.py": "e452722f6fab15935645d7b0a4b9956477f354fe4aa1d071818dbc7569df8bfa",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/spec.json": "88ce8de9d63d2c6f31d313ca98355dd0111d6494cea303b25cc9d95a0f181111",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/ws58-launcher.out": "f714d2d8895b9a9022634613e92ebb37de32ab2ac2417749bfe75aff2bff338a"
+  },
+  "publication": {
+    "completed_synthetic_noncohort_requests": 1,
+    "cpus": "116-119",
+    "long_run_result": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-supported-35b-20261120/run/RESULT.json",
+    "manifest": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-bfcl-cj3e-supported-35b-v1-20261120.json",
+      "sha256": "5f15d0412fcf84a62d29233a1e9b57eb111dae94e617f4e93f4c00ec498ad837"
+    },
+    "pass_record": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3e-supported-35b-v1-20261120/PASS.json",
+      "sha256": "cc717f501ff2a76dfe8e88ef1d9807da235d9e5812d9be2a82075f63bd19b01a"
+    },
+    "rc": 0,
+    "status": "SMOKE PASS; PUBLISHED"
+  },
+  "reference_arm": "codex-bfcl-cj3d-supported-27b-v1-20261120",
+  "row": "codex-bfcl-cj3e-supported-35b-v1-20261120",
+  "scope": "Second supported-frame arm with identical frozen 120 IDs; synthetic smoke provides no cohort quality score.",
+  "source_commit": "14feefc9d75c3e5ca6eff3b2aa701bb556c0b157",
+  "validation": {
+    "gitnexus": "No index; no application source changes, row scratch and documentation only.",
+    "immutable_source_reconstruction": "PASS, identical 120 selected cases",
+    "model_stat_matches_prehashed_identity": true,
+    "server_and_all_build_library_hashes_match": true
+  }
+}

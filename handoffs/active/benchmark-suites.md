@@ -518,6 +518,22 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       Row `codex-bfcl-cj3e-single-35b-v1-20261120` published: **smoke PASS**,
       rc=0 on four CPUs (116–119), one synthetic request; no cohort score.
       [Publication bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/second-arm-35b-20261120.json).
+      Separately declared 120-ID supported-frame second arm (2026-11-20):
+      `codex-bfcl-cj3e-supported-35b-v1-20261120`, same 35B model/build above,
+      identical frozen six-stratum selection as the 27B supported-frame arm
+      (selection SHA-256 `4b45552622e4d7d612cca4331a1092aeb491013e5c79bd836d845579e2b30616`).
+      Explicit key `bfcl_v3_native_supported_frame_local`; higher per-stratum known
+      pass fraction is better. Fixed temperature 0, seed 20261031, max_tokens 4096,
+      timeout 8312s. Require both arms complete with 120 known verdicts for any
+      descriptive comparison: stop-on-answer when both arms have 120 known verdicts;
+      stop-on-futility on first UNKNOWN, custody/transport/checker failure, STOP or
+      deadline; gate-class = futility-only. No retries/redraw/continuation. Conditional single-arm
+      uncertainty bounds do not establish fleet-difference power; no formal
+      discrimination, full-BFCL, baseline-beating or adoption claim. All coverage-selected
+      overlap disclosed conservatively before publication; no exclusion or tuning.
+      Publisher smoke **PASS**, rc=0, CPUs 116–119, one synthetic noncohort request;
+      row published. No cohort score; parent CJ-3e remains open for complete results.
+      [Second-arm contract and publication bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/supported-frame-second-arm-35b-20261120.json).
 
 ### CJ-4 — tau-bench (multi-step agentic)
 
