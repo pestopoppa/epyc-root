@@ -969,6 +969,15 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
              "baseline_ref naming the decision-grade baseline / production-serving measurement, or shape_override "
              f"\"operator: <who> <date>: <why>\"; right-sized from its threads: {'declare -t/--threads/--workers/OMP_NUM_THREADS' if c['threads'] is None else ('sub-quarter' if c['threads'] <= SUB_CORES else 'quarter' if c['threads'] <= 24 else 'multi-quarter(' + str(min(3, -(-c['threads'] // 24))) + ')')}")
         wj = width_justified(row, c)
+        lit = literal_threads_sum(launcher, o)
+        dmq = re.fullmatch(r"multi-quarter\(([23])\)", decl)
+        if lit and dmq and not c["gpu_use"] and not c["timing"] and not row.get("timing"):
+            fitq = -(-lit // 24)
+            need(wj or int(dmq.group(1)) <= fitq,
+                 f"declared {decl} but the launcher's literal thread knobs sum to {lit} threads ({fitq} quarter"
+                 f"{'s' if fitq > 1 else ''}): the extra width idles. Republish as "
+                 f"{'quarter' if fitq <= 1 else 'multi-quarter(' + str(fitq) + ')'}, or add width_justification "
+                 "\"<why the extra width helps, >= 20 chars>\" (F6, AK audit B6)")
         if wj:
             print(f"WIDTH-JUSTIFIED {rid}: declared {decl or regions} over contract {c['shape']} by {over} cores: {wj}")
         need(wj or over < SHAPE_TOLERANCE_CORES, f"declared {decl or 'regions ' + regions} books {over} cores more than the evidence "
@@ -1450,6 +1459,7 @@ def ram_fence_env(d, env):
     return env
 UNDERUSED_PCT = 5.0
 UNDERUSED_S = 600
+UNDERUSED_SHRINK_S = 1800   # F6 (AK audit B6): continuously UNDERUSED this long -> a "shrink to <n> quarters" note to the owner
 ALERT_REPEATS = 3
 
 
@@ -2191,6 +2201,24 @@ def compress_cpus(cpus):
 
 
 WIDTH_JUSTIFICATION_MIN = 20
+
+
+_LIT_THREADS = re.compile(r"(?:(?<![\w-])(?:--threads|-t)[ =]+|\bOMP_NUM_THREADS=)(\d+)\b")
+
+
+def literal_threads_sum(launcher, o=None):
+    """F6 (AK audit B6): the sum of LITERAL thread knobs (--threads N, -t N, OMP_NUM_THREADS=N) in the launcher text and
+    (which carries its --cmd), comments skipped. 0 = none written literally (variables are contract_of's job, never guessed here)."""
+    try:   # the launcher text already carries --cmd; reading o["cmd"] too would count it twice
+        texts = [open(launcher, errors="replace").read()]
+    except (OSError, TypeError):
+        texts = [str((o or {}).get("cmd") or "")]
+    tot = 0
+    for t in texts:
+        for ln in t.splitlines():
+            if not ln.lstrip().startswith("#"):
+                tot += sum(int(x) for x in _LIT_THREADS.findall(ln))
+    return tot
 
 
 def width_justified(row, c):
@@ -4461,7 +4489,7 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
     hist = load_json(p) or {"samples": []}
     hist["samples"] = [s for s in hist["samples"] if now - s["ts"] <= UNDERUSED_S * 2][-12:] + \
         [{"ts": now, "cpu": {str(k): v for k, v in sample.items()}, "holders": holders, "vram": vram}]
-    atomic_json(p, hist)
+    since = {k: v for k, v in (hist.get("underused_since") or {}).items()}
     out = []
     # a grant holding the GPU token is judged by KFD/VRAM (idle_held + gpu_grant_busy), never by CPU %
     gpu_rids = {rid for r, rid in holders.items() if r == GPU}
@@ -4483,6 +4511,7 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
             b1 = sum(sample.get(c, (0, 0))[0] for c in cpus); t1 = sum(sample.get(c, (0, 0))[1] for c in cpus)
             pct = 100.0 * (b1 - b0) / (t1 - t0) if t1 > t0 else 100.0
         if pct < UNDERUSED_PCT:
+            since.setdefault(f"{r}:{rid}", s0["ts"])
             out.append((r, rid, pct))
             seen.add(f"underused:{r}:{rid}")
             log(f"UNDERUSED {r} {rid}: {pct:.1f}% of its CPUs busy over {int(now - s0['ts'])}s (<{UNDERUSED_PCT:g}%); not killed; owner fix task dryrun/{rid}/UNDERUSED.json")
@@ -4491,7 +4520,34 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
                 os.makedirs(dry_dir(flags, rid), exist_ok=True)
                 atomic_json(fp, {"id": rid, "at": now_iso(), "region": r, "busy_pct": round(pct, 1), "window_s": int(now - s0["ts"]),
                                  "fix_task": f"{rid} holds {r} but uses {pct:.1f}% of it: shrink its regions/claim (a fetch or single-core job is not a quarter row), or split the row"})
+    live = {f"{r}:{rid}" for r, rid, _ in out}
+    hist["underused_since"] = {k: v for k, v in since.items() if k in live}
+    atomic_json(p, hist)
+    shrink_suggest(flags, holders, out, hist["underused_since"], now, log)
     return out
+
+
+def shrink_suggest(flags, holders, under, since, now, log, emit=None):
+    """F6 (AK audit B6): a row UNDERUSED on some held quarters for UNDERUSED_SHRINK_S gets ONE owner note through
+    notify.emit: "shrink to <n> quarters" (n = held CPU quarters minus the underused ones, at least 1). Never acts."""
+    emit = emit or notify.emit
+    by = {}
+    for r, rid, pct in under:
+        if now - float(since.get(f"{r}:{rid}") or now) >= UNDERUSED_SHRINK_S:
+            by.setdefault(rid, []).append((r, pct))
+    for rid, qs in by.items():
+        held = sorted(r for r, x in holders.items() if x == rid and r in QUARTERS)
+        n = max(1, len(held) - len(qs))
+        owner = str((load_json(ready_path(flags, rid)) or {}).get("owner") or "")
+        msg = (f"UNDERUSED {rid}: {','.join(r for r, _ in qs)} under {UNDERUSED_PCT:g}% busy for >= {UNDERUSED_SHRINK_S // 60} min "
+               f"of the {len(held)} quarter(s) it holds; shrink to {n} quarter{'s' if n > 1 else ''} (shape "
+               f"{'quarter' if n == 1 else f'multi-quarter({n})'}) on its next publish")
+        try:
+            if emit(flags, "underused-shrink", rid, ",".join(held), msg, "warning", owner,
+                    {"held": held, "underused": [r for r, _ in qs], "suggest_quarters": n}):
+                log(f"UNDERUSED-SHRINK {rid}: suggested {n} quarter(s) to owner={owner or FALLBACK_OWNER}")
+        except Exception as ex:  # noqa: BLE001
+            log(f"UNDERUSED-SHRINK {rid}: notify failed: {type(ex).__name__}: {ex}")
 
 
 IDLE_HELD_AFTER_S = 60   # a grant older than this whose regions measure < hostutil.IDLE_PCT busy is IDLE-HELD
@@ -4673,6 +4729,126 @@ def _idle_act(flags, rid, e, regions, pct, idle_s, holds, owner, log, emit, want
              f"(opt-in idle_reclaim); remove {sf} to re-queue", "warning", owner, {"stop_file": sf, "idle_s": idle_s})
     except Exception as ex:  # noqa: BLE001
         log(f"IDLE-RECLAIM {rid}: notify failed: {type(ex).__name__}: {ex}")
+
+
+IDLE_CRASH_CHILD_PCT = 5.0      # F6 (AK audit B6): a descendant above this CPU % is the job still working
+IDLE_CRASH_REGION_PCT = 1.0     # "region busy 0 %" with measurement noise
+IDLE_CRASH_SAMPLES = 2          # consecutive qualifying samples before acting; the first one only alerts the owner
+IDLE_CRASH_MIN_GAP_S = 30       # samples closer than this are not "consecutive" (the keeper ticks ~60 s)
+
+
+def idle_crash_state_path(flags):
+    return os.path.join(state_dir(flags), "idle_after_crash.json")
+
+
+def _tree_cpu(pid):
+    """{child pid: (starttime, cpu seconds)} of every live descendant of pid (pid itself excluded)."""
+    hz = os.sysconf("SC_CLK_TCK")
+    out = {}
+    for c, birth in harness_tree(int(pid), {}).items():
+        if c == int(pid):
+            continue
+        try:
+            f = open(f"/proc/{c}/stat").read().rsplit(")", 1)[1].split()
+        except (OSError, IndexError):
+            continue
+        if f[19] == birth:
+            out[str(c)] = (birth, (int(f[11]) + int(f[12])) / hz)
+    return out
+
+
+def idle_after_crash(flags, grants, util, log, now=None, emit=None, act=True, occ=None):
+    """F6 (AK audit B6) idle-after-crash: a started (non-dry-run) grant whose launcher pid is alive while no descendant
+    uses > IDLE_CRASH_CHILD_PCT CPU (and, for a GPU grant, the device reads idle for it) and every held region reads
+    ~0 % busy. First such sample: a warning to the owner (alert before acting). IDLE_CRASH_SAMPLES consecutive: the
+    grant is ended the engine's own way - its STOP file is touched (filler_run15 stops, writes .ended rc=75) - and the
+    owner is told reason=idle-after-crash. Never signals or kills a process. Returns [(rid, action)]."""
+    now = time.time() if now is None else now
+    emit = emit or notify.emit
+    sp = idle_crash_state_path(flags)
+    st = load_json(sp) or {}
+    nst, out = {}, []
+    for g in grants:
+        rid, pid = g["id"], g.get("pid")
+        if g.get("dryrun") or not g.get("started") or not pid or not proc_alive(pid):
+            continue
+        prev = st.get(rid) or {}
+        e = {"t": now, "n": 0, "alerted": prev.get("alerted"), "ended": prev.get("ended")}
+        try:
+            cpu = _tree_cpu(pid)
+        except Exception:  # noqa: BLE001 - /proc races never end a grant
+            continue
+        e["cpu"] = {k: list(v) for k, v in cpu.items()}
+        nst[rid] = e
+        if e["ended"]:
+            continue
+        if not prev:
+            continue   # the first sample is only a baseline for the CPU deltas
+        dt_s = now - float(prev.get("t") or 0)
+        if dt_s < IDLE_CRASH_MIN_GAP_S:
+            nst[rid] = prev   # too close to the last sample to count: keep it as the baseline
+            continue
+        pcpu = prev.get("cpu") or {}
+        busy_child = [k for k, (b, c) in cpu.items() if k in pcpu and pcpu[k][0] == b and 100.0 * (c - pcpu[k][1]) / dt_s > IDLE_CRASH_CHILD_PCT]
+        busy_child += [k for k, (b, c) in cpu.items() if k not in pcpu and c / max(dt_s, 1.0) * 100.0 > IDLE_CRASH_CHILD_PCT]
+        qs = [r for r in g["holds"] if r in QUARTERS]
+        pct = hostutil.regions_pct(util or {}, qs)
+        region_busy = any(v is None or v > IDLE_CRASH_REGION_PCT for v in pct.values())
+        gpu_busy = False
+        if GPU in g["holds"]:
+            try:
+                gpu_busy = gpu_grant_busy(flags, g, util or {}, occ if occ is not None else gpu_occupancy())[0]
+            except Exception:  # noqa: BLE001 - unknown device state never ends a grant
+                gpu_busy = True
+        if busy_child or region_busy or gpu_busy or not (qs or GPU in g["holds"]):
+            e["alerted"] = None   # working again: a later idle spell alerts afresh
+            continue
+        e["n"] = int(prev.get("n") or 0) + 1
+        row = load_json(ready_path(flags, rid)) or {}
+        owner = str(row.get("owner") or "")
+        why = (f"launcher pid {pid} alive, {len(cpu)} descendant(s) none > {IDLE_CRASH_CHILD_PCT:g}% CPU, regions "
+               f"{','.join(sorted(g['holds']))} ~0% busy")
+        if e["n"] < IDLE_CRASH_SAMPLES:
+            if not e["alerted"]:
+                e["alerted"] = now
+                log(f"IDLE-AFTER-CRASH-PENDING {rid}: {why}; the grant ends on the next such sample")
+                try:
+                    emit(flags, "idle-after-crash-pending", rid, g.get("start") or "", f"IDLE-AFTER-CRASH pending {rid}: {why}; "
+                         f"the keeper ends the grant (STOP file, rc=75) if the next sample agrees", "warning", owner,
+                         {"pid": pid, "holds": sorted(g["holds"]), "logs": dry_dir(flags, rid)})
+                except Exception as ex:  # noqa: BLE001
+                    log(f"IDLE-AFTER-CRASH {rid}: notify failed: {type(ex).__name__}: {ex}")
+            out.append((rid, "pending"))
+            continue
+        if not act:
+            out.append((rid, "would-end"))
+            continue
+        sf = resolve_stop_path(row)
+        if not sf:
+            log(f"IDLE-AFTER-CRASH-REFUSED {rid}: {why}; its stop file is unknown - alerted only")
+            out.append((rid, "no-stop-file"))
+            continue
+        try:
+            os.makedirs(os.path.dirname(sf), exist_ok=True)
+            with open(sf, "a") as f:
+                f.write(json.dumps({"by": "rowflow idle-after-crash", "at": now_iso(), "reason": "idle-after-crash", "pid": pid}) + "\n")
+        except OSError as ex:
+            log(f"IDLE-AFTER-CRASH {rid}: stop file {sf} not written: {ex}")
+            continue
+        e["ended"] = now
+        log(f"IDLE-AFTER-CRASH {rid}: {why} for {e['n']} samples; touched STOP {sf} (engine ends it rc=75 reason=idle-after-crash)")
+        try:
+            emit(flags, "idle-after-crash", rid, g.get("start") or "", f"IDLE-AFTER-CRASH {rid}: grant ended ({why}); the "
+                 f"engine writes .ended rc=75; remove {sf} and republish to re-queue", "critical", owner,
+                 {"pid": pid, "stop_file": sf, "reason": "idle-after-crash"})
+        except Exception as ex:  # noqa: BLE001
+            log(f"IDLE-AFTER-CRASH {rid}: notify failed: {type(ex).__name__}: {ex}")
+        out.append((rid, "ended"))
+    try:
+        atomic_json(sp, nst)
+    except OSError as ex:
+        log(f"IDLE-AFTER-CRASH state write failed ({sp}): {ex}")
+    return out
 
 
 def idle_warn_state_path(flags):
@@ -5325,6 +5501,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             idle_held_notify(flags, idle_now, grants, log, wanted=cands)
         except Exception as e:  # noqa: BLE001 - a warning never stops allocation
             log(f"IDLE-HELD-WARN failed: {type(e).__name__}: {e}")
+        try:   # F6: a launcher alive over a dead job ends its grant (alert first, then the STOP file; never a kill)
+            idle_after_crash(flags, grants, util, log)
+        except Exception as e:  # noqa: BLE001
+            log(f"IDLE-AFTER-CRASH failed: {type(e).__name__}: {e}")
     # 2026-11-03 session review item 7: a row that fails to arm or is refused at admission no longer idles the regions
     # planned for it until the next tick - the tick re-plans the still-free regions without it (bounded by the number
     # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
