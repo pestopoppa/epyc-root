@@ -23,7 +23,10 @@ import json
 import re
 import sys
 
-TASK_ID = re.compile(r"\(ID:\s*([A-Za-z0-9_-]+)\)|\bshell[_ ]id[\"':\s]+([A-Za-z0-9_-]+)|\btask[_ ]id[\"':\s]+([A-Za-z0-9_-]+)", re.I)
+# Fable review S3: a tool_result also carries command stdout, so ids are accepted ONLY in the
+# harness's own phrasing, at the start of a line, and only in the harness id format.
+TASK_ID = re.compile(r"^(?:Command )?(?:running in background with ID: ([a-z0-9]{8,9})\b"
+                     r"|Command was moved to the background \(ID: ([a-z0-9]{8,9})\))", re.M)
 NOTIFY = re.compile(r"<task-id>([^<]+)</task-id>.*?<status>(completed|failed|killed|stopped)</status>", re.S)
 STOP_TOOLS = ("TaskStop", "KillShell", "KillBash")
 
@@ -71,7 +74,7 @@ def survivors(path):
                 elif c.get("type") == "tool_result" and c.get("tool_use_id") in pending:
                     m = TASK_ID.search(_text(c.get("content")))
                     if m:
-                        started[next(g for g in m.groups() if g)] = pending.pop(c.get("tool_use_id"))
+                        started[m.group(1) or m.group(2)] = pending.pop(c.get("tool_use_id"))
                 elif c.get("type") == "text":
                     ended.update(t.strip() for t, _ in NOTIFY.findall(c.get("text") or ""))
     return [(t, cmd) for t, cmd in started.items() if t not in ended]
@@ -93,7 +96,7 @@ def main():
         return 0
     # P5-1: only harness-issued task ids go into context, never subagent-authored command text
     # (a relayed statement must not reach the dispatching model through a hook channel).
-    lines = ", ".join(re.sub(r"[^A-Za-z0-9_-]", "", t)[:32] for t, _ in alive[:8])
+    lines = ", ".join(t for t, _ in alive[:8])     # format-checked by TASK_ID
     msg = (f"HAND-BACK SWEEP: the subagent left {len(alive)} background task(s) not stopped and not reported "
            f"finished: {lines}. Check each and TaskStop it unless it is meant to outlive the hand-back.")
     if event == "SubagentStop":
