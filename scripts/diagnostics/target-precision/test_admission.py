@@ -12,7 +12,7 @@ spec.loader.exec_module(capture)
 
 
 def save(path, value):
-    path.write_text(json.dumps(value))
+    path.write_text(json.dumps(value, sort_keys=True))
     return {'path': str(path), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
@@ -20,7 +20,7 @@ def make_panel(tmp_path):
     libraries = {'/prepared/libllama.so': '1' * 64}
     plan = {k: 'a' * 64 for k in capture.SHARED if k.endswith('_sha256')}
     plan.update(origin='native_claimed', run_id='test', backend='cpu',
-                verification={'replay': 'fresh-block-serial-v1', 'mode': 'block'},
+                verification={'replay': 'fresh-block-serial-v1', 'mode': 'block', 'blocks': 1},
                 sampling={'temperature': 0, 'top_k': 1}, numerical_floor=.01,
                 decision_rule='inconclusive unless all controls pass',
                 libraries_sha256=hashlib.sha256(json.dumps(libraries, sort_keys=True, separators=(',', ':')).encode()).hexdigest(),
@@ -32,16 +32,42 @@ def make_panel(tmp_path):
         sha256=c['target_sha256'], base=base, tensor_correspondence='verified',
         conversion_sha256='c'*64, catalog_sha256='d'*64, path='/prepared/'+c['target_quant']+'.gguf') for c in plan['cells']},
         'drafter': dict(sha256=plan['drafter_sha256'], target_base=base, training_dtype='BF16', path='/prepared/draft.gguf')}
-    plan['native_worker'] = dict(targets={q: v['path'] for q, v in weights['targets'].items()},
+    plan['prompt_manifest_sha256'] = save(tmp_path/'prompts.json', {'prompts': {'calibration': 'calibration prompt'}})['sha256']
+    plan['native_worker'] = dict(prompt_manifest=str(tmp_path/'prompts.json'), targets={q: v['path'] for q, v in weights['targets'].items()},
                                  drafter=weights['drafter']['path'], env={'LD_LIBRARY_PATH': '/prepared/libs'})
     build = {k: plan[k] for k in ('backend', 'binary_sha256', 'source_sha256', 'libraries_sha256')}
     build.update(source_commit='e'*40, libraries=libraries, ld_library_path='/prepared/libs')
+    holdout = dict(schema='epyc.target-precision.holdout.v1',
+                   evaluation=[['held', 42]], calibration=[['calibration', 3]],
+                   prompt_manifest_sha256=plan['prompt_manifest_sha256'], protocol_sha256=plan['protocol_sha256'])
+    plan['holdout_sha256'] = save(tmp_path/'holdout.json', holdout)['sha256']
     floor = {k: plan[k] for k in ('backend', 'binary_sha256', 'source_sha256', 'libraries_sha256', 'drafter_sha256', 'verification', 'sampling')}
     floor['controls'] = []
     for c in plan['cells']:
         control = dict(target_quant=c['target_quant'], target_sha256=c['target_sha256'],
-                       comparison='fresh-block-vs-serial-same-prefix', repetitions=2, coordinates=100,
+                       comparison='fresh-block-vs-serial-same-prefix', repetitions=2, coordinates=200,
                        max_abs=.005, rms=.002)
+        control['trace_outputs'] = []
+        for repetition in range(2):
+            case = dict(c, prompt_id='calibration', seed=3, repetition=repetition)
+            request = dict(schema='epyc.target-precision.native-trace.v1', case=case,
+                           settings={k: plan[k] for k in capture.SHARED}, prompt='calibration prompt',
+                           runtime=plan['native_worker'],
+                           trace_semantics='greedy_prefix_acceptance_and_same_prefix_verify_vs_serial_logits')
+            rows = [dict(verify_prefix=prefix, serial_prefix=prefix,
+                         witness=dict(count=50, verify_argmax=1, max_abs=.005, sum_squared=.0002))
+                    for prefix in ([2], [2, 1])]
+            trace = dict(request=request, status='ok', spec_type='draft-dflash',
+                         numerical_encoding='full-vocabulary-moments-v1',
+                         blocks=[dict(block=0, draft_tokens=[1], accepted=1, logits=rows)])
+            samples = [dict(pid=2, start_ticks=1, monotonic_ns=t,
+                            libraries={p: dict(sha256=h, device=0, inode=1) for p, h in libraries.items()},
+                            maps='0-1 r-xp 00000000 00:00 1 /prepared/libllama.so') for t in (1, 2)]
+            observed = dict(schema='epyc.target-precision.runtime.v1', request=request,
+                            owner_pid=1, child_pid=2, returncode=0, samples=samples)
+            control['trace_outputs'].append(dict(
+                trace=save(tmp_path/f'{c["target_quant"]}-{repetition}-trace.json', trace),
+                runtime=save(tmp_path/f'{c["target_quant"]}-{repetition}-runtime.json', observed)))
         control['native_output'] = save(tmp_path/(c['target_quant']+'.json'), control)
         floor['controls'].append(control)
     holdout = dict(evaluation=[['held', 42]], calibration=[['calibration', 3]],
@@ -155,7 +181,8 @@ def test_hip_requires_own_process_vram_and_kfd_plan(panel):
     with pytest.raises(ValueError, match='HIP residency'):
         capture.admit_native(plan)
     plan['admission']['runtime_proof'].update(kfd_process=True, nonzero_vram=True)
-    capture.admit_native(plan)
+    with pytest.raises(ValueError, match='floor plan setting mismatch: backend'):
+        capture.admit_native(plan)  # CPU originals cannot qualify HIP controls
 
 
 def test_worker_refuses_unadmitted_native_before_subprocess(panel, monkeypatch):

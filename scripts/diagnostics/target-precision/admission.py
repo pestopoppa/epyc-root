@@ -13,7 +13,7 @@ def _require(condition, message):
         raise ValueError('native admission: ' + message)
 
 
-def admit(plan, read):
+def admit(plan, read, *, require_floor=True):
     """Refuse incomplete native-claimed panels before any native subprocess."""
     if plan['origin'] == 'synthetic':
         return
@@ -93,6 +93,17 @@ def admit(plan, read):
     env = runtime.get('env', {})
     _require(bool(env.get('LD_LIBRARY_PATH')) and build.get('ld_library_path') == env['LD_LIBRARY_PATH'], 'private library environment required')
 
+    proof = admission.get('runtime_proof')
+    _require(isinstance(proof, dict), 'runtime residency proof plan required')
+    _require(proof.get('sampling_window') == 'during-each-cell'
+             and proof.get('mapped_library_sha256') == libraries
+             and proof.get('own_pid') is True, 'runtime mapping/ownership proof plan required')
+    if plan['backend'] == 'hip':
+        _require(proof.get('kfd_process') is True and proof.get('nonzero_vram') is True, 'HIP residency proof plan required')
+
+    if not require_floor:
+        return  # Floor producer still requires every other native admission gate.
+
     floor = receipt('floor')
     for key in ('backend', 'binary_sha256', 'libraries_sha256', 'source_sha256', 'drafter_sha256', 'verification', 'sampling'):
         _require(floor.get(key) == plan[key], 'floor setting mismatch: ' + key)
@@ -114,11 +125,12 @@ def admit(plan, read):
         native, identity = read(original['path'])
         _require(identity['sha256'] == original['sha256'], 'floor original digest mismatch')
         _require(native == {k: v for k, v in control.items() if k != 'native_output'}, 'floor original telemetry mismatch')
-
-    proof = admission.get('runtime_proof')
-    _require(isinstance(proof, dict), 'runtime residency proof plan required')
-    _require(proof.get('sampling_window') == 'during-each-cell'
-             and proof.get('mapped_library_sha256') == libraries
-             and proof.get('own_pid') is True, 'runtime mapping/ownership proof plan required')
-    if plan['backend'] == 'hip':
-        _require(proof.get('kfd_process') is True and proof.get('nonzero_vram') is True, 'HIP residency proof plan required')
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('precision_floor', Path(__file__).with_name('floor.py'))
+        producer = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(producer)
+        try:
+            recomputed = producer.summarize(plan, native.get('trace_outputs'), read)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise ValueError('native admission: floor originals invalid: ' + str(exc)) from exc
+        _require(recomputed == native, 'floor recomputation mismatch')

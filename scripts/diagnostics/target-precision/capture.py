@@ -134,6 +134,8 @@ def open_capture(plan_path, opened_path):
               'plan_file': identity, 'producer_sha256': _digest(Path(__file__).read_bytes())}
     if 'admission' in plan:
         record['admission_producer_sha256'] = _digest(Path(__file__).with_name('admission.py').read_bytes())
+        record['floor_worker_sha256'] = _digest(Path(__file__).with_name('worker.py').read_bytes())
+        record['floor_producer_sha256'] = _digest(Path(__file__).with_name('floor.py').read_bytes())
         record['runtime_producer_sha256'] = _digest(Path(__file__).with_name('runtime.py').read_bytes())
     _exclusive(opened_path, record)
     return record
@@ -154,6 +156,10 @@ def _finalized(opened_path, cell_paths):
         raise ValueError('producer bytes changed')
     plan = _plan(opened['plan'])
     if 'admission' in plan:
+        if opened.get('floor_worker_sha256') != _digest(Path(__file__).with_name('worker.py').read_bytes()):
+            raise ValueError('floor worker bytes changed')
+        if opened.get('floor_producer_sha256') != _digest(Path(__file__).with_name('floor.py').read_bytes()):
+            raise ValueError('floor producer bytes changed')
         if opened.get('admission_producer_sha256') != _digest(Path(__file__).with_name('admission.py').read_bytes()):
             raise ValueError('admission producer bytes changed')
         if opened.get('runtime_producer_sha256') != _digest(Path(__file__).with_name('runtime.py').read_bytes()):

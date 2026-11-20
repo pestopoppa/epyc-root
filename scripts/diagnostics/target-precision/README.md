@@ -250,3 +250,45 @@ weight equivalence, control execution, residency or a precision cause.
 Run `python3 -m pytest -q scripts/diagnostics/target-precision/` for refusal,
 closure/projection and native-producer tests; optional real-header/executable
 tests require the environment described above. No model smoke is implied.
+
+### Repeated numerical-floor producer
+
+`floor.py` runs the existing native fresh-block/serial executable in separate
+processes for at least two repetitions of one calibration prompt/seed and target.
+Use only inside a published compute row; no model run is part of its unit tests:
+
+```bash
+python3 scripts/diagnostics/target-precision/floor.py \
+  --plan /prepared/plan.json --requests /prepared/calibration-requests.json \
+  --output-dir /row/out/BF16-floor
+```
+
+The requests file is an object `{"requests": [<native request>, ...]}`. Requests
+use worker.py's native request schema/settings/runtime and full case identities;
+only `cell_id` and `repetition` vary across repetitions. The prompt text must
+match the pinned manifest, the prompt/seed must occur in the disjoint calibration
+list, and the target quant/digest must match a planned arm. Prepare these small
+files and all weight/build/holdout evidence before publication. Admission checks
+every native prerequisite except the floor being produced; there is no circular
+requirement for a prior floor receipt. The executable digest is checked without
+reading model weights, and each child uses the explicit private environment.
+
+For each repetition retain exclusive request, trace, stdout/stderr and owned-PID
+runtime originals. Missing residency windows, native failures and malformed or
+changed traces refuse a control; partial outputs remain, and no successful
+control is emitted. A successful `control.json` aggregates every full-vocabulary
+coordinate across all blocks and repetitions, using max-absolute difference and
+RMS from squared sums/counts (both lower is better). `receipt-control.json` adds
+its `{path,sha256}` reference for the floor receipt's `controls` array. Produce
+one control per quant, then wrap them with the floor receipt's shared settings
+and schema described above. Passing production is not implied: matrix admission
+still requires all controls to meet the predeclared numerical bound.
+
+Admission now requires `trace_outputs=[{trace:{path,sha256},
+runtime:{path,sha256}}, ...]` in every control and replays the original native
+moments and runtime observations. Aggregate-only legacy declarations refuse.
+Closure reopens every original and binds floor.py and its worker reducer bytes;
+editing a trace or runtime record after opening refuses closure. Digests and
+consistent declarations do not independently attest model provenance or prove
+that residency observations overlapped the verification kernel specifically.
+There has been no model-backed floor measurement or causal precision finding.

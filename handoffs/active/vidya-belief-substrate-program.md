@@ -3278,8 +3278,13 @@ is not residency evidence. Existing VB-RI-OPS-WIRE task remains open.
 The prospective runtime observer now binds retained owned-child maps/library hashes and
 HIP KFD/VRAM observations through worker/runner/closure replay; model-free fixtures only,
 no actual cell residency or verify-phase overlap established. Preserve these originals
-when implementing the numerical-floor producer; the existing planning-context canary
-still gates the read-side wiring claim.
+with the numerical-floor producer; the existing planning-context canary
+still gates the read-side wiring claim. `target-precision/floor.py` now produces repeated
+calibration controls from original native traces and owned-process runtime records;
+admission/closure recompute every denominator and moment and bind reducer bytes.
+VB-RI-OPS-WIRE must retain these originals through first admitted floor/matrix
+execution and demonstrate the planning-context canary; model-free fixtures alone
+create no measured numerical floor, residency or causal precision warrant.
 
 ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
 
