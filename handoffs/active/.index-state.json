@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 594
+      "open": 600
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 9841,
+          "line": 9842,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10044,
+          "line": 10045,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20
@@ -1183,7 +1183,7 @@
       "closed": 238,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 29,
+      "open": 31,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1192,7 +1192,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 269,
+      "total": 271,
       "tracks": [
         {
           "blocked": 2,
@@ -1207,14 +1207,14 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 27
+          "open": 29
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1820,
+          "line": 1824,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1948,
+          "line": 1952,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1234,7 +1234,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2280,
+          "line": 2284,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2381,
+          "line": 2385,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2935,
+          "line": 2939,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3073,
+          "line": 3077,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1274,7 +1274,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3080,
+          "line": 3084,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1426,7 +1426,7 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 117,
+      "closed": 118,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 33,
@@ -1438,7 +1438,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 151,
+      "total": 152,
       "tracks": [
         {
           "blocked": 0,
@@ -1484,7 +1484,7 @@
         },
         {
           "blocked": 1,
-          "closed": 31,
+          "closed": 32,
           "gates": [],
           "guarded": 0,
           "line": 1778,
@@ -2134,7 +2134,7 @@
       "closed": 296,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 5,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2143,7 +2143,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 301,
+      "total": 303,
       "tracks": [
         {
           "blocked": 0,
@@ -2181,14 +2181,14 @@
           "line": 2267,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 1
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 53,
           "gates": [],
           "guarded": 0,
-          "line": 2600,
+          "line": 2605,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2198,7 +2198,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3036,
+          "line": 3041,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2208,7 +2208,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3131,
+          "line": 3136,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2354,7 +2354,7 @@
       "closed": 203,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 40,
+      "open": 42,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,7 +2363,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 245,
+      "total": 247,
       "tracks": [
         {
           "blocked": 1,
@@ -2386,7 +2386,7 @@
           "line": 845,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 30
+          "open": 32
         }
       ]
     },
