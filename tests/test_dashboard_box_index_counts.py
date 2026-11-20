@@ -25,7 +25,7 @@ DOC = {"counts": {"open": 2, "frozen": 1, "needs-owner": 1, "held": 1, "outside_
        "holds": [{"id": "akagg", "scope": "loop-launch"}], "holds_source": "handoffs/active/holds.yaml",
        "boxes": {"X-1": {"file": "handoffs/active/x.md", "state": "open", "holds": ["akagg"], "gate_open": True},
                  "X-2": {"file": "handoffs/active/x.md", "state": "frozen"},
-                 "X-3": {"file": "handoffs/active/x.md", "state": "needs-owner"},
+                 "X-3": {"file": "handoffs/active/x.md", "state": "needs-owner", "proposed_by": "taskflow t"},
                  "X-4": {"file": "handoffs/active/x.md", "state": "done"}}}
 
 
@@ -39,7 +39,7 @@ def test_board_counts_holds_and_fresh_badge(tmp_path):
     card = next(c for c in b["columns"]["active"] if c["id"] == "active/x")
     bc = card["box_counts"]
     assert (bc["open"], bc["frozen"], bc["needs-owner"], bc["held"], bc["blocked"]) == (1, 1, 1, 1, 1)
-    assert bc["holds"] == ["akagg"]
+    assert bc["holds"] == ["akagg"] and bc["proposals_pending"] == 1
 
 
 def test_board_stale_badge_when_sources_are_newer(tmp_path):

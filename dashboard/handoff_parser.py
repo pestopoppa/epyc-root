@@ -724,7 +724,7 @@ def build_board(handoff_root: Path, *, file_activity: dict | None = None,
     }
 
 
-BOX_COUNT_STATES = ("open", "blocked", "frozen", "needs-owner", "outside_backlog", "held")
+BOX_COUNT_STATES = ("open", "blocked", "frozen", "needs-owner", "outside_backlog", "held", "proposals_pending")
 
 
 def box_index_summary(repo: Path) -> dict:
@@ -756,6 +756,8 @@ def box_index_summary(repo: Path) -> dict:
             d["blocked"] += 1
         if r.get("outside_backlog"):
             d["outside_backlog"] += 1
+        if r.get("state") == "needs-owner" and r.get("proposed_by"):
+            d["proposals_pending"] += 1          # C1: LLM proposals awaiting the owning session
         if r.get("holds"):
             d["held"] += 1
             d["holds"] = sorted(set(d["holds"]) | set(r["holds"]))

@@ -239,7 +239,7 @@ TIERS = ('luna', 'terra', 'sol', 'haiku', 'sonnet', 'opus')
 DONE_WHEN_REQUIRED = ('non-inference', 'inference')     # classes whose standard-grammar box must state `done when`
 FIELD_KEYS = ('done when', 'gate', 'inputs', 'inputs-missing', 'tier', 'owner', 'stop rule', 'model', 'build', 'harness',
               'metric', 'rule', 'region', 'est', 'frozen until', 'previous_task_text', 'supersedes', 'superseded by',
-              'roll-up', 'class')
+              'roll-up', 'class', 'proposed-by', 'parent')
 FIELD_RE = re.compile(r'·\s*(?:❄\s*)?(' + '|'.join(re.escape(k) for k in sorted(FIELD_KEYS, key=len, reverse=True))
                       + r')\s*:\s*', re.I)
 BOX_ID = re.compile(r'^\s*[-*] \[[ xX~>!]\]\s*\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*')

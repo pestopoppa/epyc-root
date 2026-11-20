@@ -292,3 +292,20 @@ def test_backlog_row_check_refuses_held_and_unavailable_boxes(tmp_path):
             "file": "handoffs/active/kc.md", "text_sha": box_index.text_sha(line), "state": "open", "holds": [hold]}}}))
         code, why = brc.classify(act / "kc.md", 3, " ", line[6:], "K")
         assert code == 2 and hold in why[0]
+
+
+def test_index_check_flags_a_corrupt_hub_copy(tmp_path, monkeypatch):
+    """Fable S2: --check validates the hub-first copy the readers resolve, not only the checkout's."""
+    import index_state as I
+    import toolroot
+    repo, hub = tmp_path / "repo", tmp_path / "hub"
+    _write(repo, [])
+    (hub / "handoffs/active").mkdir(parents=True)
+    (hub / "handoffs/active/holds.yaml").write_text("holds: [broken")
+    monkeypatch.setattr(I, "REPO_ROOT", repo)
+    monkeypatch.delenv("EPYC_HOLDS_ROOT", raising=False)
+    monkeypatch.setattr(toolroot, "HUB", str(hub))
+    errs = I.hold_problems({"rows": {}}, {})
+    assert any("unreadable" in e and str(hub) in e for e in errs)
+    (hub / "handoffs/active/holds.yaml").write_text("holds: []\n")
+    assert I.hold_problems({"rows": {}}, {}) == []

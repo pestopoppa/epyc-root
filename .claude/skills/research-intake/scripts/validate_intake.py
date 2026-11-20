@@ -1094,6 +1094,36 @@ def _handoff_path(ref: object, root: Path) -> Path | None:
     return path if path.parent in roots else None
 
 
+def intake_box_lint(path: Path, task_id: str) -> list[str]:
+    """Handoff standard C1/C6: every box intake Stage 4 applies passes `task_lint` dispatch -- explicit `[class]` tag,
+    `· done when:` (unless drafted NEEDS-OWNER), `· gate:` stated (`none` is explicit) and every `· inputs:` path
+    existing -- so intake never emits a box that later needs an LLM proposal. Errors name the box and the field."""
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "scripts" / "handoffs"))
+    try:
+        import task_lint as _tl
+        import task_lint_core as _l1
+    finally:
+        _sys.path.pop(0)
+    lines = path.read_text(encoding="utf-8").split("\n")
+    i = next((n for n, l in enumerate(lines) if _l1.CHECKBOX.match(l) and _l1.head_id(l) == task_id), None)
+    if i is None:
+        return [f"{task_id}: applied box not found in {path.name}"]
+    own, _ = _l1.own_block(lines, i)
+    r = _tl.dispatch_result(own, 0)
+    out = []
+    if r["class_basis"] != "explicit":
+        out.append(f"{task_id}: intake box needs an explicit [class] tag (handoff_box.py add --class)")
+    if r["state"] != "needs-owner":
+        if r["class"] in _tl.DONE_WHEN_REQUIRED and not r["done_when"]:
+            out.append(f"{task_id}: intake box needs `· done when:` (or --needs-owner for a draft)")
+        if "gate" not in r["fields"]:
+            out.append(f"{task_id}: intake box needs `· gate:` (box/row IDs, or `none`)")
+    if r["inputs_missing"]:
+        out.append(f"{task_id}: intake box `· inputs:` paths do not exist: {', '.join(r['inputs_missing'])}")
+    return out
+
+
 def session_cleanup_eligible(session: object) -> bool:
     """Ingestion completion alone cannot discard steering/actionable state."""
     if not isinstance(session, dict):
@@ -1360,6 +1390,8 @@ def _validate_v2_coverage(session: dict, filing: dict, recommendations: dict[str
                 errors.append(f"{task_id}: changing an existing checkbox requires exact previous_task_text; silent task ID collision")
         if not preapproval and existing.get(task_id) != [task["task_text"]]:
             errors.append(f"{task_id}: Stage-4 proposed task must match exact applied owner checkbox")
+        elif not preapproval:
+            errors.extend(intake_box_lint(path, task_id))
 
     outcomes = filing.get("outcome_reviews")
     if not isinstance(outcomes, dict):

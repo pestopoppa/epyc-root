@@ -635,6 +635,10 @@ After distillation, build ONE plan covering:
    section. Refining an existing box = a NEW ID via `handoff_box.py refine` carrying
    `previous_task_text` (the old first line is never edited). Anything a dive already settled is a box
    added then ticked with the ONE suffix `✅ YYYY-MM-DD [belief: …|no-belief: …] <verdict>`.
+   **Every box must pass `task_lint` dispatch** (handoff standard C1): explicit `[class]` tag, `· done when:`
+   (unless drafted NEEDS-OWNER), `· gate:` stated (`none` is explicit), every `· inputs:` path existing.
+   `validate_intake.py` (Stage 4) refuses the filing otherwise (`intake_box_lint`), so intake never emits a
+   box that later needs an LLM rewrite proposal.
 3. **New stubs** — full stub content (template below), so the operator reviews the actual text.
 4. **Index rows** — **exactly one** domain-index row per handoff, in the thin-row schema
    `| ID | Track | Handoff | Next action | Deps |` (contract:

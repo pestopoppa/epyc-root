@@ -14,6 +14,9 @@ SPEC.loader.exec_module(validator)
 REVIEW_FIELDS = (
     "project_objective", "implementation_ref", "gap", "operational_change",
     "benefit_direction", "owner", "execution_conditions", "closure_basis")
+# Handoff standard C1: an applied intake box passes task_lint dispatch (explicit class, done when, gate).
+STD = "      · class: non-inference\n      · done when: verdict: PASS\n      · gate: none\n"
+
 TASK_LINES = {
     "WIRE-1": "- [ ] **WIRE-1 — Bind existing outputs.**",
     "PE-USE": "- [ ] **PE-USE — Exercise the ParEval consumer.**",
@@ -123,9 +126,9 @@ class ValidateIntakePlanTests(unittest.TestCase):
         owner = self.root / "handoffs/active/owner.md"
         owner.parent.mkdir(parents=True)
         owner.write_text("# Synthetic current owner\n\n"
-                         "- [ ] **WIRE-1 — Bind existing outputs.**\n"
-                         "- [ ] **PE-USE — Exercise the ParEval consumer.**\n"
-                         "- [ ] **PE-SCREEN — Compare retained outcomes.**\n"
+                         "- [ ] **WIRE-1 — Bind existing outputs.**\n" + STD +
+                         "- [ ] **PE-USE — Exercise the ParEval consumer.**\n" + STD +
+                         "- [ ] **PE-SCREEN — Compare retained outcomes.**\n" + STD +
                          "- [x] **TD-21 — Repair the existing artifact path.**\n",
                          encoding="utf-8")
         source = self.root / "synthetic-current.py"
@@ -262,7 +265,7 @@ class ValidateIntakePlanTests(unittest.TestCase):
         index = self.root / "handoffs/active/research-evaluation-index.md"
         index.write_text("# Synthetic index\n", encoding="utf-8")
         stub = dict(path="handoffs/active/new-owner.md",
-                    content="# New owner\n\n- [ ] **NEW-1 — Bounded task.**\n",
+                    content="# New owner\n\n- [ ] **NEW-1 — Bounded task.**\n" + STD,
                     index_file="handoffs/active/research-evaluation-index.md",
                     index_row="| RE-1 | Evaluation | [New](new-owner.md) | Run bounded task | — |")
         self.session["stage3_filing"]["proposed_stubs"] = [stub]
@@ -494,7 +497,7 @@ class ValidateIntakePlanV2Tests(unittest.TestCase):
         self.reconcile_stage4()
         self.assert_invalid("(?i)task|owner|applied")  # The proposed task is still unlanded.
         owner = self.root / "handoffs/active/owner.md"
-        owner.write_text(owner.read_text() + line + "\n", encoding="utf-8")
+        owner.write_text(owner.read_text() + line + "\n" + STD, encoding="utf-8")
         self.assert_valid()  # Addition occurs once in the reconciled retained ledger.
         self.assertEqual(len(self.session["actionable_ledger"]), 4)
 
@@ -547,7 +550,7 @@ class ValidateIntakePlanV2Tests(unittest.TestCase):
     def test_stage4_addition_record_must_match_reconciled_retained_row(self):
         _, line = self.add_delta()
         owner = self.root / "handoffs/active/owner.md"
-        owner.write_text(owner.read_text() + line + "\n", encoding="utf-8")
+        owner.write_text(owner.read_text() + line + "\n" + STD, encoding="utf-8")
         self.reconcile_stage4()
         self.assert_valid()
         original = copy.deepcopy(self.session["actionable_ledger"][-1])
@@ -758,7 +761,7 @@ class ValidateIntakePlanV2Tests(unittest.TestCase):
         index = self.root / "handoffs/active/research-evaluation-index.md"
         index.write_text("# Synthetic domain index\n", encoding="utf-8")
         self.payload["proposed_stubs"] = [dict(
-            path="handoffs/active/new-owner.md", content="# New owner\n\n" + line + "\n",
+            path="handoffs/active/new-owner.md", content="# New owner\n\n" + line + "\n" + STD,
             index_file="handoffs/active/research-evaluation-index.md",
             index_row="| RE-1 | Evaluation | [New](new-owner.md) | Run bounded task | — |")]
         self.payload["entry_updates"][0]["handoffs_created"] = ["new-owner.md"]
@@ -866,7 +869,7 @@ class ValidateIntakePlanV2Tests(unittest.TestCase):
         association_error = "(?i)unmapped|(?:outcome|recommendation).*task|task.*(?:outcome|associat|referenced)"
         self.assert_invalid(association_error)
         owner = self.root / "handoffs/active/owner.md"
-        owner.write_text(owner.read_text() + valid["task_text"] + "\n", encoding="utf-8")
+        owner.write_text(owner.read_text() + valid["task_text"] + "\n" + STD, encoding="utf-8")
         self.assert_invalid(association_error)
         for field in ("owner", "task_text"):
             for value in (None, "", [], 12):
@@ -887,7 +890,7 @@ class ValidateIntakePlanV2Tests(unittest.TestCase):
         self.reconcile_stage4()
         self.assert_invalid(association_error)
         owner = self.root / "handoffs/active/owner.md"
-        owner.write_text(owner.read_text() + line + "\n", encoding="utf-8")
+        owner.write_text(owner.read_text() + line + "\n" + STD, encoding="utf-8")
         self.assert_invalid(association_error)
 
     def test_owner_aliases_cannot_evade_proposed_task_uniqueness(self):
@@ -949,7 +952,7 @@ class ValidateIntakePlanV2Tests(unittest.TestCase):
         index = self.root / "handoffs/active/research-evaluation-index.md"
         index.write_text("# Synthetic domain index\n", encoding="utf-8")
         stub = dict(
-            path="handoffs/active/new-owner.md", content="# New owner\n\n" + line + "\n",
+            path="handoffs/active/new-owner.md", content="# New owner\n\n" + line + "\n" + STD,
             index_file="handoffs/active/research-evaluation-index.md",
             index_row="| RE-1 | Evaluation | [New](new-owner.md) | Run bounded task | — |")
         self.payload["proposed_stubs"] = [stub]

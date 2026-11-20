@@ -744,9 +744,17 @@ def render_domain_tables(state: dict, bdoc: dict, prio: dict) -> dict[str, str]:
         out[idx].append((rank is None, rank or 0, rid,
                          f"| {rid} | [{hname}]({hname}) | {generated_next_action(boxes)} | "
                          f"{', '.join(sorted(deps)) or '—'} | {rank if rank is not None else '—'} | "
-                         f"{h.get('open', 0)}/{h.get('blocked', 0)}/{h.get('frozen', 0)} | {h.get('last_advanced') or '—'} |"))
+                         f"{h.get('open', 0)}/{h.get('blocked', 0)}/{h.get('frozen', 0)}{_owner_note(boxes)} | "
+                         f"{h.get('last_advanced') or '—'} |"))
     return {i: "\n".join([GEN_START, GEN_HEAD] + [x[3] for x in sorted(rows)] + [GEN_END])
             for i, rows in out.items()}
+
+
+def _owner_note(boxes: list[dict]) -> str:
+    """C1: ` · needs-owner n (p proposals)` when the handoff has NEEDS-OWNER boxes."""
+    n = sum(1 for b in boxes if b.get("state") == "needs-owner")
+    p = sum(1 for b in boxes if b.get("state") == "needs-owner" and b.get("proposed_by"))
+    return (f" · needs-owner {n}" + (f" ({p} proposals)" if p else "")) if n else ""
 
 
 def splice_domain_table(text: str, block: str) -> str:
@@ -1251,10 +1259,21 @@ def hold_problems(state: dict, paths: dict | None = None) -> list[str]:
     sys.path.insert(0, str(REPO_ROOT / "scripts" / "coordination"))
     try:
         import holds as _H  # noqa: PLC0415
-        hl = _H.load(str(REPO_ROOT))
-        if hl is None:      # present but unreadable (missing returned above): fail the commit, never "no holds"
-            return [f"BAD HOLD: unreadable {hp.relative_to(REPO_ROOT)} — every reader fails closed until it parses"]
-        errs = [f"BAD HOLD: {e}" for e in _H.validate(hl)]
+        # Validate EVERY copy a reader may resolve (Fable S2): the hub-first path the readers use AND this checkout.
+        copies = []
+        for cand in (Path(_H.path()), hp):
+            if cand.exists() and cand.resolve() not in [x.resolve() for x in copies]:
+                copies.append(cand)
+        errs, hl = [], None
+        for cand in copies:
+            got = _H.load(str(cand.parents[2]))
+            if got is None:
+                errs.append(f"BAD HOLD: unreadable {cand} — every reader fails closed until it parses")
+            elif cand.resolve() == hp.resolve():
+                hl = got
+        if hl is None:
+            return errs
+        errs += [f"BAD HOLD: {e}" for e in _H.validate(hl)]
     finally:
         sys.path.pop(0)
     paths = paths if paths is not None else handoff_paths()
@@ -1638,6 +1657,40 @@ def box_index_doc(state: dict) -> dict:
                            track_open)
 
 
+PROPOSAL_MAX_AGE_DAYS = 14
+_PROPOSED_TS = re.compile(r"(\d{4}-\d{2}-\d{2})")
+
+
+def annotate_box_counts(state: dict, bdoc: dict) -> None:
+    """C1: per handoff `needs_owner` (NEEDS-OWNER boxes) and `proposals_pending` (NEEDS-OWNER boxes carrying
+    `proposed-by`), from the box index. Only written when non-zero so a tree without proposals keeps its state bytes."""
+    per: dict[str, dict] = defaultdict(lambda: {"needs_owner": 0, "proposals_pending": 0})
+    for r in (bdoc.get("boxes") or {}).values():
+        if r.get("state") == "needs-owner":
+            d = per[Path(r.get("file", "")).name]
+            d["needs_owner"] += 1
+            if r.get("proposed_by"):
+                d["proposals_pending"] += 1
+    for name, h in state["handoffs"].items():
+        for k, v in (per.get(name) or {}).items():
+            if v:
+                h[k] = v
+
+
+def stale_proposals(bdoc: dict, today: str | None = None) -> list[str]:
+    """`--check` warning (C1): files whose pending proposals are older than PROPOSAL_MAX_AGE_DAYS."""
+    import datetime as _dtm
+    now = _dtm.date.fromisoformat(today) if today else _dtm.date.today()
+    old: dict[str, int] = defaultdict(int)
+    for r in (bdoc.get("boxes") or {}).values():
+        if r.get("state") == "needs-owner" and r.get("proposed_by"):
+            m = _PROPOSED_TS.search(str(r["proposed_by"]))
+            if m and (now - _dtm.date.fromisoformat(m.group(1))).days > PROPOSAL_MAX_AGE_DAYS:
+                old[Path(r.get("file", "")).name] += 1
+    return [f"PROPOSALS: {n} pending proposal(s) in {f} older than {PROPOSAL_MAX_AGE_DAYS} days — the owning session "
+            f"accepts / edits / rejects them at wrap-up (wrap-up.md Step 2, Proposals)" for f, n in sorted(old.items())]
+
+
 def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -> tuple[list[str], list[str]]:
     """(warnings, errors) for `--check`: the diff-scoped a/f gate (`task_lint.diff_gate`: rule a fails, rule f warns;
     HANDOFF_BOX_GATE / --box-gate override) plus the size-limit findings of a fresh box index.
@@ -1656,6 +1709,7 @@ def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -
         stale = sorted(domain_table_updates(state, doc))
         if stale:   # AK audit B10: generated surfaces warn, never fail a commit that did not touch them
             warns.append(f"GENERATED ROWS: stale in {', '.join(stale)} — run index_state.py")
+        warns.extend(stale_proposals(doc))
         n_out = doc["counts"].get("outside_backlog", 0)
         if n_out:
             warns.append(f"BOX-INDEX: {n_out} open box(es) sit outside `### Backlog` in files that have one")
@@ -1735,15 +1789,16 @@ def main(argv: list[str] | None = None) -> int:
         print(f"REFUSING to write — {SHALLOW_MSG}", file=sys.stderr)
         return 2
 
-    SIDECAR.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    graph = build_graph(state)
-    GRAPH.write_text(json.dumps(graph, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
     try:
         import box_index
     finally:
         sys.path.pop(0)
     bdoc = box_index_doc(state)
+    annotate_box_counts(state, bdoc)          # C1: needs_owner / proposals_pending per handoff
+    SIDECAR.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    graph = build_graph(state)
+    GRAPH.write_text(json.dumps(graph, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     tmp = BOX_INDEX.with_suffix(f".json.{os.getpid()}.tmp")
     tmp.write_text(box_index.dumps(bdoc), encoding="utf-8")
     os.replace(tmp, BOX_INDEX)

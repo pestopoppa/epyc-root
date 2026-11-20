@@ -270,7 +270,51 @@ def split(v):
     return [x for x in re.split(r"[,\s]+", v or "") if x]
 
 
-OPS = {"add": op_add, "split": op_split, "refine": op_refine, "gate": op_gate, "freeze": op_freeze}
+def op_propose(lines, a, root):
+    """C1 (decision 6): a NEEDS-OWNER proposal child `**<ID>.p<n>** [<class>] <text> NEEDS-OWNER` nested after the
+    parent's own block, with `· done when:` / `· stop rule:`, `· proposed-by: <who> <ts>` and `· parent: <ID>`. The
+    parent is NEVER edited. No `gate:` (an accepted child must not be blocked by its own open parent)."""
+    i = find_box(lines, a.box)
+    if L1.CHECKBOX.match(lines[i]).group(2) in "xX":
+        raise BoxError(f"{a.box} is ticked; proposals go under open boxes")
+    ids = all_ids(root)
+    n = 1
+    while f"{a.box}.p{n}" in ids or any(f"**{a.box}.p{n}**" in l for l in lines):
+        n += 1
+    cid = f"{a.box}.p{n}"
+    indent = lines[i][:len(lines[i]) - len(lines[i].lstrip())]
+    extra = []
+    if a.stop_rule:
+        extra.append(f"· stop rule: {' '.join(a.stop_rule.split())}")
+    extra.append(f"· proposed-by: {' '.join(a.proposed_by.split())}        · parent: {a.box}")
+    new = render(cid, a.cls, a.text, a.done_when, None, a.inputs or (), a.tier, a.owner, True, extra, indent + "  ")
+    new = [l for l in new if l.strip() != "· gate: none"]
+    end = block_end(lines, i)
+    return lines[:end] + new + lines[end:]
+
+
+def op_reject(lines, a, root):
+    """C1: decline a proposal child -- its block leaves the backlog and lands under `## History` as a plain line
+    `- **<ID>** <text> [declined: <who> <date> <reason>]` (the belief-capture D1 form; History never holds boxes)."""
+    i = find_box(lines, a.box)
+    own_txt, _ = L1.own_block(lines, i)
+    if "NEEDS-OWNER" not in own_txt or "proposed-by" not in own_txt:
+        raise BoxError(f"{a.box} is not a pending proposal (needs NEEDS-OWNER + proposed-by)")
+    end = own_end(lines, i)
+    body = L1.CHECKBOX.match(lines[i]).group(3).replace("NEEDS-OWNER", "").strip()
+    date = a.date or __import__("datetime").date.today().isoformat()
+    note = f"- {body} [declined: {a.by} {date} {' '.join(a.reason.split())}]"
+    rest = lines[:i] + lines[end:]
+    hist = next((k for k, l in enumerate(rest) if re.match(r"^##\s+History\b", l)), None)
+    if hist is None:
+        while rest and not rest[-1].strip():
+            rest.pop()
+        return rest + ["", "## History", "", note, ""]
+    return rest[:hist + 1] + ["", note] + rest[hist + 1:]
+
+
+OPS = {"add": op_add, "split": op_split, "refine": op_refine, "gate": op_gate, "freeze": op_freeze,
+       "propose": op_propose, "reject": op_reject}
 
 
 def apply(path: Path, op: str, a, root: Path = REPO_ROOT, dry_run=False) -> str:
@@ -278,7 +322,11 @@ def apply(path: Path, op: str, a, root: Path = REPO_ROOT, dry_run=False) -> str:
     eol = "\r\n" if "\r\n" in raw else "\n"                            # CRLF files stay CRLF (S4)
     before = raw.replace("\r\n", "\n").split("\n")
     after = OPS[op](before, a, root)
-    guard_first_lines(before, after)
+    if op == "reject":     # the declined proposal's first line leaves on purpose; every OTHER first line must stay
+        drop = next(l for l in before if L1.CHECKBOX.match(l) and L1.head_id(l) == a.box)
+        guard_first_lines([l for l in before if l != drop], after)
+    else:
+        guard_first_lines(before, after)
     diff = "\n".join(difflib.unified_diff(before, after, str(path), str(path), lineterm="", n=1))
     if not dry_run:
         tmp = path.with_suffix(path.suffix + ".tmp")
@@ -313,6 +361,10 @@ def parser():
     p = sub.add_parser("refine"); common(p); fields(p, need_class=False); p.add_argument("--new-id", required=True)
     p = sub.add_parser("gate"); common(p)
     p.add_argument("--add"); p.add_argument("--remove"); p.add_argument("--none", action="store_true")
+    p = sub.add_parser("propose"); common(p); fields(p)
+    p.add_argument("--proposed-by", required=True); p.add_argument("--stop-rule")
+    p = sub.add_parser("reject"); common(p)
+    p.add_argument("--by", required=True); p.add_argument("--reason", required=True); p.add_argument("--date")
     p = sub.add_parser("freeze"); common(p)
     p.add_argument("--track"); p.add_argument("--whole-file", action="store_true"); p.add_argument("--until", required=True)
     return ap
