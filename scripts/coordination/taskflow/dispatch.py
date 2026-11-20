@@ -500,14 +500,14 @@ class _EndRun(Exception):
 GNX_TRIGGER = ROOT / "scripts/gitnexus-reindex.py"
 
 
-def gitnexus_trigger(batch_id: str, apply: bool, script: Path | None = None, runner=None) -> str:
+def gitnexus_trigger(batch_id: str, enabled: bool = True, script: Path | None = None, runner=None) -> str:
     """Once per batch: ask the gitnexus staleness trigger whether to re-index (it detaches itself).
 
-    Skipped on dry-run (not apply) and under pytest unless a fake `script` is injected. Never raises and never
+    Fires on every real run (independent of --apply: a re-index is not a repo write). Skipped with --no-gitnexus-trigger and under pytest unless a fake `script` is injected. Never raises and never
     fails the dispatch; the outcome is logged to sweep.log and returned.
     """
-    if not apply:
-        out = "skipped:dry-run"
+    if not enabled:
+        out = "skipped:flag"
     elif script is None and os.environ.get("PYTEST_CURRENT_TEST"):
         out = "skipped:test"
     else:
@@ -524,10 +524,10 @@ def gitnexus_trigger(batch_id: str, apply: bool, script: Path | None = None, run
     return out
 
 
-def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: bool, family: str = "local") -> list[dict]:
+def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: bool, family: str = "local", gnx_trigger: bool = True) -> list[dict]:
     out.mkdir(parents=True, exist_ok=True)
     run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    gitnexus_trigger(run_id, apply)
+    gitnexus_trigger(run_id, gnx_trigger)
     ledger = out / "ledger.jsonl"
     rows = []
     for n, task in enumerate(tasks):
@@ -610,6 +610,7 @@ def main(argv=None) -> int:
     r.add_argument("--out", required=True)
     r.add_argument("--apply", action="store_true")
     r.add_argument("--reviewer", action="store_true")
+    r.add_argument("--no-gitnexus-trigger", action="store_true")
     sub.add_parser("sweep")
     a = ap.parse_args(argv)
     if a.cmd == "sweep":
@@ -620,7 +621,7 @@ def main(argv=None) -> int:
         s = json.dumps(tasks, indent=1)
         Path(a.out).write_text(s) if a.out else print(s)
         return 0
-    rows = run(json.loads(Path(a.tasks).read_text()), a.endpoint, Path(a.out), a.apply, a.reviewer)
+    rows = run(json.loads(Path(a.tasks).read_text()), a.endpoint, Path(a.out), a.apply, a.reviewer, gnx_trigger=not a.no_gitnexus_trigger)
     print(json.dumps({"attempted": len(rows), "verified": sum(r.get("verdict") == "verified" for r in rows)}))
     return 0
 
