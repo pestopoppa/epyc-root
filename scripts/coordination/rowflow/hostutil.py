@@ -25,6 +25,29 @@ QUARTERS = ("q0", "q1", "q2", "q3")
 DRM_GLOB = "/sys/class/drm/card*/device"
 
 
+def proc_census(proc="/proc"):
+    """F7 (AK audit B7): ONE per-sample process census {pid: (starttime, cpu_s, last_cpu, comm)} for contamination
+    attribution (CPU % comes from two censuses). Never raises; unreadable pids are skipped."""
+    hz = os.sysconf("SC_CLK_TCK")
+    out = {}
+    for q in os.listdir(proc):
+        if not q.isdigit():
+            continue
+        try:
+            raw = open(f"{proc}/{q}/stat").read()
+            comm = raw[raw.index("(") + 1:raw.rindex(")")]
+            f = raw.rsplit(")", 1)[1].split()
+            out[int(q)] = (f[19], (int(f[11]) + int(f[12])) / hz, int(f[36]), comm)
+        except (OSError, ValueError, IndexError):
+            continue
+    return out
+
+
+def quarter_of_cpu(cpu):
+    """The ws58 quarter of a logical cpu (SMT siblings fold onto their core's quarter)."""
+    return QUARTERS[(int(cpu) % 96) // 24]
+
+
 def quarter_cpus(q):
     lo = int(q[1]) * 24
     return list(range(lo, lo + 24)) + list(range(lo + 96, lo + 120))

@@ -4851,6 +4851,153 @@ def idle_after_crash(flags, grants, util, log, now=None, emit=None, act=True, oc
     return out
 
 
+# ---------------------------------------------------------------- F7 (AK audit B7): builds are a lane; contamination names the offender
+BUILD_PREFIX = "build-"
+BUILD_MAX_MINUTES = 120
+BUILD_MAX_CPUS = 24
+CONTAM_PCT = 20.0          # a foreign process above this CPU % on a held quarter is contamination
+CONTAM_SAMPLES = 2         # consecutive samples before CONTAMINATION.json + the owner alert
+
+
+def _session_env(pid):
+    """The CLAUDE/CODEX session hints in a pid's environment, when readable (same uid only)."""
+    try:
+        env = open(f"/proc/{int(pid)}/environ", "rb").read().split(b"\0")
+    except (OSError, ValueError):
+        return None
+    keep = {}
+    for kv in env:
+        k, _, v = kv.decode(errors="replace").partition("=")
+        if k in ("FILLER_ID", "CLAUDE_SESSION_ID", "CODEX_SESSION_ID", "EPYC_AGENT_ID", "EPYC_SESSION") and v:
+            keep[k] = v[:80]
+    return keep or None
+
+
+def _cmdline(pid):
+    try:
+        return open(f"/proc/{int(pid)}/cmdline", "rb").read().replace(b"\0", b" ").decode(errors="replace").strip()
+    except (OSError, ValueError):
+        return ""
+
+
+def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None):
+    """`rowflow.py claim --build`: a short `build` grant (grants/build-<owner>-<ts>.grant, holds one quarter) so a build
+    is a lane the planner sees instead of contamination. cpus = a count (<= 24: the first whole-free quarter q0-q2)
+    or a literal cpu list (its quarters). Refused - naming the grant - when it would overlap a timing grant's quarters,
+    or any held quarter. Returns (grant id, line)."""
+    need(owner and re.fullmatch(r"[\w.-]+", owner), "claim --build needs --owner <roster id>")
+    need(isinstance(minutes, int) and 1 <= minutes <= BUILD_MAX_MINUTES, f"--minutes must be 1..{BUILD_MAX_MINUTES}")
+    grants = open_grants(flags) if grants is None else grants
+    allrows = rows(flags) if allrows is None else allrows
+    if free is None:
+        _, free, _ = host_snapshot(flags, grants)
+    tq = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX)], allrows)
+    holder = {q: g["id"] for g in grants for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
+    s = str(cpus).strip()
+    if re.fullmatch(r"\d+", s):
+        n = int(s)
+        need(1 <= n <= BUILD_MAX_CPUS, f"--cpus {n}: a build lane is at most one quarter ({BUILD_MAX_CPUS} cores)")
+        pick = [q for q in QUARTERS[:3] if q in free and q not in tq]
+        need(pick, "no whole-free quarter q0-q2 for a build now (" + ", ".join(f"{q}: {holder.get(q, 'busy')}"
+             + (" [timing]" if q in tq else "") for q in QUARTERS[:3]) + "); retry later, never run it unclaimed")
+        qs = [pick[0]]
+    else:
+        need(re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", s), f"--cpus {s!r}: a count or a literal cpu list")
+        qs = sorted(quarters_of(s, fold=True))
+        need(len(qs) == 1, f"--cpus {s} spans {qs or 'no quarter'}; a build lane is one quarter")
+    for q in qs:
+        need(q not in tq, f"BUILD-REFUSED: {q} is held by timing grant {holder.get(q, '?')}; a build there would perturb "
+                          "its measurement. Pick another quarter (or --cpus N to let the keeper pick)")
+        need(q in free, f"BUILD-REFUSED: {q} is held by {holder.get(q, 'another job')}; pick a free quarter")
+    t = dt.datetime.now(dt.timezone.utc) if now is None else dt.datetime.fromtimestamp(now, dt.timezone.utc)
+    gid = f"{BUILD_PREFIX}{owner}-{t:%Y%m%dT%H%M%SZ}"
+    line = write_grant(flags, gid, ",".join(qs), set(qs), minutes * 60)
+    rec = {"id": gid, "owner": owner, "kind": "build", "quarters": qs, "cpus": ",".join(cpu_list(q) for q in qs),
+           "minutes": minutes, "at": now_iso()}
+    atomic_json(os.path.join(flags, "grants", gid + ".build.json"), rec)
+    log(f"BUILD-GRANT {gid}: {','.join(qs)} for {minutes} min (owner={owner}); run it pinned: taskset -c {rec['cpus']} ...")
+    return gid, line
+
+
+def reap_build_grants(flags, now=None, log=print):
+    """Build grants past their end= are ended (grants/<id>.ended rc=0 reason=build-window) so their quarter frees.
+    A build grant has no engine and no pid: nothing else would ever end it."""
+    now = time.time() if now is None else now
+    out = []
+    for g in glob.glob(os.path.join(flags, "grants", BUILD_PREFIX + "*.grant")):
+        gid = os.path.basename(g)[:-6]
+        kv = dict(re.findall(r"(\w+)=(\S+)", head1(g) or ""))
+        end = iso_epoch(kv.get("end")) if kv.get("end") else None
+        if end is not None and now < end:
+            continue
+        with open(os.path.join(flags, "grants", gid + ".ended"), "w") as f:
+            f.write(f"rc=0 time={now_iso()} reason=build-window\njob_id={gid}\n")
+        _rm(g)
+        log(f"BUILD-END {gid}: window over; quarter released")
+        out.append(gid)
+    return out
+
+
+def contamination_sample(flags, grants, log, census=None, prev=None, now=None, emit=None):
+    """F7: per keeper sample, per quarter a grant holds, foreign processes above CONTAM_PCT CPU (last ran there, not
+    the grant's own pids, not a build grant's job). CONTAM_SAMPLES consecutive -> appended to dryrun/<id>/CONTAMINATION.json
+    {pid, comm, cmdline[:80], container, session env} and ONE `contamination` alert to the row owner per offender.
+    Never kills. census/prev: hostutil.proc_census() results (tests). Returns {rid: [offender pids]} recorded now."""
+    now = time.time() if now is None else now
+    emit = emit or notify.emit
+    sp = os.path.join(state_dir(flags), "contamination.json")
+    st = load_json(sp) or {}
+    census = hostutil.proc_census() if census is None else census
+    prev_c = {int(k): tuple(v) for k, v in (st.get("census") or {}).items()} if prev is None else prev
+    dt_s = now - float(st.get("t") or now)
+    hits_prev = st.get("hits") or {}
+    hits, out = {}, {}
+    build_q = {q for g in grants if g["id"].startswith(BUILD_PREFIX) for q in g["holds"] if q in QUARTERS}
+    if dt_s > 0:
+        held = [(g, {q for q in QUARTERS if q in g["holds"]}) for g in grants if not g["id"].startswith(BUILD_PREFIX)]
+        for g, qs in held:
+            if not qs:
+                continue
+            try:
+                own = own_pids(flags, g)
+            except Exception:  # noqa: BLE001
+                own = set()
+            for pid, (birth, cpu, last, comm) in census.items():
+                pv = prev_c.get(pid)
+                if pid in own or pid == os.getpid() or not pv or pv[0] != birth:
+                    continue
+                pct = 100.0 * (cpu - pv[1]) / dt_s
+                q = hostutil.quarter_of_cpu(last)
+                if pct <= CONTAM_PCT or q not in qs or q in build_q:
+                    continue
+                key = f"{g['id']}|{pid}|{birth}"
+                n = int(hits_prev.get(key, 0)) + 1
+                hits[key] = n
+                if n != CONTAM_SAMPLES:
+                    continue
+                rec = {"at": now_iso(), "pid": pid, "comm": comm, "cmdline": _cmdline(pid)[:80], "cpu_pct": round(pct, 1),
+                       "quarter": q, "container": pid_container_id(pid), "session_env": _session_env(pid)}
+                p = os.path.join(dry_dir(flags, g["id"]), "CONTAMINATION.json")
+                os.makedirs(os.path.dirname(p), exist_ok=True)
+                cur = load_json(p) or {"id": g["id"], "offenders": []}
+                cur["offenders"].append(rec)
+                atomic_json(p, cur)
+                out.setdefault(g["id"], []).append(pid)
+                owner = str((load_json(ready_path(flags, g["id"])) or {}).get("owner") or "")
+                log(f"CONTAMINATION {g['id']} {q}: pid {pid} {comm} {rec['cpu_pct']}% ({rec['cmdline']}) container={rec['container']}")
+                try:
+                    emit(flags, "contamination", g["id"], f"{pid}:{birth}", f"CONTAMINATION on {q} under {g['id']}: pid {pid} "
+                         f"`{rec['cmdline']}` at {rec['cpu_pct']}% CPU for {CONTAM_SAMPLES} samples; container {rec['container']}, "
+                         f"session {rec['session_env']}; record {p}", "warning", owner, rec)
+                except Exception as ex:  # noqa: BLE001
+                    log(f"CONTAMINATION {g['id']}: notify failed: {type(ex).__name__}: {ex}")
+    try:
+        atomic_json(sp, {"t": now, "census": {str(k): list(v) for k, v in census.items()}, "hits": hits})
+    except OSError as ex:
+        log(f"CONTAMINATION state write failed ({sp}): {ex}")
+    return out
+
+
 def idle_warn_state_path(flags):
     return os.path.join(state_dir(flags), "idle_held_warn.json")
 
@@ -5366,6 +5513,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         except Exception as e:  # noqa: BLE001 - never stops allocation
             log(f"DRYRUN-RECONCILE failed: {type(e).__name__}: {e}")
     rl = rl_status()
+    if not dry:
+        try:   # F7: a build grant has no engine; its window end releases its quarter
+            reap_build_grants(flags, log=log)
+        except Exception as e:  # noqa: BLE001
+            log(f"BUILD-END failed: {type(e).__name__}: {e}")
     grants = open_grants(flags) if dry else heal_grants(flags, open_grants(flags), rl, log, seen, allrows)
     gids = {g["id"] for g in grants}
     busy, free, holders = host_snapshot(flags, grants, rl)
@@ -5505,6 +5657,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             idle_after_crash(flags, grants, util, log)
         except Exception as e:  # noqa: BLE001
             log(f"IDLE-AFTER-CRASH failed: {type(e).__name__}: {e}")
+        try:   # F7: foreign processes on held quarters, attributed (pid, comm, cmdline, container, session)
+            contamination_sample(flags, grants, log)
+        except Exception as e:  # noqa: BLE001
+            log(f"CONTAMINATION check failed: {type(e).__name__}: {e}")
     # 2026-11-03 session review item 7: a row that fails to arm or is refused at admission no longer idles the regions
     # planned for it until the next tick - the tick re-plans the still-free regions without it (bounded by the number
     # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
@@ -6088,6 +6244,9 @@ def main(argv=None):
     s = sub.add_parser("allocate", help="ONE snapshot per tick: heal, assign dry runs + grants together, write grants, log IDLE-WHY/UNDERUSED")
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
+    s = sub.add_parser("claim", help="F7: claim a short build lane: claim --build --owner <id> --cpus N|LIST --minutes M")
+    s.add_argument("--build", action="store_true", required=True); s.add_argument("--owner", required=True)
+    s.add_argument("--cpus", required=True); s.add_argument("--minutes", type=int, required=True)
     s = sub.add_parser("deploy-guard", help="deploy_rowflow step 3: rc 75 when a changed engine file would reach LEGACY open grants")
     s.add_argument("--changed", nargs="*", default=[]); s.add_argument("--allow-open-grants", action="store_true")
     sub.add_parser("legacy-grants", help="ids of open grants whose poller still reads the live engine path (one per line)")
@@ -6152,6 +6311,10 @@ def main(argv=None):
             row = publish(spec, a.flags, source=os.path.abspath(a.spec))
             print(published_line(row, a.flags))
             supersede(a.flags, row)
+            return 0
+        if a.cmd == "claim":
+            gid, line = claim_build(a.flags, a.owner, a.cpus, a.minutes)
+            print(f"BUILD-GRANT {gid} {line}")
             return 0
         if a.cmd == "withdraw":
             r = withdraw(a.flags, a.id, a.reason)
