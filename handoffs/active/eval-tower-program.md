@@ -643,7 +643,7 @@ The anchor/de-anchoring rules above are human-amendment-only (trust boundary). B
 - [ ] **EV-29** Offline A/B on an existing labeled set (e.g. the RM-3/RM-5 reviewer corpus, or any suite with gold labels): score the same candidates with (a) the current show-candidate-and-ask judge and (b) a commit-first judge (judge answers independently, then compares). Report FPR on known-wrong answers for both, with a chance-corrected agreement stat per intake-876. intake-875's claimed effect is FPR 0.906 → 0.012 — if ours reproduces at even a fraction of that, the rule proposal carries local evidence; if it does not, we saved a constitution amendment. Moderate judge-inference cost → candidate for the inference-batch loop rather than ad-hoc execution. Arms (absorbs the de-anchoring rule and the dual-judge audit): (a) show-candidate-and-ask judge, (b) commit-first judge, (c) clean rubric vs bias-augmented rubric for each judge config; report FPR on known-wrong answers and chance-corrected agreement (intake-876). Decision: if (b) cuts FPR by >= half of intake-875's 0.906 -> 0.012 effect on our corpus, propose the de-anchoring rule gated on the measured solve-accuracy threshold; otherwise record that no constitution amendment is warranted.
 - [ ] **EV-24** Forward guard from intake-877 (was prose-only in progress): when the three absent-source suites are downloaded (operator ask), attach a **web-egress check** to any GAIA run — the suite is 165 verbatim public questions and is only safe on the direct-completion path; repl mode + `frontdoor` (the sole `web_access: true` role) is the one contaminating combination.
 
-- [ ] **Cross-fleet arm-parallelism for rebaselines (operator-endorsed 2026-07-23; TRIGGER: implement
+- [ ] **EV-31** **Cross-fleet arm-parallelism for rebaselines (operator-endorsed 2026-07-23; TRIGGER: implement
   WITH the next scheduled EV-4-class cross-fleet run so it lands with its consumer)**: CORRECTED DESIGN
   SPACE (operator 2026-07-23 — fleets overlap on cpusets/BW; naive 4∥4 overlap is NOT free):
   (i) overlapped 4∥4 — NOT VIABLE under live policy (operator correction #2, 2026-07-23):
@@ -3267,12 +3267,12 @@ already has bare-letter handling).
       llama-server) — any per-scorer cap would fail the child's *first* fork under normal fleet load, and would
       fail NONDETERMINISTICALLY as load varies, turning the scorer into an instrument whose results track how
       busy the box is. Verified **by execution: 9/9 checks**, including the real orphan case.
-- [ ] **2a-iii-followon. Bound process/thread COUNT via cgroup v2 `pids.max`** — the correct mechanism (counts
+- [ ] **EV-32** **2a-iii-followon. Bound process/thread COUNT via cgroup v2 `pids.max`** — the correct mechanism (counts
       only the scorer's own subtree, unaffected by co-tenants). Verified available on this host: `pids`
       controller present, child cgroup creatable; needs `+pids` in `cgroup.subtree_control`. Pair it with
       `cpuset.cpus`/`memory.max` pinned to the eval quadrant (cpuset 112-119) so the whole bound is enforced at
       the cgroup rather than per-process. Concrete blow-up this bounds: numpy sizes its pool to nproc (192 here).
-- [ ] **2a-iv. Harden isolation** — wrap `code_exec_scorer.py` in bubblewrap (`--unshare-net`, read-only root,
+- [ ] **EV-33** **2a-iv. Harden isolation** — wrap `code_exec_scorer.py` in bubblewrap (`--unshare-net`, read-only root,
       tmpfs `/tmp`). `unshare` + unprivileged userns are already available; `bwrap` is one apt package. MicroVM
       substrate (AgentENV) is recorded EVALUATED-AND-DECLINED: cannot run here (no kvm group, ublk unloaded) and
       its 2 vCPU × 1 GiB default with no cpuset knob would delete the fail-closed cpuset-112-119 guarantee we
@@ -3329,11 +3329,11 @@ already has bare-letter handling).
       binds every patch, trajectory, and runner source. Over-budget/legacy/mismatched evidence remains
       observable but exits nonzero and is scoring-ineligible; ordinary resume fails closed. The default
       research smoke targets cover the contract (`make test`: 43 passed; `make lint`: clean).
-- [ ] **2c. Eval-tower pool registration decision package (OPERATOR).** Once LCB-hard/BCB-hard/SWE-oracle
+- [ ] **EV-34** **2c. Eval-tower pool registration decision package (OPERATOR).** Once LCB-hard/BCB-hard/SWE-oracle
       prove discriminative: present options+tradeoffs for registering them into the E7 eval pool (era-sensitive
       instrument change — new-era row vs supplementary-pool vs bench-only). Operator asked for the package
       when the time comes; do NOT register unilaterally.
-- [ ] **2d. LCB contamination-window refresh.** The cached LCB snapshot spans 2023-05→2024-03 (likely inside
+- [ ] **EV-35** **2d. LCB contamination-window refresh.** The cached LCB snapshot spans 2023-05→2024-03 (likely inside
       these models' training windows). Pull a newer LiveCodeBench release (v5/v6 date-window) for a
       post-cutoff hard slice; re-validate oracle; compare to the current window's scores (a large drop =
       contamination signal on the old window).
