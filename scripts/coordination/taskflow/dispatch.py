@@ -222,7 +222,7 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
         row = {"n": n, "key": task["key"], "handoff": task["handoff"], "repo": task["repo"], "kind": task.get("kind"),
                "tier": task.get("tier"), "family": family}
         try:
-            repo, lane, base = make_lane(task, tdir, f"taskflow/{run_id}/{n:02d}")
+            repo, lane, base = make_lane(task, tdir, f"taskflow/{run_id}/{n:02d}-{hashlib.sha1(str(tdir).encode()).hexdigest()[:6]}")  # r4: same-second collision
         except subprocess.CalledProcessError as e:
             row.update(verdict="error", reason="lane", failure_class="harness", detail=e.stderr[-300:])
             rows.append(row); ledger.open("a").write(json.dumps(row) + "\n")
