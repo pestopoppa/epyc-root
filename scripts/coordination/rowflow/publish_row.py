@@ -494,6 +494,43 @@ def check_holds(spec, flags, reg, handoff_file, repo=None):
         check_release_scope(flags, h["id"], rid)
 
 
+ROSTER_REL = "coordination/session-bus/config.yaml"
+
+
+def roster_ids(repo=None):
+    """{roster id: role} from config.yaml, read via toolroot.resolve (hub view first). {} when unreadable."""
+    try:
+        import yaml
+        cfg = yaml.safe_load(open(config_path(ROSTER_REL, repo), encoding="utf-8")) or {}
+        return {str(r.get("id")).strip(): str(r.get("role") or "") for r in cfg.get("roster") or [] if isinstance(r, dict) and r.get("id")}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def check_owner_roster(spec, flags, repo=None, enforce=None):
+    """F9 (AK audit B9): a row's owner must be someone an alert can reach - a roster id in config.yaml (not retired), or a
+    handoff-<slug> / h-<slug> whose slug is registered in <flags>/handoff-sessions.json. Enforced for the live flags
+    tree (like notify.is_live: scratch/test trees never route alerts) or when ROWFLOW_ROSTER_CHECK=1 / enforce=True."""
+    if enforce is None:
+        enforce = os.environ.get("ROWFLOW_ROSTER_CHECK") == "1" or rf.notify.is_live(flags)
+    if not enforce:
+        return
+    owner = str(spec.get("owner") or "").strip()
+    roster = roster_ids(repo)
+    rf.need(roster, f"owner check: roster {config_path(ROSTER_REL, repo)} unreadable; refusing an owner no alert can be proven to reach")
+    if owner in roster and roster[owner] != "retired":
+        return
+    if OWNER_PREFIX_RX.match(owner):
+        reg = rf.load_json(os.path.join(flags, SESSIONS_NAME)) or {}
+        if owner_slug(owner) in (reg.get("sessions") or {}):
+            return
+    raise rf.Refused(f"owner {owner!r} is not a roster id in {config_path(ROSTER_REL, repo)}"
+                     f"{' (retired)' if roster.get(owner) == 'retired' else ''} nor a handoff-<slug> registered in "
+                     f"{os.path.join(flags, SESSIONS_NAME)}: its alerts (smoke FAIL, row-ended, UNDERUSED) would reach nobody. "
+                     f"FIX: publish with your roster id as owner, or add the roster row first "
+                     f"(`session_bus.py roster add {owner or '<id>'} ...`)")
+
+
 def check_handoff(spec, repo=None):
     """The row belongs to a handoff: handoff_task must name an existing handoffs/active/<file>.md."""
     ht = str(spec.get("handoff_task") or "").strip()
@@ -1448,6 +1485,7 @@ def main(argv=None):
             spec = rf.spec_from_legacy(spec, a.flags)
         rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
         check_operator_gate(spec, a.flags)
+        check_owner_roster(spec, a.flags)
         refresh_view()
         check_handoff(spec)
         check_task_lint(spec)

@@ -4516,6 +4516,13 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
             seen.add(f"underused:{r}:{rid}")
             log(f"UNDERUSED {r} {rid}: {pct:.1f}% of its CPUs busy over {int(now - s0['ts'])}s (<{UNDERUSED_PCT:g}%); not killed; owner fix task dryrun/{rid}/UNDERUSED.json")
             fp = os.path.join(dry_dir(flags, rid), "UNDERUSED.json")
+            try:   # F9: UNDERUSED reaches the owner (one alert per region+row: notify keys are idempotent)
+                notify.emit(flags, "underused", rid, r, f"UNDERUSED {r} {rid}: {pct:.1f}% of its CPUs busy over "
+                            f"{int(now - s0['ts'])}s; shrink its regions/claim or split the row", "warning",
+                            str((load_json(ready_path(flags, rid)) or {}).get("owner") or ""),
+                            {"region": r, "busy_pct": round(pct, 1)})
+            except Exception as ex:  # noqa: BLE001
+                log(f"UNDERUSED {rid}: notify failed: {type(ex).__name__}: {ex}")
             if not os.path.exists(fp):
                 os.makedirs(dry_dir(flags, rid), exist_ok=True)
                 atomic_json(fp, {"id": rid, "at": now_iso(), "region": r, "busy_pct": round(pct, 1), "window_s": int(now - s0["ts"]),
@@ -4995,6 +5002,55 @@ def contamination_sample(flags, grants, log, census=None, prev=None, now=None, e
         atomic_json(sp, {"t": now, "census": {str(k): list(v) for k, v in census.items()}, "hits": hits})
     except OSError as ex:
         log(f"CONTAMINATION state write failed ({sp}): {ex}")
+    return out
+
+
+QUEUED_AGED_S = 7200   # F9 (AK audit B9): a smoke marker this old with no batch running tells its owner
+
+
+def queued_aged_alerts(flags, now=None, log=print, emit=None):
+    """F9: every dryrun/<id>/{SMOKE,GPU-SMOKE}-QUEUED.json older than QUEUED_AGED_S while no batch serves it (no GPU
+    batch running for a GPU marker, no SMOKE-PLACED runner for a CPU one) -> ONE `queued-aged` alert per queueing to the
+    row owner (marker spec owner, else the ready/unpublished manifest's). Returns the alerted ids."""
+    now = time.time() if now is None else now
+    emit = emit or notify.emit
+    out = []
+    gpu_run = None
+    for name in ("SMOKE-QUEUED.json", "GPU-SMOKE-QUEUED.json"):
+        for q in glob.glob(os.path.join(flags, "dryrun", "*", name)):
+            rid = os.path.basename(os.path.dirname(q))
+            d = load_json(q) or {}
+            at = iso_epoch(d.get("queued_at")) if d.get("queued_at") else None
+            try:
+                at = at or os.path.getmtime(q)
+            except OSError:
+                continue
+            if now - at < QUEUED_AGED_S:
+                continue
+            if name.startswith("GPU"):
+                gpu_run = gpu_batch_running(flags) if gpu_run is None else gpu_run
+                if gpu_run:
+                    continue
+            elif proc_alive((load_json(smoke_placed_path(flags, rid)) or {}).get("pid")):
+                continue
+            owner = str((d.get("spec") or {}).get("owner") or (load_json(ready_path(flags, rid)) or load_json(
+                os.path.join(dry_dir(flags, rid), "unpublished.json")) or {}).get("owner") or "")
+            h = int((now - at) // 3600)
+            disc = str(d.get("queued_at") or int(at))
+            try:
+                if os.path.exists(notify._marker(flags, notify.event_key("queued-aged", rid, disc))):
+                    continue   # already told for this queueing: no per-tick log noise
+            except Exception:  # noqa: BLE001
+                pass
+            try:
+                if emit(flags, "queued-aged", rid, disc, f"QUEUED-aged {rid}: its {name[:-5]} "
+                        f"marker is {h}h old and no smoke batch has taken it; check `rowflow.py status {rid}` / the keeper log",
+                        "warning", owner, {"marker": q, "age_s": int(now - at)}):
+                    out.append(rid)
+            except Exception as ex:  # noqa: BLE001
+                log(f"QUEUED-AGED {rid}: notify failed: {type(ex).__name__}: {ex}")
+    if out:
+        log(f"QUEUED-AGED {len(out)} marker(s) > {QUEUED_AGED_S // 3600}h: {','.join(out[:8])}; owners alerted")
     return out
 
 
@@ -5657,6 +5713,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             idle_after_crash(flags, grants, util, log)
         except Exception as e:  # noqa: BLE001
             log(f"IDLE-AFTER-CRASH failed: {type(e).__name__}: {e}")
+        try:   # F9: aged smoke markers reach their owners
+            queued_aged_alerts(flags, log=log)
+        except Exception as e:  # noqa: BLE001
+            log(f"QUEUED-AGED check failed: {type(e).__name__}: {e}")
         try:   # F7: foreign processes on held quarters, attributed (pid, comm, cmdline, container, session)
             contamination_sample(flags, grants, log)
         except Exception as e:  # noqa: BLE001

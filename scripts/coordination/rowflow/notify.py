@@ -8,6 +8,8 @@ IDLE-VIOLATION. This module is called BY THE CODE THAT WRITES the event (no LLM,
     row-ended   filler_run15.sh after write_ended (every reason) and on the cleanup-failed REFUSED path (no .ended)
     smoke-fail  rowflow.record_fail (every dryrun/<id>/FAIL-N.json, smoke and arm/launch)
     disk-floor  rowflow.allocate (the keeper tick): ONE alert per crossing below the floor, hysteresis on recovery
+    queued-aged rowflow.allocate: a smoke marker (SMOKE-QUEUED / GPU-SMOKE-QUEUED) older than 2 h with no batch (F9)
+    underused   rowflow.underused: first UNDERUSED of a (region, row); underused-shrink after 30 min (F6/F9)
 
 Each event yields exactly one notification, keyed deterministically (sha256 of kind|row|discriminator):
     1. one line in <flags>/rowflow-alerts.jsonl (operator-/dashboard-visible; schema rowflow.alert.v1)
@@ -314,6 +316,21 @@ def is_live(flags):
     return bool(os.environ.get("ROWFLOW_BUS_ROOT")) or os.path.realpath(flags) == os.path.realpath(LIVE_FLAGS)
 
 
+def _owner_not_roster_once(flags, rid, owner):
+    """F9 (AK audit B9): a legacy row whose owner is not a roster id still routes to `inference`, logged ONCE per row."""
+    m = os.path.join(flags, "notify", "owner-not-roster", str(rid).replace("/", "_"))
+    try:
+        os.makedirs(os.path.dirname(m), exist_ok=True)
+        fd = os.open(m, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.write(fd, json.dumps({"row": rid, "owner": owner, "at": _now()}).encode())
+        os.close(fd)
+    except FileExistsError:
+        return
+    except OSError as e:
+        _log(f"owner-not-roster {rid}: marker failed: {e}")
+    _log(f"owner-not-roster {rid}: owner {owner!r} is not a roster id; alerts go to {FALLBACK_ASSIGNEE}")
+
+
 def _bus_send(rec, owner, action, flags=LIVE_FLAGS):
     if not is_live(flags):
         return "skipped: non-live flags tree and no ROWFLOW_BUS_ROOT"
@@ -324,6 +341,8 @@ def _bus_send(rec, owner, action, flags=LIVE_FLAGS):
     roster = _roster(bus_root)
     owner = owner if owner in roster else OWNER_ALIASES.get(owner, owner)
     assignee = owner if roster.get(owner) not in (None, "", "retired") and owner != WRITER else FALLBACK_ASSIGNEE
+    if assignee == FALLBACK_ASSIGNEE and owner != FALLBACK_ASSIGNEE:
+        _owner_not_roster_once(flags, rec.get("row_id") or rec["kind"], owner)
     stamp = rec["ts"].replace("-", "").replace(":", "")
     msg = {"id": f"msg-{stamp}-{int(rec['key'][:8], 16)}-{WRITER}", "to": assignee,
            "kind": "defect" if action else "status", "task_id": rec.get("row_id") or rec["kind"],
