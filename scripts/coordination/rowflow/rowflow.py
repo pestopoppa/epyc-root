@@ -165,8 +165,13 @@ def load_json(path):
 
 
 def alive(pid):
+    """True for a live process. A ZOMBIE (exited, not yet reaped) is NOT alive: a smoke whose bash exited but sits <defunct>
+    otherwise kept its RUNNING.json regions busy until the deadline (AK 2026-11-20: q3 + GPU idle, "held by ?")."""
     try:
-        return bool(pid) and subprocess.run(["ps", "-o", "pid=", "-p", str(int(pid))], capture_output=True).returncode == 0
+        if not pid:
+            return False
+        r = subprocess.run(["ps", "-o", "stat=", "-p", str(int(pid))], capture_output=True, text=True)
+        return r.returncode == 0 and not r.stdout.strip().startswith("Z")
     except (ValueError, TypeError):
         return False
 
