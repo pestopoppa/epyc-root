@@ -25,3 +25,13 @@ R2 evidence (original files, SHA-256):
 - `/mnt/raid0/llm/tmp/ak-dtree-diag-gpu-20261120-r2/out/results.jsonl`: `7d2a5ead40c5bff9c1e7cfc7bb0d24d0f2d8e91092978934233e37469db26994`.
 - `/mnt/raid0/llm/tmp/ak-dtree-diag-gpu-20261120-r2/out/logs/dbg-a3b.log`: `4ff2064f16d5d1a1f8c734ee3714bb56e41ce3bc604375a97b1cbc78bdcf4315`.
 - `/mnt/raid0/llm/tmp/ak-dtree-diag-gpu-20261120-r2/out/logs/dbg-27b.log`: `481b90b7b3e906e9d38ee7d511c9d0acc849d2e930018824576b29cb9cb41319`.
+
+## R3: constant-width build and server smoke
+
+Row `ak-dtree-build-gpu-20261120-r3` ended rc=0 at 04:18:42Z. The R3 amendment selects experimental source `abda9a72c4709cc9d3d86112b1e39d1ab9e8ce82`, padding eligible batch-tree rounds to the column budget. Build and server-smoke verdict is PASS: the build record has rc=0, rebuilt server implementation, tree-reservation marker, tree-accept symbol and linkage rc=0; both models completed two 64-token tree requests with verified tree rounds. Owner PASS/FILED already existed when df2 filed; df2 returned NOOP and acknowledged the alert. [belief: cc]
+
+27B text matched its chain control on 2/2 prompts; A3B matched on 0/2. Identity is recorded rather than gated by this smoke rule. P5 remains open pending full oracle qualification and measured A/B. The successful smoke does not waive A3B's mismatch. [belief: cc]
+
+Recorded graph-reuse counts (two requests, tree versus chain) were 27B `[17, 26]` versus `[15, 24]`, and A3B `[24, 45]` versus `[26, 48]`. These are informational counts, not reuse rates or proof of a performance cause. Recorded tok/s was 27B `[32.607045, 46.948701]` versus `[32.176844, 63.208566]`, and A3B `[50.224953, 78.618767]` versus `[43.397098, 52.971713]`. This server smoke was not a timing-grade A/B experiment; no speedup verdict follows. [belief: cc]
+
+Evidence: `/mnt/raid0/llm/tmp/ak-dtree-build-gpu-20261120-r3/out/results.jsonl`, SHA-256 `bb739e050c428fefada3bfec51985c29d4ef3f2b70fb04640400df2d32731b18`. The build record binds the artifacts to the source above: `llama-server` SHA-256 `02de65ccd76e4beb3387a7a2341e9017eae987b3e071975abcdb35076d54c7d1`, `libllama-server-impl.so` `efb1417a3ea0cfc2aafb3f851573e472d07e72407a6d49d8e817f56361485849`, `libllama.so.0.0.10613` `d9b416a842ddd3a614b94c268e6f23b58e694c61592eb67eeb6258a095f72121`, and `libggml-hip.so.0.16.0` `3b243ee959e627fb8715f5c67ad838c23a81eb579dba137b77f1866d31b4e690`.
