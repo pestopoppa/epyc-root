@@ -30,6 +30,22 @@ def guard(remaining):
     if available('/mnt/raid0') < 150*GIB+remaining: raise RuntimeError('remaining transfer would breach 150 GiB disk floor')
     if mem_available() < 250*GIB: raise RuntimeError('host MemAvailable below 250 GiB')
 
+def remaining_transfer(sources):
+    """Reserve only unwritten bytes; retained bytes still require full verification."""
+    remaining=0
+    for name,_,size,_ in sources:
+        path=SCRATCH/name; partial=SCRATCH/(name+'.part')
+        if path.exists() and partial.exists():
+            raise RuntimeError('ambiguous completed and partial files')
+        if path.exists():
+            if path.stat().st_size!=size:
+                raise RuntimeError('retained completed file fails pinned size')
+        else:
+            retained=partial.stat().st_size if partial.exists() else 0
+            if retained>size: raise RuntimeError('partial exceeds pinned size')
+            remaining+=size-retained
+    return remaining
+
 def download_inputs():
     # Only pinned filenames belong to this acquisition; never overwrite foreign data.
     allowed={n+s for n,_,_,_ in SOURCES for s in ('', '.part')}
@@ -53,7 +69,8 @@ def download_inputs():
                 if partial.stat().st_size>size: raise RuntimeError('partial exceeds pinned size')
                 with partial.open('rb') as f:
                     while b:=f.read(8*1024*1024): h.update(b); written+=len(b)
-            remaining=sum(x[2] for x in SOURCES[index+1:]) + size-written
+            later_remaining=remaining_transfer(SOURCES[index+1:])
+            remaining=later_remaining + size-written
             guard(remaining)
             if written<size:
                 headers={'User-Agent':'epyc-precision-preflight/2'}
@@ -73,7 +90,7 @@ def download_inputs():
                             if not b: break
                             if written+len(b)>size: raise RuntimeError('remote exceeded expected size')
                             out.write(b); h.update(b); written+=len(b)
-                            guard(sum(x[2] for x in SOURCES[index+1:]) + size-written)
+                            guard(later_remaining + size-written)
                         out.flush(); os.fsync(out.fileno())
             if written!=size: raise RuntimeError('incomplete transfer; partial retained')
             if h.hexdigest()!=expected:
