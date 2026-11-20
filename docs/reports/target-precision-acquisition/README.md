@@ -71,3 +71,54 @@ The tested planner reads metadata and audited tool source only. Headers do not
 verify weight payloads; the metadata reserve needs enforcement; tool-build,
 tensor/tokenizer and drafter correspondence still require receipts. No transfer,
 model execution, numerical-floor measurement or causal precision finding occurred.
+
+
+## Staged preparation and resource controls (2026-11-20)
+
+[`preparation-schedule-20261120.json`](preparation-schedule-20261120.json)
+compares two explicit serial placements from the audited converter bounds.
+All-durable staging needs **278,075,241,664 free bytes**, including the unchanged
+150 GiB disk floor and 1 GiB total control reserve; the snapshot has
+**277,417,951,232 available bytes**, so that placement is refused. Source release
+reduces its peak, but does not reserve capacity against other sessions.
+
+The explicit `tmpfs-intermediates` candidate puts pinned source shards and BF16
+in task-owned tmpfs scratch, with Q8_0/Q4_K_M outputs and provenance receipts on
+durable storage. It needs **222,354,733,184 disk bytes**,
+**112,380,277,934 tmpfs bytes**, and **517,180,945,582 host-available bytes**.
+All three envelopes fit this snapshot. The RAM calculation includes the unchanged
+250 GiB host floor, the worst simultaneous tmpfs footprint, and the converter's
+128 GiB cgroup budget, conservatively double-counting pages also charged to that
+cgroup. Quantizers each get 64 GiB; acquisition gets 4 GiB. These are proposed
+enforced budgets, not measured memory sufficiency. No capacity is reserved.
+
+Source release requires verified pinned payloads, BF16 full tensor/tokenizer
+correspondence, and retained source/build/output receipts, and can affect only
+this task's source files. The planner performs no deletion. A reboot loses
+source/BF16 tmpfs files: reacquire/rederive and fully reverify before publication;
+receipts alone never establish that weights still exist. All three target arms
+must exist and pass admission when the prospective matrix is readied.
+
+`scripts/diagnostics/target-precision/preparation.py` implements planning and a
+single-command Linux guard. The guard refuses a shared/nonempty or unbounded
+cgroup, requires exact `memory.max`, zero swap and group OOM, joins and verifies
+the captured child's membership before exec, and applies `RLIMIT_FSIZE` to the
+audited single-output command. It retains merged original stdout/stderr through
+a pipe with a separately enforced log cap, samples remaining disk budget and the
+250 GiB host-memory floor, sets a deadline, and reaps its captured process group
+on success and failure. It does not edit shared cgroup settings. A cgroup memory
+budget hit fails the command even if it returns zero. Partial outputs/logs are
+retained as failures; success is not a verified-weight receipt.
+
+**Execution remains unadmitted.** The current root cgroup is shared and refused.
+No delegated leaf, acquisition integration, aggregate control-reserve enforcement,
+per-volume floor supervisor or verified-source release implementation is claimed.
+Disk/host sampling can detect shared resource loss but cannot reserve capacity
+or prevent another session consuming space between samples. The wrapper is for
+single-threaded callers and audited serial single-output commands; split/temp
+outputs require another audit. Its tests use tiny metadata and fake children /
+cgroup files: **32 controls pass**, including exact capacity boundaries, separate
+tmpfs/RAM refusal, existing-output protection, cgroup/host-memory/OOM refusal,
+log cap, deadline, disk-loss and captured-child cleanup. No actual delegated
+cgroup, converter, quantizer, acquisition or inference was executed. Full target
+precision suite: **296 passed, 11 optional tests skipped**.

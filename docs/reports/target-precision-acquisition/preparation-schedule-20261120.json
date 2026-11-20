@@ -1,0 +1,169 @@
+{
+  "schema": "epyc.target-precision.preparation-comparison.v1",
+  "snapshot_utc": "2026-11-20T10:01:29.411861+00:00",
+  "input_file_sha256": "5f847a8f6325c1633864fd6b747e7ebbdfbda4ab5bd22b860c7a48723e3809ec",
+  "placements": {
+    "durable": {
+      "schema": "epyc.target-precision.preparation.v1",
+      "sizing_sha256": "acc20246cead0093a3be0d9130df3465a2840fb7f556a6869a2ff3f947be3b10",
+      "placement": "durable",
+      "tmpfs_peak_bytes": 0,
+      "tmpfs_required_free_bytes": 0,
+      "tmpfs_available_bytes": 608205561856,
+      "host_available_bytes": 1154335657984,
+      "host_required_bytes": 405874409472,
+      "resource_envelope_fits": false,
+      "volatile_recovery": "tmpfs source/BF16 lost on reboot: reacquire/rederive and fully reverify before row publication",
+      "steps": [
+        {
+          "name": "acquire",
+          "retained_bytes": 55586027630,
+          "memory_max_bytes": 4294967296,
+          "durable_bytes": 55586027630,
+          "tmpfs_bytes": 0
+        },
+        {
+          "name": "convert",
+          "retained_bytes": 111306536110,
+          "memory_max_bytes": 137438953472,
+          "durable_bytes": 111306536110,
+          "tmpfs_bytes": 0
+        },
+        {
+          "name": "release_verified_source",
+          "retained_bytes": 55720508480,
+          "memory_max_bytes": 4294967296,
+          "durable_bytes": 55720508480,
+          "tmpfs_bytes": 0
+        },
+        {
+          "name": "quantize_Q8_0",
+          "retained_bytes": 85830367360,
+          "memory_max_bytes": 68719476736,
+          "durable_bytes": 85830367360,
+          "tmpfs_bytes": 0
+        },
+        {
+          "name": "quantize_Q4_K_M",
+          "retained_bytes": 115940226240,
+          "memory_max_bytes": 68719476736,
+          "durable_bytes": 115940226240,
+          "tmpfs_bytes": 0
+        }
+      ],
+      "output_cap_bytes": {
+        "BF16": 55720508480,
+        "Q8_0": 30109858880,
+        "Q4_K_M": 30109858880
+      },
+      "control_reserve_bytes": 1073741824,
+      "disk_floor_bytes": 161061273600,
+      "required_free_bytes": 278075241664,
+      "available_bytes": 277417951232,
+      "disk_envelope_fits": false,
+      "execution_admitted": false,
+      "source_release_gate": [
+        "all pinned source payloads verified",
+        "BF16 digest and full tensor/tokenizer correspondence verified",
+        "source/build/output receipts persisted outside source directory",
+        "task-owned source only; no shared model deletion"
+      ],
+      "enforcement": {
+        "memory": "dedicated cgroup-v2 memory.max; memory.swap.max=0",
+        "output": "RLIMIT_FSIZE per serial single-output command",
+        "disk": "remaining output budget plus unchanged floor on every monitor sample",
+        "controls": "aggregate logs/receipts bounded within control reserve"
+      },
+      "limitations": [
+        "snapshot reserves no shared disk, tmpfs or RAM",
+        "memory caps are enforced budgets, not measured sufficiency",
+        "source release requires receipt validation; planner never deletes files",
+        "restart may need source reacquisition and BF16 rederivation; volatile paths cannot be treated as durable",
+        "acquisition and aggregate control-reserve enforcement require integration"
+      ]
+    },
+    "tmpfs-intermediates": {
+      "schema": "epyc.target-precision.preparation.v1",
+      "sizing_sha256": "acc20246cead0093a3be0d9130df3465a2840fb7f556a6869a2ff3f947be3b10",
+      "placement": "tmpfs-intermediates",
+      "tmpfs_peak_bytes": 111306536110,
+      "tmpfs_required_free_bytes": 112380277934,
+      "tmpfs_available_bytes": 608205561856,
+      "host_available_bytes": 1154335657984,
+      "host_required_bytes": 517180945582,
+      "resource_envelope_fits": true,
+      "volatile_recovery": "tmpfs source/BF16 lost on reboot: reacquire/rederive and fully reverify before row publication",
+      "steps": [
+        {
+          "name": "acquire",
+          "retained_bytes": 55586027630,
+          "memory_max_bytes": 4294967296,
+          "durable_bytes": 0,
+          "tmpfs_bytes": 55586027630
+        },
+        {
+          "name": "convert",
+          "retained_bytes": 111306536110,
+          "memory_max_bytes": 137438953472,
+          "durable_bytes": 0,
+          "tmpfs_bytes": 111306536110
+        },
+        {
+          "name": "release_verified_source",
+          "retained_bytes": 55720508480,
+          "memory_max_bytes": 4294967296,
+          "durable_bytes": 0,
+          "tmpfs_bytes": 55720508480
+        },
+        {
+          "name": "quantize_Q8_0",
+          "retained_bytes": 85830367360,
+          "memory_max_bytes": 68719476736,
+          "durable_bytes": 30109858880,
+          "tmpfs_bytes": 55720508480
+        },
+        {
+          "name": "quantize_Q4_K_M",
+          "retained_bytes": 115940226240,
+          "memory_max_bytes": 68719476736,
+          "durable_bytes": 60219717760,
+          "tmpfs_bytes": 55720508480
+        }
+      ],
+      "output_cap_bytes": {
+        "BF16": 55720508480,
+        "Q8_0": 30109858880,
+        "Q4_K_M": 30109858880
+      },
+      "control_reserve_bytes": 1073741824,
+      "disk_floor_bytes": 161061273600,
+      "required_free_bytes": 222354733184,
+      "available_bytes": 277417951232,
+      "disk_envelope_fits": true,
+      "execution_admitted": false,
+      "source_release_gate": [
+        "all pinned source payloads verified",
+        "BF16 digest and full tensor/tokenizer correspondence verified",
+        "source/build/output receipts persisted outside source directory",
+        "task-owned source only; no shared model deletion"
+      ],
+      "enforcement": {
+        "memory": "dedicated cgroup-v2 memory.max; memory.swap.max=0",
+        "output": "RLIMIT_FSIZE per serial single-output command",
+        "disk": "remaining output budget plus unchanged floor on every monitor sample",
+        "controls": "aggregate logs/receipts bounded within control reserve"
+      },
+      "limitations": [
+        "snapshot reserves no shared disk, tmpfs or RAM",
+        "memory caps are enforced budgets, not measured sufficiency",
+        "source release requires receipt validation; planner never deletes files",
+        "restart may need source reacquisition and BF16 rederivation; volatile paths cannot be treated as durable",
+        "acquisition and aggregate control-reserve enforcement require integration"
+      ]
+    }
+  },
+  "selected_candidate": "tmpfs-intermediates",
+  "execution_admitted": false,
+  "next_gate": "Integrate acquisition, aggregate logs/receipts reserve, verified-source release and per-volume continuous floors; obtain exclusively owned delegated cgroup before any launch.",
+  "current_cgroup_refusal": "cgroup must be empty and exclusively owned"
+}
