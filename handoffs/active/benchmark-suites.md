@@ -400,6 +400,15 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       Parent remains open for live verdict; separate key
       `bfcl_v3_native_supported_frame_local`, per-stratum counts only; no quality score.
       [no-belief: transport smoke and publication; no benchmark quality claim]
+      2026-11-20 single-turn live verdict: `codex-bfcl-cj3d-single-27b-v1-20261120`
+      ended **rc=1, INCONCLUSIVE**: timeout at `parallel_multiple_0`; terminal
+      `RESULT.json` absent. Completed=8, known=8, passed known=8; exposed
+      UNKNOWN=1, unexposed=5 of 14. Nine intact chains (60 records) bind
+      9 exposures, 8 responses, 9 before/8 after residency proofs and 8 original
+      checker verdicts. These are interrupted diagnostic counts, **no quality score**.
+      No retry/redraw; parent remains open for representative coverage.
+      [Verdict and source SHA-256 bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-verdict-20261120.json).
+      [belief: cc]
   - [x] **CJ-3d-BUDGET — Repair prospective native BFCL request admission and transport budgeting with offline refusal controls.** ✅ 2026-11-20 [no-belief: engineering repair and model-free offline controls only]
       **79 offline regression controls PASS** (10.376s unittest / 11.317s process).
       Full capture now shares an 8,312-second HTTP/admission allowance plus

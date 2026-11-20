@@ -1,0 +1,372 @@
+{
+  "row": "codex-bfcl-cj3d-single-27b-v1-20261120",
+  "box": "CJ-3d",
+  "verdict": "inconclusive",
+  "rationale": "INCONCLUSIVE: rc=1; RESULT.json absent; ABORTED.json reports TimeoutError: timed out, completed=8. Nine intact exclusive journal chains contain 60 records, 9 exposures, 8 responses, 9 before/8 after PID/socket/model/build residency proofs and 8 original-checker verdicts, all valid=True. Completed=8, known=8, passed known=8, exposed UNKNOWN=1 (parallel_multiple_0), unexposed=5 of 14. These are interrupted-capture counts, not a quality score; terminal absence, abort and UNKNOWN prohibit a quality conclusion. No retry/redraw. Parent CJ-3d remains open; already-published supported-frame rows are independent, not retries.",
+  "counts": {
+    "selected": 14,
+    "completed": 8,
+    "known": 8,
+    "passed_known_verdicts": 8,
+    "exposed_unknown": 1,
+    "unexposed": 5,
+    "score": null
+  },
+  "journal_events": {
+    "identity": 9,
+    "residency": 17,
+    "exposure": 9,
+    "response": 8,
+    "capture_result": 8,
+    "verdict": 8,
+    "aborted": 1
+  },
+  "journals": [
+    {
+      "case_id": "multiple_0",
+      "records": 7,
+      "chain_valid": true,
+      "tail_sha256": "0c2a0711c5b035eaa04bf25060b025046e49113279e74b22103c6b4b414f7fd4",
+      "events": {
+        "identity": 1,
+        "residency": 2,
+        "exposure": 1,
+        "response": 1,
+        "capture_result": 1,
+        "verdict": 1
+      },
+      "residency_phases": {
+        "before": 1,
+        "after": 1
+      },
+      "verdict": {
+        "official": {
+          "error": [],
+          "error_type": "simple_function_checker:unclear",
+          "valid": true
+        },
+        "status": "scored",
+        "valid": true
+      }
+    },
+    {
+      "case_id": "multiple_1",
+      "records": 7,
+      "chain_valid": true,
+      "tail_sha256": "5735a5886d6698126f5a68a54219b707d43e181cb3435dc728f4b99c052947ac",
+      "events": {
+        "identity": 1,
+        "residency": 2,
+        "exposure": 1,
+        "response": 1,
+        "capture_result": 1,
+        "verdict": 1
+      },
+      "residency_phases": {
+        "before": 1,
+        "after": 1
+      },
+      "verdict": {
+        "official": {
+          "error": [],
+          "error_type": "simple_function_checker:unclear",
+          "valid": true
+        },
+        "status": "scored",
+        "valid": true
+      }
+    },
+    {
+      "case_id": "parallel_0",
+      "records": 7,
+      "chain_valid": true,
+      "tail_sha256": "8aa18b13ac56998880eea73e552c4cc56c51e1d2a363b882fb0573858930321a",
+      "events": {
+        "identity": 1,
+        "residency": 2,
+        "exposure": 1,
+        "response": 1,
+        "capture_result": 1,
+        "verdict": 1
+      },
+      "residency_phases": {
+        "before": 1,
+        "after": 1
+      },
+      "verdict": {
+        "official": {
+          "error": [],
+          "valid": true
+        },
+        "status": "scored",
+        "valid": true
+      }
+    },
+    {
+      "case_id": "parallel_1",
+      "records": 7,
+      "chain_valid": true,
+      "tail_sha256": "57a5e287ff9567f8db5518caa8828ab6f968974201846338dd575c0f1aa4c2a9",
+      "events": {
+        "identity": 1,
+        "residency": 2,
+        "exposure": 1,
+        "response": 1,
+        "capture_result": 1,
+        "verdict": 1
+      },
+      "residency_phases": {
+        "before": 1,
+        "after": 1
+      },
+      "verdict": {
+        "official": {
+          "error": [],
+          "valid": true
+        },
+        "status": "scored",
+        "valid": true
+      }
+    },
+    {
+      "case_id": "parallel_multiple_0",
+      "records": 4,
+      "chain_valid": true,
+      "tail_sha256": "62eba9a85e9c93616a9035b73cdeec87916499bafc76b86d29be879ed6ef0d7e",
+      "events": {
+        "identity": 1,
+        "residency": 1,
+        "exposure": 1,
+        "aborted": 1
+      },
+      "residency_phases": {
+        "before": 1
+      },
+      "verdict": null
+    },
+    {
+      "case_id": "simple_0",
+      "records": 7,
+      "chain_valid": true,
+      "tail_sha256": "c8c7a73ed95e154d7f6a14a5e2c28e503fcf2b2f2b919154b25b6c340fa0afde",
+      "events": {
+        "identity": 1,
+        "residency": 2,
+        "exposure": 1,
+        "response": 1,
+        "capture_result": 1,
+        "verdict": 1
+      },
+      "residency_phases": {
+        "before": 1,
+        "after": 1
+      },
+      "verdict": {
+        "official": {
+          "error": [],
+          "valid": true
+        },
+        "status": "scored",
+        "valid": true
+      }
+    },
+    {
+      "case_id": "simple_1",
+      "records": 7,
+      "chain_valid": true,
+      "tail_sha256": "1a5ba5baefab125cf8525a9d3b179c2f251f07ad6a1f509a3561a0d1eb69dd8d",
+      "events": {
+        "identity": 1,
+        "residency": 2,
+        "exposure": 1,
+        "response": 1,
+        "capture_result": 1,
+        "verdict": 1
+      },
+      "residency_phases": {
+        "before": 1,
+        "after": 1
+      },
+      "verdict": {
+        "official": {
+          "error": [],
+          "error_type": "simple_function_checker:unclear",
+          "valid": true
+        },
+        "status": "scored",
+        "valid": true
+      }
+    },
+    {
+      "case_id": "simple_2",
+      "records": 7,
+      "chain_valid": true,
+      "tail_sha256": "e06962a874b7e8b8e0e62e1ac95d81a1974f5ee4cc7e330043e47bd493d1e582",
+      "events": {
+        "identity": 1,
+        "residency": 2,
+        "exposure": 1,
+        "response": 1,
+        "capture_result": 1,
+        "verdict": 1
+      },
+      "residency_phases": {
+        "before": 1,
+        "after": 1
+      },
+      "verdict": {
+        "official": {
+          "error": [],
+          "error_type": "simple_function_checker:unclear",
+          "valid": true
+        },
+        "status": "scored",
+        "valid": true
+      }
+    },
+    {
+      "case_id": "simple_3",
+      "records": 7,
+      "chain_valid": true,
+      "tail_sha256": "4d066da9fa499cf053ac6041b7abf714037759defe50962be23931fd379f84ed",
+      "events": {
+        "identity": 1,
+        "residency": 2,
+        "exposure": 1,
+        "response": 1,
+        "capture_result": 1,
+        "verdict": 1
+      },
+      "residency_phases": {
+        "before": 1,
+        "after": 1
+      },
+      "verdict": {
+        "official": {
+          "error": [],
+          "error_type": "simple_function_checker:unclear",
+          "valid": true
+        },
+        "status": "scored",
+        "valid": true
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/multiple_1.jsonl",
+      "sha256": "6b5b7586ad6d77d4e5cbdacb64b2ee7d0b5aea21fbea5fb257cfe53ed67df993"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_0.jsonl",
+      "sha256": "018ff156e6435c5b5f2984683454286c8b54409647e6c28f1e07480a351b91da"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/parallel_1.jsonl",
+      "sha256": "6e6709e697458f5fcd98885f120bf7e7b8ed7842b47c67e9fc4d75ea5107007d"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_2.jsonl",
+      "sha256": "65e05861739ad1260e8f0cfdddc59ed6c6bcfd3d08422017769f3cb3ca3faa41"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_3.jsonl",
+      "sha256": "5066419aae7171496a7c0873519fc82b55d9af356ce7e95bbd196fb9e605c50f"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/parallel_multiple_0.jsonl",
+      "sha256": "9411f2e5ee04dfb01e1bad4b92fb20678cfa0c9a3ced458d2712d13309506c27"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/parallel_0.jsonl",
+      "sha256": "bed4f51c65bb65dbd4b45139d2b416ef6aeaea2b4a63830c63153aaef94bc742"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_1.jsonl",
+      "sha256": "3878a3950c84eac6522c614a192e4dd52aa512ee1a11d8f93bc3a9ed26d01cb3"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/multiple_0.jsonl",
+      "sha256": "b449740c221e4cae3a44cfa1793778f388b16587dc559fbb819430f17567c5c2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/parallel_1.result.json",
+      "sha256": "d60fc4439af96f036b40054443837515354d2cbbebea2b850b15b0338bbfa168"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_3.result.json",
+      "sha256": "4982c2f21e93fb14df0d652cdfaa5ab89b45bd6cdd8d7dc93bbc7259100bdc63"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/multiple_1.result.json",
+      "sha256": "4982c2f21e93fb14df0d652cdfaa5ab89b45bd6cdd8d7dc93bbc7259100bdc63"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/multiple_0.result.json",
+      "sha256": "4982c2f21e93fb14df0d652cdfaa5ab89b45bd6cdd8d7dc93bbc7259100bdc63"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_0.result.json",
+      "sha256": "d60fc4439af96f036b40054443837515354d2cbbebea2b850b15b0338bbfa168"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_2.result.json",
+      "sha256": "4982c2f21e93fb14df0d652cdfaa5ab89b45bd6cdd8d7dc93bbc7259100bdc63"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/parallel_0.result.json",
+      "sha256": "d60fc4439af96f036b40054443837515354d2cbbebea2b850b15b0338bbfa168"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_1.result.json",
+      "sha256": "4982c2f21e93fb14df0d652cdfaa5ab89b45bd6cdd8d7dc93bbc7259100bdc63"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/ABORTED.json",
+      "sha256": "237d2fc4355cd9efc49d443ae8966af80a9d80f8adfe88deb45fe3c3d610c3a9"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/attempt.json",
+      "sha256": "f01900bfe0e9c66141ade044bace337d24aeff58292810acfbb9705507ad8bbc"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/runtime.json",
+      "sha256": "5cba20d10049844d43d8e551cf76a528ffcaeaafea7a9c2849da901cd1a7798c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/server.json",
+      "sha256": "5a1a78989032d4fd39e577b0231de7f7e2096a17bc51b18c55081d56a8640f39"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/shutdown.json",
+      "sha256": "266064320a6410bee8d0bed8262804de47bf1d9fd7b4473a2a5c54ac3e7fb681"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/CONFIG.json",
+      "sha256": "077aed6ae387a1a56edc3ab3bdfcfcc69b58050c998f7393e821f69b7411e757"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/bfcl_fleet_run.py",
+      "sha256": "6fda05e4806cc9a6128e2a2de01447a4a5650eabad15b41a7859857e27e33a27"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/ws58-launcher.out",
+      "sha256": "3fcfe5e7b7d3e4a118787df7f49682bd4d8e0b201fd901639940c8f6d2da732b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-bfcl-cj3d-single-27b-v1-20261120.ended",
+      "sha256": "f8fc1aa88c9fa96436048a33df4428934259d74f2fc09c891be715226aed4b0a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-bfcl-cj3d-single-27b-v1-20261120.json",
+      "sha256": "c4fcdedc8a657e7f2f842b7793157331a20c400dc2f040bdae4c0bf8f6623ad8"
+    }
+  ],
+  "terminal_present": false,
+  "limitations": [
+    "Diagnostic coverage only; no representative, comparative or adoption claim.",
+    "No retry/redraw or successor published.",
+    "Preserve upstream error_type simple_function_checker:unclear alongside its valid=True; no local regrading."
+  ],
+  "next_action": "File next existing BFCL/IFBench run-end event; retain aborted cohort unchanged."
+}
