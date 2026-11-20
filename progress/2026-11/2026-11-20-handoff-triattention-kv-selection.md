@@ -69,3 +69,7 @@ YARN-CPU-512k native adjudication: INCOMPLETE (native rc75), despite wrapper rc0
 ## 09:40Z — YARN-CPU-512k: adjudicate incomplete native result and consume run-end alert
 
 Persistence follow-through: the PII hook rejected the numeric attempt-directory identifier as a possible account number. Replaced that redundant locator with the native RESULT.json attempt field; original result/probe SHA256 references remain intact. No hook bypass or grading change. Native CPU verdict remains INCOMPLETE, >=500K box remains open, existing SUPERSEDED filing and banked operator gate preserved.
+
+## 09:44Z — File physical KV compaction and bounded continuation verdict for triattention-s8c-api-phys-20261120
+
+S8-C-API-PHYS: filed row triattention-s8c-api-phys-20261120 PASS rc=0. Physical occupancy 128->68 (60 evicted), sink4/recent16 and retained K/V bytes preserved; continuation occupancy76/max135, zero replenished evicted positions, all eight token IDs match dense control. Bounded correctness/continuity only, no quality/performance claim. RESULT.json SHA-256 080002d341f74fa9d4b81d5c69a40ce11befd33f9f9f24c17e229142a02501c0; cases.json SHA-256 97c12a233bd71336e49e477b93c17ba89b1d1fa6fbfd87647d61e8f3936c2fa7. Findings and scope saved in scripts/experiments/triattention-s8c-api-phys-20261120/README.md; existing S8-C-VALIDATION-WIRE covers prospective claim capture. [belief: cc]
