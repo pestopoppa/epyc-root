@@ -267,3 +267,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: `pytest -q tests/coordination/test_taskflow_needs_brief_tag.py`
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **GNX-REINDEX** [non-inference] Keep the gitnexus index fresh: scripts/gitnexus-reindex.py publishes keeper rows (host / q3-pocket options) when the index is stale
+      · done when: python3 scripts/gitnexus-reindex.py check reports fresh after a keeper-run reindex
+      · gate: none
+      · tier: sonnet   · owner: pipeline-mgmt
