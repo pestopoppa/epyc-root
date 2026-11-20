@@ -377,6 +377,24 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       CPUs 116–119 at 04:55Z. [Input and native-smoke content bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-republication-20261120.json).
       No manual READY edit, full cohort run or quality verdict; disappearance cause
       unestablished. The fourteen-case diagnostic is again published for granted work.
+  - [x] **CJ-3d-SUPPORTED-CAPTURE — Integrate frozen supported-frame IDs with source-bound native capture and pass original-checker/refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
+      2026-11-20: offline materialization reconstructs the exact frozen selection
+      from original V3 git blobs; a separate supported-frame source lock preserves
+      the older HF coverage bindings. Capture validates prepared bundle/record
+      identities before exposure and journals sample/source provenance; the worker
+      emits `bfcl_v3_native_supported_frame_local`, category counts and no automatic
+      pooled score. All 120 selected cases reach native request capture and original
+      checker UNKNOWN controls without model inference. Tampering, changed sources,
+      altered ordering and changed rows refuse; worker stops at the first UNKNOWN.
+      **72 regression controls PASS**, followed by **11 final controls PASS**
+      (73 unique tests including the new supported-frame worker control).
+      [Qualification](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/supported-frame-capture-20261120.json)
+      and [prospective measurement contract](../../proposed/cj567/BFCL-SAMPLING.md):
+      20/category, seed 20261120, 120/1,150 cases, coarse diagnostic only;
+      conservative planning half-width 14.3 percentage points for a weighted mean
+      under the stated sampling assumption; no interim quality decisions or retries.
+      Parent remains open: prepare immutable fleet inputs and coverage-overlap
+      disclosure, then publish the supported-frame row with smoke PASS; no model score.
   - [x] **CJ-3d-SINGLE-CAPTURE — Pass all fourteen supported single-turn coverage cases through durable native capture and the original checker with refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
       Single-turn Python/Java/JavaScript capture now shares the exclusive journal,
       content-pinned inputs and local residency transport. Embedded schemas and lock
@@ -449,8 +467,8 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       selection does not cover full BFCL. Existing coverage rows are unchanged.
       [Contract](../../proposed/cj567/BFCL-SAMPLING.md),
       [source/test bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/supported-frame-sampling-20261120.json).
-      Parent remains open: integrate frozen IDs with capture under a prospective
-      sample-size/error and stop contract, then publish the supported-frame inference.
+      Parent remains open: supported-frame capture and the prospective contract are
+      implemented below; prepare immutable fleet inputs and publish the inference.
       [no-belief: model-free sampler software controls]
 - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the
       set: the published BFCL evidence is **unrankable today** (122B reports `bfcl_v4` 0.722,

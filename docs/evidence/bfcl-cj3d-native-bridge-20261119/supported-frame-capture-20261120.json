@@ -1,0 +1,42 @@
+{
+  "box": "CJ-3d",
+  "result": "PASS: source-bound supported-frame native capture software integration",
+  "regression": {
+    "tests": 72,
+    "seconds": 29.777,
+    "status": "PASS"
+  },
+  "final_controls": {
+    "tests": 11,
+    "seconds": 30.133,
+    "status": "PASS"
+  },
+  "unique_tests": 73,
+  "selected_cases": 120,
+  "population": 1150,
+  "scope": "Scripted malformed completions reach original checker UNKNOWN; no model inference or quality score.",
+  "controls": [
+    "Offline source/selection reconstruction and refusal inside grant",
+    "Prepared input digest, original-source lock, order and case/gold ID refusal",
+    "Changed per-record inputs refuse before exposure",
+    "All 120 immutable selected inputs journal native exposure and raw response before original checker UNKNOWN",
+    "Supported-frame fleet mode passes BoundSample, stops at first UNKNOWN, preserves per-stratum counts and distinct benchmark key"
+  ],
+  "upstream_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+  "bindings": {
+    "proposed/cj567/BFCL-SAMPLING.md": "ba13d8c7f8e1841aef82884f4934009d57109d977fcb76449bd5ae438540d3a5",
+    "proposed/cj567/bfcl_capture_run.py": "9cd77c007b1e2959842c6b74a0526206c96e6d2ad6efc23bb9ac7b6a83219223",
+    "proposed/cj567/bfcl_fleet_run.py": "db5efd2b0d893c61467d4121b70249a78c494bdb3db9ee757cef081ee6b05f01",
+    "proposed/cj567/bfcl-supported-frame-lock.json": "0207547d36f00ea537e4167f582807e286f05ff60dc0cef91eb8d7f0f9d58476",
+    "proposed/cj567/bfcl_sample_capture.py": "3474207a3afebdb42a8f5ae32e675c4020ca9fdbd4e1b5b8d2ca12f13f878c33",
+    "proposed/cj567/test_bfcl_sample_capture.py": "4def7bb2398ff264f7aea2977be1490885c277f56f992f635e383565b7bc462a",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-sampling-20261120/capture-tests.txt": "8cb37862103742be4a97bd88ab4e90fb09e5f2a2d42a1d29191899230d6c6dc1",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-sampling-20261120/capture-final-tests.txt": "7edfae88a63911640363f01fcd375596d47f33e06b563662184cb87712f47a86"
+  },
+  "limitations": [
+    "No live inference or row publication this turn.",
+    "Original git corpus uses a separate source lock from HF coverage bytes.",
+    "Random-sampling uncertainty bounds are conditional on the predeclared hash-ranking sampling assumption.",
+    "No population score, fleet discrimination or adoption verdict."
+  ]
+}

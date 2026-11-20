@@ -107,7 +107,7 @@ class Journal:
 
 
 def capture_case(bridge, row, model, identity, catalog_directory, output, query,
-                 should_stop=lambda: False, *, software_control=False):
+                 should_stop=lambda: False, *, software_control=False, sample_binding=None):
     """Capture once with write-time custody, then call unmodified official replay.
 
     Live identity is checked against prepared manifests and local process mappings.
@@ -132,9 +132,16 @@ def capture_case(bridge, row, model, identity, catalog_directory, output, query,
         source = prefix + 'BFCL_v3_' + category + '.json'
         if source not in lock['corpus']:
             raise ValueError('unbound corpus category')
-    selected = lock['selection'].get(row['case']['id'], {})
-    if any(digest(row[field]) != selected.get(field + '_sha256') for field in ('case', 'gold')):
-        raise ValueError('case/gold content differs from pinned selection')
+    sample_provenance = None
+    if sample_binding is None:
+        selected = lock['selection'].get(row['case']['id'], {})
+        if any(digest(row[field]) != selected.get(field + '_sha256') for field in ('case', 'gold')):
+            raise ValueError('case/gold content differs from pinned selection')
+    else:
+        from bfcl_sample_capture import BoundSample
+        if not isinstance(sample_binding, BoundSample) or category not in CATEGORIES:
+            raise ValueError('supported sample binding required')
+        sample_provenance = sample_binding.validate(row)
     single_turn = category in CATEGORIES
     if single_turn:
         # Request construction validates category/language and binds embedded schemas.
@@ -147,13 +154,16 @@ def capture_case(bridge, row, model, identity, catalog_directory, output, query,
     row = copy.deepcopy(row)
     journal = Journal(output)
     try:
-        journal.append({'kind': 'identity', 'benchmark': 'bfcl_v3',
+        journal.append({'kind': 'identity', 'benchmark': ('bfcl_v3_native_supported_frame_local'
+                                                       if sample_provenance else 'bfcl_v3'),
             'instrument': 'native-single-turn' if single_turn else 'native-multi-turn', 'upstream_commit': UPSTREAM,
             'software_sha256': {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
-                                for name in ('bfcl_capture_run.py', 'bfcl_residency.py', 'bfcl_native.py', 'openai_tool_calls.py')},
+                                for name in ('bfcl-supported-frame-lock.json', 'bfcl_sample_capture.py', 'bfcl_capture_run.py', 'bfcl_residency.py', 'bfcl_native.py', 'openai_tool_calls.py')},
             'identity': identity, 'case_id': row['case']['id'], 'category': category,
             'case_sha256': digest(row['case']), 'gold_sha256': digest(row['gold']),
-            'catalog': catalog_binding, 'corpus': lock['corpus'],
+            'catalog': catalog_binding, 'corpus': (sample_provenance['sample']['sources']
+                                                if sample_provenance else lock['corpus']),
+            'supported_sample': sample_provenance,
             'protocol': {'temperature': 0, 'seed': 20261031, 'max_tokens': 4096},
             'limitations': ['official response/order checks disabled',
                            'official irrelevance helper nested-call blind spot'] if not single_turn else [],

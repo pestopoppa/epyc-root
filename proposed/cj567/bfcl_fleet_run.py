@@ -158,14 +158,22 @@ def run(directory):
                            'synthetic_noncohort': True, 'completed': 1, 'score': None, 'identity': identity}
             else:
                 bridge = OfficialV3(config['checker'])
-                rows = select_rows(json.loads((directory / 'SELECTION.json').read_text()),
-                                   config.get('cohort', 'multi-turn'))
+                sample_binding = None
+                if config.get('cohort') == 'supported-frame':
+                    from bfcl_sample_capture import BoundSample
+                    sample_binding = BoundSample(directory / 'SELECTION.json',
+                                                  config['selection_sha256'])
+                    rows = sample_binding.rows()
+                else:
+                    rows = select_rows(json.loads((directory / 'SELECTION.json').read_text()),
+                                       config.get('cohort', 'multi-turn'))
                 for row in rows:
                     if stop() or time.time() + 330 >= deadline:
                         break
                     verdict = capture_case(bridge, row, config['model'], identity,
                         config['catalog'], out / (row['case']['id'] + '.jsonl'), transport,
-                        lambda: stop() or time.time() + 330 >= deadline)
+                        lambda: stop() or time.time() + 330 >= deadline,
+                        **({'sample_binding': sample_binding} if sample_binding is not None else {}))
                     verdicts.append(verdict)
                     write_new(out / (row['case']['id'] + '.result.json'), verdict)
                     if verdict.get('valid') is None:
@@ -173,6 +181,16 @@ def run(directory):
                 summary = {'status': 'complete' if len(verdicts) == len(rows) else 'partial',
                            'benchmark': 'bfcl_v3', 'cohort': config.get('cohort', 'multi-turn'),
                            **summarize(verdicts, len(rows))}
+                if sample_binding is not None:
+                    summary.update(status=('complete' if len(verdicts) == len(rows) and
+                                               summary['unknown'] == 0 else 'partial'),
+                        benchmark='bfcl_v3_native_supported_frame_local',
+                        official_checker='bfcl_v3',
+                        scope='six supported single-turn AST strata; not full BFCL',
+                        sample_sha256=sample_binding.sha256,
+                        strata={c: summarize([v for r, v in zip(rows, verdicts) if r['category'] == c],
+                                            sum(r['category'] == c for r in rows))
+                                for c in sorted(CATEGORIES)})
             write_new(out / 'RESULT.json', summary)
             if smoke:
                 write_new(Path(os.environ['FILLER_DRYRUN_RESULT_PATH']), summary)
