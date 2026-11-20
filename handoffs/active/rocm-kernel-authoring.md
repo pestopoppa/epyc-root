@@ -1585,11 +1585,11 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - [ ] **ROCPROF-ATT-ADAPTER-1** [non-inference] Write an adapter from the rocprofv2 ATT decoded CSV (Line, Instruction, Hitcount, Cycles) to the amd/skills stall classes (VMEM-load, VMEM-wait, LDS/SMEM-wait, barrier, MFMA) and test it on the existing canary fixture, as the ROCm-6.2 route to stall attribution (intake-2745).
       · done when: a function returns per-class cycle shares for the canary fixture with a test, and the class mapping cites hotspot_analyzer.py
       · gate: none
-      · route pending operator decision (ROCm 7.2 strategy): the operator's follow-up (move champion development to ROCm 7.2 side by side, retire 6.2 after v11) gets its own decision package; this adapter is not a route choice
-- [ ] **ROCM-PROFILER-DECISION** [operator-decision] Choose the stall-attribution route on the MI210 given that rocprofv3 thread trace is absent from ROCm 6.2: (d, recommended) adapt the working rocprofv2 ATT decode to the stall taxonomy; (c) a side-by-side ROCm 7.x profiling-only install; (a) backport rocprofv3, aqlprofile and the trace decoder to 6.2; (b) a system-wide ROCm upgrade (intake-2745, intake-2724).
+      · route decided: adapter (operator 2026-11-20, ROCM-PROFILER-DECISION option d; stay on ROCm 6.2, no 7.x profiling install, 6.2 not retired)
+- [x] **ROCM-PROFILER-DECISION** [operator-decision] Choose the stall-attribution route on the MI210 given that rocprofv3 thread trace is absent from ROCm 6.2: (d, recommended) adapt the working rocprofv2 ATT decode to the stall taxonomy; (c) a side-by-side ROCm 7.x profiling-only install; (a) backport rocprofv3, aqlprofile and the trace decoder to 6.2; (b) a system-wide ROCm upgrade (intake-2745, intake-2724).
       · done when: the operator's choice is recorded under this box; (d) proceeds through ROCPROF-ATT-ADAPTER-1, any other option gets its own boxes
       · gate: none
-      · status 2026-11-20: still OPEN; the operator asked whether to move champion development to ROCm 7.2 side by side and retire 6.2 after v11, and a separate decision package is being prepared by the autokernel session; no route chosen
+      ✅ 2026-11-20 DECIDED (operator): option (d). STAY ON ROCm 6.2 for builds and production; stall attribution goes through the rocprofv2 ATT adapter (ROCPROF-ATT-ADAPTER-1); 6.2 is NOT retired and champion development does not move to 7.2. Evidence: the 2026-11-05 ROCm 10.1 side-by-side A/B on C5/C6 (operator NO-GO for Q38P-3/3a/3b), nothing since favours 7.2; the only new reason (rocprofv3 thread trace) is covered by the adapter. Package: `/mnt/raid0/llm/tmp/rocm72-decision-20261120.md`. [no-belief: operator decision record]
 ## Track: agentic-rocm-kernel-authoring
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47 -->
 
