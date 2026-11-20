@@ -2001,9 +2001,11 @@ real gap, since **knowing WHICH arm was contended is exactly what a hot session 
       · model: Qwen3.8-Flash-Next UD-IQ4_XS + shared Q8_0 MTP head · build: C14 GGML_CPU_PROF build used by the r2 profile row · harness: read per-thread fields of the existing d1k/d32k units; re-run one ~15 min unit only if fields are missing
       · metric(dir): us per call lower, imbalance max/mean · rule: reuse existing units first · region: same as the source row · est: 0 new compute if fields exist, else ~15 min + 25%
       · stop rule: question = is the head cost instruction-bound dequant (kernel helps) or fixed per-call cost (it cannot)? stop-on-answer: max/mean < 1.1 and wall within 5% of bytes/read-BW opens a Q6_K GEMV box, otherwise close; stop-on-futility: the unit captured only the draft copy, so move to a unit with the trunk head
+      · seeded as AK hypothesis AK-H-Q6KHEAD-1 (research seeds/hypotheses/16-kspec-sub3pct-levers-20261120.md) (operator 2026-11-20: <3% → AK loop, not hand-prepped)
 - [ ] **IQ4NL-GEMV-ZMM** [non-inference] Widen ggml_gemv_iq4_nl_8x8_q8_0 from the 256-bit AVX2 LUT path to a 512-bit vpshufb plus vpdpbusd path for the Q38FN IQ4_NL expert-down tensors, if XFER-4b keeps IQ4_NL on the repack path (intake-2718).
       · done when: a patch on an experimental branch from fresh C14 with a bit-exact unit test against the AVX2 GEMV on the expert-down shapes, strings proof of the new symbol, and a filed decode micro A/B
       · gate: XFER-4b
+      · seeded as AK hypothesis AK-H-IQ4NLZMM-1 (research seeds/hypotheses/16-kspec-sub3pct-levers-20261120.md) (operator 2026-11-20: <3% → AK loop, not hand-prepped)
 
 ### ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 

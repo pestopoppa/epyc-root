@@ -4756,6 +4756,7 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
       · model: Qwen3.8-27B Q8_0 + DFlash2 Q8_0, served recipe · build: experimental from champion C14, default-off knob · harness: NMSE check of fused vs unfused subgraph, then end-to-end decode A/B, 5 interleaved reps
       · metric(dir): drafter subgraph us/round lower, tok/s higher · rule: greedy token identity, then end-to-end above the 0.84% GPU noise floor carries to the champion gate · region: gpu-q3 (host threads 184-191) · est: 3600 s (inferred) + 25%
       · stop rule: question = is >= 2% of the round recoverable from drafter dispatch overhead? upper bound 1.96 ms vs a 0.50 ms floor; checkpoint after step 1 (no compute); stop-on-answer: fused subgraph >= 1.30x and end-to-end above 0.84% carries, op < 1.10x drops; stop-on-futility: step 1 shows < 270 conv+selector dispatches per round
+      · seeded as AK hypothesis AK-H-DF2FLOOR-1 (research seeds/hypotheses/16-kspec-sub3pct-levers-20261120.md) (operator 2026-11-20: <3% → AK loop, not hand-prepped)
 
 ### Moved from INF-48 (2026-11-19)
 

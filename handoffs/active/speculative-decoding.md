@@ -22,6 +22,7 @@
       · model: Qwen3.8-Flash-Next UD-IQ4_XS (primary), Qwen3.6-35B-A3B-MTP Q8_0, Qwen3.8-27B Q8_0, captured on CPU at ngl 0 · build: C14 CPU store plus the act_dump capture tool with its matcher widened to the output.weight MUL_MAT · harness: capture of 4096 prompt tokens, then offline numpy (python -I in a numpy venv)
       · metric(dir): recall@1 higher, MACs removed higher · rule: PASS as in done-when; void the run unless the full head recomputed from the dump reproduces the model argmax on >= 99.9% of rows · region: CPU q0-q2, short checkpointed windows · est: 2400 s (inferred; ~18 s per capture at 229.8 tok/s prefill, load and SVD unmeasured) + 25%
       · stop rule: question = can a no-training head keep recall@1 >= 99.5% while removing >= 79% of head MACs? CI half-width ~0.22 pp at N=4096; checkpoints after Q38FN, A3B, 27B; stop-on-answer: Q38FN PASS files a CPU implementation box, Q38FN FAIL on every arm closes the CPU head-approximation lever with numbers; stop-on-futility: sanity gate fails or no arm reaches recall@1 >= 95% at >= 79% removed
+      · seeded as AK hypothesis AK-H-CLUSTVOCAB-GPU-1 for its GPU arms only; the CPU Q38FN arm stays a task (research seeds/hypotheses/16-kspec-sub3pct-levers-20261120.md) (operator 2026-11-20: <3% → AK loop, not hand-prepped)
 
 > Folded from the body of `handoffs/active/speculative-decoding-mtp-refresh.md` (row INF-50), from its first `##` section on, @ `5638c6a45bad` on 2026-11-03 (BRF-T7-F4, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
