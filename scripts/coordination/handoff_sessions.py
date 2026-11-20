@@ -1637,9 +1637,11 @@ def pending_proposals(repo=None) -> dict:
         import box_index as _bi
         doc = _bi.load(repo or ROOT, regenerate=False)
     except Exception:  # noqa: BLE001
-        return {}
+        return None
     finally:
         sys.path.pop(0)
+    if not doc.get("boxes"):
+        return None                       # index unavailable: the caller logs once, never reads it as "none pending"
     out: dict = {}
     for k, r in (doc.get("boxes") or {}).items():
         if r.get("state") == "needs-owner" and r.get("proposed_by"):
@@ -1665,31 +1667,53 @@ def held_handoffs(repo=None) -> set:
 OWNER_SPAWN_GAP_S = 24 * 3600   # at most ONE owner spawn per handoff per day (operator 2026-11-20)
 
 
-def proposals_events(flags, st, S, now, pending=None, held=None):
-    """C1 (acceptance as an event): when a session's handoff goes from 0 to >0 pending proposals, or stays >0 for 24 h,
-    queue ONE `proposals-pending` event for the owning session (same queue as awaited files); never more than one
-    such turn per handoff per day. Retired/done owners are skipped (the ownerless review queue covers them)."""
-    pending = pending_proposals() if pending is None else pending
+def pick_owner(S, name):
+    """ONE owner per handoff (Fable S1): among live (not done/retired) sessions on this handoff, prefer non-gated,
+    non-parked, then the latest last_end; None when there is no live session."""
+    cands = [(slug, e) for slug, e in S.items() if isinstance(e, dict) and e.get("status") not in ("done", "retired")
+             and os.path.basename(str(e.get("handoff") or "")) == name]
+    if not cands:
+        return None
+    cands.sort(key=lambda se: (not tg.is_gated(se[1]), not tg.is_parked(se[1]), str(se[1].get("last_end") or "")),
+               reverse=True)
+    return cands[0][0]
+
+
+_READ_INDEX = object()
+
+
+def proposals_events(flags, st, S, now, pending=_READ_INDEX, held=None):
+    """C1 (acceptance as an event): when a HANDOFF goes from 0 to >0 pending proposals, or stays >0 for 24 h, queue ONE
+    `proposals-pending` event for ONE owner session of it (pick_owner: non-gated, non-parked, latest last_end -- a
+    parked owner is woken by it, never replaced); never more than one such turn per handoff per day. `proposals_seen`
+    is keyed by handoff basename (six sessions on one handoff = one event)."""
+    pending = pending_proposals() if pending is _READ_INDEX else pending
+    if pending is None:
+        if not st.get("proposals_index_unavailable_logged"):
+            log(flags, "PROPOSALS-INDEX-UNAVAILABLE: .box-index.json missing/unreadable; no proposals events this pass")
+            st["proposals_index_unavailable_logged"] = True
+        return
+    st.pop("proposals_index_unavailable_logged", None)
     seen = st.setdefault("proposals_seen", {})
-    for slug, e in S.items():
-        if not isinstance(e, dict) or e.get("status") in ("done", "retired") or not e.get("handoff"):
+    for name in [k for k in seen if k not in pending or not pending[k]]:
+        seen.pop(name, None)
+    for name, ids in sorted(pending.items()):
+        slug = pick_owner(S, name) if ids else None
+        if not slug:
             continue
-        ids = pending.get(os.path.basename(str(e["handoff"]))) or []
-        rec = seen.get(slug) or {}
-        if not ids:
-            seen.pop(slug, None)
-            continue
+        rec = seen.get(name) or {}
         if not rec.get("since"):
             rec["since"] = now
         due = (not rec.get("last_turn") and (now - rec["since"] < 60 or now - rec["since"] >= PROPOSALS_TURN_GAP_S)) \
             or (rec.get("last_turn") and now - rec["last_turn"] >= PROPOSALS_TURN_GAP_S)
-        seen[slug] = rec
-        if not due or any(x["slug"] == slug and x.get("kind") == "proposals-pending" for x in st.get("queue") or []):
+        seen[name] = rec
+        if not due or any(x.get("kind") == "proposals-pending" and os.path.basename(str(x.get("end") or "")) == name
+                          for x in st.get("queue") or []):
             continue
-        rec["last_turn"] = now
-        st.setdefault("queue", []).append({"slug": slug, "rid": f"proposals-{len(ids)}", "end": str(e["handoff"]),
+        rec["last_turn"], rec["owner"] = now, slug
+        st.setdefault("queue", []).append({"slug": slug, "rid": f"proposals-{len(ids)}", "end": str(S[slug]["handoff"]),
                                            "kind": "proposals-pending", "data": {"ids": ids}, "queued_at": now})
-        log(flags, f"PROPOSALS-PENDING {len(ids)} -> {slug}")
+        log(flags, f"PROPOSALS-PENDING {len(ids)} -> {slug} (handoff {name})")
     # Ownership belongs to the HANDOFF; sessions are replaceable (operator 2026-11-20, "Sessions don't live forever"): a
     # handoff with pending proposals and NO live owner (none registered, or all done/retired) gets a NEW owner session
     # through the unowned-handoff path (start_handoff; width cap, admission and engine budget apply there). A parked or

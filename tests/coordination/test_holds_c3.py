@@ -329,7 +329,7 @@ def test_proposals_pending_event_once_per_day(tmp_path):
     p = hs.proposals_prompt("h0", S["h0"], F, {"ids": ["A-1.p1"]})
     assert "accept / edit" in p.lower() or "Accept / edit" in p
     hs.proposals_events(F, st, S, 1000.0 + 26 * 3600, {}, held=set())
-    assert "h0" not in st["proposals_seen"]                    # cleared when nothing is pending
+    assert "h0.md" not in st["proposals_seen"]                 # cleared when nothing is pending
 
 
 
@@ -397,3 +397,21 @@ def test_owner_spawn_daily_cap(tmp_path):
     assert st["unowned"]["handoffs/active/h9.md"] == []   # within 24 h: no second spawn
     hs.proposals_events(F, st, {}, 1000.0 + 25 * 3600, {"h9.md": ["Z-1.p1"]}, held=set())
     assert len(st["unowned"]["handoffs/active/h9.md"]) == 1
+
+
+
+def test_two_sessions_on_one_handoff_make_one_event(tmp_path):
+    """Fable S1: six suspended owners of harness-program.md must not become six resumes."""
+    import handoff_sessions as hs
+    F = _flags(tmp_path)
+    S = {"a": {"handoff": "handoffs/active/h0.md", "last_end": "2026-11-19T10:00:00Z", "parked": {"reason": "x"}},
+         "b": {"handoff": "handoffs/active/h0.md", "last_end": "2026-11-20T09:00:00Z"},
+         "c": {"handoff": "handoffs/active/h0.md", "last_end": "2026-11-20T10:00:00Z", "parked": {"reason": "y"}}}
+    st = {}
+    hs.proposals_events(F, st, S, 1000.0, {"h0.md": ["A-1.p1"]}, held=set())
+    q = [x for x in st["queue"] if x["kind"] == "proposals-pending"]
+    assert [x["slug"] for x in q] == ["b"]                     # non-parked beats a later-ending parked owner
+    hs.proposals_events(F, st, S, 1001.0, None, held=set())    # index unavailable: logged once, no crash
+    hs.proposals_events(F, st, S, 1002.0, None, held=set())
+    log = open(os.path.join(F, "handoff-sessions.log")).read()
+    assert log.count("PROPOSALS-INDEX-UNAVAILABLE") == 1
