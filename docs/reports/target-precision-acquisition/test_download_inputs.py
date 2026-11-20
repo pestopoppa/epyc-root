@@ -31,3 +31,44 @@ def test_guard_refuses_low_disk(monkeypatch):
     try: m.guard(1)
     except RuntimeError as e: assert 'disk floor' in str(e)
     else: raise AssertionError('disk floor bypassed')
+
+
+def test_disk_budget_includes_all_remaining_bytes(monkeypatch):
+    monkeypatch.setattr(m,'available',lambda path: 160*m.GIB)
+    monkeypatch.setattr(m,'mem_available',lambda: 300*m.GIB)
+    import pytest
+    with pytest.raises(RuntimeError,match='disk floor'):
+        m.guard(11*m.GIB)
+    m.guard(10*m.GIB)
+
+
+def test_disk_download_does_not_require_tmpfs(monkeypatch):
+    def disk_only(path):
+        assert path=='/mnt/raid0'
+        return 900*m.GIB
+    monkeypatch.setattr(m,'available',disk_only)
+    monkeypatch.setattr(m,'mem_available',lambda: 300*m.GIB)
+    m.guard(75*m.GIB)
+
+
+def test_durable_default_paths():
+    assert m.SCRATCH==Path('/mnt/raid0/llm/tmp/df2/target-precision-inputs')
+    assert m.RESULT==Path('/mnt/raid0/llm/tmp/df2/target-precision-acquisition/result.json')
+
+
+def test_low_memory_still_refused(monkeypatch):
+    monkeypatch.setattr(m,'available',lambda path: 900*m.GIB)
+    monkeypatch.setattr(m,'mem_available',lambda: 249*m.GIB)
+    import pytest
+    with pytest.raises(RuntimeError,match='MemAvailable'):
+        m.guard(1)
+
+
+def test_existing_destination_is_never_overwritten(tmp_path,monkeypatch):
+    import pytest
+    monkeypatch.setattr(m,'SCRATCH',tmp_path)
+    marker=tmp_path/'retained.gguf'
+    marker.write_bytes(b'retained')
+    with pytest.raises(RuntimeError,match='refuse reuse'):
+        m.download_inputs()
+    assert marker.read_bytes()==b'retained'

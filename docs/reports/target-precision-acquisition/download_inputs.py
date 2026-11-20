@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Acquire pinned candidate GGUFs to volatile task-specific tmpfs.
+"""Acquire pinned candidate GGUFs to durable task-specific storage.
 
 This is model preflight only: no run, admission, equivalence, or causal claim.
 Source identity across different converters remains unverified. Uses no user
@@ -8,8 +8,8 @@ credentials, rechecks shared-host floors throughout, and records real failures.
 import hashlib, json, os, signal, sys, time, urllib.request
 from pathlib import Path
 
-SCRATCH=Path('/dev/shm/mtp-target-precision-20261104')
-RESULT=Path('/mnt/raid0/llm/tmp/speculative-decoding-mtp/precision-metadata/acquisition-result.json')
+SCRATCH=Path('/mnt/raid0/llm/tmp/df2/target-precision-inputs')
+RESULT=Path('/mnt/raid0/llm/tmp/df2/target-precision-acquisition/result.json')
 GIB=1024**3
 SOURCES=(
  ('Qwen3.8-27B-BF16-00001-of-00002.gguf','https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/4ca720788d1e01f1bff70c033e0d0028fd02e502/BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf',49986159616,'b9966e82b7a4d87028b5eae061d578ee826305ebf8baea5bfc6e09bad0ba191f'),
@@ -27,13 +27,12 @@ def available(path):
     v=os.statvfs(path); return v.f_bavail*v.f_frsize
 
 def guard(remaining):
-    if available('/mnt/raid0') < 150*GIB: raise RuntimeError('disk floor below 150 GiB')
+    if available('/mnt/raid0') < 150*GIB+remaining: raise RuntimeError('remaining transfer would breach 150 GiB disk floor')
     if mem_available() < 250*GIB: raise RuntimeError('host MemAvailable below 250 GiB')
-    if available('/dev/shm') < remaining+4*GIB: raise RuntimeError('tmpfs headroom insufficient')
 
 def download_inputs():
     if SCRATCH.exists(): raise RuntimeError('destination already exists; refuse reuse')
-    guard(sum(x[2] for x in SOURCES)); SCRATCH.mkdir(mode=0o700)
+    guard(sum(x[2] for x in SOURCES)); SCRATCH.mkdir(mode=0o700,parents=True)
     completed=[]; partial=None; started=time.time_ns()
     try:
         for index,(name,url,size,expected) in enumerate(SOURCES):
@@ -54,7 +53,7 @@ def download_inputs():
             os.replace(partial,path); partial=None
             completed.append({'path':str(path),'size':written,'sha256':expected,'source':url})
         return {'status':'COMPLETE','started_ns':started,'finished_ns':time.time_ns(),'files':completed,
-                'limitations':['tmpfs inputs are volatile across reboot; do not consume unless all digests and files remain valid',
+                'limitations':['durable task inputs; do not consume unless all digests and files remain valid',
                                'different converter Q4/base model revision equivalence not established',
                                'preflight inputs only; no inference or quality claim']}
     except BaseException as exc:
@@ -63,7 +62,7 @@ def download_inputs():
             except FileNotFoundError: pass
         return {'status':'FAILED','started_ns':started,'finished_ns':time.time_ns(),'error_type':type(exc).__name__,
                 'reason':str(exc) if isinstance(exc,RuntimeError) else 'transfer or I/O failure',
-                'files':completed,'limitations':['incomplete volatile inputs; no inference or equivalence claim']}
+                'files':completed,'limitations':['incomplete inputs; no inference or equivalence claim']}
 
 def main():
     def interrupted(signum, frame):
