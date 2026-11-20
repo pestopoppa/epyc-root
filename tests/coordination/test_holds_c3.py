@@ -1,5 +1,6 @@
 """Handoff standard Stage C, C3: holds.yaml is the single exclusion source; every reader derives from it."""
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -317,15 +318,82 @@ def test_proposals_pending_event_once_per_day(tmp_path):
     S = {"h0": {"handoff": "handoffs/active/h0.md"}, "old": {"handoff": "handoffs/active/h1.md", "status": "retired"}}
     st, F = {}, str(tmp_path)
     pend = {"h0.md": ["A-1.p1", "A-2.p1"], "h1.md": ["B-1.p1"]}
-    hs.proposals_events(F, st, S, 1000.0, pend)
+    hs.proposals_events(F, st, S, 1000.0, pend, held=set())
     q = [x for x in st["queue"] if x["kind"] == "proposals-pending"]
     assert [x["slug"] for x in q] == ["h0"] and q[0]["data"]["ids"] == ["A-1.p1", "A-2.p1"]
     st["queue"] = []
-    hs.proposals_events(F, st, S, 1000.0 + 3600, pend)
+    hs.proposals_events(F, st, S, 1000.0 + 3600, pend, held=set())
     assert st["queue"] == []                                   # within 24 h: no second turn
-    hs.proposals_events(F, st, S, 1000.0 + 25 * 3600, pend)
+    hs.proposals_events(F, st, S, 1000.0 + 25 * 3600, pend, held=set())
     assert [x["slug"] for x in st["queue"]] == ["h0"]
     p = hs.proposals_prompt("h0", S["h0"], F, {"ids": ["A-1.p1"]})
     assert "accept / edit" in p.lower() or "Accept / edit" in p
-    hs.proposals_events(F, st, S, 1000.0 + 26 * 3600, {})
+    hs.proposals_events(F, st, S, 1000.0 + 26 * 3600, {}, held=set())
     assert "h0" not in st["proposals_seen"]                    # cleared when nothing is pending
+
+
+
+# ---- owner spawn for ownerless handoffs (operator 2026-11-20: ownership belongs to the handoff) ----
+def _flags(tmp_path):
+    (tmp_path / "f").mkdir()
+    return str(tmp_path / "f")
+
+
+def test_retired_owner_leads_to_a_spawn_queued_and_logged(tmp_path, monkeypatch):
+    import handoff_sessions as hs
+    F = _flags(tmp_path)
+    st, S = {}, {"old": {"handoff": "handoffs/active/h1.md", "status": "retired"}}
+    hs.proposals_events(F, st, S, 1000.0, {"h1.md": ["B-1.p1"]}, held=set())
+    ev = st["unowned"]["handoffs/active/h1.md"]
+    assert ev[0]["kind"] == "proposals-pending" and ev[0]["data"]["ids"] == ["B-1.p1"]
+    assert "OWNER-SPAWN-QUEUED handoffs/active/h1.md" in open(os.path.join(F, "handoff-sessions.log")).read()
+    # start_handoff: the new session's FIRST prompt is the proposals review; the event is consumed; OWNER-SPAWNED logged
+    sent = []
+    monkeypatch.setattr(hs, "free_gib", lambda: 10 ** 6)
+    monkeypatch.setattr(hs, "brief_text", lambda slug, e, flags: "BRIEF")
+
+    def fake_go(flags, slug, e, prompt, runner, sid, fresh=False):
+        sent.append(prompt)
+        e["status"] = "live"
+        return True
+    monkeypatch.setattr(hs, "_go", fake_go)
+    reg = {"sessions": dict(S)}
+    slug = hs.start_handoff(F, reg, {"handoff": "handoffs/active/h1.md"}, None, st, 0, 2)
+    assert slug and "NEEDS-OWNER proposal" in sent[0] and "accept / edit" in sent[0].lower().replace("accept / edit /", "accept / edit")
+    assert st["unowned"]["handoffs/active/h1.md"] == []
+    assert f"OWNER-SPAWNED {slug} handoff=handoffs/active/h1.md reason=proposals-pending" in \
+        open(os.path.join(F, "handoff-sessions.log")).read()
+
+
+def test_held_handoff_no_spawn(tmp_path):
+    import handoff_sessions as hs
+    F = _flags(tmp_path)
+    st = {}
+    hs.proposals_events(F, st, {}, 1000.0, {"autokernel-loop.md": ["AK-1.p1"]}, held={"autokernel-loop.md"})
+    assert not (st.get("unowned") or {}).get("handoffs/active/autokernel-loop.md")
+    assert "OWNER-SPAWN-REFUSED" in open(os.path.join(F, "handoff-sessions.log")).read()
+    st2 = {}
+    hs.proposals_events(F, st2, {}, 1000.0, {"x.md": ["X-1.p1"]}, held={"*"})     # unknown hold state: fail closed
+    assert not (st2.get("unowned") or {}).get("handoffs/active/x.md")
+
+
+def test_suspended_owner_is_woken_not_replaced(tmp_path):
+    import handoff_sessions as hs
+    F = _flags(tmp_path)
+    st = {}
+    S = {"h0": {"handoff": "handoffs/active/h0.md", "parked": {"reason": "no progress evidence: x"}}}
+    hs.proposals_events(F, st, S, 1000.0, {"h0.md": ["A-1.p1"]}, held=set())
+    assert [x["slug"] for x in st["queue"] if x["kind"] == "proposals-pending"] == ["h0"]
+    assert not (st.get("unowned") or {}).get("handoffs/active/h0.md")
+
+
+def test_owner_spawn_daily_cap(tmp_path):
+    import handoff_sessions as hs
+    F = _flags(tmp_path)
+    st = {}
+    hs.proposals_events(F, st, {}, 1000.0, {"h9.md": ["Z-1.p1"]}, held=set())
+    st["unowned"]["handoffs/active/h9.md"] = []          # the spawn happened (event consumed), owner later retired
+    hs.proposals_events(F, st, {}, 1000.0 + 3600, {"h9.md": ["Z-1.p1"]}, held=set())
+    assert st["unowned"]["handoffs/active/h9.md"] == []   # within 24 h: no second spawn
+    hs.proposals_events(F, st, {}, 1000.0 + 25 * 3600, {"h9.md": ["Z-1.p1"]}, held=set())
+    assert len(st["unowned"]["handoffs/active/h9.md"]) == 1

@@ -1374,7 +1374,12 @@ def start_handoff(flags, reg, h, runner, st, live, cap):
     S[slug] = e
     rows = (h.get("rows") or [])[:8]
     e["auto_start"] = {"score": h.get("score"), "rows": rows, "priority": h.get("row_id"), "rank": h.get("priority_rank"), "at": now_iso()}
-    _go(flags, slug, e, brief_text(slug, e, flags) + "\n" + idle_prompt(slug, e, flags), runner, None, fresh=True)
+    pend = [ev for ev in ((st or {}).get("unowned") or {}).get(hkey(h["handoff"]), []) if ev.get("kind") == "proposals-pending"]
+    first = proposals_prompt(slug, e, flags, pend[0].get("data")) if pend else idle_prompt(slug, e, flags)
+    _go(flags, slug, e, brief_text(slug, e, flags) + "\n" + first, runner, None, fresh=True)
+    if pend and (alive(e.get("pid")) or e.get("status") == "live"):
+        st["unowned"][hkey(h["handoff"])] = [ev for ev in st["unowned"][hkey(h["handoff"])] if ev not in pend]
+        log(flags, f"OWNER-SPAWNED {slug} handoff={h['handoff']} reason=proposals-pending")
     if not alive(e.get("pid")) and e.get("status") != "live":
         return None  # LANE-FAILED / REFUSED-CWD already logged
     st["starts"] = [t for t in st.get("starts") or [] if time.time() - t < 3600] + [time.time()]  # SA-2 watchdog input
@@ -1642,7 +1647,25 @@ def pending_proposals(repo=None) -> dict:
     return out
 
 
-def proposals_events(flags, st, S, now, pending=None):
+def held_handoffs(repo=None) -> set:
+    """Handoff basenames any box of which is covered by holds.yaml (or HOLDS-UNAVAILABLE: fail closed)."""
+    try:
+        sys.path.insert(0, os.path.join(repo or ROOT, "scripts", "handoffs"))
+        import box_index as _bi
+        doc = _bi.load(repo or ROOT, regenerate=False)
+    except Exception:  # noqa: BLE001 -- unknown = held (never spawn into an unknown hold state)
+        return {"*"}
+    finally:
+        sys.path.pop(0)
+    if not doc.get("holds_source"):
+        return {"*"}
+    return {os.path.basename(r.get("file", "")) for r in (doc.get("boxes") or {}).values() if r.get("holds")}
+
+
+OWNER_SPAWN_GAP_S = 24 * 3600   # at most ONE owner spawn per handoff per day (operator 2026-11-20)
+
+
+def proposals_events(flags, st, S, now, pending=None, held=None):
     """C1 (acceptance as an event): when a session's handoff goes from 0 to >0 pending proposals, or stays >0 for 24 h,
     queue ONE `proposals-pending` event for the owning session (same queue as awaited files); never more than one
     such turn per handoff per day. Retired/done owners are skipped (the ownerless review queue covers them)."""
@@ -1667,6 +1690,35 @@ def proposals_events(flags, st, S, now, pending=None):
         st.setdefault("queue", []).append({"slug": slug, "rid": f"proposals-{len(ids)}", "end": str(e["handoff"]),
                                            "kind": "proposals-pending", "data": {"ids": ids}, "queued_at": now})
         log(flags, f"PROPOSALS-PENDING {len(ids)} -> {slug}")
+    # Ownership belongs to the HANDOFF; sessions are replaceable (operator 2026-11-20, "Sessions don't live forever"): a
+    # handoff with pending proposals and NO live owner (none registered, or all done/retired) gets a NEW owner session
+    # through the unowned-handoff path (start_handoff; width cap, admission and engine budget apply there). A parked or
+    # suspended owner is a live owner: it gets the event above (and is woken by it), never replaced. Never for a held
+    # handoff; at most one spawn per handoff per day; a refused spawn falls back to the pipeline-mgmt review queue.
+    owned = {os.path.basename(str(e.get("handoff") or "")) for e in S.values()
+             if isinstance(e, dict) and e.get("status") not in ("done", "retired") and e.get("handoff")}
+    spawns = st.setdefault("owner_spawns", {})
+    held = held_handoffs() if held is None else held
+    for name, ids in sorted(pending.items()):
+        if not ids or name in owned:
+            continue
+        hf = "handoffs/active/" + name
+        if "*" in held or name in held:
+            last = spawns.get(name, {}).get("refused_logged")
+            if last is None or now - last >= OWNER_SPAWN_GAP_S:
+                log(flags, f"OWNER-SPAWN-REFUSED {hf}: held by holds.yaml; {len(ids)} proposal(s) go to the pipeline-mgmt "
+                           f"review queue (propose_rewrites.py --review-queue)")
+                spawns.setdefault(name, {})["refused_logged"] = now
+            continue
+        last = spawns.get(name, {}).get("at")
+        if last is not None and now - last < OWNER_SPAWN_GAP_S:
+            continue
+        evs = st.setdefault("unowned", {}).setdefault(hf, [])
+        if any(x.get("kind") == "proposals-pending" for x in evs):
+            continue
+        evs.append({"rid": f"proposals-{len(ids)}", "end": hf, "kind": "proposals-pending", "data": {"ids": ids}})
+        spawns.setdefault(name, {})["at"] = now
+        log(flags, f"OWNER-SPAWN-QUEUED {hf}: {len(ids)} pending proposal(s), no live owner; starts on the next free slot")
 
 
 def proposals_prompt(slug, e, flags, data):
