@@ -120,3 +120,38 @@ markers. Both rows use CPU build capacity.
 This is smoke qualification only; full builds and native P9 remain pending.
 
 [no-belief: compiled publisher smoke only]
+
+
+## CPU P9 build dependency replacement (2026-11-20)
+
+`df2-cafe3-p9-cpu-20261119` admission now refuses because the original
+`/mnt/raid0/llm/tmp/df2/cafe3-cpu-build-r3-20261119/RESULT.json` and its build
+packet no longer exist. The sealed input check reaches `build_receipt` and raises
+`FileNotFoundError`; this is a missing dependency, rather than another corpus
+identity failure. Original P9 inventory SHA-256:
+`ba5976902eee06fcbb8c88763b1695db49e5e6fad4db0f565ac110d2aaf8f713`.
+
+The replacement row `df2-cafe3-full-cpu-build-r4-20261120` binds the existing
+full experimental candidate at production base
+`ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, with the unchanged source diff
+`30407370d7624be85d525c7961f889a24901637d3e083d6e84ff567eca03b43b`.
+[Input bindings](inputs-r4.json) and [row specification](spec-r4.json) preserve
+R3's marker, backend, numeric-SONAME, exact local linkage and artifact-hash gates.
+The driver and supervisor come from this repository; only the packet path and
+row id change. Ten existing build-validator/supervisor tests pass. Production
+source and serving processes are untouched.
+
+When the replacement build ends, validate and file its actual receipt using
+`file_result.py --no-reclaim`: its input inventory, compiled libraries and run
+files are dependencies of CPU P9, so they must remain until P9 finishes. Then
+bind the new receipt in the CPU P9 input inventory, reseal launcher/predicate
+references and republish the parked P9 row. Never synthesize the old receipt or
+weaken the source, artifact or prepared-model checks to bypass missing files.
+The replacement build's qualification does not establish a native P9 verdict.
+
+[no-belief: dependency repair and model-free tests only; no native P9 verdict]
+
+Publication: **smoke PASS** on cores **116–119**, rc75 after compiled first
+progress, at **2026-11-20T10:46:38Z**. Original PASS receipt
+`/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-full-cpu-build-r4-20261120/PASS.json` SHA-256
+`8c4077e6697f81f3dd7adfcb99a5b7f754012abdec7346a9f7186a7f1251d32c`. The full scheduled build is pending.
