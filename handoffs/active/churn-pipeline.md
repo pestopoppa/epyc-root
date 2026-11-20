@@ -214,6 +214,12 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: taskflow Stage 1 runs beside the old dispatcher on the live registry for one week and a dated report shows its verdict-ticks-per-token beating the old 82 per 11.6B
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **TASKFLOW-STAGE1-CANARY** [inference] Run the Stage 1 canary: 10 select.py boxes (TASKS.json in the row dir) through taskflow dispatch with opencode workers on a row-owned llama-server; measure verified/attempted, uncached+cached tokens per task, wall per task, decode/prefill tok/s, draft acceptance, VRAM; classify failures model-limitation vs harness vs task.
+      · done when: verdict: STAY-35B|TRY-27B|FIX-HARNESS
+      · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: champion C14 GPU store gpu-20261118-eee3da838-c14 · harness: opencode 2.2.5 + taskflow dispatch (origin/main 104a8f154) · metric: verified/attempted, tokens per verified task · rule: >=0.3 verified with model-limitation the minority failure -> STAY-35B; <0.3 with >=50% model-limitation -> TRY-27B; >=50% harness failures -> FIX-HARNESS · region: gpu-q3 (mi210_0,88-95,184-191) · est 4200 s, from 10 tasks x 300 s x 1.25 + 450 s load
+      · Stop rule: stop on answer when all 10 tasks are attempted; stop on futility when the first 4 tasks are all harness-class; STOP file / deadline / grant loss.
+      · gate: none
+      · owner: pipeline-mgmt
 - [ ] **HS-STAGE-C** [non-inference] Handoff standard Stage C (spec /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/HANDOFF-STANDARD.md): content rewrites of failing boxes so the lint-OK canary reaches 45 percent (Stage B left it at 21.6), LLM proposals as NEEDS-OWNER children, compaction, generated index rows, ratify package for human-only docs.
       · done when: box_index lint-OK canary reads at least 45 percent on origin/main and the Stage C ratify package is filed for the operator
       · gate: none

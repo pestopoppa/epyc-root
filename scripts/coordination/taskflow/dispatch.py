@@ -193,8 +193,8 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                 (tdir / "diff.patch").write_text(_git(lane, "diff", f"{base}..HEAD").stdout)
             u = w["usage"]
             row.update(model=w["model"], rc=w["rc"], timed_out=w["timed_out"], steps=u["steps"],
-                       tokens={"input": u["input"], "cached": u["cache_read"],
-                               "uncached": max(0, u["input"] - u["cache_read"]), "output": u["output"]},
+                       tokens={"prompt": u["input"] + u["cache_read"], "cached": u["cache_read"],
+                               "uncached": u["input"], "output": u["output"]},  # opencode `input` excludes cache reads
                        review_tokens=(v.get("review") or {}).get("usage"), claimed=w.get("result"),
                        verdict=v["verdict"], reason=v["reason"], checks=v["checks"],
                        failure_class=failure_class(w, v), worker_wall_s=w["wall_s"], tools=w["tools"][:40],

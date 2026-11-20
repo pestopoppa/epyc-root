@@ -225,5 +225,5 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
     u = ev["usage"]
     return {"rc": proc.returncode, "timed_out": timed_out, "wall_s": round(time.time() - t0, 1),
             "family": family, "tier": task.get("tier"), "model": model_id, "prompt_chars": len(prompt),
-            "usage": u, "uncached_input": max(0, u["input"] - u["cache_read"]) if u["input"] >= u["cache_read"] else u["input"],
+            "usage": u, "uncached_input": u["input"],  # opencode reports input net of cache reads
             "result": ev["result"], "errors": ev["errors"], "tools": ev["tools"], "text_tail": ev["text_tail"]}
