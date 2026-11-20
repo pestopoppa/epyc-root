@@ -1,9 +1,9 @@
 {
  "session_id": "intake-kspec-20261120",
  "started_at": "2026-11-20T00:00:00+00:00",
- "last_checkpoint": "2026-11-20T11:27:38.790866Z",
+ "last_checkpoint": "2026-11-20T12:10:23.138008Z",
  "stage": 3,
- "phase": "stage3-plan-awaiting-operator-approval",
+ "phase": "stage3-plan-r2-awaiting-operator-approval",
  "lane": "/workspace/.worktrees/intake-kspec-20261120",
  "requester": "autokernel subagent (operator-requested intake; plan-approval gate retained before Stage 4)",
  "previous_session": {
@@ -288,10 +288,21 @@
  ],
  "actionable_ledger": [],
  "stage3_plan": {
-  "path": "/mnt/raid0/llm/tmp/intake-kspec-20261120-plan.md",
-  "sha256": "074e6ed79833d4c2f0b6edb347fb401290b29ecc812626f64913c03b357765b0",
-  "generator": "/mnt/raid0/llm/tmp/dive-kspec-20261120/tools/plan_build.py + plan_render.py (spec plan_spec.py, plan_ledger.py)",
-  "proposed_payload_check": "validate_plan_payload: 0 plan errors; wrapper exits 1 only on the 218 pre-existing index/cross-reference errors present on origin/main",
-  "packets": "P1-P6 immediate (20 boxes incl. one refine), K1-K4 knowledge-only, M1-M6 monitor; 89 ledger rows"
- }
+  "path": "/mnt/raid0/llm/tmp/intake-kspec-20261120-plan-r2.md",
+  "sha256": "dbf7288586128da2221a0684d5aa062d0fb39d8e2a70aced7b36b57a33c8277a",
+  "revision": "r2 (operator rejected r1 2026-11-20; feedback items 0-9 relayed by autokernel)",
+  "generator": "/mnt/raid0/llm/tmp/dive-kspec-20261120/tools/plan_build_r2.py + plan_render_r2.py (plan_spec_r2.py, plan_ledger_r2.py)",
+  "proposed_payload_check": "validate_plan_payload: 0 plan errors",
+  "packets": "P1-P10 immediate (46 boxes incl. one refine and one operator-decision), K1-K4, M1-M5; 106 ledger rows",
+  "r2_research": "/mnt/raid0/llm/tmp/dive-kspec-20261120/r2/ (topic-c scripts); subagents sonnet 3, opus 2"
+ },
+ "stage3_plan_history": [
+  {
+   "path": "/mnt/raid0/llm/tmp/intake-kspec-20261120-plan.md",
+   "sha256": "074e6ed79833d4c2f0b6edb347fb401290b29ecc812626f64913c03b357765b0",
+   "generator": "/mnt/raid0/llm/tmp/dive-kspec-20261120/tools/plan_build.py + plan_render.py (spec plan_spec.py, plan_ledger.py)",
+   "proposed_payload_check": "validate_plan_payload: 0 plan errors; wrapper exits 1 only on the 218 pre-existing index/cross-reference errors present on origin/main",
+   "packets": "P1-P6 immediate (20 boxes incl. one refine), K1-K4 knowledge-only, M1-M6 monitor; 89 ledger rows"
+  }
+ ]
 }
