@@ -49,3 +49,17 @@ def test_sweep_ages_by_prefix_and_removes_old(tmp_path):
     new = trash / "20990101-000000-deadbeef-new.bin"; new.write_text("n")
     cp = run(SWEEP, "--older-than", "1", env=env)
     assert cp.returncode == 0 and not old.exists() and new.exists(), cp.stdout + cp.stderr
+
+
+def test_protected_path_refused_even_with_bypass_and_for_ancestors(tmp_path):
+    trash = tmp_path / "trash"
+    prot = tmp_path / "keep" / "ck"; prot.mkdir(parents=True); (prot / "CY2.bin").write_text("x")
+    other = tmp_path / "keep" / "other"; other.mkdir(); (other / "f").write_text("y")
+    plist = tmp_path / "protected_paths.txt"; plist.write_text(f"# c\n{prot}\n")
+    env = dict(os.environ, TRASH_ROOT=str(trash), SAFETY_AUDIT_LOG=str(tmp_path / "audit.log"), PROTECTED_PATHS_FILE=str(plist))
+    for args in ([str(prot)], [str(prot / "CY2.bin")], [str(prot.parent)], ["--bypass-guard", str(prot)], ["--bypass-guard", str(prot.parent)]):
+        cp = run(RM, *args, env=env)
+        assert cp.returncode == 1 and "operator-protected" in cp.stderr, (args, cp.stderr)
+        assert (prot / "CY2.bin").read_text() == "x"
+    assert run(RM, str(other), env=env).returncode == 0          # an unrelated sibling is still trashable
+    assert not other.exists() and (prot / "CY2.bin").exists()

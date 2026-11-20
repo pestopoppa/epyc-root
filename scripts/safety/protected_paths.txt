@@ -1,0 +1,9 @@
+# Operator-protected paths. scripts/safety/guarded_rm.sh refuses to delete or trash any listed path,
+# anything under it, or any ancestor of it (also with --bypass-guard). One absolute path per line.
+# Add an entry with the operator's approval; remove one only on explicit operator instruction.
+#
+# 2026-11-20 (operator): YaRN CY2 slot at depth 350,940 (Qwen3.6-35B-A3B-MTP-Q8_0, CPU, v10 store; CY2.bin
+# sha256 b173beca52b36bc662f654c16f11ccbf365935d464fa4d884e73bd2ccb99651e). Protected copy + the original.
+# Owner: autokernel; box handoffs/active/long-context-program.md YARN-GPU-512k.
+/mnt/raid0/llm/cache/kv_slots/yarn-cy2-351k-20261120
+/mnt/raid0/llm/tmp/yarn/cpu-resume-20261119/out

@@ -22,6 +22,10 @@ set -euo pipefail
 TRASH_ROOT="${TRASH_ROOT:-/mnt/raid0/llm/.trash}"
 AUDIT_LOG="${SAFETY_AUDIT_LOG:-/workspace/logs/safety_audit.log}"
 GUARDED_ROOTS=("/mnt/raid0/llm/models" "/mnt/raid0/llm/lmstudio" "$TRASH_ROOT")
+# Protected paths (operator-protected checkpoints): one absolute path per line in protected_paths.txt (# comments ok).
+# A delete/trash of a protected path, anything under it, or any ANCESTOR of it is refused even with --bypass-guard:
+# removing a parent would remove the protected child. Editing the list is an operator-approved change (git history).
+PROTECTED_FILE="${PROTECTED_PATHS_FILE:-$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/protected_paths.txt}"
 
 ts() { date +%Y-%m-%dT%H:%M:%S%z; }
 audit() {
@@ -40,6 +44,18 @@ is_guarded() {
             "$r"|"$r"/*) return 0 ;;
         esac
     done
+    return 1
+}
+
+is_protected() {
+    local p r line; p="$(resolve_real "$1")"
+    [ -f "$PROTECTED_FILE" ] || return 1
+    while IFS= read -r line || [ -n "$line" ]; do
+        case "$line" in ""|"#"*) continue ;; esac
+        r="$(resolve_real "$line")"
+        case "$p" in "$r"|"$r"/*) return 0 ;; esac   # the path or inside it
+        case "$r" in "$p"/*) return 0 ;; esac         # an ancestor of it
+    done < "$PROTECTED_FILE"
     return 1
 }
 
@@ -64,6 +80,11 @@ fi
 mkdir -p "$TRASH_ROOT"
 for target in "$@"; do
     [ -e "$target" ] || { echo "missing: $target" >&2; audit "WARN" "missing: $target"; continue; }
+    if is_protected "$target"; then
+        echo "REFUSED: $target is (or contains, or is inside) an operator-protected path listed in $PROTECTED_FILE; not removable, even with --bypass-guard." >&2
+        audit "CRITICAL" "refused protected delete: $target"
+        exit 1
+    fi
     if is_guarded "$target" && [ "$BY" = "safety-guard" ]; then
         echo "REFUSED: $target is under a guarded data root. Use --bypass-guard only with operator approval." >&2
         audit "CRITICAL" "refused guarded delete: $target"
