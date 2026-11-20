@@ -208,3 +208,57 @@ test SHA-256
 Receipt-validated task-owned source release is still unimplemented. A dedicated
 configured leaf is still required and no live acquisition is admitted or launched.
 The target-precision matrix remains unpublished.
+
+
+## Receipt-validated source release (2026-11-20)
+
+`scripts/diagnostics/target-precision/release_sources.py` now provides the
+`release_sources` library gate. The preceding statement that release is
+unimplemented is superseded by this tested implementation. It is not yet wired
+to a live conversion pipeline. No source files or weights were released.
+
+The caller supplies exact plan bytes, explicit task/source/control directories,
+SHA-256-bound acquisition/conversion receipt references and a fresh journal path.
+Only direct task directories under `/mnt/raid0/llm/tmp/df2/<task>` or
+`/dev/shm/df2/<task>` qualify. All ancestors must be free of symlinks. The source
+inventory must exactly match the pinned plan; every payload is rehashed against
+its SHA-256 or Git blob identity and the acquisition receipt. Source files must
+be regular single-link files. The acquisition supervisor must report successful
+worker reaping. Full validation precedes the first deletion.
+
+The conversion receipt schema is `epyc.target-precision.conversion.v1`, with
+COMPLETE status, exact plan hash/base/source root/acquisition reference, BF16
+output path/size/hash, verified tensor and tokenizer correspondence, and retained
+build, tensor-report, tokenizer-report and log references. The build receipt must
+bind the plan converter commit and the actual converter tool digest. Each
+correspondence report must be COMPLETE, plan-bound, PASS, and reference the exact
+output and acquisition receipt. Receipt files stay in controls; BF16 stays in
+another task directory. Tool/log bytes and BF16 bytes are rehashed. These are
+contracts for future native producers, not fabricated qualification receipts;
+this gate validates their binding rather than implementing tensor verification.
+
+An exclusive, fsynced RELEASING journal is persisted before unlinking only the
+allowlisted filenames through a captured directory descriptor. Each deletion is
+fsynced and journaled. RELEASED means all pinned source entries were removed;
+`verified_weights` remains false. Failure leaves FAILED or an incomplete journal,
+and retries refuse an existing journal. Recovery requires inspecting that native
+journal; it never authorizes recursive cleanup or automatic replay. Receipts,
+logs, tool and BF16 output remain. A directory flock coordinates cooperating
+callers; acquisition/conversion must already be stopped. This is not protection
+against a hostile same-user writer racing rename/unlink. Descriptor identities
+and per-file metadata are rechecked before deletion. Crash-interrupted journal
+writes can be incomplete and never count as success.
+
+Validation: **104 focused tests PASS**, including **23 new release controls**,
+covering successful scoped deletion, retained output/evidence, duplicate refusal,
+source/output/tool/log corruption, foreign entries, symlinks/hardlinks,
+unreaped/failed acquisition, plan/base/root/report/build mismatches, namespace
+refusal and injected unlink failure. No model execution, network, actual cgroup
+or source release occurred. Implementation SHA-256:
+`f24112b86d028d2f7c3e6e7c6e744ee63df8404b4d4250c48dd6ba1602913046`;
+test SHA-256:
+`5552ef02fe08caa8d088fda98c4d3fdd41732b24245a8e0ed7e6bdeadf0f4425`.
+
+The dedicated configured cgroup leaf and native conversion/correspondence receipt
+producers remain required before acquisition/conversion can be qualified as a
+whole. No acquisition or matrix was launched or published.
