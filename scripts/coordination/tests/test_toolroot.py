@@ -59,6 +59,20 @@ class ToolRoot(unittest.TestCase):
         self.assertTrue(lines[0].startswith(f"tool-commit {self.first[:12]}"), lines)
         self.assertIn("WARN: checkout 60 commits behind origin/main; tools/config read from " + self.hub, err.getvalue())
 
+    def test_never_fetched_clone_warns_against_hub_head(self):
+        """review S3: origin/main as stale as HEAD (never fetched) still warns, via the hub view's HEAD."""
+        stale = os.path.join(self.tmp, "stale")
+        subprocess.run(["git", "clone", "-q", os.path.join(self.tmp, "up"), stale], check=True, capture_output=True, env=GENV)
+        git(stale, "checkout", "-q", "--detach", self.first)
+        git(stale, "update-ref", "refs/remotes/origin/main", self.first)   # fixture clone only
+        tool = os.path.join(stale, "scripts", "tool.py")
+        with mock.patch.object(toolroot, "HUB", self.hub):
+            self.assertEqual(len(toolroot.banner(tool, out=io.StringIO())), 1)   # hub is not a git tree: no evidence
+        toolroot.CACHE_DIR = tempfile.mkdtemp(prefix="trcache2-")
+        with mock.patch.object(toolroot, "HUB", os.path.join(self.tmp, "up")):
+            lines = toolroot.banner(tool, out=io.StringIO())
+        self.assertIn("WARN: checkout 60 commits behind", lines[-1])
+
     def test_behind_cached_per_hour(self):
         toolroot.banner(self.tool, out=io.StringIO())
         with mock.patch.object(toolroot, "_git", wraps=toolroot._git) as g:

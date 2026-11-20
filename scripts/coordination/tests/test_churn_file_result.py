@@ -794,3 +794,22 @@ class TestF3VerdictSemanticsEveryPath(Base):
         self.row("f3-p", "rc==0", {"status": "ok", "x": 1})
         self.run_main("f3-p", "--no-reclaim")
         self.assertEqual(self.verdict("f3-p")["row_verdict"], "pass")
+
+
+class TestF3RecordTokensTight(Base):
+    """F3 review S3: "diagnostic" in an answer is not a DROP; only DROP(/FUTILITY_ tokens, or a status-led diagnostic."""
+
+    def test_answer_mentioning_diagnostic_stays_pass(self):
+        self.row("f3-t1", "rc==0", {"answer": "PASS: diagnostic counters all green", "x": 1})
+        self.run_main("f3-t1", "--no-reclaim")
+        self.assertEqual(self.verdict("f3-t1")["row_verdict"], "pass")
+
+    def test_status_diagnostic_coerced(self):
+        self.row("f3-t2", "rc==0", {"status": "diagnostic only", "x": 1})
+        self.run_main("f3-t2", "--no-reclaim")
+        self.assertEqual(self.verdict("f3-t2")["row_verdict"], "inconclusive")
+
+    def test_futility_token_in_answer_coerced(self):
+        self.row("f3-t3", "rc==0", {"answer": "stopped FUTILITY_TRACE", "x": 1})
+        self.run_main("f3-t3", "--no-reclaim")
+        self.assertEqual(self.verdict("f3-t3")["row_verdict"], "inconclusive")

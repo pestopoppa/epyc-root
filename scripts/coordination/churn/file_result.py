@@ -272,13 +272,20 @@ def coerce_declared_nonpass(agent):
     return agent
 
 
+RECORD_NONPASS_TOKEN = re.compile(r"\bDROP\(|\bFUTILITY_[A-Z]")
+RECORD_STATUS_DIAGNOSTIC = re.compile(r"^\s*(?:DROP\b|diagnostic\b)", re.I)
+
+
 def record_declares_nonpass(metrics):
-    """F3 (AK audit B3): the result record's own status/rationale/answer text when it declares DROP(/FUTILITY_/diagnostic,
-    else None. Used to coerce a machine-rule or --correct pass the same way coerce_declared_nonpass coerces an agent's."""
+    """F3 (AK audit B3): the result record's own text when it declares a non-pass, else None. Review S3: only the
+    `DROP(` / `FUTILITY_<X>` tokens count in status/rationale/answer (a passing answer may mention "diagnostic"); the
+    word diagnostic (or a bare DROP) counts only as the leading word of the `status` field."""
     if not isinstance(metrics, dict):
         return None
-    text = "\n".join(str(metrics.get(k) or "") for k in ("status", "rationale", "answer"))
-    return text.strip() if DECLARED_NONPASS.search(text) else None
+    texts = [str(metrics.get(k) or "") for k in ("status", "rationale", "answer")]
+    if any(RECORD_NONPASS_TOKEN.search(t) for t in texts) or RECORD_STATUS_DIAGNOSTIC.match(texts[0]):
+        return "\n".join(t for t in texts if t).strip()
+    return None
 
 
 def correct_filed(flags, rid, verdict, by, reason, dry_run=False):
@@ -328,6 +335,21 @@ def correct_filed(flags, rid, verdict, by, reason, dry_run=False):
 
 
 
+def _default_repo():
+    """F5 review S2: config/repo reads go through toolroot.resolve (hub view first), never a stale checkout's copy."""
+    own = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+    try:
+        try:
+            import toolroot
+        except ImportError:
+            sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            import toolroot
+        hub = toolroot.resolve(".", __file__)
+        return os.path.normpath(hub) if os.path.isdir(os.path.join(hub, "handoffs")) else own
+    except Exception:  # noqa: BLE001
+        return own
+
+
 def _toolroot_banner():
     """F5: print tool-commit / stale-checkout WARN (toolroot.py beside this file when installed, else the checkout's)."""
     try:
@@ -356,7 +378,8 @@ def main(argv=None):
     ap.add_argument("--answer", help="named answer stored in the receipt, e.g. SURFACE_E2E_OK")
     ap.add_argument("--superseded-by", metavar="ID")
     ap.add_argument("--filed-by", default=None)
-    ap.add_argument("--repo", default=os.path.abspath(os.path.join(HERE, "..", "..", "..")))
+    ap.add_argument("--repo", default=_default_repo(), help="repo for --receipt verification (default: the hub view via "
+                    "toolroot.resolve, else this file's checkout)")
     ap.add_argument("--no-fetch", action="store_true")
     ap.add_argument("--no-manifest", action="store_true",
                     help="LEGACY row that never had a manifest: close from its .ended record (needs --owner; --verdict SUPERSEDED|"

@@ -19,7 +19,7 @@ def gates_to_holds(reg):
     for slug, e in sorted((reg.get("sessions") or {}).items()):
         if isinstance(e, dict) and e.get("operator_gate"):
             g = e["operator_gate"] if isinstance(e["operator_gate"], dict) else {}
-            h = {"id": slug, "sessions": [slug], "scope": str(g.get("scope") or "loop-launch"),
+            h = {"id": slug, "sessions": [slug, f"handoff-{slug}", f"h-{slug}"], "scope": str(g.get("scope") or "loop-launch"),
                  "since": g.get("since"), "reason": g.get("reason")}
             if e.get("handoff"):
                 h["handoffs"] = [os.path.basename(str(e["handoff"]))]

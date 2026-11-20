@@ -69,8 +69,19 @@ def behind(root):
             return c["n"]
     except (OSError, ValueError, KeyError, TypeError):
         pass
+    counts = []
     out = _git(root, "rev-list", "--count", "HEAD..origin/main")
-    n = int(out) if out and out.isdigit() else None
+    if out and out.isdigit():
+        counts.append(int(out))
+    # review S3: a never-fetched clone's origin/main is as stale as its HEAD; the hub view's HEAD is fetched by the view
+    hub_head = _git(HUB, "rev-parse", "HEAD") if os.path.isdir(HUB) else None
+    if hub_head:
+        out = _git(root, "rev-list", "--count", f"HEAD..{hub_head}")
+        if out and out.isdigit():
+            counts.append(int(out))
+        elif _git(root, "merge-base", "--is-ancestor", hub_head, "HEAD") is None:
+            counts.append(STALE_COMMITS + 1)   # the checkout does not even hold the hub's HEAD: older than any count
+    n = max(counts) if counts else None
     try:
         os.makedirs(CACHE_DIR, exist_ok=True)
         tmp = f"{key}.{os.getpid()}.tmp"

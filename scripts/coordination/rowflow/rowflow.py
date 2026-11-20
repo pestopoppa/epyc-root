@@ -3588,22 +3588,13 @@ def smoke_lock_path(flags, rid): return os.path.join(dry_dir(flags, rid), SMOKE_
 
 
 def smoke_lock_holder(flags, rid):
-    """'pid N (who) since T' recorded by the live holder of dryrun/<id>/SMOKE.lock, else None (free or unreadable)."""
-    p = smoke_lock_path(flags, rid)
-    try:
-        fd = os.open(p, os.O_RDWR)
-    except OSError:
-        return None
-    try:
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except OSError:
-            d = load_json(p) or {}
-            return f"pid {d.get('pid', '?')} ({d.get('who', '?')}) since {d.get('at', '?')}"
-        fcntl.flock(fd, fcntl.LOCK_UN)
-        return None
-    finally:
-        os.close(fd)
+    """'pid N (who) since T' from the pid sidecar the live holder writes into dryrun/<id>/SMOKE.lock, else None. Reads
+    only (review S3: a probe never takes the flock, so it cannot make a real runner see a busy lock); the holder clears
+    the sidecar before releasing, and a dead pid never counts."""
+    d = load_json(smoke_lock_path(flags, rid)) or {}
+    if d.get("pid") and proc_alive(d["pid"]):
+        return f"pid {d['pid']} ({d.get('who', '?')}) since {d.get('at', '?')}"
+    return None
 
 
 def _verdict_since(flags, rid, t0):
@@ -3622,7 +3613,10 @@ def _verdict_since(flags, rid, t0):
 def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None, wait_s=None, log=print):
     """F2: dryrun_run under a per-id flock on dryrun/<id>/SMOKE.lock (allocator batch, --smoke-now, gpu-batch, publish all
     reach here). A second caller blocks <= wait_s (default: the smoke's own timeout + grace), says who holds it, then returns
-    the verdict that smoke recorded instead of running the smoke again; WAIT when the holder outlives the wait."""
+    the verdict that smoke recorded instead of running the smoke again; WAIT ("not run twice") when the holder outlives
+    the wait - wait_s=0 (the publish path) refuses at once instead of blocking the owner's turn.
+    Harmless duplicate: a caller that arrives AFTER the first smoke released the lock and whose state is still
+    needs-dryrun (e.g. the first one WAITed) runs its own smoke; it is serialized, never concurrent."""
     dd = dry_dir(flags, rid)
     os.makedirs(dd, exist_ok=True)
     fd = os.open(smoke_lock_path(flags, rid), os.O_RDWR | os.O_CREAT, 0o664)
@@ -3647,7 +3641,10 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None, wait_s=None
                 return got
         os.ftruncate(fd, 0)
         os.pwrite(fd, json.dumps({"pid": os.getpid(), "who": " ".join(sys.argv[:3])[:120], "at": now_iso()}).encode(), 0)
-        return _dryrun_run_locked(flags, rid, regions, one_quarter=one_quarter, smoke_s=smoke_s)
+        try:
+            return _dryrun_run_locked(flags, rid, regions, one_quarter=one_quarter, smoke_s=smoke_s)
+        finally:
+            os.ftruncate(fd, 0)   # clear the pid sidecar before the flock goes
     finally:
         os.close(fd)   # closing releases the flock
 

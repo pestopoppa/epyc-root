@@ -343,13 +343,56 @@ def check_operator_gate(spec, flags):
 HOLDS_CANDIDATES = ("handoffs/active/holds.yaml", "coordination/holds.yaml")   # == box_index.HOLDS_CANDIDATES
 HOLD_SCOPES = ("loop-launch", "all-rows", "boxes")
 HOLD_TARGET_KEYS = ("handoffs", "rows", "boxes", "files", "sessions")
+OWNER_PREFIX_RX = re.compile(r"^(handoff-|h-)")   # == file_result.py: Codex rows publish owner handoff-<slug>
+
+
+def owner_slug(owner):
+    return OWNER_PREFIX_RX.sub("", str(owner or ""))
+
+
+def session_targets(slug):
+    """Every spelling a session's rows carry as owner: slug, handoff-<slug>, h-<slug>."""
+    b = owner_slug(slug)
+    return {b, f"handoff-{b}", f"h-{b}"} if b else set()
+
+
+def _toolroot():
+    try:
+        import toolroot
+    except ImportError:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        import toolroot
+    return toolroot
+
+
+def config_path(rel, repo=None):
+    """F5: a config file from the hub view first (toolroot.resolve), unless a caller pins `repo` explicitly."""
+    if repo:
+        return os.path.join(repo, rel)
+    try:
+        return _toolroot().resolve(rel, __file__)
+    except Exception:  # noqa: BLE001
+        return os.path.join(REPO, rel)
 
 
 def load_holds(repo=None):
-    """F4 (AK audit B4): the operator's holds.yaml (handoff standard decision 3) as [{id, targets, scope, since, reason}].
-    Same file and id/targets shape box_index.load_holds reads; scope defaults to loop-launch. Broken file -> no holds."""
+    """F4 (AK audit B4): the operator's holds.yaml (handoff standard decision 3), read via toolroot.resolve (hub first).
+
+    Schema (flat; box_index.load_holds reads the same file and ignores the keys it does not know):
+        holds:
+          - id: H-AKAGG                 # required; operator-ratify/<id>.json releases it
+            scope: loop-launch          # loop-launch (default) | all-rows | boxes
+            sessions: [akagg]           # session slugs; handoff-<slug> / h-<slug> owners match too
+            handoffs: [autokernel-agg.md]
+            rows: [row-id, ...]
+            boxes: [BOX-ID or text_sha, ...]
+            files: [path, ...]
+            row_prefixes: [v11-, ...]   # a row id starting with one is refused whatever its owner
+            since: 2026-11-20T00:00Z
+            reason: free text
+    Returns [{id, scope, targets, row_prefixes, since, reason, source}]. A broken file -> no holds (WARN)."""
     for rel in HOLDS_CANDIDATES:
-        p = os.path.join(repo or REPO, rel)
+        p = config_path(rel, repo)
         if not os.path.exists(p):
             continue
         try:
@@ -364,8 +407,11 @@ def load_holds(repo=None):
         out = []
         for h in items or []:
             if isinstance(h, dict) and h.get("id"):
-                out.append({"id": str(h["id"]), "scope": str(h.get("scope") or "loop-launch"),
-                            "targets": {str(x) for k in HOLD_TARGET_KEYS for x in (h.get(k) or [])},
+                t = {str(x) for k in HOLD_TARGET_KEYS if k != "sessions" for x in (h.get(k) or [])}
+                for x in h.get("sessions") or []:
+                    t |= session_targets(x)
+                out.append({"id": str(h["id"]), "scope": str(h.get("scope") or "loop-launch"), "targets": t,
+                            "row_prefixes": [str(x) for x in (h.get("row_prefixes") or []) if x],
                             "since": h.get("since"), "reason": h.get("reason"), "source": p})
         return out
     return []
@@ -373,27 +419,56 @@ def load_holds(repo=None):
 
 def registry_holds(reg):
     """The registry's operator_gate entries as holds (the derived view; migrate_operator_gates_to_holds.py writes them to
-    holds.yaml once): id = slug, targets = {slug, handoff basename}, scope = the gate's scope (default loop-launch)."""
+    holds.yaml once): id = slug, targets = {slug, handoff-<slug>, h-<slug>, handoff basename}, scope default loop-launch."""
     out = []
     for slug, e in (reg.get("sessions") or {}).items():
         if isinstance(e, dict) and e.get("operator_gate"):
             g = e["operator_gate"] if isinstance(e["operator_gate"], dict) else {}
-            out.append({"id": slug, "scope": str(g.get("scope") or "loop-launch"),
-                        "targets": {slug} | ({os.path.basename(str(e.get("handoff")))} if e.get("handoff") else set()),
+            out.append({"id": slug, "scope": str(g.get("scope") or "loop-launch"), "row_prefixes": [],
+                        "targets": session_targets(slug) | ({os.path.basename(str(e.get("handoff")))} if e.get("handoff") else set()),
                         "since": g.get("since"), "reason": g.get("reason"), "source": "handoff-sessions.json"})
     return out
 
 
-def hold_refuses(h, spec, handoff_file):
-    """F4: a hold refuses a row only when the row's OWNER is a target, or (scope all-rows and the row's handoff, id or box
-    is a target). A row with no owner cannot be admitted by owner, so a hold on its handoff still refuses it."""
+_BOX_ID_RX = re.compile(r"^[A-Za-z][A-Za-z0-9]*(?:[-._][A-Za-z0-9]+)+$")
+
+
+def box_keys(task, repo=None):
+    """F4 review S4: the identities of the row's box - its **ID** and, via handoffs/active/.box-index.json, its text_sha.
+    A `file.md:LINE` ref is not a box ID: it is resolved through the index by (file, line) or yields nothing."""
+    if ":" not in task:
+        return set()
+    f, ref = task.rsplit(":", 1)
+    ref = ref.strip()
+    keys = {ref} if _BOX_ID_RX.match(ref) and not ref.isdigit() else set()
+    try:
+        idx = json.load(open(config_path("handoffs/active/.box-index.json", repo)))
+        fb = os.path.basename(f)
+        for rec in (idx.get("boxes") or {}).values():
+            if not isinstance(rec, dict) or os.path.basename(str(rec.get("file") or "")) != fb:
+                continue
+            if (ref.isdigit() and rec.get("line") == int(ref)) or (keys and rec.get("id") == ref):
+                keys.add(str(rec.get("text_sha")))
+                if rec.get("id"):
+                    keys.add(str(rec["id"]))
+    except (OSError, ValueError, AttributeError):
+        pass
+    return {k for k in keys if k and k != "None"}
+
+
+def hold_refuses(h, spec, handoff_file, repo=None):
+    """F4: a hold refuses a row only when the row's OWNER (handoff-/h- prefix normalised) is a target, its id starts with
+    a hold row_prefix, or (scope all-rows and the row's handoff, id or box is a target). A row with no owner cannot be
+    admitted by owner, so a hold on its handoff still refuses it."""
     owner = str(spec.get("owner") or "")
+    rid = str(spec.get("id") or "")
     t = h["targets"]
-    if owner and owner in t:
+    if owner and (owner in t or owner_slug(owner) in t):
         return f"its owner {owner!r} is held"
-    task = str(spec.get("handoff_task") or "")
-    box = task.rsplit(":", 1)[1] if ":" in task else ""
-    hit = (handoff_file and handoff_file in t) or str(spec.get("id") or "") in t or (box and box in t)
+    pre = next((p for p in h.get("row_prefixes") or [] if rid.startswith(p)), None)
+    if pre:
+        return f"its id matches held row prefix {pre!r}"
+    hit = (handoff_file and handoff_file in t) or rid in t or bool(box_keys(str(spec.get("handoff_task") or ""), repo) & t)
     if hit and (h["scope"] == "all-rows" or not owner):
         return f"its handoff {handoff_file} is held" + ("" if owner else " and the row names no owner")
     return None
@@ -406,7 +481,7 @@ def check_holds(spec, flags, reg, handoff_file, repo=None):
         if h["id"] in seen:
             continue   # holds.yaml wins over its registry-derived twin
         seen.add(h["id"])
-        why = hold_refuses(h, spec, handoff_file)
+        why = hold_refuses(h, spec, handoff_file, repo)
         if not why:
             continue
         ok, rwhy = ratified(flags, h["id"])
@@ -853,14 +928,18 @@ def gpu_busy(flags):
     return rf.gpu_batch_running(flags) or any(rf.GPU in g["holds"] for g in rf.open_grants(flags))
 
 
-def run_smoke(flags, rid, regions, smoke_s, keep_on_wait=False):
+SMOKE_BUSY_MARK = "not run twice"   # rowflow.dryrun_run's WAIT text when another runner holds dryrun/<id>/SMOKE.lock
+
+
+def run_smoke(flags, rid, regions, smoke_s, keep_on_wait=False, wait_s=None):
     """THE dry run: (verdict, msg); the manifest survives only a PASS - and a WAIT under keep_on_wait (the GPU batch: a
     ready/ manifest it did not move there belongs to a live concurrent smoke, ak-gap-1-step1-gpu-20261119)."""
     v, msg = "FAIL", "smoke did not run"
     try:
-        v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=smoke_s)
+        v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=smoke_s,
+                               **({} if wait_s is None else {"wait_s": wait_s}))
     finally:
-        if v != "PASS" and not (keep_on_wait and v == "WAIT"):
+        if v != "PASS" and not (keep_on_wait and v == "WAIT") and not (v == "WAIT" and SMOKE_BUSY_MARK in msg):
             unpublish(flags, rid)
     return v, msg
 
@@ -1190,7 +1269,9 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     if not regions:
         queue_cpu_smoke(flags, rid, spec, smoke_s, " (no free cores right now)")
         return None
-    v, msg = run_smoke(flags, rid, regions, smoke_s)
+    v, msg = run_smoke(flags, rid, regions, smoke_s, wait_s=0)   # F2 review S3: refuse, never block the owner's turn
+    if v == "WAIT" and SMOKE_BUSY_MARK in msg:
+        raise rf.Refused(f"smoke already in flight for {rid}: {msg}; the row stays as that smoke leaves it")
     if v == "PASS":
         print(f"SMOKE PASS {rid} on {regions}: {msg}")
         rf.supersede(flags, row)   # refinement 5: a PASSed successor withdraws its predecessors
