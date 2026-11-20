@@ -182,8 +182,37 @@ def _clear_refs(lane: Path) -> None:
         refs.rmdir()
 
 
+def _sweep_log(msg: str) -> None:
+    root = lane_root()
+    root.mkdir(parents=True, exist_ok=True)
+    with (root / "sweep.log").open("a") as f:
+        f.write(f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} {msg}\n")
+
+
+def delete_branch_if_safe(repo: Path, branch: str | None, base: str | None = None, pinned: bool = False) -> str:
+    """Delete a taskflow lane branch when it is ours (taskflow/*), not pinned and not pushed anywhere. The tip sha is
+    logged to <lane root>/sweep.log so `git branch <b> <sha>` recovers it while the reflog/objects live."""
+    if not branch or not branch.startswith("taskflow/"):
+        return "skip:not-taskflow"
+    if pinned:
+        return "skip:pinned"
+    tip = _git(repo, "rev-parse", "--verify", "-q", f"refs/heads/{branch}", check=False).stdout.strip()
+    if not tip:
+        return "skip:absent"
+    if _git(repo, "branch", "-r", "--contains", tip, check=False).stdout.strip() and tip != base:
+        return "skip:pushed"
+    if _git(repo, "rev-parse", "--abbrev-ref", f"{branch}@{{upstream}}", check=False).returncode == 0:
+        return "skip:has-upstream"
+    if _git(repo, "branch", "-D", branch, check=False).returncode != 0:
+        return "fail"
+    _sweep_log(f"deleted branch {branch} tip {tip} repo {repo}")
+    return "deleted"
+
+
 def drop_lane(repo: Path, lane: Path) -> bool:
-    """Remove a lane: commit any leftover worker change as WIP on the lane branch, then plain `worktree remove`."""
+    """Remove a lane: commit any leftover worker change as WIP on the lane branch, then plain `worktree remove`.
+    A lane branch with no commit over its base is deleted at once (nothing to recover)."""
+    meta = json.loads(_meta(lane).read_text()) if _meta(lane).exists() else {}
     if not lane.exists():
         _meta(lane).unlink(missing_ok=True)
         return True
@@ -197,6 +226,9 @@ def drop_lane(repo: Path, lane: Path) -> bool:
     ok = _git(repo, "worktree", "remove", str(lane), check=False).returncode == 0
     if ok:
         _meta(lane).unlink(missing_ok=True)
+        b, base = meta.get("branch"), meta.get("base")
+        if b and base and _git(repo, "rev-parse", "-q", "--verify", f"refs/heads/{b}", check=False).stdout.strip() == base:
+            delete_branch_if_safe(repo, b, base)
     return ok
 
 
@@ -226,7 +258,13 @@ def sweep_lanes(now: float | None = None) -> dict:
             out["kept"].append(str(lane))
             continue
         repo = Path(d.get("repo") or ".")
-        (out["removed"] if drop_lane(repo, lane) else out["failed"]).append(str(lane))
+        if drop_lane(repo, lane):
+            out["removed"].append(str(lane))
+            if d.get("state") == "kept":      # forensics window over: the WIP branch goes too (tip sha logged)
+                out.setdefault("branches", []).append(
+                    f"{d.get('branch')}:{delete_branch_if_safe(repo, d.get('branch'), d.get('base'), bool(d.get('pin')))}")
+        else:
+            out["failed"].append(str(lane))
     for lane in root.iterdir():
         if lane.is_dir() and lane.name not in seen and now - lane.stat().st_mtime > 3600 * KEEP_FAILED_H:
             common = _git(lane, "rev-parse", "--path-format=absolute", "--git-common-dir", check=False).stdout.strip()
@@ -344,6 +382,13 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
         rows.append(row)
         with ledger.open("a") as f:
             f.write(json.dumps(row) + "\n")
+    try:                                   # automatic orphan / expiry sweep at the end of every dispatch run
+        sw = sweep_lanes()
+        if sw.get("removed") or sw.get("failed"):
+            with ledger.open("a") as f:
+                f.write(json.dumps({"sweep": sw, "at": time.time()}) + "\n")
+    except Exception as e:  # noqa: BLE001 - the sweep never fails a batch
+        _sweep_log(f"sweep error {type(e).__name__}: {e}")
     return rows
 
 

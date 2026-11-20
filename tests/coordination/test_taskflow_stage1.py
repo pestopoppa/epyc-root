@@ -318,3 +318,41 @@ def test_lifecycle_dirty_lane_kept_then_swept_without_force(tmp_path, monkeypatc
     assert "WIP left in lane" in log                      # the change survives on the lane branch
     shown = subprocess.run(["git", "-C", str(r), "show", "l4:a.py"], capture_output=True, text=True).stdout
     assert shown == "worker change\n"
+
+
+def test_sweep_deletes_expired_wip_branch_and_logs_tip(tmp_path, monkeypatch):
+    _lane_env(tmp_path, monkeypatch, MIN_FREE_GIB=0)
+    r, lane, base = dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t0", "taskflow/x/00-a")
+    (lane / "a.py").write_text("wip\n")
+    dispatch.keep_lane(lane, "error:test", hours=1)
+    out = dispatch.sweep_lanes(now=time.time() + 7200)
+    assert out["branches"] == ["taskflow/x/00-a:deleted"]
+    log = (tmp_path / "tf/sweep.log").read_text()
+    sha = log.split(" tip ")[1].split()[0]
+    assert "deleted branch taskflow/x/00-a" in log
+    assert subprocess.run(["git", "-C", str(r), "show", f"{sha}:a.py"], capture_output=True, text=True).stdout == "wip\n"
+
+
+def test_sweep_keeps_pinned_and_pushed_branches(tmp_path, monkeypatch):
+    _lane_env(tmp_path, monkeypatch, MIN_FREE_GIB=0)
+    r, lane, base = dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t1", "taskflow/x/01-b")
+    (lane / "a.py").write_text("keep me\n")
+    dispatch.keep_lane(lane, "error:test", hours=1)
+    m = lane.parent / f"{lane.name}.lane.json"
+    d = json.loads(m.read_text()); d["pin"] = True; m.write_text(json.dumps(d))
+    assert dispatch.sweep_lanes(now=time.time() + 7200)["branches"] == ["taskflow/x/01-b:skip:pinned"]
+    r2, lane2, _ = dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t2", "taskflow/x/02-c")
+    (lane2 / "a.py").write_text("pushed\n")
+    dispatch.commit_lane(lane2, {"text_sha": "z"})
+    tip = subprocess.run(["git", "-C", str(r2), "rev-parse", "taskflow/x/02-c"], capture_output=True, text=True).stdout.strip()
+    subprocess.run(["git", "-C", str(r2), "update-ref", "refs/remotes/origin/taskflow-x", tip], check=True)
+    assert dispatch.delete_branch_if_safe(r2, "taskflow/x/02-c", base) == "skip:pushed"
+    assert dispatch.delete_branch_if_safe(r2, "main") == "skip:not-taskflow"
+
+
+def test_no_change_lane_branch_deleted_at_drop(tmp_path, monkeypatch):
+    _lane_env(tmp_path, monkeypatch, MIN_FREE_GIB=0)
+    r, lane, base = dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "run/t3", "taskflow/x/03-d")
+    assert dispatch.drop_lane(r, lane)
+    assert not subprocess.run(["git", "-C", str(r), "rev-parse", "-q", "--verify", "refs/heads/taskflow/x/03-d"],
+                              capture_output=True, text=True).stdout.strip()
