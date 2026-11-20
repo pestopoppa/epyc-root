@@ -11,9 +11,12 @@ short `(origin: …)` pointer and the story lives in the *Appendix — incident 
 ## Two axioms (canonical statements — cite, don't restate)
 
 - **An idle main with an empty queue is a coordination failure**, not a neutral resting state.
-- **The handoff dashboard counts CHECKBOX STATE ONLY.** Prose status is invisible to it. Any
-  edit recording completed work flips the matching `- [ ]` → `- [x]` (append `✅ YYYY-MM-DD`);
-  work discovered mid-flight gets its own task line. Un-wrapped work is, from the operator's
+- **The handoff dashboard and the generated index rows count CHECKBOX STATE ONLY.** Prose status is
+  invisible to them. A box is `[ ]` or `[x]` — the `[~] [>] [!]` markers are retired (handoff standard,
+  operator decision 1, 2026-11-19). Any edit recording completed work flips the matching `- [ ]` →
+  `- [x]` with the ONE tick suffix `✅ YYYY-MM-DD [belief: …|no-belief: …] <verdict>`, written by
+  `scripts/coordination/churn/wrapup.py`, `/log` or `churn/file_result.py` through `flip_checkbox`
+  (never by hand); work discovered mid-flight gets its own task line. Un-wrapped work is, from the operator's
   view, work that did not happen.
 
 Four things the axiom does not say, and each one is load-bearing:
@@ -31,13 +34,14 @@ Four things the axiom does not say, and each one is load-bearing:
   abandoned is recorded by `scripts/coordination/worker_checkpoint.py` (`/log`): `completed` flips
   the exact box, `blocked` records a non-movable blocker, `partial` is allowed ONLY at a pre-reboot
   boundary. **Nonterminal outcomes leave the source task open and add a checkpoint-keyed child
-  task** — they never flip the parent. Do not hand-reproduce that tool's mutation, commit, push,
+  task** — `**<parent>.ck-<n>** [non-inference] … · done when: resume — <action>`, the parent gaining
+  `· gate: <child>` on a continuation line — they never flip the parent. Do not hand-reproduce that tool's mutation, commit, push,
   receipt, or bus-publication phases.
 - **A result tick names its belief.** A box ticked on an experimental or measurement result
   carries `[belief: clm_<id>]`, `[belief: cc]` or `[no-belief: <reason>]` on the same line, and
   states its verdict or number on that line, not only in a prose block below. The dashboard counts
-  the tick; the planners read only the ledger, so a result that never reaches it did not happen
-  for them. A committed conclusion is recorded as an OBSERVATION (`Judged/Located`) with its
+  the tick; the planners read only the ledger and the generated `handoffs/active/.box-index.json`, so
+  a result that never reaches them did not happen for them. A committed conclusion is recorded as an OBSERVATION (`Judged/Located`) with its
   commit, path and line: recording what was concluded is legitimate, while inventing the lost
   run's protocol, n or attestation is not. Enforced by the wrap-up belief-capture gate
   (`agents/commands/wrap-up.md`, Step 2).

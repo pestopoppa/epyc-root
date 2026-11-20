@@ -592,6 +592,11 @@ Binds anyone who dispatches, claims, or cites a backlog row: coordinator, main, 
 - **Anchor rot is structural, not carelessness.** Inserting rows above a pointer is what working
   in a file *does*. Measured queue-wide rot: 27% (2026-07-29) → **34.5%** (2026-08-11) — twelve
   days of ordinary edits, no intervention, and no human refresh cadence can hold line anchors.
+- **The identity is the box's first line, hashed.** `text_sha` (sha256 of the normalised first line,
+  `scripts/handoffs/box_index.py`) keys a box; the first line is immutable once dispatched or
+  rowflow-bound (refine = a new ID). The screener's source is the generated
+  `handoffs/active/.box-index.json` plus `handoffs/active/holds.yaml`, the single operator-exclusion
+  source (handoff standard, operator decisions 1 and 3, 2026-11-19).
 - **A screener proves WELL-FORMED, not STILL-NEEDED.** `backlog_row_check.py` validates a row's
   form against the file; it cannot know the world. Screen for form, then **verify the premise
   independently** — read the state the row asserts still holds — before pointing a main at it.
@@ -736,8 +741,9 @@ per-task wrap-up is invoked by the session doing the work. Cadence contract:
 
 **(b) Subagent index edits.** **A subagent may PREPARE index edits; the owning session APPLIES
 them and owns the commit.** Drafting row text, running `scripts/handoffs/index_state.py --check`
-and reporting the exact diff is preparation. Adding, deleting or re-pointing an index row is never
-a subagent's own write. This reconciles the lifecycle rule that a wrap-up may run via a
+and reporting the exact diff is preparation. Adding, deleting or re-pointing an index row — and, once the handoff-standard
+hand-row drop lands, editing a handoff's `**Row**`/`**Domain**` header or `**Status**` (the rows are then
+generated from it) — is never a subagent's own write. This reconciles the lifecycle rule that a wrap-up may run via a
 coordinator subagent on a session's behalf with the standing CLAUDE.md prohibition: both hold,
 because preparation is not modification. Explicit operator approval is required only to widen it —
 a subagent writing an index directly. The same rule governs intake entries and handoff stubs.
