@@ -10,7 +10,9 @@ A brief is a typed SIDECAR to one handoff box: `handoffs/active/briefs/<ID>.md`,
     author: owner                        # intake|planning|wrap-up|owner|coordinator|self
     written: 2026-11-20
     accepted: owner                      # owner|auto|pending|rejected
-    review: backfill                     # only on author=self (amendment 2026-11-20): flagged for backfill review
+    review: backfill                     # only on author=self|backfill (amendment 2026-11-20): flagged for review
+    new_tests: [tests/test_new.py]       # optional: test files the box ADDS; a pytest acceptance under one may not
+                                         # exist yet (dry check skips it honestly instead of `test -f && pytest`)
     where:                               # repo-qualified; optional @rev; optional ::symbol
       - epyc-root:scripts/handoffs/box_index.py::text_sha
     approach: |                          # <= 5 lines: the decision, not a plan
@@ -38,7 +40,8 @@ not in it. The cache is `handoffs/active/briefs/.compile-cache.json` (gitignored
 CLI:
   brief.py compile <ID> [--json] [--no-cache]        exit 0 fresh/drift, 1 stale/orphaned, 2 none
   brief.py write <ID> --where W [W ...] --approach TEXT --acceptance CMD [--non-goal NG ...] [--tier T]
-                 [--author A] [--accepted A] [--json]   write/replace the sidecar (grounded + box_text_sha filled in),
+                 [--author A] [--accepted A] [--new-test P ...] [--json]
+                 --author backfill: accepted auto iff acceptance == literal done-when, else pending + review: backfill   write/replace the sidecar (grounded + box_text_sha filled in),
                                                         then compile; exit as compile
   brief.py accept <ID> [--by owner]                   accepted: <by>, clears `review`, re-grounds
   brief.py reject <ID> [--by owner]                   accepted: rejected
@@ -68,7 +71,8 @@ CACHE_REL = f"{BRIEF_DIR}/.compile-cache.json"
 BOX_DIRS = ("handoffs/active", "handoffs/blocked")
 STATES = ("none", "fresh", "drift", "stale", "orphaned")
 REQUIRED = ("schema", "id", "box_text_sha", "where", "approach", "acceptance", "non_goals", "tier")
-AUTHORS = ("intake", "planning", "wrap-up", "owner", "coordinator", "self")
+AUTHORS = ("intake", "planning", "wrap-up", "owner", "coordinator", "self", "backfill")
+REVIEWED_AUTHORS = ("self", "backfill")   # written without the owner's context -> review: backfill, accepted: pending
 ACCEPTED = ("owner", "auto", "pending", "rejected")
 TIERS = ("local", "luna", "terra", "sol")
 APPROACH_MAX_LINES = 5
@@ -116,7 +120,7 @@ def parse_text(text: str) -> dict:
 def render(doc: dict) -> str:
     import yaml
     order = ("schema", "id", "box_text_sha", "author", "written", "accepted", "review", "where", "approach",
-             "acceptance", "non_goals", "tier", "grounded")
+             "acceptance", "new_tests", "non_goals", "tier", "grounded")
     d = {k: doc[k] for k in order if k in doc and doc[k] is not None}
     d.update({k: v for k, v in doc.items() if k not in d and not k.startswith("_") and v is not None})
     return "---\n" + yaml.safe_dump(d, sort_keys=False, allow_unicode=True, width=120) + "---\n"
@@ -128,6 +132,8 @@ def schema_errors(doc: dict) -> list[str]:
         errs.append(f"schema is {doc.get('schema')!r}, want {SCHEMA}")
     if "where" in doc and not (isinstance(doc["where"], list) and doc["where"]):
         errs.append("`where` must be a non-empty list")
+    if doc.get("new_tests") is not None and not isinstance(doc["new_tests"], list):
+        errs.append("`new_tests` must be a list")
     if "non_goals" in doc and not isinstance(doc["non_goals"], list):
         errs.append("`non_goals` must be a list")
     if doc.get("tier") and doc["tier"] not in TIERS:
@@ -197,11 +203,26 @@ def blob_sha(rdir: Path, path: str, rev: str | None) -> str | None:
     if rev:
         r = _git(rdir, "rev-parse", "--verify", "-q", f"{rev}:{path}")
         return r.stdout.strip() or None if r.returncode == 0 else None
-    p = rdir / path
+    p = rdir / path.rstrip("/")
+    if p.is_dir():
+        return dir_sha(p)
     if not p.is_file():
         return None
     data = p.read_bytes()
     return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
+_DIR_SKIP = {".git", "__pycache__", "node_modules", ".pytest_cache"}
+
+
+def dir_sha(d: Path) -> str:
+    """A `--where` DIRECTORY: `tree:` + sha over the sorted (relpath, blob sha) of its files (deterministic; drift
+    fires when any file under it changes)."""
+    h = hashlib.sha1()
+    for f in sorted(x for x in d.rglob("*") if x.is_file() and not (_DIR_SKIP & set(x.relative_to(d).parts))):
+        data = f.read_bytes()
+        h.update(f"{f.relative_to(d).as_posix()}\0".encode() + hashlib.sha1(b"blob %d\0" % len(data) + data).digest())
+    return "tree:" + h.hexdigest()
 
 
 _GN_STATUS: dict[str, str] = {}
@@ -235,8 +256,12 @@ def gitnexus_state(rdir: Path) -> str:
 
 def _grep_symbol(rdir: Path, path: str, rev: str | None, sym: str) -> bool:
     name = sym.split(".")[-1]
-    rx = re.compile(r"(?m)^\s*(?:async\s+)?(?:def|class|function|fn|struct|enum|const|let|var|static)\s+"
-                    + re.escape(name) + r"\b|^\s*" + re.escape(name) + r"\s*[:=]|\b" + re.escape(name) + r"\s*\(")
+    n = re.escape(name)
+    rx = re.compile(r"(?m)^\s*(?:async\s+)?(?:def|class|function|fn|struct|enum|const|let|var|static)\s+" + n
+                    + r"\b|^\s*" + n + r"\s*[:=]|\b" + n + r"\s*\("
+                    # module-level tuple assignment: `A, B = ...` / `(A, B) = ...` / `A, *rest = ...`
+                    + r"|^\s*[\(\[]?\s*(?:\*?[A-Za-z_]\w*\s*,\s*)*\*?" + n
+                    + r"\s*(?:,\s*\*?[A-Za-z_]\w*\s*)*,?\s*[\)\]]?\s*=(?!=)")
     if rev:
         r = _git(rdir, "show", f"{rev}:{path}")
         text = r.stdout if r.returncode == 0 else ""
@@ -277,8 +302,10 @@ _PYTEST_VALUE_OPTS = {"-p", "-k", "-m", "-c", "-o", "-W", "--rootdir", "--desele
                       "--basetemp", "-n", "--maxfail", "--tb", "-r"}
 
 
-def acceptance_dry(root: Path, cmd: str) -> dict:
-    """{ok, kind, detail}: a DRY check only — nothing runs for real."""
+def acceptance_dry(root: Path, cmd: str, new_tests: list | None = None) -> dict:
+    """{ok, kind, detail}: a DRY check only — nothing runs for real. `new_tests` = test files the box itself ADDS:
+    a pytest target under one of them may not exist yet (it is not collected; the verifier runs it after the work)."""
+    new = {str(t).split("::")[0] for t in (new_tests or [])}
     cmd = (cmd or "").strip().strip("`").strip()
     if not cmd:
         return {"ok": False, "kind": "empty", "detail": "acceptance is empty"}
@@ -295,6 +322,10 @@ def acceptance_dry(root: Path, cmd: str) -> dict:
                 skip = True
             elif not a.startswith("-") and a not in ("-m", "pytest"):
                 targets.append(a)
+        pending = [t for t in targets if t.split("::")[0] in new and not (Path(root) / t.split("::")[0]).exists()]
+        targets = [t for t in targets if t not in pending]
+        if pending and not targets:
+            return {"ok": True, "kind": "pytest-new", "detail": f"new test(s) named by the brief, not yet written: {pending}"}
         ok_paths = [t for t in targets if (Path(root) / t.split("::")[0]).exists()]
         if targets and len(ok_paths) != len(targets):
             return {"ok": False, "kind": "pytest", "detail": f"missing test path(s): "
@@ -404,12 +435,15 @@ def compile_brief(bid: str, root: Path = REPO_ROOT, use_cache: bool = True, box:
     errs = schema_errors(doc)
     stale = [f"schema: {e}" for e in errs]
     checks, inputs_ext, blast = [], [], {}
+    new_tests = [str(t).split(":", 1)[-1] if str(t).startswith("epyc-") else str(t) for t in doc.get("new_tests") or []]
     for w in doc.get("where") or []:
         pw = parse_where(str(w))
         rd = repo_dir(root, pw["repo"])
         c = {"where": pw["raw"], "ok": True, "strength": "strong"}
         if rd is None:
             c.update(ok=False, detail=f"repo {pw['repo']} not found")
+        elif blob_sha(rd, pw["path"], pw["rev"]) is None and pw["path"] in new_tests:
+            c.update(detail="new test named by the brief (not yet written)")
         elif blob_sha(rd, pw["path"], pw["rev"]) is None:
             c.update(ok=False, detail=f"path missing at {pw['rev'] or 'HEAD'}")
         elif pw["sym"]:
@@ -422,7 +456,7 @@ def compile_brief(bid: str, root: Path = REPO_ROOT, use_cache: bool = True, box:
         checks.append(c)
         if not c["ok"]:
             stale.append(f"where: {pw['raw']}: {c['detail']}")
-    acc = acceptance_dry(root, str(doc.get("acceptance") or ""))
+    acc = acceptance_dry(root, str(doc.get("acceptance") or ""), new_tests)
     checks.append({"acceptance": doc.get("acceptance"), **acc})
     if not acc["ok"]:
         stale.append(f"acceptance: {acc['kind']}: {acc['detail']}")
@@ -465,19 +499,20 @@ def cached_state(root: Path, bid: str, box_sha: str, brief_ref: str | None = Non
 # ------------------------------------------------------------------------------------------------- write / accept
 def write_brief(bid: str, where: list[str], approach: str, acceptance: str, non_goals: list[str] | None = None,
                 tier: str = "local", author: str = "owner", accepted: str | None = None, root: Path = REPO_ROOT,
-                today: str | None = None) -> Path:
+                today: str | None = None, new_tests: list[str] | None = None) -> Path:
     """Write (replace) the sidecar for an EXISTING open box; fills box_text_sha + grounded. Refuses an unknown box."""
     root = Path(root)
     box = find_box(root, bid)
     if box is None or box.get("n", 1) != 1:
         raise ValueError(f"box **{bid}** not found exactly once among open boxes in {BOX_DIRS}")
     today = today or _dt.date.today().isoformat()
-    accepted = accepted or ("pending" if author == "self" else
-                            "auto" if acceptance_matches(acceptance, box.get("done_when")) else "owner")
+    matches = acceptance_matches(acceptance, box.get("done_when"))
+    accepted = accepted or ("pending" if author == "self" else "auto" if matches else
+                            "pending" if author == "backfill" else "owner")
     doc = {"schema": SCHEMA, "id": bid, "box_text_sha": box["text_sha"], "author": author, "written": today,
-           "accepted": accepted, "review": "backfill" if author == "self" else None,
+           "accepted": accepted, "review": "backfill" if author in REVIEWED_AUTHORS else None,
            "where": list(where), "approach": approach.strip() + "\n", "acceptance": acceptance,
-           "non_goals": list(non_goals or []), "tier": tier,
+           "new_tests": list(new_tests) if new_tests else None, "non_goals": list(non_goals or []), "tier": tier,
            "grounded": {"at": today, "blobs": where_blobs(root, where)}}
     errs = schema_errors(doc)
     if errs:
@@ -529,6 +564,8 @@ def main(argv=None) -> int:
     p.add_argument("--approach", required=True); p.add_argument("--acceptance", required=True)
     p.add_argument("--non-goal", action="append", default=[]); p.add_argument("--tier", default="local", choices=TIERS)
     p.add_argument("--author", default="owner", choices=AUTHORS); p.add_argument("--accepted", choices=ACCEPTED)
+    p.add_argument("--new-test", action="append", default=[],
+                   help="a test file the box ADDS (repo-relative); a pytest acceptance under it may not exist yet")
     p.add_argument("--json", action="store_true")
     for op in ("accept", "reject"):
         p = sub.add_parser(op); p.add_argument("id"); p.add_argument("--by", default="owner")
@@ -539,7 +576,8 @@ def main(argv=None) -> int:
     try:
         if a.op in ("compile", "write"):
             if a.op == "write":
-                write_brief(a.id, a.where, a.approach, a.acceptance, a.non_goal, a.tier, a.author, a.accepted, root)
+                write_brief(a.id, a.where, a.approach, a.acceptance, a.non_goal, a.tier, a.author, a.accepted, root,
+                            new_tests=a.new_test)
             r = compile_brief(a.id, root, use_cache=not getattr(a, "no_cache", False))
             print(json.dumps(r, sort_keys=True, default=str) if a.json else _show(r))
             return _exit(r["state"])

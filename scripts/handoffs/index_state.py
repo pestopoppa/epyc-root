@@ -728,8 +728,8 @@ def load_moves(path: Path | None = None) -> list[dict]:
                 d = json.loads(line)
             except ValueError:
                 continue
-            if isinstance(d, dict) and d.get("from") and d.get("to"):
-                out.append(d)
+            if isinstance(d, dict) and d.get("from") and d.get("to") and d.get("op") != "assign-id":
+                out.append(d)       # assign-id lines are identity renames in place, not file moves
     except OSError:
         pass
     return out

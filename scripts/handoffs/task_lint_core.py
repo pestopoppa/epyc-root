@@ -132,6 +132,15 @@ def body_id(body):
     return tok if tok and re.search(r'[\d-]', tok) and not tok.startswith('-') else None
 
 
+_ID_SHAPE = re.compile(r'^[A-Z][A-Z0-9]*(?:[-_.][A-Za-z0-9]+)*$')
+
+
+def suspect_id(bid):
+    """True when an extracted head id does not look like a box ID (a title word such as "Sub-quarter" or "1"):
+    an ID starts with an UPPER-CASE segment and carries a digit. The box should get one (`handoff_box.py assign-id`)."""
+    return bool(bid) and not (_ID_SHAPE.match(bid) and re.search(r'\d', bid))
+
+
 def head_id(line):
     """Box id from a full checkbox line, or None."""
     m = HEAD_PREFIX.match(line or '')

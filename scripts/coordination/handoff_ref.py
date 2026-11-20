@@ -82,20 +82,35 @@ def load_moves(root) -> list:
     return out
 
 
+def sha_aliases(sha, moves) -> set:
+    """`sha` plus every text_sha it became through `handoff_box.py assign-id` records (op=assign-id: the ONE
+    sanctioned first-line edit, {text_sha: old, new_text_sha: new}). Chains followed."""
+    out, todo = set(), [sha] if sha else []
+    while todo:
+        s = todo.pop()
+        if s in out:
+            continue
+        out.add(s)
+        todo += [m["new_text_sha"] for m in moves if m.get("op") == "assign-id" and m.get("text_sha") == s
+                 and m.get("new_text_sha")]
+    return out
+
+
 def moved_file(ref, root, sha=None, moves=None):
     """The file a ref's box lives in NOW: follow .moves.jsonl by (text_sha) first, then by box id (the ref's TASK),
     from the ref's file; returns the ref's own file when nothing moved it. Chains are followed (a.md -> b.md -> c.md)."""
     r = parse(ref)
     f, task = r.file, r.task
     moves = load_moves(root) if moves is None else moves
+    shas = sha_aliases(sha, moves)
     seen = set()
     while f and f not in seen:
         seen.add(f)
         hit = None
         for m in moves:
-            if m.get("from") != f:
+            if m.get("from") != f or m.get("op") == "assign-id":
                 continue
-            if (sha and m.get("text_sha") == sha) or (task and not str(task).isdigit() and m.get("box_id") == task):
+            if (shas and m.get("text_sha") in shas) or (task and not str(task).isdigit() and m.get("box_id") == task):
                 hit = m
         if not hit:
             break

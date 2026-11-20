@@ -17,6 +17,13 @@
          accept (clears the self-brief `review: backfill` flag, re-grounds) or reject a brief; refuses an orphaned
          brief (box_text_sha mismatch).
 
+  assign-id FILE LINE [--id X] [--base origin/main]
+         give an ID-less box (or one whose extracted "ID" is a title word, e.g. "Sub-quarter", "1") a bold head ID,
+         minted with the handoff's prefix convention against IDs on --base + the working tree; records
+         {op: assign-id, box_id, text_sha (old), new_text_sha, from, to, at} in handoffs/active/.moves.jsonl so text_sha
+         identity is followed. Idempotent: a box that already has a real ID is left alone. The ONE sanctioned
+         first-line edit (bulk use notifies owners, as for the Stage B bulk moves).
+
 INVARIANT: the FIRST LINE of an existing box is never changed (task text is the identity; spec §2.2). Every op edits
 continuation lines or inserts new lines only, and verifies this before writing. `--dry-run` prints the diff.
 """
@@ -360,6 +367,72 @@ def split_file(path: Path, track: str, to_slug: str, root: Path = REPO_ROOT, dry
     return {"moved_boxes": len(moves), "to": str(dest), "lines_moved": len(moved)}
 
 
+def base_ids(root: Path, base: str | None) -> set[str]:
+    """Head IDs in handoffs/ at `base` (e.g. origin/main) -- minting checks the shared branch, not only this tree."""
+    import subprocess
+    if not base:
+        return set()
+    r = subprocess.run(["git", "-C", str(root), "grep", "-h", "-I", "-e", r"\[", base, "--", "handoffs/"],
+                       capture_output=True, text=True, timeout=120)
+    return {i for i in (L1.head_id(l) for l in r.stdout.split("\n")) if i}
+
+
+def id_prefix(lines: list[str], path: Path) -> str:
+    """The handoff's ID convention: the most common `<PREFIX>-` of its real IDs, else the file stem's initials."""
+    c = collections.Counter()
+    for l in lines:
+        i = L1.head_id(l)
+        if i and not L1.suspect_id(i):
+            m = re.match(r"^(.*?)[-_.]?\d+[A-Za-z]?$", i)
+            if m and m.group(1):
+                c[m.group(1)] += 1
+    if c:
+        return c.most_common(1)[0][0]
+    return "".join(w[0] for w in path.stem.split("-") if w).upper() or "BOX"
+
+
+def assign_id(path: Path, line: int, new_id: str | None = None, root: Path = REPO_ROOT, base: str | None = "origin/main",
+              dry_run=False, today=None) -> dict:
+    import datetime
+    import json
+    today = today or datetime.date.today().isoformat()
+    raw = path.read_text(encoding="utf-8")
+    lines = raw.split("\n")
+    i = line - 1
+    if not (0 <= i < len(lines)) or not L1.CHECKBOX.match(lines[i]):
+        raise BoxError(f"{path.name}:{line} is not a checkbox line")
+    cur = L1.head_id(lines[i])
+    if cur and not L1.suspect_id(cur):
+        return {"id": cur, "changed": False, "line": line}
+    taken = all_ids(root) | base_ids(root, base)
+    if new_id:
+        if not _ID_OK.match(new_id) or L1.suspect_id(new_id):
+            raise BoxError(f"--id {new_id!r} is not an ID (UPPER-CASE prefix + a digit)")
+        if new_id in taken:
+            raise BoxError(f"ID {new_id} already exists")
+    else:
+        pre = id_prefix(lines, path)
+        sep = "" if pre.endswith(("-", "_", ".")) else "-"
+        n = 1 + max([int(m.group(1)) for t in taken for m in [re.match(re.escape(pre) + r"[-_.]?(\d+)$", t)] if m] or [0])
+        new_id = f"{pre}{sep}{n}"
+    m = L1.HEAD_PREFIX.match(lines[i])
+    old = lines[i]
+    lines[i] = old[:m.end()] + f"**{new_id}** " + old[m.end():]
+    if L1.head_id(lines[i]) != new_id:
+        raise BoxError(f"inserted ID does not parse back as the head ID: {lines[i][:80]!r}")
+    rec = {"op": "assign-id", "box_id": new_id, "text_sha": BI.text_sha(old), "new_text_sha": BI.text_sha(lines[i]),
+           "from": path.name, "to": path.name, "at": today, "line": line, "old_head": cur}
+    if not dry_run:
+        tmp = path.with_suffix(path.suffix + ".tmp")
+        tmp.write_text("\n".join(lines), encoding="utf-8")
+        os.replace(tmp, path)
+        mv = root / "handoffs" / "active" / ".moves.jsonl"
+        mv.parent.mkdir(parents=True, exist_ok=True)
+        with open(mv, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(rec, sort_keys=True) + "\n")
+    return {"id": new_id, "changed": True, "line": line, "move": rec}
+
+
 OPS = {"add": op_add, "split": op_split, "refine": op_refine, "gate": op_gate, "freeze": op_freeze,
        "propose": op_propose, "reject": op_reject}
 
@@ -408,6 +481,7 @@ def parser():
     p.add_argument("--where", nargs="+"); p.add_argument("--approach"); p.add_argument("--acceptance")
     p.add_argument("--non-goal", action="append", default=[])
     p.add_argument("--brief-author", default="owner")
+    p.add_argument("--new-test", action="append", default=[])
     p = sub.add_parser("brief"); p.add_argument("action", choices=("accept", "reject")); p.add_argument("box")
     p.add_argument("--by", default="owner"); p.add_argument("--root", default=str(REPO_ROOT))
     p = sub.add_parser("split"); common(p); p.add_argument("--child", action="append", required=True)
@@ -420,6 +494,8 @@ def parser():
     p.add_argument("--by", required=True); p.add_argument("--reason", required=True); p.add_argument("--date")
     p = sub.add_parser("split-file"); common(p, box=False)
     p.add_argument("--track", required=True); p.add_argument("--to", required=True)
+    p = sub.add_parser("assign-id"); p.add_argument("file"); p.add_argument("line", type=int)
+    p.add_argument("--id"); p.add_argument("--base", default="origin/main"); p.add_argument("--dry-run", action="store_true")
     p = sub.add_parser("freeze"); common(p)
     p.add_argument("--track"); p.add_argument("--whole-file", action="store_true"); p.add_argument("--until", required=True)
     return ap
@@ -461,7 +537,8 @@ def add_brief(a, path: Path) -> int:
     root = root_of(path)
     acc = a.acceptance or (a.done_when or "").strip().strip("`")
     try:
-        B.write_brief(a.id, a.where, a.approach, acc, a.non_goal, a.tier or "local", a.brief_author, root=root)
+        B.write_brief(a.id, a.where, a.approach, acc, a.non_goal, a.tier or "local", a.brief_author, root=root,
+                      new_tests=a.new_test)
     except ValueError as e:
         print(f"handoff_box: brief not written: {e}", file=sys.stderr)
         return 1
@@ -475,6 +552,13 @@ def main(argv=None):
     if a.op == "brief":
         return op_brief(a)
     path = Path(a.file)
+    if a.op == "assign-id":
+        try:
+            print(__import__("json").dumps(assign_id(path, a.line, a.id, root_of(path), a.base or None, a.dry_run)))
+        except BoxError as e:
+            print(f"handoff_box: {e}", file=sys.stderr)
+            return 1
+        return 0
     if a.op == "split-file":
         try:
             print(split_file(path, a.track, a.to, dry_run=a.dry_run))
