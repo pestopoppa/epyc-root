@@ -23,6 +23,7 @@ def run_matrix(plan_path, output_dir):
     plan_path = Path(plan_path).absolute()
     plan, _ = capture._read(plan_path)
     capture._plan(plan)
+    capture.admit_native(plan)
     worker = plan['runner']
     argv, timeout = worker['argv'], worker['timeout_s']
     if (not isinstance(argv, list) or not argv
@@ -35,6 +36,7 @@ def run_matrix(plan_path, output_dir):
     opened = capture.open_capture(plan_path, opened_path)
     # Use the sealed copy, never an unbound plan reread, for actual execution.
     plan = opened['plan']
+    capture.admit_native(plan)
     if plan['runner'] != worker:
         raise ValueError('runner changed before opening')
     cells = []

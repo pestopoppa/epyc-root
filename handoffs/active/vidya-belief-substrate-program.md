@@ -3270,6 +3270,11 @@ established. Preserve producer/source/library identities with original compact
 traces; coordinate-level reanalysis requires a separate full-vector capture.
 Keep native-worker adoption and the planning-context canary open; no new source
 class, grading rule or decision-bearing measurement was introduced.
+Native matrix admission now requires prepared matched-weight/build/holdout/numerical-floor
+receipts and a per-cell runtime-residency proof plan; replay checks original receipt
+and floor-output bytes plus the admission implementation digest. Preserve actual
+source/build provenance and runtime observations prospectively; the proof plan
+is not residency evidence. Existing VB-RI-OPS-WIRE task remains open.
 
 ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
 

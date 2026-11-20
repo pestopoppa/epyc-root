@@ -177,3 +177,55 @@ tests in `test_native.py`. Those tests compile/run the actual C++ numerical
 reducer and refuse unsupported requests **before loading any model**. No model
 execution, native acceptance measurement, matrix qualification or causal result
 is implied. Run the actual admitted matrix only through a published compute row.
+
+
+## Native matrix admission
+
+`admission.py` is called before the runner creates an output directory, again
+on the sealed plan, and by the per-cell worker before any native subprocess.
+Synthetic process fixtures remain model-free. `native_claimed` execution now
+requires `plan.admission`: four `{path, sha256}` references to prepared, small
+JSON receipts (`weights`, `build`, `floor`, `holdout`) plus `runtime_proof`.
+Receipt schemas are `epyc.target-precision.<name>.v1`; paths are absolute.
+These reads never hash or open model weights. Prepare evidence before publishing.
+The native opening also binds the admission implementation digest, and closure
+replay rechecks all receipt and original-floor-output digests.
+
+The weights receipt declares a pinned `base={repo, revision}` (40 hex commit),
+`targets` keyed by quant with artifact `path`, `sha256`, identical `base`,
+`tensor_correspondence="verified"`, `conversion_sha256` and `catalog_sha256`.
+`drafter` binds its path/digest, identical `target_base` and BF16 `training_dtype`.
+Paths must match `native_worker`. Exactly one BF16/F16 arm, Q8_0 and Q4_K_M are
+required, with identical prompt/seed/repetition coverage and one complete matched
+group per consecutive three cells. Each quant uses one artifact throughout.
+
+The build receipt binds backend, executable, source and library-map digests,
+`source_commit`, absolute library paths/digests and the child's `ld_library_path`.
+`libraries_sha256` is the SHA-256 of the sorted compact JSON `libraries` map.
+The holdout receipt binds the prompt/protocol digests and disjoint `evaluation`
+and `calibration` lists of `[prompt_id, seed]`; evaluation exactly covers cells,
+and its receipt digest equals `holdout_sha256`. Independence remains a scientific
+obligation; a declaration cannot establish that prompts were never inspected.
+
+The floor receipt binds backend, binary/source/libraries/drafter, verification
+and sampling. For each quant it retains the exact target digest, comparison
+`fresh-block-vs-serial-same-prefix`, at least two repetitions, positive logit
+coordinate count, finite `max_abs`/`rms` (lower is better) bounded by the declared
+`numerical_floor`, and `native_output={path,sha256}`. That original JSON must
+match the control fields exactly. Verification must declare
+`replay="fresh-block-serial-v1"`. Missing/failed controls refuse matrix execution;
+this gate does not run controls or fabricate their evidence.
+
+`runtime_proof` declares `sampling_window="during-each-cell"`, `own_pid=true`
+and `mapped_library_sha256` equal to the build map. HIP also requires
+`kfd_process=true` and `nonzero_vram=true`. This is a **proof plan**, not a
+collector or a passing runtime proof. Actual admitted row execution still must
+collect those observations during each cell, qualify resource/disk admission
+and establish source/build provenance. A consistent receipt can contain false
+declarations; admission is a refusal gate, never independent verification of
+weight equivalence, control execution, residency or a precision cause.
+
+`test_admission.py:make_panel` supplies a complete model-free receipt example.
+Run `python3 -m pytest -q scripts/diagnostics/target-precision/` for refusal,
+closure/projection and native-producer tests; optional real-header/executable
+tests require the environment described above. No model smoke is implied.
