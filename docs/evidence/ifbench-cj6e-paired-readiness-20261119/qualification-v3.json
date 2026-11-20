@@ -1,0 +1,55 @@
+{
+  "box": "CJ-6e",
+  "row": "codex-ifbench-cj6e-35b-v3-20261120",
+  "continuation_of": "codex-ifbench-cj6e-35b-v2-20261119",
+  "source_commit": "1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d",
+  "preserved_valid_responses": 76,
+  "unresolved_exposures": 0,
+  "remaining_unexposed": 224,
+  "preserved_indices": "000-075",
+  "capture_seal": {
+    "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/CONTINUATION-INPUTS.sha256",
+    "sha256": "65675979ed7c0b3a66ea83f04f9523543d150ff31a6b844bd1dfdd91cd88d14b"
+  },
+  "capture_inventory": "docs/evidence/ifbench-cj6e-paired-readiness-20261119/verdict-v2.json@efe604b0fcb074a205e779d56abc751ee9c485ff",
+  "manifest": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/ready/codex-ifbench-cj6e-35b-v3-20261120.json",
+    "sha256": "61a7212d7f6c0b5c2d5ad5bd810adb86bc81f444b90f66efa5472f1c1ef3ca55"
+  },
+  "spec": {
+    "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/spec.continuation.json",
+    "sha256": "773a171689d42b1560170374aae142c91f73316c563782b844a35850a20b5e8f"
+  },
+  "launcher": {
+    "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/launch.sh",
+    "sha256": "ab640cdf88e02fee85e387933cd8573f3c167a6ec10679fdb96414d26e8eb7c6"
+  },
+  "worker": {
+    "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/worker.py",
+    "sha256": "438a7a9dcecc89311e63e378e9463135439318efa52e84a1de5e5d3ce0d02a86"
+  },
+  "source_seal": {
+    "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/SOURCE-SHA256SUMS",
+    "sha256": "f7244e13cd031e1a0469795d8bc79bff3d59c3d0690772e4321a24d71066b2c9"
+  },
+  "operational_seal": {
+    "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/V3-INPUTS.sha256",
+    "sha256": "dcf593afa42989779252ae6c1c445a8cf8ef06c7ca546b1dc23d7567e7e9e6f9"
+  },
+  "smoke": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ifbench-cj6e-35b-v3-20261120/PASS.json",
+    "sha256": "a370ea941d5f96e48509e311ba76b82fdb17ea2b7a28ee14893531b66da98090"
+  },
+  "smoke_verdict": "PASS",
+  "smoke_rc": 0,
+  "smoke_cpus": "116-119",
+  "full_cpus": "8-15",
+  "full_server_threads": 8,
+  "resumable": true,
+  "strict": "UNKNOWN",
+  "loose": "UNKNOWN",
+  "paired_delta": "UNCOMPUTED",
+  "adoption": "UNCLAIMED",
+  "no_redraw": true,
+  "scope": "Engineering qualification only; no new cohort generation in this turn."
+}

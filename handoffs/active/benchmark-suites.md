@@ -529,6 +529,16 @@ our own harness and score offline.
       [Hashed v2 verdict and capture inventory](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/verdict-v2.json)
       (SHA-256 `f6c8ff19226572e81b7b1593973d7241e3af465c6213dadd5325e55598cfdf85`).
       [belief: cc]
+      2026-11-20 continuation: `codex-ifbench-cj6e-35b-v3-20261120` published;
+      native four-CPU smoke **PASS**, CPUs 116–119, rc=0 at 00:18:58Z.
+      Restored source `1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d`;
+      validated and sealed all **76** prior capture triplets against their recorded hashes
+      and original prompts, with zero unresolved exposures and 224 unexposed prompts.
+      Full reservation is **8 CPUs (8–15), 8 server threads**, resumable at window ends;
+      existing captures are skipped and unresolved exposures stop without redraw.
+      Strict/loose **UNKNOWN**, paired delta **UNCOMPUTED**, adoption **UNCLAIMED**.
+      [Continuation input bindings and smoke receipt](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/qualification-v3.json).
+      [no-belief: engineering qualification and synthetic smoke only]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a as preconditions]** **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases
       exist, so the name alone is not a reproducible referent. Pre-seed the NLTK data directory and
       assert no network during scoring (the only network touch is an NLTK bootstrap at import; until
