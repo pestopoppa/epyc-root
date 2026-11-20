@@ -47,6 +47,40 @@ def instrument(source):
     return source
 
 
+def instrument_calibration(source):
+    """Opt-in prospective controls; default/r1 instrumentation stays unchanged."""
+    source = instrument(source)
+    for scenario, name in [('translate_x1', 'shift_d'), ('translate_x4', 'shift_4d'),
+                           ('roundtrip', 'shift_0')]:
+        anchor = next(line for line in source.splitlines()
+                      if line.startswith('    emit("' + scenario + '",'))
+        source = source.replace(anchor, anchor + '\n    const std::vector<float> ' + name + ' = tst;', 1)
+    # Insert after historical measurements, so extra prefills cannot affect them.
+    anchor = '    // div vs undivided'
+    if source.count(anchor) != 1:
+        raise ValueError('missing calibration insertion point')
+    block = '    // Offset-matched calibration v1: diagnostic only, no acceptance gate.\n'
+    for label, off, ref, shifted in [('0', '0', 'base', 'shift_0'),
+                                     ('d', 'd', 'ref_d', 'shift_d'),
+                                     ('4d', '4 * d', 'ref_off', 'shift_4d')]:
+        block += '    {\n        std::vector<float> r1, r2;\n'
+        for repeat in (1, 2):
+            block += (f'        if (!prefill_at({off}) || !probe_logits(&r{repeat}, 0)) '
+                      f'die("calibration {label} repeat {repeat} failed");\n')
+        for pair, left, right in [('01', ref, 'r1'), ('02', ref, 'r2'), ('12', 'r1', 'r2'),
+                                   ('shift1', 'r1', shifted), ('shift2', 'r2', shifted)]:
+            name = f'cal_{label}_{pair}'
+            block += f'        emit("{name}", compare("{name}", {left}, {right}, n_vocab, a.n_probe), "");\n'
+        block += '    }\n'
+    return source.replace(anchor, block + '\n' + anchor, 1)
+
+
 if __name__ == '__main__':
-    import sys
-    Path(sys.argv[2]).write_text(instrument(Path(sys.argv[1]).read_text()))
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('source', type=Path)
+    parser.add_argument('output', type=Path)
+    parser.add_argument('--offset-calibration', action='store_true')
+    args = parser.parse_args()
+    transform = instrument_calibration if args.offset_calibration else instrument
+    args.output.write_text(transform(args.source.read_text()))

@@ -133,3 +133,15 @@ At depth 517,343: needle_attempted=5, needle_correct=5, decode_tps=16.48230946, 
 Evidence: `/mnt/raid0/llm/tmp/yarn/gpu-512k-20261120/out/RESULT.json`, SHA-256 `2d94e62339658f03238f9ecaeffef6821ecb24a9e3d54021ef0195d48488e536`; native source/store commit `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`. Result recorded as committed conclusion [belief: cc]; no reconstructed measurement warrant. Existing prospective source-family wiring remains VB-YARN-E1.
 
 Next: resume the offset-matched KSHIFT-FIX-MODEL-TEST calibration protocol and model-free tests from the prior checkpoint, retaining r1 thresholds and separately preregistering future qualification semantics.
+
+## 11:43Z — Implement offset-matched calibration capture and strict reduction; pass model-free regression and full harness syntax checks.
+
+### KSHIFT-FIX-MODEL-TEST: offset-matched calibration code
+
+Implemented opt-in offset-calibration-v1 instrumentation: three independently fresh-prefilled references per offset (0,d,4d), pairwise repeat comparisons and saved shifted outputs compared against the additional references. Historical aggregate code and default generator are unchanged; new prefills run after historical measurements. Added strict reduction of all15 comparison position streams with no masking or subtraction. Missing, duplicate, out-of-range, unknown and nonfinite records are refused; output is diagnostic CALIBRATION_COMPLETE with qualification=false.
+
+Validation: seven model-free unittests PASS, including generated-control execution under UBSan and strict-record corruption cases; full generated harness C++17 syntax PASS against pinned experimental headers. git diff --check PASS. No inference, population claim, acceptance threshold change or H1–H3 qualification. Test evidence: `/mnt/raid0/llm/tmp/triattention-kv-selection/offset-calibration-20261120/TEST.json`, SHA-256 `6e7074557a84c8c5f94b51c393987ded79cb8c94837d6e17d24ae3a8813c6dbc`. Producer SHA-256 `9182b836633ca30a17ff0954cce3aadc07b74929dd3a2b42443a8c702e35bc8e`; reducer SHA-256 `8178fac747eda87de945befca8ca8b320eab649ec017e7c642c8bba588ac4851`.
+
+README preregisters diagnostic capture and stopping semantics only. A future qualification must separately freeze its metrics, controls, gates and stopping rules before publication; original r1 results/thresholds remain intact. Existing VB-YARN-E1 source family remains the prospective wiring owner. Parent acceptance, champion fold and upstream draft remain open.
+
+Next: adapt diagnostic_job.py to opt into calibration, strictly reduce native records per unit, and publish a bounded candidate/baseline native-f16 calibration row with smoke PASS. Preserve original library pins and actual mapped-library proofs, prepare model inputs before publication, and stop after the pair or first failure without retry.
