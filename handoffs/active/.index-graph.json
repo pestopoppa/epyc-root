@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T09:59:46Z",
+  "generated_at": "2026-11-20T10:18:08Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1335,14 +1335,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 485,
-      "dispatchable": 120,
+      "dispatchable": 121,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-19",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 120,
+      "open": 121,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1772,15 +1772,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 164,
-      "dispatchable": 38,
+      "closed": 169,
+      "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 40,
+      "open": 39,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1823,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 29,
+          "dispatchable": 28,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 824,
+          "line": 828,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 30,
+          "open": 29,
           "readiness": "blocked"
         }
       ]
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1065,
+          "line": 1067,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1681,
+          "line": 1683,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1828,
+          "line": 1830,
           "name": "triattention-kv-selection",
           "open": 12,
           "readiness": "ready"

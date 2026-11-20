@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 529
+      "open": 528
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 3,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 223
+      "open": 224
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -1460,7 +1460,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1065,
+          "line": 1067,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1470,7 +1470,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1681,
+          "line": 1683,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1480,7 +1480,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 1828,
+          "line": 1830,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 11
@@ -2343,10 +2343,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 164,
+      "closed": 169,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 38,
+      "open": 37,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2355,11 +2355,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 204,
+      "total": 208,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 106,
+          "closed": 110,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2369,16 +2369,16 @@
         },
         {
           "blocked": 1,
-          "closed": 58,
+          "closed": 59,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 824,
+          "line": 828,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 29
+          "open": 28
         }
       ]
     },
@@ -2556,7 +2556,7 @@
       "frozen": 3,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 120,
+      "open": 121,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2565,7 +2565,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 608
+      "total": 609
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
