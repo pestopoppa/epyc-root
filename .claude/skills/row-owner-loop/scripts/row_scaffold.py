@@ -4,7 +4,8 @@
   row_scaffold.py --lint <rowdir> [--box-file handoffs/active/x.md]
   row_scaffold.py new <row-id> --handoff <file.md> --box <ID> --lane cpu|gpu --regions <list>
                   --threads N --units N --unit-s S --model "<model: ...>" [--root /mnt/raid0/llm/tmp]
-                  [--gpu-common <dir>]  (gpu lane: job.py imports the canonical gpu_common.py, sha-pinned; never vendored)
+                  [--research-repo <repo>] [--research-ref origin/main]  (gpu lane: copies the canonical gpu_common.py +
+                  gpuproof_row.py from research origin/main via fetch + `git show` into the row, sha-pinned in job.py + seal)
 
 Lint checks (each prints `LINT <CODE>: …`; exit 1 on any):
   BOX-*       the handoff box (spec.handoff_task file:ID, or --box-file) has a bold **ID**, `model:`,
@@ -190,18 +191,45 @@ STOP      on-answer: TODO. on-futility: TODO. rc 75 only on STOP file / FILLER_D
 """
 {gpu_block}raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json)")
 '''
-GPU_COMMON = "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/harness"
+RESEARCH_REPO = "/mnt/raid0/llm/epyc-inference-research"  # shared clone: fetch + `git show` only, never its tree/branch/index
+HARNESS_PATH = "scripts/kernel_rnd/autokernel/harness"
+HARNESS_FILES = ("gpu_common.py", "gpuproof_row.py")
 GPU_JOB_T = '''
-# GPU lane: IMPORT the canonical row helpers, never vendor a copy of gpu_common.py into the row dir. Its sha256 at scaffold
-# time is pinned here and checked at start, so a later edit to the shared file is a FUTILITY_MISSING_INPUT, not a silent change.
+# GPU lane: the canonical row helpers were copied INTO this row dir by row_scaffold.py from research {gpu_ref} @ {gpu_commit}
+# ({harness_path}); never hand-edit them. The sha256 pins below are checked at start, so an edited copy is a
+# FUTILITY_MISSING_INPUT, not a silent change. Both files are also listed in SOURCE.sha256.
 import hashlib, os, sys
-GPU_COMMON = "{gpu_common}"
+ROW_DIR = os.path.dirname(os.path.abspath(__file__))
 GPU_COMMON_SHA256 = "{gpu_common_sha}"
-sys.path.insert(0, GPU_COMMON)
-if hashlib.sha256(open(os.path.join(GPU_COMMON, "gpu_common.py"), "rb").read()).hexdigest() != GPU_COMMON_SHA256:
-    raise SystemExit("FUTILITY_MISSING_INPUT: gpu_common.py sha256 differs from the scaffold pin")
+GPUPROOF_ROW_SHA256 = "{gpuproof_row_sha}"
+for _n, _s in (("gpu_common.py", GPU_COMMON_SHA256), ("gpuproof_row.py", GPUPROOF_ROW_SHA256)):
+    if hashlib.sha256(open(os.path.join(ROW_DIR, _n), "rb").read()).hexdigest() != _s:
+        raise SystemExit(f"FUTILITY_MISSING_INPUT: {{_n}} sha256 differs from the scaffold pin")
+sys.path.insert(0, ROW_DIR)
 import gpu_common as G  # noqa: E402  (residency_from_proof gates < 2 s children on the in-process witness + LD_DEBUG proof)
 '''
+
+
+def fetch_harness(repo: str, ref: str = "origin/main") -> tuple[str, dict[str, bytes]] | str:
+    """(commit, {name: bytes}) for HARNESS_FILES at `ref` of `repo`, via `git fetch` + `git show` only (never touches the
+    working tree, branch or index). Returns an error string on failure."""
+    import subprocess
+    remote, _, branch = ref.partition("/")
+    f = subprocess.run(["git", "-C", repo, "fetch", "-q", remote, branch], capture_output=True, text=True)
+    if f.returncode != 0:
+        return f"git fetch {remote} {branch} failed: {f.stderr.strip()[:200]}"
+    c = subprocess.run(["git", "-C", repo, "rev-parse", "--verify", ref + "^{commit}"], capture_output=True, text=True)
+    if c.returncode != 0:
+        return f"{ref} not resolvable in {repo}"
+    out = {}
+    for n in HARNESS_FILES:
+        r = subprocess.run(["git", "-C", repo, "show", f"{ref}:{HARNESS_PATH}/{n}"], capture_output=True)
+        if r.returncode != 0:
+            return f"{ref}:{HARNESS_PATH}/{n} missing"
+        out[n] = r.stdout
+    return c.stdout.strip(), out
+
+
 CHECK_T = '''#!/usr/bin/python3
 """rc 0 iff THIS row's out/RESULT.json is complete with a terminal verdict; smoke never counts."""
 import json, sys
@@ -228,17 +256,24 @@ def scaffold(a) -> int:
     if a.lane == "cpu" and cpus(a.regions) & GPU_HOST:
         print("REFUSED: cpu lane regions touch 88-95/184-191")
         return 1
+    harness, got = {}, None
+    if a.lane == "gpu":  # resolve the canonical harness BEFORE creating anything, so a refusal leaves no dir behind
+        got = fetch_harness(a.research_repo, a.research_ref)
+        if isinstance(got, str):
+            print(f"REFUSED: canonical gpu_common.py: {got}")
+            return 1
     est = math.ceil(a.units * a.unit_s * 1.25)
     os.makedirs(os.path.join(d, "out"))
     fmt = dict(id=a.row_id, owner=a.owner, handoff=a.handoff, box=a.box, threads=a.threads, dir=d,
                regions=a.regions, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units, unit_s=a.unit_s, gpu_block="")
     if a.lane == "gpu":
-        gc = os.path.join(a.gpu_common, "gpu_common.py")
-        if not os.path.exists(gc):
-            print(f"REFUSED: canonical {gc} missing")
-            return 1
-        fmt["gpu_block"] = GPU_JOB_T.format(gpu_common=a.gpu_common,
-                                            gpu_common_sha=hashlib.sha256(open(gc, "rb").read()).hexdigest())
+        commit, harness = got
+        for n, b in harness.items():
+            with open(os.path.join(d, n), "wb") as f:
+                f.write(b)
+        sh = {n: hashlib.sha256(b).hexdigest() for n, b in harness.items()}
+        fmt["gpu_block"] = GPU_JOB_T.format(gpu_ref=a.research_ref, gpu_commit=commit, harness_path=HARNESS_PATH,
+                                            gpu_common_sha=sh["gpu_common.py"], gpuproof_row_sha=sh["gpuproof_row.py"])
     for name, t, mode in (("launch.sh", LAUNCH_T, 0o755), ("job.py", JOB_T, 0o755), ("check_complete.py", CHECK_T, 0o755)):
         with open(os.path.join(d, name), "w") as f:
             f.write(t.format(**fmt))
@@ -254,7 +289,7 @@ def scaffold(a) -> int:
             "decision_rule": "see job.py docstring (RULE)", "notes": f"scaffolded by row_scaffold.py for {a.owner}"}
     with open(os.path.join(d, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
-    seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json"])
+    seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json"] + sorted(harness))
     print(f"SCAFFOLDED {d} estimate_s={est}; fill job.py TODOs, reseal (row_scaffold.py --seal {d}), then --lint")
     return 0
 
@@ -278,7 +313,8 @@ def main(argv=None) -> int:
     n.add_argument("--model", required=True)
     n.add_argument("--owner", default="autokernel")
     n.add_argument("--root", default="/mnt/raid0/llm/tmp")
-    n.add_argument("--gpu-common", default=GPU_COMMON, help="dir holding the canonical gpu_common.py (gpu lane imports it)")
+    n.add_argument("--research-repo", default=RESEARCH_REPO, help="gpu lane: repo to fetch the canonical harness from (fetch + show only)")
+    n.add_argument("--research-ref", default="origin/main", help="gpu lane: remote ref holding the canonical harness")
     a = ap.parse_args(argv)
     if a.cmd == "new":
         return scaffold(a)
