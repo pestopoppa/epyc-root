@@ -40,3 +40,38 @@ Input hashes (original files; no evidence copies):
 - `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r7-20261119/supervise.py`: `ab378fc8bd635da299c0dbe7371cfc8d42842c864473755d905fbaa9931871c2`
 
 [no-belief: tested build-row publication only; smoke queued]
+
+Scheduled full-build verdict (2026-11-20)
+---------------------------------------
+
+Filed `df2-cafe4-modes-hip-build-r7-20261119` **PASS**, scheduled rc0,
+complete at 09:41:28Z (started 09:40:09Z). The producer validates before
+writing RESULT and the row completion command validates the full receipt.
+The receipt binds pinned v10 plus the diagnostic patch, exact inputs,
+compiled rollback/verify-batch/fault/token/rollback-configure markers,
+Clang IQK compatibility, exact defined IQK/HIP exports, HIP/gfx90a and
+all six local llama/ggml libraries. No additional benchmark was run to file it.
+
+Original evidence (paths outside the repository; no evidence copies):
+
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r7-20261119/RESULT.json`:
+  SHA-256 `1e86d12f6685f05928e152e60676931a5beec31175006eb01e3dc8d8d4ecf708`.
+- Executable `runs/build-jc7fsfpo/build/bin/cafe4-mtp-rollback` beneath that scratch root:
+  SHA-256 `f866bc5c5f4c293e8099211c644422727b56342ed417dea406106ba85e5ac1e8`.
+- HIP library `runs/build-jc7fsfpo/build/bin/libggml-hip.so.0.16.0`:
+  SHA-256 `0c3c245092a22452ee1dabd6eecee9f6580e9911ca6af2edd3aef165811c2fc8`.
+- `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-hip-build-r7-20261119/PASS.json`:
+  SHA-256 `dae805b03763ba2b75cd19653e89fddbd93ed60549634132157ce2abc93642f2`.
+  Four-CPU smoke on 116–119 passed at 2026-11-19T23:46:39Z, STOP rc75;
+  its validator requires the unsuppressed IQK error and identical-source fixed check.
+
+`file_result.py` wrote the verdict and FILED receipt; the delivered completion
+alert was acknowledged. The parent box stays open: this build does not establish
+native model execution, rollback, fault sensitivity, residency or performance.
+R6 native UNKNOWN and the fixed **0.743863867** gate remain unchanged.
+Next: prepare and publish the R7 native diagnostic with these hash-bound artifacts,
+widths 2/3 normal rc0 and explicit fault rc1 controls, independent trials,
+matched proposal/prefix controls and overlapping live residency proof.
+Existing source registration and VB-SERVING-DF2 wiring task still apply.
+
+[no-belief: full build qualification only; no native measurement]
