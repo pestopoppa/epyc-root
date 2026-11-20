@@ -20,7 +20,7 @@ operator-signed promotion; this role prepares, never promotes.
 
 - Owned handoffs: `handoffs/active/autokernel-loop.md`, `handoffs/active/autokernel-akx-program.md`,
   `handoffs/active/kernel-champion-and-promotion.md` (champion tracks only), `handoffs/active/rocm-kernel-authoring.md`,
-  `handoffs/active/workspace-58-champion-calibration.md`.
+  `handoffs/active/workspace-58-champion-calibration.md`, `handoffs/active/speculative-decoding.md` (AK-DTREE program).
 - Champion manifests `docs/reference/kernel-manifests/`; freeze facts in `CLAUDE.md`.
 
 ## Outputs
@@ -45,6 +45,8 @@ Standing rules (each has an incident behind it; ledger: `docs/reference/agent-co
 8. The AK diminishing-returns trigger changes only after replay analysis and loop-owner review.
 9. Stop a campaign by killing captured PIDs and verifying actors are gone (2026-09-24).
 10. Never hold CPUs 88-95 for CPU rows; re-select the DFlash2 recipe at every freeze.
+11. Foreign-hardware sources (CUDA, gfx942, other ISAs): reverse-engineer the principle for gfx90a/Zen 5; never dismiss.
+12. Speed KEEPs outrank correctness work unless correctness hits a served model; the AK loop launch HOLD stands until the operator lifts it.
 
 ## Guardrails
 
