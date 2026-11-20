@@ -753,7 +753,7 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 
 ### Backlog
 
-- [ ] Prototype faithful ChunkKV only on a fresh `llama.cpp-experimental` tree after an
+- [ ] **NEW-16** Prototype faithful ChunkKV only on a fresh `llama.cpp-experimental` tree after an
   operator-approved long-context measurement window; compare it with Full KV and the existing
   Expected-Attention compactor at equal cache budgets before considering promotion.
       · section: Action Items
@@ -773,7 +773,7 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
       strongest reason yet to revisit KV-quant defaults. A flat result closes the question and
       retires the concern permanently.
       · section: Research Intake Update — 2026-08-22 (Stage-2b, KIVI arXiv:2402.02750)
-- [ ] **(G, cheap) A/B the asymmetric quantizer against our rotation.** `-ctk q4_0` (symmetric) vs
+- [ ] **NEW-15** **(G, cheap) A/B the asymmetric quantizer against our rotation.** `-ctk q4_0` (symmetric) vs
       `-ctk q4_1` (asymmetric), rotation ON, same group size, one pure-attention model, plus
       `llama-bench` decode t/s to price the extra scale word.
       **Gate:** a quality delta outside noise means the Hadamard rotation has NOT fully normalised the
