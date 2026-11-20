@@ -212,3 +212,7 @@ coordination/session-bus/relay_state.json
 handoffs/active/.box-index.json
 handoffs/active/.box-index.json.*.tmp
 handoffs/active/.box-index.json.lock
+
+# Task-brief layer: brief.py compile cache (keyed on box text_sha, brief sha, where-file blobs); regenerable.
+handoffs/active/briefs/.compile-cache.json
+handoffs/active/briefs/.compile-cache.*.tmp
