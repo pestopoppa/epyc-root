@@ -1,46 +1,72 @@
 {
- "session_id": "intake-dtree-infernix-20261119",
- "started_at": "2026-11-19T00:00:00+00:00",
- "stage": 4,
- "phase": "stage4-complete",
- "lane": "/workspace/.worktrees/intake-dtree-20261119",
- "requester": "autokernel (operator pre-approved, stage gates waived through Stage 4)",
+ "session_id": "intake-kspec-20261120",
+ "started_at": "2026-11-20T00:00:00+00:00",
+ "last_checkpoint": "2026-11-20T10:34:12.208267Z",
+ "stage": 1,
+ "phase": "stage1-complete",
+ "lane": "/workspace/.worktrees/intake-kspec-20261120",
+ "requester": "autokernel subagent (operator-requested intake; plan-approval gate retained before Stage 4)",
+ "previous_session": {
+  "session_id": "intake-dtree-infernix-20261119",
+  "stage": 4,
+  "phase": "stage4-complete",
+  "next_intake_id": 2718
+ },
  "urls_processed": [
-  "https://github.com/Wallawalla47/Infernix",
-  "https://github.com/Wallawalla47/Infernix/issues/30",
-  "https://arxiv.org/html/2505.14969v2",
-  "https://arxiv.org/html/2608.20961v1",
-  "https://arxiv.org/html/2607.16673v1",
-  "https://arxiv.org/html/2605.29727v1",
-  "https://arxiv.org/html/2610.00321v1",
-  "https://arxiv.org/html/2510.26577v1",
-  "https://arxiv.org/abs/2607.06763",
-  "https://arxiv.org/html/2402.14160v2",
-  "https://arxiv.org/html/2605.04543v1",
-  "https://arxiv.org/html/2609.23900v3",
-  "https://arxiv.org/html/2505.12398v2"
+  "https://github.com/ggml-org/llama.cpp/pull/32613",
+  "https://github.com/ggml-org/llama.cpp/pull/32505",
+  "https://github.com/ggml-org/llama.cpp/pull/32266",
+  "https://arxiv.org/abs/2611.26157",
+  "https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF",
+  "https://arxiv.org/abs/2611.24395",
+  "https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html",
+  "https://arxiv.org/abs/2611.23835",
+  "https://arxiv.org/abs/2611.20565",
+  "https://arxiv.org/abs/2611.25813",
+  "https://arxiv.org/abs/2611.26172",
+  "https://arxiv.org/abs/2611.25123",
+  "https://arxiv.org/abs/2611.23388",
+  "https://arxiv.org/abs/2611.24809"
  ],
- "next_intake_id": 2718,
- "literature_sweeps": 3,
- "sweep_cap": 6,
+ "entries_processed": [
+  "intake-2718",
+  "intake-2719",
+  "intake-2720",
+  "intake-2721",
+  "intake-2722",
+  "intake-2723",
+  "intake-2724",
+  "intake-2725",
+  "intake-2726",
+  "intake-2727",
+  "intake-2728",
+  "intake-2729",
+  "intake-2730",
+  "intake-2731"
+ ],
+ "next_intake_id": 2732,
+ "literature_sweeps": 0,
+ "sweep_cap": 4,
  "expansion_refused": [
   {
-   "seed": "intake-2716",
-   "reason": "sweep 4 not run: remaining surfaced sources are already indexed (DDTree intake-2667, DART 2601.19278, Block Verification 2403.10444, Bole 2608.01651, OPT-Tree, Sequoia, SpecInfer) or lack an arXiv id (Wang&Zhou 2026, Hu et al. 2026b, ReplaySSM blog); recorded here instead of minting."
+   "seed": "intake-2718..intake-2731",
+   "reason": "Stage-1 Phase-3 Tier-1/Tier-2 expansion not run separately: operator steering routes expansion through Stage-2 dive-surfaced sources (all recommended accepted, max four Stage-2b sweeps); the Tier-2b contradiction pass is run thoroughly inside each Stage-2 dive instead of a cheap Stage-1 pass."
   }
  ],
  "subagents": {
-  "opus": 1,
-  "sonnet": 3
+  "haiku": 4
  },
  "steering_ledger": [
   {
    "seq": 1,
    "stage": 1,
-   "verbatim": "cap literature expansion at no more than six sweeps, and within each sweep perform EVERY recommended deep dive. Never decline a source for missing software or kernels; those are build costs.",
+   "ts": "2026-11-20T00:00:00Z",
+   "verbatim": "KERNELS / LOW-LEVEL\n1. llama.cpp PR #32613: Q8_0 block interleaving for AVX-512/AVX2 (open). Reported: Zen 5 9600X, 6 threads, Llama-7B Q8_0 pp 73.65 -> 134.55 t/s (+82.7%), tg flat, PPL unchanged. New GEMV path is AVX2-only, so expect prefill-only gains on the EPYC 9655. Value: A/B candidate for the cpu-decode-roofline XFER-4b prefill row; check whether an AVX-512 GEMV path is worth writing ourselves.\n2. llama.cpp PR #32505: CUDA/HIP duplicate expert IDs (merged 2026-11-19). Wave64-aware ggml_cuda_popc rewrite of the MUL_MAT_ID helper; removes the MMF variant that skipped the mmid helper. Reported +1-4% pp on MI100 (gfx908). Value: should build on gfx90a; assess rebase friction against our MUL_MAT_ID / C14 champion baseline and whether it changes MoE top-k dispatch.\n3. llama.cpp PR #32266: HIP few-row MMQ on non-WMMA archs (draft). M=127, K=2048, N=9: Q8_0 74.6 -> 11.3 us, IQ4_XS 100.5 -> 8.4 us per call. Test GPU not named, so gfx90a coverage is unconfirmed. Value: this is exactly the spec-decode verify batch shape (DFlash2/MTP on MI210); verify CDNA2 applicability.\n4. NariQ (arXiv 2611.26157) + Qwen3.8-27B-NariQ-GGUF: trellis-coded PTQ calibrated on BF16 agent traces. Qwen3.8-27B at 3.0 bpw (10.1 GB) and 2.5 bpw match BF16 on DeepSWE / Terminal-Bench (41.6 and 40.7 vs 38.9 pass@1 DeepSWE). Needs the authors' llama.cpp fork, no AMD GPU support, slow CPU fallback. Value: agent-trace KL calibration for the EXL3 / low-bit lane (INF-80); trellis format relative to QTIP (intake-873); port cost to gfx90a/AVX-512.\n5. RSIBench-Infra (arXiv 2611.24395): 20-task benchmark of agents optimizing real training/inference stacks at engine, kernel and instruction level; 66.2% of task results beat a validated 1.10x. NVIDIA + Ascend only. Value: its OCI-layer submission and independent re-evaluation protocol as a reference for AutoKernel custody / keep-gates.\n6. ROCm 10.2.0 blog (2026-11-18): nothing new for gfx90a; prebuilt AITER covers MI300X/MI325X/MI350X/MI355X only. Value: look at the moat-cuda-to-rocm and FlyDSL agent skills as inputs to agentic kernel porting. Likely overlaps intake-2694 (ROCm 10.2 release notes); dedup accordingly. We stay on ROCm 6.2.\n\nINFERENCE SYSTEMS / HARNESS / POST-TRAINING\n7. NarrowSpec (arXiv 2611.23835): DFlash and EAGLE-3 drafters at 1/2 or 1/4 of target hidden width while largely keeping acceptance; for DFlash the output adapter folds into the borrowed vocab projection with logits unchanged. 1.06-1.12x on B200, 1.13-1.44x on GB10 at batch 1. Value: direct candidate for the DFlash2 lane (INF-50); a narrower drafter cuts draft cost on both CPU and MI210.\n8. Quantized draft KV cache (arXiv 2611.20565): K4V4 with per-channel keys / per-token values cuts draft-cache memory 66.2%, mean acceptance 57.93% -> 57.14%. Value: contrasts with the DFlash quantized-draft-KV acceptance collapse in intake-1256 (llama.cpp #25725); the cache layout is the variable to test.\n9. G-MTP (arXiv 2611.25813): shared MTP drafting head with target-activation injection, zero-copy KV cross-attention and clustered vocab projection; up to 3.1x server-side on Gemma 4, 2.3x on H100. Value: clustered vocab projection for Qwen3.8's 248K-vocab MTP head on CPU.\n10. Budget Internalization (arXiv 2611.26172): RLVR with a fixed rollout cap teaches Qwen3.5-4B, Gemma4-E2B and Nemotron-3-Nano-4B to stop scaling past the training budget (ending below base at large budgets); stronger KL and less truncation preserve scaling. Value: guardrail for any local GRPO run feeding thinking-budget routing.\n11. GrepMem (arXiv 2611.25123): append-only plain-text log + regex search tool, no embeddings or index; RL-trained Qwen3.5-9B 95-97% on ContextBench vs <=21% for lossy compaction baselines. Value: direct comparator for the orchestrator's ms.search / ms.expand trace tools and REPL compaction flags.\n12. QDA (arXiv 2611.23388): agent designs per-model quantization recipes, scored in minutes by KL on held-out reasoning traces, with long-generation checks for repetition loops. Value: fits our KLD gates; could drive IQ4_XS / Q4_K_M recipe search on the EPYC.\n13. FlashMorph2 (arXiv 2611.24809): on-policy layer selection for converting Qwen3 Transformers into full/linear-attention hybrids; +2.42 RULER, +1.08 LongBench over FlashMorph. Value: relevant to the hybrid-27B work (including the Expected-Attention \"no safe ratio\" finding); conversion is a post-training job, so assess cost before any adoption.\n\nAccept all recommended deep dives in the Stage 2 literature expansion for up to a maximum of four Stage 2 sweeps.",
    "disposition": "context-only",
    "plan_ref": null,
-   "reason": "Applied: 3 sweeps, every recommended dive done; no build-cost declines."
+   "reason": "Stage-1 ranking and Stage-3 grounding context; dive scope pre-selected (all recommended dives, max four Stage-2b sweeps). Final disposition set at Stage 3."
   }
- ]
+ ],
+ "entries_remaining": [],
+ "validator_note": "validate_intake.sh exits 1 with 218 errors on origin/main 68d4546a as well (handoff-refactor cross-ref drift: model-architecture-readiness.md, numa-placement track); the 14 new entries add 0 errors."
 }

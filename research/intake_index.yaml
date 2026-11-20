@@ -392449,3 +392449,605 @@
       raw_sha256: "d7a2ccbecc084e714900a9c240be46bb53059e6190922011a01eec9513ede1a8"
       byte_length: 581739
   notes: "v2 HTML read from disk (intro, §3.3, §5, App. F-G)."
+- id: intake-2718
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/32613
+  source_type: repo
+  title: "llama.cpp PR #32613: Q8_0 - Block Interleaving Implementation for x86 SIMD (AVX512/AVX2)"
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Manogna-Sree (GitHub)"
+  key_claims:
+  - "Adds Q8_0 8x8 block interleaving (repack) for x86: GEMM for AVX512 and AVX2, GEMV for AVX2 only (PR body)."
+  - "PR body table: 7B Q8_0 pp512 at 6 threads rises with the AVX512 GEMM path while tg128 is flat to slightly negative."
+  - "Perplexity is reported unchanged over 655 chunks."
+  - "Tested on a Zen 5 Ryzen 9600X; the PR is open and unreviewed, and the body states AI drafted the AVX512 path."
+  techniques:
+  - "Q8_0 8x8 repack GEMM/GEMV"
+  - "AVX512/AVX2 intrinsics in ggml-cpu arch/x86/repack.cpp"
+  reported_results:
+  - "PR body (Zen 5 9600X, 6 threads, llama 7B Q8_0): pp512 73.65 -> 134.55 t/s with AVX512; tg128 8.18 -> 8.11 (stage1-unverified)."
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - cpu-decode-roofline-program.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "Stage-1 read of the PR page, gh JSON (body/comments) and diff file list; head 298c40be93, OPEN, retrieved 2026-11-20. Overlap to check: production/champion already carry an AVX512BW 8x8 Q8_0 kernel (memory project_q8_8x8_avx512bw_outcome)."
+- id: intake-2719
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/32505
+  source_type: repo
+  title: "llama.cpp PR #32505: CUDA: implement support for duplicate expert IDs"
+  categories:
+  - moe_optimization
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "JohannesGaessler (GitHub)"
+  key_claims:
+  - "Rewrites the MUL_MAT_ID mmid helper with __ballot/__popc and adds ggml_cuda_popc for warp size 64."
+  - "Removes the MMF MoE variant for small batches that skipped the mmid helper, because it breaks on non-unique expert IDs."
+  - "Adds a low-shared-memory fallback mmid kernel and duplicate-ID test-backend-ops cases."
+  - "A reviewer reports few-row MMQ (mmq-few) still mishandling duplicate IDs, and a Strix regression at large ubatch before a later kernel push."
+  techniques:
+  - "__ballot/__popc mmid helper"
+  - "ggml_cuda_popc wave64"
+  - "duplicate expert ID tests"
+  reported_results:
+  - "PR comments: granitemoe 3B Q4_0 pp4096 on MI100 PR/master 1.03-1.04; Strix Qwen3.8-Flash-Next 0.965/0.909 before a later push (stage1-unverified)."
+  credibility_score: 3
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - kernel-champion-and-promotion.md
+    - "rocm-kernel-authoring.md"
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "Stage-1 read of the PR page, gh JSON and diff file list; MERGED 2026-11-19 as b94959a64d, retrieved 2026-11-20. Interaction with PR #32266 (mmq-few) flagged by a reviewer."
+- id: intake-2720
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/32266
+  source_type: repo
+  title: "llama.cpp PR #32266: ggml-cuda : hip few mmq on non wmma arch"
+  categories:
+  - hardware_optimization
+  - quantization
+  - speculative_decoding
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "thelittlefireman (GitHub)"
+  key_claims:
+  - "Adds a HIP branch to the few-row MMQ kernel (mmq-few.cu) for non-WMMA AMD architectures."
+  - "One block covers src0 rows, one warp splits K, and each lane decodes weights once for several src1 columns (hoisted decode)."
+  - "PR body has a single-shape microbenchmark (M=127, K=2048, N=9) across many quant types; the GPU and ROCm version are not stated."
+  - "Draft PR, no maintainer review; touches tests/test-backend-ops.cpp."
+  techniques:
+  - "few-row MMQ for HIP non-WMMA"
+  - "hoisted weight decode in vec_dot"
+  reported_results:
+  - "PR body: Q8_0 74.60 -> 11.31 us, IQ4_XS 100.53 -> 8.39 us at M=127 K=2048 N=9 (GPU unnamed; stage1-unverified)."
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    - "rocm-kernel-authoring.md"
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "Stage-1 read of the PR page, gh JSON and diff; head 23198be90e, OPEN draft, retrieved 2026-11-20."
+- id: intake-2721
+  arxiv_id: "2611.26157"
+  url: https://arxiv.org/html/2611.26157v1
+  source_type: paper
+  title: "NariQ: Sub-3-Bit Quantization for Long-Horizon Agentic Tasks"
+  categories:
+  - quantization
+  - local_inference
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Doyeob Kim (Nari Labs)"
+  key_claims:
+  - "Trellis-coded PTQ in the QTIP/EXL3 family, calibrated on tokens the BF16 model generated in agent sessions, with a KL loss over model-generated positions only."
+  - "Per-module bit widths come from a gradient-based loss estimate; the output layer is coded in likelihood bands."
+  - "Reports Qwen3.8-27B at 3.0 and 2.5 bpw level with BF16 on agentic benchmarks, with 2.0 bpw trailing."
+  - "Requires the authors llama.cpp fork tuned for SM120; MTP module, KV and activations are not quantized."
+  techniques:
+  - "trellis-coded PTQ"
+  - "agent-trace KL calibration"
+  - "gradient-based bit allocation"
+  - "banded output-layer coding"
+  reported_results:
+  - "Table 1/2 numbers recorded at dive time only (stage1-unverified)."
+  credibility_score: 0
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - quantization-and-low-bit.md
+    intake_entries:
+    - intake-873
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "arXiv v1 HTML; Stage-1 read of abstract, intro, tables, limitations. Single-author company preprint."
+- id: intake-2722
+  arxiv_id: null
+  url: https://huggingface.co/nari-labs/Qwen3.8-27B-NariQ-GGUF
+  source_type: repo
+  title: "nari-labs/Qwen3.8-27B-NariQ-GGUF (model card)"
+  categories:
+  - quantization
+  - local_inference
+  novelty: low
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Nari Labs (org)"
+  key_claims:
+  - "Ships 3.0, 2.5 and 2.0 bpw GGUF files of Qwen3.8-27B plus a BF16 vision projector."
+  - "States a NariQ-aware llama.cpp fork is required; stock llama.cpp cannot load the new tensor types."
+  - "States AMD and Intel GPUs are not supported yet and pre-Ampere NVIDIA falls back to CPU."
+  - "Accuracy table repeats the companion paper; speed table is RTX PRO 6000 only."
+  techniques:
+  - "NariQ trellis GGUF tensor types"
+  reported_results:
+  - "Card: 3.0 bpw file about 10.1 GB (stage1-unverified)."
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - quantization-and-low-bit.md
+    intake_entries:
+    - intake-873
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "Companion artifact of arXiv 2611.26157 (distinct source). Card HTML retrieved 2026-11-20."
+- id: intake-2723
+  arxiv_id: "2611.24395"
+  url: https://arxiv.org/abs/2611.24395
+  source_type: paper
+  title: "RSIBench-Infra: Can Agents Optimize Their Own Training and Inference Infrastructure at Production Scale?"
+  categories:
+  - autonomous_research
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Hanlin Wu"
+  - "Yifei Wang"
+  - "Zhicheng Cai"
+  - "Huan-ang Gao"
+  key_claims:
+  - "A benchmark of 20 training and inference tasks on NVIDIA GPUs and Ascend NPUs, with agents starting from runnable official-recipe baselines."
+  - "Agents may modify the stack at engine, kernel and instruction level."
+  - "An OCI image-layer submission protocol captures agent changes; an independent evaluation measures end-to-end speed under quality constraints."
+  - "Abstract reports a share of task results beating a validated 1.10x speedup."
+  techniques:
+  - "OCI image-layer submission"
+  - "independent end-to-end re-evaluation with quality constraints"
+  reported_results: []
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - autokernel-akx-program.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "No arXiv HTML rendering (404 on html/2611.24395v1); PDF v1 retrieved 2026-11-20 (sha256 prefix fd22c714cdcb). PDF-only: cannot be machine-anchored, so this entry stays stage1-unverified even after a dive."
+- id: intake-2724
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.2-blog/README.html
+  source_type: blog
+  title: "ROCm 10.2.0: Advancing Performance, Stability, and Developer Experience (AMD blog)"
+  categories:
+  - hardware_optimization
+  - tool_implementation
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Amy Wiebe"
+  - "Adam Chan"
+  - "Onil Gunawardana"
+  - "John Tyler"
+  - "Saad Rahim"
+  key_claims:
+  - "Vendor summary of the ROCm 10.2.0 release already covered by intake-2694 (release notes)."
+  - "Adds AMD agent Skills not in the release notes, including moat-cuda-to-rocm and FlyDSL kernel authoring/trace analysis."
+  - "Prebuilt AITER kernels are named for MI300X/MI325X/MI350X/MI355X only; gfx90a is not mentioned."
+  techniques:
+  - "moat-cuda-to-rocm skill"
+  - "FlyDSL kernel skills"
+  - "AITER prebuilt kernels"
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - "rocm-kernel-authoring.md"
+    intake_entries:
+    - intake-2694
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "Distinct URL from intake-2694 (blog vs release notes); companion, not a duplicate. Retrieved 2026-11-20."
+- id: intake-2725
+  arxiv_id: "2611.23835"
+  url: https://arxiv.org/html/2611.23835v1
+  source_type: paper
+  title: "NarrowSpec: Draft Hidden Width Need Not Match the Target in Speculative Decoding"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Alagappan Valliappan"
+  - "Ankit More"
+  - "Dheevatsa Mudigere"
+  - "Jatin Mitra"
+  key_claims:
+  - "DFlash and EAGLE-3 drafter residual streams can run at half or quarter of the target hidden width while largely keeping acceptance."
+  - "For DFlash the output adapter folds into the borrowed target vocabulary projection, leaving logits unchanged up to rounding."
+  - "Reports batch-1 end-to-end speedups on B200 and GB10 in SGLang; gains are attributed to faster draft iterations."
+  - "Single training run per variant; narrowing does not shrink KV attention, so gains are expected to shrink at long context."
+  techniques:
+  - "drafter residual-width narrowing"
+  - "output-adapter folding into borrowed lm_head"
+  reported_results:
+  - "Abstract: 1.06-1.12x (B200), 1.13-1.44x (GB10) at batch 1 (stage1-unverified)."
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-1256
+    - intake-1505
+    - intake-1512
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "arXiv v1 HTML; Stage-1 read of abstract, sec 4.1, limitations."
+- id: intake-2726
+  arxiv_id: "2611.20565"
+  url: https://arxiv.org/html/2611.20565v1
+  source_type: paper
+  title: "Memory-Efficient Speculative Decoding with Quantized Draft KV Cache"
+  categories:
+  - speculative_decoding
+  - kv_cache
+  - quantization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Saksham Gupta"
+  - "Michael Li"
+  key_claims:
+  - "Quantizes only the draft model KV cache; target cache and verifier stay BF16, so the correction rule is unchanged."
+  - "Key-versus-value bit preference depends on quantizer geometry (per-token versus grouped per-channel keys)."
+  - "Proposes K4V4 with per-channel keys and per-token values (KIVI-style) with a small mean acceptance loss."
+  - "Uses fake quantization for quality; the packed prototype is slower than BF16 SD and makes no speed claim."
+  techniques:
+  - "draft-only KV quantization"
+  - "per-channel key / per-token value K4V4"
+  reported_results:
+  - "Abstract: draft-cache memory -66.20%, mean acceptance 57.93% -> 57.14% (stage1-unverified)."
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    - "kv-cache-program.md"
+    intake_entries:
+    - intake-1256
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "arXiv v1 HTML; workshop paper. Contrast case: llama.cpp #25725 quantized draft K collapse (recorded in intake-1256 notes)."
+- id: intake-2727
+  arxiv_id: "2611.25813"
+  url: https://arxiv.org/html/2611.25813v1
+  source_type: paper
+  title: "Efficient and Robust Drafting with Multi-Token Prediction"
+  categories:
+  - speculative_decoding
+  - kv_cache
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Filippo Galgani"
+  - "Ziwei Ji"
+  - "Omri Homburger"
+  - "Ganesh Jawahar"
+  key_claims:
+  - "G-MTP is one shared drafting head with target-activation injection, zero-copy KV-cache cross-attention and a clustered vocabulary projection."
+  - "Reports Gemma 4 family speedups on H100 (vLLM, batch 1) and a smartphone GPU."
+  - "The clustered vocabulary projection is used for the smallest drafters; distillation recipes re-align drafters under domain shift."
+  techniques:
+  - "target activation injection"
+  - "zero-copy KV cross-attention"
+  - "clustered vocabulary projection"
+  - "MTP distillation"
+  reported_results:
+  - "Abstract: up to 3.1x server-side, 2.3x on H100 (stage1-unverified)."
+  credibility_score: 2
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    - "kv-cache-program.md"
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "arXiv v1 HTML; Google authors."
+- id: intake-2728
+  arxiv_id: "2611.26172"
+  url: https://arxiv.org/html/2611.26172v1
+  source_type: paper
+  title: "Budget Internalization: Fixed-Budget RLVR Trades Test-Time Scaling for In-Budget Accuracy"
+  categories:
+  - training_distillation
+  - context_management
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Ilia Zavidnyi"
+  - "Alexander Kovrigin"
+  - "Arina Puchkova"
+  - "Kirill Gelvan"
+  - "Sergey Titov"
+  key_claims:
+  - "GRPO with a fixed rollout cap gains near the training budget but stops scaling beyond it and can fall below base at large budgets."
+  - "Stronger KL and less truncation exposure preserve scaling, KL at an in-budget cost; forcing answers on truncated rollouts removes most of both effects."
+  - "SFT on artificially truncated traces reproduces the effect."
+  - "Models are 4-5B; most experiments are math; only the main comparison uses three seeds."
+  techniques:
+  - "fixed-cap GRPO"
+  - "budget forcing evaluation"
+  - "KL sweep"
+  - "forced answer on truncated rollouts"
+  reported_results:
+  - "Intro: Qwen3.5-4B 4k cap +34.8 pp at 4K and -30.2 pp at 64K (stage1-unverified)."
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - context-and-token-economy.md
+    - harness-program.md
+    intake_entries:
+    - intake-1215
+    - intake-370
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "arXiv v1 HTML."
+- id: intake-2729
+  arxiv_id: "2611.25123"
+  url: https://arxiv.org/html/2611.25123v1
+  source_type: paper
+  title: "Forget Freely, Grep Later: Lossless, Index-Free Memory for Long-Horizon LLM Agents"
+  categories:
+  - memory_augmented
+  - context_management
+  - agent_architecture
+  - search_retrieval
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Ziyan Yang"
+  - "Taiwei Shi"
+  - "Jieyu Zhao"
+  key_claims:
+  - "GrepMem appends every message and tool output to a plain-text log and exposes a regex grep_history tool after compaction; no embeddings or index."
+  - "Five context strategies are RL-trained on Qwen3.5-9B with the same recipe on top of a summarization loop."
+  - "GrepMem leads lossy compaction baselines on ContextBench, while a MemGPT-style baseline is competitive on one ContextBench split."
+  techniques:
+  - "append-only history log"
+  - "grep_history tool"
+  - "summarization loop + RL"
+  reported_results:
+  - "Table 3 (stage1-unverified): ContextBench KV 97.4 / Log 95.3 for GrepMem."
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - context-and-token-economy.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "arXiv v1 HTML."
+- id: intake-2730
+  arxiv_id: "2611.23388"
+  url: https://arxiv.org/html/2611.23388v1
+  source_type: paper
+  title: "QDA: Closed-Loop LLM Quantization Design with Agents"
+  categories:
+  - quantization
+  - benchmark_methodology
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Xingyang Li"
+  - "Tianlang Zhao"
+  - "Song Han"
+  - "Ligeng Zhu"
+  key_claims:
+  - "An LLM agent designs per-model PTQ recipes in a propose-build-score-submit loop over a composable PTQ library."
+  - "Candidates are scored by output KL against the original model on held-out reasoning traces, with long-generation checks for repetition loops."
+  - "KL ranks recipe pairs by accuracy better than layer-wise error in the authors analysis."
+  - "Checkpoints run on existing vLLM kernels; the library and evaluator are promised, not yet released."
+  techniques:
+  - "KL search objective on held-out traces"
+  - "agentic recipe search"
+  - "long-generation loop check"
+  reported_results:
+  - "Stage-1: average gains over the strongest public recipe at W4A16/W4A8/W3A16 (stage1-unverified)."
+  credibility_score: 2
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - quantization-and-low-bit.md
+    - kernel-champion-and-promotion.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "arXiv v1 HTML; MIT/NVIDIA."
+- id: intake-2731
+  arxiv_id: "2611.24809"
+  url: https://arxiv.org/html/2611.24809v1
+  source_type: paper
+  title: "On-Policy Morphing into Hybrid Attention Models"
+  categories:
+  - ssm_hybrid
+  - context_extension
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors:
+  - "Disen Lan"
+  - "Xuanda Wang"
+  - "Jianbin Zheng"
+  - "Huafeng Kuang"
+  key_claims:
+  - "Transformer-to-hybrid conversion needs a layer-selection step; FlashMorph selection has off-policy mismatches."
+  - "FlashMorph2 evaluates sampled discrete hybrids with their own hidden states and jointly optimizes selection scores and weights."
+  - "Reports small average RULER and LongBench gains over FlashMorph on Qwen3 0.6B-8B backbones."
+  techniques:
+  - "on-policy layer selection"
+  - "budget-constrained straight-through estimator"
+  reported_results:
+  - "Stage-1: +2.42 RULER, +1.08 LongBench average over FlashMorph (stage1-unverified)."
+  credibility_score: 2
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - long-context-program.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - "Stage-1 only (2026-11-20 intake-kspec); operator pre-selected all recommended dives."
+  verification: stage1-unverified
+  reader_should_conclude: "Unverified Stage-1 entry: do not cite any figure or mechanism until a Stage-2 dive promotes it."
+  notes: "arXiv v1 HTML; ByteDance Seed / Fudan / NTU."
