@@ -74,15 +74,22 @@ def plan(keys: list[str] | None, top: int) -> list[dict]:
     doc = box_index.load(ROOT)
     cands, _ = S.candidates(doc)
     byk = dict(cands)
-    chosen = [(k, byk[k]) for k in keys] if keys else cands[:top]
+    chosen = [(k, byk.get(k)) for k in keys] if keys else cands
     out = []
     for k, rec in chosen:
         if rec is None:
             raise SystemExit(f"{k} is not dispatchable now (select.py skips it)")
         t = schema.build(dict(rec, key=k))
+        why = schema.unsupported(t)
+        if why:
+            if keys:
+                print(f"skip {k}: {why}", file=sys.stderr)
+            continue
         t["kind"] = kind_of(t)
         t["tier"] = pick_tier(t)
         out.append(t)
+        if not keys and len(out) >= top:
+            break
     return out
 
 
@@ -102,12 +109,22 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     (base_dir / "lane.path").write_text(str(lane))
     base = _git(repo, "rev-parse", "origin/main").stdout.strip()
     _git(repo, "worktree", "add", "-q", "-b", branch, str(lane), base)
+    for r in task.get("refs") or []:
+        src = schema.REPOS[r["repo"]] / r["path"]
+        dst = lane / REFS / r["repo"] / r["path"]
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_bytes(src.read_bytes())
+        dst.chmod(0o444)
     return repo, lane, base
+
+
+REFS = ".taskflow-refs"
 
 
 def commit_lane(lane: Path, task: dict) -> bool:
     st = _git(lane, "status", "--porcelain", "-uall").stdout
-    paths = [ln[3:].split(" -> ")[-1] for ln in st.splitlines() if ln.strip()]
+    paths = [p for p in (ln[3:].split(" -> ")[-1] for ln in st.splitlines() if ln.strip())
+             if not p.startswith(REFS + "/")]
     if not paths:
         return False
     _git(lane, "add", "--", *paths)
@@ -117,6 +134,15 @@ def commit_lane(lane: Path, task: dict) -> bool:
 
 
 def drop_lane(repo: Path, lane: Path) -> None:
+    refs = lane / REFS
+    if refs.exists():                   # our own read-only copies; the worktree is otherwise clean after commit
+        for f in sorted(refs.rglob("*"), reverse=True):
+            if f.is_file():
+                f.chmod(0o644)
+                f.unlink()
+            else:
+                f.rmdir()
+        refs.rmdir()
     _git(repo, "worktree", "remove", str(lane), check=False)
 
 

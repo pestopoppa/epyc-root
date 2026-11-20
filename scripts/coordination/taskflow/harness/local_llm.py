@@ -52,7 +52,9 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 4. Every turn must call a tool until you finish. Never describe a plan without calling a tool in the same turn.
 5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
 6. The shell runs only the ALLOWED COMMANDS (plus ls, cat, head, tail, wc, grep, git diff, git status), exactly as written:
-   no pipes, no redirects (2>&1, >), no && chains. Paths are relative to your cwd.
+   no pipes, no redirects (2>&1, >), no && chains.
+10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
+    Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
 8. Stop as soon as the box's done-when is met.
 9. Finish with ONE final line, exactly:  TASKFLOW-RESULT {"claimed_done": true|false, "summary": "<=200 chars", "paths": ["changed/file", ...]}
@@ -117,6 +119,9 @@ def task_suffix(task: dict, excerpts: dict[str, str]) -> str:
     out.append(f"## DONE WHEN\n{task.get('done_when') or '(not stated: do what the box text asks; the reviewer judges it)'}")
     allowed = task.get("test_cmds") or []
     out.append("## ALLOWED COMMANDS\n" + ("\n".join(allowed) if allowed else "(none: do not use bash)"))
+    if task.get("refs"):
+        out.append("## REFERENCE FILES (read-only copies from other repos)\n" + "\n".join(
+            f".taskflow-refs/{r['repo']}/{r['path']}" for r in task["refs"]))
     out.append("## FORBIDDEN\n" + ", ".join(task["forbidden"][:12]) + " …")
     out.append(f"## LIMITS\n{b['turns']} tool turns max. Be brief.")
     if excerpts:

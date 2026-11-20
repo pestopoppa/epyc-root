@@ -125,6 +125,22 @@ def done_when_text(goal: str, rec: dict) -> str | None:
     return " ".join(m.group(1).split()) if m else None
 
 
+# Repos a taskflow worker can change. Kernel / llama.cpp-tree work is never dispatched here (r3 CLOSE-6).
+SUPPORTED_REPOS = ("epyc-root", "epyc-orchestrator", "epyc-inference-research")
+_KERNEL = re.compile(r"\b(?:ggml|llama\.cpp|llama-server|GGML_[A-Z_]+|CUDA|HIP|ROCm|iqk|kernel tree|champion|"
+                     r"fold(?:ed|ing)? into|tg128|llama-bench|top-k renorm|SYNC-\d+|INF-?\d+)\b", re.I)
+
+
+def unsupported(task: dict) -> str | None:
+    """Why the harness must not take this task, or None."""
+    if task["repo"] not in SUPPORTED_REPOS:
+        return f"repo {task['repo']} not supported"
+    hits = _KERNEL.findall(task["goal"])
+    if len(hits) >= 2 and not task["inputs"]:
+        return "kernel/llama.cpp-tree work (" + ",".join(sorted(set(h.lower() for h in hits))[:4]) + ")"
+    return None
+
+
 def build(rec: dict, root: Path | None = None, held_files: list[str] | None = None,
           budget: dict | None = None) -> dict:
     """epyc.task.v1 from a box-index record. Raises LookupError when the box text no longer resolves."""
@@ -146,6 +162,14 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
     for p in rec.get("inputs") or []:
         if p not in inputs and (rroot / p).exists():
             inputs.append(p)
+    refs = []                                   # cross-repo inputs: copied read-only into the lane (.taskflow-refs/)
+    for p in paths:
+        if p in inputs or (rroot / p).exists():
+            continue
+        for name, other in REPOS.items():
+            if name != repo and other.exists() and (other / p).is_file():
+                refs.append({"repo": name, "path": p})
+                break
     dw = done_when_text(goal, rec)
     cmds = _CMD.findall(dw or "") or _CMD.findall(goal)
     return {
@@ -162,7 +186,8 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
         "done_when": dw,
         "test_cmds": [" ".join(c.split()) for c in cmds][:3],
         "inputs": inputs,
-        "outputs": [p for p in paths if p not in inputs],   # named but not yet existing = may be created
+        "outputs": [p for p in paths if p not in inputs and p not in {r["path"] for r in refs}],
+        "refs": refs,   # named but not yet existing = may be created
         "forbidden": list(FORBIDDEN) + list(held_files or []),
         "repo": repo,
         "tier": rec.get("tier"),   # the box `tier:` hint only; dispatch.pick_tier fills the default by kind

@@ -194,3 +194,29 @@ def test_opencode_context_follows_server_slot_ctx(tmp_path, monkeypatch):
     c = json.loads(local_llm.write_config(tmp_path / "a", "http://x/v1", "m", {"budget": dict(schema.DEFAULT_BUDGET)},
                                           ctx=262144).read_text())
     assert c["provider"][local_llm.PROVIDER]["models"]["m"]["limit"]["context"] == 262144
+
+
+def test_unsupported_and_refs(tmp_path, monkeypatch):
+    t = {"repo": "epyc-root", "inputs": [], "goal": "SYNC-16 partial top-k in ggml CUDA path; fold into the champion"}
+    assert "kernel" in schema.unsupported(t)
+    assert schema.unsupported(dict(t, repo="epyc-web")).startswith("repo")
+    assert schema.unsupported({"repo": "epyc-root", "inputs": ["a.py"], "goal": "fix a.py"}) is None
+    other = tmp_path / "other"
+    (other / "docs").mkdir(parents=True)
+    (other / "docs/d.md").write_text("ref\n")
+    repo = tmp_path / "r"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    (repo / "a.py").write_text("x\n")
+    subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+    subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "b"], check=True)
+    subprocess.run(["git", "-C", str(repo), "update-ref", "refs/remotes/origin/main", "HEAD"], check=True)
+    monkeypatch.setitem(schema.REPOS, "epyc-root", repo)
+    monkeypatch.setitem(schema.REPOS, "epyc-orchestrator", other)
+    monkeypatch.setenv("TASKFLOW_LANE_ROOT", str(tmp_path / "tf"))
+    task = {"repo": "epyc-root", "refs": [{"repo": "epyc-orchestrator", "path": "docs/d.md"}]}
+    r, lane, base = dispatch.make_lane(task, tmp_path / "run/t0", "b2")
+    assert (lane / ".taskflow-refs/epyc-orchestrator/docs/d.md").read_text() == "ref\n"
+    assert dispatch.commit_lane(lane, task) is False           # refs are never committed
+    dispatch.drop_lane(r, lane)
+    assert not lane.exists()
