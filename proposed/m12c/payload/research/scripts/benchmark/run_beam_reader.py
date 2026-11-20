@@ -139,6 +139,7 @@ def execute_arm(output, reader):
         receipt.update(status="failed", error=str(exc))
         write_json(output / "beam_run_receipt.json", receipt)
         raise
+    receipt["reader_sha256"] = digest(output / "reader.json")
     receipt["status"] = "complete"
     receipt["completed_at"] = datetime.now(timezone.utc).isoformat()
     write_json(output / "beam_run_receipt.json", receipt)

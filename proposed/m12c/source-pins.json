@@ -8,5 +8,6 @@
     "scripts/benchmark/beam_scoring.py": "276b9e2962f45900e5a03dd0866ad3dc596990264e88b5af7ae0a5c06d1513f2"
   },
   "checker_git_object": "c9aac169b:scripts/benchmark/beam_prerun_checklist.py",
-  "tests": "10 passed in 0.11s; synthetic parquet, stub trace and HTTP; no inference"
+  "tests": "41 passed in 6.39s; synthetic parquet, stub trace and HTTP; completed-receipt admission negatives; no inference",
+  "checker_blob": "787b0d5e13731df156801984e7353fc4bf568bb4"
 }

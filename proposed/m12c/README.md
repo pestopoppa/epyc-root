@@ -42,13 +42,15 @@ Answers, finish reasons, and completed counts are checkpointed after every reque
 A failure marks the receipt failed and preserves partial answers. Existing output
 directories cannot be prepared over; started/failed runs cannot be silently rerun.
 
-Validation: 10 offline tests, real synthetic parquet input, real full/RAG adapter,
+Validation: 41 offline tests, real synthetic parquet input, real full/RAG adapter,
 stub trace backend and HTTP transport. The synthetic three-arm receipts clear the
 checker at research `c9aac169b:scripts/benchmark/beam_prerun_checklist.py`; mismatched
 budgets and truncated answers fail their respective items. No real model, trace
 service, GPU recipe, floor score, or measured synthesis cap was validated. The
-historical checker does not yet require a completed receipt or validate its new
-source/prompt bindings; tighten that admission before relying on it for a new run.
+historical checker alone does not require completion or source/prompt bindings.
+Use `admit_beam_runs.py` below for new runs; it validates those bindings before
+invoking the unchanged checker. Direct use of the historical checker omits this
+admission check.
 The 2048-token adapter cap remains a parameter, not measured sufficiency.
 
 Reproduce (scratch interpreter has pyarrow 26.0.1 / pytest 9.2.0):
@@ -63,3 +65,40 @@ PYTHONPATH=/mnt/raid0/llm/epyc-inference-research/scripts/benchmark \
 
 `source-pins.json` identifies the external dependencies used in this test, without
 copying their source files. Runtime receipts capture the source actually imported.
+
+
+Completed-run admission (M-12c-RECEIPT-ADMISSION)
+----------------------------------------------
+
+The launcher now records `reader_sha256` only after all answers are checkpointed.
+The new stdlib-only `payload/research/scripts/benchmark/admit_beam_runs.py`
+requires exactly one full, rag and trace run, all complete with matching question
+sets and reader generation settings. Before calling the pinned eight-item
+checker it verifies source/prepared-question/reader digests, unique question
+IDs, per-question prompt hashes, shared template hash, every prepared field in
+each saved answer, recorded generation parameters and finish reasons, reader
+identity, and summary truncation count. Each directory must have exactly one
+`scored-beam-*.json` summary. Incomplete or malformed artifacts fail closed.
+
+Run offline, outside the grant (the unchanged checker rehashes the dataset):
+
+```bash
+python payload/research/scripts/benchmark/admit_beam_runs.py \
+  --arm full=FULL_RUN --arm rag=RAG_RUN --arm trace=TRACE_RUN \
+  --min-max-tokens MEASURED_REQUIREMENT \
+  --expected-dataset-sha c0519be25907005ba873c927c50877471d550873039d96c041554d0075a78ace
+```
+
+Exit 0 requires integrity PASS and all eight checklist items PASS. Integrity
+PASS alone cannot override a checklist failure. The checker's source is read
+from research git object `c9aac169b:scripts/benchmark/beam_prerun_checklist.py`;
+its blob is pinned in `source-pins.json`, without copying the file. Run both
+`test_run_beam_reader.py` and `test_admit_beam_runs.py` with the interpreter and
+PYTHONPATH shown above to reproduce all 41 tests.
+
+This checks consistency of retained artifacts; it does not authenticate them or
+prove serving-binary/model contents or judgment provenance. It rejects old runs
+without the new native bindings; never backfill their missing receipts. The
+measured synthesis cap, real three-arm qualification and the parent M-12c
+checklist remain open. Deployment in research is still owner integration; these
+are root-lane opt-in tools and no external repository was edited.
