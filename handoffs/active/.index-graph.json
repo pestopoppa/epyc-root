@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T00:11:08Z",
+  "generated_at": "2026-11-20T00:13:02Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1772,7 +1772,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 151,
+      "closed": 152,
       "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 805,
+          "line": 807,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 30,
           "readiness": "blocked"

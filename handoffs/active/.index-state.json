@@ -2343,7 +2343,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 151,
+      "closed": 152,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 39,
@@ -2355,11 +2355,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 192,
+      "total": 193,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 95,
+          "closed": 96,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2375,7 +2375,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 805,
+          "line": 807,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29
