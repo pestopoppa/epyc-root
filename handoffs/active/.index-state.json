@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 530
+      "open": 529
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -423,7 +423,7 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 69,
+      "closed": 70,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 32,
@@ -435,11 +435,11 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 101,
+      "total": 102,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 21,
+          "closed": 22,
           "gates": null,
           "guarded": 0,
           "line": 0,
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 806,
+          "line": 820,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1118,
+          "line": 1132,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1325,
+          "line": 1339,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1651,
+          "line": 1665,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1886,
+          "line": 1900,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -2343,10 +2343,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 154,
+      "closed": 155,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 37,
+      "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2359,13 +2359,13 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 96,
+          "closed": 97,
           "gates": [],
           "guarded": 0,
           "line": 13,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 10
+          "open": 9
         },
         {
           "blocked": 1,
