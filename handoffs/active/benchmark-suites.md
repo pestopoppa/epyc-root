@@ -626,6 +626,19 @@ our own harness and score offline.
       Full strict/loose UNKNOWN, paired delta UNCOMPUTED, adoption UNCLAIMED;
       parent stays open pending 300-response official scoring.
       [no-belief: engineering qualification and synthetic smoke only]
+      v7 full run ended **2026-11-20T10:26:34Z, rc=75**: **36/300 valid
+      responses, 37 exposures**, zero newly completed responses. Prompt index **36**
+      has `TimeoutError('timed out')`, an immutable UNKNOWN disposition and no native
+      response. This is an **unresolved-exposure stop**, not a resumable window-end
+      partial: the declared no-redraw rule prevents a successor from completing this
+      cohort. Preserve all original records; do not republish the same cohort.
+      Server drain receipt: drained=true, rc=0. Strict/loose **UNKNOWN**, paired delta
+      UNCOMPUTED, adoption UNCLAIMED. Parent stays open; acquisition is complete but
+      generation-to-scorer wiring has not passed. The automated partial filing and
+      FILED receipt already existed and were not rewritten.
+      [Verdict and original-file SHA-256 bindings](../../docs/evidence/ifbench-cj6a-v7-20261120/verdict.json).
+      Next: diagnose the request timeout and test a capture repair offline before
+      proposing any new exposure protocol. [belief: cc]
   - [x] **CJ-6a-CORPUS — Acquire and bind the original IFBench corpus.** Preserve the root `data/IFBench_test.jsonl` from `allenai/IFBench` commit `1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d`, verify its upstream blob and SHA-256, confirm 300 unique prompts / 344 constraints / 58 IDs, and retain license/source provenance and the fixed input manifest. The parent remains open for its generation-to-official-scorer wiring. [Pinned corpus](../../data/benchmarks/ifbench-1c40f0c/README.md). ✅ 2026-11-04 [belief: cc]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6b. Size on disk** and record it in the same table as CJ-1…CJ-4.
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6c. Determine execution requirement** — scoring is judge-free, network-free and
