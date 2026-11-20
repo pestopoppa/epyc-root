@@ -1426,7 +1426,7 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 116,
+      "closed": 117,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 34,
@@ -1438,11 +1438,11 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 151,
+      "total": 152,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 63,
+          "closed": 64,
           "gates": [
             "RTG-58"
           ],
@@ -1457,7 +1457,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 677,
+          "line": 678,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 4
@@ -1467,7 +1467,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1086,
+          "line": 1087,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1477,7 +1477,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1702,
+          "line": 1703,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1487,7 +1487,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 1849,
+          "line": 1850,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 11
@@ -2351,7 +2351,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 178,
+      "closed": 179,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 35,
@@ -2363,11 +2363,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 215,
+      "total": 216,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 115,
+          "closed": 116,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2383,7 +2383,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 840,
+          "line": 842,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 26
