@@ -1,0 +1,42 @@
+{
+  "box": "CJ-6e",
+  "row": "codex-ifbench-cj6e-35b-v4-20261120",
+  "verdict": "partial",
+  "rc": 75,
+  "new_valid_responses": 24,
+  "valid_responses": 183,
+  "exposures": 183,
+  "unresolved_exposures": 0,
+  "unexposed": 117,
+  "length_finish": 6,
+  "exact_prompt_join": true,
+  "prior_capture_seal_verified": true,
+  "strict": "UNKNOWN",
+  "loose": "UNKNOWN",
+  "paired_delta": "UNCOMPUTED",
+  "adoption": "UNCLAIMED",
+  "no_redraw": true,
+  "reason": "before next request or insufficient full timeout and cleanup reserve",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ifbench-cj6e-35b-v4-20261120.ended",
+      "sha256": "92f2dfc4ce0c55110da0fa110fe7342d397d56c2514c8cad969207f9abfcb781"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-ifbench-cj6e-35b-v4-20261120.verdict.json",
+      "sha256": "b5d126dd165455119f6264811f34f0cac17960afa0fd0070a950bdf9ddbfe91a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/run/PARTIAL.json",
+      "sha256": "e064c9a2e3bd129b54fceef34bb8a6647b9f8376475e4152cc1adc07ea1123de"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/run/server-67810.drain.json",
+      "sha256": "4d34829729fd26e034e7fccefd5b41c37996ecc767021be8ae481df8d81b0108"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/CONTINUATION-V4-INPUTS.sha256",
+      "sha256": "eb0cf58748faacc37e14bcf09b1c116420d91d6c38a515accd6247b160f19346"
+    }
+  ]
+}

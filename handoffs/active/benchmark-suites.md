@@ -795,6 +795,16 @@ our own harness and score offline.
       Source and model identity unchanged; full mode retains 8 server threads
       on 8 physical cores. [Publication and content bindings](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/qualification-v4.json).
       [no-belief: continuation qualification and synthetic smoke only]
+      2026-11-20 v4 verdict: **partial**, rc=75 at 12:16:06Z. Added **24**
+      valid captures: **183/300 exact-prompt-joined valid responses**, 183 exposures,
+      zero unresolved exposures, 117 unexposed; 6 responses ended at the token limit.
+      Prior 159-capture seal verified; all 183 triplets match their recorded hashes,
+      original prompt identities and native response text. Window reserve stopped the
+      next request; server drained (rc=0). Strict/loose **UNKNOWN**, paired delta
+      **UNCOMPUTED**; no discrimination or adoption claim. Receipt filed and alert
+      acknowledged. Preserve all captures without redraw; validate immutable records
+      before any continuation. [Verdict and source bindings](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/verdict-v4.json). [belief: cc]
+
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a as preconditions]** **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases
       exist, so the name alone is not a reproducible referent. Pre-seed the NLTK data directory and
       assert no network during scoring (the only network touch is an NLTK bootstrap at import; until

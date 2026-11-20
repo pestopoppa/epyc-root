@@ -119,3 +119,11 @@ CJ-6e: v3 auto-filed PARTIAL, rc=75. Added 83 valid captures for 159/300 exact-p
 ## 12:11Z — File 35B single-turn BFCL diagnostic row result
 
 CJ-3e: Filed codex-bfcl-cj3e-single-35b-v1-20261120 INCONCLUSIVE for fleet discrimination, rc=0. Diagnostic completed=14, known=14, UNKNOWN=0, passed=13, failed=1 (java_1). Fourteen exclusive chains (98 records) validate with per-request before/after CPU PID/socket/model/build proofs; terminal agrees. Reference 27B arm is incomplete, so no fleet comparison or representative score; no retry/redraw. Evidence: docs/evidence/bfcl-cj3d-native-bridge-20261119/second-arm-single-turn-verdict-20261120.json binds existing terminal and journal SHA-256 values. Parent CJ-3e remains open. [belief: cc]
+
+## 12:17Z — Assess filed IFBench CJ-6e v4 partial result
+
+CJ-6e v4 ended rc=75 with 183/300 validated prompt-joined captures (24 new), zero unresolved exposures and 117 unexposed; six length finishes. Strict/loose remain UNKNOWN and paired delta UNCOMPUTED. Prior seal verified, server drained, receipt filed and alert acknowledged. [belief: cc]
+
+## 12:18Z — Assess filed IFBench CJ-6e v4 partial result
+
+CJ-6e v4 ended rc=75 with 183/300 validated prompt-joined captures (24 new), zero unresolved exposures and 117 unexposed; six length finishes. Strict/loose remain UNKNOWN and paired delta UNCOMPUTED. Prior seal verified, server drained, receipt filed and alert acknowledged. [belief: cc]
