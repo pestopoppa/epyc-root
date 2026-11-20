@@ -131,3 +131,7 @@ CJ-6e v4 ended rc=75 with 183/300 validated prompt-joined captures (24 new), zer
 ## 19:46Z — File supported-frame BFCL 27B partial verdict
 
 CJ-3d supported-frame 27B filed inconclusive: rc=0 but only 15/120 completed, 14 known, 1 UNKNOWN and 6 passes, all in Java; five other strata have zero. First UNKNOWN was java_90 parse error. No success-rate estimate; no retry/redraw/continuation. Receipt filed and alert acknowledged. [belief: cc]
+
+## 19:56Z — Filed CJ-3e supported-frame 35B row inconclusive
+
+CJ-3e: filed codex-bfcl-cj3e-supported-35b-v1-20261120 INCONCLUSIVE (rc=0): 5/120 completed, 4 known, 3 passed, 1 UNKNOWN; contract forbids a score or fleet comparison. RESULT.json SHA-256 fdef3f31240a4854654a1f72f64de4e8191a8fb445534da1c805db0fc3c6173c. Parent remains open; no retry or redraw. Filing receipt and alert acknowledgement recorded. [belief: cc]
