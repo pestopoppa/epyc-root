@@ -3,6 +3,7 @@
 No kernel build or GPU/model run is performed by this suite.
 """
 import json
+import shutil
 from pathlib import Path
 import subprocess
 import tempfile
@@ -83,10 +84,52 @@ class Builds(unittest.TestCase):
         self.assertEqual(set(m['tooling_sha256']), set(build.OWNED))
         self.assertIn('build/bin/am-driver', m['artifacts_sha256'])
         self.assertIn('build/bin/libggml-cpu.so', m['artifacts_sha256'])
-        self.assertNotIn('--target', m['commands'][1])  # Full kernel, including dynamic backends.
+        self.assertIn('-DGGML_BACKEND_DL=OFF', m['commands'][0])
+        self.assertNotIn('--target', m['commands'][1])  # Full kernel, including shared backends.
         cmake = (path.parent / 'CMakeLists.txt').read_text()
         includes = next(line for line in cmake.splitlines() if line.startswith('target_include_directories(am-driver'))
         self.assertLess(includes.index(str(self.source / 'src')), includes.index(str(self.owned)))
+
+    @unittest.skipUnless(shutil.which('cmake') and shutil.which('c++'), 'native toolchain required')
+    def test_real_link_resolves_direct_cpu_dependency(self):
+        # Reproduce the pinned fused-model dependency with tiny real libraries.
+        # MODULE mode fails the executable link; the generated wrapper must pass.
+        (self.repo / 'CMakeLists.txt').write_text("""cmake_minimum_required(VERSION 3.22)
+project(link_fixture LANGUAGES CXX)
+add_library(ggml-base SHARED base.cpp)
+add_library(ggml SHARED base.cpp)
+if(GGML_BACKEND_DL)
+  add_library(ggml-cpu MODULE cpu.cpp)
+  add_dependencies(ggml ggml-cpu)
+else()
+  add_library(ggml-cpu SHARED cpu.cpp)
+  target_link_libraries(ggml PUBLIC ggml-cpu)
+endif()
+add_library(llama SHARED model.cpp)
+target_link_libraries(llama PUBLIC ggml)
+""")
+        (self.repo / 'base.cpp').write_text('int base() { return 0; }\n')
+        (self.repo / 'cpu.cpp').write_text('int cpu_symbol() { return 7; }\n')
+        (self.repo / 'model.cpp').write_text('int cpu_symbol(); int model() { return cpu_symbol(); }\n')
+        self.git(self.repo, 'add', 'CMakeLists.txt', 'base.cpp', 'cpu.cpp', 'model.cpp')
+        self.git(self.repo, 'commit', '-qm', 'native link fixture')
+        pin = self.git(self.repo, 'rev-parse', 'HEAD').strip().decode()
+        self.git(self.source, 'checkout', '--detach', pin)
+        (self.owned / 'control.cpp').write_text('int model(); int main() { return model() == 7 ? 0 : 1; }\n')
+        with patch.object(build, 'PIN', pin):
+            path = build.build(self.source, self.root / 'output', 'baseline', 'cpu')
+            build.verify(path)
+            subprocess.run([str(path.parent / 'build/bin/am-control')], check=True)
+            # Demonstrate the same fixture catches the actual old failure mode.
+            broken = self.root / 'module-build'
+            subprocess.run(['cmake', '-S', str(path.parent), '-B', str(broken),
+                            '-DBUILD_SHARED_LIBS=ON', '-DGGML_BACKEND_DL=ON'],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+            result = subprocess.run(['cmake', '--build', str(broken), '--parallel', '4'],
+                                    capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('undefined reference', result.stderr)
+            self.assertIn('cpu_symbol', result.stderr)
 
     def test_baseline_build_has_no_experimental_driver(self):
         m = build.verify(self.make('baseline'))

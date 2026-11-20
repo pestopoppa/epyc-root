@@ -131,7 +131,9 @@ def build(source, output, variant, backend, jobs=4, arch=None):
                  '-DCMAKE_BUILD_TYPE=Release', '-DBUILD_SHARED_LIBS=ON',
                  '-DLLAMA_BUILD_TESTS=OFF', '-DLLAMA_BUILD_EXAMPLES=OFF',
                  '-DLLAMA_BUILD_SERVER=OFF', '-DLLAMA_CURL=OFF',
-                 '-DGGML_NATIVE=OFF', '-DGGML_BACKEND_DL=ON', '-DGGML_CPU=ON',
+                 # The pinned fused model calls CPU symbols directly. MODULE backends
+                 # cannot satisfy those link dependencies; shared linked backends can.
+                 '-DGGML_NATIVE=OFF', '-DGGML_BACKEND_DL=OFF', '-DGGML_CPU=ON',
                  '-DGGML_HIP=' + ('ON' if backend == 'hip' else 'OFF')]
     if backend == 'hip':
         configure.append('-DAMDGPU_TARGETS=' + arch)
