@@ -93,6 +93,8 @@ APPROACH_MIN_CHARS = 40
 APPROACH_COPY_OVERLAP = 0.8      # share of approach tokens that also occur in the box first line
 DUP_ACCEPTANCE_MIN = 3           # identical acceptance in this many OTHER briefs = batch generation
 _TICK_ONLY = re.compile(r"\\?\[\s*[xX]\s*\\?\]")   # `[x]` / `\[x\]` in an acceptance command
+# rule (f): a directory change in the acceptance (`cd X && ...`, `pushd`, `git -C /workspace/repos/..`, `make -C ..`)
+_CWD_CHANGE = re.compile(r"(?:^|[;&|(]\s*|&&\s*)(?:cd|pushd)(?:\s|$)|\s-C\s*/(?:workspace|mnt/raid0/llm)/")
 REPOS = {"epyc-root": None,  # None = the root the brief lives in
          "epyc-orchestrator": Path("/mnt/raid0/llm/epyc-orchestrator"),
          "epyc-inference-research": Path("/mnt/raid0/llm/epyc-inference-research"),
@@ -528,12 +530,16 @@ def _tokens(s: str) -> set[str]:
 
 def quality_problems(root: Path, bid: str, box: dict, where: list[str], approach: str, acceptance: str,
                      new_tests: list[str] | None = None) -> list[str]:
-    """Reasons a brief is generator filler rather than guidance (rules a-e). Empty list = passes."""
+    """Reasons a brief is generator filler rather than guidance (rules a-f). Empty list = passes."""
     root = Path(root)
     out: list[str] = []
     acc = (acceptance or "").strip()
     if _TICK_ONLY.search(acc) and re.search(r"\b(grep|rg|egrep|fgrep)\b", acc):
         out.append("(a) acceptance only checks the box's own checkbox tick, not the work")
+    if _CWD_CHANGE.search(acc):
+        out.append("(f) acceptance changes directory (`cd`/`pushd`/`-C <repo path>`); it already runs inside the task's "
+                   "own lane, whose repo comes from the brief's `where` entries - write the bare command, "
+                   "e.g. `python3 -m pytest -q tests/x.py::T`")
     ap = (approach or "").strip()
     weak_approach = False
     if len(ap) < APPROACH_MIN_CHARS:
@@ -575,7 +581,7 @@ def write_brief(bid: str, where: list[str], approach: str, acceptance: str, non_
                 today: str | None = None, new_tests: list[str] | None = None,
                 force_quality: str | None = None) -> Path:
     """Write (replace) the sidecar for an EXISTING open box; fills box_text_sha + grounded. Refuses an unknown box,
-    and (quality gate, rules a-e) a filler brief unless `force_quality=<reason>` (recorded as `quality_override`)."""
+    and (quality gate, rules a-f) a filler brief unless `force_quality=<reason>` (recorded as `quality_override`)."""
     root = Path(root)
     box = find_box(root, bid)
     if box is None or box.get("n", 1) != 1:

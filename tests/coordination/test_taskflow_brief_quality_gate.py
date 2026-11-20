@@ -1,4 +1,4 @@
-"""Brief write-time quality gate (rules a-e + --force-quality), handoff_box add --brief tier mapping, and decorative
+"""Brief write-time quality gate (rules a-f + --force-quality), handoff_box add --brief tier mapping, and decorative
 box-ID prefixes (`**★★ NOFOLD-1**`)."""
 import subprocess
 import sys
@@ -124,3 +124,20 @@ def test_decorative_prefix_box_id():
     for line in ("- [ ] **★★ NOFOLD-1 — x**", "- [ ] **☆ NOFOLD-1: x**", "- [ ] **• 🔥 NOFOLD-1** x"):
         assert L1.head_id(line) == "NOFOLD-1"
     assert L1.head_id("- [ ] **(C1) x**") is None
+
+
+@pytest.mark.parametrize("acc", [
+    "cd /workspace/repos/epyc-orchestrator && python3 -m pytest -q tests/x.py::T",
+    "cd scripts && python3 x.py", "pushd /tmp && python3 x.py", "python3 x.py && cd /workspace && ls",
+    "git -C /workspace/repos/epyc-root diff --stat"])
+def test_f_directory_change_refused(tmp_path, acc):
+    with pytest.raises(ValueError) as e:
+        _w(_tree(tmp_path), acceptance=acc)
+    assert "(f)" in str(e.value) and "bare command" in str(e.value) and "python3 -m pytest -q tests/x.py::T" in str(e.value)
+
+
+@pytest.mark.parametrize("acc", [
+    "python3 -m pytest -q tests/x.py::T", "python3 scripts/x.py && python3 -m pytest -q tests/x.py",
+    "python3 scripts/x.py | grep -q ok", "python3 scripts/x.py --record cd"])
+def test_f_pipes_and_chains_allowed(tmp_path, acc):
+    assert _w(_tree(tmp_path), acceptance=acc).exists()
