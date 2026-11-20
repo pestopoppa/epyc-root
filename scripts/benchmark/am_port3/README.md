@@ -598,6 +598,18 @@ input/build changes, layer thresholds, live linkage/KFD/budget sampling and owne
 child termination. Full Python suite: 68 PASS, one optional native-reader SKIP.
 Actual full builds, prepared model inputs and row publication are next.
 
+`row_job.py` is the keeper entry point after input preparation. Its smoke validates
+all four full-build receipts and runs a short patched-HIP control (20 prefix,
+one warmup and two probe tokens, context 512) through the same live
+PID/linkage/residency executor. This proves startup and control execution only.
+The grant runs the complete pipeline above with its separately declared plan.
+The outer result distinguishes `SMOKE_PASS`, `MEASURED` and `REFUSED`; a measured
+early quality/default-off stop is never translated into a quality PASS. The
+measured result is bound by SHA-256. SIGTERM raises through the executor's cleanup
+so that its captured native child is terminated and reaped before refusal is
+recorded. Use frozen build tooling and a sealed entry-point snapshot outside the
+session lane, which can disappear between publication and grant.
+
 The first full baseline CPU attempt reached the runner link but failed with
 unresolved CPU symbols from the pinned fused-model implementation (including
 `ggml_get_type_traits_cpu` and `ggml_compute_forward_rope`). Those symbols exist
