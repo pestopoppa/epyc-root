@@ -69,7 +69,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction", "handoff_task_sha",
              "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by",
-             "resumable", "max_window_s")
+             "resumable", "max_window_s", "expects_created")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -766,6 +766,51 @@ def env_clean_hits(spec):
     return hits
 
 
+_ROW_ID_SEG = re.compile(r"[A-Za-z0-9][\w.-]*-2026[01]\d{3}(?:[-_][\w.-]*)?")
+
+
+def _under(p, root):
+    root = os.path.normpath(root)
+    return bool(root) and (os.path.normpath(p) == root or os.path.normpath(p).startswith(root + "/"))
+
+
+def path_provenance_refusal(spec, cmds, warn=None):
+    """F8 (AK audit B8): every absolute /mnt/raid0/llm/tmp/... path a smoke_predicate / --complete-cmd / --precond-cmd
+    names must (1) sit inside THIS row's own dirs (scratch_root, result_path's dir, the launcher's dir, --workdir), (2) not
+    name a different row id, and (3) exist now or be declared under spec `expects_created: [paths]`. Paths outside the
+    tmp root (binaries, models) are not judged. (3) inside the row's own dirs is a WARN appended to `warn` (a completion
+    marker never exists before its run); (1) and (2) refuse. Returns the refusal text, or None."""
+    rid = str(spec.get("id") or "")
+    stem = rf.id_stem(rid) if rid else ""
+    launcher = os.path.abspath(str(spec.get("launcher") or ""))
+    own = [str(spec.get("scratch_root") or ""), os.path.dirname(str(spec.get("result_path") or "")), os.path.dirname(launcher)]
+    own += [str(w) for w in (spec.get("_workdir"),) if w]
+    own = [x for x in own if x.startswith(rf.TMP) and os.path.normpath(x) != os.path.normpath(rf.TMP)]
+    exp = [os.path.normpath(str(x)) for x in (spec.get("expects_created") or [])]
+    for kind, cmd in cmds:
+        for p in rf._ABS_TOKEN.findall(cmd or ""):
+            p = p.rstrip(",:")
+            if not p.startswith(rf.TMP):
+                continue
+            fix = (f"FIX: point {kind} at this row's own output (under {own[0] if own else 'its scratch_root'}), or, for a "
+                   f"file the job itself creates, list it under \"expects_created\": [\"{p}\"]; then re-run publish_row.py")
+            other = [seg for seg in p[len(rf.TMP):].split("/") if _ROW_ID_SEG.fullmatch(seg)
+                     and not (seg == rid or seg.startswith(rid) or rf.id_stem(seg) == stem)]
+            if other:
+                return f"{kind} `{cmd[:80]}` reads {p}, which names a different row ({other[0]}); a predicate must test THIS run. {fix}"
+            if not any(_under(p, r) for r in own):
+                return (f"{kind} `{cmd[:80]}` reads {p}, outside this row's dirs ({', '.join(own) or 'none declared'}); "
+                        f"another row's output can make it pass or fail. {fix}")
+            exists = os.path.exists(p) or (any(c in p for c in "*?[") and glob.glob(p))
+            if not exists and not any(_under(p, e) for e in exp):
+                # inside the row's own dirs a not-yet-existing file is usually the job's own output: WARN, never refuse
+                # (refusing would make every completion marker a publish failure); outside them it is refused above
+                if warn is not None and kind != "--complete-cmd":   # a completion marker is absent until its run ends
+                    warn.append(f"provenance: {kind} reads {p}, which does not exist yet; if the job creates it, declare "
+                                f"\"expects_created\": [\"{p}\"] (publish continues)")
+    return None
+
+
 def preflight(spec, flags, rerun=False):
     """Run once each, bounded (PREFLIGHT_TIMEOUT_S), before anything is published: the decision-rule parse, the smoke
     predicate, the engine's --complete-cmd and --precond-cmd (in the engine's --workdir, with preflight_env), and the
@@ -779,6 +824,15 @@ def preflight(spec, flags, rerun=False):
     except Exception:  # noqa: BLE001 - rowflow.publish reports the launcher defect in its own words
         return
     wd = o.get("workdir") or "/"
+    fmt0 = str(spec.get("result_format") or "")
+    pred0 = spec.get("smoke_predicate") or (fmt0[len("custom:"):] if fmt0.startswith("custom:") else None)
+    pwarn = []
+    bad = path_provenance_refusal(dict(spec, _workdir=o.get("workdir")),
+                                  [("smoke_predicate", pred0), ("--complete-cmd", o.get("complete_cmd")),
+                                   ("--precond-cmd", o.get("precond_cmd"))], warn=pwarn)
+    rf.need(not bad, bad)
+    for w in pwarn:
+        _warn(spec, w)
     for f, what in env_clean_hits(spec):
         _warn(spec, f"env-clean: {f} runs {what}; the keeper attributes the job's processes (and GPU residency) by "
                     "FILLER_ID, so a child that loses it reads as not the row's. FIX: pass FILLER_ID through (env -i "

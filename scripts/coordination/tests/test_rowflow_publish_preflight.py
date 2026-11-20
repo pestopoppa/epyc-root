@@ -223,6 +223,36 @@ class Preflight(unittest.TestCase):
     def test_smoke_predicate_false_passes(self):
         self.run_pf(self.spec(smoke_predicate="test -s out/results.jsonl"))
 
+    # F8 (AK audit B8): predicate / completion-check provenance
+    def test_f8_predicate_on_other_rows_output_refused(self):
+        other = os.path.join(rf.TMP, "other-row-20261119", "out", "results.jsonl")
+        msg = self.refused(self.spec(smoke_predicate=f"grep -q pass {other}"), other)
+        self.assertIn("different row (other-row-20261119)", msg)
+        self.assertIn("expects_created", msg)
+
+    def test_f8_path_outside_row_dirs_refused(self):
+        p = os.path.join(rf.TMP, "shared", "flag")
+        self.refused(self.spec(smoke_predicate=f"test -e {p}"), "outside this row's dirs")
+
+    def test_f8_missing_own_path_warns_unless_expects_created(self):
+        p = os.path.join(self.d, "out", "new.jsonl")
+        self.assertIn("declare \"expects_created\"", self.run_pf(self.spec(smoke_predicate=f"test -s {p}")))
+        self.assertNotIn("provenance", self.run_pf(self.spec(smoke_predicate=f"test -s {p}", expects_created=[p])))
+
+    def test_f8_other_row_path_published_when_expects_created_inside_row(self):
+        """acceptance: the same predicate is published once its path is declared under expects_created - here the
+        row's own copy of the file (a path naming another row is refused even when declared)."""
+        p = os.path.join(self.d, "out", "copied-from-other.jsonl")
+        self.run_pf(self.spec(smoke_predicate=f"grep -q pass {p}", expects_created=[p]))
+
+    def test_f8_complete_cmd_checked_too(self):
+        other = os.path.join(rf.TMP, "zz-row-20261118", "COMPLETE")
+        self.relaunch(f"--complete-cmd 'test -e {other}'")
+        self.refused(self.spec(), "--complete-cmd")
+
+    def test_f8_system_paths_not_judged(self):
+        self.run_pf(self.spec(smoke_predicate="/usr/bin/test -s out/results.jsonl"))
+
     def test_custom_format_predicate_is_checked_too(self):
         self.refused(self.spec(result_format="custom:true"), "result_format custom:")
 
