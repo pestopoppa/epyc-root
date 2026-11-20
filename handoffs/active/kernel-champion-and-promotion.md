@@ -75,6 +75,8 @@
       · gate: Pipeline pings that r8 has run; synthetic probe r2 got +3.0 pt / prefill 0.914x and could not exercise A2
       · done when: hit rate, summed prefill ms, count of F3-shape requests and A2 copy-loads per arm filed; PFXC-A2 and PFXC-P3 resolved from it
       · region: gpu-q3 · rank 30 · est from r2 rate (59 requests ~ 1 window) x r8 request count + 25 %
+      · trace: run on canary r7d instead of r8 (Pipeline: r7d is the first trace with full request bodies; 193 requests, /mnt/raid0/llm/tmp/taskflow-stage1-canary-r7d-20261120/out), canary recipe np2 ctx 524288, no --cache-reuse; ABBA arms; row `ak-pfxc-r7d-replay-gpu-20261120`
+      · stop rule: stop-on-answer when ABBA rep 1 is replayed (KEEP iff hit +>=3 pt, prefill ms down and A2 fires on >= 1 F3-shape request; KEEP_A1_ONLY if A2 never fires); stop-on-futility on missing store/trace, own VRAM < 20 GiB or a grant without 184-191; gate-class = futility-only
 - [x] **PFXC-P4** [inference] Probe for brief F2: the C14 server with `--cache-reuse 256` on this GGUF prints `cache_reuse is not supported by this context, it will be disabled`. model: Qwen3.6-35B-A3B-MTP Q8_0, row `ak-pfxc-probe-gpu-20261120` (C14 arm log).
       · done when: row `ak-pfxc-probe-gpu-20261120` (or its successor) is filed with this probe's verdict per the stop rule below
       · falsification / stop rule: PASS iff the line is present in the C14 arm server log; FAIL if absent. est 0 s extra
