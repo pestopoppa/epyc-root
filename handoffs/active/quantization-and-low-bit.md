@@ -232,6 +232,9 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 - [ ] **QUANT-ROT-1 — Run the offline activation-rotation probe at a fixed per-32-block budget.** **Owner: AutoKernel** (2026-11-06) — seeded as AK-QR-1 in research seed file 08 (`loop/seeds/hypotheses/`, cpu-quant-gdn) (ee33ddc36), anchor C7r 62cb6a6af. On one real Q4_K row, simulate no rotation, a 32-wide Hadamard, a magnitude-sorted channel permutation, and KLT composed with Hadamard, measuring q8_K window error, block amax/clipping error and dKLD. Pre-register the MambaQuant prediction: rotation has a positive sign and its effect shrinks as scale granularity narrows. No kernel, no converter change. Stop when one arm beats the control by more than the window-error noise, else record the null. (intake-2648#record, intake-2645#record) [belief: pending]
       · class: non-inference
 
+- NariQ vs EXL3 delta (intake-kspec-20261120, intake-2733#record): NariQ TRL1..TRL6 (ids 44-49, K=1..6) use the same exllamav3 mul1 codebook, 16-bit window and 16x16 tile as our EXL3_1..8; they differ in the wrapper: output-tile-major order (ours band8), F16 per-16-input block scales plus F32 pre/post sign-scale vectors and optional gathers (ours fp16 suh/svh), a per-side Hadamard descriptor including whole-slice Paley sizes 12/20/68 (ours fixed 128-block), banded lm_head/embedding with vocab gather, and custom TRELLIS ops. No mcg codebook, no HIP path; CPU path is fp32 dequant-then-FMA. MIT with Apache-2.0 libtrellis.
+- Monitor (intake-kspec-20261120, operator-approved): a NariQ file importer and the fork dequantizer as a second mul1 oracle (intake-2733#record) — reopen if NARIQ-EXL3-FEAS-1 finds a trellis quantizer path on this host or the EXL3 27B work is unparked.
+
 ## Track: iqk-iquant-enablement
 <!-- gate: none -->
 
@@ -303,6 +306,63 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
       · section: Research intake 2026-10-22 — SLQ / IST-DASLab / kaitchup Qwen3.8-27B SLQ (intake-2461..2493)
 
 > Folded from `handoffs/active/iqk-iquant-enablement.md` @ `6a4026f0ab50` on 2026-11-02 (BRF-T1-F5, route 1a, operator D1/D5; retired row INF-26 → INF-80). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **QUANT-LOOPCHK-1** [non-inference] Add a long-generation loop and truncation counter (wrong, looped or cut-off answers at a fixed generation cap, versus the Q8_0 or BF16 reference) as a secondary gate next to KLD for new low-bit GGUF arms (intake-2730).
+      · done when: a script in the research repo emits per-prompt wrong/looped/cut-off labels with a fixed cap and the gate text is added to this track; a dry fixture shows a synthetic looping output is labelled looped
+      · gate: none
+- [ ] **QUANT-LOOPCHK-2** [inference] Run the loop and truncation counter once on the incumbent 27B low-bit arm against Q8_0 to calibrate the secondary gate (intake-2730).
+      · done when: per-arm looped and cut-off counts on a frozen hard-prompt set are filed with the calibrated threshold (or the verdict that the gate is uninformative)
+      · gate: QUANT-LOOPCHK-1
+      · model: Qwen3.8-27B Q8_0 vs the incumbent low-bit arm · build: production store binaries (read-only use) · harness: QUANT-LOOPCHK-1 script, frozen hard-prompt set with digest, fixed cap · metric(dir): looped and cut-off counts lower · rule: flag an arm whose cut-off or loop count exceeds 2x the Q8_0 count · region: MI210 or CPU quarter short window · est: prompts x cap / measured decode rate + 25%
+      · stop rule: question = do KLD-passing low-bit arms loop or truncate more than Q8_0? stop-on-answer after the frozen set completes for both arms; stop-on-futility if Q8_0 itself truncates on > 20% of prompts (cap too low; re-declare)
+- [ ] **NARIQ-TRACE-CORPUS-1** [non-inference] Build an agent-trace calibration corpus with a per-token model-written mask, by generating sessions with a local model on our own harness (and, as a domain-only control, foreign cloud-written vault sessions), since no local BF16- or Q8-written agent logs exist (intake-2721).
+      · done when: corpus files plus per-token mask files exist under /mnt/raid0/llm/tmp/nariq-calib/ with a README naming the generating model and build, token counts and sha256, and the finding that no local agent logs existed
+      · gate: none        · inputs: `/mnt/raid0/llm/cloud-llm-vault`
+- [ ] **NARIQ-KLD-MASK-1** [non-inference] Add an optional per-token mask to the experimental EAR/KLD llama-perplexity branch so the loss counts only model-written positions, printing masked and unmasked KLD side by side (intake-2721).
+      · done when: unit test: an all-ones mask reproduces the current mean KLD exactly, zero-mask rows are excluded, and the existing stdout lines stay byte-identical
+      · gate: none
+- [ ] **NARIQ-IMX-1** [inference] Recalibrate IQ4_XS and Q4_K quants of Qwen3-4B-Instruct-2507 with an imatrix computed on agent traces versus wiki text and score masked and unmasked KLD against BF16 plus EAR (intake-2721).
+      · done when: four arm GGUFs and their masked/unmasked KLD and EAR results are filed with a verdict against the stop rule
+      · gate: NARIQ-TRACE-CORPUS-1, NARIQ-KLD-MASK-1        · inputs: `/mnt/raid0/llm/models/Qwen3-4B-Instruct-2507`
+      · model: Qwen3-4B-Instruct-2507 (BF16 safetensors base, Q8_0 GGUF) · build: experimental EAR+mask branch (production trees untouched) · harness: llama-imatrix, llama-quantize, llama-perplexity --kl-divergence on a frozen held-out trace split
+      · metric(dir): masked KLD lower, unmasked KLD lower, EAR higher · rule: 2 imatrix sources x 2 types at equal bytes · region: one CPU quarter · est: measured first-arm time x 4 x 1.25
+      · stop rule: question = does an agent-trace imatrix lower masked KLD versus a wiki imatrix at equal bytes? noise = paired per-chunk standard error; checkpoint after the first arm pair per type; stop-on-answer when the masked-KLD gap exceeds 2x the paired SE on both types; stop-on-futility when the IQ4_XS gap stays under one paired SE after all chunks
+- [ ] **NARIQ-IMX-Q38FN** [inference] If the pilot keeps, re-imatrix the served Q38FN UD-IQ4_XS recipe on agent traces and compare masked and unmasked KLD against the current file using the Q8_0 reference, keeping bytes and tensor types fixed (intake-2721).
+      · done when: masked/unmasked KLD and EAR for the current vs agent-trace-imatrix Q38FN file are filed with a keep/drop verdict; no serving change rides on it
+      · gate: NARIQ-IMX-1
+      · model: Qwen3.8-Flash-Next UD-IQ4_XS (served) vs re-imatrixed twin, Q8_0 reference (no BF16 on disk) · build: experimental EAR+mask branch · harness: llama-imatrix on the agent-trace corpus, llama-quantize with the served tensor-type map, llama-perplexity --kl-divergence
+      · metric(dir): masked KLD lower · rule: equal bytes and types; keep iff masked KLD gap > 2x paired SE and unmasked not worse · region: CPU q0-q2 short checkpointed windows · est: imatrix <= 30 min + quantize 0.5-1.5 h + KLD ~7 min per file, x 1.25
+      · stop rule: question = does the pilot's effect carry to the served MoE? stop-on-answer when both files are scored; stop-on-futility if the pilot's gap was below 2x SE (this box then closes without running)
+- [ ] **NARIQ-EXL3-FEAS-1** [non-inference] Determine whether an EXL3/trellis quantizer (exllamav3 converter) can run on this host CPU-only or on the MI210 for a small model, and cost one agent-trace recalibration in the trellis format (intake-2721, intake-2733).
+      · done when: a note states converter source and version, whether quantize needs CUDA or wave32 extensions, the viable hardware path and a measured-or-estimated cost; the trellis recalibration arm is then boxed or recorded as blocked with the reason
+      · gate: none
+- [ ] **NARIQ-BANDHEAD-1** [non-inference] Price a banded output.weight (bands ranked by predicted token probability, per-band GGUF types, vocab gather) against the served Q38FN Q6_K head, alongside QUANT-HEAD-1 (intake-2721, intake-2733).
+      · done when: a table of per-band bytes and the estimated bytes/token saving on the served recipe is filed, with the gather cost and the MTP-shared-slab handling stated
+      · gate: none
+      · expected gain: ~0.12 GB of 4.16 GB/token (~3.0% fewer bytes) for a 4/12 Q6_K/Q4_K band split (derived; split is an assumption), speed roughly proportional while lm_head stays near 94% of read bandwidth (cpu-decode-roofline-program.md L386, L393); confidence low-medium
+- [ ] **EXL3-MFMA-FP16-ENV-1** [non-inference] Test whether the EXL3-3a MFMA mismatches (~1.65e-5 to 1.8e-5 on the three real fixtures) are explained by fp16 activation rounding with a power-of-two scale per 128 inputs, as libtrellis documents, and derive the MFMA envelope from that model (intake-2733).
+      · done when: a note computes the predicted deviation per fixture from the saved fixtures and states whether it covers the observed errors; the EXL3-3a envelope is amended or the cause left open with the reason
+      · gate: none
+- [ ] **NARIQ-LIBTRELLIS-MAP-1** [non-inference] Write the gfx90a EXL3-4 design note from libtrellis principles: the 4v+1528 fp16 A-fragment with sum correction, activation prep in fragment order, grouped launches for matrices sharing an input, an LDS plan sized to 64 KB and native wave64 MFMA lane ownership (intake-2733).
+      · done when: the note states each choice with its gfx90a constants and which are covered by the existing standalone MFMA harness
+      · gate: none
+- [ ] **NARIQ-HADFULL-PROBE-1** [non-inference] Offline-probe Qwen3-4B-Instruct-2507 BF16 weights of width 2560 for quantization error after 128-block Hadamard versus whole-slice Paley-20 rotation at a fixed scalar bit width (intake-2733).
+      · done when: a per-tensor relative-error table for both rotations is filed with a verdict on whether a whole-slice format is worth a quantizer build
+      · gate: none
+- [ ] **GGUF-RECIPE-REFTRACES** [inference] Generate and freeze held-out reference traces from the original served model (search split and never-seen final split, agent-style, wiki and code) and save full-vocabulary KLD base files (intake-2730).
+      · done when: trace files and base logits exist under /mnt/raid0/llm/tmp/gguf-recipe/ with a manifest (token counts, sha256, generating build); a smoke Q4_K_M KLD on the same wiki slice reproduces 0.007607 within 3 standard errors
+      · gate: none
+      · model: the served 27B (or a smaller served model chosen for the pilot) · build: production store for generation, EAR build or v10 for KLD · harness: llama-server generation then llama-perplexity --kl-divergence-base
+      · metric(dir): base integrity and smoke mean KLD lower · rule: generate only on the reference, never a quant · region: CPU q0-q2 short checkpointed windows or MI210 if free · est: measured generation tok/s x tokens + 25%
+      · stop rule: question = do the reference files reproduce the known X0 KLD? checkpoint after 10 chunks; stop-on-answer when within 3 SE; stop-on-futility if the mismatch persists after one regeneration
+- [ ] **GGUF-RECIPE-SCORER** [non-inference] Write a candidate scorer that takes a tensor-type map and imatrix, checks bytes with llama-quantize --dry-run against a fixed budget, quantizes, scores held-out KLD, same-top-p and EAR against the saved base plus the loop/truncation counter, and emits one JSON row per candidate (intake-2730).
+      · done when: the script runs end to end on a small model with two candidates producing valid JSON rows, with unit tests for the dry-run budget rejection and the log parser
+      · gate: QUANT-LOOPCHK-1
+- [ ] **GGUF-RECIPE-SEARCH** [inference] Run a bytes-budgeted greedy/ASHA search over per-tensor type maps restricted to iqk fast-path types and imatrix calibration sources, scored by held-out KLD plus the loop/truncation check, and compare the winner with the incumbent served recipe at equal bytes on the final split (intake-2730).
+      · done when: a RESULT.json lists every candidate, the winner, the incumbent and the final-split KLD difference with a bootstrap CI, plus decode tok/s of winner vs incumbent
+      · gate: GGUF-RECIPE-REFTRACES, GGUF-RECIPE-SCORER
+      · model: one served 27B-class pilot · build: production quantizer and perplexity binaries (read-only use) · harness: GGUF-RECIPE-SCORER · operator lifted the NEW-12 per-tensor allocator hold for this search only on 2026-11-20 (approval of intake plan r2); NEW-12 itself stays held
+      · metric(dir): final-split mean KLD lower at equal bytes; decode tok/s higher as a veto · rule: bytes within 1% of incumbent, same base · region: CPU q0-q2 short checkpointed windows · est: 70-140 candidates x ~10-25 min (re-derived from the first 5) + 25%
+      · stop rule: question = does any map or calibration source beat the incumbent KLD at equal bytes beyond noise? expected 10-30% lower mean KLD (inferred) vs ~3% SE; checkpoints after 20, 50, 100 candidates; stop-on-answer when a candidate beats the incumbent on the final split with the CI excluding 0 and decode within 5%; stop-on-futility when the best final-split gain after 50 candidates is under 5%
 
 ### iqk IQ-quant Enablement — shipped in v8, residual research active
 
@@ -685,6 +745,7 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
   Per-gate inputs (all blanks; none invented): **NEW-10** (Q38FN IQ3_XXS/IQ3_S vs served UD-IQ4_XS) N = ____ (task-bank paired items), p_flip = ____ (measure: UD-IQ4_XS vs UD-IQ4_XS rerun on the bank, greedy); **NEW-13** has no task gate (KLD bootstrap, N=120 passages) - out of scope; **T2** (IQ4_KT vs Q4_K_M, IQ2_KT vs IQ2_XXS in ik scratch) N = ____, p_flip = ____ (measure: Q4_K_M and IQ2_XXS self-rerun flip floors). NEW-12 is HELD; if un-held, size it the same way. At 2 pp the gate needs 773-3091 items for p_flip 5-20%; a 250-item bank supports only ~3.5-7 pp.
 
 - *NEW-12 — HELD (operator 2026-10-22: "stick to NEW-10 and then we reassess later"); no checkbox, no compute booked.* Q38FN allocation transplant plus bytes-budgeted per-tensor type allocator from the Stage-3 plan (intake-2470#record, intake-2466#record, intake-2487#record). Reassess after NEW-10's IQ3_XXS quality result. If it is ever run, use the lean form: one candidate at a time, no P0 ISTA GSQ-weights comparison, ~190 GB disk peak, and delete the Q8_0 source at the end.
+  - 2026-11-20 (intake-kspec-20261120, operator): the NEW-12 hold is lifted for GGUF-RECIPE-SEARCH only (iqk-iquant-enablement track); NEW-12 itself stays held.
 
 
 ## Track: tq3-quantization-evaluation

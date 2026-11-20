@@ -29,6 +29,13 @@
 ## Track: autokernel-research-loop
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
+### Backlog
+- [ ] **AK-ASM-H11-UNIQ** [inference] Add an op-level test that the gfx90a AITER topksoftmax asm and the topk-moe fusion emit unique expert IDs on rows with exact ties, -inf and NaN logits, because the C14 MUL_MAT_ID helper silently drops duplicate slots (intake-2719).
+      · done when: test-backend-ops cases for tie/-inf/NaN router rows exist and a ROCm0 run reports PASS (unique IDs) or a filed FAIL with the offending kernel
+      · gate: none
+      · model: none (op level) · build: frozen C14 HIP build pinned by sha · harness: test-backend-ops ROCm0 vs CPU on the router ops · metric: unique-ID check per row (pass/fail) · rule: any duplicate ID on any degenerate row = FAIL · region: gpu-q3 short window · est: <= 600 s
+      · stop rule: question = can the asm or fusion router emit duplicate IDs? single run is decisive (deterministic); stop-on-answer after the case set runs; stop-on-futility on a build/residency proof failure
+
 > Folded from the body of `handoffs/active/autokernel-research-loop.md` (row INF-06), from its first `##` section on, @ `8012aabb5781` on 2026-11-03 (BRF-T7-F5, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
 #### Current status — 2026-09-27 (start here)
@@ -4724,6 +4731,29 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 
 - [x] **JEV-4** ✅ 2026-11-02 epyc-inference-research `3ab4ffbf1` [belief: cc] [S] `resume.ineligible_reason` (`scripts/kernel_rnd/autokernel/loop/resume.py:991`) returns one exhaustive code enum plus text; audit that every critic/panel call records asked / answered / unavailable (intake-2604#record). removes: free-text ineligibility strings matched by callers.
 - **[declined: ws58 2026-11-03 content-review: merged into the red-suite triage]** **JEV-4-FU** [S] 13 pre-existing loop/resume test failures (same set on clean origin/main, e.g. 'candidate disposition has no recorder'); and critic pass 1 writes no durable 'asked' checkpoint when hypothesis.runtime_pair is set. removes: the standing red test set and the unrecorded critic-ask state.
+- [ ] **AK-HACKSCAN-SOLX** [non-inference] Audit the reward-hack and integrity scanners against the SOL-ExecBench exploit classes and the amd/skills wave64 hazard sweep, then add the missing static detectors with mutant fixtures (intake-2732, intake-2745).
+      · done when: a diff of covered vs missing classes is filed (precision downgrade with matching dtypes, timer tamper, cached output across timed iterations, work outside the timed region, 32-bit ballot/mask destinations, 1<< on 64-bit masks, logical 32-lane warps calling wave-wide collectives, smid-indexed pools, size-threshold selectors without an above-threshold case); each added detector catches its mutant with 0 hits on the current champion HIP tree
+      · gate: none
+- [ ] **AK-ISA-IDENT-1** [non-inference] Prototype a device-ISA identity check (exported symbols plus normalized gfx90a code object of candidate vs anchor HIP builds) as an eligibility test that skips GPU re-measurement of candidates whose compiled GPU code is byte-identical (intake-2746).
+      · done when: the check runs on the stored candidate records and reports the fraction of rejected or no-op candidates with identical device ISA; indeterminate results are treated as differing
+      · gate: none
+- [ ] **AK-BLOCKED-VS-FAILED** [non-inference] Audit the row verdict classifier so a run with no GPU, a residency failure or a missing host resource is recorded as blocked (host fact) and never as a candidate failure (code fact) (intake-2746).
+      · done when: the classifier source paths and their case table (GPU absent, residency fail, OOM, candidate wrong) are filed, with any mis-classifying branch fixed and tested
+      · gate: none
+- [ ] **AMDSK-OCC-CALC-1** [non-inference] Add a gfx90a occupancy calculator (unified 512 VGPR+AGPR pool at granularity 8, 64 KB LDS, SGPR limit) fed by the static code-object register reader, validated against the a10 VGPR lever table (intake-2745).
+      · done when: a test reproduces 63->8, 78->6, 90->5 and 125->4 waves per SIMD from a10_iq2_vgpr_lever_20260812.md
+      · gate: none
+- [ ] **AMDSK-AUTOTUNE-CFG-1** [non-inference] Add a declared-config autotune pattern (config set, retrigger key args, cached best, proof that waves_per_eu and similar hints reached codegen) to the AutoKernel GPU knob sweeps (intake-2745).
+      · done when: a design note maps the pattern onto the sweep driver and names the codegen proof for each hint
+      · gate: AMDSK-OCC-CALC-1
+- [ ] **DFLASH2-DRAFT-FLOOR-FUSE** [inference] Cut the 27B DFlash2 drafter's tiny-kernel floor (488 of 560 dispatches per round under 6 us, 2.14 ms or 3.6% of the round) by fusing the per-round conv taps and the selector lattice loop into a few HIP kernels behind a default-off knob, after a zero-compute attribution step (intake-2725).
+      · done when: the step-1 attribution table (dispatches per graph node: conv, selector, other) is filed, then either a fused-op A/B row (op-level and end-to-end 27B DFlash2) or a futility close
+      · gate: none        · inputs: `/mnt/raid0/llm/tmp/ak-gap-1-trace-gpu-20261119/out/trace/27B-dflash2/k_kernel_trace.csv`
+      · code @ C14 eee3da838 (/mnt/raid0/llm/worktrees/llama-c14-pin-20261119): `src/models/dflash.cpp` build_dflash2_conv L775 (called at L1146/1203/1216/1229, 20 calls per round, 2 taps each) and the selector lattice loop L1312-1378; step 1 matches a GGML_SCHED_DEBUG node dump to rocprofv3 dispatch order in the AK-GAP-1 trace
+      · expected gain: upper +3.4% of the 27B DFlash2 round (448 removable dispatches x 4.38 us = 1.96 ms of 59.3 ms), realistic +1.5% to +2.5% (inferred, profiler inflates tiny kernels); confidence low
+      · model: Qwen3.8-27B Q8_0 + DFlash2 Q8_0, served recipe · build: experimental from champion C14, default-off knob · harness: NMSE check of fused vs unfused subgraph, then end-to-end decode A/B, 5 interleaved reps
+      · metric(dir): drafter subgraph us/round lower, tok/s higher · rule: greedy token identity, then end-to-end above the 0.84% GPU noise floor carries to the champion gate · region: gpu-q3 (host threads 184-191) · est: 3600 s (inferred) + 25%
+      · stop rule: question = is >= 2% of the round recoverable from drafter dispatch overhead? upper bound 1.96 ms vs a 0.50 ms floor; checkpoint after step 1 (no compute); stop-on-answer: fused subgraph >= 1.30x and end-to-end above 0.84% carries, op < 1.10x drops; stop-on-futility: step 1 shows < 270 conv+selector dispatches per round
 
 ### Moved from INF-48 (2026-11-19)
 

@@ -1422,6 +1422,11 @@ Operator-approved [P2](../../research/intake-stage3-plan-2026-10-03-decision-too
 ## Track: unified-trace-memory-service
 <!-- gate: none -->
 
+### Backlog
+- [ ] **UTM-B2-SEARCH-CONTROLS** [non-inference] Extend ms.search with an optional time range applied before scoring, a stateful exclude-seen-sessions set, count-only and group-by-session modes, limit/offset and a snippet clip, and ms.expand with a window of N neighbouring events of the same session, keeping default behaviour byte-identical with the flags off (intake-2737, intake-2743).
+      · done when: unit tests in the trace-navigation suites cover each parameter (range filters before ranking, seen-set exclusion, count_only returns only an integer, window clipped at session boundaries, stable offset continuation); defaults match the pre-change golden output; existing suites pass
+      · gate: none
+
 > Folded from `handoffs/active/unified-trace-memory-service.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F24, route 1a, operator D1/D5; retired row RTG-41 → EVL-10). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
 ### Unified Trace / Memory Service

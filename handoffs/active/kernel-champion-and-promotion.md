@@ -20,6 +20,14 @@
 ## Track: autokernel-champion-aggregate
 <!-- gate: INF-06#autokernel-research-loop, INF-50#dflash2-block-drafter-experimental-build, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
+### Backlog
+- [ ] **MMID-HELPER-N10** [non-inference] Fold upstream f1793c1c4 (#27978, fast mm_ids_helper for any n_expert_used, adds the n_used=10 case) as one commit with its test onto a fresh-from-champion llama.cpp-experimental branch for the next composite, because C14 sends Q38FN's top-10 MoE through the generic per-token helper on the MI210 (intake-2719).
+      · done when: the commit exists with MUL_MAT_ID test cases (n_expert 512, n_used 10, n_tokens 16/64/512); the CPU build passes them; the HIP build shows the mm_ids_helper<10> symbol; the composite's ROCm0 test-backend-ops fold slice covers MUL_MAT_ID with no new failures
+      · gate: none        · inputs: `/mnt/raid0/llm/tmp/gdn-share-mi210-20261106/out/prof/Q38FN/pp2048`
+      · code @ C14 eee3da838 (/mnt/raid0/llm/worktrees/llama-c14-pin-20261119): `ggml/src/ggml-cuda/mmid.cu` L143-171 dispatches n_expert_used 2/4/6/8/16/32 only and sends 10 to the generic per-token loop L41-60; callers `mmq.cu` L226 and `mmf.cu` L87; upstream f1793c1c4 touches only mmid.cu (+13/-2: mm_ids_pow2 padding plus any-n dispatch) and `git apply --check` is clean on C14 (2026-11-20, no tree change)
+      · build/test: one commit on a fresh-from-champion llama.cpp-experimental branch carrying the cherry-picked hunk and new test_mul_mat_id cases (`tests/test-backend-ops.cpp` near L6557: Q8_0 and IQ4_XS weights, n_expert 512, n_used 10, n_tokens 16/64/512/2048); CPU build passes them; HIP build shows mm_ids_helper<10> via nm/strings; composite fold slice ROCm0 MUL_MAT_ID shows no new failures; folded into the next champion composite per the forward-port rule (one feature per commit, test travels with it)
+      · expected gain: Q38FN MI210 hybrid pp2048: mm_ids_helper<0> is 7.33% of GPU kernel time (141 calls x 1005 us = 141.7 of 1932.7 ms; gdn-share-mi210-20261106, C7r mmid.cu identical to C14); wave64 fast path walks 4 tokens per iteration -> ~250-350 us per call -> ~92-106 ms per 2048-token ubatch, ~5% of GPU kernel time (inferred); upstream +11.4% PP on warp32; no decode, 27B, A3B or CPU effect; confidence high that the gap is real, medium on size
+
 > Folded from the body of `handoffs/active/autokernel-champion-aggregate.md` (row INF-65), from its first `##` section on, @ `f6af8bc1d093` on 2026-11-03 (BRF-T7-F1, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
 
@@ -1775,6 +1783,12 @@ Open kernel-fix boxes re-homed by INF48-FOLD-PLAN (moved from INF-48 2026-11-17;
   - Operator decision 2026-11-18: do NOT fold now; HOLD the fix for **C14**, together with the q8_1 block-sum fix (`8c180a25f`, row c13-q81-sum-overflow-gpu-20261118-r4), and fold both only after q8_1 r4 passes. [no-decision-needed: operator-decided] [belief: cc]
 - [x] **INF48-FA-HS256-MMA-PRECISION** [inference] With GGML_HIP_ROCWMMA_FATTN=OFF, 5 default-corpus FA cases (hs256, mask=0, kv 512/1024, nb 32/75, 4 of 5 with sinks) exceed the 5e-4 error limit on MMA (ERR 6.8e-4..1.26e-3; GUARD run of inf48-eqv-fa-rescale-gpu-20261116-r2). Not in the C10/C12 configure (WMMA takes these there); matters if WMMA is ever disabled. model: none. est 1800 s. stop-on-answer: accumulation-precision cause identified or limit justified. [no-belief: new box] (moved from INF-48 2026-11-17)
   - ✅ 2026-11-18 fa-bugfix-c13-confirm-20261117: pass — the five hs256 cases are OK on the fix (5/5); cause was the special head-size-256 tuning (r2 pinned it). Ships with the C14 fold above. [belief: cc]
+- [ ] **MMID-HELPER-N10-GATE** [inference] Measure the n_used=10 helper fold on the Q38FN MI210 hybrid prefill: rocprof mm_ids_helper time and pp2048 throughput, C14 store versus the fold build, with op correctness first (intake-2719).
+      · done when: verdict KEEP, DROP or FAIL_CORRECTNESS filed under MMID-HELPER-N10 with per-arm helper us/call, pp2048 tok/s and paired CIs
+      · gate: MMID-HELPER-N10        · inputs: `/mnt/raid0/llm/tmp/gdn-share-mi210-20261106/out/runs.json`
+      · model: Qwen3.8-Flash-Next UD-IQ4_XS (512 experts, top-10) in the gdn-share hybrid recipe (-ncmoe 999 -ub 2048) · build: C14 store vs the fold build (content proof: mm_ids_helper<10> symbol plus verify_ggml_linkage) · harness: test-backend-ops ROCm0 MUL_MAT_ID n_used 10 cases, then llama-bench -p 2048 -n 0 under rocprofv2 kernel stats and once without the profiler, ABBA
+      · metric(dir): mm_ids_helper us/call lower, pp2048 tok/s higher · rule: KEEP iff op tests pass AND helper time per call falls >= 30% AND unprofiled pp2048 is not lower beyond the 0.84% GPU noise floor · region: gpu-q3 (numactl --membind=3 -- taskset -c 184-191) · est: ~1500 s (two profiled + two unprofiled arms of a pp2048 run, re-derived from the gdn-share run time + 25%)
+      · stop rule: question = does the fast helper cut the 7.33% generic-helper share? expected 1005 -> ~250-350 us/call vs a few-percent repeat noise; checkpoint after the first AB pair; stop-on-answer after 3 pairs with the helper-time CI clear of 30%; stop-on-futility on an op-test failure (FAIL_CORRECTNESS) or helper time within 10% after 2 pairs (DROP)
 
 ## Track: fable5-window2-findings-03-portfolio-and-master-queue
 <!-- gate: none -->

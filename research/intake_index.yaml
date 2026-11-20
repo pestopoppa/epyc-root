@@ -392480,7 +392480,11 @@
     handoffs:
     - cpu-decode-roofline-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - cpu-decode-roofline-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): PR32613-A1: P7 / Q8PK-GEMM-AB; PR32613-A2: P7 / Q8PK-DECODE-OPBW; PR32613-A3: P7 / Q8PK-GEMM-AB; R2-Q6K-HEAD: P7 / Q6K-HEAD-CALLCOST; R2-IQ4NL-ZMM: P7 / IQ4NL-GEMV-ZMM"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -392587,7 +392591,13 @@
     - kernel-champion-and-promotion.md
     - "rocm-kernel-authoring.md"
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - kernel-champion-and-promotion.md
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): PR32505-A1: M1 monitor; PR32505-A2: P2 / MMID-HELPER-N10; PR32505-A3: P2 / AK-ASM-H11-UNIQ; PR32505-A4: K2 knowledge-only; R2-MMID-GATE: P2 / MMID-HELPER-N10-GATE"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -392731,7 +392741,11 @@
     - speculative-decoding.md
     - "rocm-kernel-authoring.md"
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): PR32266-A1: P2 / DTREE-0-Q8MF; PR32266-A2: K1 knowledge-only; PR32266-A3: P2 / DTREE-0-Q8MF-GATE; R2-WVSK16-WITNESS: P2 / DTREE-0-WVSK16-WITNESS"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -392810,7 +392824,11 @@
     - quantization-and-low-bit.md
     intake_entries:
     - intake-873
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): NARIQ-A1: P3 / NARIQ-KLD-MASK-1, NARIQ-IMX-1; NARIQ-A2: K3 knowledge-only; NARIQ-A3: K3 knowledge-only; NARIQ-A4: P10 / NARIQ-LIBTRELLIS-MAP-1; R2-NARIQ-CORPUS: P3 / NARIQ-TRACE-CORPUS-1; R2-NARIQ-SERVED: P3 / NARIQ-IMX-Q38FN; R2-NARIQ-TRELLIS: P3 / NARIQ-EXL3-FEAS-1"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -392930,6 +392948,9 @@
     intake_entries:
     - intake-873
   handoffs_updated: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): NARIQ-HF-A1: decline: the card restates the paper counts and is not independent evidence"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -392996,7 +393017,12 @@
     handoffs:
     - autokernel-akx-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - rocm-kernel-authoring.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): RSI-A1: K2 knowledge-only; RSI-A2: M5 monitor; RSI-A3: K2 knowledge-only"
   handoffs_created: []
   verification: stage1-unverified
   read_depth: PARTIAL
@@ -393095,7 +393121,11 @@
     - "rocm-kernel-authoring.md"
     intake_entries:
     - intake-2694
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): ROCM102-A1: P4 / ROCK-WAVE64-CHECKLIST; ROCM102-A2: K2 knowledge-only; ROCM102-A3: K2 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393215,7 +393245,12 @@
     - intake-1256
     - intake-1505
     - intake-1512
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): NARROW-A1: P9 / NARROW-DRAFT-WIDTH-TIMING; NARROW-A2: M2 monitor; NARROW-A3: K1 knowledge-only; R2-FLOOR-FUSE: P9 / DFLASH2-DRAFT-FLOOR-FUSE"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393349,7 +393384,11 @@
     - "kv-cache-program.md"
     intake_entries:
     - intake-1256
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): QDKV-A1: K1 knowledge-only; QDKV-A2: P1 / Q38FN-DRAFT-FA-WINDOW; QDKV-A3: decline: draft KV capacity is not binding, rotation already handles key outliers and the packed path is slower"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393497,7 +393536,11 @@
     - speculative-decoding.md
     - "kv-cache-program.md"
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): GMTP-A1: P9 / DRAFT-HEAD-APPROX-RECALL; GMTP-A2: K1 knowledge-only; GMTP-A3: K1 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393653,7 +393696,11 @@
     intake_entries:
     - intake-1215
     - intake-370
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): BUD-A1: P6 / TB-MULTIBUDGET-1; BUD-A2: P6 / TB-MULTIBUDGET-1; BUD-A3: M4 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393803,7 +393850,12 @@
     handoffs:
     - context-and-token-economy.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  - memory-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): GRP-A1: P5 / CF-AB-A7-PROBE; GRP-A2: P5 / UTM-B2-SEARCH-CONTROLS; GRP-A3: K4 knowledge-only; R2-GREP-HISTORY: P5 / UTM-B2-GREP-HISTORY; R2-VERBATIM-COMPACTION: P5 / UTM-B2-VERBATIM-WITH-COMPACTION; R2-RECOVERY-POINTERS: P5 / UTM-B2-RECOVERY-POINTERS"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -393936,7 +393988,11 @@
     - quantization-and-low-bit.md
     - kernel-champion-and-promotion.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): QDA-A1: P3 / QUANT-LOOPCHK-1, QUANT-LOOPCHK-2; QDA-A2: P8 / GGUF-RECIPE-SEARCH; QDA-A3: P8 / GGUF-RECIPE-SCORER, GGUF-RECIPE-SEARCH; R2-GGUF-REFTRACES: P8 / GGUF-RECIPE-REFTRACES"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -394058,6 +394114,9 @@
     - long-context-program.md
     intake_entries: []
   handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): FM2-A1: K4 knowledge-only; FM2-A2: decline: a multi-billion-token training job with no consumer in our served lineup"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -394187,7 +394246,12 @@
     - intake-1087
     - intake-1227
     - intake-2010
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - autokernel-loop.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): SOLEXEC-A1: P4 / AKX-SOLSCORE-1; SOLEXEC-A2: P4 / AKX-SOLSCORE-1; SOLEXEC-A3: P4 / AK-HACKSCAN-SOLX; SOLEXEC-A4: M5 monitor; SOLEXEC-A5: decline: CUDA Blackwell problems with a withheld baseline give no decision value on gfx90a or Zen 5"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394357,7 +394421,11 @@
     - intake-2721
     - intake-2722
     - intake-873
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): NARI-A1: K3 knowledge-only; NARI-A2: M3 monitor; NARI-A3: P10 / NARIQ-BANDHEAD-1; NARI-A4: M3 monitor; R2-MFMA-ENV: P10 / EXL3-MFMA-FP16-ENV-1; R2-HADFULL: P10 / NARIQ-HADFULL-PROBE-1"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -394437,7 +394505,11 @@
     - intake-2724
     - intake-2697
     - intake-2703
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): AMDSKILLS-A1: P4 / ROCK-WAVE64-CHECKLIST; AMDSKILLS-A2: P4 / ROCM-PROFILER-DECISION; AMDSKILLS-A3: P4 / ROCK-FLYDSL-GFX90A"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394525,7 +394597,11 @@
     - intake-2697
     - intake-2703
     - intake-2724
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): FLYDOCS-A1: P4 / ROCK-FLYDSL-GFX90A; FLYDOCS-A2: K2 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394597,7 +394673,11 @@
     - intake-2697
     - intake-2703
     - intake-2724
-  handoffs_updated: []
+  handoffs_updated:
+  - rocm-kernel-authoring.md
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): FLYBLOG-A1: K2 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394683,7 +394763,12 @@
     - memory-program.md
     intake_entries:
     - intake-2729
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  - memory-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): CHATLOGSEARCH-A1: P5 / CF-AB-A7-SURFACE; CHATLOGSEARCH-A2: P5 / UTM-B2-SEARCH-CONTROLS; CHATLOGSEARCH-A3: K4 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394810,7 +394895,11 @@
     - harness-program.md
     intake_entries:
     - intake-2729
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): GREPALLYOUNEED-A1: P5 / CF-AB-A7-SURFACE; GREPALLYOUNEED-A2: K4 knowledge-only; GREPALLYOUNEED-A3: decline: the source does not contain those features"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -394923,7 +395012,12 @@
     - intake-2727
     - intake-505
     - intake-864
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): WMTP-A1: P1 / Q38FN-DRAFT-FA-WINDOW; WMTP-A2: P1 / Q38FN-DRAFT-SPLITKV; WMTP-A3: M2 monitor; WMTP-A4: K1 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395043,7 +395137,11 @@
     intake_entries:
     - intake-740
     - intake-2725
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): SLIM-A1: P9 / DRAFT-HEAD-APPROX-RECALL; SLIM-A2: M2 monitor; SLIM-A3: decline: the measured CPU ceiling cannot clear the serving floor after acceptance loss"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395154,7 +395252,11 @@
     intake_entries:
     - intake-740
     - intake-2727
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): DYNA-A1: K1 knowledge-only; DYNA-A2: M2 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395296,7 +395398,11 @@
     - autokernel-akx-program.md
     intake_entries:
     - intake-2732
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): SOLAR-A1: P4 / AKX-SOLSCORE-1; SOLAR-A2: P4 / AKX-SOLSCORE-1; SOLAR-A3: M5 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -395400,7 +395506,11 @@
     intake_entries:
     - intake-2737
     - intake-2729
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): BM25SCALE-A1: K4 knowledge-only; BM25SCALE-A2: P5 / CF-AB-A7-PROBE; BM25SCALE-A3: decline: the trace store already uses the ranking the paper recommends"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395501,7 +395611,12 @@
     intake_entries:
     - intake-2739
     - intake-2725
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): ATTNDRIFT-A1: P1 / Q38FN-DRAFT-FA-WINDOW; ATTNDRIFT-A2: M2 monitor; ATTNDRIFT-A3: M2 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -395633,7 +395748,13 @@
     - autokernel-loop.md
     intake_entries:
     - intake-2734
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - coordination-and-churn-pipeline.md
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): SKREPO-A1: P4 / AK-HACKSCAN-SOLX; SKREPO-A2: P4 / AK-HACKSCAN-SOLX; SKREPO-A3: P4 / ROCPROF-ATT-ADAPTER-1; SKREPO-A4: P4 / ROCK-WAVE64-CHECKLIST; SKREPO-A5: P4 / ROCM-PROFILER-DECISION; R2-ATT-ADAPTER: P4 / ROCPROF-ATT-ADAPTER-1; R2-OCC-CALC: P4 / AMDSK-OCC-CALC-1; R2-AUTOTUNE: P4 / AMDSK-AUTOTUNE-CFG-1; R2-SKILLCARD: P4 / AMDSK-SKILLCARD-EVALS-1"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -395723,7 +395844,12 @@
     intake_entries:
     - intake-2734
     - intake-2742
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-kspec-20261120 Stage-4 filing (plan r2, operator-approved 2026-11-20): MOAT-A1: P4 / AK-ISA-IDENT-1; MOAT-A2: P4 / AK-BLOCKED-VS-FAILED; MOAT-A3: P4 / ROCK-WAVE64-CHECKLIST; MOAT-A4: decline: the port and upstream-PR machinery has no counterpart in our loop"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL

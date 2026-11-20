@@ -876,6 +876,11 @@ Sawtooth / duplicate-processing argument, banked for the summarize-family cluste
 ## Track: per-request-reasoning-budget
 <!-- gate: none -->
 
+### Backlog
+- [ ] **TB-MULTIBUDGET-1** [non-inference] Add a multi-budget evaluation rule for thinking-budget routing (score any candidate policy or served model at three or more budgets spanning its typical response length, report accuracy and output length, keep the top budget uncensored) and list which served models were RL- or length-trained (intake-2728).
+      · done when: the rule is written into this track and a table of served or candidate models with their RL/length-training status (from model cards and registry) is filed
+      · gate: none
+
 > Folded from `handoffs/active/per-request-reasoning-budget.md` @ `7e268b4de29c` on 2026-11-02 (BRF-T1-F6, route 1a, operator D1/D5; retired row EVL-33 → RTG-08). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
 ### Per-Request Reasoning Budget for Hybrid SSM+MoE Models
@@ -1377,6 +1382,8 @@ n=500 per arm × 3 arms = 1,500 generations + 500 estimator calls ≈ 2,000 requ
 consumes/drops it before the template — while `chat_template_kwargs: {reasoning_effort: low}`
 renders the steering instruction (225 B). The static tree-wide zero-occurrence finding and the live
 behaviour now agree: the only working channel is `chat_template_kwargs`.
+
+- Monitor (intake-kspec-20261120, operator-approved): if a local GRPO/RLVR weights run is ever planned, pre-register stronger KL or lower truncation exposure plus a multi-budget evaluation (intake-2728#record).
 
 ## Track: rao-redel-substrate-spike
 <!-- gate: none -->
@@ -3107,7 +3114,26 @@ to the operator, not an edit.
 ## Track: tool-output-compression
 <!-- gate: none -->
 
+### Backlog
+- [ ] **CF-AB-A7-SURFACE** [non-inference] Amend the A7 lossless-log arm declaration to name grep_history plus peek over the verbatim log as its tool surface (log format, page size and clip limits), register a generic bare-search control arm, and require an inline-versus-pointer delivery check before any pass-rate claim (intake-2729, intake-2737, intake-2738).
+      · done when: the A7 arm text in the CF-AB-1 frame names the tool surface, the bare-search control and the delivery-path precondition
+      · gate: UTM-B2-GREP-HISTORY
+
 > Folded from `handoffs/active/tool-output-compression.md` @ `7e268b4de29c` on 2026-11-02 (BRF-T1-F6, route 1a, operator D1/D5; retired row UFH-07 → RTG-08). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **CF-AB-A7-PROBE** [inference] Run a prompt-only exact-recall probe built from our own verbatim session logs (key-value lookups and counting questions with mechanical answers) comparing summary_only, pointer_only, summary_pointer and full_history arms plus a forced-first-search arm on one served role (intake-2729, intake-2737, intake-2743).
+      · done when: per-arm exact-recall accuracy, counting accuracy and tokens per question are filed with a verdict on whether the lossless-log arms beat summary-only at matched token cost
+      · gate: CF-AB-A7-SURFACE, UTM-B2-GREP-HISTORY, UTM-B2-SEARCH-CONTROLS
+      · model: one served role (frontdoor or worker) from the current registry · build: production stack, orchestrator with trace_navigation_tools on in a sidecar only · harness: context_arm_ab arms over a frozen probe set mined from session.verbatim.md logs (digest recorded) · metric(dir): exact-recall and counting accuracy higher, tokens/question lower · rule: lossless arm keeps if accuracy +10 points over summary_only with tokens <= 1.5x · region: per the role's serving window · est: probe items x turns x measured role rate + 25%
+      · stop rule: question = does lossless-log search beat summary-only on exact recall at our window sizes? first unit checks the role writes working search calls (the A7 precondition); stop-on-answer after the paired probe set; stop-on-futility if the role fails the search-call check or no binding window exists at the role
+- [ ] **UTM-B2-GREP-HISTORY** [non-inference] Add a REPL grep_history(pattern, context_lines, offset, count) tool over the session's verbatim log, registered only after the first compaction boundary, with a size-safe output contract (case-insensitive regex, oldest first, 10 per page up to 30, context up to 3 lines, 6K-character response ending on a whole match with a continuation offset, 300-character line clip, count-only with per-source counts, compiler errors returned, 10 s timeout) (intake-2729).
+      · done when: tests cover absence before and presence after the first boundary, non-overlapping pagination, count agreement with the paged total, timeout and bad-pattern errors, tool-budget charging, and a byte-identical tool registry with the flag off
+      · gate: none
+- [ ] **UTM-B2-VERBATIM-WITH-COMPACTION** [non-inference] Let session_log_verbatim run alongside session compaction outside the context-arm A/B, registering the verbatim log as an artifact for grep_history, while the arm-mode conflict guard stays unchanged (intake-2729).
+      · done when: a test shows the verbatim log written with session_compaction on and no arm active; the arm conflict list still raises in arm mode (existing context-arm tests pass unchanged); the artifact is registered for the owning task only
+      · gate: UTM-B2-GREP-HISTORY
+- [ ] **UTM-B2-RECOVERY-POINTERS** [non-inference] Make compaction and tool-result clearing leave recovery pointers (verbatim log path, byte offset and length) and mention grep_history when it is registered, behind the same flags (intake-2729).
+      · done when: tests assert the cleared-output placeholder carries a peek pointer matching the recorded byte offset and that compaction text names grep_history only when registered; flags-off output is byte-identical
+      · gate: UTM-B2-GREP-HISTORY
 
 ### Tool Token Optimization — Output Compression + Definition Reduction
 
