@@ -117,8 +117,10 @@ def reviewer_for(endpoint: str, model: str):
     def review(task: dict, diff: str) -> dict:
         msg = (local_llm.POLICY + "\n# REVIEW\nYou review a worker's diff for the box below. Answer ONLY JSON "
                '{"verdict":"done|not_done|drift","reason":"<=150 chars"}. done = the diff fully does what the box '
-               "asks; not_done = partial or wrong; drift = changes things the box did not ask for.\n\n## BOX\n"
-               + task["goal"] + "\n\n## DIFF\n" + diff[:12000])
+               "asks AND meets its DONE WHEN; not_done = partial, wrong, or the DONE WHEN is not met; drift = changes "
+               "things the box did not ask for. Check the DONE WHEN clause item by item.\n\n## BOX\n"
+               + task["goal"] + "\n\n## DONE WHEN\n" + str(task.get("done_when") or "(see box)")
+               + "\n\n## DIFF\n" + diff[:12000])
         body = {"model": model, "messages": [{"role": "user", "content": msg}], "max_tokens": 200, "temperature": 0,
                 "cache_prompt": True, "response_format": {"type": "json_object"},
                 "chat_template_kwargs": {"enable_thinking": False}}

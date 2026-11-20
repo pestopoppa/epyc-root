@@ -162,3 +162,11 @@ def test_max_tokens_cap_and_no_side_agents(tmp_path, monkeypatch):
     monkeypatch.setattr(local_llm, "POLICY_DIR", tmp_path / "pol")
     c = json.loads(local_llm.write_config(tmp_path / "a", "http://x/v1", "m", {"budget": dict(schema.DEFAULT_BUDGET)}).read_text())
     assert c["agent"]["summary"] == {"disable": True} and "small_model" not in c
+
+
+def test_skill_named_in_words_is_an_input_and_not_forbidden():
+    # hand-check of NOFOLD-1 (canary r3): a correct change to the named skill was rejected as forbidden-path
+    assert ".claude/skills/kernel-promotion/" in schema.named_paths("Done when the kernel-promotion skill's fold step cites it.")
+    t = {"inputs": [".claude/skills/kernel-promotion/"], "outputs": [], "forbidden": list(schema.FORBIDDEN)}
+    assert verify.forbidden_hits([".claude/skills/kernel-promotion/SKILL.md"], t) == []
+    assert verify.forbidden_hits([".claude/settings.json"], t) == [".claude/settings.json"]

@@ -84,8 +84,13 @@ def find_box(lines: list[str], rec: dict) -> int:
     return -1
 
 
+_SKILL = re.compile(r"`?([a-z0-9][a-z0-9-]+)`?\s+skill\b", re.I)
+
+
 def named_paths(text: str) -> list[str]:
     seen: list[str] = []
+    for m in _SKILL.finditer(text):           # "the kernel-promotion skill" -> .claude/skills/kernel-promotion/
+        seen.append(f".claude/skills/{m.group(1).lower()}/")
     for m in list(_PATH.finditer(text)) + list(_BARE_PATH.finditer(text)):
         p = m.group(1).rstrip(".")
         if p not in seen and not p.startswith("/"):

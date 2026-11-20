@@ -34,7 +34,9 @@ def changed_paths(lane: Path, base_ref: str) -> list[str]:
 
 def forbidden_hits(paths: list[str], task: dict) -> list[str]:
     named = set(task.get("inputs") or []) | set(task.get("outputs") or [])
-    return [p for p in paths if p not in named and any(fnmatch.fnmatch(p, g) for g in task.get("forbidden") or [])]
+    dirs = tuple(n for n in named if n.endswith("/")) or ("\0",)
+    return [p for p in paths if p not in named and not p.startswith(dirs)
+            and any(fnmatch.fnmatch(p, g) for g in task.get("forbidden") or [])]
 
 
 def outside_pathspec(paths: list[str], task: dict) -> list[str]:
