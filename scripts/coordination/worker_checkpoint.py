@@ -295,11 +295,28 @@ def _legacy_done_body(req: Request, day: str, checkpoint_id: str) -> str:
 
 
 def _child_body(req: Request, checkpoint_id: str) -> str:
+    """Handoff standard Stage C (C0.3): the child is a §2.2 box -- `· done when: resume — <action>` (the enforced
+    diff gate rule a) and `· gate: <parent ID>` -- with the idempotency marker BEFORE the fields so the `gate:` value
+    stays a clean ref list."""
     label = "Blocked" if req.outcome == "blocked" else "Partial"
+    resume = " ".join(str(req.resume_action or "").replace("·", "-").split())
     return (
-        f"**{label} checkpoint `{checkpoint_id}`** — {req.summary}; "
-        f"resume: {req.resume_action} <!-- worker-checkpoint:{checkpoint_id} -->"
+        f"**{label} checkpoint `{checkpoint_id}`** — {req.summary} <!-- worker-checkpoint:{checkpoint_id} --> "
+        f"· done when: resume — {resume} · gate: {_parent_id(req.task_text) or 'none'}"
     )
+
+
+def _parent_id(task_text: str) -> str | None:
+    """The parent's `**ID**` via THE shared box-id rule (task_lint_core.body_id), None when it has no id."""
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "handoffs"))
+    try:
+        import task_lint_core as _l1
+        return _l1.body_id(task_text or "")
+    except Exception:  # noqa: BLE001 -- no id -> `gate: none`
+        return None
+    finally:
+        _sys.path.pop(0)
 
 
 def _update_handoff(path: Path, req: Request, checkpoint_id: str, day: str) -> None:

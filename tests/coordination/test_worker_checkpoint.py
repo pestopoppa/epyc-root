@@ -658,3 +658,32 @@ def test_replay_with_changed_summary_is_idempotent(tmp_path: Path) -> None:
     wc._update_handoff(h, wc.Request(summary="a different summary", **base), "wcp-x", "2026-11-19")
     assert h.read_text(encoding="utf-8") == once and "first summary" in once
 
+
+
+@pytest.mark.parametrize("outcome", ["blocked", "partial"])
+def test_nonterminal_child_is_a_standard_box_passing_the_diff_gate(lane: Path, outcome: str) -> None:
+    """C0.3 (handoff standard Stage C): the /log child carries `· done when: resume — <action>` and
+    `· gate: <parent ID>`, so the enforced diff gate (rule a) accepts it."""
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "handoffs"))
+    import task_lint as tl
+    dirty(lane)
+    req = request(
+        outcome=outcome,
+        boundary_reason="task-boundary" if outcome == "blocked" else "pre-reboot",
+        next_context="pre-reboot" if outcome == "partial" else "disjoint",
+        resume_action="Acquire the named external receipt, then rerun validation",
+        blocker_class="external-event",
+        blocked_on="Named receipt is not available",
+        blocking_owner_or_event="external receipt publication",
+        evidence_refs=("artifacts/evidence/missing-receipt.json",),
+        alternatives_exhausted=("Checked the canonical receipt directory",),
+        boundary_key=f"{outcome}-std",
+    )
+    receipt = wc.run_checkpoint(req, repo=lane)
+    lines = (lane / HANDOFF).read_text(encoding="utf-8").split("\n")
+    i = next(n for n, l in enumerate(lines) if f"worker-checkpoint:{receipt['checkpoint_id']}" in l)
+    f = tl.parse_fields(lines[i])
+    assert f["done when"] == f"resume — {req.resume_action}"
+    assert f["gate"] == (wc._parent_id(TASK) or "none")
+    assert "a" not in tl.dispatch_result(lines[i], 0)["fails"]
