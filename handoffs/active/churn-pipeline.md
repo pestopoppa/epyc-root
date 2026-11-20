@@ -248,7 +248,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
 - [x] **HS-STAGE-A** Handoff standard Stage A ba3adabf1 plus hotfix 671a6adf7 (`handoff_box.py`, `box_index.py`, lint). ✅ 2026-11-19 [no-belief: build/landing]
 - [x] **HS-STAGE-B** Handoff standard Stage B e14edec25..e5784a93f; lint-OK canary 20.5 to 21.6 percent, short of the 45 percent target because the remaining failures need content rewrites (box HS-STAGE-C). ✅ 2026-11-20 [belief: cc]
 - [x] **MODEL-Q8-REGISTERED** Q8 model registered (epyc-inference-research 1c8d54874). ✅ 2026-11-20 [no-belief: build/landing]
-- [ ] **RTG100-HS-RATIFY** [operator-decision] Operator signs the handoff-standard ratify package (human-only docs) by running scripts/operator/ratify_handoff_standard_20261120.sh.
+- [x] **RTG100-HS-RATIFY** [operator-decision] Operator signs the handoff-standard ratify package (human-only docs) by running scripts/operator/ratify_handoff_standard_20261120.sh. ✅ 2026-11-20 [belief: cc] signed 98342afc8; --verify VERIFIED (CLAUDE.md, SESSION_LIFECYCLE.md, OPERATING_CONSTRAINTS.md at post-state, receipts on origin/main)
       · done when: the ratify script has run and its receipt is committed on origin/main
       · gate: none
 - [ ] **RTG100-HS-C6-DROP** [non-inference] Drop the hand-written index rows once generated rows meet the C6 criteria (7 days at or above 90 percent; first sample 86.7 percent, not met).
