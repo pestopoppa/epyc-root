@@ -43,6 +43,8 @@ CLI:
                  [--author A] [--accepted A] [--new-test P ...] [--json]
                  --author backfill: accepted auto iff acceptance == literal done-when, else pending + review: backfill   write/replace the sidecar (grounded + box_text_sha filled in),
                                                         then compile; exit as compile
+                 [--force-quality REASON]   quality gate (a-e: tick-only acceptance, thin/copied/boilerplate approach,
+                                                        no resolving `where`, batch-identical acceptance) refuses unless forced
   brief.py accept <ID> [--by owner]                   accepted: <by>, clears `review`, re-grounds
   brief.py reject <ID> [--by owner]                   accepted: rejected
   brief.py sweep [--json] [--stale-list]              compile every sidecar; --stale-list prints only non-fresh
@@ -85,6 +87,12 @@ REVIEWED_AUTHORS = ("self", "backfill")   # written without the owner's context 
 ACCEPTED = ("owner", "auto", "pending", "rejected")
 TIERS = ("local", "luna", "terra", "sol")
 APPROACH_MAX_LINES = 5
+# Write-time quality gate (design §brief quality). Data, not code: extend here.
+BOILERPLATE_APPROACH_PREFIXES = ("write-side wiring for:", "first concrete step for:", "parked tracker:")
+APPROACH_MIN_CHARS = 40
+APPROACH_COPY_OVERLAP = 0.8      # share of approach tokens that also occur in the box first line
+DUP_ACCEPTANCE_MIN = 3           # identical acceptance in this many OTHER briefs = batch generation
+_TICK_ONLY = re.compile(r"\\?\[\s*[xX]\s*\\?\]")   # `[x]` / `\[x\]` in an acceptance command
 REPOS = {"epyc-root": None,  # None = the root the brief lives in
          "epyc-orchestrator": Path("/mnt/raid0/llm/epyc-orchestrator"),
          "epyc-inference-research": Path("/mnt/raid0/llm/epyc-inference-research"),
@@ -178,7 +186,8 @@ def find_box(root: Path, bid: str) -> dict | None:
                 txt, ch = L1.block(lines, i)
                 f = TL.parse_fields(txt)
                 hits.append({"file": str(p.relative_to(root)), "line": i + 1, "text_sha": BI.text_sha(line),
-                             "done_when": f.get("done when"), "brief_ref": f.get("brief")})
+                             "done_when": f.get("done when"), "brief_ref": f.get("brief"),
+                             "first_line": line})
     if not hits:
         return None
     return {**hits[0], "n": len(hits)}
@@ -513,15 +522,69 @@ def cached_state(root: Path, bid: str, box_sha: str, brief_ref: str | None = Non
 
 
 # ------------------------------------------------------------------------------------------------- write / accept
+def _tokens(s: str) -> set[str]:
+    return set(re.findall(r"[a-z0-9_]+", (s or "").lower()))
+
+
+def quality_problems(root: Path, bid: str, box: dict, where: list[str], approach: str, acceptance: str,
+                     new_tests: list[str] | None = None) -> list[str]:
+    """Reasons a brief is generator filler rather than guidance (rules a-e). Empty list = passes."""
+    root = Path(root)
+    out: list[str] = []
+    acc = (acceptance or "").strip()
+    if _TICK_ONLY.search(acc) and re.search(r"\b(grep|rg|egrep|fgrep)\b", acc):
+        out.append("(a) acceptance only checks the box's own checkbox tick, not the work")
+    ap = (approach or "").strip()
+    weak_approach = False
+    if len(ap) < APPROACH_MIN_CHARS:
+        out.append(f"(b) approach is empty or under {APPROACH_MIN_CHARS} characters")
+        weak_approach = True
+    else:
+        at, ft = _tokens(ap), _tokens(box.get("first_line") or "")
+        if at and len(at & ft) / len(at) >= APPROACH_COPY_OVERLAP:
+            out.append(f"(b) approach is mostly copied from the box first line (token overlap >= {APPROACH_COPY_OVERLAP})")
+            weak_approach = True
+    boiler = next((b for b in BOILERPLATE_APPROACH_PREFIXES if ap.lower().startswith(b)), None)
+    if boiler:
+        out.append(f"(c) approach starts with generator boilerplate {boiler!r}")
+    nt = {str(t).split(":", 1)[-1] if str(t).startswith("epyc-") else str(t) for t in new_tests or []}
+    def resolves(w: str) -> bool:
+        pw = parse_where(w)
+        rd = repo_dir(root, pw["repo"])
+        return rd is not None and (blob_sha(rd, pw["path"], pw["rev"]) is not None or pw["path"] in nt)
+    if not any(resolves(str(w)) for w in where):
+        out.append("(d) none of the `where` entries resolve to an existing path")
+    if (weak_approach or boiler) and acc:
+        norm = " ".join(acc.split())
+        dups = 0
+        for other in all_briefs(root):
+            if other == bid:
+                continue
+            try:
+                od = parse_text(brief_path(root, other).read_text(encoding="utf-8", errors="replace"))
+            except Exception:  # noqa: BLE001
+                continue
+            dups += " ".join(str(od.get("acceptance") or "").split()) == norm
+        if dups >= DUP_ACCEPTANCE_MIN:
+            out.append(f"(e) acceptance is identical to {dups} other briefs (batch generation)")
+    return out
+
+
 def write_brief(bid: str, where: list[str], approach: str, acceptance: str, non_goals: list[str] | None = None,
                 tier: str = "local", author: str = "owner", accepted: str | None = None, root: Path = REPO_ROOT,
-                today: str | None = None, new_tests: list[str] | None = None) -> Path:
-    """Write (replace) the sidecar for an EXISTING open box; fills box_text_sha + grounded. Refuses an unknown box."""
+                today: str | None = None, new_tests: list[str] | None = None,
+                force_quality: str | None = None) -> Path:
+    """Write (replace) the sidecar for an EXISTING open box; fills box_text_sha + grounded. Refuses an unknown box,
+    and (quality gate, rules a-e) a filler brief unless `force_quality=<reason>` (recorded as `quality_override`)."""
     root = Path(root)
     box = find_box(root, bid)
     if box is None or box.get("n", 1) != 1:
         raise ValueError(f"box **{bid}** not found exactly once among open boxes in {BOX_DIRS}")
     today = today or _dt.date.today().isoformat()
+    probs = quality_problems(root, bid, box, where, approach, acceptance, new_tests)
+    if probs and not (force_quality and force_quality.strip()):
+        raise ValueError(f"brief for {bid} refused by the quality gate (use --force-quality REASON to override):\n  "
+                         + "\n  ".join(probs))
     matches = acceptance_matches(acceptance, box.get("done_when"))
     accepted = accepted or ("pending" if author == "self" else "auto" if matches else
                             "pending" if author == "backfill" else "owner")
@@ -530,6 +593,8 @@ def write_brief(bid: str, where: list[str], approach: str, acceptance: str, non_
            "where": list(where), "approach": approach.strip() + "\n", "acceptance": acceptance,
            "new_tests": list(new_tests) if new_tests else None, "non_goals": list(non_goals or []), "tier": tier,
            "grounded": {"at": today, "blobs": where_blobs(root, where)}}
+    if probs:
+        doc["quality_override"] = force_quality.strip()
     errs = schema_errors(doc)
     if errs:
         raise ValueError("; ".join(errs))
@@ -582,6 +647,8 @@ def main(argv=None) -> int:
     p.add_argument("--author", default="owner", choices=AUTHORS); p.add_argument("--accepted", choices=ACCEPTED)
     p.add_argument("--new-test", action="append", default=[],
                    help="a test file the box ADDS (repo-relative); a pytest acceptance under it may not exist yet")
+    p.add_argument("--force-quality", metavar="REASON", help="override the write-time quality gate; recorded as "
+                   "`quality_override: REASON` in the brief")
     p.add_argument("--json", action="store_true")
     for op in ("accept", "reject"):
         p = sub.add_parser(op); p.add_argument("id"); p.add_argument("--by", default="owner")
@@ -593,7 +660,7 @@ def main(argv=None) -> int:
         if a.op in ("compile", "write"):
             if a.op == "write":
                 write_brief(a.id, a.where, a.approach, a.acceptance, a.non_goal, a.tier, a.author, a.accepted, root,
-                            new_tests=a.new_test)
+                            new_tests=a.new_test, force_quality=a.force_quality)
             r = compile_brief(a.id, root, use_cache=not getattr(a, "no_cache", False))
             print(json.dumps(r, sort_keys=True, default=str) if a.json else _show(r))
             return _exit(r["state"])

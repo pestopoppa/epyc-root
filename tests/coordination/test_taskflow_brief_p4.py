@@ -49,7 +49,7 @@ def _fake_spawn(acceptance):
         if task.get("phase") == "brief":
             assert "## WRITE BRIEF FIRST" in dispatch.local_llm.task_suffix(task, {})
             return dict(w, result=None, brief={"where": ["epyc-root:scripts/x.py::parse"],
-                                                "approach": "strip in parse", "acceptance": acceptance,
+                                                "approach": "strip surrounding whitespace inside parse before returning", "acceptance": acceptance,
                                                 "non_goals": ["do not rename parse"]})
         assert task["brief_state"] in ("fresh", "drift") and task["where"]            # phase 2 sees the brief
         (Path(cwd) / "scripts/x.py").write_text("def parse(s):\n    return s.strip()\n")

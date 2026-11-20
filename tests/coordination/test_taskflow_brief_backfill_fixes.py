@@ -27,7 +27,7 @@ def _tree(tmp_path, done="python3 scripts/pkg/a.py"):
 
 
 def _w(root, **kw):
-    a = dict(where=["epyc-root:scripts/pkg/"], approach="x", acceptance="python3 scripts/pkg/a.py", non_goals=[],
+    a = dict(where=["epyc-root:scripts/pkg/"], approach="rewrite the package module to track the directory tree sha", acceptance="python3 scripts/pkg/a.py", non_goals=[],
              root=root, today="2026-11-20")
     a.update(kw)
     return B.write_brief("BF-1", **a)

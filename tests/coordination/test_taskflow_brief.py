@@ -25,7 +25,7 @@ def _tree(tmp_path, box=BOX):
 
 
 def _write(root, **kw):
-    args = dict(where=["epyc-root:scripts/x.py::parse"], approach="make parse strict", acceptance="python3 scripts/x.py",
+    args = dict(where=["epyc-root:scripts/x.py::parse"], approach="make parse strict by rejecting non-string input early", acceptance="python3 scripts/x.py",
                 non_goals=["no new deps"], tier="local", author="owner", root=root, today="2026-11-20")
     args.update(kw)
     return B.write_brief("BR-1", **args)
@@ -145,6 +145,6 @@ def test_self_brief_flagged_for_backfill_review(tmp_path, monkeypatch):
 def test_sweep_stale_list(tmp_path, monkeypatch, capsys):
     _no_gitnexus(monkeypatch)
     root = _tree(tmp_path)
-    _write(root, where=["epyc-root:scripts/gone.py"])
+    _write(root, where=["epyc-root:scripts/gone.py"], force_quality="fixture: deliberately stale where")
     assert B.main(["--root", str(root), "sweep", "--stale-list"]) == 0
     assert "BR-1: stale" in capsys.readouterr().out

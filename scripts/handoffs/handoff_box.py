@@ -499,6 +499,7 @@ def parser():
     p.add_argument("--where", nargs="+"); p.add_argument("--approach"); p.add_argument("--acceptance")
     p.add_argument("--non-goal", action="append", default=[])
     p.add_argument("--brief-author", default="owner")
+    p.add_argument("--force-quality", metavar="REASON", help="override the brief quality gate (recorded in the brief)")
     p.add_argument("--new-test", action="append", default=[])
     p = sub.add_parser("brief"); p.add_argument("action", choices=("accept", "reject")); p.add_argument("box")
     p.add_argument("--by", default="owner"); p.add_argument("--root", default=str(REPO_ROOT))
@@ -555,6 +556,20 @@ def op_brief(a) -> int:
     return 0
 
 
+# box-tier vocabulary (luna/terra/sol/haiku/sonnet/opus) -> brief-tier vocabulary (local/luna/terra/sol)
+BOX_TO_BRIEF_TIER = {"luna": "luna", "terra": "terra", "sol": "sol", "haiku": "local", "sonnet": "luna", "opus": "terra",
+                     "local": "local"}
+
+
+def brief_tier(tier):
+    """Map a box tier to a brief tier; raise ValueError (never fall through silently) on an unmapped one."""
+    if not tier:
+        return "local"
+    if tier not in BOX_TO_BRIEF_TIER:
+        raise ValueError(f"box tier {tier!r} has no brief-tier mapping ({sorted(BOX_TO_BRIEF_TIER)})")
+    return BOX_TO_BRIEF_TIER[tier]
+
+
 def add_brief(a, path: Path) -> int:
     if not (a.where and a.approach):
         print("handoff_box: --brief needs --where and --approach", file=sys.stderr)
@@ -563,10 +578,10 @@ def add_brief(a, path: Path) -> int:
     root = root_of(path)
     acc = a.acceptance or (a.done_when or "").strip().strip("`")
     try:
-        B.write_brief(a.id, a.where, a.approach, acc, a.non_goal, a.tier or "local", a.brief_author, root=root,
-                      new_tests=a.new_test)
+        B.write_brief(a.id, a.where, a.approach, acc, a.non_goal, brief_tier(a.tier), a.brief_author, root=root,
+                      new_tests=a.new_test, force_quality=a.force_quality)
     except ValueError as e:
-        print(f"handoff_box: brief not written: {e}", file=sys.stderr)
+        print(f"handoff_box: BRIEF NOT WRITTEN (box {a.id} WAS added): {e}", file=sys.stderr)
         return 1
     r = B.compile_brief(a.id, root)
     print(f"brief {a.id}: {r['state']}" + "".join(f"\n  STALE {x}" for x in r["stale_list"]))

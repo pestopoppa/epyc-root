@@ -117,9 +117,9 @@ def path_exists(p):
 
 # THE box-id regex (handoff standard §2.2; Fable review S2, 2026-11-19), shared by task_lint, box_index,
 # index_state and backlog_row_check. The id is the FIRST token inside the leading bold span, delimited by a space,
-# `—`, `:`, `(` or the closing `**`, with an optional leading `❄`: `**KPF-18.3 — text**`, `**AKX-ALL-5 (C1): …**`,
+# `—`, `:`, `(` or the closing `**`, with optional leading decorative non-ASCII symbols (`❄`, `★★`, `☆`, emoji, `•`; stripped before matching): `**KPF-18.3 — text**`, `**AKX-ALL-5 (C1): …**`,
 # `**KPF-17: tests.**`, `**B5**`. The token must carry a digit or a hyphen, so a bold English word is never an id.
-BODY_ID = re.compile(r'^\*\*\s*(?:❄\s*)?([A-Za-z0-9][A-Za-z0-9._-]*?)\.?(?=\*\*|\s|—|–|:|\()')
+BODY_ID = re.compile(r'^\*\*\s*(?:[^\x00-\x7f\w]+\s*)*([A-Za-z0-9][A-Za-z0-9._-]*?)\.?(?=\*\*|\s|—|–|:|\()')
 HEAD_PREFIX = re.compile(r'^\s*(?:[-*+]|\d+[.)]) \[[ xX~>!]\]\s*')
 
 

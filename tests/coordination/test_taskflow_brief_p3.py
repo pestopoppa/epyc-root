@@ -43,11 +43,11 @@ def test_merge_brief_into_task(tmp_path, monkeypatch):
     monkeypatch.setitem(schema.REPOS, "epyc-root", root)
     t = schema.build(_rec(root), root=root)
     assert t["brief_state"] == "none" and t["where"] == [] and t["stale"] == []
-    B.write_brief("BR-1", ["epyc-root:scripts/x.py::parse"], "make parse strict", "python3 scripts/x.py",
+    B.write_brief("BR-1", ["epyc-root:scripts/x.py::parse"], "make parse strict by rejecting non-string input early", "python3 scripts/x.py",
                   ["no new deps"], root=root, today="2026-11-20")
     t = schema.build(_rec(root), root=root)
     assert t["brief_state"] == "fresh" and t["where"] == ["epyc-root:scripts/x.py::parse"]
-    assert t["approach"] == "make parse strict" and t["acceptance"] == "python3 scripts/x.py"
+    assert t["approach"] == "make parse strict by rejecting non-string input early" and t["acceptance"] == "python3 scripts/x.py"
     assert t["non_goals"] == ["no new deps"] and t["acceptance_matches_done_when"] is True
     assert t["brief_accepted"] == "auto" and t["brief_path"] == "handoffs/active/briefs/BR-1.md"
     (root / "scripts/x.py").unlink()

@@ -82,7 +82,7 @@ def test_cross_repo_lane_self_briefs_and_commits_brief_in_root_worktree(tmp_path
     def spawn(task, cwd, run_dir, base_url, family="local", timeout_s=None):
         calls.append((task.get("phase") or "exec", Path(cwd).resolve()))
         if task.get("phase") == "brief":
-            return _w(result=None, brief={"where": ["epyc-orchestrator:scripts/x.py::parse"], "approach": "strip",
+            return _w(result=None, brief={"where": ["epyc-orchestrator:scripts/x.py::parse"], "approach": "strip surrounding whitespace inside parse before returning",
                                           "acceptance": TEST, "non_goals": ["do not rename parse"]})
         assert task["brief_state"] in ("fresh", "drift") and task["where"] == ["epyc-orchestrator:scripts/x.py::parse"]
         return _exec(cwd)
@@ -126,12 +126,12 @@ def test_existing_brief_reaches_cross_repo_worker_even_with_a_stale_plan(tmp_pat
     def spawn(task, cwd, run_dir, base_url, family="local", timeout_s=None):
         calls.append(task.get("phase") or "exec")
         assert task.get("phase") != "brief"
-        assert task["brief_state"] == "fresh" and task["approach"] == "strip in parse"
+        assert task["brief_state"] == "fresh" and task["approach"] == "strip surrounding whitespace inside parse before returning"
         assert task["where"] == ["epyc-orchestrator:scripts/x.py::parse"] and task["non_goals"] == ["keep the name"]
         return _exec(cwd)
     task = _setup(tmp_path, monkeypatch, root, orch, spawn)       # packet planned BEFORE the brief existed
     monkeypatch.setitem(B.REPOS, "epyc-orchestrator", orch)
-    B.write_brief("XR-1", ["epyc-orchestrator:scripts/x.py::parse"], "strip in parse", TEST, ["keep the name"],
+    B.write_brief("XR-1", ["epyc-orchestrator:scripts/x.py::parse"], "strip surrounding whitespace inside parse before returning", TEST, ["keep the name"],
                   author="owner", accepted="owner", root=root)
     _commit(root, "brief")
     assert task["brief_state"] == "none"
