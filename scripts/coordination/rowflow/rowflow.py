@@ -2383,6 +2383,14 @@ def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_po
     return min(better, key=plan_order) if better else None
 
 
+def _placeable_now(x, free, ram, gpu_grant_open, drain, need_r, now, T):
+    """x has a fitting option this tick that a drain does not refuse it (drain-late rows only take non-drain regions)."""
+    opts = _fits(x, free, ram, gpu_grant_open)
+    if drain is not None and x is not drain and (now + book_s(x) > T or now + hold_s(x) > T) and not cap_ok(x, now, T):
+        opts = [o for o in opts if not (o & need_r)]
+    return bool(opts)
+
+
 def _fits(c, free, ram, gpu_grant_open):
     opts = [o for o in c["options"] if o and o <= free]
     if c.get("bench") and gpu_grant_open:
@@ -2632,9 +2640,13 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 # (GPU-Q3-GUARD: a quarter row's q3-narrow option is its whole-quarter grant, not sub-quarter packing)
                 # PACKING (operator "fix it" 2026-11-05): a sub-quarter row goes onto a partly used quarter; it breaks a
                 # whole free quarter only while more are free than the whole-quarter rows that fit now need
-                keep = [x for x in opts if not any(q in free and expand({q}) & x for q in QUARTERS)]
+                # AK audit 2026-11-20 (PACKING-GPU-INVERSION, MI210 idle 11:50-12:11Z): a GPU option (gpu-quiet + q3's
+                # host threads 88-95/184-191) never "breaks" q3 - under GPU-Q3-GUARD no CPU row may take those cores -
+                # and wq counts only whole-quarter rows that can really be placed now (not drain-late on every fitting
+                # option); drain-late rank-45/57 quarter rows held rank-30 gpu-q3 rows off an idle MI210.
+                keep = [x for x in opts if GPU in x or not any(q in free and expand({q}) & x for q in QUARTERS)]
                 wq = sum(1 for x in pending if x is not c and any(t in QUARTERS for o2 in x["options"] for t in o2)
-                         and _fits(x, free, ram, gpu_grant_open))
+                         and _placeable_now(x, free, ram, gpu_grant_open, drain, need_r, now, T))
                 opts = keep or (opts if sum(1 for q in QUARTERS if q in free) > wq else [])
             if not opts:
                 continue
