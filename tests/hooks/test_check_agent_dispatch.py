@@ -179,3 +179,30 @@ def test_shipped_project_types_all_declare_models():
     finally:
         del os.environ["CLAUDE_PROJECT_DIR"]
     assert types == {"explorer": "haiku", "runner": "sonnet", "clerk": "haiku"}
+
+
+# AK audit C3 (2026-11-20): build brief without a compute claim -> WARN, never block.
+BUILD = "cd tree && taskset -c 0-47 cmake --build build -j48"
+
+
+@pytest.mark.parametrize("prompt", [BUILD, "taskset -c 96-143 make -j48 llama-server",
+                                    "run `taskset -c 0-15 hipcc -O3 k.cpp`"])
+def test_build_under_taskset_without_claim_warns_never_blocks(proj, prompt):
+    res, lines = run(proj, dispatch({"model": "sonnet", "prompt": prompt}))
+    assert res.returncode == 0
+    assert lines[0]["findings"] == ["build_without_claim"]
+    assert "build_without_claim" in json.loads(res.stdout)["hookSpecificOutput"]["additionalContext"]
+
+
+@pytest.mark.parametrize("prompt", [
+    BUILD + "\nHold the region-lock q0 first.",                 # claim named
+    BUILD + "\nBuild row: c14-build (grant g-123).",
+    "cmake --build build -j8",                                   # no taskset
+    "taskset -c 0-3 python3 bench.py",                           # no build verb
+    "taskset -c 0 ./bin/cmake-format x",                         # verb only as a word fragment
+    "read the makefile and summarise taskset usage in docs",     # 'makefile' is not 'make'
+])
+def test_mutation_claimed_or_non_build_briefs_are_clean(proj, prompt):
+    res, lines = run(proj, dispatch({"model": "sonnet", "prompt": prompt}))
+    assert res.returncode == 0
+    assert lines[0]["findings"] == [] and res.stdout == ""

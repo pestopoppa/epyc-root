@@ -16,6 +16,13 @@ Findings (each is a warning, never a denial):
   fork_cheaper_model         a ``fork`` was given a cheaper ``model``; a fork runs
                              on its parent's model, so the override is ignored.
                              A fork with no ``model`` is correct and not flagged.
+  build_without_claim        (AK audit C3, 2026-11-20) the prompt runs a build or
+                             compute verb (cmake/make/hipcc/gcc/cargo/ninja) pinned
+                             with ``taskset`` but names no compute claim
+                             (``claim``/``region-lock``/``build row``/grant). 39 of
+                             413 audited briefs carried the claim. WARN, never a
+                             denial; the warning reaches the model as
+                             ``additionalContext``.
 
 Every handled dispatch appends one JSONL line to ``logs/agent_dispatch_audit.jsonl``
 (override: ``AGENT_DISPATCH_AUDIT_LOG``) carrying this file's sha256 as ``hook_sha``.
@@ -27,6 +34,7 @@ import datetime as _dt
 import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -86,6 +94,17 @@ def project_types() -> dict:
     return types
 
 
+BUILD_VERB = re.compile(r"(?<![\w.-])(cmake|make|hipcc|gcc|g\+\+|clang\+\+|cargo|ninja)(?![\w.-])")
+TASKSET = re.compile(r"\btaskset\b")
+CLAIM = re.compile(r"\bclaim|region[- ]lock|build[- ]row|\bgrant\b|run_direct|EPYC_REGION", re.I)
+
+
+def build_without_claim(prompt) -> bool:
+    if not isinstance(prompt, str):
+        return False
+    return bool(BUILD_VERB.search(prompt) and TASKSET.search(prompt) and not CLAIM.search(prompt))
+
+
 def classify(tool_input: dict, types: dict) -> list:
     """Return the list of warning codes for one main-thread dispatch."""
     subagent_type = tool_input.get("subagent_type")
@@ -97,6 +116,8 @@ def classify(tool_input: dict, types: dict) -> list:
             findings.append("fork_cheaper_model")
     elif not model and not (isinstance(subagent_type, str) and subagent_type in types):
         findings.append("no_model_non_project_type")
+    if build_without_claim(tool_input.get("prompt")):
+        findings.append("build_without_claim")
     return findings
 
 
@@ -109,6 +130,11 @@ NOTES = {
     "fork_cheaper_model": (
         "a `fork` runs on its parent's model; the cheaper `model` you passed is "
         "ignored. Use a typed subagent to get a cheaper tier."
+    ),
+    "build_without_claim": (
+        "the brief runs a build/compute verb under `taskset` but names no compute "
+        "claim. Add the claim to the brief (region-lock / build row / grant id) so "
+        "the subagent does not build on cores another session holds."
     ),
 }
 
@@ -165,6 +191,11 @@ def handle(raw: str) -> None:
     append_audit(record)
     for code in findings:
         sys.stderr.write(f"[check_agent_dispatch] WARN {code}: {NOTES[code]}\n")
+    if "build_without_claim" in findings:   # stderr on exit 0 never reaches the model; this does
+        json.dump({"hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "additionalContext": f"[check_agent_dispatch] WARN build_without_claim: {NOTES['build_without_claim']}",
+        }}, sys.stdout)
 
 
 def main() -> int:
