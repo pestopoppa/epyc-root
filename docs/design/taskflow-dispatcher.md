@@ -89,6 +89,10 @@ Keep: `wrapup.py`, `file_result.py`, `rowflow/*`, `token_guards` budget/width/en
 **Stage 2 (2–3 days).** Authoring conventions landed (template + scoped lint gate); owners re-touch the top-ranked 30 non-OK boxes in the six handoffs; translation proposals on. Canary: lint-OK fraction in those files ≥ 40%, verified boxes/day ≥ 10, translation acceptance ≥ 50%, reviewer disagreement < 20%.
 **Stage 3.** opencode adapter, per-family pacing, cross-family reviewer. **Stage 4.** Retire `handoff_sessions.py` when verified boxes/day beats the old pipeline's best (~20 verdict ticks) for a week.
 
+**Worktree lifecycle.** Owned by the taskflow builder, who is writing this section (how a worker's worktree is created,
+reused, pushed and removed). Pointer only until it lands; task briefs that a worker writes or refreshes in that worktree
+are covered in [`task-brief-layer.md`](task-brief-layer.md) §5.
+
 ## 4. Open questions for the operator
 1. **Translation write-back**: may the dispatcher append `[proposed-by: taskflow]` done-conditions and child boxes into handoffs (as proposals, never ticked), or must proposals go to a side file for owners to paste in?
 2. **Legacy boxes**: accept the scoped lint gate (hard-fail only on boxes touched in the commit), or a one-time owner sweep of the ~300 non-OK boxes in these six files first?
