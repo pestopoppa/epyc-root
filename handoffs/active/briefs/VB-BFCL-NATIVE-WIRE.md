@@ -1,7 +1,7 @@
 ---
 schema: epyc.brief.v1
-id: SC-89
-box_text_sha: 5699b29b4c1a75f3
+id: VB-BFCL-NATIVE-WIRE
+box_text_sha: t:9775a97d48040a2d
 author: backfill
 written: '2026-11-20'
 accepted: pending

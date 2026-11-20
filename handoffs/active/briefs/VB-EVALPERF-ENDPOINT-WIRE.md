@@ -1,7 +1,7 @@
 ---
 schema: epyc.brief.v1
-id: SC-134
-box_text_sha: 5f4a4a5d8c8d9919
+id: VB-EVALPERF-ENDPOINT-WIRE
+box_text_sha: t:aabe7e3ac45bbbf9
 author: backfill
 written: '2026-11-20'
 accepted: pending

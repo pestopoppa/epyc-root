@@ -950,7 +950,7 @@ import.
 
 ## Decision gate (OPERATOR)
 
-- [ ] **CJ-28** **CJ-GATE. Which suites to adopt is an OPERATOR decision, not the executor's.** Once CJ-1…CJ-4 The package reports for every candidate (absorbs CJ-5b) the both-perfect fraction, fleet range and a paired significance test, not only the mean; and it decides the fate of the existing 79-question suite — retire, keep as a regression tripwire, or re-tier (absorbs CJ-5c).
+- [ ] **CJ-GATE. Which suites to adopt is an OPERATOR decision, not the executor's.** Once CJ-1…CJ-4 The package reports for every candidate (absorbs CJ-5b) the both-perfect fraction, fleet range and a paired significance test, not only the mean; and it decides the fate of the existing 79-question suite — retire, keep as a regression tripwire, or re-tier (absorbs CJ-5c).
       report corpus size, execution requirement, and measured discrimination, present a decision
       package per the canonical contract (`agents/shared/OPERATING_CONSTRAINTS.md` →
       *Operator Decision Requests*): options + tradeoffs + a recommendation. Do **not** adopt a
@@ -1991,7 +1991,7 @@ this repo, and settle two that nobody owns at all.
         before we spend a CPU window. Caveats that must travel with it: **n=200, single run, no
         variance**, and the "full context" arm is **sliding-window 200k / 50k-overlap plus LLM
         aggregation, not one prefill** — so it is not the clean long-context control E3 still owes.
-  - [ ] **CJ-29** **E3b — Run a clean same-model direct-context versus REPL/data-by-reference comparison.** The
+  - [ ] **E3b — Run a clean same-model direct-context versus REPL/data-by-reference comparison.** The
         Pokee-Isaac report's 10M RULER result is a direct full-prompt arm, not external-memory or REPL
         paging, and its proprietary architecture cannot be reproduced from the report. Use locally
         supported context lengths and matched retrieval, document-QA, and tool-mediated tasks. Compare

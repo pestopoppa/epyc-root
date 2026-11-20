@@ -1,7 +1,7 @@
 ---
 schema: epyc.brief.v1
-id: SC-93
-box_text_sha: 1def28ca08091472
+id: VB-DELEGATION-CONTEXT-SIZES-WIRE
+box_text_sha: t:96e70aa13a6592ae
 author: backfill
 written: '2026-11-20'
 accepted: pending

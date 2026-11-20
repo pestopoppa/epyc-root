@@ -1,7 +1,7 @@
 ---
 schema: epyc.brief.v1
-id: SC-133
-box_text_sha: 431426dd63046f23
+id: VB-GPQA-CURRENT-CENSUS-WIRE
+box_text_sha: t:3945a8dbfb7f4735
 author: backfill
 written: '2026-11-20'
 accepted: pending

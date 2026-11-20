@@ -1,7 +1,7 @@
 ---
 schema: epyc.brief.v1
-id: SC-135
-box_text_sha: cf6dc71012540823
+id: VB-PLANNING-DEPTH-WIRE
+box_text_sha: t:47dd0a91f312614f
 author: backfill
 written: '2026-11-20'
 accepted: pending
