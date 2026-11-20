@@ -18,6 +18,10 @@ def _isolated_hub(tmp_path, monkeypatch):
     sys.path.insert(0, os.path.dirname(_TESTS))
     import toolroot
     monkeypatch.setattr(toolroot, "HUB", str(tmp_path / "no-hub"))
+    # C3: the repo now carries handoffs/active/holds.yaml; toolroot.resolve falls back to the checkout when the hub
+    # has no copy, so give the fixture hub an empty one (these tests exercise the registry/prefix gate only).
+    (tmp_path / "no-hub" / "handoffs" / "active").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "no-hub" / "handoffs" / "active" / "holds.yaml").write_text("holds: []\n")
     monkeypatch.setattr(pr, "REPO", str(tmp_path / "no-hub"))
 
 

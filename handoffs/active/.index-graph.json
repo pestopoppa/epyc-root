@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T10:18:08Z",
+  "generated_at": "2026-11-20T10:23:11Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1067,
+          "line": 1069,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1683,
+          "line": 1685,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1830,
+          "line": 1832,
           "name": "triattention-kv-selection",
           "open": 12,
           "readiness": "ready"
