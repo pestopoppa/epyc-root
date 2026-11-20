@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T11:19:04Z",
+  "generated_at": "2026-11-20T11:40:31Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1043,7 +1043,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 74,
+      "closed": 75,
       "dispatchable": 32,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -1084,7 +1084,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 963,
+          "line": 1010,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1093,7 +1093,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1275,
+          "line": 1322,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1102,7 +1102,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1482,
+          "line": 1529,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1111,7 +1111,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1808,
+          "line": 1855,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1120,7 +1120,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2043,
+          "line": 2090,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1769,7 +1769,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 176,
+      "closed": 178,
       "dispatchable": 35,
       "domain": "inference-research",
       "guarded": 0,
@@ -1825,7 +1825,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 835,
+          "line": 840,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 27,
           "readiness": "blocked"
@@ -1836,15 +1836,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 115,
-      "dispatchable": 35,
+      "closed": 116,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-20",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 36,
+      "open": 35,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1866,20 +1866,20 @@
           "blocked_by": [
             "RTG-58"
           ],
-          "dispatchable": 20,
+          "dispatchable": 19,
           "gates": [
             "RTG-58"
           ],
           "line": 17,
           "name": "yarn-context-extension-research",
-          "open": 20,
+          "open": 19,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 676,
+          "line": 677,
           "name": "attention-matching-kv-compaction",
           "open": 4,
           "readiness": "ready"
@@ -1888,7 +1888,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1085,
+          "line": 1086,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1897,7 +1897,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1701,
+          "line": 1702,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1906,7 +1906,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1848,
+          "line": 1849,
           "name": "triattention-kv-selection",
           "open": 12,
           "readiness": "ready"
