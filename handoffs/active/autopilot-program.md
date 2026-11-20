@@ -51,28 +51,28 @@ AutoPilot proposes and evaluates numeric, prompt, routing, and code candidates t
   - **RTG-09:** DAR-LAT-1, DAR-LAT-2, DAR-LAT-3, DAR-LAT-3i, P3-3, P3-4, LRC-1, TD-28, P4-2.
   - **EVL-47:** VB-AP-FIRST-CYCLE, VB-AP-SPINUP-AP3-SCOPED, VB-CANARY-B-FRONTIER, SC14-B, VB-AP70-ROTATION-READ, P1-PHASE2, and the Autopilot half of VB-REFOCUS-NONEMPTY-READ-PROOF.
   - **Restart-preconditions checklist (from the 2026-11-09 audit; each must be re-proved at hold-lift):**
-    - [ ] Operator explicitly lifts HOLD (P0.1) AFTER the next production kernel promotion + stack reorg.
-    - [ ] `verify_llama_cpp.sh` + `verify_kernel_store.sh` pass; served binary proven by digest/ggml linkage (`verify_ggml_linkage.sh`), VRAM sampled during GPU roles.
-    - [ ] PaddleOCR-VL entered into the production stack for table regions, with ODL kept for everything else. This is box [PIP02-PADDLE-STACK-ENTRY](knowledge-pipelines.md), owned by pipeline-mgmt. Operator directive, 2026-11-10: AFTER the v11 production kernel promotion, BEFORE the Autopilot relaunch. That box must be ticked before HOLD is lifted. [no-belief: operator sequencing directive]
-    - [ ] Registry/launch_manifest lineup final; worker_fast, eval_batch_frontdoor, embedder `extra_recipes` resolved; literal `llama.cpp/build/bin` paths and ik_llama launcher text removed or proven unused.
+    - [ ] **W-11** Operator explicitly lifts HOLD (P0.1) AFTER the next production kernel promotion + stack reorg.
+    - [ ] **W-12** `verify_llama_cpp.sh` + `verify_kernel_store.sh` pass; served binary proven by digest/ggml linkage (`verify_ggml_linkage.sh`), VRAM sampled during GPU roles.
+    - [ ] **W-13** PaddleOCR-VL entered into the production stack for table regions, with ODL kept for everything else. This is box [PIP02-PADDLE-STACK-ENTRY](knowledge-pipelines.md), owned by pipeline-mgmt. Operator directive, 2026-11-10: AFTER the v11 production kernel promotion, BEFORE the Autopilot relaunch. That box must be ticked before HOLD is lifted. [no-belief: operator sequencing directive]
+    - [ ] **W-14** Registry/launch_manifest lineup final; worker_fast, eval_batch_frontdoor, embedder `extra_recipes` resolved; literal `llama.cpp/build/bin` paths and ik_llama launcher text removed or proven unused.
       - *(2026-11-09, apr2-stack-ready: PARTIAL, not ticked)* Consumers traced and the diff prepared, not applied (the master registry is a stack-change source needing one operator signature; launch_manifest.yaml and orchestrator_stack.py are pinned by `stack_priors.yaml` `source_artifacts`, so even a comment edit needs a priors regeneration in the same commit). Package: `artifacts/analysis/stack-ready-kernel-store-paths-20261109/` (`01-research-master-registry.patch`, `02-orchestrator-text.patch`; both `apply --check` clean). Findings: `runtime_defaults.binaries.base_dir` is dead (every consumer overrides it from the kernel store); the seven `command_templates` literals are LIVE through `RegistryLoader.generate_command` (`src/formalizer.py:242`) and run the frozen tree's in-tree build, which still holds v9; orchestrator `70dbf5ea` adds a `{llama_bin_dir}` placeholder (store-resolved, inert until a template uses it) and the master patch switches the templates to it; the `optimal_gpu_serving.binary` build-hip paths are dated measurement records of what ran and stay. Also found, not fixed: `scripts/graph_router/reembed_episodic_store.py:44` hardcodes `llama.cpp/build/bin/llama-server`; `scripts/lib/executor.py:80,101` and `executor_paths.py:45,106` carry dead fallbacks. Remaining: operator signs the package inside the post-promotion stack-change; `launch_manifest.yaml` text goes through priors regeneration. [no-belief: partial, no measured claim] [2026-11-09 wrap-up verification: `70dbf5ea` is an ancestor of epyc-orchestrator origin/main; box state unchanged — landing is code only, acceptance still as the box states]
-    - [ ] Journal readers shard-aware. 2026-11-09 verified: `preflight_audit.py` (`_jsonl_paths`/`_load_jsonl`, :198-222) and `restart_readiness_report.py` (imports `_load_jsonl`, :855) DO read `autopilot_journal_1.jsonl`; the audit claim they read only the frozen shard was wrong. They used their own chain-walking helper; since `918b8143` (on origin/main) `preflight_audit` and `phase_status` read via `scripts/autopilot/journal_shards.py` (JRN-5); `restart_readiness_report` keeps its helper — re-check that choice at hold-lift. restart_readiness_report, seq_readiness_report, archive_authority_report all clean.
+    - [ ] **W-15** Journal readers shard-aware. 2026-11-09 verified: `preflight_audit.py` (`_jsonl_paths`/`_load_jsonl`, :198-222) and `restart_readiness_report.py` (imports `_load_jsonl`, :855) DO read `autopilot_journal_1.jsonl`; the audit claim they read only the frozen shard was wrong. They used their own chain-walking helper; since `918b8143` (on origin/main) `preflight_audit` and `phase_status` read via `scripts/autopilot/journal_shards.py` (JRN-5); `restart_readiness_report` keeps its helper — re-check that choice at hold-lift. restart_readiness_report, seq_readiness_report, archive_authority_report all clean.
       - 2026-11-09 (apr2 rtg02-code) JRN-5 code done: epyc-orchestrator branch `apr2/rtg02-code-20261109` `918b8143`: `preflight_audit._jsonl_paths` (and so `restart_readiness_report._load_jsonl`) now delegates to `journal_shards()`/`resolve_journal_paths()`; `phase_status._journal_shards` (used by the readiness report's phase health, previously lexicographic) uses the numeric-sorted iterator. Tests: gap tolerance, sidecar exclusion, numeric order (29 + 33 passed). Checklist item stays open: it is re-proved at hold-lift. [2026-11-09 wrap-up verification: `918b8143` is an ancestor of epyc-orchestrator origin/main; box state unchanged — landing is code only, acceptance still as the box states]
     - [ ] Brand-new era fenced via operator ratify script (the era and baseline files are human-only): baseline reseated under the new era, E20 corpus (EV19) and current kernel; multi-tier T1/T2/T3 baselines re-proved vs the 2026-08-10 ratification.
       - *(2026-11-09, apr2-stack-ready: PARTIAL, not ticked)* Era half prepared: `scripts/operator/ratify_autopilot_relaunch_era_20261109.sh` appends one `autopilot_speed` row (default id `E21-autopilot-relaunch-speed`) after E20, with kernel identity and lineup sha256 as REQUIRED arguments (never defaulted), instrument fields carried from the latest autopilot_speed row, refusal if `--from` is not later than it or if the kernel is not a registered cpu_bench era, idempotency marker, unique anchors, diff preview, `.bak`, `--dry-run/--apply/--commit`, typed operator. `--dry-run`, `--apply --commit` and the re-run no-op were exercised on a copy only; the real file was not touched. The operator runs it at relaunch. Not covered: the `autopilot_baseline.yaml` reseat (needs post-promotion measurement under the new era) and `autopilot_state.json` (`pareto_epoch_ts`, `active_instrument_eras`), which the autopilot-side era-advance path writes. [no-belief: partial, ratifier prepared and not run]
-    - [ ] SEQ gate decided (SEQ_VERDICT, SEQ_P0_2_BRIDGE) and AP-55 shadow->enforce plan; AP55 stays shadow for the first run.
-    - [ ] Planner roster policy re-decided (`start_authority_daemon.py:109-113` pins a temporary two-Codex roster).
-    - [ ] Start only via `start_authority_daemon.py` (env-gated); no bare `autopilot.py start`; no other llama-server/autopilot live.
-    - [ ] Belief ingest canary armed; first post-hook trial verified; any new write-side capture (selector menu, decoding_id, holdout; see AP-DGM-PROV decision) shipped before the first model-producing run, else AP-DGM-* stay not_evaluable.
-    - [ ] Orchestrator API reload ownership per CLAUDE.md; orchestrator at current main, loop-safety C1-C3 in.
-    - [ ] **Flags to set in the launcher env at release (operator decision 2026-11-09; all default-off, observe-only or opt-in, none set while the hold stands):** `AUTOPILOT_SELECTOR_MENU_CAPTURE=1` (AP-DGM-PROV option A), `AUTOPILOT_SELECTOR_HOLDOUT_ID` (+ `AUTOPILOT_SELECTOR_HOLDOUT_DECLARED_AT`; the holdout must be declared before the first run), `AUTOPILOT_SELECTOR_PLANNER_PROPOSAL_MENU=1` (AP-DGM-PROV option C), `AUTOPILOT_MUTATION_REQUIRE_SCREEN=1`, `AUTOPILOT_SPEED_PHYSICAL_CEILING_TPS=<value>` (the value must come from the surface roofline summed over the eval's concurrency; see RTG-02 speed-physicality note, not guessed), `AUTOPILOT_PLANNER_NUMERIC_TELL=1`. Verify each took effect in the first trial's journal row or log before counting the run.
-    - [ ] Stale journal tail row 1505 "(killed)" / trial counter state (`autopilot_state.json`) checked before the first trial.
+    - [ ] **W-16** SEQ gate decided (SEQ_VERDICT, SEQ_P0_2_BRIDGE) and AP-55 shadow->enforce plan; AP55 stays shadow for the first run.
+    - [ ] **W-17** Planner roster policy re-decided (`start_authority_daemon.py:109-113` pins a temporary two-Codex roster).
+    - [ ] **W-18** Start only via `start_authority_daemon.py` (env-gated); no bare `autopilot.py start`; no other llama-server/autopilot live.
+    - [ ] **W-19** Belief ingest canary armed; first post-hook trial verified; any new write-side capture (selector menu, decoding_id, holdout; see AP-DGM-PROV decision) shipped before the first model-producing run, else AP-DGM-* stay not_evaluable.
+    - [ ] **W-20** Orchestrator API reload ownership per CLAUDE.md; orchestrator at current main, loop-safety C1-C3 in.
+    - [ ] **W-21** **Flags to set in the launcher env at release (operator decision 2026-11-09; all default-off, observe-only or opt-in, none set while the hold stands):** `AUTOPILOT_SELECTOR_MENU_CAPTURE=1` (AP-DGM-PROV option A), `AUTOPILOT_SELECTOR_HOLDOUT_ID` (+ `AUTOPILOT_SELECTOR_HOLDOUT_DECLARED_AT`; the holdout must be declared before the first run), `AUTOPILOT_SELECTOR_PLANNER_PROPOSAL_MENU=1` (AP-DGM-PROV option C), `AUTOPILOT_MUTATION_REQUIRE_SCREEN=1`, `AUTOPILOT_SPEED_PHYSICAL_CEILING_TPS=<value>` (the value must come from the surface roofline summed over the eval's concurrency; see RTG-02 speed-physicality note, not guessed), `AUTOPILOT_PLANNER_NUMERIC_TELL=1`. Verify each took effect in the first trial's journal row or log before counting the run.
+    - [ ] **W-22** Stale journal tail row 1505 "(killed)" / trial counter state (`autopilot_state.json`) checked before the first trial.
 
 ##### Remaining Work — Prioritized
 
 - **[declined: ws58 2026-11-03 content-review: curiosity; no autopilot task names it]** AP-26: Test dspy.RLM for autopilot tasks — long-horizon benchmark analysis where metadata-first context exploration avoids context window limits
 
-- [ ] AP-27: Formalize eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier (state matching, not LLM-as-judge). **2026-07-11 partial scaffold**: `epyc-orchestrator` commit `7ee919d8` adds `src/autopilot_core/rlvr_tiers.py`, a pure observe-only reward contract with T0 binary, T1 calibrated continuous, and T2/T3 process-attributed reward views plus explicit blockers for missing calibration/process evidence. **2026-07-11 export slice**: `scripts/autopilot/export_rlvr_environment.py` exports prompt-free `ap27_rlvr_environment_row.v1` JSONL from EvalResult/journal artifacts for future RL training. **2026-07-11 report slice**: `EvalResult.to_grep_lines()` emits report-only `METRIC rlvr_*` lines without changing objectives, SafetyGate, Pareto, or journal schema. **2026-07-11 journal slice**: `epyc-orchestrator` commit `69445d43` adds observe-only `eval_details["rlvr_reward"]` journal payloads from the same deterministic contract via the lower-risk main-loop journal assembly point, avoiding the HIGH-risk `EvalTower._aggregate` path. This closes the code-only tier/reward design, offline export, report-only, and journal-payload pieces; AP-27 remains open for inference-dependent Ouro integration. **Implementation plan**: See [eval-tower-verification.md](eval-tower-program.md) EV-1–EV-7. Depends on EV-4 (calibration baseline) and P7 Ouro results.
+- [ ] **W-23** AP-27: Formalize eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier (state matching, not LLM-as-judge). **2026-07-11 partial scaffold**: `epyc-orchestrator` commit `7ee919d8` adds `src/autopilot_core/rlvr_tiers.py`, a pure observe-only reward contract with T0 binary, T1 calibrated continuous, and T2/T3 process-attributed reward views plus explicit blockers for missing calibration/process evidence. **2026-07-11 export slice**: `scripts/autopilot/export_rlvr_environment.py` exports prompt-free `ap27_rlvr_environment_row.v1` JSONL from EvalResult/journal artifacts for future RL training. **2026-07-11 report slice**: `EvalResult.to_grep_lines()` emits report-only `METRIC rlvr_*` lines without changing objectives, SafetyGate, Pareto, or journal schema. **2026-07-11 journal slice**: `epyc-orchestrator` commit `69445d43` adds observe-only `eval_details["rlvr_reward"]` journal payloads from the same deterministic contract via the lower-risk main-loop journal assembly point, avoiding the HIGH-risk `EvalTower._aggregate` path. This closes the code-only tier/reward design, offline export, report-only, and journal-payload pieces; AP-27 remains open for inference-dependent Ouro integration. **Implementation plan**: See [eval-tower-verification.md](eval-tower-program.md) EV-1–EV-7. Depends on EV-4 (calibration baseline) and P7 Ouro results.
 
 ###### AP-26/AP-27 operator gate packet - prepared 2026-07-11
 
@@ -213,7 +213,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       was never done. The 27B's prior currently resolves 0.8597 via public `mmlu_pro`, not the canonical
       instrument.
 
-- [ ] **Decide the lineup status of `worker_fast` (8102), `eval_batch_frontdoor` (18070) and the
+- [ ] **W-24** **Decide the lineup status of `worker_fast` (8102), `eval_batch_frontdoor` (18070) and the
       embedder `extra_recipes` (8096-8098).** They are declared in the launch manifest and so are
       painted as expected services, but none are running. Hidden from the regions-lock panel as a
       display fix; whether they should remain declared is a stack-config decision.
@@ -269,7 +269,7 @@ First full smoke run of the trial loop. Four defects, three silent.
 
 ##### New instances of the same class, found by the critic, previously unowned
 
-- [ ] **`memories.sub_decision` is 0 / 59,337 with no producer anywhere.** Column + index
+- [ ] **W-25** **`memories.sub_decision` is 0 / 59,337 with no producer anywhere.** Column + index
       (`episodic_store.py:330,335`), dataclass field (`:173`), `store()` parameter (`:379`), INSERT
       binding (`:527,557`), and a passing `test_episodic_store_sub_decision.py`. `grep "sub_decision="`
       across `src/ scripts/ orchestration/` excluding the store and backfill script -> **zero hits**.
@@ -321,7 +321,7 @@ First full smoke run of the trial loop. Four defects, three silent.
         whole chain, or retire `binding_routing` and its machinery on purpose.
       - **2026-10-31 decision resolved: wire the existing chain.** The API lifespan constructs the router when the existing default-off flag is enabled, the actual heuristic routing caller passes that state instance to the classifier, and shutdown clears it. Native lifespan→registration→public-route tests prove a rule registered through the existing `RoutingBinding` API overrides the heuristic, while forced and explicit routes retain precedence. An enabled startup creates an empty registry until rules are explicitly registered; no configuration loader, default override, per-session isolation, live flag activation, or runtime reload is claimed. The old tripwire is replaced by behavioral tests. This supersedes the historical unchecked/no-fix annotation above.
 
-- [ ] **Ten fully-built, fully-tested, zero-production-importer modules** (1-3 test importers, 0
+- [ ] **W-26** **Ten fully-built, fully-tested, zero-production-importer modules** (1-3 test importers, 0
       production importers), incl. `src/mutation_ledger.py`, whose docstring asserts "the autopilot
       accept-path consults the ledger" — it does not.
       - **RE-DERIVED 2026-08-12 (`mainC`) — the COUNT is wrong and the row cannot be acted on as
@@ -435,7 +435,7 @@ First full smoke run of the trial loop. Four defects, three silent.
       Same shape as the registry's own `kv_quant_by_shape` future-proofing note.
       - Optional `server_mode.<role>.serving_shape.slots_by_instance` maps declared ports to positive slot counts before shape/scalar/fallback resolution. The compiler reads its handed registry and retains the existing per-port artifact; native instance lookup, server argv, admission/attestation, capacity reporting, and local batch certification agree. Explicit topology and owner-registry data remain authoritative; heterogeneous URL pools use conservative per-member limits. The critical base resolver's behavior and independent eval-batch fallback remain unchanged. Four stale usage fixtures were corrected to the native attribution protocol after exact base/candidate controls; no production declaration, live capacity, reload, or inference changed.
 
-- [ ] **Routing is not context-length aware.** Nothing inspects prompt length before choosing an
+- [ ] **W-27** **Routing is not context-length aware.** Nothing inspects prompt length before choosing an
       instance, so a long prompt landing on a narrow slot gets a hard 400 rather than being routed to
       a wider instance or to `ingest_long_context`. The frontdoor group is heterogeneous by design
       (`:8070` 16,384/req vs `:8080`/`:8180` 65,536/req before this change), so the same request
@@ -988,14 +988,14 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
   Needs one ruling, applied to both, rather than two local fixes.
   **RULED 2026-09-15 (S3-OP-01, option a); implementation is AP-64.**
 
-- [ ] **OPERATOR DECISION, deliberately not taken by the subagent:** `:1960` also says reliability
+- [ ] **W-28** **OPERATOR DECISION, deliberately not taken by the subagent:** `:1960` also says reliability
   should have collapsed the run long before 70 questions. Early abort is a live-control-loop policy
   change — *how many consecutive infra-failed rows should abort an in-flight batch, and abort or
   continue-and-mark?* `RELIABILITY_FLOOR = 0.8` already blocks such a run at the gate (as RETRY),
   but only at the END, after the questions are spent. Everything not depending on that answer is done.
   - **2026-11-09 audit (RTG-02):** Anchor `:1960` is unresolvable (no file named). The T1 batch is `eval_tower.py`; the "0% correct over 70 questions" incident is cited at `eval_tower.py:6139` (comment), `RELIABILITY_FLOOR = 0.8` is at `safety_gate.py:150`, and there is NO early-abort in `eval_tower.py` (no consecutive-infra-failure counter found). Decision needed (operator): (A) abort the in-flight batch after N consecutive infra-failed rows and mark the run `infra_aborted` (recommended N=10 and continue-and-mark never); (B) continue-and-mark every row and let the end-of-batch RELIABILITY_FLOOR gate decide (today); (C) abort only when the first K rows are all infra-failed (startup outage). Recommendation: C (catches the 2026-08-03 API-down case with the least policy change).
 
-- [ ] **OPERATOR EDIT NEEDED — `human_only_paths.yaml` still calls safety gates unenforceable.**
+- [ ] **W-29** **OPERATOR EDIT NEEDED — `human_only_paths.yaml` still calls safety gates unenforceable.**
   Its `conceptual:` block lists "safety gates" as prose-only; that is now **partially false**.
   Agent-typed execution of a derived copy IS enforced by `check_operator_apply_copy.sh`; daemon,
   cron and subprocess execution remain OS-level-only (separate uid / read-only mount). The file is
@@ -1329,7 +1329,7 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
 
 **Not done (deferred, still open):**
 
-- [ ] **[C1 fix #2] Manifest writer intent-not-realized gap** — writer lives in
+- [ ] **W-30** **[C1 fix #2] Manifest writer intent-not-realized gap** — writer lives in
   `scripts/server/runtime_facts_manifest.py` (other-agent ownership); ESC-8 fixes
   already rewrote the writer to derive `selected_servers` from realized state, but
   the live manifest still shows an empty lineup — verify separately.
@@ -1346,7 +1346,7 @@ warm/explicit-only and not normally launched, so "expected down" slightly overst
   Related trap already recorded at P0-0 (`numa-topology-cutover-resume-20260730.md`): the derived
   priors are likewise a faithful record of a halves-only launch, not a corrupted file.
   - **2026-11-09 audit (RTG-02):** Missing fact: `scripts/server/runtime_facts_manifest.py` exists; the check needs a realized lineup, so it can only run in the relaunch window (add to the stack bring-up verification), owner = whoever runs the relaunch. Acceptance: with the stack up, `selected_servers` equals the set of healthy launched roles.
-- [ ] **[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch
+- [ ] **W-31** **[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch
   concern (`scripts/server/*`), out of dashboard-file ownership.
   - **2026-11-09 audit (RTG-02):** Missing facts: no owner and no failing evidence recorded; cannot be verified with the stack down. Acceptance: with the API up, each of the 6 uvicorn workers reports identical env for the stack-relevant keys (diff of `/proc/<pid>/environ` for captured PIDs). Owner: whoever owns `scripts/server/orchestrator_stack.py` at relaunch.
 - [x] **[E8-PANELS] Era-honest pareto/GEPA plots for E8** ✅ 2026-07-27 — implemented in
@@ -2707,7 +2707,7 @@ Tick waypoints + one-line progress entry per phase; claim numbers per MEASUREMEN
 
 #### Research Intake Update — 2026-08-21 (Stage-2b, intake-1279#record)
 
-- [ ] **(Z) Fix the llama-server log retention hole.** [too-big: retention ownership and missing-window cause require subsystem investigation] A correctness question about production
+- [ ] **W-32** **(Z) Fix the llama-server log retention hole.** [too-big: retention ownership and missing-window cause require subsystem investigation] A correctness question about production
       (upstream #27442, disclosed 2026-08-20) **could not be answered from retained evidence**: no
       llama-server or orchestrator log on disk is newer than 2026-08-11, a nine-day gap spanning
       disclosure. Where the frontdoor log *does* cover, it is clean — 11,670 timing lines, zero
@@ -4009,10 +4009,10 @@ Full REPL error taxonomy extracted from `repl_tap.log` (4462 errors, 4280 `CALL(
 
 #### Tasks
 - [ ] P0.1 operator run/pause decision on autopilot candidate species
-- [ ] P0.2 P2 amendment bundle signed (rate-axis era-fence first) + discriminability gate + P3 canary
+- [ ] **W-33** P0.2 P2 amendment bundle signed (rate-axis era-fence first) + discriminability gate + P3 canary
   - [x] W5 control-pair attestation report-only scaffold landed in `epyc-orchestrator` commit `7a2a7c89`: `hle_metrics.py` now journals default-off `oracle_adequacy.control_attestation` status (`disabled`/`no_controls`/`incomplete`/`failed`/`passed`) from supplied known-good/known-bad rows without changing SafetyGate, Pareto admission, learning exclusion, blacklists, or thresholds. Binding gate remains operator/policy-gated. ✅ 2026-07-11
   - [x] P0.2a report-only amendment evidence view landed in `epyc-orchestrator` commit `65d4cf40`: `fable5_gate_report.py` now surfaces rate-axis state, latest oracle control-pair attestation, eval discriminability/T3 hard-lane coverage, and RI-10 canary state under `p0_2_amendment_bundle_inputs` with empty blockers and explicit `operator_signing_required`; signed P2 amendment / binding rate-axis era-fence remains operator-gated. ✅ 2026-07-11
-- [ ] P0.3 era-fenced blacklist purge + tool/delegation lever re-exploration
+- [ ] **W-34** P0.3 era-fenced blacklist purge + tool/delegation lever re-exploration
   - [x] P0.3a guarded purge planner/apply helper landed in `epyc-orchestrator` commit `a26e6c6a`; dry-run identified exactly the 5 audit-scoped entries (`frontdoor.md` prompt/GEPA freezes, t655, t664, t864) and preserves 49 others. Apply remains operator-gated by `--approval-token ERA_FENCED_BLACKLIST_PURGE_2026_07_11`. ✅ 2026-07-11
   - [x] P0.3b audit-scoped tool/delegation re-exploration landed in `epyc-orchestrator` commit `134ed346`: AutoPilot now marks the three automated instrument-era structural blacklist entries (`architect_delegation` t655, `specialist_routing` t664/t864) as retryable without rewriting YAML, preserves manual frontdoor prompt/GEPA freezes behind the approval token, and journals `p0_3_blacklist_reexploration_*` rationale when dispatching those retries. ✅ 2026-07-11
 
@@ -4059,7 +4059,7 @@ This packet is command-discovery and evidence packaging only. It does not author
   - [x] P2.8b display-matrix renderer collapse landed in `epyc-orchestrator` commit `4de996ea` ("Collapse region lock grid onto display matrix") ✅ 2026-07-11
   - [x] P2.8c browser fallback removal landed in `epyc-orchestrator` commit `08e94997`: `dashboard.html` no longer reconstructs a region-lock grid from legacy `by_role`/PID data when the backend display matrix is unavailable; it shows an explicit diagnostic instead, so observability cannot silently fork lock authority again. ✅ 2026-07-11
 - [x] P2.9 host covariates journaled per timing event ✅ 2026-07-11
-- [ ] W1 runtime-facts consumption follow-up: remaining runtime-facts-backed reader consolidation stays open for surfaces beyond the validated stack-service slice; a live reader insertion for `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` was prototyped and reverted after `gitnexus impact active_stack_numa_mode --repo epyc-orchestrator --direction upstream` returned HIGH risk (`22` upstream impacts across dashboard health/topology/node detail/snapshot/tap flows). Re-enter only with explicit acceptance of that blast radius; do not paper over this with another env/PID fallback.
+- [ ] **W-35** W1 runtime-facts consumption follow-up: remaining runtime-facts-backed reader consolidation stays open for surfaces beyond the validated stack-service slice; a live reader insertion for `/mnt/raid0/llm/tmp/orchestrator_runtime_facts.json` was prototyped and reverted after `gitnexus impact active_stack_numa_mode --repo epyc-orchestrator --direction upstream` returned HIGH risk (`22` upstream impacts across dashboard health/topology/node detail/snapshot/tap flows). Re-enter only with explicit acceptance of that blast radius; do not paper over this with another env/PID fallback.
   - [x] W1 runtime-facts stack-service slice landed in `epyc-orchestrator` commit `db62aa3f`: runtime facts manifest now records `runtime_stack.stack_numa_mode`, `selected_servers`, `selected_ports`, and effective paths; stack start/reload/stop refresh the manifest at persisted-state boundaries; dashboard `expected_stack_services()` uses validated runtime selected servers when no explicit `ORCHESTRATOR_STACK_NUMA_MODE` override exists, otherwise it falls back to static manifest behavior. ✅ 2026-07-14
 - [x] P3.10 migration-discipline hook (all readers in one change) ✅ 2026-07-11
   - Root commit `6d023e9d` enforced stack-fact migration discipline with the pre-commit hook, validator, candidate gate integration, and focused tests; verified with `py_compile`, `bash -n`, targeted pytest, negative/positive CLI checks, and `git diff --check`.
@@ -4540,7 +4540,7 @@ outcome.
 - [x] SEQ-2 — Build and run the offline re-adjudication (zero inference). ✅ 2026-07-28
       Report: `orchestration/reports/readjudicate_sequential_20260728.json`
 - [x] ~~SEQ-3 — **Resume the top candidate to a verdict. GATED — read the era problem first.**~~ **SUPERSEDED 2026-11-17 (autopilot-backlog-session, at the pipeline-mgmt handoff audit): dead premise** — its 393 trials are core_v1/E8, eras now run through E20 (`instrument_eras.yaml:571`), SEQ-3a was closed superseded and SEQ-3b declined era-stale, so no path resumes this candidate; folding E8 evidence into a new-era e-process is the defect the era registry forbids. Successor: SEQ-3c below. ✅ 2026-11-17 [no-belief: supersede-close, premise retired]
-- [ ] SEQ-3c — **First sequential verdict in the relaunch era.** After the Autopilot relaunch (new instrument era set by the operator ratify script), run the sequential allocator from a fresh pool to a confirm/reject verdict on the new-era top candidate; no pre-relaunch trials are carried in. Record trial count and final E here. Gate: Autopilot relaunch. [inference] est: provisional, pilot: first 20 trials of the new era. [no-belief: future run]
+- [ ] **W-36** SEQ-3c — **First sequential verdict in the relaunch era.** After the Autopilot relaunch (new instrument era set by the operator ratify script), run the sequential allocator from a fresh pool to a confirm/reject verdict on the new-era top candidate; no pre-relaunch trials are carried in. Record trial count and final E here. Gate: Autopilot relaunch. [inference] est: provisional, pilot: first 20 trials of the new era. [no-belief: future run]
   - **2026-11-09 era rewrite (RTG-02):** SEQ-3 premise is dead: its 393 trials are core_v1/E8 and eras run through E20 (`instrument_eras.yaml:571`); the "~9 more trials" figure does not transfer. The relaunch will use a brand-new instrument era, set by an operator ratify script because `orchestration/instrument_eras.yaml` and `orchestration/autopilot_baseline.yaml` are human-only (agents never edit them). E8-era premises here (core_v1 trials, E8 numbers, "E_quality 11.55 vs 20") are historical and must be re-derived under the new era before this box is acted on; the box stays open only for that reason.
 
     **The "~9 more trials" figure is only valid inside `core_v1`, and `core_v1` is over.**
@@ -4596,7 +4596,7 @@ outcome.
       Replay over all 396: `z_rate` at clip floor 50% -> 0%, positive evidence 8% -> 69%, three
       candidates cross `E_rate = 20`, one reaches 222, **zero false confirms**. NO THRESHOLD CHANGED.
 
-- [ ] **Decide whether to re-arm the sequential gate.** Currently `AUTOPILOT_SEQ_VERDICT=0`
+- [ ] **W-37** **Decide whether to re-arm the sequential gate.** Currently `AUTOPILOT_SEQ_VERDICT=0`
   - **2026-11-09 era rewrite (RTG-02):** Daemon env today is `AUTOPILOT_SEQ_VERDICT=0`, `AUTOPILOT_SEQ_P0_2_BRIDGE=1` (`start_authority_daemon.py:96-97`); the "max E_quality 11.55 vs 20" evidence is E8-era. Re-evaluate re-arming only after the first new-era trials. The relaunch will use a brand-new instrument era, set by an operator ratify script because `orchestration/instrument_eras.yaml` and `orchestration/autopilot_baseline.yaml` are human-only (agents never edit them). E8-era premises here (core_v1 trials, E8 numbers, "E_quality 11.55 vs 20") are historical and must be re-derived under the new era before this box is acted on; the box stays open only for that reason.
       (operator unblock, 2026-08-04) because an unreachable gate meant AutoPilot could not ratchet at
       all. Re-arming changes what counts as a promotion -> human-amendment-only. **On current
