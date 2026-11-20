@@ -355,3 +355,4 @@
 {"at": "2026-11-20", "box_id": "TD-40", "from": "routing-program.md", "line": 2276, "new_text_sha": "2f2f87a40acec6b1", "old_head": null, "op": "assign-id", "text_sha": "7ec7ed63e326e91a", "to": "routing-program.md"}
 {"at": "2026-11-20", "box_id": "TD-41", "from": "routing-program.md", "line": 3278, "new_text_sha": "ebfc464b645a677a", "old_head": null, "op": "assign-id", "text_sha": "371b71626406939c", "to": "routing-program.md"}
 {"at": "2026-11-20", "box_id": "TD-42", "from": "routing-program.md", "line": 554, "new_text_sha": "19ef5f64dc95bb81", "old_head": null, "op": "assign-id", "text_sha": "0bfb5f04dd1a519b", "to": "routing-program.md"}
+{"at": "2026-11-20", "box_id": "W-11", "from": "numa-placement-and-contention.md", "line": 2452, "new_text_sha": "e29a9fc96384e4ef", "old_head": null, "op": "assign-id", "text_sha": "e2f676e461e2db26", "to": "numa-placement-and-contention.md"}
