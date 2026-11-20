@@ -127,3 +127,7 @@ CJ-6e v4 ended rc=75 with 183/300 validated prompt-joined captures (24 new), zer
 ## 12:18Z — Assess filed IFBench CJ-6e v4 partial result
 
 CJ-6e v4 ended rc=75 with 183/300 validated prompt-joined captures (24 new), zero unresolved exposures and 117 unexposed; six length finishes. Strict/loose remain UNKNOWN and paired delta UNCOMPUTED. Prior seal verified, server drained, receipt filed and alert acknowledged. [belief: cc]
+
+## 19:46Z — File supported-frame BFCL 27B partial verdict
+
+CJ-3d supported-frame 27B filed inconclusive: rc=0 but only 15/120 completed, 14 known, 1 UNKNOWN and 6 passes, all in Java; five other strata have zero. First UNKNOWN was java_90 parse error. No success-rate estimate; no retry/redraw/continuation. Receipt filed and alert acknowledged. [belief: cc]

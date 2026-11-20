@@ -400,6 +400,18 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       Parent remains open for live verdict; separate key
       `bfcl_v3_native_supported_frame_local`, per-stratum counts only; no quality score.
       [no-belief: transport smoke and publication; no benchmark quality claim]
+      2026-11-20 supported-frame verdict: **INCONCLUSIVE**, rc=0, native
+      result is partial. Java: 15 completed, 14 known, 1 UNKNOWN, 6 passed;
+      JavaScript, multiple, parallel, parallel_multiple and simple: each 0
+      completed / known / UNKNOWN / passed. `java_90` stopped at parse error
+      (`finish_reason is not tool_calls`). The 120 known verdict requirement
+      was not met: no success-rate estimate or pooled score. No retry, redraw
+      or continuation of this cohort. RESULT.json SHA-256
+      `b130bfd75c1f4071bd8bfc9bfe976a1a14ac50839fdf2d1e8b90fdefa0f28b24`;
+      filed verdict and receipt `filing-done/codex-bfcl-cj3d-supported-27b-v1-20261120`
+      under `/mnt/raid0/llm/tmp/compute-flags/`. Alert acknowledged; parent
+      remains open. [belief: cc]
+
       2026-11-20 single-turn live verdict: `codex-bfcl-cj3d-single-27b-v1-20261120`
       ended **rc=1, INCONCLUSIVE**: timeout at `parallel_multiple_0`; terminal
       `RESULT.json` absent. Completed=8, known=8, passed known=8; exposed
