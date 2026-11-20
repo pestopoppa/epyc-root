@@ -1419,10 +1419,10 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 113,
+      "closed": 114,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 35,
+      "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1447,13 +1447,13 @@
         },
         {
           "blocked": 0,
-          "closed": 10,
+          "closed": 11,
           "gates": [],
           "guarded": 0,
           "line": 642,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
@@ -2343,10 +2343,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 155,
+      "closed": 157,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 36,
+      "open": 37,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2355,11 +2355,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 193,
+      "total": 196,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 97,
+          "closed": 99,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2375,10 +2375,10 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 813,
+          "line": 815,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 27
+          "open": 28
         }
       ]
     },

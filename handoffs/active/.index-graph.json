@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T03:01:52Z",
+  "generated_at": "2026-11-20T03:13:23Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1772,15 +1772,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 155,
-      "dispatchable": 36,
+      "closed": 157,
+      "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 38,
+      "open": 39,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1823,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 27,
+          "dispatchable": 28,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 813,
+          "line": 815,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 28,
+          "open": 29,
           "readiness": "blocked"
         }
       ]
@@ -1839,15 +1839,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 113,
-      "dispatchable": 35,
+      "closed": 114,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-20",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 36,
+      "open": 35,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1880,11 +1880,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 642,
           "name": "attention-matching-kv-compaction",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         },
         {
