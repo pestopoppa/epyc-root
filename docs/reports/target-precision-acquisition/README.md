@@ -301,3 +301,44 @@ Implementation SHA-256:
 `200112d1cf7a0e5db2f14580e147ee891c220b3aff1b2318e0d7d843b6e3fb0a`;
 test SHA-256:
 `0c3c40202d043fb171335117cbd9928cf0e65305163b7f3637ebb984f8133c13`.
+
+## Typed tokenizer metadata comparison (2026-11-20)
+
+`scripts/diagnostics/target-precision/tokenizer_metadata.py` compares every
+`tokenizer.*` KV entry in a tensor-bearing GGUF with a separate vocabulary-only
+GGUF reference. It compares serialized type tags and array element types as well
+as values, including ordered tokens, token types, merges, pretokenizer identity,
+special-token settings, chat templates and future tokenizer keys. Non-tokenizer
+metadata may differ. This is the GPT2/BPE metadata profile; other tokenizer
+families refuse.
+
+```bash
+python3 scripts/diagnostics/target-precision/tokenizer_metadata.py \
+  --reference /TASK/controls/reference-vocab.gguf \
+  --output /TASK/target-BF16.gguf --receipt /TASK/controls/tokenizer-metadata.json
+```
+
+The standard-library reader stops at the end of the GGUF v3 KV table and uses
+unbuffered reads, without touching tensor descriptors or payloads. Global byte
+and item budgets bound metadata traversal. Duplicate keys, nested arrays,
+invalid UTF-8, unknown types, truncated tables, invalid vocabulary inventories,
+symlinks/hardlinks and file/path changes during reading refuse. Receipts bind
+the exact header/KV bytes by SHA-256 and record file size; they **do not hash or
+verify weight payloads**. CLI receipts are exclusive and fsynced. A comparison
+mismatch produces a FAIL receipt and exit 1; malformed inputs fail before any
+receipt is created.
+
+A PASS establishes only typed metadata equality to the supplied reference.
+It does not establish that the reference came from the pinned upstream or an
+approved converter. Reference generation and build/source binding, actual
+tokenization behavior, tensor value/transformation correspondence and the
+conversion receipt producer remain required. The metadata receipt deliberately
+lacks the COMPLETE/plan/output/acquisition authorization fields consumed by
+`release_sources.py`; it cannot authorize deletion. No real model file,
+acquisition, conversion, release or precision measurement ran during validation.
+
+Validation: **35 new model-free tests PASS; 58 PASS** together with the existing
+source-release controls. Fixtures cover equality, each vocabulary dimension,
+missing/extra keys, chat/template and type drift, malformed and oversized tables,
+payload exclusion, unsafe files, concurrent mutation/replacement and exclusive
+PASS/FAIL CLI receipts. Source-release controls remain unchanged.
