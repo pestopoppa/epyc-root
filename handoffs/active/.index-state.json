@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 529
+      "open": 527
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -423,7 +423,7 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 70,
+      "closed": 71,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 32,
@@ -435,11 +435,11 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 102,
+      "total": 103,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 22,
+          "closed": 23,
           "gates": null,
           "guarded": 0,
           "line": 0,
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 820,
+          "line": 834,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1132,
+          "line": 1146,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1339,
+          "line": 1353,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1665,
+          "line": 1679,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1900,
+          "line": 1914,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -1419,10 +1419,10 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 111,
+      "closed": 113,
       "guarded": 0,
-      "last_advanced": "2026-11-19",
-      "open": 37,
+      "last_advanced": "2026-11-20",
+      "open": 35,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1435,7 +1435,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 60,
+          "closed": 62,
           "gates": [
             "RTG-58"
           ],
@@ -1443,7 +1443,7 @@
           "line": 17,
           "markers": 1,
           "name": "yarn-context-extension-research",
-          "open": 20
+          "open": 18
         },
         {
           "blocked": 0,
@@ -1460,7 +1460,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1045,
+          "line": 1046,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1470,7 +1470,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1661,
+          "line": 1662,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1480,7 +1480,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1808,
+          "line": 1809,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
@@ -2375,7 +2375,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 812,
+          "line": 813,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 27

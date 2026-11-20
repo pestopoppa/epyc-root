@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T02:29:49Z",
+  "generated_at": "2026-11-20T03:01:52Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1048,7 +1048,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 70,
+      "closed": 71,
       "dispatchable": 32,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -1089,7 +1089,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 820,
+          "line": 834,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1098,7 +1098,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1132,
+          "line": 1146,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1107,7 +1107,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1339,
+          "line": 1353,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1116,7 +1116,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1665,
+          "line": 1679,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1125,7 +1125,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1900,
+          "line": 1914,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 812,
+          "line": 813,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 28,
           "readiness": "blocked"
@@ -1836,18 +1836,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 111,
-      "dispatchable": 37,
+      "closed": 113,
+      "dispatchable": 35,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 38,
+      "open": 36,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1869,13 +1869,13 @@
           "blocked_by": [
             "RTG-58"
           ],
-          "dispatchable": 20,
+          "dispatchable": 18,
           "gates": [
             "RTG-58"
           ],
           "line": 17,
           "name": "yarn-context-extension-research",
-          "open": 20,
+          "open": 18,
           "readiness": "blocked"
         },
         {
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1045,
+          "line": 1046,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1661,
+          "line": 1662,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1808,
+          "line": 1809,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
