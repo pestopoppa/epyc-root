@@ -22,3 +22,13 @@ def _no_real_tmux_or_engines(monkeypatch):
     monkeypatch.setenv("ROWFLOW_NO_VIEW_REFRESH", "1")  # never force-checkout the real hub view from a test
     yield
     shutil.rmtree(d, ignore_errors=True)
+
+
+import pytest as _pytest_holds
+
+
+@_pytest_holds.fixture(autouse=True)
+def _isolated_holds_root(tmp_path, monkeypatch):
+    """handoff_sessions `gate`/`unpark` write holds.yaml (handoff standard C3); never let a test touch the real tree."""
+    (tmp_path / "_holds_root" / "handoffs" / "active").mkdir(parents=True, exist_ok=True)
+    monkeypatch.setenv("EPYC_HOLDS_ROOT", str(tmp_path / "_holds_root"))

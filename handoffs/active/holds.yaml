@@ -1,0 +1,171 @@
+# Operator holds — the single exclusion source (handoff standard decision 3; schema: scripts/coordination/holds.py).
+# Written by the operator and by `handoff_sessions.py gate|unpark`; every reader derives from this file.
+holds:
+- id: akagg
+  sessions:
+  - akagg
+  - handoff-akagg
+  - h-akagg
+  scope: loop-launch
+  since: '2026-11-19T02:12:51Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - kernel-champion-and-promotion.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: autokernel-all-devices-all-dimensions
+  sessions:
+  - autokernel-all-devices-all-dimensions
+  - handoff-autokernel-all-devices-all-dimensions
+  - h-autokernel-all-devices-all-dimensions
+  scope: loop-launch
+  since: '2026-11-19T02:12:51Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - autokernel-akx-program.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: autokernel-cross-workload-keep-gate
+  sessions:
+  - autokernel-cross-workload-keep-gate
+  - handoff-autokernel-cross-workload-keep-gate
+  - h-autokernel-cross-workload-keep-gate
+  scope: loop-launch
+  since: '2026-11-19T02:12:51Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - autokernel-akx-program.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: autokernel-rebuild
+  sessions:
+  - autokernel-rebuild
+  - handoff-autokernel-rebuild
+  - h-autokernel-rebuild
+  scope: loop-launch
+  since: '2026-11-19T02:12:51Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - autokernel-loop.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: autokernel-research-loop
+  sessions:
+  - autokernel-research-loop
+  - handoff-autokernel-research-loop
+  - h-autokernel-research-loop
+  scope: loop-launch
+  since: '2026-11-19T02:12:52Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - autokernel-loop.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: autokernel-unified-surface
+  sessions:
+  - autokernel-unified-surface
+  - handoff-autokernel-unified-surface
+  - h-autokernel-unified-surface
+  scope: loop-launch
+  since: '2026-11-19T02:12:52Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - autokernel-loop.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: autopilot
+  sessions:
+  - autopilot
+  - handoff-autopilot
+  - h-autopilot
+  scope: loop-launch
+  since: '2026-11-19T02:12:52Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - autopilot-program.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: batched-edit-parallel-apply
+  sessions:
+  - batched-edit-parallel-apply
+  - handoff-batched-edit-parallel-apply
+  - h-batched-edit-parallel-apply
+  scope: loop-launch
+  since: '2026-11-19T02:12:52Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - autopilot-program.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: heterogeneous-slot-fabric-residency
+  sessions:
+  - heterogeneous-slot-fabric-residency
+  - handoff-heterogeneous-slot-fabric-residency
+  - h-heterogeneous-slot-fabric-residency
+  scope: loop-launch
+  since: '2026-11-19T21:23:57Z'
+  reason: 'operator 2026-11-19: prep loop on GPU-blocked KPF-18 boxes (73 NOOP/123
+    turns); hold until a GPU window'
+  handoffs:
+  - kv-cache-program.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: scaffold-autopilot-cost-lever-deployment
+  sessions:
+  - scaffold-autopilot-cost-lever-deployment
+  - handoff-scaffold-autopilot-cost-lever-deployment
+  - h-scaffold-autopilot-cost-lever-deployment
+  scope: loop-launch
+  since: '2026-11-19T02:12:52Z'
+  reason: 'operator hold 2026-11-19: autokernel/autopilot agent loops stay held; never
+    auto-unpark'
+  handoffs:
+  - autopilot-program.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: v11-promotion-checklist
+  sessions:
+  - v11-promotion-checklist
+  - handoff-v11-promotion-checklist
+  - h-v11-promotion-checklist
+  scope: loop-launch
+  since: '2026-11-18T13:41:39Z'
+  reason: 'operator 2026-11-18: no production kernel promotion or v11 prep until operator
+    ratifies; champions still accumulating'
+  handoffs:
+  - v11-promotion-checklist.md
+  by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
+- id: dispatch-stack-lifecycle-program
+  scope: loop-launch
+  since: '2026-11-19'
+  by: taskflow select.EXCLUDE_FILES (Stage B brief)
+  reason: 'operator-held track (stack bring-up): no dispatcher/taskflow loop launches;
+    rows admitted by their own owner'
+  sessions:
+  - stack-lifecycle-program
+- id: rowprefix-v11-
+  scope: all-rows
+  row_prefixes:
+  - v11-
+  since: '2026-11-18'
+  by: publish_row.DEFAULT_GATED_ROW_PREFIXES
+  reason: production kernel promotion rows; released only by operator-ratify/rowprefix-v11-.json
+- id: rowprefix-v12-
+  scope: all-rows
+  row_prefixes:
+  - v12-
+  since: '2026-11-18'
+  by: publish_row.DEFAULT_GATED_ROW_PREFIXES
+  reason: production kernel promotion rows; released only by operator-ratify/rowprefix-v12-.json
+- id: rowprefix-v13-
+  scope: all-rows
+  row_prefixes:
+  - v13-
+  since: '2026-11-18'
+  by: publish_row.DEFAULT_GATED_ROW_PREFIXES
+  reason: production kernel promotion rows; released only by operator-ratify/rowprefix-v13-.json
+- id: rowprefix-v14-
+  scope: all-rows
+  row_prefixes:
+  - v14-
+  since: '2026-11-18'
+  by: publish_row.DEFAULT_GATED_ROW_PREFIXES
+  reason: production kernel promotion rows; released only by operator-ratify/rowprefix-v14-.json

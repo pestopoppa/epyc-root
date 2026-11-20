@@ -68,6 +68,7 @@ import backlog_gen as bg  # noqa: E402
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "rowflow"))
 import notify as rf_notify  # noqa: E402  - the inference mailbox (operator 2026-11-05)
 import token_guards as tg  # noqa: E402  - token-audit recs 1-5 (operator 2026-11-06)
+import holds as H  # noqa: E402  - handoff standard C3: holds.yaml is the gate source, registry operator_gate a cache
 import codex_budget_meter as meter  # noqa: E402
 
 VERSION = "hs-dispatcher-v3"
@@ -1677,6 +1678,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     now = now or time.time()
     repo = repo or ROOT
     reg = load(reg_path(flags), {"sessions": {}})
+    sync_holds(flags, reg, repo)
     st = load(state_path(flags), {"seen": [], "queue": []})
     seen = set(st.get("seen") or [])
     pilots = bg.load_pilots(reg_path(flags))
@@ -2297,9 +2299,25 @@ def gate_held(flags, slug, e) -> bool:
     return True
 
 
-def set_gate(flags, reg, slug, reason):
+def holds_root(repo=None):
+    """Where holds.yaml lives for the dispatcher: $EPYC_HOLDS_ROOT (tests, lane trees) else the dispatcher repo."""
+    return os.environ.get("EPYC_HOLDS_ROOT") or repo or ROOT
+
+
+def sync_holds(flags, reg, repo=None):
+    """C3: refresh the registry's operator_gate cache from holds.yaml (no-op while the file does not exist)."""
+    try:
+        for slug in H.sync_registry(reg, H.load(holds_root(repo))):
+            log(flags, f"GATE-SYNC {slug}: operator_gate {'set' if (reg['sessions'][slug].get('operator_gate')) else 'cleared'} from holds.yaml")
+    except Exception as ex:  # noqa: BLE001 -- a broken holds file must never stop dispatch; the cache stays as it was
+        log(flags, f"GATE-SYNC failed: {type(ex).__name__}: {ex}")
+
+
+def set_gate(flags, reg, slug, reason, repo=None):
     e = reg["sessions"][slug]
-    e["operator_gate"] = {"reason": reason, "since": now_iso()}
+    p = H.add_session_hold(slug, reason, now_iso(), handoff=e.get("handoff"), root=holds_root(repo))
+    log(flags, f"HOLD-WRITTEN {slug} -> {p} (commit it; holds.yaml is the source, the registry gate is its cache)")
+    e["operator_gate"] = {"reason": reason, "since": now_iso(), "source": H.CACHE_SOURCE, "hold": slug}
     tg.park(e, f"{GATE_PARK_PREFIX} {reason}", now_iso())
     log(flags, f"GATE-SET {slug}: {reason}")
     gate_held(flags, slug, e)
@@ -2321,6 +2339,8 @@ def unpark_cmd(flags, reg, slug) -> int:
             print(f"REFUSED: {msg}", file=sys.stderr)
             return 3
         e.pop("operator_gate", None)
+        if H.remove_session_hold(slug, root=holds_root()):
+            log(flags, f"HOLD-REMOVED {slug} from {H.path(holds_root())} (commit it)")
         log(flags, f"GATE-LIFTED {slug}: {why}")
     tg.unpark(e)
     log(flags, f"UNPARK {slug} (operator)")
@@ -2695,6 +2715,7 @@ def main(argv=None):
         print("restart gate: " + ("OPEN" if not fails else f"CLOSED ({len(fails)} failure(s))"))
         return 1 if fails else 0
     if a.cmd == "status":
+        H.sync_registry(reg, H.load(holds_root()))   # C3: show the gates holds.yaml derives (read-only: nothing saved)
         print(json.dumps(reg, indent=2))
         return 0
     if a.cmd == "unpark":

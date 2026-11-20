@@ -105,7 +105,14 @@ def sections(lines: list[str]) -> list[tuple[str | None, bool, int, str | None, 
     return out
 
 
+_OWNER_PREFIX = re.compile(r"^(handoff-|h-)")
+
+
 def load_holds(root: Path) -> list[dict]:
+    """holds.yaml in F4's FLAT shape (publish_row.load_holds / scripts/coordination/holds.py document it):
+    `sessions / handoffs / rows / boxes / files` + `scope`. Returns [{id, scope, targets}] where targets is the set of
+    handoff basenames, file stems (a session slug names its `<slug>.md` handoff, `handoff-`/`h-` normalised), row ids,
+    box ids and text_shas a box is matched against. Legacy nested `targets:` maps are read too."""
     for rel in HOLDS_CANDIDATES:
         p = root / rel
         if not p.exists():
@@ -120,11 +127,23 @@ def load_holds(root: Path) -> list[dict]:
             items = [{"id": k, **(v if isinstance(v, dict) else {})} for k, v in items.items()]
         out = []
         for h in items or []:
-            if isinstance(h, dict) and h.get("id"):
-                out.append({"id": str(h["id"]),
-                            "targets": {str(x) for k in ("handoffs", "rows", "boxes", "files") for x in (h.get(k) or [])}})
+            if not (isinstance(h, dict) and h.get("id")):
+                continue
+            src = {**h, **(h.get("targets") if isinstance(h.get("targets"), dict) else {})}
+            t = {str(x) for k in ("handoffs", "rows", "boxes", "files") for x in (src.get(k) or [])}
+            t |= {Path(x).name for x in (src.get("handoffs") or []) + (src.get("files") or [])}
+            t |= {f"session:{_OWNER_PREFIX.sub('', str(x))}" for x in (src.get("sessions") or src.get("owners") or [])}
+            out.append({"id": str(h["id"]), "scope": str(h.get("scope") or "loop-launch"), "targets": t})
         return out
     return []
+
+
+def holds_on(holds: list[dict], name: str, row: str | None, bid: str | None, sha: str) -> list[str]:
+    """Hold ids covering a box: its handoff basename, its file stem as a held session, its row, its ID or text_sha.
+    Every scope holds the box for the DISPATCHER (loop-launch holds the handoff's agent sessions, which is what
+    taskflow/select is); scope only differs for rowflow rows (publish_row.hold_refuses)."""
+    keys = {name, f"session:{Path(name).stem}", sha} | ({row} if row else set()) | ({bid} if bid else set())
+    return sorted(h["id"] for h in holds if keys & h["targets"])
 
 
 def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None],
@@ -175,7 +194,7 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
                    "row": row, "row_rank": (prows.get(row) or {}).get("rank") if row else None,
                    "pos_in_backlog": p, "cont_lines": len(own_txt.split("\n")) - 1, "frozen_until": inherited,
                    "outside_backlog": bool(has_backlog and not in_backlog and st not in "xX"),
-                   "holds": sorted(h["id"] for h in holds if {name, row, r["id"]} & h["targets"])}
+                   "holds": holds_on(holds, name, row, r["id"], text_sha(line))}
             if rec["outside_backlog"]:
                 rec["lint"]["warn"] = ["outside-backlog"]
             if st in "xX":
@@ -219,8 +238,10 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
     counts["lint_ok"] = sum(1 for r in recs if r["lint"]["ok"])
     counts["total"] = len(recs)
     counts["outside_backlog"] = sum(1 for r in recs if r.get("outside_backlog"))
+    counts["held"] = sum(1 for r in recs if r.get("holds") and r["state"] != "done")
     return {"schema": SCHEMA, "include_done": INCLUDE_DONE, "counts": counts, "limits": limit_findings(files, recs, root),
-            "holds_source": next((h for h in HOLDS_CANDIDATES if (root / h).exists()), None), "boxes": boxes}
+            "holds_source": next((h for h in HOLDS_CANDIDATES if (root / h).exists()), None),
+            "holds": [{"id": h["id"], "scope": h["scope"]} for h in holds], "boxes": boxes}
 
 
 DISPATCH_CLASSES = ("non-inference", "inference")

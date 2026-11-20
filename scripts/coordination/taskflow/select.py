@@ -14,7 +14,7 @@ position first, file line as the tie-break). A box is admitted only when ALL hol
   lint.ok                        task_lint dispatch verdict (done-condition, inputs, …)
   no inputs_missing              every declared input exists
   not outside_backlog            an open box under History/Done of a standard file is a placement error
-  file not excluded              operator-held tracks (EXCLUDE_FILES) and handoffs already in flight
+  file not excluded              handoffs already in flight (--exclude / in_flight); holds come from holds.yaml
 
 `select()` returns (record | None, skip histogram). The histogram is the authoring-debt gauge (DESIGN §2.6).
 
@@ -37,10 +37,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DISPATCH_CLASSES = ("non-inference", "inference")
-# Operator-held tracks (Stage B brief: AutoKernel, autopilot, promotion, stack bring-up). holds.yaml supersedes this
-# once it exists; until then a held handoff yields zero boxes through this list.
-EXCLUDE_FILES = ("autokernel-loop.md", "autokernel-akx-program.md", "autopilot-program.md",
-                 "kernel-champion-and-promotion.md", "v11-promotion-checklist.md", "stack-lifecycle-program.md")
+# Operator holds come from handoffs/active/holds.yaml ONLY (handoff standard C3): box_index puts the covering hold ids
+# on each record (`holds`) and the shared predicate skips them. No private exclusion list.
+EXCLUDE_FILES: tuple[str, ...] = ()
 
 
 def load_index(root: Path | None = None) -> dict:

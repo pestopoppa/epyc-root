@@ -688,7 +688,7 @@ def generated_next_action(boxes: list[dict], exclude: set[str] | None = None) ->
     taskflow/select.py uses -- lint, inputs, holds, gates, placement, class, held files), else HELD / BLOCKED /
     FROZEN / NEEDS-OWNER. Never a lint-failing or non-dispatchable box."""
     import box_index
-    exclude = set(exclude if exclude is not None else _held_files())
+    exclude = set(exclude or ())   # holds arrive on the records from holds.yaml (C3)
     live = [b for b in boxes if b.get("state") != "done"]
     live.sort(key=lambda b: (b.get("pos_in_backlog") is None, b.get("pos_in_backlog") or 0, b.get("line", 0)))
     for b in live:
@@ -711,18 +711,6 @@ def generated_next_action(boxes: list[dict], exclude: set[str] | None = None) ->
     if frozen:
         return _cell(f"FROZEN until {frozen[0].get('frozen_until') or '?'}"[:140])
     return "—"
-
-
-def _held_files() -> set[str]:
-    """Files whose boxes are under an operator hold for the dispatcher (select.EXCLUDE_FILES until C3 holds.yaml)."""
-    try:
-        sys.path.insert(0, str(REPO_ROOT / "scripts" / "coordination"))
-        from taskflow import select as _sel  # noqa: PLC0415
-        return set(getattr(_sel, "EXCLUDE_FILES", ()))
-    except Exception:  # noqa: BLE001
-        return set()
-    finally:
-        sys.path.pop(0)
 
 
 def render_domain_tables(state: dict, bdoc: dict, prio: dict) -> dict[str, str]:
@@ -1251,9 +1239,41 @@ def dep_cycles(state: dict) -> list[str]:
     return errs
 
 
+def hold_problems(state: dict, paths: dict | None = None) -> list[str]:
+    """C3: `BAD HOLD` for a holds.yaml schema error or a target that resolves to nothing (handoff file, row id, box
+    ID). Sessions are not resolved here (the registry lives under the flags dir); text_sha box targets are accepted."""
+    hp = REPO_ROOT / "handoffs" / "active" / "holds.yaml"
+    if not hp.exists():
+        return []
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "coordination"))
+    try:
+        import holds as _H  # noqa: PLC0415
+        hl = _H.load(str(REPO_ROOT)) or []
+        errs = [f"BAD HOLD: {e}" for e in _H.validate(hl)]
+    finally:
+        sys.path.pop(0)
+    paths = paths if paths is not None else handoff_paths()
+    names = set(paths) | {p.name for p in (REPO_ROOT / "handoffs").glob("*/*.md")}
+    ids: set[str] = set()
+    for p in paths.values():
+        ids |= set(re.findall(r"\*\*\s*(?:❄\s*)?([A-Za-z][A-Za-z0-9]*(?:[-._][A-Za-z0-9]+)+)", p.read_text(errors="replace")))
+    for h in hl:
+        for f in h.get("handoffs") or []:
+            if Path(str(f)).name not in names:
+                errs.append(f"BAD HOLD: {h['id']} targets handoff {f} which does not exist")
+        for r in h.get("rows") or []:
+            if str(r) not in state.get("rows", {}):
+                errs.append(f"BAD HOLD: {h['id']} targets row {r} which no index declares")
+        for b in h.get("boxes") or []:
+            if str(b) not in ids and not re.fullmatch(r"[0-9a-f]{16}", str(b)):
+                errs.append(f"BAD HOLD: {h['id']} targets box {b} which no handoff carries")
+    return errs
+
+
 def check(state: dict) -> list[str]:
     errs = []
     paths = handoff_paths()
+    errs += hold_problems(state, paths)
 
     for rid, sites in sorted(state.get("row_id_collisions", {}).items()):
         errs.append(f"ID COLLISION: row id {rid} is used by {len(sites)} rows ({', '.join(sites)}) — "

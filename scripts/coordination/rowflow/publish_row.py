@@ -325,7 +325,10 @@ def check_operator_gate(spec, flags):
     owner - see hold_refuses), unless operator-ratify/<hold id | slug | rowprefix-<prefix>>.json exists."""
     reg = rf.load_json(os.path.join(flags, SESSIONS_NAME)) or {}
     rid = str(spec.get("id") or "")
-    prefixes = reg["operator_gated_row_prefixes"] if "operator_gated_row_prefixes" in reg else DEFAULT_GATED_ROW_PREFIXES
+    if "operator_gated_row_prefixes" in reg:
+        prefixes = reg["operator_gated_row_prefixes"]
+    else:   # C3: derived from holds.yaml `row_prefixes` when the file declares any; the constant is the no-file fallback
+        prefixes = [p for h in load_holds() for p in h.get("row_prefixes") or []] or DEFAULT_GATED_ROW_PREFIXES
     for pre in prefixes or []:
         if pre and rid.startswith(pre):
             ok, why = ratified(flags, f"rowprefix-{pre}")
@@ -391,6 +394,7 @@ def load_holds(repo=None):
             since: 2026-11-20T00:00Z
             reason: free text
     Returns [{id, scope, targets, row_prefixes, since, reason, source}]. A broken file -> no holds (WARN)."""
+    repo = repo or os.environ.get("EPYC_HOLDS_ROOT") or None   # C3: tests / lane trees pin the holds root
     for rel in HOLDS_CANDIDATES:
         p = config_path(rel, repo)
         if not os.path.exists(p):
