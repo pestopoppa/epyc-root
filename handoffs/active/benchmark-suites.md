@@ -293,7 +293,7 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       Evidence + category tables: `epyc-inference-research/data/bfcl-cj3-2026-08-25/summary.json`.
       CJ-3d caveat recorded: production tool path is the bespoke REPL protocol, not native function
       calling; the instrument decision (REPL vs native) belongs to CJ-GATE. ✅ 2026-08-27
-- [ ] **CJ-3d. Wire a representative sample** — note that the orchestrator's production tool path is
+- [ ] **CJ-3d. Wire a representative sample** [inference] — note that the orchestrator's production tool path is
       the bespoke Python-REPL protocol (`TOOL()/CALL()/FINAL()`), **not** llama-server native
       function calling, and `ChatRequest.tools` is accepted-but-never-consumed. Decide deliberately
       whether the local BFCL run measures the production REPL path or the native-function-call path —
@@ -341,8 +341,25 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       lost proof aborts before scoring.
       [Contract](../../docs/design/bfcl-local-residency.md) and
       [software qualification](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/residency-20261120.json).
-      Parent remains open for publishing actual fleet capture; no model was run,
-      no GPU residency or fleet score claimed. [no-belief: model-free software controls]
+      Native CPU diagnostic contract (2026-11-20): model Qwen3.8-27B-Q8_0
+      (`a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348`),
+      production v10 build `ffc1bac82`, server SHA-256
+      `4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c`.
+      Stop-on-answer after the ten pinned multi-turn coverage cases; stop-on-futility
+      at first UNKNOWN/transport/custody failure, STOP or grant deadline. No retry
+      or redraw, no representative score; gate-class = futility-only. Smoke uses
+      one synthetic noncohort native-tool request, at most 24 generated tokens.
+      2026-11-20: dedicated native CPU worker published as
+      `codex-bfcl-cj3d-27b-v1-20261120`; **smoke PASS**, rc=0, one synthetic
+      noncohort request with before/after residency proofs on four CPU cores.
+      **5 launcher controls PASS**, including unique-attempt isolation and the
+      exact rowflow native-result output. Two smoke integration failures were fixed
+      before publication (missing native result, then stale smoke completion).
+      [Launcher qualification and content-bound evidence](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/fleet-launcher-20261120.json).
+      Granted work captures the ten selected multi-turn cases; this smoke supplies
+      no BFCL quality score. Parent stays open for the live coverage verdict and
+      durable single-turn fleet capture; SQL remains excluded by the official evaluator.
+      [no-belief: transport qualification; no benchmark quality claim]
   - [x] **CJ-3d-SCHEMA — Resolve official catalog/simulator version skew and pass all ten selected multi-turn cases through durable capture and original V3 replay.** ✅ 2026-11-20 [no-belief: model-free software controls]
       Bind the whole official Twitter catalog from Gorilla
       `f64916eb4092aef76fc8609bd53eb594b5e84bd0` (13 methods), whose Twitter
