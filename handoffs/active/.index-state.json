@@ -504,6 +504,7 @@
       "closed": 88,
       "guarded": 0,
       "last_advanced": "2026-11-20",
+      "needs_owner": 1,
       "open": 31,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {

@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T10:39:31Z",
+  "generated_at": "2026-11-20T10:43:53Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1876,7 +1876,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 666,
+          "line": 667,
           "name": "attention-matching-kv-compaction",
           "open": 4,
           "readiness": "ready"
@@ -1885,7 +1885,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1074,
+          "line": 1075,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1894,7 +1894,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1690,
+          "line": 1691,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1903,7 +1903,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1837,
+          "line": 1838,
           "name": "triattention-kv-selection",
           "open": 12,
           "readiness": "ready"
