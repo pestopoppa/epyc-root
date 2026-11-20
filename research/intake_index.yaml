@@ -395929,3 +395929,167 @@
     source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
   dive_corrections: "2026-11-20 Stage-2b wave-2 dive (sonnet; PARTIAL: README, AGENTS.md, validator.md, reviewer.md, heads of codeobj_diff.py and changeclass.py read @ 86968a5e896a). Moat is a port gate-and-provenance workflow, not a performance search. Transferable to our loop: evidence bound to an exact commit with re-derivation on head move; carry-forward without a GPU re-run only when exported symbols and normalized device ISA are identical (indeterminate treated as differ); a 'blocked (host fact) vs failed (code fact)' distinction when no GPU is present; a base-control pattern (rebuild the pre-fix source and show the gate still passes) to prove a gate is blind; 'assertion count is a lower bound' and 'read what the checker compares'. Our loop is already stronger on gaming controls (autokernel-loop.md \u00a78.6 L2007-L2023 @901b3fe). All Moat measurements are ROCm 7.x. Licence/fork/upstream machinery not applicable. CONTRIBUTING.md declined. lane_head 901b3fe44a30"
   notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 2)."
+
+- id: intake-2747
+  arxiv_id: "2404.00242"
+  url: https://arxiv.org/abs/2404.00242
+  source_type: paper
+  title: "DeFT: Decoding with Flash Tree-attention for Efficient Tree-structured LLM Inference"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "KV-guided grouping loads shared-prefix KV once for all tree queries."
+  - "Flattened tree KV splitting balances partitions across the tree."
+  - "Abstract reports large KV IO reduction and attention-latency speedups on tree workloads."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: DIGEST
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Abstract only read in Stage 1 (v4, ICLR 2025)."
+- id: intake-2748
+  arxiv_id: "2402.05099"
+  url: https://arxiv.org/abs/2402.05099
+  source_type: paper
+  title: "Hydragen: High-Throughput LLM Inference with Shared Prefixes"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "Prefix and suffix attention are computed separately and recombined."
+  - "Queries sharing a prefix are batched into one matrix-matrix pass over the prefix KV."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: DIGEST
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Abstract only read. Merge rule assumed LSE, unconfirmed."
+- id: intake-2749
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/30370
+  source_type: repo
+  title: "llama.cpp PR #30370: ggml-cuda: Add GCN HIP sparse fattn"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: worth_investigating
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "Enables the sparse (index-gather) FA path on GCN-family HIP targets without WMMA."
+  - "PR body benchmarks decode at nq 1-64 with large speedups at long KV."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: DIGEST
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Open at llama.cpp head 4b69c79cca4b (2026-11-20); diff not read. Related: closed #28943 (interior fully-masked tile skip, RDNA3), merged #27970 sparse-fa, mask-to-KV_max tail skip in fattn-common.cuh."
+- id: intake-2750
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/attention/verify_splitkv.py
+  source_type: repo
+  title: "SGLang verify_splitkv: split-KV target-verify attention with LSE merge (Triton)"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "Target verify on the Triton backend otherwise runs the prefill extend kernel, which loops the long prefix serially per sequence and head."
+  - "Replacement splits the prefix KV across programs, then LSE-merges with the small draft-draft causal block."
+  - "Supports topk==1 only; trees fall back to extend_attention_fwd with a per-element int8 custom mask."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: DIGEST
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Pinned ea442ff4ab19. Also FlashInfer c7e4de0b13ad packed bit custom mask + cascade merge_state seen (already intake-458 family)."
+- id: intake-2751
+  arxiv_id: null
+  url: https://github.com/ROCm/composable_kernel
+  source_type: repo
+  title: "composable_kernel CK-Tile FMHA split-KV and mask variants"
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2705
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors: []
+  key_claims:
+  - "Mask kinds are geometric only (no mask, top-left/bottom-right causal, generic window); no arbitrary tree mask."
+  - "Split-KV fwd plus combine kernels exist for decode."
+  - "Split-KV query tile bm0 is 32 or 64 rows, so 12-16 query rows underfill the tile."
+  techniques: []
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2720
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: DIGEST
+  notes: "Stage-1 (intake-dtree-verify-20261120, autokernel). Pinned 6cb06034c56d; grep-level read only, nothing built for gfx90a. aiter 1ff8c8f61247: MTP multi-query PA/MLA asm is gfx942-only; FA mask limited to none/causal."
