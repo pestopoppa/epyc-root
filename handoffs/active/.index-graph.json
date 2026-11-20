@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T01:57:40Z",
+  "generated_at": "2026-11-20T02:02:47Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1136,7 +1136,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 138,
+      "closed": 139,
       "dispatchable": 36,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -1175,7 +1175,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 944,
+          "line": 947,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
@@ -1184,7 +1184,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1419,
+          "line": 1422,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1201,7 +1201,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1886,
+          "line": 1889,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1772,15 +1772,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 153,
-      "dispatchable": 38,
+      "closed": 154,
+      "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 40,
+      "open": 39,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1823,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 28,
+          "dispatchable": 27,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 811,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 29,
+          "open": 28,
           "readiness": "blocked"
         }
       ]
