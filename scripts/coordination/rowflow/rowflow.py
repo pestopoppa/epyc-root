@@ -5079,6 +5079,51 @@ def queued_aged_alerts(flags, now=None, log=print, emit=None):
     return out
 
 
+def orphaned_smoke_alerts(flags, log=print, emit=None, now=None, min_age_s=120):
+    """B1 (AK audit: a queued smoke is a durable obligation): a dryrun/<id>/unpublished.json (a row waiting for its
+    smoke) with NO queued marker, no live RUNNING/SMOKE-PLACED runner, no PASS/FAIL/QUEUED-DROPPED record newer than it
+    and no withdrawal means its marker was removed outside PASS/FAIL/withdraw/drop (e.g. by hand). ONE
+    `queued-smoke-orphaned` alert to the owner per orphaning; never re-queues on its own. Returns the alerted ids."""
+    now = time.time() if now is None else now
+    emit = emit or notify.emit
+    out = []
+    for up in glob.glob(os.path.join(flags, "dryrun", "*", "unpublished.json")):
+        dd = os.path.dirname(up)
+        rid = os.path.basename(dd)
+        try:
+            t_up = os.path.getmtime(up)
+        except OSError:
+            continue
+        if now - t_up < min_age_s:
+            continue   # a publish/batch in progress moves these files around
+        if any(os.path.exists(os.path.join(dd, n)) for n in ("SMOKE-QUEUED.json", "GPU-SMOKE-QUEUED.json")):
+            continue
+        if os.path.exists(withdraw_pending_path(flags, rid)) or os.path.exists(os.path.join(withdrawn_dir(flags), rid + ".json")):
+            continue
+        if any(proc_alive((load_json(os.path.join(dd, n)) or {}).get("pid")) for n in ("RUNNING.json", "SMOKE-PLACED.json")):
+            continue
+        recs = [os.path.join(dd, "PASS.json")] + glob.glob(os.path.join(dd, "FAIL-*.json")) + glob.glob(os.path.join(dd, "QUEUED-DROPPED-*.json"))
+        if any(os.path.exists(r) and os.path.getmtime(r) >= t_up - 1 for r in recs):
+            continue
+        row = load_json(up) or {}
+        disc = str(int(t_up))
+        try:
+            if os.path.exists(notify._marker(flags, notify.event_key("queued-smoke-orphaned", rid, disc))):
+                continue
+        except Exception:  # noqa: BLE001
+            pass
+        try:
+            emit(flags, "queued-smoke-orphaned", rid, disc, f"row {rid} waits for its smoke (dryrun/{rid}/unpublished.json) "
+                 "but its queued marker is gone with no PASS/FAIL/withdraw/drop record; nothing will run it. Republish "
+                 f"(publish_row.py <spec>) or withdraw it (rowflow.py withdraw {rid} --reason ...)", "warning",
+                 str(row.get("owner") or ""), {"unpublished": up})
+            out.append(rid)
+            log(f"QUEUED-SMOKE-ORPHANED {rid}: marker removed outside PASS/FAIL/withdraw/drop; owner alerted")
+        except Exception as ex:  # noqa: BLE001
+            log(f"QUEUED-SMOKE-ORPHANED {rid}: notify failed: {type(ex).__name__}: {ex}")
+    return out
+
+
 def idle_warn_state_path(flags):
     return os.path.join(state_dir(flags), "idle_held_warn.json")
 
@@ -5738,6 +5783,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             idle_after_crash(flags, grants, util, log)
         except Exception as e:  # noqa: BLE001
             log(f"IDLE-AFTER-CRASH failed: {type(e).__name__}: {e}")
+        try:   # B1: a smoke marker removed outside PASS/FAIL/withdraw/drop reaches the owner
+            orphaned_smoke_alerts(flags, log=log)
+        except Exception as e:  # noqa: BLE001
+            log(f"QUEUED-SMOKE-ORPHANED check failed: {type(e).__name__}: {e}")
         try:   # F9: aged smoke markers reach their owners
             queued_aged_alerts(flags, log=log)
         except Exception as e:  # noqa: BLE001
