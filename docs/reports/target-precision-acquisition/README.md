@@ -262,3 +262,42 @@ test SHA-256:
 The dedicated configured cgroup leaf and native conversion/correspondence receipt
 producers remain required before acquisition/conversion can be qualified as a
 whole. No acquisition or matrix was launched or published.
+
+
+## Dedicated cgroup leaf configuration (2026-11-20)
+
+`scripts/diagnostics/target-precision/cgroup_leaf.py` supplies the missing
+leaf configuration helper. It accepts an explicit absolute delegated parent,
+a fresh `df2-tp-<task>` name and a positive byte cap. It checks the containing
+mount is cgroup-v2, the parent is an empty domain and its memory controller is
+already enabled. It never enables controllers, changes parent limits or moves
+processes. Only a newly created child receives `memory.max`, zero swap and
+group OOM enforcement; the existing preparation validator rereads all limits.
+Existing leaves and symlink paths/controls refuse. Failed configuration retains
+the new leaf for inspection and refuses automatic reuse. The returned identity
+records its path, device and inode; it grants no execution admission.
+
+Example (requires an independently delegated writable parent):
+
+```bash
+python3 scripts/diagnostics/target-precision/cgroup_leaf.py \
+  --parent /sys/fs/cgroup/DELEGATED-PARENT \
+  --name df2-tp-acquire --memory-max-bytes 4294967296
+```
+
+The example cap is for durable acquisition only. Tmpfs acquisition must use the
+source-inclusive cap from the placement schedule. This helper does not reserve
+RAM, configure ancestor budgets, provide delegation, or protect against hostile
+same-user concurrent mutation. Runtime admission must still check an empty leaf
+and exact limits immediately before launch.
+
+Validation: **51 tests PASS** across leaf configuration and existing preparation
+controls, including 19 new tests. Tests emulate kernel control semantics; the
+real mount refusal and no-create/no-follow control writer also execute directly.
+No live cgroup configuration, transfer, conversion or model execution occurred.
+Native conversion/correspondence receipt production and actual resource-admitted
+acquisition remain required; the matrix is unpublished.
+Implementation SHA-256:
+`200112d1cf7a0e5db2f14580e147ee891c220b3aff1b2318e0d7d843b6e3fb0a`;
+test SHA-256:
+`0c3c40202d043fb171335117cbd9928cf0e65305163b7f3637ebb984f8133c13`.
