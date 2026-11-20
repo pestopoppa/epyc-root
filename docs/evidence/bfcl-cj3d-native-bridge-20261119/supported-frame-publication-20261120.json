@@ -1,0 +1,100 @@
+{
+  "box": "CJ-3d",
+  "row": "codex-bfcl-cj3d-supported-27b-v1-20261120",
+  "source_commit": "b46e0a10625c633e488370708cc54eab19a92864",
+  "scope": "Publication of 120-case six-stratum supported-frame diagnostic; no cohort inference or model quality score in smoke.",
+  "prepared_inputs": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/BFCL-SAMPLING.md": "ba13d8c7f8e1841aef82884f4934009d57109d977fcb76449bd5ae438540d3a5",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/BUILD.json": "5a62c90959db4779b3d714a862a38642ab6ef9eb82c43a5149f7126adb0ded3e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/CONFIG.json": "b1ff3fb1db99c421b950e876a8e9ea845bc74c236b51d9ea6003be1587e1e0f4",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/INPUTS.sha256": "367ea29fc99ca5989bf2893aa648654d6a1f1bdf477365609bfeca645895549d",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/MODEL.json": "15071cdf9b48dcfb78dcea47946155370d2fc8cae17cce171b72dd0418d83aa8",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/OVERLAP.json": "3118f1c740edf1384aa774d0a60a351ba2cda4d2f113f67bf411d0f3a9919eb6",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/SELECTION.json": "4b45552622e4d7d612cca4331a1092aeb491013e5c79bd836d845579e2b30616",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/bfcl-catalog-lock.json": "bbe8ef47dc600a732f55835d3c2827efae336c4733f34b338c1e69423990bfdc",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/bfcl-supported-frame-lock.json": "0207547d36f00ea537e4167f582807e286f05ff60dc0cef91eb8d7f0f9d58476",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/bfcl_capture_run.py": "9cd77c007b1e2959842c6b74a0526206c96e6d2ad6efc23bb9ac7b6a83219223",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/bfcl_fleet_run.py": "18b2a610c6339a27a76870dddb1d01ad12dbee958237ad4acee47c4fe253ed33",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/bfcl_native.py": "26c56cda41f57040edd1f1f79bb478c33868f68ef576b8a2dbadd3245b784cf3",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/bfcl_residency.py": "81a4c92158c95b1fc366121eac81901e3de80bcbe08ac45de811f6672c98373f",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/bfcl_sample.py": "25695d0a5d1f7ea4342ae7f2d33000497f31632098fb4c4e81c02075a4afbd8b",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/bfcl_sample_capture.py": "3474207a3afebdb42a8f5ae32e675c4020ca9fdbd4e1b5b8d2ca12f13f878c33",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/launch.sh": "522f2e0dae1fb91e6a2c1a610f2207de274a5fe8c5aa528a6cbf0a2bd2107583",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/openai_tool_calls.py": "e452722f6fab15935645d7b0a4b9956477f354fe4aa1d071818dbc7569df8bfa",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/spec.json": "df8e338767e7534b140115b1ce254f09cd7d6c986ca67a3fe98b6981e87d63a1"
+  },
+  "overlap": {
+    "coverage_selected_count": 26,
+    "coverage_selected_overlap": [
+      "java_1",
+      "javascript_1",
+      "parallel_1"
+    ],
+    "disclosure": "Running coverage rows may expose further IDs after snapshot; coverage-selected overlap is the conservative prospective disclosure. No exclusion/redraw. Prior multi-turn abort remains unchanged; no supported-frame inference yet.",
+    "prior_exposures": [
+      {
+        "exposed_ids_at_snapshot": [
+          "multiple_0",
+          "multiple_1",
+          "parallel_0",
+          "simple_0",
+          "simple_1",
+          "simple_2",
+          "simple_3"
+        ],
+        "journal_prefix_sha256": {
+          "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/multiple_0.jsonl": "b449740c221e4cae3a44cfa1793778f388b16587dc559fbb819430f17567c5c2",
+          "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/multiple_1.jsonl": "6b5b7586ad6d77d4e5cbdacb64b2ee7d0b5aea21fbea5fb257cfe53ed67df993",
+          "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/parallel_0.jsonl": "406828d6ee5ec98f2a5a6af2ee77bf5defa8922772330d36962a2c455cf5872d",
+          "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_0.jsonl": "018ff156e6435c5b5f2984683454286c8b54409647e6c28f1e07480a351b91da",
+          "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_1.jsonl": "3878a3950c84eac6522c614a192e4dd52aa512ee1a11d8f93bc3a9ed26d01cb3",
+          "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_2.jsonl": "65e05861739ad1260e8f0cfdddc59ed6c6bcfd3d08422017769f3cb3ca3faa41",
+          "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/simple_3.jsonl": "5066419aae7171496a7c0873519fc82b55d9af356ce7e95bbd196fb9e605c50f"
+        },
+        "overlap_exposed": [],
+        "run": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run"
+      },
+      {
+        "exposed_ids_at_snapshot": [],
+        "journal_prefix_sha256": {},
+        "overlap_exposed": [],
+        "run": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3e-single-35b-20261120/run"
+      },
+      {
+        "exposed_ids_at_snapshot": [
+          "multi_turn_base_0"
+        ],
+        "journal_prefix_sha256": {
+          "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run/multi_turn_base_0.jsonl": "c55aeb2798d18a729a302de42d0d65fba411b26b32c6703d62fbe68eee852aa0"
+        },
+        "overlap_exposed": [],
+        "run": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-27b-20261120/run"
+      }
+    ],
+    "selected_cases": 120,
+    "snapshot_utc": "2026-11-20T11:24:09.967641+00:00"
+  },
+  "validation": {
+    "model_stat_matches_prehashed_identity": true,
+    "server_and_all_build_library_hashes_match": true,
+    "offline_bundle_reconstruction": "PASS; immutable original V3 objects; 120 cases",
+    "gitnexus": "No index; no application code edited; only row scratch and evidence/handoff records."
+  },
+  "limitations": [
+    "Descriptive per-stratum baseline only; no automatic pooled score or full BFCL result.",
+    "Running coverage journals are snapshot prefixes, not final files; full selected overlap disclosed prospectively.",
+    "No retries, redraws or continuation after interruption; prior aborted multi-turn cohort unchanged.",
+    "154800-second allocation is an engineering estimate, not a measured throughput guarantee."
+  ],
+  "publication": {
+    "result": "SMOKE PASS; PUBLISHED",
+    "rc": 0,
+    "cpus": "116-119",
+    "completed_synthetic_noncohort_requests": 1,
+    "pass_record": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3d-supported-27b-v1-20261120/PASS.json",
+      "sha256": "ce4105e18eff9c77147d30aed9075cf00ce162ce3434978930939ab5f0bdadbb"
+    },
+    "long_run_result": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-supported-27b-20261120/run/RESULT.json"
+  }
+}

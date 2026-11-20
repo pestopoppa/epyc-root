@@ -387,6 +387,19 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       CPUs 116–119 at 04:55Z. [Input and native-smoke content bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-republication-20261120.json).
       No manual READY edit, full cohort run or quality verdict; disappearance cause
       unestablished. The fourteen-case diagnostic is again published for granted work.
+      2026-11-20 supported-frame publication: `codex-bfcl-cj3d-supported-27b-v1-20261120`
+      **SMOKE PASS and PUBLISHED**, rc=0, CPUs 116–119, one synthetic noncohort
+      native request with before/after residency proofs. Immutable 120-case bundle
+      reconstructs original V3 sources (20 per six strata); worker includes the
+      repaired 8,312-second request budget. Model inode matches its previously
+      hashed identity; server and all build-library hashes checked offline.
+      Conservative overlap with earlier coverage selection: **3 IDs** (`java_1`,
+      `javascript_1`, `parallel_1`); none exposed at the 11:24:09Z journal snapshot,
+      but running coverage may expose them later. No exclusions/redraws; aborted
+      multi-turn cohort unchanged. [Publication and content bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/supported-frame-publication-20261120.json).
+      Parent remains open for live verdict; separate key
+      `bfcl_v3_native_supported_frame_local`, per-stratum counts only; no quality score.
+      [no-belief: transport smoke and publication; no benchmark quality claim]
   - [x] **CJ-3d-BUDGET — Repair prospective native BFCL request admission and transport budgeting with offline refusal controls.** ✅ 2026-11-20 [no-belief: engineering repair and model-free offline controls only]
       **79 offline regression controls PASS** (10.376s unittest / 11.317s process).
       Full capture now shares an 8,312-second HTTP/admission allowance plus
