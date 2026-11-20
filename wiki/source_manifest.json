@@ -11,21 +11,20 @@
   "last_compile": "2026-11-18T15:49:03Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
+      "added": 0,
       "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-19T22:09:31Z",
+    "at": "2026-11-20T10:29:39Z",
     "scope_paths": [
-      "docs/reports/m12k-plan-review-custody-20261119.md",
-      "progress/2026-11/2026-11-19-autopilot-backlog-session.md"
+      "handoffs/active/autokernel-loop.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-19T22:09:31Z",
+  "scan_time": "2026-11-20T10:29:39Z",
   "schema_version": 1,
-  "source_set_hash": "47dc4fd0fe2bc38244aa0ee77d0599b35d86d340f17851241f5c02ecb8bf4fe9",
+  "source_set_hash": "1b22f015809dd45eb6e6e417335584597dcc724ffed8874ce715b17c281555f7",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -44,10 +43,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "33eaedd25a24571c92c9dc28b7d6a1704725792e9ce0c6363c8035e0b12e64dd",
-      "modified": "2026-11-19T09:37:00Z",
+      "content_hash": "d2aed5fcfbe385c1adb42c6a5eb02ff0cbe51dba61603ff2da827e562808d2fb",
+      "modified": "2026-11-20T10:26:33Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1768239,
+      "size": 1219359,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },

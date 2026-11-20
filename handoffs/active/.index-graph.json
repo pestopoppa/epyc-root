@@ -213,19 +213,19 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "EVL-47",
-      "weight": 9
+      "weight": 6
     },
     {
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-48",
-      "weight": 25
+      "weight": 13
     },
     {
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-65",
-      "weight": 13
+      "weight": 7
     },
     {
       "from": "INF-06",
@@ -250,12 +250,6 @@
       "kind": "ref",
       "to": "RTG-02",
       "weight": 2
-    },
-    {
-      "from": "INF-06",
-      "kind": "ref",
-      "to": "RTG-34",
-      "weight": 1
     },
     {
       "from": "INF-45",
@@ -477,7 +471,7 @@
       "from": "INF-82",
       "kind": "ref",
       "to": "INF-77",
-      "weight": 5
+      "weight": 4
     },
     {
       "from": "INF-83",
@@ -702,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T10:23:11Z",
+  "generated_at": "2026-11-20T10:29:58Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1374,16 +1368,16 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 879,
+      "closed": 815,
       "dispatchable": 121,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
       "open": 123,
       "priority": 0.896,
@@ -1429,7 +1423,7 @@
             "INF-06#agent-collab-rnd-harness",
             "INF-06#autokernel-restart-and-strip"
           ],
-          "line": 27,
+          "line": 29,
           "name": "autokernel-research-loop",
           "open": 39,
           "readiness": "blocked"
@@ -1438,7 +1432,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6105,
+          "line": 4739,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1447,7 +1441,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6185,
+          "line": 4818,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1466,7 +1460,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6483,
+          "line": 4991,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1483,7 +1477,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9723,
+          "line": 6893,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1496,7 +1490,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14135,
+          "line": 9856,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1530,7 +1524,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14348,
+          "line": 10055,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -1772,7 +1766,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 169,
+      "closed": 170,
       "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
@@ -1828,7 +1822,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 828,
+          "line": 829,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29,
           "readiness": "blocked"
@@ -2287,7 +2281,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "INF-06#autokernel-rebuild-program",
@@ -2299,13 +2293,13 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 141,
+      "closed": 127,
       "dispatchable": 54,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
       "open": 55,
       "priority": 0.0011,
@@ -2343,7 +2337,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 28,
+          "line": 19,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 7,
           "readiness": "blocked"
@@ -2366,7 +2360,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 970,
+          "line": 800,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 48,
           "readiness": "blocked"

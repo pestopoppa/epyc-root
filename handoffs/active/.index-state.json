@@ -42,9 +42,9 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 141,
+      "closed": 127,
       "guarded": 0,
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "open": 54,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 196,
+      "total": 182,
       "tracks": [
         {
           "blocked": 0,
@@ -68,21 +68,21 @@
         },
         {
           "blocked": 0,
-          "closed": 47,
+          "closed": 39,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 28,
+          "line": 19,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 7
         },
         {
           "blocked": 1,
-          "closed": 89,
+          "closed": 83,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 970,
+          "line": 800,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 47
@@ -101,9 +101,9 @@
     },
     "autokernel-loop.md": {
       "blocked": 2,
-      "closed": 879,
+      "closed": 815,
       "guarded": 0,
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "open": 121,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -113,11 +113,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1002,
+      "total": 938,
       "tracks": [
         {
           "blocked": 2,
-          "closed": 400,
+          "closed": 380,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -125,7 +125,7 @@
             "INF-06#autokernel-restart-and-strip"
           ],
           "guarded": 0,
-          "line": 27,
+          "line": 29,
           "markers": 1,
           "name": "autokernel-research-loop",
           "open": 37
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 6105,
+          "line": 4739,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,14 +145,14 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6185,
+          "line": 4818,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
         },
         {
           "blocked": 0,
-          "closed": 175,
+          "closed": 144,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
@@ -160,40 +160,40 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6483,
+          "line": 4991,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 13
         },
         {
           "blocked": 0,
-          "closed": 222,
+          "closed": 218,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9723,
+          "line": 6893,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 45
         },
         {
           "blocked": 0,
-          "closed": 13,
+          "closed": 7,
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14135,
+          "line": 9856,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
         },
         {
           "blocked": 0,
-          "closed": 44,
+          "closed": 41,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14348,
+          "line": 10055,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20
@@ -2343,7 +2343,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 169,
+      "closed": 170,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 37,
@@ -2355,11 +2355,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 208,
+      "total": 209,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 110,
+          "closed": 111,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2375,7 +2375,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 828,
+          "line": 829,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 28
