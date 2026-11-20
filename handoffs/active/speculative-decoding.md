@@ -861,6 +861,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · est: ~1.5-2 agent-days of implementation (inferred); measurement in DTREE-0-Q8MF-GATE
       · expected gain: 27B verify W12 61.3 -> ~44.3 ms, W16 62.4 -> ~45.0 ms (inferred from the DTREE-0 trace and smoke deltas; floor 26.05 GB / 1433 GB/s = 18.2 ms; stretch 1200 GB/s -> GEMM 21.7 ms at any M 5..16); confidence low-medium
 - [ ] **DTREE-0-Q8MF-GATE** [inference] Gate the small-M Q8_0 kernel on the 27B with op correctness on ROCm0, the fresh-prefill oracle at 12 and 16 verify rows, and a paired llama-bench A/B against the wvsk16 knob (intake-2720#record).
+      · target (coordinator 2026-11-20, seed review research 0d86d13f9): marginal verify cost <= 1.15 ms/row (8->16) for the 27B tree to reach +3 % (breakeven 1.5 ms/row; today 2.01 on wvsk16; assumes 52.5 ms chain round, acceptance +12 % at W12 / +17 % at W16). The filed verdict reports the Q8MF slope and the combined Q8MF + DTREE-ATTN-ROUTE slope against 1.15
       · done when: verdict KEEP, DROP or FAIL_CORRECTNESS filed under DTREE-0 with per-arm t8/t12/t16 and paired CIs
       · gate: DTREE-0-Q8MF, DTREE-0-WVSK16-WITNESS
       · expected gain: the verify-cost uplift a 12-wide tree needs to beat the 8-row chain falls from +41% (default route) / +10.6% (wvsk16) to ~+1.8%; LM head at M=W saves ~0.7 ms more (MMQ M16 2139 us vs wvsk M8 1464 us); confidence medium on the design, size set by DTREE-0-Q8MF
