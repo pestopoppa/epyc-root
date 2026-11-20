@@ -423,7 +423,7 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 71,
+      "closed": 72,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 32,
@@ -435,11 +435,11 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 103,
+      "total": 104,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 23,
+          "closed": 24,
           "gates": null,
           "guarded": 0,
           "line": 0,
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 834,
+          "line": 872,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1146,
+          "line": 1184,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1353,
+          "line": 1391,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1679,
+          "line": 1717,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1914,
+          "line": 1952,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -2343,7 +2343,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 157,
+      "closed": 158,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 37,
@@ -2355,11 +2355,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 196,
+      "total": 197,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 99,
+          "closed": 100,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2375,7 +2375,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 815,
+          "line": 816,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 28
