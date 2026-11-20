@@ -208,3 +208,36 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
 - [x] **CHURN-CONT-TREE** — budget aggregation up a node tree: **declined 2026-11-07** — churn rows and sessions are siblings under one dispatcher, so the only root is the fleet, which `token_guards.width_cap()` + `codex_budget_meter.py` already meter; an unmetered seat failing closed is covered by CHURN-CONT-COSTBASIS. [no-belief: decline]
 
 - **Standing note: AutoKernel loop custody (agreed 2026-11-07).** Diffs to `loop/{run,loop,pipeline,actors}.py` in the research repo go to the AutoKernel session for review and re-pin BEFORE any push; Pipeline Management does not push them directly. (AutoKernel re-pinned `run.py` at research `e37852556` on 2026-11-07.)
+
+### Backlog
+- [ ] **TASKFLOW-STAGE1** [non-inference] Taskflow Stage 1: build the redesigned dispatcher per /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/DESIGN.md (Fable audit: current dispatcher bought 82 verdict ticks for 11.6B tokens).
+      · done when: taskflow Stage 1 runs beside the old dispatcher on the live registry for one week and a dated report shows its verdict-ticks-per-token beating the old 82 per 11.6B
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **HS-STAGE-C** [non-inference] Handoff standard Stage C (spec /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/HANDOFF-STANDARD.md): content rewrites of failing boxes so the lint-OK canary reaches 45 percent (Stage B left it at 21.6), LLM proposals as NEEDS-OWNER children, compaction, generated index rows, ratify package for human-only docs.
+      · done when: box_index lint-OK canary reads at least 45 percent on origin/main and the Stage C ratify package is filed for the operator
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AK-FIXES-F2-F9** [non-inference] Build AK-audit fixes F2-F9 (D9-acked) from /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/AK-REQS-FIXES.md; 14 requirements triaged.
+      · done when: each of F2-F9 is merged on origin/main with a test, and the AK-REQS-FIXES.md rows are marked landed with commit SHAs
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AK-HOOKS-C1-C6** [non-inference] Build AK-audit hooks C1-C6 (D9-acked) from AK-REQS-FIXES.md.
+      · done when: each of hooks C1-C6 is live in the hook chain on origin/main with a test that trips it, SHAs recorded in AK-REQS-FIXES.md
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **WS4-WAKE-IMPERATIVE** [non-inference] WS-4 caveat: a woken session ignores a wake whose message has no imperative; make dispatcher wake messages and bus nudges always carry an imperative line.
+      · done when: a test shows every wake/nudge builder in handoff_sessions.py and session_bus emits an imperative line, and a live woken session acts on one
+      · gate: none
+      · owner: pipeline-mgmt
+
+#### Pipeline-mgmt 2026-11-19..20 landed work
+
+- [x] **HS-IDLE-UNPARK-REVERTED** c160f8d59 (idle-slot unpark without an event, drop of filed sink events, actionable RESUME-STALL) was reverted to event-only by 13370aead; 11 sessions retired, heterogeneous-slot-fabric-residency gated, agentic-rocm-kernel-authoring retired rather than gated. ✅ 2026-11-20 [no-belief: tooling-repair]
+- [x] **DISPATCHER-FABLE-AUDIT** Fable audit: the dispatcher does not earn its cost (11.6B tokens bought 82 verdict ticks); redesign "taskflow" drafted at /mnt/raid0/llm/tmp/dispatcher-redesign-20261119/DESIGN.md; build box TASKFLOW-STAGE1. ✅ 2026-11-20 [belief: cc]
+- [x] **FILER-DROP-AS-PASS-GUARD** bba1c010a: DROP-as-pass guard plus owner-only `--correct`; c6-admission-live-proof-r12 corrected to inconclusive. ✅ 2026-11-20 [no-belief: tooling-repair]
+- [x] **ROWFLOW-QUEUED-GPU-SMOKE-WAIT** 41041359b: queued-GPU-smoke WAIT, queue_status and owner routing; roster row `autokernel` added. ✅ 2026-11-20 [no-belief: tooling-repair]
+- [x] **ORCH-TEST-FIXES-1120** epyc-orchestrator test fixes 68c686e2, 75e6d978 and 23 commits up to 4451e671. ✅ 2026-11-20 [no-belief: tooling-repair]
+- [x] **HS-STAGE-A** Handoff standard Stage A ba3adabf1 plus hotfix 671a6adf7 (`handoff_box.py`, `box_index.py`, lint). ✅ 2026-11-19 [no-belief: build/landing]
+- [x] **HS-STAGE-B** Handoff standard Stage B e14edec25..e5784a93f; lint-OK canary 20.5 to 21.6 percent, short of the 45 percent target because the remaining failures need content rewrites (box HS-STAGE-C). ✅ 2026-11-20 [belief: cc]
+- [x] **MODEL-Q8-REGISTERED** Q8 model registered (epyc-inference-research 1c8d54874). ✅ 2026-11-20 [no-belief: build/landing]
