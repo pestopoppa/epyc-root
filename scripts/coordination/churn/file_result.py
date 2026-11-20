@@ -245,7 +245,10 @@ def done_when_refusal(lane, task, verdict, result_path, rec):
     artifact class) that this filed result does not satisfy, else None. Free-text and command done-whens never
     refuse here (a row result carries no command rc)."""
     try:
-        sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), "handoffs"))
+        for cand in (os.path.join(os.path.dirname(HERE), "handoffs"),                    # deployed: bin/handoffs
+                     os.path.join(os.path.dirname(os.path.dirname(HERE)), "handoffs")):  # repo: scripts/handoffs
+            if cand not in sys.path:
+                sys.path.insert(0, cand)
         import done_when as _dw
         import task_lint_core as _l1
     except ImportError:

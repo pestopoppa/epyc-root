@@ -167,12 +167,14 @@ def check_done_when(lane: str, hits: list[tuple[str, int, str]], rec: dict) -> l
     """C2 / AK audit B13: each ticked box's `· done when:` is checked against the tick's evidence (done_when.check).
     `fail` REFUSES the whole wrap-up naming the box and the reason; `unchecked` (free text, or a command the record
     did not report running) proceeds and is recorded in report.json as done_when: unchecked."""
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-                                    "handoffs"))
+    here = os.path.dirname(os.path.abspath(__file__))
+    cands = [os.path.join(os.path.dirname(os.path.dirname(here)), "handoffs"),   # repo: scripts/handoffs
+             os.path.join(os.path.dirname(here), "handoffs")]                    # deployed: bin/handoffs
+    sys.path[:0] = cands
     try:
         import done_when as _dw
     finally:
-        sys.path.pop(0)
+        del sys.path[:len(cands)]
     out = []
     for n, (f, i, line) in enumerate(hits):
         lines = open(f, encoding="utf-8").read().split("\n")

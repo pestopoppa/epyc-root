@@ -77,3 +77,9 @@ disk_janitor.sh                      scripts/coordination/churn/disk_janitor.sh 
 ws58-backlog-gen-v1.sh               scripts/coordination/churn/ws58-backlog-gen-v1.sh    hot
 ws58-flow-scoreboard-v1.sh           scripts/coordination/churn/ws58-flow-scoreboard-v1.sh hot
 GOAL-codex-gen.md                    scripts/coordination/churn/GOAL-codex-gen.md         hot
+
+# 2026-11-20: modules handoff_sessions / churn import that were missing (the dispatcher crashed on `import holds`)
+bin/holds.py                         scripts/coordination/holds.py                        hot
+bin/token_guards.py                  scripts/coordination/token_guards.py                 hot
+bin/handoffs/done_when.py            scripts/handoffs/done_when.py                        hot
+bin/codex_budget_meter.py            scripts/coordination/codex_budget_meter.py           hot
