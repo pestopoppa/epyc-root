@@ -690,7 +690,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T15:36:08Z",
+  "generated_at": "2026-11-20T16:29:24Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1200,10 +1200,10 @@
     },
     {
       "age_days": 17,
-      "blocked": 2,
+      "blocked": 0,
       "blocked_by": [],
       "closed": 215,
-      "dispatchable": 40,
+      "dispatchable": 42,
       "domain": "research-evaluation",
       "guarded": 1,
       "handoff": "eval-tower-program.md",
@@ -1230,7 +1230,7 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 19,
+          "dispatchable": 21,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
@@ -1766,15 +1766,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 185,
-      "dispatchable": 43,
+      "closed": 187,
+      "dispatchable": 45,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 45,
+      "open": 47,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1817,14 +1817,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 33,
+          "dispatchable": 35,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 845,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 34,
+          "open": 36,
           "readiness": "blocked"
         }
       ]
@@ -2618,10 +2618,10 @@
     },
     {
       "age_days": 1,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 296,
-      "dispatchable": 81,
+      "dispatchable": 82,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
@@ -2651,7 +2651,7 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 47,
+          "dispatchable": 48,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
@@ -3108,15 +3108,15 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 91,
-      "dispatchable": 34,
+      "closed": 92,
+      "dispatchable": 35,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-20",
       "next_action": "Run TASKFLOW-STAGE1 canary (tf1-canary-35b-c14-gpu-r1-20261120); then HS ratify signature, C6 7-day drop, owner-roles decision",
-      "open": 34,
+      "open": 35,
       "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
