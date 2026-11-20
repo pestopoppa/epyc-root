@@ -28,8 +28,15 @@
     "Initial full-suite invocations lacked BFCL_CHECKOUT and then BFCL_CATALOG; final invocation with both passes all 61 controls."
   ],
   "publication": {
-    "result": "ACCEPTED AND QUEUED; supported --smoke-now invocation still active at checkpoint",
-    "smoke_verdict": null,
-    "ready_claim": false
+    "result": "SMOKE PASS; PUBLISHED",
+    "returncode": 0,
+    "cpu_cores": "116-119",
+    "completed_native_requests": 1,
+    "synthetic_noncohort": true,
+    "result_path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/run/RESULT.json",
+    "files": {
+      "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3d-single-27b-v1-20261120/PASS.json": "06fd9993da4ca0e3fb0e97df62e5bb806ea220d20c0c02504aafff999a5bcbef",
+      "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-bfcl-cj3d-single-27b-v1-20261120/native-attempts/attempt-jjpbu1nc/native-result.json": "6c92cec7a159b62c0bed3d314633b28cef566573ac8ce1ccebfdf34b09eee3e1"
+    }
   }
 }
