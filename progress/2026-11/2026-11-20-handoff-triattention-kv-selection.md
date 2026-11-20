@@ -157,3 +157,7 @@ Filed lsa-cpu-sparse-opgate-20261119-r1 as KEEP_OP (rc=0): 32k KV 24-thread medi
 ## 22:56Z — File inconclusive CPU sparse end-to-end bound result
 
 Filed lsa-cpu-sparse-e2e-bound-20261120-r1 inconclusive: FUTILITY_WRONG_GRANT, rc=0; grant supplied q0 (0-23), but preregistration requires q1 or q2. No benchmark pair or bound measured; LSA-CPU-SPARSE-E2E remains open. RESULT.json SHA-256 4902feb16eb5a416b82524fbc7c67b9ac5b1a777e06e5335ce81e310921521bb. [belief: cc]
+
+## 23:23Z — File contention-limited CPU sparse end-to-end bound result
+
+Filed lsa-cpu-sparse-e2e-bound-20261120-r2 inconclusive: FUTILITY_CONTENTION, rc=0, q0 valid under r2; no valid pair or bound measured. LSA-CPU-SPARSE-E2E remains open. RESULT.json SHA-256 acf8aa62ce0d55a8233e44fdac7cdbd3573c06c75f1b758056ecb4ba2db2da2d. [belief: cc]
