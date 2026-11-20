@@ -1,0 +1,22 @@
+--- a/tests/test-kshift-model.cpp
++++ b/tests/test-kshift-model.cpp
+@@ -9,6 +9,7 @@
+ //   control   : noise floor, no shift: prefill at offset 0 vs prefill at offset `off`.
+ // Output: one JSON object per scenario on stdout. Exit code 0 always when the harness ran (verdicts are made by the row job).
+ #include "llama.h"
++#include "fixture_bounds.h"
+ 
+ #include <algorithm>
+ #include <cmath>
+@@ -180,8 +181,9 @@
+     std::stringstream ss;
+     ss << f.rdbuf();
+     std::vector<llama_token> all = tokenize(vocab, ss.str());
+-    const int need = a.n_prefix + a.n_probe + 8;
+-    if ((int) all.size() < need) die("corpus too short");
++    if (!kshift_fixture_fits(all.size(), a.n_prefix, a.n_probe)) {
++        die("corpus too short or non-positive prefix/probe length");
++    }
+     // skip the first 200 tokens (file header) and use real text
+     std::vector<llama_token> prefix(all.begin() + 200, all.begin() + 200 + a.n_prefix);
+     std::vector<llama_token> probe(all.begin() + 200 + a.n_prefix, all.begin() + 200 + a.n_prefix + a.n_probe);
