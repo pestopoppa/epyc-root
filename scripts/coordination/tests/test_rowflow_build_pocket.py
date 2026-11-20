@@ -1,7 +1,7 @@
 """BUILD-POCKET (pipeline-mgmt 2026-11-20): filler-ak-q38fn-draftfa-window-cpu-20261119 (multi-quarter(3), 28000 s) held
 q0-q2 for ~7.8 h and a short build claim found no pocket. A long undeclared q0-q2 row is not booked while a build claim
 waits, and a resumable one is granted with a hard end so the pocket reopens; thresholds come from policy data."""
-import json
+import json, time
 import os
 import sys
 import tempfile
@@ -71,14 +71,38 @@ class BuildPocket(unittest.TestCase):
             json.dump({"build_pocket": {"queue_dir": qd}}, open(os.path.join(fl, "allocator.json"), "w"))
             self.assertEqual(rf.build_waiters(fl, now=NOW), [])
             rf.record_build_wait(fl, "dtree", now=NOW - 60)
+            self.assertEqual(json.load(open(os.path.join(fl, "build-wait", "dtree.json")))["pid"], os.getppid())
             self.assertEqual([w["src"] for w in rf.build_waiters(fl, now=NOW)], ["build-wait"])
             self.assertEqual(rf.build_waiters(fl, now=NOW + 8000), [])   # TTL
+            self.assertEqual(rf.build_waiters(fl, now=NOW + 1900), [])   # 30-min cap, well inside waiter_ttl_s
             json.dump({"pid": os.getpid(), "regions": ["q0"], "tag": "dtree-q8mf-build", "created_at": NOW - 10},
                       open(os.path.join(qd, "t1.json"), "w"))
             json.dump({"pid": os.getpid(), "regions": ["q3"], "tag": "x", "created_at": NOW - 10}, open(os.path.join(qd, "t2.json"), "w"))
             json.dump({"pid": os.getpid(), "regions": ["q1"], "tag": "rowid", "created_at": NOW - 10}, open(os.path.join(qd, "t3.json"), "w"))
             ws = rf.build_waiters(fl, now=NOW, rowids={"rowid"})
             self.assertEqual(sorted(w["src"] for w in ws), ["build-wait", "ticket"])
+
+    def test_stale_records_ignored_and_logged(self):
+        import subprocess
+        dead = subprocess.Popen(["true"]); dead.wait()
+        zomb = subprocess.Popen(["true"]); time.sleep(0.3)   # exited, not reaped: a zombie
+        with tempfile.TemporaryDirectory() as fl, tempfile.TemporaryDirectory() as qd:
+            json.dump({"build_pocket": {"queue_dir": qd}}, open(os.path.join(fl, "allocator.json"), "w"))
+            d = os.path.join(fl, "build-wait"); os.makedirs(d)
+            for name, pid in (("nullpid", None), ("deadpid", dead.pid), ("zombie", zomb.pid), ("alive", os.getpid())):
+                json.dump({"owner": name, "pid": pid, "at_epoch": NOW - 60}, open(os.path.join(d, name + ".json"), "w"))
+            logs = []
+            ws = rf.build_waiters(fl, now=NOW, log=logs.append)
+            zomb.wait()
+            self.assertEqual([w["who"] for w in ws], ["alive"])
+            self.assertEqual(sorted(l.split()[1].rstrip(":") for l in logs), ["deadpid", "nullpid", "zombie"])
+            self.assertTrue(all(l.startswith("BUILD-WAIT-STALE") for l in logs))
+            self.assertEqual(len(os.listdir(d)), 4)   # never deleted
+
+    def test_explicit_wait_pid(self):
+        with tempfile.TemporaryDirectory() as fl:
+            rf.record_build_wait(fl, "o", now=NOW, pid=4242)
+            self.assertEqual(json.load(open(os.path.join(fl, "build-wait", "o.json")))["pid"], 4242)
 
 
 if __name__ == "__main__":

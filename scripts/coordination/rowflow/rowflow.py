@@ -2063,7 +2063,7 @@ BUILD_WAIT_DIR = "build-wait"   # <flags>/build-wait/<owner>-<ts>.json: a refuse
 
 
 def build_pocket_policy(flags=None):
-    pol = {"long_hold_s": 7200, "max_hold_s": 7200, "waiter_ttl_s": 7200, "queue_dir": TMP.rstrip("/") + "/queue"}
+    pol = {"long_hold_s": 7200, "max_hold_s": 7200, "waiter_ttl_s": 7200, "waiter_ttl_cap_s": 1800, "queue_dir": TMP.rstrip("/") + "/queue"}
     pol.update({k: v for k, v in (load_json(BUILD_POCKET_POLICY_FILE) or {}).items() if not k.startswith("_")})
     if flags:
         pol.update((load_json(os.path.join(flags, "allocator.json")) or {}).get("build_pocket") or {})
@@ -2077,9 +2077,10 @@ def _pid_live(pid):
         return False
 
 
-def build_waiters(flags, now=None, rowids=()):
+def build_waiters(flags, now=None, rowids=(), log=None):
     """Build claims waiting for a q0-q2 pocket: a live FIFO lock ticket on q0-q2 (region-lock queue dir; the tag is not a
-    row id) or an unexpired build-wait record whose owner pid is alive. [{src, who, since}]."""
+    row id) or an unexpired build-wait record whose pid is alive (a record with no pid, a dead pid or a zombie is ignored and logged
+    BUILD-WAIT-STALE, never deleted; its TTL is min(waiter_ttl_s, waiter_ttl_cap_s) - a refused re-claim refreshes at_epoch). [{src, who, since}]."""
     now = time.time() if now is None else now
     pol = build_pocket_policy(flags)
     ttl = float(pol["waiter_ttl_s"])
@@ -2095,8 +2096,13 @@ def build_waiters(flags, now=None, rowids=()):
     for p in glob.glob(os.path.join(flags, BUILD_WAIT_DIR, "*.json")):
         t = load_json(p) or {}
         since = float(t.get("at_epoch") or 0)
-        if now - since <= ttl and (t.get("pid") is None or _pid_live(t.get("pid"))):
-            out.append({"src": "build-wait", "who": str(t.get("owner") or "?"), "since": since})
+        owner = str(t.get("owner") or os.path.basename(p)[:-5] or "?")
+        if now - since > min(ttl, float(pol.get("waiter_ttl_cap_s", ttl))):
+            continue
+        if proc_alive(t.get("pid")):
+            out.append({"src": "build-wait", "who": owner, "since": since})
+        elif log:
+            log(f"BUILD-WAIT-STALE {owner}: record pid {t.get('pid')!r} is absent/dead; ignored (record kept)")
     return out
 
 
@@ -5059,12 +5065,15 @@ def _cmdline(pid):
         return ""
 
 
-def record_build_wait(flags, owner, now=None):
+def record_build_wait(flags, owner, now=None, pid=None):
     """A refused `claim --build` leaves a build-wait record (TTL waiter_ttl_s, removed when the owner's next claim succeeds): the planner stops booking long
     undeclared q0-q2 rows over the pocket while it lives (BUILD-POCKET)."""
     now = time.time() if now is None else now
+    # The claim CLI exits at once, so its own pid is dead before the planner reads the record: the claimant is the invoking
+    # process (parent shell/agent) unless --wait-pid names one. pid was hardcoded None before (2026-11-20 stale autokernel-probe).
+    pid = int(pid) if pid else os.getppid()
     d = os.path.join(flags, BUILD_WAIT_DIR); os.makedirs(d, exist_ok=True)
-    atomic_json(os.path.join(d, f"{owner}.json"), {"owner": owner, "pid": None, "at_epoch": now, "at": now_iso()})
+    atomic_json(os.path.join(d, f"{owner}.json"), {"owner": owner, "pid": pid, "at_epoch": now, "at": now_iso()})
 
 
 def free_cores(q, free):
@@ -5077,7 +5086,7 @@ def partial_tokens(cores, free):
     return set(cores) | {f"t{int(c[1:]) + 96}" for c in cores if f"t{int(c[1:]) + 96}" in free}
 
 
-def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None):
+def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None):
     """`rowflow.py claim --build`: a short `build` grant (grants/build-<owner>-<ts>.grant, holds one quarter) so a build
     is a lane the planner sees instead of contamination. cpus = a count (<= 24: the first whole-free quarter q0-q2)
     or a literal cpu list (its quarters). Refused - naming the grant - when it would overlap a timing grant's quarters,
@@ -5102,7 +5111,7 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
                 if q not in tq and len(fc) >= n:
                     part = partial_tokens(fc[:n], free); pick = [q]; break
         if not pick:   # BUILD-POCKET: remember the unmet claim so the planner leaves the next pocket for it
-            record_build_wait(flags, owner, now)
+            record_build_wait(flags, owner, now, wait_pid)
         need(pick, f"no whole-free quarter q0-q2 and none with >= {n} free cores for a build now (" + ", ".join(
              f"{q}: {holder.get(q, 'busy')}" + (" [timing]" if q in tq else "") for q in QUARTERS[:3])
              + "); retry later, never run it unclaimed")
@@ -6074,7 +6083,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
     for _pass in range(len(cands) + 1):
         bpol = build_pocket_policy(flags)
-        bw = build_waiters(flags, rowids=set(allrows))
+        bw = build_waiters(flags, rowids=set(allrows), log=log)
         assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
                                         grant_ends=[e for e in ends if e], quiet_ok=quiet_ok, held_ports=held_ports,
                                         drain_prev=drain_prev, region_ends=r_ends, region_holders=holders,
@@ -6662,6 +6671,7 @@ def main(argv=None):
     s = sub.add_parser("claim", help="F7: claim a short build lane: claim --build --owner <id> --cpus N|LIST --minutes M")
     s.add_argument("--build", action="store_true", required=True); s.add_argument("--owner", required=True)
     s.add_argument("--cpus", required=True); s.add_argument("--minutes", type=int, required=True)
+    s.add_argument("--wait-pid", type=int, default=None, help="pid whose liveness keeps a refused claim's build-wait record live (default: the invoking parent)")
     s = sub.add_parser("deploy-guard", help="deploy_rowflow step 3: rc 75 when a changed engine file would reach LEGACY open grants")
     s.add_argument("--changed", nargs="*", default=[]); s.add_argument("--allow-open-grants", action="store_true")
     sub.add_parser("legacy-grants", help="ids of open grants whose poller still reads the live engine path (one per line)")
@@ -6729,7 +6739,7 @@ def main(argv=None):
             supersede(a.flags, row)
             return 0
         if a.cmd == "claim":
-            gid, line = claim_build(a.flags, a.owner, a.cpus, a.minutes)
+            gid, line = claim_build(a.flags, a.owner, a.cpus, a.minutes, wait_pid=a.wait_pid)
             print(f"BUILD-GRANT {gid} {line}")
             return 0
         if a.cmd == "withdraw":
