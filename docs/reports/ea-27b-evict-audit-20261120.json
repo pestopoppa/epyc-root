@@ -1,0 +1,195 @@
+{
+  "schema": "epyc.ea27b.retrospective-audit.v1",
+  "as_of": "2026-11-20",
+  "belief": "cc",
+  "scope": "Located retained pre-audit Expected-Attention records on qwen35 hybrid Qwen3.8-27B; qualification and full-run segments distinguished. Missing counters never inferred. This is a committed-conclusion audit, not a new run warrant.",
+  "summary": {
+    "void": 1,
+    "evicted>0": 6,
+    "not-recorded": 4
+  },
+  "unique_corrected_5x_items": 60,
+  "corrected_5x_correct": 0,
+  "corrected_0_8_keep_items": 32,
+  "corrected_0_8_keep_correct": 1,
+  "records": [
+    {
+      "id": "pre-fix-AM-PORT-2-qualification",
+      "classification": "void",
+      "phase": "qualification",
+      "n_evicted": 0,
+      "source": {
+        "repo": "epyc-llama",
+        "commit": "c9f2e34cea7a0e9ddac5ad7b2088bf06b56ee1db",
+        "location": "commit message, original GPU smoke diagnosis"
+      },
+      "notes": "Original raw response was not retained separately from the later smoke. Zero is a contemporaneously committed reported count, not a newly reconstructed raw observation; void as an EA measurement. No quality score may be rescued from it."
+    },
+    {
+      "id": "AM-PORT-2",
+      "classification": "evicted>0",
+      "phase": "full-run segment",
+      "source": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119/out/results.jsonl",
+      "ea_records": 32,
+      "n_evicted_min": 23300,
+      "n_evicted_max": 24940,
+      "correct": 0,
+      "notes": "Original STOPPED segment and r2 continuation compose one cohort; do not count as independent repeats."
+    },
+    {
+      "id": "AM-PORT-2-smoke",
+      "classification": "evicted>0",
+      "phase": "qualification",
+      "source": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119/out-smoke/RESULT.json",
+      "ea_records": 1,
+      "n_evicted_min": 2377,
+      "n_evicted_max": 2377,
+      "correct": 0,
+      "notes": "Qualification only; not the 32K cohort."
+    },
+    {
+      "id": "AM-PORT-2-r2",
+      "classification": "evicted>0",
+      "phase": "full-run segment",
+      "source": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119-r2/out/results.jsonl",
+      "ea_records": 28,
+      "n_evicted_min": 23192,
+      "n_evicted_max": 25993,
+      "correct": 0,
+      "notes": "Original STOPPED segment and r2 continuation compose one cohort; do not count as independent repeats."
+    },
+    {
+      "id": "AM-PORT-2-r2-smoke",
+      "classification": "evicted>0",
+      "phase": "qualification",
+      "source": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119-r2/out-smoke/RESULT.json",
+      "ea_records": 1,
+      "n_evicted_min": 2377,
+      "n_evicted_max": 2377,
+      "correct": 0,
+      "notes": "Qualification only; not the 32K cohort."
+    },
+    {
+      "id": "AM-PORT-2B-smoke",
+      "classification": "evicted>0",
+      "phase": "qualification",
+      "source": "/mnt/raid0/llm/tmp/am-port-ea-ladder-gpu-20261119/out-smoke/RESULT.json",
+      "ea_records": 1,
+      "n_evicted_min": 2377,
+      "n_evicted_max": 2377,
+      "correct": 0,
+      "notes": "The r2 manifest uses this same scratch/results lineage; not a second independent smoke."
+    },
+    {
+      "id": "AM-PORT-2B-ladder",
+      "classification": "evicted>0",
+      "phase": "full-run",
+      "source": "/mnt/raid0/llm/tmp/am-port-ea-ladder-gpu-20261119/out/results.jsonl",
+      "ea_records": 32,
+      "n_evicted_min": 5825,
+      "n_evicted_max": 6234,
+      "correct": 1,
+      "notes": "Initial filing and r2 corrected filing refer to the same native result. 5x is reused from AM-PORT-2; 0.5/0.33 EA not run. n_beta_set=0 is expected and is not n_evicted=0."
+    },
+    {
+      "id": "legacy-four-model-production-validation",
+      "classification": "not-recorded",
+      "source": "progress/2026-04/2026-04-14.md",
+      "notes": "8/8 aggregate calls four model families including dense 27B, but does not identify a qwen35 hybrid-27B eviction count. Separate reported PPL ratios 0.86 and 1.096 belong to 1.7B and 35B, not 27B."
+    },
+    {
+      "id": "legacy-deployment-ledger",
+      "classification": "not-recorded",
+      "source": "handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md",
+      "notes": "Deployment/wiring and other-model tests are not a measured hybrid-27B compression result. No hybrid-27B n_evicted recorded."
+    },
+    {
+      "id": "KV-admission-and-fallback-summary",
+      "classification": "not-recorded",
+      "source": "handoffs/active/kv-cache-program.md",
+      "notes": "KVU admission/cache-credit and the removed 32768 fallback are capacity/plumbing observations, not an EA evict-count series. Located KVU/C6 result/launcher searches found no EA compact invocation or retained hybrid-27B n_evicted. Do not infer eviction efficacy from admission success."
+    },
+    {
+      "id": "S8-deployed-path-premise",
+      "classification": "not-recorded",
+      "source": "handoffs/active/long-context-program.md",
+      "notes": "Code present and callers wired does not establish effective hybrid-27B eviction. No pre-fix 27B profile cohort with counts found; S8 remains unresolved."
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119/out/results.jsonl",
+      "sha256": "3a1d29b80eba0cf1eebda65e03e5847947d0f115720206cdb1eb535aa0c5f032"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119/out-smoke/RESULT.json",
+      "sha256": "465454bf4881a974b3b2e70b1191dd292e7ae86b9db2fd6143b333e0e658dbca"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119-r2/out/results.jsonl",
+      "sha256": "225d2d456751892a199256f30070287b51b2c7884cf7ee2b10316f7dd7f0503b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119-r2/out-smoke/RESULT.json",
+      "sha256": "bcddf3f046a4ce94e1cf23b064ae79b5623705d1ee649349206f991e38eb735c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port-ea-ladder-gpu-20261119/out-smoke/RESULT.json",
+      "sha256": "c6ebeab8123cc1ac956832aedb9049be5bf1d496a2275954460bb3594e32b5ad"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port-ea-ladder-gpu-20261119/out/results.jsonl",
+      "sha256": "1a73d4cd64286224534f73e5ffa0593884de0ca6ccb902e7b854cca1727b4ec5"
+    },
+    {
+      "path": "progress/2026-04/2026-04-14.md",
+      "sha256": "65d554e2e1cb55a4ff2265e3ba23f5232c47c134f5cc85eca239fa2fc9fcd86a",
+      "blob": "9bd9769603b0e27c5704296f500749381c601ee3"
+    },
+    {
+      "path": "handoffs/completed/triattention-kv-selection-deployment-completed-through-2026-05-28.md",
+      "sha256": "0f9eea7d0bec45505263bab2ef4314a73a045249ff6f11aeba018e8da287cc68",
+      "blob": "29f46f7b660843780bdf116af64c5de4a0d15380"
+    },
+    {
+      "path": "handoffs/active/kv-cache-program.md",
+      "sha256": "680d7bf63c2b1e2a1404e80a41ee66d7e820d51b38fa39069265b0654846e28a",
+      "blob": "40381ca7d9cbf0899125f837da67831f432c0f86"
+    },
+    {
+      "path": "handoffs/active/long-context-program.md",
+      "sha256": "718e8543080c18c1c9a6f78423d4c8022ea1370d7beb139b43a77f39bf4ddee1",
+      "blob": "fbad43b18e940b8953648788b29e8c7a227e13b6"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119/out/BUILD.json",
+      "sha256": "b9e2c647eeebef42e977117622d1021468cb0ec89ac353e73b021cac655b2467"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port2-l4-vs-ea-gpu-20261119-r2/out/RESULT.json",
+      "sha256": "c54f2b9974fb6e808e6d35f68e833d9ccf9bb924b5f02348906be5d92f73c0b6"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/am-port-ea-ladder-gpu-20261119/out/RESULT.json",
+      "sha256": "e16c147c78d739332a6e948b3d80501c4a815fa665ed9893d672b2beb3a7219f"
+    },
+    {
+      "path": "handoffs/archived/llamacpp-v6-consolidation.md",
+      "sha256": "2c510909564c9444c61fabebc6521bdbae8684a70ef0bc8919137347f4974c39",
+      "blob": "81500b2d981128c6c55666b239b70138a08dae72"
+    },
+    {
+      "path": "handoffs/active/harness-program.md",
+      "sha256": "f7e757689df2502479d8e5df6d921cbeaf73d579d871598e8668b1446063cebe",
+      "blob": "258e50a5d333d2b022f018b6736de891dc1db570"
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-inference-research/docs/guides/kv-compaction-guide.md",
+      "sha256": "5d387bc3792c3915192e10fc87f2ee1b39e4fb18bbd66762b1a735a592b6e381"
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/expected-attention-s1/ea_s1_results.json",
+      "sha256": "61d1b1618e0a91bca9b324b06427ae420df3573308a3c12b14fb4ecded4b5cfe"
+    }
+  ]
+}
