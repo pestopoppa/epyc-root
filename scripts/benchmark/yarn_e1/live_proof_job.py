@@ -16,7 +16,7 @@ import urllib.request
 
 STORE = Path('/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82')
 TEMPLATE = '/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja'
-CHECKER_COMMIT = 'dbc24d93e4f2b15354da6313aa7af912f85ca4b6'
+CHECKER_COMMIT = '833108f9a5259b50c4f923efeaa804e44d2697c2'
 ROOT_REPO = '/mnt/raid0/llm/views/epyc-root-main'
 PORT = 18761
 
