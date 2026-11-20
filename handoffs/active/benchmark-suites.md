@@ -769,6 +769,23 @@ our own harness and score offline.
       Strict/loose **UNKNOWN**, paired delta **UNCOMPUTED**, adoption **UNCLAIMED**.
       [Continuation input bindings and smoke receipt](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/qualification-v3.json).
       [no-belief: engineering qualification and synthetic smoke only]
+      2026-11-20 v3 verdict: **partial**, rc=75 at 11:43:46Z. Added **83**
+      valid captures, preserving all 76 prior captures: **159/300 exact-prompt-joined
+      valid responses**, 159 exposures, 0 unresolved exposures, 141 unexposed;
+      5 responses ended at the token limit. Stopped before another request to
+      preserve timeout/cleanup reserve; server drained (rc=0). Auto-filed receipt
+      retained; alert acknowledged. Strict/loose **UNKNOWN**, paired delta
+      **UNCOMPUTED**; no discrimination, repeatability or adoption conclusion.
+      [Verdict and source SHA-256 bindings](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/verdict-v3.json).
+      CJ-6e remains open; preserve all 159 captures without redraw. [belief: cc]
+      Continuation `codex-ifbench-cj6e-35b-v4-20261120`: **SMOKE PASS and
+      PUBLISHED**, rc=0 at 11:47:16Z, CPUs 116–119, synthetic noncohort request.
+      Validated all 159 capture triplets, original prompts and prior seals offline;
+      immutable continuation seal covers indices 000–158. Remaining 141 prompts
+      retain original order; first unresolved exposure stops without redraw.
+      Source and model identity unchanged; full mode retains 8 server threads
+      on 8 physical cores. [Publication and content bindings](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/qualification-v4.json).
+      [no-belief: continuation qualification and synthetic smoke only]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a as preconditions]** **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases
       exist, so the name alone is not a reproducible referent. Pre-seed the NLTK data directory and
       assert no network during scoring (the only network touch is an NLTK bootstrap at import; until

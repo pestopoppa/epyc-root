@@ -1,0 +1,59 @@
+{
+  "box": "CJ-6e",
+  "row": "codex-ifbench-cj6e-35b-v3-20261120",
+  "verdict": "partial",
+  "rc": 75,
+  "new_valid_responses": 83,
+  "valid_responses": 159,
+  "exposures": 159,
+  "unresolved_exposures": 0,
+  "unexposed": 141,
+  "length_finish": 5,
+  "exact_prompt_join": true,
+  "prior_capture_seal_verified": true,
+  "strict": "UNKNOWN",
+  "loose": "UNKNOWN",
+  "paired_delta": "UNCOMPUTED",
+  "adoption": "UNCLAIMED",
+  "no_redraw": true,
+  "reason": "before next request or insufficient full timeout and cleanup reserve",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/launch.sh",
+      "sha256": "ab640cdf88e02fee85e387933cd8573f3c167a6ec10679fdb96414d26e8eb7c6"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/worker.py",
+      "sha256": "438a7a9dcecc89311e63e378e9463135439318efa52e84a1de5e5d3ce0d02a86"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/spec.continuation.json",
+      "sha256": "773a171689d42b1560170374aae142c91f73316c563782b844a35850a20b5e8f"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/CONTINUATION-INPUTS.sha256",
+      "sha256": "65675979ed7c0b3a66ea83f04f9523543d150ff31a6b844bd1dfdd91cd88d14b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/run/PARTIAL.json",
+      "sha256": "e064c9a2e3bd129b54fceef34bb8a6647b9f8376475e4152cc1adc07ea1123de"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/codex-ifbench-cj6e-35b-v3-20261120.ended",
+      "sha256": "cf3134dba9879b77644c102f988c15a9ff0434afa36935747ee3ae11a03dfcd8"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/filing-done/codex-ifbench-cj6e-35b-v3-20261120.verdict.json",
+      "sha256": "ced15db39b950ccf7cea6b289a5b2e7bbe1264704fda031e7b5ec8ccec77c0cf"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/run/server-1045212.drain.json",
+      "sha256": "21b237b516f08bcae0039aa7757f62262854e2dc1a73a8943d036ba201b2f158"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/run/server-2298731.drain.json",
+      "sha256": "03d38dfb338997e477bb2867116ee04e983cb08a51c856d3375300686d4a7254"
+    }
+  ],
+  "next_action": "Continue untouched cohort from index 159 under v4 after native smoke PASS; no scoring until all 300 valid."
+}
