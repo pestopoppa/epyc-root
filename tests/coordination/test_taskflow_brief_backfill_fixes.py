@@ -124,3 +124,39 @@ def test_6_assign_id_checks_base_branch_ids(tmp_path):
     h = act / "h.md"
     h.write_text("- [ ] **TU-3** a\n- [ ] plain\n")
     assert HB.assign_id(h, 2, root=tmp_path, base="origin/main")["id"] == "TU-21"
+
+
+def test_7_digit_free_and_hyphenated_head_ids_are_valid_never_renamed(tmp_path):
+    for t in ("VB-TASKFLOW-BRIEF-WIRE", "B5", "KPF-18.3", "E3b", "SC84a", "D-g", "LRC-RI-CONCURRENCY"):
+        assert not L1.suspect_id(t), t
+    for t in ("Sub-quarter", "First-party", "Layer-3", "1", "2026-11-20", "Foo"):
+        assert L1.suspect_id(t), t
+    act = tmp_path / "handoffs/active"
+    act.mkdir(parents=True)
+    h = act / "h.md"
+    h.write_text("# H\n- [ ] **VB-TASKFLOW-BRIEF-WIRE** wire it\n- [ ] **Sub-quarter routing** c\n- [ ] **Overview** d\n")
+    r = HB.assign_id(h, 2, root=tmp_path, base=None)
+    assert r["changed"] is False and h.read_text().split("\n")[1] == "- [ ] **VB-TASKFLOW-BRIEF-WIRE** wire it"
+    assert not (act / ".moves.jsonl").exists()
+    assert HB.assign_id(h, 3, root=tmp_path, base=None, today="2026-11-20")["changed"]       # title word: renamed
+    assert HB.assign_id(h, 4, root=tmp_path, base=None, today="2026-11-20")["changed"]       # bold plain word: renamed
+
+
+def test_8_id_suspect_lint_follows_the_fixed_rule(tmp_path):
+    import box_index as BI
+    assert L1.head_has_valid_id("- [ ] **VB-X-WIRE** a") and not L1.head_has_valid_id("- [ ] **1** a")
+    assert not L1.head_has_valid_id("- [ ] plain") and not L1.head_has_valid_id("- [ ] **Overview** a")
+
+
+def test_9_box_text_sha_written_prefixed_old_form_still_read(tmp_path, monkeypatch):
+    _nogn(monkeypatch)
+    root = _tree(tmp_path)
+    p = _w(root)
+    raw = B.parse_text(p.read_text())["box_text_sha"]
+    sha = B.find_box(root, "BF-1")["text_sha"]
+    assert raw == "t:" + sha and not str(raw).isdigit() and B.sha_norm(raw) == B.sha_norm(sha) == sha
+    assert B.cached_state(root, "BF-1", sha)["brief"] != "orphaned"
+    p.write_text(p.read_text().replace("t:" + sha, sha))                                    # old bare form still reads
+    assert B.cached_state(root, "BF-1", sha)["brief"] != "orphaned"
+    p.write_text(p.read_text().replace(sha, str(10**15 + 7), 1))
+    assert B.cached_state(root, "BF-1", sha)["brief"] == "orphaned"

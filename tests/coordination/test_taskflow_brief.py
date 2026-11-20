@@ -46,7 +46,7 @@ def test_fresh_and_format(tmp_path, monkeypatch):
     root = _tree(tmp_path)
     p = _write(root)
     doc = B.parse_text(p.read_text())
-    assert doc["schema"] == "epyc.brief.v1" and doc["box_text_sha"] == B.find_box(root, "BR-1")["text_sha"]
+    assert doc["schema"] == "epyc.brief.v1" and B.sha_norm(doc["box_text_sha"]) == B.find_box(root, "BR-1")["text_sha"]
     assert doc["accepted"] == "auto"            # acceptance == the literal done-when command (D3)
     assert set(B.REQUIRED) <= set(doc)
     r = B.compile_brief("BR-1", root)

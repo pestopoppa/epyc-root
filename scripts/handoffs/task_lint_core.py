@@ -132,13 +132,29 @@ def body_id(body):
     return tok if tok and re.search(r'[\d-]', tok) and not tok.startswith('-') else None
 
 
-_ID_SHAPE = re.compile(r'^[A-Z][A-Z0-9]*(?:[-_.][A-Za-z0-9]+)*$')
+_ID_SHAPE = re.compile(r'^[A-Z][A-Z0-9]*(?:\d[a-z])?(?:[-_.][A-Za-z0-9]+)*$')   # E3b / SC84a / KPF-26.1h are IDs
 
 
 def suspect_id(bid):
-    """True when an extracted head id does not look like a box ID (a title word such as "Sub-quarter" or "1"):
-    an ID starts with an UPPER-CASE segment and carries a digit. The box should get one (`handoff_box.py assign-id`)."""
-    return bool(bid) and not (_ID_SHAPE.match(bid) and re.search(r'\d', bid))
+    """True when an extracted head id does not look like a box ID (a title word such as "Sub-quarter" or a plain
+    number such as "1"). An ID is an UPPER-CASE-led token of letters, digits, dots and hyphens carrying at least one
+    hyphen OR one digit: `B5`, `KPF-18.3`, and digit-free `VB-TASKFLOW-BRIEF-WIRE` are all valid IDs. A suspect box
+    gets one via `handoff_box.py assign-id`; a valid one is never renamed."""
+    return bool(bid) and not (_ID_SHAPE.match(bid) and re.search(r'[\d-]', bid))
+
+
+_BOLD_HEAD = re.compile(r'^\*\*(.*?)\*\*')
+
+
+def head_has_valid_id(line):
+    """True when ANY token of the line's leading bold span has a valid ID shape (so assign-id must not rename it)."""
+    m = HEAD_PREFIX.match(line or '')
+    if not m:
+        return False
+    b = _BOLD_HEAD.match(line[m.end():].strip())
+    if not b:
+        return False
+    return any(t and not suspect_id(t) for t in (x.strip('.:,;()\u2744\u2014\u2013') for x in b.group(1).split()))
 
 
 def head_id(line):

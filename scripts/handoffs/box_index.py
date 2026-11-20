@@ -237,7 +237,7 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
             rec.update(brief_fields(root, r["id"], rec["text_sha"], pf.get("brief")))   # task-brief layer P2
             if rec["outside_backlog"]:
                 rec["lint"]["warn"] = ["outside-backlog"]
-            if L1.suspect_id(r["id"]):   # extractor took a title word as the ID -> handoff_box.py assign-id
+            if L1.suspect_id(r["id"]) and not L1.head_has_valid_id(line):   # extractor took a title word as the ID -> handoff_box.py assign-id
                 rec["lint"].setdefault("warn", []).append("id-suspect")
             if st in "xX":
                 t = parse_tick(line) or {}

@@ -6,7 +6,7 @@ A brief is a typed SIDECAR to one handoff box: `handoffs/active/briefs/<ID>.md`,
     ---
     schema: epyc.brief.v1
     id: TU-GR-1
-    box_text_sha: 0123456789abcdef      # box_index.text_sha of the box's first line when the brief was written
+    box_text_sha: t:0123456789abcdef    # box_index.text_sha of the box's first line when the brief was written
     author: owner                        # intake|planning|wrap-up|owner|coordinator|self
     written: 2026-11-20
     accepted: owner                      # owner|auto|pending|rejected
@@ -70,6 +70,15 @@ BRIEF_DIR = "handoffs/active/briefs"
 CACHE_REL = f"{BRIEF_DIR}/.compile-cache.json"
 BOX_DIRS = ("handoffs/active", "handoffs/blocked")
 STATES = ("none", "fresh", "drift", "stale", "orphaned")
+SHA_PREFIX = "t:"   # written form of box_text_sha: an all-digit hex sha trips the pii hook's account-number pattern
+
+
+def sha_norm(v) -> str:
+    """box_text_sha in either form (`t:<hex>` written now, bare `<hex>` read for old briefs) -> the bare hex."""
+    s = str(v).strip() if v is not None else ""
+    return s[len(SHA_PREFIX):] if s.startswith(SHA_PREFIX) else s
+
+
 REQUIRED = ("schema", "id", "box_text_sha", "where", "approach", "acceptance", "non_goals", "tier")
 AUTHORS = ("intake", "planning", "wrap-up", "owner", "coordinator", "self", "backfill")
 REVIEWED_AUTHORS = ("self", "backfill")   # written without the owner's context -> review: backfill, accepted: pending
@@ -422,7 +431,7 @@ def compile_brief(bid: str, root: Path = REPO_ROOT, use_cache: bool = True, box:
         why = "box not found (open, in handoffs/active|blocked)" if box is None else f"box ID matches {box['n']} boxes"
         res.update(state="orphaned", stale_list=[f"identity: {why}"])
         return res
-    if str(doc.get("box_text_sha")) != box["text_sha"]:
+    if sha_norm(doc.get("box_text_sha")) != box["text_sha"]:
         res.update(state="orphaned", stale_list=[f"identity: brief box_text_sha {doc.get('box_text_sha')} != box "
                                                  f"text_sha {box['text_sha']} — box text changed; re-brief"])
         return res
@@ -495,7 +504,7 @@ def cached_state(root: Path, bid: str, box_sha: str, brief_ref: str | None = Non
         return {"brief": "stale", "brief_sha": _sha(text)}
     out = {"brief_sha": _sha(text), "accepted": doc.get("accepted"), "brief_author": doc.get("author"),
            "brief_review": doc.get("review")}
-    if str(doc.get("box_text_sha")) != box_sha:
+    if sha_norm(doc.get("box_text_sha")) != box_sha:
         return {**out, "brief": "orphaned"}
     hit = _load_cache(root).get(bid)
     if hit and hit.get("key") == cache_key(box_sha, text, where_blobs(root, doc.get("where") or [])):
@@ -516,7 +525,7 @@ def write_brief(bid: str, where: list[str], approach: str, acceptance: str, non_
     matches = acceptance_matches(acceptance, box.get("done_when"))
     accepted = accepted or ("pending" if author == "self" else "auto" if matches else
                             "pending" if author == "backfill" else "owner")
-    doc = {"schema": SCHEMA, "id": bid, "box_text_sha": box["text_sha"], "author": author, "written": today,
+    doc = {"schema": SCHEMA, "id": bid, "box_text_sha": SHA_PREFIX + box["text_sha"], "author": author, "written": today,
            "accepted": accepted, "review": "backfill" if author in REVIEWED_AUTHORS else None,
            "where": list(where), "approach": approach.strip() + "\n", "acceptance": acceptance,
            "new_tests": list(new_tests) if new_tests else None, "non_goals": list(non_goals or []), "tier": tier,

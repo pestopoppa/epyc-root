@@ -420,7 +420,7 @@ def assign_id(path: Path, line: int, new_id: str | None = None, root: Path = REP
     if not (0 <= i < len(lines)) or not L1.CHECKBOX.match(lines[i]):
         raise BoxError(f"{path.name}:{line} is not a checkbox line")
     cur = L1.head_id(lines[i])
-    if cur and not L1.suspect_id(cur):
+    if (cur and not L1.suspect_id(cur)) or L1.head_has_valid_id(lines[i]):
         return {"id": cur, "changed": False, "line": line}
     taken = all_ids(root) | base_ids(root, base)
     if new_id:
