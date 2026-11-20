@@ -12,8 +12,9 @@ parse(text) -> {"kind": cmd|file|verdict|artifact_class|free, ...}
 
 check(done_when_text, evidence, root) -> ("ok" | "fail" | "unchecked", reason)
     evidence = {"verdict": str, "paths": [repo-relative], "commands": [{"cmd", "rc"}], "artifact_class": str}
-    cmd: ok when evidence.commands has the same command with rc 0, fail on rc != 0, unchecked when it was not run
-         (wrapup never runs arbitrary shell at tick time; the verifier/turn runs it and records rc).
+    cmd: ok when evidence.commands has the same command with rc 0, fail on rc != 0, and UNCHECKED unless the record
+         lists that command (nothing is executed at tick time; the verifier/turn runs it and records rc).
+    verdict: the tick's `verdict` is MANDATORY for a `done when: verdict …` box -- a tick without one is refused.
     file: ok when <root>/<path> exists (and, with #field, the JSON/YAML file has that dotted key truthy).
     verdict: ok when the tick verdict matches the pattern (case-insensitive regex / literal).
     artifact_class: the evidence must name an artifact OF THAT CLASS. `kernels/production/*` is never "loop-built"
@@ -118,11 +119,12 @@ def check(done_when: str | None, evidence: dict | None, root: str = ".") -> tupl
     if any(PRODUCTION.search(x) for x in paths) and not any(LOOP_EVIDENCE.search(x) for x in paths
                                                             if not PRODUCTION.search(x)):
         return "fail", ("done-when names a loop-built artifact; the evidence names kernels/production/*, which is never "
-                        "loop-built (AKX-ALL-14)")
+                        "loop-built (AKX-ALL-14) -- list the champion / ak-* build receipt path in evidence.paths")
     if str(ev.get("artifact_class") or "").lower().startswith("loop-built") or any(
             LOOP_EVIDENCE.search(x) for x in paths if not PRODUCTION.search(x)):
         return "ok", "loop-built artifact named"
-    return "fail", "done-when names a loop-built artifact; the evidence names none (champion / ak-* build receipt)"
+    return "fail", ("done-when names a loop-built artifact; the evidence names none -- list the champion / ak-* "
+                    "build receipt path in the record's evidence.paths")
 
 
 def done_when_of(box_text: str) -> str | None:

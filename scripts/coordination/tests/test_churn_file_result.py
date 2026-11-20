@@ -397,6 +397,7 @@ class TestFileResult(Base):
         self.assertIn("- [ ] **akx-lb3-2-cv5-pair-r2** tune the thing", hp.read_text())
         self.assertIn("TICK-REFUSED", err)
         self.assertNotIn("TICKED", out)
+        self.assertIn("verdict: pass", self.verdict("akx-lb3-2-cv5-pair-r2")["tick_refused"])   # durable record
 
     def test_done_when_verdict_match_ticks(self):
         hp = Path(self.lane, "handoffs/active/h.md")

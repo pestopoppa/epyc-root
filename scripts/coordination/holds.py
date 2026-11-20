@@ -32,6 +32,9 @@ HEADER = """# Operator holds -- the single exclusion source (handoff standard de
 #       row_prefixes refuse any matching row id whatever its scope. Release: operator-ratify/<hold id>.json.
 # FAIL CLOSED: a missing or unreadable file never means "no holds" -- registry gates + default row prefixes stay,
 # every box is marked HOLDS-UNAVAILABLE and `index_state.py --check` fails with BAD HOLD.
+# CAVEAT: during a holds outage publish_row enforces only the registry gates + default row prefixes, so a
+# FILE-ONLY hold (one with no registry operator_gate twin, e.g. rocm-kernel-authoring) does not refuse rows
+# until the file parses again; the dispatcher side (select, generated rows) still holds everything.
 """
 
 

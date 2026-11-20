@@ -526,6 +526,11 @@ def main(argv=None):
         if not a.no_reclaim:
             run_reclaim([rid, "--flags", flags, "--pre-filed"])
         return 0
+    tick = (agent or {}).get("tick_text")
+    task = str(m.get("handoff_task") or "")
+    refused = done_when_refusal(a.lane, task, verdict, result_path, rec) if tick and ":" in task else None
+    if refused:
+        rec["tick_refused"] = refused      # C2: durable in verdict.json, so dashboard/verdict_count see it without notify
     os.makedirs(done, exist_ok=True)
     vtmp = os.path.join(done, f".{rid}.verdict.{os.getpid()}.tmp")
     with open(vtmp, "w") as fh:
@@ -534,9 +539,6 @@ def main(argv=None):
     if kt and kt.get("reported"):
         with open(os.path.join(done, "keep_tail_counter.jsonl"), "a") as fh:
             fh.write(json.dumps({"row": rid, "at": now, "P_pct": kt["P_pct"], "F_pct": kt["F_pct"], "refused": kt["refused"]}, sort_keys=True) + "\n")
-    tick = (agent or {}).get("tick_text")
-    task = str(m.get("handoff_task") or "")
-    refused = done_when_refusal(a.lane, task, verdict, result_path, rec) if tick and ":" in task else None
     if refused:
         # C2: the result is FILED (verdict written, FILED below) but the box is NOT ticked; the owner is alerted
         print(f"TICK-REFUSED {task}: {refused}", file=sys.stderr)
