@@ -1,0 +1,14 @@
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -5629,6 +5629,11 @@
+                     tree_seq_store[i - off] = slot.id;
+                 }
+ 
++                // AK-DTREE: handle_last_sampled_token appended the MAIN draft to prompt.tokens.
++                // verify_and_accept removes the WINNER's length. Replace the pending suffix now,
++                // preserving the committed prefix and anchor even when the winner has another length.
++                slot.prompt.tokens.keep_first(slot.prompt.n_tokens() - slot.spec_draft.size());
++                slot.prompt.tokens.insert(slot.spec_tree_alts[best]);
+                 slot.spec_draft   = slot.spec_tree_alts[best];
+                 slot.spec_i_batch = slot.spec_tree_i_batch[best];
+                 slot.n_tree_alt_wins++;

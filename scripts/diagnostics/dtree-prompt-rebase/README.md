@@ -38,7 +38,7 @@ python3 -m pytest -q scripts/diagnostics/dtree-prompt-rebase \
   --basetemp=/mnt/raid0/llm/tmp/df2/dtree-prompt-rebase/pytest
 ```
 
-Six tests pass. The behavioral test extracts the actual pinned
+The original six tests pass. The behavioral test extracts the actual pinned
 `spec_tree_resolve` method and the later prompt accept statements directly from
 the Git object into temporary C++ translation units. Model-free doubles supply
 the surrounding APIs, including predetermined oracle acceptance lengths and a
@@ -53,4 +53,40 @@ Next, apply this patch in an isolated experimental candidate through the kernel
 build row workflow. Require content-bound artifacts and a fresh qualification
 that reaches a shorter alternative win and continues to the next tree round,
 then rerun the unchanged P5 protocol. Do not resume a previous result directory
-across source identities. The A3B row is independent and remains pending.
+across source identities. The A3B row was filed below-baseline futility; see `docs/reports/df2-dtree-p5-a3b-20261120.md`.
+
+## R5 deferred-commit regression (2026-11-20)
+
+The already-published `ak-dtree-build-gpu-20261120-r5` uses experimental
+`51b885a8cbd32ee8b0105dea54a18260fb3adbec`. Its deferred memory commit fixes the separate
+issue of committing a greedy count before the sampler's accepted count is known.
+It does **not** replace the prompt's pending main-draft suffix when the winner
+changes. The prompt repair is still required at that source identity.
+
+`port.py` now accepts exactly the two pinned original source digests (47f08e797
+and r5), and refuses all other or already-repaired inputs. The r5 source digest
+is `32fc3599d0abc0c50930aac2c164c6bbc75c2abaf9631e3c086ea4e41f671575`. Its generated
+`r5-fix.patch` SHA-256 is
+`1e46a8d7df3e4a20432de843f07543a30ea215db449f4aaa70e64decb82711cd`;
+repaired r5 source SHA-256 is
+`6c0873569fadcfcf626bb879fed8474a5fe63cb7cf003d81c49deafb1f579c7f`.
+
+Eight model-free tests PASS. The r5 regression extracts its actual resolve,
+deferred commit and prompt-accept statements into the C++ doubles and runs
+under UBSan with warnings as errors. Unmodified r5 fails on a seven-token main
+draft replaced by a one-token alternative with zero sampled drafts accepted:
+the prompt still contains six excess tokens while memory commits only the anchor.
+The repair passes **2,100** cases across main lengths 1–7, alternative lengths
+1–9, winning/losing alternatives, and sampled acceptance 0 through the selected
+greedy prefix. It checks prefix/content, pending-column clearance, sampled bonus
+and the next-root position implied by prompt length versus committed columns.
+The original 47f08e797 regression still passes its **630** cases after repair
+and fails without repair.
+
+These are source-level tests with predetermined acceptance and a memory-commit
+double. They do not execute a real next decode round, prove runtime tensor
+correctness, attribute the observed T12 failure, or establish speed. The queued
+r5 build and all queued timing rows are untouched. Apply `r5-fix.patch` to a new
+isolated experimental candidate after the kernel owner's current build boundary;
+content-prove the resulting build and require a real shorter-winner continuation
+qualification before new 27B P5 timing. Do not reuse an older result directory.

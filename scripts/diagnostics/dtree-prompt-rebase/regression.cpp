@@ -25,7 +25,7 @@ struct prompt_type {
 struct server_slot {
     bool spec_tree_batch_round = true, spec_tree_batch = true;
     std::vector<std::vector<int>> spec_tree_i_batch, spec_tree_alts;
-    std::vector<int> spec_i_batch, spec_draft;
+    std::vector<int> spec_i_batch, spec_draft, spec_tree_cols_pending;
     int id = 0, spec_tree_seq0 = 1, n_tree_rounds = 0;
     int n_tree_alt_wins = 0, n_tree_alt_extra = 0, sampled = -1;
     prompt_type prompt;
@@ -48,54 +48,67 @@ struct server_type {
 
 int main() {
     int cases = 0;
-    for (int main_len = 1; main_len <= 7; ++main_len) {
+    for (int main_len = 7; main_len >= 1; --main_len) {
         for (int alt_len = 1; alt_len <= 9; ++alt_len) {
-            for (int accepted = 1; accepted <= alt_len; ++accepted) {
+            for (int greedy = 1; greedy <= alt_len; ++greedy) {
                 for (bool wins : {false, true}) {
-                    server_type server;
-                    server.slots.emplace_back();
-                    auto & slot = server.slots[0];
-                    const std::vector<int> prefix = {5, 6, 7};
-                    const int anchor = 42;
-                    slot.prompt.tokens.data = prefix;
-                    slot.prompt.tokens.data.push_back(anchor);
-                    for (int j = 0; j < main_len; ++j) slot.spec_draft.push_back(100+j);
-                    std::vector<int> alt;
-                    for (int j = 0; j < alt_len; ++j) alt.push_back(200+j);
-                    slot.prompt.tokens.insert(slot.spec_draft);
-                    for (int j = 0; j <= main_len; ++j) slot.spec_i_batch.push_back(j);
-                    std::vector<int> rows = {0};
-                    for (int j = 0; j < alt_len; ++j) rows.push_back(main_len+1+j);
-                    slot.spec_tree_i_batch = {rows};
-                    slot.spec_tree_alts = {alt};
-                    main_accept = wins ? 0 : 1;
-                    alt_accept = wins ? accepted : 0;
-                    const auto winner = wins ? alt : slot.spec_draft;
-                    const int keep = wins ? accepted : 1;
-                    const int width = main_len + 1 + alt_len;
-                    std::vector<int> seqs(width, 0), parents(width, -1);
-                    std::vector<int *> seq_ptrs;
-                    for (auto & s : seqs) seq_ptrs.push_back(&s);
-                    llama_batch view{width, seq_ptrs.data(), parents.data()}, proc = view;
-                    assert(server.spec_tree_resolve(0, view, proc));
-                    assert(committed_columns == keep+1);
-                    assert(slot.spec_draft == winner);
-                    assert(proc.parent == nullptr);
-                    const size_t n_draft = slot.spec_draft.size();
-                    std::vector<int> ids(winner.begin(), winner.begin()+keep);
-                    ids.push_back(999); // sampled bonus/correction, not yet decoded
-                    // INSERT_PINNED_ACCEPT
-                    std::vector<int> expected = prefix;
-                    expected.push_back(anchor);
-                    expected.insert(expected.end(), winner.begin(), winner.begin()+keep);
-                    if (slot.prompt.tokens.data != expected) {
-                        std::cerr << "wrong prefix/next-position: main=" << main_len
-                                  << " alt=" << alt_len << " accepted=" << keep << " wins=" << wins << '\n';
-                        return 1;
+                    const int greedy_keep = wins ? greedy : 1;
+                    const int sampler_min = DTREE_DEFERRED ? 0 : greedy_keep;
+                    for (int keep = sampler_min; keep <= greedy_keep; ++keep) {
+                        server_type server;
+                        server.slots.emplace_back();
+                        auto & slot = server.slots[0];
+                        const std::vector<int> prefix = {5, 6, 7};
+                        const int anchor = 42;
+                        slot.prompt.tokens.data = prefix;
+                        slot.prompt.tokens.data.push_back(anchor);
+                        for (int j = 0; j < main_len; ++j) slot.spec_draft.push_back(100+j);
+                        std::vector<int> alt;
+                        for (int j = 0; j < alt_len; ++j) alt.push_back(200+j);
+                        slot.prompt.tokens.insert(slot.spec_draft);
+                        for (int j = 0; j <= main_len; ++j) slot.spec_i_batch.push_back(j);
+                        std::vector<int> rows = {0};
+                        for (int j = 0; j < alt_len; ++j) rows.push_back(main_len+1+j);
+                        slot.spec_tree_i_batch = {rows};
+                        slot.spec_tree_alts = {alt};
+                        main_accept = wins ? 0 : 1;
+                        alt_accept = wins ? greedy : 0;
+                        const auto winner = wins ? alt : slot.spec_draft;
+                        const int width = main_len + 1 + alt_len;
+                        std::vector<int> seqs(width, 0), parents(width, -1);
+                        std::vector<int *> seq_ptrs;
+                        for (auto & s : seqs) seq_ptrs.push_back(&s);
+                        llama_batch view{width, seq_ptrs.data(), parents.data()}, proc = view;
+                        committed_columns = -1;
+                        assert(server.spec_tree_resolve(0, view, proc));
+                        if (DTREE_DEFERRED) assert(committed_columns == -1);
+                        else assert(committed_columns == keep+1);
+                        assert(slot.spec_draft == winner);
+                        assert(proc.parent == nullptr);
+                        const size_t n_draft = slot.spec_draft.size();
+                        std::vector<int> ids(winner.begin(), winner.begin()+keep);
+                        ids.push_back(999); // sampled bonus/correction, not yet decoded
+                        const auto accepted = ids;
+                        (void) accepted;
+                        // INSERT_PINNED_COMMIT
+                        assert(committed_columns == keep+1);
+                        // INSERT_PINNED_ACCEPT
+                        std::vector<int> expected = prefix;
+                        expected.push_back(anchor);
+                        expected.insert(expected.end(), winner.begin(), winner.begin()+keep);
+                        if (slot.prompt.tokens.data != expected) {
+                            std::cerr << "wrong prefix/next-position: main=" << main_len
+                                      << " alt=" << alt_len << " accepted=" << keep << " wins=" << wins << '\n';
+                            return 1;
+                        }
+                        assert(slot.sampled == 999);
+                        assert(slot.n_tree_alt_wins == (wins ? 1 : 0));
+                        // The next root is the sampled correction/bonus token. Its position
+                        // must follow the exact committed anchor + sampled drafts.
+                        if (slot.prompt.n_tokens() != prefix.size() + committed_columns) return 2;
+                        if (DTREE_DEFERRED) assert(slot.spec_tree_cols_pending.empty());
+                        ++cases;
                     }
-                    assert(slot.sampled == 999);
-                    assert(slot.n_tree_alt_wins == (wins ? 1 : 0));
-                    ++cases;
                 }
             }
         }
