@@ -35,7 +35,7 @@
 - [ ] **AK-ASM-H11-UNIQ** [inference] Add an op-level test that the gfx90a AITER topksoftmax asm and the topk-moe fusion emit unique expert IDs on rows with exact ties, -inf and NaN logits, because the C14 MUL_MAT_ID helper silently drops duplicate slots (intake-2719).
       · done when: test-backend-ops cases for tie/-inf/NaN router rows exist and a ROCm0 run reports PASS (unique IDs) or a filed FAIL with the offending kernel
       · gate: none
-      · model: none (op level) · build: frozen C14 HIP build pinned by sha · harness: test-backend-ops ROCm0 vs CPU on the router ops · metric: unique-ID check per row (pass/fail) · rule: any duplicate ID on any degenerate row = FAIL · region: gpu-q3 short window · est: <= 600 s
+      · model: none (op level) · build: C16 composite 13d6fc150 + TOPK_MOE_DEGEN test (llama.cpp-experimental-ak-h11-uniq-20261120 @ 9cb1a3ee9) HIP build pinned by sha · harness: test-backend-ops ROCm0 vs CPU on the router ops · metric: unique-ID check per row (pass/fail) · rule: any duplicate ID on any degenerate row = FAIL · region: gpu-q3 short window · est 600 s
       · stop rule: question = can the asm or fusion router emit duplicate IDs? single run is decisive (deterministic); stop-on-answer after the case set runs; stop-on-futility on a build/residency proof failure
 
 > Folded from the body of `handoffs/active/autokernel-research-loop.md` (row INF-06), from its first `##` section on, @ `8012aabb5781` on 2026-11-03 (BRF-T7-F5, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
