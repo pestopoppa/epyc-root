@@ -7,6 +7,11 @@
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/hooks/session_start_lane_notice.py\"",
             "timeout": 25
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/hooks/session_start_staleness.py\"",
+            "timeout": 10
           }
         ]
       }
