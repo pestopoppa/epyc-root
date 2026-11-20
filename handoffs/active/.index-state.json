@@ -101,7 +101,7 @@
     },
     "autokernel-loop.md": {
       "blocked": 2,
-      "closed": 815,
+      "closed": 816,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 121,
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 938,
+      "total": 939,
       "tracks": [
         {
           "blocked": 2,
@@ -193,7 +193,7 @@
         },
         {
           "blocked": 0,
-          "closed": 41,
+          "closed": 42,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -2346,7 +2346,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 173,
+      "closed": 174,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 36,
@@ -2358,11 +2358,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 211,
+      "total": 212,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 111,
+          "closed": 112,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2378,7 +2378,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 830,
+          "line": 831,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 27
