@@ -170,3 +170,27 @@ def test_skill_named_in_words_is_an_input_and_not_forbidden():
     t = {"inputs": [".claude/skills/kernel-promotion/"], "outputs": [], "forbidden": list(schema.FORBIDDEN)}
     assert verify.forbidden_hits([".claude/skills/kernel-promotion/SKILL.md"], t) == []
     assert verify.forbidden_hits([".claude/settings.json"], t) == [".claude/settings.json"]
+
+
+def test_basename_resolution_and_short_lane(tmp_path, monkeypatch):
+    repo = tmp_path / "r"
+    (repo / "scripts/dev").mkdir(parents=True)
+    (repo / "scripts/dev/m2_guards.py").write_text("x\n")
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+    assert schema.resolve_basename(repo, "m2_guards.py") == "scripts/dev/m2_guards.py"
+    assert schema.resolve_basename(repo, "nope.py") is None
+    subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "b"], check=True)
+    subprocess.run(["git", "-C", str(repo), "update-ref", "refs/remotes/origin/main", "HEAD"], check=True)
+    monkeypatch.setitem(schema.REPOS, "epyc-root", repo)
+    monkeypatch.setenv("TASKFLOW_LANE_ROOT", str(tmp_path / "tf"))
+    r, lane, base = dispatch.make_lane({"repo": "epyc-root"}, tmp_path / "very/long/run-2026112099/t07", "b1")
+    assert len(lane.name) == 4 and lane.parent == tmp_path / "tf" and (lane / "scripts/dev/m2_guards.py").exists()
+    dispatch.drop_lane(r, lane)
+
+
+def test_opencode_context_follows_server_slot_ctx(tmp_path, monkeypatch):
+    monkeypatch.setattr(local_llm, "POLICY_DIR", tmp_path / "pol")
+    c = json.loads(local_llm.write_config(tmp_path / "a", "http://x/v1", "m", {"budget": dict(schema.DEFAULT_BUDGET)},
+                                          ctx=262144).read_text())
+    assert c["provider"][local_llm.PROVIDER]["models"]["m"]["limit"]["context"] == 262144

@@ -261,7 +261,7 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
     """Run one worker to completion (or the wall cap). Returns {rc, wall_s, usage, result, model, tier, ...}."""
     run_dir.mkdir(parents=True, exist_ok=True)
     model_id = model_for(task.get("tier"), family)
-    write_config(run_dir, base_url, model_id, task)
+    write_config(run_dir, base_url, model_id, task, ctx=int(task["budget"].get("ctx", 65536)))  # = server per-slot ctx
     prompt = task_suffix(task, excerpts_for(task, cwd))
     (run_dir / "prompt.md").write_text(prompt, encoding="utf-8")
     env = dict(os.environ,
