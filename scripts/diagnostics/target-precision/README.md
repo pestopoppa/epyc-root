@@ -321,3 +321,34 @@ envelope uses four bytes per source element for each output, including mixed
 quantization retention, plus alignment and metadata reserves. Converter-added
 tensors and temporary workspace require a separate source audit; execution stays
 unadmitted even if that envelope fits. The 150 GiB disk floor is unchanged.
+
+`converter_sizing.converter_storage_plan` adds a content-bound audit for exactly
+v10 and the pinned Qwen3.8 upstream revision. It verifies the converter, registry,
+Qwen/base implementations, GGUF writer, quantizer and quant-block declarations
+against audited SHA-256 values; it checks config Git identity and the default
+serial command policy. New tensor names/shapes, source dtypes, fused/expert
+paths, changed source, quantized inputs and temp/eager/override command changes
+refuse. All source headers still pass the existing index/offset/length checks.
+
+The text converter drops vision tensors and retains the MTP tensors by default.
+For this catalog its transforms preserve element counts and generate no extra
+tensors. Norms, vectors and SSM convolution weights remain F32 in all three
+arms. Other matrices use BF16 for the first arm; both quantized-arm caps use the
+Q8_0 ceiling (34 bytes per 32 values, with an F16 fallback for unusual rows).
+Q4_K_M's mixed Q4/Q5/Q6 choices fit below this ceiling; this planner does not
+predict their exact recipe or assume four bits per weight. Each output adds an
+explicit 1 GiB metadata reserve and 32 bytes per tensor for alignment. The reserve
+is a proposed execution cap, still requiring enforcement and metadata validation.
+
+Default lazy conversion writes its output directly; `--use-temp-file` would
+create a second disk spool and is outside this audit. The quantizer mmaps its
+input and requests two reusable buffers of up to four bytes per largest tensor
+each. The report distinguishes their logical sizes (and logical overlap during
+reallocation) from allocated capacity and total RSS: vector spare capacity,
+allocator state, interpreter, worker stacks and mapped/page-cache residency
+remain outside those figures. Neither total process RAM nor execution is
+admitted by a fitting disk envelope. The process must separately enforce memory,
+output caps and unchanged resource floors before any acquisition or model run.
+
+Pinned catalog result and source Git object references:
+[`converter-sizing-20261120.json`](../../../docs/reports/target-precision-acquisition/converter-sizing-20261120.json).

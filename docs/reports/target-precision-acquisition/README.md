@@ -24,3 +24,50 @@ The delivered retry event `result-retry-20261120T013858Z.json` also FAILED at th
 Storage admission is **REFUSED**: 256,106,651,648 available bytes at the snapshot versus 553,384,692,482 required including the unchanged 150 GiB floor. The conservative peak keeps all source files plus three output caps, each twice source size plus 1 GiB for alignment/metadata: **392,323,418,882 additional bytes**. This is a declared preparation envelope, not measured output sizes or an impossibility claim about a tighter plan. Actual preparation must enforce the caps and recheck resource floors throughout; the snapshot reserves no shared storage. No transfer or conversion was started. Next implement tensor-aware output sizing from pinned headers to replace the conservative caps, then evaluate resource admission; no blind retry of the old mixed-source downloader. The floor/matrix stays unpublished and the causal precision gate stays unresolved.
 
 Validation: 16 model-free planner tests cover shared-parent commands, exact disk-boundary admission and provenance/refusal controls. The planner performs no network access, weight reads, subprocesses or inference.
+
+## Converter and quantizer source audit (2026-11-20)
+
+[`converter-sizing-20261120.json`](converter-sizing-20261120.json) binds seven
+read-only source files to production commit
+`ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, by Git blob and SHA-256, and verifies
+config metadata against the pinned upstream Git identity. No production tree
+was built or changed. The default text converter retains **866 tensors /
+27,320,697,856 elements**, including the MTP head, and drops **333 vision
+tensors**. Reordering, norm adjustment and A-log transformation preserve shape;
+this catalog uses no fused-QKVZ or expert path and no generated extra tensors.
+
+The BF16 payload cap is **54,646,738,944 bytes**, including **2,671,616 F32
+values** (norms/vectors/convolution tensors). Each quantized payload cap is
+**29,036,089,344 bytes**. Q4_K_M uses a conservative Q8 ceiling covering mixed
+quantization and compatible fallbacks; it is not a prediction of the exact Q4
+file size. Per-arm metadata/alignment reserves give output caps of
+**55,720,508,480 BF16 bytes** and **30,109,858,880 bytes** for each quantized arm.
+Retaining the source plus all outputs requires **332,587,527,470 free bytes**,
+including the unchanged 150 GiB floor, versus **280,157,663,232 available bytes**
+at this snapshot: **disk admission REFUSED**. Execution remains unadmitted.
+
+Source paths at that commit explain the bounds:
+
+- `conversion/__init__.py` selects the text Qwen class; `conversion/base.py`
+  `TextModel.filter_tensors` excludes vision. `conversion/qwen.py`
+  `_Qwen35MtpMixin.filter_tensors` retains/remaps the MTP head. The inherited
+  `generate_extra_tensors` returns an empty sequence.
+- `conversion/base.py` `prepare_tensors` keeps vectors, norms and SSM conv1d in
+  F32. `conversion/qwen.py` reorders heads, transforms A-log and adjusts norms
+  without increasing retained element counts for these unfused dense tensors.
+- `src/llama-quant.cpp` `tensor_allows_quantization` preserves these F32 tensors;
+  default Q4_K_M mixture choices and `tensor_type_fallback` fit the Q8 ceiling
+  or use F16 for rows incompatible with 32-value blocks.
+  `ggml/src/ggml-common.h` defines the 32-value / 34-byte Q8_0 block.
+- `gguf-py/gguf/gguf_writer.py` writes default lazy tensors directly. Its optional
+  temporary spool is excluded by the planner's exact command-policy check.
+  `src/llama-quant.cpp` mmaps input and requests F32-conversion and work buffers,
+  each at most **5,085,593,600 logical bytes** for the largest retained tensor.
+  Together they hold up to **10,171,187,200 logical bytes**; logical old/new
+  overlap during reallocation is at most **15,256,780,800 bytes**. These are not
+  total allocated-capacity or RSS bounds. No total RAM admission is claimed.
+
+The tested planner reads metadata and audited tool source only. Headers do not
+verify weight payloads; the metadata reserve needs enforcement; tool-build,
+tensor/tokenizer and drafter correspondence still require receipts. No transfer,
+model execution, numerical-floor measurement or causal precision finding occurred.

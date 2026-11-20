@@ -1,0 +1,189 @@
+{
+  "schema": "epyc.target-precision.converter-sizing.v1",
+  "base": {
+    "repo": "Qwen/Qwen3.8-27B",
+    "revision": "37561816e66b5b9153b1b64c10968c18c1e6f4a0"
+  },
+  "converter_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "audited_source_sha256": {
+    "convert_hf_to_gguf.py": "8f1bed9466221e57e434caa7ee720abe1569deb6bc2fe5a65da950ea66c8e737",
+    "conversion/__init__.py": "b323927760f90d1bee8ed06b1165df12f28510b8241318bd08c7d46be8516951",
+    "conversion/base.py": "b54106d70b21ff6af4d8fcc68bc98a59b436ac5933d2c552e9eea55c32e48db9",
+    "conversion/qwen.py": "7da4c1dca81de0e5e05abf6bb31055d3cffa8be16415980b23c4f6a53d0ab28f",
+    "ggml/src/ggml-common.h": "3e7a03c2deb30a27c04aaad631ccd38a7c0403b923fdda3dc34356673f1a7a5f",
+    "src/llama-quant.cpp": "94f80fa5b8734b6d6228e039ec21a06159350ea7bce176722014b3212e693180",
+    "gguf-py/gguf/gguf_writer.py": "b959644737bec534cbe563bac9473af01d6d16255d701cf347da0ff021ff6eb5"
+  },
+  "config_git_blob_sha1": "706cebd746c4b6f2b1d1f892630867acfdfd3df8",
+  "headers": [
+    {
+      "path": "model-00001-of-00018.safetensors",
+      "header_bytes": 45400,
+      "sha256": "f4cbd9978d80810a0e91ff1b9eee98afb230fdc94ef59550954079df3752ca05"
+    },
+    {
+      "path": "model-00002-of-00018.safetensors",
+      "header_bytes": 6152,
+      "sha256": "712e885527c27c46d257c9cc17858f38ea78c2b795501c2de511c77f0d21f5f7"
+    },
+    {
+      "path": "model-00003-of-00018.safetensors",
+      "header_bytes": 152,
+      "sha256": "b8f9a3cc0294c614390b5722494dcea8082f83c5cbf56da05b8c8f37c4bbe1fb"
+    },
+    {
+      "path": "model-00004-of-00018.safetensors",
+      "header_bytes": 9056,
+      "sha256": "ba99fbe75f726a370bae45f56c26b7cca9d4d04c2bc0b985f85a759f86f58e4a"
+    },
+    {
+      "path": "model-00005-of-00018.safetensors",
+      "header_bytes": 4824,
+      "sha256": "014a358848b7d5f734988922825b025a73be7d9ac1256bd7cc194fcbfd247cb9"
+    },
+    {
+      "path": "model-00006-of-00018.safetensors",
+      "header_bytes": 9952,
+      "sha256": "fcca93799f009642c232f0b577dc5508771a5646f443c2c2e9ea3981b7101e98"
+    },
+    {
+      "path": "model-00007-of-00018.safetensors",
+      "header_bytes": 3952,
+      "sha256": "53aae8c12ad2498d212fd3e85c167f80338b0e4b8a9239cce43c675e89fb9c8a"
+    },
+    {
+      "path": "model-00008-of-00018.safetensors",
+      "header_bytes": 9952,
+      "sha256": "6fca806f2ec923543cb9d256b62a97e61efaaa91ae55ac76dd770ede89626f99"
+    },
+    {
+      "path": "model-00009-of-00018.safetensors",
+      "header_bytes": 3952,
+      "sha256": "85728ac217f564d40921ad9fbc3115d7b4dd974fdddecb119c6131ae02dc6356"
+    },
+    {
+      "path": "model-00010-of-00018.safetensors",
+      "header_bytes": 9952,
+      "sha256": "90f7d04c3c049625f3b87aabe684e9dc41e1338edcf3a52c8691a3fedb4def35"
+    },
+    {
+      "path": "model-00011-of-00018.safetensors",
+      "header_bytes": 3952,
+      "sha256": "76511c9f8694b89ab67b257754313d166f6cc1f8f65b1d8245d63d1a17e8fa72"
+    },
+    {
+      "path": "model-00012-of-00018.safetensors",
+      "header_bytes": 9952,
+      "sha256": "b3c2a0a542f840a5fb81b0a595a3e76c47ad9d8dcb75b4146ba034bec48c6624"
+    },
+    {
+      "path": "model-00013-of-00018.safetensors",
+      "header_bytes": 3952,
+      "sha256": "fda125bcd2add706130665454e60ff215c02008d502690222bc91d007d809b3d"
+    },
+    {
+      "path": "model-00014-of-00018.safetensors",
+      "header_bytes": 9952,
+      "sha256": "a4fb86312f6d19b2c875397cb1332eb0d0509ee87ac7d071ab8136ad39900a35"
+    },
+    {
+      "path": "model-00015-of-00018.safetensors",
+      "header_bytes": 3952,
+      "sha256": "fbfcdbe24b153a09d21fb4a01af24db550cb3d5be61aa83de16ff1bb278932f1"
+    },
+    {
+      "path": "model-00016-of-00018.safetensors",
+      "header_bytes": 10056,
+      "sha256": "8e34d4718e9757344063700d85ee3ee62222b97dbacc11864d8de862a835d38d"
+    },
+    {
+      "path": "model-00017-of-00018.safetensors",
+      "header_bytes": 3952,
+      "sha256": "4d3fbaeb838aed16121dcc01fe50b3721b30bdb303be13b03b05aecd4b2dc637"
+    },
+    {
+      "path": "model-00018-of-00018.safetensors",
+      "header_bytes": 1760,
+      "sha256": "175ef82a06309dc2f737c914fcd2e5d10255814f38a7aa09fe631d6f7ae34556"
+    }
+  ],
+  "steps": [
+    [
+      "python3",
+      "convert_hf_to_gguf.py",
+      "source",
+      "--outtype",
+      "bf16",
+      "--outfile",
+      "target-BF16.gguf"
+    ],
+    [
+      "llama-quantize",
+      "target-BF16.gguf",
+      "target-Q8_0.gguf",
+      "Q8_0"
+    ],
+    [
+      "llama-quantize",
+      "target-BF16.gguf",
+      "target-Q4_K_M.gguf",
+      "Q4_K_M"
+    ]
+  ],
+  "retained_tensor_count": 866,
+  "dropped_vision_tensor_count": 333,
+  "retained_elements": 27320697856,
+  "retained_f32_elements": 2671616,
+  "payload_cap_bytes": {
+    "BF16": 54646738944,
+    "Q8_0": 29036089344,
+    "Q4_K_M": 29036089344
+  },
+  "metadata_alignment_reserve_per_arm_bytes": 1073769536,
+  "output_cap_bytes": {
+    "BF16": 55720508480,
+    "Q8_0": 30109858880,
+    "Q4_K_M": 30109858880
+  },
+  "source_bytes": 55586027630,
+  "peak_additional_bytes": 171526253870,
+  "disk_floor_bytes": 161061273600,
+  "required_free_bytes": 332587527470,
+  "available_bytes": 280157663232,
+  "disk_envelope_fits": false,
+  "workspace": {
+    "extra_disk_bytes": 0,
+    "largest_retained_tensor_elements": 1271398400,
+    "quantizer_two_buffer_logical_bytes": 10171187200,
+    "quantizer_reallocation_logical_bytes": 15256780800,
+    "converter_total_rss_bound_bytes": null,
+    "quantizer_total_rss_bound_bytes": null
+  },
+  "execution_admitted": false,
+  "limitations": [
+    "headers/config are metadata, not verified weight payloads",
+    "Q4_K_M cap uses Q8 ceiling, not exact mixed-type recipe",
+    "reserve must be enforced; metadata/tokenizer size not proven",
+    "workspace logical sizes exclude vector spare capacity, allocator/interpreter/thread stacks and mapped/page-cache residency",
+    "no total RAM admission; measure or enforce process memory separately",
+    "default serial commands only; temp/eager/split/overrides require a new audit",
+    "bind tool builds, verify tensor/tokenizer/drafter correspondence and recheck floors"
+  ],
+  "evidence": {
+    "source_repo": "/mnt/raid0/llm/llama.cpp",
+    "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "source_git_blobs": {
+      "convert_hf_to_gguf.py": "2c5e62a16fbef67ef1bba243df7e3aa7b4de1543",
+      "conversion/__init__.py": "b49fea3a7ad920e75d20b1dc92653cb27de8a09f",
+      "conversion/base.py": "dbfaf371eca51029a58113d3dc8b4f4278d50c60",
+      "conversion/qwen.py": "a3f7543228f2da22222f98ec932b64e921fc6d47",
+      "ggml/src/ggml-common.h": "75aaf934d2c39236df50a32cb14b0ca0f66adc4a",
+      "src/llama-quant.cpp": "720c90769fd74723f88f41749d0ce12ae155a98a",
+      "gguf-py/gguf/gguf_writer.py": "6da5514f1a34d247cd566804281067bebbee07a8"
+    },
+    "header_directory": "/mnt/raid0/llm/tmp/df2/tensor-sizing",
+    "config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+    "index_sha256": "77042094076611b69791a610065f28b7013b8c621795fa86ddccc8bac7d1b9df",
+    "parent_plan_git_blob": "9e457330000f463e0b9a6d5d3fd24d77ae74396e"
+  }
+}
