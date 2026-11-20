@@ -364,6 +364,8 @@ def phase1_or_skip(task: dict, lane: Path, tdir: Path, endpoint: str, family: st
     the run ends NEEDS-BRIEF. A lane of another repo (the brief lives in epyc-root) resolves the box's brief in a
     separate epyc-root worktree at origin/main -- so an existing brief always reaches the packet fresh -- and a
     self-brief is written and committed there (`brief_branch`, never pushed here) before phase 2."""
+    if task.get("brief_mode") == "off":         # A/B no-brief arm: no brief merge, no self-brief, ever
+        return None
     if task["repo"] == "epyc-root":
         if not needs_phase1(task, family):
             return None

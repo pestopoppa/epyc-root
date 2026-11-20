@@ -367,3 +367,11 @@ def test_brief_acceptance_cd_normalised_to_lane():
     other = {"repo": "epyc-root", "acceptance": "cd /mnt/raid0/llm/harness/opencode && node --test x.ts"}
     assert verify.acceptance_cmd(other) is None            # a foreign tree is never rewritten (and not runnable)
     assert local_llm.allowed_commands(t) == ["python3 -m pytest -q tests/unit/x.py"]
+
+
+def test_brief_mode_off_skips_phase1_even_cross_repo(monkeypatch):
+    called = []
+    monkeypatch.setattr(dispatch, "_brief_lane", lambda *a, **k: called.append("lane") or (None, None))
+    t = {"id": "X-1", "repo": "epyc-orchestrator", "brief_mode": "off", "brief_state": "none"}
+    assert dispatch.phase1_or_skip(t, Path("/nonexistent"), Path("/nonexistent"), "http://x/v1", "local") is None
+    assert called == []
