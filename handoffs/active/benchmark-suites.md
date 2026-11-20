@@ -459,6 +459,14 @@ fleet models.** No inference runs without the standing region claim; no at-scale
 - [ ] **CJ-5a. Record every result under an explicit benchmark key** in the
       `public_benchmarks.yaml` schema (`local_benchmarks:` for our runs, `absent_from_card:` where a
       model does not report it). Never merge two keys under one axis name.
+      - **2026-11-20 registration controls:** lane-local
+        `proposed/cj567/public_benchmark_registration.py` validates the existing v1 catalog and
+        emits review fragments under exact `local_benchmarks` keys with explicit vendor-absence
+        disclosures and source pins. All 22 synthetic controls pass; the current orchestrator
+        catalog passes (7 models, 21 keys). No priors changed or candidates adopted. Usage and
+        limits: `proposed/cj567/PUBLIC-REGISTRATION.md`. CJ-5a remains open for eligible cohort
+        results to be recorded following CJ-GATE; this is an implemented schema guard, not a
+        claim that pending measurements exist.
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-GATE as its reporting requirement]** **CJ-5b. Report the saturation and spread statistics for every candidate**, not just the mean:
       both-perfect fraction, fleet range, and a paired significance test on the sharpest pair. A
       candidate that ranks by mean but is 70% saturated has not passed criterion 1.
