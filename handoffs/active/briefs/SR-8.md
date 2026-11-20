@@ -1,0 +1,28 @@
+---
+schema: epyc.brief.v1
+id: SR-8
+box_text_sha: 8729340df092aa89
+author: backfill
+written: '2026-11-20'
+accepted: pending
+review: backfill
+where:
+- epyc-root:scripts/vidya/ingest_sources.py
+approach: 'Write-side wiring for: [ ] **SR-8 original edit-source lookup capture:** bind BEP source/edit verifier, rendered
+  tokens, coder target/drafter/server/DSO/grant, full outputs/counters/timings, pa. Land the source adapter/producer hook
+  (existing carrier, claim_tuple.grade(), no new ladder; Source in ingest_sources.py + README row) with a synthetic-fixture
+  test and refusal controls. Box has no code-level done-when; acceptance is the closest check.
+
+  '
+acceptance: python3 -m pytest -q tests/vidya/test_qwen3_vl_wire.py
+new_tests:
+- tests/vidya/test_qwen3_vl_wire.py
+non_goals:
+- no retrospective measurement warrant
+- no new grading ladder
+tier: terra
+grounded:
+  at: '2026-11-20'
+  blobs:
+    epyc-root:scripts/vidya/ingest_sources.py: d2da53a6a45f78f20c2426ff20bb4b15cfbdad61
+---
