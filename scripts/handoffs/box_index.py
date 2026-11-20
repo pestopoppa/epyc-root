@@ -233,6 +233,7 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
             rec["proposed_by"] = pf.get("proposed-by") or None
             rec["parent"] = pf.get("parent") or None
             rec["needs_owner"] = rec["state"] == "needs-owner"
+            rec["needs_brief"] = "NEEDS-BRIEF" in own_txt     # task-brief layer §5/§6: two failed self-briefs
             rec.update(brief_fields(root, r["id"], rec["text_sha"], pf.get("brief")))   # task-brief layer P2
             if rec["outside_backlog"]:
                 rec["lint"]["warn"] = ["outside-backlog"]
@@ -349,6 +350,10 @@ def skip_reason(rec: dict, exclude: set[str] | frozenset = frozenset()) -> str |
         return "outside-backlog"
     if not (rec.get("lint") or {}).get("ok"):
         return "lint-fail"
+    if rec.get("needs_brief"):
+        # task-brief layer §6: a box tagged NEEDS-BRIEF (two failed self-briefs) waits for its owner to brief it.
+        # A MISSING brief is never a skip: local boxes dispatch and self-brief; no design rule gates other tiers.
+        return "needs-brief"
     return None
 
 

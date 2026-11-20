@@ -352,7 +352,8 @@ DIFF_GATE_DEFAULT = 'default'  # restored in Stage B after the S1/S1b touched-bo
 #   k-mismatch the brief's box_text_sha != the box's text_sha (box text changed / brief for another box):  FAILS
 #   k-stale    a touched brief does not compile (path/symbol/acceptance dry check):                         WARN
 # Promote `k` to enforce here once the backfill job has covered the legacy boxes.
-DIFF_GATE_RULE_MODES = {'a': 'enforce', 'f': 'warn', 'k': 'warn', 'k-mismatch': 'enforce', 'k-stale': 'warn'}
+DIFF_GATE_RULE_MODES = {'a': 'enforce', 'f': 'warn', 'k': 'warn', 'k-mismatch': 'enforce', 'k-stale': 'warn',
+                        'k-accept-auto': 'enforce', 'k-acceptance': 'warn'}
 DIFF_GATE_EXEMPT_K = ('rollup', 'frozen')                  # no work of their own to brief
 DIFF_GATE_RULES = {'a': 'a', 'g-done-when': 'a', 'f': 'f', 'g-inputs': 'f'}
 DIFF_GATE_PATHS = ('handoffs/active/', 'handoffs/blocked/')
@@ -369,6 +370,10 @@ DIFF_GATE_HINT = {
     'k-mismatch': ("the brief was written for different box text (box_text_sha mismatch) — re-brief with "
                    "`brief.py write <ID> ...`; the box first line is identity and never changes to fit a brief"),
     'k-stale': "the brief does not compile: {missing} — fix it, then `brief.py compile <ID>`",
+    'k-accept-auto': ("the brief says `accepted: auto` but its acceptance is not the box's literal done-when (D3) — "
+                      "make acceptance the done-when command, or set `accepted: pending|owner`"),
+    'k-acceptance': ("the brief's acceptance differs from the box's done-when — acceptance is the RUNNABLE form of the "
+                     "done-when, never a second target; the owner must accept it (`handoff_box.py brief accept <ID>`)"),
 }
 BRIEF_DIR = 'handoffs/active/briefs/'
 
@@ -388,6 +393,14 @@ def brief_rule(repo, r, head_sha):
     return ['k'] if st == 'none' else ['k-mismatch'] if st == 'orphaned' else []
 
 
+def acceptance_rule(res):
+    """Acceptance-vs-done-when lint (P4, §1.5/D3) on one compile result: None | 'k-accept-auto' | 'k-acceptance'.
+    auto-accepted but not the literal done-when FAILS; any other mismatch warns until an owner has accepted it."""
+    if res.get('acceptance_matches_done_when'): return None
+    if res.get('accepted') == 'auto': return 'k-accept-auto'
+    return None if res.get('accepted') in ('owner', 'rejected') else 'k-acceptance'
+
+
 def touched_brief_findings(repo, added):
     """[(relpath, 1, [rule], info)] for every brief sidecar the diff adds/changes: a full (cached) compile."""
     out = []
@@ -396,6 +409,9 @@ def touched_brief_findings(repo, added):
         res = _brief_mod().compile_brief(os.path.basename(rel)[:-3], repo)
         rule = {'orphaned': 'k-mismatch', 'stale': 'k-stale'}.get(res['state'])
         if rule: out.append((rel, 1, [rule], {'inputs_missing': res['stale_list'], 'fails': res['stale_list']}))
+        elif res['state'] != 'none':
+            acc = acceptance_rule(res)
+            if acc: out.append((rel, 1, [acc], {'inputs_missing': [], 'fails': []}))
     return out
 
 

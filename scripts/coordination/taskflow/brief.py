@@ -273,6 +273,8 @@ def check_symbol(rdir: Path, path: str, rev: str | None, sym: str) -> dict:
 
 # ------------------------------------------------------------------------------------------------- acceptance
 _PYTEST = re.compile(r"^(?:python3?\s+-m\s+)?pytest\b")
+_PYTEST_VALUE_OPTS = {"-p", "-k", "-m", "-c", "-o", "-W", "--rootdir", "--deselect", "--ignore", "--confcutdir",
+                      "--basetemp", "-n", "--maxfail", "--tb", "-r"}
 
 
 def acceptance_dry(root: Path, cmd: str) -> dict:
@@ -285,7 +287,14 @@ def acceptance_dry(root: Path, cmd: str) -> dict:
     except ValueError as e:
         return {"ok": False, "kind": "unparsable", "detail": str(e)}
     if _PYTEST.match(cmd):
-        targets = [a for a in argv[1:] if not a.startswith("-") and a not in ("-m", "pytest")]
+        targets, skip = [], False
+        for a in argv[1:]:
+            if skip:                      # the value of an option that takes one (`-p no:cacheprovider`, `-k expr`)
+                skip = False
+            elif a in _PYTEST_VALUE_OPTS:
+                skip = True
+            elif not a.startswith("-") and a not in ("-m", "pytest"):
+                targets.append(a)
         ok_paths = [t for t in targets if (Path(root) / t.split("::")[0]).exists()]
         if targets and len(ok_paths) != len(targets):
             return {"ok": False, "kind": "pytest", "detail": f"missing test path(s): "

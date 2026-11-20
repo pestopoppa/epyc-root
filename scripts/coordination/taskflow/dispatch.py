@@ -11,6 +11,14 @@ handoff's slug (box resolved by TEXT; evidence = the verifier's); index rows are
 leaves the lane (the canary default). The lane worktree is removed after the diff and ledger are saved; the local
 branch is kept for review.
 
+Two-phase run (task-brief layer P4, docs/design/task-brief-layer.md §5): on the local family, a box whose brief is
+none / orphaned / stale / drift first gets PHASE 1 -- the worker self-briefs (or refreshes) with its output constrained
+to a TASKFLOW-BRIEF line; the dispatcher writes `handoffs/active/briefs/<ID>.md` (author: self, review: backfill),
+compiles it, rejects an acceptance that already passes on the unchanged tree, and commits the brief ALONE on the lane
+before PHASE 2 executes. Two failed attempts end the run `needs-brief`. D3: the brief is `accepted: auto` when its
+acceptance is the box's literal done-when, else `accepted: pending` -- a pending brief HOLDS the result tick (verify
+returns hold=accepted-pending) until the owner accepts at wrap-up (`handoff_box.py brief accept <ID>`).
+
 Tier (operator directive 3): box `tier:` wins; else class -> tier (TIER_BY_KIND); escalation only after a verified
 failure (`escalate()`). Ledger: one JSON line per task {key, tier, model, family, tokens (input/cached/uncached/output),
 wall_s, verdict, reason, failure_class}.
@@ -32,7 +40,7 @@ from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE.parent))
-from taskflow import schema, verify  # noqa: E402
+from taskflow import brief as B, schema, verify  # noqa: E402
 from taskflow.harness import local_llm  # noqa: E402
 
 ROOT = _HERE.parents[2]
@@ -161,7 +169,7 @@ REFS = ".taskflow-refs"
 def commit_lane(lane: Path, task: dict) -> bool:
     st = _git(lane, "status", "--porcelain", "-uall").stdout
     paths = [p for p in (ln[3:].split(" -> ")[-1] for ln in st.splitlines() if ln.strip())
-             if not p.startswith(REFS + "/")]
+             if not p.startswith(REFS + "/") and not p.endswith(".compile-cache.json")]
     if not paths:
         return False
     _git(lane, "add", "--", *paths)
@@ -273,15 +281,87 @@ def sweep_lanes(now: float | None = None) -> dict:
     return out
 
 
+# ------------------------------------------------------------------------------------ phase 1: self-brief (P4)
+BRIEF_REFRESH_STATES = ("none", "orphaned", "stale", "drift")
+SELF_BRIEF_SHARE = 0.25          # §5: phase 1 gets <= 25 % of the turn / wall budget
+SELF_BRIEF_ATTEMPTS = 2          # §5: two failed compiles -> NEEDS-BRIEF
+_RUNNABLE = re.compile(r"^(?:pytest|python3?|bash|make)\s")
+
+
+def needs_phase1(task: dict, family: str) -> bool:
+    """Local boxes dispatch with any brief state and self-brief first (D4); cloud families get the brief if it exists."""
+    return family == "local" and bool(task.get("id")) and task.get("brief_state", "none") in BRIEF_REFRESH_STATES
+
+
+def self_brief(task: dict, lane: Path, tdir: Path, endpoint: str, family: str = "local", spawn=None) -> dict:
+    """Phase 1. Returns {ok, attempts, brief_path?, accepted?, committed, missing?, workers}. Never edits the box."""
+    spawn = spawn or local_llm.spawn
+    b = task["budget"]
+    t1 = dict(task, phase="brief", budget=dict(b, turns=max(4, int(b["turns"] * SELF_BRIEF_SHARE)),
+                                               wall_s=max(120, int(b["wall_s"] * SELF_BRIEF_SHARE))))
+    out = {"ok": False, "attempts": 0, "committed": False, "workers": []}
+    missing: list[str] = []
+    for n in range(1, SELF_BRIEF_ATTEMPTS + 1):
+        out["attempts"] = n
+        w = spawn(dict(t1, stale=missing or t1.get("stale") or []), lane, tdir / f"brief{n}", endpoint, family=family)
+        out["workers"].append({k: w.get(k) for k in ("model", "rc", "timed_out", "usage", "brief")})
+        d = w.get("brief") if isinstance(w.get("brief"), dict) else {}
+        where = [str(x) for x in (d.get("where") or []) if str(x).strip()]
+        if isinstance(d.get("where"), str):
+            where = [d["where"]]
+        missing = [k for k in ("where", "approach", "acceptance") if not (where if k == "where" else d.get(k))]
+        if missing:
+            missing = [f"missing key `{k}`" for k in missing]
+            continue
+        acc = " ".join(str(d["acceptance"]).strip().strip("`").split())
+        accepted = "auto" if B.acceptance_matches(acc, task.get("done_when")) else "pending"     # D3
+        ng = d.get("non_goals") or []
+        try:
+            p = B.write_brief(task["id"], where, str(d["approach"]), acc, [str(x) for x in (ng if isinstance(ng, list) else [ng])],
+                              author="self", accepted=accepted, root=lane)
+        except ValueError as e:
+            missing = [f"schema: {e}"]
+            continue
+        r = B.compile_brief(task["id"], lane, use_cache=False)
+        if r["state"] not in ("fresh", "drift"):
+            missing = list(r.get("stale_list") or [f"compile: {r['state']}"])
+            p.unlink(missing_ok=True)
+            continue
+        if _RUNNABLE.match(acc):          # §5: an acceptance that already passes proves nothing
+            pre = verify.run_tests(lane, [acc])[0]
+            if pre["rc"] == 0:
+                missing = [f"acceptance: `{acc}` already passes on the unchanged tree; it must fail until the box is done"]
+                p.unlink(missing_ok=True)
+                continue
+        rel = str(p.relative_to(lane))
+        _git(lane, "add", "--", rel)
+        _git(lane, "-c", "user.name=taskflow", "-c", "user.email=taskflow@localhost", "commit", "-q", "--no-verify",
+             "-m", f"taskflow: brief {task['id']} (author: self, review: backfill, accepted: {accepted})")
+        out.update(ok=True, brief_path=rel, accepted=accepted, committed=True)
+        return out
+    out["missing"] = missing
+    return out
+
+
+def phase1_or_skip(task: dict, lane: Path, tdir: Path, endpoint: str, family: str, spawn=None) -> dict | None:
+    """Run phase 1 when needed and re-merge the brief into the task. None = nothing to do; a dict with ok False =
+    the run ends NEEDS-BRIEF. Briefs live in the handoff's repo: a lane of another repo keeps the brief in memory
+    (`brief_commit: deferred-cross-repo`, saved to <tdir>/brief.json) for phase 2."""
+    if not needs_phase1(task, family):
+        return None
+    if task["repo"] != "epyc-root":
+        return {"ok": False, "skipped": "cross-repo lane: self-brief needs an epyc-root lane", "missing": []}
+    res = self_brief(task, lane, tdir, endpoint, family, spawn)
+    (tdir / "brief.json").write_text(json.dumps({k: v for k, v in res.items() if k != "workers"}, indent=1))
+    if res["ok"]:
+        schema.merge_brief(task, lane)
+    return res
+
+
 def reviewer_for(endpoint: str, model: str):
     """Reviewer hook: ONE chat call, JSON verdict against the verbatim box text. Never edits."""
     def review(task: dict, diff: str) -> dict:
-        msg = (local_llm.POLICY + "\n# REVIEW\nYou review a worker's diff for the box below. Answer ONLY JSON "
-               '{"verdict":"done|not_done|drift","reason":"<=150 chars"}. done = the diff fully does what the box '
-               "asks AND meets its DONE WHEN; not_done = partial, wrong, or the DONE WHEN is not met; drift = changes "
-               "things the box did not ask for. Check the DONE WHEN clause item by item.\n\n## BOX\n"
-               + task["goal"] + "\n\n## DONE WHEN\n" + str(task.get("done_when") or "(see box)")
-               + "\n\n## DIFF\n" + diff[:12000])
+        msg = local_llm.POLICY + "\n" + verify.review_prompt(task, diff)
         body = {"model": model, "messages": [{"role": "user", "content": msg}], "max_tokens": 200, "temperature": 0,
                 "cache_prompt": True, "response_format": {"type": "json_object"},
                 "chat_template_kwargs": {"enable_thinking": False}}
@@ -333,6 +413,10 @@ def apply_tick(task: dict, lane: Path, v: dict, w: dict) -> str:
     return (r.stdout.strip().splitlines() or ["?"])[-1]
 
 
+class _EndRun(Exception):
+    """Phase 1 ended the run (needs-brief); the row is already filled."""
+
+
 def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: bool, family: str = "local") -> list[dict]:
     out.mkdir(parents=True, exist_ok=True)
     run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -352,6 +436,14 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
             rows.append(row); ledger.open("a").write(json.dumps(row) + "\n")
             continue
         try:
+            p1 = phase1_or_skip(task, lane, tdir, endpoint, family)
+            if p1 is not None:
+                row["brief_phase"] = {k: p1.get(k) for k in ("ok", "attempts", "brief_path", "accepted", "missing",
+                                                             "skipped")}
+                if not p1["ok"] and not p1.get("skipped"):
+                    row.update(verdict="needs-brief", reason="NEEDS-BRIEF:" + ";".join(p1.get("missing") or [])[:200],
+                               failure_class="task")
+                    raise _EndRun()
             w = local_llm.spawn(task, lane, tdir / "worker", endpoint, family=family)
             committed = commit_lane(lane, task)
             reviewer = reviewer_for(endpoint, w["model"]) if use_reviewer else None
@@ -367,8 +459,12 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                        failure_class=failure_class(w, v), worker_wall_s=w["wall_s"], tools=w["tools"][:40], edits=w.get("edits"), nudged=w.get("nudged"),
                        tool_errors=(w.get("tool_errors") or [])[:5],
                        errors=w["errors"][:3])
-            if apply and v["verdict"] == "verified":
+            if v.get("hold"):
+                row["held"] = v["hold"]       # D3: accepted: pending -> the owner accepts brief + result at wrap-up
+            if apply and v["verdict"] == "verified" and not v.get("hold"):
                 row["applied"] = apply_tick(task, lane, v, w)
+        except _EndRun:
+            pass
         except Exception as e:  # noqa: BLE001 - one task never stops the batch
             row.update(verdict="error", reason=type(e).__name__, failure_class="harness", detail=str(e)[:300])
         finally:
