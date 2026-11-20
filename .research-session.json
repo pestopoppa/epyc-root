@@ -1,9 +1,9 @@
 {
  "session_id": "intake-kspec-20261120",
  "started_at": "2026-11-20T00:00:00+00:00",
- "last_checkpoint": "2026-11-20T11:15:19.834911Z",
- "stage": 2,
- "phase": "stage2-closed",
+ "last_checkpoint": "2026-11-20T11:27:38.790866Z",
+ "stage": 3,
+ "phase": "stage3-plan-awaiting-operator-approval",
  "lane": "/workspace/.worktrees/intake-kspec-20261120",
  "requester": "autokernel subagent (operator-requested intake; plan-approval gate retained before Stage 4)",
  "previous_session": {
@@ -285,5 +285,13 @@
    "selected": [],
    "note": "not run: every wave-2 dive-surfaced source was recommended decline (2605.05253 EnterpriseRAG-Bench, 2510.10114 LinearRAG, 2603.15031 Attention Residuals, Attention-Drift code repo, AMD-AGI/Magpie, ROCm/FlyDSL, amd/skillscope, moat CONTRIBUTING.md); the operator pre-approval covers recommended dives only"
   }
- ]
+ ],
+ "actionable_ledger": [],
+ "stage3_plan": {
+  "path": "/mnt/raid0/llm/tmp/intake-kspec-20261120-plan.md",
+  "sha256": "074e6ed79833d4c2f0b6edb347fb401290b29ecc812626f64913c03b357765b0",
+  "generator": "/mnt/raid0/llm/tmp/dive-kspec-20261120/tools/plan_build.py + plan_render.py (spec plan_spec.py, plan_ledger.py)",
+  "proposed_payload_check": "validate_plan_payload: 0 plan errors; wrapper exits 1 only on the 218 pre-existing index/cross-reference errors present on origin/main",
+  "packets": "P1-P6 immediate (20 boxes incl. one refine), K1-K4 knowledge-only, M1-M6 monitor; 89 ledger rows"
+ }
 }
