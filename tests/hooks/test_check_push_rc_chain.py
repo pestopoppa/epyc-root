@@ -19,6 +19,8 @@ SP = "python3 /workspace/scripts/coordination/serialized_push.py --agent x --rep
     f"cd wt && {SP} | grep -q 'PUSH VERIFIED' && cd .. && git branch -D lane-x",
     "git push origin HEAD | tee log && git worktree remove wt",
     f"{SP} | grep PUSH\ngit worktree remove wt",
+    f"{SP} | grep 'PUSH VERIFIED' && git worktree remove wt",          # quoted pattern, real pipe
+    f"git commit -m 'x | y' && {SP} | tail -1 && git branch -D lane",
 ])
 def test_masked_push_then_cleanup_is_refused(cmd):
     assert "BLOCKED" in c.verdict(cmd)
@@ -35,6 +37,11 @@ def test_masked_push_then_cleanup_is_refused(cmd):
     "git pushd-like-thing | grep x && git worktree list",
     "git branch -a | grep push && git worktree remove wt",
     "",
+    f"{SP} | tee push.log; rc=${{PIPESTATUS[0]}}; [ $rc -eq 0 ] && git worktree remove wt",   # Fable S3
+    "git commit -m 'run git push | grep PUSH' && git worktree remove wt",    # push only in a message
+    "git commit -m \"fix: git push | tail\" && git branch -D old",
+    f"{SP} | grep 'PUSH|VERIFIED' ; echo done",                            # quoted | and no cleanup
+    "cat > notes.md <<'EOF'\ngit push origin main | grep PUSH\nEOF\ngit worktree remove wt",
 ])
 def test_safe_shapes_pass(cmd):
     assert c.verdict(cmd) is None

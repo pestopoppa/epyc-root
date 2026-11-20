@@ -14,7 +14,8 @@ Refused (exit 2, one line, cause + fix) only when ALL hold in one command string
   * a push: `serialized_push.py` or `git ... push`;
   * its output is piped (`|`, not `||`) into another command in the same segment;
   * a LATER segment (after `&&` or `;`) runs `git worktree remove` or `git branch -d/-D`;
-  * no `pipefail` is set in the command.
+  * no `pipefail` is set and `PIPESTATUS` is not read in the command;
+  * quoted strings and heredoc bodies are ignored (Fable review S3).
 Everything else passes: a bare push chain (`push && git worktree remove`) branches on the real
 rc and is correct; a piped push with no cleanup after it destroys nothing. Malformed input and
 internal errors pass (the hook never blocks on its own bug).
@@ -26,12 +27,20 @@ import sys
 PUSH = re.compile(r"serialized_push\.py|\bgit\b(?:\s+-C\s+\S+|\s+-c\s+\S+)*\s+push\b")
 CLEANUP = re.compile(r"\bgit\b(?:\s+-C\s+\S+)*\s+(?:worktree\s+remove|branch\s+(?:-[a-zA-Z]*[dD]\b|--delete))")
 SPLIT = re.compile(r"&&|;|\n")
+HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?^\s*\2\s*$", re.S | re.M)
+QUOTED = re.compile(r"'[^']*'|\"(?:\\.|[^\"\\])*\"")
+
+
+def _code_only(command):
+    """Fable review S3: drop heredoc bodies and quoted strings (commit messages, grep patterns),
+    so a `|` or `git push` inside them is not read as shell structure."""
+    return QUOTED.sub("Q", HEREDOC.sub("HEREDOC", command))
 
 
 def verdict(command):
-    if not isinstance(command, str) or "pipefail" in command:
-        return None
-    segments = SPLIT.split(command)
+    if not isinstance(command, str) or "pipefail" in command or "PIPESTATUS" in command:
+        return None                       # the push rc is checked explicitly
+    segments = SPLIT.split(_code_only(command))
     for i, seg in enumerate(segments):
         m = PUSH.search(seg)
         if not m:
