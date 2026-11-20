@@ -69,6 +69,14 @@ class B1FiveRowOrdering(Base):
         a = [json.loads(x) for x in open(os.path.join(self.flags, "rowflow-alerts.jsonl"))]
         self.assertEqual([(x["kind"], x["row_owner"]) for x in a], [("queued-smoke-orphaned", "autokernel")])
 
+    def test_review_s3_week_old_unpublished_ignored(self):
+        rid = "gpu-old-20261101"
+        up = pr.unpublished_path(self.flags, rid)
+        rf.atomic_json(up, {"id": rid, "owner": "autokernel"})
+        old = time.time() - 8 * 86400
+        os.utime(up, (old, old))
+        self.assertEqual(rf.orphaned_smoke_alerts(self.flags, log=lambda m: None), [])
+
     def test_fail_record_is_not_an_orphan(self):
         rid = "gpu-y-20261120"
         rf.atomic_json(pr.unpublished_path(self.flags, rid), {"id": rid, "owner": "autokernel"})

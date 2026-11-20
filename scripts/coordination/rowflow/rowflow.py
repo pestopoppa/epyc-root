@@ -4767,7 +4767,9 @@ def _tree_cpu(pid):
 def idle_crash_exempt(g, row):
     """Why idle_after_crash must not judge this grant (review S2-1), else None: a build lane, a quiet-host / gpu-q3 /
     timing row (its harness idles between arms by design), or a row with no first progress yet - its result file has
-    not been written since the grant began (a 100+ GB mmap load or a quiet pre-run phase is not a crash)."""
+    not been written since the grant began (a 100+ GB mmap load or a quiet pre-run phase is not a crash). By design a
+    row that writes its result only at the END (typical of a GPU row) stays exempt for its whole run: idle-after-crash
+    never judges it, and its window end / the IDLE-HELD warnings are what bound a crashed one."""
     if g["id"].startswith(BUILD_PREFIX) or str(row.get("kind") or "") == "build":
         return "build"
     if (str(row.get("shape") or "") in ("quiet-host", "gpu-q3") or row.get("timing")
@@ -4970,6 +4972,23 @@ def reap_build_grants(flags, now=None, log=print):
     return out
 
 
+def contamination_exempt_pids(flags):
+    """Review S3: pids never attributed as contamination - the keeper's own tree (this process, its parent keeper loop and
+    their descendants) and every smoke harness named in dryrun/*/RUNNING.json or SMOKE-PLACED.json (with its tree)."""
+    out = {os.getpid()}
+    roots = [os.getpid(), os.getppid()]
+    for n in ("RUNNING.json", "SMOKE-PLACED.json"):
+        for f in glob.glob(os.path.join(flags, "dryrun", "*", n)):
+            d = load_json(f) or {}
+            roots += [x for x in (d.get("pid"), d.get("pgid")) if str(x or "").isdigit()]
+    for r in roots:
+        try:
+            out |= {int(r)} | set(harness_tree(int(r), {}))
+        except Exception:  # noqa: BLE001
+            out.add(int(r))
+    return out
+
+
 def contamination_sample(flags, grants, log, census=None, prev=None, now=None, emit=None):
     """F7: per keeper sample, per quarter a grant holds, foreign processes above CONTAM_PCT CPU (last ran there, not
     the grant's own pids, not a build grant's job). CONTAM_SAMPLES consecutive -> appended to dryrun/<id>/CONTAMINATION.json
@@ -4985,6 +5004,7 @@ def contamination_sample(flags, grants, log, census=None, prev=None, now=None, e
     hits_prev = st.get("hits") or {}
     hits, out = {}, {}
     build_q = {q for g in grants if g["id"].startswith(BUILD_PREFIX) for q in g["holds"] if q in QUARTERS}
+    exempt = contamination_exempt_pids(flags)
     if dt_s > 0:
         held = [(g, {q for q in QUARTERS if q in g["holds"]}) for g in grants if not g["id"].startswith(BUILD_PREFIX)]
         for g, qs in held:
@@ -4996,7 +5016,7 @@ def contamination_sample(flags, grants, log, census=None, prev=None, now=None, e
                 own = set()
             for pid, (birth, cpu, last, comm) in census.items():
                 pv = prev_c.get(pid)
-                if pid in own or pid == os.getpid() or not pv or pv[0] != birth:
+                if pid in own or pid in exempt or not pv or pv[0] != birth:
                     continue
                 pct = 100.0 * (cpu - pv[1]) / dt_s
                 q = hostutil.quarter_of_cpu(last)
@@ -5079,6 +5099,9 @@ def queued_aged_alerts(flags, now=None, log=print, emit=None):
     return out
 
 
+ORPHAN_MAX_AGE_S = 7 * 86400   # unpublished.json older than this is never alerted as orphaned
+
+
 def orphaned_smoke_alerts(flags, log=print, emit=None, now=None, min_age_s=120):
     """B1 (AK audit: a queued smoke is a durable obligation): a dryrun/<id>/unpublished.json (a row waiting for its
     smoke) with NO queued marker, no live RUNNING/SMOKE-PLACED runner, no PASS/FAIL/QUEUED-DROPPED record newer than it
@@ -5096,6 +5119,8 @@ def orphaned_smoke_alerts(flags, log=print, emit=None, now=None, min_age_s=120):
             continue
         if now - t_up < min_age_s:
             continue   # a publish/batch in progress moves these files around
+        if now - t_up > ORPHAN_MAX_AGE_S:
+            continue   # review S3: week-old leftovers (11-01/11-04) are history, not a fresh orphaning
         if any(os.path.exists(os.path.join(dd, n)) for n in ("SMOKE-QUEUED.json", "GPU-SMOKE-QUEUED.json")):
             continue
         if os.path.exists(withdraw_pending_path(flags, rid)) or os.path.exists(os.path.join(withdrawn_dir(flags), rid + ".json")):

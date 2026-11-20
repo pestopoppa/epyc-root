@@ -79,6 +79,17 @@ class Contamination(unittest.TestCase):
         self.assertEqual([(a[1], a[2], a[6]) for a in self.sent], [("contamination", BENCH, "autokernel")])
         self.assertEqual(self.sample({4242: ("77", 190.0, 5, "cmake")}, 1180.0), {})          # once per offender
 
+    def test_review_s3_smoke_harness_and_keeper_pids_exempt(self):
+        rf.atomic_json(os.path.join(rf.dry_dir(self.flags, "smk-20261120"), "RUNNING.json"), {"pid": 5151})
+        rf.atomic_json(os.path.join(rf.dry_dir(self.flags, "smp-20261120"), "SMOKE-PLACED.json"), {"pid": 5252})
+        ex = rf.contamination_exempt_pids(self.flags)
+        self.assertTrue({5151, 5252, os.getpid(), os.getppid()} <= ex)
+        for pid in (5151, 5252, os.getpid()):
+            self.sample({pid: ("9", 0.0, 3, "x")}, 1000.0)
+            self.sample({pid: ("9", 60.0, 3, "x")}, 1060.0)
+            self.assertEqual(self.sample({pid: ("9", 120.0, 3, "x")}, 1120.0), {}, pid)
+        self.assertEqual(self.sent, [])
+
     def test_other_quarter_and_build_lane_ignored(self):
         self.sample({7: ("1", 0.0, 30, "make")}, 1000.0)                                      # cpu 30 = q1
         self.sample({7: ("1", 60.0, 30, "make")}, 1060.0)
@@ -86,7 +97,9 @@ class Contamination(unittest.TestCase):
         self.assertEqual(self.sent, [])
 
     def test_real_busy_process_named_within_two_samples(self):
-        yes = subprocess.Popen(["yes"], stdout=subprocess.DEVNULL)   # fixture stand-in for cmake (never taskset: shared host)
+        # fixture stand-in for cmake (never taskset: shared host); double-forked so it is NOT in this (keeper) process's tree
+        sh = subprocess.run(["sh", "-c", "yes >/dev/null 2>&1 & echo $!"], capture_output=True, text=True, check=True)
+        yes = mock.Mock(pid=int(sh.stdout.strip()))
         try:
             g = dict(bench_grant(), holds=set(rf.QUARTERS))
             got = {}
@@ -99,7 +112,6 @@ class Contamination(unittest.TestCase):
             self.assertEqual(o["comm"], "yes")
         finally:
             os.kill(yes.pid, signal.SIGKILL)   # the pid this test captured
-            yes.wait(5)
 
 
 if __name__ == "__main__":
