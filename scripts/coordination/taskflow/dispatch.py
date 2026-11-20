@@ -293,8 +293,12 @@ def needs_phase1(task: dict, family: str) -> bool:
     return family == "local" and bool(task.get("id")) and task.get("brief_state", "none") in BRIEF_REFRESH_STATES
 
 
-def self_brief(task: dict, lane: Path, tdir: Path, endpoint: str, family: str = "local", spawn=None) -> dict:
-    """Phase 1. Returns {ok, attempts, brief_path?, accepted?, committed, missing?, workers}. Never edits the box."""
+def self_brief(task: dict, lane: Path, tdir: Path, endpoint: str, family: str = "local", spawn=None,
+               brief_root: Path | None = None) -> dict:
+    """Phase 1. Returns {ok, attempts, brief_path?, accepted?, committed, missing?, workers}. Never edits the box.
+    `brief_root` = a separate epyc-root worktree that receives the brief when the lane is another repo (the worker
+    reads the code in `lane`; the dispatcher writes + commits `briefs/<ID>.md` in `brief_root`)."""
+    root = brief_root or lane
     spawn = spawn or local_llm.spawn
     b = task["budget"]
     t1 = dict(task, phase="brief", budget=dict(b, turns=max(4, int(b["turns"] * SELF_BRIEF_SHARE)),
@@ -318,13 +322,14 @@ def self_brief(task: dict, lane: Path, tdir: Path, endpoint: str, family: str = 
         ng = d.get("non_goals") or []
         try:
             p = B.write_brief(task["id"], where, str(d["approach"]), acc, [str(x) for x in (ng if isinstance(ng, list) else [ng])],
-                              author="self", accepted=accepted, root=lane)
+                              author="self", accepted=accepted, root=root)
         except ValueError as e:
             missing = [f"schema: {e}"]
             continue
-        r = B.compile_brief(task["id"], lane, use_cache=False)
+        r = B.compile_brief(task["id"], root, use_cache=False)
+        stale = list(r.get("stale_list") or [])
         if r["state"] not in ("fresh", "drift"):
-            missing = list(r.get("stale_list") or [f"compile: {r['state']}"])
+            missing = stale or [f"compile: {r['state']}"]
             p.unlink(missing_ok=True)
             continue
         if _RUNNABLE.match(acc):          # §5: an acceptance that already passes proves nothing
@@ -333,29 +338,54 @@ def self_brief(task: dict, lane: Path, tdir: Path, endpoint: str, family: str = 
                 missing = [f"acceptance: `{acc}` already passes on the unchanged tree; it must fail until the box is done"]
                 p.unlink(missing_ok=True)
                 continue
-        rel = str(p.relative_to(lane))
-        _git(lane, "add", "--", rel)
-        _git(lane, "-c", "user.name=taskflow", "-c", "user.email=taskflow@localhost", "commit", "-q", "--no-verify",
+        rel = str(p.relative_to(root))
+        _git(root, "add", "--", rel)
+        _git(root, "-c", "user.name=taskflow", "-c", "user.email=taskflow@localhost", "commit", "-q", "--no-verify",
              "-m", f"taskflow: brief {task['id']} (author: self, review: backfill, accepted: {accepted})")
         out.update(ok=True, brief_path=rel, accepted=accepted, committed=True)
+        if brief_root is not None:
+            out["brief_branch"] = _git(root, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
+            out["brief_commit"] = _git(root, "rev-parse", "HEAD").stdout.strip()
         return out
     out["missing"] = missing
     return out
 
 
+def _brief_lane(task: dict, tdir: Path) -> tuple[Path, Path]:
+    """A separate epyc-root worktree (detached from the code lane) at origin/main for a cross-repo box's brief."""
+    t = dict(task, repo="epyc-root", refs=[], key=str(task.get("key")) + "+brief")
+    repo, blane, _ = make_lane(t, tdir / "brieflane", f"taskflow/brief/{task['id']}-{int(time.time())}-"
+                               f"{hashlib.sha1(str(tdir).encode()).hexdigest()[:6]}")
+    return repo, blane
+
+
 def phase1_or_skip(task: dict, lane: Path, tdir: Path, endpoint: str, family: str, spawn=None) -> dict | None:
     """Run phase 1 when needed and re-merge the brief into the task. None = nothing to do; a dict with ok False =
-    the run ends NEEDS-BRIEF. Briefs live in the handoff's repo: a lane of another repo keeps the brief in memory
-    (`brief_commit: deferred-cross-repo`, saved to <tdir>/brief.json) for phase 2."""
-    if not needs_phase1(task, family):
+    the run ends NEEDS-BRIEF. A lane of another repo (the brief lives in epyc-root) resolves the box's brief in a
+    separate epyc-root worktree at origin/main -- so an existing brief always reaches the packet fresh -- and a
+    self-brief is written and committed there (`brief_branch`, never pushed here) before phase 2."""
+    if task["repo"] == "epyc-root":
+        if not needs_phase1(task, family):
+            return None
+        res = self_brief(task, lane, tdir, endpoint, family, spawn)
+        (tdir / "brief.json").write_text(json.dumps({k: v for k, v in res.items() if k != "workers"}, indent=1))
+        if res["ok"]:
+            schema.merge_brief(task, lane)
+        return res
+    if not task.get("id"):
         return None
-    if task["repo"] != "epyc-root":
-        return {"ok": False, "skipped": "cross-repo lane: self-brief needs an epyc-root lane", "missing": []}
-    res = self_brief(task, lane, tdir, endpoint, family, spawn)
-    (tdir / "brief.json").write_text(json.dumps({k: v for k, v in res.items() if k != "workers"}, indent=1))
-    if res["ok"]:
-        schema.merge_brief(task, lane)
-    return res
+    repo, blane = _brief_lane(task, tdir)
+    try:
+        schema.merge_brief(task, blane)             # an existing brief reaches the packet (cloud families too)
+        if not needs_phase1(task, family):
+            return None
+        res = self_brief(task, lane, tdir, endpoint, family, spawn, brief_root=blane)
+        (tdir / "brief.json").write_text(json.dumps({k: v for k, v in res.items() if k != "workers"}, indent=1))
+        if res["ok"]:
+            schema.merge_brief(task, blane)
+        return res
+    finally:
+        drop_lane(repo, blane)                      # a committed brief keeps its branch (drop_lane only deletes empty ones)
 
 
 def reviewer_for(endpoint: str, model: str):
@@ -413,6 +443,56 @@ def apply_tick(task: dict, lane: Path, v: dict, w: dict) -> str:
     return (r.stdout.strip().splitlines() or ["?"])[-1]
 
 
+NEEDS_BRIEF_AGENT = "taskflow"
+
+
+def tag_needs_brief(task: dict, tdir: Path, reason: str, apply: bool = False, push=None) -> dict:
+    """Write the NEEDS-BRIEF tag onto the box (`handoff_box.py needs-brief`, a `· NEEDS-BRIEF:` continuation line, the
+    first line untouched) so box_index reads `needs_brief` and select.py skips the box. Done in a fresh epyc-root
+    worktree at origin/main -- never in the shared clone -- committed on a `taskflow/needs-brief/<ID>` branch; with
+    `apply` it is pushed like a tick (serialized_push). Returns {tagged, branch?, pushed?, detail?}."""
+    out = {"tagged": False}
+    if not task.get("id"):
+        return dict(out, detail="box has no ID")
+    repo = schema.REPOS["epyc-root"]
+    try:
+        _, tl, _ = make_lane(dict(task, repo="epyc-root", refs=[], key=str(task.get("key")) + "+tag"), tdir / "taglane",
+                             f"taskflow/needs-brief/{task['id']}-{int(time.time())}")
+    except (subprocess.CalledProcessError, LaneRefused) as e:
+        return dict(out, detail=f"lane: {(getattr(e, 'stderr', None) or str(e))[-200:]}")
+    try:
+        sys.path.insert(0, str(ROOT / "scripts" / "handoffs"))
+        try:
+            import handoff_box
+        finally:
+            sys.path.pop(0)
+        r = handoff_box.main(["needs-brief", "--file", str(tl / task["handoff"]), task["id"], "--reason", reason, "--root", str(tl)]) \
+            if task.get("handoff") else 1
+        if r != 0:
+            return dict(out, detail="handoff_box needs-brief refused")
+        rel = task["handoff"]
+        if not _git(tl, "status", "--porcelain", "--", rel).stdout.strip():
+            return dict(out, tagged=True, detail="already tagged")
+        _git(tl, "add", "--", rel)
+        _git(tl, "-c", "user.name=taskflow", "-c", "user.email=taskflow@localhost", "commit", "-q", "--no-verify",
+             "-m", f"taskflow: tag {task['id']} NEEDS-BRIEF (two failed self-briefs)")
+        out.update(tagged=True, branch=_git(tl, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip())
+        if apply:
+            out["pushed"] = (push or _push_tag)(tl)
+        return out
+    except Exception as e:  # noqa: BLE001 - tagging never fails the batch
+        return dict(out, detail=f"{type(e).__name__}: {e}"[:300])
+    finally:
+        drop_lane(repo, tl)
+
+
+def _push_tag(lane: Path) -> str:
+    _git(lane, "branch", "--set-upstream-to=origin/main", check=False)
+    r = subprocess.run([sys.executable, str(ROOT / "scripts/coordination/serialized_push.py"), "--agent", NEEDS_BRIEF_AGENT,
+                        "--repo", str(lane), "--fetch", "--push", "--wait", "900"], capture_output=True, text=True)
+    return "ok" if r.returncode == 0 else f"rc={r.returncode}"
+
+
 class _EndRun(Exception):
     """Phase 1 ended the run (needs-brief); the row is already filled."""
 
@@ -443,6 +523,7 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                 if not p1["ok"] and not p1.get("skipped"):
                     row.update(verdict="needs-brief", reason="NEEDS-BRIEF:" + ";".join(p1.get("missing") or [])[:200],
                                failure_class="task")
+                    row["tag"] = tag_needs_brief(task, tdir, row["reason"], apply)   # box_index then skips the box
                     raise _EndRun()
             w = local_llm.spawn(task, lane, tdir / "worker", endpoint, family=family)
             committed = commit_lane(lane, task)

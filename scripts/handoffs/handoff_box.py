@@ -13,6 +13,8 @@
   add ... --brief --where W [W ...] --approach TEXT [--acceptance CMD] [--non-goal NG ...] [--brief-author A]
          also writes the box's brief sidecar `handoffs/active/briefs/<ID>.md` (epyc.brief.v1, task-brief layer) in the
          same run and compiles it; --acceptance defaults to the --done-when text. Every new box should carry one.
+  needs-brief --file F ID [--reason R] [--clear]
+         tags the box NEEDS-BRIEF (a `· NEEDS-BRIEF:` continuation line) so box_index/select.py skip it until briefed.
   brief accept|reject ID [--by owner] [--root R]
          accept (clears the self-brief `review: backfill` flag, re-grounds) or reject a brief; refuses an orphaned
          brief (box_text_sha mismatch).
@@ -279,6 +281,22 @@ def op_freeze(lines, a, root):
     raise BoxError("freeze needs ID, --track or --whole-file")
 
 
+def op_needs_brief(lines, a, root):
+    """Tag the box NEEDS-BRIEF on a `· NEEDS-BRIEF: <date> <reason>` continuation line (the first line is the identity
+    and never changes). box_index reads `needs_brief` from it and select.py skips the box until its owner briefs it
+    (`brief accept` or `--clear` removes the tag). Idempotent: a second tag replaces the line."""
+    lines = list(lines)
+    i = find_box(lines, a.box)
+    if L1.CHECKBOX.match(lines[i]).group(2) in "xX":
+        raise BoxError(f"{a.box} is ticked; nothing to tag")
+    if a.clear:
+        end = own_end(lines, i)
+        return [l for k, l in enumerate(lines) if not (i < k < end and re.match(r"^\s*·\s*NEEDS-BRIEF\s*:", l))]
+    date = a.date or __import__("datetime").date.today().isoformat()
+    why = " ".join((a.reason or "two failed self-briefs").replace("·", "-").split())[:200]
+    return set_field(lines, i, "NEEDS-BRIEF", f"{date} {why}")
+
+
 def split(v):
     return [x for x in re.split(r"[,\s]+", v or "") if x]
 
@@ -434,7 +452,7 @@ def assign_id(path: Path, line: int, new_id: str | None = None, root: Path = REP
 
 
 OPS = {"add": op_add, "split": op_split, "refine": op_refine, "gate": op_gate, "freeze": op_freeze,
-       "propose": op_propose, "reject": op_reject}
+       "propose": op_propose, "reject": op_reject, "needs-brief": op_needs_brief}
 
 
 def apply(path: Path, op: str, a, root: Path = REPO_ROOT, dry_run=False) -> str:
@@ -492,6 +510,9 @@ def parser():
     p.add_argument("--proposed-by", required=True); p.add_argument("--stop-rule")
     p = sub.add_parser("reject"); common(p)
     p.add_argument("--by", required=True); p.add_argument("--reason", required=True); p.add_argument("--date")
+    p = sub.add_parser("needs-brief"); common(p)
+    p.add_argument("--reason"); p.add_argument("--date"); p.add_argument("--clear", action="store_true")
+    p.add_argument("--root", default=str(REPO_ROOT))
     p = sub.add_parser("split-file"); common(p, box=False)
     p.add_argument("--track", required=True); p.add_argument("--to", required=True)
     p = sub.add_parser("assign-id"); p.add_argument("file"); p.add_argument("line", type=int)
@@ -526,6 +547,11 @@ def op_brief(a) -> int:
         print(f"handoff_box: refusing to accept an orphaned brief: {'; '.join(r['stale_list'])}", file=sys.stderr)
         return 1
     print(B.set_accepted(a.box, "rejected" if a.action == "reject" else a.by, root))
+    if a.action == "accept" and r.get("box"):       # the owner briefed it: the NEEDS-BRIEF tag has done its job
+        f = root / r["box"]["file"]
+        if f.exists() and "NEEDS-BRIEF" in f.read_text(encoding="utf-8", errors="replace"):
+            ns = argparse.Namespace(box=a.box, clear=True, reason=None, date=None)
+            apply(f, "needs-brief", ns, root)
     return 0
 
 

@@ -233,7 +233,7 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
             rec["proposed_by"] = pf.get("proposed-by") or None
             rec["parent"] = pf.get("parent") or None
             rec["needs_owner"] = rec["state"] == "needs-owner"
-            rec["needs_brief"] = "NEEDS-BRIEF" in own_txt     # task-brief layer §5/§6: two failed self-briefs
+            rec["needs_brief"] = bool(re.search(r"·\s*NEEDS-BRIEF\s*:", own_txt))     # task-brief layer §5/§6: two failed self-briefs
             rec.update(brief_fields(root, r["id"], rec["text_sha"], pf.get("brief")))   # task-brief layer P2
             if rec["outside_backlog"]:
                 rec["lint"]["warn"] = ["outside-backlog"]

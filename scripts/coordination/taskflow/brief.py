@@ -457,6 +457,13 @@ def compile_brief(bid: str, root: Path = REPO_ROOT, use_cache: bool = True, box:
         if not c["ok"]:
             stale.append(f"where: {pw['raw']}: {c['detail']}")
     acc = acceptance_dry(root, str(doc.get("acceptance") or ""), new_tests)
+    if not acc["ok"]:       # a cross-repo box's acceptance runs in the repo its `where` names, not in epyc-root
+        for repo in dict.fromkeys(parse_where(str(w))["repo"] for w in doc.get("where") or []):
+            rd = repo_dir(root, repo) if repo != "epyc-root" else None
+            alt = acceptance_dry(rd, str(doc.get("acceptance") or ""), new_tests) if rd else None
+            if alt and alt["ok"]:
+                acc = alt
+                break
     checks.append({"acceptance": doc.get("acceptance"), **acc})
     if not acc["ok"]:
         stale.append(f"acceptance: {acc['kind']}: {acc['detail']}")
