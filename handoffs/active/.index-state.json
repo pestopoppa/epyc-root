@@ -1419,10 +1419,10 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 114,
+      "closed": 115,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 35,
+      "open": 34,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1450,7 +1450,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 644,
+          "line": 661,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 4
@@ -1460,7 +1460,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1048,
+          "line": 1065,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1470,20 +1470,20 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1664,
+          "line": 1681,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
         },
         {
           "blocked": 1,
-          "closed": 30,
+          "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 1811,
+          "line": 1828,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 12
+          "open": 11
         }
       ]
     },
@@ -2346,7 +2346,7 @@
       "closed": 164,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 37,
+      "open": 38,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2355,7 +2355,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 203,
+      "total": 204,
       "tracks": [
         {
           "blocked": 1,
@@ -2375,10 +2375,10 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 822,
+          "line": 823,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 28
+          "open": 29
         }
       ]
     },

@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T09:41:25Z",
+  "generated_at": "2026-11-20T09:47:54Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1438,7 +1438,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6104,
+          "line": 6105,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1447,7 +1447,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6184,
+          "line": 6185,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1466,7 +1466,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6482,
+          "line": 6483,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1483,7 +1483,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9722,
+          "line": 9723,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1496,7 +1496,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14134,
+          "line": 14135,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1530,7 +1530,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14347,
+          "line": 14348,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -1773,14 +1773,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 164,
-      "dispatchable": 37,
+      "dispatchable": 38,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 39,
+      "open": 40,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1823,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 28,
+          "dispatchable": 29,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 822,
+          "line": 823,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 29,
+          "open": 30,
           "readiness": "blocked"
         }
       ]
@@ -1839,15 +1839,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 114,
-      "dispatchable": 35,
+      "closed": 115,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-20",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 36,
+      "open": 35,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1882,7 +1882,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 644,
+          "line": 661,
           "name": "attention-matching-kv-compaction",
           "open": 4,
           "readiness": "ready"
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1048,
+          "line": 1065,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,18 +1900,18 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1664,
+          "line": 1681,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 11,
           "gates": [],
-          "line": 1811,
+          "line": 1828,
           "name": "triattention-kv-selection",
-          "open": 13,
+          "open": 12,
           "readiness": "ready"
         }
       ]
