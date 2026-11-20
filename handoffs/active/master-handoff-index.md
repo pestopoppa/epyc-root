@@ -124,12 +124,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 13 | 546 | 29 | 2026-11-07 |
+| inference-research | 13 | 554 | 29 | 2026-11-07 |
 | pipeline-integration | 1 | 1 | 0 | 2026-11-17 |
-| research-evaluation | 4 | 224 | 3 | 2026-11-03 |
+| research-evaluation | 4 | 232 | 3 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
-| routing-and-optimization | 9 | 428 | 13 | 2026-11-05 |
-| user-facing-harness | 2 | 85 | 1 | 2026-10-03 |
+| routing-and-optimization | 9 | 437 | 13 | 2026-11-05 |
+| user-facing-harness | 2 | 93 | 1 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

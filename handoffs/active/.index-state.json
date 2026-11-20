@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 546
+      "open": 554
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 3,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 224
+      "open": 232
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,13 +28,13 @@
       "blocked": 13,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 428
+      "open": 437
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 85
+      "open": 93
     }
   },
   "duplicates": {},
@@ -760,8 +760,10 @@
       "closed": 153,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 27,
+      "needs_owner": 8,
+      "open": 35,
       "owner_index": "inference-research-index.md",
+      "proposals_pending": 8,
       "prune": {
         "blocker": "open-tasks",
         "candidate": false,
@@ -769,7 +771,7 @@
       },
       "row_id": "INF-70",
       "state": "active",
-      "total": 180,
+      "total": 188,
       "tracks": [
         {
           "blocked": 0,
@@ -801,14 +803,14 @@
           "line": 5269,
           "markers": 1,
           "name": "cpu-prefill-compute-large-models",
-          "open": 1
+          "open": 5
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 5764,
+          "line": 5776,
           "markers": 1,
           "name": "large-moe-expert-parallelism",
           "open": 0
@@ -820,10 +822,10 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 5878,
+          "line": 5890,
           "markers": 1,
           "name": "moe-routing-tap-and-locality-measurement",
-          "open": 4
+          "open": 8
         }
       ]
     },
@@ -848,8 +850,10 @@
       "closed": 310,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 76,
+      "needs_owner": 9,
+      "open": 85,
       "owner_index": "routing-and-optimization-index.md",
+      "proposals_pending": 9,
       "prune": {
         "blocker": "open-tasks",
         "candidate": false,
@@ -857,7 +861,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 386,
+      "total": 395,
       "tracks": [
         {
           "blocked": 0,
@@ -877,14 +881,14 @@
           "line": 1261,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
-          "open": 3
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1308,
+          "line": 1312,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -894,7 +898,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1415,
+          "line": 1419,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -904,17 +908,17 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1515,
+          "line": 1519,
           "markers": 1,
           "name": "loop-state-offraid-backup",
-          "open": 1
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 87,
           "gates": [],
           "guarded": 0,
-          "line": 1568,
+          "line": 1576,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 34
@@ -924,10 +928,10 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 2193,
+          "line": 2201,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 7
+          "open": 14
         }
       ]
     },
@@ -1055,8 +1059,10 @@
       "frozen": 14,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 78,
+      "needs_owner": 8,
+      "open": 86,
       "owner_index": "user-facing-harness-index.md",
+      "proposals_pending": 8,
       "prune": {
         "blocker": "open-tasks",
         "candidate": false,
@@ -1064,7 +1070,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 356,
+      "total": 364,
       "tracks": [
         {
           "blocked": 0,
@@ -1094,14 +1100,14 @@
           "line": 444,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 15
+          "open": 20
         },
         {
           "blocked": 0,
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 898,
+          "line": 914,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 6
@@ -1113,7 +1119,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1679,
+          "line": 1695,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 8
@@ -1125,7 +1131,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2384,
+          "line": 2400,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1142,7 +1148,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2473,
+          "line": 2489,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 16
@@ -1155,17 +1161,17 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2952,
+          "line": 2968,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
-          "open": 23
+          "open": 26
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3857,
+          "line": 3882,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -2377,7 +2383,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 834,
+          "line": 835,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 26
@@ -2560,8 +2566,10 @@
       "frozen": 3,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 121,
+      "needs_owner": 8,
+      "open": 129,
       "owner_index": "research-evaluation-index.md",
+      "proposals_pending": 8,
       "prune": {
         "blocker": "open-tasks",
         "candidate": false,
@@ -2569,7 +2577,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 609
+      "total": 617
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
