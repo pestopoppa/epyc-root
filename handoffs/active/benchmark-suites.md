@@ -360,6 +360,17 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       no BFCL quality score. Parent stays open for the live coverage verdict and
       durable single-turn fleet capture; SQL remains excluded by the official evaluator.
       [no-belief: transport qualification; no benchmark quality claim]
+      2026-11-20 single-turn fleet extension: the dedicated worker now selects an
+      explicit fourteen-case Python/Java/JavaScript cohort, rejects SQL, duplicate
+      IDs, truncated cohorts and unknown cohort names, and preserves the multi-turn
+      default. **61 capture/checker/residency/worker/adapter controls PASS** (30.428s).
+      Separate immutable inputs and launcher prepared for
+      `codex-bfcl-cj3d-single-27b-v1-20261120`; `publish_row.py` accepted and queued
+      the row, then its supported immediate smoke invocation was started. No smoke
+      verdict was available at checkpoint; no readiness or BFCL score is claimed.
+      [Source and input bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/single-turn-fleet-20261120.json).
+      Parent remains open for smoke qualification and live coverage verdicts.
+      [no-belief: software controls; no benchmark quality claim]
   - [x] **CJ-3d-SINGLE-CAPTURE — Pass all fourteen supported single-turn coverage cases through durable native capture and the original checker with refusal controls.** ✅ 2026-11-20 [no-belief: model-free software controls]
       Single-turn Python/Java/JavaScript capture now shares the exclusive journal,
       content-pinned inputs and local residency transport. Embedded schemas and lock

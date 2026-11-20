@@ -1,0 +1,35 @@
+{
+  "box": "CJ-3d",
+  "row": "codex-bfcl-cj3d-single-27b-v1-20261120",
+  "scope": "Fourteen pinned Python/Java/JavaScript native single-turn coverage cases; SQL excluded; no representative score.",
+  "controls": {
+    "result": "PASS",
+    "tests": 61,
+    "elapsed_s": 30.428,
+    "command": "BFCL_CHECKOUT=/mnt/raid0/llm/worktrees/mains/bfcl-upstream-checker-cj3d-20261104 BFCL_CATALOG=/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-catalog PYTHONPATH=proposed/cj567 /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/cj3d-official-v3-controls/venv311/bin/python -B -m unittest test_bfcl_capture_run test_bfcl_native test_bfcl_residency test_bfcl_fleet_run test_openai_tool_calls -q"
+  },
+  "software_sha256": {
+    "proposed/cj567/bfcl_fleet_run.py": "6fda05e4806cc9a6128e2a2de01447a4a5650eabad15b41a7859857e27e33a27",
+    "proposed/cj567/test_bfcl_fleet_run.py": "4bd3005d4fd5f3ec1a12e4836adeea399ac2838307df37f7831b7fa0aa1d6797"
+  },
+  "prepared_inputs": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/MODEL.json": "15071cdf9b48dcfb78dcea47946155370d2fc8cae17cce171b72dd0418d83aa8",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/BUILD.json": "5a62c90959db4779b3d714a862a38642ab6ef9eb82c43a5149f7126adb0ded3e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/CONFIG.json": "077aed6ae387a1a56edc3ab3bdfcfcc69b58050c998f7393e821f69b7411e757",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/SELECTION.json": "60a76fe05c09fe7de5aeb052da2c4b5ad758d96dabc68f9759a282ffd104c8f0",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/INPUTS.sha256": "7444b15a2230a40ad3a08941a9334f96007f4335d7b43dbfb0347f8fd0eeddec",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/spec.json": "5c652e05be05ef42be4a32b63984ab1ba995aba920515a1481c8e6aad535ef7a",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-cj3d-single-27b-20261120/launch.sh": "586c6947d8f820ef8c22709d4b4d3c013e3b77d372fd41892950b78b2ae0cdd7"
+  },
+  "preparation": "Previously hashed model identity reused after all prepared inode metadata matched; no weight hashing at grant time. Runtime inputs pinned separately; existing multi-turn row unchanged.",
+  "limitations": [
+    "Coverage diagnostic only; live fleet verdict pending.",
+    "Stop on first UNKNOWN, transport/custody failure, STOP or deadline; no retries/redraws.",
+    "Initial full-suite invocations lacked BFCL_CHECKOUT and then BFCL_CATALOG; final invocation with both passes all 61 controls."
+  ],
+  "publication": {
+    "result": "ACCEPTED AND QUEUED; supported --smoke-now invocation still active at checkpoint",
+    "smoke_verdict": null,
+    "ready_claim": false
+  }
+}

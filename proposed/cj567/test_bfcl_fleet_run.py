@@ -8,6 +8,24 @@ from bfcl_fleet_run import select_rows, stop_server, summarize
 
 
 class FleetControls(unittest.TestCase):
+    def test_single_turn_selection_excludes_sql_and_multiturn(self):
+        import json
+        from pathlib import Path
+        manifest = json.loads(Path('data/benchmarks/bfcl-v3-cj3d-prep-20261104/sample-manifest.json').read_text())
+        rows = select_rows(manifest, 'single-turn')
+        self.assertEqual(len(rows), 14)
+        self.assertEqual({r['category'] for r in rows},
+                         {'simple', 'multiple', 'parallel', 'parallel_multiple', 'java', 'javascript'})
+        self.assertEqual(rows, manifest['cases'][:14])
+        for replacement in (manifest['cases'][14], manifest['cases'][16], rows[0]):
+            damaged = {'cases': rows[:-1] + [replacement]}
+            with self.assertRaises(ValueError):
+                select_rows(damaged, 'single-turn')
+        with self.assertRaises(ValueError):
+            select_rows({'cases': rows[:-1]}, 'single-turn')
+        with self.assertRaises(ValueError):
+            select_rows(manifest, 'all')
+
     def test_unknown_cannot_become_failure_or_score(self):
         summary = summarize([{'valid': True}, {'valid': False}, {'valid': None}], 10)
         self.assertEqual((summary['known'], summary['unknown'], summary['passed']), (2, 1, 1))

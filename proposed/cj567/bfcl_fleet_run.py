@@ -12,7 +12,7 @@ import time
 from urllib.request import build_opener, ProxyHandler
 
 from bfcl_capture_run import Journal, capture_case
-from bfcl_native import OfficialV3
+from bfcl_native import CATEGORIES, OfficialV3
 from bfcl_residency import LocalNativeTransport, fingerprint
 
 
@@ -28,11 +28,19 @@ def write_new(path, value):
         os.fsync(stream.fileno())
 
 
-def select_rows(manifest):
-    rows = manifest['cases'][16:]
-    if len(rows) != 10 or len({r['case']['id'] for r in rows}) != 10:
-        raise ValueError('expected ten selected multi-turn cases')
-    if any(not r['category'].startswith('multi_turn_') for r in rows):
+def select_rows(manifest, cohort='multi-turn'):
+    if cohort == 'single-turn':
+        rows, count = manifest['cases'][:14], 14
+        allowed = CATEGORIES
+    elif cohort == 'multi-turn':
+        rows, count = manifest['cases'][16:], 10
+        allowed = {'multi_turn_base', 'multi_turn_composite', 'multi_turn_long_context',
+                   'multi_turn_miss_func', 'multi_turn_miss_param'}
+    else:
+        raise ValueError('unknown coverage cohort')
+    if len(rows) != count or len({r['case']['id'] for r in rows}) != count:
+        raise ValueError('wrong selected coverage count or duplicate ID')
+    if any(r['category'] not in allowed for r in rows):
         raise ValueError('unexpected selected category')
     return rows
 
@@ -150,7 +158,8 @@ def run(directory):
                            'synthetic_noncohort': True, 'completed': 1, 'score': None, 'identity': identity}
             else:
                 bridge = OfficialV3(config['checker'])
-                rows = select_rows(json.loads((directory / 'SELECTION.json').read_text()))
+                rows = select_rows(json.loads((directory / 'SELECTION.json').read_text()),
+                                   config.get('cohort', 'multi-turn'))
                 for row in rows:
                     if stop() or time.time() + 330 >= deadline:
                         break
@@ -162,7 +171,8 @@ def run(directory):
                     if verdict.get('valid') is None:
                         break
                 summary = {'status': 'complete' if len(verdicts) == len(rows) else 'partial',
-                           'benchmark': 'bfcl_v3', **summarize(verdicts, len(rows))}
+                           'benchmark': 'bfcl_v3', 'cohort': config.get('cohort', 'multi-turn'),
+                           **summarize(verdicts, len(rows))}
             write_new(out / 'RESULT.json', summary)
             if smoke:
                 write_new(Path(os.environ['FILLER_DRYRUN_RESULT_PATH']), summary)
