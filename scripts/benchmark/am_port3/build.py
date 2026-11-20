@@ -33,7 +33,8 @@ def git(source, *args):
     return subprocess.check_output(['git', '-C', str(source), *args])
 
 
-def source_state(source, variant):
+def source_state(source, variant, tooling_dir=None):
+    tooling_dir = HERE if tooling_dir is None else Path(tooling_dir)
     source = Path(source).resolve(strict=True)
     if (not (source / '.git').is_file() or git(source, 'branch', '--show-current').strip()
             or git(source, 'rev-parse', 'HEAD').decode().strip() != PIN):
@@ -41,7 +42,7 @@ def source_state(source, variant):
     if git(source, 'diff', '--cached').strip():
         raise ValueError('staged source changes refused')
     diff = git(source, 'diff', '--binary', 'HEAD')
-    if diff != ((HERE / 'integration.patch').read_bytes() if variant == 'patched' else b''):
+    if diff != ((tooling_dir / 'integration.patch').read_bytes() if variant == 'patched' else b''):
         raise ValueError('unexpected tracked source changes')
     others = git(source, 'ls-files', '--others', '--exclude-standard', '-z')
     ignored = git(source, 'ls-files', '--others', '--ignored', '--exclude-standard', '-z')
@@ -49,7 +50,7 @@ def source_state(source, variant):
     if {p.decode() for p in others.split(b'\0') if p} != expected or ignored:
         raise ValueError('unexpected untracked/ignored source files')
     for name in expected:
-        if (source / name).is_symlink() or sha(source / name) != sha(HERE / Path(name).name):
+        if (source / name).is_symlink() or sha(source / name) != sha(tooling_dir / Path(name).name):
             raise ValueError('installed header mismatch')
     return dict(commit=PIN, tree=git(source, 'rev-parse', 'HEAD^{tree}').decode().strip(),
                 diff_sha256=hashlib.sha256(diff).hexdigest())
@@ -73,15 +74,20 @@ def artifacts(output, variant, backend):
     return {str(p.relative_to(output)): sha(p) for p in sorted(paths)}
 
 
-def verify(manifest):
+def verify(manifest, *, current_tooling=True):
     manifest = Path(manifest).resolve(strict=True)
     m = json.loads(manifest.read_text())
     if (m.get('schema') != 'epyc.am.full-build.v1' or m.get('variant') not in ('baseline', 'patched')
             or m.get('backend') not in ('cpu', 'hip') or m.get('status') != 'BUILT'):
         raise ValueError('complete full-build manifest required')
-    if m['tooling_sha256'] != {name: sha(HERE / name) for name in OWNED}:
+    inputs = manifest.parent / 'tooling'
+    if ({p.name for p in inputs.iterdir()} != set(OWNED)
+            or any((inputs / n).is_symlink() for n in OWNED)
+            or m['tooling_sha256'] != {n: sha(inputs / n) for n in OWNED}):
+        raise ValueError('build input snapshot changed')
+    if current_tooling and m['tooling_sha256'] != {name: sha(HERE / name) for name in OWNED}:
         raise ValueError('build tooling changed')
-    if m['source_state'] != source_state(m['source'], m['variant']):
+    if m['source_state'] != source_state(m['source'], m['variant'], inputs):
         raise ValueError('build source changed')
     if m['artifacts_sha256'] != artifacts(manifest.parent, m['variant'], m['backend']):
         raise ValueError('build artifacts changed')
@@ -106,6 +112,14 @@ def build(source, output, variant, backend, jobs=4, arch=None):
         install(source)
     before = source_state(source, variant)
     output.mkdir(parents=True)
+    # Individual compiler/runtime inputs, not a copied kernel tree or evidence packet.
+    # Lane worktrees may be reaped while the native build is running.
+    inputs = output / 'tooling'
+    inputs.mkdir()
+    for name in OWNED:
+        (inputs / name).write_bytes((HERE / name).read_bytes())
+    if tooling != {n: sha(inputs / n) for n in OWNED}:
+        raise ValueError('tooling changed while freezing build inputs')
     # A wrapper project builds the full kernel and both runners in one dependency graph.
     # JSON string quoting is compatible with CMake paths; reject its expansion syntax.
     def q(path):
@@ -118,13 +132,13 @@ def build(source, output, variant, backend, jobs=4, arch=None):
              'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")',
              'set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")',
              f'add_subdirectory({q(source)} kernel)',
-             f'add_executable(am-control {q(HERE / "control.cpp")})',
+             f'add_executable(am-control {q(inputs / "control.cpp")})',
              f'target_include_directories(am-control PRIVATE {q(source / "include")} {q(source / "ggml/include")} {q(source / "vendor")})',
              'target_link_libraries(am-control PRIVATE llama ggml ggml-base)']
     if variant == 'patched':
-        cmake += [f'add_executable(am-driver {q(HERE / "driver.cpp")})',
+        cmake += [f'add_executable(am-driver {q(inputs / "driver.cpp")})',
                   'target_include_directories(am-driver PRIVATE ' + ' '.join(q(p) for p in
-                   (source / 'src', HERE, source / 'include', source / 'ggml/include', source / 'vendor')) + ')',
+                   (source / 'src', inputs, source / 'include', source / 'ggml/include', source / 'vendor')) + ')',
                   'target_link_libraries(am-driver PRIVATE llama ggml ggml-base)']
     (output / 'CMakeLists.txt').write_text('\n'.join(cmake) + '\n')
     configure = ['cmake', '-S', str(output), '-B', str(output / 'build'),
@@ -142,7 +156,9 @@ def build(source, output, variant, backend, jobs=4, arch=None):
     for i, command in enumerate(commands):
         with (output / f'build-{i}.log').open('xb') as log:
             subprocess.run(command, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
-    if source_state(source, variant) != before or tooling != {n: sha(HERE / n) for n in OWNED}:
+    if (source_state(source, variant, inputs) != before
+            or tooling != {n: sha(inputs / n) for n in OWNED}
+            or (HERE.exists() and tooling != {n: sha(HERE / n) for n in OWNED})):
         raise ValueError('source/tooling changed during build')
     m = dict(schema='epyc.am.full-build.v1', status='BUILT', source=str(source),
              source_state=before, variant=variant, backend=backend, architecture=arch,
@@ -152,7 +168,7 @@ def build(source, output, variant, backend, jobs=4, arch=None):
     manifest = output / 'BUILD.json'
     with manifest.open('x') as f:
         f.write(json.dumps(m, indent=2) + '\n')
-    verify(manifest)
+    verify(manifest, current_tooling=False)
     return manifest
 
 

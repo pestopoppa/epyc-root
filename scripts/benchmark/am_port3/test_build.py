@@ -88,7 +88,7 @@ class Builds(unittest.TestCase):
         self.assertNotIn('--target', m['commands'][1])  # Full kernel, including shared backends.
         cmake = (path.parent / 'CMakeLists.txt').read_text()
         includes = next(line for line in cmake.splitlines() if line.startswith('target_include_directories(am-driver'))
-        self.assertLess(includes.index(str(self.source / 'src')), includes.index(str(self.owned)))
+        self.assertLess(includes.index(str(self.source / 'src')), includes.index(str(path.parent / 'tooling')))
 
     @unittest.skipUnless(shutil.which('cmake') and shutil.which('c++'), 'native toolchain required')
     def test_real_link_resolves_direct_cpu_dependency(self):
@@ -117,7 +117,13 @@ target_link_libraries(llama PUBLIC ggml)
         self.git(self.source, 'checkout', '--detach', pin)
         (self.owned / 'control.cpp').write_text('int model(); int main() { return model() == 7 ? 0 : 1; }\n')
         with patch.object(build, 'PIN', pin):
-            path = build.build(self.source, self.root / 'output', 'baseline', 'cpu')
+            def reaping_native(command, **kwargs):
+                if command[0] == 'cmake' and command[1] == '--build':
+                    shutil.rmtree(self.owned)
+                return self.real_run(command, **kwargs)
+            with patch.object(build.subprocess, 'run', reaping_native):
+                path = build.build(self.source, self.root / 'output', 'baseline', 'cpu')
+            shutil.copytree(path.parent / 'tooling', self.owned)
             build.verify(path)
             subprocess.run([str(path.parent / 'build/bin/am-control')], check=True)
             # Demonstrate the same fixture catches the actual old failure mode.
@@ -130,6 +136,27 @@ target_link_libraries(llama PUBLIC ggml)
             self.assertNotEqual(result.returncode, 0)
             self.assertIn('undefined reference', result.stderr)
             self.assertIn('cpu_symbol', result.stderr)
+
+    def test_snapshot_tampering_refused(self):
+        path = self.make()
+        (path.parent / 'tooling/control.cpp').write_text('tampered')
+        with self.assertRaisesRegex(ValueError, 'snapshot changed'):
+            build.verify(path)
+
+    def test_lane_reaped_between_configure_and_compile(self):
+        def reaping(command, **kwargs):
+            if command[0] == 'cmake' and command[1] == '--build':
+                shutil.rmtree(self.owned)
+                wrapper = (self.root / 'output/CMakeLists.txt').read_text()
+                self.assertNotIn(str(self.owned), wrapper)
+                self.assertIn(str(self.root / 'output/tooling/control.cpp'), wrapper)
+            return self.fake_run(command, **kwargs)
+        with patch.object(build.subprocess, 'run', reaping):
+            path = build.build(self.source, self.root / 'output', 'patched', 'cpu')
+        build.verify(path, current_tooling=False)
+        # A fresh lane can validate the exact original inputs after rotation.
+        shutil.copytree(path.parent / 'tooling', self.owned)
+        build.verify(path)
 
     def test_baseline_build_has_no_experimental_driver(self):
         m = build.verify(self.make('baseline'))

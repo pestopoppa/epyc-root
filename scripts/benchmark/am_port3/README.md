@@ -497,7 +497,14 @@ same scratch source location at the pin; do not accumulate attempt trees.
 
 A generated CMake wrapper builds the **full kernel**, including shared linked backend
 libraries (`GGML_BACKEND_DL=OFF`), and links `am-control` in both variants plus `am-driver` in the patched
-variant. Internal includes put installed patched `src` before the lane headers.
+variant. Internal includes put installed patched `src` before the frozen build headers.
+The wrapper compiles runner sources and headers from individual `tooling/` input
+files in its scratch build root, bound to the receipt by SHA-256. It never
+references lane compiler inputs after configuration, so session rotation may
+remove the lane while compilation continues. This is a compiler-input snapshot,
+not a copied kernel tree or evidence packet. The kernel stays in its detached
+worktree. Completed receipts verify the frozen inputs and source; ordinary
+`verify` also requires the current lane tooling to match those exact bytes.
 `BUILD.json` binds the source commit/tree/complete tracked diff, exact injected
 headers, patch, driver/control and Python runtime tooling, actual configure/build
 argv, relevant compiler environment, CMake cache/wrapper, build logs, executable
@@ -505,20 +512,19 @@ and all llama/ggml shared-library bytes (including aliases). Verification refuse
 tracked, staged, untracked or ignored source changes beyond that exact patch and
 headers, changed tooling/configuration/logs/artifacts, missing required backend
 libraries, empty outputs and libraries resolving outside the build's bin.
-Source/tooling are checked before and after the build. Run verification at row
+Kernel source and frozen inputs are checked before and after the build;
+current lane inputs are also rechecked if the lane still exists. Run verification at row
 admission and around execution; the runtime wrappers still provide their own
 mapped-library/content checks. This is a local reproducibility receipt, not an
 independently trusted or adversarial build attestation. It does not prove GPU
 residency, model identity, default-off equivalence or attention quality.
 
-Sixteen build-contract tests use real temporary git worktrees and a **simulated
-CMake/compiler** to exercise baseline/patched CPU/HIP receipts, full-build argv,
-include order, clean-tree/output guards, failed/mutating builds and source,
-header, tooling, cache, log, artifact and external-symlink refusals. They do not
-compile the kernel. The full Python suite has 50 passing tests and one optional
-native-reader test skipped without `AM_BUNDLE_TEST`. Actual full CPU/HIP linking,
-prepared model inputs and bounded row publication remain to do; no full-build
-or model/GPU verdict is asserted by these tests.
+Build-contract tests use real temporary git worktrees and a simulated toolchain
+for receipt validation and mutation refusals. A miniature real CMake/compiler
+fixture proves direct CPU symbols link with shared backends, removes lane inputs
+between configure and compile, and runs the resulting control executable. These
+tests do not compile the full kernel. Actual CPU/HIP full-build receipts and the
+bounded model row remain necessary before any model/GPU verdict.
 
 ## Bounded model pipeline (admitted row only)
 
