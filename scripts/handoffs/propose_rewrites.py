@@ -82,6 +82,8 @@ def candidates(doc: dict, top_rows: int) -> list[tuple[str, dict]]:
             continue
         if r.get("proposed_by") or r["id"] in has_child:
             continue
+        if k != r["id"]:
+            continue                     # duplicate ID in the repo (box_index keys it file#sha): not addressable
         fails = set((r.get("lint") or {}).get("fails") or [])
         if fails & set(TARGET_FAILS):
             out.append((k, r))
@@ -126,6 +128,17 @@ def parse_reply(text: str) -> dict | None:
     return d if isinstance(d, dict) and (d.get("done_when") or d.get("split") or d.get("stop_rule")) else None
 
 
+_UNSAFE = re.compile(r"[·\u2022]|<!--|-->|\[\s*[xX ]?\s*\]|\bNEEDS-(?:OWNER|OPERATOR|DECOMPOSITION)\b|✅|❄|\*\*")
+
+
+def clean(value, limit: int = 240) -> str:
+    """Model text is DATA: one line, no field separators (`·`), no checkbox / tick / freeze markers, no HTML
+    comments, no bold-ID markup, no NEEDS-* tokens -- so a reply can never inject a `· gate:` / `· done when:` field,
+    a second box, a tick or an ID into someone else's handoff."""
+    t = _UNSAFE.sub(" ", " ".join(str(value or "").split()))
+    return " ".join(t.split())[:limit]
+
+
 def write_proposals(path: Path, rec: dict, reply: dict, who: str, dry_run: bool) -> list[str]:
     cls = rec.get("class") if rec.get("class") in ("non-inference", "inference") else "non-inference"
     base = re.sub(r"^\s*[-*] \[.\]\s*", "", rec.get("text", ""))
@@ -139,10 +152,11 @@ def write_proposals(path: Path, rec: dict, reply: dict, who: str, dry_run: bool)
         items.append((base[:200] or rec["id"], reply.get("done_when"), reply.get("stop_rule")))
     diffs = []
     for text, dw, stop in items:
-        a = argparse.Namespace(box=rec["id"], cls=cls, text=" ".join(str(text).split())[:240],
-                               done_when=(" ".join(str(dw).split())[:240] if dw else None), inputs=None, tier=None,
-                               owner=None, needs_owner=True, proposed_by=who,
-                               stop_rule=(" ".join(str(stop).split())[:240] if stop else None))
+        if not clean(text):
+            continue
+        a = argparse.Namespace(box=rec["id"], cls=cls, text=clean(text), done_when=(clean(dw) or None),
+                               inputs=None, tier=None, owner=None, needs_owner=True, proposed_by=who,
+                               stop_rule=(clean(stop) or None))
         diffs.append(HB.apply(path, "propose", a, REPO_ROOT, dry_run=dry_run))
     return diffs
 
@@ -155,6 +169,7 @@ def main(argv=None, runner=claude_runner, root: Path = REPO_ROOT) -> int:
     ap.add_argument("--per-box-tokens", type=int, default=30_000)
     ap.add_argument("--stop-share", type=float, default=0.20)
     ap.add_argument("--ledger", default=None)
+    ap.add_argument("--files", nargs="*", default=None, help="restrict to these handoff basenames")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
     doc = BI.load(root)
@@ -167,6 +182,8 @@ def main(argv=None, runner=claude_runner, root: Path = REPO_ROOT) -> int:
     total = done = written = 0
     stats = {"proposed": 0, "no-json": 0, "over-budget": 0, "error": 0}
     for key, rec in candidates(doc, a.top_rows):
+        if a.files and Path(rec["file"]).name not in a.files:
+            continue
         if done >= a.max_boxes or total >= a.budget_tokens:
             break
         share = pending_share(BI.load(root, regenerate=not a.dry_run), a.top_rows) if written else 0.0
@@ -199,9 +216,13 @@ def main(argv=None, runner=claude_runner, root: Path = REPO_ROOT) -> int:
         elif reply is None:
             outcome = "no-json"
         else:
-            for d in write_proposals(path, rec, reply, who, a.dry_run):
-                print(d)
-            written += 0 if a.dry_run else 1
+            try:
+                for d in write_proposals(path, rec, reply, who, a.dry_run):
+                    print(d)
+                written += 0 if a.dry_run else 1
+            except HB.BoxError as exc:
+                outcome = "error"
+                print(f"SKIP {rec['id']}: {exc}", file=sys.stderr)
         stats[outcome] += 1
         if ledger:
             ledger.write(json.dumps({"at": ts, "box": rec["id"], "file": rec["file"], "fails": fails, "tokens": tok,
