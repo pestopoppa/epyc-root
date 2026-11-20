@@ -1617,6 +1617,8 @@ def open_grants(flags):
     out = []
     for g in glob.glob(os.path.join(flags, "grants", "*.grant")):
         rid = os.path.basename(g)[:-6]
+        if os.path.exists(os.path.join(flags, "grants", rid + ".ended")):
+            continue   # an ended grant holds nothing (a hand-release / engine end that left the .grant behind is no phantom hold)
         first = head1(g)
         kv = dict(re.findall(r"(\w+)=(\S+)", first))
         regions = kv.get("regions", "")
@@ -5103,6 +5105,69 @@ def reap_build_grants(flags, now=None, log=print):
     return out
 
 
+def release_grant(flags, rid, by, reason, regions=None, log=print, now=None):
+    """`rowflow.py release <id> --by <owner> --reason R [--regions q2,q1]`: the OWNER ends an idle/finished grant early (or
+    shrinks it to the quarters it keeps) so the regions free on the keeper's next tick. Refused unless by == the row owner
+    (ready manifest `owner`; a build grant: its build.json owner) and the job is NOT running: an engine/dry-run pid that is
+    alive (a zombie is dead) refuses - a running job is never killed (preemption is by drain only). A grant whose job has not
+    started may be released: the row's STOP file is touched so its armed poller exits. Whole release: grants/<id>.ended
+    `rc=75 reason=released-early`, .grant renamed .grant.released-early, GRANT-RELEASED logged. Partial (`regions` = quarters
+    the grant holds, not all): the .grant is rewritten to the remaining quarters (build.json follows).
+    Returns RELEASED | SHRUNK. Raises Refused."""
+    G = os.path.join(flags, "grants")
+    gp = os.path.join(G, rid + ".grant")
+    reason = re.sub(r"\s+", "_", str(reason or "").strip())
+    by = str(by or "").strip()
+    need(reason, "release: --reason is required")
+    need(by, "release: --by <owner> is required (or EPYC_AGENT_ID in the environment)")
+    need(not any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete")),
+         f"release {rid}: already ended (grants/{rid}.ended|.complete); nothing to release")
+    need(os.path.exists(gp), f"release {rid}: no open grant (grants/{rid}.grant)")
+    bj = load_json(os.path.join(G, rid + ".build.json")) or {}
+    is_build = rid.startswith(BUILD_PREFIX)
+    owner = str(bj.get("owner") or "") if is_build else notify.row_owner(flags, rid)
+    need(owner and owner == by, f"release {rid}: owner is {owner or '(unknown)'}, caller is {by or '(none)'}; only the row owner may release")
+    g = next((x for x in open_grants(flags) if x["id"] == rid), None)
+    need(g is not None, f"release {rid}: grant unreadable")
+    pids = [g.get("pid")] + [(load_json(q) or {}).get("pid") for q in (running_path(flags, rid), armed_path(flags, rid))]
+    live = [x for x in pids if x and proc_alive(x)]
+    need(not ((g["dryrun"] or g["started"]) and live),
+         f"release {rid}: job is running (pid {live[0] if live else '?'} alive); never killed - it finishes or drains")
+    now_s = now_iso() if now is None else now
+    if regions:
+        want = {t.strip() for t in str(regions).split(",") if t.strip()}
+        held = {q for q in g["holds"] if q in QUARTERS}
+        need(want <= held, f"release {rid}: cannot release {','.join(sorted(want - held))}: not a quarter this grant holds "
+                           f"({','.join(sorted(held)) or 'none'})")
+        keep = sorted(held - want)
+        if keep:
+            kv = dict(re.findall(r"(\w+)=(\S+)", head1(gp)))
+            cpus = ",".join(f"{int(q[1]) * 24}-{int(q[1]) * 24 + 23},{int(q[1]) * 24 + 96}-{int(q[1]) * 24 + 119}" for q in keep)
+            kv.update(regions=",".join(keep), holds=",".join(keep), cpus=cpus)
+            line = " ".join(f"{k}={kv[k]}" for k in ("regions", "start", "end", "holds", "cpus", "lock") if k in kv) + "\n"
+            with open(gp + ".tmp", "w") as f:
+                f.write(line)
+            os.replace(gp + ".tmp", gp)
+            if bj:
+                bj.update(quarters=keep, cpus=cpus)
+                atomic_json(os.path.join(G, rid + ".build.json"), bj)
+            log(f"GRANT-RELEASED {rid}: shrunk to {','.join(keep)}; released {','.join(sorted(want))} by={by} reason={reason}")
+            return "SHRUNK"
+    if not is_build:
+        sf = resolve_stop_path(load_json(ready_path(flags, rid)) or {})
+        if sf:
+            try:
+                os.makedirs(os.path.dirname(sf), exist_ok=True)
+                open(sf, "a").close()
+            except OSError as e:
+                log(f"GRANT-RELEASE {rid}: could not touch STOP {sf}: {e}")
+    with open(os.path.join(G, rid + ".ended"), "w") as f:
+        f.write(f"rc=75 time={now_s} reason=released-early by={by} note={reason}\njob_id={rid}\n")
+    os.replace(gp, gp + ".released-early")
+    log(f"GRANT-RELEASED {rid}: ended by owner {by} reason={reason}; {','.join(sorted(g['holds'] & set(REGIONS))) or '-'} free next tick")
+    return "RELEASED"
+
+
 def contamination_exempt_pids(flags):
     """Review S3: pids never attributed as contamination - the keeper's own tree (this process, its parent keeper loop and
     their descendants) and every smoke harness named in dryrun/*/RUNNING.json or SMOKE-PLACED.json (with its tree)."""
@@ -6536,6 +6601,8 @@ def main(argv=None):
     sub.add_parser("list")
     s = sub.add_parser("withdraw", help="end a row that will never run: manifest -> ready/.withdrawn/, grants/<id>.ended rc=75, STOP touched")
     s.add_argument("id"); s.add_argument("--reason", required=True)
+    s = sub.add_parser("release", help="owner-only: end an idle/finished grant early, or shrink it with --regions q2,..; refused while its job runs (never kills)")
+    s.add_argument("id"); s.add_argument("--by"); s.add_argument("--reason", required=True); s.add_argument("--regions")
     s = sub.add_parser("unpark", help="operator: a parked row (precond refusal / arming failures) is grantable again next tick; its "
                                       "earlier arming FAIL records no longer count (dryrun/<id>/UNPARK.json)")
     s.add_argument("id"); s.add_argument("--by"); s.add_argument("--note", default="")
@@ -6619,6 +6686,11 @@ def main(argv=None):
             r = withdraw(a.flags, a.id, a.reason)
             print(f"{r} {a.id}")
             return 0 if r in ("WITHDRAWN", "PENDING", "TERMINAL") else 2
+        if a.cmd == "release":
+            by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
+            r = release_grant(a.flags, a.id, by, a.reason, a.regions)
+            print(f"{r} {a.id}")
+            return 0
         if a.cmd == "unpark":
             known = (a.id in rows(a.flags) or os.path.isdir(dry_dir(a.flags, a.id))
                      or os.path.exists(os.path.join(a.flags, "operator-escalations", a.id + ".md")))

@@ -224,3 +224,16 @@ Throughput*.
 - **Do not carry `estimate_s` over from a predecessor row.** A copied estimate turned a 3 h approval into a 10 h grant; re-derive it from this row's own visits x cell time.
 - **Q38FN GPU noise floor: A/A KLD ~0.025 (0.0248-0.0267), A/A PPL spread ~1.4%, greedy A/A agreement 0.33-0.78.** Q38FN routing amplifies rounding ~45x versus the dense 27B (~0.0006). Any Q38FN GPU quality clause must be A/A-calibrated; on the GPU the 27B clause decides (operator, 2026-11-18).
 - **Build pocket: a long q0-q2 row must leave short builds a pocket (2026-11-20).** filler-ak-q38fn-draftfa-window-cpu-20261119 (multi-quarter(3), 28000 s) held q0-q2 for ~7.8 h while a build claim waited >45 min (q3 is the MI210's host threads). Rule (`build_pocket_policy.json`, overridable via `allocator.json` `build_pocket`): a CPU row booking all of q0-q2 with hold > `long_hold_s` (7200 s) and no `"whole_host_need": true` (a) is not granted while a build claim waits (`BUILD-POCKET-HELD`; waiter = live region-lock FIFO ticket on q0-q2, or a `build-wait/<owner>.json` left by a refused `rowflow.py claim --build`), and (b) if `"resumable": true`, is granted with a hard end at `max_hold_s` (capcut-requeued), so the pocket reopens at each cut. A non-resumable long row is never cut. Wire a long row's declaration instead of relying on the carve-out: resumable if it checkpoints, `whole_host_need` if it truly needs q0-q2 for hours.
+
+## Releasing an idle grant early (2026-11-20, AutoKernel)
+
+A grant whose job is idle or finished (a leftover q2 slot, a build lane booked to 22:16Z) is released by its OWNER, not left to run to `end=`:
+
+```
+python3 scripts/coordination/rowflow/rowflow.py release <row-or-build-id> --by <owner> --reason "<why>" [--regions q2[,q1]]
+```
+
+- **Owner-only**: `--by` (default: `EPYC_AGENT_ID`/`WRAPUP_AGENT_ID`/`SESSION_BUS_AGENT`) must equal the row manifest `owner`, or the `build.json` owner for `build-*` grants.
+- **Refused while the job runs**: a live engine/poller/dry-run pid (a zombie is dead) refuses. It never kills; preemption stays drain-only.
+- **Whole release** writes `grants/<id>.ended rc=75 reason=released-early`, renames `.grant` to `.grant.released-early` and logs `GRANT-RELEASED`; the cores free on the keeper's next tick. **`--regions`** (quarters the grant holds, not all of them) shrinks the grant to the rest.
+- `open_grants` treats any grant with a `.ended` receipt as released, so a hand-release that leaves `.grant` or `.build.json` behind holds nothing. Hand-editing `grants/` is no longer needed.

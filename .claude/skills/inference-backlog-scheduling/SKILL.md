@@ -328,6 +328,10 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
 - **A real-lane smoke, not a fixture preflight, makes a row ready** (`references/launch-admission-gate.md`).
 - **A re-arm reassesses; it never copies the spec.** Before republishing a row after a failed or stopped run, re-derive its shape (cores/quarters, slots), its estimate and the way the prior run failed from the prior run's own evidence. SLIDERS r3 was a verbatim copy of r2 and booked about 13 h on one quarter; its first question took 5,516 s and ended `[Error] Request timed out.` (hard-coded 200 s client timeout, up to 16 concurrent calls into 2 slots). The operator objected (2026-11-09); r4 fixed the cause, used 4 slots and two quarters, and cut the estimate from 12 h to 8 h from r3's measured first question.
 
+### Releasing an idle grant early (2026-11-20)
+
+`rowflow.py release <id> --by <owner> --reason R [--regions q2,..]` is the owner-only early release for a grant (row or `build-*` claim) whose job is idle or done: refused unless `--by` is the row/build owner and no live pid (zombie = dead) runs the job; never kills. Ends the grant (`.ended rc=75 reason=released-early`, `GRANT-RELEASED`) or shrinks it to the remaining quarters; the keeper frees the cores next tick, and any grant with a `.ended` receipt holds nothing. Details: `docs/guides/agent-workflows/compute-fillers.md` -> *Releasing an idle grant early*. Do not hand-edit `grants/`.
+
 ## 5. Coordination protocol
 
 - A grant request from a peer carries: `id`, regions shape, `min_window` s, `minutes` estimate,
