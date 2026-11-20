@@ -58,3 +58,17 @@
 - AK-DTREE: Q8MF-V3 NO_GAIN (A3 slope 0.23 ms/row, W12 47.8 / W16 49.8 ms vs wvsk16 53.0/60.7; op ~0.73 TB/s). ATTN-ROUTE-V2 both candidates LOSS. GDN-ROWS `ba89d5047` committed, gate in flight. HBM-CEILING box `34c36d2de` + repack fork `369fa2717`, row ak-dtree0-q8mf-hbm-gpu-20261120 queued. V4 composite branch llama.cpp-experimental-dtree-v4-20261120 in flight.
 - Scheduler: pipeline partial-quarter fix `73f498cb2`. Indexer CPU row stopped for builds (already filed fail).
 - Wrap-up ticks: DTREE-0-Q8MF-V3 and DTREE-ATTN-ROUTE-V2 build boxes (landed; verdicts on their gate boxes). No index row edits needed.
+
+## Wrap-up 8 (since 203c3bb6b) — autokernel
+
+- **HBM stream ceiling**: 1498.2 GB/s = 93.6% of 1600 (bs256, 4 waves/CU, unroll 4); standalone row refused by publisher (<5 min), number recorded on the V4 gate.
+- **DTREE-0-Q8MF-V4 gate DROP** (filed fail; boxes `5bfb28c15`, `c0346cb50`, `5e8e9bf05`): correct 152/152; W1/8/12/16 X 32.1/43.5/53.2/61.0, V3 34.6/43.5/47.8/49.5, V4 38.0/61.0/95.9/108.4 ms. MMVQ load pattern does not carry to 16 columns. Receipt-ack added this wrap-up (receipt FAILED vs box DROP).
+- **HBM-CEILING** (`f79ba2198`, `8ea44891a`): repack clears the bar; V3R/V3 op GB/s 1.13-1.26x on every 27B shape; V3R 850-983 GB/s flat vs MMVQ n1 1080-1190.
+- **In-place repack KEEP** (fork `0689c70ee`, knob GGML_HIP_Q8_MF_INPLACE=1; gate filed pass, tick `e0df6d004`): 184/184 correct; 27B W8/12/16 V3I 40.1/43.5/44.1 ms vs X 44.3/53.3/60.9. Costs: W1 +14.5%, prefill +7.7%, VRAM +54 MiB.
+- **GDN-ROWS gate r2 KEEP** (filed pass, tick `810837134`): 267/0 both arms; tree-verify GDN ms W16 4.76 -> 3.97.
+- **PFXC r7d real-trace replay NEUTRAL** (filed fail; `17a9ca2ee`, stop rule `c2acfe186`): hit 92.97 vs 93.00%, prefill 0.99x; A2 proven; P3 is harness-side.
+- **Measured tree acceptance** (P5 logs): 27B T12 +5.8%, T16 +11.0% vs chain (Infernix assumed +12/+17%); A3B T4 +0.7%, T6 +4.4%. At V3 cost the 27B tree is ~-4%.
+- **DTREE-TREE-QUALITY** (box `caf9348ca`, notes `b0fd55606`/`2bf4c11d0`): sim validated; greedy best-first W12 +6.0%, W16 +3.66%; oracle 6.99. Greedy builder fork `74de2c3e7` + `fa9191562`. C16 r3 rows pending build claim (box stays open).
+- **Lineage/tooling**: composite rebased on C16 (branch llama.cpp-experimental-dtree-v4c16-20261120); row_scaffold reads origin/main (`0b96e0a87`, research `41119de1b`); AK journal program.md learnings (research `86167b529`, `3ab8362e5`).
+- **Memory rules added**: compounded-gain threshold; write the hand-back ledger before respawning.
+- Follow-up to Pipeline: publisher withdrew row tf1-cpu-s1b-35b-c14-q1q2-20261120 as "superseded" during our publish.
