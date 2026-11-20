@@ -34,7 +34,7 @@ measurement, not an established root cause or permission to loosen thresholds.
 `instrument.py` adds diagnostic output to the SHA-pinned r1 source: one record
 per probe position with KLD, both top-1 token IDs and both top-two logit margins.
 It retains the original aggregate calculation and adds fresh-offset-d and
-repeat-offset-0 controls, plus wrong-probe-offset and dropped-prefix controls.
+repeat-offset-0 controls, plus tail-key-shift and dropped-prefix controls.
 The latter controls test other perturbations; they cannot retroactively satisfy
 r1's half-prefix sensitivity gate. `test_instrument.py` executes the actual
 instrumented comparator on known synthetic logits under UBSan, checking KLD,
@@ -47,3 +47,22 @@ weights are checked before publication and never hashed in the grant. Runtime
 mapped-library paths are verified for both libllama and libggml-cpu. Output
 contains complete position records and first/last-eight-position KLD summaries.
 This is exploratory diagnostic evidence, with no H1–H3 qualification verdict.
+
+The original diagnostic row `kshift-diagnostic-20261120` aborted at its
+wrong-query-offset control: it requested position 512 after cached position 447.
+The pinned decoder requires the next position to equal the cached maximum + 1.
+A successor uses `negctl_tail_key_shift_64`: prefill at zero, shift only the
+last cached key from 447 to 511, then probe at 512 through the normal consecutive
+path. Earlier keys stay at 0–446. This perturbs both the tail key and query
+positions, so it is **not** a pure query-offset experiment and retains a new
+scenario name. Its sensitivity is unknown until measured. The dropped-prefix
+control starts an empty cache at position 448; the decoder permits a nonzero
+starting position when no earlier sequence position exists.
+
+The position regression executes the generated control block and actual
+`probe_logits` lambda with a model-free decoder stub implementing the pinned
+consecutive-position check. It verifies cache geometry and 64 consecutive
+probe positions for both controls. Restoring the old gap must fail with the
+observed decode refusal. Comparator and corpus-boundary tests remain in place.
+Old row inputs, results, and acceptance thresholds are unchanged; publish any
+successor separately, with the new control explicitly described in its rule.

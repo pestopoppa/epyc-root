@@ -33,8 +33,12 @@ def instrument(source):
 ''' + anchor, 1)
     anchor = '    // div: seq_div(G)'
     source = source.replace(anchor, '''    // Diagnostic controls, never used to retroactively qualify r1.
-    if (!prefill_at(0) || !probe_logits(&tst, 64)) die("wrong probe control failed");
-    emit("negctl_probe_offset_64", compare("negctl_probe_offset_64", base, tst, n_vocab, a.n_probe), "");
+    // A query-only position gap is refused by llama_decode. Move the tail key
+    // too, preserving consecutive probe positions; this is a different control.
+    if (!prefill_at(0)) die("tail shift prefill failed");
+    llama_memory_seq_add(mem, 0, a.n_prefix - 1, a.n_prefix, 64);
+    if (!probe_logits(&tst, 0)) die("tail shift control failed");
+    emit("negctl_tail_key_shift_64", compare("negctl_tail_key_shift_64", base, tst, n_vocab, a.n_probe), "");
     reset();
     if (!decode(ctx, probe, a.n_prefix, a.n_probe, n_vocab, &tst)) die("drop prefix failed");
     emit("negctl_drop_prefix", compare("negctl_drop_prefix", base, tst, n_vocab, a.n_probe), "");
