@@ -30,3 +30,20 @@ new model row, diagnose those independently: the original sensitivity statistic
 averages 64 teacher-forced probe positions after corrupting only the first half
 of the prefix. Attenuation by recent intact context is a hypothesis requiring
 measurement, not an established root cause or permission to loosen thresholds.
+
+`instrument.py` adds diagnostic output to the SHA-pinned r1 source: one record
+per probe position with KLD, both top-1 token IDs and both top-two logit margins.
+It retains the original aggregate calculation and adds fresh-offset-d and
+repeat-offset-0 controls, plus wrong-probe-offset and dropped-prefix controls.
+The latter controls test other perturbations; they cannot retroactively satisfy
+r1's half-prefix sensitivity gate. `test_instrument.py` executes the actual
+instrumented comparator on known synthetic logits under UBSan, checking KLD,
+ties, margins, token IDs and aggregate preservation.
+
+`diagnostic_job.py` compiles this standalone harness and runs exactly the native
+Qwen3 f16 candidate/baseline pair through a compute row. Smoke compiles/links
+without model inference. Small input and library hashes are pinned; model
+weights are checked before publication and never hashed in the grant. Runtime
+mapped-library paths are verified for both libllama and libggml-cpu. Output
+contains complete position records and first/last-eight-position KLD summaries.
+This is exploratory diagnostic evidence, with no H1–H3 qualification verdict.
