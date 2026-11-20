@@ -7,6 +7,7 @@ tokenization or download occurs under the grant. No checkpoint is fabricated.
 """
 from __future__ import annotations
 import datetime as dt
+import fcntl
 import hashlib
 import json
 import os
@@ -171,8 +172,10 @@ def main():
         raise RuntimeError('expired keeper grant')
     smoke = bool(os.environ.get('FILLER_SMOKE') or os.environ.get('FILLER_SMOKE_T0'))
     d = Path.cwd()
-    out = d/('out-smoke' if smoke else 'out')/str(time.time_ns())
-    out.mkdir(parents=True)
+    out = d/('out-smoke' if smoke else 'out')/'continuation'
+    out.mkdir(parents=True, exist_ok=True)
+    lock = (out/'.owner.lock').open('a')
+    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     runner = load_runner()
     inputs = json.loads((d/'INPUTS.json').read_text())
     check_inputs(inputs)
@@ -181,8 +184,8 @@ def main():
     identity = dict(model_sha256=inputs['model_sha256'], build_sha256=inputs['build_sha256'],
                     argv_sha256=hashlib.sha256(json.dumps(command).encode()).hexdigest())
     (out/'identity.json').write_text(json.dumps(identity))
-    # Fresh attempt, original fixtures: do not import historical completed flags
-    # or append fresh records to the 2026-10-05 measurements. No receipt exists.
+    # Stable slot directory and exact argv identity survive keeper relaunches.
+    # Historical unsealed slots remain refused by the guard.
     children = install_server(runner, command, deadline)
     args = types.SimpleNamespace(arm='CY2', i_own_the_window=True, wait=False, max_hours=24,
         margin_min=0, budget_cpus=None, block_until=dt.datetime.fromtimestamp(deadline, dt.timezone.utc).isoformat(),
@@ -191,7 +194,7 @@ def main():
     error = None
     try:
         import cpu_resume
-        rc = cpu_resume.run_guarded(runner, args, identity, out/'checkpoint.json')
+        rc = cpu_resume.run_guarded(runner, args, identity, out/'checkpoint.json', checkpoint=True)
     except Exception as exc:
         rc, error = 3, f'{type(exc).__name__}: {exc}'
     finally:
@@ -201,6 +204,7 @@ def main():
         result.update(error=error, own_server_reaped=all(p.poll() is not None for p in children),
                       attempt=str(out), smoke=smoke)
         (d/('SMOKE-RESULT.json' if smoke else 'RESULT.json')).write_text(json.dumps(result, indent=2)+'\n')
+        lock.close()
     return rc
 
 

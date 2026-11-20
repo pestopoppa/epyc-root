@@ -74,7 +74,8 @@ class ContinuationTests(unittest.TestCase):
             runner = SimpleNamespace()
             child = Mock()
             child.poll.return_value = 0
-            def interrupted(runner, args, identity, receipt):
+            def interrupted(runner, args, identity, receipt, **kwargs):
+                self.assertTrue(kwargs['checkpoint'])
                 self.assertFalse(args.force_preflight)
                 self.assertFalse(args.selftest_external)
                 self.assertFalse(args.wait)
@@ -96,6 +97,8 @@ class ContinuationTests(unittest.TestCase):
                 result = json.loads((d/'RESULT.json').read_text())
                 self.assertTrue(result['own_server_reaped'])
                 self.assertEqual(result['verdict'], 'INCOMPLETE')
+                self.assertEqual(runner.SLOTS, d/'out/continuation/slots')
+                self.assertEqual(result['attempt'], str(d/'out/continuation'))
 
     def test_verdict_requires_complete_valid_decode_and_five_needles(self):
         with tempfile.TemporaryDirectory() as tmp:

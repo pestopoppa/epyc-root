@@ -5,7 +5,7 @@ from pathlib import Path
 import tempfile
 from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import cpu_resume as guard
 
@@ -126,6 +126,107 @@ class ResumeTests(unittest.TestCase):
     def test_new_run_has_no_resume_claim(self):
         self.state.unlink()
         self.assertEqual(self.prepare(), dict(action="fresh", reason="no prior state", archive=None))
+
+    def checkpoint_runner(self):
+        def http(url, body=None, **kwargs):
+            if url.endswith('action=save'):
+                (self.slot.parent/body['filename']).write_bytes(b'new-slot')
+            return 200, {'n_restored': self.old['depth']}
+        self.runner.YN = SimpleNamespace(http_json=Mock(side_effect=http),
+                                        write_json=guard._atomic_json)
+
+    def save_checkpoint(self, writer, state=None):
+        writer.http_json('http://localhost/slots/0?action=save', {'filename': 'CY2.bin'})
+        writer.write_json(self.state, state or self.old)
+
+    def test_stop_and_relaunch_rewinds_unsealed_progress_and_restores_generation(self):
+        self.checkpoint_runner()
+        self.state.unlink()
+        # The runner sees the same hooked API as its real pinned implementation.
+        def save_via_hooks(args):
+            self.runner.YN.http_json('http://localhost/slots/0?action=save', {'filename': 'CY2.bin'})
+            self.runner.YN.write_json(self.state, self.old)
+            self.runner.YN.write_json(self.state, dict(self.old, turn=47, depth=410000))
+            raise SystemExit(75)
+        self.runner.run = save_via_hooks
+        original_http = self.runner.YN.http_json
+        with self.assertRaises(SystemExit):
+            guard.run_guarded(self.runner, self.args, self.identity, self.receipt, checkpoint=True)
+        self.assertIs(self.runner.YN.http_json, original_http)
+        seal = json.loads(self.receipt.read_text())
+        def relaunched(args):
+            self.assertEqual(json.loads(self.state.read_text()), self.old)
+            self.runner.YN.http_json('http://localhost/slots/0?action=restore', {'filename': 'CY2.bin'})
+            self.assertEqual(original_http.call_args.args[1]['filename'], seal['filename'])
+            return 0
+        self.runner.run = relaunched
+        self.assertEqual(guard.run_guarded(self.runner, self.args, self.identity, self.receipt,
+                                          checkpoint=True), 0)
+
+    def test_killed_save_or_receipt_publish_preserves_previous_generation(self):
+        self.checkpoint_runner()
+        with guard.CheckpointWriter(self.runner, self.identity, self.receipt) as writer:
+            self.save_checkpoint(writer)
+            before = self.receipt.read_bytes()
+            filename = writer.filename
+            real_http = writer.http
+            def killed(url, body=None, **kwargs):
+                (self.slot.parent/body['filename']).write_bytes(b'partial')
+                raise SystemExit(75)
+            writer.http = killed
+            with self.assertRaises(SystemExit):
+                self.save_checkpoint(writer)
+            writer.http = real_http
+            writer.http_json('http://localhost/slots/0?action=save', {'filename': 'CY2.bin'})
+            with patch.object(guard, '_atomic_json', side_effect=SystemExit(75)):
+                with self.assertRaises(SystemExit):
+                    writer.write_json(self.state, dict(self.old, turn=50, saved_turn=50, depth=430000))
+            self.assertEqual(self.receipt.read_bytes(), before)
+            self.assertTrue((self.slot.parent/filename).exists())
+        self.assertEqual(guard.restore_checkpoint(self.state, self.slot.parent, self.receipt,
+                         self.identity)['action'], 'resume')
+        self.assertEqual(json.loads(self.state.read_text()), self.old)
+
+    def test_v2_identity_mismatch_never_rewrites_state(self):
+        self.checkpoint_runner()
+        with guard.CheckpointWriter(self.runner, self.identity, self.receipt) as writer:
+            self.save_checkpoint(writer)
+        before = self.state.read_bytes()
+        for key in self.identity:
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, 'identity'):
+                guard.restore_checkpoint(self.state, self.slot.parent, self.receipt,
+                                         dict(self.identity, **{key: 'f'*64}))
+            self.assertEqual(self.state.read_bytes(), before)
+
+    def test_successful_next_save_switches_generation_before_reclaim(self):
+        self.checkpoint_runner()
+        with guard.CheckpointWriter(self.runner, self.identity, self.receipt) as writer:
+            self.save_checkpoint(writer)
+            previous = writer.filename
+            next_state = dict(self.old, turn=50, saved_turn=50, depth=430000)
+            self.save_checkpoint(writer, next_state)
+            current = writer.filename
+            self.assertNotEqual(previous, current)
+            self.assertFalse((self.slot.parent/previous).exists())
+            self.assertTrue((self.slot.parent/current).exists())
+        self.assertEqual(guard.restore_checkpoint(self.state, self.slot.parent, self.receipt,
+                         self.identity)['filename'], current)
+        self.assertEqual(json.loads(self.state.read_text()), next_state)
+
+    def test_save_failure_and_corrupt_sealed_slot_fail_closed(self):
+        self.checkpoint_runner()
+        with guard.CheckpointWriter(self.runner, self.identity, self.receipt) as writer:
+            writer.http = Mock(return_value=(500, {}))
+            with self.assertRaisesRegex(RuntimeError, 'save failed'):
+                self.save_checkpoint(writer)
+            self.assertFalse(self.receipt.exists())
+        self.checkpoint_runner()
+        with guard.CheckpointWriter(self.runner, self.identity, self.receipt) as writer:
+            self.save_checkpoint(writer)
+            filename = writer.filename
+        (self.slot.parent/filename).write_bytes(b'changed')
+        with self.assertRaisesRegex(ValueError, 'slot digest'):
+            guard.restore_checkpoint(self.state, self.slot.parent, self.receipt, self.identity)
 
 
 if __name__ == "__main__":
