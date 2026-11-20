@@ -3275,6 +3275,11 @@ receipts and a per-cell runtime-residency proof plan; replay checks original rec
 and floor-output bytes plus the admission implementation digest. Preserve actual
 source/build provenance and runtime observations prospectively; the proof plan
 is not residency evidence. Existing VB-RI-OPS-WIRE task remains open.
+The prospective runtime observer now binds retained owned-child maps/library hashes and
+HIP KFD/VRAM observations through worker/runner/closure replay; model-free fixtures only,
+no actual cell residency or verify-phase overlap established. Preserve these originals
+when implementing the numerical-floor producer; the existing planning-context canary
+still gates the read-side wiring claim.
 
 ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
 

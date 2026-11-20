@@ -168,7 +168,9 @@ def load_module(name, path):
 def integrated(panel, tmp_path):
     runner = load_module('precision_runner_test', Path(__file__).with_name('runner.py'))
     worker = tmp_path / 'worker.py'
-    worker.write_text('''import argparse, hashlib, json, pathlib, sys
+    worker.write_text('''import argparse, hashlib, json, pathlib, sys, os
+sys.path.insert(0, str(pathlib.Path.cwd()))
+from scripts.vidya.qwen4exp_quality_capture import stable_bytes_identity
 p=argparse.ArgumentParser()
 p.add_argument('--plan'); p.add_argument('--cell-id'); p.add_argument('--output')
 a=p.parse_args(); plan=json.loads(pathlib.Path(a.plan).read_text())
@@ -186,6 +188,17 @@ value['request']={'plan_sha256':hashlib.sha256(pathlib.Path(a.plan).read_bytes()
                   'settings':{k:plan[k] for k in ('drafter_sha256','backend','binary_sha256','libraries_sha256',
                     'verification','sampling','prompt_manifest_sha256','holdout_sha256','protocol_sha256',
                     'source_sha256','decision_rule','numerical_floor')}, 'runtime':plan['native_worker']}
+if value['status']=='ok' and mode != 'no-proof':
+    libraries=plan['admission']['runtime_proof']['mapped_library_sha256']
+    # Fabricated process observations for replay/refusal tests, never measurements.
+    sample=dict(pid=os.getpid(),start_ticks=12,libraries={p:dict(sha256=s,device=1,inode=2) for p,s in libraries.items()},
+                maps=''.join('1-2 r-xp 0 00:01 2 '+p+'\\n' for p in libraries),kfd_registered=False,vram={})
+    proof=dict(schema='epyc.target-precision.runtime.v1',request=value['request'],owner_pid=os.getppid(),child_pid=os.getpid(),
+               returncode=0,samples=[dict(sample,monotonic_ns=t) for t in (1,2)])
+    proof_path=pathlib.Path(a.output).with_suffix('.runtime.json')
+    proof_path.write_text(json.dumps(proof))
+    value['runtime_proof']=stable_bytes_identity(proof_path)[1]
+    value['native_artifacts']=[value['runtime_proof']]
 pathlib.Path(a.output).write_text(json.dumps(value))
 if mode == 'nonzero': sys.exit(3)
 ''')
@@ -225,8 +238,17 @@ def test_runner_original_discovery_and_shared_grade(integrated):
         runner.run_matrix(plan, dest)
 
 
+def test_closure_refuses_edited_runtime_original(integrated):
+    runner, plan, dest = integrated
+    result = runner.run_matrix(plan, dest)
+    proof = result['cells'][0]['native']['runtime_proof']
+    Path(proof['path']).write_text('{}')
+    with pytest.raises(ValueError, match='artifact bytes changed'):
+        runner.capture.read_precision(dest / 'final.json')
+
+
 @pytest.mark.parametrize('mode,status', [('failed','failed'), ('invalid','invalid'),
-    ('abstained','abstained'), ('missing','failed'), ('nonzero','failed'), ('malformed','invalid')])
+    ('abstained','abstained'), ('missing','failed'), ('nonzero','failed'), ('malformed','invalid'), ('no-proof','invalid')])
 def test_runner_retains_all_terminal_cells(integrated, mode, status):
     runner, plan, dest = integrated
     mutate(plan, lambda p: p['runner'].update(test_mode=mode))

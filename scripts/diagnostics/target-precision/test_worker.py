@@ -197,3 +197,31 @@ def test_failed_native_process_retains_original_bytes(native, mode):
     assert result['native_artifacts']
     if mode == 'malformed':
         assert out.with_suffix('.native').joinpath('trace.json').read_text() == 'malformed native bytes'
+
+
+@pytest.mark.parametrize('mode,status', [('ok', 'ok'), ('one-sample', 'invalid'), ('timeout', 'failed')])
+def test_worker_binds_runtime_original_and_refuses_incomplete_window(native, monkeypatch, mode, status):
+    plan_path, output = native
+    plan = json.loads(plan_path.read_text())
+    plan['origin'] = 'native_claimed'
+    libraries = {'/fixture/libllama.so': '1'*64}
+    plan['admission'] = {'runtime_proof': {'mapped_library_sha256': libraries}}
+    write(plan_path, plan)
+    # Admission itself has a separate refusal suite. These observations and
+    # executable are fabricated solely to exercise worker receipt integration.
+    monkeypatch.setattr(worker.capture, 'admit_native', lambda p: None)
+    def execute(command, env, stdout, stderr, timeout, plan, request):
+        rc = worker.subprocess.run(command, env=env, stdout=stdout, stderr=stderr, check=False).returncode
+        sample = dict(pid=123, start_ticks=42, libraries={p:dict(sha256=s,device=1,inode=2) for p,s in libraries.items()},
+                      maps='1-2 r-xp 0 00:01 2 /fixture/libllama.so\n', kfd_registered=False, vram={})
+        record = dict(schema=worker.runtime.SCHEMA, request=request, owner_pid=99, child_pid=123,
+                      returncode=rc, samples=[dict(sample,monotonic_ns=t) for t in (1,2)])
+        if mode == 'one-sample': record['samples'].pop()
+        if mode == 'timeout': record['timed_out'] = True
+        return record
+    monkeypatch.setattr(worker.runtime, 'execute', execute)
+    value = worker.run_cell(plan_path, 'q8', output)
+    assert value['status'] == status
+    assert value['runtime_proof'] in value['native_artifacts']
+    original = Path(value['runtime_proof']['path'])
+    assert value['runtime_proof']['sha256'] == digest(original)

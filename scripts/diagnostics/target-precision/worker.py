@@ -17,6 +17,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 spec = importlib.util.spec_from_file_location('precision_worker_capture', Path(__file__).with_name('capture.py'))
 capture = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(capture)
+runtime_spec = importlib.util.spec_from_file_location('precision_runtime', Path(__file__).with_name('runtime.py'))
+runtime = importlib.util.module_from_spec(runtime_spec)
+runtime_spec.loader.exec_module(runtime)
 SCHEMA = 'epyc.target-precision.native-trace.v1'
 
 
@@ -213,17 +216,33 @@ def run_cell(plan_path, cell_id, output):
         artifacts.extend((stdout, stderr))
         with stdout.open('xb') as out, stderr.open('xb') as err:
             try:
-                result = subprocess.run(command, env=config['env'], stdout=out, stderr=err,
-                                        timeout=config['timeout_s'], check=False)
-                if result.returncode:
-                    raise RuntimeError(f'native executable rc={result.returncode}')
+                if plan['origin'] == 'native_claimed':
+                    observed = runtime.execute(command, config['env'], out, err, config['timeout_s'], plan, request)
+                    proof_path = directory / 'runtime.json'
+                    capture._exclusive(proof_path, observed)
+                    artifacts.append(proof_path)
+                    value['runtime_proof'] = _identity(proof_path)
+                    rc = observed['returncode']
+                    if observed.get('timed_out'):
+                        raise RuntimeError('native executable timed out')
+                else:
+                    rc = subprocess.run(command, env=config['env'], stdout=out, stderr=err,
+                                        timeout=config['timeout_s'], check=False).returncode
+                if rc:
+                    raise RuntimeError(f'native executable rc={rc}')
             except subprocess.TimeoutExpired as exc:
                 raise RuntimeError('native executable timed out') from exc
         trace, _ = capture._read(raw)
         value = reduce_trace(trace, request)
+        if plan['origin'] == 'native_claimed':
+            value['runtime_proof'] = _identity(proof_path)
+            if value['status'] == 'ok':
+                runtime.validate(observed, plan, request)
     except (ValueError, KeyError, TypeError, OSError, RuntimeError) as exc:
         value = {'status': 'failed' if isinstance(exc, RuntimeError) else 'invalid', 'error': str(exc)}
     finally:
+        if 'proof_path' in locals() and proof_path.exists():
+            value['runtime_proof'] = _identity(proof_path)
         if 'raw' in locals() and raw.exists():
             artifacts.append(raw)
     if 'request' in locals():

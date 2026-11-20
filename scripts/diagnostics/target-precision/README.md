@@ -61,6 +61,27 @@ digest. The worker checks the executable digest; it never hashes model weights.
 Admission must separately bind prepared model/library identities and verify
 runtime residency. A request echo alone cannot establish those facts.
 
+For native-claimed cells, `runtime.py` observes only the worker's captured
+`Popen` child during execution. Successful cells require two distinct observations
+with the same PID/start-time identity, all declared libraries mapped at the
+hashed file's device/inode, and no undeclared `libggml`/`libllama` mappings.
+Library hashing streams bounded library files, caches stable inode identities,
+and never opens model weights. HIP additionally requires `libggml-hip`, KFD
+membership and nonzero per-child VRAM in both observations. CPU panels refuse
+accelerator library mappings. A short or missed window is invalid, rather than
+evidence that GPU execution did not occur. Timeout kills/reaps only this child.
+
+`runtime.json` retains the request, process identities, monotonic timestamps,
+original maps text, observed library identities, KFD counters and bounded error
+diagnostics. Two qualifying samples are retained while observation continues;
+subsequent identity/library contradictions invalidate the cell. Runner and closure
+replay bind the original proof digest, cell request and runtime implementation.
+Failed/invalid cells retain available proof records without gaining acceptance
+counts. Synthetic fixtures bypass the live observer and never provide run evidence.
+These checks establish observed residency within the cell process window; they
+do not identify the verify kernel, prove overlap with an individual verify pass,
+or independently attest the producer. No numerical-floor or causal claim follows.
+
 The executable is invoked as `EXECUTABLE --request REQUEST.json --output TRACE.json`
 with no shell or extra flags. The request seals the plan digest, case (including
 seed and target quant), prompt text, every shared setting, entire runtime

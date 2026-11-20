@@ -134,6 +134,7 @@ def open_capture(plan_path, opened_path):
               'plan_file': identity, 'producer_sha256': _digest(Path(__file__).read_bytes())}
     if 'admission' in plan:
         record['admission_producer_sha256'] = _digest(Path(__file__).with_name('admission.py').read_bytes())
+        record['runtime_producer_sha256'] = _digest(Path(__file__).with_name('runtime.py').read_bytes())
     _exclusive(opened_path, record)
     return record
 
@@ -155,6 +156,8 @@ def _finalized(opened_path, cell_paths):
     if 'admission' in plan:
         if opened.get('admission_producer_sha256') != _digest(Path(__file__).with_name('admission.py').read_bytes()):
             raise ValueError('admission producer bytes changed')
+        if opened.get('runtime_producer_sha256') != _digest(Path(__file__).with_name('runtime.py').read_bytes()):
+            raise ValueError('runtime producer bytes changed')
         admit_native(plan)
     current_plan, identity = _read(opened['plan_file']['path'])
     if identity['sha256'] != opened['plan_file']['sha256'] or current_plan != plan:
@@ -200,6 +203,22 @@ def _finalized(opened_path, cell_paths):
                                       ('positions', 'accepted', 'drafted', 'numerical_divergence')):
                 raise ValueError('native output telemetry mismatch')
         if status == 'ok':
+            if plan['origin'] == 'native_claimed':
+                proof_ref = cell.get('runtime_proof', {})
+                proof, proof_identity = _read(proof_ref.get('path', ''))
+                if (proof_identity != proof_ref or raw_output.get('runtime_proof') != proof_ref
+                        or proof_ref not in cell.get('native_artifacts', [])):
+                    raise ValueError('runtime proof identity mismatch')
+                request = raw_output.get('request', {})
+                if (request.get('plan_sha256') != opened['plan_file']['sha256']
+                        or request.get('case') != expected[cid]
+                        or request.get('settings') != cell['settings']
+                        or request.get('runtime') != plan['native_worker']):
+                    raise ValueError('runtime request plan/cell mismatch')
+                module_spec = importlib.util.spec_from_file_location('precision_runtime_replay', Path(__file__).with_name('runtime.py'))
+                module = importlib.util.module_from_spec(module_spec)
+                module_spec.loader.exec_module(module)
+                module.validate(proof, plan, request)
             positions = cell.get('positions')
             if not isinstance(positions, list) or not positions:
                 raise ValueError('missing per-position acceptance')

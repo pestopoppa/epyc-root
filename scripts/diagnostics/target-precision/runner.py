@@ -76,11 +76,22 @@ def run_matrix(plan_path, output_dir):
                             or request.get('runtime') != plan['native_worker']):
                         raise ValueError('native worker request binding mismatch')
                     native['native_artifacts'].extend(telemetry.get('native_artifacts', []))
+                    if 'runtime_proof' in telemetry:
+                        native['runtime_proof'] = telemetry['runtime_proof']
                 status = telemetry.get('status')
                 if status not in ('ok', 'failed', 'invalid', 'abstained'):
                     raise ValueError('native status missing or unknown')
                 native['status'] = status
                 if status == 'ok':
+                    if plan['origin'] == 'native_claimed':
+                        proof_ref = telemetry.get('runtime_proof', {})
+                        proof, proof_identity = capture._read(proof_ref.get('path', ''))
+                        if proof_identity != proof_ref or proof_ref not in native['native_artifacts']:
+                            raise ValueError('runtime proof identity mismatch')
+                        runtime_spec = importlib.util.spec_from_file_location('precision_runner_runtime', Path(__file__).with_name('runtime.py'))
+                        runtime = importlib.util.module_from_spec(runtime_spec)
+                        runtime_spec.loader.exec_module(runtime)
+                        runtime.validate(proof, plan, request)
                     for key in ('positions', 'accepted', 'drafted', 'numerical_divergence'):
                         native[key] = telemetry[key]
                     native.pop('error')
