@@ -92,6 +92,35 @@ class Verdicts(unittest.TestCase):
             os.remove(f.name)
         self.assertEqual(cq.last_user_text("/nonexistent"), "")
 
+    # AK audit C1 (2026-11-20): "Use the decision tool!" was refused 3x on 11-18T23:36Z.
+    def test_explicit_request_for_the_decision_tool_allows_the_call(self):
+        for text in ("Use the decision tool!", "USE THE DECISION TOOL NOW", "give me a decision package", "just ask me"):
+            self.assertIsNone(cq.verdict(q(["A (Recommended)", "B (Recommended)"]), flags="/nonexistent", last_text=text), text)
+            self.assertIsNone(cq.verdict(qs(*[f"d{i}?" for i in range(5)]), flags="/nonexistent", last_text=text), text)
+
+    def test_negated_ask_me_is_not_a_request(self):
+        for text in ("don't ask me, RUN IT", "do not ask me, RUN IT", "never ask me, JUST RUN it"):
+            self.assertIn("imperative", cq.verdict(q(["A", "B"]), flags="/nonexistent", last_text=text), text)
+
+    def test_refusal_names_the_matched_operator_text(self):
+        v = cq.verdict(q(["A", "B"]), flags="/nonexistent", last_text="RUN IT NOW please")
+        self.assertIn("operator text matched: 'RUN IT NOW please'", v)
+        v = cq.verdict(q(["A (Recommended)", "B (Recommended)"]), flags="/nonexistent", last_text="")
+        self.assertIn("operator text matched: none found", v)
+
+    def test_relayed_mid_turn_message_is_the_operator_turn(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as f:
+            f.write(json.dumps({"type": "user", "message": {"content": "RUN IT NOW"}}) + "\n")
+            f.write(json.dumps({"type": "user", "message": {"content": [{"type": "text", "text":
+                "<system-reminder>\nThe user sent the following message:\nUse the decision tool!\n</system-reminder>"}]}}) + "\n")
+        try:
+            self.assertEqual(cq.last_user_text(f.name), "Use the decision tool!")
+            self.assertIsNone(cq.verdict(dict(q(["A", "B"]), transcript_path=f.name), flags="/nonexistent"))
+        finally:
+            os.remove(f.name)
+        self.assertEqual(cq.operator_text("<system-reminder>todo list empty</system-reminder>"), "")
+        self.assertEqual(cq.operator_text("<system-reminder>x</system-reminder> go on"), "go on")
+
     def test_malformed_input_and_other_tools_pass(self):
         self.assertIsNone(cq.verdict({"tool_input": {}}, flags="/nonexistent", last_text=""))
         self.assertIsNone(cq.verdict({"tool_input": {"questions": "x"}}, flags="/nonexistent", last_text=""))

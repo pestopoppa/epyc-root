@@ -22,6 +22,13 @@ recommended option first, labelled "(Recommended)", and the tool takes up to 4 q
       question itself ("decision tool", "options", "ask me", ...) or when every question is an operator-only decision
       (ratification, signature, ack, approval, authorisation, human-only path);
   4 is unchanged and applies to every question: a thread that owns live compute never blocks.
+2026-11-20 fix (AK audit C1; refused 3x on 11-18T23:36Z after the operator wrote "Use the decision tool!"):
+  5. an operator turn that EXPLICITLY requests the tool ("decision tool", "decision package", "AskUserQuestion",
+     "ask me") allows the call outright, ahead of rules 1-4; the operator asked for exactly this call;
+  6. operator text delivered mid-turn arrives wrapped in a <system-reminder> ("The user sent the following message:
+     ..."); the old reader skipped every text starting with "<", so it fell back to an OLDER turn (often one with
+     NOW in it). The reader now unwraps that form and strips other tags instead of skipping the whole turn;
+  7. every refusal names the operator text it matched (first 160 chars), so a misfire is visible in the record.
 Everything else passes. Malformed input passes (the hook never blocks on its own bug). Flags dir: ROWFLOW_FLAGS.
 """
 import glob
@@ -32,10 +39,29 @@ import sys
 
 IMPERATIVE = re.compile(r"\bNOW\b|\b(?i:JUST RUN|RUN IT|DO SOMETHING|LAUNCH (IT|THE)|GO AHEAD|STOP ASKING)\b")
 RECOMMENDED = re.compile(r"\b(recommended|default)\b", re.I)
-ASKS_FOR_QUESTION = re.compile(r"decision (tool|package)|AskUserQuestion|\boptions?\b|trade-?offs?|\bask me\b|which (one|option)", re.I)
+ASKS_FOR_QUESTION = re.compile(r"decision (tool|package)|AskUserQuestion|\boptions?\b|trade-?offs?|(?<!n't )(?<!not )(?<!never )\bask me\b|which (one|option)", re.I)
 OPERATOR_ONLY = re.compile(r"ratif|signature|\bsign[- ]?off\b|\bsign\b|\back(nowledge\w*)?\b|approv|authori[sz]|human[- ]only|operator[- ]only", re.I)
+EXPLICIT_REQUEST = re.compile(r"decision[- ](tool|package)|AskUserQuestion|(?<!n't )(?<!not )(?<!never )\bask me\b", re.I)
+RELAYED = re.compile(r"user sent (?:the following|a new) message[^:\n]*:\s*(.*)", re.I | re.S)
+TAG_BLOCK = re.compile(r"<(system-reminder|command-[a-z-]+|local-command-[a-z-]+)[^>]*>(.*?)</\1>", re.S)
 MAX_QUESTIONS = 4
 FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
+
+
+def operator_text(text):
+    """The operator-authored part of a user-turn string, '' when it holds none.
+
+    Relayed mid-turn messages live inside a <system-reminder>; unwrap those, drop every other tag block."""
+    relayed = []
+
+    def repl(m):
+        r = RELAYED.search(m.group(2))
+        if r and r.group(1).strip():
+            relayed.append(r.group(1).strip())
+        return " "
+    rest = TAG_BLOCK.sub(repl, text)
+    rest = re.sub(r"<[^>\n]{1,80}>", " ", rest).strip()
+    return relayed[-1] if relayed else rest
 
 
 def last_user_text(transcript_path):
@@ -58,7 +84,8 @@ def last_user_text(transcript_path):
                     text = " ".join(c.get("text", "") for c in content if isinstance(c, dict) and c.get("type") == "text")
                 else:
                     continue
-                if text.strip() and not text.lstrip().startswith("<"):   # tool results / system reminders are not operator turns
+                text = operator_text(text)    # tool results / bare reminders yield '' and are not operator turns
+                if text.strip():
                     last = text
     except OSError:
         return ""
@@ -92,6 +119,18 @@ def verdict(hook_input, flags=FLAGS, last_text=None):
     if not isinstance(qs, list):
         return None
     qs = [x for x in qs if isinstance(x, dict)]
+    text = last_user_text(hook_input.get("transcript_path", "")) if last_text is None else last_text
+    text = text or ""
+    if EXPLICIT_REQUEST.search(text):
+        return None                                   # rule 5: the operator asked for this call
+    v = _verdict(qs, hook_input, flags, text)
+    if v:
+        snippet = " ".join(text.split())[:160]
+        v += f" [operator text matched: {snippet!r}]" if snippet else " [operator text matched: none found]"
+    return v
+
+
+def _verdict(qs, hook_input, flags, text):
     if len(qs) > MAX_QUESTIONS:
         return f"BLOCKED: {len(qs)} items in one question (max {MAX_QUESTIONS}); fix: ask only the decisions only the operator can make, act on the rest first"
     keys = [(str(x.get("question", "")).strip().lower(), str(x.get("header", "")).strip().lower()) for x in qs]
@@ -105,8 +144,7 @@ def verdict(hook_input, flags=FLAGS, last_text=None):
         if marked > 1:
             return "BLOCKED: several options marked Recommended/default in one question; fix: recommend ONE option (first), or act if they are all acceptable"
     operator_only = bool(qs) and all(OPERATOR_ONLY.search(f"{x.get('header', '')} {x.get('question', '')}") for x in qs)
-    text = last_user_text(hook_input.get("transcript_path", "")) if last_text is None else last_text
-    m = IMPERATIVE.search(text or "")
+    m = IMPERATIVE.search(text)
     if m and not operator_only and not ASKS_FOR_QUESTION.search(text):
         return f"BLOCKED: the operator's last message is an imperative ({m.group(0)!r}); fix: make the tool call it asks for in this turn"
     rid = live_launch(hook_input.get("session_id"), flags)
