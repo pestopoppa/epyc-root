@@ -153,3 +153,7 @@ AM-PORT-3: filed row am-port3-native-capturefix-gpu-20261120, rc=0, fail at comp
 ## 22:40Z — File LSA CPU sparse op-level gate result
 
 Filed lsa-cpu-sparse-opgate-20261119-r1 as KEEP_OP (rc=0): 32k KV 24-thread median dense/LSA 3.97184x, rounds 3.97184/3.95898/3.97640; correctness checks passed. This is an op-level geometry-only result; integration, quality gate and >=3% end-to-end criterion remain open in LSA-CPU-SPARSE-E2E. Results SHA-256 12f1b1df7c42c246cbb2b4bff9777a9da19b6e197f35edc1b1b7b6d38283ab86. [belief: cc]
+
+## 22:56Z — File inconclusive CPU sparse end-to-end bound result
+
+Filed lsa-cpu-sparse-e2e-bound-20261120-r1 inconclusive: FUTILITY_WRONG_GRANT, rc=0; grant supplied q0 (0-23), but preregistration requires q1 or q2. No benchmark pair or bound measured; LSA-CPU-SPARSE-E2E remains open. RESULT.json SHA-256 4902feb16eb5a416b82524fbc7c67b9ac5b1a777e06e5335ce81e310921521bb. [belief: cc]
