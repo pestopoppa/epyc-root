@@ -1,0 +1,85 @@
+{
+  "output": "/unused",
+  "build_result": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-v4-build-row/RESULT.json",
+  "build_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-v4-build-row",
+  "server": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-v4-build-row/runs/build-BwLyph3y/build/bin/llama-server",
+  "backend": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-v4-build-row/runs/build-BwLyph3y/build/bin/libggml-hip.so.0.16.0",
+  "backend_sha256": "c9ed775d4a2d313dcdfc1d5d522513a476923ce3dde129eac5d6f5f33ede2abe",
+  "trace_marker": "G3_FATTN_DISPATCH_V3",
+  "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+  "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "model_preflight": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/g3-gpu-20261104-r5/preflight.json",
+  "model_preflight_sha256": "406a231e6ab233c2c8bd071977858ab1a929c8241cd90429302fc33fe445d44b",
+  "layer_manifest": "/mnt/raid0/llm/views/epyc-root-main/docs/reports/g3-mi210-verify-instrumentation/qwen35-layer-manifest.json",
+  "layer_manifest_sha256": "f644903f02fd50e2c4ec828b2d4247c6c66564e35b925fd511fff6e544a308ab",
+  "timeout_seconds": 1700,
+  "url": "http://127.0.0.1:18991/completion",
+  "rocm_card": "card0",
+  "server_args": [
+    "-m",
+    "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "18991",
+    "-np",
+    "1",
+    "-c",
+    "4096",
+    "-b",
+    "512",
+    "-ub",
+    "512",
+    "--flash-attn",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "--device",
+    "ROCm0",
+    "-ngl",
+    "999",
+    "--spec-type",
+    "draft-mtp",
+    "--spec-draft-n-max",
+    "1",
+    "--spec-draft-p-min",
+    "0"
+  ],
+  "requests": [
+    {
+      "prompt": "Explain how a balanced search tree maintains ordered keys, then work through an example with eight distinct keys.",
+      "n_predict": 1024,
+      "temperature": 0,
+      "seed": 42,
+      "stream": false
+    }
+  ],
+  "row_id": "df2-g3-six-native-r6-20261120",
+  "environment_policy": {
+    "sclk_mhz": [
+      800,
+      1700
+    ],
+    "mclk_mhz": [
+      1600,
+      1600
+    ],
+    "max_gap_s": 3.0
+  },
+  "protocol_sources": {
+    "native_protocol.py": "44bbefc7217ed3c4ab220701263c60ff8959d7924abf6aeb1e1ee93b0d2eedc3",
+    "diagnostic_runner.py": "bea72274779911ae89d237433c7b74940f51da8b9417254d8765d448db359445",
+    "environment_gates.py": "900653dd4be62d2e8d0091a867faca47ef2920049572a7b731485f61602a3717",
+    "analyze_timed_run.py": "fd5b19062acdad4f9db02d8c6997b90b7e2534ba764bc141552b5aa135dadf85",
+    "sysfs_residency.py": "dd36ae78e28f4fd048ed6411a038386410cfd6853b5c7ffc9194308b412e68a9",
+    "residency_evidence.py": "8bbfa963639125a2cf083d28b3cc643a0891bdbd8e5f40428df8fc7f0fd2e89c",
+    "residency_correlation.py": "1ec28ccfb5ce6c80ecb6cd79f83fb00204ce73f5d5949d002e6336be33bfd935",
+    "invocation_trace_v5.py": "969e371588b03781247c2a9233b73cc2d7e8259e6b475cacc20e44cb0efab098",
+    "invocation_trace_v4.py": "bb8247da86b0907ec245855001d3efb73d4d0dcca4cdb372c09d364ab87157e8",
+    "invocation_trace_v3.py": "bb03cb4b653fe9797ffb2dfa9fd408add78f1fcf0eadffd214b4bc9765b64a78",
+    "invocation_trace_v2.py": "2726d8c65aa335feb21279720a4004ae5de416262a5b582845cc527b4b365648",
+    "build_receipt_v4.py": "9e6fdf26b23fd930a1c64ce74eef9ded059b1c5edc47a2ee23524898012e950a"
+  }
+}

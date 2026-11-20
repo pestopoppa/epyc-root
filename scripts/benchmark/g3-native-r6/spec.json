@@ -1,0 +1,31 @@
+{
+  "id": "df2-g3-six-native-r6-20261120",
+  "owner": "df2",
+  "launcher": "/mnt/raid0/llm/tmp/df2/g3-six-native-r6-20261120/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-191",
+  "ports": [
+    18991
+  ],
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/g3-six-native-r6-20261120",
+  "result_path": "/mnt/raid0/llm/tmp/df2/g3-six-native-r6-20261120/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "SCOPED_DISPATCH_OBSERVED only if native_protocol.assess accepts all six independent processes, both MTP-off controls, complete timed layer/dispatch coverage, actual draft-length strata, raw sampled lease/KFD allocation/clock gates and common grant digest; vec_observed answers only the observed-dispatch existential question. Any missing control, incomplete trace/residency, out-of-policy clocks, foreign allocation, failure, STOP or deadline => UNKNOWN, retain partial output and require drain. No throughput or bandwidth claim.",
+  "verdict_by": "agent",
+  "estimate_s": 10200,
+  "min_window_s": 7200,
+  "first_progress_s": 900,
+  "handoff_task": "handoffs/active/speculative-decoding.md:G3",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/g3-six-native-r6-20261120/check.py progress",
+  "keep": [
+    "runs/**",
+    "*.json",
+    "*.py",
+    "*.sh",
+    "*.sha256"
+  ],
+  "notes": "Six fresh server processes; control-first checkpoints. Reuse content-bound V4 build and retained prepared model identity. Predeclared sampled clocks: sclk 800-1700 MHz, mclk 1600 MHz, max gap 3 s. Bound twelve current diagnostic sources. Stop on native/control failure; missing evidence remains UNKNOWN."
+}
