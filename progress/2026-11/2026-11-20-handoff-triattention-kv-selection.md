@@ -7,3 +7,7 @@ AM-PORT-3: started actual pinned detached-source CPU baseline compilation (4 bui
 ## 01:16Z — Fix the observed baseline CPU runner link failure with a native linker regression test
 
 AM-PORT-3: consumed FAILED BUILD-BATCH (SHA-256 af95db90f1dd66622faebb6f4353416089b63e8a9b5c601fe98b21f429c26b28). Fixed wrapper backend linkage: the pinned fused model requires direct CPU symbols, so use shared linked backends instead of MODULE mode. Build suite: 17 PASS; real tiny CMake regression reproduces original unresolved symbols and links/runs corrected wrapper. Full four-way kernel rebuild and native model verdict remain outstanding. Evidence and log digest recorded in the handoff.
+
+## 01:21Z — Restart corrected native full builds; native publication impossible before build receipts exist
+
+AM-PORT-3: native row publication is currently impossible because the failed batch emitted no full-build receipts. Restarted real CPU/HIP baseline/patched compilation with corrected shared-backend linkage at d52f1398391066d0d3500fb03bb762ecd6781cc2, four workers per build, serial batch. Reused baseline-cpu-src; removed superseded baseline_cpu/build binaries while preserving original failure logs in place. New baseline receipt target baseline_cpu-linked/BUILD.json; captured own build/batch PIDs in /mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-full/BUILD-PIDS.json. Registered awaiting/am-port3-full-builds.json for the new BUILD-BATCH.json completion/failure event. No checkbox, build success, published row or model verdict claimed. No LLM polling of build completion.
