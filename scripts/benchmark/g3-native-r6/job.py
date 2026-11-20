@@ -13,6 +13,18 @@ from native_protocol import execute
 D = Path(__file__).resolve().parent
 
 
+def result_exit_code(record):
+    """Preserve drained STOP/deadline without treating partial output as complete."""
+    cells = list(record['cells'].values())
+    if cells and any(c['rc'] == 75 for c in cells):
+        if all(c['rc'] in (0, 75) and
+               c.get('result', {}).get('process_group_drained') is True
+               for c in cells):
+            return 75
+        return 1
+    return 0 if len(cells) == 6 and all(c['rc'] == 0 for c in cells) else 1
+
+
 def main():
     runs = D / 'runs'
     runs.mkdir(exist_ok=True)
@@ -26,8 +38,7 @@ def main():
     # Includes partial UNKNOWN on a stopped/failed child, with captured drain.
     result.write_bytes(endpoint.read_bytes())
     record = json.loads(result.read_text())
-    return 0 if len(record['cells']) == 6 and all(
-        c['rc'] == 0 for c in record['cells'].values()) else 1
+    return result_exit_code(record)
 
 
 if __name__ == '__main__':
