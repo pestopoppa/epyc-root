@@ -20,6 +20,7 @@ Tier map (operator directive 3): the adapter maps the task tier to a model; Stag
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -37,7 +38,8 @@ TIER_MODELS = {
 }
 # Global deny-list carried over from /workspace/opencode.json (the per-run XDG config dir replaces the global config).
 # r1 canary: a piped test command (`cmd | head`) was denied by "*": deny -> read-only helpers are allowed.
-READ_ONLY = ["ls*", "cat *", "head *", "tail *", "wc *", "grep *", "rg *", "git diff*", "git status*", "git log*"]
+READ_ONLY = ["ls*", "head *",  # H1: no `cat` (unbounded); read with line ranges
+             "tail *", "wc *", "grep *", "rg *", "git diff*", "git status*", "git log*"]
 BASH_DENY = ["sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
              "git commit*", "curl*", "wget*", "systemctl*", "reboot*", "shutdown*"]
 
@@ -59,6 +61,35 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 
 
 NUDGE = "Continue now: call a tool in this turn (grep, read or edit). Do not describe a plan.\n"
+
+
+TOOL_MAX_LINES, TOOL_MAX_BYTES = 200, 8192
+POLICY_DIR = Path(os.environ.get("TASKFLOW_POLICY_DIR", "/mnt/raid0/llm/tmp/taskflow-policy"))
+
+
+def policy_file() -> Path:
+    """H3: ONE content-addressed POLICY path for every task, so the instructions block (which names its path) is
+    byte-identical across tasks and the server's prefix cache spans the whole batch."""
+    h = hashlib.sha256(POLICY.encode()).hexdigest()[:12]
+    p = POLICY_DIR / f"POLICY-{h}.md"
+    if not p.exists():
+        POLICY_DIR.mkdir(parents=True, exist_ok=True)
+        tmp = p.with_suffix(f".{os.getpid()}.tmp")
+        tmp.write_text(POLICY, encoding="utf-8")
+        os.replace(tmp, p)
+    return p
+
+
+def request_digest(body: dict) -> dict:
+    """H5: what the metering proxy logs per request -- enough to locate a prefix break without storing prompts."""
+    msgs = body.get("messages") or []
+    sys_txt = "".join(str(m.get("content")) for m in msgs if m.get("role") == "system")
+    raw = json.dumps(body, sort_keys=False)
+    return {"n_messages": len(msgs), "roles": [m.get("role") for m in msgs][:60],
+            "tools": [t.get("function", {}).get("name") for t in body.get("tools") or []],
+            "system_sha": hashlib.sha256(sys_txt.encode()).hexdigest()[:16],
+            "head2k_sha": hashlib.sha256(raw[:2048].encode()).hexdigest()[:16], "body_chars": len(raw),
+            "is_title": not body.get("tools") and len(msgs) <= 2}
 
 
 def model_for(tier: str | None, family: str = "local") -> str:
@@ -102,15 +133,13 @@ def excerpts_for(task: dict, cwd: Path) -> dict[str, str]:
     return out
 
 
-def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 32768,
+def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 65536,
                  out_tokens: int = 4096) -> Path:
     """Per-run opencode config (XDG_CONFIG_HOME/opencode/opencode.json) + the POLICY instructions file.
     Everything that reaches the prompt is task-independent; only bash allow patterns vary (not prompt text)."""
     cfg_dir = run_dir / "xdg-config" / "opencode"
     cfg_dir.mkdir(parents=True, exist_ok=True)
-    pol = run_dir / "POLICY.md"
-    if not pol.exists():
-        pol.write_text(POLICY, encoding="utf-8")
+    pol = policy_file()
     bash = {"*": "deny"}
     for ro in READ_ONLY:
         bash[ro] = "allow"
@@ -125,6 +154,10 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         "autoupdate": False,
         "share": "disabled",
         "instructions": [str(pol)],
+        # H1 (prefix-cache brief 2026-11-20): r2 single tool bursts reached 20-23k tokens and drove compaction
+        "tool_output": {"max_lines": TOOL_MAX_LINES, "max_bytes": TOOL_MAX_BYTES},
+        # H2: no title side-request (it evicted the np1 slot and cost ~6% of r1 computed tokens)
+        "small_model": f"{PROVIDER}/{model_id}",
         "model": f"{PROVIDER}/{model_id}",
         "provider": {PROVIDER: {
             "npm": "@ai-sdk/openai-compatible",
@@ -136,7 +169,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
                 "options": {"chat_template_kwargs": {"enable_thinking": False}, "cache_prompt": True},
             }},
         }},
-        "agent": {AGENT: {
+        "agent": {"title": {"disable": True}, "summary": {"disable": False}, AGENT: {
             "description": "taskflow single-box worker", "mode": "primary",
             "steps": int(task["budget"]["turns"]),
             "permission": {"read": "allow", "edit": "allow", "glob": "allow", "grep": "allow", "list": "allow",

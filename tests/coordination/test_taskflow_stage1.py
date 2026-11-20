@@ -74,14 +74,15 @@ def test_verify_reviewer_and_tests(tmp_path):
     assert verify.verify(t, lane, base)["reason"] == "tests-fail"
 
 
-def test_opencode_config_stable_prefix(tmp_path):
+def test_opencode_config_stable_prefix(tmp_path, monkeypatch):
+    monkeypatch.setattr(local_llm, "POLICY_DIR", tmp_path / "pol")
     t = {"budget": dict(schema.DEFAULT_BUDGET), "test_cmds": ["pytest tests/a.py"]}
     p1 = local_llm.write_config(tmp_path / "r1", "http://x/v1", "m", t)
     p2 = local_llm.write_config(tmp_path / "r2", "http://x/v1", "m", dict(t, test_cmds=[]))
     c1, c2 = json.loads(p1.read_text()), json.loads(p2.read_text())
     assert c1["snapshot"] is False and c1["agent"][local_llm.AGENT]["permission"]["task"] == "deny"
     assert c1["agent"][local_llm.AGENT]["permission"]["bash"]["pytest tests/a.py"] == "allow"
-    assert (tmp_path / "r1/POLICY.md").read_text() == (tmp_path / "r2/POLICY.md").read_text()   # cacheable prefix
+    assert c1["instructions"] == c2["instructions"]                                            # cacheable prefix
     del c1["agent"], c2["agent"], c1["instructions"], c2["instructions"]
     assert c1 == c2
 
@@ -101,3 +102,51 @@ def test_failure_class():
     assert dispatch.failure_class(w, {"verdict": "rejected", "reason": "tests-fail"}) == "model-limitation"
     assert dispatch.failure_class(dict(w, result={"claimed_done": False}), {"verdict": "rejected", "reason": "no-change"}) == "task"
     assert dispatch.failure_class(dict(w, usage={"steps": 0}, errors=["x"]), {"verdict": "error"}) == "harness"
+
+
+def test_prefix_cache_fixes_h1_h3(tmp_path, monkeypatch):
+    monkeypatch.setattr(local_llm, "POLICY_DIR", tmp_path / "pol")
+    t = {"budget": dict(schema.DEFAULT_BUDGET), "test_cmds": []}
+    c = json.loads(local_llm.write_config(tmp_path / "a", "http://x/v1", "m", t).read_text())
+    bash = c["agent"][local_llm.AGENT]["permission"]["bash"]
+    assert "cat *" not in bash and bash["*"] == "deny" and bash["head *"] == "allow"            # H1 no unbounded cat
+    assert c["tool_output"] == {"max_lines": local_llm.TOOL_MAX_LINES, "max_bytes": local_llm.TOOL_MAX_BYTES}
+    assert c["provider"][local_llm.PROVIDER]["models"]["m"]["limit"]["context"] == 65536       # H1 ctx 64k
+    assert c["agent"]["title"] == {"disable": True}                                            # H2 no title call
+    c2 = json.loads(local_llm.write_config(tmp_path / "b", "http://x/v1", "m", t).read_text())
+    assert c["instructions"] == c2["instructions"] and "POLICY-" in c["instructions"][0]      # H3 one shared path
+
+
+def test_request_digest_h5():
+    body = {"messages": [{"role": "system", "content": "S"}, {"role": "user", "content": "u"}],
+            "tools": [{"function": {"name": "read"}}]}
+    d = local_llm.request_digest(body)
+    assert d["n_messages"] == 2 and d["tools"] == ["read"] and not d["is_title"]
+    assert local_llm.request_digest({"messages": [{"role": "user", "content": "t"}]})["is_title"]
+    assert d["system_sha"] == local_llm.request_digest(dict(body, messages=body["messages"] + [{"role": "user", "content": "x"}]))["system_sha"]
+
+
+def test_worker_env_pwd_is_lane_h4(tmp_path, monkeypatch):
+    seen = {}
+    real = subprocess.Popen
+
+    class P:
+        pid, returncode = 1, 0
+
+        def __init__(self, argv, cwd, env, **kw):
+            seen.update(cwd=cwd, pwd=env["PWD"])
+
+        def communicate(self, *a, **k):
+            return b"", b""
+
+    def fake(argv, *a, **kw):
+        return P(argv, **kw) if argv[0] == local_llm.OPENCODE else real(argv, *a, **kw)
+    monkeypatch.setattr(local_llm.subprocess, "Popen", fake)
+    monkeypatch.setattr(local_llm, "POLICY_DIR", tmp_path / "pol")
+    lane = tmp_path / "lane"
+    lane.mkdir()
+    subprocess.run(["git", "init", "-q", str(lane)], check=True)
+    t = {"handoff": "h", "id": "X", "text_sha": "a", "goal": "g", "done_when": None, "test_cmds": [], "forbidden": [],
+         "inputs": [], "tier": None, "budget": dict(schema.DEFAULT_BUDGET)}
+    local_llm.spawn(t, lane, tmp_path / "run", "http://x/v1")
+    assert seen["cwd"] == str(lane) == seen["pwd"]
