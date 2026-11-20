@@ -35,13 +35,13 @@ def repo(tmp_path):
     return r
 
 
-def run(repo, tmp_path, extra=None):
+def run(repo, tmp_path, extra=None, cmd=None):
     log = tmp_path / "warn.jsonl"
     env = {**os.environ, "EPYC_FETCH_MAX_AGE_S": "999999999", "EPYC_GENERATED_WARN_LOG": str(log),
            "TOOLROOT_HUB": str(tmp_path / "nohub"), "EPYC_HYGIENE_EXTRA_SHARED": str(repo), **(extra or {})}
     env.pop("EPYC_INDEX_WRITER", None) if not extra or "EPYC_INDEX_WRITER" not in extra else None
     p = subprocess.run([sys.executable, str(HOOK)], capture_output=True, text=True, env=env, input=json.dumps(
-        {"tool_name": "Bash", "tool_input": {"command": f"git -C {repo} commit -m x"}}))
+        {"tool_name": "Bash", "tool_input": {"command": cmd or f"git -C {repo} commit -m x"}}))
     rows = [json.loads(x) for x in log.read_text().splitlines()] if log.exists() else []
     return p, rows
 
@@ -59,10 +59,49 @@ def test_hub_writer_env_silent(repo, tmp_path):
     assert p.returncode == 0 and p.stderr == "" and rows == []
 
 
-def test_hub_checkout_silent(repo, tmp_path):
+def test_hub_checkout_no_longer_exempt(repo, tmp_path):
     (repo / STATE).write_text('{"a":1}\n'); git(repo, "add", STATE)
     p, rows = run(repo, tmp_path, {"TOOLROOT_HUB": str(repo)})
-    assert p.returncode == 0 and p.stderr == "" and rows == []
+    assert STATE in p.stderr and len(rows) == 1
+
+
+def test_commit_a_judges_worktree(repo, tmp_path):
+    (repo / STATE).write_text('{"a":1}\n')          # unstaged
+    p, rows = run(repo, tmp_path, cmd=f"git -C {repo} commit -a -m x")
+    assert STATE in p.stderr and rows[0]["files"] == [STATE]
+
+
+def test_commit_pathspec_judges_worktree(repo, tmp_path):
+    (repo / STATE).write_text('{"a":1}\n')
+    p, rows = run(repo, tmp_path, cmd=f"git -C {repo} commit -m x -- {STATE}")
+    assert rows and rows[0]["files"] == [STATE]
+
+
+def test_add_then_commit_chain(repo, tmp_path):
+    (repo / STATE).write_text('{"a":1}\n')
+    p, rows = run(repo, tmp_path, cmd=f"git -C {repo} add {STATE} && git -C {repo} commit -m x")
+    assert STATE in p.stderr and rows[0]["files"] == [STATE]
+
+
+def test_new_file_message_and_log(repo, tmp_path):
+    g = "handoffs/active/.index-graph.json"
+    (repo / g).write_text("{}\n"); git(repo, "add", g)
+    p, rows = run(repo, tmp_path)
+    assert "new file" in p.stderr and rows[0]["new_files"] == [g]
+
+
+def test_all_marker_pairs_compared(repo, tmp_path):
+    both = BASE_MD + "<!-- BEGIN GENERATED index_state -->\nq\n<!-- END GENERATED index_state -->\n"
+    (repo / IDX).write_text(both); git(repo, "add", IDX); git(repo, "commit", "-qm", "two")
+    (repo / IDX).write_text(both.replace("\nq\n", "\nr\n")); git(repo, "add", IDX)   # change only the 2nd pair
+    p, rows = run(repo, tmp_path)
+    assert rows and rows[0]["files"] == [IDX]
+
+
+def test_who_env_order(repo, tmp_path):
+    (repo / STATE).write_text('{"a":1}\n'); git(repo, "add", STATE)
+    _, rows = run(repo, tmp_path, {"EPYC_AGENT_ID": "", "CLAUDE_CODE_SESSION_ID": "sess1", "CODEX_THREAD_ID": "c"})
+    assert rows[0]["who"] == "sess1"
 
 
 def test_no_generated_files_silent(repo, tmp_path):

@@ -226,6 +226,33 @@ class WrapupTests(unittest.TestCase):
         rc, out, err = self._run(dict(self.rec, state="finished"))
         self._assert_no_commit(rc, err, "bad state")
 
+    def _gen_commit(self, mode):
+        gen = "handoffs/active/.index-state.json"
+        with open(os.path.join(self.lane, gen), "w") as fh:
+            fh.write('{"a":1}\n')
+        log = os.path.join(self.tmp, "gen-warn.jsonl")
+        env = {"EPYC_GENERATED_WARN_LOG": log, "EPYC_GENERATED_COMMIT_MODE": mode}
+        with patch.dict(os.environ, env):
+            os.environ.pop("EPYC_INDEX_WRITER", None)
+            try:
+                with redirect_stderr(io.StringIO()):
+                    wu.commit(self.lane, [gen], "m", [])
+                err = None
+            except wu.WrapupError as ex:
+                err = str(ex)
+        rows = [json.loads(x) for x in open(log)] if os.path.exists(log) else []
+        return err, rows
+
+    def test_rule_g_warns_and_logs_by_default(self):
+        err, rows = self._gen_commit("warn")
+        self.assertIsNone(err)
+        self.assertEqual(rows[0]["files"], ["handoffs/active/.index-state.json"])
+
+    def test_rule_g_refuses_in_refuse_mode(self):
+        err, rows = self._gen_commit("refuse")
+        self.assertIn("Rule G", err)
+        self.assertEqual(len(rows), 1)
+
     def test_dry_run_commits_nothing(self):
         rc, out, err = self._run(self.rec, extra=["--dry-run"])
         self.assertEqual(rc, 0, err + out)

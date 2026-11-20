@@ -591,8 +591,10 @@ def command_syncs_checkout(cmd: str) -> bool:
 # master-handoff-index.md and the generated:start/end block of each domain index. Hand rows outside the blocks are
 # NOT generated and never warn. Limit: a PreToolUse hook sees the index BEFORE the command runs, so a chained
 # `git add X && git commit` is judged on what is already staged.
-# Flip GENERATED_COMMIT_MODE_DEFAULT to "refuse" after a week of warnings (about 2026-11-27); or set
-# EPYC_GENERATED_COMMIT_MODE=refuse in the environment.
+# Flip GENERATED_COMMIT_MODE_DEFAULT to "refuse" once there have been zero non-hub commits touching generated files
+# for 7 days, judged from the warn JSONL plus `git log --since=7.days -- handoffs/active/.index-state.json`;
+# or set EPYC_GENERATED_COMMIT_MODE=refuse in the environment. Only EPYC_INDEX_WRITER=hub exempts (hub writers:
+# index_regen.py sets it around its own commit; refresh_hub_view.sh only fetches/checks out and never commits).
 GENERATED_COMMIT_MODE_DEFAULT = "warn"
 GENERATED_JSON = ("handoffs/active/.index-state.json", "handoffs/active/.index-graph.json")
 GENERATED_BLOCKS = (("<!-- BEGIN GENERATED index_state -->", "<!-- END GENERATED index_state -->"),
@@ -609,58 +611,102 @@ def _git_out(repo: str, *args: str) -> str | None:
 
 
 def _generated_blocks(text: str) -> list[str]:
+    """Every generated block of every marker pair, in order (all occurrences, all pairs)."""
     out = []
     for b, e in GENERATED_BLOCKS:
-        i = text.find(b)
-        j = text.find(e, i + len(b)) if i >= 0 else -1
-        out.append(text[i:j] if j >= 0 else "")
+        pos = 0
+        while True:
+            i = text.find(b, pos)
+            if i < 0:
+                break
+            j = text.find(e, i + len(b))
+            if j < 0:
+                out.append(text[i:])
+                break
+            out.append(text[i:j])
+            pos = j + len(e)
     return out
 
 
-def generated_files_staged(repo: str) -> list[str]:
-    """Staged paths that touch a generated surface (block-level for the markdown indices)."""
-    names = (_git_out(repo, "diff", "--cached", "--name-only", "-z") or "").split("\0")
-    hits = []
-    for n in filter(None, names):
+def _is_surface_candidate(n: str) -> bool:
+    return n in GENERATED_JSON or (n.startswith("handoffs/active/") and n.count("/") == 2 and n.endswith(".md"))
+
+
+def generated_hits(repo: str, extra_paths=(), worktree: bool = False) -> dict[str, bool]:
+    """{path: is_new_file} for generated surfaces this commit would touch.
+    Base = staged. worktree=True (`commit -a`) adds every tracked working-tree change; extra_paths (a commit
+    pathspec, or paths `git add`ed earlier in the same command) are judged by their working-tree content."""
+    wt_names: set[str] = set()
+    if worktree:
+        wt_names |= set(filter(None, (_git_out(repo, "diff", "HEAD", "--name-only", "-z") or "").split("\0")))
+    paths = [p[2:] if p.startswith("./") else p for p in extra_paths if p and not p.startswith("-")]
+    for p in paths:
+        if _is_surface_candidate(p):
+            wt_names.add(p)
+        elif paths and os.path.isdir(os.path.join(repo, p)):
+            wt_names |= set(filter(None, (_git_out(repo, "diff", "HEAD", "--name-only", "-z", "--", p) or "").split("\0")))
+    names = set(filter(None, (_git_out(repo, "diff", "--cached", "--name-only", "-z") or "").split("\0"))) | wt_names
+    hits: dict[str, bool] = {}
+    for n in sorted(names):
+        if not _is_surface_candidate(n):
+            continue
+        old = _git_out(repo, "show", f"HEAD:{n}")
         if n in GENERATED_JSON:
-            hits.append(n)
-        elif n.startswith("handoffs/active/") and n.count("/") == 2 and n.endswith(".md"):
+            hits[n] = old is None
+            continue
+        if n in wt_names:
+            try:
+                with open(os.path.join(repo, n), errors="replace") as f:
+                    new = f.read()
+            except OSError:
+                new = ""        # deleted in the working tree
+        else:
             new = _git_out(repo, "show", f":{n}") or ""
-            old = _git_out(repo, "show", f"HEAD:{n}") or ""
-            if _generated_blocks(new) != _generated_blocks(old):
-                hits.append(n)
+        if _generated_blocks(new) != _generated_blocks(old or ""):
+            hits[n] = old is None
     return hits
 
 
+def generated_files_staged(repo: str, extra_paths=(), worktree: bool = False) -> list[str]:
+    return list(generated_hits(repo, extra_paths, worktree))
+
+
 def generated_commit_exempt(repo: str) -> bool:
-    if os.environ.get("EPYC_INDEX_WRITER") == "hub":
-        return True
-    top = _git_out(repo, "rev-parse", "--show-toplevel")
-    hub = os.environ.get("TOOLROOT_HUB", "/mnt/raid0/llm/views/epyc-root-main")
-    return bool(top) and os.path.realpath(top.strip()) == os.path.realpath(hub)
+    return os.environ.get("EPYC_INDEX_WRITER") == "hub"
 
 
-def check_generated_commit(repo: str) -> int | None:
+def _who() -> str:
+    for k in ("EPYC_AGENT_ID", "CLAUDE_CODE_SESSION_ID", "CODEX_THREAD_ID", "USER"):
+        if os.environ.get(k):
+            return os.environ[k]
+    return "?"
+
+
+def check_generated_commit(repo: str, extra_paths=(), worktree: bool = False) -> int | None:
     """None = pass silently; 0 = warned (exit 0); 2 = refused."""
     if generated_commit_exempt(repo):
         return None
-    files = generated_files_staged(repo)
-    if not files:
+    hits = generated_hits(repo, extra_paths, worktree)
+    if not hits:
         return None
+    files = list(hits)
     mode = os.environ.get("EPYC_GENERATED_COMMIT_MODE", GENERATED_COMMIT_MODE_DEFAULT)
+    labelled = [f + (" (new file, no HEAD version)" if hits[f] else "") for f in files]
     msg = ("%s: this commit stages generated index surface(s):\n    %s\n"
            "The hub regenerates these (index_regen.py); a session copy goes stale. Unstage them "
            "(`git restore --staged <path>`) and let the hub refresh. Hub writers set EPYC_INDEX_WRITER=hub."
-           % ("BLOCKED" if mode == "refuse" else "WARNING", "\n    ".join(files)))
+           % ("BLOCKED" if mode == "refuse" else "WARNING", "\n    ".join(labelled)))
     print(msg, file=sys.stderr)
     try:
-        os.makedirs(os.path.dirname(GENERATED_WARN_LOG), exist_ok=True)
-        with open(GENERATED_WARN_LOG, "a") as f:
+        log = os.environ.get("EPYC_GENERATED_WARN_LOG", GENERATED_WARN_LOG)
+        os.makedirs(os.path.dirname(log), exist_ok=True)
+        with open(log, "a") as f:
             f.write(json.dumps({
                 "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-                "who": os.environ.get("EPYC_AGENT_ID") or os.environ.get("CLAUDE_SESSION_ID") or os.environ.get("USER", "?"),
+                "who": _who(),
                 "commit": (_git_out(repo, "rev-parse", "HEAD") or "").strip(),
-                "repo": repo, "mode": mode, "files": files}) + "\n")
+                "repo": repo, "mode": mode, "files": files,
+                "new_files": [f for f in files if hits[f]]}) + "\n")
     except OSError:
         pass
     return 2 if mode == "refuse" else 0
@@ -691,6 +737,7 @@ def main() -> int:
         return 0
 
     max_age = int(os.environ.get("EPYC_FETCH_MAX_AGE_S", "600"))
+    added_paths: list[str] = []       # paths `git add`ed by earlier segments of this same command (Rule G)
 
     for segment in split_into_segments(cmd):
         for tokens in git_invocations(segment):
@@ -746,6 +793,7 @@ or run `git read-tree -m -u HEAD@{{1}} HEAD` after the move.
                 continue
 
             if sub == "add":
+                added_paths.extend(positionals)
                 if set(flags) & WHOLESALE_ADD_FLAGS or "." in positionals:
                     return block(f"""BLOCKED: wholesale `git add` on a shared repo ({repo}).
 
@@ -816,7 +864,8 @@ Compare against a clean tree without touching this one:
 {OPERATOR_BYPASS_NOTE}""")
 
             if sub == "commit":
-                if check_generated_commit(repo) == 2:
+                if check_generated_commit(repo, extra_paths=[*added_paths, *positionals],
+                                          worktree="--all" in flags or short_cluster_has(flags, "a")) == 2:
                     return 2
                 if positionals:
                     return block(f"""BLOCKED: `git commit -- <pathspec>` on a shared repo ({repo}).
