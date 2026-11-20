@@ -2580,7 +2580,7 @@ The following original ranking and experiment sequence are historical; the updat
 
 #### Q8MF reuse outside tree verify — 2026-11-20 (autokernel)
 
-- [ ] **Q8MF-REUSE-NP-DECODE** [non-inference then inference] Route multi-slot target decode (np 2-16) on the GPU 27B Q8_0 and the A3B through the small-M Q8_0 GEMM (GGML_HIP_Q8_MF, MF_MIN=1): batched decode is a MUL_MAT at M = np, the exact shape the kernel streams weights once for. Wire the route for n_tokens = np decode steps (not only verify ubatches), on a branch off the V3 commit.
+- [ ] **Q8MF-REUSE-NP-DECODE** [inference] Route multi-slot target decode (np 2-16) on the GPU 27B Q8_0 and the A3B through the small-M Q8_0 GEMM (GGML_HIP_Q8_MF, MF_MIN=1): batched decode is a MUL_MAT at M = np, the exact shape the kernel streams weights once for. Wire the route for n_tokens = np decode steps (not only verify ubatches), on a branch off the V3 commit.
       · done when: one commit routing np 2-16 decode onto the V3 kernel with CPU tests and op-perf GB/s at M 2/4/8/16, then a paired llama-bench -np 2,4,8,16 row filed with verdict KEEP / NO_GAIN / LOSS / FAIL_CORRECTNESS
       · gate: DTREE-0-Q8MF-V3 (speculative-decoding.md) landing; do not start before
       · M range: 2-16 (np 2..16)
