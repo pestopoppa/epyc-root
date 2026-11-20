@@ -866,5 +866,24 @@ class TestClaudeWrapper(unittest.TestCase):
                 self.assertNotIn("command not found", res.stderr)
 
 
+class TestSkipNote(unittest.TestCase):
+    """AK audit C4: a refusal must say the rest of a compound command did not run."""
+
+    def test_compound_refusal_says_the_rest_did_not_run(self):
+        v = fs.scan_command('echo hi > $OUT && git add x && git commit -m x', cwd="/workspace")
+        self.assertIn("rest of this compound command did not run", v["detail"])
+        self.assertIn("Use a literal path", v["detail"])
+
+    def test_simple_refusal_says_nothing_ran_without_compound_claim(self):
+        v = fs.scan_command("mkdir /etc/x", cwd="/workspace")
+        self.assertTrue(v["detail"].endswith("Nothing ran."), v["detail"])
+        self.assertNotIn("compound", v["detail"])
+        self.assertNotIn("literal path", v["detail"])
+
+    def test_allowed_commands_carry_no_note(self):
+        for cmd in ("echo hi > /workspace/tmp/x && git status", "ls | wc -l"):
+            self.assertEqual(fs.scan_command(cmd, cwd="/workspace"), {"verdict": "allowed"}, cmd)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

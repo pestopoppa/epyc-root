@@ -1173,7 +1173,28 @@ def scan_command(command: str, cwd: str | None = None,
            "allowlist": load_allowlist(allowlist_path or ALLOWLIST_PATH),
            "cdpath": "CDPATH" in command or bool(os.environ.get("CDPATH"))}
     _scan(lex(command, keep_quoted=True, bodies=ctx["bodies"]), cwd, ctx)
-    return ctx.get("a") or ctx.get("b") or {"verdict": "allowed"}
+    verdict = ctx.get("a") or ctx.get("b") or {"verdict": "allowed"}
+    if verdict.get("verdict") != "allowed":
+        verdict = dict(verdict, detail=_with_skip_note(verdict.get("detail", "refused"), command))
+    return verdict
+
+
+COMPOUND = re.compile(r"&&|\|\||[;|\n]")
+
+
+def _with_skip_note(detail: str, command: str) -> str:
+    """AK audit C4 (2026-11-20): a refused compound command ran NONE of its parts.
+
+    On 11-10T09:28Z an agent read a containment refusal on a `$VAR` write target, did not notice the
+    rest of its `edit && git add && git commit` chain had also been skipped, and reported the edit
+    done over an empty commit. Every surface (Claude wrapper, opencode plugin, codex bridge) prints
+    this detail, so the note is added here, once."""
+    if "variable" in detail and "literal path" not in detail:
+        detail = f"{detail} Use a literal path."
+    if COMPOUND.search(command):
+        return (f"{detail} NOTHING RAN: the rest of this compound command did not run either; "
+                "do not report any part of it as done.")
+    return f"{detail} Nothing ran."
 
 
 def check_path(path: str, cwd: str | None = None,
