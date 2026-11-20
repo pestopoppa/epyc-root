@@ -109,3 +109,37 @@ Step 3 pruning (OP-AK-CODEBUDGET-43 row deletion once the operator accepts; hand
 
 ### Open
 DTREE T9 oracle fix, identity row, DTREE-0 trace; Q38FN-DRAFT-FA-WINDOW, INDEXER-TOPK-CPU; SCLK-CAPT re-run and SCLK-RECLAIM; AKX-P3a box; trim-or-split boxes.
+
+## Wrap-up 4 (since Wrap-up 3, root `3033eeb95`): code-budget ratchet ratified, audit and skill, clock reclaim, tests box closed, DTREE
+
+All shas verified as ancestors of root origin/main, or present in research / the named fork, before writing. Fork shas live in `/mnt/raid0/llm/llama.cpp-experimental` (branch `llama.cpp-experimental-dtree-kernels-20261119`).
+
+| Item | Result | Evidence |
+|---|---|---|
+| Code-budget ratchet | ratified | root `bde27ba5f`, research `252684d41` |
+| Session audit (Fable) | written | `/mnt/raid0/llm/tmp/autokernel-session-audit-20261119.md` |
+| `row-owner-loop` skill | landed with 7 committed-conclusion register rows | root `720768eb0` |
+| Pipeline requirements | 14 sent to Pipeline, which is building B1, B2, B6, B8, B9 | bus |
+| AKX-ALL-31.NATIVE-C14 | NATIVE_PASS, ticked | root `0a27198d2` |
+| Clock reclaim | decode is not clock-limited (1700 MHz held); prefill is power-limited (300 W cap is the maximum); SCLK-CAPT r2 CAPTURED_LIKE_RANDOM, so random operands are valid for op gates and zero operands overstate MMQ by 26%; new boxes AK-PROF-SCLK-ENERGY and AK-PROF-SCLK-DETM (DETM needs root) | root `c80dedbc3` |
+| AK-TESTS-RESEARCH-MAIN-RED | ticked: 247 failing items -> 1 intermittent failure, 0 errors, 8262 passed, 111 skipped (two justified groups) | root `648774335`; research `4a59d7b0c..1108b6ec1` (17 commits, one real product bug `cec5bcb30`); root `ec5857e32` pin |
+| AK-STATIC-REGISTRY-CGROUP-NLINK-FLAKE | new open box: cgroup dir `nlink` in the identity makes `test_discovery_static_registry` fail intermittently under parallel load; 54/54 alone | root `648774335` |
+
+### Tests box detail
+Per-file loop+controller suites on research `1108b6ec1`, system python3 (no numpy), `EPYC_ROOT` at a fresh root worktree, q1 region claim, nice, 4 files in parallel; `cpu_fa_verifier_record` first: 14 passed with the pin. Intermediate full runs on `a95d0558e` showed 8 and 9 failures; three were deterministic and test-side (fixed in `1108b6ec1`: conftest `EPYC_ORCHESTRATOR_REPO` outranks the fixture root; the reader C1 pin needs a git fixture root; a same-size same-tick DSO rewrite needs an explicit mtime). The rest moved between runs (`native_final_trial`, `evidence_feed`, `loadgen_selfcheck`, `static_registry`) and pass alone, i.e. load sensitivity; only `static_registry` still flakes at 4 parallel. `check_regrowth_guards.py`: 0 violations.
+
+### AK-DTREE
+- DTREE-0 filed: the verify cost is a route step at 12 rows (wvsk M<=11 at 29.8 ms vs MMQ at 46.7 ms). AK-WVSK-M10 box `b508e2972`; the T9 subagent says the cause is not wvsk.
+- T9 divergence: the AK-ASM-H15 fusion corrupts conv state when `n_seqs` changes between ubatches; `GGML_CUDA_AK_H15=0` makes it clean. This may affect production np>1 if H15 is in the store builds; a fix is in progress.
+- Identity rows r1-r7: ops pass bit-exact every time (GDN 131/131, SSM_CONV 66/66); DTREE-2c and P4 ticked. Oracle disagreements are near-ties within Poisson noise; gate option A was taken.
+- P5 rows `ak-dtree-batch-27b-gpu-20261119` and `ak-dtree-batch-a3b-gpu-20261119` are published at fork `abda9a72c` (fixes `b66a25406`, `dd26275d6`, `abda9a72c`) and wait for a gpu-q3 window. The smoke shows 27B auto at 41 vs 103 tok/s for linear, consistent with the verify-slope cost.
+
+### Housekeeping
+Root worktrees `ak-dtree2-p5`, `ak-dtree2-p5c`, `ak-dtree-file`, `ak-sclk-reclaim-20261119` removed (landed or clean; plain remove). `ak-dtree2-p5b` kept: it holds uncommitted domain-index edits outside the discardable set.
+
+### Wrap-up edits
+- Box tick `AK-TESTS-RESEARCH-MAIN-RED` plus one new open box. Checkbox flips this wrap-up: 1 tick, 1 new open box. Belief-capture: both carry `[no-belief: tooling-repair]`.
+- Derived actionables: 1 filed (the nlink flake box), 0 declined.
+
+### Skipped (operator cadence)
+Step 3 pruning and the Step 5 wiki sweep.
