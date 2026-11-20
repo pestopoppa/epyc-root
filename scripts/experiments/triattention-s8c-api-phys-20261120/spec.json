@@ -1,0 +1,26 @@
+{
+  "id": "triattention-s8c-api-phys-20261120",
+  "owner": "triattention-kv-selection",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "gib": 8,
+  "estimate_s": 600,
+  "min_window_s": 300,
+  "first_progress_s": 300,
+  "scratch_root": "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120",
+  "launcher": "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120/packet/launcher.sh",
+  "result_path": "/mnt/raid0/llm/tmp/triattention-kv-selection/s8c-api-phys-20261120/native/RESULT.json",
+  "result_format": "json",
+  "unit_key": "unit",
+  "decision_rule": "Futility-only diagnostic on pinned Qwen3-1.7B-Q8_0 CPU candidate: saved dense KV must lose exactly response n_evicted cells while preserving sink4 and recent16 positions and every retained K/V row byte; compare eight deterministic continuation token IDs to the uncompacted control and record post-continuation physical positions. Token differences alone do not fail; cache reset/re-prefill makes continuity inconclusive. Stop after this bounded pair, first invariant failure, STOP or deadline; no quality/performance claim.",
+  "handoff_task": "long-context-program.md:S8-C-API-PHYS",
+  "priority_rank": 70,
+  "keep": [
+    "native/**",
+    "plan.json",
+    "packet/**",
+    "packet-pin.json"
+  ],
+  "kind": "compute",
+  "verdict_by": "agent"
+}
