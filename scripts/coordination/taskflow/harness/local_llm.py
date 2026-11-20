@@ -40,6 +40,10 @@ TIER_MODELS = {
 # r1 canary: a piped test command (`cmd | head`) was denied by "*": deny -> read-only helpers are allowed.
 READ_ONLY = ["ls*", "head *",  # H1: no `cat` (unbounded); read with line ranges
              "tail *", "wc *", "grep *", "rg *", "git diff*", "git status*", "git log*"]
+# Task-brief layer P3 (§7): retrieval tools for locating code and for self-briefing (read-only, zero cloud tokens).
+RETRIEVAL = ["gitnexus query *", "gitnexus context *", "gitnexus impact *",
+             "/workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query *"]
+KB_SEARCH = RETRIEVAL[-1][:-2]
 BASH_DENY = ["sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
              "git commit*", "curl*", "wget*", "systemctl*", "reboot*", "shutdown*"]
 
@@ -165,13 +169,63 @@ def model_for(tier: str | None, family: str = "local") -> str:
     return m.get(tier or "terra", m["terra"])
 
 
+BRIEF_RESULT = "TASKFLOW-BRIEF"
+
+
+def allowed_commands(task: dict) -> list[str]:
+    """Acceptance first (it IS the runnable done-when, §1.5), then the box's own test commands, deduplicated."""
+    out = []
+    for c in ([task.get("acceptance")] if task.get("acceptance") else []) + list(task.get("test_cmds") or []):
+        c = " ".join(str(c).strip().strip("`").split())
+        if c and c not in out:
+            out.append(c)
+    return out
+
+
+def brief_sections(task: dict) -> list[str]:
+    """## WHERE / ## APPROACH / ## NON-GOALS / ## STALE (task-brief layer P3). Empty when there is no brief."""
+    out = []
+    if task.get("where"):
+        blast = task.get("blast_radius") or {}
+        out.append("## WHERE\n" + "\n".join(
+            f"- {w}" + (f"  (blast radius {blast[w.split('::')[-1]]}: change with care)"
+                        if "::" in w and str(blast.get(w.split("::")[-1], "")).upper() in ("HIGH", "CRITICAL") else "")
+            for w in task["where"]))
+    if task.get("approach"):
+        out.append("## APPROACH\n" + str(task["approach"]).strip())
+    if task.get("non_goals"):
+        out.append("## NON-GOALS (doing any of these is drift)\n" + "\n".join(f"- {g}" for g in task["non_goals"]))
+    if task.get("brief_state") == "stale" and task.get("stale"):
+        out.append("## STALE (the brief no longer matches the tree)\n" + "\n".join(f"- {x}" for x in task["stale"]))
+    return out
+
+
+def write_brief_section(task: dict) -> str:
+    """Phase 1 of the two-phase run (§5): self-brief (none/orphaned) or refresh (stale) -- output is constrained."""
+    why = {"stale": "the brief above is STALE: fix the listed items", "orphaned": "the old brief was written for "
+           "different box text"}.get(task.get("brief_state"), "this box has no brief yet")
+    return ("## WRITE BRIEF FIRST\n"
+            f"Phase 1 of 2 ({why}). Do NOT edit any file in this phase. Locate the code with grep/read and, if allowed, "
+            f"`gitnexus query|context <name>` or `{KB_SEARCH} \"<question>\"`. Then finish with ONE line, exactly:\n"
+            f'{BRIEF_RESULT} {{"where": ["epyc-root:path/to/file.py::symbol", ...], "approach": "<=5 lines: the decision", '
+            '"acceptance": "<the runnable form of DONE WHEN, e.g. pytest -q tests/x.py::test_y>", '
+            '"non_goals": ["<what not to change>", ...]}\n'
+            "where = repo-qualified paths that exist (optional ::symbol); acceptance must FAIL on the unchanged tree "
+            "and pass once the box is done; use the DONE WHEN command verbatim when it is one.")
+
+
 def task_suffix(task: dict, excerpts: dict[str, str]) -> str:
-    """The per-task user message. Ordered most-stable-first so even within a task the head caches."""
+    """The per-task user message (everything after the byte-identical stable prefix = opencode system prompt + tool
+    schemas + POLICY). Ordered most-stable-first so even within a task the head caches."""
     b = task["budget"]
     out = [f"## BOX ({task['handoff']}, id {task.get('id') or task['text_sha']})", task["goal"].strip(), ""]
     out.append(f"## DONE WHEN\n{task.get('done_when') or '(not stated: do what the box text asks; the reviewer judges it)'}")
-    allowed = task.get("test_cmds") or []
-    out.append("## ALLOWED COMMANDS\n" + ("\n".join(allowed) if allowed else "(none: do not use bash)"))
+    out.extend(brief_sections(task))
+    if task.get("phase") == "brief":
+        out.append(write_brief_section(task))
+    allowed = allowed_commands(task)
+    out.append("## ALLOWED COMMANDS\n" + ("\n".join(allowed) if allowed else "(no test command for this box)")
+               + "\nRead-only helpers: gitnexus query|context|impact <name>; kb-search (see WRITE BRIEF FIRST).")
     if task.get("refs"):
         out.append("## REFERENCE FILES (read-only copies from other repos)\n" + "\n".join(
             f".taskflow-refs/{r['repo']}" + (f"@{r['rev']}" if r.get("rev") else "") + f"/{r['path']}"
@@ -215,7 +269,9 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
     bash = {"*": "deny"}
     for ro in READ_ONLY:
         bash[ro] = "allow"
-    for c in task.get("test_cmds") or []:
+    for ro in RETRIEVAL:
+        bash[ro] = "allow"
+    for c in allowed_commands(task):
         bash[c] = "allow"
         bash[c + " *"] = "allow"
     for d in BASH_DENY:
@@ -311,7 +367,16 @@ def parse_events(path: Path) -> dict:
             except ValueError:
                 result = {"claimed_done": None, "summary": "unparseable TASKFLOW-RESULT", "raw": raw[:300]}
             break
-    return {"usage": usage, "result": result, "text_tail": final[-1500:], "errors": errors, "tools": tools,
+    brief = None
+    for ln in reversed(final.splitlines()):
+        if BRIEF_RESULT in ln:
+            raw = ln.split(BRIEF_RESULT, 1)[1].strip()
+            try:
+                brief = json.loads(raw[raw.index("{"): raw.rindex("}") + 1])
+            except ValueError:
+                brief = {"unparseable": raw[:300]}
+            break
+    return {"usage": usage, "result": result, "brief": brief, "text_tail": final[-1500:], "errors": errors, "tools": tools,
             "tool_errors": tool_errors, "edits": edits}
 
 
@@ -372,5 +437,5 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
     return {"rc": proc.returncode, "timed_out": timed_out, "wall_s": round(time.time() - t0, 1),
             "family": family, "tier": task.get("tier"), "model": model_id, "prompt_chars": len(prompt),
             "usage": u, "uncached_input": u["input"],  # opencode reports input net of cache reads
-            "result": ev["result"], "errors": ev["errors"], "tools": ev["tools"], "nudged": nudged,
+            "result": ev["result"], "brief": ev.get("brief"), "errors": ev["errors"], "tools": ev["tools"], "nudged": nudged,
             "tool_errors": ev["tool_errors"], "edits": ev["edits"], "text_tail": ev["text_tail"]}

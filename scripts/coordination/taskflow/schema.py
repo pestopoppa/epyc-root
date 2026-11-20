@@ -11,6 +11,9 @@ The task record is what a worker sees and what the verifier checks. It is determ
   forbidden    globs the worker must never touch (FORBIDDEN + any `holds.yaml` `files` targets)
   repo         the git tree the paths resolve in (epyc-root | epyc-orchestrator | epyc-inference-research | …)
   tier/budget  model tier hint and hard caps (turns, tokens, wall seconds)
+  brief        task-brief layer P3 (docs/design/task-brief-layer.md §7): the deterministic `brief.compile_brief`
+               merged in -- where, approach, acceptance, non_goals, inputs_ext, brief_state, stale (the stale-list),
+               brief_accepted, brief_author, acceptance_matches_done_when, blast_radius, brief_path
 
     python3 scripts/coordination/taskflow/schema.py <box-key> [...]     # print task records as JSON
 """
@@ -159,6 +162,47 @@ def unsupported(task: dict) -> str | None:
     return None
 
 
+BRIEF_KEYS = ("where", "approach", "acceptance", "non_goals", "inputs_ext", "brief_state", "stale", "brief_accepted",
+              "brief_author", "brief_review", "acceptance_matches_done_when", "blast_radius", "brief_path")
+
+
+def merge_brief(task: dict, root: Path) -> dict:
+    """Fill the BRIEF_KEYS of an epyc.task.v1 record from the box's sidecar (compile is deterministic, 0 tokens).
+    A box without an ID, or a compile that cannot run, is `brief_state: none` (the worker self-briefs, §5)."""
+    empty = {"where": [], "approach": None, "acceptance": None, "non_goals": [], "inputs_ext": [],
+             "brief_state": "none", "stale": [], "brief_accepted": None, "brief_author": None, "brief_review": None,
+             "acceptance_matches_done_when": False, "blast_radius": {}, "brief_path": None}
+    task.update(empty)
+    bid = task.get("id")
+    if not bid:
+        return task
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    try:
+        from taskflow import brief as B
+        r = B.compile_brief(bid, Path(root))
+        doc = {}
+        p = Path(root) / r["brief"]
+        if p.exists() and r["state"] != "none":
+            try:
+                doc = B.parse_text(p.read_text(encoding="utf-8"))
+            except ValueError:
+                doc = {}
+    except Exception as e:  # noqa: BLE001 - a broken sidecar never stops the task build; it routes to self-brief
+        task["stale"] = [f"compile unavailable: {type(e).__name__}: {e}"[:200]]
+        return task
+    finally:
+        sys.path.pop(0)
+    task.update(brief_state=r["state"], stale=list(r.get("stale_list") or []), brief_path=r["brief"],
+                brief_accepted=r.get("accepted"), brief_author=r.get("author"), brief_review=r.get("review"),
+                acceptance_matches_done_when=bool(r.get("acceptance_matches_done_when")),
+                inputs_ext=list(r.get("inputs_ext") or []), blast_radius=dict(r.get("blast_radius") or {}))
+    if doc:
+        task.update(where=[str(w) for w in doc.get("where") or []], approach=(doc.get("approach") or "").strip() or None,
+                    acceptance=(str(doc["acceptance"]).strip() if doc.get("acceptance") else None),
+                    non_goals=[str(x) for x in doc.get("non_goals") or []])
+    return task
+
+
 def build(rec: dict, root: Path | None = None, held_files: list[str] | None = None,
           budget: dict | None = None) -> dict:
     """epyc.task.v1 from a box-index record. Raises LookupError when the box text no longer resolves."""
@@ -202,7 +246,7 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
                 break
     dw = done_when_text(goal, rec)
     cmds = _CMD.findall(dw or "") or _CMD.findall(goal)
-    return {
+    task = {
         "schema": SCHEMA,
         "key": rec.get("key") or rec.get("id") or f"{rec['file']}#{rec.get('text_sha')}",
         "id": rec.get("id"),
@@ -223,6 +267,7 @@ def build(rec: dict, root: Path | None = None, held_files: list[str] | None = No
         "tier": rec.get("tier"),   # the box `tier:` hint only; dispatch.pick_tier fills the default by kind
         "budget": dict(DEFAULT_BUDGET, **(budget or {})),
     }
+    return merge_brief(task, root)
 
 
 def main(argv=None) -> int:
