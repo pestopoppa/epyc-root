@@ -1,7 +1,7 @@
 ---
 schema: epyc.brief.v1
-id: W-11
-box_text_sha: t:e29a9fc96384e4ef
+id: NUMA-DECOUPLE-1
+box_text_sha: t:301913b8a35fbe93
 author: owner
 written: '2026-11-20'
 accepted: owner
