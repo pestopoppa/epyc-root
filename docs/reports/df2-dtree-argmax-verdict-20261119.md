@@ -34,3 +34,37 @@ claim. Prospective projection is tracked under VB-DTREE-A-WIRE with the shared g
 - `/mnt/raid0/llm/tmp/ak-dtree-a-argmax-gpu-20261119/spec.json`: `8aa0e540b60190a6fe2f3ac8d483ad55df801b879e36c02f60bb28e74f0a0bfe`
 - `/mnt/raid0/llm/tmp/ak-dtree-a-argmax-gpu-20261119/launch.sh`: `08f8376712e07c54995bf72d1b0de1b3a87aec7c86e5eb8cc011ffae5035545d`
 - `/mnt/raid0/llm/tmp/compute-flags/ready/ak-dtree-a-argmax-gpu-20261119.json`: `5b7729ee3a5bd1c6652aa09e32d3cbdf3895f874e8c5adfa56364b75674f5175`
+
+## DTREE-A2 determinism-controlled rerun (2026-11-20)
+
+Row `ak-dtree-a-argmax-gpu-20261119-r2` ended rc=0 with
+**FAIL / FUTILITY_IDENTITY**, at pair 0. Zero-based prompt 0 has identical
+L and L2 content hashes but a different X hash; prompt 2 matches all arms.
+Prompt 1 differs between L and L2 and is excluded by the registered gate.
+Thus one of two judged prompts fails identity despite the lowest-index tie
+fix in candidate `bf39c2509`. The cause remains unproven; the control excludes
+host-repeat variability as an explanation under this registered gate, but
+does not isolate the underlying numerical or implementation mechanism.
+
+Higher decode tok/s is better. L=50.448668, L2=50.411904,
+X=51.152357; X/mean(L,L2)=1.014318 (+1.4318%).
+The native summary reports X/L=1.014318;
+this differs from the registered X/mean(L,L2) denominator above. Neither
+ratio earns a speed verdict: n=1, no estimable paired 95% CI, identity
+futility stops the run before the minimum five-pair answer checkpoint.
+No KEEP_CANDIDATE or LOSS speed conclusion is supported.
+
+All arms show own HIP mappings, own libraries and nonzero owned VRAM
+(~37.74 GB) in beginning/end snapshots; these are not continuous residency
+proof. Do not enable this candidate by default. Reuse the matched-prefix
+logit/first-divergence diagnostic requirement from A1 before another repaired
+candidate qualification. Existing VB-DTREE-A-WIRE covers prospective belief
+projection; this report records a committed-conclusion observation.
+
+Original evidence SHA-256 (files retained by row policy; no copied blobs):
+
+- `/mnt/raid0/llm/tmp/ak-dtree-a-argmax-gpu-20261119-r2/out/RESULT.json`: `370033a0860823dbe674502e309154552be5e35e0faa97d6a1588dbbba011ca5`
+- `/mnt/raid0/llm/tmp/ak-dtree-a-argmax-gpu-20261119-r2/out/results.jsonl`: `4e1e95c894404826a77f58d2d4a809c0efb3944f8f0d152523149286079db344`
+- `/mnt/raid0/llm/tmp/ak-dtree-a-argmax-gpu-20261119-r2/job.py`: `5532199422cbcf02d6bb5ab1c2a516e20a130ac53d3a7648cdadf30c2bdac5fc`
+- `/mnt/raid0/llm/tmp/ak-dtree-a-argmax-gpu-20261119-r2/SOURCE.sha256`: `13b8945682fa82dd0bb670608b48c06b13497ed3978767bc6d9c4188a45b01f4`
+- `/mnt/raid0/llm/tmp/compute-flags/ready/ak-dtree-a-argmax-gpu-20261119-r2.json`: `c550a1a24a259b29fe701031c46e9aa0d8d8fd5a7363b08a3a4010b8ea009e7d`
