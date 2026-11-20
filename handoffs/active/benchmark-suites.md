@@ -440,6 +440,18 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       [Source blobs, controls, environment and digests](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/multi-turn.json).
       Parent CJ-3d remains open for live multi-turn schema scheduling, feedback and capture.
   - [x] **CJ-3d-ADAPTER — Prepare the native tool-call response adapter.** Convert ordered OpenAI-compatible function calls into the upstream V3 checker input shape, retain absent/malformed calls as parse errors, and validate malformed JSON, duplicate keys and ordering without invoking a model or defining scoring. The parent remains open until the pinned official checker and live transport are integrated. [Proposed adapter](../../proposed/cj567/openai_tool_calls.py). ✅ 2026-11-04 [belief: cc]
+      2026-11-20 supported-frame sampler: [ID-only offline implementation](../../proposed/cj567/bfcl_sample.py)
+      reads immutable official V3 case/gold git blobs, checks full ID alignment, and
+      freezes deterministic hash-ranked selections within all six supported single-turn
+      categories (1,150 cases). **7 controls PASS; official request construction PASS
+      for 120 selected cases** (20 per category). The example validates software only;
+      unequal sampling fractions prohibit an unweighted population estimate, and the
+      selection does not cover full BFCL. Existing coverage rows are unchanged.
+      [Contract](../../proposed/cj567/BFCL-SAMPLING.md),
+      [source/test bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/supported-frame-sampling-20261120.json).
+      Parent remains open: integrate frozen IDs with capture under a prospective
+      sample-size/error and stop contract, then publish the supported-frame inference.
+      [no-belief: model-free sampler software controls]
 - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the
       set: the published BFCL evidence is **unrankable today** (122B reports `bfcl_v4` 0.722,
       Next-80B reports `bfcl_v3` 0.703 — two keys, no comparison). A single local run under ONE key

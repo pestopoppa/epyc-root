@@ -1,0 +1,58 @@
+{
+  "box": "CJ-3d",
+  "result": "PASS: supported-frame sampler software controls",
+  "unit_tests": 7,
+  "request_construction": {
+    "status": "PASS",
+    "request_construction_counts": {
+      "java": 20,
+      "javascript": 20,
+      "multiple": 20,
+      "parallel": 20,
+      "parallel_multiple": 20,
+      "simple": 20
+    },
+    "population_n": 1150,
+    "sample_n": 120,
+    "scope": "model-free official request construction only; no inference or scoring"
+  },
+  "upstream_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+  "frame_sha256": "21b664276321354268877d1b0485509d074cbd8d90dee350134a643f6c32efe2",
+  "strata": {
+    "java": {
+      "population_n": 100,
+      "sample_n": 20
+    },
+    "javascript": {
+      "population_n": 50,
+      "sample_n": 20
+    },
+    "multiple": {
+      "population_n": 200,
+      "sample_n": 20
+    },
+    "parallel": {
+      "population_n": 200,
+      "sample_n": 20
+    },
+    "parallel_multiple": {
+      "population_n": 200,
+      "sample_n": 20
+    },
+    "simple": {
+      "population_n": 400,
+      "sample_n": 20
+    }
+  },
+  "bindings": {
+    "proposed/cj567/bfcl_sample.py": "25695d0a5d1f7ea4342ae7f2d33000497f31632098fb4c4e81c02075a4afbd8b",
+    "proposed/cj567/test_bfcl_sample.py": "bd350c391a88d9f19e706fa3f84f92553a98a37c9774b10dc0df013cafe66400",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-sampling-20261120/selection.json": "536b46eed7087116b16de276bc86a46498a010a74effe7e5bbcf179d20c4cb22",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/bfcl-sampling-20261120/request-controls.json": "34f2ee55301af72452efc622734a57e71fd8089709947221d1f44677c24db209"
+  },
+  "limitations": [
+    "ID-only offline sampler; not consumed by current fleet runner.",
+    "120-item example validates software only; measurement sufficiency is not established.",
+    "No inference, scoring, full BFCL representativeness or discrimination claimed."
+  ]
+}
