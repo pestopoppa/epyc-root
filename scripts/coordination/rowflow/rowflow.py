@@ -4740,7 +4740,8 @@ def _idle_act(flags, rid, e, regions, pct, idle_s, holds, owner, log, emit, want
 
 IDLE_CRASH_CHILD_PCT = 5.0      # F6 (AK audit B6): a descendant above this CPU % is the job still working
 IDLE_CRASH_REGION_PCT = 1.0     # "region busy 0 %" with measurement noise
-IDLE_CRASH_SAMPLES = 2          # consecutive qualifying samples before acting; the first one only alerts the owner
+IDLE_CRASH_SAMPLES = 2          # consecutive qualifying samples before the owner alert
+IDLE_CRASH_ACT_S = 600          # review S2-1: act only after >= 10 min of continuous qualifying samples (audit bound)
 IDLE_CRASH_MIN_GAP_S = 30       # samples closer than this are not "consecutive" (the keeper ticks ~60 s)
 
 
@@ -4749,12 +4750,11 @@ def idle_crash_state_path(flags):
 
 
 def _tree_cpu(pid):
-    """{child pid: (starttime, cpu seconds)} of every live descendant of pid (pid itself excluded)."""
+    """{pid: (starttime, cpu seconds)} of the launcher pid AND every live descendant (review S2-2: a launcher that execs
+    into the job, or is the single worker, does its work in its own pid)."""
     hz = os.sysconf("SC_CLK_TCK")
     out = {}
     for c, birth in harness_tree(int(pid), {}).items():
-        if c == int(pid):
-            continue
         try:
             f = open(f"/proc/{c}/stat").read().rsplit(")", 1)[1].split()
         except (OSError, IndexError):
@@ -4764,11 +4764,31 @@ def _tree_cpu(pid):
     return out
 
 
+def idle_crash_exempt(g, row):
+    """Why idle_after_crash must not judge this grant (review S2-1), else None: a build lane, a quiet-host / gpu-q3 /
+    timing row (its harness idles between arms by design), or a row with no first progress yet - its result file has
+    not been written since the grant began (a 100+ GB mmap load or a quiet pre-run phase is not a crash)."""
+    if g["id"].startswith(BUILD_PREFIX) or str(row.get("kind") or "") == "build":
+        return "build"
+    if (str(row.get("shape") or "") in ("quiet-host", "gpu-q3") or row.get("timing")
+            or row.get("admission_class") in GPU_TIMING_CLASSES):
+        return "timing/quiet-host"
+    rp = str(row.get("result_path") or "")
+    try:
+        t0 = os.path.getmtime(g["path"])
+        hits = glob.glob(rp) if any(c in rp for c in "*?[") else [rp]
+        if not any(os.path.exists(h) and os.path.getmtime(h) >= t0 for h in hits if h):
+            return "no-first-progress"
+    except (OSError, KeyError, TypeError):
+        return "no-first-progress"
+    return None
+
+
 def idle_after_crash(flags, grants, util, log, now=None, emit=None, act=True, occ=None):
     """F6 (AK audit B6) idle-after-crash: a started (non-dry-run) grant whose launcher pid is alive while no descendant
-    uses > IDLE_CRASH_CHILD_PCT CPU (and, for a GPU grant, the device reads idle for it) and every held region reads
-    ~0 % busy. First such sample: a warning to the owner (alert before acting). IDLE_CRASH_SAMPLES consecutive: the
-    grant is ended the engine's own way - its STOP file is touched (filler_run15 stops, writes .ended rc=75) - and the
+    uses > IDLE_CRASH_CHILD_PCT CPU (the launcher's own pid included; for a GPU grant, the device reads idle for it) and
+    every held region reads ~0 % busy, after its first progress (idle_crash_exempt). IDLE_CRASH_SAMPLES consecutive: a
+    warning to the owner (alert before acting). >= IDLE_CRASH_ACT_S of continuous qualifying samples: the grant is ended the engine's own way - its STOP file is touched (filler_run15 stops, writes .ended rc=75) - and the
     owner is told reason=idle-after-crash. Never signals or kills a process. Returns [(rid, action)]."""
     now = time.time() if now is None else now
     emit = emit or notify.emit
@@ -4779,8 +4799,12 @@ def idle_after_crash(flags, grants, util, log, now=None, emit=None, act=True, oc
         rid, pid = g["id"], g.get("pid")
         if g.get("dryrun") or not g.get("started") or not pid or not proc_alive(pid):
             continue
+        row = load_json(ready_path(flags, rid)) or {}
+        skip = idle_crash_exempt(g, row)
+        if skip:
+            continue
         prev = st.get(rid) or {}
-        e = {"t": now, "n": 0, "alerted": prev.get("alerted"), "ended": prev.get("ended")}
+        e = {"t": now, "n": 0, "alerted": prev.get("alerted"), "ended": prev.get("ended"), "since": None}
         try:
             cpu = _tree_cpu(pid)
         except Exception:  # noqa: BLE001 - /proc races never end a grant
@@ -4811,21 +4835,22 @@ def idle_after_crash(flags, grants, util, log, now=None, emit=None, act=True, oc
             e["alerted"] = None   # working again: a later idle spell alerts afresh
             continue
         e["n"] = int(prev.get("n") or 0) + 1
-        row = load_json(ready_path(flags, rid)) or {}
+        e["since"] = prev.get("since") or prev["t"]   # the quiet spell began at the baseline sample before this one
         owner = str(row.get("owner") or "")
         why = (f"launcher pid {pid} alive, {len(cpu)} descendant(s) none > {IDLE_CRASH_CHILD_PCT:g}% CPU, regions "
                f"{','.join(sorted(g['holds']))} ~0% busy")
-        if e["n"] < IDLE_CRASH_SAMPLES:
-            if not e["alerted"]:
+        quiet_s = int(now - float(e["since"]))
+        if e["n"] < IDLE_CRASH_SAMPLES or quiet_s < IDLE_CRASH_ACT_S:
+            if e["n"] >= IDLE_CRASH_SAMPLES and not e["alerted"]:
                 e["alerted"] = now
-                log(f"IDLE-AFTER-CRASH-PENDING {rid}: {why}; the grant ends on the next such sample")
+                log(f"IDLE-AFTER-CRASH-PENDING {rid}: {why} for {quiet_s}s; the grant ends after {IDLE_CRASH_ACT_S}s of this")
                 try:
                     emit(flags, "idle-after-crash-pending", rid, g.get("start") or "", f"IDLE-AFTER-CRASH pending {rid}: {why}; "
-                         f"the keeper ends the grant (STOP file, rc=75) if the next sample agrees", "warning", owner,
+                         f"the keeper ends the grant (STOP file, rc=75) if it stays so for {IDLE_CRASH_ACT_S // 60} min", "warning", owner,
                          {"pid": pid, "holds": sorted(g["holds"]), "logs": dry_dir(flags, rid)})
                 except Exception as ex:  # noqa: BLE001
                     log(f"IDLE-AFTER-CRASH {rid}: notify failed: {type(ex).__name__}: {ex}")
-            out.append((rid, "pending"))
+            out.append((rid, "pending" if e["n"] >= IDLE_CRASH_SAMPLES else "quiet"))
             continue
         if not act:
             out.append((rid, "would-end"))
