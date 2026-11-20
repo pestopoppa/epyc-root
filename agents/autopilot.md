@@ -28,6 +28,7 @@ Make the continuous optimizer correct, fully wired and restart-ready. Autopilot 
 
 - Default-off code registered as FeatureSpecs on the autopilot manipulation surface; filed rows; ticks with belief tags.
 - Restart-readiness evidence for the operator's hold-lift decision.
+- **Briefs** (`docs/design/task-brief-layer.md`): every box you add or split carries a brief (`handoff_box.py add --brief` / `brief.py write`; split children get their own); accept or reject `pending` self/backfill briefs and their held ticks with `handoff_box.py brief accept|reject <ID>`; repair an orphaned brief with `brief.py write`.
 
 ## Workflow
 

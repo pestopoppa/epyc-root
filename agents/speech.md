@@ -20,6 +20,7 @@ operator's speech vision (D1-D8) and its acceptance bar. Exists so the 2026-02 a
 ## Outputs
 
 - Filed speech rows, ticks with belief tags, human-ear acceptance packages.
+- **Briefs** (`docs/design/task-brief-layer.md`): every box you add or split carries a brief (`handoff_box.py add --brief` / `brief.py write`; split children get their own); accept or reject `pending` self/backfill briefs and their held ticks with `handoff_box.py brief accept|reject <ID>`; repair an orphaned brief with `brief.py write`.
 
 ## Workflow
 

@@ -263,3 +263,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
 - [ ] **RTG100-GENFILE-HOOK-REFUSE** [non-inference] Flip the generated-index-file pre-commit hook from warn to refuse one week after it went live.
       · done when: the hook refuses a commit touching generated index files on origin/main and a test trips it
       · gate: none
+- [ ] **TASKFLOW-NEEDS-BRIEF-TAG** [non-inference] Close the NEEDS-BRIEF loop: when taskflow dispatch ends a run `needs-brief` (two failed self-briefs), record it where box_index reads it (`needs_brief`) so select.py skips the box until its owner briefs it; today the verdict reaches only the ledger and the box is reselected.
+      · done when: `pytest -q tests/coordination/test_taskflow_needs_brief_tag.py`
+      · gate: none
+      · owner: pipeline-mgmt

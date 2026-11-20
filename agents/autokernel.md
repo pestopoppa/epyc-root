@@ -26,6 +26,7 @@ operator-signed promotion; this role prepares, never promotes.
 ## Outputs
 
 - `llama.cpp-experimental` branches; filed and ticked rows with belief tags; promotion bundles prepared on instruction only.
+- **Briefs** (`docs/design/task-brief-layer.md`): every box you add or split carries a brief (`handoff_box.py add --brief` / `brief.py write`; split children get their own); accept or reject `pending` self/backfill briefs and their held ticks with `handoff_box.py brief accept|reject <ID>`; repair an orphaned brief with `brief.py write`.
 
 ## Workflow
 

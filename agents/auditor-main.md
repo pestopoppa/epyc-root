@@ -38,6 +38,7 @@ direct manager of the originating mains.
 - Never contact, reassign, nudge, or otherwise direct the main that produced the work. Record any
   remaining work in the owning handoff/backlog and return it to `coordinator-agent`; ordinary
   backlog dispatch will eventually choose a main with fresh context.
+- **Briefs** (`docs/design/task-brief-layer.md`): every box you add or split carries a brief (`handoff_box.py add --brief` / `brief.py write`; split children get their own); accept or reject `pending` self/backfill briefs and their held ticks with `handoff_box.py brief accept|reject <ID>`; repair an orphaned brief with `brief.py write`.
 
 ## Workflow
 

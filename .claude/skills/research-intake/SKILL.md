@@ -639,6 +639,14 @@ After distillation, build ONE plan covering:
    (unless drafted NEEDS-OWNER), `· gate:` stated (`none` is explicit), every `· inputs:` path existing.
    `validate_intake.py` (Stage 4) refuses the filing otherwise (`intake_box_lint`), so intake never emits a
    box that later needs an LLM rewrite proposal.
+   **Every new box gets a brief in the same Stage 4 write** (task-brief layer,
+   `docs/design/task-brief-layer.md`; operator amendment 2026-11-20: a box without one is a gap). Stage 3
+   already grounded the approach, so write it with the box: `handoff_box.py add ... --brief --where
+   <repo:path[::symbol]> ... --approach "<=5 lines: the decision>" [--acceptance "<runnable done-when>"]
+   [--non-goal ...] [--new-test tests/test_new.py] --brief-author intake` (acceptance defaults to the
+   done-when; a literal done-when is `accepted: auto`, any other acceptance is `accepted: owner` by plan
+   approval). The plan shows each brief's where/acceptance next to its
+   box, and a brief that does not compile (`brief.py compile <ID>` exit 1) is fixed before the filing commits.
 3. **New stubs** — full stub content (template below), so the operator reviews the actual text.
 4. **Index rows** — **exactly one** domain-index row per handoff, in the thin-row schema
    `| ID | Track | Handoff | Next action | Deps |` (contract:

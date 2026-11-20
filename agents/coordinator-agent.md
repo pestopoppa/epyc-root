@@ -64,6 +64,8 @@ or launch fresh), with pane evidence, roster identity, live-main cap impact and 
 `--context-reset-confirmed` only after explicit confirmation. Models and effort are recommendations; the
 operator may change them at any time. The auditor is a headless per-packet invocation since P3-7.
 
+- **Briefs** (`docs/design/task-brief-layer.md`): when you dispatch or re-point work, the box carries a brief (`brief.py write <ID> --author coordinator ...` for one-line amendments or gate changes); track `BRIEF-COVERAGE`, `NEEDS-BRIEF` skips and `accepted: pending` counts from `index_state.py --summary` and route them to the owner.
+
 ## Guardrails
 
 - **Compute is owned at the coordination level.** The daemon grants windows against `compute_policy.yaml`; as
