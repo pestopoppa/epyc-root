@@ -1760,6 +1760,17 @@ def stale_proposals(bdoc: dict, today: str | None = None) -> list[str]:
             f"accepts / edits / rejects them at wrap-up (wrap-up.md Step 2, Proposals)" for f, n in sorted(old.items())]
 
 
+def brief_coverage_line(doc: dict) -> str:
+    """`BRIEF-COVERAGE: briefed/total` over not-done boxes, plus the non-fresh brief states (task-brief layer P2)."""
+    c = doc.get("counts") or {}
+    tot, bri = c.get("brief_total", 0), c.get("briefed", 0)
+    pct = f" ({100 * bri / tot:.1f}%)" if tot else ""
+    extra = [f"{k[6:]} {c[k]}" for k in ("brief_unverified", "brief_drift", "brief_stale", "brief_orphaned",
+                                          "brief_pending", "brief_backfill_review") if c.get(k)]
+    return f"BRIEF-COVERAGE: {bri}/{tot} boxes briefed{pct}" + (f" — {', '.join(extra)}" if extra else "") + \
+        " — missing briefs are gaps (backfill: scripts/coordination/taskflow/brief.py write)"
+
+
 def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -> tuple[list[str], list[str]]:
     """(warnings, errors) for `--check`: the diff-scoped a/f gate (`task_lint.diff_gate`: rule a fails, rule f warns;
     HANDOFF_BOX_GATE / --box-gate override) plus the size-limit findings of a fresh box index.
@@ -1782,6 +1793,7 @@ def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -
         if doc["counts"].get("legacy_marker"):   # C7
             warns.append(f"LEGACY-MARKER: {doc['counts']['legacy_marker']} retired `[~] [>] [!]` line(s) remain — "
                          f"never dispatchable; `handoff_migrate.py <file>` rewrites them to `[ ]` + NEEDS-OWNER")
+        warns.append(brief_coverage_line(doc))   # task-brief layer P2: every box needs a brief (amendment 2026-11-20)
         n_out = doc["counts"].get("outside_backlog", 0)
         if n_out:
             warns.append(f"BOX-INDEX: {n_out} open box(es) sit outside `### Backlog` in files that have one")
@@ -1894,6 +1906,10 @@ def main(argv: list[str] | None = None) -> int:
         assigned = sum(1 for s in state["handoffs"].values() if s["owner_index"])
         print(f"\n{assigned}/{n} handoffs owned · {len(state['duplicates'])} duplicated · "
               f"{n - assigned} orphaned")
+        try:
+            print(brief_coverage_line(box_index_doc(state)))
+        except Exception as exc:  # noqa: BLE001 — summary is advisory
+            print(f"BRIEF-COVERAGE: unavailable ({type(exc).__name__}: {exc})")
         return 0
 
     if args.check:

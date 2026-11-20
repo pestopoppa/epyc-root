@@ -239,13 +239,14 @@ TIERS = ('luna', 'terra', 'sol', 'haiku', 'sonnet', 'opus')
 DONE_WHEN_REQUIRED = ('non-inference', 'inference')     # classes whose standard-grammar box must state `done when`
 FIELD_KEYS = ('done when', 'gate', 'inputs', 'inputs-missing', 'tier', 'owner', 'stop rule', 'model', 'build', 'harness',
               'metric', 'rule', 'region', 'est', 'frozen until', 'previous_task_text', 'supersedes', 'superseded by',
-              'roll-up', 'class', 'proposed-by', 'parent')
+              'roll-up', 'class', 'proposed-by', 'parent', 'brief')
 FIELD_RE = re.compile(r'·\s*(?:❄\s*)?(' + '|'.join(re.escape(k) for k in sorted(FIELD_KEYS, key=len, reverse=True))
                       + r')\s*:\s*', re.I)
 BOX_ID = re.compile(r'^\s*[-*] \[[ xX~>!]\]\s*\*\*([A-Za-z0-9][A-Za-z0-9._-]*)\*\*')
 # Fields a mechanical migration adds as ANNOTATIONS; they never opt a legacy box into the g-* grammar checks
 # (spec §6 step 2: class / roll-up / frozen / gate-from-BLOCKED / inputs-missing marks must not change a verdict).
-MIGRATION_FIELDS = ('class', 'roll-up', 'frozen until', 'inputs-missing', 'gate', 'supersedes', 'superseded by')
+MIGRATION_FIELDS = ('class', 'roll-up', 'frozen until', 'inputs-missing', 'gate', 'supersedes', 'superseded by',
+                    'brief')   # `· brief: <ID>` points at a sidecar; it never opts a legacy box into the grammar
 # A roll-up carries no work of its own (its children do): rubric a/b/c/e/s do not apply to it (spec §2.2/§2.3).
 ROLLUP_WAIVED = ('a', 'b', 'c', 'e', 's')
 
@@ -346,7 +347,13 @@ def run_dispatch(paths, as_json=False):
 # ---------------------------------------------------------------------------------------------------------------------
 DIFF_GATE_ENV = 'HANDOFF_BOX_GATE'
 DIFF_GATE_DEFAULT = 'default'  # restored in Stage B after the S1/S1b touched-box fix (tests: test_handoff_standard_b.py)
-DIFF_GATE_RULE_MODES = {'a': 'enforce', 'f': 'warn'}      # per-rule severity in `default` mode
+# Rule k (task-brief layer P2, operator amendment 2026-11-20: EVERY box must have a brief). Rolled out like rule a:
+#   k          touched open box has no brief sidecar (handoffs/active/briefs/<ID>.md) or no ID to key one: WARN first
+#   k-mismatch the brief's box_text_sha != the box's text_sha (box text changed / brief for another box):  FAILS
+#   k-stale    a touched brief does not compile (path/symbol/acceptance dry check):                         WARN
+# Promote `k` to enforce here once the backfill job has covered the legacy boxes.
+DIFF_GATE_RULE_MODES = {'a': 'enforce', 'f': 'warn', 'k': 'warn', 'k-mismatch': 'enforce', 'k-stale': 'warn'}
+DIFF_GATE_EXEMPT_K = ('rollup', 'frozen')                  # no work of their own to brief
 DIFF_GATE_RULES = {'a': 'a', 'g-done-when': 'a', 'f': 'f', 'g-inputs': 'f'}
 DIFF_GATE_PATHS = ('handoffs/active/', 'handoffs/blocked/')
 DONE_WHEN_TEXT = re.compile(r'done[- ]when', re.I)
@@ -357,7 +364,39 @@ DIFF_GATE_HINT = {
           "      or run `python3 scripts/handoffs/handoff_box.py add --file F --track T --id ID --class C --text ... "
           "--done-when ...`; a draft without one may carry `NEEDS-OWNER` instead"),
     'f': "fix or remove the backticked path(s) that do not exist: {missing}",
+    'k': ("every box needs a brief: `python3 scripts/coordination/taskflow/brief.py write <ID> --where repo:path[::sym] "
+          "--approach ... --acceptance '<done-when command>' [--non-goal ...]` (or `handoff_box.py add ... --brief-*`)"),
+    'k-mismatch': ("the brief was written for different box text (box_text_sha mismatch) — re-brief with "
+                   "`brief.py write <ID> ...`; the box first line is identity and never changes to fit a brief"),
+    'k-stale': "the brief does not compile: {missing} — fix it, then `brief.py compile <ID>`",
 }
+BRIEF_DIR = 'handoffs/active/briefs/'
+
+
+def _brief_mod():
+    p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'coordination')
+    if p not in sys.path: sys.path.insert(0, p)
+    from taskflow import brief  # noqa: PLC0415 — lazy (brief imports this module)
+    return brief
+
+
+def brief_rule(repo, r, head_sha):
+    """Rule k for one touched box: [] | ['k'] | ['k-mismatch'] (cheap: identity only, no compile)."""
+    if r['state'] in DIFF_GATE_EXEMPT_K: return []
+    if not r['id']: return ['k']
+    st = _brief_mod().cached_state(repo, r['id'], head_sha, (r.get('fields') or {}).get('brief'))['brief']
+    return ['k'] if st == 'none' else ['k-mismatch'] if st == 'orphaned' else []
+
+
+def touched_brief_findings(repo, added):
+    """[(relpath, 1, [rule], info)] for every brief sidecar the diff adds/changes: a full (cached) compile."""
+    out = []
+    for rel in sorted(added):
+        if not rel.startswith(BRIEF_DIR) or not os.path.exists(os.path.join(str(repo), rel)): continue
+        res = _brief_mod().compile_brief(os.path.basename(rel)[:-3], repo)
+        rule = {'orphaned': 'k-mismatch', 'stale': 'k-stale'}.get(res['state'])
+        if rule: out.append((rel, 1, [rule], {'inputs_missing': res['stale_list'], 'fails': res['stale_list']}))
+    return out
 
 
 def diff_gate_mode(explicit=None):
@@ -366,6 +405,8 @@ def diff_gate_mode(explicit=None):
 
 
 def _rule_severity(mode, rule):
+    if mode == 'enforce' and rule.startswith('k'):   # `enforce` is the a/f switch; rule k follows its own table
+        return DIFF_GATE_RULE_MODES[rule]
     return {'off': 'off', 'warn': 'warn', 'enforce': 'enforce'}.get(mode) or DIFF_GATE_RULE_MODES.get(rule, 'warn')
 
 
@@ -401,7 +442,8 @@ def touched_box_findings(repo, base=None):
     `done when` is demanded only of a box whose first line is NEW in the diff; an edited legacy box is judged by
     rubric field a (the hint is still printed)."""
     out, removed = [], {}
-    for rel, added in sorted(added_lines(repo, base, removed).items()):
+    touched = added_lines(repo, base, removed)
+    for rel, added in sorted(touched.items()):
         p = os.path.join(str(repo), rel)
         if not added or not os.path.exists(p): continue
         lines = open(p, encoding='utf-8', errors='replace').read().split('\n')
@@ -417,7 +459,18 @@ def touched_box_findings(repo, base=None):
             if head_new and not DONE_WHEN_TEXT.search(own_block(txt)): bad.add('a')   # decision 5, new boxes only
             bad = sorted(bad)
             if r['state'] in DIFF_GATE_EXEMPT_A or 'OWNER' in r['tags']: bad = [k for k in bad if k != 'a']
+            try:
+                if os.path.dirname(os.path.abspath(__file__)) not in sys.path:
+                    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+                import box_index as _BI  # noqa: PLC0415
+                bad += brief_rule(repo, r, _BI.text_sha(lines[ln - 1]))
+            except Exception as exc:  # noqa: BLE001 — rule k must never break the a/f gate
+                print(f"DIFF-GATE: rule k unavailable ({type(exc).__name__}: {exc})", file=sys.stderr)
             out.append((rel, ln, bad, r))
+    try:
+        out += touched_brief_findings(repo, [k for k, v in touched.items() if v])
+    except Exception as exc:  # noqa: BLE001
+        print(f"DIFF-GATE: brief compile unavailable ({type(exc).__name__}: {exc})", file=sys.stderr)
     return out
 
 
@@ -436,7 +489,7 @@ def diff_gate(repo, base=None, mode=None):
             lines.append(f"{'ERROR' if sev == 'enforce' else 'WARN'} DIFF-GATE {rel}:{ln}: touched open box fails rule {rule} — {hint}")
     nbad = sum(1 for f in finds if f[2])
     lines.append(f"DIFF-GATE ({mode}; {DIFF_GATE_ENV}=off|warn|enforce|default): {len(finds)} touched open box(es), "
-                 f"{nbad} failing a/f, {nerr} error(s)")
+                 f"{nbad} failing a/f/k, {nerr} error(s)")
     return lines, nerr
 
 

@@ -770,7 +770,10 @@ function renderBoxIndex(bi){
   const c = bi.counts||{};
   const parts = ["open","blocked","frozen","needs-owner","proposals_pending","held","outside_backlog","lint_ok"].map(k => k+" "+(c[k]||0));
   const holds = (bi.holds||[]).map(h => h.id).join(", ");
-  el.textContent = "Boxes: " + parts.join(" · ") + (holds ? " | holds: " + holds : "")
+  const b = bi.briefs||{};   // task-brief layer: coverage briefed/total (every box needs a brief)
+  const bstates = ["unverified","drift","stale","orphaned","pending","backfill_review"].filter(k => b["brief_"+k]).map(k => k+" "+b["brief_"+k]);
+  const brief = " | briefs: " + (b.briefed||0) + "/" + (b.brief_total||0) + (bstates.length ? " (" + bstates.join(" · ") + ")" : "");
+  el.textContent = "Boxes: " + parts.join(" · ") + brief + (holds ? " | holds: " + holds : "")
     + (bi.stale ? "  [STALE: " + (bi.stale_reason||"older than sources") + "]" : "");
 }
 

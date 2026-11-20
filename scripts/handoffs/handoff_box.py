@@ -10,6 +10,12 @@
          Writes a NEW box ID2 after ID carrying `· previous_task_text:` + `· supersedes:`; ID gets `· ❄ frozen until:`.
   gate   --file F ID [--add A,B] [--remove A] [--none]      edits the box's `· gate:` line
   freeze --file F (ID | --track T | --whole-file) --until EVENT
+  add ... --brief --where W [W ...] --approach TEXT [--acceptance CMD] [--non-goal NG ...] [--brief-author A]
+         also writes the box's brief sidecar `handoffs/active/briefs/<ID>.md` (epyc.brief.v1, task-brief layer) in the
+         same run and compiles it; --acceptance defaults to the --done-when text. Every new box should carry one.
+  brief accept|reject ID [--by owner] [--root R]
+         accept (clears the self-brief `review: backfill` flag, re-grounds) or reject a brief; refuses an orphaned
+         brief (box_text_sha mismatch).
 
 INVARIANT: the FIRST LINE of an existing box is never changed (task text is the identity; spec §2.2). Every op edits
 continuation lines or inserts new lines only, and verifies this before writing. `--dry-run` prints the diff.
@@ -398,6 +404,12 @@ def parser():
 
     p = sub.add_parser("add"); common(p, box=False); fields(p)
     p.add_argument("--track", required=True); p.add_argument("--id", required=True); p.add_argument("--after")
+    p.add_argument("--brief", action="store_true", help="also write the brief sidecar (task-brief layer)")
+    p.add_argument("--where", nargs="+"); p.add_argument("--approach"); p.add_argument("--acceptance")
+    p.add_argument("--non-goal", action="append", default=[])
+    p.add_argument("--brief-author", default="owner")
+    p = sub.add_parser("brief"); p.add_argument("action", choices=("accept", "reject")); p.add_argument("box")
+    p.add_argument("--by", default="owner"); p.add_argument("--root", default=str(REPO_ROOT))
     p = sub.add_parser("split"); common(p); p.add_argument("--child", action="append", required=True)
     p = sub.add_parser("refine"); common(p); fields(p, need_class=False); p.add_argument("--new-id", required=True)
     p = sub.add_parser("gate"); common(p)
@@ -413,8 +425,55 @@ def parser():
     return ap
 
 
+def _brief_mod():
+    p = str(REPO_ROOT / "scripts" / "coordination")
+    if p not in sys.path:
+        sys.path.insert(0, p)
+    from taskflow import brief  # noqa: PLC0415
+    return brief
+
+
+def root_of(path: Path) -> Path:
+    """The repo root a handoff file lives in (`<root>/handoffs/<dir>/<file>.md`), else REPO_ROOT."""
+    rp = path.resolve()
+    return rp.parents[2] if len(rp.parents) > 2 and rp.parents[1].name == "handoffs" else REPO_ROOT
+
+
+def op_brief(a) -> int:
+    B = _brief_mod()
+    root = Path(a.root)
+    r = B.compile_brief(a.box, root, use_cache=False)
+    if r["state"] == "none":
+        print(f"handoff_box: no brief for {a.box}", file=sys.stderr)
+        return 1
+    if r["state"] == "orphaned" and a.action == "accept":
+        print(f"handoff_box: refusing to accept an orphaned brief: {'; '.join(r['stale_list'])}", file=sys.stderr)
+        return 1
+    print(B.set_accepted(a.box, "rejected" if a.action == "reject" else a.by, root))
+    return 0
+
+
+def add_brief(a, path: Path) -> int:
+    if not (a.where and a.approach):
+        print("handoff_box: --brief needs --where and --approach", file=sys.stderr)
+        return 1
+    B = _brief_mod()
+    root = root_of(path)
+    acc = a.acceptance or (a.done_when or "").strip().strip("`")
+    try:
+        B.write_brief(a.id, a.where, a.approach, acc, a.non_goal, a.tier or "local", a.brief_author, root=root)
+    except ValueError as e:
+        print(f"handoff_box: brief not written: {e}", file=sys.stderr)
+        return 1
+    r = B.compile_brief(a.id, root)
+    print(f"brief {a.id}: {r['state']}" + "".join(f"\n  STALE {x}" for x in r["stale_list"]))
+    return 0 if r["state"] in ("fresh", "drift") else 1
+
+
 def main(argv=None):
     a = parser().parse_args(argv)
+    if a.op == "brief":
+        return op_brief(a)
     path = Path(a.file)
     if a.op == "split-file":
         try:
@@ -423,11 +482,16 @@ def main(argv=None):
             print(f"handoff_box: {e}", file=sys.stderr)
             return 1
         return 0
+    if a.op == "add" and a.brief and not (a.where and a.approach):
+        print("handoff_box: --brief needs --where and --approach", file=sys.stderr)
+        return 1
     try:
         print(apply(path, a.op, a, dry_run=a.dry_run) or "(no change)")
     except BoxError as e:
         print(f"handoff_box: {e}", file=sys.stderr)
         return 1
+    if a.op == "add" and a.brief and not a.dry_run:
+        return add_brief(a, path)
     return 0
 
 

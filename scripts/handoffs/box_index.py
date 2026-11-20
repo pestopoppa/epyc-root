@@ -233,6 +233,7 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
             rec["proposed_by"] = pf.get("proposed-by") or None
             rec["parent"] = pf.get("parent") or None
             rec["needs_owner"] = rec["state"] == "needs-owner"
+            rec.update(brief_fields(root, r["id"], rec["text_sha"], pf.get("brief")))   # task-brief layer P2
             if rec["outside_backlog"]:
                 rec["lint"]["warn"] = ["outside-backlog"]
             if st in "xX":
@@ -280,10 +281,46 @@ def build(root: Path, files: dict[str, Path], handoff_rows: dict[str, str | None
     counts["legacy_marker"] = sum(1 for _n, path in files.items()          # C7: retired [~] [>] [!] (never boxes)
                                   for l in path.read_text(encoding="utf-8", errors="replace").split("\n")
                                   if L1.LEGACY_MARKER.match(l))
+    counts.update(brief_counts(recs))
     counts["proposals_pending"] = sum(1 for r in recs if r.get("proposed_by") and r["state"] == "needs-owner")
     return {"schema": SCHEMA, "include_done": INCLUDE_DONE, "counts": counts, "limits": limit_findings(files, recs, root),
             "holds_source": (str(holds_file(root)) if holds_list is not None else None),
             "holds": [{"id": h["id"], "scope": h["scope"]} for h in holds], "boxes": boxes}
+
+
+BRIEF_STATES = ("none", "unverified", "fresh", "drift", "stale", "orphaned")
+
+
+def _brief_mod():
+    p = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "coordination")
+    if p not in sys.path:
+        sys.path.insert(0, p)
+    from taskflow import brief  # noqa: PLC0415
+    return brief
+
+
+def brief_fields(root: Path, bid: str | None, sha: str, ref: str | None = None) -> dict:
+    """Task-brief layer P2 (docs/design/task-brief-layer.md §4): per-box `brief` state + `brief_sha` / `accepted` /
+    `brief_author` / `brief_review`. CHEAP: no checks run here; a compile result is used only when its cache key still
+    matches (else `unverified`). A box without an ID cannot carry a brief (`none`). Never raises."""
+    if not bid:
+        return {"brief": "none"}
+    try:
+        return _brief_mod().cached_state(root, bid, sha, ref)
+    except Exception:  # noqa: BLE001 — the box index must build even if a sidecar is unreadable
+        return {"brief": "stale"}
+
+
+def brief_counts(recs: list[dict]) -> dict:
+    """Coverage = briefed / brief_total over NOT-done boxes (operator amendment 2026-11-20: every box needs a brief).
+    `briefed` excludes `none` and `orphaned` (an orphaned brief was written for a different box text)."""
+    live = [r for r in recs if r["state"] != "done"]
+    out = {f"brief_{s}": sum(1 for r in live if r.get("brief", "none") == s) for s in BRIEF_STATES}
+    out["briefed"] = sum(1 for r in live if r.get("brief", "none") not in ("none", "orphaned"))
+    out["brief_total"] = len(live)
+    out["brief_pending"] = sum(1 for r in live if r.get("accepted") == "pending")
+    out["brief_backfill_review"] = sum(1 for r in live if r.get("brief_review") == "backfill")
+    return out
 
 
 DISPATCH_CLASSES = ("non-inference", "inference")

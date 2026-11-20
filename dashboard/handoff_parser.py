@@ -724,6 +724,8 @@ def build_board(handoff_root: Path, *, file_activity: dict | None = None,
     }
 
 
+BRIEF_COUNT_KEYS = ("briefed", "brief_total", "brief_unverified", "brief_fresh", "brief_drift", "brief_stale",
+                    "brief_orphaned", "brief_pending", "brief_backfill_review")
 BOX_COUNT_STATES = ("open", "blocked", "frozen", "needs-owner", "outside_backlog", "held", "proposals_pending")
 
 
@@ -765,6 +767,8 @@ def box_index_summary(repo: Path) -> dict:
     out.update({"available": True, "stale": bool(doc.get("stale")), "stale_reason": doc.get("stale_reason"),
                 "counts": {k: int(c.get(k, 0)) for k in BOX_COUNT_STATES} | {"lint_ok": int(c.get("lint_ok", 0)),
                                                                            "total": int(c.get("total", 0))},
+                # task-brief layer P2: brief coverage briefed/brief_total (every box needs a brief) + states
+                "briefs": {k: int(c.get(k, 0)) for k in BRIEF_COUNT_KEYS},
                 "holds": doc.get("holds") or [], "holds_source": doc.get("holds_source"), "_per_file": per})
     return out
 
