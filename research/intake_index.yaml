@@ -392898,7 +392898,7 @@
   - claim_index: 2
     effect: narrowed
     note: "The CPU fallback refers to pre-Ampere NVIDIA GPUs in the fork; no EPYC-relevant CPU path or figure."
-  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full HTML read). The 'paper 44/47/46 vs card 38.9/41.6/40.7' is one dataset in two units (count of 113 vs percent). Offline agent KL (Appendix A, Table 3): NariQ 3.0 bpw 0.0063 vs GSQ-RCO IQ3_XXS 0.0276 at 3.00 bpw (authors metric). Novel part is the calibration/allocation recipe, not the format. EPYC grounding: our EXL3 track has CPU types EXL3_1..8 / EXL3M_1..8 and an AVX-512 int8 GEMV executor (quantization-and-low-bit.md:L135-L137 @e9ee76c); gfx90a EXL3-3/EXL3-4 unchecked (L65, L80); whether NariQ files decode with our EXL3 kernels is NOT-FOUND-IN-SOURCE (new GGML tensor types in the fork; seeded permutation, 16-band output layer). llama-quantize already supports per-tensor type maps (tools/quantize/quantize.cpp L410-L462 @ffc1bac82); llama-imatrix and --kl-divergence have no token-position mask, so agent-trace masked KLD needs a small patch. Decode upper bound from bytes: 3.0 bpw is 0.72x of UD-IQ4_XS bytes (arithmetic, unverified, before trellis decode cost). Adversarial pass not run; all numbers single-author own-harness. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full HTML read). The 'paper 44/47/46 vs card 38.9/41.6/40.7' is one dataset in two units (count of 113 vs percent). Offline agent KL (Appendix A, Table 3): NariQ 3.0 bpw 0.0063 vs GSQ-RCO IQ3_XXS 0.0276 at 3.00 bpw (authors metric). Novel part is the calibration/allocation recipe, not the format. EPYC grounding: our EXL3 track has CPU types EXL3_1..8 / EXL3M_1..8 and an AVX-512 int8 GEMV executor (quantization-and-low-bit.md:L135-L137 @e9ee76c); gfx90a EXL3-3/EXL3-4 unchecked (L65, L80); whether NariQ files decode with our EXL3 kernels is NOT-FOUND-IN-SOURCE (new GGML tensor types in the fork; seeded permutation, 16-band output layer). llama-quantize already supports per-tensor type maps (tools/quantize/quantize.cpp L410-L462 @ffc1bac82); llama-imatrix and --kl-divergence have no token-position mask, so agent-trace masked KLD needs a small patch. Decode upper bound from bytes: 3.0 bpw is 0.72x of UD-IQ4_XS bytes (arithmetic, unverified, before trellis decode cost). Adversarial pass not run; all numbers single-author own-harness. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d) Stage-2 close-out (2026-11-20): dive-surfaced github.com/nari-labs/nari-llama.cpp ingested and dived as intake-2733; huggingface.co/ISTA-DASLab/Qwen3.8-27B-GSQ-RCO-GGUF declined (covered by NEW-10, closed FAIL for serving)."
   notes: "arXiv v1 HTML; Stage-1 read of abstract, intro, tables, limitations. Single-author company preprint. Stage-2: fork public at github.com/nari-labs/nari-llama.cpp (not fetched)."
 - id: intake-2722
   arxiv_id: null
@@ -393058,7 +393058,7 @@
   - claim_index: 3
     effect: narrowed
     note: "Independence is job isolation plus an LLM reviewer; no repeated re-evaluation of a submission and no variance protocol."
-  dive_corrections: "2026-11-20 Stage-2 read (sonnet) of the PDF text extracted with PyMuPDF (22 pages, FULL read; quotes hand-checked against the extract, not machine-anchorable, so the entry stays stage1-unverified per the PDF rule). Only one compliance rejection of 130 (Seed TTS removed the repetition penalty and passed the WER gate); 9 zeros = 4 failed deployments, 4 quality-gate fails, 1 compliance rejection. Baselines are median of 3 or 5 cold starts (OPD single sample). Behavior categories (Table 7): graph/compilation 31/35 Faster, spec decoding/MTP 22/23, specialized GEMM/GEMV 15/15, batch/microbatch 1/7. Hardware H20 and Ascend 910B2 only. Protocol elements we lack vs have: see the dive README. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  dive_corrections: "2026-11-20 Stage-2 read (sonnet) of the PDF text extracted with PyMuPDF (22 pages, FULL read; quotes hand-checked against the extract, not machine-anchorable, so the entry stays stage1-unverified per the PDF rule). Only one compliance rejection of 130 (Seed TTS removed the repetition penalty and passed the WER gate); 9 zeros = 4 failed deployments, 4 quality-gate fails, 1 compliance rejection. Baselines are median of 3 or 5 cold starts (OPD single sample). Behavior categories (Table 7): graph/compilation 31/35 Faster, spec decoding/MTP 22/23, specialized GEMM/GEMV 15/15, batch/microbatch 1/7. Hardware H20 and Ascend 910B2 only. Protocol elements we lack vs have: see the dive README. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d) Stage-2 close-out (2026-11-20): arXiv 2603.19173 (SOL-ExecBench) ingested as intake-2732; arXiv 2601.00227 (FlashInfer-Bench) declined (NVIDIA kernel focus; protocol part captured by RSIBench)."
   notes: "No arXiv HTML rendering (404 on html/2611.24395v1); PDF v1 retrieved 2026-11-20 (sha256 prefix fd22c714cdcb). PDF-only: cannot be machine-anchored, so this entry stays stage1-unverified even after a dive. PDF-only (no arXiv HTML); hand-checked PDF quotes."
 - id: intake-2724
   arxiv_id: null
@@ -393175,7 +393175,7 @@
   - entry: intake-2694
     claim_index: 2
     why: "The gfx90a-still-supported conclusion (release notes) is what keeps the skills applicable; this blog adds no counter-evidence."
-  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). grep for gfx90a / MI210 / 6.2 = 0. Search (independent of the blog): ROCm/FlyDSL is a Python DSL + MLIR stack (docs say tested on ROCm 6.x/7.x; gfx90a codegen not established); jeffdaily/moat describes porting CUDA GitHub projects to ROCm/HIP; the exact skill name moat-cuda-to-rocm was not confirmed in the official catalog. Skills are agent text packages and do not require ROCm 10.2; what they emit must still target gfx90a/ROCm 6.2. In-house consumer: rocm-kernel-authoring.md agentic-rocm-kernel-authoring track. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). grep for gfx90a / MI210 / 6.2 = 0. Search (independent of the blog): ROCm/FlyDSL is a Python DSL + MLIR stack (docs say tested on ROCm 6.x/7.x; gfx90a codegen not established); jeffdaily/moat describes porting CUDA GitHub projects to ROCm/HIP; the exact skill name moat-cuda-to-rocm was not confirmed in the official catalog. Skills are agent text packages and do not require ROCm 10.2; what they emit must still target gfx90a/ROCm 6.2. In-house consumer: rocm-kernel-authoring.md agentic-rocm-kernel-authoring track. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d) Stage-2 close-out (2026-11-20): AMD Skills catalog, FlyDSL docs and FlyDSL blog ingested as intake-2734..2736; github.com/jeffdaily/moat declined as unreachable (HTTP 404, gh api 404) and superseded by intake-2734's finding that Moat lives at github.com/AMD-Ecosystem/moat (ingested as intake-2746) and that moat-cuda-to-rocm IS named in the official catalog (this entry's dive said unconfirmed); github.com/ROCm/aiter release v0.1.29 declined (already cross-referenced; in-house AITER work covers it)."
   notes: "Distinct URL from intake-2694 (blog vs release notes); companion, not a duplicate. Retrieved 2026-11-20."
 - id: intake-2725
   arxiv_id: "2611.23835"
@@ -393609,7 +393609,7 @@
   - claim_index: 3
     effect: reattributed
     note: "Steering read 3.1x as server-side vs 2.3x on H100; both are H100 (31B on 2x H100; E4B on 1x H100)."
-  dive_corrections: "2026-11-20 Stage-2 dive (opus; full read). Clustered projection is lossy for the drafter (~43x fewer head MACs, >97% hit rate per the paper) with exact verification; Gemma clusters the drafter's own 256-dim head whereas Qwen3.8 MTP borrows the target head. In-house: Q38FN CPU draft/MUL_MAT:lm_head 6.906 ms/step (7.42%) at d1k, 5.931 (4.38%) at d32k (q38fn-cpu-perop-profile-20261118-r2 RESULT.json; autokernel-akx-program.md:L1659 @1650e3d); ceiling ~6.7 ms/step at d1k before centroid/gather cost and acceptance loss, marginal against the CPU W5 4.15% floor. MI210: A3B-mtp k_top_k_radix 1.29 ms per drafted token, 9.9% of decode; 27B-dflash2 3.1% (autokernel-loop.md:L5746-5749 @1650e3d); a two-stage projection also shrinks the top-k input; DFlash2 selector needs top-16 plus full-vocab probability rows (dflash.cpp L1312-1330 @eee3da838), so it fits draft-mtp better. Adversarial: Google Gemma docs restate (same org); no independent evaluation. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  dive_corrections: "2026-11-20 Stage-2 dive (opus; full read). Clustered projection is lossy for the drafter (~43x fewer head MACs, >97% hit rate per the paper) with exact verification; Gemma clusters the drafter's own 256-dim head whereas Qwen3.8 MTP borrows the target head. In-house: Q38FN CPU draft/MUL_MAT:lm_head 6.906 ms/step (7.42%) at d1k, 5.931 (4.38%) at d32k (q38fn-cpu-perop-profile-20261118-r2 RESULT.json; autokernel-akx-program.md:L1659 @1650e3d); ceiling ~6.7 ms/step at d1k before centroid/gather cost and acceptance loss, marginal against the CPU W5 4.15% floor. MI210: A3B-mtp k_top_k_radix 1.29 ms per drafted token, 9.9% of decode; 27B-dflash2 3.1% (autokernel-loop.md:L5746-5749 @1650e3d); a two-stage projection also shrinks the top-k input; DFlash2 selector needs top-16 plus full-vocab probability rows (dflash.cpp L1312-1330 @eee3da838), so it fits draft-mtp better. Adversarial: Google Gemma docs restate (same org); no independent evaluation. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d) Stage-2 close-out (2026-11-20): arXiv 2510.13847 (DynaSpec) ingested as intake-2741; arXiv 2605.26444 (NanoSpec) declined (same lever as DynaSpec; reopen only if a clustered-head probe keeps)."
   notes: "arXiv v1 HTML; Google authors."
 - id: intake-2728
   arxiv_id: "2611.26172"
@@ -393765,7 +393765,7 @@
   - claim_index: 2
     effect: narrowed
     note: "Each mitigation trades in-budget gain; two KL values, one seed."
-  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). We run no local GRPO/RLVR weights training (AP-27 RLVR eval-tower scaffolding only, Ouro withdrawn 2026-11-10, autopilot-program.md:L73-L81 @e9ee76c; eval-tower-program.md:L159 defers GRPO training). The usable content is an evaluation rule for thinking-budget routing on served models: score candidate policies at several budgets with accuracy and output length, with an uncensored top budget (TB-SEM-1b found omitted-budget thinking exhausting the ceiling, context-and-token-economy.md:L1112-L1117 @e9ee76c). Adversarial pass not run. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). We run no local GRPO/RLVR weights training (AP-27 RLVR eval-tower scaffolding only, Ouro withdrawn 2026-11-10, autopilot-program.md:L73-L81 @e9ee76c; eval-tower-program.md:L159 defers GRPO training). The usable content is an evaluation rule for thinking-budget routing on served models: score candidate policies at several budgets with accuracy and output length, with an uncensored top budget (TB-SEM-1b found omitted-budget thinking exhausting the ceiling, context-and-token-economy.md:L1112-L1117 @e9ee76c). Adversarial pass not run. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d) Stage-2 close-out (2026-11-20): Muennighoff et al. 2025 budget forcing declined (no arXiv id in the source; the procedure is already implemented via thinking.budget_tokens)."
   notes: "arXiv v1 HTML."
 - id: intake-2729
   arxiv_id: "2611.25123"
@@ -393897,7 +393897,7 @@
   - claim_index: 1
     effect: narrowed
     note: "The <=21% group is SUPO and Masking only; MemGPT (searchable history) matches on KV. Training data includes 15% ContextBench-style synthetic streams."
-  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). Orchestrator @94cd43201: ms.search/ms.expand are FTS5/bm25 over the structured SQLite trace store (src/trace/query.py:L3-L10,L126,L170), feature trace_navigation_tools default OFF (src/features.py:L394); session_log_verbatim (default off) appends turns verbatim to session.verbatim.md (src/graph/session_summary.py:L111); context arms summary_only/summary_pointer/pointer_only/prune_pointer/full_history exist (src/graph/context_arm_ab.py:L19) and the continuation text points the model to peek()/grep() over the full log; the A7 lossless-log arm is specified but not run (context-and-token-economy.md:L187,L255 @e9ee76c). Differences: our default is summary-only; their grep has count-only mode and grouping; they RL-train, we would run prompt-only (the before-RL numbers apply). Name collision: our DCP-10 'ContextBench' (context-and-token-economy.md:L503) is a different benchmark. Adversarial pass not run. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d)"
+  dive_corrections: "2026-11-20 Stage-2 dive (sonnet; full read). Orchestrator @94cd43201: ms.search/ms.expand are FTS5/bm25 over the structured SQLite trace store (src/trace/query.py:L3-L10,L126,L170), feature trace_navigation_tools default OFF (src/features.py:L394); session_log_verbatim (default off) appends turns verbatim to session.verbatim.md (src/graph/session_summary.py:L111); context arms summary_only/summary_pointer/pointer_only/prune_pointer/full_history exist (src/graph/context_arm_ab.py:L19) and the continuation text points the model to peek()/grep() over the full log; the A7 lossless-log arm is specified but not run (context-and-token-economy.md:L187,L255 @e9ee76c). Differences: our default is summary-only; their grep has count-only mode and grouping; they RL-train, we would run prompt-only (the before-RL numbers apply). Name collision: our DCP-10 'ContextBench' (context-and-token-economy.md:L503) is a different benchmark. Adversarial pass not run. lane_head 1650e3d9315f (pre-rebase sibling of e9ee76c07; in-house cites @1650e3d) Stage-2 close-out (2026-11-20): arXiv 2608.12888 and 2605.15184 ingested as intake-2737 and intake-2738; arXiv 2609.37725 (ContextBench source) declined (benchmark definition only)."
   notes: "arXiv v1 HTML."
 - id: intake-2730
   arxiv_id: "2611.23388"
@@ -394558,7 +394558,7 @@
     source_revision: https://rocm.docs.amd.com/projects/FlyDSL/en/latest/index.html
     verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
     source_artifact: {"byte_length": 34276, "effective_url": "https://rocm.docs.amd.com/projects/FlyDSL/en/latest/index.html", "entry_url": "https://rocm.docs.amd.com/projects/FlyDSL/en/latest/index.html", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "6456814e27c86dd4293cff8d1acd81e8128a4f406a97b20f8916a382808e061b", "relative_path": "sha256/64/6456814e27c86dd4293cff8d1acd81e8128a4f406a97b20f8916a382808e061b.raw", "requested_url": "https://rocm.docs.amd.com/projects/FlyDSL/en/latest/index.html", "retrieved_at_utc": "2026-11-20T10:52:26.309852Z", "schema_version": 1, "snapshot_id": "sha256:6456814e27c86dd4293cff8d1acd81e8128a4f406a97b20f8916a382808e061b"}
-  dive_corrections: "2026-11-20 Stage-2b dive (sonnet). Architecture matrix read outside the anchor file (ROCm/FlyDSL README raw; docs installation page): gfx942, gfx950, gfx1250, gfx11*/gfx120* RDNA; gfx90a absent; no ROCm floor stated (README says tested on ROCm 6.x and 7.x). No cdna2 atom module listed. Adds no kernel technique beyond intake-2697/intake-2703. A port to gfx90a is a build cost (wave64 and MFMA shared with gfx942), not a decline reason; viability unknown until a compile probe. lane_head b5c5fe7b4e63"
+  dive_corrections: "2026-11-20 Stage-2b dive (sonnet). Architecture matrix read outside the anchor file (ROCm/FlyDSL README raw; docs installation page): gfx942, gfx950, gfx1250, gfx11*/gfx120* RDNA; gfx90a absent; no ROCm floor stated (README says tested on ROCm 6.x and 7.x). No cdna2 atom module listed. Adds no kernel technique beyond intake-2697/intake-2703. A port to gfx90a is a build cost (wave64 and MFMA shared with gfx942), not a decline reason; viability unknown until a compile probe. lane_head b5c5fe7b4e63 Stage-2 close-out (2026-11-20): github.com/ROCm/FlyDSL declined as a further source (already indexed as intake-2703; gfx90a viability is a compile-probe question)."
   notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 1)."
 - id: intake-2736
   arxiv_id: null
@@ -395261,3 +395261,545 @@
     source_artifact: {"byte_length": 366608, "effective_url": "https://arxiv.org/html/2510.13847v3", "entry_url": "https://arxiv.org/html/2510.13847v3", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "906984d421f013bc1f2a45f463f5f7a6498d67576feddb1b8b7e309a506488d4", "relative_path": "sha256/90/906984d421f013bc1f2a45f463f5f7a6498d67576feddb1b8b7e309a506488d4.raw", "requested_url": "https://arxiv.org/html/2510.13847v3", "retrieved_at_utc": "2026-11-20T10:52:16.947560Z", "schema_version": 1, "snapshot_id": "sha256:906984d421f013bc1f2a45f463f5f7a6498d67576feddb1b8b7e309a506488d4"}
   dive_corrections: "2026-11-20 Stage-2b dive (opus; full read; surfaced by intake-2727). Not training-free: clustering is, the router is a trained MLP. Only 128K/152K vocabularies tested; throughput only on Llama-3-8B (94.98 vs 81.47 tok/s full head, 1.17x; 1.057x over FR-Spec). Internal inconsistencies flagged (artifact defect in the source, not ours). MI210: A3B-mtp vocab-wide k_top_k_radix 1.29 ms per drafted token, ~9.9% of decode (autokernel-loop.md:L4494-4495 @b5c5fe7) is already owned by AK-GAP-1-IDSORT (argmax skip / two-stage top-k, exact). CPU ceiling ~5% of step, same as SlimSpec. Adversarial: no code release or replication; SlimSpec states DynaSpec was not reproduced for lack of an implementation. FR-Spec 2502.14856, Gumiho 2503.10135, thunlp/FR-Spec declined. lane_head b5c5fe7b4e63"
   notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 1)."
+- id: intake-2742
+  arxiv_id: null
+  url: https://github.com/NVlabs/SOLAR
+  source_type: repo
+  title: "NVlabs/SOLAR: Speed of Light Analysis for ML Model Runtime"
+  categories:
+  - hardware_optimization
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2732
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors:
+  - "NVlabs (NVIDIA)"
+  key_claims:
+  - "A SOLAR speed-of-light number is conditional on its operation counts, access model and hardware assumptions, and the tool treats translation agreement, counting and the hardware model as three separate checks."
+  - "The perf model reports unfused and fused speed-of-light per architecture and precision."
+  - "Each architecture profile carries both dense and structured-sparsity tensor-core peaks, and the sparse-peak bound is one no dense kernel can reach."
+  - "The code is Apache-2.0 licensed."
+  techniques:
+  - "program-to-einsum speed-of-light roofline"
+  - "compulsory-I/O fused byte bound"
+  - "dense and sparse peak reporting"
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - rocm-kernel-authoring.md
+    - autokernel-akx-program.md
+    intake_entries:
+    - intake-2732
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: "Do not adopt SOLAR as our bound engine (no GGUF quants, no AMD/CPU profiles, torch frontend). Reuse only the assumption-reporting vocabulary; never use a sparse-peak bound for dense kernels."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "README intro"
+    quote: "A SOL number is conditional on its operation counts, its access model and its hardware assumptions"
+    quote_sha256: b6cb459f5c04ac7c734ae27167d32ea4b92a7ec1c0a0b531ee93c84c81f8d8a0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265, found: true}
+    source_revision: https://github.com/NVlabs/SOLAR
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 353062, "effective_url": "https://github.com/NVlabs/SOLAR", "entry_url": "https://github.com/NVlabs/SOLAR", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265", "relative_path": "sha256/d1/d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265.raw", "requested_url": "https://github.com/NVlabs/SOLAR", "retrieved_at_utc": "2026-11-20T11:07:54.320737Z", "schema_version": 1, "snapshot_id": "sha256:d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "README intro"
+    quote: "Numerical agreement of a translation, correct counting and a valid hardware model are three separate checks"
+    quote_sha256: 0a237db0e93db245c2683b54132e8b925f50da6cf8db315149907b2401693383
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265, found: true}
+    source_revision: https://github.com/NVlabs/SOLAR
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 353062, "effective_url": "https://github.com/NVlabs/SOLAR", "entry_url": "https://github.com/NVlabs/SOLAR", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265", "relative_path": "sha256/d1/d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265.raw", "requested_url": "https://github.com/NVlabs/SOLAR", "retrieved_at_utc": "2026-11-20T11:07:54.320737Z", "schema_version": 1, "snapshot_id": "sha256:d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "README flow"
+    quote: "Perf model: unfused and fused SOL per arch and precision"
+    quote_sha256: 9ba7d2d84b63c16538214b53bd565e3baf5c35821dadeabb76d65639c7396caf
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265, found: true}
+    source_revision: https://github.com/NVlabs/SOLAR
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 353062, "effective_url": "https://github.com/NVlabs/SOLAR", "entry_url": "https://github.com/NVlabs/SOLAR", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265", "relative_path": "sha256/d1/d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265.raw", "requested_url": "https://github.com/NVlabs/SOLAR", "retrieved_at_utc": "2026-11-20T11:07:54.320737Z", "schema_version": 1, "snapshot_id": "sha256:d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "README SOL assumptions"
+    quote: "carries both the dense and the structured-sparsity tensor-core peak for every precision it declares, with their sources"
+    quote_sha256: 9e1d7a367c3c68d8ffd533aa5f45e2f91cb2d292efeb9ac1765df5064fdb6a75
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265, found: true}
+    source_revision: https://github.com/NVlabs/SOLAR
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 353062, "effective_url": "https://github.com/NVlabs/SOLAR", "entry_url": "https://github.com/NVlabs/SOLAR", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265", "relative_path": "sha256/d1/d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265.raw", "requested_url": "https://github.com/NVlabs/SOLAR", "retrieved_at_utc": "2026-11-20T11:07:54.320737Z", "schema_version": 1, "snapshot_id": "sha256:d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "README SOL assumptions"
+    quote: "is a lower bound no dense kernel can reach"
+    quote_sha256: 34441ff1cfe2a09f1c723125194147e3820529d515f707fb77029f9a32922fc3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265, found: true}
+    source_revision: https://github.com/NVlabs/SOLAR
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 353062, "effective_url": "https://github.com/NVlabs/SOLAR", "entry_url": "https://github.com/NVlabs/SOLAR", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265", "relative_path": "sha256/d1/d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265.raw", "requested_url": "https://github.com/NVlabs/SOLAR", "retrieved_at_utc": "2026-11-20T11:07:54.320737Z", "schema_version": 1, "snapshot_id": "sha256:d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "README badge"
+    quote: "Apache-2.0 license"
+    quote_sha256: 62d28665bf7f79a2d9832cbafc659cd9b63fba151b0d11c97ae6035017d91289
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265, found: true}
+    source_revision: https://github.com/NVlabs/SOLAR
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 353062, "effective_url": "https://github.com/NVlabs/SOLAR", "entry_url": "https://github.com/NVlabs/SOLAR", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265", "relative_path": "sha256/d1/d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265.raw", "requested_url": "https://github.com/NVlabs/SOLAR", "retrieved_at_utc": "2026-11-20T11:07:54.320737Z", "schema_version": 1, "snapshot_id": "sha256:d17d763c4a928174a8587c8875635c91df671c7aaa332ed071f526c978469265"}
+  dive_corrections: "2026-11-20 Stage-2b wave-2 dive (sonnet; PARTIAL: README to ~9k chars; docs/SOL_GUIDE.md, configs/arch/README.md, H100_SXM.yaml, solar/perf/arch_rates.py and constants read @ 62dab7534931; perf_model.py/graph_analyzer.py bodies only grepped). Fused bytes = unique external reads once plus output writes, not capacity-aware; fused_prefetched equals fused (no prefetch credit); whole-graph max(compute, memory) (docs/SOL_GUIDE.md L63-L75, L186-L364, L594-L601). Peaks in flat per-arch YAML (DRAM_byte_per_cycle, dense/sparse MAC rates); seven NVIDIA profiles only; --arch-config accepts a path, so an MI210 YAML is ~30 lines, but the frontend needs a torch.nn.Module or einsum DSL, not ggml graphs. Quantization is dtype width only (constants.py L29-L38: fp32/tf32/fp16/bf16/int8/fp64/fp8/nvfp4); no GGUF block-quant model. Sparse peak is the default headline. Decision: do not adopt SOLAR as a Tsol engine; compute Tsol from GGUF per-tensor bytes over measured achievable bandwidth (cpu-decode-roofline-program.md:L70-L80, rocm-kernel-authoring.md:L2820-L2827 @901b3fe); adopt only its assumption-reporting vocabulary (dense peak, compulsory I/O, stated exclusions). lane_head 901b3fe44a30"
+  notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 2)."
+- id: intake-2743
+  arxiv_id: "2607.26497"
+  url: https://arxiv.org/html/2607.26497v3
+  source_type: paper
+  title: "BM25 Wins at Scale: A Scaling Study of Retrieval-Augmented Generation Paradigms"
+  categories:
+  - search_retrieval
+  - memory_augmented
+  - agent_architecture
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2737
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors:
+  - "Pengyu Wang"
+  - "Benfeng Xu"
+  - "Shaohan Wang"
+  - "Mingxuan Du"
+  key_claims:
+  - "On a nested corpus ladder an LLM file-agent leads only at the smallest tiers; around 10 million corpus tokens BM25 overtakes it and leads at every larger shared tier."
+  - "At full scale BM25 retains 50.5 versus 30.7 for the file-system agent and 29.9 for dense RAG."
+  - "Dense retrieval is efficient but less accurate, and graph RAG hits construction walls."
+  - "Agency helps after globally ranked candidate discovery, not instead of it."
+  - "The authors attribute the lexical edge to precise lexical anchors and semantically similar wrong traps; all embedding calls use one 0.6B embedder."
+  techniques:
+  - "28-tier nested corpus ladder"
+  - "forced-first BM25 tool for an agent"
+  - "token-metered build and query cost"
+  reported_results: []
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - harness-program.md
+    - memory-program.md
+    - context-and-token-economy.md
+    intake_entries:
+    - intake-2737
+    - intake-2729
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Same research group as intake-2737; do not count it as independent corroboration. Evidence is enterprise prose only, with no hybrid arm and no code or log corpus."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "Around 10 million corpus tokens, BM25 overtakes it and leads at every larger shared tier"
+    quote_sha256: f78037fba706b32f8d3cdec5d233a01d17b69e2e1d599298d671303c053acbb9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa, found: true}
+    source_revision: https://arxiv.org/html/2607.26497v3
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 315596, "effective_url": "https://arxiv.org/html/2607.26497v3", "entry_url": "https://arxiv.org/html/2607.26497v3", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa", "relative_path": "sha256/7c/7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa.raw", "requested_url": "https://arxiv.org/html/2607.26497v3", "retrieved_at_utc": "2026-11-20T11:08:04.575117Z", "schema_version": 1, "snapshot_id": "sha256:7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 4.2"
+    quote: "At full scale, BM25 retains 50.5, versus 30.7 for File-System Agent and 29.9 for DenseRAG"
+    quote_sha256: dcc3af785285bdd1140e3e2bb5a6f4a8502a027fd6820c42ae45126123f65bed
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa, found: true}
+    source_revision: https://arxiv.org/html/2607.26497v3
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 315596, "effective_url": "https://arxiv.org/html/2607.26497v3", "entry_url": "https://arxiv.org/html/2607.26497v3", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa", "relative_path": "sha256/7c/7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa.raw", "requested_url": "https://arxiv.org/html/2607.26497v3", "retrieved_at_utc": "2026-11-20T11:08:04.575117Z", "schema_version": 1, "snapshot_id": "sha256:7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "Dense retrieval remains efficient but less accurate, whereas graph-based RAG encounters construction walls"
+    quote_sha256: c2c34b16978dc1b83c5775400cd6a0a68d52990f491927213eeec21ee1bd36fc
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa, found: true}
+    source_revision: https://arxiv.org/html/2607.26497v3
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 315596, "effective_url": "https://arxiv.org/html/2607.26497v3", "entry_url": "https://arxiv.org/html/2607.26497v3", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa", "relative_path": "sha256/7c/7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa.raw", "requested_url": "https://arxiv.org/html/2607.26497v3", "retrieved_at_utc": "2026-11-20T11:08:04.575117Z", "schema_version": 1, "snapshot_id": "sha256:7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 5.1"
+    quote: "Agency therefore helps after globally ranked candidate discovery"
+    quote_sha256: 97d5bc7413eb005ee0cc365709d13bfbaf08e97f705ef2e7a5b640944012df5e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa, found: true}
+    source_revision: https://arxiv.org/html/2607.26497v3
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 315596, "effective_url": "https://arxiv.org/html/2607.26497v3", "entry_url": "https://arxiv.org/html/2607.26497v3", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa", "relative_path": "sha256/7c/7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa.raw", "requested_url": "https://arxiv.org/html/2607.26497v3", "retrieved_at_utc": "2026-11-20T11:08:04.575117Z", "schema_version": 1, "snapshot_id": "sha256:7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa"}
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "Sec 6.1"
+    quote: "Enterprise questions contain precise lexical anchors, while traps are semantically similar but factually wrong"
+    quote_sha256: b0b8ce3270a2e342239a45c02dadffa9dee8930eb7c62994bccb10dcb91417d3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa, found: true}
+    source_revision: https://arxiv.org/html/2607.26497v3
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 315596, "effective_url": "https://arxiv.org/html/2607.26497v3", "entry_url": "https://arxiv.org/html/2607.26497v3", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa", "relative_path": "sha256/7c/7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa.raw", "requested_url": "https://arxiv.org/html/2607.26497v3", "retrieved_at_utc": "2026-11-20T11:08:04.575117Z", "schema_version": 1, "snapshot_id": "sha256:7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa"}
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "Sec 4.1.2"
+    quote: "all main-pipeline embedding calls go through a shared Qwen3-Embedding-0.6B model"
+    quote_sha256: 829f328007acdaf5df08785293812163baf0d0ef22c266c352bab9d33e5a7567
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa, found: true}
+    source_revision: https://arxiv.org/html/2607.26497v3
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 315596, "effective_url": "https://arxiv.org/html/2607.26497v3", "entry_url": "https://arxiv.org/html/2607.26497v3", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa", "relative_path": "sha256/7c/7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa.raw", "requested_url": "https://arxiv.org/html/2607.26497v3", "retrieved_at_utc": "2026-11-20T11:08:04.575117Z", "schema_version": 1, "snapshot_id": "sha256:7ce6341b576543446c3ddd498696a5a0ffcfe03a7f204ac9aad8705326b870aa"}
+  dive_corrections: "2026-11-20 Stage-2b wave-2 dive (sonnet; full read; surfaced by intake-2737). Not independent of ReFind: shared authors (Benfeng Xu, Licheng Zhang), count the pair as one source. One synthetic enterprise-prose corpus (EnterpriseRAG-Bench, 511,959 docs), one 0.6B embedder, top-5 chunks, Qwen3.6-27B reader; no BM25+dense RRF arm and no code or log corpus. Agent+BM25 (forced-first BM25 then reformulation) lifts the full-scale agent from 36.9 to 69.4 at ~1/9 the tokens (Table 4, 150-question subset). Our trace store already uses FTS5 bm25 with zero model calls (orchestrator src/trace/query.py L8-L10, L171 @94cd4320); REPL-EMB-2.1 kill rule is already lexical-relative (harness-program.md:L2592-L2594 @901b3fe) and our stored texts are short (median 61-126 tokens, L2549). EnterpriseRAG-Bench 2605.05253 and LinearRAG 2510.10114 declined. lane_head 901b3fe44a30"
+  notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 2)."
+- id: intake-2744
+  arxiv_id: "2605.09992"
+  url: https://arxiv.org/html/2605.09992v1
+  source_type: paper
+  title: "Attention Drift: What Autoregressive Speculative Decoding Models Learn"
+  categories:
+  - speculative_decoding
+  - kv_cache
+  - context_extension
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2739
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors:
+  - "Do\u011fa\u00e7 Eldenk"
+  - "Payal Mohapatra"
+  - "Yigitcan Comlek"
+  - "Kaan Oktay"
+  key_claims:
+  - "During a speculation chain the drafter's attention moves from the prompt onto its own recently generated tokens, in both EAGLE-3 drafters and MTP heads."
+  - "All architectural fixes explored require retraining the drafter, and inference-time magnitude normalization without matched training hurts accuracy."
+  - "MTP heads already use post-norm yet drift sharply in the first steps and then plateau; the fix was not evaluated on other drafter designs."
+  - "Drafters trained on short windows fail at long context under full attention, a sliding window rescues them, and performance saturates around a 1024-token window."
+  techniques:
+  - "post-norm drafter hidden state"
+  - "per-stream RMSNorm before fusion"
+  - "sliding window with sink carry for drafter long context"
+  reported_results: []
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - autokernel-akx-program.md
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2739
+    - intake-2725
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: "Do not cite it as an explanation for acceptance loss with context length (it measures chain-depth drift). Its fixes need drafter retraining; cite only the SWA-with-sink long-context data as weak support for a draft window."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "attention progressively moves from the prompt onto its own recently-generated tokens"
+    quote_sha256: 5f3253933a36bc64583aa4de74a6cd9e767077c68f0b3df1b8c245f183938b21
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "This phenomenon is observed across both EAGLE3 drafters and MTP heads"
+    quote_sha256: a60741aea367b5e9f1b99005af27f7bdf99c8aff2f58d9d943fc5576b35e4967
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 4 intro"
+    quote: "All architectural changes explored in this section required re-training of the drafter"
+    quote_sha256: 0f663ccf450359d20eb346099a5223caaf53923e58a80862e77eb1c0b1eda48f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Sec 4.4"
+    quote: "normalizing the magnitude without matched training hurts the accuracy in both cases"
+    quote_sha256: 34c2bca40dee776116d47652762809e4530017a93a42e33eb9e30e84762ec942
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 4.5"
+    quote: "This is notable because MTP uses a post-norm architecture, where we expected drift to be largely suppressed"
+    quote_sha256: 89cb434917de3b9386ad6b35efe6a49de5684bf9a8fc1103834970e7245b9579
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 4.5"
+    quote: "drift onsets sharply within the first few speculation steps and then stabilizes at a new attention baseline"
+    quote_sha256: 72d27c8613989dcda02fbf6ac41a5c917229602c5caca1f31dd6e9b0b2589cf6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Sec 7 Limitations"
+    quote: "we do not investigate the alternative mechanisms at play there or evaluate our fix across other drafter designs"
+    quote_sha256: 0bb422110e84c5059866abbfbbc1dcd3f6d116faeff39356f3099063ec98cb73
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 5.2"
+    quote: "Under full attention (regular), the pre-norm model fails catastrophically"
+    quote_sha256: 0d15cd51665dc7360dcf339c703f07042d1f81e210cb6e935ba4456d2bcbff2a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 5.2"
+    quote: "performance saturates around 1024 tokens, with diminishing returns beyond that"
+    quote_sha256: be1b819dccac6b9ef4f851c20cd29ff9f5252ee46e34af850d5d0d673d5d86f3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Sec 5.2"
+    quote: "We use SWA as a long-context evaluation tool rather than as a method we propose"
+    quote_sha256: 05c4a367656cdc57d09d4abfa2b9cc15230c48e7f647918f85c3cf3b00206072
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6, found: true}
+    source_revision: https://arxiv.org/html/2605.09992v1
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 387347, "effective_url": "https://arxiv.org/html/2605.09992v1", "entry_url": "https://arxiv.org/html/2605.09992v1", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6", "relative_path": "sha256/ac/ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6.raw", "requested_url": "https://arxiv.org/html/2605.09992v1", "retrieved_at_utc": "2026-11-20T11:08:06.785440Z", "schema_version": 1, "snapshot_id": "sha256:ac64800fc199bb63c2879a17919cafdf123d8d62d262d7c335c14dcf34336bf6"}
+  dive_corrections: "2026-11-20 Stage-2b wave-2 dive (sonnet; full read; surfaced by intake-2739). OVERTURNS the surfacing hypothesis: drift is across draft-chain depth within one round, not across context length, and MTP acceptance versus context length is not measured; so it does not explain the Q38FN acceptance decline with depth (0.79 / 0.73 / 0.66 at 1k/32k/64k; autokernel-akx-program.md L1293 @901b3fe). Weak, indirect support for a draft-only window via the EAGLE-3 long-context SWA data (window 256 recovers ~80%, ~1024 saturates; Llama 3.1 8B at 8k, Qwen3-8B at 32k), with sink/BoS carry mandatory (SWA without BoS collapsed). Whether the Q38FN MTP head drafts more than one token per round was not verified by the dive. Attention Residuals 2603.15031 and the code repo declined. lane_head 901b3fe44a30"
+  notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 2)."
+- id: intake-2745
+  arxiv_id: null
+  url: https://github.com/amd/skills
+  source_type: repo
+  title: "amd/skills: Official AMD catalog of AI agent skills"
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2734
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors:
+  - "AMD"
+  key_claims:
+  - "amd/skills is federated: product teams maintain skills in their own repositories and amd/skills vendors a copy."
+  - "The catalog includes a CUDA-to-ROCm porting skill, a kernel evaluator and a rocprofv3 trace-analysis skill that maps stall hotspots to source lines and produces an optimization plan."
+  - "The CPU serving skill targets vLLM with zentorch on EPYC, not llama.cpp."
+  techniques:
+  - "federated skill catalog with nightly vendoring"
+  - "wave64 fault-class reference (moat-cuda-to-rocm)"
+  - "rocprofv3 thread-trace hotspot and L2 analyzers"
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - rocm-kernel-authoring.md
+    - autokernel-loop.md
+    intake_entries:
+    - intake-2734
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: "Use the wave64 fault list as a static-scan source for HIP candidate diffs. Do not adopt the rocprofv3 ATT collection recipe on ROCm 6.2; only its analysis layer ports."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "README federation"
+    quote: "Most skills are federated: the product team maintains the skill in its own repository, and amd/skills vendors a copy."
+    quote_sha256: 434de48d69834f401181993067097203876187a58d5c5e0fe05a4a8e2837a5d7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30, found: true}
+    source_revision: https://github.com/amd/skills
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 326847, "effective_url": "https://github.com/amd/skills", "entry_url": "https://github.com/amd/skills", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30", "relative_path": "sha256/26/26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30.raw", "requested_url": "https://github.com/amd/skills", "retrieved_at_utc": "2026-11-20T11:07:56.930729Z", "schema_version": 1, "snapshot_id": "sha256:26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "README catalog"
+    quote: "Collect rocprofv3 instruction-level traces and counters for a GPU kernel, map the top stall hotspots back to source lines, and produce an optimization plan."
+    quote_sha256: 5532401b05c4ea1a5f72a64ada0d47e5a449421d5283e65298daa0837fd61010
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30, found: true}
+    source_revision: https://github.com/amd/skills
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 326847, "effective_url": "https://github.com/amd/skills", "entry_url": "https://github.com/amd/skills", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30", "relative_path": "sha256/26/26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30.raw", "requested_url": "https://github.com/amd/skills", "retrieved_at_utc": "2026-11-20T11:07:56.930729Z", "schema_version": 1, "snapshot_id": "sha256:26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "README catalog"
+    quote: "Add a ROCm/HIP backend to a CUDA project so it runs on AMD GPUs while the CUDA build keeps working side by side."
+    quote_sha256: cf9a93efd5728284877e28d8de42090a137f13750740849e1c2a6941994518cc
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30, found: true}
+    source_revision: https://github.com/amd/skills
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 326847, "effective_url": "https://github.com/amd/skills", "entry_url": "https://github.com/amd/skills", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30", "relative_path": "sha256/26/26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30.raw", "requested_url": "https://github.com/amd/skills", "retrieved_at_utc": "2026-11-20T11:07:56.930729Z", "schema_version": 1, "snapshot_id": "sha256:26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "README catalog"
+    quote: "Evaluate GPU kernel correctness and performance, compare kernel implementations"
+    quote_sha256: f8ff00bc1f68fb50f7ef5e0c0955149dc1c77add4f2356b44e6db426ca86cd41
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30, found: true}
+    source_revision: https://github.com/amd/skills
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 326847, "effective_url": "https://github.com/amd/skills", "entry_url": "https://github.com/amd/skills", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30", "relative_path": "sha256/26/26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30.raw", "requested_url": "https://github.com/amd/skills", "retrieved_at_utc": "2026-11-20T11:07:56.930729Z", "schema_version": 1, "snapshot_id": "sha256:26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "README catalog"
+    quote: "Serve LLMs on AMD EPYC CPUs with vLLM and zentorch"
+    quote_sha256: 4c7ad6bf66a211dea57b85ee2c9308a371e0c215070ca72900f014963ee4e91d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30, found: true}
+    source_revision: https://github.com/amd/skills
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 326847, "effective_url": "https://github.com/amd/skills", "entry_url": "https://github.com/amd/skills", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30", "relative_path": "sha256/26/26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30.raw", "requested_url": "https://github.com/amd/skills", "retrieved_at_utc": "2026-11-20T11:07:56.930729Z", "schema_version": 1, "snapshot_id": "sha256:26e208b49901965ed6d049586416ba9fe61fdffec0cf0e4b86fe2a8ca1d92e30"}
+  dive_corrections: "2026-11-20 Stage-2b wave-2 dive (sonnet; PARTIAL: README plus moat-cuda-to-rocm SKILL.md index and references faults-wavefront.md, faults-numerics.md (part), validation.md, no-hip-equivalent.md, and flydsl-kernel-trace-analysis/SKILL.md read in a shallow clone @ 2470f33cbd47; other skills not read). Repo-file evidence (not machine-anchorable): faults-wavefront.md lists measured wave64 hazards: 64-bit __ballot/__activemask truncated to 32-bit, 32-bit mask arithmetic (1<<K) on 64-lane masks, logical 32-lane warps calling wave-wide collectives, blockDim/warpSize==0 on sub-wavefront blocks, __smid() up to 125 on a 104-CU gfx90a GCD overrunning per-CU pools, size-threshold kernels unreachable by small harnesses (gfx90a memory fault above 3072 elements), plus a validate-both-widths / cross-arch consistency rule; all measurements cite ROCm 7.x, none 6.x. The ATT skill's rocprofv3 + advanced_thread_trace collection does not run on our stack: rocprofv3 6.2 has no thread trace, only rocprofv2 --plugin att (rocm-kernel-authoring.md:L1535 @901b3fe); only its stall taxonomy and occupancy math port. Magpie, FlyDSL and skillscope repos declined (already covered or governance-only). lane_head 901b3fe44a30"
+  notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 2)."
+- id: intake-2746
+  arxiv_id: null
+  url: https://github.com/AMD-Ecosystem/moat
+  source_type: repo
+  title: "MOAT: Migration Orchestration via Automated Translation (AMD-Ecosystem/moat)"
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2734
+  verdict: adopt_patterns
+  ingested_date: '2026-11-20'
+  authors:
+  - "AMD-Ecosystem"
+  key_claims:
+  - "Moat runs five agents in sequence that hand over through a state file; the reviewer and validator can send work back to the porter."
+  - "Validation is gated on real-GPU test runs per wavefront gate; a compile or CPU-only smoketest is not evidence."
+  - "Decisions that need a person are enforced by tooling and bound to a commit and its text."
+  - "Moat names silent 32-lane assumptions as the most common way a CUDA port breaks on AMD."
+  techniques:
+  - "five-role agent pipeline with state-file handoff"
+  - "per-wavefront gates proven on real GPUs"
+  - "carry-forward by device-ISA identity"
+  - "tooling-enforced human decisions"
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - autokernel-loop.md
+    - rocm-kernel-authoring.md
+    intake_entries:
+    - intake-2734
+    - intake-2742
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: "Adopt the evidence-discipline patterns (ISA-identity carry-forward, blocked-vs-failed, base control). Do not adopt the port/PR tooling; Moat is not a performance search loop."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "README How it works"
+    quote: "Five agents run in sequence, and each hands over through a state file rather than a conversation"
+    quote_sha256: 285b3544a52348fe337bdcb4737e2b1315e3b4b7a7eff256040e21678a96dcf0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd, found: true}
+    source_revision: https://github.com/AMD-Ecosystem/moat
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "README How it works"
+    quote: "The reviewer and the validator can both send it back to the porter."
+    quote_sha256: 90ba873ed4235bd9d455ab4dabc876ef7a45bd45b4ff830c0a7e507b516df537
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd, found: true}
+    source_revision: https://github.com/AMD-Ecosystem/moat
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "README maintainer section"
+    quote: "A compile is not evidence and does not count."
+    quote_sha256: d8d6d8f7d7be6b637aa02d4e7583b2b636725430f04ea9d6dfaaa95b9454163f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd, found: true}
+    source_revision: https://github.com/AMD-Ecosystem/moat
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "README Scope and honesty"
+    quote: "A CPU-only build smoketest proves compilation only; correctness is gated on real-GPU test runs."
+    quote_sha256: d3fa4760e47ac12301b5729e84278c3c6c33d641e353f6e71c247256ba803023
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd, found: true}
+    source_revision: https://github.com/AMD-Ecosystem/moat
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "README gates"
+    quote: "Coverage is expressed as gates -- wave64, wave32, windows"
+    quote_sha256: 7f1c040fc9dbe3a499e3bb6289a8828d01ace7b2ee12b160b5dc4b11f1729b3b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd, found: true}
+    source_revision: https://github.com/AMD-Ecosystem/moat
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "README What a person decides"
+    quote: "Each is enforced by the tooling rather than by an instruction an agent is asked to remember"
+    quote_sha256: 024237225f55339e4dfefd71062fd2fa209fe26fb8479e3f26732307e3c8467d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd, found: true}
+    source_revision: https://github.com/AMD-Ecosystem/moat
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "README What a person decides"
+    quote: "their approval is bound to that commit and that text"
+    quote_sha256: e6fc7e40adc7a5b795398ad9865a5bbfd1d459c2b5d6eed7329311dd80dc0778
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd, found: true}
+    source_revision: https://github.com/AMD-Ecosystem/moat
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "README gate note"
+    quote: "Code that silently assumes 32 is the single most common way a CUDA port breaks on AMD"
+    quote_sha256: 3151b203686af4a904b76850212960c29fcc38998f0ee636a4b153648fc4eef7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd, found: true}
+    source_revision: https://github.com/AMD-Ecosystem/moat
+    verified_by: research-intake/stage2b (intake-kspec-20261120; quote grep-checked against the retained extract)
+    source_artifact: {"byte_length": 454110, "effective_url": "https://github.com/AMD-Ecosystem/moat", "entry_url": "https://github.com/AMD-Ecosystem/moat", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/html", "raw_sha256": "1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd", "relative_path": "sha256/1e/1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd.raw", "requested_url": "https://github.com/AMD-Ecosystem/moat", "retrieved_at_utc": "2026-11-20T11:08:02.390109Z", "schema_version": 1, "snapshot_id": "sha256:1ebb9f2823be827d723723623ec2c8ee09e94e39502c7ab25035c68c73ada7fd"}
+  dive_corrections: "2026-11-20 Stage-2b wave-2 dive (sonnet; PARTIAL: README, AGENTS.md, validator.md, reviewer.md, heads of codeobj_diff.py and changeclass.py read @ 86968a5e896a). Moat is a port gate-and-provenance workflow, not a performance search. Transferable to our loop: evidence bound to an exact commit with re-derivation on head move; carry-forward without a GPU re-run only when exported symbols and normalized device ISA are identical (indeterminate treated as differ); a 'blocked (host fact) vs failed (code fact)' distinction when no GPU is present; a base-control pattern (rebuild the pre-fix source and show the gate still passes) to prove a gate is blind; 'assertion count is a lower bound' and 'read what the checker compares'. Our loop is already stronger on gaming controls (autokernel-loop.md \u00a78.6 L2007-L2023 @901b3fe). All Moat measurements are ROCm 7.x. Licence/fork/upstream machinery not applicable. CONTRIBUTING.md declined. lane_head 901b3fe44a30"
+  notes: "Stage-2b combined Stage-1+2 entry (intake-kspec-20261120, wave 2)."
