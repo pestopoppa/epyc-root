@@ -253,6 +253,25 @@ tests require the environment described above. No model smoke is implied.
 
 ### Repeated numerical-floor producer
 
+Prepare one target's repeated requests with `prepare_floor.py` before row
+publication. It checks the weight/build/holdout admission receipts without
+requiring an existing floor, selects a declared calibration prompt/seed, and
+binds every request to the exact plan bytes. It never opens model weights or
+launches a producer. For example:
+
+```bash
+python3 scripts/diagnostics/target-precision/prepare_floor.py \
+  --plan /prepared/plan.json --target-quant BF16 \
+  --prompt-id calibration-01 --seed 3 --repetitions 2 \
+  --output /prepared/BF16-calibration-requests.json
+```
+
+The output is exclusive; invalid, overlapping or undeclared calibration cases
+refuse before writing. Repeat for each admitted target. Receipt consistency
+does not establish matched-weight provenance or admit resources; those must
+still be resolved before publication. This helper does not create prompts,
+change the frozen protocol, or qualify a numerical floor.
+
 `floor.py` runs the existing native fresh-block/serial executable in separate
 processes for at least two repetitions of one calibration prompt/seed and target.
 Use only inside a published compute row; no model run is part of its unit tests:
