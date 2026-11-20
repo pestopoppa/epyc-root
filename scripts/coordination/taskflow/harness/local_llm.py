@@ -95,6 +95,44 @@ def cap_max_tokens(body: dict, cap: int = MAX_TOKENS_CAP) -> bool:
     return False
 
 
+class DegenerationGuard:
+    """Proxy-side abort for degenerate decoding (canary r3/r4: capped runaways decoding repetitive garbage at
+    ~46 tok/s with ~0 MTP acceptance carried 44% of np1 drafted tokens).
+
+    feed(text_delta, timings) per streamed chunk -> reason str when the request should be aborted, else None.
+      mtp:    with per-chunk timings (request `timings_per_token: true`), rolling acceptance over the last
+              >= MTP_WINDOW predicted tokens stays below MTP_MIN
+      repeat: over the last REPEAT_WINDOW chars, the share of word NGRAM-grams that are repeats >= REPEAT_MAX
+    """
+    MTP_WINDOW, MTP_MIN = 512, 0.2
+    REPEAT_WINDOW, NGRAM, REPEAT_MAX, MIN_CHARS = 4000, 6, 0.6, 2000
+
+    def __init__(self):
+        self.text = ""
+        self.marks: list[tuple[int, int, int]] = []    # (predicted_n, draft_n, draft_accepted)
+
+    def feed(self, delta: str = "", timings: dict | None = None) -> str | None:
+        if delta:
+            self.text = (self.text + delta)[-self.REPEAT_WINDOW * 2:]
+        if timings and timings.get("draft_n") is not None:
+            self.marks.append((int(timings.get("predicted_n") or 0), int(timings.get("draft_n") or 0),
+                               int(timings.get("draft_n_accepted") or 0)))
+            p1, d1, a1 = self.marks[-1]
+            for p0, d0, a0 in reversed(self.marks[:-1]):
+                if p1 - p0 >= self.MTP_WINDOW:
+                    if d1 - d0 > 0 and (a1 - a0) / (d1 - d0) < self.MTP_MIN:
+                        return f"mtp-acceptance {(a1 - a0) / (d1 - d0):.2f} over {p1 - p0} tokens"
+                    break
+        if len(self.text) >= self.MIN_CHARS:
+            w = self.text[-self.REPEAT_WINDOW:].split()
+            grams = [tuple(w[i:i + self.NGRAM]) for i in range(max(0, len(w) - self.NGRAM + 1))]
+            if len(grams) >= 50:
+                rep = 1 - len(set(grams)) / len(grams)
+                if rep >= self.REPEAT_MAX:
+                    return f"repeat-ratio {rep:.2f}"
+        return None
+
+
 def request_digest(body: dict) -> dict:
     """H5: what the metering proxy logs per request -- enough to locate a prefix break without storing prompts."""
     msgs = body.get("messages") or []

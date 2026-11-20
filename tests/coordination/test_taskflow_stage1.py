@@ -258,3 +258,18 @@ def test_rev_path_ref_packaged_via_git_show(tmp_path, monkeypatch):
     r, lane, base = dispatch.make_lane(task, tmp_path / "run/t0", "b3")
     assert (lane / f".taskflow-refs/epyc-orchestrator@{sha[:8]}/tests/test_old.py").read_text() == "old\n"
     dispatch.drop_lane(r, lane)
+
+
+def test_degeneration_guard():
+    g = local_llm.DegenerationGuard()
+    assert g.feed("def f(x):\n    return x + 1\n" * 3) is None
+    normal = " ".join(f"word{i}" for i in range(800))
+    assert local_llm.DegenerationGuard().feed(normal) is None
+    loop = local_llm.DegenerationGuard()
+    assert loop.feed("the same phrase again and again " * 200).startswith("repeat-ratio")
+    m = local_llm.DegenerationGuard()
+    assert m.feed(timings={"predicted_n": 10, "draft_n": 10, "draft_n_accepted": 9}) is None
+    assert m.feed(timings={"predicted_n": 700, "draft_n": 1400, "draft_n_accepted": 60}).startswith("mtp-acceptance")
+    ok = local_llm.DegenerationGuard()
+    ok.feed(timings={"predicted_n": 10, "draft_n": 10, "draft_n_accepted": 9})
+    assert ok.feed(timings={"predicted_n": 700, "draft_n": 900, "draft_n_accepted": 720}) is None
