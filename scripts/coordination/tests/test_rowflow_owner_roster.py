@@ -52,7 +52,7 @@ class Roster(unittest.TestCase):
         self.check("h-akagg")
 
     def test_retired_and_unregistered_handoff_refused(self):
-        for o in ("old-one", "handoff-nobody", ""):
+        for o in ("old-one", "handoff-nobody", "nobody", ""):
             with self.assertRaises(rf.Refused):
                 self.check(o)
 
@@ -65,6 +65,29 @@ class Roster(unittest.TestCase):
             self.assertEqual(pr.main([spec, "--flags", self.flags]), 2)
         rv.assert_not_called()
         self.assertIn("REFUSED: owner 'not-a-roster-id'", out.getvalue())
+
+    def test_review_s1_bare_registered_slug_accepted(self):
+        self.check("akagg")   # Codex publishes owner: <slug>
+
+    def test_review_s1_warn_mode_logs_records_never_refuses(self):
+        err = io.StringIO()
+        with mock.patch.dict(os.environ, {"ROWFLOW_ROSTER_CHECK": "warn"}), redirect_stderr(err):
+            pr.check_owner_roster({"id": "r1", "owner": "codex-ifbench"}, self.flags)
+            pr.check_owner_roster({"id": "r2", "owner": "codex-ifbench"}, self.flags)
+            pr.check_owner_roster({"id": "r3", "owner": "codex3"}, self.flags)
+        self.assertIn("WARN owner-not-roster", err.getvalue())
+        recs = [json.loads(x) for x in open(os.path.join(self.flags, pr.OWNER_NOT_ROSTER_FILE))]
+        self.assertEqual([r["owner"] for r in recs], ["codex-ifbench", "codex3"])
+
+    def test_review_s1_live_default_is_warn(self):
+        with mock.patch.object(pr.rf.notify, "is_live", return_value=True), mock.patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("ROWFLOW_ROSTER_CHECK", None)
+            self.assertEqual(pr.owner_check_mode(self.flags), "warn")
+
+    def test_review_s1_empty_owner_always_refused(self):
+        for env in ("off", "warn", "refuse"):
+            with mock.patch.dict(os.environ, {"ROWFLOW_ROSTER_CHECK": env}), self.assertRaises(rf.Refused):
+                pr.check_owner_roster({"id": "r1", "owner": "  "}, self.flags)
 
     def test_scratch_flags_tree_not_enforced(self):
         pr.check_owner_roster({"id": "r1", "owner": "t"}, self.flags)   # tests / scratch trees never route alerts

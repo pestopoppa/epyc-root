@@ -508,28 +508,61 @@ def roster_ids(repo=None):
         return {}
 
 
+OWNER_NOT_ROSTER_FILE = "owner-not-roster.jsonl"   # <flags>/: distinct non-roster owners, for the operator
+
+
+def owner_check_mode(flags, enforce=None):
+    """F9 mode: refuse | warn | off. enforce=True -> refuse (tests). ROWFLOW_ROSTER_CHECK=refuse|1 -> refuse, =warn -> warn,
+    =off|0 -> off; unset: warn on the live flags tree (review S1: 41 of 284 live publishes use registered bare slugs or
+    historical owners), off on scratch/test trees (they never route alerts)."""
+    if enforce is True:
+        return "refuse"
+    v = os.environ.get("ROWFLOW_ROSTER_CHECK", "").strip().lower()
+    if v in ("refuse", "1"):
+        return "refuse"
+    if v in ("warn", "off", "0"):
+        return "off" if v == "0" else v
+    return "warn" if rf.notify.is_live(flags) else "off"
+
+
+def _record_non_roster(flags, owner, rid):
+    """Append `owner` to <flags>/owner-not-roster.jsonl once (distinct owners); never raises."""
+    p = os.path.join(flags, OWNER_NOT_ROSTER_FILE)
+    try:
+        seen = {json.loads(x).get("owner") for x in open(p)} if os.path.exists(p) else set()
+        if owner not in seen:
+            with open(p, "a") as f:
+                f.write(json.dumps({"owner": owner, "first_row": rid, "at": rf.now_iso()}) + "\n")
+    except (OSError, ValueError):
+        pass
+
+
 def check_owner_roster(spec, flags, repo=None, enforce=None):
-    """F9 (AK audit B9): a row's owner must be someone an alert can reach - a roster id in config.yaml (not retired), or a
-    handoff-<slug> / h-<slug> whose slug is registered in <flags>/handoff-sessions.json. Enforced for the live flags
-    tree (like notify.is_live: scratch/test trees never route alerts) or when ROWFLOW_ROSTER_CHECK=1 / enforce=True."""
-    if enforce is None:
-        enforce = os.environ.get("ROWFLOW_ROSTER_CHECK") == "1" or rf.notify.is_live(flags)
-    if not enforce:
-        return
+    """F9 (AK audit B9): a row's owner should be someone an alert can reach: a non-retired roster id in config.yaml, or
+    a session slug registered in <flags>/handoff-sessions.json (bare `<slug>` as Codex publishes it, or handoff-/h-<slug>).
+    An EMPTY owner is always refused. Any other owner: refused in `refuse` mode; in `warn` mode (the live default) it is
+    logged owner-not-roster, recorded once in <flags>/owner-not-roster.jsonl, and its alerts route to `inference`."""
     owner = str(spec.get("owner") or "").strip()
+    rf.need(owner, "owner is empty: every row needs an owner its alerts can reach (your roster id)")
+    mode = owner_check_mode(flags, enforce)
+    if mode == "off":
+        return
     roster = roster_ids(repo)
-    rf.need(roster, f"owner check: roster {config_path(ROSTER_REL, repo)} unreadable; refusing an owner no alert can be proven to reach")
     if owner in roster and roster[owner] != "retired":
         return
-    if OWNER_PREFIX_RX.match(owner):
-        reg = rf.load_json(os.path.join(flags, SESSIONS_NAME)) or {}
-        if owner_slug(owner) in (reg.get("sessions") or {}):
-            return
-    raise rf.Refused(f"owner {owner!r} is not a roster id in {config_path(ROSTER_REL, repo)}"
-                     f"{' (retired)' if roster.get(owner) == 'retired' else ''} nor a handoff-<slug> registered in "
-                     f"{os.path.join(flags, SESSIONS_NAME)}: its alerts (smoke FAIL, row-ended, UNDERUSED) would reach nobody. "
-                     f"FIX: publish with your roster id as owner, or add the roster row first "
-                     f"(`session_bus.py roster add {owner or '<id>'} ...`)")
+    reg = rf.load_json(os.path.join(flags, SESSIONS_NAME)) or {}
+    if owner_slug(owner) in (reg.get("sessions") or {}):
+        return
+    why = (f"owner {owner!r} is not a roster id in {config_path(ROSTER_REL, repo)}"
+           f"{' (retired)' if roster.get(owner) == 'retired' else ''}{' (roster unreadable)' if not roster else ''} nor a session "
+           f"registered in {os.path.join(flags, SESSIONS_NAME)}")
+    if mode == "warn":
+        print(f"WARN owner-not-roster: {why}; its alerts go to `inference` (recorded in {OWNER_NOT_ROSTER_FILE}; "
+              f"`session_bus.py roster add {owner} ...` to route them to you)", file=sys.stderr)
+        _record_non_roster(flags, owner, str(spec.get("id") or ""))
+        return
+    raise rf.Refused(f"{why}: its alerts (smoke FAIL, row-ended, UNDERUSED) would reach nobody. FIX: publish with your "
+                     f"roster id as owner, or add the roster row first (`session_bus.py roster add {owner} ...`)")
 
 
 def check_handoff(spec, repo=None):
