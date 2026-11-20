@@ -219,7 +219,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-48",
-      "weight": 13
+      "weight": 12
     },
     {
       "from": "INF-06",
@@ -272,12 +272,6 @@
     {
       "from": "INF-48",
       "kind": "ref",
-      "to": "EVL-47",
-      "weight": 4
-    },
-    {
-      "from": "INF-48",
-      "kind": "ref",
       "to": "INF-65",
       "weight": 5
     },
@@ -321,7 +315,7 @@
       "from": "INF-50",
       "kind": "ref",
       "to": "INF-65",
-      "weight": 11
+      "weight": 10
     },
     {
       "from": "INF-59",
@@ -387,7 +381,7 @@
       "from": "INF-65",
       "kind": "ref",
       "to": "INF-83",
-      "weight": 43
+      "weight": 40
     },
     {
       "from": "INF-65",
@@ -696,7 +690,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T12:39:11Z",
+  "generated_at": "2026-11-20T13:30:55Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1373,7 +1367,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 816,
+      "closed": 806,
       "dispatchable": 128,
       "domain": "inference-research",
       "guarded": 0,
@@ -1434,7 +1428,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 4771,
+          "line": 4725,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1443,7 +1437,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 4850,
+          "line": 4808,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1462,7 +1456,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5023,
+          "line": 4985,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1479,7 +1473,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 6925,
+          "line": 6873,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1492,7 +1486,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 9888,
+          "line": 9840,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1526,7 +1520,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10087,
+          "line": 10043,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -1651,21 +1645,21 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 372,
-      "dispatchable": 5,
+      "closed": 296,
+      "dispatchable": 4,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": "2026-11-19",
+      "last_advanced": "2026-11-20",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 5,
+      "open": 4,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1700,13 +1694,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [
             "EVL-47"
           ],
           "line": 60,
           "name": "rocm-verify-profile-backend",
-          "open": 3,
+          "open": 2,
           "readiness": "blocked"
         },
         {
@@ -1719,7 +1713,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1593,
+          "line": 1165,
           "name": "agentic-rocm-kernel-authoring",
           "open": 2,
           "readiness": "blocked"
@@ -1734,7 +1728,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2761,
+          "line": 2267,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1743,7 +1737,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3165,
+          "line": 2590,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1752,7 +1746,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3678,
+          "line": 3026,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1761,7 +1755,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3773,
+          "line": 3121,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1772,15 +1766,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 182,
-      "dispatchable": 38,
+      "closed": 184,
+      "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-20",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 40,
+      "open": 39,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1813,7 +1807,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 13,
+          "line": 15,
           "name": "speculative-decoding-mtp-refresh",
           "open": 11,
           "readiness": "ready"
@@ -1823,14 +1817,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 28,
+          "dispatchable": 27,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 852,
+          "line": 845,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 29,
+          "open": 28,
           "readiness": "blocked"
         }
       ]
@@ -1840,14 +1834,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 117,
-      "dispatchable": 34,
+      "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-20",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 35,
+      "open": 34,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1880,18 +1874,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
-          "line": 680,
+          "line": 614,
           "name": "attention-matching-kv-compaction",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1089,
+          "line": 1011,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1894,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1705,
+          "line": 1627,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1903,7 @@
           "blocked_by": [],
           "dispatchable": 11,
           "gates": [],
-          "line": 1852,
+          "line": 1778,
           "name": "triattention-kv-selection",
           "open": 12,
           "readiness": "ready"
@@ -1978,7 +1972,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1795,
+          "line": 1758,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1987,7 +1981,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1919,
+          "line": 1886,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1996,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2251,
+          "line": 2218,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2005,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2390,
+          "line": 2319,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2014,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2952,
+          "line": 2873,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2026,7 +2020,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3090,
+          "line": 3011,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2038,7 +2032,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3097,
+          "line": 3018,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2098,7 +2092,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5132,
+          "line": 5134,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2107,7 +2101,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 5285,
+          "line": 5287,
           "name": "cpu-prefill-compute-large-models",
           "open": 6,
           "readiness": "ready"
@@ -2116,7 +2110,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5800,
+          "line": 5802,
           "name": "large-moe-expert-parallelism",
           "open": 0,
           "readiness": "no_open"
@@ -2129,7 +2123,7 @@
           "gates": [
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 5914,
+          "line": 5916,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 8,
           "readiness": "blocked"
@@ -3114,15 +3108,15 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 88,
-      "dispatchable": 32,
+      "closed": 90,
+      "dispatchable": 35,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-20",
-      "next_action": "Build TASKFLOW-STAGE1 beside the old dispatcher; then HS-STAGE-C, AK-FIXES-F2-F9, AK-HOOKS-C1-C6",
-      "open": 32,
+      "next_action": "Run TASKFLOW-STAGE1 canary (tf1-canary-35b-c14-gpu-r1-20261120); then HS ratify signature, C6 7-day drop, owner-roles decision",
+      "open": 35,
       "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
@@ -3139,14 +3133,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 310,
-      "dispatchable": 85,
+      "dispatchable": 86,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-17",
       "next_action": "TOOLPERM+AGENTFILE-INJECT after prod relaunch+matrix refresh; CTX-DEPTH after v11; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
-      "open": 85,
+      "open": 86,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3220,11 +3214,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 15,
           "gates": [],
           "line": 2201,
           "name": "repo-readiness-scorer",
-          "open": 14,
+          "open": 15,
           "readiness": "ready"
         }
       ]
