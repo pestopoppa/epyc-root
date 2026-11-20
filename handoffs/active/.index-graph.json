@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T05:01:29Z",
+  "generated_at": "2026-11-20T05:22:39Z",
   "nodes": [
     {
       "age_days": 10,
@@ -1048,7 +1048,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 72,
+      "closed": 73,
       "dispatchable": 32,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -1089,7 +1089,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 897,
+          "line": 939,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1098,7 +1098,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1209,
+          "line": 1251,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1107,7 +1107,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1416,
+          "line": 1458,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1116,7 +1116,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1742,
+          "line": 1784,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1125,7 +1125,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1977,
+          "line": 2019,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"

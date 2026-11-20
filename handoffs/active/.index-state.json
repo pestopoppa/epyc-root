@@ -423,7 +423,7 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 72,
+      "closed": 73,
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "open": 32,
@@ -435,11 +435,11 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 104,
+      "total": 105,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 24,
+          "closed": 25,
           "gates": null,
           "guarded": 0,
           "line": 0,
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 897,
+          "line": 939,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1209,
+          "line": 1251,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1416,
+          "line": 1458,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1742,
+          "line": 1784,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1977,
+          "line": 2019,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
