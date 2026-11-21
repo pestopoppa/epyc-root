@@ -146,5 +146,52 @@ class KeeperWrapperV13(unittest.TestCase):
         self.assertEqual(sorted(p1), sorted(p2))
 
 
+class VaultCollision(unittest.TestCase):
+    """INC-20261121: roots sharing a basename (.../packet, .../r3) shared one vault record + version series, so every pass re-vaulted
+    and trashed the neighbour's versions (48G in .trash-reap). Each root must own its series; an unchanged root cuts no new version."""
+
+    def ns(self, work):
+        import datetime as dt, glob, hashlib, json as js, re, tarfile, time
+        text = open(KeeperWrapperV13.KEEPER).read()
+        py = text.split("python3 -I - <<'PY'", 1)[1].split("\n", 1)[1].split("\nPY\n", 1)[0]
+        src = "def vault_key" + py.split("def vault_key", 1)[1].split("\ndef delplan", 1)[0]
+        sha_src = "def sha" + py.split("def sha", 1)[1].split("\ndef vault_key", 1)[0]
+        g = dict(os=os, re=re, json=js, hashlib=hashlib, tarfile=tarfile, dt=dt, subprocess=subprocess, time=time, now=time.time(),
+                 ST=work + "/st/", VAULT=work + "/vault/", TRASH=work + "/trash", GRM="/nonexistent", TMP=work + "/tmp/",
+                 VMAX=2 << 30, FMAX=512 << 20, RECENT_S=3600, MODE="live", E={}, gib=lambda b: str(b))
+        os.makedirs(g["ST"]); os.makedirs(g["TRASH"])
+        exec(sha_src + "\n" + src, g)
+        return g
+
+    def test_same_basename_roots_do_not_churn(self):
+        work = tempfile.mkdtemp()
+        try:
+            g = self.ns(work); roots = []
+            for parent in ("a/x", "b/y"):
+                r = os.path.join(work, "tmp", parent, "packet"); os.makedirs(r)
+                f = os.path.join(r, "k.json"); open(f, "w").write(parent); os.utime(f, (1000, 1000)); roots.append((r, f))
+            for _ in range(3):
+                for r, f in roots:
+                    ok, msg = g["vault"]("packet", r, [f], 1000)
+                    self.assertTrue(ok, msg)
+            tars = [x for d, _, fs in os.walk(work + "/vault") for x in fs if x.endswith(".tar.gz")]
+            self.assertEqual(len(tars), 2, tars)           # one version per root, not one per pass
+            self.assertEqual(os.listdir(work + "/trash"), [])   # nothing superseded was trashed
+        finally:
+            shutil.rmtree(work, ignore_errors=True)
+
+    def test_prune_keeps_newest_n_policy(self):
+        work = tempfile.mkdtemp()
+        try:
+            g = self.ns(work); g["VAULT_KEEP"] = 2; g["GRM"] = "/nonexistent"
+            d = work + "/vault/2026-11/"; os.makedirs(d)
+            for n in range(1, 6):
+                for suf in (".tar.gz", ".tar.gz.sha256", ".index.json"): open("%sk.v%d%s" % (d, n, suf), "w").write("x")
+            g["prune_vault"](d, "k")
+            self.assertEqual(sorted(x for x in os.listdir(d) if x.endswith(".tar.gz")), ["k.v4.tar.gz", "k.v5.tar.gz"])
+        finally:
+            shutil.rmtree(work, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main()

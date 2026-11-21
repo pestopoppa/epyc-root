@@ -324,8 +324,18 @@ def sha(p):
     with open(p, 'rb') as f:
         for ch in iter(lambda: f.read(1 << 20), b''): h.update(ch)
     return h.hexdigest()
+def vault_key(name, root):
+    """Vault identity. basename alone COLLIDES (many roots are .../packet, .../r3, .../row, .../r2, .../nemo-server-marker-request-join): they shared one
+    ST/<name>.vault.json record and one version series, so every pass saw a foreign digest, cut a new version and pruned the neighbour's
+    (INC-20261121 reap churn, 48G of superseded vault copies in .trash-reap). Top-level tmp dirs keep their bare name (existing series);
+    anything nested gets a stable path hash so each root owns its record and version series."""
+    rp = os.path.realpath(root)
+    if os.path.dirname(rp.rstrip('/')) + '/' == TMP: return name
+    return '%s-%s' % (name, hashlib.sha256(rp.encode()).hexdigest()[:8])
+VAULT_KEEP = int(E.get('REAP_VAULT_KEEP', '2'))   # policy data: newest N versions kept per vault key
 def vault(name, root, files, filed_at):
     """returns (ok, msg). dry: only sizes."""
+    name = vault_key(name, root)
     tot = 0; big = []
     for f in files:
         try: sz = os.lstat(f).st_size
@@ -364,9 +374,10 @@ def vault(name, root, files, filed_at):
     json.dump(dict(tar=tar, tar_sha256=ts, digest=dig, n=len(idx)), open(rec, 'w'))
     pr = prune_vault(d, name)
     return True, 'VAULTED %s (%d files, %s, sha256 %s)%s' % (tar, len(idx), gib(tot), ts[:16], pr)
-def prune_vault(d, name, keep=2):
+def prune_vault(d, name, keep=None):
     """after a verified new tar: drop versions of `name` older than the newest `keep` (tar, .sha256, .index.json) via guarded_rm
     (TRASH_ROOT=reap trash; trash-sweep frees it); if guarded_rm fails, move the paths into TRASH."""
+    keep = max(1, VAULT_KEEP if keep is None else keep)
     rx = re.compile('^' + re.escape(name) + r'\.v(\d+)\.tar\.gz$'); vs = sorted(int(m.group(1)) for m in (rx.match(f) for f in os.listdir(d)) if m)
     old = []
     for n in vs[:-keep]:
