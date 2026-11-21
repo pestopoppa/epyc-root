@@ -747,6 +747,9 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 - *NEW-12 — HELD (operator 2026-10-22: "stick to NEW-10 and then we reassess later"); no checkbox, no compute booked.* Q38FN allocation transplant plus bytes-budgeted per-tensor type allocator from the Stage-3 plan (intake-2470#record, intake-2466#record, intake-2487#record). Reassess after NEW-10's IQ3_XXS quality result. If it is ever run, use the lean form: one candidate at a time, no P0 ISTA GSQ-weights comparison, ~190 GB disk peak, and delete the Q8_0 source at the end.
   - 2026-11-20 (intake-kspec-20261120, operator): the NEW-12 hold is lifted for GGUF-RECIPE-SEARCH only (iqk-iquant-enablement track); NEW-12 itself stays held.
 
+- Notes (ak-intake-20261121): K27 template: the fork's AVX-512 16x16 tile in gemm_q4_b32_8x8_q8_0_lut_avx (arch/x86/repack.cpp L641) with a direct int8 load is the starting point for an x86 Q8_0 8x8 kernel; precondition: GGML_IQK=1 routes Q8_0 to iqk, so it must beat iqk (measured by Q8PK-GEMM-AB) (intake-2754#record). NEW-6(f) idiom: expand sign-plane bits to bytes with vpshufb broadcast, vptestmb against 0x8040201008040201 and vpblendmb (intake-2754#record). EntroLLM shares authors with LazyWeights and decodes once per sequence, so it is not independent evidence; its in-loop decode rate is only a lower-bound reference for WSTREAM-DECODE-UBENCH-CPU (intake-2777#record).
+
+
 
 ## Track: tq3-quantization-evaluation
 <!-- gate: none -->

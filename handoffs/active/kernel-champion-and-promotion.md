@@ -1811,6 +1811,12 @@ Open kernel-fix boxes re-homed by INF48-FOLD-PLAN (moved from INF-48 2026-11-17;
       · model: Qwen3.8-Flash-Next UD-IQ4_XS (512 experts, top-10) in the gdn-share hybrid recipe (-ncmoe 999 -ub 2048) · build: C14 store vs the fold build (content proof: mm_ids_helper<10> symbol plus verify_ggml_linkage) · harness: test-backend-ops ROCm0 MUL_MAT_ID n_used 10 cases, then llama-bench -p 2048 -n 0 under rocprofv2 kernel stats and once without the profiler, ABBA
       · metric(dir): mm_ids_helper us/call lower, pp2048 tok/s higher · rule: KEEP iff op tests pass AND helper time per call falls >= 30% AND unprofiled pp2048 is not lower beyond the 0.84% GPU noise floor · region: gpu-q3 (numactl --membind=3 -- taskset -c 184-191) · est: ~1500 s (two profiled + two unprofiled arms of a pp2048 run, re-derived from the gdn-share run time + 25%)
       · stop rule: question = does the fast helper cut the 7.33% generic-helper share? expected 1005 -> ~250-350 us/call vs a few-percent repeat noise; checkpoint after the first AB pair; stop-on-answer after 3 pairs with the helper-time CI clear of 30%; stop-on-futility on an op-test failure (FAIL_CORRECTNESS) or helper time within 10% after 2 pairs (DROP)
+- [ ] **FAROWS-GATHER-SHARE** [inference] From a C17 trace at the :8083 shape (np 4, >= 32k per slot, q8_0 KV), report the share of decode and verify step time spent in the UP-FAROWS-HIP gather kernels, as the upper bound for in-place kv_rows reads (intake-2753#record).
+      · done when: RESULT.json records gather-kernel share of decode and of verify step time with the verdict: >= 3% of the verify step opens an in-place-read implementation box under KPF-41, otherwise close
+      · gate: none
+      · model: Qwen3.8-27B Q8_0 + DFlash2 np 4, >= 32k per slot, q8_0 KV · build: champion C17 ed5d94969 store binary · harness: rocprofv3 kernel trace over 5 measured requests, gather kernels identified by name
+      · metric(dir): gather share of step time · rule: >= 3% of verify step opens the follow-on · region: gpu-q3 (numactl --membind=3, host threads 184-191) · est: 700 s + 25%
+      · stop rule: question = is the gather copy a lever? checkpoint after the first request; stop-on-answer after 5 requests; stop-on-futility if the share is < 1% after the first request
 
 
 ### Done
@@ -1824,6 +1830,9 @@ Open kernel-fix boxes re-homed by INF48-FOLD-PLAN (moved from INF-48 2026-11-17;
 - [x] **HEAD-4** ✅ 2026-09-16
 - [x] **PROD-BASE-1** ✅ 2026-09-21
 - [x] **METH-BENCH-1** ✅ 2026-09-08
+
+- C17 correctness note (ak-intake-20261121, intake-2752#record): production v10 ffc1bac82 lacks the rollback guards c7435cc77 and 3a6fd54ae that C17 carries; by code reading, a find_slot cell swap at np > 1 can make a later rollback restore another sequence's snapshot on v10 (not reproduced). Record as a correctness fix carried by C17. B3 packet note: the BF16 GDN state (GGML_CUDA_GDN_STATE_BF16, off) is rounded to nearest and fed back every step; if it is ever proposed, add a stochastic-rounding store arm to the >= 20K coherence gate (intake-2771#record).
+
 
 ## Track: fable5-window2-findings-03-portfolio-and-master-queue
 <!-- gate: none -->

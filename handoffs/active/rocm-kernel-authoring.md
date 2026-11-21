@@ -2295,8 +2295,16 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - [x] **—** ✅ 2026-08-12 —
 - [x] **C5-4** ✅ 2026-08-16 —
 
+- Monitor (ak-intake-20261121, operator-approved): HIP ReplaySSM non-flush path (ring of logged inputs, per-row flush flag, output-only verify on the C8-6 UT machinery) only after RS-REPLAY-PORT lands and an np >= 4 served row shows committed-state writes >= 2% of the round (intake-2771#record).
+
+
 ## Track: mi210-q8-dequant-gemv-roofline
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47 -->
+
+### Backlog
+- [ ] **WSTREAM-DECODE-BUDGET-GPU** [non-inference] Estimate the MI210 spare-ALU budget for in-register lossless weight decode inside the Q8_0 decode GEMV at batch 1: from the measured GEMV occupancy and bandwidth (about 65% of HBM peak on the 27B decode), compute the VALU cycles per streamed byte available under memory stalls, and compare with the decode cost per output byte of the WSTREAM-DECODE-UBENCH-CPU schemes mapped to wave64 (intake-2756#record).
+      · done when: a short note with the stall-cycle budget per byte, the per-scheme wave64 decode cost estimate and the verdict: a scheme fits iff its cost is below the stall budget with 1.5x margin and the census saving is >= 3%, which opens an experimental kernel box; otherwise close
+      · gate: WSTREAM-ENTROPY-CENSUS        · inputs: `/mnt/raid0/llm/tmp/dive-ak-intake-20261121/2611.17108v3/dive.md`
 
 > Folded from `handoffs/active/mi210-q8-dequant-gemv-roofline.md` @ `b1bf3f3f7ade` on 2026-11-02 (BRF-T1-F23, route 1a, operator D1/D5; retired row INF-37 → INF-03). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 

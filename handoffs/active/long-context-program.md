@@ -614,6 +614,14 @@ The operational YARN-128K-MI210 checkbox remains open until CPU-v3 shard withdra
 ## Track: attention-matching-kv-compaction
 <!-- gate: none -->
 
+### Backlog
+- [ ] **EA-POOL-SCREEN** [inference] Screen eviction-and-selection variants on the hybrid 27B with the AM-PORT-2B 60-item harness to separate scorer resolution from eviction mechanics: Expected-Attention scores max-pooled over a sequence window before the threshold (kernel 1 as control, 7, 15, 63), an always-kept recent window of 32 tokens as a flag, a ChunkEA arm (fixed chunks of 10, chunk-mean EA, recent window kept), random per-token and random 64-token-span eviction controls, and exact top-k selection through the H12 sparse-FA path with no eviction (intake-2775#record, intake-2776#record, intake-2760#record, intake-2780#record, intake-2781#record).
+      · done when: a per-arm table (items correct out of 60 at keep 0.8, plus keep 0.5 for any arm within 3 items of FULL at 0.8, against FULL and the existing EA and L4 arms) is filed under this box with KEEP or DROP per arm and a one-line verdict: scoring or mechanics
+      · gate: none
+      · model: Qwen3.8-27B Q8_0 · build: the retained AM-PORT-2 HIP build of c9f2e34ce plus a host-side pooling, window, chunk and random-control patch on an experimental branch (content proof: strings for the new knob names) · harness: AM-PORT-2B 60 items, frozen item manifest, same scorer, fixed seed for the random controls
+      · metric(dir): items correct higher · rule: KEEP an arm iff at keep 0.8 it scores within 3 items of FULL (EA scored 1/32, L4 stride-1 45/60); scoring is implicated if pooled or ChunkEA arms beat random-span, mechanics if random-span also fails while exact selection holds · region: gpu-q3 (numactl --membind=3, host threads 184-191) · est: from the AM-PORT-2B row time per arm at keep 0.8, plus keep 0.5 only for passing arms, + 25%
+      · stop rule: question = is EA's failure on the 27B caused by scattered per-token scoring (fixable by pooling, chunks or a recent window) or by eviction itself (exact selection survives, random-span fails)? checkpoint after keep 0.8 for all arms; stop-on-answer after keep 0.8 plus keep 0.5 for passing arms; stop-on-futility if every arm including exact selection is below 30/60 at keep 0.8
+
 > Folded from `handoffs/active/attention-matching-kv-compaction.md` @ `4a6273fd896e` on 2026-11-03 (BRF-T7-F7, route 1b, operator D1/D5; retired row INF-05 → INF-59). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
 ### Attention Matching KV Compaction
@@ -1961,3 +1969,7 @@ Execution controls and acceptance: [approved plan](../../research/deep-dives/lsa
 ## History
 
 - 2026-11-20 compacted 19 ticked box(es) older than 30 d -> [long-context-program-history-2026-11-20.md](../archived/long-context-program-history-2026-11-20.md) (handoff_compact.py)
+
+- Note (ak-intake-20261121): scorer alternatives for LSA-CPU-SPARSE-E2E: RocketKV's HSA scorer (per-page key min/max plus top head-dims) is the published alternative to the 64-d index-key cache; compare scorer bytes per step before choosing (intake-2775#record). RoCoKV's key-transposed in-page layout is another option but changes the in-page key layout (intake-2760#record).
+- Monitor (ak-intake-20261121, operator-approved): when LSA-QUALITY-32K resumes, add an entropy-adaptive budget arm at the same mean budget (intake-2760#record); re-evaluate a RoCoKV-style three-phase sparse decode port only when served contexts reach >= 128k (intake-2760#record); schedule the faithful ChunkKV prototype (NEW-16) only if EA-POOL-SCREEN shows the 27B failure is scoring rather than mechanics (intake-2781#record).
+

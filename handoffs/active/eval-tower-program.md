@@ -1118,6 +1118,9 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 
 Orchestrator `79230233c04b1e24b8736640d70e290825612880` adds per-call retained-mass capture and a refusal floor to the existing paired distributional consumer. A versioned v2 plan binds the ordered K=9 score-token IDs and explicit floor; each call records missing IDs as zero mass and refuses a below-floor or zero-mass judgment before aggregation. Legacy v1 mathematical vectors preserve their original manifest, request IDs and output shape and carry no native mass warrant. Seventy focused tests, accepted/refused CLI cases, Ruff and diff checks pass; durable validation and admitted R6 resource evidence are committed under `artifacts/audit/ni-ev15d-retained-mass-20261031/`. This closes the software contract only. Native position/template checks, original numeric goldens and live judgment validation remain separate open asks. [no-belief: offline software controls; no native scoring or quality claim]
 
+- Monitor (ak-intake-20261121, operator-approved): add an embedding-dispersion companion to Pass^k, reusing _consistency_and_passk, when the existing Pass^k monitor fires (intake-2764#record).
+
+
 ## Track: bulk-inference-campaign
 <!-- gate: none -->
 

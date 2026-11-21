@@ -396223,7 +396223,14 @@
     intake_entries:
     - intake-490
     - intake-1025
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - kernel-champion-and-promotion.md
+  - kv-cache-program.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: pr31669-A1: P1 / RS-REPLAY-PORT, RS-REPLAY-GATE; pr31669-A2: P1 / DTREE-REPLAY-DESIGN; pr31669-A3: K1 knowledge-only; pr31669-A4: K2 knowledge-only; pr31669-A5: P4 / KPF-RS-1-REFUSED-CTR; pr31669-A6: P1 / AK-LEARN-GDN-REPLAY; pr31669-A7: decline: these are not EPYC serving backends (CPU and gfx90a HIP are), so the ports serve no consumer; pr31669-A8: decline: a separate base-kernel change with its own gate; replay ports onto our one-column-per-warp kernel without it"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: Cite PR31669 for the input-log replay mechanism and the exact memory table; cite the speed table only as RTX PRO 6000 numbers whose gain grows with sequences in the batch (np1 flat). Do NOT carry 'HIP verified' (only Strix Halo prefill), do NOT carry 'fixes the find_slot bug' for snapshot mode (it refuses the rollback; C17 already does). Our estimate for MI210 27B np1 is ~-0.67 ms/step (~1.3% of a round), unmeasured; the CPU benefit is keeping the recurrent working set L3-resident, unmeasured (~1-8%).
@@ -396517,7 +396524,13 @@
     - speculative-decoding.md
     - rocm-kernel-authoring.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - kernel-champion-and-promotion.md
+  - kv-cache-program.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: pr32520-A1: P4 / FAROWS-GATHER-SHARE; pr32520-A2: M2 monitor; pr32520-A3: K3 knowledge-only; pr32520-A4: K1 knowledge-only; pr32520-A5: decline: the CPU serving shape is non-unified, so no row list exists to read; pr32520-A6: decline: the fork excludes BF16 from VEC on AMD and production KV is q8_0"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite pr32520 for the in-place lane-owned-row + shuffle technique and the compile-time-specialization rule. Do NOT cite it as evidence of an idle-slot penalty on our stack: v10 has no kv_rows and C17 gathers raw rows without F16 conversion. Its n=1 vec variant does not cover our served speculative verify shape; any port must use the side channel (not FA src[5]) and should first bound the gather-copy share (pr32520-A1).'
@@ -396766,7 +396779,11 @@
     - quantization-and-low-bit.md
     - autokernel-akx-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - quantization-and-low-bit.md
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: pr32646-A1: K4 knowledge-only; pr32646-A2: K4 knowledge-only; pr32646-A3: decline: Q1_0 is quality-blocked for us (2026-07-19 steering) and the kernel repeats work (redundant sign multiply, AVX2-only GEMV); pr32646-A4: decline: the PR has no 512-bit GEMV; the queued CPU small-M verify measurement decides any small-M lever first"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite this PR only as evidence that the existing ggml 8x8 AVX-512 GEMM template carries to a new type with a cheap bit-expand, and for its pp/tg table (9600X, 6 threads, own AVX2 vec_dot base). Do NOT cite it as a source of IQ4_NL or Q8_0 zmm kernels: it has none. Do NOT carry its PPL as a statement about Q1_0 quality.'
@@ -396957,7 +396974,12 @@
     - speculative-decoding.md
     intake_entries:
     - intake-1420
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - cpu-decode-roofline-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: sonic-A1: P2 / AK-GAP-1-STOCH-CENSUS, AK-GAP-1-STOCH-ACCEPT; sonic-A2: P2 / Q38FN-CPU-SAMPLER-SPLIT; sonic-A3: decline: the bf16 key truncates fp32 logits and would break the exact TOP_K oracle, and adaptive radix loses to bitonic at batch 1 at every vocab size in the paper"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: Cite SonicSampler for the two-stage tile-local top-k + merge principle, the packed value|inverted-index key for deterministic ties, the logit-space min-p threshold (x_i >= max + ln theta), Gumbel-max with pre-drawn noise as a graph input, and per-request indicator bits. Do NOT cite 10x or 16x as typical; do not carry the bf16 16-bit key into a path gated on fp32 bit-exact indices; do not port the adaptive radix path for B<=4.
@@ -397233,7 +397255,13 @@
     - intake-815
     - intake-816
     - intake-817
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - rocm-kernel-authoring.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: lazy-A1: P7 / WSTREAM-DECODE-UBENCH-CPU; lazy-A2: P7 / WSTREAM-DECODE-BUDGET-GPU; lazy-A3: decline: shaping gives no size gain at fixed width and raises perplexity at equal format (paper Table VI); lazy-A4: K1 knowledge-only; lazy-A5: P7 / WSTREAM-ENTROPY-CENSUS; lazy-A6: M7 monitor"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite LazyWeights for the parallel-decodable Huffman layout, the Huffman-vs-rANS hardware comparison, and the measured fact that software weight decode is 2.5-3.2x slower than fixed width on edge GPUs. Do NOT cite its 5.7-31.4% as a GGUF size win, its Orin 36% as a decode-unit win, or its Nano 58-64% as anything but GPU-vs-CPU. Do NOT treat the cost of software decode on our hardware as settled: the dive measured 2-7% ideal code-entropy headroom, which is up to about 7% faster bandwidth-bound decode if decode hides under memory stalls; whether it does on Zen 5 and gfx90a is measured by the WSTREAM-* census and decode microbenchmarks.'
@@ -397526,7 +397554,11 @@
     intake_entries:
     - intake-1256
     - intake-1265
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: draft-A1: decline: the physical HBM floor for one 4.47 GB draft token (2.8 ms) exceeds the 1.65 ms per-token break-even against DFlash2; draft-A2: M1 monitor; draft-A3: K1 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: Cite the card for the acceptance table (temp-1 rejection sampling, block 16) and the top-20 serving-policy distillation recipe. Do NOT compare 5.58 with our greedy DFlash2 tokens/step (5.8 at block 8, different sampling and benchmark), do not cite any speedup (none reported), and do not treat the base Qwen3.5-4B GGUF as this draft.
@@ -397798,7 +397830,12 @@
     - long-context-program.md
     intake_entries:
     - intake-2091
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-program.md
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: fr-A1: P1 / FR-UFH14-DIVERGE; fr-A2: P1 / KPF-64-CUTS; fr-A3: M2 monitor; fr-A4: decline: the existing checkpoint-pool measurement found the pool is not binding at 4 sessions on 4 slots; fr-A5: decline: llama.cpp checkpoints are host-RAM byte vectors, not GPU KV pages, so there is no shared pool to lend into; fr-A6: decline: duplicate of the existing first-divergence analysis in the routing program"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite FrontierReplay for the boundary-predictability measurement and split-free checkpointing via input-log replay; cite its goodput/TTFT numbers only as vLLM-align-mode, one-A800, under-load results. Do NOT carry the 4.26x/8.9x as expected llama.cpp gains, and do NOT carry dead-slot KV lending (llama.cpp checkpoints are host RAM). Next steps are zero-inference: classify UFH14-A7 divergence positions and count cut ubatches in existing server logs before building anything.'
@@ -398073,7 +398110,11 @@
     - speculative-decoding.md
     intake_entries:
     - intake-056
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: raptor-A1: P6 / SPEC-CONF-FRONTIER-GAP; raptor-A2: P6 / AK-H-MTP-DEGEN-1; raptor-A3: decline: it has no verify-cost term, and under the measured 1.8-2.4 ms per extra row the in-house projection gives cost-aware adaptive width 118.3 vs static W12 118.0 tok/s"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: Cite Raptor for the frontier-gap signal definition and the shallow-rejection (cap 2) / path-exhaustion (+1) recovery rule. Do NOT cite its speedups as transferable (greedy-only, 3090, unrepeated, broken Medusa baselines), and do not adopt its controller for width without adding our measured verify-cost curve.
@@ -398307,7 +398348,11 @@
     - long-context-program.md
     - eval-tower-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - long-context-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: rococ-A1: M3 monitor; rococ-A2: P5 / EA-POOL-SCREEN; rococ-A3: decline: measured quality loss: the redundancy term alone scores 0.00 on AIME25 for both models in the paper ablation; rococ-A4: K5 knowledge-only; rococ-A5: M3 monitor; rococ-A6: decline: llama.cpp has no paged block table (contiguous cells), so there is no target structure"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: Cite RoCoKV for (a) the uncertainty-adaptive per-step selection budget passed as a device tensor and (b) the observation that selection errors hurt mainly at high-entropy steps (Obs 1). Do NOT carry 'allocates more KV memory' (its vLLM path frees none), do NOT carry the redundancy term as a quality lever (0.00 AIME25 alone), and do NOT carry the 1.27-1.45x speedups to the hybrid 27B (16 KV layers; in-house roofline caps ~+3% at 32k q8_0). Its relevance to us is as a budget-policy arm for the D-LSA/H12 selection path and a selection-without-eviction contrast to the failed Expected-Attention eviction.
@@ -398545,7 +398590,12 @@
     intake_entries:
     - intake-2528
     - intake-2221
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: aggron-A1: P3 / TOC-CMP-4-PREREG-V2; aggron-A2: P3 / TOC-CMP-NONPROSE-TALLY; aggron-A3: P4 / KPF-22-QUEUE-SHARE; aggron-A4: M4 monitor"
   handoffs_created: []
   verification: dive-overturned
   reader_should_conclude: Cite Aggron for (a) the prose/non-prose split with the tool-family classifier and append-only frozen summaries, and (b) the measured fact that under KV saturation request latency is mostly queue wait. Do NOT cite the 27-31%/1.34-1.40x numbers as measured serving results, and do NOT carry the queue-time summarization mechanism to our stack without first measuring head-of-line blocked share in SharedKVPoolAdmission.
@@ -398740,7 +398790,11 @@
     intake_entries:
     - intake-2629
     - intake-2639
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: compact-A1: P3 / TOC-CMP-4-PREREG-V2; compact-A2: P3 / TOC-CMP-4-PREREG-V2; compact-A3: P3 / TOC-CMP-4; compact-A4: decline: it is an internal suite and not public"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: Cite CompAct-Bench for the evaluation DESIGN (boundary x fixed executor x matched action budget x calibrated retention ratio x pass^3-filtered tasks x state-persistence control) and for Table 2 as frontier-compactor numbers on closed models. Do NOT cite the failure-category shares as a causal split, and do NOT transfer Table 2 absolute numbers to local 27B/A3B compactors.
@@ -398927,6 +398981,9 @@
     - intake-240
     - intake-327
   handoffs_updated: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: gepa-A1: decline: the only evidence is a single un-held-out run per cell, and our autopilot already mutates prompts, code and GEPA species with guards; gepa-A2: decline: the paper does not name its reflection model, so it gives no evidence either way; gepa-A3: decline: already covered by the existing frontier/promotion gate and knowledge fence"
   handoffs_created: []
   verification: dive-overturned
   reader_should_conclude: Do not cite Table 3 or the compute-efficiency claim as evidence that harness evolution matches RL. Cite only as a restatement that GEPA-style reflective evolution can be applied to structured harness genotypes (prompt+tools+skills+exemplars). Our GEPA species already exists; this paper changes no decision.
@@ -399087,7 +399144,11 @@
     - eval-tower-program.md
     intake_entries:
     - intake-370
-  handoffs_updated: []
+  handoffs_updated:
+  - eval-tower-program.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: roam-A1: decline: the evidence is one seed with test-set checkpoint selection and no served role is a 2B math reasoner; roam-A2: M5 monitor; roam-A3: decline: no consumer exists"
   handoffs_created: []
   verification: dive-overturned
   reader_should_conclude: Cite ROAM-GRPO only as a recipe sketch for judge-verified off-mode self-distillation and for the use of pass@k alongside dispersion. Do NOT cite +4.7% or any pass@16 gain as a result; it is a single-seed, test-selected peak.
@@ -399256,7 +399317,11 @@
     - kv-cache-program.md
     intake_entries:
     - intake-2758
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: suffix-A1: decline: it is an approximation with no logit or token-identity evidence, and our greedy-identity, KLD and speculative-verify gates need exact state; suffix-A2: K3 knowledge-only"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite SuffixReplay for: group-entry-hidden-state anchors, the 51-55x storage reduction over naive per-layer replay, and the table showing quality degrades with small k and for OLMo. Do NOT cite it as evidence that replay is safe for greedy-identity gates or speculative verify: it reports task scores only, and approximate state means the served distribution is not the model''s. Do not carry the 2.3-4.3x or -70% TTFT as general; they are vs SGLang''s checkpoint grid on H800.'
@@ -399485,7 +399550,11 @@
     - kv-cache-program.md
     intake_entries:
     - intake-2758
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: tail-A1: decline: same exactness reason as SuffixReplay, with per-cell losses up to 22% in the paper appendix; tail-A2: P4 / KPF-RS-1-ZERO-STATE"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite Tail-Replay only for the mechanism (cache FA-output hiddens; replay group-wise from zero state; zero-state baseline shows the replay is load-bearing) and as a restatement of SuffixReplay. Do not cite its speedups as serving evidence (vs full prefill, 20-rep mean, no engine) and do not use it for long-context safety: RULER is capped at 16K and the per-cell appendix is the honest place to look.'
@@ -399712,7 +399781,11 @@
     - kv-cache-program.md
     intake_entries:
     - intake-2758
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: sparse-A1: P4 / KPF-18.4; sparse-A2: M2 monitor; sparse-A3: decline: the paper states spike and append-only distributions gain nothing, and the Marconi eviction row is already dormant on the same trigger"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite for: exact-DP checkpoint placement formula, the proof that balanced spacing is only optimal for uniform overlap, and the explicit statement that single-trunk (spike) and append-only workloads gain nothing over ''checkpoint at the shared boundary''. Do NOT cite its speedup numbers as system results (0.8B layer group on a 2080 Super). The directly usable idea for us is: measure our overlap-depth histogram first; with a single trunk boundary, `checkpoint_at=[len(trunk)]` (KPF-18) is already DP-optimal.'
@@ -399941,6 +400014,9 @@
     intake_entries:
     - intake-2756
   handoffs_updated: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: huff-A1: decline: no BF16 weights are on our decode path and the decoder is hardware-only"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: Cite Huff-LLM only as simulated-hardware evidence that lossless 16-bit weight coding reaches about 1.37-1.47x and needs an in-datapath decoder. Do NOT cite its latency/energy figures as measured, its FPGA prototype (no results given), or any of it for quantized GGUF formats. Our decode path serves quantized weights, so it has no EPYC consumer.
@@ -400117,7 +400193,11 @@
     - speculative-decoding.md
     intake_entries:
     - intake-2759
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: talon-A1: decline: its speedup formula treats verify width as free; 52+ extra rows at 1.8-2.4 ms each add more than the accepted-token gain, and DFlash2 has no serial drafter forwards to cut; talon-A2: P1 / AK-LEARN-GDN-REPLAY"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite TALON for the relative-threshold tree gate (min-p on cumulative path probability, root top-K) and for R = tau/(1+c*delta). Do NOT carry N=60 or its speedups to the MI210: convert with the program.md tree cost model including verify slope s.'
@@ -400321,7 +400401,11 @@
     intake_entries:
     - intake-2761
     - intake-2762
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: slip-A1: P3 / TOC-CMP-4-PREREG-V2; slip-A2: P3 / TOC-CMP-SMALL-JUDGE; slip-A3: decline: single-agent regime; Aggron reports async barely helps once KV memory saturates and our regime is unmeasured"
   handoffs_created: []
   verification: dive-verified
   reader_should_conclude: 'Cite for the async compaction + trajectory-grounded judge design and for the Async-only vs judge ablation. Do not carry the 8.8 pp / 39.7% figures as expected gains on our stack: single-agent low-load regime, unreported n and variance, same-family judge.'
@@ -400516,7 +400600,13 @@
     intake_entries:
     - intake-2752
     - intake-2758
-  handoffs_updated: []
+  handoffs_updated:
+  - kernel-champion-and-promotion.md
+  - rocm-kernel-authoring.md
+  - speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: replayssm-A1: P1 / RS-REPLAY-GATE; replayssm-A2: P1 / RS-REPLAY-GATE; replayssm-A3: K2 knowledge-only; replayssm-A4: M6 monitor; replayssm-A5: decline: it requires the non-flush steps of the HIP ReplaySSM path, which is itself trigger-gated, and the np 1 MI210 state read is about 0.1 ms per step; replayssm-A6: decline: the authors list it as unmeasured future work and it depends on the gated non-flush path; replayssm-A7: decline: duplicate of the existing Triton GDN kernel probe actionable in the ROCm authoring lane"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -400884,7 +400974,12 @@
     handoffs: []
     intake_entries:
     - intake-2758
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-program.md
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: flash-A1: P1 / KPF-64-SNAPSLOT-READ; flash-A2: M2 monitor; flash-A3: P1 / FR-UFH14-DIVERGE; flash-A4: decline: already integrated in champion C17 as its end-of-request checkpoint (default on); flash-A5: decline: the existing checkpoint-pool measurement shows the pool is not binding at our load; flash-A6: decline: the principle ports into our own kernels (flash-A1/A2); the cluster split addresses an SM100 occupancy issue we do not have at np <= 4"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -401077,7 +401172,11 @@
     intake_entries:
     - intake-2765
     - intake-2766
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: linearkv-A1: P4 / KPF-62-DRIFT-PRIORS; linearkv-A2: decline: it was measured only on Granite with a HyPIC-lite composition; on GDN models the initializers tie"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -401286,7 +401385,11 @@
     intake_entries:
     - intake-2765
     - intake-2766
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: hypic-A1: P4 / KPF-62-DRIFT-PRIORS; hypic-A2: decline: the reorder planner acceptance is bit-identity and these are approximate recompute paths; hypic-A3: P4 / KPF-60-LPT-MODEL"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -401488,7 +401591,11 @@
     handoffs: []
     intake_entries:
     - intake-2760
-  handoffs_updated: []
+  handoffs_updated:
+  - long-context-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: rocket-A1: P5 / EA-POOL-SCREEN; rocket-A2: K5 knowledge-only; rocket-A3: decline: measured on a dense 8B at batch 1 in fp16; our byte roofline caps the selector gain at about 3-6% at 32k on the 27B"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -401694,7 +401801,11 @@
     handoffs: []
     intake_entries:
     - intake-2760
-  handoffs_updated: []
+  handoffs_updated:
+  - long-context-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: skipkv-A1: decline: its eviction unit is still the token and it was validated only on R1-distill chain-of-thought with static batching; skipkv-A2: P5 / EA-POOL-SCREEN"
   handoffs_created: []
   verification: dive-overturned
   read_depth: FULL
@@ -401855,7 +401966,12 @@
     handoffs: []
     intake_entries:
     - intake-2756
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-akx-program.md
+  - quantization-and-low-bit.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: entro-A1: P7 / WSTREAM-DECODE-UBENCH-CPU; entro-A2: K4 knowledge-only"
   handoffs_created: []
   verification: dive-overturned
   read_depth: FULL
@@ -402020,7 +402136,11 @@
     handoffs: []
     intake_entries:
     - intake-2762
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: cpage-A1: P3 / TOC-CMP-4-PREREG-V2; cpage-A2: decline: internal suite and closed executors; the page outcomes are simulated from paper means"
   handoffs_created: []
   verification: dive-overturned
   read_depth: FULL
@@ -402176,7 +402296,11 @@
     handoffs: []
     intake_entries:
     - intake-2770
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: sliprepo-A1: P3 / TOC-CMP-JUDGE-SHIM; sliprepo-A2: decline: duplicate of the async-judge arm added to the pre-registration, which runs on our own trajectories; the vendor run needs Apptainer grading and adds no EPYC decision; sliprepo-A3: decline: they are not bundled in the repo"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -402369,7 +402493,11 @@
     handoffs: []
     intake_entries:
     - intake-2775
-  handoffs_updated: []
+  handoffs_updated:
+  - long-context-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: snapkv-A1: P5 / EA-POOL-SCREEN; snapkv-A2: P5 / EA-POOL-SCREEN; snapkv-A3: decline: SnapKV never tested a kernel above 13; 63 comes from RocketKV"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -402560,7 +402688,11 @@
     handoffs: []
     intake_entries:
     - intake-2776
-  handoffs_updated: []
+  handoffs_updated:
+  - long-context-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: chunkkv-A1: P5 / EA-POOL-SCREEN; chunkkv-A2: M3 monitor; chunkkv-A3: decline: EA already shares one position set across layers"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -402770,7 +402902,11 @@
     handoffs: []
     intake_entries:
     - intake-2774
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: kvpacket-A1: decline: the method does not support hybrid GDN models, is approximate and needs per-model per-domain adapter training; kvpacket-A2: K3 knowledge-only; kvpacket-A3: M2 monitor"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -402974,7 +403110,11 @@
     handoffs: []
     intake_entries:
     - intake-2774
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: hypicrepo-A1: K3 knowledge-only; hypicrepo-A2: P4 / KPF-62-DRIFT-PRIORS; hypicrepo-A3: decline: no ROCm path and our stack is llama.cpp; the math is ported through the drift-gate arms instead (not a decline of the technique)"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -403163,6 +403303,9 @@
     intake_entries:
     - intake-2782
   handoffs_updated: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: kvsa-A1: decline: all its models are full-attention while our served models are hybrid GDN, where chunk-KV reuse is still refused in phase 1; kvsa-A2: decline: the existing gate already measures against a full-recompute reference on our own models; PGR is a normalisation that adds no decision; kvsa-A3: decline: already enforced: the chunk-store key includes the model fingerprint and preload receipts bind model digests"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -403361,7 +403504,11 @@
     handoffs: []
     intake_entries:
     - intake-2774
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: monitor
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: nips-A1: M2 monitor; nips-A2: decline: no measurable claim beyond the abstract is readable, and the drift gate already carries the layer-wise drift prior"
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -403516,7 +403663,11 @@
     intake_entries:
     - intake-2761
     - intake-2770
-  handoffs_updated: []
+  handoffs_updated:
+  - context-and-token-economy.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: cbench-A1: P3 / TOC-CMP-4-PREREG-V2; cbench-A2: decline: no code, data or full text is retrievable (OpenReview and preprints.org return 403 challenges); cbench-A3: decline: its asynchrony is per-session background work, not queue-time hiding, so the head-of-line trigger is unaffected"
   handoffs_created: []
   verification: stage1-unverified
   read_depth: PARTIAL
@@ -403619,7 +403770,11 @@
     handoffs: []
     intake_entries:
     - intake-2772
-  handoffs_updated: []
+  handoffs_updated:
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: fsdoc-A1: P1 / KPF-64-CUTS; fsdoc-A2: P1 / KPF-64-SNAPSLOT-READ; fsdoc-A3: M2 monitor; fsdoc-A4: decline: it fixes an SM100 occupancy issue we do not have at np <= 4; fsdoc-A5: decline: the checkpoint pool is not binding at our load"
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -403883,7 +404038,12 @@
     intake_entries:
     - intake-2772
     - intake-2758
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-program.md
+  - kv-cache-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "ak-intake-20261121 Stage-3 plan: fspdf-A1: M2 monitor; fspdf-A2: P1 / FR-UFH14-DIVERGE; fspdf-A3: K3 knowledge-only; fspdf-A4: decline: the existing checkpoint-pool measurement found no pressure at our load; fspdf-A5: decline: opened only if the divergent-turn re-scope finds a non-zero thinning-erased class"
   handoffs_created: []
   verification: stage1-unverified
   read_depth: PARTIAL

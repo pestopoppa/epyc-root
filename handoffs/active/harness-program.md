@@ -3226,6 +3226,9 @@ REPL-EMB has no inlining path (search returns pointers; reads go through `get`/`
       · section: Research intake 2026-10-31 — ws58 batch (intake-2545..2602)
 
 > Folded from `handoffs/active/agentic-serving-harness-fixes.md` @ `d221498dc150` on 2026-11-03 (BRF-T7-F6, route 1b, operator D1/D5; retired row UFH-14 → UFH-01). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
+- [ ] **FR-UFH14-DIVERGE** [non-inference] Re-scope UFH14-A7 against champion C17, which already checkpoints at end of generation (PFXC-A1, default on; the UFH14-A7 code read was v10), and classify the 41 divergent turns by where the first divergence starts relative to the previous assistant output, to decide whether anything beyond PFXC-A1 is needed (intake-2758#record, intake-2772#record, intake-2787#record).
+      · done when: a table of the 41 turns by first-divergence position (inside previous output, at template boundary, earlier) with the PFXC-A1 coverage of each, counting separately turns whose post-generation checkpoint lies past the kept text (for example a stop string inside accepted drafts) and turns whose matching earlier checkpoint was erased by create_checkpoint min-step thinning, is filed under UFH14-A7 with the verdict: file a template-stable-end checkpoint box only if at least half the turns are not served by PFXC-A1, otherwise close
+      · gate: none
 
 ### Agentic serving harness fixes — demonstrate on the 27B, generalize, then audit
 
