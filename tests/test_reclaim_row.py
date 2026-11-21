@@ -117,13 +117,47 @@ def test_no_end_record_exit2_and_unfiled_exit6(env):
     assert env.run("--pre-filed") == 0
 
 
-def test_no_raw_moves_nothing(env):
+def test_no_raw_opt_out_moves_nothing(env):
     env.manifest()
     env.end()
     f = write(env.scratch / "raw" / "big.bin")
-    assert env.run("--apply") == 0
+    assert env.run("--apply", "--no-auto-raw") == 0
     assert f.exists() and not env.trash.exists()
     assert env.receipt()["state"] == "NO-RAW"
+
+
+def test_no_raw_env_opt_out(env, monkeypatch):
+    monkeypatch.setenv("RECLAIM_AUTO_RAW", "0")
+    env.manifest()
+    env.end()
+    f = write(env.scratch / "raw" / "big.bin")
+    assert env.run("--apply") == 0 and f.exists()
+
+
+def test_auto_raw_reclaims_scratch_keeps_result_verdict_smoke_and_keep(env):
+    env.manifest()   # no raw declaration; keep=["keepme/*"], result_path out/result.json
+    env.end(started=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 7000)))   # job started 2h ago
+    gguf = write(env.scratch / "emu" / "big.gguf")
+    res = write(env.scratch / "out" / "result.json", "{}")
+    res2 = write(env.scratch / "RESULT.json", "{}")
+    ver = write(env.scratch / "verdict.json", "{}")
+    smoke = write(env.scratch / "smoke" / "smoke-summary.txt")
+    keep = write(env.scratch / "keepme" / "k.txt")
+    cut = time.time() - 60   # written after the job start, so none is an INPUT file
+    for f in (gguf, res, res2, ver, smoke, keep):
+        os.utime(f, (cut, cut))
+    assert env.run("--apply") == 0
+    assert not gguf.exists()
+    assert res.exists() and res2.exists() and ver.exists() and smoke.exists() and keep.exists()
+    assert "big.gguf" in trashed(env)
+    assert env.receipt()["auto_raw"] is True
+
+
+def test_auto_raw_manifest_opt_out(env):
+    env.manifest(reclaim_auto=False)
+    env.end(started=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 7000)))
+    f = write(env.scratch / "emu" / "big.gguf")
+    assert env.run("--apply") == 0 and f.exists()
 
 
 def test_raw_glob_reaps_only_raw(env):

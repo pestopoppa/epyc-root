@@ -1,7 +1,8 @@
 #!/bin/bash
 # trash-sweep.sh — permanently remove trash entries older than N days.
 #
-# Usage: trash-sweep.sh --older-than DAYS|now [--dry-run]
+# Usage: trash-sweep.sh --older-than DAYS|Nh|now [--dry-run]
+#   --older-than 24h   hours granularity (trash_reap_tick.sh, operator 2026-11-21); a bare number is days
 #   --older-than now   operator force-clear: removes EVERY trash entry, including ones trashed today
 #                      (operator 2026-11-05). Always preview with --dry-run first.
 # Only ever deletes inside $TRASH_ROOT. Never run on a live path.
@@ -22,8 +23,10 @@ done
 [ -d "$TRASH_ROOT" ] || { echo "no trash"; exit 0; }
 if [ "$days" = now ]; then
     cutoff=$(( $(date +%s) + 1 ))   # everything trashed up to this second
+elif [[ "$days" =~ ^([0-9]+)h$ ]] && [ "${BASH_REMATCH[1]}" -gt 0 ]; then
+    cutoff=$(( $(date +%s) - BASH_REMATCH[1] * 3600 ))
 else
-    [[ "$days" =~ ^[0-9]+$ ]] && [ "$days" -gt 0 ] || { echo "days required (positive integer, or 'now')" >&2; exit 2; }
+    [[ "$days" =~ ^[0-9]+$ ]] && [ "$days" -gt 0 ] || { echo "days required (positive integer, 'Nh' hours, or 'now')" >&2; exit 2; }
     cutoff=$(( $(date +%s) - days * 86400 ))
 fi
 # Age = the TRASH time, read from the YYYYMMDD-HHMMSS prefix guarded_rm.sh gives every entry —

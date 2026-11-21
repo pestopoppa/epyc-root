@@ -417,3 +417,36 @@ def test_workspace_sync_status_counts_real_repo(tmp_path):
     s = wsc.workspace_sync_status(str(clone))
     assert (s["behind"], s["ahead"]) == (2, 0)
     assert wsc.workspace_sync_status(str(tmp_path / "nope"))["ok"] is False
+
+
+# ---- reclaim_under_floor (operator 2026-11-21, disk guards) ----
+def test_reclaim_under_floor_runs_all_three_tools_with_apply(tmp_path, calls, monkeypatch):
+    monkeypatch.setattr(hh.quiet_host, "quiet_host_grant", lambda *a, **k: None)
+    t = hh.Tick(dry_run=False, state_dir=tmp_path / "state")
+    done = hh.reclaim_under_floor(t, free=100 * hh.GB)
+    assert [d["step"] for d in done] == ["worktree-reaper", "build-ttl", "trash-reap"]
+    flat = [" ".join(c) for c in calls]
+    assert "worktree_reaper.py --apply --fetch" in flat[0]
+    assert "build_ttl.py --apply" in flat[1]
+    assert "trash_reap_tick.sh" in flat[2]
+    assert t.state["last_reclaim"]["steps"]
+
+
+def test_reclaim_not_below_floor_does_nothing(tmp_path, calls):
+    t = hh.Tick(dry_run=False, state_dir=tmp_path / "state")
+    assert hh.reclaim_under_floor(t, free=300 * hh.GB) == []
+    assert calls == []
+
+
+def test_reclaim_dry_run_never_passes_apply(tmp_path, calls, monkeypatch):
+    monkeypatch.setattr(hh.quiet_host, "quiet_host_grant", lambda *a, **k: None)
+    t = hh.Tick(dry_run=True, state_dir=tmp_path / "state")
+    hh.reclaim_under_floor(t, free=100 * hh.GB)
+    assert calls and not any("--apply" in c for c in calls)
+
+
+def test_reclaim_defers_under_quiet_host_unless_critical(tmp_path, calls, monkeypatch):
+    monkeypatch.setattr(hh.quiet_host, "quiet_host_grant", lambda *a, **k: "g1")
+    t = hh.Tick(dry_run=False, state_dir=tmp_path / "state")
+    assert hh.reclaim_under_floor(t, free=200 * hh.GB) == [] and calls == []
+    assert len(hh.reclaim_under_floor(t, free=100 * hh.GB)) == 3

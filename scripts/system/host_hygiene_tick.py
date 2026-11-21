@@ -95,6 +95,8 @@ GiB = 2**30
 DISK_PATH = os.environ.get("HYGIENE_DISK_PATH", LLM)
 FREE_WARN = _env_f("HYGIENE_FREE_WARN_GB", 200) * GB
 FREE_CRIT = _env_f("HYGIENE_FREE_CRIT_GB", 100) * GB
+RECLAIM_FLOOR = _env_f("HYGIENE_RECLAIM_FLOOR_GB", 250) * GB   # below this the tick ACTS (operator 2026-11-21), well above the keeper's 170G pause
+RECLAIM_PAUSE_FLOOR = _env_f("HYGIENE_RECLAIM_QUIET_FLOOR_GB", 150) * GB   # under a quiet-host grant it acts only below this
 CLEAR_FACTOR = 1.10
 PERSIST = 2
 HEAVY_INTERVAL_S = _env_f("HYGIENE_HEAVY_INTERVAL_S", 86400)
@@ -797,6 +799,38 @@ def workspace_sync(t: Tick, repo: str = WORKSPACE_CLONE, check=None) -> None:
 
 
 # --------------------------------------------------------------------------- main
+def reclaim_under_floor(t: Tick, free: int | None = None, root: Path = CODE_ROOT, floor: float | None = None) -> list[dict]:
+    """Free space < RECLAIM_FLOOR (250 GB): run the worktree reaper, build TTL and trash reaper (--apply unless dry-run), log what each did.
+
+    Deterministic, no LLM. Each tool is its own subprocess under nice/ionice; a failing tool is logged and never stops the others or the tick.
+    Under a live quiet-host grant it defers (a background scan degrades a timed row) unless free is under RECLAIM_PAUSE_FLOOR."""
+    floor = RECLAIM_FLOOR if floor is None else floor
+    if free is None:
+        free = t.state.get("disk_free_bytes")
+    if free is None or free >= floor:
+        return []
+    if quiet_host.quiet_host_grant() and free >= RECLAIM_PAUSE_FLOOR:
+        t.log(f"reclaim: free {fmt_gb(free)} < {fmt_gb(floor)} but a quiet-host grant is live: deferred")
+        return []
+    safety = root / "scripts" / "safety"
+    apply = [] if t.dry_run else ["--apply"]
+    steps = [("worktree-reaper", ["python3", str(safety / "worktree_reaper.py"), *apply, "--fetch"]),
+             ("build-ttl", ["python3", str(safety / "build_ttl.py"), *apply]),
+             ("trash-reap", ["bash", str(safety / "trash_reap_tick.sh")])]
+    done = []
+    t.log(f"reclaim: free {fmt_gb(free)} < {fmt_gb(floor)}: running {', '.join(n for n, _ in steps)} ({'dry-run' if t.dry_run else 'apply'})")
+    for name, argv in steps:
+        before = shutil.disk_usage(DISK_PATH).free if Path(DISK_PATH).exists() else 0
+        cp = run(["nice", "-n", "19", "ionice", "-c3", *argv], timeout=3600)
+        tail = ((cp.stdout or "").strip().splitlines() or [""])[-1][:200] if cp is not None else "no result (timeout or spawn failure)"
+        rc = cp.returncode if cp is not None else -1
+        after = shutil.disk_usage(DISK_PATH).free if Path(DISK_PATH).exists() else 0
+        t.log(f"reclaim {name}: rc={rc} freed~{fmt_gb(max(0, after - before))} :: {tail}")
+        done.append({"step": name, "rc": rc, "tail": tail})
+    t.state["last_reclaim"] = {"at": now_iso(), "free_bytes": free, "steps": done}
+    return done
+
+
 def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STATE_DIR) -> int:
     state_dir.mkdir(parents=True, exist_ok=True)
     lock = open(state_dir / ".tick.lock", "w")
@@ -808,6 +842,7 @@ def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STA
     t = Tick(dry_run=dry_run, state_dir=state_dir)
     try:
         disk_free(t)
+        reclaim_under_floor(t)
         keeper(t)
         backups(t)
         loop_state_backups(t)

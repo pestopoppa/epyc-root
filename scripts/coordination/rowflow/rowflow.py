@@ -934,6 +934,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["admission_class"] = spec["admission_class"]
     if spec.get("busy_fraction") is not None:
         row["busy_fraction"] = float(spec["busy_fraction"])
+    if spec.get("scratch_gb") is not None:   # per-row scratch declaration (disk guards 2026-11-21); the keeper logs SCRATCH-OVER, never kills
+        row["scratch_gb"] = float(spec["scratch_gb"])
     qg = check_quiet_guard(spec, regions)
     if qg:
         row["quiet_guard_regions"] = qg
@@ -4916,6 +4918,59 @@ def log_transition(flags, kind, current, log, persist=True):
             log(f"{kind} logstate write failed ({sp}): {ex}")
 
 
+# ---------------------------------------------------------------- SCRATCH-OVER (operator 2026-11-21, disk guards; LOG ONLY, never a kill)
+# A running row whose scratch_root grows past its declared `scratch_gb` (default SCRATCH_OVER_DEFAULT_GB = 40) logs
+# `SCRATCH-OVER <row> <GB>`. A 29 GB smoke GGUF nobody declared is what this catches. du is throttled per row (SCRATCH_OVER_EVERY_S) and a
+# row is re-logged only when its size grew >= SCRATCH_OVER_REGROW_GB since the last line (state in ws58-keeper-state/allocator/scratch_over.json).
+SCRATCH_OVER_DEFAULT_GB = 40.0
+SCRATCH_OVER_EVERY_S = 600
+SCRATCH_OVER_REGROW_GB = 5.0
+
+
+def _scratch_gb(path):
+    try:
+        r = subprocess.run(["du", "-sk", path], capture_output=True, text=True, timeout=300)
+        return int(r.stdout.split()[0]) / 1048576.0
+    except (OSError, subprocess.TimeoutExpired, ValueError, IndexError):
+        return None
+
+
+def scratch_over(flags, grants, log, now=None, du_gb=None, state_path=None):
+    """Log SCRATCH-OVER for running grants over their declared scratch_gb (default 40). Returns [(rid, gb)] logged. Never raises, never kills."""
+    now = time.time() if now is None else now
+    du_gb = du_gb or _scratch_gb
+    sp = state_path or os.path.join(flags, "ws58-keeper-state", "allocator", "scratch_over.json")
+    st = load_json(sp) or {}
+    out = []
+    for g in grants:
+        rid = g["id"]
+        try:
+            ent = st.get(rid) or {}
+            if now - float(ent.get("checked", 0)) < SCRATCH_OVER_EVERY_S:
+                continue
+            m = load_json(ready_path(flags, rid)) or {}
+            root = m.get("scratch_root")
+            if not isinstance(root, str) or not os.path.isdir(root):
+                continue
+            cap = float(m.get("scratch_gb") or SCRATCH_OVER_DEFAULT_GB)
+            gb = du_gb(root)
+            ent["checked"] = now
+            if gb is not None and gb > cap and gb >= float(ent.get("logged_gb", 0)) + SCRATCH_OVER_REGROW_GB:
+                log(f"SCRATCH-OVER {rid} {gb:.1f}G (declared {cap:g}G{'' if m.get('scratch_gb') else ', default'}; root {root}; log-only)")
+                ent["logged_gb"] = gb
+                out.append((rid, round(gb, 1)))
+            st[rid] = ent
+        except Exception as ex:  # noqa: BLE001 - a log-only guard never stops allocation
+            log(f"SCRATCH-OVER check failed for {rid}: {type(ex).__name__}: {ex}")
+    try:
+        os.makedirs(os.path.dirname(sp), exist_ok=True)
+        with open(sp, "w") as fh:
+            json.dump(st, fh)
+    except OSError:
+        pass
+    return out
+
+
 def idle_held(flags, grants, holders, util, log, seen, now=None, occ=None):
     """2026-11-03 session review item 2: every held region is judged by MEASUREMENT, not by its grant file - a grant
     older than IDLE_HELD_AFTER_S whose region reads < IDLE_PCT busy logs IDLE-HELD (one line: region, row, %, age,
@@ -6424,6 +6479,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     util = measure_util()
     idle_now = idle_held(flags, grants, holders, util, log, seen)
     if not dry:
+        scratch_over(flags, grants, log)
         try:   # operator 2026-11-05: IDLE-HELD tells the owner (notify-only; never ends a grant)
             idle_held_notify(flags, idle_now, grants, log, wanted=cands)
         except Exception as e:  # noqa: BLE001 - a warning never stops allocation

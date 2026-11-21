@@ -154,7 +154,10 @@ def shared_unfiled(flags: str, rid: str, root: str):
     return None
 
 
-def keep_map(root: str, m: dict, cutoff: float, worktree_paths) -> dict:
+DEFAULT_KEEP_NAMES = re.compile(r"(?i)^(RESULT[^/]*|results[^/]*|verdict[^/]*|smoke[^/]*|SMOKE[^/]*)$")
+
+
+def keep_map(root: str, m: dict, cutoff: float, worktree_paths, default_names: bool = False) -> dict:
     """realpath -> why, for every directly kept path under root."""
     rr = os.path.realpath(root)
     kept: dict = {}
@@ -181,7 +184,9 @@ def keep_map(root: str, m: dict, cutoff: float, worktree_paths) -> dict:
             continue
         for n in fns + dns:
             p = os.path.join(dp, n)
-            if is_marker(n):
+            if default_names and DEFAULT_KEEP_NAMES.match(n):
+                add(p, "result-artifact")   # RESULT/verdict/smoke artifacts always survive an AUTO-RAW reclaim
+            elif is_marker(n):
                 add(p, "keep-marker")
             elif wg.EVIDENCE_RE.search(n):
                 add(p, "evidence")
@@ -248,6 +253,8 @@ def main(argv=None) -> int:
     ap.add_argument("--salvage-dir", default=ws.DEFAULT_SALVAGE_DIR)
     ap.add_argument("--tmp-root")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--no-auto-raw", action="store_true",
+                    help="opt out of AUTO-RAW: with no raw declaration, reclaim nothing (env RECLAIM_AUTO_RAW=0 does the same)")
     a = ap.parse_args(argv)
     rid, flags = a.row_id, a.flags
     mp, m = filing.load_manifest(flags, rid)
@@ -265,11 +272,18 @@ def main(argv=None) -> int:
     if not a.pre_filed and not os.path.exists(os.path.join(done, rid + ".FILED")):
         print(f"REFUSED {rid}: not filed (no filing-done/{rid}.FILED)"); return 6
     raw, days = raw_decl(m)
+    # AUTO-RAW (operator 2026-11-21, disk guards): a row that declares no `raw` used to reclaim NOTHING at filing (NO-RAW; the keeper's
+    # 1-day backstop was the only reaper, and a 29 GB smoke GGUF sat for days). Default ON: every entry of scratch_root is a
+    # candidate and the KEEP SET below still protects result_path (+RESULT*/results*/verdict*/smoke* names), manifest `keep:` globs,
+    # INPUT RULE files, evidence/markers/receipts and worktrees. Opt out: --no-auto-raw, RECLAIM_AUTO_RAW=0, manifest "reclaim_auto": false.
+    auto_raw = False
+    if raw is None and not a.no_auto_raw and os.environ.get("RECLAIM_AUTO_RAW", "1") != "0" and m.get("reclaim_auto") is not False:
+        raw, auto_raw = ["**/*"], True
     if raw and any(bad_glob(g) for g in raw):
         print(f"REFUSED {rid}: raw glob absolute or with '..': {raw}"); return 6
     tag = "RECLAIM" if a.apply else "RECLAIM-DRYRUN"
     rec = {"id": rid, "at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
-           "apply": a.apply, "raw": raw, "retention_days": days, "scratch_root": root, "candidates": [], "kept": [],
+           "apply": a.apply, "raw": raw, "auto_raw": auto_raw, "retention_days": days, "scratch_root": root, "candidates": [], "kept": [],
            "worktrees": [], "bytes_reclaimed": 0, "state": None, "reason": None}
 
     def finish(state, reason=None, code=0):
@@ -308,7 +322,7 @@ def main(argv=None) -> int:
     errors = 0
     if raw:
         cutoff, _src = start_cutoff(ep, mp)
-        kept = keep_map(root, m, cutoff, [w.path for w in wts])
+        kept = keep_map(root, m, cutoff, [w.path for w in wts], default_names=auto_raw)
         kept_anc: dict = {}
         rr = os.path.realpath(root)
         for k, why in kept.items():

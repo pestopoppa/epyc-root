@@ -3,7 +3,7 @@
 
     python3 scripts/coordination/churn/file_result.py <row-id> [--flags DIR] [--verdict-json FILE]
                                                           [--lane DIR] [--dry-run]
-                                                          [--allow-no-scratch-root] [--no-reclaim]
+                                                          [--allow-no-scratch-root] [--no-reclaim] [--no-auto-raw]
 
 Reads the epyc.row.v3 manifest (<flags>/ready/<id>.json or ready/*/<id>.json), the end record
 (<flags>/grants/<id>.ended|.complete, first line `rc=N ...`) and the result at `result_path`
@@ -32,7 +32,8 @@ SCOPE (CHURN-CONT-SCOPE): with --receipt, the commit's changed paths (`git diff-
 inside the repo, plus the receipt's handoff). `..`/absolute paths, gitlinks (160000), paths under a symlinked dir and symlinks
 resolving outside scope are refused (exit 8, REFUSED ... scope: ...). The receipt's handoff is always in scope.
 RECLAIM-AT-FILING: once the FILED receipt is written, reclaim_row.py <id> --apply --pre-filed frees the row's
-declared raw scratch and row-owned worktrees (`--no-reclaim` skips; --dry-run runs it in dry-run mode). A reclaim
+declared raw scratch and row-owned worktrees (`--no-reclaim` skips; --dry-run runs it in dry-run mode). AUTO-RAW (default ON, `--no-auto-raw` opts out): a row that
+declares no `raw` reclaims every scratch_root entry except RESULT/verdict/smoke artifacts, `keep:` globs and the usual keep set. A reclaim
 error or non-zero exit prints RECLAIM-ERROR and never changes the filing outcome.
 The verdict record validates against scripts/coordination/filed_verdict.schema.json
 (epyc.filed.verdict.v1, additionalProperties) and adds {row, verdict, rule, values, rc, result_path,
@@ -406,6 +407,9 @@ def main(argv=None):
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--allow-no-scratch-root", action="store_true")
     ap.add_argument("--no-reclaim", action="store_true")
+    ap.add_argument("--no-auto-raw", action="store_true",
+                    help="reclaim only DECLARED raw scratch (default: a row with no raw declaration reclaims everything "
+                         "in scratch_root except result/verdict/smoke artifacts and keep: globs)")
     ap.add_argument("--receipt", metavar="COMMIT:HANDOFF#BOX", help="file from a verified verdict commit on origin/main")
     ap.add_argument("--verdict", help="with --receipt: the verdict word; alone: SUPERSEDED|WITHDRAWN (no result needed)")
     ap.add_argument("--answer", help="named answer stored in the receipt, e.g. SURFACE_E2E_OK")
@@ -422,6 +426,8 @@ def main(argv=None):
                                                           "(--filed-by must equal the manifest owner), needs --reason")
     ap.add_argument("--reason", help="with --correct: why the filed verdict was wrong")
     a = ap.parse_args(argv)
+    if a.no_auto_raw:
+        os.environ["RECLAIM_AUTO_RAW"] = "0"
     rid, flags = a.row_id, a.flags
     if a.correct:
         return correct_filed(flags, rid, a.correct, a.filed_by or "", a.reason or "", a.dry_run)
