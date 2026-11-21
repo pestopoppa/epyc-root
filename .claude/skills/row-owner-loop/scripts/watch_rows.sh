@@ -6,18 +6,20 @@
 #   QUEUED-DROPPED <id> <file>    dryrun/<id>/QUEUED-DROPPED-*.json
 #   QUEUED-AGED <id> <age_s>      dryrun/<id>/*SMOKE-QUEUED.json older than --queued-max
 #   IDLE-GRANT <id> gpu|cpu <pct> owner grant open, device/quarter busy < --idle-pct for --idle-n samples
+# --gate-eval: on ENDED, also draft <rowdir>/verdict.json with the deterministic gate evaluator
+#   (runend.py <id> --gate-eval, AKPL-P1) and append `gate=<verdict>` to the event line.
 # Handled events are keyed in the state file; `--ack <key>` records one so it never fires again.
 # No per-row exclusions in code. Usage:
 #   watch_rows.sh --owner autokernel [--interval 60] [--queued-max 600] [--idle-pct 5] [--idle-n 3] [--once]
 #   watch_rows.sh --owner autokernel --ack 'ENDED <id>'
 set -euo pipefail
 FLAGS=/mnt/raid0/llm/tmp/compute-flags
-OWNER="" INTERVAL=60 QMAX=600 IDLE_PCT=5 IDLE_N=3 ONCE=0 ACK="" SINCE=""
+OWNER="" INTERVAL=60 QMAX=600 IDLE_PCT=5 IDLE_N=3 ONCE=0 ACK="" SINCE="" GATE_EVAL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --owner) OWNER=$2; shift 2;; --interval) INTERVAL=$2; shift 2;; --queued-max) QMAX=$2; shift 2;;
     --idle-pct) IDLE_PCT=$2; shift 2;; --idle-n) IDLE_N=$2; shift 2;; --once) ONCE=1; shift;;
-    --ack) ACK=$2; shift 2;; --flags) FLAGS=$2; shift 2;; --since) SINCE=$2; shift 2;;
+    --ack) ACK=$2; shift 2;; --gate-eval) GATE_EVAL=1; shift;; --flags) FLAGS=$2; shift 2;; --since) SINCE=$2; shift 2;;
     *) echo "unknown arg $1" >&2; exit 2;;
   esac
 done
@@ -76,7 +78,7 @@ EOF
 }
 
 scan() {
-  local f id rc reason age q last busy cnt regs
+  local f id rc reason age q last busy cnt regs gv
   # ENDED
   for f in "$FLAGS"/grants/*.ended; do
     [ -e "$f" ] || continue
@@ -86,6 +88,10 @@ scan() {
     [ -e "$FLAGS/filing-done/$id.FILED" ] && continue
     rc=$(sed -n '0,/^rc=/s/^rc=\([^ ]*\).*/\1/p' "$f")
     reason=$(sed -n '0,/reason=/s/.*reason=\([^ ]*\).*/\1/p' "$f")
+    if ! handled "ENDED $id" && [ "$GATE_EVAL" = 1 ]; then
+      gv=$(python3 "$(dirname "$0")/runend.py" "$id" --gate-eval 2>&1 | tail -n 1 | cut -c1-160 || true)
+      reason="$reason gate=[$gv]"
+    fi
     emit "ENDED $id" "rc=$rc reason=$reason" && return 0
   done
   for id in $(owner_of_ready); do

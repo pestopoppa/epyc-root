@@ -19,7 +19,7 @@ tier: local
 grounded:
   at: '2026-11-21'
   blobs:
-    epyc-root:.claude/skills/row-owner-loop/scripts/runend.py: 41b26fe1c19e3d94ac405dedecf49710353aa906
-    epyc-root:.claude/skills/row-owner-loop/scripts/watch_rows.sh: 4c1129025cdc769593f0b7f64c9cfb0eaac1fc1f
-    epyc-root:docs/design/autokernel-parallel-loop-p1-replay.md: null
+    epyc-root:.claude/skills/row-owner-loop/scripts/runend.py: 01bc328e62887a05c13c15931d9ed312af60d78a
+    epyc-root:.claude/skills/row-owner-loop/scripts/watch_rows.sh: 298fe6772c013fcc27c1e16dbe0046a385e5917e
+    epyc-root:docs/design/autokernel-parallel-loop-p1-replay.md: e993d01f16eaafe6cdd4bdc12ac681c73f4d3c06
 ---

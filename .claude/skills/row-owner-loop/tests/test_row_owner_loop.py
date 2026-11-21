@@ -206,3 +206,21 @@ def test_brief_forces_build_and_rules():
 def test_watch_rows_syntax():
     sh = os.path.join(HERE, "..", "scripts", "watch_rows.sh")
     assert subprocess.run(["bash", "-n", sh]).returncode == 0
+
+
+# ---------------------------------------------------------------- runend --gate-eval (AKPL-P1)
+def test_runend_gate_eval_draft_uses_the_evaluator(tmp_path, monkeypatch):
+    pkg = tmp_path / "kr" / "autokernel" / "loop"
+    pkg.mkdir(parents=True)
+    (tmp_path / "kr" / "autokernel" / "__init__.py").write_text("")
+    (pkg / "__init__.py").write_text("")
+    (pkg / "gate_eval.py").write_text(
+        "import json, sys\n"
+        "assert sys.argv[1].endswith('/row-g/out/RESULT.json') and '--row' in sys.argv\n"
+        "print(json.dumps({'filed_verdict': 'fail', 'verdict': 'FAIL', 'gate_id': 'graph_kld.gpu.q38_27b',"
+        " 'rationale': 'mean_kld=0.0041 <= 0.003 failed; rc=0', 'native_verdict': 'PASS', 'checks': []}))\n")
+    monkeypatch.setattr(runend, "TMP", str(tmp_path))
+    monkeypatch.setattr(runend, "FLAGS", str(tmp_path / "flags"))
+    v = runend.gate_eval_draft("row-g", kernel_rnd=str(tmp_path / "kr"))
+    assert v["verdict"] == "fail" and v["drafted_by"] == "gate_eval"
+    assert "graph_kld.gpu.q38_27b" in v["rationale"] and runend.lint_verdict(v) == []

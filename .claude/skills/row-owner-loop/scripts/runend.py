@@ -2,6 +2,9 @@
 """runend.py — owner-side run-end triage for one rowflow row (row-owner-loop skill, step 4).
 
   runend.py <row>                 draft <rowdir>/verdict.json from out/RESULT.json + grants/<row>.ended
+  runend.py <row> --gate-eval     draft it with the deterministic gate evaluator instead (AKPL-P1, no LLM):
+                                  epyc-inference-research autokernel.loop.gate_eval — graph_kld_policy.json,
+                                  bench speed floors, PPL contract, declared-verdict vocabulary
   runend.py <row> --file          after review: run file_result.py from a pinned detached origin/main
                                   worktree, confirm filing-done/<row>.FILED, print the tick-line draft
   runend.py --check-cc <file.md>  list `[belief: cc]` lines in <file.md> with no register row
@@ -91,6 +94,24 @@ def draft(row: str) -> dict:
     return {"verdict": v, "rationale": rat, "native_verdict": native, "answer": "TODO"}
 
 
+RESEARCH_KERNEL_RND = os.environ.get("AK_RESEARCH_KERNEL_RND",
+                                    "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd")
+
+
+def gate_eval_draft(row: str, kernel_rnd: str = RESEARCH_KERNEL_RND) -> dict:
+    """verdict.json draft from autokernel.loop.gate_eval (pure, deterministic). Raises on evaluator failure."""
+    res = os.path.join(TMP, row, "out", "RESULT.json")
+    ep = os.path.join(FLAGS, "grants", f"{row}.ended")
+    cmd = [sys.executable, "-m", "autokernel.loop.gate_eval", res, "--row", row]
+    if os.path.exists(ep):
+        cmd += ["--ended", ep]
+    out = subprocess.run(cmd, cwd=kernel_rnd, capture_output=True, text=True, timeout=120, check=True).stdout
+    g = json.loads(out)
+    return {"verdict": g["filed_verdict"], "rationale": f"gate_eval {g['gate_id']} ({g['verdict']}): {g['rationale']}",
+            "native_verdict": g.get("native_verdict") or "", "answer": g["verdict"], "gate_eval": g,
+            "drafted_by": "gate_eval"}
+
+
 def tick_line(row: str, v: dict, sha: str = "<commit>") -> str:
     tag = "[belief: cc]"
     return (f"- [x] (YYYY-MM-DD, <owner>) row `{row}` **{v.get('native_verdict') or v['verdict'].upper()}**"
@@ -151,6 +172,7 @@ def main(argv=None) -> int:
     ap.add_argument("--owner", default="autokernel")
     ap.add_argument("--check-cc", metavar="FILE_MD")
     ap.add_argument("--force-draft", action="store_true", help="overwrite an existing verdict.json draft")
+    ap.add_argument("--gate-eval", action="store_true", help="draft with the deterministic gate evaluator (no LLM)")
     a = ap.parse_args(argv)
     if a.check_cc:
         miss = check_cc(a.check_cc)
@@ -165,7 +187,10 @@ def main(argv=None) -> int:
     if os.path.exists(vpath) and not a.force_draft:
         print(f"{vpath} exists; review it or pass --force-draft")
         return 1
-    v = draft(a.row)
+    v = gate_eval_draft(a.row) if a.gate_eval else draft(a.row)
+    if v["verdict"] in ("SUPERSEDED", "WITHDRAWN"):
+        print(f"LIFECYCLE {a.row}: {v['verdict']} — {v['rationale']}; not a filable pass/fail/inconclusive draft")
+        return 3
     with open(vpath, "w") as f:
         json.dump(v, f, indent=1)
     print(f"DRAFT {vpath}: verdict={v['verdict']} (native {v['native_verdict']!r}); edit rationale/answer, then --file")
