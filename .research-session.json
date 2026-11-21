@@ -1,52 +1,199 @@
 {
- "session_id": "intake-dtree-verify-20261120",
- "started_at": "2026-11-20T00:00:00+00:00",
- "last_checkpoint": "2026-11-20T23:59:00+00:00",
- "stage": 4,
- "phase": "stage4-complete",
- "lane": "/mnt/raid0/llm/worktrees/intake-dtree-s2-20261120",
+ "session_id": "ak-intake-20261121",
+ "started_at": "2026-11-21T11:40:00+00:00",
+ "last_checkpoint": "2026-11-21T12:40:00+00:00",
+ "stage": 1,
+ "phase": "stage1-complete",
+ "lane": "/workspace/.worktrees/ak-intake-20261121",
  "owner": "autokernel",
  "urls_processed": [
-  "https://arxiv.org/abs/2404.00242v4",
-  "https://arxiv.org/abs/2402.05099v2",
-  "https://github.com/ggml-org/llama.cpp/pull/30370",
-  "https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/attention/verify_splitkv.py",
-  "https://github.com/ROCm/composable_kernel",
-  "https://github.com/Wallawalla47/Infernix"
+  "https://github.com/ggml-org/llama.cpp/pull/31669",
+  "https://github.com/ggml-org/llama.cpp/pull/32520",
+  "https://github.com/ggml-org/llama.cpp/pull/32646",
+  "https://arxiv.org/abs/2607.20475",
+  "https://arxiv.org/abs/2611.17108",
+  "https://huggingface.co/nvidia/Qwen3.5-4B-Qwen3.8-27B-Draft",
+  "https://arxiv.org/abs/2611.26020",
+  "https://arxiv.org/abs/2611.25436",
+  "https://arxiv.org/abs/2611.25433",
+  "https://arxiv.org/abs/2611.26435",
+  "https://arxiv.org/abs/2611.25673",
+  "https://arxiv.org/abs/2611.25380",
+  "https://arxiv.org/abs/2611.25926"
  ],
- "next_intake_id": 2752,
- "stage2_sweeps": 1,
- "stage2_dived": [
-  "intake-2749",
-  "intake-2750",
-  "intake-2747",
-  "intake-2705",
-  "intake-2748",
-  "intake-2751"
+ "entries_processed": [
+  "intake-2752",
+  "intake-2753",
+  "intake-2754",
+  "intake-2755",
+  "intake-2756",
+  "intake-2757",
+  "intake-2758",
+  "intake-2759",
+  "intake-2760",
+  "intake-2761",
+  "intake-2762",
+  "intake-2763",
+  "intake-2764",
+  "intake-2765",
+  "intake-2766",
+  "intake-2767",
+  "intake-2768",
+  "intake-2769",
+  "intake-2770"
  ],
- "dive_surfaced_declined": [
-  {
-   "source": "https://github.com/LINs-lab/DeFT",
-   "reason": "prefix KV sharing already baseline for single-sequence verify"
-  }
- ],
+ "entries_remaining": [],
+ "next_intake_id": 2771,
+ "expansion": {
+  "added": [
+   "intake-2765",
+   "intake-2766",
+   "intake-2767",
+   "intake-2768",
+   "intake-2769",
+   "intake-2770"
+  ],
+  "expansion_refused": [
+   {
+    "seed": "intake-2758",
+    "reason": "2608.30386 DASC (decay-aware state compression) not added: run budget held to 6; SuffixReplay/Tail-Replay/Sparse-prefix already cover the hybrid prefix-cache comparison set"
+   },
+   {
+    "seed": "intake-2761",
+    "reason": "2609.14872 AgentKV not added: run budget; Slipstream is the measured baseline that bears on the Aggron claim"
+   },
+   {
+    "seed": "intake-2760",
+    "reason": "2602.08005 DeltaKV not added: run budget; RoCoKV dive settles the eviction question first"
+   },
+   {
+    "seed": "intake-2759",
+    "reason": "2602.00523 SAGE not added: run budget; TALON is the text-LLM comparator, SAGE is VLM-only"
+   }
+  ]
+ },
+ "stage2_sweeps": 0,
  "steering_ledger": [
   {
    "seq": 1,
-   "stage": 2,
-   "verbatim": "Accept all recommended deep dives and literature expansions for up to 4 stage 2 sweeps",
+   "stage": 1,
+   "verbatim": "Automatically accept every recommended deep dive and literature expansion for up to four Stage 2 sweeps.",
    "disposition": "context-only",
    "plan_ref": null,
-   "reason": "executed: one sweep; only dive-surfaced source declined, so no further sweeps"
+   "reason": "process authorization for Stage 2 dive selection and Stage-2b waves (cap 4); not a filing authorization"
   },
   {
    "seq": 2,
-   "stage": 3,
-   "verbatim": "File directly",
+   "stage": 1,
+   "verbatim": "Operator steering (context for Stage 1 ranking and Stage 3 grounding, not authorization to write handoffs):",
    "disposition": "context-only",
    "plan_ref": null,
-   "reason": "operator waived the Stage-3 plan review; filed DTREE-ATTN-SHARE, DTREE-ATTN-ROUTE and seeds file 17"
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 3,
+   "stage": 1,
+   "verbatim": "1. llama.cpp PR #31669 (GDN replay instead of snapshot rollback). Reported on RTX PRO 6000, Qwen3.8-27B Q8_0: recurrent-state memory -73/-85/-91% at n_rs_seq 3/7/15; batched verify +17.8..+34.5% at 8-32 seqs (8 tok/seq); DFlash2 llama-server +2.1/+7.9/+3.8% at 4/16/32 slots; Strix Halo HIP prefill +1.7/+0.9%. Hardware: CUDA plus other backends; the ggml-cuda path builds for HIP, unmeasured on gfx90a. Value: INF-50 DFlash2 np>1 verify and the GDN snapshot floor in the autokernel program.md learnings; Q8MF-V5I-NP-DECODE np-scaling. Extract: the performance principles themselves — data layout, tiling, wavefront mapping, LDS use, fusion, quant packing and dispatch rules. (Specifically: logging recurrent inputs plus recompute instead of state copies, trading data movement for compute.) Check: whether each principle works on the MI210 (gfx90a, CDNA2, wave64, 64 KB LDS, no FP8) or the Zen 5 EPYC CPU (AVX-512, NPS4).",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 4,
+   "stage": 1,
+   "verbatim": "2. llama.cpp PR #32520 (kv_rows variant of the vec flash-attention kernel). Reported on RTX PRO 6000 sm_120, Qwen3-4B: q8_0 KV 7.97 -> 3.02 ms/tok and bf16 9.10 -> 2.77 ms/tok with a 34k-token idle slot; f16 unchanged. A reviewer found mixed K/V pairs regress without an extra dispatch check. Hardware: NVIDIA only; the HIP variant compiles but is never dispatched, so it does not run on gfx90a. Value: INF-50 G3 (MI210 verify in the VEC flash-attention kernel), -kvu with quantized KV. Extract: the performance principles themselves — data layout, tiling, wavefront mapping, LDS use, fusion, quant packing and dispatch rules. (Specifically: row-list lookup as a template parameter, per-lane row ownership with shuffles, dispatch gating.) Check: whether each principle works on the MI210 (gfx90a, CDNA2, wave64, 64 KB LDS, no FP8) or the Zen 5 EPYC CPU (AVX-512, NPS4).",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 5,
+   "stage": 1,
+   "verbatim": "3. llama.cpp PR #32646 (Q1_0 8x8 block interleaving, AVX-512 GEMM / AVX2 GEMV). Reported on a Zen 5 9600X, llama2 7B Q1_0: pp512 43.57 -> 138.96 t/s with AVX-512 (+218.94%), tg128 -1.31%; perplexity about 848K for both base and PR. Hardware: Zen 5 AVX-512, so it runs on the EPYC. Value: repack/shuffle pattern for IQ4NL zmm and Q8_0-interleave seeds; the format itself is not usable.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 6,
+   "stage": 1,
+   "verbatim": "4. SonicSampler (arXiv 2607.20475). Reported: up to 10x faster top-k (hierarchical two-stage), up to 16x on heterogeneous speculative workloads; fused logit processing, top-k/top-p/min-p and speculative verification in one batched kernel. Hardware: Triton on CUDA, CUDA-Graph oriented. Value: AutoKernel AK-GAP-1 TOPK_FAST (49.7x op) and the DFlash2 verify/sampling tail. Extract: the performance principles themselves — data layout, tiling, wavefront mapping, LDS use, fusion, quant packing and dispatch rules. (Specifically: the two-stage top-k over a 248k vocab exploiting low entropy, and vertical fusion of the sampling chain.) Check: whether each principle works on the MI210 (gfx90a, CDNA2, wave64, 64 KB LDS, no FP8) or the Zen 5 EPYC CPU (AVX-512, NPS4).",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 7,
+   "stage": 1,
+   "verbatim": "5. LazyWeights (arXiv 2611.17108). Reported: lossless Huffman coding of GPTQ/GGUF codes, 5.7-31.4% smaller than the best GGUF at 1%/3.5% perplexity budgets; Jetson Nano CPU 58-64% less time per token; ASIC unit up to 36% lower Orin latency. Hardware: Jetson, a 7 nm ASIC, and a Zynq FPGA. Value: INF-70 CPU decode roofline, CPU-NT-WEIGHT-STREAM (spare cores versus DRAM bandwidth). Extract: the performance principles themselves — data layout, tiling, wavefront mapping, LDS use, fusion, quant packing and dispatch rules. (Specifically: interleaved-lane entropy coding of quant codes and decode-on-demand before the GEMV.) Check: whether each principle works on the MI210 (gfx90a, CDNA2, wave64, 64 KB LDS, no FP8) or the Zen 5 EPYC CPU (AVX-512, NPS4).",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 8,
+   "stage": 1,
+   "verbatim": "6. NVIDIA Qwen3.5-4B-Qwen3.8-27B-Draft (external draft, 4.21B params, shares the 248,320-token vocab). Reported acceptance at block 16: 5.58 vs 3.81 for the MTP head (SPEED-Bench qualitative), 5.11 vs 3.86 (throughput-32k); 0.8B draft 3.92/3.60. Trained at seq len 12,288 with rejection sampling at T=1.0, top-k 20, top-p 0.95. Hardware: Blackwell / Groq 3 LPU with vLLM; a bartowski GGUF exists, so it loads in llama.cpp on the EPYC/MI210. Value: INF-50 comparator against MTP and DFlash2 on 27B; SPEC-PIT.1 (temperature > 0) gate; draft-cost versus acceptance tradeoff. Extract: the performance principles themselves — data layout, tiling, wavefront mapping, LDS use, fusion, quant packing and dispatch rules. (Specifically: top-20 distribution distillation recipe and block size choice.) Check: whether each principle works on the MI210 (gfx90a, CDNA2, wave64, 64 KB LDS, no FP8) or the Zen 5 EPYC CPU (AVX-512, NPS4).",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 9,
+   "stage": 1,
+   "verbatim": "7. FrontierReplay (arXiv 2611.26020). Reported: state-only replay kernel 6-37x cheaper per token than recompute; median TTFT -16..-89% (up to 8.9x); 80% SLO capacity up to 1.73x; goodput up to 4.26x; up to 1.54x over approximate replay, which loses up to 17% accuracy. Hardware: not stated in the abstract. Value: prefix caching for Qwen3.x hybrids, the GDN snapshot floor, the orchestrator prefix-cache layout flags.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 10,
+   "stage": 1,
+   "verbatim": "8. Raptor (arXiv 2611.25436). Reported: training-free rejection-aware adaptive tree (depth, width, draft budget), up to 2.39x average speedup on two VLMs over seven benchmarks. Hardware: GPU, not specified. Value: DTREE round-overhead gates, the adaptive draft window, AK-H-MTP-DEGEN-1.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 11,
+   "stage": 1,
+   "verbatim": "9. RoCoKV (arXiv 2611.25433). Reported: DeepSeek-R1-Distill-Llama-8B in vLLM 1.27x speedup / +38% throughput on AIME25, 1.43x / +45% on a long synthetic benchmark versus full KV. Hardware: fused CUDA decode kernels in vLLM. Value: KV eviction after Expected-Attention \"no safe ratio\" on hybrid 27B; TriAttention selection; KLD gates. Extract: the performance principles themselves — data layout, tiling, wavefront mapping, LDS use, fusion, quant packing and dispatch rules. (Specifically: uncertainty-scaled budget, redundancy-aware selection, three-phase fused decode keeping the paged layout.) Check: whether each principle works on the MI210 (gfx90a, CDNA2, wave64, 64 KB LDS, no FP8) or the Zen 5 EPYC CPU (AVX-512, NPS4).",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 12,
+   "stage": 1,
+   "verbatim": "10. Aggron (arXiv 2611.26435). Reported: per-turn selective KV summarization during head-of-line stalls; P99 program latency -27..-31%, throughput 1.34-1.40x at high load. Hardware: GPU serving. Value: orchestrator context compaction and scheduling of idle slots.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 13,
+   "stage": 1,
+   "verbatim": "11. CompAct-Bench (arXiv 2611.25673). Reported: working-context compaction stays very lossy even for frontier models; failures come from distorted task state, not only omissions (no headline numbers in the abstract). Hardware: none (eval). Value: eval rigor for orchestrator compaction; distinct from Compact-Bench intake-2629.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 14,
+   "stage": 1,
+   "verbatim": "12. Evolving Agent Harnesses with GEPA (arXiv 2611.25380). Reported: harness evolution recovers most of the weight-update gains at a small fraction of compute on SWE-bench Verified, OfficeBench and Terminal-Bench, and combining it with weight updates is best (no numbers in the abstract). Hardware: none (frozen policy). Value: evolutionary prompt optimization and skill banks for the local Qwen harness.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
+  },
+  {
+   "seq": 15,
+   "stage": 1,
+   "verbatim": "13. ROAM-GRPO (arXiv 2611.25926). Reported: Qwen3.5-2B on 1,000 MATH lvl5 problems, peak pass@16 +4.7%, embedding cosine distance about 1.5-2x. Hardware: not stated. Value: RLVR diversity recipe that is reproducible on local Qwen.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
   }
  ],
- "previous_session": "intake-kspec-20261120"
+ "previous_session": "intake-dtree-verify-20261120"
 }

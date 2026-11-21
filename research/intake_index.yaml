@@ -396178,3 +396178,877 @@
     source_revision: https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp
     source_artifact: {"byte_length": 35340, "effective_url": "https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp", "entry_url": "https://github.com/ROCm/composable_kernel", "extractor_id": "vidya/machine_anchor-html-text/v1", "extractor_sha256": "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92", "media_type": "text/plain", "raw_sha256": "9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7", "relative_path": "sha256/9a/9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7.raw", "requested_url": "https://raw.githubusercontent.com/ROCm/composable_kernel/6cb06034c56de6d7587114887ac2167ee2cb80a2/include/ck_tile/ops/fmha/block/block_masking.hpp", "retrieved_at_utc": "2026-11-20T13:36:57.773711Z", "schema_version": 1, "snapshot_id": "sha256:9ab20e154cb179f3d4fb132c6df0e1319fa2108da17a9a73f9e444d6396a3db7"}
     verified_by: research-intake/stage2 (intake-dtree-verify-20261120)
+- id: intake-2752
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/31669
+  source_type: repo
+  title: 'llama.cpp PR #31669: GDN use replay instead of rollback'
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-21'
+  authors:
+  - am17an
+  key_claims:
+  - 'Replaces per-token Gated DeltaNet recurrent-state snapshot rollback with replay: pending k/v/g/beta rows are kept and the next ubatch recomputes the state, trading compute for data movement.'
+  - Recurrent-state memory per sequence falls sharply versus snapshots on Qwen3.8-27B Q8_0 as n_rs_seq grows.
+  - Batched verify and multi-slot DFlash2 llama-server throughput improve; single-sequence decode and prefill are about flat.
+  - Fixes an rs_max cell-swap bug in find_slot that also exists on master snapshot mode.
+  - Opt-in (LLAMA_RS_REPLAY); each backend needs a replay path inside its gated delta net op, otherwise the op falls back to CPU.
+  techniques:
+  - GDN state replay from logged pending rows
+  - replay inside the gated delta net op
+  - rs_max carried on cell swap
+  reported_results:
+  - 'PR body Memory table: recurrent state per sequence at n_rs_seq 3/7/15 (unverified)'
+  - 'PR body Speed tables: batched verify 1-32 seqs and DFlash2 server 4/16/32 slots on RTX PRO 6000 (unverified)'
+  credibility_score: null
+  contradicting_evidence:
+  - Maintainers undecided between removing snapshots and a separate ggml_gated_delta_net_ext op; Metal decode slower without in-kernel replay (PR thread, unverified)
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    - kv-cache-program.md
+    - cpu-decode-roofline-program.md
+    intake_entries:
+    - intake-490
+    - intake-1025
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). Open PR, head 93252b852acc793fd03597ba88fac6b3ec72409a read 2026-11-21 via gh + patch-diff. Bears on the autokernel program.md learning 'GDN verify has a snapshot-write floor' (unverified link).
+- id: intake-2753
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/32520
+  source_type: repo
+  title: 'llama.cpp PR #32520: CUDA read K/V through kv_rows in the vec flash attention kernel'
+  categories:
+  - kv_cache
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-21'
+  authors:
+  - am17an
+  key_claims:
+  - With --kv-unified, flash attention reads K/V through per-slice row lists (kv_rows); on CUDA only the MMA kernel handled kv_rows, so quantized and BF16 caches were converted to F16 on every call.
+  - Adds a kv_rows variant of the vec kernel where each lane owns one row index and shuffles it; the row lookup is a template parameter because a runtime select slowed the plain vec kernel.
+  - F16 K/V and multi-query slices keep the MMA kernel.
+  - A follow-up commit gates the vec kv_rows path on a compiled vec kernel for the K/V type pair after a reviewer found mixed pairs regressed.
+  - The HIP build compiles the variant but does not dispatch it.
+  techniques:
+  - kv_rows row-list read in vec FA
+  - template-parameter row lookup with warp shuffle
+  - compiled-pair dispatch gate
+  reported_results:
+  - 'PR body table: Qwen3-4B with an idle 34k slot, q8_0 and bf16 KV ms/token master vs PR (unverified)'
+  - 'Reviewer table RTX 5090: mixed q8_0/q4_0 before and after the fix (unverified)'
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - kv-cache-program.md
+    - speculative-decoding.md
+    - rocm-kernel-authoring.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: 'Stage-1 (ak-intake-20261121, autokernel). Open PR, head 952b2a449dd0e061a866fa4f449b59c119ed931f read 2026-11-21. Builds on upstream kv_rows PR #29510 (tracked in kv-cache-program.md P4).'
+- id: intake-2754
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/32646
+  source_type: repo
+  title: 'llama.cpp PR #32646: Q1_0 block interleaving for x86 SIMD (AVX512/AVX2)'
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-21'
+  authors:
+  - saikrishna2893
+  key_claims:
+  - Adds an 8x8 block-interleaved Q1_0 repack with AVX-512/AVX-2 GEMM and AVX-2 GEMV kernels against Q8_0 activations.
+  - Reports a large prompt-processing gain over its own unoptimized base on a 7B Q1_0 model on a 6-thread Zen 5 desktop.
+  - Reports a small token-generation regression.
+  - Perplexity is unchanged between base and PR but implausibly high for both, so the format is not usable for quality.
+  techniques:
+  - 8x8 block interleave repack
+  - AVX-512 GEMM with Q8_0 activations
+  reported_results:
+  - 'PR body: pp512 and tg128 base vs AVX2 vs AVX512 (unverified)'
+  credibility_score: null
+  contradicting_evidence:
+  - ggml-gh-bot flagged the PR description as AI-generated against the contribution policy (PR thread, unverified)
+  cross_references:
+    handoffs:
+    - quantization-and-low-bit.md
+    - autokernel-akx-program.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: 'Stage-1 (ak-intake-20261121, autokernel). Open PR, head 31dbe8fe4d315804dfd608472f004d126ec210ab. Operator: the format itself is not usable; value is the repack/shuffle pattern for IQ4NL zmm and Q8_0 interleave seeds.'
+- id: intake-2755
+  arxiv_id: '2607.20475'
+  url: https://arxiv.org/abs/2607.20475v1
+  source_type: paper
+  title: 'SonicSampler: Unified Tile-Aware Kernels for LLM Sampling and Speculative Verification'
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Pragaash Ponnusamy
+  - Shivam Sahni
+  - Jue Wang
+  - Tri Dao
+  key_claims:
+  - Fuses the sampling pipeline (masks, penalties, temperature, top-k/top-p/min-p, selection, speculative verification) into tile-aware Triton kernels, CUDA-Graph compatible, with per-request behaviour encoded as bit indicators.
+  - 'Hierarchical two-stage top-k: tile-local reductions emit k packed candidates, then a cross-tile merge; bitonic vs adaptive radix-bitonic chosen per batch size.'
+  - 'Bounded support assumption: k=128 captures the effective probability mass under top-p for well-trained LLMs.'
+  - Reports top-k and sampling speedups over FlashInfer/radix baselines and an end-to-end Eagle3 decode gain over TRT-LLM.
+  techniques:
+  - two-stage tile-aware top-k
+  - bitonic merge top-k
+  - adaptive radix-bitonic selection
+  - fused sampling epilogue
+  - bit-indicator batching
+  reported_results:
+  - 'Abstract: top-k and speculative sampling speedups (unverified)'
+  - '§4.2: end-to-end Qwen3-8B Eagle3 decode gain vs TRT-LLM (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - autokernel-loop.md
+    - speculative-decoding.md
+    intake_entries:
+    - intake-1420
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). arXiv v1 HTML. Bears on AK-GAP-1 TOPK_FAST (already landed in C17) and the DFlash2 verify/sampling tail. Authors Together AI (commercial -1).
+- id: intake-2756
+  arxiv_id: '2611.17108'
+  url: https://arxiv.org/abs/2611.17108v3
+  source_type: paper
+  title: 'LazyWeights: Decode-on-Demand Edge LLMs'
+  categories:
+  - quantization
+  - local_inference
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Arnab Sanyal
+  - Gourav Datta
+  - Sandeep P. Chinchali
+  key_claims:
+  - Entropy-aware GPTQ inside unmodified GGUF formats yields files smaller than the best llama.cpp format at fixed perplexity budgets.
+  - Per-matrix length-limited canonical Huffman with 32 interleaved lanes per tile is close to zeroth-order entropy.
+  - A fixed-function Huffman decode unit between DRAM and L2 cuts Orin latency per token; software Huffman decode on the Orin GPU is slower than fixed-width codes.
+  - On Jetson Nano CPU the system cuts time per token versus CPU llama.cpp.
+  - Huffman beats rANS in rate and area at equal throughput.
+  techniques:
+  - entropy-aware GPTQ
+  - length-limited canonical Huffman
+  - 32 interleaved lane streams
+  - decode unit between DRAM and L2
+  reported_results:
+  - 'Table III: file size vs best llama.cpp format at 1%/3.5% dPPL (unverified)'
+  - '§VI-C Table IV: Jetson Nano time per token (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - autokernel-akx-program.md
+    - cpu-decode-roofline-program.md
+    - quantization-and-low-bit.md
+    intake_entries:
+    - intake-815
+    - intake-816
+    - intake-817
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). arXiv v3 HTML (paper revised since v1). Bears on INF-70 CPU decode roofline and CPU-NT-WEIGHT-STREAM (spare cores vs DRAM bandwidth).
+- id: intake-2757
+  arxiv_id: null
+  url: https://huggingface.co/nvidia/Qwen3.5-4B-Qwen3.8-27B-Draft
+  source_type: repo
+  title: nvidia/Qwen3.5-4B-Qwen3.8-27B-Draft (external speculative draft model card)
+  categories:
+  - speculative_decoding
+  - training_distillation
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - NVIDIA
+  key_claims:
+  - External 4.21B draft (from Qwen3.5-4B) for Qwen3.8-27B trained with NVIDIA Model Optimizer; shares the target tokenizer and vocabulary.
+  - Trained on the target's top-20 output distribution over target-synthesized responses.
+  - Drafts under temperature 1.0, top-k 20, top-p 0.95 with rejection-sampling verification.
+  - Reports tokens per target step at block 16 above the 27B MTP head on SPEED-Bench.
+  techniques:
+  - external draft model
+  - top-20 distribution distillation
+  - block drafting
+  reported_results:
+  - 'Evaluation table: tokens per target step vs the MTP head (unverified)'
+  - 'Comparison table: 0.8B and 1B drafts (unverified)'
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-1256
+    - intake-1265
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: 'Stage-1 (ak-intake-20261121, autokernel). HF README pinned at bc5ad93d03d96a9c1ef49748e00ec5130a7080de. Operator: a bartowski GGUF exists. No DFlash2 baseline in the card.'
+- id: intake-2758
+  arxiv_id: '2611.26020'
+  url: https://arxiv.org/abs/2611.26020v1
+  source_type: paper
+  title: 'FrontierReplay: Split-Free Exact Prefix Caching for Hybrid Language Models'
+  categories:
+  - ssm_hybrid
+  - kv_cache
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Zekun Wang
+  - Yizhuo Wang
+  key_claims:
+  - Exact prefix caches for hybrid models cut prefill at mid-prompt checkpoints, and the cuts add scheduler steps that outweigh reuse under load.
+  - Prefix reuse ends at structural boundaries predictable in advance (turn ends, branch points).
+  - Split-free checkpointing runs prefill uncut, logs recurrent-layer inputs near boundaries and rebuilds the state with a state-only replay kernel.
+  - Frontier-aware retention lends dead checkpoint slots to the attention KV pool.
+  - Exact replay avoids the accuracy loss of approximate suffix replay.
+  techniques:
+  - split-free checkpointing
+  - state-only replay kernel
+  - boundary planner
+  - frontier-aware retention
+  reported_results:
+  - 'Abstract: TTFT, SLO capacity and goodput vs vLLM (unverified)'
+  - 'Table 1: replay cost vs recompute (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - kv-cache-program.md
+    - long-context-program.md
+    intake_entries:
+    - intake-2091
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). arXiv v1 HTML. Bears on prefix caching for Qwen3.x hybrids and the GDN snapshot floor; same replay principle as intake-2752 (unverified link).
+- id: intake-2759
+  arxiv_id: '2611.25436'
+  url: https://arxiv.org/abs/2611.25436v1
+  source_type: paper
+  title: 'Raptor: Rejection-aware Adaptive Tree based on Speculative Decoding'
+  categories:
+  - speculative_decoding
+  - multimodal
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Qishu Hu
+  - Haozhao Wang
+  - Zicong Hong
+  - Yufeng Zhan
+  - Yuanqing Xia
+  key_claims:
+  - Acceptance length alone cannot separate insufficient coverage from excessive deep expansion, so the controller uses rejection-derived signals.
+  - Depth, width and node budget adapt with bounded momentum-smoothed updates plus drafting-budget execution control.
+  - Training-free; layered on Medusa, EAGLE and ViSpec.
+  - Speedup can rise while acceptance length falls.
+  techniques:
+  - rejection-feedback tree controller
+  - momentum tree update
+  - drafting-budget control
+  reported_results:
+  - 'Abstract: average and peak speedup over AR on two VLMs (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-056
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). arXiv v1 HTML. VLM-only evaluation; bears on DTREE round-overhead gates and the adaptive draft window.
+- id: intake-2760
+  arxiv_id: '2611.25433'
+  url: https://arxiv.org/abs/2611.25433v1
+  source_type: paper
+  title: 'RoCoKV: Accelerating LLM Inference Serving through Uncertainty and Redundancy Aware KV Cache Compression'
+  categories:
+  - kv_cache
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Payman Behnam
+  - Elaheh Sobhani
+  - Saad Amin
+  - Yahya Hassan
+  - Daniyal Khan
+  - Biswadeep Chakraborty
+  - Tanish Patwa
+  - Souvik Kundu
+  key_claims:
+  - Reasoning traces carry redundant low-utility tokens that still get high attention, so attention alone is a poor eviction signal.
+  - Uncertainty-guided adaptive budgets allocate more KV memory in uncertain phases.
+  - Redundancy-aware selection down-weights tokens similar to recent content.
+  - Fused three-phase decode kernels keep vLLM's paged layout and CUDA graphs.
+  techniques:
+  - uncertainty-scaled KV budget
+  - redundancy-aware selection
+  - three-phase fused sparse decode
+  reported_results:
+  - 'Table 1: AIME25 and synthetic long benchmark latency/throughput vs full KV (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - context-and-token-economy.md
+    - long-context-program.md
+    - eval-tower-program.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). arXiv v1 HTML. Code not released. Bears on KV eviction after Expected-Attention found no safe ratio on hybrid 27B.
+- id: intake-2761
+  arxiv_id: '2611.26435'
+  url: https://arxiv.org/abs/2611.26435v1
+  source_type: paper
+  title: 'Aggron: Aggressive Compression of Agentic KV Caches during Head-of-Line Stalls in the Request Queue'
+  categories:
+  - inference_serving
+  - kv_cache
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Rishabh Ravi
+  - Tony Hong
+  - Chen Wang
+  - Yue Zhu
+  - Mengmei Ye
+  - Hubertus Franke
+  - Fan Lai
+  - Josep Torrellas
+  key_claims:
+  - Summarizes agentic requests every turn but compresses only prose parts of the context, keeping non-prose verbatim.
+  - Runs summarization from a separate queue while the request is stalled behind head-of-line blocking.
+  - Issues a summarization only when predicted to finish before the stalled request would run.
+  - Under load a summary's cost is mainly the queue wait it adds.
+  techniques:
+  - per-turn selective summarization
+  - summarization queue during head-of-line stalls
+  - predictive issue gating
+  reported_results:
+  - 'Abstract: P99 program latency and throughput at high load vs Slipstream/APEC (unverified)'
+  credibility_score: 2
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - context-and-token-economy.md
+    - kv-cache-program.md
+    intake_entries:
+    - intake-2528
+    - intake-2221
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). arXiv v1 HTML. Headline latency numbers are simulator-derived (Stage-1 read).
+- id: intake-2762
+  arxiv_id: '2611.25673'
+  url: https://arxiv.org/abs/2611.25673v1
+  source_type: paper
+  title: 'CompAct-Bench: A Benchmark for Working-Context Compaction in Long-Horizon Agent Tasks'
+  categories:
+  - benchmark_methodology
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Jiayi Chen
+  - Lizhe Chen
+  - Yujia Chen
+  - Shihan Dou
+  - Ming Zhang
+  - Chendi Ge
+  - Shiguang Ni
+  - Tao Gui
+  key_claims:
+  - Process-level tasks where a compactor rewrites history at a boundary and a fixed executor resumes under a matched action budget.
+  - Post-compaction accuracy stays well below the pre-compaction solve rate even for frontier compactors.
+  - 'Two failure pathways: omissions cause repeated work; state distortion turns tentative evidence into conclusions and causes premature termination.'
+  - Compaction quality varies with boundary stage.
+  techniques:
+  - compaction-boundary evaluation with fixed executor
+  - matched continuation budget
+  - retention-ratio calibration
+  reported_results:
+  - 'Table 2: post-compaction accuracy per compactor (unverified)'
+  credibility_score: 2
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - context-and-token-economy.md
+    - eval-tower-program.md
+    - memory-program.md
+    intake_entries:
+    - intake-2629
+    - intake-2639
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: 'Stage-1 (ak-intake-20261121, autokernel). arXiv v1 HTML. Distinct from Compact-Bench (intake-2629, arXiv 2610.31710): different authors, tasks and protocol.'
+- id: intake-2763
+  arxiv_id: '2611.25380'
+  url: https://arxiv.org/abs/2611.25380v1
+  source_type: paper
+  title: 'Beyond Weight Updates: Evolving Agent Harnesses for Domain Specialization'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - BoHao Chen
+  key_claims:
+  - Treats the agent harness (system prompt, tool schemas, skill library, planning scaffold) as an optimizable outer loop with the policy frozen, using GEPA reflective evolution.
+  - Harness-only GEPA recovers much of the gain of weight-only RL at a small fraction of compute.
+  - Combining harness adapters with weight updates gives the best result, sub-additively.
+  - Weight-only specialization shortened reasoning and raised truncation.
+  techniques:
+  - GEPA reflective harness evolution
+  - per-domain harness adapters
+  - Pareto archive
+  reported_results:
+  - 'Table 3: SWE-bench Verified, OfficeBench, Terminal-Bench base/SAO/GEPA/combined (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - harness-program.md
+    - memory-program.md
+    intake_entries:
+    - intake-240
+    - intake-327
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). arXiv v1 HTML. Single author, own base harness.
+- id: intake-2764
+  arxiv_id: '2611.25926'
+  url: https://arxiv.org/abs/2611.25926v1
+  source_type: paper
+  title: 'ROAM-GRPO: Enforcing Reasoning Diversity in GRPO via Routed Off-mode Approach Mining'
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Jeff Duan
+  - Matt Thomson
+  key_claims:
+  - Routes well-solved training problems to an off-mode track that asks the model for distinct solution strategies.
+  - An LLM judge verifies validity and distinctness; a verified anchor solution is self-distilled with a ROAM loss.
+  - Improves peak pass@16 on a hard held-out math set but not on in-distribution MATH-L5.
+  - Raises embedding-based solution dispersion.
+  techniques:
+  - routed off-mode approach mining
+  - LLM-judge distinctness verification
+  - self-distillation loss
+  reported_results:
+  - 'Table 2: peak pass@16 Omni-MATH-L5/6 and MATH-L5, GRPO vs ROAM (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - eval-tower-program.md
+    intake_entries:
+    - intake-370
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 (ak-intake-20261121, autokernel). arXiv v1 HTML. Qwen3.5-2B LoRA; relevance medium on operator steering (RLVR diversity recipe reproducible on local Qwen).
+- id: intake-2765
+  arxiv_id: '2609.33477'
+  url: https://arxiv.org/abs/2609.33477v1
+  source_type: paper
+  title: 'Just Let Linear States Forget the Distant Past: Prefix Caching via Suffix Replay for Hybrid LLMs'
+  categories:
+  - ssm_hybrid
+  - kv_cache
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2758
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Yirui Liu
+  - Ruoling Qi
+  - Xuaner Wu
+  - Yuxin Jin
+  - Jian Chen
+  - Penghang Liu
+  key_claims:
+  - Approximates a hybrid model's recurrent state at a matched prefix boundary by replaying only a recent suffix of layer input hidden states, without materializing checkpoints.
+  - Combines layer-wise and token-wise anchor sparsity with a bounded replay budget.
+  - Evaluated on OLMo-Hybrid-7B, Qwen3.5-4B and Qwen3.6-27B-FP8 in SGLang.
+  techniques:
+  - suffix replay
+  - anchor sidecar
+  - pipelined replay
+  reported_results:
+  - 'Abstract: quality retention on LongBench/RULER and TTFT vs SGLang checkpoint cache (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - kv-cache-program.md
+    intake_entries:
+    - intake-2758
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 expansion from intake-2758 (FrontierReplay's approximate-replay baseline). Title resolved via arXiv API 2026-11-21.
+- id: intake-2766
+  arxiv_id: '2608.30310'
+  url: https://arxiv.org/abs/2608.30310v2
+  source_type: paper
+  title: 'Tail-Replay: Escaping the Curse of Linear Attention in Prefix Caching for Hybrid LLMs'
+  categories:
+  - ssm_hybrid
+  - kv_cache
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2758
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Yirui Liu
+  - Ruoling Qi
+  - Xuaner Wu
+  - Penghang Liu
+  - Jian Chen
+  key_claims:
+  - Caches exact full-attention KV but omits recurrent checkpoints; on a hit, rebuilds Gated DeltaNet states by replaying a short recent suffix.
+  - Treats gated linear attention as lossy compression whose early contributions decay.
+  - Evaluated on three Gated DeltaNet hybrids on LongBench and RULER.
+  techniques:
+  - tail replay of recurrent state
+  reported_results:
+  - 'Abstract: quality retention at 5-10% replay budget and TTFT speedup at 32K (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - kv-cache-program.md
+    intake_entries:
+    - intake-2758
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 expansion from intake-2758. arXiv v2. Title resolved via arXiv API 2026-11-21.
+- id: intake-2767
+  arxiv_id: '2605.05219'
+  url: https://arxiv.org/abs/2605.05219v1
+  source_type: paper
+  title: Sparse Prefix Caching for Hybrid and Recurrent LLM Serving
+  categories:
+  - ssm_hybrid
+  - kv_cache
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2758
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Mikhail Shirokikh
+  - Sergey Nikolenko
+  key_claims:
+  - Stores exact recurrent states at a sparse set of checkpoint positions and recomputes the remaining suffix exactly on a hit.
+  - Formalizes checkpoint placement under an overlap-depth distribution as an exact O(NM) dynamic program.
+  - Distribution-aware placement dominates fixed-budget heuristics on QuALITY and system-prompt data with fewer checkpoints.
+  techniques:
+  - checkpoint placement dynamic program
+  - exact suffix recompute
+  reported_results:
+  - 'Abstract: Pareto frontier vs block caching (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - kv-cache-program.md
+    intake_entries:
+    - intake-2758
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 expansion from intake-2758. Title resolved via arXiv API 2026-11-21. Exact (not approximate) alternative to replay.
+- id: intake-2768
+  arxiv_id: '2502.00922'
+  url: https://arxiv.org/abs/2502.00922v1
+  source_type: paper
+  title: 'Huff-LLM: End-to-End Lossless Compression for Efficient LLM Inference'
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2756
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Patrick Yubeaton
+  - Tareq Mahmoud
+  - Shehab Naga
+  - Pooria Taheri
+  - Tianhua Xia
+  - Arun George
+  key_claims:
+  - Lossless Huffman compression of LLM weights kept compressed everywhere including on-chip buffers.
+  - Claims latency and energy gains from lower weight bandwidth.
+  techniques:
+  - lossless Huffman weight compression
+  reported_results:
+  - 'Abstract: no headline numbers (unverified)'
+  credibility_score: 0
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - autokernel-akx-program.md
+    - cpu-decode-roofline-program.md
+    intake_entries:
+    - intake-2756
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 expansion from intake-2756 (LazyWeights' closest prior work). Older than 12 months.
+- id: intake-2769
+  arxiv_id: '2601.07353'
+  url: https://arxiv.org/abs/2601.07353v1
+  source_type: paper
+  title: 'TALON: Confidence-Aware Speculative Decoding with Adaptive Token Trees'
+  categories:
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2759
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Tianyu Liu
+  - Qitan Lv
+  - Yuhao Shen
+  - Xiao Sun
+  - Xiaoyan Sun
+  key_claims:
+  - Training-free budget-driven adaptive tree expansion that builds the draft tree iteratively until a fixed token budget is met.
+  - Hybrid expansion allocates the node budget per layer, giving deep-narrow trees in confident contexts and shallow-wide trees in uncertain ones.
+  - Evaluated across 5 models and 6 datasets against EAGLE-3.
+  techniques:
+  - budget-driven adaptive tree expansion
+  reported_results:
+  - 'Abstract: end-to-end speedup over AR (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    intake_entries:
+    - intake-2759
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 expansion from intake-2759 (Raptor's adaptive-tree comparator). Title resolved via arXiv API 2026-11-21.
+- id: intake-2770
+  arxiv_id: '2605.08580'
+  url: https://arxiv.org/abs/2605.08580v1
+  source_type: paper
+  title: 'Slipstream: Trajectory-Grounded Compaction Validation for Long-Horizon Agents'
+  categories:
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2761
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Zhuofu Chen
+  - Rui Pan
+  - Yinwei Dai
+  - Ravi Netravali
+  key_claims:
+  - Runs the compactor asynchronously in parallel with continued agent execution on the original context.
+  - A judge validates the candidate summary against the agent's continued reasoning (forward intent, key facts, constraints).
+  - Evaluated on SWE-bench Verified and BrowseComp.
+  techniques:
+  - asynchronous compaction
+  - trajectory-grounded summary validation
+  reported_results:
+  - 'Abstract: task accuracy and end-to-end latency vs synchronous compaction (unverified)'
+  credibility_score: 1
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - context-and-token-economy.md
+    intake_entries:
+    - intake-2761
+    - intake-2762
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'ak-intake-20261121 Stage 1: recommended for a Stage-2 dive (operator auto-accepted all recommended dives, max 4 sweeps)'
+  verification: stage1-unverified
+  reader_should_conclude: 'Stage-1 unverified: do not cite any figure, metric or named mechanism from this entry until a Stage-2 dive promotes it.'
+  notes: Stage-1 expansion from intake-2761 (Aggron's baseline; also cited by intake-2762). Title resolved via arXiv API 2026-11-21.
