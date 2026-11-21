@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-21T00:43:44Z",
+  "generated_at": "2026-11-21T01:05:11Z",
   "nodes": [
     {
       "age_days": 11,
@@ -1772,7 +1772,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 206,
+      "closed": 207,
       "dispatchable": 42,
       "domain": "inference-research",
       "guarded": 0,
@@ -1811,11 +1811,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 11,
           "gates": [],
           "line": 15,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 11,
+          "open": 12,
           "readiness": "ready"
         },
         {
@@ -1823,14 +1823,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 32,
+          "dispatchable": 31,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 851,
+          "line": 858,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 33,
+          "open": 32,
           "readiness": "blocked"
         }
       ]
