@@ -314,7 +314,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: ≥30 iterations of stage timings and a per-`unit_key` estimate table exist and `row_scaffold.py` can consume it (AK-TAIL-SPLIT GO/NO-GO data is a by-product).
       · gate: none
       · owner: pipeline-mgmt
-      · progress: 2026-11-21 code landed: tail_timing RESULT export ($AK_RESULT_JSON, key tail_path_timing_summary, run.py end-of-run hook; research 061369f10), estimate_history.py + row_scaffold default (root 095707392). Per-family table exists (28 families with >= 3 completed runs). OPEN on one clause: >= 30 iterations of stage timings need the next AK loop run with AK_RESULT_JSON set.
+      · progress: 2026-11-21 code landed: tail_timing RESULT export ($AK_RESULT_JSON, key tail_path_timing_summary, run.py end-of-run hook; research a1eeb03a0), estimate_history.py + row_scaffold default (root 873b534ee). Per-family table exists (28 families with >= 3 completed runs). OPEN on one clause: >= 30 iterations of stage timings need the next AK loop run with AK_RESULT_JSON set.
 - [ ] **AKPL-P1** [non-inference] AK parallel loop P1: gate evaluator + verdict filer. Pure function RESULT.json + graph_kld_policy.json + bench floors + PPL contract -> verdict.json (PASS/FAIL/NOISE/FUTILITY with gate id, thresholds, observed values), no LLM; wired to watch_rows.sh/runend.py. Design: docs/design/autokernel-parallel-loop.md §4.
       · done when: replay agreement ≥95% with every disagreement explained; new rows file with zero LLM turns.
       · gate: none
