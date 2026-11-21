@@ -41,6 +41,7 @@ def cand():
 @pytest.fixture(autouse=True)
 def stub_harness(monkeypatch):
     monkeypatch.setattr(C.RS, "fetch_harness", lambda repo, ref="origin/main": ("deadbeef", dict(HARNESS)))
+    monkeypatch.setattr(C, "research_head", lambda repo=None, ref="origin/main": "f" * 40)
 
 
 def _chain(tmp_path, cand, **kw):
@@ -72,7 +73,7 @@ def test_chain_shapes_deps_and_lint(tmp_path, cand):
     assert list(rows) == ["build", "oracle-kld", "ab-timing", "fold-check"]
     specs = {k: json.load(open(os.path.join(r["rowdir"], "spec.json"))) for k, r in rows.items()}
     # builds on one CPU quarter, never q3
-    assert specs["build"]["lane"] == "cpu" and specs["build"]["regions"] == "q1"
+    assert specs["build"]["lane"] == "cpu" and specs["build"]["regions"] == "any-of q0,q1,q2"
     # GPU timing holds 88-95; the oracle row does not book the timing cores
     assert "88-95" in specs["ab-timing"]["regions"] and specs["ab-timing"]["timing"] == "ak-keep-gate"
     assert specs["ab-timing"]["admission_class"] == "block-timing-quiet"
@@ -148,3 +149,42 @@ def test_candidate_from_ledger():
 if __name__ == "__main__":
     raise SystemExit("REFUSING: pytest-fixture suite; run: "
                      "python -m pytest scripts/coordination/tests/test_akloop_chain.py -q")
+
+
+# ---- AKPL-P3: stage driver, stage subsets, rebase chains -------------------------------------------------------
+
+def test_job_runs_pinned_stage_driver(tmp_path, cand):
+    rep = _chain(tmp_path, cand)
+    rows = {r["stage"]: r for r in rep["rows"]}
+    job = open(os.path.join(rows["oracle-kld"]["rowdir"], "job.py")).read()
+    assert "FUTILITY_HARNESS_STAGE_DRIVER_MISSING" not in job
+    assert "autokernel.loop.stage_bodies" in job and "git\", \"-C\", RESEARCH_REPO, \"archive\"" in job
+    assert "f" * 40 in job                                         # pinned research commit
+    assert os.path.join(rows["build"]["rowdir"], "out", "RESULT.json") in job   # upstream RESULT handed down
+    bjob = open(os.path.join(rows["build"]["rowdir"], "job.py")).read()
+    assert 'os.environ["HIP_VISIBLE_DEVICES"] = "-1"' in bjob and "LANE, ROW = 'build', 'cpu'" in bjob
+    cj = json.load(open(os.path.join(rows["build"]["rowdir"], "candidate.json")))
+    assert cj["patch_sha"] == cand["patch_sha"] and cj["base_sha"] == cand["base_sha"]
+    assert "candidate.json" in open(os.path.join(rows["build"]["rowdir"], "SOURCE.sha256")).read()
+
+
+def test_offline_rows_never_publishable(tmp_path, cand):
+    rep = _chain(tmp_path, cand, research_tree=str(tmp_path), test_mode=True)
+    assert all(any(e.startswith("CHAIN-TESTMODE") for e in r["lint"]) for r in rep["rows"])
+    rep2 = C.scaffold_chain(dict(cand), root=str(tmp_path / "rows2"), date="20261121", handoff="churn-pipeline.md",
+                            recs=_recs(), research_tree=str(tmp_path))
+    assert all(any(e.startswith("CHAIN-DRIVER") for e in r["lint"]) for r in rep2["rows"])
+
+
+def test_rebase_chain_subset_and_distinct_ids(tmp_path, cand):
+    first = _chain(tmp_path, cand)
+    rb = dict(cand, patch_sha="7777777aaaaa", base_sha="9999999bbbbb", stages=["build", "oracle-kld", "fold-check"],
+              skip_stages=["ab-timing"], rebase_of={"candidate": cand["id"]})
+    rep = _chain(tmp_path, rb)
+    assert [r["stage"] for r in rep["rows"]] == ["build", "oracle-kld", "fold-check"]
+    assert not {r["id"] for r in rep["rows"]} & {r["id"] for r in first["rows"]}
+    assert all("-rb7777777-" in r["id"] for r in rep["rows"])
+    fold = json.load(open(os.path.join(rep["rows"][-1]["rowdir"], "spec.json")))
+    assert fold["gate"] == [rep["rows"][1]["box"]] and fold["rebase_of"]["candidate"] == cand["id"]
+    with pytest.raises(ValueError):
+        C.chain_stages(dict(cand, stages=["oracle-kld", "fold-check"]))

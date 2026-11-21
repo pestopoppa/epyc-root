@@ -12,18 +12,24 @@ resolves), the P1 gate ids its verdict is decided by (`gate_ids`, gate_eval.py),
 estimate_history.py over the AK rows of the same stage class (p75 wall x 1.25).
 
 Region shapes (keeper packing rules, inference-backlog-scheduling skill):
-    build       cpu lane, ONE quarter, q0..q2 only (never q3: 88-95 are the MI210 host threads a GPU timing row holds)
+    build       cpu lane, ONE quarter (any-of q0,q1,q2) (never q3: 88-95 are the MI210 host threads a GPU timing row holds)
     oracle-kld  gpu lane, mi210_0 + host threads 184-191, not a timing row (quiet-only on the timing cores)
     ab-timing   gpu timing row: shape gpu-q3 (mi210_0, 88-95 held, 184-191), admission block-timing-quiet
     fold-check  gpu timing row like ab-timing, resumable (per-step checkpoints)
 `resumable` is true where a window end can continue from a checkpoint (incremental build, chunked KLD, per-step
 fold check) and false for the A/B timing window, which must be one quiet grant.
 
+Stage driver (AKPL-P3): each job.py runs research `autokernel.loop.stage_bodies` for its stage, pinned to a research
+commit (`git archive`, never the clone's tree), with the RESULT paths of its upstream stage rows; it always leaves a
+finished polar RESULT (or FUTILITY_HARNESS_*). A candidate record's `stages` narrows the chain (a rebase-and-recheck
+chain: build + oracle-kld [+ ab-timing when the measured path moved] + fold-check).
+
 Successor emitter: when a cap or rule changes, `successor()` copies a scaffolded row dir to `<id>-r<N+1>`, sets
 `supersedes=<prior id>`, cites the prior row's evidence (filed verdict / RESULT path) in `successor_of`, and changes
 ONLY the named clause(s); everything else is byte-identical apart from the id/path rewrite and the reseal.
 
     chain.py scaffold --candidate cand.json --handoff churn-pipeline.md [--root DIR] [--date YYYYMMDD]
+                      [--research-commit SHA] [--research-tree DIR --test-mode]   (offline rows never publish)
     chain.py from-ledger --ledger ledger.json --tag AK-GAP-1-IDSORT --llama /mnt/raid0/llm/llama.cpp [...]
     chain.py successor --rowdir DIR --set estimate_s=4200 --reason "cap raised" [--evidence PATH]
     chain.py lint --rowdir DIR [--box-file boxes.md]
@@ -62,6 +68,9 @@ CANDIDATE_SCHEMA = "epyc.akloop.candidate.v1"
 MIN_ESTIMATE_S = 300            # publish_row.MIN_ESTIMATE_S: a shorter job runs in the owner's turn, not as a row
 GPU_TIMING_REGIONS = "mi210_0,88-95,184-191"
 GPU_PLAIN_REGIONS = "mi210_0,184-191"
+#: Any ONE of q0..q2 (never q3: 88-95 are the MI210 host cores a timing row holds). AKPL-P3: a fixed "q1" pinned
+#: every candidate's build to one quarter, so two candidates could never build at once.
+BUILD_REGIONS = "any-of q0,q1,q2"
 SUCCESSOR_CLAUSES = ("estimate_s", "max_window_s", "min_window_s", "decision_rule", "regions", "resumable",
                      "timing", "admission_class", "gate_ids", "busy_fraction", "first_progress_s")
 
@@ -86,7 +95,7 @@ class Stage:
 
 
 STAGES: tuple[Stage, ...] = (
-    Stage("build", "cpu", "q1", 24, True, r"^(ak|akx|c\d+)-.*-build(-|$)",
+    Stage("build", "cpu", BUILD_REGIONS, 24, True, r"^(ak|akx|c\d+)-.*-build(-|$)",
           ("declared.polar", "declared.futility_harness"),
           "Does the candidate patch build cleanly on its base (CPU + HIP trees), with its test target?",
           "PASS if both trees build and the feature test binary exists; FUTILITY_HARNESS_BUILD_ENV on a toolchain/"
@@ -173,12 +182,17 @@ def stage_estimate(stage: Stage, recs: list[dict[str, Any]] | None = None, flags
 
 # ---- scaffolding --------------------------------------------------------------------------------
 
+def _rebase_tag(cand: dict[str, Any]) -> str:
+    """A rebase-and-recheck chain re-tests the SAME hypothesis on a new base: its rows carry the rebased patch."""
+    return f"-rb{str(cand['patch_sha'])[:7]}" if cand.get("rebase_of") else ""
+
+
 def row_id(cand: dict[str, Any], stage: Stage, date: str) -> str:
-    return f"akc-{_slug(cand['hypothesis_id'])}-{stage.name}-{date}"
+    return f"akc-{_slug(cand['hypothesis_id'])}{_rebase_tag(cand)}-{stage.name}-{date}"
 
 
 def box_id(cand: dict[str, Any], stage: Stage) -> str:
-    return f"AKC-{_slug(cand['hypothesis_id']).upper()}-{stage.name.upper()}"
+    return f"AKC-{_slug(cand['hypothesis_id']).upper()}{_rebase_tag(cand).upper()}-{stage.name.upper()}"
 
 
 def render_box(cand: dict[str, Any], stage: Stage, est: int, gate: list[str], owner: str) -> str:
@@ -193,32 +207,78 @@ def render_box(cand: dict[str, Any], stage: Stage, est: int, gate: list[str], ow
     return "\n".join(lines)
 
 
-def _job_text(cand: dict[str, Any], stage: Stage, rid: str, d: str) -> str:
-    """Stage job.py with the docstring filled; the body refuses as FUTILITY_HARNESS until the stage driver lands."""
+CAND_FIELDS = ("id", "base_sha", "patch_sha", "hypothesis_id", "predicted_effect", "paths", "rebase_of",
+               "skip_stages", "champion_ref", "op", "geomean_min", "pairs", "timing_model", "anchor_build",
+               "llama_repo", "stages", "test_outcomes", "test_refs", "test_parents", "test_fixture_repo",
+               "test_lineage_log")
+
+
+def _job_text(cand: dict[str, Any], stage: Stage, rid: str, d: str, *, prior_results: dict[str, str],
+              research_commit: str | None, research_tree: str | None, test_mode: bool,
+              research_repo: str = RS.RESEARCH_REPO) -> str:
+    """Stage job.py: runs `autokernel.loop.stage_bodies` (research repo, AKPL-P3) for this stage and leaves ONE
+    polar RESULT.json. The research code comes from `git archive <pinned commit>` of the research clone (read-only:
+    never its tree, branch or index), or from `research_tree` for an offline test-mode row (lint refuses to publish
+    those). Any harness failure still writes a finished FUTILITY_HARNESS_* RESULT, so no run ends without a claim."""
     return f'''#!/usr/bin/python3
 """{rid}
 QUESTION  {stage.question}
           candidate {cand['id']}: hypothesis {cand['hypothesis_id']}, patch {cand['patch_sha']}, base {cand['base_sha']},
           predicted effect {cand['predicted_effect']}.
-SOURCE    llama.cpp-experimental worktree at {cand['patch_sha']} (content proof: git rev-parse HEAD == patch sha).
+SOURCE    llama.cpp-experimental worktree at {cand['patch_sha']} (content proof: git rev-parse HEAD == patch sha);
+          stage driver autokernel.loop.stage_bodies @ research {research_commit or research_tree}.
 STEPS     stage {stage.name}; gate ids {", ".join(stage.gate_ids)}.
 RULE      {stage.rule}
 STOP      {stage.stop}
 """
-import json, os, sys
-OUT = os.path.join("{d}", "out", "RESULT.json")
-# Stage driver: generated by akloop/chain.py. Until the per-stage driver is wired (AKPL-P2 live run), the job
-# writes a finished harness-futility RESULT so a smoke can never be read as a candidate result.
+import io, json, os, subprocess, sys, tarfile
+D = {d!r}
+OUT = os.path.join(D, "out", "RESULT.json")
+STAGE, LANE, ROW = {stage.name!r}, {stage.lane!r}, {rid!r}
+RESEARCH_REPO, RESEARCH_COMMIT, RESEARCH_TREE = {research_repo!r}, {research_commit!r}, {research_tree!r}
+PRIOR_RESULTS = {json.dumps(prior_results, sort_keys=True)}
+TEST_MODE = {bool(test_mode)!r}
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
-json.dump({{"complete": True, "verdict": "FUTILITY_HARNESS_STAGE_DRIVER_MISSING", "stage": "{stage.name}",
-           "candidate": "{cand['id']}"}}, open(OUT, "w"))
+
+
+def harness(token, why):
+    json.dump({{"complete": True, "verdict": f"{{token}} ({{why}})", "stage": STAGE, "row": ROW,
+               "candidate": {cand['id']!r}}}, open(OUT, "w"))
+    sys.exit(0)
+
+
+if LANE != "gpu":
+    os.environ["HIP_VISIBLE_DEVICES"] = "-1"
+    os.environ["ROCR_VISIBLE_DEVICES"] = "-1"
+if RESEARCH_TREE:
+    kr = os.path.join(RESEARCH_TREE, "scripts", "kernel_rnd")
+else:
+    root = os.path.join(D, "research")
+    kr = os.path.join(root, "scripts", "kernel_rnd")
+    if not os.path.exists(os.path.join(kr, "autokernel", "loop", "stage_bodies.py")):
+        a = subprocess.run(["git", "-C", RESEARCH_REPO, "archive", RESEARCH_COMMIT, "scripts/kernel_rnd/autokernel"],
+                           capture_output=True)
+        if a.returncode != 0:
+            harness("FUTILITY_HARNESS_MISSING_INPUT", f"git archive {{RESEARCH_COMMIT}} failed")
+        tarfile.open(fileobj=io.BytesIO(a.stdout)).extractall(root)
+cand = json.load(open(os.path.join(D, "candidate.json")))
+cand["stage_results"] = PRIOR_RESULTS
+cp = os.path.join(D, "out", "candidate.run.json")
+json.dump(cand, open(cp, "w"), indent=1)
+argv = [sys.executable, "-s", "-B", "-m", "autokernel.loop.stage_bodies", "--stage", STAGE, "--candidate", cp,
+        "--out", OUT, "--lane", LANE, "--row", ROW] + (["--test-mode"] if TEST_MODE else [])
+rc = subprocess.run(argv, cwd=kr).returncode
+if not os.path.exists(OUT):
+    harness("FUTILITY_HARNESS_STAGE_DRIVER_CRASH", f"stage driver rc={{rc}} wrote no RESULT")
 sys.exit(0)
 '''
 
 
 def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, handoff: str, owner: str,
                    gate: list[str], supersedes: str | None, recs: list[dict[str, Any]] | None,
-                   research_repo: str = RS.RESEARCH_REPO, quiet: bool = True) -> dict[str, Any]:
+                   research_repo: str = RS.RESEARCH_REPO, quiet: bool = True,
+                   prior_results: dict[str, str] | None = None, research_commit: str | None = None,
+                   research_tree: str | None = None, test_mode: bool = False) -> dict[str, Any]:
     rid = row_id(cand, stage, date)
     est, just = stage_estimate(stage, recs)
     a = SimpleNamespace(row_id=rid, handoff=handoff, box=box_id(cand, stage), lane=stage.lane, regions=stage.regions,
@@ -232,7 +292,10 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
         raise RuntimeError(f"row_scaffold refused {rid}: {buf.getvalue().strip()}")
     d = os.path.join(root, rid)
     with open(os.path.join(d, "job.py"), "w") as f:
-        f.write(_job_text(cand, stage, rid, d))
+        f.write(_job_text(cand, stage, rid, d, prior_results=prior_results or {}, research_commit=research_commit,
+                          research_tree=research_tree, test_mode=test_mode, research_repo=research_repo))
+    with open(os.path.join(d, "candidate.json"), "w") as f:
+        json.dump({k: cand[k] for k in CAND_FIELDS if k in cand}, f, indent=1, sort_keys=True)
     sp = os.path.join(d, "spec.json")
     spec = json.load(open(sp))
     spec.update({"estimate_s": est, "estimate_justification": just, "min_window_s": spec["min_window_s"],
@@ -240,8 +303,15 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
                  "resumable": stage.resumable, "family": f"akchain-{stage.name}", "verdict_by": "gate_eval",
                  "decision_rule": f"gate_eval {', '.join(stage.gate_ids)}; job.py RULE",
                  "candidate": {k: cand[k] for k in ("id", "base_sha", "patch_sha", "hypothesis_id", "predicted_effect")},
+                 "stage": stage.name, "stage_driver": {"research_commit": research_commit,
+                                                       "research_tree": research_tree, "test_mode": bool(test_mode)},
+                 **({"rebase_of": cand["rebase_of"]} if cand.get("rebase_of") else {}),
                  "notes": (f"akloop/chain.py stage {stage.name} of {cand['id']}; gate: {', '.join(gate) or 'none'}; "
                            f"estimate {just}")})
+    if stage.regions.startswith("any-of"):
+        spec["shape"] = "quarter"
+        spec["width_justification"] = (f"{stage.regions} is the allow-set, not the width: rowflow.contract_of books "
+                                       f"ONE quarter (shape quarter, options q0|q1|q2)")
     for k in ("timing", "admission_class", "shape"):
         v = getattr(stage, k)
         if v:
@@ -250,7 +320,7 @@ def scaffold_stage(cand: dict[str, Any], stage: Stage, *, root: str, date: str, 
         spec["max_window_s"] = max(int(spec["min_window_s"]) + 300, int(math.ceil(est * 1.2)) + 300)
     with open(sp, "w") as f:
         json.dump(spec, f, indent=1)
-    RS.seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json"]
+    RS.seal(d, ["job.py", "check_complete.py", "launch.sh", "spec.json", "candidate.json"]
             + sorted(n for n in RS.HARNESS_FILES if os.path.exists(os.path.join(d, n))))
     return {"stage": stage.name, "id": rid, "rowdir": d, "box": box_id(cand, stage), "estimate_s": est,
             "regions": stage.regions, "lane": stage.lane, "resumable": stage.resumable, "gate": list(gate),
@@ -277,21 +347,54 @@ def lint_row(rowdir: str, box_file: str | None) -> list[str]:
             errs.append(f"CHAIN-FIELD: spec.{k} missing")
     if "supersedes" not in spec or "gate" not in spec:
         errs.append("CHAIN-FIELD: spec.supersedes / spec.gate missing")
+    drv = spec.get("stage_driver") or {}
+    if drv.get("test_mode"):
+        errs.append("CHAIN-TESTMODE: an offline test-mode row (stub stage bodies) is never publishable")
+    if drv and not drv.get("test_mode") and (drv.get("research_tree") or not drv.get("research_commit")):
+        errs.append("CHAIN-DRIVER: the stage driver must be a pinned research commit (git archive), not a tree")
     return errs
+
+
+def research_head(repo: str = RS.RESEARCH_REPO, ref: str = "origin/main") -> str | None:
+    """The research commit a live chain pins its stage driver to (fetch + rev-parse only; never the clone's tree)."""
+    remote, _, branch = ref.partition("/")
+    subprocess.run(["git", "-C", repo, "fetch", "-q", remote, branch], capture_output=True, text=True)
+    r = subprocess.run(["git", "-C", repo, "rev-parse", "--verify", f"{ref}^{{commit}}"], capture_output=True, text=True)
+    return r.stdout.strip() if r.returncode == 0 else None
+
+
+def chain_stages(cand: dict[str, Any]) -> tuple[Stage, ...]:
+    """The stages this candidate's chain runs: all four, or the record's `stages` (a rebase-and-recheck chain is
+    build + oracle-kld [+ ab-timing only when the measured path moved] + fold-check)."""
+    names = cand.get("stages") or [s.name for s in STAGES]
+    bad = [n for n in names if n not in STAGE_BY_NAME]
+    if bad or names[-1] != "fold-check" or names[0] != "build":
+        raise ValueError(f"chain stages must run build .. fold-check from {[s.name for s in STAGES]}; got {names}")
+    return tuple(STAGE_BY_NAME[n] for n in names)
 
 
 def scaffold_chain(cand: dict[str, Any], *, root: str, date: str, handoff: str, owner: str = "pipeline-mgmt",
                    prior: dict[str, str] | None = None, recs: list[dict[str, Any]] | None = None,
-                   research_repo: str = RS.RESEARCH_REPO) -> dict[str, Any]:
-    """Scaffold + dry-run lint the four stage rows. Never publishes. `prior` maps stage -> prior row id."""
+                   research_repo: str = RS.RESEARCH_REPO, research_commit: str | None = None,
+                   research_tree: str | None = None, test_mode: bool = False) -> dict[str, Any]:
+    """Scaffold + dry-run lint the stage rows. Never publishes. `prior` maps stage -> prior row id.
+
+    Each job runs autokernel.loop.stage_bodies pinned to `research_commit` (default: research origin/main), with the
+    RESULT paths of its upstream stage rows, so fold-check can prove the keep lands on the base it was built from."""
     prior = prior or {}
     recs = EH.samples() if recs is None else recs
+    if research_tree is None and research_commit is None:
+        research_commit = research_head(research_repo)
     os.makedirs(root, exist_ok=True)
     rows, boxes, prev = [], [], None
-    for st in STAGES:
+    results: dict[str, str] = {}
+    for st in chain_stages(cand):
         gate = [prev["box"]] if prev else []
         r = scaffold_stage(cand, st, root=root, date=date, handoff=handoff, owner=owner, gate=gate,
-                           supersedes=prior.get(st.name), recs=recs, research_repo=research_repo)
+                           supersedes=prior.get(st.name), recs=recs, research_repo=research_repo,
+                           prior_results=dict(results), research_commit=research_commit,
+                           research_tree=research_tree, test_mode=test_mode)
+        results[st.name] = os.path.join(r["rowdir"], "out", "RESULT.json")
         boxes.append(render_box(cand, st, r["estimate_s"], gate, owner))
         rows.append(r)
         prev = r
@@ -301,6 +404,7 @@ def scaffold_chain(cand: dict[str, Any], *, root: str, date: str, handoff: str, 
     for r in rows:
         r["lint"] = lint_row(r["rowdir"], box_file)
     return {"schema": SCHEMA, "candidate": cand, "rows": rows, "box_file": box_file, "published": False,
+            "research_commit": research_commit, "test_mode": bool(test_mode),
             "lint_clean": all(not r["lint"] for r in rows)}
 
 
@@ -406,6 +510,9 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--owner", default="pipeline-mgmt")
         p.add_argument("--research-repo", default=RS.RESEARCH_REPO)
         p.add_argument("--prior", action="append", default=[], help="stage=row-id: the prior attempt this supersedes")
+        p.add_argument("--research-commit", help="pin the stage driver (default: research origin/main)")
+        p.add_argument("--research-tree", help="OFFLINE ONLY: run the stage driver from this tree (lint refuses publish)")
+        p.add_argument("--test-mode", action="store_true", help="OFFLINE ONLY: stub stage bodies (lint refuses publish)")
         if name == "scaffold":
             p.add_argument("--candidate", required=True)
         else:
@@ -429,7 +536,11 @@ def main(argv: list[str] | None = None) -> int:
             if a.cmd == "scaffold":
                 cand = candidate(**{k: v for k, v in cand.items() if k != "schema"})
             rep = scaffold_chain(cand, root=a.root, date=a.date, handoff=a.handoff, owner=a.owner,
-                                 prior=dict(p.split("=", 1) for p in a.prior), research_repo=a.research_repo)
+                                 prior=dict(p.split("=", 1) for p in a.prior), research_repo=a.research_repo,
+                                 research_commit=a.research_commit, research_tree=a.research_tree,
+                                 test_mode=a.test_mode)
+            if a.test_mode:   # offline rows are expected to carry the CHAIN-TESTMODE refusal and nothing else
+                return 0 if all(all(e.startswith("CHAIN-TESTMODE") for e in r["lint"]) for r in rep["rows"]) else 1
             print(json.dumps(rep, indent=1))
             return 0 if rep["lint_clean"] else 1
         if a.cmd == "successor":
