@@ -32,11 +32,12 @@
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47, INF-06#agent-collab-rnd-harness, INF-06#autokernel-restart-and-strip -->
 
 ### Backlog
-- [ ] **AK-ASM-H11-UNIQ** [inference] Add an op-level test that the gfx90a AITER topksoftmax asm and the topk-moe fusion emit unique expert IDs on rows with exact ties, -inf and NaN logits, because the C14 MUL_MAT_ID helper silently drops duplicate slots (intake-2719).
+- [x] **AK-ASM-H11-UNIQ** [inference] Add an op-level test that the gfx90a AITER topksoftmax asm and the topk-moe fusion emit unique expert IDs on rows with exact ties, -inf and NaN logits, because the C14 MUL_MAT_ID helper silently drops duplicate slots (intake-2719).
       · done when: test-backend-ops cases for tie/-inf/NaN router rows exist and a ROCm0 run reports PASS (unique IDs) or a filed FAIL with the offending kernel
       · gate: none
       · model: none (op level) · build: C16 composite 13d6fc150 + TOPK_MOE_DEGEN test (llama.cpp-experimental-ak-h11-uniq-20261120 @ 9cb1a3ee9) HIP build pinned by sha · harness: test-backend-ops ROCm0 vs CPU on the router ops · metric: unique-ID check per row (pass/fail) · rule: any duplicate ID on any degenerate row = FAIL · region: gpu-q3 short window · est 600 s
       · stop rule: question = can the asm or fusion router emit duplicate IDs? single run is decisive (deterministic); stop-on-answer after the case set runs; stop-on-futility on a build/residency proof failure
+      · ✅ 2026-11-21 row ak-asm-h11-uniq-gpu-20261120 rc=0 FAIL(dup_ids): ROCm residency proven (row-build libggml-hip via LD_DEBUG, VRAM +341 MB); 24/24 TOPK_MOE_DEGEN cases FAIL on ROCm0 (48 witness lines). Offending kernel: the topk-moe fusion router (softmax gating, with_norm 0 and 1) emits duplicate expert IDs on exact-tie rows in every config (n_expert 128/256/512, k 4/8/10) and on a half -inf row once (128/k4/513 rows, with_norm=1). No out-of-range IDs. Finite-logit serving unaffected; degenerate rows would reach the C14 MUL_MAT_ID duplicate drop. Evidence: /mnt/raid0/llm/tmp/ak-asm-h11-uniq-gpu-20261120/{out/RESULT.json,verdict.json} [no-belief: row verdict filed by agent]
 
 > Folded from the body of `handoffs/active/autokernel-research-loop.md` (row INF-06), from its first `##` section on, @ `8012aabb5781` on 2026-11-03 (BRF-T7-F5, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
