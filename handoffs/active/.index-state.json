@@ -4,7 +4,7 @@
       "blocked": 28,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 594
+      "open": 596
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 128,
+      "closed": 129,
       "guarded": 0,
-      "last_advanced": "2026-11-20",
-      "open": 57,
+      "last_advanced": "2026-11-21",
+      "open": 56,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 1,
-          "closed": 84,
+          "closed": 85,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -95,7 +95,7 @@
           "line": 810,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 49
+          "open": 48
         }
       ]
     },
@@ -104,7 +104,7 @@
       "closed": 810,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 125,
+      "open": 126,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 936,
+      "total": 937,
       "tracks": [
         {
           "blocked": 1,
@@ -128,14 +128,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 41
+          "open": 42
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 4732,
+          "line": 4733,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 4815,
+          "line": 4816,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 4992,
+          "line": 4993,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 13
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 6881,
+          "line": 6882,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 45
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 9849,
+          "line": 9850,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10052,
+          "line": 10053,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20
@@ -2351,10 +2351,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 209,
+      "closed": 210,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 41,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,7 +2363,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 252,
+      "total": 255,
       "tracks": [
         {
           "blocked": 1,
@@ -2377,7 +2377,7 @@
         },
         {
           "blocked": 1,
-          "closed": 92,
+          "closed": 93,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2386,7 +2386,7 @@
           "line": 858,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 30
+          "open": 32
         }
       ]
     },
