@@ -97,8 +97,8 @@ class PartialQuarterBuild(unittest.TestCase):
         self.assertIn("q0 is held", str(e.exception))
 
     def test_count_claim_falls_back_to_free_cores_when_no_whole_quarter(self):
-        g = partial_grant(); other = {"id": "o", "holds": {"q1", "q2"}}
-        free = self.free_without(g, quarters_busy={"q1", "q2"})
+        g = partial_grant(); other = {"id": "o", "holds": {"q1", "q2", "q3"}}   # q3 busy too: with q3 free the 2nd claim would take the q3 pocket
+        free = self.free_without(g, quarters_busy={"q1", "q2", "q3"})
         gid, _ = self.claim("16", [g, other], free)
         held = [x for x in rf.open_grants(self.flags) if x["id"] == gid][0]["holds"]
         cores = {t for t in held if t.startswith("c")}
@@ -110,7 +110,7 @@ class PartialQuarterBuild(unittest.TestCase):
 
     def test_whole_quarter_hold_still_refuses(self):
         g = {"id": "wq", "holds": {"q0"}}
-        free = self.free_without(g, quarters_busy={"q1", "q2"})
+        free = self.free_without(g, quarters_busy={"q1", "q2", "q3"})   # q3 busy: else a count falls to the q3 pocket
         for c in ("8-23", "4"):
             with self.assertRaises(rf.Refused):
                 self.claim(c, [g], free)

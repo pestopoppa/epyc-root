@@ -5103,8 +5103,33 @@ def partial_tokens(cores, free):
     return set(cores) | {f"t{int(c[1:]) + 96}" for c in cores if f"t{int(c[1:]) + 96}" in free}
 
 
+# Q3-POCKET BUILD (AK 2026-11-21, D9 standing AK ack): build-autokernel-20261121T033012Z took all of q3 and held 88-95/184-191
+# (the MI210 host threads), so queued GPU rows waited while q0-q2 sat behind long CPU timing rows. A build may instead take the
+# q3 POCKET = cores 72-87 + SMT siblings 168-183 (exactly COEXIST_Q3, the cores gpu-q3 NARROW never gives a GPU grant): never
+# 88-95 / 184-191, never gpu-quiet. Beside a GPU grant (holds gpu-quiet + 88-95 + 184-191) and beside a GPU TIMING grant alike -
+# the same rule subquarter q3 rows already follow (NARROW: 72-87 stay grantable beside a GPU timing run).
+BUILD_Q3_POCKET_CORES = 16
+BUILD_GPU_HOST_CPUS = frozenset(range(88, 96)) | GPU_HOST_THREADS
+
+
+def build_cpu_set(s):
+    return {x for x in _cpu_set(s)}
+
+
+def q3_pocket_claim(flags, free, n, want=None):
+    """Tokens (cores + free SMT siblings) of a q3-pocket build, or None. n: first n free pocket cores; want: the explicit core
+    tokens (all must be free). Never returns a token outside COEXIST_Q3."""
+    pocket = sorted((c for c in COEXIST_Q3 if c.startswith("c") and c in free), key=lambda c: int(c[1:]))
+    cores = sorted(want, key=lambda c: int(c[1:])) if want else pocket[:n]
+    if not cores or (want and not set(want) <= set(pocket)) or (not want and len(cores) < n):
+        return None
+    toks = partial_tokens(cores, free) & COEXIST_Q3
+    return toks if toks >= set(cores) else None
+
+
 def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None):
-    """`rowflow.py claim --build`: a short `build` grant (grants/build-<owner>-<ts>.grant, holds one quarter) so a build
+    """`rowflow.py claim --build`: a short `build` grant (--cpus 72-87 or a count that finds no q0-q2 room = the q3 pocket, never
+    88-95/184-191, never gpu-quiet; see Q3-POCKET BUILD) (grants/build-<owner>-<ts>.grant, holds one quarter) so a build
     is a lane the planner sees instead of contamination. cpus = a count (<= 24: the first whole-free quarter q0-q2)
     or a literal cpu list (its quarters). Refused - naming the grant - when it would overlap a timing grant's quarters,
     or any held quarter. Returns (grant id, line)."""
@@ -5127,6 +5152,11 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
                 fc = free_cores(q, free)
                 if q not in tq and len(fc) >= n:
                     part = partial_tokens(fc[:n], free); pick = [q]; break
+        if not pick and n <= BUILD_Q3_POCKET_CORES:   # q0-q2 have no pocket: the q3 pocket 72-87 (never 88-95), beside GPU grants
+            tg = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX) and g["holds"] & COEXIST_Q3], allrows)
+            part = None if tg else q3_pocket_claim(flags, free, n)
+            if part:
+                pick = ["q3"]
         if not pick:   # BUILD-POCKET: remember the unmet claim so the planner leaves the next pocket for it
             record_build_wait(flags, owner, now, wait_pid)
         need(pick, f"no whole-free quarter q0-q2 and none with >= {n} free cores for a build now (" + ", ".join(
@@ -5135,15 +5165,30 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
         qs = [pick[0]]
     else:
         need(re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", s), f"--cpus {s!r}: a count or a literal cpu list")
+        bad = build_cpu_set(s) & BUILD_GPU_HOST_CPUS
+        need(not bad, f"BUILD-REFUSED: --cpus {s} names {compress_cpus(bad)}, the MI210 host threads (cores 88-95 / 184-191); a build "
+                      "never books them or gpu-quiet. Use the q3 pocket --cpus 72-87 (siblings 168-183 come with it)")
         qs = sorted(quarters_of(s, fold=True))
         need(len(qs) == 1, f"--cpus {s} spans {qs or 'no quarter'}; a build lane is one quarter")
-        if qs[0] not in free and qs[0] not in tq and free_cores(qs[0], free):   # held in part: the listed cores must be free
+        if qs == ["q3"]:
+            # q3 is never booked whole by a build: only the pocket, whatever the list says (a pocket list is 72-87 / 168-183 cores)
+            wc = {f"c{x % 96}" for x in _cpu_set(s)}
+            need(wc <= COEXIST_Q3, f"BUILD-REFUSED: --cpus {s} is not inside the q3 pocket 72-87 (+168-183)")
+            miss = sorted(wc - free)
+            need(not miss, f"BUILD-REFUSED: q3 pocket cores {compress_cpus({int(c[1:]) for c in miss})} are held by "
+                           f"{', '.join(sorted({g['id'] for g in grants if g['holds'] & set(miss)})) or 'another job'}")
+            tg = timing_quarters(flags, [g for g in grants if not g["id"].startswith(BUILD_PREFIX) and g["holds"] & COEXIST_Q3], allrows)
+            need(not tg, f"BUILD-REFUSED: a timing grant holds q3 pocket cores; a build there would perturb its measurement")
+            part = q3_pocket_claim(flags, free, 0, want=wc)
+            need(part, f"BUILD-REFUSED: q3 pocket {s} is not free")
+        elif qs[0] not in free and qs[0] not in tq and free_cores(qs[0], free):   # held in part: the listed cores must be free
             want = {t for t in cpu_tokens(s) if t in CORES or t in THREADS}
             miss = sorted(want - free)
             if want and not miss:
                 part = want
+    pocket = bool(part) and qs == ["q3"]   # a q3-pocket build holds only 72-87/168-183: a GPU timing grant's 88-95 is not its quarter
     for q in qs:
-        need(q not in tq, f"BUILD-REFUSED: {q} is held by timing grant {holder.get(q, '?')}; a build there would perturb "
+        need(pocket or q not in tq, f"BUILD-REFUSED: {q} is held by timing grant {holder.get(q, '?')}; a build there would perturb "
                           "its measurement. Pick another quarter (or --cpus N to let the keeper pick)")
         need(part or q in free, f"BUILD-REFUSED: {q} is held by {holder.get(q, 'another job')}; pick a free quarter")
     t = dt.datetime.now(dt.timezone.utc) if now is None else dt.datetime.fromtimestamp(now, dt.timezone.utc)
@@ -5152,11 +5197,12 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
     if part:   # core-granular hold: explicit cpus + core/thread tokens, so the rest of the quarter stays claimable
         cl = tokens_cpus(part)
         line = write_grant(flags, gid, cl, set(part), minutes * 60)
+        need(not pocket or set(part) <= COEXIST_Q3, "BUILD-REFUSED: internal: a q3-pocket build would hold tokens outside 72-87/168-183")
     else:
         cl = ",".join(cpu_list(q) for q in qs)
         line = write_grant(flags, gid, ",".join(qs), set(qs), minutes * 60)
     rec = {"id": gid, "owner": owner, "kind": "build", "quarters": qs, "cpus": cl,
-           "minutes": minutes, "at": now_iso(), **({"partial": sorted(part)} if part else {})}
+           "minutes": minutes, "at": now_iso(), **({"partial": sorted(part)} if part else {}), **({"pocket": "q3"} if pocket else {})}
     atomic_json(os.path.join(flags, "grants", gid + ".build.json"), rec)
     log(f"BUILD-GRANT {gid}: {','.join(qs)} for {minutes} min (owner={owner}); run it pinned: taskset -c {rec['cpus']} ...")
     return gid, line
@@ -6685,7 +6731,7 @@ def main(argv=None):
     s = sub.add_parser("allocate", help="ONE snapshot per tick: heal, assign dry runs + grants together, write grants, log IDLE-WHY/UNDERUSED")
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
-    s = sub.add_parser("claim", help="F7: claim a short build lane: claim --build --owner <id> --cpus N|LIST --minutes M")
+    s = sub.add_parser("claim", help="F7: claim a short build lane: claim --build --owner <id> --cpus N|LIST --minutes M (--cpus 72-87 = the q3 pocket, never 88-95/184-191)")
     s.add_argument("--build", action="store_true", required=True); s.add_argument("--owner", required=True)
     s.add_argument("--cpus", required=True); s.add_argument("--minutes", type=int, required=True)
     s.add_argument("--wait-pid", type=int, default=None, help="pid whose liveness keeps a refused claim's build-wait record live (default: the invoking parent)")
