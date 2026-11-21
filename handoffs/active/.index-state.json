@@ -4,7 +4,7 @@
       "blocked": 28,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 594
+      "open": 593
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2351,10 +2351,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 217,
+      "closed": 219,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 41,
+      "open": 40,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,21 +2363,21 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 260,
+      "total": 261,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 120,
+          "closed": 121,
           "gates": [],
           "guarded": 0,
           "line": 15,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 10
+          "open": 9
         },
         {
           "blocked": 1,
-          "closed": 97,
+          "closed": 98,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
