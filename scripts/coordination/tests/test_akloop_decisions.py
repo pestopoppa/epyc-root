@@ -146,3 +146,13 @@ def test_markdown_and_cli_render(world, capsys):
     assert "# Decisions needed: akown" in md and "handoffs/active/ak.md:10" in md and "(Recommended)" in md
     for k in D.KINDS:
         assert k in md
+
+
+def test_filed_futility_is_suppressed(world):
+    """AKPL-P3: a historical FUTILITY whose verdict is already filed needs no owner decision."""
+    assert "futility" in by_kind(run(world))
+    wt(f"{world['flags']}/filing-done/f-20261121.FILED", "filed\n")
+    assert "futility" not in by_kind(run(world))
+    os.remove(f"{world['flags']}/filing-done/f-20261121.FILED")
+    wj(f"{world['flags']}/filing-done/f-20261121.verdict.json", {"verdict": "inconclusive"})
+    assert "futility" not in by_kind(run(world))

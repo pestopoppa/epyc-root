@@ -6,7 +6,8 @@
            [--paths /abs/a /abs/b] [--worktree NAME] [--owner autokernel] [--trailer-file F]
 
 The build clause is mandatory (`--build none` must be explicit). The report contract always asks for
-proof of every claim and for the agent's own background tasks to be stopped before hand-back.
+proof of every claim and for the agent's own background tasks to be stopped before hand-back, and (AKPL-P5) ends
+with a CLAIMS block the owner stamps VERIFIED/UNVERIFIED with akloop/handback_verify.py (`--no-stamp` omits it).
 """
 from __future__ import annotations
 
@@ -33,6 +34,17 @@ REPORT_FIXED = [
     "rows: id + `ls /mnt/raid0/llm/tmp/compute-flags/ready/<id>.json` (or the SMOKE-QUEUED marker with age)",
     "smoke state: quoted from the LAST block of dryrun/<id>/launcher.out, never from memory",
     "background tasks: confirm every one you started is stopped",
+]
+#: AKPL-P5 hand-back stamp (akloop/handback_verify.py). The owner runs the verifier on the hand-back text and the
+#: report is only believed when it is stamped VERIFIED; the CLAIMS block is what the verifier can check.
+HANDBACK_VERIFY = "/workspace/scripts/coordination/akloop/handback_verify.py"
+STAMP_CONTRACT = [
+    "end with a `CLAIMS:` block, one machine-checkable claim per line, using exactly these forms: "
+    "`pushed <sha> to <branch>`, `branch <branch> contains <sha>`, `published <row-id>`, `smoke passed <row-id>`, "
+    "`filed <row-id>`, `ticked <BOX-ID> in <handoff.md>`, `built <lib> with <symbol>`, "
+    "`tests passed log <abs-path>` (or `tests passed cmd <command>`)",
+    f"the owner stamps the hand-back with `python3 {HANDBACK_VERIFY} --text <handback>`: only a VERIFIED stamp is "
+    "believed; UNVERIFIED (any claim failing, or no checkable claim) is treated as not done",
 ]
 
 
@@ -78,6 +90,8 @@ def render(a, box: str | None = None) -> str:
     out += [BUILD[a.build].format(d=a.build_detail or ""), ""]
     out += [hard_rules(), ""]
     rep = REPORT_FIXED + [r.strip() for r in (a.report or "").split(";") if r.strip()]
+    if getattr(a, "stamp", True):
+        rep += STAMP_CONTRACT
     out += ["Report contract (prove every claim; unverified claims are treated as false):"] + [f"- {r}" for r in rep]
     return "\n".join(out) + "\n"
 
@@ -94,6 +108,8 @@ def main(argv=None) -> int:
     ap.add_argument("--paths", nargs="*")
     ap.add_argument("--worktree")
     ap.add_argument("--owner", default="autokernel")
+    ap.add_argument("--no-stamp", dest="stamp", action="store_false",
+                    help="omit the AKPL-P5 CLAIMS block / handback_verify stamp contract (default: included)")
     a = ap.parse_args(argv)
     sys.stdout.write(render(a))
     return 0

@@ -8,6 +8,9 @@
 #   IDLE-GRANT <id> gpu|cpu <pct> owner grant open, device/quarter busy < --idle-pct for --idle-n samples
 # --gate-eval: on ENDED, also draft <rowdir>/verdict.json with the deterministic gate evaluator
 #   (runend.py <id> --gate-eval, AKPL-P1) and append `gate=<verdict>` to the event line.
+# AK chain / fold rows (akc-*, c<N>-fold-*, c<N>-composite-*), always: akloop/ak_runend.py files the gate_eval verdict
+#   (runend --gate-eval --file, zero LLM turns), classifies the RESULT (P5) routing harness failures to the pipeline,
+#   and regenerates the P4 lineage after a composite; its one line is appended as `ak=[...]` (AKPL-P3).
 # Handled events are keyed in the state file; `--ack <key>` records one so it never fires again.
 # No per-row exclusions in code. Usage:
 #   watch_rows.sh --owner autokernel [--interval 60] [--queued-max 600] [--idle-pct 5] [--idle-n 3] [--once]
@@ -24,6 +27,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 [ -n "$OWNER" ] || { echo "--owner required" >&2; exit 2; }
+AKLOOP=${WATCH_ROWS_AKLOOP:-$(cd "$(dirname "$0")/../../../../scripts/coordination/akloop" 2>/dev/null && pwd || echo /workspace/scripts/coordination/akloop)}
 STATE_DIR=${WATCH_ROWS_STATE:-/mnt/raid0/llm/tmp/row-owner-loop-state}
 mkdir -p "$STATE_DIR"
 STATE=$STATE_DIR/$OWNER.handled
@@ -88,9 +92,18 @@ scan() {
     [ -e "$FLAGS/filing-done/$id.FILED" ] && continue
     rc=$(sed -n '0,/^rc=/s/^rc=\([^ ]*\).*/\1/p' "$f")
     reason=$(sed -n '0,/reason=/s/.*reason=\([^ ]*\).*/\1/p' "$f")
-    if ! handled "ENDED $id" && [ "$GATE_EVAL" = 1 ]; then
-      gv=$(python3 "$(dirname "$0")/runend.py" "$id" --gate-eval 2>&1 | tail -n 1 | cut -c1-160 || true)
-      reason="$reason gate=[$gv]"
+    if ! handled "ENDED $id"; then
+      case "$id" in
+        akc-*|c[0-9]*-fold-*|c[0-9]*-composite-*)
+          # AKPL-P3: zero-LLM run end for AK chain / fold rows (gate_eval --file, failclass routing, lineage)
+          ak=$(python3 "$AKLOOP/ak_runend.py" "$id" --flags "$FLAGS" 2>&1 | tail -n 1 | cut -c1-240 || true)
+          reason="$reason ak=[$ak]";;
+        *)
+          if [ "$GATE_EVAL" = 1 ]; then
+            gv=$(python3 "$(dirname "$0")/runend.py" "$id" --gate-eval 2>&1 | tail -n 1 | cut -c1-160 || true)
+            reason="$reason gate=[$gv]"
+          fi;;
+      esac
     fi
     emit "ENDED $id" "rc=$rc reason=$reason" && return 0
   done

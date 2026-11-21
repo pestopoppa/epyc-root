@@ -3624,6 +3624,46 @@ def reap_pids(tracked, grace=20):
     return sorted(live), sorted(p for p, b in live.items() if _same(p, b))
 
 
+AKLOOP_DIRS = (os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "akloop"),
+               "/mnt/raid0/llm/views/epyc-root-main/scripts/coordination/akloop",
+               "/workspace/scripts/coordination/akloop")
+
+
+def is_ak_row(rid, d):
+    """An AutoKernel row: an akloop chain row (akc-*) or any row the autokernel session owns."""
+    return str(rid).startswith("akc-") or str((d or {}).get("owner") or "") == "autokernel" \
+        or str((d or {}).get("family") or "").startswith("akchain-")
+
+
+def _failclass_mod():
+    for p in [os.environ.get("ROWFLOW_AKLOOP_DIR")] + list(AKLOOP_DIRS):
+        if p and os.path.isfile(os.path.join(p, "failclass.py")):
+            if p not in sys.path:
+                sys.path.insert(0, p)
+            import failclass  # noqa: PLC0415
+            return failclass
+    return None
+
+
+def ak_failclass(flags, rid, d, rec):
+    """AKPL-P3/P5: classify an AK row's FAIL record (AK-FAILRULE-1 rules, akloop/failclass.py) and route a harness
+    failure to the pipeline inbox (notify, owner pipeline-mgmt), so it never costs the AK owner a turn. Returns the
+    classification dict or None (not an AK row / classifier unavailable). Never raises."""
+    if not is_ak_row(rid, d):
+        return None
+    try:
+        fc = _failclass_mod()
+        if fc is None:
+            return None
+        c = fc.classify_fail(dict(rec, id=rid), "\n".join(rec.get("launcher_out_tail") or []))
+        out = c.to_dict()
+        if c.side == "harness":
+            out["routed"] = bool(fc.route(c, flags, notify_mod=notify, rid=rid))
+        return out
+    except Exception as e:  # noqa: BLE001 - classification never blocks the FAIL record
+        return {"side": "unknown", "error": f"{type(e).__name__}: {e}"}
+
+
 def record_fail(flags, rid, d, reason, extra):
     n = len(fail_paths(flags, rid)) + 1
     rec = {"id": rid, "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"]) if os.path.isfile(d["launcher"]["path"]) else None,
@@ -3631,6 +3671,9 @@ def record_fail(flags, rid, d, reason, extra):
            "row_sha256": row_sha(flags, rid), "rowflow_sha256": sha256(__file__), "reason": reason, "launcher_out_tail": tail(os.path.join(dry_dir(flags, rid), "launcher.out")),
            "fix_task": f"fix dry-run failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/launcher.out; the keeper retries as soon as the launcher file changes)",
            **extra}
+    fc = ak_failclass(flags, rid, d, rec)
+    if fc is not None:
+        rec["failclass"] = fc
     fp = os.path.join(dry_dir(flags, rid), f"FAIL-{n}.json")
     atomic_json(fp, rec)
     try:  # push, not wait-to-be-noticed (2026-11-04); never blocks the FAIL record

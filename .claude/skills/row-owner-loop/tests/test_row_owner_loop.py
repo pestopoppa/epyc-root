@@ -203,6 +203,33 @@ def test_brief_forces_build_and_rules():
         pass
 
 
+def test_brief_carries_the_handback_stamp_contract():
+    class A:
+        goal = "g"; box = None; model = "sonnet"; effort = "low"; build = "none"; build_detail = None
+        report = ""; paths = None; worktree = "wt"; owner = "autokernel"; stamp = True
+    out = brief.render(A, box="")
+    assert "CLAIMS:" in out and "handback_verify.py --text" in out and "VERIFIED" in out
+    import importlib.util
+    hv = os.path.join(HERE, "..", "..", "..", "..", "scripts", "coordination", "akloop", "handback_verify.py")
+    spec = importlib.util.spec_from_file_location("hv", hv)
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    # every claim form the brief names is one the verifier extracts
+    demo = ("pushed abc1234 to main\nbranch main contains abc1234\npublished akc-x-build-20261121\n"
+            "smoke passed akc-x-build-20261121\nfiled akc-x-build-20261121\nticked AKPL-P3 in churn-pipeline.md\n"
+            "built libggml-cpu.so with GGML_IQK\ntests passed log /tmp/x.log")
+    assert {c["type"] for c in m.extract_claims(demo)} == {"pushed", "branch_contains", "published", "smoke_pass",
+                                                          "filed", "ticked", "built", "tests"}
+    A.stamp = False
+    assert "CLAIMS:" not in brief.render(A, box="")
+
+
+def test_watch_rows_ak_rows_go_through_ak_runend():
+    t = open(os.path.join(HERE, "..", "scripts", "watch_rows.sh")).read()
+    assert 'akc-*|c[0-9]*-fold-*|c[0-9]*-composite-*)' in t and "ak_runend.py" in t
+    ak = os.path.join(HERE, "..", "..", "..", "..", "scripts", "coordination", "akloop", "ak_runend.py")
+    assert os.path.isfile(ak)
+
+
 def test_watch_rows_syntax():
     sh = os.path.join(HERE, "..", "scripts", "watch_rows.sh")
     assert subprocess.run(["bash", "-n", sh]).returncode == 0

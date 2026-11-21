@@ -13,7 +13,8 @@ Signals (every event carries `evidence`: file:line or record ids, never prose al
     hold-hit                   holds.yaml hold that targets the owner's sessions/handoffs/boxes (holds.yaml:line + boxes)
     refusal-cap                a row's lineage at 2 of MAX_FAILS=3 arming/launch refusals    (dryrun/<id>/FAIL-N.json)
     row-parked                 rowflow state `parked`, or a lineage already at MAX_FAILS     (dryrun/<id>/FAIL-N.json)
-    futility                   an ended row whose RESULT verdict is FUTILITY* with no successor row (RESULT.json)
+    futility                   an ended row whose RESULT verdict is FUTILITY* with no successor row and no filed verdict
+                               (RESULT.json; filing-done/<id>.FILED|.verdict.json suppresses it)
     supersede-dead-end         a row superseded-by a successor that never existed / was withdrawn (grants/<id>.ended)
     smoke-fail-repeat          >=2 dry-run (smoke) FAIL records in one lineage, no PASS since   (dryrun/<id>/FAIL-N.json)
 
@@ -161,6 +162,11 @@ class Ctx:
         except OSError:
             return None
 
+    def filed(self, rid):
+        """True when the row's verdict is already filed (filing-done/<id>.FILED or .verdict.json)."""
+        fd = os.path.join(self.flags, "filing-done")
+        return any(os.path.exists(os.path.join(fd, rid + ext)) for ext in (".FILED", ".verdict.json"))
+
     def fails(self, rid):
         out = []
         for p in sorted(glob.glob(os.path.join(self.flags, "dryrun", rid, "FAIL-*.json"))):
@@ -303,6 +309,8 @@ def c_futility(c):
         p, d = _result(c, man)
         verdict = str((d or {}).get("verdict") or "")
         if not verdict.upper().startswith("FUTILITY"):
+            continue
+        if c.filed(rid):   # AKPL-P3: historical futility already filed (runend / gate_eval) needs no decision
             continue
         succ = [o for o, m in mans.items() if o != rid and (rid in ([m["supersedes"]] if isinstance(m.get("supersedes"), str) else (m.get("supersedes") or []))
                                                               or (stem(o) == stem(rid) and str(m.get("published_at") or "") > str(man.get("published_at") or "") and not m["_withdrawn"]))]

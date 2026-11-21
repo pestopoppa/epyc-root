@@ -198,13 +198,48 @@ def _fail_dups(d):
     return str(d).startswith("FAIL") and "dup_ids" in str(d)
 
 
+def _candidate_klass(text):
+    t = str(text).upper()
+    return ("compile" if "COMPILE" in t else "correctness_gate" if ("CORRECT" in t or "ORACLE" in t or "KLD" in t)
+            else "noise" if "NOISE" in t else "timing_loss")
+
+
+def _harness_klass(text):
+    t = str(text).upper()
+    for frag, klass in (("RESIDENCY", "residency_unproven"), ("BUILD", "build_missing"), ("WINDOW", "window_or_stop"),
+                        ("STOP", "window_or_stop"), ("CONTENTION", "instrument_noise"), ("INSTRUMENT", "instrument_noise"),
+                        ("NOISE", "instrument_noise"), ("GRANT", "admission_refused"), ("DRIVER", "job_script_error"),
+                        ("INPUT", "result_contract"), ("SOURCE", "result_contract"), ("STALE", "result_contract"),
+                        ("PRODUCTION", "admission_refused")):
+        if frag in t:
+            return klass
+    return "job_script_error"
+
+
+def _polar(res):
+    """AKPL-P1/P3 polar row convention (row_scaffold / akloop stage bodies), read first like gate_eval does:
+    FUTILITY_HARNESS_* -> harness, FUTILITY_CANDIDATE_* -> candidate, else `polar` PASS -> ok / FAIL -> candidate."""
+    v = str(res.get("verdict") or "").strip()
+    tok = re.split(r"[\s:;,(]", v, maxsplit=1)[0].upper()
+    if tok.startswith("FUTILITY_HARNESS"):
+        return _c("harness", _harness_klass(tok), "result:FUTILITY_HARNESS*", v)
+    if tok.startswith("FUTILITY_CANDIDATE"):
+        return _c("candidate", _candidate_klass(tok), "result:FUTILITY_CANDIDATE*", v)
+    polar = str(res.get("polar") or "").strip().upper()
+    if polar == "PASS":
+        return _c("ok", "pass", "result:polar=PASS", v)
+    if polar == "FAIL":
+        return _c("candidate", _candidate_klass(f"{tok} {res.get('stage') or ''}"), "result:polar=FAIL", v)
+    return None
+
+
 def classify_result(res, launcher_text: str | None = None) -> Classification:
     if not isinstance(res, dict):
         c = _c("unknown", "unparseable", "result:not-an-object")
         return _resolve_unknown(c, {"result": str(res)[:600]})
     row = str(res.get("row") or res.get("id") or "")
-    c = None
-    for key in ("verdict", "status"):
+    c = _polar(res)
+    for key in (() if c else ("verdict", "status")):
         v = res.get(key)
         if isinstance(v, dict):
             v = v.get("status") or v.get("verdict")
