@@ -293,6 +293,28 @@ class TestSupersede(Base):
         self.assertEqual(rep["withdrawn"], ["w-r1"])
         self.assertIn("WITHDRAWN", self.read_filed("w-r1"))
 
+    def test_owner_withdrawal_filed_not_attributed_to_sweep_or_publisher(self):
+        # ak-dtree0-q8packed-...-20261120 (owner-withdrawn, rebuild) filed during an unrelated publish of ak-dtree0-q8v6-...-20261121
+        a, b = "ak-dtree0-q8packed-gate-gpu-20261120", "ak-dtree0-q8v6-gate-gpu-20261121"
+        self.row(a, where=".withdrawn", rc=75, published="2026-11-21T00:40:29Z")
+        Path(self.flags, "grants", a + ".ended").write_text("rc=75 reason=rebuild:_v3_MMVQ;_republish_after_build at=2026-11-21T00:41:50Z\n")
+        self.row(b, ended=False, published="2026-11-21T00:42:27Z")   # no `supersedes`
+        lines = []
+        rep = filing.supersede_on_publish(self.flags, b, log=lines.append)
+        v = self.verdict(a)
+        self.assertEqual(v["row_verdict"], "WITHDRAWN"); self.assertIsNone(v["superseded_by"])
+        self.assertEqual(v["filed_by"], "owner-withdrawal")
+        self.assertIn("WITHDRAWN-FILED reason=rebuild:_v3_MMVQ;_republish_after_build", v["reason"])
+        self.assertFalse(any("by=filing.supersede" in l for l in lines), lines)
+        self.assertEqual(rep["superseded"], []); self.assertNotIn(a, rep["successor"])
+
+    def test_no_supersedes_no_withdrawal_of_live_unrelated_row(self):
+        a, b = "ak-dtree0-q8packed-gate-gpu-20261120", "ak-dtree0-q8v6-gate-gpu-20261121"
+        self.row(a, ended=True, rc=75, published="2026-11-21T00:40:29Z")   # ended, unfiled, NOT withdrawn
+        self.row(b, ended=False, published="2026-11-21T00:42:27Z")
+        rep = filing.supersede_on_publish(self.flags, b, log=lambda *_: None)
+        self.assertFalse(self.filed(a)); self.assertEqual(rep["superseded"] + rep["withdrawn"], [])
+
     def test_supersedes_field_with_free_text_and_parallel_arms(self):
         self.row("arm-r3-pca", published="2026-11-06T01:00:00Z"); self.row("arm-r3-dense", published="2026-11-06T01:00:00Z")
         self.row("arm-r4-pca", ended=False, supersedes="arm-r3-pca (widened to 2 quarters)")

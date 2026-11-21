@@ -525,7 +525,10 @@ def supersede_lineage(flags, new_id=None, *, by="filing.supersede", reclaim=True
                                   reclaim=reclaim, no_reclaim_globs=no_reclaim_globs, dry_run=dry_run, log=log)
                 (rep["superseded"] if r == "FILED" else rep["noop" if r == "NOOP" else "skipped"]).append(rid)
                 continue
-            r = file_terminal(flags, rid, "WITHDRAWN", by=by, note="manifest in ready/.withdrawn", reclaim=reclaim,
+            # An owner's withdrawal that already exists. The sweep only FILES it: never label it with the sweep's own name
+            # (`filing.supersede`) or the publishing row's, which read as "this publish withdrew it" (3 false alarms, 2026-11-21).
+            om = re.search(r"reason=(\S+)", reason or ""); orig = om.group(1) if om else "unrecorded"
+            r = file_terminal(flags, rid, "WITHDRAWN", by="owner-withdrawal", note=f"WITHDRAWN-FILED reason={orig} (withdrawn earlier by its owner; filed by the {by} sweep)", reclaim=reclaim,
                               no_reclaim_globs=no_reclaim_globs, dry_run=dry_run, log=log)
             (rep["withdrawn"] if r == "FILED" else rep["noop" if r == "NOOP" else "skipped"]).append(rid)
             continue
