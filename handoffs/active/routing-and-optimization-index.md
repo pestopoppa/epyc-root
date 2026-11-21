@@ -14,7 +14,7 @@
 | RTG-08 | context folding progressive | [context-and-token-economy.md](context-and-token-economy.md) | Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone | — |
 | RTG-09 | decision aware routing | [routing-program.md](routing-program.md) | DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1 | — |
 | RTG-22 | non inference backlog | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) | TOOLPERM+AGENTFILE-INJECT after prod relaunch+matrix refresh; CTX-DEPTH after v11; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor | — |
-| RTG-34 | session bus thin dispatcher | [coordination-and-churn-pipeline.md](coordination-and-churn-pipeline.md) | Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1 | — |
+| RTG-34 | session bus thin dispatcher | [coordination-and-churn-pipeline.md](coordination-and-churn-pipeline.md) | FM-4 Phase C: collect 30 prospective dispatch_with_gate records per arm plus one native canary; futility check 2026-12-03; then close and move to completed/ | — |
 | RTG-100 | churn pipeline | [churn-pipeline.md](churn-pipeline.md) | Compute paused for AK; resume TASKFLOW-STAGE1-CANARY at r8 calibration (CPU q1q2), then packet fixes → 35B saturation → 27B arm → brief backfill | RTG-34 |
 | RTG-36 | stack change governance pipeline | [stack-lifecycle-program.md](stack-lifecycle-program.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER | — |
 | RTG-58 | kv prefix fork and paged attention | [kv-cache-program.md](kv-cache-program.md) | Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort | EVL-14, INF-65 |
