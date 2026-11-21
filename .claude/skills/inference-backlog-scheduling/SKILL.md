@@ -83,6 +83,7 @@ Threads default from affinity (`job_fence.py` sets `OMP_NUM_THREADS`, `GGML_N_TH
   gets ONE `[warning]` to its owner (`IDLE-HELD-WARN`), then one per 15 min; GPU grants are judged by their own KFD
   client / device busy, never CPU %. rowflow2 ends a wholly idle grant (every core < 2 %, no own KFD pid) at 900 s with
   `rc=75`, re-queues once, then terminal (design decision 9).
+- **Quiet-guard quarters are declared (2026-11-21).** A row that books quarters only as an idle contention guard sets spec `quiet_guard_regions: ["q0","q2"]` (subset of its booked regions); the keeper skips them in UNDERUSED/UNDERUSED-SHRINK (logs `QUIET-GUARD <id> regions=...`) and queue_status shows `GUARD`, not `IDLE-HELD`. See `compute-fillers.md` > Publishing discipline.
 - **Containers die with the row.** `filler_run15` labels containers the job starts (`epyc.filler.row=<id>`, `docker`
   shim) and stops + removes exactly those at STOP / hard end / exit (operator 2026-11-06). Containers carry
   `--cpuset-cpus "$FILLER_CPUS"`.

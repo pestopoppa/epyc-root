@@ -69,7 +69,7 @@ SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction", "handoff_task_sha",
              "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by",
-             "resumable", "max_window_s", "expects_created")
+             "resumable", "max_window_s", "expects_created", "quiet_guard_regions")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -278,6 +278,7 @@ def lint(spec):
     # keep is not linted (operator 2026-11-03, session review 3.1): an empty keep = every input (older than the first job
     # start) + the result; the keeper's reaper protects both and keep globs only add to them.
     rf.check_busy_fraction(spec)   # before the smoke: a bad value costs no compute
+    rf.check_quiet_guard(spec)     # likewise: guard quarters must be a subset of the booked regions
     if not spec.get("kind"):
         spec["kind"] = "compute"
         notes.append("kind=compute")

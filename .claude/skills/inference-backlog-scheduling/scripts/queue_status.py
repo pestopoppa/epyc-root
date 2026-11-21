@@ -198,6 +198,8 @@ def classify(flags, owner=None, now=None):
             if not os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
                 unfiled += 1
         elif state == "running":
+            if isinstance(m.get("quiet_guard_regions"), list):
+                rec["quiet_guard"] = [t for t in m["quiet_guard_regions"] if isinstance(t, str)]
             out["RUNNING"].append(rec)
         elif rf.runnable(st):
             rec["gpu_wait"] = (f"waiting on GPU ({', '.join(gpu_busy)})" if gpu_busy else None) if _wants_gpu(m) else None
@@ -284,6 +286,10 @@ def main(argv=None) -> int:
                 toks.append("gpu-quiet")
             x["util"] = hu.regions_pct(util, toks)
             idle = hu.idle_regions(util, toks)
+            guard = [t for t in (x.get("quiet_guard") or []) if t in toks]
+            if guard:
+                x["guard"] = guard   # idle on purpose (pre-registered contention guard): GUARD, never IDLE-HELD
+            idle = [t for t in idle if t not in guard]
             if idle:
                 x["idle_held"] = idle
     if a.json:
@@ -306,6 +312,7 @@ def main(argv=None) -> int:
     for x in sorted(r["RUNNING"], key=lambda x: x["id"]):
         print(f"  {ow(x):<18} {x['id']:<44} {x.get('regions','?')} until {x.get('end','?')} ({x.get('ends_in_min','?')} min left)"
               + (" measured " + " ".join(f"{k}={'?' if v is None else f'{v:.0f}%'}" for k, v in x["util"].items()) if x.get("util") else "")
+              + (f" GUARD {','.join(x['guard'])}" if x.get("guard") else "")
               + (f" IDLE-HELD {','.join(x['idle_held'])}" if x.get("idle_held") else ""))
     print(f"\nGRANTABLE/QUEUED ({len(r['GRANTABLE'])})  (dry run PASSED, waiting for a keeper placement)")
     for x in sorted(r["GRANTABLE"], key=lambda x: (x.get("rank") is None, x.get("rank") or 0, x["id"])):

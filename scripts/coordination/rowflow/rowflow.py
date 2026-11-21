@@ -8,6 +8,8 @@ OWNER CONTRACT (two things): the launcher script and a small spec. `publish_row.
                                result_path (what the filer reads), decision_rule, estimate_s, handoff_task
                      optional: result_format (jsonl|json|csv|tsv|text-lines|markdown-table|custom:<cmd>; default by
                                extension), regions (default gpu -> mi210_0,184-191; cpu -> any-cpu-quarter),
+                               quiet_guard_regions (list of booked quarters kept idle on purpose, e.g. ["q0","q2"]: the keeper's
+                               UNDERUSED skips them, queue_status shows GUARD),
                                busy_fraction (0..1: share of its claimed cpus the job keeps busy; unset = 1.0; below
                                0.5 the row is never promoted to a host/quiet-host drain, only placed on free regions),
                                ram_gib (48), priority_rank (100), scratch_root (launcher's job dir), keep (globs that
@@ -929,6 +931,9 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         row["admission_class"] = spec["admission_class"]
     if spec.get("busy_fraction") is not None:
         row["busy_fraction"] = float(spec["busy_fraction"])
+    qg = check_quiet_guard(spec, regions)
+    if qg:
+        row["quiet_guard_regions"] = qg
     if snap:
         row["snapshot"] = snap
     elif isinstance(spec.get("snapshot"), dict):  # a republish from ready/<id>.json (publish_row.py --repair) keeps its snapshot record
@@ -1192,7 +1197,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
               "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by",
-              "resumable", "max_window_s", "whole_host_need"):
+              "resumable", "max_window_s", "whole_host_need", "quiet_guard_regions"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -2213,6 +2218,28 @@ def check_busy_fraction(spec):
     need(bf is None or (isinstance(bf, (int, float)) and not isinstance(bf, bool) and 0 <= bf <= 1),
          f"busy_fraction {bf!r} must be a number 0..1 (the share of its claimed cpus the job keeps busy, e.g. 0.9); "
          f"omit it when unknown (= 1.0)")
+
+
+def check_quiet_guard(spec, regions=None):
+    """Publish gate: optional spec quiet_guard_regions = a list of quarters the row books ON PURPOSE and keeps idle (a
+    pre-registered contention guard, e.g. a /proc/stat sampler that rejects any cell where they are busy). Must be a
+    non-empty list of qN names, a subset of the quarters the row's regions book. Returns the sorted list ([] when unset)."""
+    qg = spec.get("quiet_guard_regions")
+    if qg is None:
+        return []
+    need(isinstance(qg, list) and qg and all(isinstance(x, str) and re.fullmatch(r"q[0-3]", x) for x in qg),
+         f"quiet_guard_regions {qg!r} must be a non-empty list of quarters, e.g. [\"q0\", \"q2\"]")
+    booked = quarters_of(regions if regions is not None else spec.get("regions") or "")
+    extra = sorted(set(qg) - booked)
+    need(not extra, f"quiet_guard_regions {sorted(set(qg))} must be a subset of the row's booked regions "
+                    f"{sorted(booked) or '(none: declare concrete regions, e.g. q0,q1,q2)'}; not booked: {extra}")
+    return sorted(set(qg))
+
+
+def quiet_guard_of(flags, rid):
+    """The guard quarters a published row declares ([] = none). Read-only."""
+    q = (load_json(ready_path(flags, rid)) or {}).get("quiet_guard_regions")
+    return [x for x in q if isinstance(x, str)] if isinstance(q, list) else []
 
 
 # the dry-run env a launcher must carry across a privilege wrapper. The engine derives
@@ -4675,9 +4702,20 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
     out = []
     # a grant holding the GPU token is judged by KFD/VRAM (idle_held + gpu_grant_busy), never by CPU %
     gpu_rids = {rid for r, rid in holders.items() if r == GPU}
+    guards, guard_lines = {}, {}
+    for r, rid in holders.items():
+        if r not in QUARTERS or rid in gpu_rids:
+            continue
+        if rid not in guards:
+            guards[rid] = quiet_guard_of(flags, rid)
+        if r in guards[rid]:
+            guard_lines.setdefault(rid, []).append(r)
+    log_transition(flags, "quiet-guard", {rid: f"QUIET-GUARD {rid} regions={','.join(sorted(rs))}" for rid, rs in guard_lines.items()}, log)
     for r, rid in holders.items():
         if rid in gpu_rids:
             continue
+        if r in guards.get(rid, ()):
+            continue   # a pre-registered quiet guard: idle on purpose, never UNDERUSED, never shrunk
         span = [s for s in hist["samples"] if s.get("holders", {}).get(r) == rid]
         if not span or now - span[0]["ts"] < UNDERUSED_S:
             continue
