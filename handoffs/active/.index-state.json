@@ -4,7 +4,7 @@
       "blocked": 28,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 596
+      "open": 598
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -45,7 +45,7 @@
       "closed": 129,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 56,
+      "open": 58,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 186,
+      "total": 188,
       "tracks": [
         {
           "blocked": 0,
@@ -95,7 +95,7 @@
           "line": 810,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 48
+          "open": 50
         }
       ]
     },

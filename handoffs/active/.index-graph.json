@@ -465,7 +465,7 @@
       "from": "INF-82",
       "kind": "ref",
       "to": "INF-70",
-      "weight": 10
+      "weight": 12
     },
     {
       "from": "INF-82",
@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-21T03:47:40Z",
+  "generated_at": "2026-11-21T03:57:18Z",
   "nodes": [
     {
       "age_days": 11,
@@ -2300,14 +2300,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 129,
-      "dispatchable": 56,
+      "dispatchable": 58,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-21",
       "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
-      "open": 57,
+      "open": 59,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2357,7 +2357,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 48,
+          "dispatchable": 50,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2368,7 +2368,7 @@
           ],
           "line": 810,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 49,
+          "open": 51,
           "readiness": "blocked"
         }
       ]
