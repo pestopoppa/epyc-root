@@ -854,6 +854,26 @@ def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STA
     return 0
 
 
+def reclaim_only(dry_run: bool = False, state_dir: Path = STATE_DIR) -> int:
+    """Standalone reclaim_under_floor for disk_janitor.sh (no crontab in the container): same lock as tick, never raises."""
+    state_dir.mkdir(parents=True, exist_ok=True)
+    lock = open(state_dir / ".tick.lock", "w")
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        print("another hygiene tick is running; exiting")
+        return 0
+    t = Tick(dry_run=dry_run, state_dir=state_dir)
+    try:
+        free = shutil.disk_usage(DISK_PATH).free
+        t.state["disk_free_bytes"] = free
+        done = reclaim_under_floor(t, free=free)
+        print(f"reclaim: free {fmt_gb(free)} steps={len(done)}" if done else f"reclaim: free {fmt_gb(free)} not under floor or deferred")
+    finally:
+        t.flush()
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="periodic disk-hygiene tick (see module docstring)")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -861,6 +881,8 @@ def main(argv: list[str] | None = None) -> int:
     tp.add_argument("--force-heavy", action="store_true", help="run the heavy phase now, ignoring the gate")
     tp.add_argument("--dry-run", action="store_true", help="print alarms; never relaunch")
     sub.add_parser("status")
+    rp = sub.add_parser("reclaim", help="run only the under-floor reclaim (disk_janitor.sh calls this)")
+    rp.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
     if a.cmd == "status":
         try:
@@ -868,6 +890,8 @@ def main(argv: list[str] | None = None) -> int:
         except OSError:
             print("{}")
         return 0
+    if a.cmd == "reclaim":
+        return reclaim_only(dry_run=a.dry_run)
     return tick(force_heavy=a.force_heavy, dry_run=a.dry_run)
 
 

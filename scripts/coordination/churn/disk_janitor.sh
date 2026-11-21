@@ -38,6 +38,11 @@
 #                   COMGR   comgr_cache_reaper.py --apply   /tmp/.<hex>-00000000.so ROCm comgr JIT cache files older than 3 d that
 #                                                        no process has mapped/open (regenerable; /tmp is outside the trash FS, so
 #                                                        direct unlink; operator 2026-11-07).
+#   every pass    GUARDS (operator 2026-11-21 disk guards; the container has no crontab): scripts/safety/trash_reap_tick.sh (24h trash
+#                 sweep, flock'd, cheap) on EVERY pass, and `host_hygiene_tick.py reclaim` (worktree reaper + build TTL + trash reap)
+#                 when free space on /mnt/raid0 is under JANITOR_RECLAIM_FLOOR_GIB (250). Both fail-soft: an error is logged
+#                 (GUARD-TRASH / GUARD-RECLAIM rc=N), never propagated, a missing tool is a SKIP. Tools come from $TOOLS, so
+#                 the checkout behind it must be current. Dry mode runs the reclaim with --dry-run and skips the trash tick.
 #   every pass    one FREE line (GiB available on /mnt/raid0) so disk-janitor.log carries the free-disk trend.
 #
 # This script deletes nothing itself: deletes happen only inside the keeper's guarded reaper (guarded_rm.sh -> its own trash),
@@ -67,6 +72,7 @@ LIFECYCLE=${JANITOR_LIFECYCLE:-1}
 TOOLS=${JANITOR_TOOLS:-/workspace/scripts}          # the repo's scripts/ (same tree trash-sweep.sh comes from)
 LIFECYCLE_STAMP=${JANITOR_LIFECYCLE_STAMP:-$F/ws58-keeper-state/lifecycle-last}
 WT_MAX=${JANITOR_WT_MAX:-20}; KGC_MAX=${JANITOR_KGC_MAX:-10}; KGC_MIN_AGE_D=${JANITOR_KGC_MIN_AGE_D:-7}
+RECLAIM_FLOOR_GIB=${JANITOR_RECLAIM_FLOOR_GIB:-250}
 LEASE_TTL_D=${JANITOR_LEASE_TTL_D:-14}
 CODEX_KEEP_DAYS=${JANITOR_CODEX_KEEP_DAYS:-7}; COMGR_MIN_AGE_D=${JANITOR_COMGR_MIN_AGE_D:-3}
 REAP_DISK_FLOOR_GIB=${JANITOR_REAP_DISK_FLOOR_GIB:-150}
@@ -197,8 +203,25 @@ lifecycle() {  # lifecycle [force]: the daily pass (worktree TTL reaper, kernel 
   log "LIFECYCLE end"
 }
 
+guards() {  # disk guards: trash_reap_tick every pass; hygiene reclaim under RECLAIM_FLOOR_GIB. Fail-soft: always returns 0.
+  local tick=$TOOLS/safety/trash_reap_tick.sh hyg=$TOOLS/system/host_hygiene_tick.py out rc avail
+  if [ "$MODE" = dry ]; then log "GUARD-TRASH dry-run: would run $tick"
+  elif [ -f "$tick" ]; then
+    rc=0; out=$("${SCAN_NICE[@]}" bash "$tick" 2>&1) || rc=$?
+    log "GUARD-TRASH rc=$rc ${out:+last: $(printf '%s\n' "$out" | tail -1 | cut -c1-160)}"
+  else log "GUARD-TRASH-SKIP tool missing: $tick"; fi
+  avail=$(df -B1G --output=avail "$DISK" 2>/dev/null | tail -1 | tr -d ' ' || true)
+  case "${avail:-}" in ''|*[!0-9]*) log "GUARD-RECLAIM-SKIP free space unreadable"; return 0;; esac
+  [ "$avail" -lt "$RECLAIM_FLOOR_GIB" ] || { log "GUARD-RECLAIM-SKIP ${avail}GiB free >= floor ${RECLAIM_FLOOR_GIB}GiB"; return 0; }
+  [ -f "$hyg" ] || { log "GUARD-RECLAIM-SKIP tool missing: $hyg"; return 0; }
+  local dry=(); [ "$MODE" = dry ] && dry=(--dry-run)
+  rc=0; out=$("${SCAN_NICE[@]}" python3 "$hyg" reclaim "${dry[@]}" 2>&1) || rc=$?
+  log "GUARD-RECLAIM rc=$rc (${avail}GiB free < ${RECLAIM_FLOOR_GIB}GiB) ${out:+last: $(printf '%s\n' "$out" | tail -1 | cut -c1-200)}"
+  return 0
+}
+
 if [ "$MODE" = check ]; then if scan_deferred "${2:-scan-check}"; then echo DEFER; else echo RUN; fi; exit 0; fi
-if [ "$MODE" != loop ]; then free_line; reap force; sweep; budget; autolink; lifecycle force; free_line; exit 0; fi
+if [ "$MODE" != loop ]; then free_line; reap force; sweep; budget; autolink; guards || true; lifecycle force; free_line; exit 0; fi
 
 # loop: one instance (pidfile pid alive with our argv, and not us -> exit)
 old=$(tr -d ' \n' < "$PIDF" 2>/dev/null || true)
@@ -210,7 +233,7 @@ log "disk_janitor start pid=$$ (reap+budget every ${REAP_EVERY_S}s via $KEEPER -
 last_reap=0; last_sweep=0
 while :; do
   now=$(date +%s)
-  if [ $(( now - last_reap )) -ge "$REAP_EVERY_S" ]; then free_line; reap || log "REAP error rc=$?"; budget || log "BUDGET error rc=$?"; autolink || log "LINK error rc=$?"; last_reap=$now; free_line; fi
+  if [ $(( now - last_reap )) -ge "$REAP_EVERY_S" ]; then free_line; reap || log "REAP error rc=$?"; budget || log "BUDGET error rc=$?"; autolink || log "LINK error rc=$?"; guards || log "GUARD error rc=$?"; last_reap=$now; free_line; fi
   if [ $(( now - last_sweep )) -ge "$SWEEP_EVERY_S" ]; then sweep || log "SWEEP error rc=$?"; last_sweep=$now; fi
   lifecycle || log "LIFECYCLE error rc=$?"
   sleep "$TICK_S"
