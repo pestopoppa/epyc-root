@@ -143,3 +143,8 @@ def test_candidate_from_ledger():
     assert c["base_sha"].startswith("4bc50bd") and c["predicted_effect"] == "+13.8%" and c["next_c"] == 18
     with pytest.raises(ValueError):
         C.candidate_from_ledger(ledger, "NOPE")
+
+
+if __name__ == "__main__":
+    raise SystemExit("REFUSING: pytest-fixture suite; run: "
+                     "python -m pytest scripts/coordination/tests/test_akloop_chain.py -q")
