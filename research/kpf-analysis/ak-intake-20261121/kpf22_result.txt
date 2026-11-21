@@ -1,0 +1,4 @@
+in-flight-at-start | n | pre_dispatch wait/wall % | kv-pool-admission n | kv queue/wall %
+0 214 57.4 11 0.03
+1 1 84.0 1 83.73
+kv records 12 total queue ms 48951.3 records queued >1s 1 their share of queue time % 99.8 long_prefill among them 1

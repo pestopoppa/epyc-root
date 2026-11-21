@@ -1,0 +1,61 @@
+{
+ "requests": 1708,
+ "prefill_wall_s": 30763.7,
+ "extra_ubatches_per_req": 1.616,
+ "extra_iterations_per_req": 1.616,
+ "rho_global_ms_per_tok": 1.649,
+ "by_kind": {
+  "user-start/junction": {
+   "cuts_per_req": 0.233,
+   "frac_reqs": 0.189,
+   "extra_wall_s": 1604.9,
+   "share_pct": 5.22
+  },
+  "near-end-other": {
+   "cuts_per_req": 0.374,
+   "frac_reqs": 0.365,
+   "extra_wall_s": 669.5,
+   "share_pct": 2.18
+  },
+  "n-(4+n_ubatch)": {
+   "cuts_per_req": 0.396,
+   "frac_reqs": 0.396,
+   "extra_wall_s": 786.5,
+   "share_pct": 2.56
+  },
+  "n-4": {
+   "cuts_per_req": 0.997,
+   "frac_reqs": 0.997,
+   "extra_wall_s": 1641.8,
+   "share_pct": 5.34
+  }
+ },
+ "sum_share_pct": 15.3,
+ "ckpt_create_wall_s": 198.2,
+ "ckpt_create_share_pct": 0.64,
+ "ckpts_per_req": 1.751,
+ "short_req_le200_pct": 28.2,
+ "by_size": {
+  "n_proc<=200": {
+   "requests": 482,
+   "prefill_wall_s": 220.4,
+   "sum_share_pct": 77.02,
+   "extra_ub_per_req": 1.299,
+   "ckpt_share_pct": 19.2
+  },
+  "200<n_proc<=2048": {
+   "requests": 550,
+   "prefill_wall_s": 1647.2,
+   "sum_share_pct": 50.94,
+   "extra_ub_per_req": 1.418,
+   "ckpt_share_pct": 2.74
+  },
+  "n_proc>2048": {
+   "requests": 676,
+   "prefill_wall_s": 28896.1,
+   "sum_share_pct": 12.78,
+   "extra_ub_per_req": 2.003,
+   "ckpt_share_pct": 0.38
+  }
+ }
+}

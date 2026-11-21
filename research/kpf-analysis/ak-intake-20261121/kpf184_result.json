@@ -1,0 +1,94 @@
+{
+ "requests": 1716,
+ "with_overlap": 1464,
+ "zero_overlap": 252,
+ "hist": {
+  "0": 252,
+  "<=64": 11,
+  "<=256": 5,
+  "<=512": 5,
+  "<=8192": 1,
+  "<=16384": 14,
+  "<=32768": 102,
+  "<=65536": 713,
+  "<=131072": 561,
+  "<=262144": 52
+ },
+ "d_quantiles_pos": [
+  33508,
+  41356,
+  47869,
+  54374,
+  60245,
+  66949,
+  74034,
+  83475,
+  98241
+ ],
+ "modal_512bin": {
+  "start": 0,
+  "mass_pct": 1.4
+ },
+ "policies": {
+  "M=1": {
+   "mean_recompute_tok": 26014.5,
+   "reduction_vs_none_pct": 52.4,
+   "ckpts": [
+    45221
+   ]
+  },
+  "M=2": {
+   "mean_recompute_tok": 17215.6,
+   "reduction_vs_none_pct": 68.5,
+   "ckpts": [
+    35230,
+    65354
+   ]
+  },
+  "M=4": {
+   "mean_recompute_tok": 10546.4,
+   "reduction_vs_none_pct": 80.7,
+   "ckpts": [
+    32021,
+    48202,
+    65354,
+    87320
+   ]
+  },
+  "M=8": {
+   "mean_recompute_tok": 5840.3,
+   "reduction_vs_none_pct": 89.3,
+   "ckpts": [
+    24929,
+    35230,
+    45221,
+    54264,
+    65354,
+    76099,
+    91620,
+    126722
+   ]
+  },
+  "no_checkpoint(restart from 0)": {
+   "mean_recompute_tok": 54659.8
+  },
+  "dense_every_2048": {
+   "mean_recompute_tok": 865.2,
+   "ckpts_per_slot_at_max_depth": 88,
+   "mean_ckpts_needed": 26.27
+  },
+  "dense_every_8192": {
+   "mean_recompute_tok": 3392.9,
+   "ckpts_per_slot_at_max_depth": 22,
+   "mean_ckpts_needed": 6.26
+  },
+  "single_at_modal_depth": {
+   "at": 256,
+   "mean_recompute_tok": 54443.8
+  }
+ },
+ "actual_server_recompute_beyond_restore": {
+  "mean_tok": 318.9,
+  "frac_requests": 0.334
+ }
+}
