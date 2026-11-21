@@ -696,10 +696,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-20T23:49:23Z",
+  "generated_at": "2026-11-21T00:31:55Z",
   "nodes": [
     {
-      "age_days": 10,
+      "age_days": 11,
       "blocked": 1,
       "blocked_by": [],
       "closed": 132,
@@ -1041,7 +1041,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
@@ -1129,7 +1129,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 139,
@@ -1205,7 +1205,7 @@
       ]
     },
     {
-      "age_days": 17,
+      "age_days": 18,
       "blocked": 0,
       "blocked_by": [],
       "closed": 215,
@@ -1327,7 +1327,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 485,
@@ -1370,7 +1370,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 806,
@@ -1534,7 +1534,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 239,
@@ -1657,15 +1657,15 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 296,
-      "dispatchable": 7,
+      "closed": 297,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": "2026-11-20",
+      "last_advanced": "2026-11-21",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 7,
+      "open": 6,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1729,21 +1729,21 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2267,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 3,
+          "open": 2,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2605,
+          "line": 2606,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1752,7 +1752,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3041,
+          "line": 3042,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1761,7 +1761,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3136,
+          "line": 3137,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1772,15 +1772,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 203,
-      "dispatchable": 43,
+      "closed": 205,
+      "dispatchable": 41,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
-      "last_advanced": "2026-11-20",
+      "last_advanced": "2026-11-21",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 45,
+      "open": 43,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1823,20 +1823,20 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 33,
+          "dispatchable": 31,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 845,
+          "line": 846,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 34,
+          "open": 32,
           "readiness": "blocked"
         }
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 118,
@@ -1917,7 +1917,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 238,
@@ -2046,7 +2046,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 153,
@@ -2137,7 +2137,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2178,7 +2178,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 19,
       "blocked_by": [],
       "closed": 121,
@@ -2228,7 +2228,7 @@
       ]
     },
     {
-      "age_days": 13,
+      "age_days": 14,
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
@@ -2287,7 +2287,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [
         "INF-06#autokernel-rebuild-program",
@@ -2374,7 +2374,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2400,7 +2400,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": 13,
+      "age_days": 14,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2426,7 +2426,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 149,
@@ -2523,7 +2523,7 @@
       ]
     },
     {
-      "age_days": 17,
+      "age_days": 18,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2623,7 +2623,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 296,
@@ -2852,7 +2852,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [],
       "closed": 205,
@@ -2965,7 +2965,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 183,
@@ -3109,7 +3109,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3135,7 +3135,7 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 311,
@@ -3230,7 +3230,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 357,
@@ -3379,7 +3379,7 @@
       ]
     },
     {
-      "age_days": 15,
+      "age_days": 16,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3495,7 +3495,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 6,
       "blocked_by": [],
       "closed": 438,
@@ -3570,7 +3570,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 267,
@@ -3725,7 +3725,7 @@
       ]
     },
     {
-      "age_days": 48,
+      "age_days": 49,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,

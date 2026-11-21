@@ -4,7 +4,7 @@
       "blocked": 29,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 601
+      "open": 598
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2131,10 +2131,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 296,
+      "closed": 297,
       "guarded": 0,
-      "last_advanced": "2026-11-20",
-      "open": 7,
+      "last_advanced": "2026-11-21",
+      "open": 6,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2172,7 +2172,7 @@
         },
         {
           "blocked": 0,
-          "closed": 27,
+          "closed": 28,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
@@ -2181,14 +2181,14 @@
           "line": 2267,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 53,
           "gates": [],
           "guarded": 0,
-          "line": 2605,
+          "line": 2606,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2198,7 +2198,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3041,
+          "line": 3042,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2208,7 +2208,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3136,
+          "line": 3137,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2351,10 +2351,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 203,
+      "closed": 205,
       "guarded": 0,
-      "last_advanced": "2026-11-20",
-      "open": 43,
+      "last_advanced": "2026-11-21",
+      "open": 41,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2377,16 +2377,16 @@
         },
         {
           "blocked": 1,
-          "closed": 87,
+          "closed": 89,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 845,
+          "line": 846,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 33
+          "open": 31
         }
       ]
     },
