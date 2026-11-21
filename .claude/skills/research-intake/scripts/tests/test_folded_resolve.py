@@ -54,6 +54,17 @@ class Resolve(unittest.TestCase):
         self.assertEqual(fr.resolve_handoff_file("handoffs/active/done.md", self.root),
                          "handoffs/completed/done.md")
 
+    def test_folded_target_archived_resolves_to_completed(self):
+        (self.root / "handoffs" / "completed").mkdir()
+        (self.root / "handoffs" / "completed" / "new-b.md").write_text("x")
+        self.assertEqual(fr.resolve_handoff_file("old-b.md", self.root),
+                         "handoffs/completed/new-b.md")
+        # ambiguous across statuses: left on the active path (refused downstream)
+        (self.root / "handoffs" / "archived").mkdir()
+        (self.root / "handoffs" / "archived" / "new-b.md").write_text("x")
+        self.assertEqual(fr.resolve_handoff_file("old-b.md", self.root),
+                         "handoffs/active/new-b.md")
+
     def test_row_ids(self):
         self.assertEqual(fr.resolve_row_id("X-1", self.root), "X-9")
         self.assertEqual(fr.resolve_row_id("X-2", self.root), "X-8")

@@ -1,0 +1,21 @@
+{
+  "schema": "brf-archive-successors.v1",
+  "note": "Committed successor records for handoff files/tracks that were renamed on archive or split out after the 1a/1b folds were recorded. Consumed by validate_intake._HandoffReferences. 'from' is '<file>.md' or '<file>.md#<track>'; 'to' is 'handoffs/<status>/<file>.md' or '...#<track>' (omit the fragment when the whole target file is the successor and it has no '## Track:' heading).",
+  "successors": [
+    {
+      "from": "model-architecture-readiness.md",
+      "to": "handoffs/completed/model-architecture-readiness-completed-20261107.md",
+      "commit": "2bde3069558a055e4c3199a5b4289bc405bb96a1"
+    },
+    {
+      "from": "numa-placement-and-contention.md#dynamic-stack-concurrency",
+      "to": "handoffs/completed/hybrid-checkpoint-prompt-reuse.md",
+      "commit": "528fe3633faa777a4eb8c7457f49dfe38bf69f02"
+    },
+    {
+      "from": "numa-placement-and-contention.md#within-role-placement-state-machine",
+      "to": "handoffs/completed/dispatch-placement-telemetry.md",
+      "commit": "528fe3633faa777a4eb8c7457f49dfe38bf69f02"
+    }
+  ]
+}

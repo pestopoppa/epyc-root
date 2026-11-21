@@ -66,7 +66,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### inference_serving
 - **Chapters**: (none)
-- **Handoffs**: `numa-placement-and-contention.md#track-dynamic-stack-concurrency`
+- **Handoffs**: `hybrid-checkpoint-prompt-reuse.md`
 - **Search terms**: continuous batching, disaggregated serving, vLLM, TensorRT-LLM, llama.cpp server
 
 ### routing_intelligence
@@ -81,7 +81,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### ssm_hybrid
 - **Chapters**: (none)
-- **Handoffs**: `long-context-program.md#track-multiscreen-attention-evaluation` (sub-quadratic attention survey), `model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness` (Log-Linear GDN readiness tracker)
+- **Handoffs**: `long-context-program.md#track-multiscreen-attention-evaluation` (sub-quadratic attention survey), `model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness` (Log-Linear GDN readiness tracker)
 - **Search terms**: Mamba, state space model, SSM, hybrid architecture, linear attention, Jamba, Delta Net, Multiscreen, screening mechanism, absolute relevance
 
 ### multimodal
@@ -126,7 +126,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### local_inference
 - **Chapters**: (none)
-- **Handoffs**: `numa-placement-and-contention.md#track-dynamic-stack-concurrency`, `completed/kv-cache-quantization.md`
+- **Handoffs**: `hybrid-checkpoint-prompt-reuse.md`, `completed/kv-cache-quantization.md`
 - **Search terms**: GGUF, llama.cpp, node-llama-cpp, local inference, on-device, local model serving
 
 ### search_retrieval

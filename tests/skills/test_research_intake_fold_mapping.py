@@ -136,3 +136,101 @@ def test_same_basename_in_two_statuses_is_ambiguous(tmp_path: Path) -> None:
     refs = _HandoffReferences(root, [root / "handoffs" / "active"])
     assert refs.mapping_error is not None
     assert "ambiguous handoff" in refs.mapping_error
+
+
+# ---- 2026-11-21: stale-destination relocation and archive-successor records ----
+
+def write_successors(root: Path, entries: list[dict]) -> None:
+    (root / "docs" / "design" / "backlog-refactor-2026-11" / "archive-successors.json").write_text(
+        json.dumps({"schema": "brf-archive-successors.v1", "successors": entries}))
+
+
+def succ(frm: str, to: str) -> dict:
+    return {"from": frm, "to": to, "commit": "abc1234"}
+
+
+def test_active_destination_archived_resolves_by_basename(tmp_path: Path) -> None:
+    """Cause (a): fold recorded handoffs/active/X.md, X.md later moved to completed/."""
+    root = make_root(tmp_path, [fold("handoffs/active/owner.md", "old.md", "owner.md#track:t")])
+    (root / "handoffs" / "completed" / "owner.md").write_text("# o\n\n## Track: t\n")
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    owner, track = refs.resolve("old.md")
+    assert owner == (root / "handoffs" / "completed" / "owner.md").resolve()
+    assert track == "t"
+
+
+def test_relocated_destination_still_requires_track(tmp_path: Path) -> None:
+    root = make_root(tmp_path, [fold("handoffs/active/owner.md", "old.md", "owner.md#track:t")])
+    (root / "handoffs" / "completed" / "owner.md").write_text("# o\n\n## Track: other\n")
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    with pytest.raises(ValueError, match="missing '## Track: t'"):
+        refs.resolve("old.md")
+
+
+def test_relocated_destination_ambiguous_basename_refused(tmp_path: Path) -> None:
+    root = make_root(tmp_path, [fold("handoffs/active/owner.md", "old.md", "owner.md")])
+    (root / "handoffs" / "completed" / "owner.md").write_text("# a\n")
+    (root / "handoffs" / "archived").mkdir()
+    (root / "handoffs" / "archived" / "owner.md").write_text("# b\n")
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    with pytest.raises(ValueError, match="ambiguous"):
+        refs.resolve("old.md")
+
+
+def test_unknown_handoff_is_still_refused(tmp_path: Path) -> None:
+    root = make_root(tmp_path, [fold("handoffs/active/owner.md", "old.md", "owner.md")])
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    with pytest.raises(ValueError, match="dangling committed fold target"):
+        refs.resolve("old.md")
+    with pytest.raises(ValueError, match="not found"):
+        refs.resolve("never-existed.md")
+
+
+def test_renamed_archive_resolves_via_successor_record(tmp_path: Path) -> None:
+    """Cause (b1): destination archived under a renamed file."""
+    root = make_root(tmp_path, [fold("handoffs/active/arch.md", "old.md", "arch.md#track:t")])
+    (root / "handoffs" / "completed" / "arch-completed-1.md").write_text("# a\n\n## Track: t\n")
+    write_successors(root, [succ("arch.md", "handoffs/completed/arch-completed-1.md")])
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    assert refs.mapping_error is None
+    owner, track = refs.resolve("old.md")
+    assert owner.name == "arch-completed-1.md" and track == "t"
+    assert refs.resolve("arch.md#track:t")[0].name == "arch-completed-1.md"
+
+
+def test_split_track_resolves_via_successor_record(tmp_path: Path) -> None:
+    """Cause (b2): a track moved out of its fold destination into its own file."""
+    root = make_root(tmp_path, [fold("handoffs/active/parent.md", "old.md", "parent.md#track:moved")])
+    (root / "handoffs" / "active" / "parent.md").write_text("# p\n\n## Track: kept\n")
+    (root / "handoffs" / "completed" / "split.md").write_text("# s\n")
+    write_successors(root, [succ("parent.md#moved", "handoffs/completed/split.md")])
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    owner, track = refs.resolve("old.md")
+    assert owner.name == "split.md" and track is None
+    with pytest.raises(ValueError, match="missing '## Track: nope'"):
+        refs.resolve("parent.md#track:nope")
+
+
+def test_successor_with_missing_target_is_refused(tmp_path: Path) -> None:
+    root = make_root(tmp_path, [])
+    write_successors(root, [succ("a.md", "handoffs/completed/gone.md")])
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    assert refs.mapping_error and "successor target missing" in refs.mapping_error
+
+
+def test_successor_with_missing_track_is_refused(tmp_path: Path) -> None:
+    root = make_root(tmp_path, [])
+    (root / "handoffs" / "completed" / "t.md").write_text("# t\n\n## Track: x\n")
+    write_successors(root, [succ("a.md", "handoffs/completed/t.md#y")])
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    assert refs.mapping_error and "successor track missing" in refs.mapping_error
+
+
+def test_successor_cycle_is_refused(tmp_path: Path) -> None:
+    root = make_root(tmp_path, [])
+    (root / "handoffs" / "completed" / "a.md").write_text("# a\n")
+    (root / "handoffs" / "completed" / "b.md").write_text("# b\n")
+    write_successors(root, [succ("a.md", "handoffs/completed/b.md"),
+                            succ("b.md", "handoffs/completed/a.md")])
+    refs = _HandoffReferences(root, [root / "handoffs" / "active"])
+    assert refs.mapping_error and "cyclic" in refs.mapping_error

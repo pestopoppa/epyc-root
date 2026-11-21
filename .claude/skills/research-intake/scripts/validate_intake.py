@@ -272,6 +272,8 @@ class _HandoffReferences:
         self.body_tracks: dict[str, set[str]] = {}
         self.tracks: dict[Path, list[str]] = {}
         self.mapping_error: str | None = None
+        # "<file>" or "<file>#<track>" -> (target path under handoffs/, target track | None)
+        self.successors: dict[str, tuple[str, str | None]] = {}
         try:
             meq_sources = set()
             for route in ("1a", "1b"):
@@ -324,8 +326,73 @@ class _HandoffReferences:
                     if located is None:
                         raise ValueError(f"dangling MEQ fold target {target!r}")
                     self.redirects.setdefault(source, set()).add((located, track))
+            self._load_successors()
         except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
             self.mapping_error = f"invalid committed fold mapping: {exc}"
+
+    def _load_successors(self) -> None:
+        """Load the committed archive-successor map and validate it.
+
+        Some destinations were archived under a RENAMED file, and some tracks were
+        split into their own file after the fold lists were written. Neither is
+        recoverable by basename, so the move is recorded explicitly
+        (``archive-successors.json``). Every target file (and named track) must
+        exist, and following successors must not cycle.
+        """
+        path = self.root / "docs/design/backlog-refactor-2026-11/archive-successors.json"
+        if not path.exists():
+            return
+        data = json.loads(path.read_text(), object_pairs_hook=_unique_json_object)
+        if data.get("schema") != "brf-archive-successors.v1":
+            raise ValueError(f"unsupported schema in {path.name}")
+        for entry in data["successors"]:
+            source, target, commit = entry["from"], entry["to"], entry["commit"]
+            if not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{7,40}", commit):
+                raise ValueError(f"successor {source!r} lacks a commit sha")
+            src_file, _, src_track = source.partition("#")
+            tgt_file, _, tgt_track = target.partition("#")
+            tgt = Path(tgt_file)
+            if (Path(src_file).name != src_file or not src_file.endswith(".md")
+                    or (("#" in source) and not src_track.strip())
+                    or len(tgt.parts) != 3 or tgt.parts[0] != "handoffs"
+                    or tgt.parts[1] not in HANDOFF_STATUSES or tgt.suffix != ".md"
+                    or (("#" in target) and not tgt_track.strip())):
+                raise ValueError(f"invalid successor {source!r} -> {target!r}")
+            if source in self.successors:
+                raise ValueError(f"duplicate successor for {source!r}")
+            if not (self.root / tgt).is_file():
+                raise ValueError(f"successor target missing: {target!r}")
+            if tgt_track and self._headings(self.root / tgt).count(tgt_track) != 1:
+                raise ValueError(f"successor track missing: {target!r}")
+            self.successors[source] = (tgt_file, tgt_track or None)
+        for source, (target, _) in self.successors.items():
+            seen, key = {source}, Path(target).name
+            while key in self.successors:
+                if key in seen:
+                    raise ValueError(f"cyclic successor chain at {source!r}")
+                seen.add(key)
+                key = Path(self.successors[key][0]).name
+
+    def _headings(self, owner: Path) -> list[str]:
+        if owner not in self.tracks:
+            headings = []
+            fence = None
+            for line in owner.read_text().splitlines():
+                marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+                if marker:
+                    run = marker.group(1)
+                    if fence is None:
+                        fence = run
+                    elif (run[0] == fence[0] and len(run) >= len(fence)
+                          and not marker.group(2).strip()):
+                        fence = None
+                    continue
+                if fence is None:
+                    heading = re.fullmatch(r"##\s+Track:\s*(.+?)\s*#*\s*", line)
+                    if heading:
+                        headings.append(heading.group(1))
+            self.tracks[owner] = headings
+        return self.tracks[owner]
 
     def _locate_handoff(self, name: str) -> str | None:
         """Find one handoff basename under any status directory.
@@ -351,6 +418,18 @@ class _HandoffReferences:
         if sep and (not fragment.startswith(("track:", "track-")) or not fragment[6:].strip()):
             raise ValueError("handoff fragment must name '#track:<name>' or '#track-<name>'")
         return filename, fragment[6:] if sep else None
+
+    def _find(self, path: Path, exact: bool) -> Path | None:
+        if exact or len(path.parts) == 3:
+            candidates = [self.root / path]
+        elif len(path.parts) == 2:
+            candidates = [self.root / "handoffs" / path]
+        else:
+            candidates = [directory / path for directory in self.directories]
+        found = {candidate.resolve() for candidate in candidates if candidate.is_file()}
+        if len(found) > 1:
+            raise ValueError("ambiguous handoff basename")
+        return found.pop() if found else None
 
     def resolve(self, ref: str) -> tuple[Path, str | None]:
         if self.mapping_error:
@@ -382,38 +461,27 @@ class _HandoffReferences:
             if len(tracks) != 1:
                 raise ValueError("ambiguous committed anchor body track")
             track = next(iter(tracks))
-        if mapped or len(path.parts) == 3:
-            candidates = [self.root / path]
-        elif len(path.parts) == 2:
-            candidates = [self.root / "handoffs" / path]
-        else:
-            candidates = [directory / path for directory in self.directories]
-        found = {candidate.resolve() for candidate in candidates if candidate.is_file()}
-        if not found:
+        owner = self._find(path, mapped)
+        if owner is None and mapped:
+            # The destination was archived after the fold was recorded: it is
+            # terminal history and still resolves under handoffs/<status>/.
+            located = self._locate_handoff(path.name)
+            owner = (self.root / located).resolve() if located else None
+        if owner is None:
+            succ = self.successors.get(path.name)
+            if succ:
+                path = Path(succ[0])
+                track = track or succ[1]
+                owner = self._find(path, True)
+        if owner is None:
             raise ValueError("not found" + (" (dangling committed fold target)" if mapped else ""))
-        if len(found) != 1:
-            raise ValueError("ambiguous handoff basename")
-        owner = found.pop()
         if track is not None:
-            if owner not in self.tracks:
-                headings = []
-                fence = None
-                for line in owner.read_text().splitlines():
-                    marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
-                    if marker:
-                        run = marker.group(1)
-                        if fence is None:
-                            fence = run
-                        elif (run[0] == fence[0] and len(run) >= len(fence)
-                              and not marker.group(2).strip()):
-                            fence = None
-                        continue
-                    if fence is None:
-                        heading = re.fullmatch(r"##\s+Track:\s*(.+?)\s*#*\s*", line)
-                        if heading:
-                            headings.append(heading.group(1))
-                self.tracks[owner] = headings
-            count = self.tracks[owner].count(track)
+            headings = self._headings(owner)
+            succ = self.successors.get(f"{owner.name}#{track}") if track not in headings else None
+            if succ:
+                owner = (self.root / succ[0]).resolve()
+                return owner, succ[1]
+            count = headings.count(track)
             if count != 1:
                 reason = "missing" if count == 0 else "ambiguous"
                 raise ValueError(f"{reason} '## Track: {track}' in {owner.name}")

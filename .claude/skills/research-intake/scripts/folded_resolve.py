@@ -51,6 +51,12 @@ def resolve_handoff_file(
         return name
     target, track = _norm(folded["files"][base])
     out = f"handoffs/active/{target}"
+    if not (root / out).exists():
+        # The fold destination may have been archived since (terminal history).
+        homes = [f"handoffs/{d}/{target}" for d in ("completed", "archived", "blocked")
+                 if (root / "handoffs" / d / target).exists()]
+        if len(homes) == 1:
+            out = homes[0]
     if with_anchor and track:
         out += f"#track-{track}"
     return out
