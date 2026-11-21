@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 2,
-      "closed": 806,
+      "closed": 807,
       "guarded": 0,
-      "last_advanced": "2026-11-20",
-      "open": 128,
+      "last_advanced": "2026-11-21",
+      "open": 127,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 2,
-          "closed": 370,
+          "closed": 371,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,14 +128,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 44
+          "open": 43
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 4725,
+          "line": 4727,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 4808,
+          "line": 4810,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 4985,
+          "line": 4987,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 13
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 6874,
+          "line": 6876,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 45
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 9842,
+          "line": 9844,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10045,
+          "line": 10047,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20
@@ -2351,10 +2351,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 205,
+      "closed": 206,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 41,
+      "open": 42,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,11 +2363,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 248,
+      "total": 250,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 116,
+          "closed": 117,
           "gates": [],
           "guarded": 0,
           "line": 15,
@@ -2383,10 +2383,10 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 846,
+          "line": 851,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 31
+          "open": 32
         }
       ]
     },
