@@ -177,6 +177,7 @@ class PrepInGrantTests(unittest.TestCase):
         hit = pr.prep_in_grant(bad)
         self.assertIsNotNone(hit)
         spec = fx.spec(rid, d, launcher=bad)
+        spec["scratch_gb"] = 1  # declared, so the no-scratch-gb lint (7af898bf4) does not add a second warning
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
             pr.lint(spec)  # warns, does not refuse
