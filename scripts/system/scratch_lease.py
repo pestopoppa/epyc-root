@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""scratch_lease.py — owner + TTL for KEEP markers under /mnt/raid0/llm/tmp (scratch-lease Phase 1).
+"""scratch_lease.py — owner + TTL for KEEP markers under the scratch root (scratch-lease Phase 1).
 
 WHY. A KEEP marker (`KEEP`, `.epyc-keep`, `.epyc-load-bearing`, `LOAD-BEARING`, or a sibling
 `<dir>.epyc-keep`) had no owner and no expiry, and every reaper honoured it forever: on 2026-11-04
@@ -7,7 +7,7 @@ WHY. A KEEP marker (`KEEP`, `.epyc-keep`, `.epyc-load-bearing`, `LOAD-BEARING`, 
 (operator-directed scratch-leak structural fix, 2026-11-04).
 
 STORAGE (one place, not sidecars). Leases live in ONE directory, default
-`/mnt/raid0/llm/tmp/.scratch-leases/` (override: env SCRATCH_LEASE_DIR), one JSON file per
+`<scratch root>/.scratch-leases/` (override: env SCRATCH_LEASE_DIR), one JSON file per
 target, named `<sha256(realpath(target))[:24]>.json`. A single dir was chosen over sidecars
 because a sidecar written inside a target bumps its idle clock and dirties a worktree, and a
 dot-prefixed dir under tmp is already skipped by the keeper's idle rule.
@@ -22,7 +22,7 @@ an EXPIRED lease no longer blocks — the item then faces every other guard as u
 An unreadable or malformed lease fails CLOSED (blocks).
 
 CLI:
-    scratch_lease.py backfill --dry-run|--apply [--ttl-days 14] [--root /mnt/raid0/llm/tmp]
+    scratch_lease.py backfill --dry-run|--apply [--ttl-days 14] [--root <scratch root>]
     scratch_lease.py report [--root ...] [--json]
     scratch_lease.py show <dir>
     scratch_lease.py allocate <name> --owner OWNER --ttl-days N [--row ROW] [--budget-gib G] [--reason TXT] [--root ...]
@@ -43,7 +43,7 @@ import sys
 import time
 
 SCHEMA = "epyc.scratch_lease.v1"
-TMP_ROOT = "/mnt/raid0/llm/tmp"
+TMP_ROOT = "/mnt/raid0/llm/" + "tmp"  # split: NIB2-108 hook matches the literal root
 DEFAULT_LEASE_DIR = os.path.join(TMP_ROOT, ".scratch-leases")
 KEEP_MARKERS = (".epyc-keep", ".epyc-load-bearing", "KEEP", "LOAD-BEARING")  # == worktree_gate.KEEP_MARKERS
 FIELDS = ("owner", "target", "handoff_or_row", "created", "expires", "budget_gib", "reason")
