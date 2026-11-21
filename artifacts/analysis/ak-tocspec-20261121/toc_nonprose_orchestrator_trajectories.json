@@ -1,0 +1,29 @@
+{
+ "unique_files": 119,
+ "roles": {
+  "frontdoor": {
+   "trajectories": 71,
+   "turns": 142,
+   "tokens_introduced": 248501,
+   "prose_side_share": 0.924,
+   "nonprose_share": 0.076,
+   "of_which_untallied_obs": 0.076,
+   "initial": 217404,
+   "model": 12102,
+   "obs_nonprose": 18762,
+   "obs_prose": 233
+  },
+  "worker_general": {
+   "trajectories": 2,
+   "turns": 2,
+   "tokens_introduced": 256,
+   "prose_side_share": 1.0,
+   "nonprose_share": 0.0,
+   "of_which_untallied_obs": 0.0,
+   "initial": 240,
+   "model": 16,
+   "obs_nonprose": 0,
+   "obs_prose": 0
+  }
+ }
+}

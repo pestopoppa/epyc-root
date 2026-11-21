@@ -19,6 +19,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from analysis import calculate_baps
+from arms_v2 import prefix_reuse, prefix_reuse_by_arm
 
 HERE = Path(__file__).resolve().parent
 SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp4-r3")
@@ -305,7 +306,10 @@ def trial_metrics(graph, events, row, *, smoke=False):
                 or "response_error" in record or not record.get("response_sha256")
                 or (streaming and record.get("response_sse_done") is not True)):
             raise ValueError("incomplete or failed generation transport")
-    return trajectory_metrics(events, row, smoke=smoke)
+    metrics = trajectory_metrics(events, row, smoke=smoke)
+    # v2 amendment: per-arm prefix-cache reuse tally (server counts), recorded beside accuracy and cost
+    metrics["prefix_reuse"] = prefix_reuse(events, int(row["env"]["ORCHESTRATOR_CONTEXT_FORCE_TURNS"]))
+    return metrics
 
 
 def summarize_ledger(out, schedule, draw):
@@ -333,7 +337,8 @@ def summarize_ledger(out, schedule, draw):
                      "baps": result.get("baps") if valid else None,
                      "baps_unknown_reason": baps_unknown_reason,
                      "correct": result.get("correct") if observed_run else None, "wall_s": result.get("wall_s"),
-                     "attempts": rec.get("attempts"), "void_point": point in voided})
+                     "attempts": rec.get("attempts"), "void_point": point in voided,
+                     "prefix_reuse": result.get("prefix_reuse") if observed_run else None})
         if void_reasons.get(point) == BOUNDARY_TURN_TERMINAL:
             runs[-1].update({"void_reason": BOUNDARY_TURN_TERMINAL,
                              "observed_correct": result.get("correct"), "grade_reason": result.get("grade_reason")})
@@ -355,6 +360,7 @@ def summarize_ledger(out, schedule, draw):
             "voided_per_stratum": dict(Counter(strata[point] for point in voided)),
             "void_reasons": void_reasons,
             "terminal_voids_by_stratum_and_arm": dict(terminal_voids),
+            "prefix_reuse_by_arm": prefix_reuse_by_arm(runs),
             "replacements": replacements, "reserve_exhausted": len(active) < PILOT_POINTS,
             "schedule_exhausted": observed == expected,
             "coverage_complete": len(active) == PILOT_POINTS and observed == expected and completed == PLANNED}

@@ -135,3 +135,75 @@ and simultaneous intervals to pass before applying the MDE. The simultaneous int
 are explicitly Bonferroni, not labelled Holm-adjusted intervals. This conservative
 implementation detail is declared before pilot data; synthetic arithmetic tests do not
 establish interval coverage or the model's effect size.
+
+## 11. v2 amendment (2026-11-21; prospective, written before the next run)
+
+Status: nothing here has been measured. It applies to the next CONFIRMATORY or successor-pilot run and amends sections 2,
+3, 4 and 6 only where stated; the option-(a) triple, the 0.10 BAPS MDE, the Holm-adjusted three-contrast rule and the
+section 7/7a stopping and validity rules stay in force for the three v1 arms. The 96-run pilot already filed (r3) is a v1
+pilot and is not re-labelled. Sources (research intake ak-intake-20261121, dives under
+`research/deep-dives/ak-intake-20261121/`): CompAct-Bench protocol (intake-2762#record, intake-2778#record), Aggron prose-only
+compaction (intake-2761#record), the async judge arm (intake-2770#record), CompactionBench (intake-2786#record).
+Outcome-blind: every rule below is fixed by task and trajectory properties, never by an arm's result.
+
+### 11.1 Controls (apply to every arm, v1 and new)
+
+1. **Pre-filter (solved-in-all-uncompacted-repeats).** A candidate point is eligible only if its task was solved in ALL
+   of k = 3 uncompacted `full_history` reference repeats on the same model and build (reference trajectory of at least 8
+   rounds, so a 25/50/75% boundary has room). Input: the uncompacted reference runs; the filter is applied BEFORE the
+   frozen point list is drawn, the tasks excluded are counted, and the sha256 of the filtered candidate list is recorded in
+   the receipt beside the frozen 30-point hash. Analysis: BAPS and accuracy are conditional on solvable tasks; the report
+   states this estimand and the exclusion count. If fewer than 30 eligible points remain the cell is a pilot, never a
+   confirmation (extends section 3's pilot-labelling rule).
+2. **Matched post-boundary action budget.** All arms at a point resume with the same budget B = min(25, ceil(1.5 x the
+   median post-boundary action count of the point's uncompacted reference solves)); a continuation ends at B actions, a
+   verified FINAL or the turn cap, whichever is first. B is computed from the reference runs, per point, before any arm
+   runs. Analysis: BAPS keeps its first-five window; accuracy and Pass^3 are graded at termination under B; a run that
+   hits B without FINAL is incorrect, recorded `budget_exhausted`, and counted separately from an error exit.
+3. **Retention-ratio matching (self-built IRC calibration).** Compaction-producing arms (`summary_only`,
+   `prose_only_frozen_append`) are calibrated so that the retained artifact is 10% of the boundary history in
+   characters, accepted within [0.097, 0.103] (the CompAct tolerance). Iterative Ratio Calibration is self-built, because
+   the CompAct prompt is not released (compact-page dive): re-prompt the same compactor with the previous attempt's measured
+   ratio and the target until in tolerance, at most 4 rounds, temperature 0.3 as in the graph, the number of rounds and the
+   achieved ratio recorded per point and arm. A point that cannot reach tolerance in 4 rounds is recorded with its achieved
+   ratio and analysed with the ratio as a covariate (reported, not dropped). `pointer_only`, `prune_pointer` and the floor
+   arm are not summaries; their retained ratio is measured and reported but not calibrated.
+4. **Boundary placement 25/50/75%.** The forced boundary is placed at 25%, 50% or 75% of the point's reference
+   trajectory length, one boundary per point assigned by a seeded permutation balanced across the three levels after
+   length stratification, recorded in the receipt. These map to the existing early / middle / late strata (so the section 4
+   stratified bootstrap is unchanged); each stratum keeps the >= 10 points rule for confirmation.
+5. **Six-type error annotation on failed continuations.** Every incorrect continuation (any arm) receives a post-hoc
+   label from the CompAct six types: critical omission (CO), factual distortion (FD), premature commitment (PC),
+   lost resolution (LR), progress/state loss (PSL) and constraint/goal distortion (CGD); labels overlap, so a run carries
+   a set. The annotator is an LLM blind to the arm and to the other arm's result, run offline over the retained trajectory
+   and wire artifacts, with a 10% double-annotated sample for agreement (Cohen's kappa reported; labels are descriptive,
+   never gating). Unannotated runs are UNKNOWN, not "none".
+
+### 11.2 New arms
+
+| Arm | Definition | Inputs | Analysis |
+|---|---|---|---|
+| `persistence_floor` | At the boundary all older history and any summary are dropped; the continuation sees the task statement, the system prompt, the reconstructed environment state (workspace as at the boundary) and the raw tail common to every arm (the last 20% of the budget), plus a one-line notice that earlier turns are not shown. No summary, no pointer | boundary environment snapshot from the reference run; orchestrator `context_arm_ab` arm `persistence_floor` (commit 52df680d) | Floor: how much of any arm's accuracy is environment persistence. Reported beside every contrast; an arm that does not beat the floor by the MDE is reported "not above persistence floor". Joins the contrast family (see 11.3). |
+| `prose_only_frozen_append` | Prose tool output (reasoning and retrieved documents) is summarised; file, shell, SQL and test output is kept verbatim. Progressive indexed form: history is cut into fixed-size segments (4,096 characters of prose); each segment is summarised as it closes; the summary is appended after the unchanged prefix and is never rewritten or re-summarised; a segment index maps each summary to the verbatim span. NOT blocked on kv-prefix-fork P1 (it creates no concurrent sequence). The scheduler accepts the name; the arm body is not yet implemented (TOC-CMP-ARM-PROSE-FROZEN) and the graph refuses it with a named reason | the same boundary history; the prose / non-prose classifier rule of TOC-CMP-NONPROSE-TALLY | Contrasts with `summary_only` (same compactor, same 10% budget per control 3). Its prefix-cache reuse tally (11.4) is a primary secondary because the arm exists to keep the prefix stable. |
+| `async_compaction_next_k_judge` | Compaction runs asynchronously while the agent takes its next k actions on the pre-compaction context; a judge scores whether those actions are consistent with the finished summary (alignment and non-contradiction, the V2-Fast judge of TOC-CMP-JUDGE-SHIM); accepted actions are carried, rejected ones are discarded and the step re-run on the summary | two sequences sharing the pre-compaction prefix | **BLOCKED on kv-prefix-fork P1.** Defined here so the contrast family is fixed in advance; refused by `arms_v2.resolve_arms` until P1 lands. No v2 run may schedule it. |
+
+### 11.3 Analysis changes
+
+- The contrast family is every pairwise contrast among the arms ACTUALLY RUN in the cell (v1 triple plus the floor and
+  `prose_only_frozen_append` is five arms, ten contrasts); Holm adjustment and the Bonferroni simultaneous intervals use
+  that count, and the MDE rule is unchanged. Contrasts against `persistence_floor` are reported with the others.
+  The family is fixed by the receipt before the run; adding an arm afterwards voids the cell. `analysis.analyze(...,
+  arms=resolve_arms(...))` implements this; the default remains the v1 triple.
+- Sample size: 11.1 and the extra arms raise runs per model to points x repeats x arms = 30 x 8 x 5 = 1,200
+  (1,800 at 12 repeats). This is stated before any run; booking remains a separate compute decision (section 6).
+- Floor effect (section 8) is judged on the arm set as run; a floor arm with BAPS ~ 0 is reported, not hidden.
+
+### 11.4 Prefix-cache reuse tally (every run, every arm)
+
+Per arm, report prefix-cache reuse = sum of cached prompt tokens / sum of prompt tokens, token-weighted over all turns and
+over post-boundary turns separately, beside accuracy and cost. Source: the per-turn server counts already in the trajectory
+artifact (`cached_prompt_tokens`, `prompt_tokens`, taken from the llama-server slot timings; never estimated). A turn with
+a missing count is excluded and counted as unobserved; a run with no observed turns reports no reuse (None, not 0).
+Voided points are excluded. Implemented in `scripts/experiments/toc-cmp-4-live/arms_v2.py` (`prefix_reuse`,
+`prefix_reuse_by_arm`), recorded per run in `RUNS.jsonl` and per arm in the ledger summary by `runner.py`; offline tests in
+`test_arms_v2.py`. The tally is descriptive: a higher reuse is not an accuracy claim.

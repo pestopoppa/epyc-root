@@ -71,7 +71,7 @@ def _finite(row, field, upper=None):
     return value
 
 
-def _paired_points(runs, mode):
+def _paired_points(runs, mode, arms=ARMS):
     strata = {}
     voided = set()
     for row in runs:
@@ -90,7 +90,7 @@ def _paired_points(runs, mode):
                 raise ValueError(f"{point_id}: a void marker cannot be valid")
             voided.add(point_id)
 
-    groups = {point_id: {arm: {} for arm in ARMS} for point_id in sorted(strata)
+    groups = {point_id: {arm: {} for arm in arms} for point_id in sorted(strata)
               if point_id not in voided}
     for row in runs:
         point_id = row["point_id"]
@@ -98,7 +98,7 @@ def _paired_points(runs, mode):
             continue
         arm = row.get("arm")
         repeat = row.get("repeat")
-        if arm not in ARMS or type(repeat) is not int or repeat < 0:
+        if arm not in arms or type(repeat) is not int or repeat < 0:
             raise ValueError(f"{point_id}: invalid arm or repeat")
         if not row["valid"]:
             raise ValueError(f"{point_id}: invalid run ({arm}, repeat {repeat})")
@@ -112,15 +112,15 @@ def _paired_points(runs, mode):
 
     points = {stratum: [] for stratum in STRATA}
     repeat_counts = set()
-    for point_id, arms in groups.items():
-        repeats = tuple(sorted(arms[ARMS[0]]))
-        if not repeats or any(tuple(sorted(arms[arm])) != repeats for arm in ARMS):
+    for point_id, by_arm in groups.items():
+        repeats = tuple(sorted(by_arm[arms[0]]))
+        if not repeats or any(tuple(sorted(by_arm[arm])) != repeats for arm in arms):
             raise ValueError(f"{point_id}: mismatched repeat IDs across arms")
         if repeats != tuple(range(len(repeats))):
             raise ValueError(f"{point_id}: missing zero-based repeat IDs")
         repeat_counts.add(len(repeats))
         points[strata[point_id]].append(tuple(
-            tuple(arms[arm][repeat] for repeat in repeats) for arm in ARMS
+            tuple(by_arm[arm][repeat] for repeat in repeats) for arm in arms
         ))
 
     if mode == "pilot":
@@ -146,14 +146,14 @@ def _point_metrics(point, indices, complete_scores):
     return tuple(metrics)
 
 
-def _summarize(point_metrics):
+def _summarize(point_metrics, contrast_indices=CONTRAST_INDICES):
     arms = tuple(zip(*point_metrics))
     arm_means = [
         tuple(statistics.fmean(values) for values in zip(*arm)) for arm in arms
     ]
     differences = [
         statistics.fmean(a[0] - b[0] for a, b in zip(arms[left], arms[right]))
-        for left, right in CONTRAST_INDICES
+        for left, right in contrast_indices
     ]
     return arm_means, differences
 
@@ -191,10 +191,12 @@ def _holm_p_values(samples):
     return adjusted
 
 
-def _bootstrap(points, complete_scores, seed, draws):
+def _bootstrap(points, complete_scores, seed, draws, arms=ARMS):
     rng = random.Random(seed)
-    arm_samples = [[[], [], []] for _ in ARMS]
-    contrast_samples = [[] for _ in CONTRASTS]
+    contrasts = tuple(combinations(arms, 2))
+    contrast_indices = tuple(combinations(range(len(arms)), 2))
+    arm_samples = [[[], [], []] for _ in arms]
+    contrast_samples = [[] for _ in contrasts]
     for _ in range(draws):
         resampled = []
         for group in points.values():
@@ -203,7 +205,7 @@ def _bootstrap(points, complete_scores, seed, draws):
                 repeats = len(point[0])
                 indices = [rng.randrange(repeats) for _ in range(repeats)]
                 resampled.append(_point_metrics(point, indices, complete_scores))
-        arm_means, differences = _summarize(resampled)
+        arm_means, differences = _summarize(resampled, contrast_indices)
         for metrics, samples in zip(arm_means, arm_samples):
             for value, sample in zip(metrics, samples):
                 sample.append(value)
@@ -212,17 +214,21 @@ def _bootstrap(points, complete_scores, seed, draws):
     return arm_samples, [sorted(sample) for sample in contrast_samples]
 
 
-def analyze(runs, mode, *, seed=DEFAULT_SEED, draws=BOOTSTRAP_DRAWS):
+def analyze(runs, mode, *, seed=DEFAULT_SEED, draws=BOOTSTRAP_DRAWS, arms=ARMS):
+    """`arms` defaults to the option-(a) triple; a v2 arm set must come from arms_v2.resolve_arms()."""
+    arms = tuple(arms)
+    contrasts = tuple(combinations(arms, 2))
+    contrast_indices = tuple(combinations(range(len(arms)), 2))
     if mode not in ("pilot", "confirmatory"):
         raise ValueError("mode must be pilot or confirmatory")
     if not isinstance(runs, list):
         raise ValueError("runs must be an array")  # noqa: TRY004
-    points, voids = _paired_points(runs, mode)
+    points, voids = _paired_points(runs, mode, arms)
     all_points = [point for group in points.values() for point in group]
     repeats = len(all_points[0][0])
     total_per_arm = len(all_points) * repeats
     scored = [sum(row[1] is not None for point in all_points for row in point[arm])
-              for arm in range(len(ARMS))]
+              for arm in range(len(arms))]
     complete_scores = [mode == "confirmatory" and count == total_per_arm for count in scored]
     observed = [_point_metrics(point, range(repeats), complete_scores) for point in all_points]
     report = {
@@ -250,7 +256,7 @@ def analyze(runs, mode, *, seed=DEFAULT_SEED, draws=BOOTSTRAP_DRAWS):
         }
         report["paired_difference_sd"] = {
             f"{a} - {b}": statistics.stdev(point[left][0] - point[right][0] for point in observed)
-            for (a, b), (left, right) in zip(CONTRASTS, CONTRAST_INDICES)
+            for (a, b), (left, right) in zip(contrasts, contrast_indices)
         }
         if any(not group for group in points.values()):
             report["sd_scope"] = (
@@ -260,13 +266,13 @@ def analyze(runs, mode, *, seed=DEFAULT_SEED, draws=BOOTSTRAP_DRAWS):
 
     if type(draws) is not int or draws < 2:
         raise ValueError("bootstrap needs at least two draws")
-    arm_means, differences = _summarize(observed)
-    arm_samples, contrast_samples = _bootstrap(points, complete_scores, seed, draws)
+    arm_means, differences = _summarize(observed, contrast_indices)
+    arm_samples, contrast_samples = _bootstrap(points, complete_scores, seed, draws, arms)
     adjusted = _holm_p_values(contrast_samples)
     report["bootstrap"] = {"seed": seed, "draws": draws}
     report["minimum_detectable_effect"] = MDE
     report["arms"] = {}
-    for arm, metrics, samples, count in zip(ARMS, arm_means, arm_samples, scored):
+    for arm, metrics, samples, count in zip(arms, arm_means, arm_samples, scored):
         arm_report = {
             name: {"mean": value, "interval_95": _interval(sorted(sample))}
             for name, value, sample in zip(("baps", "accuracy", "pass3"), metrics, samples)
@@ -279,11 +285,11 @@ def analyze(runs, mode, *, seed=DEFAULT_SEED, draws=BOOTSTRAP_DRAWS):
     report["floor_effect"] = floor
     report["contrasts"] = {}
     for index, ((left, right), mean, sample) in enumerate(
-        zip(CONTRASTS, differences, contrast_samples)
+        zip(contrasts, differences, contrast_samples)
     ):
         # Bonferroni gives conservative simultaneous intervals. Require one
         # to exclude zero as well as passing the Holm zero-null test.
-        interval = _interval(sample, ALPHA / len(CONTRASTS))
+        interval = _interval(sample, ALPHA / len(contrasts))
         rejected = adjusted[index] <= ALPHA and _excludes_zero(interval)
         decision = "no_effect_established"
         if floor:

@@ -83,3 +83,12 @@ four inference threads. Insufficient physical cores are refused. The
 failed predecessors supply no behavioral evidence. See TOC-CMP-2r in the
 [owning handoff](../../../handoffs/active/context-and-token-economy.md) for
 preserved evidence, successor rows and qualification status.
+
+## v2 amendment support (2026-11-21)
+
+`arms_v2.py` holds the arm registry for the v2 pre-registration amendment (section 11 of the
+[pre-registration](../../../docs/design/toc-cmp-4-preregistration-20261109.md)): `resolve_arms()` accepts
+`persistence_floor` and `prose_only_frozen_append`, and refuses `async_compaction_next_k_judge` (blocked on
+kv-prefix-fork P1). `analysis.analyze(..., arms=...)` accepts any resolved arm set; the default stays the v1 triple.
+`runner.py` records the per-run prefix-cache reuse tally and a per-arm roll-up in the ledger summary. The arm
+implementations themselves (orchestrator side) are not part of this packet.

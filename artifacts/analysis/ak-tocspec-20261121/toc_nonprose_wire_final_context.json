@@ -1,0 +1,90 @@
+{
+ "calls": 8,
+ "tokens_total": 617979,
+ "share": {
+  "instructions": 0.079,
+  "tools_schema": 0.073,
+  "user_task_prompt_unclassified": 0.474,
+  "model_prose": 0.253,
+  "call_args": 0.01,
+  "nonprose_file_read": 0.106,
+  "nonprose_other_shell": 0.005
+ },
+ "nonprose_total_share": 0.111,
+ "per_call": {
+  "C2/cxf1/r1": {
+   "input_tokens": 130269,
+   "instructions": 6166,
+   "tools_schema": 5654,
+   "user_task_prompt_unclassified": 48633,
+   "model_prose": 53647,
+   "call_args": 1347,
+   "nonprose_file_read": 14823
+  },
+  "C2/cxf1/r2": {
+   "input_tokens": 70151,
+   "instructions": 6006,
+   "tools_schema": 5507,
+   "user_task_prompt_unclassified": 30948,
+   "model_prose": 15928,
+   "call_args": 289,
+   "nonprose_file_read": 11474
+  },
+  "C2/cxf12/r1": {
+   "input_tokens": 109521,
+   "instructions": 6123,
+   "tools_schema": 5615,
+   "user_task_prompt_unclassified": 48539,
+   "model_prose": 35466,
+   "call_args": 2449,
+   "nonprose_file_read": 11011,
+   "nonprose_other_shell": 318
+  },
+  "C2/cxf12/r2": {
+   "input_tokens": 48155,
+   "instructions": 5832,
+   "tools_schema": 5348,
+   "user_task_prompt_unclassified": 28975,
+   "model_prose": 4374,
+   "call_args": 90,
+   "nonprose_file_read": 3536
+  },
+  "C4/cxf1/r1": {
+   "input_tokens": 43718,
+   "instructions": 5824,
+   "tools_schema": 5341,
+   "user_task_prompt_unclassified": 29678,
+   "model_prose": 1339,
+   "call_args": 244,
+   "nonprose_file_read": 1292
+  },
+  "C4/cxf1/r2": {
+   "input_tokens": 55282,
+   "instructions": 6129,
+   "tools_schema": 5620,
+   "user_task_prompt_unclassified": 31232,
+   "model_prose": 6409,
+   "call_args": 337,
+   "nonprose_file_read": 5555
+  },
+  "C4/cxf12/r1": {
+   "input_tokens": 114042,
+   "instructions": 6955,
+   "tools_schema": 6378,
+   "user_task_prompt_unclassified": 46422,
+   "model_prose": 36267,
+   "call_args": 1299,
+   "nonprose_file_read": 14055,
+   "nonprose_other_shell": 2667
+  },
+  "C4/cxf12/r2": {
+   "input_tokens": 46841,
+   "instructions": 5844,
+   "tools_schema": 5359,
+   "user_task_prompt_unclassified": 28792,
+   "model_prose": 2852,
+   "call_args": 147,
+   "nonprose_file_read": 3846
+  }
+ }
+}
