@@ -36,8 +36,9 @@
 
 
       · result 2026-11-21 (ak-draft-head-recall-cpu-20261120-r2q0, rc=0, filed PASS): A1 faithful arithmetic sanity 100% on eligible rows, >=99% retained. Q38FN SVD rank 256 C16384 recall 99.6338%, low-margin 99.3164%, MACs removed 83.299%; A3B best eligible recall 99.1699% fails; 27B rank 512 C16384 recall 99.8291%, low-margin 99.7070%, MACs removed 83.196%, top-16 containment 99.2462%. N=4096 per head; trunk pre-head states are a proxy for MTP draft states. RESULT.json SHA-256 6bdc0c603b7809f985b8b086dfcc0ffb479e1770c5cf57de45054707c86107ef. [belief: cc]
-- [ ] **DRAFT-HEAD-CPU-IMPLEMENT** Implement the Q38FN two-stage SVD draft head behind an environment knob in experimental graph_mtp, then test d1k/d32k against the exact head, including acceptance and throughput.
+- [x] **DRAFT-HEAD-CPU-IMPLEMENT** Implement the Q38FN two-stage SVD draft head behind an environment knob in experimental graph_mtp, then test d1k/d32k against the exact head, including acceptance and throughput.
       · done when: experimental implementation passes correctness tests and a row measures end-to-end d1k/d32k throughput and acceptance versus exact head using actual MTP draft states; record a keep/drop verdict.
+      · ✅ 2026-11-21 KEEP (row ak-draft-head-svd-cpu-20261121-r3q0): rank-256 SVD head (q8_0 factors, LLAMA_MTP_DRAFT_HEAD_SVD) vs exact head, Q38FN CPU MTP, 4 ABBA blocks: D1K +7.79% CI95 [+2.73, +12.92], acceptance 0.683 -> 0.720; D32K +1.75% [-2.1, +5.7], acceptance 0.634 -> 0.634; recall test PASS. C17 fold item (f). [no-belief: row verdict filed by agent]
 
 > Folded from the body of `handoffs/active/speculative-decoding-mtp-refresh.md` (row INF-50), from its first `##` section on, @ `5638c6a45bad` on 2026-11-03 (BRF-T7-F4, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
