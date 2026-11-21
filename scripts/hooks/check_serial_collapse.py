@@ -13,14 +13,12 @@ from __future__ import annotations
 import datetime as _dt
 import json
 import os
-import re
+import shlex
 import sys
 from pathlib import Path
 
 HOOK = "check_serial_collapse"
-THRESHOLD = int(os.environ.get("SERIAL_COLLAPSE_THRESHOLD", "3"))
 HOOK_PATH = Path(__file__).resolve()
-TASK_RE = re.compile(r'"task_id"\s*:\s*"([^"]*)"')
 
 
 def audit_log_path() -> Path:
@@ -32,10 +30,29 @@ def audit_log_path() -> Path:
 
 
 def boundary_task(command: str):
-    if "session_bus.py" not in command or " append" not in command or "heartbeat" not in command:
+    # Accept only a simple direct invocation; shell composition and expansion make
+    # the command's actual effect ambiguous. Refuse rather than guess.
+    if not isinstance(command, str) or any(c in command for c in "\n\r`$"):
         return None
-    m = TASK_RE.search(command)
-    return m.group(1) if m else None
+    try:
+        lexer = shlex.shlex(command, posix=True, punctuation_chars=";&|<>()")
+        lexer.whitespace_split = True
+        lexer.commenters = ""
+        args = list(lexer)
+        if len(args) != 9 or args[0] not in ("python", "python3"):
+            return None
+        if args[1] != "scripts/coordination/session_bus.py" or args[2] != "append":
+            return None
+        options = dict(zip(args[3::2], args[4::2]))
+        if len(options) != 3 or set(options) != {"--agent", "--target", "--json"}:
+            return None
+        if options["--target"] != "heartbeat" or not options["--agent"]:
+            return None
+        data = json.loads(options["--json"])
+        task = data.get("task_id") if isinstance(data, dict) else None
+        return task if isinstance(task, str) and task else None
+    except (ValueError, TypeError):
+        return None
 
 
 def session_rows(path: Path, session_id: str) -> list:
@@ -70,6 +87,13 @@ def handle(raw: str) -> None:
         return
     if payload.get("tool_name") not in (None, "Bash"):
         return
+    response = payload.get("tool_response")
+    if payload.get("hook_event_name") != "PostToolUse" or not isinstance(response, dict):
+        return
+    if response.get("interrupted") is not False:
+        return
+    if "exit_code" in response and (type(response["exit_code"]) is not int or response["exit_code"] != 0):
+        return
     cmd = (payload.get("tool_input") or {}).get("command") or ""
     task = boundary_task(cmd)
     session_id = payload.get("session_id")
@@ -77,14 +101,28 @@ def handle(raw: str) -> None:
         return
     path = audit_log_path()
     rows = session_rows(path, session_id)
+    if any(d.get("hook") == HOOK and d.get("task_id") == task for d in rows):
+        return
+    threshold = int(os.environ.get("SERIAL_COLLAPSE_THRESHOLD", "3"))
+    if threshold < 1:
+        raise ValueError("SERIAL_COLLAPSE_THRESHOLD must be positive")
     width = width_since_last_boundary(rows)
-    prior = [d.get("width") for d in rows if d.get("hook") == HOOK]
+    seen = set()
+    prior = []
+    for d in rows:
+        if d.get("hook") != HOOK:
+            continue
+        task_id = d.get("task_id")
+        if not isinstance(task_id, str) or not task_id or task_id in seen:
+            continue
+        seen.add(task_id)
+        prior.append(d.get("width"))
     streak = 0
     for w in reversed(prior + [width]):
         if w != 0:
             break
         streak += 1
-    flagged = streak >= THRESHOLD
+    flagged = streak >= threshold
     rec = {
         "ts": _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "hook": HOOK, "mode": "warn", "event": "boundary", "session_id": session_id,
