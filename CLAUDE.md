@@ -19,6 +19,10 @@ writing anything into a "Deferred / Open / Awaiting operator" list:
 - **Recurrence check:** an item appearing in two consecutive wrap-ups or status reports with an unchanged
   blocker is proof it was never blocked. Do it *before* writing anything else.
 - Mentioning something in passing is fine. Mentioning it **instead of doing it** is the failure.
+- **Reporting and acting (2026-11-21):** an authorized action is executed, not re-asked; a report's last line
+  is `Next:` + owner; re-probe a blocker older than 1 h (`scripts/session/recheck_blocker.py`) before
+  repeating it. Report shape: `.claude/skills/report-format/`. Canonical: `OPERATING_CONSTRAINTS.md` →
+  *Act, Don't Defer* → *Reporting and acting*.
 
 The operator should not have to hand-hold a workflow to a clean conclusion. Full rule, with the admission
 test and its origin: [`agents/shared/OPERATING_CONSTRAINTS.md` → *Act, Don't

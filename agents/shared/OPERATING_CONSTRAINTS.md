@@ -444,6 +444,21 @@ Do it now — before writing anything else — and say plainly that it should ha
 
 (origin: 2026-08-03, three consecutive identical "Deferred" lists; Appendix)
 
+**Reporting and acting (operator-steering analysis, ratified 2026-11-21).** About 73 % of the operator's turns
+compensated for an agent that did not act on, or did not report, what it already knew
+(`/mnt/raid0/llm/tmp/operator-steering-analysis-20261121/REPORT.md` §2). Three rules close that:
+
+- **An authorized action is executed, not re-asked.** Once the operator said go (approved, proceed, do it),
+  or a standing rule covers it, the next report says it is done or running. Asking again, or ending a
+  report on "shall I?", re-opens a closed decision.
+- **A report's last line is the next action and its owner.** `Next: <owner> <action> <when or trigger>`.
+  The rest of the report follows the `report-format` skill (`.claude/skills/report-format/`): headline,
+  numbers with unit/baseline/direction, running/queued with ETA, blocked on what until when and why, exact
+  operator commands from `scripts/session/pending_operator_cmds.py combined`, IDs expanded on first use.
+- **Re-probe a blocker older than one hour before repeating it.** `scripts/session/recheck_blocker.py`
+  (codex-login, which, python, model, disk, row); a CLEAR result means act, not report. A stale blocker
+  repeated as current is a false statement to the operator.
+
 ## Operator Decision Requests
 
 Applies **only** to items that pass the admission test above.

@@ -1,0 +1,30 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "gate_id": "RATIFY-OPERATOR-STEERING-20261121",
+  "status": "ratified",
+  "ratified_at": "2026-11-21T21:50:36Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "operator-steering": "2026-11-21 approval: non-hook mechanisms + three human-only rules (authorized action executed, not re-asked; report last line = next action + owner; re-probe a blocker older than 1 h)"
+  },
+  "base_origin_main": "2a46d139a7e3d17ddf5caa7a26e9810378a3fc4a",
+  "consolidated_receipt": "artifacts/operator/ratify_operator_steering_20261121.receipt.json",
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "8e69280549e66d09bfc28315bec2d584523fdbe97829b4fdbb2dbe806ec8e6f5",
+      "sha256_after": "7e5af9f8a61fdaa2c858a7f237630251651359c181690e0bfbbecb2ba6460063"
+    },
+    "agents/shared/SESSION_LIFECYCLE.md": {
+      "sha256_before": "8cd48b8cbeff9489be9963535f4ddb5114d4682fbc3b8e610939726e60f74eb8",
+      "sha256_after": "77064cc8b97e3615ee9996c6bdd9611013fe8a71b0be29152f06ab913987a047"
+    },
+    "CLAUDE.md": {
+      "sha256_before": "5e7b8b5a0f0e102d8576b625a399ab2aa9a723e8cd84b4bbbe73abc88c38f7f5",
+      "sha256_after": "910f9e0de59c751643c7c1fbcc417ede2ec95f54acedfac8501f459853d6116a"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_operator_steering_20261121.sh",
+  "ratify_script_sha256": "b3e8e092c43a13e51c72c45cb678fa2e0090996d702605845df949c581ee0712",
+  "processes_touched": []
+}

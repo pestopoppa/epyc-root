@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-OPERATOR-STEERING-20261121",
+  "indexed_by": "ratify",
+  "receipt": "artifacts/operator/ratify_operator_steering_20261121.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

@@ -97,6 +97,12 @@ X" as one nudge — send `/clear`, confirm it landed, then dispatch via a self-c
 file (origin: INC-20260728-cleared-context). **Recovery**: Codex prints `codex resume
 <session-id>` on clear — resume rather than rediscover if context was cleared by mistake.
 
+**Every boundary report ends on `Next:` + owner and repeats no unprobed blocker.** Whichever row above
+applies, the report that closes the boundary follows `OPERATING_CONSTRAINTS.md` → *Act, Don't Defer* →
+*Reporting and acting*: its last line is the next action and its owner, an authorized action is executed
+rather than re-asked, and a blocker older than one hour is re-probed (`scripts/session/recheck_blocker.py`)
+before it is repeated.
+
 ## Wrap-up cadence
 
 **Binding: one task done = one wrap-up, AS YOU GO.** The operator's rule of 2026-08-11 governs and
