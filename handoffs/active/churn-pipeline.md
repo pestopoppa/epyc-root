@@ -309,3 +309,31 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: A row with quiet_guard_regions is reported as guarding, not UNDERUSED, and its regions stay quiet.
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **AKPL-P0** [non-inference] AK parallel loop P0: instrument the tail (per-stage durations and lock wait into RESULT) and build estimate-from-history (per-family runtime percentiles, p75 x 1.25, overrun flag above 1.5x) consumed by row_scaffold.py. Design: docs/design/autokernel-parallel-loop.md §4.
+      · done when: ≥30 iterations of stage timings and a per-`unit_key` estimate table exist and `row_scaffold.py` can consume it (AK-TAIL-SPLIT GO/NO-GO data is a by-product).
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKPL-P1** [non-inference] AK parallel loop P1: gate evaluator + verdict filer. Pure function RESULT.json + graph_kld_policy.json + bench floors + PPL contract -> verdict.json (PASS/FAIL/NOISE/FUTILITY with gate id, thresholds, observed values), no LLM; wired to watch_rows.sh/runend.py. Design: docs/design/autokernel-parallel-loop.md §4.
+      · done when: replay agreement ≥95% with every disagreement explained; new rows file with zero LLM turns.
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKPL-P2** [non-inference] AK parallel loop P2: row-chain scaffolder + auto-republish. One candidate record -> build/oracle/timing/fold-check rows with lineage, supersedes and gate: deps; successor emitter on cap/rule change. Design: docs/design/autokernel-parallel-loop.md §4.
+      · done when: a management-session candidate (e.g. a C17 fold check) is driven end to end by the chain with the owner only approving the publish.
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKPL-P3** [non-inference] AK parallel loop P3: tail split (AK-TAIL-SPLIT) via rowflow. Lanes emit candidate records, the chain scaffolder publishes rows, the keeper packs them; only advance_champion CAS and the quiet timing row are exclusive; stale-lane rebase-and-recheck replaces redraw; --workers 1 legacy path kept. Design: docs/design/autokernel-parallel-loop.md §4.
+      · done when: two candidates are in build/gate concurrently while a third times on the GPU; device-busy fraction rises above the run-11 baseline (15.8%) on a measured campaign; no keep lands on a base it was not built from.
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKPL-P4** [non-inference] AK parallel loop P4: lineage/fold manager. Keep ledger, fold list (one feature per commit + test), presence manifest, DO-NOT-FOLD, Spec-D re-check rows auto-scaffolded; replaces the hand-driven C16/C17 mapping subagents. Design: docs/design/autokernel-parallel-loop.md §4.
+      · done when: the C-next fold list and presence gate are generated, not written, and the manager refuses a fold missing a test (DS41-C116 gate).
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKPL-P5** [non-inference] AK parallel loop P5: hand-back verifier + failure classifier. Mechanical handback-checklist.md; AK-FAILRULE-1 taxonomy as rules with a cheap-model fallback; harness failures auto-routed to the pipeline inbox. Design: docs/design/autokernel-parallel-loop.md §4.
+      · done when: every subagent hand-back carries a machine VERIFIED/UNVERIFIED stamp and harness failures no longer consume a main-thread turn.
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **AKPL-P6** [non-inference] AK parallel loop P6: decision-needed detector. Unresolved gate:/hold/cap -> draft 3-option package for the owner to send. Design: docs/design/autokernel-parallel-loop.md §4.
+      · done when: each AskUserQuestion in a week traces to a detector event. Promotion remains outside scope: the pipeline ends at a ratify package the operator signs (kernel-promotion skill).
+      · gate: none
+      · owner: pipeline-mgmt
