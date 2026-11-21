@@ -4,7 +4,7 @@
       "blocked": 28,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 593
+      "open": 591
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 463
+      "open": 471
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 130,
+      "closed": 133,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 61,
+      "open": 58,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 1,
-          "closed": 86,
+          "closed": 89,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -95,16 +95,16 @@
           "line": 810,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 53
+          "open": 50
         }
       ]
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 814,
+      "closed": 819,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 129,
+      "open": 133,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,11 +113,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 944,
+      "total": 953,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 378,
+          "closed": 383,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,14 +128,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 45
+          "open": 49
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 4779,
+          "line": 4832,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 4862,
+          "line": 4915,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5039,
+          "line": 5092,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 13
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 6928,
+          "line": 6981,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 45
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 9896,
+          "line": 9949,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10099,
+          "line": 10152,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20
@@ -505,7 +505,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-20",
       "needs_owner": 1,
-      "open": 44,
+      "open": 51,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -514,7 +514,7 @@
       },
       "row_id": "RTG-100",
       "state": "active",
-      "total": 136
+      "total": 143
     },
     "context-and-token-economy.md": {
       "blocked": 2,
@@ -757,11 +757,11 @@
     },
     "cpu-decode-roofline-program.md": {
       "blocked": 0,
-      "closed": 155,
+      "closed": 156,
       "guarded": 0,
       "last_advanced": "2026-11-21",
       "needs_owner": 8,
-      "open": 38,
+      "open": 37,
       "owner_index": "inference-research-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -775,7 +775,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 117,
+          "closed": 118,
           "gates": [
             "INF-65"
           ],
@@ -783,7 +783,7 @@
           "line": 100,
           "markers": 1,
           "name": "cpu-decode-roofline-program",
-          "open": 24
+          "open": 23
         },
         {
           "blocked": 0,
@@ -1180,10 +1180,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 239,
+      "closed": 240,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 32,
+      "open": 31,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1196,7 +1196,7 @@
       "tracks": [
         {
           "blocked": 2,
-          "closed": 195,
+          "closed": 196,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1207,7 +1207,7 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 30
+          "open": 29
         },
         {
           "blocked": 0,
@@ -1374,7 +1374,7 @@
       "closed": 444,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 76,
+      "open": 77,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1383,7 +1383,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 526,
+      "total": 527,
       "tracks": [
         {
           "blocked": 5,
@@ -1397,14 +1397,14 @@
           "line": 36,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 37
+          "open": 38
         },
         {
           "blocked": 1,
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1907,
+          "line": 1915,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 7
@@ -1417,7 +1417,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2347,
+          "line": 2355,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 32
@@ -2351,10 +2351,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 224,
+      "closed": 225,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 40,
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2377,7 +2377,7 @@
         },
         {
           "blocked": 1,
-          "closed": 103,
+          "closed": 104,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2386,7 +2386,7 @@
           "line": 872,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 31
+          "open": 30
         }
       ]
     },
