@@ -4,5 +4,10 @@
   "max_hold_s": 7200,
   "waiter_ttl_s": 7200,
   "waiter_ttl_cap_s": 1800,
-  "queue_dir": "/mnt/raid0/llm/tmp/queue"
+  "queue_dir": "/mnt/raid0/llm/tmp/queue",
+  "auto_release_idle": {
+    "enabled": true,
+    "idle_pct": 5.0,
+    "idle_min": 30
+  }
 }

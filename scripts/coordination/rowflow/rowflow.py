@@ -4705,6 +4705,60 @@ def underused(flags, holders, log, seen, sample=None, now=None, vram=None):
     return out
 
 
+def _cpu_ids(spec):
+    out = []
+    for t in str(spec or "").split(","):
+        a, _, b = t.strip().partition("-")
+        if a.isdigit():
+            out += list(range(int(a), int(b or a) + 1))
+    return out
+
+
+def build_idle_release(flags, holders, log, sample=None, now=None):
+    """Auto-release of an IDLE BUILD claim (pipeline-mgmt 2026-11-21; D9 standing AK ack). A build-* grant whose own CPUs
+    (build.json cpus) stay < idle_pct busy for idle_min minutes (policy build_pocket_policy.json: auto_release_idle) is ended
+    through release_grant(by=its owner, ended_reason=auto-released-idle-build) and logged BUILD-AUTO-RELEASED <id> idle <N>min.
+    Any busy tick resets the anchor. BUILD claims only: a measurement row is never touched. Never kills a process. Returns [ids]."""
+    pol = (build_pocket_policy(flags).get("auto_release_idle") or {})
+    if not pol.get("enabled"):
+        return []
+    now = now or time.time()
+    sample = cpu_sample() if sample is None else sample
+    thr, need_s = float(pol.get("idle_pct", 5.0)), float(pol.get("idle_min", 30)) * 60
+    p = os.path.join(state_dir(flags), "build_idle.json")
+    st = load_json(p) or {}
+    live = {rid for rid in holders.values() if str(rid).startswith(BUILD_PREFIX)}
+    new, out = {}, []
+    for rid in sorted(live):
+        bj = load_json(os.path.join(flags, "grants", rid + ".build.json")) or {}
+        cpus = _cpu_ids(bj.get("cpus"))
+        if not cpus:
+            continue
+        cur = {str(c): list(sample.get(c, (0, 0))) for c in cpus}
+        a = st.get(rid)
+        if not a:
+            new[rid] = {"ts": now, "cpu": cur}
+            continue
+        b0 = sum(a["cpu"].get(str(c), (0, 0))[0] for c in cpus); t0 = sum(a["cpu"].get(str(c), (0, 0))[1] for c in cpus)
+        b1 = sum(v[0] for v in cur.values()); t1 = sum(v[1] for v in cur.values())
+        pct = 100.0 * (b1 - b0) / (t1 - t0) if t1 > t0 else 100.0
+        if pct >= thr:
+            new[rid] = {"ts": now, "cpu": cur}   # busy: restart the idle window
+            continue
+        new[rid] = a
+        if now - a["ts"] >= need_s:
+            try:
+                if release_grant(flags, rid, str(bj.get("owner") or ""), "auto-released-idle-build", log=lambda m: None,
+                                 ended_reason="auto-released-idle-build") == "RELEASED":
+                    log(f"BUILD-AUTO-RELEASED {rid} idle {int((now - a['ts']) // 60)}min ({pct:.1f}% of its CPUs busy; no process killed)")
+                    out.append(rid)
+                    new.pop(rid, None)
+            except Refused as e:
+                log(f"BUILD-AUTO-RELEASE {rid}: refused: {e}")
+    atomic_json(p, new)
+    return out
+
+
 def shrink_suggest(flags, holders, under, since, now, log, emit=None):
     """F6 (AK audit B6): a row UNDERUSED on some held quarters for UNDERUSED_SHRINK_S gets ONE owner note through
     notify.emit: "shrink to <n> quarters" (n = held CPU quarters minus the underused ones, at least 1). Never acts."""
@@ -5230,7 +5284,7 @@ def reap_build_grants(flags, now=None, log=print):
     return out
 
 
-def release_grant(flags, rid, by, reason, regions=None, log=print, now=None):
+def release_grant(flags, rid, by, reason, regions=None, log=print, now=None, ended_reason="released-early"):
     """`rowflow.py release <id> --by <owner> --reason R [--regions q2,q1]`: the OWNER ends an idle/finished grant early (or
     shrinks it to the quarters it keeps) so the regions free on the keeper's next tick. Refused unless by == the row owner
     (ready manifest `owner`; a build grant: its build.json owner) and the job is NOT running: an engine/dry-run pid that is
@@ -5287,7 +5341,7 @@ def release_grant(flags, rid, by, reason, regions=None, log=print, now=None):
             except OSError as e:
                 log(f"GRANT-RELEASE {rid}: could not touch STOP {sf}: {e}")
     with open(os.path.join(G, rid + ".ended"), "w") as f:
-        f.write(f"rc=75 time={now_s} reason=released-early by={by} note={reason}\njob_id={rid}\n")
+        f.write(f"rc=75 time={now_s} reason={ended_reason} by={by} note={reason}\njob_id={rid}\n")
     os.replace(gp, gp + ".released-early")
     log(f"GRANT-RELEASED {rid}: ended by owner {by} reason={reason}; {','.join(sorted(g['holds'] & set(REGIONS))) or '-'} free next tick")
     return "RELEASED"
@@ -6293,6 +6347,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             log(f"ALERT-UNACKED check failed: {type(e).__name__}: {e}")
         idle_violation(flags, free, cands, out, mem_available_gib(), gpu_open, held_ports, log, util=util)
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
+        try:
+            build_idle_release(flags, holders, log)
+        except Exception as e:  # noqa: BLE001 - an auto-release fault must not stop allocation
+            log(f"BUILD-AUTO-RELEASE failed: {type(e).__name__}: {e}")
         repeat_alert(flags, seen, log)
     return out
 
