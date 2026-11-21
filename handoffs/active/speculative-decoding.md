@@ -31,6 +31,8 @@
       · done when: the knob is built in an experimental CPU store with a proof the binary contains it, and a d1k/d32k A/B RESULT.json reports tok/s and acceptance versus knob-off with a KEEP/DROP verdict
       · gate: DRAFT-HEAD-APPROX-RECALL PASS (met 2026-11-21, ak-draft-head-recall-cpu-20261120-r2q0)        · inputs: `/mnt/raid0/llm/tmp/ak-draft-head-recall-cpu-20261120-r2q0/out/RESULT.json`
       · expected gain: CPU Q38FN d1k +3.8% to +6.8% tok/s (83.3% of head MACs removed at recall@1 0.9963), d32k +1.3% to +3.4%; confidence low-medium
+      · rule: KEEP iff d1k tok/s geomean >= +4.15% with 95% CI lower > 0 AND pooled MTP acceptance drop <= 0.01 at d1k and d32k (ABBA, Q38FN CPU 24 threads q0); stop-on-answer when 6 valid ABBA blocks give KEEP/ACCEPT_FAIL/SPEED_FAIL; stop-on-futility on d1k CI upper < 4.15% or acceptance drop > 0.03 at the 3-block interim, 6 contention-rejected blocks, or a build/knob proof failure; gate-class = futility-only
+      · build: fork `llama.cpp-experimental-draft-head-svd-20261121` @ b5d6a32a6 (C16 13d6fc150 + knob LLAMA_MTP_DRAFT_HEAD_SVD), factors research fe9408e29 `make_svd_factors.py` (sha 67bf21b2 rank-256 Q8_0 sidecar)
 
 
       · result 2026-11-21 (ak-draft-head-recall-cpu-20261120-r2q0, rc=0, filed PASS): A1 faithful arithmetic sanity 100% on eligible rows, >=99% retained. Q38FN SVD rank 256 C16384 recall 99.6338%, low-margin 99.3164%, MACs removed 83.299%; A3B best eligible recall 99.1699% fails; 27B rank 512 C16384 recall 99.8291%, low-margin 99.7070%, MACs removed 83.196%, top-16 containment 99.2462%. N=4096 per head; trunk pre-head states are a proxy for MTP draft states. RESULT.json SHA-256 6bdc0c603b7809f985b8b086dfcc0ffb479e1770c5cf57de45054707c86107ef. [belief: cc]
