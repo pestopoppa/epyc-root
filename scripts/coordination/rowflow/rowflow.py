@@ -6075,7 +6075,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     if admit_hold:
         cands = []   # operator 2026-11-07: nothing new is granted; the reason was logged once on its transition
     qh_hold = None
-    if GPU in free and not dry and not admit_hold and not gpu_batch_running(flags) \
+    # 2026-11-21 (GPU idle 05:50-06:0xZ, queued smokes unrun): a DISK-PAUSE set admit_hold and gated the smoke batch too. A
+    # queued smoke is not a new admission the pause protects against; only an operator HOLD file stops the batch.
+    smoke_block = smoke_batch_blocked(flags)
+    if GPU in free and not dry and not smoke_block and not gpu_batch_running(flags) \
             and glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
         try:   # operator D9 2026-11-11 "Hold smokes": a quiet-host row about to start keeps the GPU free of a smoke batch
             qh_hold = quiet_host_smoke_hold(
@@ -6086,7 +6089,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         except Exception as e:  # noqa: BLE001 - a fault in the hold check never stops allocation; smokes run as before
             log(f"SMOKE-HOLD check failed: {type(e).__name__}: {e}")
             qh_hold = None
-    if not dry and not admit_hold and smoke_hold_lapsed(flags, qh_hold):
+    if not dry and not smoke_block and smoke_hold_lapsed(flags, qh_hold):
         log(f"SMOKE-HOLD-LAPSED {qh_hold[0]['id']}: held the queued GPU smokes > {QH_SMOKE_HOLD_MAX_S}s without starting; "
             "smokes run")
         qh_hold = None
@@ -6097,7 +6100,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                        f"({queued_gpu_batch_s(flags)}s) not started"}, log, persist=True)
     else:
         log_transition(flags, "smoke-hold", {}, log, persist=not dry)
-        if GPU in free and not dry and not admit_hold and start_gpu_batch(flags, log):
+        if GPU in free and not dry and not smoke_block and start_gpu_batch(flags, log):
             free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
     smoke_waits = []   # [(row, reason)]: ready rows taken out of the planner by WAIT-FOR-SMOKE; still named in IDLE-WHY
     qr = queued_gpu_min_rank(flags)   # operator 2026-11-06: a queued smoke competes by its OWN rank against ready rows
@@ -6324,6 +6327,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         elif any(r in o for c, _ in smoke_waits for o in c["options"]):
             sw = [w for c, w in smoke_waits if any(r in o for o in c["options"])]
             why = idle_why_line(sw[0], sw[1:])
+        if r == GPU:
+            why = gpu_idle_smoke_note(flags, why, smoke_block, qh_hold)
         log(f"IDLE-WHY {r}: {why}")
     for r, why in idle_partial_quarters(flags, free, busy, grants, holders).items():   # idle CPU quarters too
         log(f"IDLE-WHY {r}: {why}")
@@ -6639,6 +6644,34 @@ def release_gpu_batch(flags):
         os.remove(gpu_batch_lock(flags))
     except OSError:
         pass
+
+
+def smoke_batch_blocked(flags):
+    """Why the allocator must not start a queued-GPU-smoke batch, else None: an operator HOLD_* file or the operator's
+    HOLD-ADMISSIONS file. A DISK-PAUSE is NOT a reason (it gates new grants; a smoke is short and was starved by it)."""
+    holds = operator_holds(flags)
+    if holds:
+        return holds[0]
+    if os.path.exists(os.path.join(flags, diskpause.HOLD_FILE)):
+        return diskpause.HOLD_FILE
+    return None
+
+
+def gpu_idle_smoke_note(flags, why, blocked=None, qh_hold=None):
+    """IDLE-WHY gpu-quiet must name queued smokes: they are not planner candidates, so 'no runnable row needs it' lied."""
+    q = sorted(os.path.basename(os.path.dirname(x)) for x in glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")))
+    if not q:
+        return why
+    ids = ",".join(q[:5]) + (f",+{len(q) - 5}" if len(q) > 5 else "")
+    if blocked:
+        st = f"not started: operator hold {blocked}"
+    elif qh_hold:
+        st = f"held for quiet-host {qh_hold[0]['id']}"
+    elif gpu_batch_running(flags):
+        st = "batch running"
+    else:
+        st = "batch starts this tick"
+    return f"{why}; {len(q)} queued GPU smoke(s) ({ids}) {st}"
 
 
 def start_gpu_batch(flags, log):
