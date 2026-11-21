@@ -2351,7 +2351,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 219,
+      "closed": 220,
       "guarded": 0,
       "last_advanced": "2026-11-21",
       "open": 40,
@@ -2363,7 +2363,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 261,
+      "total": 262,
       "tracks": [
         {
           "blocked": 1,
@@ -2377,7 +2377,7 @@
         },
         {
           "blocked": 1,
-          "closed": 98,
+          "closed": 99,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
