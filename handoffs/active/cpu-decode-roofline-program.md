@@ -2007,7 +2007,8 @@ real gap, since **knowing WHICH arm was contended is exactly what a hot session 
       · done when: a patch on an experimental branch from fresh C14 with a bit-exact unit test against the AVX2 GEMV on the expert-down shapes, strings proof of the new symbol, and a filed decode micro A/B
       · gate: XFER-4b
       · seeded as AK hypothesis AK-H-IQ4NLZMM-1 (research seeds/hypotheses/16-kspec-sub3pct-levers-20261120.md) (operator 2026-11-20: <3% → AK loop, not hand-prepped)
-- [ ] **Q38FN-CPU-SAMPLER-SPLIT** [inference] Attribute the non-forward share of the Q38FN CPU MTP round (sampler top-k and sort, drafter, host bookkeeping) with one perf timestamp pass, and port a tile-local packed-key AVX-512 top-k with deterministic tie order only if the sampler is >= 3% of the round (intake-2755#record).
+- [x] **Q38FN-CPU-SAMPLER-SPLIT** [inference] Attribute the non-forward share of the Q38FN CPU MTP round (sampler top-k and sort, drafter, host bookkeeping) with one perf timestamp pass, and port a tile-local packed-key AVX-512 top-k with deterministic tie order only if the sampler is >= 3% of the round (intake-2755#record).
+      · ✅ 2026-11-21 answered from existing evidence, no new row: ak-q38fn-cpu-mtp-round-host-20261121 ANSWERED_NO_HOST_LEVER. The sampler sits inside the verify timer at 0.50% of the round at D1K (0.53 of 106.9 ms), and the whole non-forward share is 0.84%, below the 3% port threshold, so the futility clause is met. [no-belief: row verdict filed by agent]
       · done when: a per-component share table of the non-forward round time is filed under this box with the verdict: sampler >= 3% means port, otherwise close
       · gate: none
       · model: Qwen3.8-Flash-Next UD-IQ4_XS + MTP Q8_0 · build: current champion CPU build · harness: CPU MTP serving shape, perf record with timestamps over 5 x 96-token requests
