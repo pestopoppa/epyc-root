@@ -2005,6 +2005,23 @@ def contract_of(d, o=None, flags=None):
         shape = ("sub-quarter" if not nq else "quarter" if nq == 1 and not cpu_extra else
                  f"multi-quarter({min(nq, 3)})" if not cpu_extra else shape)
         floored = True
+    if regs.startswith("any-of") and not whole and not explicit:
+        # PM-ANYOF 2026-11-20 (lsa-cpu-sparse-e2e-bound-20261120-r1: "any-of q1,q2" granted q0): only the last
+        # derivation branch read the any-of set; every threads-known branch emitted all QUARTERS. The declared set
+        # is a hard allow-list for every option: quarter, core and sibling-thread tokens must all fall inside it.
+        allowed = {x.strip() for x in regs[len("any-of"):].split(",") if x.strip() in QUARTERS}
+
+        def _quarter_of(t):
+            if t in QUARTERS:
+                return t
+            m = re.fullmatch(r"[ct](\d+)", t)
+            if not m or (t[0] == "t" and int(m.group(1)) in GPU_HOST_THREADS):
+                return None   # not a cpu token, or an MI210 host thread (the GPU token's own business)
+            return f"q{(int(m.group(1)) % 96) // 24}"
+        inside = [x for x in opts if {_quarter_of(t) for t in x} - {None} <= allowed]
+        if allowed and not inside:   # declared width > set size: the whole set, never a quarter outside it
+            inside = [frozenset(allowed | gpu_tok)]
+        opts = inside or opts
     opts = [frozenset(compress(expand(x))) for x in opts if x] or [frozenset({q} | gpu_tok) for q in QUARTERS]
     held = max((len({t for t in expand(x) if t in CORES}) for x in opts), default=0)
     need_cores = held if (whole or gpu_use or threads is None or floored) else (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24))
