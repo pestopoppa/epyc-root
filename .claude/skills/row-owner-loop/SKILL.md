@@ -10,6 +10,7 @@ re-arm. Each step below is one paragraph plus its command; detail lives in `refe
 Canonical protocol (do not restate it): `docs/guides/agent-workflows/compute-fillers.md` (launcher,
 job side, publishing), `docs/guides/agent-workflows/backlog-churn-flow.md` (flow, the one rule no
 gate may break), `.claude/skills/inference-backlog-scheduling/` (bins, keeper, STATUS/ETA format).
+Every STATUS/ETA or run-end report to the operator uses `.claude/skills/report-format/` (template, jargon rule, `Next:` line); re-probe a repeated blocker with `scripts/session/recheck_blocker.py` and queue operator-only commands with `scripts/session/pending_operator_cmds.py add`.
 `S=/workspace/.claude/skills/row-owner-loop/scripts` below. What not to do: `references/stop-doing.md`.
 
 ## 0. Session start

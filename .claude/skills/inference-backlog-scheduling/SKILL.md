@@ -380,6 +380,8 @@ RAM ledger next 24 h: peak concurrent GiB per block (never two DS41-class items 
 `scripts/queue_status.py [--owner X] [--json]` produces the first sections read-only (rowflow state, not FILLERS.md); the
 critical path and the RAM ledger come from the writers' chains and the row RAM figures.
 
+**Wrap it in the `report-format` skill (2026-11-21).** Any STATUS/ETA answer to the operator follows `.claude/skills/report-format/SKILL.md` (headline, numbers with unit/baseline/direction, running/queued with ETA, blocked-on-what-until-when-why, exact operator commands, `Next:` + owner). `scripts/session/status_digest.py` prints the whole digest in one call; `scripts/session/idle_alarm.py --watch` (run_in_background) wakes you on idle-with-backlog instead of the operator.
+
 Add a `DECISIONS` line to the report: `python3 scripts/handoffs/verdict_count.py` (read-only) prints the DECIDED / RAN-NO-VERDICT / RAN-FAILED-ONLY / NEVER-RUN class counts and decisions per day, so the operator sees decisions/week (last 7 d vs prior 7 d), not only runs; `--json OUT` writes the full per-row table.
 
 ## Shared job templates: import, never copy (operator 2026-11-06)
