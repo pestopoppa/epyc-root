@@ -1,9 +1,9 @@
 {
  "session_id": "ak-intake-20261121",
  "started_at": "2026-11-21T11:40:00+00:00",
- "last_checkpoint": "2026-11-21T12:40:00+00:00",
- "stage": 1,
- "phase": "stage1-complete",
+ "last_checkpoint": "2026-11-21T15:30:00+00:00",
+ "stage": 3,
+ "phase": "stage3-plan-presented",
  "lane": "/workspace/.worktrees/ak-intake-20261121",
  "owner": "autokernel",
  "urls_processed": [
@@ -40,10 +40,23 @@
   "intake-2767",
   "intake-2768",
   "intake-2769",
-  "intake-2770"
+  "intake-2770",
+  "intake-2771",
+  "intake-2772",
+  "intake-2773",
+  "intake-2774",
+  "intake-2775",
+  "intake-2776",
+  "intake-2777",
+  "intake-2778",
+  "intake-2779",
+  "intake-2780",
+  "intake-2781",
+  "intake-2782",
+  "intake-2783"
  ],
  "entries_remaining": [],
- "next_intake_id": 2771,
+ "next_intake_id": 2784,
  "expansion": {
   "added": [
    "intake-2765",
@@ -72,7 +85,7 @@
    }
   ]
  },
- "stage2_sweeps": 0,
+ "stage2_sweeps": 1,
  "steering_ledger": [
   {
    "seq": 1,
@@ -195,5 +208,44 @@
    "reason": "Stage-1 ranking and Stage-3 grounding context; final disposition assigned in the Stage-3 plan reconciliation"
   }
  ],
- "previous_session": "intake-dtree-verify-20261120"
+ "previous_session": "intake-dtree-verify-20261120",
+ "stage2b_waves": 2,
+ "stage2_dived": [
+  "intake-2752",
+  "intake-2753",
+  "intake-2754",
+  "intake-2755",
+  "intake-2756",
+  "intake-2757",
+  "intake-2758",
+  "intake-2759",
+  "intake-2760",
+  "intake-2761",
+  "intake-2762",
+  "intake-2763",
+  "intake-2764",
+  "intake-2765",
+  "intake-2766",
+  "intake-2767",
+  "intake-2768",
+  "intake-2769",
+  "intake-2770"
+ ],
+ "stage2b_dived": [
+  "intake-2771",
+  "intake-2772",
+  "intake-2773",
+  "intake-2774",
+  "intake-2775",
+  "intake-2776",
+  "intake-2777",
+  "intake-2778",
+  "intake-2779",
+  "intake-2780",
+  "intake-2781",
+  "intake-2782",
+  "intake-2783"
+ ],
+ "plan_file": "/mnt/raid0/llm/tmp/ak-intake-20261121-plan.md",
+ "actionable_ledger": []
 }
