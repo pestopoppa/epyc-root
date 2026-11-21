@@ -365,13 +365,41 @@ class TestFileResult(Base):
         self.assertEqual(v["outcome_class"], "PARTIAL-VERDICT")
         self.assertTrue(self.filed("akx-lb3-2-cv5-pair-r2"))
 
-    def test_missing_result_file_is_inconclusive(self):
+    def test_missing_result_file_is_withdrawn_no_claim(self):
+        # NO RESULT -> NO CLAIM (operator ruling 2026-11-21): no successor -> WITHDRAWN, never inconclusive
         self.row("akx-lb3-2-cv5-pair-r2", "tps >= 1", None)
         code, _, _ = self.run_main("akx-lb3-2-cv5-pair-r2")
         self.assertEqual(code, 0)
         v = self.verdict("akx-lb3-2-cv5-pair-r2")
-        self.assertEqual(v["row_verdict"], "inconclusive")
-        self.assertFalse(v["result_exists"])
+        self.assertEqual(v["row_verdict"], "WITHDRAWN")
+        self.assertIn("no result -> no claim", v["reason"])
+
+    def test_no_result_with_successor_is_superseded(self):
+        self.row("akx-lb3-2-cv5-pair-r2", "tps >= 1", None, rc=75)
+        self.row("akx-lb3-2-cv5-pair-r3", "tps >= 1", {"tps": 2})
+        m = json.loads(Path(self.flags, "ready", "akx-lb3-2-cv5-pair-r3.json").read_text())
+        m["supersedes"] = "akx-lb3-2-cv5-pair-r2"
+        Path(self.flags, "ready", "akx-lb3-2-cv5-pair-r3.json").write_text(json.dumps(m))
+        code, _, _ = self.run_main("akx-lb3-2-cv5-pair-r2")
+        self.assertEqual(code, 0)
+        v = self.verdict("akx-lb3-2-cv5-pair-r2")
+        self.assertEqual(v["row_verdict"], "SUPERSEDED")
+        self.assertEqual(v["superseded_by"], "akx-lb3-2-cv5-pair-r3")
+
+    def test_unfinished_run_agent_inconclusive_becomes_no_claim(self):
+        self.row("akx-lb3-2-cv5-pair-r2", "judge by eye", {"x": 1}, rc=143)
+        vj = os.path.join(self.tmp.name, "v.json")
+        Path(vj).write_text(json.dumps({"verdict": "inconclusive", "rationale": "killed at 3 of 9"}))
+        code, _, _ = self.run_main("akx-lb3-2-cv5-pair-r2", "--verdict-json", vj)
+        self.assertEqual(code, 0)
+        self.assertEqual(self.verdict("akx-lb3-2-cv5-pair-r2")["row_verdict"], "WITHDRAWN")
+
+    def test_finished_run_missing_metric_stays_inconclusive(self):
+        # ran to a finished RESULT but could not decide: inconclusive is reserved for exactly this
+        self.row("akx-lb3-2-cv5-pair-r2", "tps >= 1", {"other": 1})
+        code, _, _ = self.run_main("akx-lb3-2-cv5-pair-r2")
+        self.assertEqual(code, 0)
+        self.assertEqual(self.verdict("akx-lb3-2-cv5-pair-r2")["row_verdict"], "inconclusive")
 
     def test_jsonl_last_record_and_units(self):
         self.row("akx-lb3-2-cv5-pair-r2", "units >= 3 and acc > 0.8", [{"acc": 0.1}, {"acc": 0.2}, {"acc": 0.9}], fmt="jsonl", end=".complete")

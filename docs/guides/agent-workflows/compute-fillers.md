@@ -80,6 +80,24 @@ A new incident class = a new scenario in `tests/replay/scenarios.py`, never a ne
 - **Keep rows ready ahead of the current ones.** There is no timer to refill the queue: on 2026-11-09 the day's rows ended about 19:30Z with none behind them and the host sat idle. Publish the next rows while the last are running.
 - A row that builds from the C9 configure argv (`-DLLAMA_LLGUIDANCE=ON`) needs `cargo`: put the pinned toolchain from the build identity's INPUTS.json (`rust-*/bin`) first on PATH with an empty CARGO_HOME, or `llama-bench`/`common` fail with `cargo: not found` (hit twice on 2026-11-09).
 
+## Filing rule: no result → no claim (operator 2026-11-21)
+
+A row that never produced a **finished RESULT** — no result file, the job did not end rc 0, or the record
+says `complete:false` — is filed **SUPERSEDED** if a successor row exists (a manifest names it in
+`supersedes`, or a later attempt of its family), otherwise **WITHDRAWN**. It is **never** filed
+inconclusive. Inconclusive is reserved for a row that ran to a finished RESULT but could not decide.
+A measured FAIL declared by the job (stop-on-futility negative) stays a fail.
+
+- `file_result.py` defaults to this when there is no finished RESULT (`filing.finished_result`,
+  `filing.no_result_successor`); an agent `inconclusive` on such a row is converted. Owners need not
+  remember it.
+- `gate_eval.py` (research `autokernel/loop`) returns SUPERSEDED/WITHDRAWN under gate id
+  `filing.no_result_no_claim`; `runend.py <row> --gate-eval --file` files policy-decided verdicts with
+  zero LLM turns.
+- Row templates carry polar verdict tokens: `"polar": "PASS"|"FAIL"` beside the named answer, and
+  `FUTILITY_HARNESS_<WHY>` (harness/instrument, inconclusive) vs `FUTILITY_CANDIDATE_<WHY>` (candidate
+  negative, fail). The legacy tokens are still read.
+
 ## Job-side rules (each bought by an incident; dates in the skill's incident ledger)
 
 - fold-build rows must write VERSION.txt + SHA256SUMS + PROVENANCE.md into each store (re-anchor find_store_build requires them)

@@ -105,6 +105,55 @@ Caveat: the layer-L3 token vocabulary was written while reading this same corpus
 - `rka-a3b-gpu-d-np-sweep-20261118-r3`: declared DROP_MULTI (no D2 np gain >= 3%) but the owner filed the RECOMMEND_D2 answer as pass: the row asked two questions; the RESULT verdict answers only one (row-convention bug: one polar token per row).
 - `s3-aku-13-loo-cpu-c14-20261118`: MEASURED (data collected) but the owner filed inconclusive because the Goodhart count was 4/5 against a rule needing 5/5; polarity only in prose (same class as E).
 
+## Re-run under the 2026-11-21 filing rule
+
+Operator ruling 2026-11-21: **no result → no claim**. A row with no finished RESULT is SUPERSEDED when a
+successor exists, otherwise WITHDRAWN, never inconclusive. `gate_eval` now applies it (gate id
+`filing.no_result_no_claim`). "Finished" means a RESULT exists, the job ended rc 0 (any end reason) and the
+record does not say `complete:false`. Polar tokens (`polar`, `FUTILITY_HARNESS_*`, `FUTILITY_CANDIDATE_*`) are
+accepted next to the legacy vocabulary. No historical row carries them yet, so they do not change this replay.
+
+"Ruled" agreement re-reads each owner label under the rules in force today. A no-result row's correct label is
+the rule's. A lifecycle label on a row that ran to a finished RESULT means "ran but could not decide", which is
+inconclusive. A pass on `DROP(diagnostic…)` is inconclusive under FILER-DROP-AS-PASS-GUARD (bba1c010a). The
+no-result part agrees **by construction**: the ruling defines the label. It is reported as such.
+
+| Measure (472 filings, owner autokernel, since 2026-11-06) | Before (P1 code at origin) | After |
+|---|---|---|
+| Strict agreement vs historical owner labels | 393/472 = 83.3% | 392/472 = 83.0% |
+| Ruled agreement (labels re-read under today's rules) | — | **444/472 = 94.1%** |
+| Policy-decided verdicts agreeing (filable with 0 LLM turns) | — | 109/110 |
+
+Per group (the categories of the disagreement table above; "agreed-in-P1" = rows that agreed in the first replay):
+
+| Group | Strict before | Strict after | Ruled after |
+|---|---|---|---|
+| agreed-in-P1 | 393/393 | 390/393 | 393/393 |
+| A lifecycle label | 0/12 | 0/12 | 12/12 |
+| B no-claim vs inconclusive | 0/21 | 2/21 | 21/21 |
+| B2 completed run, harness failure, filed no-claim | 0/9 | 0/9 | 7/9 |
+| C DROP(diagnostic) filed pass/fail | 0/6 | 0/6 | 4/6 |
+| D overloaded FUTILITY token | 0/12 | 0/12 | 0/12 |
+| E polarity only in prose | 0/3 | 0/3 | 0/3 |
+| F no out/RESULT | 0/8 | 0/8 | 7/8 |
+| G owner judged the instrument | 0/6 | 0/6 | 0/6 |
+| H other | 0/2 | 0/2 | 0/2 |
+
+By ruled label: SUPERSEDED 80/80, WITHDRAWN 20/20, pass 157/163, fail 96/106, inconclusive 91/103.
+
+**94.1% is below the ≥95% gate, so AKPL-P1 stays open.** The 28 rows that still disagree:
+- D + E + H (17) are row-template bugs. The polar tokens fix them for new rows only. Historical rows cannot be
+  re-tokenised without inventing what their RESULT never said.
+- G (6) is the owner's noise-vs-regression judgment (critic tier).
+- C (2) are DROP(diagnostic) rows filed fail. B2 (2): `c17-fold-gpu-20261121` declared FAIL on a finished run,
+  filed SUPERSEDED, and `lb49-sinks-identity-cpu-20261110` declared FAIL(build). F (1): `c6-port35186-remeasure-r2`.
+  For these, rc 0 with a RESULT but no verdict.
+
+What would close P1: a holdout of filings made after the polar tokens land
+(`python3 -m autokernel.loop.gate_eval_replay --since 2026-11-22 --categories <this file>`) at ≥95%. That needs
+the AK loop running again. Zero-LLM filing is wired: `runend.py <row> --gate-eval --file` files a
+`policy_decided` verdict at once and exits 4 with a draft otherwise.
+
 ## Every disagreement
 
 | Row | Human | Evaluator | Gate | Declared | Cat |

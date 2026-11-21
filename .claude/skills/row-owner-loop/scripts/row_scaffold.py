@@ -188,10 +188,14 @@ QUESTION  {model}
           TODO: the one question this row answers.
 SOURCE    TODO: binary/tree + content proof (sha / symbol).
 STEPS     TODO: units ({units} x ~{unit_s} s).
-RULE      TODO: pre-registered, first match wins; FUTILITY_* / FAIL(...) / PASS(...).
+RULE      TODO: pre-registered, first match wins. RESULT.json carries ONE polar token per row:
+          "polar": "PASS" | "FAIL" (beside the named answer in "verdict"); a futility outcome is split:
+          FUTILITY_HARNESS_<WHY> (instrument/harness/input, candidate not judged -> inconclusive) vs
+          FUTILITY_CANDIDATE_<WHY> (a measured negative about the candidate -> fail). gate_eval reads these.
+          No finished RESULT -> no claim: the row files SUPERSEDED/WITHDRAWN, never inconclusive.
 STOP      on-answer: TODO. on-futility: TODO. rc 75 only on STOP file / FILLER_DEADLINE.
 """
-{gpu_block}raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json)")
+{gpu_block}raise SystemExit("TODO: implement job (write out/results.jsonl and out/RESULT.json with complete, verdict, polar)")
 '''
 RESEARCH_REPO = "/mnt/raid0/llm/epyc-inference-research"  # shared clone: fetch + `git show` only, never its tree/branch/index
 HARNESS_PATH = "scripts/kernel_rnd/autokernel/harness"
@@ -199,14 +203,14 @@ HARNESS_FILES = ("gpu_common.py", "gpuproof_row.py")
 GPU_JOB_T = '''
 # GPU lane: the canonical row helpers were copied INTO this row dir by row_scaffold.py from research {gpu_ref} @ {gpu_commit}
 # ({harness_path}); never hand-edit them. The sha256 pins below are checked at start, so an edited copy is a
-# FUTILITY_MISSING_INPUT, not a silent change. Both files are also listed in SOURCE.sha256.
+# FUTILITY_HARNESS_MISSING_INPUT, not a silent change. Both files are also listed in SOURCE.sha256.
 import hashlib, os, sys
 ROW_DIR = os.path.dirname(os.path.abspath(__file__))
 GPU_COMMON_SHA256 = "{gpu_common_sha}"
 GPUPROOF_ROW_SHA256 = "{gpuproof_row_sha}"
 for _n, _s in (("gpu_common.py", GPU_COMMON_SHA256), ("gpuproof_row.py", GPUPROOF_ROW_SHA256)):
     if hashlib.sha256(open(os.path.join(ROW_DIR, _n), "rb").read()).hexdigest() != _s:
-        raise SystemExit(f"FUTILITY_MISSING_INPUT: {{_n}} sha256 differs from the scaffold pin")
+        raise SystemExit(f"FUTILITY_HARNESS_MISSING_INPUT: {{_n}} sha256 differs from the scaffold pin")
 sys.path.insert(0, ROW_DIR)
 import gpu_common as G  # noqa: E402  (residency_from_proof gates < 2 s children on the in-process witness + LD_DEBUG proof)
 '''
@@ -233,14 +237,16 @@ def fetch_harness(repo: str, ref: str = "origin/main") -> tuple[str, dict[str, b
 
 
 CHECK_T = '''#!/usr/bin/python3
-"""rc 0 iff THIS row's out/RESULT.json is complete with a terminal verdict; smoke never counts."""
+"""rc 0 iff THIS row's out/RESULT.json is complete with a terminal verdict AND one polar token; smoke never counts.
+Polar token: "polar": "PASS"|"FAIL", or a split futility verdict FUTILITY_HARNESS_* / FUTILITY_CANDIDATE_*."""
 import json, sys
 try:
     r = json.load(open("{dir}/out/RESULT.json"))
 except (OSError, ValueError):
     sys.exit(1)
 v = str(r.get("verdict") or "")
-sys.exit(0 if r.get("complete") is True and v.startswith(("PASS", "KEEP", "DROP", "FAIL", "FUTILITY")) else 1)
+polar = str(r.get("polar") or "").upper() in ("PASS", "FAIL") or v.startswith(("FUTILITY_HARNESS", "FUTILITY_CANDIDATE"))
+sys.exit(0 if r.get("complete") is True and polar and v.startswith(("PASS", "KEEP", "DROP", "FAIL", "FUTILITY")) else 1)
 '''
 
 

@@ -496,6 +496,24 @@ def successor_of(rid, mans, wd, new_id=None, explicit=()):
     return best
 
 
+def finished_result(rc, endline, metrics, result_exists):
+    """True when the row produced a FINISHED RESULT: a result file exists, the job ended rc 0 (any end reason:
+    complete, direct-run, exited, build-window), and the record does not say complete:false. NO RESULT -> NO CLAIM
+    (operator ruling 2026-11-21): a row that is not finished is filed SUPERSEDED / WITHDRAWN, never inconclusive."""
+    if not result_exists or rc not in (0, "0"):
+        return False
+    return not (isinstance(metrics, dict) and metrics.get("complete") is False)
+
+
+def no_result_successor(flags, rid):
+    """The successor row id for a no-result filing (a manifest naming rid in `supersedes`, or a later attempt of the
+    same family), or None. The ruling's default verdict is SUPERSEDED when this is set, otherwise WITHDRAWN."""
+    mans = load_all_manifests(flags)
+    if rid not in mans:
+        return None
+    return successor_of(rid, mans, os.path.join(flags, "ready", ".withdrawn") + os.sep)
+
+
 def _names_as_superseded(mans, succ, rid):
     """True when the successor's manifest lists rid in its `supersedes` (a list, or one id)."""
     named = (mans.get(succ, (None, {}))[1] or {}).get("supersedes") or []

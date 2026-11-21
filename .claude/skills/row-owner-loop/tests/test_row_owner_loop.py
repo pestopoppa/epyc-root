@@ -224,3 +224,64 @@ def test_runend_gate_eval_draft_uses_the_evaluator(tmp_path, monkeypatch):
     v = runend.gate_eval_draft("row-g", kernel_rnd=str(tmp_path / "kr"))
     assert v["verdict"] == "fail" and v["drafted_by"] == "gate_eval"
     assert "graph_kld.gpu.q38_27b" in v["rationale"] and runend.lint_verdict(v) == []
+
+
+def _gdraft(verdict, decided, gate="graph_kld.gpu.q38_27b"):
+    return lambda row: {"verdict": verdict, "rationale": f"gate_eval {gate}: rc=0", "native_verdict": "",
+                        "answer": verdict.upper(), "gate_eval": {"gate_id": gate}, "policy_decided": decided}
+
+
+def test_runend_gate_eval_file_autofiles_policy_decided(tmp_path, monkeypatch):
+    monkeypatch.setattr(runend, "TMP", str(tmp_path))
+    (tmp_path / "row-a").mkdir()
+    filed = []
+    rc = runend.auto_file("row-a", "o", draft_fn=_gdraft("fail", True), file_fn=lambda r, o: filed.append(r) or 0)
+    assert rc == 0 and filed == ["row-a"]          # zero LLM turns: filed straight from the evaluator
+    assert json.load(open(tmp_path / "row-a" / "verdict.json"))["verdict"] == "fail"
+
+
+def test_runend_gate_eval_file_refuses_non_policy_decided(tmp_path, monkeypatch):
+    monkeypatch.setattr(runend, "TMP", str(tmp_path))
+    (tmp_path / "row-b").mkdir()
+    filed = []
+    rc = runend.auto_file("row-b", "o", draft_fn=_gdraft("fail", False, "declared.negative"),
+                          file_fn=lambda r, o: filed.append(r) or 0)
+    assert rc == 4 and filed == [] and (tmp_path / "row-b" / "verdict.json").exists()
+
+
+def test_runend_file_row_terminal_skips_lint(tmp_path, monkeypatch):
+    # a no-result rule verdict (SUPERSEDED/WITHDRAWN) is filed through file_result's terminal path, not linted
+    monkeypatch.setattr(runend, "TMP", str(tmp_path))
+    monkeypatch.setattr(runend, "FLAGS", str(tmp_path / "flags"))
+    (tmp_path / "row-c").mkdir()
+    (tmp_path / "row-c" / "verdict.json").write_text(json.dumps({"verdict": "WITHDRAWN", "rationale": "no result"}))
+    calls = []
+
+    class R:
+        returncode = 0
+
+    def fake_run(cmd, **kw):
+        calls.append(cmd)
+        if "file_result.py" in " ".join(map(str, cmd)):
+            os.makedirs(tmp_path / "flags" / "filing-done", exist_ok=True)
+            (tmp_path / "flags" / "filing-done" / "row-c.FILED").write_text("FILED")
+        return R()
+    assert runend.file_row("row-c", "o", run=fake_run) == 0
+    assert any("--verdict-json" in c for c in calls)
+
+
+def test_check_complete_requires_polar_token(tmp_path):
+    (tmp_path / "out").mkdir()
+    chk = tmp_path / "check_complete.py"
+    chk.write_text(rs.CHECK_T.format(dir=str(tmp_path)))
+    res = tmp_path / "out" / "RESULT.json"
+
+    def rc(d):
+        res.write_text(json.dumps(d))
+        return subprocess.run([sys.executable, str(chk)]).returncode
+    assert rc({"complete": True, "verdict": "FAIL(x)"}) == 1                     # no polar token
+    assert rc({"complete": True, "verdict": "FAIL(x)", "polar": "FAIL"}) == 0
+    assert rc({"complete": True, "verdict": "FUTILITY_HARNESS_INPUT"}) == 0
+    assert rc({"complete": True, "verdict": "FUTILITY_CANDIDATE_BELOW_BASELINE"}) == 0
+    assert rc({"complete": False, "verdict": "PASS", "polar": "PASS"}) == 1
+    assert "FUTILITY_CANDIDATE" in rs.JOB_T and '"polar"' in rs.JOB_T

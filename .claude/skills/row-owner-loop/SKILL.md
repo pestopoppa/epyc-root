@@ -52,6 +52,17 @@ rationale must cite numbers). Review the draft against the pre-registered RULE, 
 `python3 $S/runend.py <row> --file` — it files from a pinned detached `origin/main` worktree,
 confirms `filing-done/<row>.FILED`, and prints the tick-line draft with its belief tag.
 
+**No result → no claim** (operator ruling 2026-11-21). A row that never produced a FINISHED RESULT
+(no RESULT, job not ended rc 0, or `complete:false`) is filed **SUPERSEDED** when a successor row exists,
+otherwise **WITHDRAWN** — never inconclusive. Inconclusive is only for a row that ran to a finished
+RESULT but could not decide. `file_result.py` and `gate_eval` apply this by default; a declared
+measured FAIL is still a fail. Zero-LLM filing: `python3 $S/runend.py <row> --gate-eval --file`
+files at once when the evaluator marks the verdict `policy_decided` (policy gate, lifecycle,
+no-result rule, polar token) and otherwise leaves the draft and exits 4 for owner review.
+Row templates (`row_scaffold.py`) write one polar token per row — `"polar": "PASS"|"FAIL"` beside the
+named answer — and split futility as `FUTILITY_HARNESS_<WHY>` (inconclusive) vs
+`FUTILITY_CANDIDATE_<WHY>` (fail); `check_complete.py` refuses a RESULT without one.
+
 ## 5. Tick
 Re-read the box's own done-when text before ticking; a result on a different binary/tree than the
 box names is a note, not a tick (§2.12). The tick line states the verdict and numbers on the line,

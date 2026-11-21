@@ -12,6 +12,10 @@ Reads the epyc.row.v3 manifest (<flags>/ready/<id>.json or ready/*/<id>.json), t
 of `<metric> <op> <number>[%]` (ops < <= > >= == !=, `and`/`or`, parentheses). `%` and a leading
 sign are notation only: the metric is compared against the bare number.
 
+NO RESULT -> NO CLAIM (operator ruling 2026-11-21): a row with no FINISHED RESULT (no result file, run not ended rc 0
+complete, or complete:false) whose verdict would be inconclusive / needs-agent is filed SUPERSEDED (a successor row
+exists: filing.no_result_successor) or WITHDRAWN by default - never inconclusive. A measured pass/fail stays as decided.
+
 Exit codes: 0 verdict filed (pass|fail|inconclusive — a missing metric is inconclusive, never pass);
 4 NEEDS-AGENT-VERDICT (rule not machine-checkable and no --verdict-json); 2 manifest or end record
 missing / bad --verdict-json; 5 checkbox tick failed (verdict still written, FILED not touched);
@@ -489,7 +493,20 @@ def main(argv=None):
     if declared:   # F3: the machine rule passed but the record itself says DROP(...)/FUTILITY_/diagnostic
         coerced_from, verdict = "pass", "inconclusive"
         reason = f"[coerced pass->inconclusive: result record declares {declared[:120]}] {reason or ''}".strip()
-    if window_end_resumable(m, rc, endline) and verdict != "pass":
+    resumable_end = window_end_resumable(m, rc, endline)
+    if not resumable_end and not filing.finished_result(rc, endline, metrics, sha is not None) \
+            and (not machine or verdict == "inconclusive") and (agent is None or agent.get("verdict") == "inconclusive"):
+        # NO RESULT -> NO CLAIM (operator ruling 2026-11-21): a row that never produced a finished RESULT is filed
+        # SUPERSEDED when a successor row exists, otherwise WITHDRAWN - never inconclusive. Owners need not remember it.
+        succ = filing.no_result_successor(flags, rid)
+        term = "SUPERSEDED" if succ else "WITHDRAWN"
+        note = (f"no finished RESULT (rc={rc}, result_exists={sha is not None}); no result -> no claim "
+                f"(filing rule 2026-11-21)" + (f"; was {agent['verdict']}" if agent else ""))
+        r = filing.file_terminal(flags, rid, term, by=str((agent or {}).get("filed_by") or "file_result.py:no-result-rule"),
+                                 superseded_by=succ, note=note, reclaim=not a.no_reclaim, dry_run=a.dry_run)
+        print(r)
+        return 0 if r in ("FILED", "NOOP") else 2
+    if resumable_end and verdict != "pass":
         # ONE BOOKING DURATION (pipeline audit 2026-11-10 #3): a resumable row's window end is a normal end
         verdict, machine = "partial", True
         reason = "resumable row reached its window end: partial, resumes (republish the next round; the job continues from its checkpoint)"

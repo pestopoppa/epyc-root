@@ -5,6 +5,10 @@
   runend.py <row> --gate-eval     draft it with the deterministic gate evaluator instead (AKPL-P1, no LLM):
                                   epyc-inference-research autokernel.loop.gate_eval — graph_kld_policy.json,
                                   bench speed floors, PPL contract, declared-verdict vocabulary
+  runend.py <row> --gate-eval --file
+                                  ZERO-LLM filing: draft with gate_eval and, when the evaluator marks the verdict
+                                  policy_decided (policy gate, lifecycle, the no-result rule, a polar token), file
+                                  it at once; otherwise write the draft and exit 4 (owner review)
   runend.py <row> --file          after review: run file_result.py from a pinned detached origin/main
                                   worktree, confirm filing-done/<row>.FILED, print the tick-line draft
   runend.py --check-cc <file.md>  list `[belief: cc]` lines in <file.md> with no register row
@@ -13,6 +17,9 @@ Verdict mapping (mirrors file_result.coerce_declared_nonpass, stricter): a nativ
 reason that declares DROP / FUTILITY* / STOPPED / INCONCLUSIVE / rc 75 / rc 143 / partial is NEVER
 `pass`; FAIL* / crash -> fail; PASS / KEEP -> pass only when the run ended reason=complete.
 The draft's rationale must cite at least one number (lint_verdict refuses one that doesn't).
+
+NO RESULT -> NO CLAIM (operator ruling 2026-11-21): a row with no finished RESULT files SUPERSEDED (a successor
+row exists) or WITHDRAWN, never inconclusive; inconclusive is for a row that ran but could not decide.
 """
 from __future__ import annotations
 
@@ -98,6 +105,19 @@ RESEARCH_KERNEL_RND = os.environ.get("AK_RESEARCH_KERNEL_RND",
                                     "/mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd")
 
 
+CHURN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "..", "scripts", "coordination", "churn")
+
+
+def successor(row: str, flags: str = FLAGS) -> str | None:
+    """The row's successor (filing.no_result_successor), or None. Best effort: None on any import/read failure."""
+    try:
+        sys.path.insert(0, os.path.realpath(CHURN))
+        import filing
+        return filing.no_result_successor(flags, row)
+    except Exception:   # noqa: BLE001
+        return None
+
+
 def gate_eval_draft(row: str, kernel_rnd: str = RESEARCH_KERNEL_RND) -> dict:
     """verdict.json draft from autokernel.loop.gate_eval (pure, deterministic). Raises on evaluator failure."""
     res = os.path.join(TMP, row, "out", "RESULT.json")
@@ -105,11 +125,15 @@ def gate_eval_draft(row: str, kernel_rnd: str = RESEARCH_KERNEL_RND) -> dict:
     cmd = [sys.executable, "-m", "autokernel.loop.gate_eval", res, "--row", row]
     if os.path.exists(ep):
         cmd += ["--ended", ep]
+    succ = successor(row)
+    if succ:
+        cmd += ["--successor", succ]
     out = subprocess.run(cmd, cwd=kernel_rnd, capture_output=True, text=True, timeout=120, check=True).stdout
     g = json.loads(out)
     return {"verdict": g["filed_verdict"], "rationale": f"gate_eval {g['gate_id']} ({g['verdict']}): {g['rationale']}",
             "native_verdict": g.get("native_verdict") or "", "answer": g["verdict"], "gate_eval": g,
-            "drafted_by": "gate_eval"}
+            "drafted_by": "gate_eval", "policy_decided": bool(g.get("policy_decided")),
+            "superseded_by": g.get("successor"), "filed_by": "runend --gate-eval (policy-decided, 0 LLM turns)"}
 
 
 def tick_line(row: str, v: dict, sha: str = "<commit>") -> str:
@@ -118,23 +142,24 @@ def tick_line(row: str, v: dict, sha: str = "<commit>") -> str:
             f" (filed {v['verdict']}): {v['rationale']} Evidence: `{TMP}/{row}/out/RESULT.json`, {sha}. {tag}")
 
 
-def file_row(row: str, owner: str) -> int:
+def file_row(row: str, owner: str, run=subprocess.run) -> int:
     vpath = os.path.join(TMP, row, "verdict.json")
     v = json.load(open(vpath))
-    errs = lint_verdict(v)
+    terminal = v.get("verdict") in ("SUPERSEDED", "WITHDRAWN")
+    errs = [] if terminal else lint_verdict(v)
     if errs:
         print("REFUSED verdict.json: " + "; ".join(errs))
         return 2
-    subprocess.run(["git", "-C", ROOT, "fetch", "-q", "origin"], check=True)
+    run(["git", "-C", ROOT, "fetch", "-q", "origin"], check=True)
     wt = tempfile.mkdtemp(prefix=f"runend-{row}-", dir=os.path.join(TMP))
     os.rmdir(wt)
-    subprocess.run(["git", "-C", ROOT, "worktree", "add", "--detach", wt, "origin/main"], check=True,
-                   stdout=subprocess.DEVNULL)
+    run(["git", "-C", ROOT, "worktree", "add", "--detach", wt, "origin/main"], check=True, stdout=subprocess.DEVNULL)
     try:
-        rc = subprocess.run([sys.executable, os.path.join(wt, "scripts/coordination/churn/file_result.py"), row,
-                             "--verdict-json", vpath, "--filed-by", owner]).returncode
+        # file_result.py takes {verdict: SUPERSEDED|WITHDRAWN, superseded_by, rationale} through --verdict-json too
+        rc = run([sys.executable, os.path.join(wt, "scripts/coordination/churn/file_result.py"), row,
+                  "--verdict-json", vpath, "--filed-by", owner]).returncode
     finally:
-        subprocess.run(["git", "-C", ROOT, "worktree", "remove", wt])
+        run(["git", "-C", ROOT, "worktree", "remove", wt])
     filed = os.path.join(FLAGS, "filing-done", f"{row}.FILED")
     if rc != 0 or not os.path.exists(filed):
         print(f"NOT FILED rc={rc} ({filed} missing)")
@@ -144,6 +169,23 @@ def file_row(row: str, owner: str) -> int:
     print(tick_line(row, v))
     print("then: register row via `python3 scripts/vidya/cli.py conclusion add …` and re-arm watch_rows.sh")
     return 0
+
+
+def auto_file(row: str, owner: str, force: bool = False, draft_fn=None, file_fn=None) -> int:
+    """`--gate-eval --file`: zero-LLM filing of a policy-decided verdict; anything else -> draft + exit 4."""
+    v = (draft_fn or gate_eval_draft)(row)
+    vpath = os.path.join(TMP, row, "verdict.json")
+    if os.path.exists(vpath) and not force:
+        print(f"{vpath} exists (owner draft); review it and run --file, or pass --force-draft")
+        return 1
+    with open(vpath, "w") as f:
+        json.dump(v, f, indent=1)
+    if not v.get("policy_decided"):
+        print(f"OWNER-REVIEW {row}: {v['verdict']} via {v['gate_eval'].get('gate_id')} is not policy-decided; "
+              f"draft at {vpath}, review then --file")
+        return 4
+    print(f"AUTO-FILE {row}: {v['verdict']} ({v['gate_eval'].get('gate_id')}), 0 LLM turns")
+    return (file_fn or file_row)(row, owner)
 
 
 def check_cc(md: str, repo: str = ROOT) -> list[tuple[int, str]]:
@@ -181,6 +223,8 @@ def main(argv=None) -> int:
         return 1 if miss else 0
     if not a.row:
         ap.error("row required")
+    if a.file and a.gate_eval:
+        return auto_file(a.row, a.owner, a.force_draft)
     if a.file:
         return file_row(a.row, a.owner)
     vpath = os.path.join(TMP, a.row, "verdict.json")
