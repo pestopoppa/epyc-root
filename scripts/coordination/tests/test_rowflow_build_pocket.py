@@ -61,6 +61,14 @@ class BuildPocket(unittest.TestCase):
         self.assertEqual(out, [])   # live waiter: not booked at all (held)
         self.assertEqual(rf.plan.build_held, ["wide"])
 
+    def test_min_window_floors_build_pocket_cap(self):
+        # 2026-11-21 MIN-CAP: lsa-cpu-sparse-e2e-20261121-r1 (resumable, all q0-q2, min 12500, no waiter) was granted
+        # 7260 s and refused by the launcher (rc=12). The anticipatory max_hold cut never goes below min_window + 300.
+        c = dict(cand("lsa", est=13750, resumable=True), min_window_s=12500)
+        out, _, _ = run([c], False)
+        self.assertEqual([x["id"] for x, _ in out], ["lsa"])
+        self.assertGreaterEqual(rf.plan.hard_end["lsa"] - NOW, 12800)
+
     def test_whole_host_need_opts_out(self):
         out, _, _ = run([cand("long", resumable=True, whole=True)], True)
         self.assertEqual([c["id"] for c, _ in out], ["long"])

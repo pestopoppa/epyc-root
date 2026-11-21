@@ -2747,9 +2747,13 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         dur = book_s
         pending = [drain] + sorted([c for c in pending if c is not drain], key=lambda c: (drain_outranks(c, drain), now + dur(c) > T, -dur(c)))
         # (PM-INVERSION: strictly better-ranked rows first - the drain never binds them)
+    unfit = set()   # MIN-CAP: rows whose hard-end cap would leave less than min_window_s + 300 this tick
+    plan.min_cap_skips = []
     while pending:
         placed = None
         for c in pending:
+            if c["id"] in unfit:
+                continue
             # D9 2026-11-11 (operator "Cap backfill at T"): a row whose booking or hold overruns T is admitted capped at T
             # when the cap clears its min window (cap_ok); only a row the cap would starve below min_window stays late
             over = drain_outranks(c, drain) and (now + book_s(c) > T or now + hold_s(c) > T)
@@ -2814,7 +2818,14 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         if dfr_T is not None and (now + hold_s(c) > dfr_T or now + book_s(c) > dfr_T) and o & dfr_r:
             caps.append(dfr_T)
         if c.get("resumable") and long_q012_cand(c, bp) and {"q0", "q1", "q2"} <= set(o) and GPU not in o:
-            caps.append(now + float(bp["max_hold_s"]))   # BUILD-POCKET (b): a resumable long row yields its pocket at a checkpoint
+            # BUILD-POCKET (b): a resumable long row yields its pocket at a checkpoint; anticipatory, so it never cuts
+            # below the launcher's gate (min_window_s + MARGIN_S): max(max_hold_s, min_window_s + 300) (2026-11-21 MIN-CAP)
+            caps.append(now + max(float(bp["max_hold_s"]), float(c.get("min_window_s") or 0) + 300))
+        if caps and min(caps) - now < float(c.get("min_window_s") or 0) + 300:
+            # MIN-CAP guard: never hand out a window the launcher refuses (rc=12); hard boundary -> not granted this tick
+            plan.min_cap_skips.append((c["id"], min(caps) - now))
+            unfit.add(c["id"])
+            continue
         if caps:
             plan.hard_end[c["id"]] = min(caps)
         out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
