@@ -52,6 +52,9 @@ KEEPER SIDE (deterministic, no LLM): the keeper is the qualifier.
                               free cores = SMOKE-WAIT, never FAIL. The first-progress timer starts at engine START.
     (the dry run is publish_row.py's smoke: rowflow.dryrun_run, keeper-placed or --smoke-now; no grant. PASS = the job's
      FIRST REAL PROGRESS within first_progress_s - see FirstProgress; "a JSON appeared" is not progress)
+    resume <id> --by <owner> --reason R   owner-only: a resumable row whose last end was rc=75 reason=stopped|released-early is
+                              requeued under the SAME id (STOP + terminal end cleared, manifest back in ready/, PASS kept, out/ and the
+                              resume ledger kept, ROW-RESUMED logged); status shows `next: resume (rowflow.py resume <id>)`
     status <id>               needs-dryrun | dryrun-running | failed | parked | stale | stopped | grantable | armed | running | done
                               (stopped: the launcher's --stop file exists - never granted, never a drain candidate;
                                reason = the path; deleting it returns the row to grantable)
@@ -3087,6 +3090,8 @@ def next_action(st, flags, rid):
     """DETERMINISTIC one-line next action per state (2026-11-03: an agent reads it, never infers it)."""
     rp = ready_path(flags, rid)
     s = st["state"]
+    if s == "done" and resumable_stopped(flags, rid)[1] is None:
+        return f"resume (rowflow.py resume {rid})"
     if s in ("done", "running", "dryrun-running"):
         return "-"
     if s in ("held", "stopped"):
@@ -5432,6 +5437,112 @@ def release_grant(flags, rid, by, reason, regions=None, log=print, now=None, end
     return "RELEASED"
 
 
+RESUME_REASONS = ("stopped", "released-early")
+
+
+def resume_dir(flags):
+    return os.path.join(flags, "grants", ".resume")
+
+
+def _manifest_anywhere(flags, rid):
+    """ready/<id>.json, else the same manifest parked under ready/.withdrawn/ or another ready/ subdir -> path or None."""
+    for p in [ready_path(flags, rid), os.path.join(withdrawn_dir(flags), rid + ".json")] \
+            + sorted(glob.glob(os.path.join(flags, "ready", "*", rid + ".json"))):
+        if os.path.isfile(p):
+            return p
+    return None
+
+
+def resumable_stopped(flags, rid):
+    """(manifest_path, why_not): why_not is None when `rid` is a resumable row whose last end was rc=75 reason=stopped|
+    released-early (the owner's STOP, or an owner release), so `rowflow.py resume` can requeue it in place."""
+    G = os.path.join(flags, "grants")
+    if os.path.exists(os.path.join(G, rid + ".complete")):
+        return None, "grants/<id>.complete: the row finished"
+    h = head1(os.path.join(G, rid + ".ended"))
+    if not h:
+        return None, "no grants/<id>.ended: the row has not ended (a STOP file with no end is `rm`-ed by its owner)"
+    m = re.search(r"(?:^|\s)reason=(\S+)", h)
+    if not (re.search(r"(^|\s)rc=75(\s|$)", h) and m and m.group(1) in RESUME_REASONS):
+        return None, f"last end is not rc=75 reason=stopped|released-early ({h[:90]!r})"
+    mp = _manifest_anywhere(flags, rid)
+    if not mp:
+        return None, "no manifest for this id (never published, or removed): publish it"
+    d = load_json(mp) or {}
+    if not d.get("resumable"):
+        return None, "row is not resumable (spec resumable: true): publish a successor id"
+    return mp, None
+
+
+def resume_row(flags, rid, by, reason, log=print, now=None):
+    """`rowflow.py resume <id> --by <owner> --reason R`: owner-only requeue of a STOPPED / released-early RESUMABLE row under
+    the SAME id. Its grants/<id>.ended (and .grant.released-early) move to grants/.resume/<id>.<ts>.*, the STOP file is
+    removed, a FILED receipt of that end is archived to filing-done/.resumed/ (so the next end files again; write_filed is
+    create-once), the manifest returns to ready/ and the existing PASS.json makes it grantable at once (no new smoke: the
+    dry run already passed for this id). out/ and the job's resume ledger are never touched. Refused unless by == the row
+    owner, the end qualifies (resumable_stopped), no job runs, the row is not superseded and PASS.json matches the launcher
+    (else publish_row.py re-smokes). Logs ROW-RESUMED <id>. Returns the number of resumes of this id."""
+    G = os.path.join(flags, "grants")
+    reason = re.sub(r"\s+", "_", str(reason or "").strip())
+    by = str(by or "").strip()
+    need(reason, "resume: --reason is required")
+    need(by, "resume: --by <owner> is required (or EPYC_AGENT_ID in the environment)")
+    mp, why = resumable_stopped(flags, rid)
+    need(mp, f"resume {rid}: {why}")
+    owner = notify.row_owner(flags, rid) or str((load_json(mp) or {}).get("owner") or "")
+    need(owner and owner == by, f"resume {rid}: owner is {owner or '(unknown)'}, caller is {by or '(none)'}; only the row owner may resume")
+    need(not os.path.exists(os.path.join(G, rid + ".grant")), f"resume {rid}: grants/{rid}.grant is open")
+    need(direct_run(flags, rid) is None, f"resume {rid}: a direct run is live")
+    run = load_json(running_path(flags, rid))
+    need(not (run and alive(run.get("pid"))), f"resume {rid}: a dry run is live (pid {(run or {}).get('pid')})")
+    for op in glob.glob(os.path.join(flags, "ready", "*.json")):
+        sup = (load_json(op) or {}).get("supersedes")
+        for v in (sup if isinstance(sup, list) else [sup]):
+            need(rid not in re.findall(r"[A-Za-z0-9_.-]+", str(v or "")),
+                 f"resume {rid}: superseded by {os.path.basename(op)[:-5]}")
+    d = load_json(mp) or {}
+    lp = (d.get("launcher") or {}).get("path") or ""
+    p = load_json(pass_path(flags, rid))
+    need(p and os.path.isfile(lp) and p.get("launcher_sha256") == sha256(lp),
+         f"resume {rid}: no PASS.json matching the current launcher; republish with publish_row.py for a new smoke")
+    now_t = time.time() if now is None else now
+    ts = dt.datetime.fromtimestamp(now_t, dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    rd = resume_dir(flags)
+    os.makedirs(rd, exist_ok=True)
+    for suf in (".ended", ".grant.released-early"):
+        src = os.path.join(G, rid + suf)
+        if os.path.exists(src):
+            shutil.move(src, os.path.join(rd, f"{rid}.{ts}{suf}"))
+    fd = os.path.join(flags, "filing-done")
+    if os.path.exists(os.path.join(fd, rid + ".FILED")):
+        ar = os.path.join(fd, ".resumed")
+        os.makedirs(ar, exist_ok=True)
+        for suf in (".FILED", ".verdict.json"):
+            if os.path.exists(os.path.join(fd, rid + suf)):
+                shutil.move(os.path.join(fd, rid + suf), os.path.join(ar, f"{rid}.{ts}{suf}"))
+    sf = resolve_stop_path(d)
+    if sf and os.path.exists(sf):
+        try:
+            os.unlink(sf)
+        except OSError as e:
+            raise Refused(f"resume {rid}: could not remove STOP {sf}: {e}")
+    if mp != ready_path(flags, rid):
+        os.makedirs(os.path.dirname(ready_path(flags, rid)), exist_ok=True)
+        shutil.move(mp, ready_path(flags, rid))
+    hp = os.path.join(rd, rid + ".history.json")
+    hist = list((load_json(hp) or {}).get("resumed") or [])
+    hist.append({"at": now_iso(), "by": by, "reason": reason})
+    atomic_json(hp, {"id": rid, "resumed": hist})
+    msg = f"ROW-RESUMED {rid} by={by} reason={reason} ({len(hist)} resume(s)); same id grantable, out/ and the resume ledger kept"
+    log(msg)
+    try:
+        with open(os.path.join(flags, "ws58-calendar-keeper.log"), "a") as f:
+            f.write(f"{now_iso()} {msg}\n")
+    except OSError:
+        pass
+    return len(hist)
+
+
 def contamination_exempt_pids(flags):
     """Review S3: pids never attributed as contamination - the keeper's own tree (this process, its parent keeper loop and
     their descendants) and every smoke harness named in dryrun/*/RUNNING.json or SMOKE-PLACED.json (with its tree)."""
@@ -6921,6 +7032,8 @@ def main(argv=None):
     s.add_argument("id"); s.add_argument("--reason", required=True)
     s = sub.add_parser("release", help="owner-only: end an idle/finished grant early, or shrink it with --regions q2,..; refused while its job runs (never kills)")
     s.add_argument("id"); s.add_argument("--by"); s.add_argument("--reason", required=True); s.add_argument("--regions")
+    s = sub.add_parser("resume", help="owner-only: requeue a STOPPED / released-early resumable row under the SAME id (clears STOP + the terminal end, back to ready/, no new smoke)")
+    s.add_argument("id"); s.add_argument("--by"); s.add_argument("--reason", required=True)
     s = sub.add_parser("unpark", help="operator: a parked row (precond refusal / arming failures) is grantable again next tick; its "
                                       "earlier arming FAIL records no longer count (dryrun/<id>/UNPARK.json)")
     s.add_argument("id"); s.add_argument("--by"); s.add_argument("--note", default="")
@@ -7009,6 +7122,10 @@ def main(argv=None):
             by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
             r = release_grant(a.flags, a.id, by, a.reason, a.regions)
             print(f"{r} {a.id}")
+            return 0
+        if a.cmd == "resume":
+            by = a.by or next((os.environ[k] for k in notify.PUBLISHER_ID_ENV if os.environ.get(k)), "")
+            resume_row(a.flags, a.id, by, a.reason)
             return 0
         if a.cmd == "unpark":
             known = (a.id in rows(a.flags) or os.path.isdir(dry_dir(a.flags, a.id))

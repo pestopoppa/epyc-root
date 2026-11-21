@@ -333,6 +333,8 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
 
 `rowflow.py release <id> --by <owner> --reason R [--regions q2,..]` is the owner-only early release for a grant (row or `build-*` claim) whose job is idle or done: refused unless `--by` is the row/build owner and no live pid (zombie = dead) runs the job; never kills. Ends the grant (`.ended rc=75 reason=released-early`, `GRANT-RELEASED`) or shrinks it to the remaining quarters; the keeper frees the cores next tick, and any grant with a `.ended` receipt holds nothing. Details: `docs/guides/agent-workflows/compute-fillers.md` -> *Releasing an idle grant early*. Do not hand-edit `grants/`.
 
+`rowflow.py resume <id> --by <owner> --reason R` is the owner-only requeue of a `resumable` row that ended `rc=75 reason=stopped` (owner STOP) or `reason=released-early`: same id, STOP and `.ended` cleared (archived under `grants/.resume/`), manifest back in `ready/`, no new smoke (PASS kept), `out/` and the job's resume ledger kept, `ROW-RESUMED <id>` logged; `rowflow.py status` shows `next: resume (rowflow.py resume <id>)`. Nothing requeues a STOPped row on its own, and a non-resumable row still needs an `-rN` successor.
+
 ## 5. Coordination protocol
 
 - A grant request from a peer carries: `id`, regions shape, `min_window` s, `minutes` estimate,
