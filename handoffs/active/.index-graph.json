@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-21T01:25:43Z",
+  "generated_at": "2026-11-21T01:36:24Z",
   "nodes": [
     {
       "age_days": 11,
@@ -1657,15 +1657,15 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 297,
-      "dispatchable": 6,
+      "closed": 298,
+      "dispatchable": 5,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-21",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-PROOF r13 then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 6,
+      "open": 5,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1729,21 +1729,21 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2267,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 2,
+          "open": 1,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2606,
+          "line": 2607,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1752,7 +1752,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3042,
+          "line": 3043,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1761,7 +1761,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3137,
+          "line": 3138,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
