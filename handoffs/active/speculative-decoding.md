@@ -31,6 +31,8 @@
       · done when: the knob is built in an experimental CPU store with a proof the binary contains it, and a d1k/d32k A/B RESULT.json reports tok/s and acceptance versus knob-off with a KEEP/DROP verdict
       · gate: DRAFT-HEAD-APPROX-RECALL PASS (met 2026-11-21, ak-draft-head-recall-cpu-20261120-r2q0)        · inputs: `/mnt/raid0/llm/tmp/ak-draft-head-recall-cpu-20261120-r2q0/out/RESULT.json`
       · expected gain: CPU Q38FN d1k +3.8% to +6.8% tok/s (83.3% of head MACs removed at recall@1 0.9963), d32k +1.3% to +3.4%; confidence low-medium
+      · rule: KEEP iff d1k tok/s geomean >= +4.15% with 95% CI lower > 0 AND pooled MTP acceptance drop <= 0.01 at d1k and d32k (ABBA, Q38FN CPU 24 threads q0); stop-on-answer when 6 valid ABBA blocks give KEEP/ACCEPT_FAIL/SPEED_FAIL; stop-on-futility on d1k CI upper < 4.15% or acceptance drop > 0.03 at the 3-block interim, 6 contention-rejected blocks, or a build/knob proof failure; gate-class = futility-only
+      · build: fork `llama.cpp-experimental-draft-head-svd-20261121` @ b5d6a32a6 (C16 13d6fc150 + knob LLAMA_MTP_DRAFT_HEAD_SVD), factors research fe9408e29 `make_svd_factors.py` (sha 67bf21b2 rank-256 Q8_0 sidecar)
 
 > Folded from the body of `handoffs/active/speculative-decoding-mtp-refresh.md` (row INF-50), from its first `##` section on, @ `5638c6a45bad` on 2026-11-03 (BRF-T7-F4, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
