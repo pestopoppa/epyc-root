@@ -896,13 +896,36 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · model: Qwen3.8-27B Q8_0, q8_0 KV · build: dtree-branch HIP build with the Q8MF commit (content proof: strings GGML_HIP_Q8_MF plus verify_ggml_linkage) · harness: test-backend-ops ROCm0 MUL_MAT cases, oracle check at 12/16 rows (AK-WVSK-M10 rule, 0/48 disagreements), llama-bench -p 8,12,16 -n 0 -d 0 -r 10 -v, arms X = GGML_HIP_Q8_WVSK_MAX=16 vs Q = X + GGML_HIP_Q8_MF=1, interleaved
       · metric(dir): t12, t16 ms lower · rule: KEEP iff correctness passes AND Q t12 and t16 <= 0.95x X AND t8 within +-2% · region: gpu-q3 (numactl --membind=3 -- taskset -c 184-191) · est: 900 s (wvsk16 row booked 600 s for 5x2 arms, plus op tests and oracle)
       · stop rule: question = does the kernel make 12-16-row verify cost about the same as 8 rows? expected t16 ~55.4 -> ~45 ms vs repeat noise 0.3-0.5 ms; checkpoint after each XQ pair; stop-on-answer after 3 repeats with the paired t16 CI half-width <= 1 ms; stop-on-futility on any op/oracle failure (FAIL_CORRECTNESS), Q t16 >= X t16 after 2 repeats (DROP), or a residency failure
-- [ ] **NARROW-DRAFT-WIDTH-TIMING** [inference] Price the round-time saving a half- or quarter-width drafter could realize on the MI210 before any retrain by timing the 27B DFlash2 drafter and A3B MTP-layer GEMM shapes at widths 1, 1/2 and 1/4 under both residual-only and all-dims scaling (intake-2725).
+- [x] **NARROW-DRAFT-WIDTH-TIMING** [inference] Price the round-time saving a half- or quarter-width drafter could realize on the MI210 before any retrain by timing the 27B DFlash2 drafter and A3B MTP-layer GEMM shapes at widths 1, 1/2 and 1/4 under both residual-only and all-dims scaling (intake-2725). ✅ 2026-11-21 [belief: cc] DECISION-PACKAGE 27B quarter; PARK 27B half and A3B half/quarter, per published row rule
       · done when: a table of us/op per shape, width and scaling (5 interleaved reps, served route confirmed by kernel name) and a realizable per-round saving for half and quarter width on the 27B and the A3B, each with a verdict CLOSE, DECISION-PACKAGE or PARK
       · gate: none        · inputs: `/mnt/raid0/llm/tmp/dive-kspec-20261120/r2/topic-c/rounds_27B.json` `/mnt/raid0/llm/tmp/dive-kspec-20261120/r2/topic-c/rounds_A3B.json`
       · expected gain: decides a retrain; ceilings if retrained: 27B +0.4% to +5.4% (half), A3B 0% to +4.8% (half) from measured round splits (27B drafter 14.8% [13.7, 15.0] of 59.3 ms, A3B 20.0% [19.0, 20.4] of 22.6 ms); confidence medium
       · model: op-level shapes of Qwen3.8-27B-DFlash2 Q8_0 and Qwen3.6-35B-A3B-MTP Q8_0, random operands · build: experimental from champion C14 with test-backend-ops perf cases appended, no kernel change · harness: test-backend-ops perf -o MUL_MAT,MUL_MAT_ID
       · metric(dir): us/op lower, converted to ms saved per round · rule: CLOSE if half width saves < 2.9% of the median round on both units; DECISION-PACKAGE (narrow-drafter retrain, operator-level spend) if >= 5.8%; else PARK until an upstream narrow checkpoint exists · region: gpu-q3 (host threads 184-191) · est: 900 s (inferred) + 25%
       · stop rule: question = does half width save >= 2.9% of the round even with zero acceptance loss? predicted 2.19-2.99 ms of a 58.5-63.8 ms 27B round and 0.73-1.01 ms of a 22.2-24.2 ms A3B round vs 1-2% per-op noise; checkpoint after the 27B shapes; stop-on-answer per the rule; stop-on-futility if the shapes do not land on the served route
+
+      · Result rc=0, five reps; `RESULT.json` SHA-256 `7c097ab0dbd6abb8b4239f15a0ad47155ac7cc1c4df86a623b4f61bb8194a627`, `/mnt/raid0/llm/tmp/ak-narrow-draft-width-gpu-20261121/out/RESULT.json` (individual reps and kernel names). Median µs/op:
+
+      | Model: shape | Full | Residual half / quarter | All-dims half / quarter |
+      |---|---:|---:|---:|
+      | 27B: down | 105.51 | 63.56 / 54.94 | 36.49 / 21.13 |
+      | 27B: fc | 151.38 | 47.63 / 25.43 | 47.63 / 25.43 |
+      | 27B: ffup | 101.58 | 62.10 / 45.23 | 33.90 / 21.02 |
+      | 27B: head | 1451.57 | 866.65 / 538.43 | 866.65 / 538.43 |
+      | 27B: kv | 21.12 | 14.01 / 11.25 | 11.26 / 8.86 |
+      | 27B: o | 29.21 | 20.36 / 21.79 | 21.34 / 11.43 |
+      | 27B: q | 28.88 | 18.95 / 20.42 | 21.26 / 11.25 |
+      | A3B: eh | 9.36 | 4.34 / 3.26 | 4.34 / 3.26 |
+      | A3B: head | 414.11 | 283.27 / 252.24 | 283.27 / 252.24 |
+      | A3B: kv | 3.83 | 3.26 / 3.08 | 2.93 / 2.73 |
+      | A3B: moe_down | 13.11 | 8.14 / 6.07 | 7.49 / 5.89 |
+      | A3B: moe_up | 24.68 | 13.42 / 8.14 | 8.13 / 5.11 |
+      | A3B: o | 9.36 | 6.13 / 4.84 | 4.34 / 3.26 |
+      | A3B: q | 16.97 | 11.47 / 9.56 | 6.58 / 4.28 |
+      | A3B: sh_down | 4.28 | 3.22 / 3.08 | 3.06 / 2.88 |
+      | A3B: sh_up | 4.34 | 3.55 / 3.22 | 3.26 / 2.86 |
+
+      · Per row rule (all-dims <0.84% CLOSE; residual ≥3% DECISION-PACKAGE; else PARK): 27B half PARK, residual/all 1.458/1.887 ms (2.459%/3.181%); quarter DECISION-PACKAGE, 2.034/2.566 ms (3.429%/4.328%). A3B half PARK, 0.328/0.355 ms (1.450%/1.571%); quarter PARK, 0.415/0.437 ms (1.835%/1.935%). GEMM-only; acceptance loss unmodelled. The handoff rule above specifies different 2.9%/5.8% thresholds; these verdicts use the published row rule, and do not resolve that discrepancy. Routes: 27B q8wv / q8sk; A3B mul_mat_vec_q, with kernel-name details in result.
 
 - [x] **DTREE-ATTN-SHARE** [inference] Measure how much of the per-row verify increment is attention by rocprof-tracing the 27B and the GPU A3B verify at W=8/12/16 at context 4k and 32k, splitting FA kernel time from MUL_MAT and the rest (intake-2750#record, intake-2705#record). ✅ 2026-11-20 OPEN, row ak-dtree-attn-share-gpu-20261120-r3 filed [belief: cc]
       · r2 filed **NOT_JUDGEABLE** (rc=0): the first trace (27B, 4k, W1) retained only 2 short verify segments, below the required 3; no 32k widths measured, so OPEN/CLOSE remains unresolved. GPU residency and linkage passed. Result `/mnt/raid0/llm/tmp/ak-dtree-attn-share-gpu-20261120-r2/out/RESULT.json` SHA-256 `00466be73138761e2b61da561af8ec5c636910850876ce0899d5080263f0ca9d`. Repair segment attribution and republish. [belief: cc]
