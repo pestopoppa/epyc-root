@@ -1,0 +1,22 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "gate_id": "RATIFY-TASK-BRIEF-20261120",
+  "status": "ratified",
+  "ratified_at": "2026-11-21T12:15:13Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "task-brief": "docs/design/task-brief-layer.md §7 human-only sentence"
+  },
+  "base_origin_main": "fb4f5725a657cb3b2dcc9146b413ec0461720014",
+  "consolidated_receipt": "artifacts/operator/ratify_task_brief_20261120.receipt.json",
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "33e405bcab00eb8cc0ea8437dea395320801c1bff382c76163134d4f30a5c575",
+      "sha256_after": "8e69280549e66d09bfc28315bec2d584523fdbe97829b4fdbb2dbe806ec8e6f5"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_task_brief_20261120.sh",
+  "ratify_script_sha256": "ca62f021d215643579592278d35f68059eeff8c904762a64f6ff500df8fb906d",
+  "processes_touched": []
+}

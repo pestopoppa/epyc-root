@@ -597,6 +597,8 @@ Binds anyone who dispatches, claims, or cites a backlog row: coordinator, main, 
   rowflow-bound (refine = a new ID). The screener's source is the generated
   `handoffs/active/.box-index.json` plus `handoffs/active/holds.yaml`, the single operator-exclusion
   source (handoff standard, operator decisions 1 and 3, 2026-11-19).
+  **A brief is guidance; the box text stays identity** — a task brief may shape *how* a box is
+  worked, never *what* it is (`docs/design/task-brief-layer.md` §7).
 - **A screener proves WELL-FORMED, not STILL-NEEDED.** `backlog_row_check.py` validates a row's
   form against the file; it cannot know the world. Screen for form, then **verify the premise
   independently** — read the state the row asserts still holds — before pointing a main at it.
