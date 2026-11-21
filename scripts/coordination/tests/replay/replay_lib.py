@@ -356,6 +356,14 @@ def load_candidate(rowflow_dir, flags, tmp):
         hostutil.measure = lambda *a, **k: json.loads(json.dumps(W.util))
     except Exception:  # noqa: BLE001
         pass
+    try:   # DISKPAUSE-LEAK 2026-11-21: diskpause.tick() read the REAL /mnt/raid0 free space; a host under the 150 GiB floor
+        #        (deploy 21:25Z) paused every sandbox grant ("never granted"). Feed it the trace's disk_free_gib instead.
+        import diskpause
+        _real_tick = diskpause.tick
+        diskpause.tick = lambda flags=None, *a, **k: _real_tick(flags, *a, **{**k, "free_gib": W.disk,
+                                                                                 "now": rf.time.time()})
+    except Exception:  # noqa: BLE001
+        pass
     try:
         import notify
         for fn in ("is_live",):

@@ -69,6 +69,18 @@ def test_scenario(name, work):
     assert not viol, "\n".join(viol[:10])
 
 
+def test_scenario_immune_to_real_host_disk_pressure(work, monkeypatch):
+    """DISKPAUSE-LEAK 2026-11-21: the sandbox must not read the REAL disk. Pointing the disk probe at a 0-free fs makes the
+    live host look 'under the floor'; the replay must still grant (the trace says 400 GiB free)."""
+    monkeypatch.setenv("FILLER_DISK_PATH", "/proc")   # statvfs(/proc).free == 0: far under the default 150 GiB floor
+    name = "cpu-quarter-prefers-q0-over-q3"
+    tpath, check = SC.SCENARIOS[name](os.path.join(work, name + ".leak.trace.jsonl"))
+    dec, err = RA.worker(CAND, tpath, os.path.join(work, "out", name + "-leak"))
+    assert dec is not None, err
+    viol = list(check(dec))
+    assert not viol, "\n".join(viol[:10])
+
+
 # ------------------------------------------------------------------ negative control: the rule gpu-q3 NARROW replaces
 OLD_GPU_Q3_LINE = 'GPU_Q3_TOKENS = frozenset({GPU, "q3"} | {f"t{k}" for k in range(184, 192)})   # OLD: whole q3\n'
 
