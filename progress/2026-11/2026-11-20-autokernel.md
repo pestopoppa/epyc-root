@@ -84,3 +84,14 @@
 - **rowflow release verb live** (`466e6b97a`) after a hand-release incident (grant file edited by hand).
 - **Stopped two stale agents** (Q38FN TOPK-EXACT/W8192 agent; superseded greedy-builder agent). Rows `ak-q38fn-draftfa-w8192-cpu-20261120` (granted/running) and `ak-q38fn-indexer-topk-exact-cpu-20261120` (queued) still need filing at verdict.
 - **Memory rule added**: no hand edits to grant files; use the rowflow release verb.
+
+## Wrap-up 10 (after 79f440a40): 22:2xZ-23:59Z
+
+- **Overnight queue push** (machine dedicated): chainverify, sclk-detm, c16-fold gpu/cpu, H15 np2 A/B, H11-UNIQ, greedy-fix rows, Q38FN split-KV / idxk-cache / w8192 / topk-exact, q0 fills. Build lanes opened by pausing w8192 (STOP, rc75 resumable).
+- **c16-fold-gpu PASS** (78948be46): 27B KLD 0.0, top-1 100%; Q38FN PPL 3.577; decode geomean 1.0447.
+- **r4 tree rows** (C16+V3I+GDN-ROWS): 27B FUTILITY (T16/L 0.860, round-cost 1.319 vs break-even 1.134; kernel verify predicted ~1.10 -> server-level overhead). A3B FUTILITY. V3I chain ~7% faster than old path.
+- **Greedy builder root cause**: prompt rollback by winner length after spec_draft swap; fix 15bec7cd0 + regression test.
+- **LSA CPU sparse op gate KEEP_OP** (ae985eb95): op 3.97x at T24; e2e ceiling 27B 32k 6.0% f16 KV. Impl milestone 1 on fork lsa-cpu-sparse-20261120 @ 3dd113132.
+- **u3-variance PASS SIZE_OK_POWER_LOW** (d45a9ac66); **draft-splitkv r3q0 inconclusive** (640189bb9: draft FA -24%, tok/s +5.3%, numerics change -> needs 27B-anchored KLD rule and 48t rerun).
+- **QDEC-CPU-MULMAT** closed (ticked this wrap-up): Q6_K error is the deliberate Q8_0_R8 repack, kept per speed>correctness; IQ3_XXS fixed by 17d092de0.
+- **Pipeline fixes**: stale build-wait records cleared (5dc723189), LSA auto-tick dup (0166ee63a), C16 SHA typo in fold jobs fixed; granter any-of bug seen (q1,q2 granted q0).
