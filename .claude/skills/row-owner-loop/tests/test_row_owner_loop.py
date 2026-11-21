@@ -125,6 +125,25 @@ def test_scaffold_then_lint(tmp_path):
                     "--threads", "24", "--units", "1", "--unit-s", "1", "--model", "m", "--root", str(tmp_path)]) == 1
 
 
+def test_scaffold_defaults_to_estimate_from_history(tmp_path):
+    flags = tmp_path / "flags"
+    (flags / "grants").mkdir(parents=True)
+    for i, w in enumerate((100, 200, 300, 400)):
+        (flags / "grants" / f"fam-h-2026112{i}.ended").write_text(
+            f"rc=0 time=2026-11-20T10:{w // 60:02d}:{w % 60:02d}Z reason=complete\nstarted=2026-11-20T10:00:00Z\n")
+    hf = tmp_path / "h.md"
+    hf.write_text("- [ ] **BOX-3** x. model: A3B. stop-on answer. est 375 s\n")
+    base = ["--handoff", str(hf), "--box", "BOX-3", "--lane", "cpu", "--regions", "0-23", "--threads", "24",
+            "--model", "model: A3B Q8_0", "--root", str(tmp_path), "--flags", str(flags)]
+    assert rs.main(["new", "fam-h-20261130", *base]) == 0
+    spec = json.load(open(tmp_path / "fam-h-20261130" / "spec.json"))
+    assert spec["estimate_s"] == 375 and spec["estimate_justification"].startswith("history fam-h")
+    assert not [e for e in rs.lint(str(tmp_path / "fam-h-20261130"), str(hf)) if e.startswith("EST-ARITH")]
+    # no measured estimate and no history -> refused, nothing created
+    assert rs.main(["new", "unknown-fam-20261130", *base]) == 1
+    assert not (tmp_path / "unknown-fam-20261130").exists()
+
+
 def _git(*a, cwd=None):
     return subprocess.run(["git", *a], cwd=cwd, check=True, capture_output=True, text=True).stdout.strip()
 

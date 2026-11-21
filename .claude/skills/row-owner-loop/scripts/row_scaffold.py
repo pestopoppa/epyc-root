@@ -3,7 +3,9 @@
 
   row_scaffold.py --lint <rowdir> [--box-file handoffs/active/x.md]
   row_scaffold.py new <row-id> --handoff <file.md> --box <ID> --lane cpu|gpu --regions <list>
-                  --threads N --units N --unit-s S --model "<model: ...>" [--root /mnt/raid0/llm/tmp]
+                  --threads N [--units N --unit-s S] --model "<model: ...>" [--root /mnt/raid0/llm/tmp]
+                  (no --units/--unit-s: estimate_s defaults to estimate-from-history, family p75 x 1.25,
+                  scripts/coordination/rowflow/estimate_history.py; refused when the family has < 3 runs)
                   [--research-repo <repo>] [--research-ref origin/main]  (gpu lane: copies the canonical gpu_common.py +
                   gpuproof_row.py from research origin/main via fetch + `git show` into the row, sha-pinned in job.py + seal)
 
@@ -248,6 +250,34 @@ def seal(rowdir: str, names: list[str]) -> None:
             f.write(f"{hashlib.sha256(open(os.path.join(rowdir, n), 'rb').read()).hexdigest()}  {n}\n")
 
 
+ESTIMATE_HISTORY_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    "..", "..", "..", "..", "scripts", "coordination", "rowflow")
+
+
+def history_suggestion(row_id: str, units: int | None = None, flags: str | None = None):
+    """estimate_history.suggest() for this row's family, or None (no / too little history)."""
+    sys.path.insert(0, os.path.normpath(ESTIMATE_HISTORY_DIR))
+    try:
+        import estimate_history
+    finally:
+        sys.path.pop(0)
+    kw = {"flags": flags} if flags else {}
+    return estimate_history.suggest(row_id, units=units, **kw)
+
+
+def resolve_estimate(a) -> tuple:
+    """(estimate_s, justification). A measured `--units x --unit-s` always wins; without it the
+    default is estimate-from-history (family p75 x 1.25, or units x per-unit p75 x 1.25)."""
+    if a.units and a.unit_s:
+        est = math.ceil(a.units * a.unit_s * 1.25)
+        return est, f"{a.units} units x {a.unit_s} s measured x 1.25 margin = {est} s"
+    sug = history_suggestion(a.row_id, a.units, getattr(a, "flags", None))
+    if not sug:
+        return None, ("no measured estimate (--units N --unit-s S) and no estimate-from-history "
+                      "for this row family (needs >= 3 completed runs)")
+    return sug["estimate_s"], sug["estimate_justification"]
+
+
 def scaffold(a) -> int:
     d = os.path.join(a.root, a.row_id)
     if os.path.exists(d):
@@ -262,10 +292,13 @@ def scaffold(a) -> int:
         if isinstance(got, str):
             print(f"REFUSED: canonical gpu_common.py: {got}")
             return 1
-    est = math.ceil(a.units * a.unit_s * 1.25)
+    est, just = resolve_estimate(a)
+    if est is None:
+        print(f"REFUSED: {just}")
+        return 1
     os.makedirs(os.path.join(d, "out"))
     fmt = dict(id=a.row_id, owner=a.owner, handoff=a.handoff, box=a.box, threads=a.threads, dir=d,
-               regions=a.regions, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units, unit_s=a.unit_s, gpu_block="")
+               regions=a.regions, lane=a.lane, minw=math.ceil(est * 0.8), model=a.model, units=a.units or '?', unit_s=a.unit_s or '?', gpu_block="")
     if a.lane == "gpu":
         commit, harness = got
         for n, b in harness.items():
@@ -283,7 +316,7 @@ def scaffold(a) -> int:
             "launcher": f"{d}/launch.sh", "result_path": f"{d}/out/RESULT.json", "result_format": "json",
             "scratch_root": d, "workdir": d, "stop_file": f"{d}/STOP", "estimate_s": est,
             "min_window_s": math.ceil(est * 0.8), "declared_threads": a.threads,
-            "estimate_justification": f"{a.units} units x {a.unit_s} s measured x 1.25 margin = {est} s",
+            "estimate_justification": just,
             "handoff_task": f"{os.path.basename(a.handoff)}:{a.box}", "model": a.model,
             "smoke_predicate": f"/usr/bin/test -s {d}/out/TERMINAL-smoke.json",
             "decision_rule": "see job.py docstring (RULE)", "notes": f"scaffolded by row_scaffold.py for {a.owner}"}
@@ -308,8 +341,9 @@ def main(argv=None) -> int:
     n.add_argument("--lane", choices=["cpu", "gpu"], required=True)
     n.add_argument("--regions", required=True)
     n.add_argument("--threads", type=int, required=True)
-    n.add_argument("--units", type=int, required=True)
-    n.add_argument("--unit-s", type=float, required=True)
+    n.add_argument("--units", type=int, help="units of work; with --unit-s a measured estimate")
+    n.add_argument("--unit-s", type=float, help="measured seconds per unit; omit to default to estimate-from-history")
+    n.add_argument("--flags", help="compute-flags root for estimate-from-history (default: the live one)")
     n.add_argument("--model", required=True)
     n.add_argument("--owner", default="autokernel")
     n.add_argument("--root", default="/mnt/raid0/llm/tmp")
