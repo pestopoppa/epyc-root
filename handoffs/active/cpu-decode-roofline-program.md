@@ -1988,7 +1988,7 @@ append forever across 10+ arms.**
 defect propagated in the first place. And **`arm_hot.sh` samples PER ARM, not per session**: the agent had
 originally omitted the sampler from the hot script entirely, and with 10 arms inside one process that was a
 real gap, since **knowing WHICH arm was contended is exactly what a hot session buys.**
-- [ ] **Q8PK-DECODE-OPBW** [inference] Measure achieved GB/s of the plain ggml_vec_dot_q8_0_q8_0 decode path at the real dense-Q8_0 shapes for N 1..5 against a same-bytes streaming read, to decide whether an AVX-512 VNNI interleaved Q8_0 GEMV is worth writing (intake-2718).
+- [x] **Q8PK-DECODE-OPBW** [inference] Measure achieved GB/s of the plain ggml_vec_dot_q8_0_q8_0 decode path at the real dense-Q8_0 shapes for N 1..5 against a same-bytes streaming read, to decide whether an AVX-512 VNNI interleaved Q8_0 GEMV is worth writing (intake-2718). ✅ 2026-11-21 >=85% of stream bandwidth: YES, no VNNI GEMV lever [no-belief: row verdict filed by agent]
       · done when: a table of per-op us and GB/s versus the same-bytes bench_readbw gemv pattern at t48 for 6 shapes and N in {1,2,3,5} is filed with the verdict 'dense-Q8_0 ops reach >= 85% of streaming read: YES/NO'
       · gate: Q38P-1
       · expected gain: if dense-Q8_0 decode ops run at ~60% of streaming and a VNNI GEMV reaches 85%, 25% of step x (1 - 60/85) = ~7% upper bound, likely 2-4% (inferred); confidence low
