@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-21T02:30:22Z",
+  "generated_at": "2026-11-21T03:03:00Z",
   "nodes": [
     {
       "age_days": 11,
@@ -1371,9 +1371,9 @@
     },
     {
       "age_days": 0,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 808,
+      "closed": 809,
       "dispatchable": 126,
       "domain": "inference-research",
       "guarded": 0,
@@ -1381,7 +1381,7 @@
       "id": "INF-06",
       "last_advanced": "2026-11-21",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 128,
+      "open": 127,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1427,14 +1427,14 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 44,
+          "open": 43,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 4728,
+          "line": 4731,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1443,7 +1443,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 4811,
+          "line": 4814,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1462,7 +1462,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 4988,
+          "line": 4991,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1479,7 +1479,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 6877,
+          "line": 6880,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1492,7 +1492,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 9845,
+          "line": 9848,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1526,7 +1526,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10048,
+          "line": 10051,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -1917,18 +1917,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 238,
-      "dispatchable": 31,
+      "closed": 239,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-20",
+      "last_advanced": "2026-11-21",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 33,
+      "open": 32,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1962,7 +1962,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 29,
+          "dispatchable": 28,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1971,7 +1971,7 @@
           ],
           "line": 22,
           "name": "autokernel-champion-aggregate",
-          "open": 31,
+          "open": 30,
           "readiness": "blocked"
         },
         {
