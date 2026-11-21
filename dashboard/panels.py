@@ -690,6 +690,29 @@ _PANEL_SOURCE_CATALOG = _index((
               "dispatcher is not passing, not that no work exists.",
     ),
     PanelSource(
+        panel="akflow",
+        kind=KIND_FILETREE,
+        payload_func="akflow_payload",
+        route="/api/akflow",
+        health_route="/api/akflow/health",
+        health_func="akflow_health",
+        producer="scripts/coordination/akloop/flow_status.py over the AK candidate spool, rowflow ready/grants/filing-done, akloop failclass, the lineage runs dir and akloop/decisions.py",
+        producer_repo="epyc-root",
+        evidence="/mnt/raid0/llm/tmp/akchain-spool/cand-*.json, /mnt/raid0/llm/tmp/compute-flags/{ready,grants,filing-done}, /mnt/raid0/llm/tmp/akchain-lineage/",
+        timestamp_field="newest AK event: candidate emitted_at, grant/ended/filed mtime, lineage run mtime",
+        absence_means=(
+            "the rowflow flags directory is unreadable or the akloop producer failed to import, so "
+            "nothing can be said about AK rows in flight. The /loop flowchart then says so instead "
+            "of drawing zeros; a zero on a node is a statement only when this panel is present."),
+        warn_s=6 * _HOUR,
+        stale_s=3 * _DAY,
+        gates_health=False,
+        absence_is_anomalous=False,
+        notes="Age is the age of the newest AutoKernel loop event, so a quiet loop reads warn/stale: "
+              "that means no AK row moved, not that the hub is broken. The decisions detector's own "
+              "as_of is excluded from this timestamp so it cannot certify a dormant loop.",
+    ),
+    PanelSource(
         panel="knowledge",
         kind=KIND_EXPORT,
         payload_func="knowledge_payload",

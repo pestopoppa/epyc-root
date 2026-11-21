@@ -54,7 +54,7 @@
       "path": "/loop",
       "owner_repo": "epyc-root",
       "health_path": "/api/loop/health",
-      "blurb": "THE Kernel R&D surface: explicitly selected unified campaign status and authenticated producer controls, otherwise the legacy AutoKernel loop; an independently dated champion headline versus the frozen production kernel, operator-gated serving evidence and belief records. Durable history is not producer liveness. /api/loop/health follows the selected campaign or legacy loop without allowing other evidence cards to certify it. /kernel redirects here. Unified execution remains gated separately from management controls."
+      "blurb": "THE Kernel R&D surface: explicitly selected unified campaign status and authenticated producer controls, otherwise the legacy AutoKernel loop; an independently dated champion headline versus the frozen production kernel, operator-gated serving evidence and belief records. Durable history is not producer liveness. /api/loop/health follows the selected campaign or legacy loop without allowing other evidence cards to certify it. /kernel redirects here. Top strip: AK rows running/queued, decisions needed and the live parallel-loop flowchart (data /api/akflow, contract scripts/coordination/akloop/flow_status.py; data probe /api/akflow/health). Unified execution remains gated separately from management controls."
     },
     {
       "id": "bus",

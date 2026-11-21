@@ -32,6 +32,8 @@ GET /api/queue               folded work queue (latest row per task_id) + invari
 GET /api/outcome             the autopilot outcome contract (+ freshness), if exported
 GET /api/gpu_window          the G1 watchdog's executor-status file (+ freshness envelope)
 GET /api/pipeline            pipeline page data: flowchart counts, sessions by step, compute regions
+GET /api/akflow              AK parallel-loop live flowchart (akloop/flow_status.py contract) + freshness
+GET /api/akflow/health       is the AK flow view still true (newest loop event within budget)?
 GET /api/health              the FOLD over ``dashboard/panels.py``: every panel's
                              freshness envelope + watchdog, plus one status that
                              names the worst panel and why
@@ -1505,6 +1507,54 @@ def pipeline_health() -> tuple[int, dict]:
 
 
 # --------------------------------------------------------------------------- #
+# AK parallel-loop live flow  (/loop flowchart panel). Contract owned by akloop.
+# --------------------------------------------------------------------------- #
+_AKFLOW_TTL_S = 30.0
+_akflow_cache: dict | None = None
+_akflow_cache_ts = 0.0
+_akflow_lock = threading.Lock()
+
+
+def _akflow_module():
+    d = str(REPO / "scripts" / "coordination" / "akloop")
+    if d not in sys.path:
+        sys.path.insert(0, d)
+    import flow_status  # noqa: PLC0415 -- the producer lives with the subsystem (plane rule)
+    return flow_status
+
+
+def akflow_payload(force: bool = False) -> dict:
+    """Read-only fold of spool + rowflow + filing + lineage + decisions, TTL-cached."""
+    global _akflow_cache, _akflow_cache_ts
+    now = time.time()
+    with _akflow_lock:
+        if not force and _akflow_cache is not None and (now - _akflow_cache_ts) < _AKFLOW_TTL_S:
+            return _akflow_cache
+    try:
+        data = _akflow_module().build()
+    except Exception as exc:  # noqa: BLE001 -- a broken producer is an absent panel, never a dead page
+        data = {"schema": "epyc.akloop.flow.v1", "present": False, "error": f"{type(exc).__name__}: {exc}"}
+    if data.get("present") is False or not data.get("sources", {}).get("rowflow", {}).get("present"):
+        obs = panels.absent(panels.source("akflow"), data.get("error") or "rowflow flags dir unreadable")
+        data["present"] = False
+    else:
+        data["present"] = True
+        obs = panels.Observation(
+            artifact_present=True, timestamp=_parse_semantic_timestamp(data.get("last_event")),
+            source="newest AK loop event (spool/grant/filing/lineage)",
+            populated=bool(data.get("nodes")), detail=None, watermark=data.get("last_event"))
+    data["_freshness"] = _panel_envelope("akflow", obs)
+    with _akflow_lock:
+        _akflow_cache, _akflow_cache_ts = data, now
+    return data
+
+
+def akflow_health() -> tuple[int, dict]:
+    """``/api/akflow/health`` - is the AK flow view still true?"""
+    return _subject_health("akflow", akflow_payload())
+
+
+# --------------------------------------------------------------------------- #
 # KT-3: read-only claim browser  (/knowledge)
 # --------------------------------------------------------------------------- #
 def knowledge_payload() -> dict:
@@ -1811,6 +1861,7 @@ def panel_envelopes() -> dict:
         "kernel_progression": lambda: kernel_progression.snapshot()[1],
         "loop_spec": lambda: loop_spec_payload()["_freshness"],
         "pipeline": lambda: pipeline_payload()["_freshness"],
+        "akflow": lambda: akflow_payload()["_freshness"],
         "knowledge": lambda: knowledge_payload()["_freshness"],
         "knowledge_claim": lambda: panels.live(),
     }
@@ -2298,6 +2349,7 @@ API_ROUTES = {
     "/api/benchmark_artifacts": benchmark_artifacts_payload,
     "/api/loop_spec": loop_spec_payload,
     "/api/pipeline": pipeline_payload,
+    "/api/akflow": akflow_payload,
     "/api/knowledge": knowledge_payload,
     "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
@@ -2316,6 +2368,7 @@ PANEL_HEALTH_ROUTES = {
     "/api/loop/health": loop_data_health,
     "/api/loop_spec/health": loop_spec_health,
     "/api/pipeline/health": pipeline_health,
+    "/api/akflow/health": akflow_health,
     "/api/knowledge/health": knowledge_health,
 }
 

@@ -326,6 +326,25 @@
   .akx-class{font-weight:700;white-space:nowrap}.akx-class.touched{color:var(--amber)}
   .akx-class.unknown{color:var(--muted)}.akx-class.inert{color:var(--accent)}
   .akx-evidence{padding:6px 10px 10px;color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+  /* AK flow panel: same visual grammar as the handoff page's #pipeline-sec flowchart */
+  #akflow-sec{--det-f:#10264a;--det-s:#60a5fa;--ai-f:#3a1d0a;--ai-s:#fb923c;--line:#30363d;--card:#161b22}
+  #akflow-sec .akf-h3{font-size:14px;margin:14px 0 4px}
+  #akflow-sec svg{width:100%;height:auto;background:var(--card);border:1px solid var(--line)}
+  #akflow-sec svg text{fill:var(--text);font:12px system-ui,sans-serif}#akflow-sec svg .sub{fill:var(--muted);font-size:10px}
+  #akflow-sec svg .cnt{font-weight:700;font-size:15px}#akflow-sec svg .badge{font-size:9px;font-weight:700}
+  #akflow-sec svg .det{fill:var(--det-f);stroke:var(--det-s);stroke-width:1.6}
+  #akflow-sec svg .ai{fill:var(--ai-f);stroke:var(--ai-s);stroke-width:1.6;stroke-dasharray:5 3}
+  #akflow-sec svg .bd-DET{fill:var(--det-s)}#akflow-sec svg .bd-AI{fill:var(--ai-s)}
+  #akflow-sec svg .edge{stroke:var(--muted);stroke-width:1.3;fill:none}#akflow-sec svg .edge.dash{stroke-dasharray:4 3}
+  #akflow-sec svg .grp{fill:none;stroke:var(--line);stroke-dasharray:3 4}
+  #akflow-sec svg g.node{cursor:pointer}#akflow-sec svg g.node.idle{opacity:.6}
+  #akflow-sec svg g.node.active rect{stroke-width:3}#akflow-sec svg g.node.sel rect{stroke:var(--good);stroke-width:3}
+  #akflow-sec .akf-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:4px 0}
+  #akflow-sec .akf-sw{display:inline-block;width:24px;height:12px;vertical-align:middle;margin-right:5px}
+  #akflow-sec .akf-sw.d{background:var(--det-f);border:2px solid var(--det-s)}#akflow-sec .akf-sw.a{background:var(--ai-f);border:2px dashed var(--ai-s);border-radius:8px}
+  #akflow-sec .akf-tiles{display:flex;gap:8px;flex-wrap:wrap}#akflow-sec .akf-tile{border:1px solid var(--line);background:var(--card);padding:6px 12px;min-width:140px}
+  #akflow-sec .akf-tile b{font-size:20px;display:block}#akflow-sec table{border-collapse:collapse;width:100%;font-size:12px}
+  #akflow-sec td,#akflow-sec th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}
 </style>
 </head>
 <body>
@@ -344,6 +363,18 @@
 
 <main>
   <div id="banner"></div>
+  <!-- AK parallel-loop live flow (audit docs/design/ak-dashboard-audit-20261121.md, fixes 1-3).
+       Data contract epyc.akloop.flow.v1 lives with akloop (scripts/coordination/akloop/flow_status.py);
+       this page only draws it. Styling reuses the handoff page's pipeline flowchart (DET box / AI dashed pill). -->
+  <section id="akflow-sec">
+    <h2>At a glance <span class="count">AutoKernel rows under rowflow · decisions needed · live loop flow</span>
+      <span id="akflow-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="akflow-badgetxt">…</span></span></h2>
+    <div id="akflow-glance" class="pad">Loading…</div>
+    <h3 class="akf-h3">Loop flow <span class="count">click a node for its items · data <a href="/api/akflow">/api/akflow</a> · probe <a href="/api/akflow/health">/api/akflow/health</a> · refresh 30 s</span></h3>
+    <div class="akf-legend"><span><span class="akf-sw d"></span><b>DET</b> deterministic: code decides (rowflow, gate evaluator, filing, lineage, failure routing, decisions detector)</span><span><span class="akf-sw a"></span><b>AI</b> an LLM does the work (planner, critic, author in each lane)</span></div>
+    <div id="akflow-svg"></div>
+    <div id="akflow-items" class="pad"></div>
+  </section>
 
   <!-- The page opens with THE headline (operator note, 2026-08-31: no scope
        lecture above it — the /kernel-retirement pointer lives in one line in
@@ -3042,6 +3073,73 @@ async function tick(){
 
 tick();
 setInterval(tick, 20000);
+</script>
+<script>
+"use strict";
+// AK flow panel. Pure render functions (akfGlance/akfSvg/akfItems) are tested under Node
+// (tests/test_akflow.py); akfLoad is the only DOM/fetch code.
+const AKF_POS={planner:[40,60],critic:[250,60],author:[460,60],candidate:[700,60],
+ build:[40,210],'oracle-kld':[250,210],'ab-timing':[460,210],'fold-check':[670,210],gate_eval:[890,210],
+ file:[890,350],lineage:[670,350],rebase:[460,350],failclass:[890,480],decisions:[670,480]};
+const AKF_DASH={'gate_eval>failclass':1,'file>decisions':1,'lineage>rebase':1,'rebase>build':1};
+function akfEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function akfAge(s){if(s==null)return '-';s=Math.round(s);return s<120?s+' s':s<7200?Math.round(s/60)+' min':s<172800?Math.round(s/3600)+' h':Math.round(s/86400)+' d';}
+function akfGlance(d){
+ if(!d||d.present===false)return `<p class="warn">AK flow ABSENT: ${akfEsc((d&&d.error)||'producer unavailable')}. ${akfEsc(((d&&d._freshness)||{}).absence_means||'')}</p>`;
+ const g=d.glance||{},dec=d.decisions||{},o=g.other_rows||{};
+ const tile=(n,l,t)=>`<div class="akf-tile" title="${akfEsc(t||'')}"><b>${n==null?'-':akfEsc(n)}</b>${akfEsc(l)}</div>`;
+ let h=`<div class="akf-tiles">${tile(g.running_n,'AK rows running','grant held, not ended')}${tile(g.queued_n,'AK rows queued','published, not yet granted')}${tile(g.candidates,'candidates emitted','lane candidate records in window')}${tile(dec.present?g.decisions_n:null,'decisions needed','akloop/decisions.py (P6)')}${tile(d.last_event_age_s==null?null:akfAge(d.last_event_age_s),'since last loop event',d.last_event||'')}</div>`;
+ h+=`<p class="muted">Window ${akfEsc(d.window_h)} h · ${akfEsc(g.chain_rows)} parallel-loop chain row(s) (akc-*) · rows with no chain stage: ${akfEsc(o.running||0)} running, ${akfEsc(o.queued||0)} queued, ${akfEsc(o.filed||0)} filed. The legacy single-process loop's cards further down have their own banners; when they read STALE, this strip is the current state.</p>`;
+ if((g.running||[]).length)h+=`<p><b>Running:</b> ${g.running.map(r=>`<code>${akfEsc(r.id)}</code>${r.stage?' ('+akfEsc(r.stage)+')':''}`).join(' · ')}</p>`;
+ if(dec.present&&(dec.events||[]).length){h+=`<details><summary><b>Decisions needed (${dec.events.length})</b> <span class="muted">${Object.entries(dec.counts||{}).map(([k,v])=>akfEsc(k)+' '+akfEsc(v)).join(' · ')}</span></summary><table><tr><th>kind</th><th>subject</th><th>why</th></tr>${dec.events.map(e=>`<tr><td>${akfEsc(e.kind)}</td><td><code>${akfEsc(e.subject)}</code></td><td>${akfEsc(e.summary)}</td></tr>`).join('')}</table></details>`;}
+ else if(!dec.present)h+=`<p class="warn">decisions detector unavailable: ${akfEsc(dec.error||'')}</p>`;
+ return h;
+}
+function akfClip(x1,y1,x2,y2,r){const cx=r[0]+r[2]/2,cy=r[1]+r[3]/2,dx=x1-cx,dy=y1-cy;if(!dx&&!dy)return [cx,cy];const s=Math.min(dx?(r[2]/2)/Math.abs(dx):1e9,dy?(r[3]/2)/Math.abs(dy):1e9);return [cx+dx*s,cy+dy*s];}
+function akfSvg(d,sel){
+ if(!d||!d.nodes)return '';
+ const W=180,H=74,box=id=>{const p=AKF_POS[id]||[0,0];return [p[0],p[1],W,H];};
+ let s='<svg viewBox="0 0 1110 580" role="img" aria-label="AutoKernel loop flowchart"><defs><marker id="akar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8b949e"/></marker></defs>';
+ s+='<rect class="grp" x="25" y="35" width="640" height="112"/><text x="30" y="28" style="font-weight:700">LLM LANES (per candidate)</text>';
+ s+='<rect class="grp" x="25" y="185" width="1060" height="112"/><text x="30" y="178" style="font-weight:700">ROW CHAIN on rowflow (deterministic)</text>';
+ s+='<text x="30" y="330" style="font-weight:700">AFTER THE RUN</text><text x="30" y="460" style="font-weight:700">SIDE PATHS</text>';
+ for(const [a,b] of (d.edges||[])){if(!AKF_POS[a]||!AKF_POS[b])continue;const A=box(a),B=box(b);const ac=[A[0]+W/2,A[1]+H/2],bc=[B[0]+W/2,B[1]+H/2];
+  const p1=akfClip(bc[0],bc[1],ac[0],ac[1],A),p2=akfClip(ac[0],ac[1],bc[0],bc[1],B);
+  s+=`<path class="edge${AKF_DASH[a+'>'+b]?' dash':''}" d="M${p1[0].toFixed(1)},${p1[1].toFixed(1)} L${p2[0].toFixed(1)},${p2[1].toFixed(1)}" marker-end="url(#akar)"/>`;}
+ for(const [id,n] of Object.entries(d.nodes)){if(!AKF_POS[id])continue;const [x,y]=AKF_POS[id],ai=n.owner==='AI',cx=x+W/2;
+  s+=`<g class="node ${akfEsc(n.state)}${sel===id?' sel':''}" data-node="${akfEsc(id)}" tabindex="0"><title>${akfEsc(n.label)}: ${akfEsc(n.note||n.sub)}</title>`;
+  s+=ai?`<rect class="ai" x="${x}" y="${y}" width="${W}" height="${H}" rx="22"/>`:`<rect class="det" x="${x}" y="${y}" width="${W}" height="${H}"/>`;
+  s+=`<text class="badge bd-${ai?'AI':'DET'}" x="${x+(ai?16:6)}" y="${y+12}">${ai?'AI':'DET'}</text>`;
+  s+=`<text class="cnt" x="${x+W-(ai?16:8)}" y="${y+16}" text-anchor="end">${n.count==null?'-':akfEsc(n.count)}</text>`;
+  s+=`<text x="${cx}" y="${y+30}" text-anchor="middle" style="font-weight:600">${akfEsc(n.label)}</text>`;
+  const line=n.count==null?(n.state==='uninstrumented'?'not instrumented':akfEsc(n.state)):`run ${n.in_flight} · queued ${n.queued} · done ${n.done}`;
+  s+=`<text class="sub" x="${cx}" y="${y+47}" text-anchor="middle">${line}</text>`;
+  s+=`<text class="sub" x="${cx}" y="${y+62}" text-anchor="middle">last ${n.age_s==null?'never':akfAge(n.age_s)+' ago'}</text></g>`;}
+ return s+'</svg>';
+}
+function akfItems(d,id){
+ const n=d&&d.nodes&&d.nodes[id];if(!n)return '<p class="muted">Click a node to list its items.</p>';
+ let h=`<h3 class="akf-h3">${akfEsc(n.label)} <span class="count">${akfEsc(n.owner)} · ${akfEsc(n.sub)} · state ${akfEsc(n.state)} · last event ${akfEsc(n.last_event||'never')}</span></h3>`;
+ if(n.note)h+=`<p class="muted">${akfEsc(n.note)}</p>`;
+ if(!n.items.length)return h+'<p class="muted">No items in the window.</p>';
+ h+=`<table><tr><th>item</th><th>state</th><th>at</th><th>detail</th></tr>${n.items.map(i=>`<tr><td><code>${akfEsc(i.id)}</code></td><td>${akfEsc(i.state)}</td><td>${akfEsc(i.at||'-')}</td><td>${akfEsc(i.detail||'')}</td></tr>`).join('')}</table>`;
+ if(n.count>n.items.length)h+=`<p class="muted">showing ${n.items.length} of ${akfEsc(n.count)} (newest first)</p>`;
+ return h;
+}
+let akfData=null,akfSel=null;
+function akfPaint(){
+ const sv=document.getElementById('akflow-svg');sv.innerHTML=akfSvg(akfData,akfSel);
+ document.getElementById('akflow-items').innerHTML=akfItems(akfData,akfSel);
+ sv.querySelectorAll('g.node').forEach(g=>{const f=()=>{akfSel=g.dataset.node;akfPaint();};g.addEventListener('click',f);g.addEventListener('keydown',e=>{if(e.key==='Enter')f();});});
+}
+async function akfLoad(){
+ let d;try{d=await (await fetch('/api/akflow')).json();}catch(e){d={present:false,error:'/api/akflow unreachable: '+e};}
+ const f=d._freshness||{},cls=d.present===false?'missing':(f.staleness_class||'missing');
+ const b=document.getElementById('akflow-badge');b.className='badge '+({fresh:'fresh',aging:'malformed',stale:'stale'}[cls]||'absent');
+ document.getElementById('akflow-badgetxt').textContent=`${String(cls).toUpperCase()} · last loop event ${akfAge(d.last_event_age_s)} ago`;
+ document.getElementById('akflow-glance').innerHTML=akfGlance(d);akfData=d;akfPaint();
+}
+akfLoad();setInterval(akfLoad,30000);
 </script>
 </body>
 </html>
