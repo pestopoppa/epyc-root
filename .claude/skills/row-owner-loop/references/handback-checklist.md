@@ -13,3 +13,7 @@ Verify each claim yourself; an unverified claim is false.
 
 Then: `TaskStop` the agent's leftover background tasks, file/tick, dispatch the next phase in the
 same turn, and update the program table.
+
+Mechanical form: `python3 scripts/coordination/akloop/handback_verify.py --text <handback.md>` (or `--claims claims.json`)
+runs the table above and prints a VERIFIED/UNVERIFIED stamp with per-claim results (exit 0 = VERIFIED). A hand-back
+with no checkable claim is UNVERIFIED. Design: `docs/design/autokernel-parallel-loop-p5.md`.
