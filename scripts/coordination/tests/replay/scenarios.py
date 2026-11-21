@@ -858,16 +858,17 @@ def sc_backfill_expired_drain(path):
 def sc_deferred_multiquarter_backfills_c15(path):
     """D9 2026-11-18 (c15-fold-cpu): LSA rows hold q0+q1 for 20 h; a multi-quarter(2) row (q0-q2 only) has waited
     > DRAIN_AFTER_S, so its earliest start is ~20 h out - beyond DRAIN_RESERVE_HORIZON_S, deferred (no reservation).
-    q2 backfills: the 5 h c15-fold-cpu quarter row is granted (capped at now + horizon), while a 20 h row that cannot be
-    capped (min window 20 h) is refused there ("only admit rows that end within 2 h", the anti-starvation rule)."""
+    q2 backfills: the 5 h c15-fold-cpu quarter row is granted in full (PM-CAP 2026-11-21: backfill onto a deferred target
+    is bounded by its real earliest start S, not the 2 h horizon), while a 30 h row that cannot be capped (min window
+    30 h > S) is refused there (it would delay the target)."""
     lsa_d = row("lsa-dense-20h", regions="any-of q0", extra="python3 job.py --workers 24", est=20 * 3600, rank=20)
     lsa_p = row("lsa-pca-20h", regions="any-of q1", extra="python3 job.py --workers 24", est=20 * 3600, rank=20)
     mq = row("rka-a3b48-mq2", regions="any-cpu-quarter", extra="python3 job.py --workers 48", est=3600, rank=30,
              man={"declared_shape": "multi-quarter(2)", "shape": "multi-quarter(2)"})
     mq["pass"]["passed_at"] = _iso(T0 - 4 * 3600)
     c15 = row("c15-fold-cpu", regions="any-of q2", extra="make -j 24", est=5 * 3600, rank=60, man={"min_window_s": 3600})
-    lng = row("q2-long-20h", regions="any-of q2", extra="make -j 24", est=20 * 3600, rank=50,
-              man={"min_window_s": 20 * 3600})
+    lng = row("q2-long-20h", regions="any-of q2", extra="make -j 24", est=30 * 3600, rank=50,
+              man={"min_window_s": 30 * 3600})
     lsa = {"lsa-dense-20h": lsa_d, "lsa-pca-20h": lsa_p}
     rows = dict(lsa, **{"rka-a3b48-mq2": mq, "c15-fold-cpu": c15, "q2-long-20h": lng})
     ticks = [(lsa, {})] + [(rows, {})] * 3
@@ -878,7 +879,7 @@ def sc_deferred_multiquarter_backfills_c15(path):
             return ["fixture: the LSA rows were not granted on tick 0"]
         if not _granted(d, "c15-fold-cpu"):
             out.append("c15-fold-cpu never granted: q2 idled behind a deferred multi-quarter target")
-        out += [f"q2-long-20h (ends beyond the horizon) granted at tick {i}" for i, _ in _granted(d, "q2-long-20h")]
+        out += [f"q2-long-20h (ends beyond the deferred target's start) granted at tick {i}" for i, _ in _granted(d, "q2-long-20h")]
         out += [f"multi-quarter target granted at tick {i} while q0+q1 are busy" for i, _ in _granted(d, "rka-a3b48-mq2")]
         return out
     return write(path, ticks), check

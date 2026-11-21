@@ -93,13 +93,24 @@ class DrainHorizon(unittest.TestCase):
         self.assertIsNone(rf.plan.last_drain)
         self.assertEqual([c["id"] for c, _ in rf.plan.drain_deferred], ["rka-a3b48"])
         self.assertTrue(any(c["id"] == "rka-a3b48" and "horizon" in why for c, why in rf.plan.no_reserve))
-        self.assertIn("five-h-quarter", {c["id"] for c, _ in a})   # c15-fold-cpu case: admitted, capped at the horizon
-        self.assertEqual(rf.plan.hard_end["five-h-quarter"], NOW + rf.DRAIN_RESERVE_HORIZON_S)
+        # PM-CAP 2026-11-21: bounded by the target's real earliest start S (20 h), not the 2 h horizon - a 5 h row ending
+        # before S cannot delay it, so it gets its full window (ak-draft-head-svd-cpu-20261121-r2q0 was cut at 7260 s)
+        self.assertIn("five-h-quarter", {c["id"] for c, _ in a})
+        self.assertNotIn("five-h-quarter", rf.plan.hard_end)
+
         self.assertFalse(any("draining for" in v for v in idle.values()))
 
+    def test_5f_row_overrunning_deferred_start_is_capped_at_S(self):
+        T = NOW + 6 * H
+        q = cand("long-q", [{"q0"}], rank=60, est=8 * H, window=8 * H, minwin=H)
+        a, _, _ = run([mq_drain(), q], T)
+        self.assertEqual([c["id"] for c, _ in rf.plan.drain_deferred], ["rka-a3b48"])
+        self.assertIn("long-q", {c["id"] for c, _ in a})
+        self.assertEqual(rf.plan.hard_end["long-q"], T)
+
     def test_5c_beyond_horizon_long_row_refused_on_deferred_regions(self):
-        # D9 "only admit rows that end within 2 h": a 5 h row that cannot be capped (min window 5 h) stays off q0
-        q = cand("five-h-quarter", [{"q0"}], rank=60, est=5 * H, window=5 * H, minwin=5 * H)
+        # a row that outlasts the deferred target's earliest start and cannot be capped (min window 25 h) stays off q0
+        q = cand("five-h-quarter", [{"q0"}], rank=60, est=25 * H, window=25 * H, minwin=25 * H)
         a, _, _ = run([mq_drain(), q], NOW + 20 * H)
         self.assertEqual([c["id"] for c, _ in rf.plan.drain_deferred], ["rka-a3b48"])
         self.assertNotIn("five-h-quarter", {c["id"] for c, _ in a})

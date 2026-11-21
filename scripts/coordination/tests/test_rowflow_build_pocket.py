@@ -43,6 +43,24 @@ class BuildPocket(unittest.TestCase):
         run([cand("long", resumable=True)], False)
         self.assertEqual(rf.plan.hard_end["long"], NOW + 7200)
 
+    def test_single_quarter_resumable_gets_full_window(self):
+        # PM-CAP: a resumable single-quarter row is never cut at max_hold_s (build-pocket rule needs all of q0-q2)
+        c = cand("sq", est=13750, resumable=True, options=[{"q0"}], shape="quarter")
+        out, _, _ = run([c], False)
+        self.assertEqual([x["id"] for x, _ in out], ["sq"])
+        self.assertNotIn("sq", rf.plan.hard_end)
+        out, _, _ = run([c], True)   # even with a build claim waiting
+        self.assertEqual([x["id"] for x, _ in out], ["sq"])
+        self.assertNotIn("sq", rf.plan.hard_end)
+
+    def test_q012_resumable_cap_and_waiter_hold(self):
+        c = cand("wide", est=13750, resumable=True)
+        run([c], False)
+        self.assertEqual(rf.plan.hard_end["wide"], NOW + 7200)   # cut so the pocket reopens
+        out, _, _ = run([c], True)
+        self.assertEqual(out, [])   # live waiter: not booked at all (held)
+        self.assertEqual(rf.plan.build_held, ["wide"])
+
     def test_whole_host_need_opts_out(self):
         out, _, _ = run([cand("long", resumable=True, whole=True)], True)
         self.assertEqual([c["id"] for c, _ in out], ["long"])

@@ -2730,7 +2730,10 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                     S = float(prev)
                 if S is not None and S - now > DRAIN_RESERVE_HORIZON_S and drain_horizon_applies(c):   # D9 2026-11-18: partial-host only
                     plan.drain_deferred.append((c, S))
-                    dfr_r, dfr_T = set().union(*c["options"]), now + DRAIN_RESERVE_HORIZON_S
+                    # PM-CAP 2026-11-21: backfill onto a deferred target's regions is bounded by its REAL earliest start S
+                    # (a row ending by S cannot delay it), not by the 2 h horizon (which cut a 3.8 h single-quarter row at 7260 s
+                    # with S = 6.4 h away; ak-draft-head-svd-cpu-20261121-r2q0). The horizon only decides "no reservation".
+                    dfr_r, dfr_T = set().union(*c["options"]), S
                     S, why = None, (f"earliest start {dt.datetime.fromtimestamp(S, dt.timezone.utc):%Y-%m-%dT%H:%MZ} "
                                     f"beyond reserve horizon {DRAIN_RESERVE_HORIZON_S}s")
                 if S is None:
