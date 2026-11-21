@@ -261,6 +261,7 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · gate: none
 - [ ] **RTG100-TASKFLOW-CANARY-RESULT** [inference] Record the result of canary row tf1-canary-35b-c14-gpu-r1-20261120 (C14, qwen3.6-35b-a3b-q8-gpu-mtp, 10 tasks) against TASKFLOW-STAGE1.
       · done when: verdict: STAY-35B|TRY-27B|FIX-HARNESS filed from the row's result
+      · 2026-11-21 INTERIM, not ticked (INCONCLUSIVE is not an allowed verdict here): canary r1-r7d verified 0 to 2/10; clean A/B r6c (no brief) and r7d (strong brief) both 0/8; Sonnet packet-only calibration verified 5/7, so the tasks are doable and the 35B's 0 is mostly harness/env/packet. Working verdict FIX-HARNESS (no model verdict; STAY-35B vs TRY-27B undecided); canary paused for AutoKernel compute. Evidence: docs/design/taskflow-stage1-canary-findings.md. Remaining: this box files STAY-35B|TRY-27B|FIX-HARNESS once TASKFLOW-STAGE1-CANARY closes (its RESUME POINT: r8 CPU calibration, packet fixes, iterate to 35B saturation, then 27B on residual failures); gate stays TASKFLOW-STAGE1-CANARY.
       · gate: TASKFLOW-STAGE1-CANARY
 - [ ] **RTG100-GENFILE-HOOK-REFUSE** [non-inference] Flip the generated-index-file pre-commit hook from warn to refuse one week after it went live.
       · done when: the hook refuses a commit touching generated index files on origin/main and a test trips it
