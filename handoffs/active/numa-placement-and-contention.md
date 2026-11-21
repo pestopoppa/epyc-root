@@ -429,6 +429,7 @@ the machine.
       4 are salvageable. Owning suspension banner:
       [`batched-decode-measurement.md`](numa-placement-and-contention.md#track-batched-decode-measurement).
 - [ ] **P2-2. Establish production anchors for the three roles that have none.**
+      - 2026-11-21 (pipeline-mgmt, box stays open): identity producer fixed — orchestrator 57f07ceb makes every serving-call record carry `server.model_path`/`argv_sha256` (explicit null when unknown), `identity_source`, and `population` (caller_class, server_scope, context_depth_tokens). The anchors still need >=50 eligible production calls per role, which needs the production stack serving traffic. [no-belief: code only, no samples]
       Only `frontdoor` has one — **median 35.7 tok/s, n=154**, derived from
       AutoPilot production traffic, *a path independent of the thing under test*,
       which is what makes it valid. `worker_general`, `architect_general` and
@@ -763,7 +764,7 @@ than MTP everywhere (122B CPU: 9.38 vs 15.76).
   off the retracted finding. Nothing justifies enabling ngram on any role.
 - [x] Re-scope NG1–NG5 in `speculative-decoding-mtp-refresh.md` — they were filed ✅ 2026-10-29 (audit: numa:910 [x]: speculative-decoding-mtp-refresh.md banner added, NG1-NG4 cancelled, NG5 re-scoped (2026-07-31)) [no-belief: audit-reconciliation]
   against the retracted result.
-- [ ] Fold the four P-BENCH-PLACEMENT-1 amendments (no repeated-prompt replication
+- [x] Fold the four P-BENCH-PLACEMENT-1 amendments (no repeated-prompt replication ✅ 2026-11-21 [belief: cc] verified: ratified a0e248d40 (RATIFY-INF45-P24-20261110, receipt artifacts/operator/ratify_inf45_p24_20261110.receipt.json RATIFIED); A1-A4 at measurement/protocols/bench-cpu.md:266-270 per the 2026-11-10 operator decision (annex, not MEASUREMENT.md body)
   for context-reading drafters; mandatory non-context control arm; report n/min/max
   never a bare median; `accept=1.000` is a bug report) into MEASUREMENT.md proper.
   - **Operator decision 2026-11-10:** the four amendments ride RATIFY-INF45-P24-20261110 (`scripts/operator/run_inf45_p24_ratify_20261110.sh`) as A1-A4 in the P-BENCH-PLACEMENT-1 annex; box closes when the operator signs it.
@@ -793,7 +794,7 @@ Qwen2.5-VL-7B-Instruct Q4_K_M, node1, 24t, `membind=1`. Same GGUF serves
   burn an hour. If either vision role is expected to take long-context work, it
   needs more cores or GPU residency — this is a real capacity limit, not a bench
   artifact.
-- [ ] **Harness parser bug:** depth is read from the FIRST `prompt eval time` line.
+- [x] **Harness parser bug:** depth is read from the FIRST `prompt eval time` line. ✅ 2026-11-21 [belief: cc] verified: research 18d0c3ea2 (on origin/main) ctxparse.py STOP_RE reads `stop processing: n_tokens`; regression scripts/benchmark/tests/test_ctxparse_depth.py
   When rep 1 times out before logging one, a later cache-warm incremental count is
   reported instead (observed: `prompt=2926` where true resident context was
   27,586, per `stop processing: n_tokens`). Read depth from `n_tokens` instead.
@@ -1085,12 +1086,14 @@ Operator agreed. Replaces the single BLOCK/ALLOW pair matrix, which conflated th
 different kinds of thing and is why 58 of 78 pairs were being benchmarked to
 rediscover set intersection.
 
-- [ ] **(1) Placement feasibility — DERIVED, never measured.** Pure cpuset
+- [ ] **W-40** **(1) Placement feasibility — DERIVED, never measured.** Pure cpuset
   intersection, regenerated from `stack_numa.py` on every topology change. Zero
   inference, cannot go "stale" in a way a benchmark fixes. half A (q0+q1) vs half B
   (q2+q3) = disjoint, may co-run. full (0-95) intersects both halves = exclusive.
   **This artifact is what a pre-commit gate may consult** — it removes the standing
   block on the orchestrator repo. Program note (absorbs the 2026-07-31 directive rows, W8 and Q4): the matrix is a SURFACE autopilot can price, never a veto; artifact (2) carries the bandwidth regimes (not the worst case); schema first, regenerate last (mining persisted as wf_d3095ecd-19e); the interference model does not wait for E5 (premise corrected 2026-08-01); online learning (option C) layers on later with (2) as cold-start prior and (3) as what telemetry updates.
+      · class: non-inference
+      · done when: the derived cpuset-intersection feasibility artifact is regenerated from stack_numa.py by a script with a test, and the orchestrator pre-commit gate consults it instead of the benchmarked contention matrix
 - [ ] **(2) Per-role capacity curve — `tok/s = f(np, context_depth)` per role x shape.**
   Self-interference, NOT a pair property. **N curves, not N².** This is what the
   half/full headline runs actually produce. Answers "how should I use this role",
@@ -1375,7 +1378,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       declared ONLY in master with no launcher-side declaration — precisely the surface the
       `--device none` incident ran through. `shared_with` for `worker` disagrees (legacy
       `worker_explore` alias exists launcher-side only).
-- [ ] **`q_scorer_priors` fails: `architect_general` / `coder_escalation` quality source is
+- [x] **`q_scorer_priors` fails: `architect_general` / `coder_escalation` quality source is ✅ 2026-11-21 [belief: cc] done: orchestrator 58cbce34 — judge-suite 0.886 wired by model_id to the qwen3.8-27b-q8_0 roles (coder_escalation, architect_critic, ingest_long_context) as source measured_judge_suite with provenance; unmeasured roles (architect_general, now Flash-Next) fail closed as `unscored`, no fabricated value. Master-registry quality_pct not yet added (research registry; overlay is the live wire)
       `degraded_fallback`.** The router scores them with a FABRICATED quality number rather than
       none. Deliberately not auto-declared in `accepted_gaps.yaml` — laundering a fail-open fallback
       under a waiver is exactly what that mechanism exists to prevent. Options: make q_scorer refuse
@@ -2449,7 +2452,7 @@ comparison table + R1-R4 rule evaluation in the summarizer.
     `TRIM_DEFINITION` is **not** amended and every banked number stands. Nothing further is owed by
     this lane until it is signed. Token 2 (absorbed): the v9 signature added a scope constraint on the consolidated era token; present both asks as one package.
     - **Operator decision 2026-11-10:** token signed (decouple). Implementation is code work:
-    - [ ] **NUMA-DECOUPLE-1** Implement the signed decouple: stop gating `decision_grade` on the trimmed window (research `scripts/benchmark/server_numa_np_sweep.py:1501`), surface `trimmed_window_empty` via `_apply_basis_caveat`, re-grade the 5 listed cells; banked numbers unchanged.
+    - [x] **NUMA-DECOUPLE-1** Implement the signed decouple: stop gating `decision_grade` on the trimmed window (research `scripts/benchmark/server_numa_np_sweep.py:1501`), surface `trimmed_window_empty` via `_apply_basis_caveat`, re-grade the 5 listed cells; banked numbers unchanged. ✅ 2026-11-21 [belief: cc] done: research a56df365b — trimmed_window_empty + caveats in summarize_cell, _apply_basis_caveat demotes to decision_grade_caveated, test_decision_grade_decouple.py; 5 cells re-graded offline from banked data (all now decision_grade, banked numbers unchanged) at data/numa_placement/numa-decouple-1-regrade-20261121/
 - [x] **R2/R4 mix metric bases and let a non-decision-grade cell win the Pareto peak (discovered 2026-07-29 by pre-validating the summarizer on a COPY of the live partial W1)** — *(⛔ every tasks/hr figure quoted in this item is SUSPENDED 2026-07-30. The defect it identifies is a metric-BASIS inconsistency — raw vs trimmed — which is scale-invariant, so the finding and its fix survive the suspension and must be applied before the re-measured cells are aggregated.)* — R2 names `qwen36_q8_0-C2-np16` peak at **578.6 tasks/hr on `aggregate_basis=raw_fallback`**, above `C2-np8` at **462.8 on `trimmed`**; `C2-np16` is `decision_grade=false` (`empty_trimmed_window`). R4's `per_shape_np_optimum` picks the same cell on the same basis and flags `mixed_metric_basis: true`. **The arithmetic settles it**: like-for-like, `C2-np8` raw **669.2** > `C2-np16` raw **578.6**, and on trimmed `C2-np16` has no value at all — so it wins on *no* consistent basis. It only appears to win because it is compared on raw while its rival is compared on trimmed, and raw is systematically higher (includes the ramp-up burst, skips steady-state trimming). **This upgrades the 16:18Z T=32 finding**: those cells do not merely fail to contribute, they *actively contaminate* R2/R4 by winning comparisons they should not be in — a reader would wrongly conclude 2×quarter @np16 is the peak provisioning shape. **R1 is unaffected** — it already guards per-pair (`mixed_metric_basis: false` on the clean half-machine T=16 pair, where C2@8 462.8 beats C1@16 327.0 by 29.3% on a consistent trimmed basis). Fix = apply R1's existing guard to R2/R4: exclude `decision_grade=false` cells from aggregation, or refuse a peak whose basis differs from its rivals. **Not changed in-flight** — instrument code, campaign live on it, and changing aggregation mid-run would make banked cells non-comparable. Pure post-hoc read, so it is fixable and re-runnable **offline** against the same run dirs at zero inference cost. Escalated `msg-20260729T162849Z-50-mainA`.
   **✅ 2026-08-11 (`mainA`) — LANDED, research `4fb44869`. Half of this was already fixed; the other half was real.**
   **Already fixed, verified by offline replay of `e5-w1-qwen36-20260729T154725Z`:** the 2026-07-30 metric
@@ -3726,7 +3729,7 @@ primary artefact.
       Growing it changes the measurement instrument and breaks comparability with every banked
       E1/W0/Stage-B cell, so it is an operator ruling — and it should be recorded as an **era
       boundary**, not an edit, exactly as the 2026-08-11 rider argues for objective changes.
-- [ ] **T5 — Arm the locality gate for mmap roles.** [too-big: interleave threshold and shared mmap attribution need handoff resolution] `affinity_preflight.py:195` currently sets
+- [x] **T5 — Arm the locality gate for mmap roles.** [too-big: interleave threshold and shared mmap attribution need handoff resolution] `affinity_preflight.py:195` currently sets ✅ 2026-11-21 [belief: cc] done: orchestrator b04f71f1 — affinity_preflight armed regardless of mmap; single-node local_fraction>=0.95, multi-node shares within [0.75/n,1.25/n], else exit 1; tests in test_affinity_preflight*.py (77 pass)
       `required = no_mmap and len(expected_nodes) == 1`, so under mmap it observes and reports
       but never fails. It should fail a single-node instance whose `local_fraction` is below
       threshold regardless of mmap.
@@ -4332,7 +4335,7 @@ That is almost certainly the mechanism behind this handoff's two half-speed role
       Evidence: `/mnt/raid0/llm/tmp/inf70/agents/c7-finish/REPORT.md`; memory
       `feedback_page_cache_defeats_numa_interleave`.
 
-- [ ] **The pre-evict hazard is RECLAIM-THEN-LOAD, not the size of the constant — and C7's launch path does
+- [ ] **W-39** **The pre-evict hazard is RECLAIM-THEN-LOAD, not the size of the constant — and C7's launch path does
       exactly that sequence.** Found 2026-09-03 by INF-70's `mtp-tip2`; supersedes this item's first framing
       ("is 40 GiB too low?"), which was mine and was wrong about the variable.
       **The evidence.** Two consecutive loads of the SAME model by the SAME launcher, both at `EVICT_GIB=40`, 33 s
@@ -4368,6 +4371,8 @@ That is almost certainly the mechanism behind this handoff's two half-speed role
       show 60 was never observed to fail, not that 60 is sufficient. Detail in
       `/mnt/raid0/llm/tmp/inf70/agents/mtp-tip2/FINDING-numa.md`. Owner: the stack session, with the activation
       item above. No orchestrator config was touched by INF-70.
+      · class: non-inference
+      · done when: the C7 launch path no longer loads immediately after a forced membind reclaim (settle/verify per-node free before load, or reclaim decoupled from load), with a unit test reproducing the reclaim-then-load sequence
 
 ## Track: shape-keyed-contention-gating
 <!-- gate: none -->
@@ -4394,8 +4399,10 @@ That is almost certainly the mechanism behind this handoff's two half-speed role
 
 - [x] **A — Cross-role disjoint placement** (prerequisite; correctness-critical) — **CODE-COMPLETE 2026-05-30, behind `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT`; A-1 TOCTOU RESOLVED** via the global region mutex (`cpu_region.GLOBAL.{region}.lock`). Still LIVE-OBSERVATION-GATED before flag-on.
 - [x] **B — Shape-keyed admission core + default-off gate seam + dispatch-side caller wiring** — `Placement`, `admit_set`, `held_regions_by_role`, `seam_admit`, dual-flag gate, and `ContentionGate.evaluate(candidate_topology_idx=...)` are code-complete and verified. The seam is **authoritative** when consulted (`worst = seam_decision`), not tightening-only. **Dispatch-side caller wiring DONE 2026-05-31 (Step 2):** `inference.py` defers the coarse role-keyed pre-gate for `ConcurrencyAwareBackend` when both flags are armed (so it can't mask a later disjoint candidate); `concurrency_aware.py` `_dispatch` evaluates the gate per **real** `candidate_topology_idx` before acquiring the candidate lock (denied candidates skipped/re-polled); `contention_gate.py` `admit()` threads `candidate_topology_idx` through to `evaluate()`. B is now code-complete end-to-end; production remains **inert** only because both shape-aware flags default off and the API was not reloaded.
-- [ ] **C — Backfill prep only** — pure `select_backfill_candidate` is implemented and tested; the heavy-port veto, all-heavy idle barrier, and pressure skip remain intact. Behavior-changing C work is not started.
+- [ ] **W-38** **C — Backfill prep only** — pure `select_backfill_candidate` is implemented and tested; the heavy-port veto, all-heavy idle barrier, and pressure skip remain intact. Behavior-changing C work is not started.
       NEEDS-OWNER — legacy `[~]` marker retired (handoff standard C7): tick it, freeze it or keep it open
+      · class: non-inference
+      · done when: behavior-changing backfill (select_backfill_candidate wired into dispatch) lands behind a default-off flag with tests and the heavy-port veto, idle barrier and pressure skip preserved, or the box is frozen by its owner
 
 ##### Next actions (operator-gated)
 
@@ -5333,7 +5340,7 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
 - **[declined: ws58 2026-11-03 content-review: stale pre-reboot staging (reboot 2026-08-13); pinning is mi210-serving-program GPS-PIN-1]** **S-10 — Land SS-BENCH-GATE-b's cpuset pinning in the launch path before the reboot** so it is
       live from the first post-reboot launch. It exists to stop a reload sidecar invalidating a
       decision-gating run — which is exactly how the first clean window gets wasted.
-- [ ] **S-11 — Close the P-BENCH-1 host-health gap.** `bench_canonical.sh` performs no uptime or
+- [x] **S-11 — Close the P-BENCH-1 host-health gap.** `bench_canonical.sh` performs no uptime or ✅ 2026-11-21 [belief: cc] done: research a56df365b — canonical_host_attestation.py always emits attestation_status/decision_grade/blockers; missing attestation or unknown uptime => decision_grade=false; uptime gate fixed to >= one week (server_np_sweep.py:303); tests in test_canonical_host_attestation.py
       host-health check, so the canonical CPU path can silently mint a policy-non-compliant
       decision-grade number while the P-BENCH-3 path fails closed. Either add the gate or make the
       attestation mandatory in the emitted artifact. Route to the measurement-protocol owner — the
