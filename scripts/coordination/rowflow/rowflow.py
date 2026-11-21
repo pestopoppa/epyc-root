@@ -5275,6 +5275,37 @@ def q3_pocket_claim(flags, free, n, want=None):
 
 
 def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None):
+    """CLAIM-ID 2026-11-21 (AK, D9 standing ack): two concurrent `claim --build --cpus 72-87` calls in the same UTC second both
+    read the same free snapshot, both passed the checks, both minted build-<owner>-<second> and the second write_grant
+    os.replace()d the first's grant: one id, two claimants, and the first release freed cores the second was still building on.
+    Now the whole claim (snapshot -> overlap check -> grant write) runs under one flock (grants/.claim.lock), the id carries a
+    random suffix and is created O_EXCL, and the tokens are re-checked against the on-disk grants so a stale injected snapshot
+    cannot double-book. See _claim_build_locked for the claim itself."""
+    G = os.path.join(flags, "grants")
+    os.makedirs(G, exist_ok=True)
+    fd = os.open(os.path.join(G, ".claim.lock"), os.O_CREAT | os.O_RDWR, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)   # blocking: claims are short; serialising them is the point
+        return _claim_build_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free, wait_pid)
+    finally:
+        os.close(fd)   # closing releases the flock
+
+
+def _new_build_id(flags, owner, t):
+    """build-<owner>-<UTC second>-<6 hex>, reserved by creating grants/<id>.build.json with O_EXCL (retry on a collision)."""
+    for _ in range(50):
+        gid = f"{BUILD_PREFIX}{owner}-{t:%Y%m%dT%H%M%SZ}-{os.urandom(3).hex()}"
+        try:
+            os.close(os.open(os.path.join(flags, "grants", gid + ".build.json"), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644))
+        except FileExistsError:
+            continue
+        if os.path.exists(os.path.join(flags, "grants", gid + ".grant")):
+            continue
+        return gid
+    raise Refused("BUILD-REFUSED: could not mint a unique build grant id")
+
+
+def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None):
     """`rowflow.py claim --build`: a short `build` grant (--cpus 72-87 or a count that finds no q0-q2 room = the q3 pocket, never
     88-95/184-191, never gpu-quiet; see Q3-POCKET BUILD) (grants/build-<owner>-<ts>.grant, holds one quarter) so a build
     is a lane the planner sees instead of contamination. cpus = a count (<= 24: the first whole-free quarter q0-q2)
@@ -5339,7 +5370,12 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
                           "its measurement. Pick another quarter (or --cpus N to let the keeper pick)")
         need(part or q in free, f"BUILD-REFUSED: {q} is held by {holder.get(q, 'another job')}; pick a free quarter")
     t = dt.datetime.now(dt.timezone.utc) if now is None else dt.datetime.fromtimestamp(now, dt.timezone.utc)
-    gid = f"{BUILD_PREFIX}{owner}-{t:%Y%m%dT%H%M%SZ}"
+    want_tokens = expand(set(part) if part else set(qs))
+    for g in open_grants(flags):   # on-disk truth, under the claim lock: a held core is never booked twice
+        both = want_tokens & expand(g["holds"])
+        need(not both, f"BUILD-REFUSED: {compress_cpus({int(x[1:]) % 96 for x in both if x[0] in 'ct'}) or ','.join(sorted(both))} "
+                       f"already held by {g['id']}; a second claim on the same cores is refused while it holds them")
+    gid = _new_build_id(flags, owner, t)
     _rm(os.path.join(flags, BUILD_WAIT_DIR, f"{owner}.json"))
     if part:   # core-granular hold: explicit cpus + core/thread tokens, so the rest of the quarter stays claimable
         cl = tokens_cpus(part)
