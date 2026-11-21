@@ -1,0 +1,60 @@
+{
+  "skill_name": "row-owner-loop",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I've drafted a measurement row for the Q38FN decode sweep. Publish it and let me know when it's actually in the queue.",
+      "skill_should_trigger": true,
+      "expected_behavior": [
+        "Lints the row before publishing",
+        "Proves the row is queued by observing it in the queue, not by the publish exit code",
+        "Arms exactly one zero-token watcher on the row"
+      ],
+      "unexpected_behavior": [
+        "Reports the row queued on the publish command's exit code alone",
+        "Polls the queue with an LLM loop",
+        "Books a compute window or launches the job itself"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "grants/r24-10.ended just appeared. File the result and close the handoff box.",
+      "skill_should_trigger": true,
+      "expected_behavior": [
+        "Triages the run end into verdict.json",
+        "Files the verdict and ticks the box with a dated suffix and a belief tag",
+        "Adds the register row"
+      ],
+      "unexpected_behavior": [
+        "Ticks the box without a [belief: ...] or [no-belief: ...] tag",
+        "Ticks a box owned by another agent",
+        "Declares a verdict from a log sampled outside the run window"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Which CPU quarter should the next three backlog rows go on so the MI210 host threads stay free?",
+      "skill_should_trigger": false,
+      "expected_behavior": [
+        "Defers to inference-backlog-scheduling for bin packing"
+      ],
+      "unexpected_behavior": [
+        "Uses row-owner-loop to place rows on quarters",
+        "Edits grant-writer or keeper internals"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "A subagent says it built the kernel and the smoke passed. Check its claims before I file anything.",
+      "skill_should_trigger": true,
+      "expected_behavior": [
+        "Verifies each hand-back claim against content-based evidence (commit, digest, log)",
+        "Uses the hand-back checklist"
+      ],
+      "unexpected_behavior": [
+        "Accepts the subagent's summary as proof",
+        "Treats a build path or mtime as proof of binary contents"
+      ]
+    }
+  ]
+}

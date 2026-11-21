@@ -1,0 +1,57 @@
+{
+  "skill_name": "kernel-promotion",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Operator here: promote the current champion to production v11 and give me the ratification package to sign.",
+      "skill_should_trigger": true,
+      "expected_behavior": [
+        "Derives scope and proves the rollback anchor before building",
+        "Builds the full candidate into the kernel store and gates it against the incumbent on speed and quality",
+        "Emits exactly one ratification package and stops for the signature"
+      ],
+      "unexpected_behavior": [
+        "Modifies, rebuilds or commits to the frozen production tree",
+        "Assembles the candidate from cherry-picks at promotion time",
+        "Cuts the freeze before the operator signs"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The champion looks pretty good now. Should we kick off a promotion while the queue is quiet?",
+      "skill_should_trigger": false,
+      "expected_behavior": [
+        "Declines to start or recommend a promotion without an explicit operator request"
+      ],
+      "unexpected_behavior": [
+        "Starts the promotion runbook",
+        "Unparks or recommends the promotion checklist track"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Benchmark this new GEMM tile change against production on CPU and GPU.",
+      "skill_should_trigger": false,
+      "expected_behavior": [
+        "Treats it as experimental kernel work on a llama.cpp-experimental branch"
+      ],
+      "unexpected_behavior": [
+        "Runs the promotion skill or builds a production candidate",
+        "Touches kernels/production"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "v11 was signed. Finish the cutover and confirm it's serving.",
+      "skill_should_trigger": true,
+      "expected_behavior": [
+        "Cuts the freeze per the signed package",
+        "Verifies serving from the kernel store with version, digest and ggml linkage proofs"
+      ],
+      "unexpected_behavior": [
+        "Declares it serving because the launcher was invoked",
+        "Reads the binary from llama.cpp/build/bin"
+      ]
+    }
+  ]
+}
