@@ -2085,7 +2085,7 @@ BUILD_WAIT_DIR = "build-wait"   # <flags>/build-wait/<owner>-<ts>.json: a refuse
 
 
 def build_pocket_policy(flags=None):
-    pol = {"long_hold_s": 7200, "max_hold_s": 7200, "waiter_ttl_s": 7200, "waiter_ttl_cap_s": 1800, "queue_dir": TMP.rstrip("/") + "/queue"}
+    pol = {"stopping_horizon_s": 600, "long_hold_s": 7200, "max_hold_s": 7200, "waiter_ttl_s": 7200, "waiter_ttl_cap_s": 1800, "queue_dir": TMP.rstrip("/") + "/queue"}
     pol.update({k: v for k, v in (load_json(BUILD_POCKET_POLICY_FILE) or {}).items() if not k.startswith("_")})
     if flags:
         pol.update((load_json(os.path.join(flags, "allocator.json")) or {}).get("build_pocket") or {})
@@ -2535,6 +2535,27 @@ def rank_fragment_ok(c, o, contenders, free, ram, gpu_grant_open, held_ports=(),
     return True
 
 
+def stop_reserved(c, contenders, free, stopping, ram, gpu_grant_open, ports, horizon_s):
+    """PM-STOPRES 2026-11-21 (c17-fold-cpu rank 22 needs q0-q2; its owner STOPped nta (q0) and idxk (q1+q2); q0 freed first
+    and a rank-40 quarter row took it while idxk was still checkpointing). Regions held by a grant whose STOP file is set
+    free imminently (stopping). A STRICTLY better-ranked multi-quarter contender h that does not fit now but would fit
+    once the stopping regions end reserves the already-free quarters of that option. Returns [(h, regions)]; the caller
+    refuses c any option touching them unless c's booking ends within horizon_s."""
+    if not stopping:
+        return []
+    out = []
+    for h in contenders:
+        if h is c or float(h["rank"]) >= float(c["rank"]) or _fits(h, free, ram, gpu_grant_open):
+            continue
+        if own_block(h, free, ram, gpu_grant_open, ports) is not None:
+            continue
+        for x in sorted(h["options"], key=lambda o: sorted(o)):
+            if sum(1 for q in QUARTERS if q in x) >= 2 and x & stopping and x <= (free | stopping):
+                out.append((h, frozenset(x & free)))
+                break
+    return out
+
+
 def _fits(c, free, ram, gpu_grant_open):
     opts = [o for o in c["options"] if o and o <= free]
     if c.get("bench") and gpu_grant_open:
@@ -2675,7 +2696,7 @@ def gpu_q3_guard(c):
 
 
 def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None,
-         region_ends=None, region_holders=None, gpu_queued=False, build_waiting=False, build_policy=None):
+         region_ends=None, region_holders=None, gpu_queued=False, build_waiting=False, build_policy=None, stopping=()):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
@@ -2697,6 +2718,9 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     (plan.no_reserve = [(row, why)]); a persisted T is used only while it is still in the future.
     BUILD-POCKET (2026-11-20): a long (> long_hold_s) undeclared q0-q2 row is not placed while build_waiting (plan.build_held);
     a resumable one is placed with a hard end at max_hold_s (build_policy; plan.hard_end) so the pocket reopens at the cut.
+    STOP-RESERVE (PM-STOPRES 2026-11-21): stopping = tokens held by grants whose STOP file is set (checkpointing, free within
+    build_policy stopping_horizon_s); a better-ranked multi-quarter row that fits once they end reserves the already-free
+    quarters (plan.stop_reserves = [(worse row, better row, regions)]); worse rows ending within the horizon may still take them.
     Returns (assigned [(cand, option)], idle {region: reason}, pending); plan.last_drain = (cand, T) or None."""
     now = time.time() if now is None else now
     free = set(free)
@@ -2720,6 +2744,9 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         plan.build_held = [c["id"] for c in held]
         cands = [c for c in cands if c not in held]
     plan.build_held_rows = held
+    stopping = expand(set(stopping or ()))
+    stop_h = float(bp.get("stopping_horizon_s", 600))
+    plan.stop_reserves = []   # [(worse row, better row, regions)]
     pending = sorted(cands, key=plan_order)
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
@@ -2809,6 +2836,13 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                         hopts = [x for x in hopts if not (x & dfr_r)]
                     return hopts
                 opts = [o for o in opts if rank_fragment_ok(c, o, pending + held, free, ram, gpu_grant_open, ports, _eff)]
+            if opts and stopping and now + book_s(c) > now + stop_h:   # PM-STOPRES: a better row is waiting on stopping grants
+                for h, res in stop_reserved(c, pending + held, free, stopping, ram, gpu_grant_open, ports, stop_h):
+                    hit = [o for o in opts if o & res]
+                    if hit:
+                        if (c["id"], h["id"], res) not in [(a["id"], b["id"], r) for a, b, r in plan.stop_reserves]:
+                            plan.stop_reserves.append((c, h, res))
+                        opts = [o for o in opts if not (o & res)]
             if opts and not any(t in QUARTERS for x in opts for t in x) and not (plan.gpu_q3_guard and Q3_NARROW in opts):
                 # (GPU-Q3-GUARD: a quarter row's q3-narrow option is its whole-quarter grant, not sub-quarter packing)
                 # PACKING (operator "fix it" 2026-11-05): a sub-quarter row goes onto a partly used quarter; it breaks a
@@ -6034,6 +6068,16 @@ def queued_gpu_min_rank(flags):
     return best
 
 
+def stopping_tokens(flags, grants, allrows):
+    """PM-STOPRES: tokens held by open grants whose row STOP file exists (the owner STOPped it; it checkpoints, exits rc 75)."""
+    out = set()
+    for g in grants:
+        sf = resolve_stop_path(allrows.get(g["id"]) or load_json(ready_path(flags, g["id"])) or {})
+        if sf and os.path.exists(sf):
+            out |= set(g.get("holds") or ())
+    return out
+
+
 def region_end_map(flags, grants, busy, now=None):
     """{token: end epoch | None} for every busy token: the latest end of the open grants holding it (None when a holding
     grant has no parsable end), live smokes now + SMOKE_HOLD_S; a quarter token, the latest end of its busy members.
@@ -6261,7 +6305,14 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
                                         grant_ends=[e for e in ends if e], quiet_ok=quiet_ok, held_ports=held_ports,
                                         drain_prev=drain_prev, region_ends=r_ends, region_holders=holders,
-                                        gpu_queued=gpu_queued, build_waiting=bool(bw), build_policy=bpol)
+                                        gpu_queued=gpu_queued, build_waiting=bool(bw), build_policy=bpol,
+                                        stopping=stopping_tokens(flags, grants, allrows))
+        _srl = {}
+        for lc, hc, res in plan.stop_reserves:
+            _srl.setdefault(hc["id"], set()).update(res)
+        for hid, res in _srl.items():
+            log(f"RESERVE-FOR-STOPPING {hid} regions={','.join(compress(res))}: its other regions are held by grants being stopped; "
+                f"worse-ranked rows may take them only if they end within {int(bpol.get('stopping_horizon_s', 600))}s")
         for rid_h in plan.build_held:
             log(f"BUILD-POCKET-HELD {rid_h}: long q0-q2 row not booked while a build claim waits "
                 f"({'; '.join(w['who'] for w in bw)}); declare whole_host_need to opt out")

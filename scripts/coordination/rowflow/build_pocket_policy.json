@@ -1,5 +1,6 @@
 {
-  "_doc": "BUILD-POCKET carve-out (pipeline-mgmt 2026-11-20, D9 standing AK ack). A CPU multi-quarter(3) row (all of q0-q2) whose hold exceeds long_hold_s and that does not declare whole_host_need leaves a pocket for short build claims: (a) it is not granted while a build claim waits; (b) a resumable one is granted with a hard end at max_hold_s (capcut-requeued, so the pocket opens at each cut). A build-wait record counts only with a live (non-zombie) pid and for min(waiter_ttl_s, waiter_ttl_cap_s) unless refreshed. Override any key in <flags>/allocator.json under \"build_pocket\".",
+  "_doc": "BUILD-POCKET carve-out (pipeline-mgmt 2026-11-20, D9 standing AK ack). A CPU multi-quarter(3) row (all of q0-q2) whose hold exceeds long_hold_s and that does not declare whole_host_need leaves a pocket for short build claims: (a) it is not granted while a build claim waits; (b) a resumable one is granted with a hard end at max_hold_s (capcut-requeued, so the pocket opens at each cut). A build-wait record counts only with a live (non-zombie) pid and for min(waiter_ttl_s, waiter_ttl_cap_s) unless refreshed. stopping_horizon_s (PM-STOPRES 2026-11-21): regions of grants whose STOP file is set count as freeing within this many seconds; a better multi-quarter row waiting on them reserves the already-free quarters. Override any key in <flags>/allocator.json under \"build_pocket\".",
+  "stopping_horizon_s": 600,
   "long_hold_s": 7200,
   "max_hold_s": 7200,
   "waiter_ttl_s": 7200,
