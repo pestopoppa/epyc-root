@@ -12,7 +12,15 @@
     default estimate in `row_scaffold.py`. Open on one clause: ≥30 iterations of stage timings need a loop run.
   - P1 gate evaluator — `scripts/kernel_rnd/autokernel/loop/gate_eval.py` (research repo); replay report
     [autokernel-parallel-loop-p1-replay.md](autokernel-parallel-loop-p1-replay.md).
-  - P2..P6 — not started.
+  - P2 chain scaffolder (`scripts/coordination/akloop/chain.py`), P4 lineage manager (research
+    `scripts/kernel_rnd/autokernel/lineage`), P5 `failclass` / `handback_verify`, P6 `decisions.py` — code landed.
+  - P3 tail split — code + offline proof landed 2026-11-21 (not deployed): research `loop/stage_bodies.py`
+    (stage job bodies, polar RESULTs, hard-rule guards) and `loop/tailsplit.py` (lanes emit candidate records via
+    `EmittingTail`; `rebase_recheck` for stale bases; `--legacy-tail` / `--workers 1` rollback); root `chain.py` jobs
+    drive the pinned stage driver, `akloop/ak_runend.py` runs on ENDED from `watch_rows.sh`, `failclass` wired into
+    `rowflow.record_fail`. Offline simulation: `scripts/coordination/tests/test_akloop_p3_sim.py`. Open on one
+    clause: device-busy fraction above 15.8% on a measured campaign. Single-MI210 caveat: oracle-kld rows hold
+    `mi210_0`, so GPU gates serialize with timing; concurrency comes from CPU-quarter builds.
 - **Hard limits that hold at every phase**: production kernels frozen, promotion operator-only, all scheduling
   through rowflow (no second keeper), main sessions remain the only row publishers.
 
