@@ -1,8 +1,8 @@
 # Deep dives: ak-intake-20261121 (autokernel research intake, 2026-11-21)
 
-Stage-2 dives (intake-2752..2770) and Stage-2b waves 1-2 (intake-2771..2783). Each file is the dive report written
+Stage-2 dives (intake-2752..2770) and Stage-2b waves 1-3 (intake-2771..2788; wave 3 at operator request). Each file is the dive report written
 against the retained source text (vidya raw-anchor store); claim anchors are machine-marked in research/intake_index.yaml.
-Lane head for in-house citations: ac1347f5d. Stage-3 plan: /mnt/raid0/llm/tmp/ak-intake-20261121-plan.md (awaiting operator approval).
+Lane head for in-house citations: ac1347f5d. Stage-3 plan: /mnt/raid0/llm/tmp/ak-intake-20261121-plan-r2.md (r2, awaiting operator approval; r1 superseded).
 
 | Intake | Dive | Verification | Read depth |
 |---|---|---|---|
@@ -38,3 +38,8 @@ Lane head for in-house citations: ac1347f5d. Stage-3 plan: /mnt/raid0/llm/tmp/ak
 | intake-2781 | [2502.00299v5](2502.00299v5.md) | dive-verified | PARTIAL |
 | intake-2782 | [2604.13226v3](2604.13226v3.md) | dive-verified | PARTIAL |
 | intake-2783 | [hypic-repo](hypic-repo.md) | dive-verified | FULL |
+| intake-2784 | [2609.10266v2](2609.10266v2.md) | dive-verified | FULL |
+| intake-2785 | [neurips-152513](neurips-152513.md) | dive-verified | PARTIAL |
+| intake-2786 | [compactionbench](compactionbench.md) | stage1-unverified | PARTIAL |
+| intake-2787 | [flashstates-designdoc](flashstates-designdoc.md) | dive-verified | FULL |
+| intake-2788 | [flashstates-pdf](flashstates-pdf.md) | stage1-unverified | PARTIAL |

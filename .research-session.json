@@ -1,9 +1,9 @@
 {
  "session_id": "ak-intake-20261121",
  "started_at": "2026-11-21T11:40:00+00:00",
- "last_checkpoint": "2026-11-21T15:30:00+00:00",
+ "last_checkpoint": "2026-11-21T17:30:00+00:00",
  "stage": 3,
- "phase": "stage3-plan-presented",
+ "phase": "stage3-plan-r2-presented",
  "lane": "/workspace/.worktrees/ak-intake-20261121",
  "owner": "autokernel",
  "urls_processed": [
@@ -53,10 +53,15 @@
   "intake-2780",
   "intake-2781",
   "intake-2782",
-  "intake-2783"
+  "intake-2783",
+  "intake-2784",
+  "intake-2785",
+  "intake-2786",
+  "intake-2787",
+  "intake-2788"
  ],
  "entries_remaining": [],
- "next_intake_id": 2784,
+ "next_intake_id": 2789,
  "expansion": {
   "added": [
    "intake-2765",
@@ -209,7 +214,7 @@
   }
  ],
  "previous_session": "intake-dtree-verify-20261120",
- "stage2b_waves": 2,
+ "stage2b_waves": 3,
  "stage2_dived": [
   "intake-2752",
   "intake-2753",
@@ -244,8 +249,20 @@
   "intake-2780",
   "intake-2781",
   "intake-2782",
-  "intake-2783"
+  "intake-2783",
+  "intake-2784",
+  "intake-2785",
+  "intake-2786",
+  "intake-2787",
+  "intake-2788"
  ],
- "plan_file": "/mnt/raid0/llm/tmp/ak-intake-20261121-plan.md",
- "actionable_ledger": []
+ "plan_file": "/mnt/raid0/llm/tmp/ak-intake-20261121-plan-r2.md",
+ "actionable_ledger": [],
+ "superseded_plans": [
+  {
+   "file": "/mnt/raid0/llm/tmp/ak-intake-20261121-plan.md",
+   "sha256": "8405ac1851e43fed717c0cb4ff8032aca505f6cb018717450a704825b61a5fc7",
+   "status": "not approved (operator 2026-11-21)"
+  }
+ ]
 }

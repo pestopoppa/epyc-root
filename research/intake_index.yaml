@@ -397236,7 +397236,7 @@
   handoffs_updated: []
   handoffs_created: []
   verification: dive-verified
-  reader_should_conclude: 'Cite LazyWeights for the parallel-decodable Huffman layout, the Huffman-vs-rANS hardware comparison, and the measured fact that software weight decode is 2.5-3.2x slower than fixed width on edge GPUs. Do NOT cite its 5.7-31.4% as a GGUF size win, its Orin 36% as a decode-unit win, or its Nano 58-64% as anything but GPU-vs-CPU. Do NOT re-propose entropy-coded weights for our CPU or MI210 decode: our measured code entropy leaves 2-7% headroom, and software decode costs far more than that.'
+  reader_should_conclude: 'Cite LazyWeights for the parallel-decodable Huffman layout, the Huffman-vs-rANS hardware comparison, and the measured fact that software weight decode is 2.5-3.2x slower than fixed width on edge GPUs. Do NOT cite its 5.7-31.4% as a GGUF size win, its Orin 36% as a decode-unit win, or its Nano 58-64% as anything but GPU-vs-CPU. Do NOT treat the cost of software decode on our hardware as settled: the dive measured 2-7% ideal code-entropy headroom, which is up to about 7% faster bandwidth-bound decode if decode hides under memory stalls; whether it does on Zen 5 and gfx90a is measured by the WSTREAM-* census and decode microbenchmarks.'
   notes: 'Stage-1 (ak-intake-20261121, autokernel). arXiv v3 HTML (paper revised since v1). Bears on INF-70 CPU decode roofline and CPU-NT-WEIGHT-STREAM (spare cores vs DRAM bandwidth). Stage-2 dive (ak-intake-20261121) lane_head ac1347f5d; dive report research/deep-dives/ak-intake-20261121/2611.17108v3.md. Not read: All sections, Tables I-VI, captions and references were read. Figure bodies (Fig. 4 frontier, Fig. 5 decode-rate bars) are not in the HTML text. Stage-2 dive (ak-intake-20261121) lane_head ac1347f5d; dive report research/deep-dives/ak-intake-20261121/2611.17108v3.md. Not read: All sections, Tables I-VI, captions and references were read. Figure bodies (Fig. 4 frontier, Fig. 5 decode-rate bars) are not in the HTML text.'
   read_depth: FULL
   claim_anchors:
@@ -397487,7 +397487,8 @@
   - claim_index: 4
     effect: unaffected
     note: Huffman <= rANS in rate (0-1% fewer bits) and 1.15-4.0x smaller in area at 2 G weights/s. Interleaved rANS states were not evaluated.
-  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2): the size claim applies to the coded bundle, not to fixed-width GGUF. The Orin/Nano speedups are mostly runtime and format effects, because the unit is projected at twin time. A dive-time entropy measurement on our UD-IQ4_XS Q38FN and 27B Q8_0 GGUFs bounds lossless headroom at about 2% (IQ4_NL) and 4-7% (Q8_0). The CPU/MI210 software-decode lever is closed: decode cost is about 20x the bytes saved, the Zen 5 L3 is CCD-private so spare-core producers are ruled out, and gfx90a has less ALU per byte than the Orin, where the paper itself measured a 2.5-3.2x slowdown. 2026-11-21 Stage-2 close-out (dive-surfaced sources): arXiv:2505.02380 — ingested and dived in Stage-2b as intake-2777; arXiv:2606.15789 — declined: title seen only; likely BF16 lineage covered by intake-815..818; reopen if it covers quantized integer codes.'
+  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2): the size claim applies to the coded bundle, not to fixed-width GGUF. The Orin/Nano speedups are mostly runtime and format effects, because the unit is projected at twin time. A dive-time entropy measurement on our UD-IQ4_XS Q38FN and 27B Q8_0 GGUFs bounds lossless headroom at about 2% (IQ4_NL) and 4-7% (Q8_0). The CPU/MI210 software-decode lever is closed: decode cost is about 20x the bytes saved, the Zen 5 L3 is CCD-private so spare-core producers are ruled out, and gfx90a has less ALU per byte than the Orin, where the paper itself measured a 2.5-3.2x slowdown. 2026-11-21 Stage-2 close-out (dive-surfaced sources): arXiv:2505.02380 — ingested and dived in Stage-2b as intake-2777; arXiv:2606.15789 — declined: title seen only; likely BF16 lineage covered by intake-815..818; reopen if it covers quantized integer codes. 2026-11-21 Stage-3 r2 correction (operator challenge): the earlier CPU and MI210 declines rested on an assumed decode
+    rate of about 1 symbol per cycle per core, not a measurement; decode is bandwidth-bound, so the lever is re-opened as a staged census plus decode microbenchmarks.'
 - id: intake-2757
   arxiv_id: null
   url: https://huggingface.co/nvidia/Qwen3.5-4B-Qwen3.8-27B-Draft
@@ -401858,7 +401859,7 @@
   handoffs_created: []
   verification: dive-overturned
   read_depth: FULL
-  reader_should_conclude: Cite EntroLLM only for the storage-compressibility mechanism (tensor-level codes are spikier than block-quantized codes; baselines in Table 2 are the authors' own) and as a data point for one-time CPU Huffman unpack (about 2.3 G weights/s on 4 A57 threads for 4-bit codes). Do NOT cite it as evidence that entropy-decoded weights speed up CPU token generation on any x86/Zen server; do NOT treat it and LazyWeights as two independent sources.
+  reader_should_conclude: Cite EntroLLM only for the storage-compressibility mechanism (tensor-level codes are spikier than block-quantized codes; baselines in Table 2 are the authors' own) and as a data point for one-time CPU Huffman unpack (about 2.3 G weights/s on 4 A57 threads for 4-bit codes). Do NOT cite it as evidence that entropy-decoded weights speed up CPU token generation on any x86/Zen server; do NOT treat it and LazyWeights as two independent sources. Its in-loop A57 decode rate is usable only as a lower-bound reference for the Zen 5 decode microbenchmark.
   notes: 'Stage-2b (ak-intake-20261121, autokernel): dive-surfaced from intake-2756; combined Stage-1+2 pass. Dive report research/deep-dives/ak-intake-20261121/2505.02380v4.md. Not read: Bibliography skimmed; figures 1-4 are images.'
   dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2b): new entry. EntroLLM does not contradict the LazyWeights decline: its CPU decode is a one-time unpack on a 4-core A57 at 25.6 GB/s where 8-bit weights are 4x more bandwidth-starved than ours; its token-generation speedup is not reconciled with decode-once; and per-token in-loop decode on Zen 5 stays a ~10-20x loss. 2026-11-21 Stage-2 close-out (dive-surfaced sources): ICASSP 2026 EntroLLM slides (https://arnabsanyal.github.io/icassp2026/ieee_icassp_2026_entrollm.pdf) — declined: One slide fragment seen in a search snippet; context unverified; does not change the decline..'
   claim_anchors:
@@ -402775,7 +402776,8 @@
   read_depth: PARTIAL
   reader_should_conclude: 'Cite KV Packet for: boundary-artifact/attention-sink evidence (Fig 5, Table 6) that supports the head-window recompute in KPF-62.3, and as the recompute-free trained-adapter baseline. Do NOT cite it for hybrid/GDN reuse, as lossless/exact, or as a plug-in for orchestrator RAG/tool-output reuse: it needs a trained adapter per model and domain (30 epochs, 256-512 samples, A100), recovers 77% on average and 48% on multi-hop with one doc per packet, and an independent benchmark (KVShareArena, via search) reports drops when the cache comes from a different checkpoint.'
   notes: 'Stage-2b (ak-intake-20261121, autokernel): dive-surfaced from intake-2774; combined Stage-1+2 pass. Dive report research/deep-dives/ak-intake-20261121/2604.13226v3.md. Not read: Read in full: abstract, Sec 1-5, Tables 1, 2, 4-6, 8-11, App A.4-A.9, limitations. Not read: App A.1-A.3 details, Fig 3/4/5/7 (images; the headline F1/FLOPs/TTFT curves are in Fig 3 so exact per-point numbers were not verified), reference list.'
-  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2b wave 2): new entry. Answers the HyPIC dive question: KV Packet does not apply to GDN/recurrent layers as published (no recurrent-state story: header/trailer tokens change a document recurrent state but the state cannot be concatenated without a (T,S) compose). It is a competing approach to EPIC/CacheBlend-style selective recompute (the KPF-62 family), not to HyPIC. 2026-11-21 Stage-2 close-out (dive-surfaced sources): arXiv:2609.10266 (KVShareArena: KV-cache reuse across contexts and checkpoints) — integrator decline at close-out: bears only on the KV Packet orchestrator-reuse path, which is declined (trained adapters, no hybrid support); arXiv:2609.36722 (Attuner: recomputation-free agentic context KV reuse) — declined: seen in a search result only; wave cap and no served-model evidence; revisit if KPF-62 productises; arXiv:2609.33503 (RelaxKV) — declined: search result only; same family as EPIC/CacheBlend already in KPF-62.'
+  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2b wave 2): new entry. Answers the HyPIC dive question: KV Packet does not apply to GDN/recurrent layers as published (no recurrent-state story: header/trailer tokens change a document recurrent state but the state cannot be concatenated without a (T,S) compose). It is a competing approach to EPIC/CacheBlend-style selective recompute (the KPF-62 family), not to HyPIC. 2026-11-21 Stage-2 close-out (dive-surfaced sources): arXiv:2609.10266 (KVShareArena: KV-cache reuse across contexts and checkpoints) — integrator decline at close-out: bears only on the KV Packet orchestrator-reuse path, which is declined (trained adapters, no hybrid support); arXiv:2609.36722 (Attuner: recomputation-free agentic context KV reuse) — declined: seen in a search result only; wave cap and no served-model evidence; revisit if KPF-62 productises; arXiv:2609.33503 (RelaxKV) — declined: search result only; same family as EPIC/CacheBlend already in KPF-62. 2026-11-21
+    Stage-2b wave-3 correction (intake-2784 full read): the KVShareArena robustness figure quoted from a search snippet is superseded; the full text reports the trained adapter dropping significantly in 12 of 18 pair-dataset tests, worst -0.146 F1, fixed by per-producer retraining.'
   claim_anchors:
   - claim_index: 0
     kind: page-and-quote
@@ -403117,3 +403119,865 @@
   - entry: intake-2774
     claim_index: 0
     why: README is the companion of the HyPIC paper; paper numbers are restated, not new evidence
+- id: intake-2784
+  arxiv_id: '2609.10266'
+  url: https://arxiv.org/abs/2609.10266v2
+  source_type: paper
+  title: 'KVShareArena: KV-Cache Reuse Across Contexts and Model Checkpoints'
+  categories:
+  - kv_cache
+  - benchmark
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2782
+  verdict: adopt_patterns
+  ingested_date: '2026-11-21'
+  authors:
+  - Xi Shi
+  - Mengxin Zheng
+  - Qian Lou
+  key_claims:
+  - KVShareArena benchmarks 11 KV-reuse repair/compression methods on 2,150 QA questions (Qasper, MultiFieldQA, HotpotQA) with five dense/MoE Qwen3 and Llama-3.1 receivers (4B-30B) and six producer/receiver checkpoint pairs; all models are full-attention, none hybrid/GDN/SSM.
+  - 'Cross-checkpoint: most repairs lose under 0.02 F1 on average (at most 0.04 in any test) when a same-family sibling or base predecessor wrote the cache, but KV Packet''s trained adapter drops significantly in 12 of 18 tests (worst -0.146 F1) and LegoLink without recompute loses up to 0.151; retraining the adapter per producer recovers it at about 20 GPU-hours.'
+  - A cache from a different pretraining run (Qwen3-Coder-30B-A3B written, Qwen3-30B-A3B-Instruct read) lowers every method by up to 0.32 F1; the authors call reuse across such checkpoints open.
+  - Which repair helps depends on the receiver model, even between two 8B models (position alignment alone recovers .41 multi-hop PGR on Llama-3.1-8B but .03 on Qwen3-8B), so a method result does not transfer across models.
+  - 'Prefix caching is the exact-match control: lossless, no document compute saved when preceding text changes; it is complementary to repair, not compared against it.'
+  techniques:
+  - cross-context KV reuse benchmark
+  - cross-checkpoint (producer/receiver) KV reuse
+  - performance-gap-recovered (PGR) metric
+  - selective recomputation (CacheBlend, LegoLink)
+  - trained soft-token adapter (KV Packet)
+  reported_results:
+  - 'Table 2: KVPacket quality .681 / LegoLink .666 / CacheBlend .704 (speed .736), KVCOMM .801 quality but speed .179'
+  - 'Table 3: mean multi-hop PGR position alignment .209, CacheBlend .436, LegoLink(k=2) .463, KVPacket .518, SnapKV r=.25 .212'
+  - 'Table 14 (appendix B): KVPacket -.146 +/- .023 F1, 12/18 significant; LegoLink k=0 -.151, 8/18'
+  - 'Table 17: Qwen3-8B Qasper no-repair F1 .417 same-context same-weights vs .353/.410 with a different producer; HotpotQA .559 vs .484/.527'
+  - 'Table 15: different-pretraining-run producer -.129 to -.320 F1 across all methods'
+  - 'Section 3.6/M.3: retraining the adapter ~20 GPU-hours per producer'
+  credibility_score: 3
+  contradicting_evidence: []
+  cross_references:
+    handoffs: []
+    intake_entries:
+    - intake-2782
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: 'Cite for: (a) the controlled 2x2 protocol and PGR metric as a template for an approximate-reuse gate, (b) producer-change robustness numbers by method class, (c) ''which repair helps is receiver-specific'' as a reason to run KPF-62 G3 on our own served models. Do NOT cite for hybrid/GDN reuse (no such model tested), for cache reuse across our champion rebuilds (a rebuild keeps the weights; the paper varies weights, not kernels), or for quantized-vs-base weights (its ''Quant. 4-bit'' is KV-cache quantization of the receiver, not a weight-quantized producer).'
+  notes: 'Stage-2b (ak-intake-20261121, autokernel): dive-surfaced from intake-2782; combined Stage-1+2 pass. Dive report research/deep-dives/ak-intake-20261121/2609.10266v2.md. Not read: Read the HTML extraction in full (main text, Tables 1-5, appendix A, B (Qwen3-8B/4B board rows and Tables 14/15 tail), K, L, M, N). Per-model appendix boards for 14B/30B/Llama and Table 14 head, Tables 12/13, appendices C-J skimmed by heading only; figures are images.'
+  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2b wave 3): the KV Packet dive carried this paper from a search snippet as ''soft-token-adapter reuse dropping in four of six cells (up to -.135)''. The full text says 12 of 18 pair-dataset tests, worst -.146 F1, and that the drop is specific to the trained adapter (and LegoLink k=0 up to -.151), while selective-recompute repairs (CacheBlend, LegoLink k=2) and compression stay within about .04. The paper is NOT broad evidence that KV reuse is fragile across checkpoints; it is evidence that approximate cross-context repair that was trained on one producer does not transfer, and that same-family weight changes cost little for recompute-based repair. It is also not independent robustness evidence for ''KV reuse'' in our sense: all five models are full-attention. 2026-11-21 operator request: dived in Stage-2b wave 3 after being declined at the Stage-2 close-out.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract (2)
+    quote: five dense and mixture-of-experts LLMs from 4B to 30B parameters and six LLM pairs
+    quote_sha256: a81415881aa081956d78c593b05ed73e2c2e341fc0e1cbdb4170ee74b30c8233
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd, found: true}
+    source_revision: https://arxiv.org/html/2609.10266v2
+    source_artifact:
+      byte_length: 644205
+      effective_url: https://arxiv.org/html/2609.10266v2
+      entry_url: https://arxiv.org/abs/2609.10266v2
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+      relative_path: sha256/36/36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd.raw
+      requested_url: https://arxiv.org/html/2609.10266v2
+      retrieved_at_utc: '2026-11-21T13:10:48.483053Z'
+      schema_version: 1
+      snapshot_id: sha256:36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Abstract
+    quote: most repairs keep their quality when another version of the LLM wrote the cache, but a trained repair adapter loses quality in 12 of the 18 pair–dataset tests
+    quote_sha256: ec8ee5d957ab87b0f62162f4915731df12bbca0ecea45dfdcc92eefb3977383b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd, found: true}
+    source_revision: https://arxiv.org/html/2609.10266v2
+    source_artifact:
+      byte_length: 644205
+      effective_url: https://arxiv.org/html/2609.10266v2
+      entry_url: https://arxiv.org/abs/2609.10266v2
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+      relative_path: sha256/36/36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd.raw
+      requested_url: https://arxiv.org/html/2609.10266v2
+      retrieved_at_utc: '2026-11-21T13:10:48.483053Z'
+      schema_version: 1
+      snapshot_id: sha256:36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §3.6 end
+    quote: This retraining closes the gap at about 20 20 GPU-hours per producer.
+    quote_sha256: 0f49c4db6e03aa3cd984c22e26d10ccceadcd0a18d59d1972be42f3e355f49a2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd, found: true}
+    source_revision: https://arxiv.org/html/2609.10266v2
+    source_artifact:
+      byte_length: 644205
+      effective_url: https://arxiv.org/html/2609.10266v2
+      entry_url: https://arxiv.org/abs/2609.10266v2
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+      relative_path: sha256/36/36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd.raw
+      requested_url: https://arxiv.org/html/2609.10266v2
+      retrieved_at_utc: '2026-11-21T13:10:48.483053Z'
+      schema_version: 1
+      snapshot_id: sha256:36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §3.6 end / Table 15
+    quote: A cache written by a checkpoint from a different pretraining run lowers every method, by up to .32 .32 F1
+    quote_sha256: 26d17f58d7646af784ba9458f53024611e47a304540d327d876dc8e4a7c178f6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd, found: true}
+    source_revision: https://arxiv.org/html/2609.10266v2
+    source_artifact:
+      byte_length: 644205
+      effective_url: https://arxiv.org/html/2609.10266v2
+      entry_url: https://arxiv.org/abs/2609.10266v2
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+      relative_path: sha256/36/36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd.raw
+      requested_url: https://arxiv.org/html/2609.10266v2
+      retrieved_at_utc: '2026-11-21T13:10:48.483053Z'
+      schema_version: 1
+      snapshot_id: sha256:36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §1 contributions paragraph
+    quote: position alignment alone reaches a multi-hop PGR of .41 .41 on Llama-3.1-8B but .03 .03 on Qwen3-8B
+    quote_sha256: b5b56076b79d1f1d1a382dde3fb8f6e3bb2201f52e7d5968ac046c56c608eafc
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd, found: true}
+    source_revision: https://arxiv.org/html/2609.10266v2
+    source_artifact:
+      byte_length: 644205
+      effective_url: https://arxiv.org/html/2609.10266v2
+      entry_url: https://arxiv.org/abs/2609.10266v2
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+      relative_path: sha256/36/36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd.raw
+      requested_url: https://arxiv.org/html/2609.10266v2
+      retrieved_at_utc: '2026-11-21T13:10:48.483053Z'
+      schema_version: 1
+      snapshot_id: sha256:36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Appendix K
+    quote: Prefix caching is lossless because it reuses KV only after the same text.
+    quote_sha256: 28e0d957906ece4f3281f0d72b198b4e0833706bb4644380681b45a45052f976
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd, found: true}
+    source_revision: https://arxiv.org/html/2609.10266v2
+    source_artifact:
+      byte_length: 644205
+      effective_url: https://arxiv.org/html/2609.10266v2
+      entry_url: https://arxiv.org/abs/2609.10266v2
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+      relative_path: sha256/36/36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd.raw
+      requested_url: https://arxiv.org/html/2609.10266v2
+      retrieved_at_utc: '2026-11-21T13:10:48.483053Z'
+      schema_version: 1
+      snapshot_id: sha256:36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table 16
+    quote: Qwen3-8B Qwen3-8B-Base base predecessor Qwen3-8B DeepSeek-R1-0528-Qwen3-8B distilled sibling
+    quote_sha256: d900999b9cfe0d38be5fa21a58714626860a2002609c52ec4cf47436621d6eba
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd, found: true}
+    source_revision: https://arxiv.org/html/2609.10266v2
+    source_artifact:
+      byte_length: 644205
+      effective_url: https://arxiv.org/html/2609.10266v2
+      entry_url: https://arxiv.org/abs/2609.10266v2
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+      relative_path: sha256/36/36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd.raw
+      requested_url: https://arxiv.org/html/2609.10266v2
+      retrieved_at_utc: '2026-11-21T13:10:48.483053Z'
+      schema_version: 1
+      snapshot_id: sha256:36af215acc223782ed929c500bdf32b180cbe7a608aedd3e7558c74b3d73dfdd
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2782
+    claim_index: 3
+    why: the KV Packet adapter-robustness objection is settled here (12/18, retraining fixes it)
+- id: intake-2785
+  arxiv_id: null
+  url: https://neurips.cc/virtual/2026/poster/152513
+  source_type: paper
+  title: 'Bridging the Gap: Position-Independent Cache Reuse for Hybrid SSM-Attention Architectures'
+  categories:
+  - kv_cache
+  - ssm_hybrid
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2774
+  verdict: worth_investigating
+  ingested_date: '2026-11-21'
+  authors:
+  - Weikang Wang
+  - Xin Zhou
+  - Haiyang Liu
+  - Lei Wang
+  - Jun Liu
+  - Weifeng Zhang
+  key_claims:
+  - 'Abstract problem: in hybrid SSM-attention models an SSM layer''s coarse block/request-level cache miss invalidates fine-grained hits in adjacent attention layers, so chunk-level PIC is wanted to align granularity across layers.'
+  - 'Abstract method: ''HyPIC'' with residual state propagation and online decay correction adapts offline SSM chunk caches to new contexts by recomputing minimal boundary tokens, plus a parallel recomputation pipeline exploiting the linear superposition property of SSMs.'
+  - 'Abstract result: 2x TTFT speedup with ''highly competitive accuracy'' on diverse hybrid models and datasets (no models, datasets, baselines or accuracy numbers on the page).'
+  - 'Not the same work as intake-2774: different authors (Weikang Wang et al. vs Yifei Liu et al., Xiaohongshu/PKU), different described mechanism and different headline speedup (2x vs 3.25x); a namesake on the same problem, apparently concurrent.'
+  techniques:
+  - residual state propagation
+  - online decay correction
+  - boundary-token recompute
+  - parallel recomputation via linear superposition
+  reported_results:
+  - 'Abstract: 2x TTFT speedup (poster page, no table)'
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs: []
+    intake_entries:
+    - intake-2774
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite only as: a second, independent group reports a PIC scheme for hybrid SSM-attention (abstract-level, 2x TTFT, unverified). Do NOT merge it with intake-2774, do not carry the 2x number into any gate or estimate, and do not claim it is GDN-specific: the abstract says ''SSMs'' with ''decay correction'', which may target Mamba-style decay rather than Gated DeltaNet''s delta-rule state. Re-ingest when a PDF or arXiv version becomes retrievable.'
+  notes: 'Stage-2b (ak-intake-20261121, autokernel): dive-surfaced from intake-2774; combined Stage-1+2 pass. Dive report research/deep-dives/ak-intake-20261121/neurips-152513.md. Not read: Only the poster page abstract (2,872 characters of extracted text) was readable. The OpenReview PDF (id SZ24HRIAMK) returns HTTP 403 (challenge) to curl; no arXiv version was found by title. No method detail, models, datasets, baselines, ablations or numbers beyond the abstract''s ''2x TTFT'' were read. Verification here means abstract claims were located in the page text, not that results were checked. Only the NeurIPS virtual poster page (abstract) is retrievable; OpenReview SZ24HRIAMK PDF returns 403 to curl; no arXiv version found by title search. A namesake ''HyPIC'' by different authors from intake-2774.'
+  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2b wave 3): the name ''HyPIC'' was assumed possibly the same as intake-2774 (arXiv 2607.01299, ''Hypic'', SIGOPS ATC 2026). From the text available it is a namesake: authors are disjoint (arXiv: Yifei Liu, Juntong Wu, Yang Liu, Junhao Hu, Minghao Li, Xiaohongshu/PKU/SJTU; poster: Weikang Wang, Xin Zhou, Haiyang Liu, Lei Wang, Jun Liu, Weifeng Zhang), the mechanisms named differ (arXiv: cached segment-cumulative transition operator, seam window, segment parallelism; poster: residual state propagation, online decay correction, minimal boundary-token recompute, linear-superposition parallel recompute) and the speedup differs (3.25x average TTFT vs 2x). The arXiv text contains none of ''superposition'', ''residual state'' or ''decay correction'' (counted in 2607.01299v3/extracted.txt). Both claim to be ''the first'' PIC system for hybrids, which both cannot be. Concurrent independent work cannot be ruled out as a revision lineage, but
+    nothing supports treating the poster''s numbers as the arXiv paper''s. 2026-11-21 operator request: dived in Stage-2b wave 3 after being declined at the Stage-2 close-out.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Poster abstract
+    quote: SSMs are always restricted to coarse-grained block- or request-level reuse
+    quote_sha256: 890b3a717a6f09a4adc419c4aece3804f6372620f4f218ffcc7f4f513d6ab8fe
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0, found: true}
+    source_revision: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+    source_artifact:
+      byte_length: 89539
+      effective_url: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+      entry_url: https://neurips.cc/virtual/2026/poster/152513
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+      relative_path: sha256/91/91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0.raw
+      requested_url: https://neurips.cc/virtual/2026/poster/152513
+      retrieved_at_utc: '2026-11-21T13:10:41.703034Z'
+      schema_version: 1
+      snapshot_id: sha256:91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Poster abstract
+    quote: We introduce residual state propagation and online decay correction
+    quote_sha256: b46808ffa13427a2ebc4f708de5e48448c692a48ca635912b1281b2dd1ee4001
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0, found: true}
+    source_revision: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+    source_artifact:
+      byte_length: 89539
+      effective_url: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+      entry_url: https://neurips.cc/virtual/2026/poster/152513
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+      relative_path: sha256/91/91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0.raw
+      requested_url: https://neurips.cc/virtual/2026/poster/152513
+      retrieved_at_utc: '2026-11-21T13:10:41.703034Z'
+      schema_version: 1
+      snapshot_id: sha256:91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Poster abstract
+    quote: HyPIC achieves a 2$\times$ speedup in time-to-first-token (TTFT) while maintaining highly competitive accuracy
+    quote_sha256: 44c3d49ffea45b44185a5565548216f77aa899bc44f259de472ee665a141f7ea
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0, found: true}
+    source_revision: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+    source_artifact:
+      byte_length: 89539
+      effective_url: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+      entry_url: https://neurips.cc/virtual/2026/poster/152513
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+      relative_path: sha256/91/91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0.raw
+      requested_url: https://neurips.cc/virtual/2026/poster/152513
+      retrieved_at_utc: '2026-11-21T13:10:41.703034Z'
+      schema_version: 1
+      snapshot_id: sha256:91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Poster page author line
+    quote: Weikang Wang ⋅ Xin Zhou ⋅ Haiyang Liu ⋅ Lei Wang ⋅ Jun Liu ⋅ Weifeng Zhang
+    quote_sha256: 48e02dd6100716f98f0da2182e5c4ecb07343f76d2cc4151dd6d117ec2192cfc
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0, found: true}
+    source_revision: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+    source_artifact:
+      byte_length: 89539
+      effective_url: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+      entry_url: https://neurips.cc/virtual/2026/poster/152513
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+      relative_path: sha256/91/91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0.raw
+      requested_url: https://neurips.cc/virtual/2026/poster/152513
+      retrieved_at_utc: '2026-11-21T13:10:41.703034Z'
+      schema_version: 1
+      snapshot_id: sha256:91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Poster abstract
+    quote: we propose HyPIC, the first unified framework achieving PIC reuse for hybrid architectures
+    quote_sha256: f8fa0502934493a512b272331ca00490549945578a895563538d82d512a3dbee
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0, found: true}
+    source_revision: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+    source_artifact:
+      byte_length: 89539
+      effective_url: https://neurips.cc/virtual/2026/loc/sydney/poster/152513
+      entry_url: https://neurips.cc/virtual/2026/poster/152513
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/html
+      raw_sha256: 91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+      relative_path: sha256/91/91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0.raw
+      requested_url: https://neurips.cc/virtual/2026/poster/152513
+      retrieved_at_utc: '2026-11-21T13:10:41.703034Z'
+      schema_version: 1
+      snapshot_id: sha256:91059709e6c449ac40bce4aed5d72ff469186e915a2e0a66bd349c8d171714d0
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  claim_corrections: []
+- id: intake-2786
+  arxiv_id: null
+  url: https://openreview.net/forum?id=NWYYYlWJhJ
+  source_type: paper
+  title: Characterizing and Optimizing Context Compaction in Production Coding Agents
+  categories:
+  - context_management
+  - agent_architecture
+  - benchmark
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2761
+  verdict: adopt_patterns
+  ingested_date: '2026-11-21'
+  authors:
+  - Anonymous (ICLR 2027 submission 22403; Aggron cites it as Liu et al. 2026a)
+  key_claims:
+  - 'Production characterisation (abstract): from 13.5M GitHub Copilot agentic coding sessions (760M LLM calls), only 7.8% of sessions trigger compaction but they use 44.2% of tokens, and compaction adds foreground delay and sharply reduces prefix-cache reuse (authors say camera-ready scales to 103.7M sessions; unverified here).'
+  - 'CompactionBench: persistent multi-turn software-evolution tasks (SWE-EVO release changelogs as sequential requirements; eight tasks, 315 changelog items per an author reply) graded on repo tests; the authors concede task selection, not the multi-turn design alone, produces repeated compaction.'
+  - APEC prepares fine-grained, indexed summaries in the background and appends them to a stable prefix, taking summarisation off the critical path while preserving prefix-cache reuse; it treats the summariser as a black box and is harness-agnostic.
+  - 'Reported gain: total cost down up to 25.4% and agent execution time down 9.6% with improved task quality; but per author replies PEC (progressive, synchronous) carries the token-cost and accuracy gains while asynchrony only removes blocking latency, APEC costs more than PEC ($16.37 vs $14.75), and a reviewer showed APEC''s accuracy gains are within noise (about 1.0-1.7 standard errors), which the authors agreed to restate as directional.'
+  - 'Relationship to our sources: APEC is the ''APEC (Liu et al. 2026a)'' baseline of Aggron (intake-2761). Aggron''s simulator runs it as whole-context compaction at 60K, whereas this abstract describes progressive fine-grained summaries, so Aggron''s gains over ''APEC'' may be over a different design than the one published here.'
+  techniques:
+  - asynchronous progressive compaction (APEC)
+  - progressive synchronous compaction (PEC)
+  - indexed fine-grained summaries appended to a stable prefix
+  - CompactionBench (SWE-EVO release-sequence multi-turn tasks)
+  reported_results:
+  - 'Abstract: 7.8% of sessions compact, 44.2% of token consumption'
+  - 'Abstract: cost -25.4% max, execution time -9.6%'
+  - 'Author reply Q3 table (five trials): PEC accuracy 76.74 +/- 3.55, cost $14.75; Sync-H 69.29 +/- 4.74, $21.93'
+  - 'Reviewer follow-up: APEC cost $16.37 vs PEC $14.75; latency 27.82 vs 29.89 min (author reply)'
+  credibility_score: 3
+  contradicting_evidence: []
+  cross_references:
+    handoffs: []
+    intake_entries:
+    - intake-2761
+    - intake-2770
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite for: (a) production prevalence (7.8% of sessions, 44.2% of tokens; trace scale unverified, privacy-reviewed telemetry we cannot inspect), (b) the design pattern ''summarise segments progressively and append indexed summaries after an unchanged prefix'' as the prefix-cache-friendly compaction, (c) the author-conceded split that progressive summarisation, not asynchrony, carries cost and accuracy. Do NOT cite any accuracy delta as significant (authors concede directional), do not treat the 25.4%/9.6% as our numbers (GitHub Copilot harness, frontier hosted models, hosted prefix cache), and do not read APEC from Aggron''s baseline description. Re-ingest when the PDF or released traces are retrievable.'
+  notes: 'Stage-2b (ak-intake-20261121, autokernel): dive-surfaced from intake-2761, intake-2770; combined Stage-1+2 pass. Dive report research/deep-dives/ak-intake-20261121/compactionbench.md. Not read: UNANCHORABLE by the mechanical checker. Read only the OpenReview abstract and TLDR and ten public author-reply comments returned by the OpenReview search API (/mnt/raid0/llm/tmp/dive-ak-intake-20261121/w3/or_search.json; the reviews themselves and the paper PDF were not retrievable: PDF /pdf/37328c9e... and the forum return the OpenReview challenge, HTTP 403). Not read: method section, Tables 1-8, appendices, APEC algorithm, the index format, the benchmark task list beyond reply excerpts, any released code or traces. Claims below are from the abstract and author replies only. Locator record: Aggron''s bibliography DOI 10.20944/preprints202611.0780.v1 redirects to preprints.org (HTTP 403 Access Denied to curl even with a browser UA, saved as w3/pp.html); OpenReview ICLR 2027 submission NWYYYlWJhJ
+    found via https://api2.openreview.net/notes/search?term=CompactionBench (the direct /notes?id= endpoint is also challenge-gated); arXiv full-text search for CompactionBench returned nothing. GitHub namesakes checked by README: t46/compactionbench (archived, created 2026-06-11, ''bet-0003'': StatefulQA/AccumulatorQA with local 3B/7B models and a ledger+refetch policy) and ayushnangia/CompactionBench (created 2026-02-24: retention-vs-answer gap on BABILong/OOLONG-synth with Codex/Claude runners) are both UNRELATED namesakes, neither mentions coding agents, Copilot, APEC or SWE-EVO. Metadata inconsistency: the bibtex names the ''Fifteenth International Conference on Learning Representations'' and year 2026, while the venue id is ICLR.cc/2027. CompactionBench + APEC (''Characterizing and Optimizing Context Compaction in Production Coding Agents''), cited by Aggron (intake-2761) as APEC (Liu et al. 2026a). Locator search 2026-11-21: Aggron bibliography links DOI 10.20944/preprints202611.0780.v1
+    (302 to preprints.org, HTTP 403 to curl incl. browser UA); OpenReview ICLR 2027 Submission22403 forum NWYYYlWJhJ (anonymous) found via api2.openreview.net/notes/search?term=CompactionBench, its forum and PDF return the OpenReview challenge (403); arXiv API all:CompactionBench returned no entries; GitHub repos t46/compactionbench and ayushnangia/CompactionBench are unrelated namesakes (READMEs read). Only the OpenReview abstract, TLDR and public author replies were readable.'
+  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2b wave 3): Aggron''s dive flagged APEC as a baseline with no identifier. Located (OpenReview NWYYYlWJhJ, anonymous ICLR 2027 submission; the two GitHub CompactionBench repos are unrelated namesakes). Correction to the Aggron framing: APEC is progressive, fine-grained and index-addressed with summaries appended to a stable prefix, i.e. already prefix-preserving, so Aggron''s ''APEC compacts the whole context at 60K'' simulator baseline is likely not this design. Also the async part is not where the quality or cost gain comes from by the authors'' own account. 2026-11-21 operator request: dived in Stage-2b wave 3 after being declined at the Stage-2 close-out.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: OpenReview abstract (forumContent.abstract) in w3/or_search.json
+    quote: Although only 7.8% of sessions trigger compaction, they account for 44.2% of total token consumption.
+    quote_sha256: 8d7bc074f7bcdd8b306f139d3b553d262b30a5bc75be9ad4b975721c44e5943b
+    source_revision: https://api2.openreview.net/notes/search?term=CompactionBench
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 2
+    kind: page-and-quote
+    locator: OpenReview abstract
+    quote: APEC, an asynchronous progressive compaction mechanism that prepares fine-grained, indexed summaries in the background and appends them to a stable prefix
+    quote_sha256: aabe3bc6a772f8c8d15cfe60c6f00384795b7328659267c266e5e98a7f118b74
+    source_revision: https://api2.openreview.net/notes/search?term=CompactionBench
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 3
+    kind: page-and-quote
+    locator: OpenReview abstract
+    quote: APEC improves task quality while reducing total cost by up to 25.4% and agent execution time by 9.6%
+    quote_sha256: 834752fed164954f411d0e151e98599f11116a361cbdda5abb417bfc2e75d411
+    source_revision: https://api2.openreview.net/notes/search?term=CompactionBench
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 3
+    kind: page-and-quote
+    locator: author meta-reply tQ8yq6cpcN
+    quote: progressive summarization (PEC) captures token cost and accuracy gains, while asynchrony (APEC) specifically removes blocking latency off the critical path
+    quote_sha256: d15e883ac6e6f309db884db8c65c58204f5703e9f34ae866c245a22cb2d54611
+    source_revision: https://api2.openreview.net/notes/search?term=CompactionBench
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 3
+    kind: page-and-quote
+    locator: reviewer follow-up LFG66SBE9R point 2
+    quote: The same test also shows APEC costs more than PEC ($16.37 vs. $14.75, about 2.2 standard errors)
+    quote_sha256: f91a950cac95ae2feafa39e1d1ec49c8268bd22f9248d088660eeb80e09da63e
+    source_revision: https://api2.openreview.net/notes/search?term=CompactionBench
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 3
+    kind: page-and-quote
+    locator: author reply LxMhoMTSn7 point 2
+    quote: We will revise the paper to describe the accuracy results as directional rather than significant
+    quote_sha256: 89a8e11400ad0096ea14dccc194ab78c92af561dca5819b773a03948415220f2
+    source_revision: https://api2.openreview.net/notes/search?term=CompactionBench
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 1
+    kind: page-and-quote
+    locator: author reply LxMhoMTSn7 point 1
+    quote: We agree that the multi-turn conversion alone does not guarantee repeated compaction; task selection also matters
+    quote_sha256: c58cb2b4177fa34ae8a02b8d7d70becec1c55ffa8462e3837d6975ff00efa73c
+    source_revision: https://api2.openreview.net/notes/search?term=CompactionBench
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  claim_corrections: []
+  depends_on:
+  - entry: intake-2761
+    claim_index: 0
+    why: its APEC baseline is this work; Aggron's gains over APEC should be read with this description
+- id: intake-2787
+  arxiv_id: null
+  url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+  source_type: repo
+  title: Hybrid State Checkpoints
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  - speculative_decoding
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2772
+  verdict: adopt_patterns
+  ingested_date: '2026-11-21'
+  authors:
+  - FutureMLS-Lab
+  key_claims:
+  - 'Export planning: the scheduler plans each non-final prefill chunk to hold at most one must-cache position; if the backend can write it the chunk runs past it and exports the state there, ending at the second position if any; one position per request per step, carried scheduler -> MambaManager (reserve/re-key) -> SchedulerOutput -> attention metadata -> compute_mamba_prefill_checkpoints; a later chunk cap that moves the position out drops the export.'
+  - 'Kernel and layout: the vendored FlashInfer GDN kernel writes each exporting sequence''s state at its own offset into a per-sequence workspace row (upstream uses one gcd stride for the whole call), and an exporter copies the rows into cache blocks; offsets keep the layer''s alignment (64 tokens GDN, 16 FlashKDA) on the prefix-cache grid; SM100 only.'
+  - 'Bit-identity contract: output and final state equal the no-export call on the same route, each exported state equals the final state of the sequence cut at the offset, offset 0 writes nothing, calls without offsets run the original kernel.'
+  - Under speculative decoding the fork resolves the exact state from the per-position verify column of the last accepted draft (gathering a later column into the first before any read) and refuses to publish when the scheduler kept fewer tokens than the device sampled; export is refused with EAGLE block drop, ubatching and context parallelism.
+  techniques:
+  - in-chunk prefill state export (one position per request per step)
+  - per-sequence export workspace rows
+  - export bit-identity invariants
+  - frontier (exact request-end) checkpoints
+  - decode-boundary snapshots
+  - speculative frontier resolution from per-position verify columns
+  - GreedyDual-Size recovery-unit eviction
+  reported_results:
+  - No performance numbers in the doc; tests listed only (test_prefill_export_is_flashinfer_bit_for_bit on SM100) (Testing)
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs: []
+    intake_entries:
+    - intake-2772
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: Cite intake-2787 (#01-#03) for the export planning rule, the per-sequence offset layout and the bit-identity contract; cite it as precedent for reading an exact state from per-position spec columns (KPF-64-SNAPSLOT-READ). Do NOT cite it for any performance number (it has none). For llama.cpp the offset must be per ubatch, and pricing cuts must separate extra ubatches (n-(4+n_ubatch), user-start, junction cuts) from the n-4 cut, which adds an iteration but no ubatch.
+  notes: 'Stage-2b (ak-intake-20261121, autokernel): dive-surfaced from intake-2772; combined Stage-1+2 pass. Dive report research/deep-dives/ak-intake-20261121/flashstates-designdoc.md. Not read: All sections of the design doc @ 3cfd432cd83a read. Linked code (export.py, vendored FlashInfer GDN CuTe DSL kernel, FlashKDA export .cuh) not re-read in this wave.'
+  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2b wave 3): primary export mechanism now anchorable; adds the per-sequence workspace-row + copy layout, the chunk-cap drop rule, the ubatching refusal (llama.cpp needs a per-ubatch offset), and the speculative per-position-column resolution with a stop-inside-draft refusal that has no explicit counterpart in C17''s post-generation checkpoint. 2026-11-21 operator request: dived in Stage-2b wave 3 after being declined at the Stage-2 close-out.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: In-chunk state export
+    quote: the scheduler plans each non-final prefill chunk with `export.plan_export` so that the chunk contains at most one position where a state must be cached.
+    quote_sha256: 7071744ddac2afcdc7f6370bf54317cce51ef4c3ca026363afa38d0138a0bf05
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: In-chunk state export
+    quote: 'The scheduler chooses one position per request per step, and every consumer takes it from there:'
+    quote_sha256: 5168b0f32e1fe3fb5f109491797727c74b0f8b25a3f887da7ccc98c9fd868081
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: In-chunk state export
+    quote: A later cap on the chunk that moves the position out of it drops the export.
+    quote_sha256: 4afc22a6931c74f2f56b95eaf92fd0576aa77671725c7981ea80c0c942f52536
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Export kernels / GDN
+    quote: the layer calls a vendored copy of that kernel (`vllm/third_party/flashinfer_gdn`) that writes each sequence's state at its own offset into its row; `MambaPrefillCheckpointExporter` then copies the rows into the cache blocks as before.
+    quote_sha256: 8330bd0dcce0282ba7d5af77c9aff612c211ee69b8f817e2d3b597e4539b632a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Export kernels invariant 4
+    quote: Offsets keep the alignment the layer declares (64 tokens for the gated delta rule, 16 for FlashKDA), and the scheduler places them on the prefix-cache grid
+    quote_sha256: 6d4ee23a17f1ad367e20a4fc85e7ee44489e00a8e940c73198d51f8765356d43
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Export kernels invariant 1
+    quote: A call's output and final state are bit-identical to the backend's call without export on the same route, and each exported state is bit-identical to the final state of its sequence cut at the offset.
+    quote_sha256: 153a72843e964a488f30f63b2fbad5100fbd549b6e1a4af854145ce80cd26de3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Speculative decoding
+    quote: otherwise, the state after the kept tokens, in the column of the last accepted draft or, for a layout without per-position columns, in the block the accepted tokens end in.
+    quote_sha256: 7fc3799767ce2025c7d74744fcc4d781fec1307bc1b3cd6190e1469617d4a70f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Speculative decoding
+    quote: When the scheduler kept fewer tokens than the device sampled, for example at a stop string, the request publishes no frontier;
+    quote_sha256: 93ce640f3bd3afaad10da301d33f4162d10bfef72067197e69b0fc46b192f273
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Requirements
+    quote: It is refused with the EAGLE block drop under speculative decoding (an exported position follows neither the drop nor the lookahead block hashes that replace it), ubatching, and context parallelism.
+    quote_sha256: e09a45e626705f14a706a3002688b70661bb4dcf4c46cd8d8cad087aade1df0a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a, found: true}
+    source_revision: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+    source_artifact:
+      byte_length: 25414
+      effective_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      entry_url: https://github.com/FutureMLS-Lab/vllm/blob/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      media_type: text/plain
+      raw_sha256: 1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+      relative_path: sha256/13/1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a.raw
+      requested_url: https://raw.githubusercontent.com/FutureMLS-Lab/vllm/3cfd432cd83a54a5e538cad7b090e56c27a870f9/docs/design/hybrid_state_checkpoints.md
+      retrieved_at_utc: '2026-11-21T13:10:42.008955Z'
+      schema_version: 1
+      snapshot_id: sha256:1321566c5d21753b3ced1ffdd5fa397649ccb445a49783d67146cdd291cb929a
+    verified_by: research-intake/stage2b (ak-intake-20261121)
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: intake-2772 claim 0 (one export position per request per step, run past it) confirmed verbatim.
+  - claim_index: 1
+    effect: narrowed
+    note: 64/16 is the layer-declared scheduler alignment at 3cfd432; the release PDF (intake-2788 App. H) says the GDN kernel itself supports 16-aligned offsets inside 64-token tiles via a bounded prefix update. Export goes through a workspace row plus a copy, not in place.
+  - claim_index: 2
+    effect: unaffected
+    note: bit-identity invariants confirmed; no overhead numbers exist in the doc.
+  - claim_index: 3
+    effect: narrowed
+    note: export is refused under ubatching, so a llama.cpp port must make the offset per ubatch (one offset per sequence per GDN op call).
+  depends_on:
+  - entry: intake-2772
+    claim_index: 0
+    why: this doc is the mechanism source for intake-2772's export and frontier claims
+- id: intake-2788
+  arxiv_id: null
+  url: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+  source_type: repo
+  title: 'FlashStates: Unlocking Flexible Hybrid State Management for Agentic LLM Inference'
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2772
+  verdict: adopt_patterns
+  ingested_date: '2026-11-21'
+  authors:
+  - Chenxi Li
+  - Weili Xu
+  - Tianyi Zhang
+  - Jue Wang
+  - Zhongzhu Zhou
+  - Chenfeng Xu
+  key_claims:
+  - 'Measured on 2x B200 (TP2) per engine against vLLM commit ec8a372 (0.32.0rc1.dev105) align mode with FlashStates built in the same build, closed-loop SemiAnalysis Claude Code trace replay: at 48 sessions GLM-5.3-Flash NVFP4 3.14x prefill / 3.02x decode, Nemotron 3 Super 2.27x / 2.32x, Qwen3.8-Flash-Next FP8 1.54x / 1.54x; median uncached tokens fall by about 70% of vLLM''s 3,136-8,320-token block.'
+  - In-chunk export (Algorithm 1) exports one checkpoint per sequence per prefill call; KDA at 16-token tile boundaries, GDN at 16-aligned offsets inside 64-token tiles via one bounded prefix update from the tile's intermediates, leaving outputs and final state unchanged; costs are stated only asymptotically (one 4*d_S-byte fp32 output), no measured overhead.
+  - 'GDN export was never used in serving: the main experiments enable in-chunk export only for KDA (GLM); Qwen3.8-Flash-Next and Nemotron use exact request-completion capture only, so every GDN-model gain comes from end-of-request capture plus admission/eviction.'
+  - 'Ablation (Qwen3.8-Flash-Next 512K): ASC alone gives about 70% of the gain at 48 sessions but falls below vLLM at 32 sessions (decode 26.0 vs 30.1 K TPM) because LRU keeps every extra checkpoint; dependency-aware admission and GDS eviction restore parity (30.4).'
+  - Retaining superseded request-end states for two turns cuts extra prefill among context-shortening requests from 55.1% to 16.2% (64 sessions) and 58.7% to 18.2% (72), about 3% of requests, p90 TTFT -18 to -19% (App. E, unpaired runs).
+  techniques:
+  - Arbitrary State Checkpointing (exact request-end capture + in-chunk export)
+  - fused one-position state export (Algorithm 1; GDN bounded prefix update inside 64-token tiles)
+  - dependency-aware GreedyDual-Size admission and eviction
+  - cost-density timer analysis
+  - two-turn superseded-state retention
+  - Mooncake recovery-unit store
+  reported_results:
+  - 'GLM-5.3-Flash 48 sessions: 3.14x prefill, 3.02x decode, -96% uncached p50, -88% p90 TTFT vs vLLM (Abstract, Fig. 1b/5 labels)'
+  - 'Qwen3.8-Flash-Next 48 sessions: 1.54x decode, 1.54x prefill, -66% uncached, -79% p90 TTFT (Fig. 5 labels, §1)'
+  - 'Table 3 ablation, 32 sessions decode K TPM: vLLM 30.1, +ASC 26.0, +admission 28.2, FlashStates 30.4; 48 sessions: 24.1, 34.2, 36.8, 38.8 (App. C Table 3)'
+  - 'Table 4 (512 GiB Mooncake, MTP 3): output TPM x1.02-x1.41 vs vLLM+Mooncake across 32-80 sessions (App. D)'
+  - 'Table 5: extra prefill/shortened 55.1%->16.2% (64), 58.7%->18.2% (72); p90 TTFT -18.1%, -19.4% (App. E)'
+  - 'Table 7: FlashStates 73.4 K output TPM vs Marconi best alpha=0.1 71.2 and tuner choice alpha=0 66.0 (App. F.1)'
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs: []
+    intake_entries:
+    - intake-2772
+    - intake-2758
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Cite intake-2788 for Algorithm 1 (one-position export, GDN bounded prefix update in 64-token tiles) and for the fact that GDN export was never used in serving. Cite its throughput numbers only as vendor-measured on 2x B200 against vLLM ec8a372''s block grid; do NOT carry the Qwen3.8-Flash-Next 1.54x or GLM 3.14x to llama.cpp, which has no block grid and already captures end-of-generation state (PFXC-A1). Do NOT cite it as evidence that export is cheap or faster than replay: no overhead is measured.'
+  notes: 'Stage-2b (ak-intake-20261121, autokernel): dive-surfaced from intake-2772, intake-2758; combined Stage-1+2 pass. Dive report research/deep-dives/ak-intake-20261121/flashstates-pdf.md. Not read: UNANCHORABLE PDF (sha256 8bb41e1b8b33...). Read via a stdlib-only text extraction of all 32 pages: body, references, appendices A-J with proofs, Tables 1-7 in full, and text labels of vector Figures 4-10 and 12. Not read: curve data in Figures 2, 5, 6, 8, 10, 11 beyond printed labels, and Figures 1/2/11 panel labels; some equations and inter-word spaces garbled by extraction. Read tool PDF rendering unavailable (no pdftoppm); pypdf install denied. PDF-only source (FlashStates_Release.pdf @ e3ff1fdb46e5, sha256 8bb41e1b8b3331da...); text extracted with a stdlib extractor (32 pages, tables and figure labels; figure curves unread); quotes checked by hand against that text; not machine-anchorable, so it stays stage1-unverified and nothing from it is quoted in plans.'
+  dive_corrections: '2026-11-21 (ak-intake-20261121 Stage 2b wave 3): release PDF read via stdlib text extraction (figure curves unread). GDN export was never used in serving (KDA only), so GDN-model gains come from end-of-request capture (= C17 PFXC-A1) plus retention; GDN export grain is 16 inside 64-token tiles via a bounded prefix update; no measured export overhead exists; baseline is vLLM ec8a372; the uncached-token gain is ~70% of vLLM''s block, an artifact of its block-grid placement that llama.cpp does not have. 2026-11-21 operator request: dived in Stage-2b wave 3 after being declined at the Stage-2 close-out.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract p.1
+    quote: achieves up to 3.14×, 2.27× and 1.54× the prefill throughput of vLLM respectively.
+    quote_sha256: 8ff460e517a4da538b0719784b7f15219f6e8e7599f7d31734c0283d1cf937dc
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 0
+    kind: page-and-quote
+    locator: App. C Engine version p.18
+    quote: The vLLM baseline runs at commit ec8a372 (0.32.0rc1.dev105), a development build shortly before v0.32.0, and FlashStates is implemented in the same build.
+    quote_sha256: 8230ce34b9b47c35d0256e600547f73e9e37fe50edfe57bc98ed90836f39a32d
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §5.3 p.12
+    quote: On every model, FlashStates lowers the median uncached tokens per request by about 70% of a block relative to vLLM.
+    quote_sha256: 4c73e3c9afdfdeabf958e225c7cf5529e4686effef7b09a06b5d41cb8194300b
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 1
+    kind: page-and-quote
+    locator: App. H p.26
+    quote: KDA exports the state available at a 16-token tile boundary. GDN supports offsets aligned to 16 tokens within its 64-token tiles.
+    quote_sha256: 2e713ed3662ef76dc0b4444c6cb67b9ca6dba6fdf703f775131db6e80df3d9fb
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 1
+    kind: page-and-quote
+    locator: App. H p.26
+    quote: This requires an additional state update for that local prefix, rather than another prefill call over the full prefix.
+    quote_sha256: f00f6675d06f06b022684f5a1e5da65b191af37bb2cb956329759360e001b40b
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 2
+    kind: page-and-quote
+    locator: App. H p.27
+    quote: In the main serving experiments (Section 5), in-chunk export is enabled only for the KDA kernel backend of GLM-5.3-Flash.
+    quote_sha256: 900188f1c7644d09187c27a7639080874db50e9adb48db71dd98400b819fbbc7
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 2
+    kind: page-and-quote
+    locator: App. H p.27
+    quote: The GDN exporter has kernel-level validation; Qwen3.8-Flash-Next and Nemotron 3 Super use exact request-completion capture without in-chunk export.
+    quote_sha256: f8d45fea854cac931a2b0ca4c96d82047aad1eb44821c51fd6c822534b2bcecd
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §5.5 p.13
+    quote: At 48 sessions, near the cache capacity, ASC with the LRU eviction of vLLM already provides about 70% of the gain of FlashStates over vLLM
+    quote_sha256: 30741dcfb9ed59c06401fcc19e0de421e847318cc5fd3eb96cd28e3255f13bd4
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Table 3 p.20
+    quote: vLLM 30.1 3.37 0.912 3,377 0.83 +ASC 26.0 2.96 0.847 1,025 1.93
+    quote_sha256: d4e8a3058851e3bd731239390b82c1e3955dfd11f4e3f0f92f7a22428286bd78
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  - claim_index: 4
+    kind: page-and-quote
+    locator: App. E p.23
+    quote: The Mooncake connector delays marking superseded states for preferential eviction by two continuation turns, preserving recent request-end states and associated intermediate states.
+    quote_sha256: fa90ab1074918e5b9a2af89b229df0a493da16e2acd231e19c00224585892341
+    source_revision: https://github.com/FutureMLS-Lab/FlashStates/blob/e3ff1fdb46e560ef1b1755662727ae2f1e83b23a/docs/FlashStates_Release.pdf
+    verified_by: research-intake/stage2b (ak-intake-20261121) hand-checked; not machine-anchorable
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: intake-2772's README headline is GLM-only; Qwen3.8-Flash-Next (GDN) is 1.54x; baseline is vLLM ec8a372 (0.32.0rc1), not the v0.33.0 the release fork targets; gain scales with vLLM's block size.
+  - claim_index: 1
+    effect: narrowed
+    note: intake-2772 said 64-token GDN grain (design doc serving alignment); the kernel supports 16-aligned interior offsets via a bounded prefix update.
+  - claim_index: 2
+    effect: overturned
+    note: intake-2772 framed in-chunk export as part of the measured system for GDN; the paper enables export in serving only for KDA, so no GDN result measures export.
+  - claim_index: 3
+    effect: narrowed
+    note: exact-end capture without retention policy loses throughput below cache capacity (Table 3, 32 sessions).
+  depends_on:
+  - entry: intake-2772
+    claim_index: 0
+    why: same system; this PDF corrects intake-2772's export and headline framing
+  - entry: intake-2787
+    claim_index: 1
+    why: the design doc's 64-token GDN alignment is the serving configuration of the kernel capability this PDF describes
