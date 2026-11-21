@@ -83,6 +83,33 @@ class KeeperUnderused(unittest.TestCase):
         self.assertEqual([(r, i) for r, i, _ in out], [("q1", "b")])
 
 
+class IdleHeldGuard(unittest.TestCase):
+    def test_guard_skipped_in_idle_held_and_warn(self):
+        flags = tempfile.mkdtemp()
+        os.makedirs(os.path.join(flags, "grants"))
+        gp = os.path.join(flags, "grants", "r3.grant")
+        open(gp, "w").write("x")
+        os.utime(gp, (1, 1))   # old grant
+        rf.atomic_json(rf.ready_path(flags, "r3"), {"schema": rf.SCHEMA, "id": "r3", "owner": "o", "quiet_guard_regions": ["q0", "q2"]})
+        grants = [{"id": "r3", "path": gp, "holds": {"q0", "q1", "q2"}}]
+        holders = {"q0": "r3", "q1": "r3", "q2": "r3"}
+        util = {"q0": 0.5, "q1": 0.5, "q2": 0.5, "q3": 0.0}
+        lines = []
+        out = rf.idle_held(flags, grants, holders, util, lines.append, set(), now=10_000.0)
+        self.assertEqual([(r, i) for r, i, _ in out], [("q1", "r3")])   # only the unlisted quarter is IDLE-HELD
+        self.assertFalse([l for l in lines if "IDLE-HELD q0" in l or "IDLE-HELD q2" in l], lines)
+        sent = []
+        rf.idle_held_notify(flags, out, grants, lines.append, now=10_000.0 + rf.IDLE_WARN_AFTER_S + 1,
+                            emit=lambda *a: sent.append(a) or {})
+        rf.idle_held_notify(flags, out, grants, lines.append, now=10_000.0 + 2 * rf.IDLE_WARN_AFTER_S + 2,
+                            emit=lambda *a: sent.append(a) or {})
+        self.assertTrue(all(",q0" not in a[3] and "q2" not in a[3] for a in sent), sent)
+        # negative control: all guard quarters idle and no guard -> they are reported
+        rf.atomic_json(rf.ready_path(flags, "r3"), {"schema": rf.SCHEMA, "id": "r3", "owner": "o"})
+        out2 = rf.idle_held(flags, grants, holders, util, lambda m: None, set(), now=10_000.0)
+        self.assertEqual(sorted(r for r, _, _ in out2), ["q0", "q1", "q2"])
+
+
 class BuildIdleUntouched(unittest.TestCase):
     def test_measurement_row_with_guard_is_not_released(self):
         flags = tempfile.mkdtemp()

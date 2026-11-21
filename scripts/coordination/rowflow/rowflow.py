@@ -4904,6 +4904,8 @@ def idle_held(flags, grants, holders, util, log, seen, now=None, occ=None):
             continue
         if rid in gpu_ids:
             continue   # judged below, by the device
+        if r in quiet_guard_of(flags, rid):
+            continue   # declared quiet guard: idle on purpose (QUIET-GUARD is logged by underused); feeds IDLE-HELD-WARN too
         v = hostutil.regions_pct(util, [r]).get(r)
         if v is not None and v < hostutil.IDLE_PCT:
             out.append((r, rid, v))
