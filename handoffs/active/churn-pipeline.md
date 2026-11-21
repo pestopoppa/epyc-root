@@ -301,3 +301,11 @@ Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; t
       · done when: a keeper test shows a non-resumable row grant is capped and an unmeasured estimate emits a warning
       · gate: none
       · owner: pipeline-mgmt
+- [ ] **DEPLOY-FROM-REF** [non-inference] Make deploy_rowflow.sh take its replay harness, and itself, from the staged ref (origin/main) instead of the invoking tree, so deploying from /workspace cannot use a stale harness.
+      · done when: Running deploy_rowflow.sh from a stale tree uses the staged-ref harness; fixture test proves it.
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **KEEPER-QUIET-GUARD** [non-inference] Add the quiet_guard_regions spec field so contention-guard rows stop showing as UNDERUSED in the keeper.
+      · done when: A row with quiet_guard_regions is reported as guarding, not UNDERUSED, and its regions stay quiet.
+      · gate: none
+      · owner: pipeline-mgmt
