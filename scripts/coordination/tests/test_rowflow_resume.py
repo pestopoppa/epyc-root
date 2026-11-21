@@ -72,6 +72,18 @@ class Resume(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(self.G, RID + ".grant.released-early")))
         self.assertEqual(rf.status(self.f, RID)["state"], "grantable")
 
+    def test_partial_native_incomplete_resumes(self):
+        """RESUME-PARTIAL 2026-11-21: rc=75 reason=partial-* (job-declared resumable partial) resumes like stopped."""
+        self.row(ended="rc=75 time=x reason=partial-native-incomplete", stop=False)
+        self.assertEqual(rf.status(self.f, RID)["next"], f"resume (rowflow.py resume {RID})")
+        self.assertEqual(self.go(), 1)
+        self.assertEqual(rf.status(self.f, RID)["state"], "grantable")
+
+    def test_partial_not_resumable_spec_refused(self):
+        self.row(ended="rc=75 reason=partial-native-incomplete", resumable=False, stop=False)
+        with self.assertRaises(rf.Refused):
+            self.go()
+
     def test_owner_only(self):
         self.row()
         with self.assertRaises(rf.Refused):

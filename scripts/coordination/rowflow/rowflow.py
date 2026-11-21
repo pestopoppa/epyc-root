@@ -5491,7 +5491,7 @@ def _manifest_anywhere(flags, rid):
 
 def resumable_stopped(flags, rid):
     """(manifest_path, why_not): why_not is None when `rid` is a resumable row whose last end was rc=75 reason=stopped|
-    released-early (the owner's STOP, or an owner release), so `rowflow.py resume` can requeue it in place."""
+    released-early|partial-* (the owner's STOP, an owner release, or a job-declared resumable partial), so `rowflow.py resume` can requeue it in place."""
     G = os.path.join(flags, "grants")
     if os.path.exists(os.path.join(G, rid + ".complete")):
         return None, "grants/<id>.complete: the row finished"
@@ -5499,8 +5499,9 @@ def resumable_stopped(flags, rid):
     if not h:
         return None, "no grants/<id>.ended: the row has not ended (a STOP file with no end is `rm`-ed by its owner)"
     m = re.search(r"(?:^|\s)reason=(\S+)", h)
-    if not (re.search(r"(^|\s)rc=75(\s|$)", h) and m and m.group(1) in RESUME_REASONS):
-        return None, f"last end is not rc=75 reason=stopped|released-early ({h[:90]!r})"
+    if not (re.search(r"(^|\s)rc=75(\s|$)", h) and m and (m.group(1) in RESUME_REASONS or m.group(1).startswith("partial-"))):
+        # RESUME-PARTIAL 2026-11-21: a job-declared resumable partial (filler_run15: rc=75 reason=partial-native-incomplete) resumes too
+        return None, f"last end is not rc=75 reason=stopped|released-early|partial-* ({h[:90]!r})"
     mp = _manifest_anywhere(flags, rid)
     if not mp:
         return None, "no manifest for this id (never published, or removed): publish it"
