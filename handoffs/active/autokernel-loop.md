@@ -10050,9 +10050,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: five owner classes register sealed records via hooks and missing/stale/gap classes keep admission refused
           · gate: none
           · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `807cce1ea`: sealed `native_retention_owner_record.v1` for build_dependency/candidate_manifest/evidence/physical_root/worker_result, derivable only from owner durable state and bound to seed digest/config generation/incarnation; `build_native_view` re-derives each class (missing/stale/gap keep the plan incomplete; forged/dict records refused); candidate executables depend on DSOs + RUNPATH dirs; hooks at catalog install/replay, candidate completion, native capture append, WORKER_RESULT_RETAINED. 105 passed + adjacent. Live deletion/provider still unavailable. [no-belief: code]
-    - [ ] **AKU-10f2** [non-inference] read real ELF DT_NEEDED/RUNPATH from builds outside the controller mutex
+    - [x] **AKU-10f2** [non-inference] read real ELF DT_NEEDED/RUNPATH from builds outside the controller mutex
           · done when: a build whose ELF needs an undeclared DSO or RUNPATH dir keeps it retained, proven by a test on a real built fixture ELF
           · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `1c5d832e6`: new `elf_retention.py` parses each candidate executable's ELF64 dynamic section (bounded seeks) inside `build_native_view`, outside the controller mutex; RUNPATH/RPATH dirs ($ORIGIN expanded) and NEEDED files resolved in them become retained executable dependencies even when undeclared; present-but-unparsable ELF -> `elf_dependencies_unreadable` uncertain scope. `test_elf_retention.py` compiles a real exe+libfoo.so fixture with cc (under build grant build-autokernel-20261122T183357Z-376b5f, released) and proves the undeclared DSO + RUNPATH dir are retained. 40 passed incl. catalog/consumer/evidence-hook suites. [no-belief: code]
     - [ ] **AKU-10f3** [non-inference] persist owner coverage records in an additive journal kind instead of re-deriving on replay
           · done when: owner coverage records replay from a versioned journal kind with legacy streams unchanged
           · gate: none
