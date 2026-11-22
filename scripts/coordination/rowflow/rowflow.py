@@ -435,6 +435,18 @@ _PY_IMPORT = re.compile(r"^\s*(?:import\s+([\w, ]+)|from\s+(\w+)\s+import\b)", r
 _SCRIPT_REF = re.compile(r"(?:\$\{?D\}?/)?([A-Za-z0-9_./-]+\.(?:sh|py|bash))\b")
 
 
+_INFRA_DIRS = ("/compute-flags/bin/", "/scripts/coordination/rowflow/")
+
+
+def _is_rowflow_infra(f):
+    """True for the rowflow engine / keeper sources themselves (deployed bin/ or repo scripts/coordination/rowflow). Their
+    comments carry thread numbers (`-t 48`, `-t 10`); scanning them as a job's argv widened r5/r6 from 24 threads to
+    48 -> multi-quarter(2) and granted a quarter the job never used (shapefix 2026-11-22)."""
+    f = os.path.normpath(f)
+    here = os.path.dirname(os.path.abspath(__file__)) + os.sep
+    return f.startswith(here) or any(d in f for d in _INFRA_DIRS)
+
+
 def _job_chain(cmd, max_files=32):
     """[(path, text)] of the job files --cmd runs and, transitively, the scripts they name (absolute, $D/-relative or
     relative to the file's dir / its own D=) and the sibling Python modules they import - where a job's compute process
@@ -443,6 +455,8 @@ def _job_chain(cmd, max_files=32):
 
     def add(f):
         f = os.path.normpath(f)
+        if _is_rowflow_infra(f):   # shapefix 2026-11-22: a job that merely NAMES the engine must not make its source evidence
+            return False
         if f in seen or len(seen) >= max_files or not os.path.isfile(f):
             return False
         seen.add(f)
@@ -946,7 +960,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -973,6 +987,17 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     if o.get("threads"):
         row["declared_threads"] = int(o["threads"])
         row["threads_evidence"] = o.get("threads_evidence") or []
+    # shapefix 2026-11-22: the spec's own declared_threads is authoritative over the argv scan (r6 declared 24, the scan
+    # read 48 out of the engine's comments and the row was granted q0+q2). A larger scan is logged, never silently used.
+    sdt = spec.get("declared_threads")
+    if isinstance(sdt, int) and not isinstance(sdt, bool) and sdt >= 1:
+        scanned = int(o.get("threads") or 0)
+        if scanned > sdt:
+            w = f"THREADS-SCAN-OVERRIDDEN spec declared_threads {sdt} kept over argv scan {scanned} ({', '.join(o.get('threads_evidence') or [])})"
+            print(f"{rid}: {w}")
+            row["publish_warnings"] = list(row.get("publish_warnings") or []) + [w]
+        row["declared_threads"] = sdt
+        o["threads"] = sdt   # contract_of takes max(row, o["threads"]): the scan must not out-vote the declaration
     # keeper class fix 2026-11-05 (operator "fix it"): the contract is derived from evidence only; the spec's shape and
     # regions are advisory and a declaration that books >= SHAPE_TOLERANCE_CORES more than the contract needs is
     # refused unless the spec carries shape_override "operator: <who> <date>: <why>" (logged in the row)
@@ -1027,6 +1052,10 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         need(c["shape"] != "gpu-q3" or not held_q3, "gpu-q3 regions must claim only gpu-quiet + 88-95 + 184-191 (operator "
              f"2026-11-05 NARROW: a GPU timing grant never holds q3 cores 72-87, found {','.join(compress(held_q3))}; they stay "
              "grantable to CPU rows beside a GPU timing run); a quieter neighbourhood needs explicit regions + shape_override")
+    if c.get("widened"):
+        wn = f"SHAPE-WIDENED {c['widened']} (opt out: shape_widen=false in the spec)"
+        print(f"{rid}: {wn}")
+        row["publish_warnings"] = list(row.get("publish_warnings") or []) + [wn]
     check_timing_shape(spec, o, c["shape"])
     cw = claim_wider_refusal(row, c, o)
     need(not cw, cw)
@@ -1957,6 +1986,8 @@ def contract_of(d, o=None, flags=None):
         pinned = bool(decl_cpus) and not (cpu_tokens(decl_cpus) & set(QUARTERS))   # concrete sub-quarter regions
         legacy = len(_cpu_set(cc) & set(range(96))) if (cc and not honours) else 0
         nq_ram = -(-gib // QUARTER_RAM_GIB) if gib > QUARTER_RAM_GIB else 1
+        if d.get("shape_widen") is False:   # opt-out (shapefix 2026-11-22): never widen on RAM; the owner owns the fit
+            nq_ram = 1
         if pinned:
             shape, opts = "sub-quarter", [frozenset(cpu_tokens(decl_cpus) | (cpu_tokens(cc) if legacy else set()))]
         elif threads is not None and legacy <= (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24)):
@@ -2035,7 +2066,13 @@ def contract_of(d, o=None, flags=None):
     opts = [frozenset(compress(expand(x))) for x in opts if x] or [frozenset({q} | gpu_tok) for q in QUARTERS]
     held = max((len({t for t in expand(x) if t in CORES}) for x in opts), default=0)
     need_cores = held if (whole or gpu_use or threads is None or floored) else (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24))
-    return {"shape": shape, "options": opts, "bench": gq == "exclusive", "threads": threads, "gpu_use": gpu_use,
+    widened = ""
+    if shape.startswith("multi-quarter(") and not whole and threads is not None and not explicit:
+        nmq = int(shape[len("multi-quarter("):-1])
+        if nmq > -(-threads // 24):
+            widened = (f"{nmq} quarters for {threads} threads: " + ("declared shape floor" if floored else
+                       f"RAM {gib} GiB > {QUARTER_RAM_GIB} GiB/quarter" if gib > QUARTER_RAM_GIB else "unknown"))
+    return {"shape": shape, "options": opts, "bench": gq == "exclusive", "widened": widened, "threads": threads, "gpu_use": gpu_use,
             "timing": timing, "evidence": evidence, "lock": honours, "need": need_cores, "held": held,
             "claim": cc if cls != "gpu" else "", "explicit_cpus": decl_cpus if explicit else ""}
 
