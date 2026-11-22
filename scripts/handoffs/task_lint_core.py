@@ -243,13 +243,42 @@ def section_context(lines, i, radius=60):
 #  - `when ... lands/completes` inside a tick/close/done-when clause: the box's own completion condition
 #    (AK-TRIM-OR-SPLIT-SMALL-20261119).
 _FP_AFTER_DATE = re.compile(r'after\s+(?:the\s+)?\d{4}-\d{2}-\d{2}', re.I)
-_FP_ONLY_IF_CMP = re.compile(r'only if\s*(?:the\s+\S+\s+(?:is|are)\s+)?[<>=~\u2265\u2264]', re.I)
+_FP_ONLY_IF_CMP = re.compile(r'only if\s*(?:the\s+)?operator\b|only if\s*(?:the\s+\S+\s+(?:is|are)\s+)?[<>=~\u2265\u2264]', re.I)
 _FP_PREREQ_NOUN = re.compile(r'(?:the|its|their|a|an|this|that|these|v\d+)\s+(?:\w+\s+)?prereq\w*\s+(?!is\b|are\b|must\b|not\b|:)[a-z]', re.I)
 _FP_COMPLETION = re.compile(r'\b(?:tick|ticks|closes?|done|complete[sd]?|finished)\b', re.I)
 # Handoff-standard way to state a prerequisite without rewording the identity line: a continuation line
 # `· gate: <BOX-ID>[, <BOX-ID>...]` (or `gate:` bare) naming the prerequisite box(es). `gate: none` does not count.
 _GATE_LINE = re.compile(r'^\s*(?:[-*\u00b7]\s*)?\u00b7?\s*gate:\s*(\S.*?)\s*$', re.I | re.M)
-_GATE_ID = re.compile(r'[A-Za-z][A-Za-z0-9._]*-[A-Za-z0-9._]*\d[A-Za-z0-9._#-]*')
+# Same id grammar as task_lint.GATE_REF (`[A-Za-z][A-Za-z0-9._#-]*`), hyphenated: a digit is NOT required
+# (AK-SERVING-LONGCTX-DECODE-ONLY).
+_GATE_ID = re.compile(r'[A-Za-z][A-Za-z0-9._]*(?:-[A-Za-z0-9._#]+)+')
+# A digit-free hyphenated all-caps id (>= 3 segments) is a box id for the TID-proximity check too.
+TID_NODIGIT = re.compile(r'\b[A-Z][A-Z]+(?:-[A-Z][A-Z]+){2,}\b')
+# STRUCTURAL rule d: an explicit dependency declaration (`· gate: <anything>` incl. `gate: none`, or `· class: <x>`)
+# is authoritative - the owner declared the box's dependencies, prose elsewhere is just prose.
+_DECL = re.compile(r'(?:^|\u00b7)\s*(?:\u2744\s*)?(?:gate|class)\s*:', re.I | re.M)
+_NOTE_LINE = re.compile(r'^\s*(?:[-*\u00b7]\s*)*(?:\d{4}-\d{2}-\d{2}|(?:rule|stop|decision)\s*:|\*\*?(?:rule|stop|decision)\b)', re.I)
+
+
+# `· units: ...` / `· done when: ...` / `· model: ...` continuation lines are box SPEC fields, not prerequisite prose.
+_FIELD_LINE = re.compile(r'^\s*(?:[-*]\s*)?\u00b7\s*(?:\u2744\s*)?[A-Za-z][\w -]{0,24}:')
+
+
+def has_declaration(t):
+    return bool(_DECL.search(t))
+
+
+def scan_text(t):
+    """First line + non-note continuation lines (dated notes / history and rule:/stop:/decision: lines are not scanned)."""
+    ls = t.split('\n')
+    out = [ls[0]]
+    for l in ls[1:]:
+        if CHECKBOX.match(l) or LEGACY_MARKER.match(l):   # a nested child box owns its own prose (and its own lint)
+            break
+        if _NOTE_LINE.match(l) or _FIELD_LINE.match(l):
+            continue
+        out.append(l)
+    return '\n'.join(out)
 
 
 def GATE_LINE_OK(t):
@@ -262,11 +291,56 @@ def GATE_LINE_OK(t):
     return False
 
 
+_FP_ONCE_COUNT = re.compile(r'(?:exactly|only|run|runs|ran|at most|than|just|read|measured)[\s-]+once\b|once\s*(?:[;.,)\]:]|$|per\b|each\b|on\b|in\b|at\b|for\b|with\b|more\b|then\b|before\b|and\b|or\b)', re.I | re.M)
+_FP_ONLY_IF_RULE = re.compile(r'only if\b[^.;\n]{0,80}?(?:at least|>=|\u2265|break-?even|[<>]\s*\d|\d\s*%|exceeds?|beats?|improves? by|within\b)', re.I)
+_FP_RULE_OR_AUTH = re.compile(r'\s*(?:[^.;\n]{0,40}?(?:at least|>=|\u2265|break-?even)|(?:the |a |its |their |normal |selected-work |original |full |pinned |explicit |fresh )*(?:[\w/-]+\s+){0,3}?(?:authori(?:[sz]\w*|ty|ties)|approvals?|admission|operator|digests?|receipts?|credentials?|permission|grants?|ratif\w*|sign-?off))', re.I)
+_AFTER_EVENT = re.compile(r'\b(?:lands?|landed|completes?|completed|ships?|shipped|merged?|promot\w*|finish\w*|done|released?|ratif\w*|signs?|signed|published|resolved|available|ready|retrain\w*|rebuild\w*|reload\w*|restart\w*|cutover|freeze|unblock\w*)\b', re.I)
 _FP_NEGATED = re.compile(r"(?:no longer|not|never|n't|nothing|no)\s+(?:\w+\s+)?$", re.I)
 _FP_STOP_RULE = re.compile(r'stop[- ]on[- ](?:answer|futility)\s+$|stop(?:s|ping)?\s+$', re.I)
 
 
 def _is_fp(t, m):
+    w = m.group(0).lower()
+    if _FP_NEGATED.search(t[max(0, m.start() - 20):m.start()]):   # "no longer gated on X": the prerequisite is lifted
+        return True
+    if w == 'after':
+        if _FP_STOP_RULE.search(t[max(0, m.start() - 24):m.start()]) or re.match(r'after\s+(?:round|rounds|run|runs|cell|cells)\s+\d', t[m.start():m.start() + 24], re.I):
+            return True                                           # a stop rule ("stop-on-answer after round 4"), not a wait
+        if _FP_AFTER_DATE.match(t, m.start()):
+            return True
+        # `after` is a wait only when its clause names a completion event / authority; algorithm and history prose is not.
+        clause = re.split(r'[.;\n]', t[m.end():m.end() + 120], 1)[0]
+        return not _AFTER_EVENT.search(clause)
+    if w == 'only if':
+        return bool(_FP_ONLY_IF_CMP.match(t, m.start())) or bool(_FP_ONLY_IF_RULE.match(t, m.start()))
+    if w.startswith('prereq'):
+        if re.search(r'(?:model|build|model/build|input|data)\s+prereq\w*\s*:$', t[max(0, m.start() - 20):m.end() + 1], re.I):
+            return True        # an inputs label naming what the box itself builds
+        if re.match(r'prereq\w*\s+(?:from|of|for|in)\b', t[m.start():m.start() + 24], re.I):
+            return True
+        return bool(_FP_PREREQ_NOUN.search(t[max(0, m.start() - 40):m.end() + 30]))
+    if w.startswith('when'):
+        sent = t[:m.start()]
+        sent = sent[max(sent.rfind('. '), sent.rfind('\n')) + 1:]
+        return bool(_FP_COMPLETION.search(sent))
+    if w == 'until then':
+        return True        # a consequence clause ("until then X is not backed"): the end condition is stated in the same sentence
+    if w == 'once' and re.match(r'once\s+(?:its|their|the|a)\s+[\w-]+\s+(?:is|are|has|have)\s+\d', t[m.start():m.start() + 60], re.I):
+        return True        # algorithm prose ("once its timing is 512 rounds old")
+    if w == 'once':
+        sent = t[:m.start()]
+        sent = sent[sent.rfind('. ') + 1:]
+        if re.search(r'\b(?:moves?|changes?|raises?|lowers?|becomes?|grows?|shifts?)\b', sent, re.I):
+            return True    # descriptive state-change sentence ("moves the ceiling ... once the package lands"), not a wait
+        return bool(_FP_ONCE_COUNT.search(t[max(0, m.start() - 14):m.end() + 12])) or bool(re.match(r'once\s+(?:the\s+)?operator\b', t[m.start():m.start() + 24], re.I))
+    if w in ('parked', 'deferred'):
+        return bool(re.match(r'\s*(?:\d{4}-|\(|with\b|by\b|:|reason)', t[m.end():m.end() + 14], re.I))
+    if w.startswith('requires') or w == 'require' or w.startswith('need') or w.startswith('depend'):
+        return bool(_FP_RULE_OR_AUTH.match(t, m.end()))
+    return False
+
+
+def _is_fp_legacy(t, m):
     w = m.group(0).lower()
     if _FP_NEGATED.search(t[max(0, m.start() - 20):m.start()]):   # "no longer gated on X": the prerequisite is lifted
         return True
@@ -283,6 +357,15 @@ def _is_fp(t, m):
         sent = sent[max(sent.rfind('. '), sent.rfind('\n')) + 1:]
         return bool(_FP_COMPLETION.search(sent))
     return False
+
+
+def legacy_masked(t):
+    """Monotonicity guard: the pre-structural rule (first non-FP match, TID within 160 chars) is kept as a mask, so the
+    structural rule can only ever REMOVE rule-d flags relative to the old behaviour, never add new ones."""
+    for m in PROSE_PREREQ.finditer(t):
+        if not _is_fp_legacy(t, m):
+            return bool(TID.search(t[m.start():m.start() + 160]))
+    return True
 
 
 def prose_prereq(t):
@@ -316,8 +399,9 @@ def score(text, children=0, owner=True, nested=False):
         miss = [k for k, rx in SUB.items() if not rx.search(t)]
     f['c'] = bool(miss)
     # d
-    pm = prose_prereq(t)
-    f['d'] = bool(pm) and not TID.search(t[pm.start():pm.start() + 160]) and not GATE_LINE_OK(t)
+    pm = None if has_declaration(t) else prose_prereq(scan_text(t))
+    f['d'] = bool(pm) and not legacy_masked(t) and not TID.search(pm.string[max(0, pm.start() - 120):pm.start() + 160]) \
+        and not TID_NODIGIT.search(pm.string[max(0, pm.start() - 120):pm.start() + 160]) and not GATE_LINE_OK(t)
     # e
     steps = len(re.findall(r'(?:^|\s)\(?(?:\d{1,2}|[a-h])[).]\s', t)) + len(re.findall(r'; then|, then', t))
     f['e'] = len(t) > 1500 or children > 6 or steps >= 6 or bool(re.search(r'\(ongoing\)|\[too-big|~?\d+ days|split across', t, re.I))
@@ -332,7 +416,7 @@ def score(text, children=0, owner=True, nested=False):
     f['f'] = bool(dang)
     f['g'] = not owner
     f['h'] = is_op  # operator-decision class also routes to the operator queue, never to a worker
-    return cls, f, sorted(set(dang)), miss, (t[pm.start():pm.start() + 120] if f['d'] else None)
+    return cls, f, sorted(set(dang)), miss, (pm.string[pm.start():pm.start() + 120] if f['d'] else None)
 
 
 def lint_file(path, as_json=False):

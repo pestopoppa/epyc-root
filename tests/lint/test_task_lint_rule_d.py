@@ -44,5 +44,7 @@ def test_gate_continuation_satisfies_d():
     assert d(base)
     assert not d(base + "\n      · gate: INF-48#rocm-verify-profile-backend, EVL-47")
     assert not d(base + "\n      · gate: AK-LOOP-3")
-    assert d(base + "\n      · gate: none")
-    assert d(base + "\n      · gate: the scheduler")
+    # structural rule (2026-11-22): ANY `· gate:` value (incl. none) is an explicit declaration and satisfies d
+    assert not d(base + "\n      · gate: none")
+    assert not d(base + "\n      · gate: the scheduler")
+    assert not d(base + "\n      · class: blocked-external")
