@@ -46,6 +46,36 @@ DEFAULT_BUDGET = {"turns": 30, "tokens": 120000, "wall_s": 600,  # r7: one 839 s
                   "excerpt_chars": 9000}
 TIER_BY_CLASS = {"non-inference": "terra", "inference": "terra"}
 
+
+# Per-task wall budget from the measured serving rate (r8b canary FIX-HARNESS 2026-11-22, fix 1): the 600 s default was
+# sized for the GPU; on a CPU quarter prefill ran 77-284 tok/s over 30-80k-token tasks and 6+ of 16 runs died on time.
+# wall_s = margin * (expected_prompt_tokens / prefill_tok_s + expected_output_tokens / decode_tok_s) + overhead_s,
+# clamped to [floor_s, cap_s]. Every key is configurable (job CONFIG `wall_budget`, `dispatch.py run --wall-budget`).
+WALL_BUDGET_DEFAULTS = {"expected_prompt_tokens": 80000, "expected_output_tokens": 6000, "margin": 1.25,
+                        "overhead_s": 120, "floor_s": 600, "cap_s": 3600}
+
+
+def wall_budget_s(cfg: dict | None) -> int | None:
+    """None when no measured rate is given (keep the task's own wall_s)."""
+    c = dict(WALL_BUDGET_DEFAULTS, **(cfg or {}))
+    pre, dec = c.get("prefill_tok_s"), c.get("decode_tok_s")
+    if not pre or not dec:
+        return None
+    w = float(c["margin"]) * (float(c["expected_prompt_tokens"]) / float(pre)
+                              + float(c["expected_output_tokens"]) / float(dec)) + float(c["overhead_s"])
+    w = max(float(c["floor_s"] or 0), w)
+    if c.get("cap_s"):
+        w = min(float(c["cap_s"]), w)
+    return int(round(w))
+
+
+def apply_wall_budget(task: dict, cfg: dict | None) -> dict:
+    """Return the task with budget.wall_s derived from `cfg` (unchanged when cfg carries no rate)."""
+    w = wall_budget_s(cfg)
+    if w is None:
+        return task
+    return dict(task, budget=dict(task.get("budget") or DEFAULT_BUDGET, wall_s=w))
+
 _PATH = re.compile(r"`([A-Za-z0-9_.][\w./-]*(?:\.[A-Za-z0-9]{1,6}|/))(?::\d+(?:-\d+)?)?`")
 _BARE_PATH = re.compile(r"(?<![\w/.])((?:src|scripts|tests|docs|orchestration|research|dashboard|benchmarks)/[\w./-]+\.[A-Za-z0-9]{1,6})")
 _CMD = re.compile(r"`((?:pytest|python3?|bash|make)\s[^`]+)`")

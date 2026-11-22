@@ -526,18 +526,20 @@ def gitnexus_trigger(batch_id: str, enabled: bool = True, script: Path | None = 
     return out
 
 
-def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: bool, family: str = "local", gnx_trigger: bool = True) -> list[dict]:
+def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: bool, family: str = "local", gnx_trigger: bool = True,
+        wall_budget: dict | None = None) -> list[dict]:
     out.mkdir(parents=True, exist_ok=True)
     run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     gitnexus_trigger(run_id, gnx_trigger)
     ledger = out / "ledger.jsonl"
     rows = []
     for n, task in enumerate(tasks):
+        task = schema.apply_wall_budget(task, wall_budget)      # fix 1: wall_s from the measured rate, when given
         tdir = out / f"t{n:02d}"
         tdir.mkdir(exist_ok=True)
         t0 = time.time()
         row = {"n": n, "key": task["key"], "handoff": task["handoff"], "repo": task["repo"], "kind": task.get("kind"),
-               "tier": task.get("tier"), "family": family}
+               "tier": task.get("tier"), "family": family, "wall_budget_s": task["budget"].get("wall_s")}
         try:
             repo, lane, base = make_lane(task, tdir, f"taskflow/{run_id}/{n:02d}-{hashlib.sha1(str(tdir).encode()).hexdigest()[:6]}")  # r4: same-second collision
         except (subprocess.CalledProcessError, LaneRefused) as e:
@@ -613,6 +615,7 @@ def main(argv=None) -> int:
     r.add_argument("--apply", action="store_true")
     r.add_argument("--reviewer", action="store_true")
     r.add_argument("--no-gitnexus-trigger", action="store_true")
+    r.add_argument("--wall-budget", default="", help='JSON, e.g. {"prefill_tok_s":111,"decode_tok_s":17.4} (schema.WALL_BUDGET_DEFAULTS)')
     sub.add_parser("sweep")
     a = ap.parse_args(argv)
     if a.cmd == "sweep":
@@ -623,7 +626,8 @@ def main(argv=None) -> int:
         s = json.dumps(tasks, indent=1)
         Path(a.out).write_text(s) if a.out else print(s)
         return 0
-    rows = run(json.loads(Path(a.tasks).read_text()), a.endpoint, Path(a.out), a.apply, a.reviewer, gnx_trigger=not a.no_gitnexus_trigger)
+    rows = run(json.loads(Path(a.tasks).read_text()), a.endpoint, Path(a.out), a.apply, a.reviewer, gnx_trigger=not a.no_gitnexus_trigger,
+               wall_budget=json.loads(a.wall_budget) if a.wall_budget else None)
     print(json.dumps({"attempted": len(rows), "verified": sum(r.get("verdict") == "verified" for r in rows)}))
     return 0
 
