@@ -4951,6 +4951,8 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
 
   - [ ] **RKA-A3B48-D-REMEASURE** [inference] Contention-controlled re-measure of A3B CPU MTP draft length after the 2026-11-18 inversion analysis (research/deep-dives/a3b-cpu-d-depth-inversion-20261118.md: the a3b48 row was bimodal, ~24 vs ~50 ms/token per cell, likely host contention). model: Qwen3.6-35B-A3B MTP Q8_0, 48t CPU half instance, production v10 CPU store. Row rka-a3b48-d-remeasure-20261118: D in {2,4} at 4k/16k/32k, ABBA x4 rounds, foreign-CPU busy sampled per decode window, cells with p95 foreign busy >= 25% invalid (one rerun). stop-on-answer after round 4: RECOMMEND_D2 iff gain >= 5% at 4k and 32k with CI lower bound > 0 in every valid round (>= 3 valid); DEPTH_ADAPTIVE / KEEP_D4 / NO_RECOMMENDATION otherwise; stop-on-futility: < 3 valid rounds possible (FUTILITY_CONTENDED) or KEEP_D4 at round 3; gate-class = futility-only. Measure only: any recipe change goes to the operator. [no-belief: planning]
       · history: notes moved to autokernel-loop-box-history-20261122.md
+      · region: multi-quarter(2), 48 threads · est 9000 s (both from the row spec of rka-a3b48-d-remeasure-20261118)
+      · done when: the row (or its successor) files RECOMMEND_D2 / DEPTH_ADAPTIVE / KEEP_D4 / NO_RECOMMENDATION, or stops FUTILITY_CONTENDED
 - [x] **C15-EPI-Q8** [inference] Producer-epilogue q8_1 write for MI210 decode (from INF48-GATEUP-PROBE: standalone quantize_q8_1 = 3.56% of 27B Q8_0 decode). RMSNorm+mul and gated-unary+mul fused kernels also write the q8_1 block their Q8_0/Q6_K MMVQ consumer needs, pre-registering the … [no-belief: planning] ✅ 2026-11-19 [belief: cc] [no-belief: row verdict filed by agent] [no-belief: source estimate] _(detail → completed ledger)_
 - [ ] **RKA-A3B-ROUTER-MMVF** [inference] [origin: autokernel-session self-scouting 2026-11-18, NOT backlog-mandated; boxed per operator so it is documented] A3B router F32/BF16 matmuls kept on MMVF up to ne11=8 on CDNA (knob GGML_HIP_MMVF_CDNA_MAX_NE11, 79650eeab; carried default-off in C16 13d6fc150). Measured: rka-a3b-n4-trace-gpu-20261118 removes 76-95% of the n3->4 step; rka-a3b-mmvf8-e2e-gpu-20261118-r2 KEEP (D4 +14%, D2 0%). model: Qwen3.6-35B-A3B MTP Q8_0 on MI210. Remaining: default-on decision at C16 fold (operator). stop-on-answer: C16 fold gate verdict; stop-on-futility: n/a (KEEP measured); gate-class = futility-only. Parent: RKA-A3B-N4-STEP. [no-belief: planning]
 - [ ] **RKA-A3B-ROUTER-WIDE** [inference] [origin: autokernel-session self-scouting 2026-11-18, NOT backlog-mandated; boxed per operator so it is documented] extend the MMVF router path to ne11 9..64 by column-tiling 8-wide launches (knob GGML_HIP_ROUTER_WIDE=1, branch llama.cpp-experimental-c15-a3b-router-wide-20261118 @ bb3294c71) so multi-session verify batches benefit. model: Qwen3.6-35B-A3B MTP Q8_0 on MI210. Row rka-a3b-router-wide-gpu-20261118. stop-on-answer: KEEP iff np4 or np8 D2 aggregate >= +3% with no cell < -1%; stop-on-futility: F32 op gain < 5% at n=12 and n=24; gate-class = futility-only. Parent: RKA-A3B-N4-STEP. [no-belief: planning] 2026-11-19 row rka-a3b-router-wide-gpu-20261118 INCONCLUSIVE (FUTILITY_INSTRUMENT): baseline test rc=0, 16/16 passed; parser counted 12 because warmup diagnostics split four case/OK lines. WIDE and timing did not run. Repair parser and republish. RESULT.json SHA-256 c457fa71b45950a43423e9b29c6ba9c5d3fa887e2fc4a6edf88e323649d1196b. [no-belief: instrument failure]
@@ -4964,6 +4966,7 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
 - [ ] **GDN-VERIFY-BASE** [inference] Measure the recurrent GATED_DELTA_NET op on ROCm0 at verify shapes (F32 and bf16 state, S_v 128 and 64, H*n_seqs 48x1 and 48x4, n_tokens 1/4/8/16, 3 repeats, A/A floor) to supply the missing verify-regime GDN share, and port upstream #32456's mild-gate (g_min -0.05) GATED_DELTA_NET test cases into the fork's test-backend-ops set (intake-2796#record). Stop with NO-GO if the 8-row 48-head op is < 3% of measured per-round verify ms; only if >= 3%, author the fused float2-reduction variant (attn = g*(S^T q) + delta*(k.q)) and screen it at these shapes (KEEP if >= 10% op time at 8 rows); gate-class = futility-only.
       · model: op-level test-backend-ops GATED_DELTA_NET (Qwen3.8-27B GDN shapes: 16 qk x3 = 48 v-heads, S_v 128/64), ROCm0 MI210, no model load · build: fork `llama.cpp-experimental-c18-gdn-mildgate-20261122` @ 1fc07edaa (C18 74c18e2d8 + tests-only: #32456 mild-gate cases + gdn_verify_base perf set), store /mnt/raid0/llm/kernels/builds/gpu-20261122-1fc07edaa-gdn-mildgate · row ak-gdn-verify-base-gpu-20261122
       · done when: row result with us/layer per shape and share of verify ms, mild-gate cases green on CPU and ROCm0, and a NO-GO or variant decision
+      · est 900 s (row spec estimate_s of ak-gdn-verify-base-gpu-20261122; region gpu-q3, 8 threads)
       · gate: none
 - M2 monitor (intake-lpr-20261122, operator-approved 2026-11-22): GDN column-width knob: reopen only if the GDN-VERIFY-BASE fused variant KEEPs.
 - M5 monitor (intake-lpr-20261122, operator-approved 2026-11-22): ZMM IQ3_S 2-8 rows / ZMM IQ2_S: reopen if a served IQ2_S/IQ3_S-heavy model profile shows the dot as bottleneck.
@@ -6163,6 +6166,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       until the loop itself elects a seed. **Piloted 2026-08-31 — the pipeline stays open as
       STANDING; the pilot sub-items below are done:**
       · history: notes moved to autokernel-loop-box-history-20261122.md
+      · class: non-inference (standing intake pipeline; zero compute until the loop elects a seed)
   - [x] Pilot sweep (a) — qwen38-mtp . BW-utilization arithmetic: MI210 production ✅ 2026-08-31 _(detail → completed ledger)_
   - [x] Pilot sweep (b) — upstream llama.cpp v0.2.0 delta since the 0db32c06 freeze ✅ 2026-08-31 _(detail → completed ledger)_
   - [x] All 13 seeds from the two sweeps injected into the live hypothesis inbox ✅ 2026-08-31 _(detail → completed ledger)_
@@ -8057,8 +8061,9 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
       `ef81196d5` + *CPU* recipe (shim ON) + *GPU* recipe (shim NOT set). `champion.py`/`Bundle` can express
       one recipe per champion, which is now demonstrably under-specified. Extend the record to key the
       recipe by surface, and make the gate refuse a measurement whose (surface, recipe_hash) pair does not
-      match. Ties to R23-59 and R23-55 (`unit`). Blocked on nothing.
+      match. Ties to R23-59 and R23-55 (`unit`).
       · history: notes moved to autokernel-loop-box-history-20261122.md
+      · gate: none
 
 ##### 3.4 Track U4 — resource broker and per-surface budgets
 
@@ -8325,6 +8330,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [x] **AK-CPU-AA-CALIB** CPU A/A calibration: screen floor + serving floor, unit and host-state hash recorded; gating-floor calibration n≥24 with interval (FLOOR-UNIT-1 supersedes the earlier n=20 proposal) Row ak-cpu-aa-calibration-20261118: model: Qwen3.8-Flash-Next (Q38FN) + MTP, C14 CPU store … [no-belief: code] [belief: cc] _(detail → completed ledger)_
 - [ ] **AK-CPU-AA-CALIB-Q** [inference] Re-run the CPU A/A calibration at the quarter shape (one quarter, 24 threads; Q38FN UD-IQ4_XS + MTP Q8_0, C14 champion CPU store cpu-20261118-eee3da838-c14), because the r1 48-thread two-quarter floor does not transfer to the quarter shape every CPU speed row uses. Row `ak-cpu-aa-calibration-q-20261122-b`, resumable per launch. stop-on-answer when 24 valid pairs (48 launches) are in; stop-on-futility on missing input, wrong grant or >8 invalid launches; gate-class = futility-only.
       · done when: the row is filed CALIBRATED, CALIBRATED_CONTENDED or DROP(<clauses>) at 24 valid pairs, or on a FUTILITY_* stop
+      · est 12360 s (row spec estimate_s of ak-cpu-aa-calibration-q-20261122-b; region quarter, 24 threads)
 - [x] **GPU-LAUNCH-VAR-COVARIATE — Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP ✅ 2026-11-19 [belief: cc] [no-belief: cross-reference] [no-belief: triage] [no-belief: row preparation] _(detail → completed ledger)_
 - [ ] **AKU-18** Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
       · class: non-inference
@@ -8336,6 +8342,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       serving surface or any re-baselined surface, and report the count on the promotion record.
       intake-1378#record. Consumed by INF-75 AKX-P3b.
       · history: notes moved to autokernel-loop-box-history-20261122.md
+      · class: non-inference (records and counts existing LOO/keep data; no new measurement)
   - [x] **AK-LOO-CONFIRM-C14 — contention-gated confirmation of the C14 CPU LOO signal.** model: Q38FN Q8 CPU (Qwen3.8-Flash-Next UD-IQ4_XS + MTP Q8_0), 48t pinned 24-71, booked q0-q2. Row `ak-loo-confirm-cpu-c14-20261119`: arms full C14 vs R1 (-0d270f99b), R3 (-a331665d4), R1234 (-L1..L4), >= 8 … ✅ 2026-11-19 [no-belief: row verdict filed by agent] _(detail → completed ledger)_
 - [ ] **AKU-19** First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
 
@@ -10875,7 +10882,7 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   - 2026-11-19 OAB-7: built and deployed 2026-09-25 (above); the open acceptance is OAB-4's `orch` arm measuring first-step and max context with no compaction, which is an inference run.
 - [ ] **OAB-8 — fan-out is the orchestrator's decision, not the model's.** Offered an allowed `task` tool plus
   fan-out guidance, the 27B never delegated once in 69 bounded steps (DS41-C20c). Splitting is orchestration: for a
-  proposal, the orchestrator (`repl_environment/parallel_dispatch.py`) runs one read-only scout per top profile
+  proposal, the orchestrator (`repos/epyc-orchestrator/src/repl_environment/parallel_dispatch.py`) runs one read-only scout per top profile
   hotspot / candidate file concurrently (≤ server slots) and hands the planner their summaries; the loop sends ONE
   request and never implements fan-out itself (operator, 2026-09-24: this is the orchestrator's job, not the
   harness's). Acceptance: OAB-4 `orch` arm shows ≥2 concurrent scout calls on :8083 per proposal and a planner
