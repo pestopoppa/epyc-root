@@ -141,7 +141,7 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
         reclaim_resumed_lane(lane, base_dir, task, repo)     # r8c fix 1: raises LaneRefused unless it is ours
     if lane.exists():
         raise LaneRefused(f"{lane} exists: one worker per worktree")
-    live = [m for m in root.glob("*.lane.json")]
+    live = live_lanes(root)            # r8d: only live lanes whose dispatcher is alive count (kept / orphans do not)
     if len(live) >= MAX_LANES:
         raise LaneRefused(f"{len(live)} live lanes >= cap {MAX_LANES}; run `dispatch.py sweep`")
     free = shutil.disk_usage(root).free / 2**30
@@ -153,7 +153,8 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     _git(repo, "worktree", "add", "-q", "-b", branch, str(lane), base)
     _meta(lane).write_text(json.dumps({"lane": str(lane), "repo": str(repo), "branch": branch, "base": base,
                                        "created": time.time(), "state": "live", "task": task.get("key"),
-                                       "owner": _proc_id(os.getpid())}))
+                                       "row": task.get("row") or os.environ.get("FILLER_ID") or None,
+                                       "base_dir": str(base_dir), "owner": _proc_id(os.getpid())}))
     for r in task.get("refs") or []:
         dst = lane / REFS / (r["repo"] + (f"@{r['rev']}" if r.get("rev") else "")) / r["path"]
         data = (schema.git_show(schema.REPOS[r["repo"]], r["rev"], r["path"]) if r.get("rev")
@@ -189,6 +190,57 @@ def _owner_alive(meta: dict) -> bool:
     if not own or ":" not in own:
         return False                    # pre-r8d lanes carry no owner; their dispatcher is gone
     return _proc_id(int(own.split(":")[0])) == own
+
+
+def _read_meta(m: Path) -> dict:
+    try:
+        return json.loads(m.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def live_lanes(root: Path | None = None) -> list[Path]:
+    """r8d (tf1-cpu-r8d: 14 kept + 2 orphaned live lanes filled the 16 cap, 10/10 units refused): the cap counts only
+    lanes in state "live" whose owner pid:starttime is still running. Kept (forensics) lanes and orphans do not."""
+    root = root or lane_root()
+    return [m for m in root.glob("*.lane.json") if (d := _read_meta(m)).get("state") == "live" and _owner_alive(d)]
+
+
+def is_orphan(meta: dict) -> bool:
+    """A live lane whose dispatcher is dead (killed stint): it has no keep_until and nobody will drop it."""
+    return meta.get("state", "live") == "live" and not _owner_alive(meta)
+
+
+FILED_DIR = Path(os.environ.get("TASKFLOW_FILED_DIR", "/mnt/raid0/llm/tmp/compute-flags/filing-done"))
+READY_DIR = Path(os.environ.get("TASKFLOW_READY_DIR", "/mnt/raid0/llm/tmp/compute-flags/ready"))
+
+
+def filed_rows(filed_dir: Path | None = None) -> set[str]:
+    d = filed_dir or FILED_DIR
+    return {f.name[:-len(".FILED")] for f in d.glob("*.FILED")} if d.is_dir() else set()
+
+
+def legacy_lane_rows(rows: set[str], ready_dir: Path | None = None) -> dict[str, str]:
+    """Pre-r8d lane metadata carries no row id: map lane path -> row through the row workdir's <base_dir>/lane.path
+    files (the row manifest in ready/ names the workdir). Later rows win a shared workdir (r8 then r8b)."""
+    rd = ready_dir or READY_DIR
+    out: dict[str, str] = {}
+    mans = []
+    for r in rows:
+        man = _read_meta(rd / f"{r}.json")
+        if man.get("workdir"):
+            mans.append((man.get("published_at") or "", r, Path(man["workdir"])))
+    for _, r, wd in sorted(mans):
+        for lp in wd.glob("out/**/lane.path"):
+            try:
+                out[lp.read_text().strip()] = r
+            except OSError:
+                pass
+    return out
+
+
+def lane_row(meta: dict, legacy: dict[str, str]) -> str | None:
+    return meta.get("row") or legacy.get(str(meta.get("lane")))
 
 
 def _registered_worktree(repo: Path, lane: Path) -> bool:
@@ -311,27 +363,49 @@ def keep_lane(lane: Path, reason: str, hours: float | None = None) -> None:
     m.write_text(json.dumps(d))
 
 
-def sweep_lanes(now: float | None = None) -> dict:
-    """Orphan / expiry sweep over the lane root: kept lanes past keep_until, and live lanes (or lane dirs with no
-    metadata) older than KEEP_FAILED_H -- i.e. left by a dead dispatcher. Removal is drop_lane (no --force/prune)."""
+def sweep_lanes(now: float | None = None, release_filed: bool = False, filed_dir: Path | None = None,
+                ready_dir: Path | None = None) -> dict:
+    """Orphan / expiry sweep over the lane root. Removed (drop_lane only, never --force/prune):
+    - kept lanes past keep_until;
+    - live lanes whose owner pid:starttime is dead (r8d orphans: a killed stint never drops its lane), at once;
+    - with release_filed, kept lanes whose row has a <row>.FILED marker in filing-done/ (the forensics window has
+      served its purpose once the round is filed and its transcripts audited);
+    - lane dirs with no metadata older than KEEP_FAILED_H."""
     now = now or time.time()
-    out = {"removed": [], "kept": [], "failed": []}
+    out = {"removed": [], "kept": [], "failed": [], "orphans": [], "released_filed": []}
     root = lane_root()
     if not root.exists():
         return out
+    rows = filed_rows(filed_dir) if release_filed else set()
+    legacy = legacy_lane_rows(rows, ready_dir) if rows else {}
     seen = set()
-    for m in root.glob("*.lane.json"):
-        d = json.loads(m.read_text())
+    for m in sorted(root.glob("*.lane.json")):
+        d = _read_meta(m)
+        if not d.get("lane"):
+            continue
         lane = Path(d["lane"])
         seen.add(lane.name)
-        due = d.get("keep_until") if d.get("state") == "kept" else d.get("created", now) + 3600 * KEEP_FAILED_H
-        if now < due:
+        state = d.get("state", "live")
+        why = None
+        if state == "kept":
+            if now >= (d.get("keep_until") or 0):
+                why = "expired"
+            elif rows and lane_row(d, legacy) in rows:
+                why = "filed"
+        elif is_orphan(d):
+            why = "orphan"
+        if not why:
             out["kept"].append(str(lane))
             continue
         repo = Path(d.get("repo") or ".")
         if drop_lane(repo, lane):
             out["removed"].append(str(lane))
-            if d.get("state") == "kept":      # forensics window over: the WIP branch goes too (tip sha logged)
+            if why == "orphan":
+                out["orphans"].append(str(lane))
+            elif why == "filed":
+                out["released_filed"].append(f"{lane}:{lane_row(d, legacy)}")
+            _sweep_log(f"swept {why} lane {lane} task {d.get('task')} row {lane_row(d, legacy)}")
+            if state == "kept":      # forensics window over: the WIP branch goes too (tip sha logged)
                 out.setdefault("branches", []).append(
                     f"{d.get('branch')}:{delete_branch_if_safe(repo, d.get('branch'), d.get('base'), bool(d.get('pin')))}")
         else:
@@ -875,10 +949,12 @@ def main(argv=None) -> int:
     r.add_argument("--reviewer", action="store_true")
     r.add_argument("--no-gitnexus-trigger", action="store_true")
     r.add_argument("--wall-budget", default="", help='JSON, e.g. {"prefill_tok_s":111,"decode_tok_s":17.4} (schema.WALL_BUDGET_DEFAULTS)')
-    sub.add_parser("sweep")
+    sw = sub.add_parser("sweep")
+    sw.add_argument("--release-filed", action="store_true",
+                    help="also drop kept lanes whose row has a FILED marker in filing-done/")
     a = ap.parse_args(argv)
     if a.cmd == "sweep":
-        print(json.dumps(sweep_lanes(), indent=1))
+        print(json.dumps(sweep_lanes(release_filed=a.release_filed), indent=1))
         return 0
     if a.cmd == "plan":
         tasks = plan([k for k in a.keys.split(",") if k] or None, a.top)

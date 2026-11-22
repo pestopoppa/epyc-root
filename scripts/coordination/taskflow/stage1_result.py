@@ -107,6 +107,49 @@ def rollup(rows: list[dict], stint_phases: list[dict] | None = None, arm_order: 
                       "failure_classes": fc}}
 
 
+NO_MODEL_WORK_REASONS = ("harness", "lane")
+
+
+def no_model_work(r: dict) -> bool:
+    """A unit that never reached the model (r8d: lane cap refusal, reason=lane, 0 requests)."""
+    return r.get("reason") in NO_MODEL_WORK_REASONS
+
+
+def harness_futility(stint_rows: list[dict]) -> bool:
+    """r8d: a stint whose EVERY unit is harness/lane did no model work; its rows must not count as final results."""
+    return bool(stint_rows) and all(no_model_work(r) for r in stint_rows)
+
+
+def quarantine_stint(out_dir: Path, stint_rows: list[dict]) -> int:
+    """Move this stint's no-model-work rows out of results.jsonl into harness-futility.jsonl so the units stay
+    un-done (resumable) and check_complete cannot count them. Returns the number of rows moved."""
+    out_dir = Path(out_dir)
+    rp = out_dir / "results.jsonl"
+    ids = {r.get("unit_id") for r in stint_rows if no_model_work(r)}
+    if not ids or not rp.exists():
+        return 0
+    keep, moved = [], []
+    for ln in rp.read_text().splitlines():
+        try:
+            r = json.loads(ln)
+        except ValueError:
+            keep.append(ln)
+            continue
+        (moved if r.get("unit_id") in ids and no_model_work(r) else keep).append(ln)
+    with (out_dir / "harness-futility.jsonl").open("a") as f:
+        for ln in moved:
+            f.write(ln + "\n")
+    tmp = rp.with_suffix(".jsonl.tmp")
+    tmp.write_text("".join(ln + "\n" for ln in keep))
+    tmp.replace(rp)
+    return len(moved)
+
+
+def units_done(rows: list[dict]) -> set[str]:
+    """Units with a real (model-work) result; harness/lane refusals never count toward completion."""
+    return {r.get("unit_id") for r in rows if r.get("unit_id") and not no_model_work(r)}
+
+
 def finalize(out_dir: Path, summary: dict, arm_order: list[str] | None = None) -> dict:
     """Merge this stint's phases with earlier stints' (persisted in stints.jsonl) and rebuild summary from
     results.jsonl. Idempotent: a phase already recorded (same arm + server pid) is not appended twice."""
