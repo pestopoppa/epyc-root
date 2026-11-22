@@ -43,7 +43,9 @@ sys.path.insert(0, str(HERE))
 import worktree_gate as wg  # noqa: E402
 
 REPO_ROOT = HERE.parent.parent
-GUARDED_RM = str(REPO_ROOT / "scripts" / "safety" / "guarded_rm.sh")
+# resolved, not __file__-relative: the installed copy (compute-flags/bin/churn) has no scripts/safety beside it.
+# Unresolvable -> the in-repo path (nonexistent), so callers fail loudly and delete nothing.
+GUARDED_RM = wg.resolve_guarded_rm(str(HERE)) or str(REPO_ROOT / "scripts" / "safety" / "guarded_rm.sh")
 DEFAULT_SALVAGE_DIR = f"{wg.LLM}/archive/worktree-salvage"
 
 

@@ -61,7 +61,7 @@ import worktree_gate as wg  # noqa: E402
 import scratch_lease  # noqa: E402
 
 REPO_ROOT = HERE.parent.parent
-GUARDED_RM = REPO_ROOT / "scripts" / "safety" / "guarded_rm.sh"
+GUARDED_RM = Path(wg.resolve_guarded_rm(str(HERE)) or REPO_ROOT / "scripts" / "safety" / "guarded_rm.sh")
 ALLOWED_PARENTS = ("/mnt/raid0/llm/tmp/", "/mnt/raid0/llm/worktrees/")
 SCRATCH_RE = re.compile(r"^\*\*Scratch\*\*:\s*(.*)$", re.M)
 PATH_RE = re.compile(r"/[^\s`;,·()\[\]|]+")

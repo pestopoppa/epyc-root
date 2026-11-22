@@ -80,6 +80,26 @@ import scratch_lease  # noqa: E402  (KEEP-marker lease: an expired lease release
 
 SCHEMA = "epyc.worktree_gate.report.v1"
 LLM = "/mnt/raid0/llm"
+
+_GRM_REL = os.path.join("scripts", "safety", "guarded_rm.sh")
+
+
+def resolve_guarded_rm(here: str | None = None, env: dict | None = None, exists=os.path.isfile) -> str | None:
+    """Locate guarded_rm.sh. This module is INSTALLED under compute-flags/bin/churn/, where a path relative to
+    __file__ points at compute-flags (no scripts/safety there), so try in order: $GUARDED_RM, the repo root of the
+    running source (here/../.. if it holds the script), the epyc-root-main view, /workspace. None if none exists."""
+    env = os.environ if env is None else env
+    here = here or os.path.dirname(os.path.abspath(__file__))
+    cands = []
+    if env.get("GUARDED_RM"):
+        cands.append(env["GUARDED_RM"])
+    cands.append(os.path.join(os.path.dirname(os.path.dirname(here)), _GRM_REL))
+    cands.append(f"{LLM}/views/epyc-root-main/{_GRM_REL}")
+    cands.append(f"/workspace/{_GRM_REL}")
+    for c in cands:
+        if exists(c):
+            return c
+    return None
 DEFAULT_REPOS = [
     f"{LLM}/epyc-root",
     f"{LLM}/epyc-orchestrator",

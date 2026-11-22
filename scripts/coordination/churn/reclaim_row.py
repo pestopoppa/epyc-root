@@ -349,7 +349,13 @@ def main(argv=None) -> int:
             chosen.append(p)
             rec["candidates"].append({"path": p, "bytes": n})
             print(f"{tag} row={rid} path={p} bytes={n} verdict=REAP")
-        if a.apply:
+        if a.apply and rec["candidates"] and not os.path.isfile(ws.GUARDED_RM):
+            # no deletion primitive reachable: fail loudly, delete nothing
+            for c in rec["candidates"]:
+                c["error"] = f"guarded_rm.sh not found (resolved {ws.GUARDED_RM}); set GUARDED_RM"
+                errors += 1
+                print(f"{tag} row={rid} path={c['path']} bytes={c['bytes']} verdict=ERROR {c['error']}")
+        elif a.apply:
             env = dict(os.environ, TRASH_ROOT=rw.trash_root())
             for c in rec["candidates"]:
                 cp = subprocess.run(["bash", ws.GUARDED_RM, c["path"]], capture_output=True, text=True,
