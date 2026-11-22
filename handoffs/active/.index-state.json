@@ -4,7 +4,7 @@
       "blocked": 27,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 593
+      "open": 591
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 472
+      "open": 471
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 820,
+      "closed": 821,
       "guarded": 0,
-      "last_advanced": "2026-11-21",
-      "open": 134,
+      "last_advanced": "2026-11-22",
+      "open": 133,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 384,
+          "closed": 385,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,7 +128,7 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 50
+          "open": 49
         },
         {
           "blocked": 0,
@@ -757,11 +757,11 @@
     },
     "cpu-decode-roofline-program.md": {
       "blocked": 0,
-      "closed": 156,
+      "closed": 157,
       "guarded": 0,
-      "last_advanced": "2026-11-21",
+      "last_advanced": "2026-11-22",
       "needs_owner": 8,
-      "open": 38,
+      "open": 37,
       "owner_index": "inference-research-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -775,7 +775,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 118,
+          "closed": 119,
           "gates": [
             "INF-65"
           ],
@@ -783,7 +783,7 @@
           "line": 100,
           "markers": 1,
           "name": "cpu-decode-roofline-program",
-          "open": 24
+          "open": 23
         },
         {
           "blocked": 0,
@@ -1371,10 +1371,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 6,
-      "closed": 444,
+      "closed": 445,
       "guarded": 0,
-      "last_advanced": "2026-11-21",
-      "open": 78,
+      "last_advanced": "2026-11-22",
+      "open": 77,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1387,7 +1387,7 @@
       "tracks": [
         {
           "blocked": 5,
-          "closed": 280,
+          "closed": 281,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1397,7 +1397,7 @@
           "line": 36,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 39
+          "open": 38
         },
         {
           "blocked": 1,
