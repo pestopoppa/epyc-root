@@ -5402,7 +5402,9 @@ def idle_crash_exempt(g, row):
     never judges it, and its window end / the IDLE-HELD warnings are what bound a crashed one."""
     if g["id"].startswith(BUILD_PREFIX) or str(row.get("kind") or "") == "build":
         return "build"
-    if (str(row.get("shape") or "") in ("quiet-host", "gpu-q3") or row.get("timing")
+    # publish_row normalizes shape gpu-q3 -> gpu and keeps the original in declared_shape (r14 false end)
+    if (str(row.get("shape") or "") in ("quiet-host", "gpu-q3")
+            or str(row.get("declared_shape") or "") in ("quiet-host", "gpu-q3") or row.get("timing")
             or row.get("admission_class") in GPU_TIMING_CLASSES):
         return "timing/quiet-host"
     rp = str(row.get("result_path") or "")

@@ -101,7 +101,7 @@ class IdleAfterCrash(unittest.TestCase):
     def test_quiet_host_and_timing_rows_not_stopped(self):
         self.progress()
         os.kill(self.worker, signal.SIGKILL)
-        for kw in ({"shape": "quiet-host"}, {"shape": "gpu-q3"}, {"timing": "bench"}, {"admission_class": "block-timing-quiet"}):
+        for kw in ({"shape": "quiet-host"}, {"shape": "gpu-q3"}, {"shape": "gpu", "declared_shape": "gpu-q3"}, {"timing": "bench"}, {"admission_class": "block-timing-quiet"}):
             self.manifest(**kw)
             self.assertEqual([r for r in self.run_minutes(15) if r], [], kw)
         self.assertFalse(os.path.exists(self.stop))
