@@ -155,7 +155,7 @@ The repaired RESULT.json, from the fixed classifier, says harness 6, model 4, ta
 
 (a)+(b) is 8/11 failures, so the result is **FIX-HARNESS**. TRY-27B is not supported: model failures are 3/11, and the nothink arm solved 3 of the 5 still-open tasks.
 
-**Fixes before r8d:**
+**Fixes before r8d** (all LANDED 2026-11-22, epyc-root 7fcfdb8c7 fix 0 = item 7, a8d3f497c 1, c69545282 2, 5f393fe17 3, c507dff13 4, 70c3a0128 5, c4e154052 6):
 1. Resume: drop or reuse the killed unit's lane before rerunning it.
 2. Under thinking, do not let the reviewer think, or give it a larger cap. Reject a verdict string that echoes the template.
 3. Packets: run a still-needed check at selection time. Drop INTAKE-VALIDATE-86 and NUMA-DECOUPLE-1, which are already done.
@@ -165,3 +165,25 @@ The repaired RESULT.json, from the fixed classifier, says harness 6, model 4, ta
 7. Job template: call `stage1_result.finalize(OUT, summary)`.
 
 With 1 and 2 alone, think would have had 2 more acceptance-passing runs judged.
+
+## r8d (2026-11-22): harness futility, no canary result — SUPERSEDED by r8e
+Row `tf1-cpu-r8d-canary-35b-q0q2-20261122` (code at c4e154052, the r8c fixes) ended 20:47:34Z, 18 s after its grant, rc=0
+reason=complete. All 10 units failed with `lane: 16 live lanes >= cap 16; run dispatch.py sweep` and made no model request.
+This is not a canary data point.
+
+- Cause: `/mnt/raid0/llm/tf` held 16 lanes from r8b/r8c. 14 were `kept` (24 h forensics window) and 2 were `live` orphans
+  of killed stints (no keep_until, no live owner). The cap counted every lane, and `sweep` removed nothing before
+  keep_until, so two rounds filled the cap.
+- Second defect: `check_complete` counted the 10 lane-error records as done, so the row exited `reason=complete`
+  instead of a resumable partial.
+- Fixes, epyc-root a5a7b3479 (`tests/coordination/test_taskflow_r8e_lane_fixes.py`):
+  1. The cap counts only `live` lanes whose owner pid:starttime is alive. Lane metadata now carries `row` and `base_dir`.
+  2. `sweep` drops orphan live lanes at once. `sweep --release-filed` drops kept lanes whose row has a
+     `filing-done/<row>.FILED` marker; pre-r8d lanes are resolved through the row workdir's `lane.path` files. drop_lane only.
+  3. The r8e job runs `sweep_lanes(release_filed=True)` before dispatching.
+  4. If a stint's units are ALL `harness`/`lane`, the job moves them to `out/harness-futility.jsonl` and exits 75. Its
+     `check_complete` never counts a harness/lane record as a finished unit.
+- Ops 2026-11-22: the new sweep released the 14 kept r8b/r8c lanes (both rows FILED, transcripts audited) and removed the
+  2 orphans (06a9, 3572). The lane root is empty. Branch tips are logged in `/mnt/raid0/llm/tf/sweep.log`.
+  r8d was filed SUPERSEDED by `tf1-cpu-r8e-canary-35b-q0q2-20261123`. r8e has the same 5 tasks x 2 arms and the r8d
+  estimate, and is prepared but not published.
