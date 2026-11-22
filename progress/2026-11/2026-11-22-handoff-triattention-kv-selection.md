@@ -15,3 +15,7 @@ LSA-CPU-SPARSE-E2E: filed r4 rc=0 DROP_QUALITY; f16 32k 5-pair geomean 1.09172 (
 ## 05:12Z — Publish continuation of EA pooling screen after window-ended partial result
 
 EA-POOL-SCREEN: prior row ak-ea-pool-screen-gpu-20261121 ended rc=75 at its window boundary and was filed partial; continuation ak-ea-pool-screen-gpu-20261122-r2 reuses its checkpoint and was published, with GPU smoke queued because the GPU is busy. No screen verdict yet.
+
+## 08:35Z — File inconclusive EA pooling screen continuation
+
+EA-POOL-SCREEN: filed ak-ea-pool-screen-gpu-20261122-r2 inconclusive (rc=0, FUTILITY_INPUT, RemoteDisconnected); server log ends with second interrupt during item 7 CE10. Per-arm n=7–8, insufficient for registered verdict; no box tick. RESULT.json SHA-256 2cb48c9a12423f2e16dc33cf877b22d426fa41a61cf4505fa5684b68feed8f3c; results.jsonl SHA-256 c34551e60eff87a0e3f96296fcf9b5a862dbc6bf7a4c968c433fa67ded8f35b1. Filed with no reclaim to preserve checkpoint.
