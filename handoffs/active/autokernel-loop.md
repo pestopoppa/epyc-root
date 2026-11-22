@@ -2799,8 +2799,8 @@ cannot retrigger the expensive gate unchanged.
 - [ ] **AKU-13** Run an end-to-end campaign that stops at a validated package with zero production writes.
   - [x] **Complete the offline operator-closeout integration fixture.**  — research ✅ 2026-08-12 _(detail → completed ledger)_
 - [ ] **AKU-14** Run the real restart/crash/resource-preemption/tamper campaign rehearsal. Fixture and
-  fault-injection tests are prerequisites, not substitutes for a campaign rehearsal with durable
-  empirical receipts.
+  fault-injection tests are not substitutes for a campaign rehearsal with durable
+  empirical receipts. Done when: a real rehearsal's durable empirical receipts are recorded here.
   - [x] **Complete the offline fault-injection acceptance matrix.**  — research ✅ 2026-08-12 _(detail → completed ledger)_
   - [x] **Publish and verify the governed real host-process rehearsal receipt.**  — ✅ 2026-08-12 _(detail → completed ledger)_
 - [x] **Repair the Kernel-R&D dashboard's current-receipt selector and live runs producer.** ✅  _(detail → completed ledger)_
@@ -4111,6 +4111,7 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-09-17; Stage-2/2b/2b2
   - 2026-11-10 PARTIAL (research `1d222ed1b`, branch `ak/wm3-lineage-20261110`, merged into epyc-inference-research origin/main at `9c1a3a421`; box stays OPEN): `lineage_edit_diagnostics.py` + tests, proposal-level cycling detector and edit taxonomy over read-only stores. **Result:** proposal-level cycling rate **3.8% / 29.4% / 12.3%** across the three stores. **Verdict:** descriptive; this is proposal-level, not the line-level code lineage (historical overwritten patch files cannot be backfilled, see VB-AK-LINEAGE), so per-edit-type yield vs frequency is still unreported. Open: the authoring-bound code-line cohort and the vidya write-side tuple (VB-AK-LINEAGE-TAXONOMY-WIRE). [belief: cc]
 - [ ] **AK-promotion controls — same-prompt replay control + BO tuning-ceiling probe at champion promotion.** (a) N=10 same-prompt replays of a promoted candidate to test gain reproducibility (metered, inference-gated); (b) post-hoc BO over one intermediate candidate's exposed constants to report tuning-ceiling headroom (invert for lower-is-better). Report-only; no promotion-path change without the standard confirm gates. Source: intake-1451.
 - [ ] **AK-integrity pack — evaluator hardening + AIChilles divergence probes.** Import SimpleTES's fresh-input recheck-per-timed-run + static blocklist into the C6 verify path (source intake-1454 @ `47d3413d`), and scope an evaluator-derived shape-grammar + divergence-guided regression search vs the sealed anchor for §9.5 (source intake-1447), recording the §V-D tradeoff (robust gating may zero a champion's gain) as pre-registered cost.
+  Done when: the fresh-input recheck + static blocklist are in the C6 verify path, the §9.5 shape-grammar/divergence search is scoped, and the §V-D tradeoff is recorded as pre-registered cost.
 
 **2026-09-17 implementation checkpoint (rows remain open).** The epoch-local observed-momentum diagnostic already exists (`b86fd838`, `5e8179ba`); the archive retains final attempts/round counts but not per-idea contexts or summaries, so a five-idea cap, summarize-every-20 comparison, and ancestor-revert A/B cannot be scored retrospectively. Do not turn those into a live search-policy change by default. Capture prospective per-idea state with an explicit nonpromotable-lane comparison first. The C6 pre-build scanner now refuses explicit benchmark/capture-phase probes (`84aaaf8d`, 46 focused tests on the isolated patch); legitimate counter-derived state continues to require held-out confirmation rather than blanket refusal. Fresh-input checks are opt-in/report-only, not live C6 authority; the sealed-anchor shape grammar and divergence search remain unimplemented. No retrospective same-prompt replay or counterfactual adaptive/cost-policy score is claimed from incomplete archives.
 
@@ -8070,6 +8071,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] **AKU-20** Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap
 - [ ] **AKU-21** CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock
 - [ ] **P4-0a (filed 2026-09-07, derived from the P4-0 merge)** — the shared, un-lane-owned research clone
+  - 2026-11-22 (autokernel triage; NOT closed): premise still alive but smaller: the shared research clone is now 29 commits behind `origin/main` with 1 dirty tracked file (was 187 / 9). Still needs an operator-assigned owner or sweep session; do not reset it. [no-belief: triage observation]
       `/mnt/raid0/llm/epyc-inference-research` is **187 commits behind `origin/main` with 9 dirty tracked
       files** left by other sessions (a merge there failed on `ort`). Surfaced merging P4-0 in; no owner,
       so nobody syncs it. Do NOT `checkout`/`reset` it (destroys other sessions' uncommitted work) — needs
@@ -10214,6 +10216,7 @@ Still subject to review: the staged concurrency proposal, its FIFO admission beh
 The previously reported LOW GitNexus impact on `_drive`, `hold_cpu` and `publish_intervals` is only a static callgraph observation. Closure callbacks and runtime claim consumers above show why it is not a correctness assurance. Re-index the implementation checkout and review these consumers before editing.
 
 - [ ] **AKU-27** GPUQUIET-WRITER-PREFERENCE: gpu-quiet EXCLUSIVE starves under AK lanes' back-to-back shared claims (timed out at 600 s on 2026-10-07 02:42Z, FIFO off). Needs FIFO default-on or writer preference. Owner: workspace-ec, coordinate with workspace-89. Done when an EXCLUSIVE acquire succeeds within its timeout while AK shared lanes are running.
+  - 2026-11-22 (autokernel triage; NOT ticked, not ours): owner is workspace-ec; writer preference exists but is gated on the `EPYC_LOCK_FIFO` default flip (sibling box AKU-25), whose named event is the live AK loop restart. Pipeline/workspace-ec closes it after the live EXCLUSIVE check. [no-belief: ownership routing]
   - 2026-11-19 GPUQUIET-WRITER-PREFERENCE: writer preference already exists (orchestrator `11e6d86`, `gpu_quiet_lock.py`) and passes `TestGpuQuietFifoOrdering::test_writer_preference` (re-run 2026-11-19: passed), but only under `EPYC_LOCK_FIFO=1`, default OFF. The remaining step is the sibling box at the FIFO section ("Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops have restarted on the new code", because old clients barge); the named event is that loop restart. The done condition (EXCLUSIVE succeeds within its timeout under live AK shared lanes) is a live check after the flip.
 
 ##### 2026-10-28 INF-74 / RUN14 joint gate result - no deployment
