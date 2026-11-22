@@ -251,3 +251,31 @@ def test_no_change_on_stale_packet_is_task():
     v = {"verdict": "rejected", "reason": "no-change", "checks": []}
     assert dispatch.failure_class(w, v, {"stale_packet": "acceptance already passes on base"}) == "task"
     assert dispatch.failure_class(w, v, {}) == "model-limitation"
+
+
+# ------------------------------------------------------------------------------- fix 6: shell pipe filters
+def test_shell_allows_sed_sort_awk_cut_in_pipes_deny_still_wins(tmp_path, monkeypatch):
+    """r8c INTAKE-VALIDATE-86: every `grep … | sed … | sort -u` / `| awk` / `| cut` was denied."""
+    import fnmatch
+    from taskflow import schema
+    from taskflow.harness import local_llm as L
+    monkeypatch.setattr(L, "POLICY_DIR", tmp_path / "pol")
+    t = {"repo": "epyc-root", "budget": dict(schema.DEFAULT_BUDGET), "acceptance": "bash scripts/validate/validate_intake.sh"}
+    bash = json.loads(L.write_config(tmp_path, "http://x/v1", "m", t, lane="/mnt/raid0/llm/tf/76db").read_text())["agent"][L.AGENT]["permission"]["bash"]
+
+    def ok(cmd):    # whole-command approximation (any allow, no deny), as in the r8c shell test
+        return (any(fnmatch.fnmatchcase(cmd, p) for p, v in bash.items() if v == "allow" and p != "*")
+                and not any(fnmatch.fnmatchcase(cmd, p) for p, v in bash.items() if v == "deny" and p != "*"))
+
+    def stage_ok(cmd):   # per-stage approximation: every pipe stage allowed, the whole command not denied
+        return all(ok(seg.strip()) for seg in cmd.split(" | ")) and ok(cmd)
+    for c in ["grep -A1 'handoffs:' research/intake_index.yaml | grep '^\\s*-' | sed 's/^\\s*-\\s*//' | sort -u",
+              "grep -A1 handoffs: research/intake_index.yaml | grep -- '- ' | awk '{print $2}' | sort -u",
+              "grep -A1 handoffs: research/intake_index.yaml | grep -- '- ' | cut -d'-' -f2- | sort",
+              "cat research/intake_index.yaml 2>&1 | sed -n '1,20p'"]:
+        assert ok(c) and stage_ok(c), c
+    for c in ["cat f | sed -i 's/a/b/' g", "cat f | sort -o out.txt", "cat f | awk '{system(\"rm x\")}'",
+              "cat f | awk '{print > \"o\"}'", "grep x f | sed 's/a/b/' > out", "sed -i 's/a/b/' f",
+              "cat f | sort --output=o", "grep x f | sed 's/a/b/w out.txt'"]:
+        assert not ok(c), c
+    assert "sed, sort, awk or cut" in L.POLICY
