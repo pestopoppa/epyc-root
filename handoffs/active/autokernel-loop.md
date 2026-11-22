@@ -9574,7 +9574,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   - [x] **AKU-04c — prospective sealed arm producer and shared immutable store**: actual planned ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-04d — generic fixed-member A2 runtime discovery consumer**: exact same-artifact ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-04e — controller-owned A2 phase persistence and cached-bank replay**: exact ✅ 2026-09-09 _(detail → completed ledger)_
-  - [ ] **AKU-04f — native per-unit A2 execution and first-issue reservation**: select one
+  - [x] **AKU-04f — native per-unit A2 execution and first-issue reservation**: select one
     digest-covered contiguous unit range from the unchanged full ExperimentPlan; parent validation
     rederives membership. Bind each launch to its fsynced unit INTENT and an opaque current-owner
     first-issue permit. Replayed unknown is not absence proof; terminal recovery and durable
@@ -9588,6 +9588,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - 2026-11-18 operator decision (decision tool): OP-AKU-A2 approved as packaged (option A: additive versioned records, legacy preserved). [no-belief: operator decision]
     - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `c533c997e` `loop/a2_unit_permit.py` adds closed hash-chained `epyc.autokernel.a2_unit_record.v2` records (INTENT, PERMIT_ISSUED, LAUNCHED, NOT_ACQUIRED, TERMINAL valid/invalid/diagnostic): digest-covered contiguous range of the unchanged plan, opaque one-shot current-owner permit, replayed intent never authorizes relaunch, replayed non-terminal state is UNKNOWN (absence not proven), retry only after owner-written NOT_ACQUIRED with identity preserved. 10 new tests; v1 transitions and `a2_execution_state` unchanged. Remaining (code, no measurement run): embed the v2 records in Journal transition validation/replay (versioned schema + legacy-preservation test) and wire the selected-unit transport around the real launch with AKU-07i's lifecycle owner. [no-belief: tooling landing]
     - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `be2e93705`: Journal `_validate_native_payload` accepts `a2_unit_record.v2` inside `A2_RUNTIME_EXECUTION` (v1 untouched; legacy validator refuses v2 = old-reader refusal), `a2_unit_permit.replay_units` chain-verifies, `CampaignController.append_a2_unit_record`/`replay_a2_unit_records` keep v2 out of the v1 projection, opt-in `loop/a2_unit_transport.launch_selected_unit` (INTENT+permit before launch, LAUNCHED/TERMINAL after, NOT_ACQUIRED retry, UNKNOWN never relaunches). 7 new tests. Remaining: hook the glue into the real AKU-04i launch call site with a real controller-held permit and live owner incarnation (needs a real plan, frame digest, producer identity); no scheduler discovery enabled. [no-belief: code]
+    - 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `a5f17c54e`: `CampaignController.run_worker_stage` binds every Prepared-v4 selected-unit launch to its fsynced `a2_unit_record.v2` INTENT and a controller-held first-issue PERMIT for the live supervisor incarnation; identity derived from the real Prepared objects (full-plan/frame digest excludes attempt id, artifact root, owner); LAUNCHED+TERMINAL on lifecycle terminal, durable NOT_ACQUIRED retry keeps identity, anything else UNKNOWN and refused forever (also after restart); stale-incarnation records refused; legacy Prepared v1-v3 write no records; no discovery kind enabled. New `test_a2_unit_launch.py` (6) + v2-chain assertions in the real-child driver tests; 241 passed across 14 adjacent files. No production producer of Prepared v4 exists until a discovery kind is enabled (separate box). [no-belief: code]
   - [x] **AKU-04i — transport one original native plan unit through the owned worker**:
     ✅ 2026-09-09. Additive Prepared v4 and result/run/artifact v3 bind the unchanged full
     native-v2 plan, exact absolute unit range and attempt lineage. Both parent and child refuse
@@ -9737,7 +9738,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - 2026-11-18 (autokernel, AKU bulk pass): unblocked in part by AKU-07j's lifecycle record (`82bbc6e92`); still needs the installed provider bindings, the service-owned run thread and the restart settlement consumer. Not done in this pass.
   - [x] **AKU-07p — compose bounded runtime, startup parser and service ownership**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07i — native-v2 actual-descendant binding and replay**: published the narrowly ✅ 2026-09-09 _(detail → completed ledger)_
-  - [ ] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
+  - [x] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
     versioned held-receipt lifecycle record after OWNED_TERMINAL and validated provider close,
     before WORKER_RESULT_ACCEPTED/STALE. Restore separate accounting-only indexes and bind lookup
     to the original unsettled driver selection. Handle crash after held append but before final
@@ -9750,6 +9751,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - 2026-11-19 (autokernel) restart-path evidence row `aku-07j-07h-restart-exercise-20261118` published (covers AKU-07j and the restart half of AKU-07h): model: none (pure-Python harness row, labelled synthetic fixtures). Stop-on-answer: 10 hash-seed iterations of the restart/reconcile/held/crash selector at research `768249e16` all pass (outcome PASS). Stop-on-futility: missing input or the first failing iteration (outcome FAIL; more iterations add nothing). Gate-class futility-only. [no-belief: tooling landing]
     - 2026-11-19 (autokernel; NOT ticked) restart-path row `aku-07j-07h-restart-exercise-20261118` filed **fail** (FAIL at iteration 0, hashseed 1000: 5 failed / 27 passed of 32 selected at research `768249e16`, synthetic fixtures, no hardware claim). 4 of the 5 were a harness defect (git-archive src had no .git; the runtime_recovery fixtures call `git rev-parse HEAD`); re-run on a real sparse git checkout detached at 768249e16: 31 passed, 1 failed. **Real finding:** `test_runtime_recovery.py::test_real_serial_interruption_new_holder_same_pending_pair_no_old_sample_mix` fails deterministically (also on cores 0-3): the fixture child asserts at test_runtime_recovery.py:80 `not observed.ran and could_not_run_reason.startswith('HistoricalLaunchBudgetExhausted:')` after `historical.run_or_reopen(..., deadline_monotonic_s=-1.0)`, so `loop-runtime-interruption.json` is never written; test and runtime_admission.py are unchanged on research origin/main. Next: fix the historical-window/run_or_reopen budget handling (or the stale fixture) in research code, then re-run the row with the prepared git-checkout harness `/mnt/raid0/llm/tmp/aku-07j-07h-restart-exercise-20261118-r2` (unpublished on purpose; r2 alone would fail at the same test). [belief: cc]
     - 2026-11-22 (autokernel, AKU lane; NOT ticked) the 2026-11-19 "real finding" is a harness-location artifact, not a runtime_admission defect: the git-checkout harness lived under `/mnt/raid0/llm/tmp/`, so `direct_historical_control` correctly refused the historical win's evidence locator as a scratch-root citation (`HistoricalControlRefused: ... resolves to a scratch root`, MEASUREMENT.md:146-156) and the fixture never saw `HistoricalLaunchBudgetExhausted`. Same research origin/main `b4c94a6c1` in a worktree under `epyc-inference-research/.worktrees/`: `test_runtime_recovery.py`+`test_worker_lifecycle.py` 60 passed at PYTHONHASHSEED=1000 and 1001. Fix for the row: rebuild its harness checkout outside any scratch root before re-running. Box remains open for the driver restart consumer of `held_receipts` (AKU-07h). [belief: cc]
+    - 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `19d574e24`: `worker_lifecycle.restored_stale_held_accounting` (accounting-only index of STALE workers carrying `OWNED_HELD_RECEIPT_RETAINED`), `CampaignController.restored_held_settlement` bound to the original unsettled selection + accounting-binding digest, `driver_execution.recover_issued` settles from it on restart through the existing `_FailedAttempt`/`_finish` path; also fixed a second-restart `JournalCorruption` (supervisor START after crashed-worker restart failed the in-loop state check). `test_standalone_runtime.py` +4: one stale event + one settlement with original held cost, no reacquisition/duplicate child; mismatched selection refused; double restart idempotent; legacy streams unchanged. 30 passed (file), integrated targeted set 1219 passed with the 11 failures identical on the origin/main base. [receipt-ack: aku-07j-07h-restart-exercise-20261118 FAILED — harness checkout lived under the /mnt/raid0/llm/tmp scratch root (explained 2026-11-22 note above); not a code defect] [no-belief: code]
   - [x] **AKU-07k — bind scheduled work through provider admission/accounting**: version the native [no-belief: operator decision] [no-belief: tooling landing] [no-belief: code] _(detail → completed ledger)_
   - [x] **AKU-07l — select and materialize native-v2 work through the public driver**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07m — derive parent witnesses from sealed native lifecycle evidence**: ✅ 2026-09-09 _(detail → completed ledger)_
@@ -9781,7 +9783,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   - [x] **AKU-07u — install closed native startup configuration and prospective instrument**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07v — collect bounded same-attempt raw search windows**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07w — retain same-server owning reports and separate parent-final trial captures**: ✅ 2026-09-09 _(detail → completed ledger)_
-  - [ ] **AKU-07x — connect the existing control-only bootstrap to the measured panel**:
+  - [x] **AKU-07x — connect the existing control-only bootstrap to the measured panel**:
     reuse live_controls' internal cycle-breaking evaluator path solely to compute actual
     control outcomes; never publish its provisional panel or let it admit a candidate.
     Main source review on2026-09-10 established that this does not require a new policy
@@ -9790,6 +9792,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     must not be transferred to GLM. Finish original runner/retained-result joins and prove
     failed controls cannot bank a runtime recipe. The earlier OP-AKU-CONTROLS request is
     superseded by this reuse path, not a remaining startup prerequisite.
+    - 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `1fd98c09a`: `runtime_admission` typed `_ControlBootstrap` accepted only for `akc-control-*` ids and its evaluations store only the control's own verdict (never published, admits nothing); real candidates require a minted `controls.ControlPanelResult` else `ControlPanelRefused` before launch; reopen with missing historical/GPU/runner control result refuses instead of relaunching; failed measured panel -> `retain()` refuses (recipe not banked). `direct_historical_control.reference_band(model)` is the sole Qwen band source; any other model raises `HistoricalBandTransferRefused`. Tests (a)-(d) new, (e) existing keep/reopen still passes. [no-belief: code]
   - [ ] **AKU-07n — build real standalone startup inputs and dry-run the installed chain**:
     add the non-test bounded factory/CLI from sealed production campaign_cli export and explicit
     candidate/resource configuration to typed StartupManifest (scheduler, anchors, profile requests,
@@ -9799,6 +9802,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     campaign resolution; do not invent profiles, grants or witness receipts. Retain exact real
     input/output paths and a runnable command; satisfy AKU-12a's full chain after separately gated
     generated-export repair. Provider absence is reported debt, not permission to fabricate it.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-07n1** [non-inference] export-path startup factory/CLI with typed provider debt and retained startup record
+          · done when: the export-path CLI emits a validated manifest plus startup-record with typed provider debt
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `47c8ad540`: `startup_factory.build_from_export` / `--production-export --resolved-export --startup-config --out-dir [--expect-export-sha256] [--provider-factory]`; seal verified via `production_enrollment.load_export`; `startup.json` round-tripped through `StartupManifest`/`materialize`; `startup-record.json` with exact paths + SHA-256s + runnable `--dry-run` command + typed `provider_debt`/`prerequisite_debt`; `launchable:false` while no production provider factory is registered. `test_startup_factory.py` 34 passed (fixture export labelled). Real piece: AKU-07n-b. [no-belief: code]
+    - [ ] **AKU-07n-b** [non-inference] real export-backed startup manifest and AKU-12a installed dry run (blocked on AKU-12c export repair)
+          · done when: a real sealed export produces startup.json plus startup-record.json and the AKU-12a installed dry run passes on it
+          · gate: none
   - [x] **AKU-07q — construct pinned startup bundles through the enrollment factory**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07z — restart a reused factory from the original scheduler seed**: ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
@@ -9823,7 +9834,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   - [x] **AKU-08d — execute exactly the pinned canonical source bytes**: stable bounded no-follow, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-08e — reopen native-v2 artifacts through the existing registered ROOT projector**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-08f — load the published canonical projector by default without retroactive authority**: ✅ 2026-09-09 _(detail → completed ledger)_
-  - [ ] **AKU-08g — capture producer implementation identity before the original run**:
+  - [x] **AKU-08g — capture producer implementation identity before the original run**:
     seal a closed producer_source_closure in loaded-instrument used_constants before plan freeze,
     using existing loaded-callable/config identities for the selected deferred native sink and
     observation seal/validation path. Include actual builder/finalizer dependencies, not only a
@@ -9834,6 +9845,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     numerical acceptance policy is implied. Lifecycle and semantic owners coordinate one writer.
     Original write-side capture is published in AKU-08h; finish canonical reopening/eligibility
     with genuine prospective evidence, retaining every owning protocol's required witness.
+    - 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `8258d0528`: typed `ProducerProvenance(warranted, reasons)` in `validation_projection_source.native_sources_bound(typed=True)` (`producer_implementation_differs`, `configured_verifier_slot_differs`, `scientific_adapter_source_differs`, `producer_source_closure_absent` = compatibility-only, `..._incomplete`, parent-final unbound/incomplete); `RegisteredClaimGradeVerifier.reopen_pair` rederives the warrant from reopened original instruments and refuses an `authority_scope` that disagrees; `verify()` raises `ProducerProvenanceRefused`; compatibility-only pairs evaluate as typed non-permitted Unavailable. v1 receipts, carrier grammar, grading ladder unchanged. New `test_validation_producer_provenance.py` (8, incl. hash seeds 1/977) + 4 final-v3 tests; 19 + 116 passed. [no-belief: code]
   - [x] **AKU-08h — prospective producer code/configuration capture**: before plan issue,
     seal selected deferred sink methods, observation seal/reopen and v2 validation methods plus
     actual configured verifier slots in loaded-instrument used_constants. Capture checks the
@@ -9887,6 +9899,25 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Runtime observation alone is not aggregate readiness. Finish existing service configuration,
     health/freshness/control acceptance and monitored reliability under AKU-12; do not create a
     second page or treat transport health as proof of scientific progress.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-09g1** [non-inference] projection v4 resource and candidate sections from owning indexes
+          · done when: projection v4 resource/candidate sections are produced from owning indexes with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `8e882bab7`: opt-in `unified_campaign_projection.v4` = v3 + `unified_resource_status.v2` (requested / granted recorded-not-live / held / used cross-checked with scheduler accounting) + `unified_candidate_status.v2` (tip, validated pointer, frozen ref, debt count + sample<=16, gate_due, pending phase, replay lag, replay_verified) from in-memory owning indexes only; 8 KiB/section bounds; typed not_connected/unknown absence; `test_runtime_aggregates.py` +3, 213 passed. [no-belief: code]
+    - [x] **AKU-09g2** [non-inference] ROOT hub validates and renders projection v4
+          · done when: the ROOT hub validates and renders v4 with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: root `f7d4dd402`: `dashboard/campaign_status.py` + `static/loop.html` strict closed v4 validation, v3 unchanged, unknown versions refused, v4->v3 downgrade and backwards counts refused; `tests/test_dashboard_projection_v4.py` 37 passed (303 adjacent with the research root set). Hub not reloaded. [no-belief: code]
+    - [x] **AKU-09g3** [non-inference] standalone service emits projection v4
+          · done when: the standalone service snapshot is v4 and validates
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `7d57d8be3`: `campaign_service._runtime_owner` calls `connect_aggregate_projection`; non-service controllers keep v3. Deploy order: hub (09g2) before service. 69 + 156 passed. [no-belief: code]
+    - [ ] **AKU-09g4** [non-inference] rebuild the candidate replay cache at controller startup
+          · done when: a restarted controller reports replay_verified true from a startup-rebuilt cache, proven by a restart test
+          · gate: none
+    - [ ] **AKU-09g5** [non-inference] service configuration, health/freshness/control acceptance and monitored reliability for the v4 producer (executes under AKU-12, HELD with it)
+          · done when: the AKU-12 monitored run shows hub health/freshness/control acceptance for the v4 producer
+          · gate: none
   - [x] **AKU-09i — label the displayed noise threshold without inventing its estimator**: ✅ 2026-09-10 _(detail → completed ledger)_
   - [x] **AKU-09j — publish separately attributed champion capabilities without rewriting the** ✅ 2026-09-10 _(detail → completed ledger)_
   - [x] **AKU-09k — headline the measured champion trajectory against frozen production**: ✅ 2026-09-14 _(detail → completed ledger)_
@@ -9918,6 +9949,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     write hooks; prove completeness and exact protected/live dependencies before fresh admission.
     CandidateTransactions.retention_view currently verifies candidate manifests, then refuses
     incomplete external coverage. Caller-supplied roots or membership cannot replace owner records.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-10f1** [non-inference] owner-recorded retention coverage contract and owner write hooks
+          · done when: five owner classes register sealed records via hooks and missing/stale/gap classes keep admission refused
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `807cce1ea`: sealed `native_retention_owner_record.v1` for build_dependency/candidate_manifest/evidence/physical_root/worker_result, derivable only from owner durable state and bound to seed digest/config generation/incarnation; `build_native_view` re-derives each class (missing/stale/gap keep the plan incomplete; forged/dict records refused); candidate executables depend on DSOs + RUNPATH dirs; hooks at catalog install/replay, candidate completion, native capture append, WORKER_RESULT_RETAINED. 105 passed + adjacent. Live deletion/provider still unavailable. [no-belief: code]
+    - [ ] **AKU-10f2** [non-inference] read real ELF DT_NEEDED/RUNPATH from builds outside the controller mutex
+          · done when: a build whose ELF needs an undeclared DSO or RUNPATH dir keeps it retained, proven by a test on a real built fixture ELF
+          · gate: none
+    - [ ] **AKU-10f3** [non-inference] persist owner coverage records in an additive journal kind instead of re-deriving on replay
+          · done when: owner coverage records replay from a versioned journal kind with legacy streams unchanged
+          · gate: none
+    - [ ] **AKU-10f4** [non-inference] end-to-end evidence-hook test on a controller with an installed catalog
+          · done when: a controller with an installed catalog shows evidence-owner coverage advancing through the real append path in a test
+          · gate: none
   - [ ] **AKU-10g — connect real maintenance holds and accounting**: implement the broker-owned
     hold/refresh/settlement provider and concrete controller backend, preserving bounded unlocked
     I/O, exact abort/completion receipts and uncertain replay. Default execution remains unavailable;
