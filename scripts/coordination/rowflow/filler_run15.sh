@@ -276,6 +276,8 @@ write_ended() { # rc reason
   [ ! -e "$ENDED" ] || { log "REFUSED: .ended already exists; use a new row id"; return 66; }
   {
     printf 'rc=%s time=%s reason=%s\n' "$1" "$(ts)" "$2"
+    # AUTO-REQUEUE (2026-11-22): a job-declared persistent blocker travels in .ended; the keeper never requeues it
+    if [ -n "${ENDED_BLOCKED_ON:-}" ]; then printf 'blocked_on=%s\nrequeue=false\n' "$ENDED_BLOCKED_ON"; fi
     if [ -n "$ov_started" ] && [ -n "$ov_est" ]; then
       printf 'job_id=%s\nowner=%s\nstep=job-run\nestimated_wall_s=%s\nstarted=%s\nregions=%s\n' \
         "$ID" "$ov_owner" "$ov_est" "$ov_started" "$ov_regions"
@@ -429,8 +431,8 @@ if [ $INNER = 1 ]; then
     flock -w $(( END - $(date -u +%s) - 60 )) 9 || { echo "GPU flock busy"; exit 9; }
     echo "$(ts) mi210_0 flock held"
   fi
-  export FILLER_END_ISO=$(date -u -d "@$END" +%FT%TZ) FILLER_ID=$ID FILLER_DEADLINE=$(( END - 90 )) FILLER_STOPFILE=$STOPFILE FILLER_PORTS=$PORTS FILLER_PIDFILE=$PIDFILE FILLER_LIB=$HERE/filler_lib.sh
-  mkdir -p "$STATE"; _pg=$(ps -o pgid= -p $$ | tr -d ' '); printf '%s %s\n' "$_pg" "$(proc_birth "$_pg")" > "$INNERPG"
+  export FILLER_BLOCKED_FILE=$STATE/$ID.blocked FILLER_END_ISO=$(date -u -d "@$END" +%FT%TZ) FILLER_ID=$ID FILLER_DEADLINE=$(( END - 90 )) FILLER_STOPFILE=$STOPFILE FILLER_PORTS=$PORTS FILLER_PIDFILE=$PIDFILE FILLER_LIB=$HERE/filler_lib.sh
+  mkdir -p "$STATE"; rm -f "$STATE/$ID.blocked"; _pg=$(ps -o pgid= -p $$ | tr -d ' '); printf '%s %s\n' "$_pg" "$(proc_birth "$_pg")" > "$INNERPG"
   install_docker_shim
   cd "$WORKDIR" || exit 3
   # No `timeout` wrapper: it moves the job into its own process group, out of reach of the launcher's captured-group kill.
@@ -627,6 +629,17 @@ run_one() {
   fi
   if is_complete; then mark_complete || return 70; return 20; fi
   if [ "$rc" -eq 0 ]; then rc=75; reason=partial-native-incomplete; fi
+  # RC75-RESUMABLE (operator 2026-11-22): the job ITSELF exited rc 75 (checkpointed and stopped at its window end) ->
+  # partial-native-stopped, a partial-* reason autorequeue()/resume treat as resumable (was reason=exited, never requeued:
+  # ak-c10-greedy-aa-quality-20261122 18:39Z). Keeper STOP/hard-end/disk-floor keep their own reasons.
+  if [ "$rc" -eq 75 ] && [ "$reason" = exited ]; then reason=partial-native-stopped; fi
+  # AUTO-REQUEUE (2026-11-22): the job wrote a persistent environmental blocker to $FILLER_BLOCKED_FILE (e.g. a
+  # clean-runtime gate refusal) -> partial-blocked-*, so the keeper's bounded auto-requeue does not retry it uselessly
+  ENDED_BLOCKED_ON=""
+  if [ "$rc" -eq 75 ] && [ -s "$STATE/$ID.blocked" ]; then
+    ENDED_BLOCKED_ON=$(head -c 300 "$STATE/$ID.blocked" | tr '\n\r' '  ' | sed 's/^blocked_on=//')
+    reason=partial-blocked-$(printf '%s' "$ENDED_BLOCKED_ON" | tr -c 'A-Za-z0-9' '-' | tr -s '-' | cut -c1-40 | sed 's/-$//')
+  fi
   [ "$rc" -eq 75 ] || reason="job-rc-$rc:$reason"
   write_ended "$rc" "$reason"
   STARTED_ONE=1
