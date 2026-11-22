@@ -713,6 +713,29 @@ _PANEL_SOURCE_CATALOG = _index((
               "as_of is excluded from this timestamp so it cannot certify a dormant loop.",
     ),
     PanelSource(
+        panel="bw_census",
+        kind=KIND_EXPORT,
+        payload_func="bw_census_payload",
+        route="/api/bw_census",
+        health_route="/api/bw_census/health",
+        health_func="bw_census_health",
+        producer="census_update.py (AutoKernel loop, epyc-inference-research scripts/kernel_rnd/autokernel/loop/census/) at each AK row end",
+        producer_repo="epyc-inference-research",
+        evidence="/mnt/raid0/llm/tmp/ak-bw-census/mi210_bandwidth_census.json",
+        timestamp_field="census file mtime (contract carries no top-level timestamp); forced stale when any ak-/akc- grants/<rowid>.ended is newer",
+        absence_means=(
+            "the live bandwidth census file is missing or unreadable, so nothing can be said about "
+            "MI210 / Zen 5 bandwidth gaps; the /loop census tables say so instead of drawing empty "
+            "tables. An empty table is a statement only when this panel is present."),
+        warn_s=1 * _DAY,
+        stale_s=3 * _DAY,
+        gates_health=False,
+        absence_is_anomalous=False,
+        notes="Two staleness arms: age (file mtime vs warn/stale) and event (an AK row ended after "
+              "the census was last written => staleness_class forced to stale). Read by "
+              "dashboard/bw_census.py; schema owned by AutoKernel.",
+    ),
+    PanelSource(
         panel="knowledge",
         kind=KIND_EXPORT,
         payload_func="knowledge_payload",

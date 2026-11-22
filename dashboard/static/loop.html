@@ -528,6 +528,15 @@
     <h2>Discovery funnel and lane observations</h2>
     <div id="discovery-progression"><div class="empty">Waiting for the independent discovery projection.</div></div>
   </section>
+  <!-- AK bandwidth census. Contract mi210_bandwidth_census.json is owned by AutoKernel
+       (census_update.py); this page only draws /api/bw_census. -->
+  <section id="bwc-sec">
+    <h2>Bandwidth census <span class="count">effective GB/s vs ceiling, sorted by recoverable ms/round · data <a href="/api/bw_census">/api/bw_census</a> · probe <a href="/api/bw_census/health">/api/bw_census/health</a> · refresh 60 s</span>
+      <span id="bwc-badge" class="badge absent" style="margin-left:auto"><span class="dot"></span><span id="bwc-badgetxt">…</span></span></h2>
+    <div id="bwc-note" class="pad"></div>
+    <h3 class="akf-h3">MI210</h3><div id="bwc-mi210" class="pad">Loading…</div>
+    <h3 class="akf-h3">Zen 5 EPYC 9655</h3><div id="bwc-cpu" class="pad">Loading…</div>
+  </section>
 </main>
 
 <footer>
@@ -3140,6 +3149,38 @@ async function akfLoad(){
  document.getElementById('akflow-glance').innerHTML=akfGlance(d);akfData=d;akfPaint();
 }
 akfLoad();setInterval(akfLoad,30000);
+</script>
+<script>
+"use strict";
+// Bandwidth census panel (/api/bw_census). bwcTable is pure; bwcLoad is the DOM/fetch code.
+const BWC_COLS=[['kernel','kernel/op'],['model','model'],['gbps','GB/s'],['ceiling_gbps','ceiling'],['gap_gbps','gap vs floor'],['frac_of_ceiling','% ceil'],['share_of_round','share'],['recoverable_ms','recov ms'],['status','status'],['seed','seed'],['source_row','source row'],['measured_at','measured_at'],['trend','trend']];
+const BWC_COLOR={open_surface:'#f85149',no_ceiling:'#d29922',ok:'#3fb950',stale:'#8b949e'};
+const bwcSort={mi210:['recoverable_ms',-1],cpu:['recoverable_ms',-1]};
+let bwcData=null;
+function bwcEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function bwcCell(k,r){const v=r[k];if(v==null||v==='')return '-';
+ if(k==='frac_of_ceiling'||k==='share_of_round')return (v*100).toFixed(1)+'%';
+ if(k==='kernel')return bwcEsc(v)+' <span class="count">'+bwcEsc([r.shape,r.n!=null?'n'+r.n:'',r.config].filter(Boolean).join(' '))+'</span>';
+ if(k==='status')return `<span style="color:${BWC_COLOR[v]||'inherit'};font-weight:700">● ${bwcEsc(v)}</span>`;
+ if(k==='seed')return `<a href="/knowledge?q=${encodeURIComponent(v)}">${bwcEsc(v)}</a>`;
+ return bwcEsc(v);}
+function bwcTable(key,rows){const [sk,dir]=bwcSort[key];
+ rows=[...(rows||[])].sort((a,b)=>{const x=a[sk],y=b[sk];if(x==y)return 0;if(x==null)return 1;if(y==null)return -1;return (x<y?-1:1)*dir;});
+ if(!rows.length)return '<p class="count">no records for this device</p>';
+ const h=BWC_COLS.map(([k,l])=>`<th style="cursor:pointer" onclick="bwcResort('${key}','${k}')">${bwcEsc(l)}${k===sk?(dir<0?' ▼':' ▲'):''}</th>`).join('');
+ return `<div style="overflow-x:auto"><table class="akx-table"><thead><tr>${h}</tr></thead><tbody>${rows.map(r=>'<tr>'+BWC_COLS.map(([k])=>`<td>${bwcCell(k,r)}</td>`).join('')+'</tr>').join('')}</tbody></table></div>`;}
+function bwcResort(key,k){const s=bwcSort[key];bwcSort[key]=[k,s[0]===k?-s[1]:-1];bwcRender();}
+function bwcRender(){const d=bwcData||{},f=d._freshness||{};
+ const b=document.getElementById('bwc-badge'),t=document.getElementById('bwc-badgetxt');
+ const cls=d.present===false?'absent':(f.staleness_class||'absent');b.className='badge '+cls;t.textContent=cls+(f.age_s!=null?' · '+Math.round(f.age_s/60)+' min':'');
+ if(d.present===false){document.getElementById('bwc-note').innerHTML=`<p class="warn">Census ABSENT: ${bwcEsc(d.error||'')}. ${bwcEsc(f.absence_means||'')}</p>`;
+  document.getElementById('bwc-mi210').innerHTML='';document.getElementById('bwc-cpu').innerHTML='';return;}
+ document.getElementById('bwc-note').innerHTML=(f.event_stale?`<p class="warn">STALE: ${bwcEsc(f.detail)}</p>`:'')+
+  `<span class="count">GPU floor ${bwcEsc(d.floor_gbps)} · target ${bwcEsc(d.target_gbps)} · ceiling ${bwcEsc(d.ceiling_gbps)} GB/s · CPU ceilings ${bwcEsc(JSON.stringify((d.cpu||{}).ceiling_gbps||{}))} · applied rows ${bwcEsc(d.applied_count)}</span>`;
+ document.getElementById('bwc-mi210').innerHTML=bwcTable('mi210',(d.tables||{}).mi210);
+ document.getElementById('bwc-cpu').innerHTML=bwcTable('cpu',(d.tables||{}).cpu);}
+async function bwcLoad(){try{bwcData=await (await fetch('/api/bw_census')).json();}catch(e){bwcData={present:false,error:'/api/bw_census unreachable: '+e};}bwcRender();}
+bwcLoad();setInterval(bwcLoad,60000);
 </script>
 </body>
 </html>

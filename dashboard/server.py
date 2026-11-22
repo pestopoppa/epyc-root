@@ -33,6 +33,8 @@ GET /api/outcome             the autopilot outcome contract (+ freshness), if ex
 GET /api/gpu_window          the G1 watchdog's executor-status file (+ freshness envelope)
 GET /api/pipeline            pipeline page data: flowchart counts, sessions by step, compute regions
 GET /api/akflow              AK parallel-loop live flowchart (akloop/flow_status.py contract) + freshness
+GET /api/bw_census         AK bandwidth census (MI210 + Zen 5 tables) + freshness (age + event arms)
+GET /api/bw_census/health  is the census still true (no AK row ended after it, mtime within budget)?
 GET /api/akflow/health       is the AK flow view still true (newest loop event within budget)?
 GET /api/health              the FOLD over ``dashboard/panels.py``: every panel's
                              freshness envelope + watchdog, plus one status that
@@ -1555,6 +1557,42 @@ def akflow_health() -> tuple[int, dict]:
 
 
 # --------------------------------------------------------------------------- #
+# AK bandwidth census  (/loop census panel). Contract owned by AutoKernel.
+# --------------------------------------------------------------------------- #
+from dashboard import bw_census  # noqa: E402
+
+
+def bw_census_payload(census_path=None, grants_dir=None, now: float | None = None) -> dict:
+    """Census tables + envelope. Age arm = file mtime; event arm = AK row ended after census."""
+    data = bw_census.build(census_path, grants_dir)
+    src = panels.source("bw_census")
+    if not data.get("present"):
+        obs = panels.absent(src, data.get("error") or "census unreadable")
+    else:
+        rows = data["tables"]
+        obs = panels.Observation(
+            artifact_present=True, timestamp=data["census_mtime"],
+            source="census file mtime", evidence=data["evidence"],
+            populated=bool(rows["mi210"] or rows["cpu"]))
+    env = _panel_envelope("bw_census", obs, now=now)
+    if data.get("event_stale"):
+        ended = data["ak_rows_ended_after_census"]
+        env["staleness_class"] = panels.CLASS_STALE
+        env["event_stale"] = True
+        env["detail"] = (f"{len(ended)} AK row(s) ended after the census was last written "
+                         f"(newest: {ended[0]['row']}); census_update.py did not run at their row end")
+    else:
+        env["event_stale"] = False
+    data["_freshness"] = env
+    return data
+
+
+def bw_census_health() -> tuple[int, dict]:
+    """``/api/bw_census/health`` - is the bandwidth census still true?"""
+    return _subject_health("bw_census", bw_census_payload())
+
+
+# --------------------------------------------------------------------------- #
 # KT-3: read-only claim browser  (/knowledge)
 # --------------------------------------------------------------------------- #
 def knowledge_payload() -> dict:
@@ -1862,6 +1900,7 @@ def panel_envelopes() -> dict:
         "loop_spec": lambda: loop_spec_payload()["_freshness"],
         "pipeline": lambda: pipeline_payload()["_freshness"],
         "akflow": lambda: akflow_payload()["_freshness"],
+        "bw_census": lambda: bw_census_payload()["_freshness"],
         "knowledge": lambda: knowledge_payload()["_freshness"],
         "knowledge_claim": lambda: panels.live(),
     }
@@ -2350,6 +2389,7 @@ API_ROUTES = {
     "/api/loop_spec": loop_spec_payload,
     "/api/pipeline": pipeline_payload,
     "/api/akflow": akflow_payload,
+    "/api/bw_census": bw_census_payload,
     "/api/knowledge": knowledge_payload,
     "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
@@ -2369,6 +2409,7 @@ PANEL_HEALTH_ROUTES = {
     "/api/loop_spec/health": loop_spec_health,
     "/api/pipeline/health": pipeline_health,
     "/api/akflow/health": akflow_health,
+    "/api/bw_census/health": bw_census_health,
     "/api/knowledge/health": knowledge_health,
 }
 

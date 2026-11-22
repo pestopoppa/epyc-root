@@ -171,6 +171,12 @@ for `:8100`. Neither layer touches the orchestrator API (`:8000`).
   `:8000` is down. The window verdict is the orchestrator's, not this route's
 - `GET /loop` — **THE Kernel R&D page.** The rebuilt AutoKernel loop, and since
   2026-08-30 the operator-gated champion evidence merged in from `/kernel`
+- `GET /api/bw_census` (+ `/api/bw_census/health`) — the `/loop` **bandwidth census** panel
+  (`dashboard/bw_census.py`) over AutoKernel's `mi210_bandwidth_census.json` (schema owned by
+  `census_update.py`): MI210 and Zen 5 EPYC 9655 tables sorted by recoverable ms/round. Panel
+  `bw_census` has two staleness arms: file mtime (warn 1 d / stale 3 d) and an event arm — any
+  `ak-*`/`akc-*` `grants/<rowid>.ended` newer than the census forces `staleness_class: stale`.
+  A missing live file renders absent (no fallback to the committed research copy).
 - `GET /api/loop` — the loop's `epyc.autokernel.loop_status.v1` report + its panel
   envelope. `loop` is `null`, never `{}`, when nothing readable was found. It also
   carries **`operator_gates`**, the `epyc.autokernel.operator_gate_bundle.v1`
