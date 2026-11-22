@@ -102,3 +102,32 @@ Before any implementation, a V5I re-profile is needed:
 - Persist the full `-lv 4` server logs, which the C17 rerun did not keep.
 
 Together these would replace the three estimated rows (items 5–7) with measurements.
+
+## Measured phase deltas (row ak-dtree-phase-gpu-20261122-r2, 2026-11-22, INCONCLUSIVE)
+
+These replace the estimated rows 5-7 above. 8 ABBA pairs, A/A in band, build 284a03e2d. RESULT.json SHA-256 `8b3d5f9a01b4cc3694af49ae3fdd8a346285f0b48aaecd094e4fd61b63bdfbf3`.
+
+| Arm | ms/round | mean length |
+|---|---|---|
+| L | 45.59 | 4.706 |
+| L2 (A/A) | 45.33 | 4.705 |
+| T12 | 50.71 | 4.914 |
+| T16 | 52.80 | 5.256 |
+| T12 + replay | 55.06 | 4.920 |
+| T16 + replay | 57.29 | 5.251 |
+
+Per-phase delta against L, in ms (mean, 95% CI):
+
+| Phase | L2 | T12 | T16 |
+|---|---|---|---|
+| decode | -0.06 [-0.34, 0.22] | 6.02 [5.67, 6.36] | 9.70 [9.43, 9.96] |
+| draft | -0.05 [-0.15, 0.05] | -0.08 [-0.21, 0.05] | -0.16 [-0.26, -0.06] |
+| pre | -0.04 [-0.11, 0.03] | 0.00 [-0.19, 0.20] | 0.18 [-0.06, 0.42] |
+| post | 0.01 [-0.19, 0.22] | 0.04 [-0.04, 0.11] | 0.27 [0.10, 0.44] |
+| iter | -0.05 [-0.26, 0.17] | 6.06 [5.70, 6.41] | 9.97 [9.69, 10.25] |
+
+With replay (T12C / T16C): decode 7.52 / 10.14, pre 1.25 / 1.73, post 1.22 / 1.71, iter 8.74 / 11.85. Replay adds host-side pre/post cost and is slower in every case.
+
+Reading: the tree cost is almost entirely in the decode phase (graph compute), not in draft, tree build or accept. The host-side items 6-7 are about zero.
+
+**The tree track is PARKED, and this confirms it.** T12 costs 5.1 ms per round over L for +0.21 mean length (4.914 against 4.706). Break-even needs about 50.9 ms at tau 5.26, so T12 and T16 are both slower per token than linear.
