@@ -319,6 +319,11 @@ def _witness_receipts(parent, receipt, witnesses, evidence, configured, reader):
         _same(body["lifecycle_reference"], evidence["lifecycle_reference"], f"{name} receipt lifecycle")
         if body["scope_defects"] and witness["status"] == "pass":
             raise arm.ProjectionError(f"parent final {name} pass carries scope defects")
+        report = body["report"] if isinstance(body["report"], dict) else {}
+        gpu = (report.get("facts") or {}).get("foreign_gpu_consumers") if name == "contention" else None
+        if witness["status"] == "pass" and gpu is not None and (  # AKU-07o3: only "none" may pass
+                not isinstance(gpu, dict) or gpu.get("status") not in {"none", "not_applicable"}):
+            raise arm.ProjectionError("parent final contention pass with foreign GPU consumers not none")
 
 
 def validate_final(carrier, *, corpus_root):
