@@ -125,3 +125,43 @@ STAY-35B is not supported either, at 1/16.
 
 With 1, 2 and 6 alone, NOFOLD-think would have passed and TU-GR-1/MM-5 would have reached a real test.
 Next: r8c with these fixes on CPU q0-q2. The 27B arm runs only on tasks still classed (c) after r8c.
+
+## r8c (2026-11-22): CPU canary after the r8b fixes, hand-audited — verdict FIX-HARNESS
+Row `tf1-cpu-r8c-canary-35b-q0q2-20261122`, rc=0, C14 CPU build, Qwen3.6-35B-A3B-MTP-Q8_0, np1, code snapshot at ea88415b1 (r8b fixes 1-6 and 8).
+It ran in 3 stints: rc=75 yields to C18 folds at 13:55Z and 15:08Z, then completed at 16:45Z.
+**canary-nothink verified 3/7 (TU-GR-1, LOOP-62, NOFOLD-1), canary-think 0/7, total 3/14 = 0.21.** In r8b it was 1/16.
+`reviewer-done` is the reviewer's "done" on a diff that already passed commit, pathspec, forbidden and the acceptance tests. It is final verified, not pending a reviewer. All 3 diffs were read and are legitimate.
+
+**RESULT.json bug.** The job's RESULT.json said `final: true` but held only the last stint ("canary-think 0/1"). Each resumed stint starts a fresh summary.
+The fix is `scripts/coordination/taskflow/stage1_result.py`, with test `tests/coordination/test_taskflow_stage1_result.py`. It rebuilds one phase per arm from results.jsonl and keeps the per-stint phases in `out/stints.jsonl`.
+This run was repaired with `python3 scripts/coordination/taskflow/stage1_result.py /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122`. The original is kept as `out/RESULT.last-stint.json`.
+
+| task | nothink: audited (classifier) | think: audited (classifier) |
+|---|---|---|
+| INTAKE-VALIDATE-86 | b: stale packet; the validator already exits 0 in the lane. Rejected outside-pathspec for a junk `tmp_extract_refs.py`, which is a correct reject. Piped `sed`/`sort`/`awk` shells were denied (harness) | b: same stale packet; the model found the validator passing; timeout plus ECONNRESET, no-change (harness) |
+| TU-GR-1 | verified | a: **lane** — the stint-1 kill left `/mnt/raid0/llm/tf/06a9`, so the resumed unit was refused "exists: one worker per worktree" (harness) |
+| NUMA-DECOUPLE-1 | b: stale packet; the work landed as a56df365b, and the model rewrote the existing decouple test. outside-pathspec on that file: fix 4 admits only *new* approach files, and this one exists in base (task) | b: the model correctly reported "already complete in a56df365b"; no-change is the right outcome (model) |
+| LOOP-62 | verified | c: wrote identity asserts that fail 15/16; timed out at 13 steps (harness) |
+| NOFOLD-1 | verified | a: acceptance passed. The reviewer used its whole 1024 cap and the parser took the prompt template `done\|not_done\|drift: <=150 chars` as the verdict (model) |
+| WS4-WAKE-IMPERATIVE | c: used all 30 steps on the 7 builders without writing the acceptance test; rc=4 is "file not found", not env (harness) | a: acceptance passed; same reviewer template echo (model) |
+| MM-5 | c: wrong `vision_token_estimate` (1054 vs 1024); the lane `src` was imported correctly (model) | a: **lane** — leftover `/mnt/raid0/llm/tf/3572` from the stint-2 kill (harness) |
+
+**Audited counts (14 runs):** (a) harness 4, (b) packet 4, (c) model 3, verified 3.
+The repaired RESULT.json, from the fixed classifier, says harness 6, model 4, task 1. It agrees with the audit on 4 of 11 failures.
+- New `lane` label: correct, and it is a real resume bug.
+- `no-change` label: both runs were stale packets, not harness or model.
+- `outside-pathspec` still fires: once correctly (a junk file), and once on an approach-named file that already exists, which fix 4 misses.
+- Mapping rc=4 to env is wrong when the worker never wrote the test file.
+
+(a)+(b) is 8/11 failures, so the result is **FIX-HARNESS**. TRY-27B is not supported: model failures are 3/11, and the nothink arm solved 3 of the 5 still-open tasks.
+
+**Fixes before r8d:**
+1. Resume: drop or reuse the killed unit's lane before rerunning it.
+2. Under thinking, do not let the reviewer think, or give it a larger cap. Reject a verdict string that echoes the template.
+3. Packets: run a still-needed check at selection time. Drop INTAKE-VALIDATE-86 and NUMA-DECOUPLE-1, which are already done.
+4. Pathspec: admit approach-named existing files.
+5. Classifier: rc=4 with the acceptance file absent in the diff and the lane is model; no-change on a done packet is packet.
+6. Allow `sed`, `sort`, `awk` and `cut` in shell pipes.
+7. Job template: call `stage1_result.finalize(OUT, summary)`.
+
+With 1 and 2 alone, think would have had 2 more acceptance-passing runs judged.
