@@ -9821,9 +9821,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - [ ] **AKU-07o2** [non-inference] wire the production KFD reader and device-to-gpu_id mapping into startup
           · done when: the startup factory installs the KFD consumer reader with the held device's gpu_id mapping, with a test
           · gate: none
-    - [ ] **AKU-07o3** [non-inference] ROOT final-trial adapter hardening: foreign GPU consumers present forces contention fail
+    - [x] **AKU-07o3** [non-inference] ROOT final-trial adapter hardening: foreign GPU consumers present forces contention fail
           · done when: the ROOT adapter refuses a contention pass when foreign_gpu_consumers is not none, with tests
           · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: root `2066de834`: `autokernel_final_trial._witness_receipts` refuses a contention PASS whose receipt report carries `foreign_gpu_consumers` not none (not_applicable allowed for CPU); fail+present accepted. `tests/vidya/test_autokernel_final_trial_gpu_contention.py` 7 + 34 adjacent passed. [no-belief: code]
   - [x] **AKU-07r — retain original parent T0 and complete model identity issuance**:
     ✅ 2026-09-09 research f6e0cfe1 / main e495de82. Closed configured registry retains
     immutable original inputs, raw captures and full 17-gate reports; post-teardown replay
@@ -9950,9 +9951,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - [ ] **AKU-08m2** [non-inference] producer writes real direct-runtime-admission control references and CalibrationReceipts beside canonical receipt pairs, and the live authority installs RegisteredServingDecision
           · done when: the producer emits control refs and calibration receipts with its pairs and the installed authority evaluates v5 rows through them, with tests
           · gate: none
-    - [ ] **AKU-08m3** [non-inference] fix feed_runtime test-order pollution from the ROOT projector loaded by test_validation_semantic_adapter
+    - [x] **AKU-08m3** [non-inference] fix feed_runtime test-order pollution from the ROOT projector loaded by test_validation_semantic_adapter
           · done when: test_validation_semantic_adapter.py followed by test_feed_runtime.py passes in one process
           · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `72bf7c518`: `isolated_root_imports` fixture restores sys.path and drops modules imported by the runpy-loaded ROOT fixture; `test_validation_semantic_adapter.py` then `test_feed_runtime.py` in one process: 39 passed (was 1 failed). [no-belief: code]
   - [x] **AKU-07y — prevent lifecycle sampling-budget starvation**: . ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
@@ -9997,9 +9999,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: the standalone service snapshot is v4 and validates
           · gate: none
           · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `7d57d8be3`: `campaign_service._runtime_owner` calls `connect_aggregate_projection`; non-service controllers keep v3. Deploy order: hub (09g2) before service. 69 + 156 passed. [no-belief: code]
-    - [ ] **AKU-09g4** [non-inference] rebuild the candidate replay cache at controller startup
+    - [x] **AKU-09g4** [non-inference] rebuild the candidate replay cache at controller startup
           · done when: a restarted controller reports replay_verified true from a startup-rebuilt cache, proven by a restart test
           · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `b12c425f6`: new `candidate_startup_replay.rebuild_cache` runs the trusted replayer once after journal replay in `CampaignController.__enter__`; restart test shows cache rebuilt without `inspect()`, position == 6 entries, v4 `replay_verified` predicate true; intent-without-completion caches pending with no committed state. 3 new + 67 adjacent passed. [no-belief: code]
     - [ ] **AKU-09g5** [non-inference] service configuration, health/freshness/control acceptance and monitored reliability for the v4 producer (executes under AKU-12, HELD with it)
           · done when: the AKU-12 monitored run shows hub health/freshness/control acceptance for the v4 producer
           · gate: none
@@ -10053,9 +10056,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - [ ] **AKU-10f3** [non-inference] persist owner coverage records in an additive journal kind instead of re-deriving on replay
           · done when: owner coverage records replay from a versioned journal kind with legacy streams unchanged
           · gate: none
-    - [ ] **AKU-10f4** [non-inference] end-to-end evidence-hook test on a controller with an installed catalog
+    - [x] **AKU-10f4** [non-inference] end-to-end evidence-hook test on a controller with an installed catalog
           · done when: a controller with an installed catalog shows evidence-owner coverage advancing through the real append path in a test
           · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `969f364bd`: `test_retention_evidence_hook.py` — controller with installed catalog produces two native captures through the real append path; evidence owner record advances (same generation, no gaps), equals its re-derivation, retention view fully covered. 1 new + 49 adjacent passed (1 pre-existing scratch-root ExpiryRefused in test_native_retention_catalog when run from a /mnt/raid0/llm/tmp worktree, unrelated). [no-belief: code]
   - [ ] **AKU-10g — connect real maintenance holds and accounting**: implement the broker-owned
     hold/refresh/settlement provider and concrete controller backend, preserving bounded unlocked
     I/O, exact abort/completion receipts and uncertain replay. Default execution remains unavailable;
