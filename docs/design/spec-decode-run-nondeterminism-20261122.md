@@ -115,3 +115,43 @@ exclusion on that alone: r3 still has one ON-only flip (mtp4np1 r2), and no marg
 - Decision: §3. Lift iff PASS on both np configs.
 - Estimate: ~6 server launches × 8 req × 256 tok. At measured Q38FN CPU rates this is ≈ 1.5-2 h. Book that
   plus 25%.
+
+## 5. Correction (2026-11-22, after row `ak-determ-knob-gpu-20261122`)
+
+The row ran fork `llama.cpp-experimental-determ-20261122` @ b781d02a7. It used 27B DF2 linear np1, the V5I env and a
+fresh server per identity request. It filed **fail** (`DEFECT_ON_NONZERO`, early stop). RESULT.json SHA-256 is
+`3a4139f66bd7da338534d523251ab26ef7dd2496b672d363981eb71e9657fb30`.
+
+**Established.**
+- ON-vs-ON A/A: 4/8 diverge, with top-2 margins 0.010-0.087 nat. So `GGML_DETERMINISTIC=1` at b781d02a7 does
+  not make decode bit-reproducible.
+- The V5 ticket reduction itself is fixed-order. This is from code reading of `mmq-q8-mf.cu` at b781d02a7. The wait
+  value at `:1430` is `max(ts, u0) - ts`, the units of the half-tile owned by lower WGs. The pre-pass zeroes the
+  ticket and dst (`:190-196`, same stream). The adds are relaxed agent-scope load/store (`:1446-1448`), published
+  by `__threadfence` plus a release `fetch_add` (`:1455-1462`). The code shows no race, no uninitialised
+  workspace, and no order that depends on launch timing.
+- §1a was incomplete. `mmq-q8-skinny.cu:242` flushes split-K partials with an unordered `unsafeAtomicAdd`. Its
+  header (`:18-20`) says "Summation order across waves is not deterministic". The knob did not touch this path.
+  It was engaged in both arms: the server logs contain `ggml_cuda_q8_skinny ... reduce=atomic`. It is the
+  remaining identified atomic source. Fix: bef2e4c7d makes `ggml_cuda_q8_skinny_eligible` return false under the
+  knob, so these shapes take the C6 MMVQ/MMQ fallback. It is not built yet.
+- The 2.3x cost (ms/round 44.6 to 102.9, ratio CI 2.28-2.33) comes from the ticket design. Each WG's first
+  half-tile is split with WG g-1, and that half-tile is the last one WG g-1 flushes. So WG g stalls after its
+  first unit until WG g-1 has finished its whole range. The persistent grid becomes a serial chain of G WGs per
+  V5 matmul. The §2 estimate (~3-5 %) assumed a scratch-plus-fixup design, which this is not.
+
+**Not established.**
+- "OFF A/A 0/0" is **n = 0**, not a clean floor. The early stop fired after ON rep1, before OFF rep1 ran.
+  `results.jsonl` holds only OFF0, ON0 and ON1. This row says nothing about whether V5 atomics are, or are not,
+  the run-to-run source with fresh servers.
+- The earlier divergences are therefore still unattributed: `ak-dtree-cuts` L2==L failing 2 of 3, and the
+  prompt-0 pos-224 flip. Those rows used a **fresh server per arm per pair**, but ran all prompts **sequentially on
+  one reused server** with `cache_prompt=false`. This row used a fresh server per request. Server-state reuse is
+  therefore a live, untested alternative to the atomics explanation. So is batch composition across a server's
+  earlier requests. Neither is supported or excluded.
+- Whether bef2e4c7d (V5 ticket plus no skinny plus rocBLAS no-atomics) reaches ON A/A = 0 is untested.
+
+**Next.** Row r2 (`/mnt/raid0/llm/tmp/ak-determ-knob-gpu-r2-20261122`, prepared, not published) keeps the protocol
+but has **no early stop**, so both A/A floors are measured. It needs a store built from bef2e4c7d. If ON reaches
+A/A = 0, the knob still needs a cheaper V5 reduction: per-WG partial scratch plus a fixed-order fixup, not a ticket
+chain. Only then is it worth folding.
