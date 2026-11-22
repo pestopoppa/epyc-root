@@ -1,0 +1,1 @@
+{"token":"RATIFY-V5I-27B-Q8MF-20261122","signed_at":"2026-11-22T15:19:17Z","package":"artifacts/operator/stack-change-v5i-27b-q8mf-20261122","orchestrator_commit":"8fd386d0","apply_condition":"bundle with C18->v11 promotion; inert on v10"}
