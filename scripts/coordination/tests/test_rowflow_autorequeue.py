@@ -114,6 +114,68 @@ class AutoRequeue(unittest.TestCase):
         self.assertEqual(self.tick(), [])
 
 
+class PerRowMax(unittest.TestCase):
+    """autorequeue_max: per-row override of the global cap (default stays 3); out-of-range refused."""
+    def setUp(self):
+        self.t = AutoRequeue("test_partial_end_requeued_same_id"); self.t.setUp()
+
+    def tearDown(self):
+        self.t.tearDown()
+
+    def _hist(self, n):
+        os.makedirs(rf.autorequeue_dir(self.t.f), exist_ok=True)
+        with open(os.path.join(rf.autorequeue_dir(self.t.f), RID + ".history.json"), "w") as fh:
+            json.dump({"id": RID, "requeued_at": [1.0] * n}, fh)
+
+    def _manifest(self, mx):
+        self.t.manifest()
+        p = rf.ready_path(self.t.f, RID)
+        d = json.load(open(p))
+        if mx is not None:
+            d["autorequeue_max"] = mx
+        json.dump(d, open(p, "w"))
+
+    def test_default_stays_3(self):
+        self.assertEqual(rf.AUTOREQUEUE_MAX, 3)
+        self._manifest(None); self._hist(3); self.t.end()
+        self.assertEqual(rf.autorequeue_decision(self.t.f, RID)[0], "limit")
+        self._hist(2)
+        self.assertEqual(rf.autorequeue_decision(self.t.f, RID), ("requeue", "3/3"))
+
+    def test_override_raises_cap_and_logs_n_of_max(self):
+        self._manifest(12); self._hist(5); self.t.end()
+        self.assertEqual(rf.autorequeue_decision(self.t.f, RID), ("requeue", "6/12"))
+        self.assertEqual(self.t.tick(), [RID])
+        self.assertIn("(6/12)", self.t.logs[-1])
+
+    def test_override_limit_and_zero(self):
+        self._manifest(12); self._hist(12); self.t.end()
+        self.assertEqual(rf.autorequeue_decision(self.t.f, RID)[0], "limit")
+        self._manifest(0); self._hist(0)
+        self.assertEqual(rf.autorequeue_decision(self.t.f, RID)[0], "limit")
+
+    def test_stop_still_wins_with_override(self):
+        self.t.manifest(stop=True)
+        p = rf.ready_path(self.t.f, RID); d = json.load(open(p)); d["autorequeue_max"] = 20; json.dump(d, open(p, "w"))
+        self.t.end()
+        self.assertEqual(rf.autorequeue_decision(self.t.f, RID)[0], "stop")
+
+    def test_lint_refuses_out_of_range(self):
+        import publish_row as pr
+        for bad in (-1, 49, "5", 2.5, True):
+            with self.assertRaises(rf.Refused):
+                pr.lint({"autorequeue_max": bad})
+        self.assertEqual(rf.autorequeue_max_check(48), 48)
+        self.assertIn("autorequeue_max", pr.SPEC_KEYS)
+
+    def test_lint_warns_over_12_without_resumable_window(self):
+        import publish_row as pr
+        s = {"autorequeue_max": 20}; pr.lint(s)
+        self.assertTrue(any("autorequeue-max" in w for w in s["publish_warnings"]))
+        s = {"autorequeue_max": 20, "resumable": True, "max_window_s": 7200}; pr.lint(s)
+        self.assertFalse(any("autorequeue-max" in w for w in s.get("publish_warnings", [])))
+
+
 class LauncherBlockedHook(unittest.TestCase):
     @unittest.skip("engine hook (FILLER_BLOCKED_FILE) withheld: filler_run15.sh is FROZEN, needs operator --emergency")
     def test_engine_exports_and_maps_blocked_file(self):

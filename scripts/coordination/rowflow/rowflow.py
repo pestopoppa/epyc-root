@@ -911,6 +911,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     window = max(minwin + 300, int(est * 1.2) + 300)
     # ONE BOOKING DURATION (pipeline audit 2026-11-10 #3): optional max_window_s bounds the grant (a row that must fit a
     # window shorter than its estimate); resumable says a window end is a normal end (filed "partial, resumes").
+    arq = autorequeue_max_check(spec.get("autorequeue_max"))
     res = spec.get("resumable", False)
     need(isinstance(res, bool), f"resumable {res!r} must be true or false (true: the job checkpoints and a window end is "
                                 "a normal end, filed as partial; false: the job must finish inside one window)")
@@ -960,7 +961,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "whole_host_need", "gpu_fence_override", "timing", "gpu_use", "verdict_by", "shape_widen", "autorequeue_max"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -1231,7 +1232,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
               "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by",
-              "resumable", "max_window_s", "whole_host_need", "quiet_guard_regions"):
+              "resumable", "max_window_s", "whole_host_need", "quiet_guard_regions", "autorequeue_max"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -4770,6 +4771,25 @@ def capcut_requeue(flags, log=print, now=None):
 # declares it via FILLER_BLOCKED_FILE (filler_run15.sh -> reason=partial-blocked-*, blocked_on=/requeue=false lines in
 # .ended) or a top-level "requeue": false / "blocked_on" in its RESULT json. (Mirrored in churn/filing.py.)
 AUTOREQUEUE_MAX = 3
+AUTOREQUEUE_CAP = 48   # ceiling for the per-row spec/manifest field `autorequeue_max` (time-sliced rows, operator 2026-11-21)
+
+
+def autorequeue_max_check(v):
+    """Validate the optional per-row `autorequeue_max` (int 0..AUTOREQUEUE_CAP, not bool); returns it or None. Raises Refused."""
+    if v is None:
+        return None
+    if isinstance(v, bool) or not isinstance(v, int) or not 0 <= v <= AUTOREQUEUE_CAP:
+        raise Refused(f"autorequeue_max {v!r} must be an integer 0..{AUTOREQUEUE_CAP} (global default {AUTOREQUEUE_MAX})")
+    return v
+
+
+def autorequeue_max_for(d):
+    """Effective auto-requeue cap for a manifest: its valid autorequeue_max, else the global AUTOREQUEUE_MAX."""
+    try:
+        v = autorequeue_max_check((d or {}).get("autorequeue_max"))
+    except Refused:
+        v = None
+    return AUTOREQUEUE_MAX if v is None else v
 
 
 def autorequeue_dir(flags):
@@ -4845,9 +4865,10 @@ def autorequeue_decision(flags, rid):
     if sf and os.path.exists(sf):
         return "stop", f"STOP file {sf} present"
     n = len(autorequeue_history(flags, rid))
-    if n >= AUTOREQUEUE_MAX:
-        return "limit", f"auto-requeue limit {AUTOREQUEUE_MAX} reached"
-    return "requeue", f"{n + 1}/{AUTOREQUEUE_MAX}"
+    mx = autorequeue_max_for(d)
+    if n >= mx:
+        return "limit", f"auto-requeue limit {mx} reached"
+    return "requeue", f"{n + 1}/{mx}"
 
 
 def autorequeue_pending(flags, rid):
@@ -4879,7 +4900,7 @@ def autorequeue(flags, log=print, now=None, emit=None):
             owner = str((load_json(ready_path(flags, rid)) or {}).get("owner") or "")
             sev = "warning"
             if kind == "limit":
-                summary = (f"AUTOREQUEUE-LIMIT {rid}: ended {head!r} after {AUTOREQUEUE_MAX} auto-requeues; not requeued again, "
+                summary = (f"AUTOREQUEUE-LIMIT {rid}: ended {head!r} after {autorequeue_max_for(load_json(ready_path(flags, rid)))} auto-requeues; not requeued again, "
                            f"filed as partial - owner: fix the cause and republish")
             elif kind == "blocked":
                 summary = (f"AUTOREQUEUE-BLOCKED {rid}: ended {head!r}, job declared a persistent blocker ({why}); "
@@ -4902,7 +4923,7 @@ def autorequeue(flags, log=print, now=None, emit=None):
         hist = autorequeue_history(flags, rid) + [now]
         atomic_json(hp, {"id": rid, "requeued_at": hist})
         log(f"AUTO-REQUEUE {rid}: {head}; resumable partial end, .ended/.grant archived to .autorequeue/{rid}.{ts}.*, "
-            f"same id grantable again ({len(hist)}/{AUTOREQUEUE_MAX})")
+            f"same id grantable again ({len(hist)}/{autorequeue_max_for(load_json(ready_path(flags, rid)))})")
         out.append(rid)
     return out
 
