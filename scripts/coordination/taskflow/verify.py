@@ -74,7 +74,7 @@ def run_tests(lane: Path, cmds: list[str]) -> list[dict]:
     return out
 
 
-_RUNNABLE = re.compile(r"^(?:pytest|python3?|bash|make)\s")
+_RUNNABLE = re.compile(r"^(?:pytest|python3?|bash|make|grep)\s")
 
 
 _CD = re.compile(r"^cd\s+(\S+)\s*&&\s*(.+)$")

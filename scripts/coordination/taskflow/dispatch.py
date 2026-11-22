@@ -285,7 +285,7 @@ def sweep_lanes(now: float | None = None) -> dict:
 BRIEF_REFRESH_STATES = ("none", "orphaned", "stale", "drift")
 SELF_BRIEF_SHARE = 0.25          # §5: phase 1 gets <= 25 % of the turn / wall budget
 SELF_BRIEF_ATTEMPTS = 2          # §5: two failed compiles -> NEEDS-BRIEF
-_RUNNABLE = re.compile(r"^(?:pytest|python3?|bash|make)\s")
+_RUNNABLE = verify._RUNNABLE
 
 
 def needs_phase1(task: dict, family: str) -> bool:
@@ -547,8 +547,12 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                        detail=(getattr(e, "stderr", None) or str(e))[-300:])
             rows.append(row); ledger.open("a").write(json.dumps(row) + "\n")
             continue
+        pkt_acc = task.get("acceptance") if task.get("brief_state") == "fresh" else None
         try:
             p1 = phase1_or_skip(task, lane, tdir, endpoint, family)
+            if pkt_acc and task.get("acceptance") != pkt_acc:   # fix 2 (r8b MM-5): a re-merged origin/main brief
+                row["acceptance_restored"] = {"merged": task.get("acceptance"), "packet": pkt_acc}
+                task["acceptance"] = pkt_acc                    # never replaces the packet's fresh acceptance
             if p1 is not None:
                 row["brief_phase"] = {k: p1.get(k) for k in ("ok", "attempts", "brief_path", "accepted", "missing",
                                                              "skipped")}

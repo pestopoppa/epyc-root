@@ -21,3 +21,31 @@ def test_apply_wall_budget_overrides_only_wall():
     out = schema.apply_wall_budget(t, {"prefill_tok_s": 111, "decode_tok_s": 17.4, "expected_output_tokens": 10000})
     assert out["budget"]["wall_s"] == 1739 and out["budget"]["ctx"] == 65536 and t["budget"]["wall_s"] == 600
     assert schema.apply_wall_budget(t, None) is t
+
+
+# ------------------------------------------------------------------------- fix 2: verifier runs acceptance
+ORCH = "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8-20261120/orch-py.sh -m pytest -q tests/unit/test_vl_describe_resize.py"
+
+
+def test_packet_acceptance_survives_brief_remerge(monkeypatch, tmp_path):
+    """r8b MM-5: the cross-repo brief re-merge from origin/main replaced the packet's orch-py.sh acceptance with the
+    committed brief's bare `python3 -m pytest` (rc=4, no fastapi). The verifier must see the packet's command."""
+    seen = {}
+    task = {"key": "MM-5", "id": "MM-5", "handoff": "h.md", "repo": "epyc-orchestrator", "brief_state": "fresh",
+            "acceptance": ORCH, "budget": dict(schema.DEFAULT_BUDGET), "goal": "g", "text_sha": "x"}
+    monkeypatch.setattr(dispatch, "make_lane", lambda t, d, b: (tmp_path, tmp_path, "base"))
+    monkeypatch.setattr(dispatch, "drop_lane", lambda r, l: True)
+    monkeypatch.setattr(dispatch, "sweep_lanes", lambda: {})
+    monkeypatch.setattr(dispatch, "phase1_or_skip", lambda t, *a, **k: t.update(acceptance="python3 -m pytest -q x.py"))
+    monkeypatch.setattr(dispatch.local_llm, "spawn", lambda *a, **k: {"model": "m", "rc": 0, "timed_out": False, "wall_s": 1,
+                        "usage": {"steps": 1, "input": 0, "cache_read": 0, "output": 0}, "tools": [], "errors": []})
+    monkeypatch.setattr(dispatch, "commit_lane", lambda l, t: False)
+    monkeypatch.setattr(dispatch.verify, "verify", lambda t, *a, **k: seen.update(acc=t["acceptance"]) or
+                        {"verdict": "rejected", "reason": "no-change", "checks": []})
+    row = dispatch.run([task], "http://x/v1", tmp_path / "out", apply=False, use_reviewer=False, gnx_trigger=False)[0]
+    assert seen["acc"] == ORCH and row["acceptance_restored"]["packet"] == ORCH
+
+
+def test_grep_acceptance_is_runnable():
+    a = "grep -q '^## NO-FOLD list' docs/reference/kernel-manifests/README.md && grep -q x .claude/skills/kernel-promotion/SKILL.md"
+    assert verify.acceptance_cmd({"acceptance": a, "repo": "epyc-root"}) == a
