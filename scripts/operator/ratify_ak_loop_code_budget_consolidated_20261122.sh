@@ -3,8 +3,8 @@
 # code-budget guard (OP-AK-CODEBUDGET-43). SUPERSEDES ratify_ak_loop_code_budget_ratchet_20261122.sh (refused at
 # postflight: built before the AKU waves landed).
 #
-# WHAT YOU ARE SIGNING (prepared 2026-11-22 against research origin/main 89af8efff):
-#   kind=new     -> every unbaselined loop module gains a "files" entry at its size AT SIGNING. 49 rows. This
+# WHAT YOU ARE SIGNING (prepared 2026-11-22 against research origin/main 80409e77a + CTC-2 part 2 branch 512df158b merged, sim b24c93df2):
+#   kind=new     -> every unbaselined loop module gains a "files" entry at its size AT SIGNING. 51 rows. This
 #                   includes the modules split verbatim out of the 15 obligation-carrying files
 #                   (AK-TRIM-OR-SPLIT obligations discharged by split, not ratchet; those originals are back under
 #                   their EXISTING ceilings) and the AKU/AKPL/CTC modules landed since 2026-11-19.
@@ -146,6 +146,7 @@ provider_factories.py	37	ratchet
 qualified_serving_producer.py	72	new	
 restart_native_citations.py	23	new	
 retention_owner_journal.py	40	new	
+run_actor_config.py	78	new	
 run_author_plan.py	65	new	
 runtime_admission.py	799	ratchet	
 runtime_aggregates.py	302	ratchet	
@@ -157,7 +158,8 @@ source_build_log.py	58	new
 source_loo.py	205	ratchet	
 stage_admission.py	119	new	
 stage_bodies.py	376	new	
-stage_footprint.py	144	new	
+stage_coordination.py	214	new	
+stage_footprint.py	146	new	
 standalone_dispatch.py	43	new	
 standalone_installed_adapters.py	37	new	
 standalone_runtime.py	742	ratchet	
