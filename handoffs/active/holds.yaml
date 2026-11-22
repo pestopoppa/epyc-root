@@ -192,6 +192,7 @@ holds:
   reason: production kernel promotion rows; released only by operator-ratify/rowprefix-v14-.json
 - id: rocm-kernel-authoring
   scope: loop-launch
+  launch_only: true
   handoffs:
   - rocm-kernel-authoring.md
   sessions:
