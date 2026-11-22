@@ -1,0 +1,14 @@
+{
+  "schema": "repo_monitors.v1",
+  "monitors": [
+    {
+      "repo": "https://github.com/autolabhq/autolab",
+      "intake": "intake-2256",
+      "reason": "OP-AUTOLAB1457 (a) Convert, 2026-11-11: knowledge_only plus repo monitor (M23-AUTOLAB1457-CONVERT)",
+      "owner": "autokernel",
+      "baseline_head": "4127da3dde8449be61a1cf9859473b9fbbd51751",
+      "baseline_date": "2026-11-22",
+      "on_change": "re-read the repo diff for new CPU system-optimisation tasks or a HIP/gfx90a task; file an intake update on intake-2256 if found"
+    }
+  ]
+}

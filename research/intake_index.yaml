@@ -315194,8 +315194,9 @@
   - autokernel-research-loop.md
   - harness-improvement-loop.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: knowledge_only
   disposition_evidence:
+  - 'Operator decision 2026-11-11 OP-AUTOLAB1457 (a) Convert (DP-K): the intake-1457 third-round AutoLab decline converts to knowledge_only plus a repo monitor (M23-AUTOLAB1457-CONVERT, 2026-11-22). Monitor: research/repo_monitors.json entry autolabhq/autolab, baseline HEAD 4127da3dde8449be61a1cf9859473b9fbbd51751, checked by scripts/research/repo_monitor.py (git ls-remote, zero-token).'
   - 'Routed to owner tasks: none (knowledge and monitor records only).'
   - 'Durable records: K15, M23, M26.'
   - 1 ledger row(s) closed as declines with grounded reasons.
