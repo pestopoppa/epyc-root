@@ -3545,3 +3545,9 @@ Prospective `scripts/ci/pin_report_fixture.py` preparation owns exclusive report
 #### Bounded pin-report source acceptance — 2026-10-07
 
 - [x] **SC-EVL42-PIN-REPORT-SOURCE — implement and verify strict categorical report attachment without claiming actual scan health.** ✅ 2026-10-07 — [MAIN published exact source and original29/29 controls](../../artifacts/ni08/evl42-report-success-acceptance-20261007/README.md). Native TRUE/FALSE/NULL and complete stale/missing/unresolved report state remain separate from pin health. SC-EVL42-PIN-REPORT-WIRING actual producer/consumer scan boundary stays open; snapshots are non-atomic and loaded code remains unproven.
+
+#### Research Intake Update — 2026-11-22 (nanoeval, intake-2791)
+
+- [ ] **EV-TYPED-OUTCOME — errored outcome class, suite digest and descriptive stratified regression report (intake-2791).** Errored attempts are excluded from pass rates and counted by class; a SHA-256 suite digest goes on each run record; a stratified exact one-sided test plus a per-task Fisher lost/gained call, reported descriptively only (futility-only until OP-ABSEQ/OP-PQP/OP-ALPHAWIN).
+    · done when: python3 -m pytest -q tests/test_typed_outcome_regression.py passes against hand-computed fixtures
+  - Filed 2026-11-22 by research intake pm-intake-nanocode-20261122 (operator-approved Stage-3 plan "Approve all"); dive report `research/deep-dives/pm-intake-nanocode-20261122/nanocode-org-dive.md`. [no-belief: filing, no result]

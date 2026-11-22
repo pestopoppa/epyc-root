@@ -404175,12 +404175,17 @@
     handoffs:
     - harness-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'pm-intake-nanocode-20261122 Stage-3 plan (operator-approved 2026-11-22 ''Approve all''): P2 CODEMODE-GUARDS and P3 CM-COMPACT filed in harness-program.md; M1 monitor: nanocode as a third-party harness arm against llama-server (plumbing exists via NANOCODE_ANTHROPIC_BASE_URL; OpenAI path needs a Responses adapter; first step a read-only check that v10 llama-server serves /v1/messages; trigger: operator wants a third-party harness comparison on CODEMODE-AB)'
+  - 'K1 knowledge-only: Hands, durable cloud runtime and SDK ports have no consumer on the single-host stack; reopen on a multi-host or serverless orchestrator deployment'
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
   reader_should_conclude: Cite intake-2789 for nanocode's Code Mode design patterns (QuickJS cells, per-tool call cap, middle truncation, compact prompt) and for the Responses-only custom endpoint. It carries no measured results.
-  notes: 'Stage 1+2 (pm-intake-nanocode-20261122). Submitted URL was the org page https://github.com/nanocodexyz (12 repos at 2026-11-22: nanocode, nanocode-ts, nanocode-swift, libnanocode, durable-cloudflare, durable-vercel, egress, nds, nanoeval, harnesslang, libkrun, .github); entries minted for the three with EPYC-relevant technique content (this, intake-2790 harnesslang, intake-2791 nanoeval). Clone pinned at d489c209fd4bf27ab218fc33c07d3b75b0fa0762. Read: README, crates/README, code-mode-engine README, description.rs L1-140, call-limit regions of code_mode/mod.rs, custom_endpoint.rs, chat.rs, hands target.rs/auto.rs, subagents durable.rs head. Not read: replay/durable state machines, docs/board.md, build-critical-path.md, RELEASE-CHAIN.md, output.rs budgets, MCP SEARCH.md. Dive report research/deep-dives/pm-intake-nanocode-20261122/README.md.'
+  notes: 'Stage 1+2 (pm-intake-nanocode-20261122). Submitted URL was the org page https://github.com/nanocodexyz (12 repos at 2026-11-22: nanocode, nanocode-ts, nanocode-swift, libnanocode, durable-cloudflare, durable-vercel, egress, nds, nanoeval, harnesslang, libkrun, .github); entries minted for the three with EPYC-relevant technique content (this, intake-2790 harnesslang, intake-2791 nanoeval). Clone pinned at d489c209fd4bf27ab218fc33c07d3b75b0fa0762. Read: README, crates/README, code-mode-engine README, description.rs L1-140, call-limit regions of code_mode/mod.rs, custom_endpoint.rs, chat.rs, hands target.rs/auto.rs, subagents durable.rs head. Not read: replay/durable state machines, docs/board.md, build-critical-path.md, RELEASE-CHAIN.md, output.rs budgets, MCP SEARCH.md. Dive report research/deep-dives/pm-intake-nanocode-20261122/nanocode-org-dive.md.'
   dive_corrections: '2026-11-22 (pm-intake-nanocode Stage 2): durability is at-most-once with explicit unknown outcome; TOOLS_MARK named in harnesslang docs was NOT found as a symbol in nanocode (nearest ALL_TOOLS / DEFERRED_NESTED_TOOLS_GUIDANCE); local endpoint path is Responses-API only. Stage-2b wave 1 (same session): nanocode.xyz/experiments publishes NO Code Mode vs direct-tool numbers (its Code Mode page says earlier comparisons lacked public run records and are not repeated; the one measured page uses fixed local replies, not models; all self-reported). nanocode-ts @ 97df28cae6e6 runs under Node 22+ outside Workers and applies a free-form endpoint as API base URL; its DECISIONS.md L72 (2026-11-15) self-reports that direct tools beat Code Mode on their Codex pair in TB2.1 (no n, unpublished run) and adds a claude_orchestration switch: hypothesis only, not citable. Declined after wave 1: nanocode at newer pin d16fb837 (already dived), nanocode.xyz/docs/guides/code-mode and the Tempo gateway code-mode guide (restatements of the dived design).'
   claim_anchors:
   - claim_index: 0
@@ -404291,7 +404296,12 @@
     handoffs:
     - harness-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'pm-intake-nanocode-20261122 Stage-3 plan (operator-approved 2026-11-22): P1 CODEMODE-EFFECT filed in harness-program.md; cell-level replay divergence check kept as monitor prose until code-mode cells are resumable'
+  - 'K1 knowledge-only: the harnesslang compiler, prover and cloud targets have no consumer on our stack; the effect-class/unknown-outcome pattern is taken in P1'
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -404406,7 +404416,13 @@
     - benchmark-suites.md
     intake_entries:
     - intake-726
-  handoffs_updated: []
+  handoffs_updated:
+  - eval-tower-program.md
+  - benchmark-suites.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'pm-intake-nanocode-20261122 Stage-3 plan (operator-approved 2026-11-22): P4 EV-TYPED-OUTCOME filed in eval-tower-program.md; P5 TB21-UNSOUND filed in benchmark-suites.md'
+  - 'K1 knowledge-only: nanoeval microVM runners and Cloudflare run tables have no consumer on our stack'
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL

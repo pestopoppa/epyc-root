@@ -1332,6 +1332,10 @@ One pattern lifted from `strukto-ai/mirage` source audit. Apply when designing t
   - Reported results: Codex CLI + GPT-5.2 at 63%; Terminus 2 + Claude Opus 4.5 at 58% on TB Core v0.1.1
   - Delta: When DGX Spark arrives and the environment-synthesis pipeline is live, TB Core v0.1.1 is the natural first external capability calibration target — run our trained agent against the 89 fixed tasks to measure absolute task-completion rate on a human-verified fixed benchmark.
 
+- [ ] **TB21-UNSOUND — Terminal-Bench 2.1 unsound-task list with provenance (intake-2791).** Flag build-cython-ext (TB2.1 #240), qemu-startup and qemu-alpine-ssh (#233), and protein-assembly (PR #247); carry mcmc-sampling-stan, torch-tensor-parallelism and crack-7z-hash as nanoeval-reported; report a sound-subset rate beside the full rate.
+    · done when: the unsound-task list with upstream links exists and the TB summary prints a sound-subset rate
+  - Filed 2026-11-22 by research intake pm-intake-nanocode-20261122 (operator-approved Stage-3 plan "Approve all"); dive report `research/deep-dives/pm-intake-nanocode-20261122/nanocode-org-dive.md`. [no-belief: filing, no result]
+
 #### Research Intake Update — 2026-07-29
 
 ##### New Related Research

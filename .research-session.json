@@ -1,9 +1,9 @@
 {
   "session_id": "pm-intake-nanocode-20261122",
   "started_at": "2026-11-22T10:00:00Z",
-  "last_checkpoint": "2026-11-22T11:00:00Z",
-  "stage": "stage3-awaiting-approval",
-  "phase": "stage3-plan",
+  "last_checkpoint": "2026-11-22T12:00:00Z",
+  "stage": "stage4-complete",
+  "phase": "stage4-applied",
   "lane": "pm-intake-nanocode",
   "owner": "pipeline-mgmt",
   "urls_processed": [
@@ -74,9 +74,17 @@
       "disposition": "context-only",
       "plan_ref": null,
       "reason": "stopped at Stage 3; no handoff edits applied"
+    },
+    {
+      "seq": 5,
+      "stage": 3,
+      "verbatim": "OPERATOR APPROVED the Stage 3 plan in full (2026-11-22, \"Approve all\").",
+      "disposition": "context-only",
+      "plan_ref": null,
+      "reason": "approval of the Stage-3 plan; Stage 4 applied P1-P5 boxes with briefs, M1/K1 recorded on entries"
     }
   ],
-  "plan_file": "/tmp/claude-1000/-workspace/688f713e-da1e-42f4-b692-65ea0fa41996/scratchpad/stage3-plan-nanocode.md",
+  "plan_file": "research/deep-dives/pm-intake-nanocode-20261122/stage3-plan.md",
   "previous_session": {
     "session_id": "ak-intake-20261121",
     "started_at": "2026-11-21T11:40:00+00:00",
@@ -4527,5 +4535,16 @@
       "approved_plan_sha256": "a1097d7fe2b9b54a3c4f92151f818badcdf7db3f9d75b697aabcdb6a38630d05",
       "approval": "operator answered \"Approve r2 (Recommended)\" via AskUserQuestion in the coordinator session, relayed to this lane 2026-11-21"
     }
+  },
+  "stage3_filing": {
+    "plan_sha256": "02a65f08b4941c9e702cccd0d0d301fbd9046092d62e36dea8fc88c86168b3fc",
+    "approved": "2026-11-22 operator 'Approve all' via coordinator",
+    "tasks": [
+      "CODEMODE-EFFECT",
+      "CODEMODE-GUARDS",
+      "CM-COMPACT",
+      "EV-TYPED-OUTCOME",
+      "TB21-UNSOUND"
+    ]
   }
 }
