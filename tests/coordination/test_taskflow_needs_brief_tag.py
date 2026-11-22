@@ -81,7 +81,8 @@ def test_needs_brief_run_tags_the_box(tmp_path, monkeypatch):
     monkeypatch.setattr(dispatch, "MIN_FREE_GIB", 0)
     monkeypatch.setattr(dispatch, "phase1_or_skip", lambda *a, **k: {"ok": False, "attempts": 2, "missing": ["missing key `where`"]})
     task = {"id": "NB-1", "key": "NB-1", "handoff": "handoffs/active/h.md", "repo": "epyc-root", "kind": "code",
-            "tier": "terra", "goal": BOX, "text_sha": "x", "budget": {"turns": 8, "wall_s": 300}}
+            "tier": "terra", "goal": BOX, "text_sha": schema.text_sha(BOX.split("\n")[0]),
+            "budget": {"turns": 8, "wall_s": 300}}   # a real text_sha: r8c fix 3 skips a box gone at origin/main
     row = dispatch.run([task], "http://x/v1", tmp_path / "out", apply=False, use_reviewer=False)[0]
     assert row["verdict"] == "needs-brief" and row["tag"]["tagged"] and row["tag"]["branch"].startswith("taskflow/needs-brief/NB-1")
     assert "· NEEDS-BRIEF:" in _git(root, "show", f"{row['tag']['branch']}:handoffs/active/h.md")

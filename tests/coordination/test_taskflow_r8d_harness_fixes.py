@@ -127,3 +127,53 @@ def test_reviewer_disables_thinking_and_retries_once(monkeypatch):
     assert [b["max_tokens"] for b, _ in sent] == [1024, 2048]
     assert all(b["chat_template_kwargs"]["enable_thinking"] is False for b, _ in sent)
     assert all(h.get("X-taskflow-role") == "reviewer" for _, h in sent)
+
+
+# ------------------------------------------------------------------------------- fix 3: packet freshness
+def _root_with_box(tmp_path, ticked: bool):
+    from taskflow import schema
+    up = tmp_path / "up"
+    up.mkdir()
+    _g(up, "init", "-q", "-b", "main")
+    (up / "h.md").write_text(f"- [{'x' if ticked else ' '}] **NV-1** do the thing\n")
+    (up / "ok.sh").write_text("exit 0\n")
+    _g(up, "add", ".")
+    _g(up, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "init")
+    clone = tmp_path / "clone"
+    subprocess.run(["git", "clone", "-q", str(up), str(clone)], check=True)
+    return clone, schema.text_sha("- [ ] **NV-1** do the thing")
+
+
+def test_stale_packet_box_ticked_or_gone(tmp_path, monkeypatch):
+    from taskflow import schema
+    clone, sha = _root_with_box(tmp_path, ticked=True)
+    monkeypatch.setitem(schema.REPOS, "epyc-root", clone)
+    t = {"handoff": "h.md", "text_sha": sha, "repo": "epyc-root"}
+    assert dispatch.box_state_at_base(t) == "ticked"
+    assert dispatch.stale_packet(t, clone) == "box ticked at origin/main"
+    assert dispatch.box_state_at_base(dict(t, text_sha="0" * 16)) == "gone"
+    assert dispatch.box_state_at_base(dict(t, handoff="missing.md")) is None        # unknown never skips
+
+
+def test_stale_packet_acceptance_already_passes(tmp_path, monkeypatch):
+    """r8c INTAKE-VALIDATE-86 (validator already exits 0) / NUMA-DECOUPLE-1 (landed as a56df365b)."""
+    from taskflow import schema
+    clone, sha = _root_with_box(tmp_path, ticked=False)
+    monkeypatch.setitem(schema.REPOS, "epyc-root", clone)
+    t = {"handoff": "h.md", "text_sha": sha, "repo": "epyc-root"}
+    assert dispatch.box_state_at_base(t) == "open"
+    assert dispatch.stale_packet(dict(t, acceptance="bash ok.sh"), clone).startswith("acceptance already passes")
+    assert dispatch.stale_packet(dict(t, acceptance="bash missing_test.sh"), clone) is None
+    assert dispatch.stale_packet(t, clone) is None
+
+
+def test_run_skips_stale_packet_before_the_model(tmp_path, monkeypatch):
+    monkeypatch.setattr(dispatch, "make_lane", lambda t, d, b: (tmp_path, tmp_path, "base"))
+    dropped = []
+    monkeypatch.setattr(dispatch, "drop_lane", lambda r, l: dropped.append(l) or True)
+    monkeypatch.setattr(dispatch, "sweep_lanes", lambda: {})
+    monkeypatch.setattr(dispatch, "stale_packet", lambda t, l: "acceptance already passes on base: `x`")
+    monkeypatch.setattr(dispatch.local_llm, "spawn", lambda *a, **k: (_ for _ in ()).throw(AssertionError("no model")))
+    task = {"key": "NUMA-DECOUPLE-1", "handoff": "h.md", "repo": "epyc-root", "budget": {"wall_s": 600}}
+    row = dispatch.run([task], "http://x/v1", tmp_path / "out", apply=False, use_reviewer=False, gnx_trigger=False)[0]
+    assert (row["verdict"], row["reason"], row["failure_class"]) == ("skipped", "stale-packet", "task") and dropped

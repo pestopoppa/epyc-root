@@ -666,6 +666,44 @@ def _push_tag(lane: Path) -> str:
     return "ok" if r.returncode == 0 else f"rc={r.returncode}"
 
 
+def box_state_at_base(task: dict) -> str | None:
+    """"open" | "ticked" | "gone" for the task's box in its handoff at epyc-root origin/main, resolved by TEXT
+    (text_sha); None when that cannot be read (no handoff, no text_sha, git failure) -- unknown never skips."""
+    if not task.get("handoff") or not task.get("text_sha"):
+        return None
+    try:
+        r = subprocess.run(["git", "-C", str(schema.REPOS["epyc-root"]), "show", f"origin/main:{task['handoff']}"],
+                           capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if r.returncode != 0:
+        return None
+    state = "gone"
+    for ln in r.stdout.splitlines():
+        m = re.match(r"\s*[-*] \[(.)\] ", ln)
+        if m and schema.text_sha(ln) == task["text_sha"]:
+            if m.group(1) not in "xX":
+                return "open"           # [ ] and partial / blocked checkpoint states are still open
+            state = "ticked"
+    return state
+
+
+def stale_packet(task: dict, lane: Path) -> str | None:
+    """r8c fix 3 (INTAKE-VALIDATE-86, NUMA-DECOUPLE-1): the packet was already done -- the validator exited 0 on the
+    lane and the decouple work had landed as a56df365b -- so the worker either found nothing to do (no-change) or
+    rewrote landed code. Checked at selection time, before any model call: the box is ticked / gone at origin/main,
+    or the packet's runnable acceptance already passes on the unchanged lane. Returns the reason, or None."""
+    st = box_state_at_base(task)
+    if st in ("ticked", "gone"):
+        return f"box {st} at origin/main"
+    acc = verify.acceptance_cmd(task)
+    if acc:
+        pre = verify.run_tests(lane, [acc])[0]
+        if pre["rc"] == 0:
+            return f"acceptance already passes on base: `{acc[:160]}`"
+    return None
+
+
 class _EndRun(Exception):
     """Phase 1 ended the run (needs-brief); the row is already filled."""
 
@@ -698,7 +736,7 @@ def gitnexus_trigger(batch_id: str, enabled: bool = True, script: Path | None = 
 
 
 def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: bool, family: str = "local", gnx_trigger: bool = True,
-        wall_budget: dict | None = None) -> list[dict]:
+        wall_budget: dict | None = None, check_fresh: bool = True) -> list[dict]:
     out.mkdir(parents=True, exist_ok=True)
     run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     gitnexus_trigger(run_id, gnx_trigger)
@@ -720,6 +758,10 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
             continue
         pkt_acc = task.get("acceptance") if task.get("brief_state") == "fresh" else None
         try:
+            why = stale_packet(task, lane) if check_fresh else None
+            if why:                                              # r8c fix 3: done packets never reach the model
+                row.update(verdict="skipped", reason="stale-packet", failure_class="task", detail=why)
+                raise _EndRun()
             p1 = phase1_or_skip(task, lane, tdir, endpoint, family)
             if pkt_acc and task.get("acceptance") != pkt_acc:   # fix 2 (r8b MM-5): a re-merged origin/main brief
                 row["acceptance_restored"] = {"merged": task.get("acceptance"), "packet": pkt_acc}
