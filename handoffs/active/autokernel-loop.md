@@ -9659,9 +9659,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: profile and actor acceptance run through the public driver-issued path with registered producer binding and no private seeding, with tests
           · gate: none
           · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `51e7235fd`: profile start requires typed `SelectedProfileWork` + the registered producer; `record_verified_target_profile` binds admission producer + installed mechanism + exact terminal/held receipt/controller-read stdout (schema-valid caller events refused); settled actor transitions refuse new reservations; `test_target_profile_execution.py` and `test_actor_preparation_state.py` rewritten onto the installed path (no `_driver_issued` seeding), independent durable budget-drift test. 497 passed. [no-belief: code]
-    - [ ] **AKU-06d2** [non-inference] actor-only operation settlement policy (no build child)
+    - [x] **AKU-06d2** [non-inference] actor-only operation settlement policy (no build child)
           · done when: an actor-only operation settles under an explicit policy outcome other than failed when its children are accepted, with tests
           · gate: none
+            · 2026-11-22 (autokernel, AKU lane) DONE: research `b0e3ecdc4`: `actor_settlement_policy.py` — actor_preparation chain with accepted final planner+critic settles `abstained`; operation_accounting routes it through the policy, settled-v2 validator admits it; denials/enrollment/uncertain/diagnostic/source-build refused. Controller settle + replay test and refusal test. 35 passed. [no-belief: code]
     - [ ] **AKU-06d3** [non-inference] contained patch authoring from advice: fresh attempt/reservation, immutable source context, owner-assigned scope, authenticated bounded output to native manifest
           · done when: authored patch bytes come only from authenticated bounded worker output and construct a native manifest bound to the advice, with tests
           · gate: none
@@ -9721,6 +9722,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - [ ] **AKU-06l3** [non-inference] expose operation_settlement in the startup manifest/CLI and default it on after migrating v1-asserting tests
           · done when: operation_settlement is configurable from the startup manifest and on by default with the migrated tests green
           · gate: none
+            · 2026-11-22 (autokernel, AKU lane) PARTIAL: research `fab29994e` makes operation_settlement configurable from the startup manifest/factory (round-trip + runtime install tests). Default-on NOT done: flipping it fails 14 restart/retry tests because v2 lacks restart recovery — account_child cannot resolve an old-incarnation terminal ("terminal lookup is ambiguous across worker generations"), trusted operation verification refuses restored attempts, profile restart settlement stays unresolved, and v1-mocking retry tests need migration. Next: restored-index proof in account_child + restored v2 verification, then flip. [no-belief: code]
     - [ ] **AKU-06l4** [non-inference] candidate feedback consumes the v2 prerequisite settlement and its enrollment reference
           · done when: planner/candidate feedback refreshes from a v2 prerequisite settlement through its enrollment_ref, with tests
           · gate: none
@@ -9776,15 +9778,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: a crash after WORKER_RESULT_ACCEPTED and a crashed profile child each settle exactly once after restart, with typed fences on bad artifacts
           · gate: none
           · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `210af0fa6`: result reference written content-addressed before WORKER_RESULT_RETAINED, `ArtifactStore.read_addressed`, `reopen_retained_result` through `reopen_deferred_result`; settles once with original held cost as `failed` + lifecycle ref (never a measurement); `RetainedResultFenced` codes `retained_prepared_differs`/`_reference_missing`/`_reference_digest_mismatch`/`_result_refused`; `profile_preparation.recover_issued` uses the held index; fixed profile-crash START state (`waiting_prerequisite`). 508 adjacent passed. [no-belief: code]
-    - [ ] **AKU-07h3** [non-inference] restart settlement cites native records the first run already wrote
+    - [x] **AKU-07h3** [non-inference] restart settlement cites native records the first run already wrote
           · done when: a restart settlement after a crash that followed native record writes cites those records, with a test
           · gate: none
+            · 2026-11-22 (autokernel, AKU lane) DONE: research `daa2729c6`: new `restart_native_citations.py` finds durable native records by lineage `driver:<transition>`; restart failed settlement cites them as `native-retained:<id>` after the lifecycle ref (never a measurement, no native_measurement_ids); driver_execution change limited to the validator loosening + ref list. settlement_crash test asserts the citations, process_crash cites none. 123 passed. [no-belief: code]
     - [ ] **AKU-07h4** [non-inference] dispatch every selected work kind (actor, continuous feed) through the standalone runtime
           · done when: the standalone runtime dispatches actor and continuous-feed selections through their owners with restart tests
           · gate: none
-    - [ ] **AKU-07h5** [non-inference] native-v2 scientific adapter configuration in startup manifests
+    - [x] **AKU-07h5** [non-inference] native-v2 scientific adapter configuration in startup manifests
           · done when: a startup manifest carries native-v2 scientific adapter configuration that the runtime installs, with a round-trip test
           · gate: none
+            · 2026-11-22 (autokernel, AKU lane) DONE: research `ac5e59a45`: `scientific_adapter_selection.py` v2 selection (native/server T0 correctness + contention/residency observation witnesses, purpose None) builds registry v3; standalone_inputs delegates v2. Round trip through a native startup manifest and runtime_factory installs the same v3 adapters. 23 passed. [no-belief: code]
   - [x] **AKU-07p — compose bounded runtime, startup parser and service ownership**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07i — native-v2 actual-descendant binding and replay**: published the narrowly ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
@@ -9819,9 +9823,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: the observation adapter derives foreign_gpu_consumers none/present/unknown from in-window KFD censuses and exposes declared purpose as unsealed input, with tests
           · gate: none
           · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `937ec73bb`: lifecycle sample schema v2 adds `kfd_consumers` (per-process VRAM on held devices via injectable reader of `/sys/class/kfd/kfd/proc/<pid>/vram_<gpu_id>`), v1 unchanged and v1 readers refuse v2; `derive_foreign_gpu_consumers` excludes owner PID, ignores out-of-window samples, `none` needs >=2 in-window censuses; contention FAILs on `present`, no PASS unless `none`; bandwidth/LLC stay unknown (no sealed uncore source; UNCAPTURED names the needed PMUs); purpose shown as `declared_plan_input_not_sealed`. 25 + 522 passed. [no-belief: code]
-    - [ ] **AKU-07o2** [non-inference] wire the production KFD reader and device-to-gpu_id mapping into startup
+    - [x] **AKU-07o2** [non-inference] wire the production KFD reader and device-to-gpu_id mapping into startup
           · done when: the startup factory installs the KFD consumer reader with the held device's gpu_id mapping, with a test
           · gate: none
+            · 2026-11-22 (autokernel, AKU lane) DONE: research `19563bb05`: new `kfd_topology.py` maps held devices (ROCm<i>) to KFD gpu_id by drm_render_minor, manifest fallback (`kfd_gpu_ids` request key), refuses an uncovered device, no reader when no KFD and no manifest; map carried additively driver config -> manifest -> runtime inputs -> driver -> PreparedPlannedServingStage -> worker `FilesystemProbe(kfd_consumer_reader=...)`; legacy digests unchanged. test_kfd_topology uses a fake topology tree. 157 adjacent passed. [no-belief: code]
     - [x] **AKU-07o3** [non-inference] ROOT final-trial adapter hardening: foreign GPU consumers present forces contention fail
           · done when: the ROOT adapter refuses a contention pass when foreign_gpu_consumers is not none, with tests
           · gate: none
@@ -10037,9 +10042,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: fresh admission requires complete current owner coverage and a broker-settled-complete recovery writes COMPLETED without re-running, with tests
           · gate: none
           · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `6a55cf91c`: bind/admit require every owner class registered, current on re-derivation and gap-free, with no uncertain scopes; `maintenance_recover_completed` writes COMPLETED under a chained recovery token when the broker already settled complete (no rerun, bytes once); recovery INTENT carries only aborted/no-hold proof; no provider -> refused before INTENT; unprovable resolve stays UNRESOLVED. 364 passed. [no-belief: code]
-    - [ ] **AKU-10d2** [non-inference] wire build_native_view -> bind -> execute into an actual maintenance caller gated on the real provider
+    - [x] **AKU-10d2** [non-inference] wire build_native_view -> bind -> execute into an actual maintenance caller gated on the real provider
           · done when: the controller's maintenance caller runs view->bind->execute end to end with an injected provider and refuses without one, with tests
           · gate: none
+            · 2026-11-22 (autokernel, AKU lane) DONE: research `6cd1192e8`: `maintenance_caller.run_maintenance` refuses before collecting without a real provider; else prepare_retention (view outside mutex, prepare, owner-bind) -> execute via CampaignMaintenanceBackend with the injected provider; nothing-expirable is a no-op. Tests: end to end with the fixture in-memory broker (COMPLETED, one acquire/settle, no mutex violations), refusal for None/base/foreign providers, real native view no-op. 69 passed. [no-belief: code]
   - [x] **AKU-10e — durable maintenance ownership, replay and shutdown fences**: short controller ✅ 2026-09-09 _(detail → completed ledger)_
   - [ ] **AKU-10f — connect complete native retained-artifact/dependency catalog**: populate the
     controller-owned catalog from existing worker/evidence/candidate/DSO/RUNPATH/physical-root
@@ -10055,9 +10061,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: a build whose ELF needs an undeclared DSO or RUNPATH dir keeps it retained, proven by a test on a real built fixture ELF
           · gate: none
           · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `1c5d832e6`: new `elf_retention.py` parses each candidate executable's ELF64 dynamic section (bounded seeks) inside `build_native_view`, outside the controller mutex; RUNPATH/RPATH dirs ($ORIGIN expanded) and NEEDED files resolved in them become retained executable dependencies even when undeclared; present-but-unparsable ELF -> `elf_dependencies_unreadable` uncertain scope. `test_elf_retention.py` compiles a real exe+libfoo.so fixture with cc (under build grant build-autokernel-20261122T183357Z-376b5f, released) and proves the undeclared DSO + RUNPATH dir are retained. 40 passed incl. catalog/consumer/evidence-hook suites. [no-belief: code]
-    - [ ] **AKU-10f3** [non-inference] persist owner coverage records in an additive journal kind instead of re-deriving on replay
+    - [x] **AKU-10f3** [non-inference] persist owner coverage records in an additive journal kind instead of re-deriving on replay
           · done when: owner coverage records replay from a versioned journal kind with legacy streams unchanged
           · gate: none
+            · 2026-11-22 (autokernel, AKU lane) DONE: research `dff5a5ff6`: owner decision Option A — owner-record generation is (seed digest, config generation), incarnation dropped; new `retention_owner_journal.py` + additive journal kind `RETENTION_OWNER_RECORDED` (thin hooks in journal.py/campaign_control); hook appends only on digest change; startup restores journaled classes instead of re-deriving, legacy streams derive in memory and append nothing; restart test proves zero re-derivations. Assertions in test_native_retention_catalog updated on purpose (2-tuple generation). 391 adjacent passed. [no-belief: code]
     - [x] **AKU-10f4** [non-inference] end-to-end evidence-hook test on a controller with an installed catalog
           · done when: a controller with an installed catalog shows evidence-owner coverage advancing through the real append path in a test
           · gate: none
@@ -10092,9 +10099,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   - [ ] **AKU-11b** [non-inference] real-manifest standalone dry run with --provider-factory host_claim_v1
         · done when: the AKU-07n-b real startup manifest dry-runs with host_claim_v1 named and reports the provider as gated-unavailable, never fabricated
         · gate: none
-  - [ ] **AKU-11c** [non-inference] build and GPU host-CPU claim specs in the host-claim provider (build role + jobs cap, gpu-quiet exclusive phase receipts)
+  - [x] **AKU-11c** [non-inference] build and GPU host-CPU claim specs in the host-claim provider (build role + jobs cap, gpu-quiet exclusive phase receipts)
         · done when: host_claim_v1 grants build-role and GPU-phase claims with their receipts in fake-backend tests
         · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `48cc96b61`: ClaimSpec closed role (bench/build + jobs cap) and gpu_quiet_exclusive; stage-class spec lookup (`cpu:build`), `build_jobs()`; production backend passes the role to hold_cpu and holds gpu-quiet EXCLUSIVE for GPU phases, adding its flock to claim ids/receipt. provider_factories pin updated (no activation record exists). Fake-backend tests for build-role grant + jobs + receipt and GPU-phase receipt. 93 passed (1 unrelated lane_watchdog pid failure). [no-belief: code]
 - [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
   compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
   and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.
