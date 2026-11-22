@@ -215,3 +215,39 @@ def test_pathspec_still_rejects_junk_and_negated_paths():
     assert verify.outside_pathspec(["tmp_extract_refs.py"], NUMA, added={"tmp_extract_refs.py"}) == ["tmp_extract_refs.py"]
     for p in ("scripts/benchmark/trim.py", "scripts/benchmark/cache_reset.py"):
         assert verify.outside_pathspec([p], NUMA, modified={p}) == [p]
+
+
+# ------------------------------------------------------------------------------- fix 5: classifier
+def test_classifier_matches_the_r8c_hand_audit():
+    """14 real r8c runs (results.jsonl + TASKS.json + diff.patch paths, tf1-cpu-r8c-canary-35b-q0q2-20261122). Hand
+    audit (findings doc r8c table): harness 4, task (packet) 4, model 3, verified 3. The stale packets carry the
+    `stale_packet` reason fix 3 now finds at selection time; lane errors are harness in dispatch.run itself."""
+    cases = json.loads((Path(__file__).parent / "taskflow_r8c_canary_cases.json").read_text())
+    got = {}
+    for c in cases:
+        if c["verify"]["verdict"] == "error":
+            got[c["unit_id"]] = "harness"
+        else:
+            got[c["unit_id"]] = dispatch.failure_class(c["worker"], c["verify"], c["task"])
+    assert got == {c["unit_id"]: c["audited"] for c in cases}
+    vals = list(got.values())
+    assert (vals.count("harness"), vals.count("task"), vals.count("model-limitation"), vals.count(None)) == (4, 4, 3, 3)
+
+
+def test_rc4_without_the_test_file_is_model():
+    w = {"timed_out": False, "usage": {"steps": 30}, "tool_errors": [], "tools": ["edit"] * 30, "errors": []}
+    v = {"verdict": "rejected", "reason": "tests-fail", "evidence": {"paths": ["scripts/coordination/tmux_adapter.py"]},
+         "checks": [{"check": "tests", "ok": False, "why": "python3 -m pytest -q scripts/coordination/tests/test_wake_imperative.py rc=4"}]}
+    assert dispatch.failure_class(w, v, {"inputs": []}) == "model-limitation"
+    wrote = dict(v, evidence={"paths": ["scripts/coordination/tests/test_wake_imperative.py"]})
+    assert dispatch.failure_class(w, wrote, {"inputs": []}) == "harness"            # wrote it: rc=4 is env
+    env = dict(v, test_tail="ModuleNotFoundError: No module named 'fastapi'", evidence={"paths": ["a.py"]})
+    env["checks"] = [{"check": "tests", "ok": False, "why": "pytest -q tests/unit/test_vl.py rc=4"}]
+    assert dispatch.failure_class(w, env, {"inputs": ["tests/unit/test_vl.py"]}) == "harness"
+
+
+def test_no_change_on_stale_packet_is_task():
+    w = {"timed_out": False, "usage": {"steps": 30}, "tool_errors": [], "tools": ["read"] * 30, "errors": []}
+    v = {"verdict": "rejected", "reason": "no-change", "checks": []}
+    assert dispatch.failure_class(w, v, {"stale_packet": "acceptance already passes on base"}) == "task"
+    assert dispatch.failure_class(w, v, {}) == "model-limitation"

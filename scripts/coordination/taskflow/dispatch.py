@@ -544,6 +544,39 @@ def _env_test_failure(v: dict) -> bool:
     return bool(_ENV_FAIL.search(tail)) or (bool(rcs) and all(r in _ENV_RC for r in rcs))
 
 
+_TEST_FILE = re.compile(r"(?<![\w/.-])((?:[\w.-]+/)*test_[\w-]+\.py)\b")
+_NOT_FOUND = re.compile(r"file or directory not found|no such file or directory", re.I)
+
+
+def missing_test_file(v: dict, task: dict | None) -> bool:
+    """r8c WS4 nothink: rc=4 was pytest's "file or directory not found" for the acceptance test the worker never
+    wrote -- the model's failure, not the environment. True when the failing run names test files none of which the
+    worker's diff touched and none of which is an existing input of the packet (or the tail says not found)."""
+    if v.get("reason") != "tests-fail":
+        return False
+    rcs = [c.get("rc") for c in (v.get("evidence") or {}).get("commands") or [] if c.get("rc")]
+    cmds = [c.get("cmd") or "" for c in (v.get("evidence") or {}).get("commands") or [] if c.get("rc")]
+    if not rcs:
+        for c in v.get("checks") or []:
+            if c.get("check") == "tests" and not c.get("ok"):
+                for part in str(c.get("why") or "").split("; "):
+                    m = re.search(r"^(.*) rc=(\d+)$", part.strip())
+                    if m:
+                        cmds.append(m.group(1))
+                        rcs.append(int(m.group(2)))
+    if not rcs or not all(r in (4, 5) for r in rcs):
+        return False
+    if _NOT_FOUND.search(str(v.get("test_tail") or "")) and not _ENV_FAIL.search(str(v.get("test_tail") or "").replace(
+            "No such file or directory", "")):
+        return True
+    if "paths" not in (v.get("evidence") or {}):
+        return False            # no record of what the worker changed: cannot tell, leave it to the env rules
+    named = {m.group(1) for c in cmds for m in _TEST_FILE.finditer(c)}
+    touched = set((v.get("evidence") or {}).get("paths") or [])
+    existing = set((task or {}).get("inputs") or [])
+    return bool(named) and not (named & touched) and not (named & existing)
+
+
 def packet_contradiction(task: dict | None) -> list[str]:
     """`where` targets the packet itself forbids (r8b INTAKE-VALIDATE-86: target under the forbidden `.claude/**`)."""
     if not task:
@@ -566,6 +599,8 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
         return None
     if packet_contradiction(task):
         return "task"           # r8b INTAKE-VALIDATE-86: the packet forbids its own target
+    if task and task.get("stale_packet"):
+        return "task"           # r8c fix 5: a done packet (INTAKE-VALIDATE-86, NUMA-DECOUPLE-1): no-change / rewrite
     if w.get("errors") and not w["usage"]["steps"]:
         return "harness"
     if w.get("result") and w["result"].get("claimed_done") is False:
@@ -576,10 +611,17 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
         named = verify.approach_new_paths(task)
         if out and all(p in named for p in out):
             return "task"       # r8b TU-GR-1: the approach named the files, the pathspec omitted them
+    if missing_test_file(v, task):
+        return "model-limitation"   # r8c WS4 nothink: rc=4 = the acceptance test was never written, not env
+    real_test_fail = reason == "tests-fail" and not _env_test_failure(v)
     if w.get("timed_out"):
+        if real_test_fail and (v.get("evidence") or {}).get("paths"):
+            return "model-limitation"   # r8c LOOP-62 think: wrote asserts that fail 15/16; the clock did not write them
         return "harness"        # r8b: 600 s GPU-sized budget on CPU prefill (WS4, MM-5, TU-GR-1 / LOOP-62 think)
-    if reason in ("reviewer-unparseable", "reviewer-None") or (v.get("review") or {}).get("empty"):
-        return "harness"        # r8b NOFOLD-1 think: empty reviewer content
+    rv = v.get("review") or {}
+    if (reason in ("reviewer-unparseable", "reviewer-None") or rv.get("empty") or rv.get("template_echo")
+            or (str(reason or "").startswith("reviewer-") and "|" in str(reason))):
+        return "harness"        # r8b NOFOLD-1 think: empty reviewer content; r8c NOFOLD/WS4 think: template echo
     if reason == "tests-fail" and _env_test_failure(v):
         return "harness"        # r8b MM-5: bare python3 -m pytest without fastapi, rc=4
     errs = [str(e) for e in w.get("tool_errors") or []]
