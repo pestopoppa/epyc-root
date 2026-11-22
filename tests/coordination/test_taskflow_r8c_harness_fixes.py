@@ -49,3 +49,27 @@ def test_packet_acceptance_survives_brief_remerge(monkeypatch, tmp_path):
 def test_grep_acceptance_is_runnable():
     a = "grep -q '^## NO-FOLD list' docs/reference/kernel-manifests/README.md && grep -q x .claude/skills/kernel-promotion/SKILL.md"
     assert verify.acceptance_cmd({"acceptance": a, "repo": "epyc-root"}) == a
+
+
+# ------------------------------------------------------------------------- fix 3: acceptance in the shell
+def test_worker_shell_allows_acceptance_shapes_seen_in_r8b(tmp_path, monkeypatch):
+    monkeypatch.setattr(L, "POLICY_DIR", tmp_path / "pol")
+    import fnmatch
+    import json
+    lane = "/mnt/raid0/llm/tf/9785"
+    t = {"repo": "epyc-orchestrator", "budget": dict(schema.DEFAULT_BUDGET),
+         "acceptance": "bash /mnt/raid0/llm/tmp/r/orch-py.sh -m pytest -q tests/unit/test_a.py tests/unit/test_b.py"}
+    bash = json.loads(L.write_config(tmp_path, "http://x/v1", "m", t, lane=lane).read_text())["agent"][L.AGENT]["permission"]["bash"]
+
+    def ok(cmd):   # opencode: last matching pattern wins; approximate with "any allow and no deny matches"
+        return (any(fnmatch.fnmatchcase(cmd, p) for p, v in bash.items() if v == "allow" and p != "*")
+                and not any(fnmatch.fnmatchcase(cmd, p) for p, v in bash.items() if v == "deny" and p != "*"))
+    assert ok(t["acceptance"])
+    assert ok(f"cd {lane} && {t['acceptance']}")
+    assert ok("bash /mnt/raid0/llm/tmp/r/orch-py.sh -m pytest -q tests/unit/test_a.py")          # another selection
+    assert ok(t["acceptance"] + ' 2>&1; echo "EXIT: $?"')
+    assert not ok(t["acceptance"] + " > out.txt")
+    assert not ok("git commit -m x")
+    v = {"repo": "epyc-root", "budget": dict(schema.DEFAULT_BUDGET), "acceptance": "bash scripts/validate/validate_intake.sh"}
+    bash = json.loads(L.write_config(tmp_path / "v", "http://x/v1", "m", v, lane="/mnt/raid0/llm/tf/4dab").read_text())["agent"][L.AGENT]["permission"]["bash"]
+    assert ok('cd /mnt/raid0/llm/tf/4dab && bash scripts/validate/validate_intake.sh 2>&1; echo "EXIT: $?"')

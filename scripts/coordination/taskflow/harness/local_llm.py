@@ -333,8 +333,38 @@ def excerpts_for(task: dict, cwd: Path) -> dict[str, str]:
     return out
 
 
+# r8b canary (FIX-HARNESS 2026-11-22, fix 3): workers could not run their own acceptance. They prefixed it with
+# `cd <lane> && `, appended `; echo "EXIT: $?"`, or re-ran the same test runner with another selection. Each allowed
+# command also gets those shapes; the runner prefix (`bash .../orch-py.sh -m pytest`, `python3 -m pytest`) is allowed
+# with any arguments. The deny list still wins (redirects, sh pipes, git writes).
+_RUNNER_PREFIX = re.compile(r"^((?:bash\s+)?\S*orch-py\.sh\s+-m\s+pytest|python3?\s+-m\s+pytest|pytest)\b")
+EXIT_TAILS = ["; echo *", " ; echo *", " 2>&1; echo *"]
+
+
+def acceptance_patterns(task: dict, lane: Path | str | None = None) -> list[str]:
+    """Shell allow patterns for the task's acceptance / test commands (exact, with args, runner prefix, cd-lane)."""
+    out: list[str] = []
+    for c in allowed_commands(task):
+        bases = [c]
+        m = _RUNNER_PREFIX.match(c)
+        if m:
+            bases.append(m.group(1))
+            if m.group(1).startswith("bash "):
+                bases.append(m.group(1)[5:].lstrip())
+        for b in bases:
+            pats = [b, b + " *"]
+            if lane:
+                pats += [f"cd {lane} && {p}" for p in (b, b + " *")]
+            for p in pats:
+                if p not in out:
+                    out.append(p)
+    if lane and out:
+        out.append(f"cd {lane}")
+    return out
+
+
 def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 65536,
-                 out_tokens: int = 4096) -> Path:
+                 out_tokens: int = 4096, lane: Path | str | None = None) -> Path:
     """Per-run opencode config (XDG_CONFIG_HOME/opencode/opencode.json) + the POLICY instructions file.
     Everything that reaches the prompt is task-independent; only bash allow patterns vary (not prompt text)."""
     cfg_dir = run_dir / "xdg-config" / "opencode"
@@ -345,11 +375,14 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         bash[ro] = "allow"
     for ro in RETRIEVAL:
         bash[ro] = "allow"
-    for c in allowed_commands(task):
+    acc_pats = acceptance_patterns(task, lane)
+    for c in acc_pats:
         bash[c] = "allow"
-        bash[c + " *"] = "allow"
     for base in [k for k, v in bash.items() if v == "allow"]:
         for tail in PIPE_TAILS:
+            bash[base + tail] = "allow"
+    for base in acc_pats:
+        for tail in EXIT_TAILS:
             bash[base + tail] = "allow"
     for d in BASH_DENY:
         bash[d] = "deny"
@@ -462,7 +495,7 @@ def spawn(task: dict, cwd: Path, run_dir: Path, base_url: str, family: str = "lo
     """Run one worker to completion (or the wall cap). Returns {rc, wall_s, usage, result, model, tier, ...}."""
     run_dir.mkdir(parents=True, exist_ok=True)
     model_id = model_for(task.get("tier"), family)
-    write_config(run_dir, base_url, model_id, task, ctx=int(task["budget"].get("ctx", 65536)))  # = server per-slot ctx
+    write_config(run_dir, base_url, model_id, task, ctx=int(task["budget"].get("ctx", 65536)), lane=cwd)  # = server per-slot ctx
     prompt = task_suffix(task, excerpts_for(task, cwd))
     (run_dir / "prompt.md").write_text(prompt, encoding="utf-8")
     env = dict(os.environ,
