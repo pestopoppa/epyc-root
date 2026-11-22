@@ -138,6 +138,8 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     root.mkdir(parents=True, exist_ok=True)
     lane = root / hashlib.sha1(str(base_dir).encode()).hexdigest()[:4]
     if lane.exists():
+        reclaim_resumed_lane(lane, base_dir, task, repo)     # r8c fix 1: raises LaneRefused unless it is ours
+    if lane.exists():
         raise LaneRefused(f"{lane} exists: one worker per worktree")
     live = [m for m in root.glob("*.lane.json")]
     if len(live) >= MAX_LANES:
@@ -150,7 +152,8 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     base = _git(repo, "rev-parse", "origin/main").stdout.strip()
     _git(repo, "worktree", "add", "-q", "-b", branch, str(lane), base)
     _meta(lane).write_text(json.dumps({"lane": str(lane), "repo": str(repo), "branch": branch, "base": base,
-                                       "created": time.time(), "state": "live", "task": task.get("key")}))
+                                       "created": time.time(), "state": "live", "task": task.get("key"),
+                                       "owner": _proc_id(os.getpid())}))
     for r in task.get("refs") or []:
         dst = lane / REFS / (r["repo"] + (f"@{r['rev']}" if r.get("rev") else "")) / r["path"]
         data = (schema.git_show(schema.REPOS[r["repo"]], r["rev"], r["path"]) if r.get("rev")
@@ -164,6 +167,66 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
 
 
 REFS = ".taskflow-refs"
+
+
+def guarded_rm_path() -> str:
+    for c in (os.environ.get("GUARDED_RM"), str(ROOT / "scripts/safety/guarded_rm.sh"), "/workspace/scripts/safety/guarded_rm.sh"):
+        if c and Path(c).is_file():
+            return c
+    raise LaneRefused("guarded_rm.sh not found")
+
+
+def _proc_id(pid: int) -> str | None:
+    """`<pid>:<starttime>` from /proc (a recycled pid has another start time). None when the process is gone."""
+    try:
+        return f"{pid}:{Path(f'/proc/{pid}/stat').read_text().rsplit(')', 1)[1].split()[19]}"
+    except (OSError, IndexError):
+        return None
+
+
+def _owner_alive(meta: dict) -> bool:
+    own = str(meta.get("owner") or "")
+    if not own or ":" not in own:
+        return False                    # pre-r8d lanes carry no owner; their dispatcher is gone
+    return _proc_id(int(own.split(":")[0])) == own
+
+
+def _registered_worktree(repo: Path, lane: Path) -> bool:
+    out = _git(repo, "worktree", "list", "--porcelain", check=False).stdout
+    want = {str(lane), os.path.realpath(lane)}
+    return any(ln[len("worktree "):] in want for ln in out.splitlines() if ln.startswith("worktree "))
+
+
+def reclaim_resumed_lane(lane: Path, base_dir: Path, task: dict, repo: Path) -> str:
+    """r8c fix 1 (TU-GR-1 think, MM-5 think): a unit killed by an rc=75 yield leaves its lane at the deterministic
+    /mnt/raid0/llm/tf/<sha1(base_dir)[:4]>, and the resumed unit was refused "exists: one worker per worktree".
+    The leftover is reclaimed only when it is provably the SAME unit's (base_dir/lane.path names it, or its metadata
+    names the same task key) AND the dispatcher that made it is dead (owner pid:starttime); a registered worktree goes through drop_lane (WIP committed on its branch, plain
+    `git worktree remove`), anything else through guarded_rm.sh (trash, recoverable). Never --force, never prune."""
+    meta = {}
+    try:
+        meta = json.loads(_meta(lane).read_text()) if _meta(lane).exists() else {}
+    except ValueError:
+        meta = {}
+    lp = base_dir / "lane.path"
+    ours = (lp.exists() and lp.read_text().strip() == str(lane)) or (meta.get("task") and meta.get("task") == task.get("key"))
+    if not ours:
+        raise LaneRefused(f"{lane} exists and is not this unit's leftover: one worker per worktree")
+    if _owner_alive(meta):
+        raise LaneRefused(f"{lane} exists and its dispatcher {meta.get('owner')} is alive: one worker per worktree")
+    mrepo = Path(meta["repo"]) if meta.get("repo") else repo
+    for r in dict.fromkeys([mrepo, repo]):
+        if _registered_worktree(r, lane):
+            if not drop_lane(r, lane):
+                raise LaneRefused(f"{lane}: leftover worktree could not be removed (git worktree remove failed)")
+            _sweep_log(f"reclaimed resumed lane {lane} (worktree remove) task {task.get('key')}")
+            return "worktree-remove"
+    cp = subprocess.run(["bash", guarded_rm_path(), str(lane)], capture_output=True, text=True, timeout=600)
+    if cp.returncode != 0:
+        raise LaneRefused(f"{lane}: guarded_rm rc={cp.returncode}: {(cp.stderr or cp.stdout).strip()[-200:]}")
+    _meta(lane).unlink(missing_ok=True)
+    _sweep_log(f"reclaimed resumed lane {lane} (guarded_rm) task {task.get('key')}")
+    return "guarded_rm"
 
 
 def commit_lane(lane: Path, task: dict) -> bool:
