@@ -1,4 +1,6 @@
 #!/bin/bash
+# SUPERSEDED 2026-11-22 -- DO NOT RUN. Refused at postflight (built before the AKU waves landed). Replaced by the
+# consolidated package scripts/operator/ratify_ak_loop_code_budget_consolidated_20261122.sh (run_ratify_codebudget_consolidated_autokernel_20261122.sh).
 # ratify_ak_loop_code_budget_ratchet_20261122.sh -- ONE operator signature: per-file RATCHET baseline for the
 # existing-file overruns of the AutoKernel loop code-budget guard (OP-AK-CODEBUDGET-43, decided 2026-11-19:
 # "ratify a per-file ratchet baseline; each file's current size becomes its cap, any growth fails").
@@ -26,6 +28,7 @@
 # Idempotent: when no table file is over its ceiling it says ALREADY RATIFIED. Touches no process and no checkout.
 # ROLLBACK: git revert the printed commits on fresh origin/main worktrees, pushed through serialized_push.py.
 set -euo pipefail
+echo 'SUPERSEDED: run scripts/operator/run_ratify_codebudget_consolidated_autokernel_20261122.sh instead.' >&2; exit 64
 export PATH="/usr/bin:/bin:${PATH}"
 export PYTHONDONTWRITEBYTECODE=1
 
