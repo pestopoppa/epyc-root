@@ -579,13 +579,37 @@ def _own_block_state(path: Path, lineno: int) -> dict | None:
         return None
 
 
+_BOX_INDEX_ENSURED: set[str] = set()
+
+
+def _ensure_box_index(path: Path) -> None:
+    """Once per process per handoffs dir, run box_index.load() (the regenerating reader) when `.box-index.json` sits
+    in a real `<root>/handoffs/active` checkout. The index is gitignored, so a fresh worktree or a stale copy used
+    to give classify() NO standard record and it then listed gate-open / blocked-external / held boxes as
+    DISPATCHABLE (AK-QL-7 miscount, 2026-11-22). Fixture dirs without `scripts/handoffs/index_state.py` are skipped."""
+    key = str(path.parent)
+    if key in _BOX_INDEX_ENSURED:
+        return
+    _BOX_INDEX_ENSURED.add(key)
+    root = path.parent.parent.parent
+    if path.parent.name != "active" or not (root / "scripts" / "handoffs" / "index_state.py").exists():
+        return
+    try:
+        sys.path.insert(0, str(root / "scripts" / "handoffs"))
+        import box_index as _bi
+        _bi.load(root)
+    except Exception:  # noqa: BLE001 — advisory; falls back to the last copy / heuristics
+        pass
+
+
 def box_index_record(path: Path, lineno: int, body: str = "") -> dict | None:
     """The handoff-standard record (state, gate_open, holds, lint …) for this box, keyed by IDENTITY (text_sha
     of the first line, spec §2.2), never by line. None when the index is absent or does not know the box (a
     stale index then fails toward today's heuristics instead of inventing a state)."""
+    _ensure_box_index(path)
     idx = _load_box_index(path)
     if not idx:
-        return None    # absent: readers do not trigger a 4 s rebuild per box; box_index.load() is the regenerating entry
+        return None
     try:
         sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
         import box_index as _bi
@@ -620,6 +644,17 @@ def classify(path: Path, lineno: int, state: str, body: str, head: str,
                        + (f" (unknown ref: {', '.join(std['gate_unknown'])})" if std.get("gate_unknown") else "")]
         if std.get("holds"):
             return 2, [f"HELD (handoff standard holds): {', '.join(std['holds'])} covers this box"]
+        # THE dispatchable predicate (box_index.skip_reason) decides the rest -- blocked-external / operator-decision
+        # class, lint-fail, inputs-missing, outside-backlog, proposal-pending, needs-brief -- so there is ONE rule set.
+        try:
+            sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+            import box_index as _bi
+            why = _bi.skip_reason(std) if "class" in std else None
+        except Exception:  # noqa: BLE001
+            why = None
+        if why:
+            return 2, [f"NOT DISPATCHABLE per box_index.skip_reason: `{why}` ({path.name}:{lineno}; "
+                       f"class={std.get('class')})"]
     if box_is_guarded(path, lineno):
         return 2, [f"an explicit DO-NOT-DISPATCH guard covers THIS box (§ {head}) — "
                    f"this is a reusable checklist or a standing constraint, not a task"]

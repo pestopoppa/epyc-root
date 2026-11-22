@@ -892,3 +892,60 @@ def test_boxes_counts_numbered_list_items(tmp_path: Path) -> None:
     p.write_text("## T\n1. [x] done\n- [ ] dash\n14. [ ] numbered open\n2) [X] paren\n", encoding="utf-8")
     assert [(st, b) for _, st, b, _ in brc._boxes(p)] == [
         ("x", "done"), (" ".strip(), "dash"), ("", "numbered open"), ("x", "paren")]
+
+
+# --- classify() == box_index.skip_reason (AK-QL-7 miscount, 2026-11-22) ---------------------------------
+# classify() used to read `.box-index.json` only when it happened to exist (gitignored, so absent in a fresh
+# worktree) and ignored `[blocked-external]`, open `· gate:` lines. Now it regenerates via box_index.load().
+
+_PRE = "# Fixture\n**Row**: FX-1\n\n## Backlog\n\n"
+_BOX = ("  - [ ] **{id} — {t}** [{cls}]\n        · done when: the thing is filed.\n{extra}")
+
+
+def _fx_root(tmp_path: Path, body: str, holds: str | None = None) -> Path:
+    """Fixture root with its `.box-index.json` built by box_index.build (what index_state.py --box-index writes);
+    no scripts/ dir, so classify's own regeneration step is skipped and the written index is what it reads."""
+    import sys
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "handoffs"))
+    import box_index as bi
+    root = tmp_path / "root"
+    (root / "handoffs" / "active").mkdir(parents=True)
+    f = root / "handoffs" / "active" / "fx.md"
+    f.write_text(_PRE + body, encoding="utf-8")
+    (root / "handoffs" / "active" / "holds.yaml").write_text(holds or "holds: []\n", encoding="utf-8")
+    doc = bi.build(root, {"fx.md": f}, {"fx.md": "FX-1"}, {"FX-1": True}, {})
+    (root / "handoffs" / "active" / ".box-index.json").write_text(bi.dumps(doc), encoding="utf-8")
+    return root
+
+
+def _verdicts(root: Path) -> dict[str, int]:
+    p = root / "handoffs" / "active" / "fx.md"
+    brc._BOX_INDEX_ENSURED.discard(str(p.parent))
+    brc._BOX_INDEX_CACHE.clear()
+    out = {}
+    for ln, st, body, head in brc._boxes(p):
+        code, _ = brc.classify(p, ln, st, body, head)
+        out[body.split("**")[1].split(" ")[0]] = code
+    return out
+
+
+def test_ak_ql_7_shape_and_blocked_external_gate_and_dispatchable(tmp_path: Path) -> None:
+    body = (_BOX.format(id="Q-S0", t="external build", cls="blocked-external",
+                        extra="        · note: waits on the external event.\n")
+            + _BOX.format(id="Q-S1", t="control", cls="non-inference", extra="        · gate: Q-S0\n")
+            + _BOX.format(id="Q-S2", t="aba", cls="inference", extra="        · gate: Q-S1\n")
+            + _BOX.format(id="Q-OK", t="free box", cls="non-inference", extra=""))
+    v = _verdicts(_fx_root(tmp_path, body))
+    assert v["Q-S0"] != 0, "[blocked-external] must not be dispatchable"
+    assert v["Q-S1"] != 0, "`gate:` naming an open box must block"
+    assert v["Q-S2"] != 0, "gate chain: S2 gated on the still-open S1"
+    assert v["Q-OK"] == 0, "a genuinely dispatchable box must stay dispatchable"
+
+
+def test_launch_only_hold_does_not_block_boxes(tmp_path: Path) -> None:
+    body = _BOX.format(id="Q-OK", t="free box", cls="non-inference", extra="")
+    holds = ("holds:\n  - id: H-LAUNCH\n    scope: loop-launch\n    launch_only: true\n"
+             "    handoffs: [fx.md]\n")
+    assert _verdicts(_fx_root(tmp_path, body, holds))["Q-OK"] == 0
+    full = holds.replace("    launch_only: true\n", "")
+    assert _verdicts(_fx_root(tmp_path / "b", body, full))["Q-OK"] != 0
