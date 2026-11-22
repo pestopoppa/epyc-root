@@ -312,3 +312,17 @@ def test_check_complete_requires_polar_token(tmp_path):
     assert rc({"complete": True, "verdict": "FUTILITY_CANDIDATE_BELOW_BASELINE"}) == 0
     assert rc({"complete": False, "verdict": "PASS", "polar": "PASS"}) == 1
     assert "FUTILITY_CANDIDATE" in rs.JOB_T and '"polar"' in rs.JOB_T
+
+
+def test_row_dir_resolves_from_manifest_when_dir_not_named_after_row(tmp_path, monkeypatch):
+    """r8b: tf1-cpu-r8b-canary-35b-q0q2-20261122 lives in taskflow-stage1-cpu-r8-20261120; --file crashed."""
+    rx = runend
+    monkeypatch.setattr(rx, "TMP", str(tmp_path))
+    real = tmp_path / "taskflow-stage1-cpu-r8-20261120"
+    (real / "out").mkdir(parents=True)
+    row = "tf1-cpu-r8b-canary-35b-q0q2-20261122"
+    for m in ({"workdir": str(real)}, {"scratch_root": str(real)}, {"result_path": str(real / "out" / "results.jsonl")}):
+        assert rx.row_dir(row, loader=lambda f, r, m=m: ("x.json", m)) == str(real)
+    assert rx.row_dir(row, loader=lambda f, r: (None, None)) == str(tmp_path / row)
+    (tmp_path / row).mkdir()
+    assert rx.row_dir(row, loader=lambda f, r: ("x", {"workdir": str(real)})) == str(tmp_path / row)

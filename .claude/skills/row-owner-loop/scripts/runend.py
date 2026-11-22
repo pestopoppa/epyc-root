@@ -86,8 +86,35 @@ def lint_verdict(v: dict) -> list[str]:
     return errs
 
 
-def draft(row: str) -> dict:
+def row_dir(row: str, flags: str = FLAGS, loader=None) -> str:
+    """The row's working dir. `<tmp>/<row>` when it exists; else resolved from the manifest's workdir, scratch_root
+    or result_path (r8b: tf1-cpu-r8b-canary-35b-q0q2-20261122 lives in taskflow-stage1-cpu-r8-20261120, and the
+    old `<tmp>/<row>` assumption crashed --file). Falls back to `<tmp>/<row>` when nothing resolves."""
     d = os.path.join(TMP, row)
+    if os.path.isdir(d):
+        return d
+    m = {}
+    try:
+        if loader is None:
+            sys.path.insert(0, os.path.realpath(CHURN))
+            import filing
+            loader = filing.load_manifest
+        m = (loader(flags, row) or (None, {}))[1] or {}
+    except Exception:   # noqa: BLE001 - best effort; the caller reports the missing file
+        m = {}
+    cands = [m.get("workdir"), m.get("scratch_root")]
+    rp = str(m.get("result_path") or "")
+    if rp:
+        rd = os.path.dirname(rp)
+        cands.append(os.path.dirname(rd) if os.path.basename(rd) == "out" else rd)
+    for c in cands:
+        if c and os.path.isabs(str(c)) and os.path.isdir(str(c)):
+            return str(c)
+    return d
+
+
+def draft(row: str) -> dict:
+    d = row_dir(row)
     res = json.load(open(os.path.join(d, "out", "RESULT.json")))
     ep = os.path.join(FLAGS, "grants", f"{row}.ended")
     ended = parse_ended(open(ep).read()) if os.path.exists(ep) else {}
@@ -120,7 +147,7 @@ def successor(row: str, flags: str = FLAGS) -> str | None:
 
 def gate_eval_draft(row: str, kernel_rnd: str = RESEARCH_KERNEL_RND) -> dict:
     """verdict.json draft from autokernel.loop.gate_eval (pure, deterministic). Raises on evaluator failure."""
-    res = os.path.join(TMP, row, "out", "RESULT.json")
+    res = os.path.join(row_dir(row), "out", "RESULT.json")
     ep = os.path.join(FLAGS, "grants", f"{row}.ended")
     cmd = [sys.executable, "-m", "autokernel.loop.gate_eval", res, "--row", row]
     if os.path.exists(ep):
@@ -139,11 +166,11 @@ def gate_eval_draft(row: str, kernel_rnd: str = RESEARCH_KERNEL_RND) -> dict:
 def tick_line(row: str, v: dict, sha: str = "<commit>") -> str:
     tag = "[belief: cc]"
     return (f"- [x] (YYYY-MM-DD, <owner>) row `{row}` **{v.get('native_verdict') or v['verdict'].upper()}**"
-            f" (filed {v['verdict']}): {v['rationale']} Evidence: `{TMP}/{row}/out/RESULT.json`, {sha}. {tag}")
+            f" (filed {v['verdict']}): {v['rationale']} Evidence: `{row_dir(row)}/out/RESULT.json`, {sha}. {tag}")
 
 
 def file_row(row: str, owner: str, run=subprocess.run) -> int:
-    vpath = os.path.join(TMP, row, "verdict.json")
+    vpath = os.path.join(row_dir(row), "verdict.json")
     v = json.load(open(vpath))
     terminal = v.get("verdict") in ("SUPERSEDED", "WITHDRAWN")
     errs = [] if terminal else lint_verdict(v)
@@ -174,7 +201,7 @@ def file_row(row: str, owner: str, run=subprocess.run) -> int:
 def auto_file(row: str, owner: str, force: bool = False, draft_fn=None, file_fn=None) -> int:
     """`--gate-eval --file`: zero-LLM filing of a policy-decided verdict; anything else -> draft + exit 4."""
     v = (draft_fn or gate_eval_draft)(row)
-    vpath = os.path.join(TMP, row, "verdict.json")
+    vpath = os.path.join(row_dir(row), "verdict.json")
     if os.path.exists(vpath) and not force:
         print(f"{vpath} exists (owner draft); review it and run --file, or pass --force-draft")
         return 1
@@ -227,7 +254,7 @@ def main(argv=None) -> int:
         return auto_file(a.row, a.owner, a.force_draft)
     if a.file:
         return file_row(a.row, a.owner)
-    vpath = os.path.join(TMP, a.row, "verdict.json")
+    vpath = os.path.join(row_dir(a.row), "verdict.json")
     if os.path.exists(vpath) and not a.force_draft:
         print(f"{vpath} exists; review it or pass --force-draft")
         return 1
