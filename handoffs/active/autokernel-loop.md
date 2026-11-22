@@ -7548,6 +7548,8 @@ ROOT accepted the prospective GPU generator reader rebind at `ROOT_GPU_GENERATIO
   - source a3bdc4860 merged; native/materialization still unapproved
   - [x] 2026-10-28 satisfied part (CPU source+runtime): superseded by r10 `bdb52d951`; SOURCE_AND_RUNTIME_PASS, full/native waits 0, receipt fd9043db (26 refs) and CPU activation/monitor 36bdfe14 (9 refs) re-hashed by ws58 from `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/`. DRY 52fa5afb is receipt-supported but only 17 of 23 refs reproducible (6 original /tmp/ak-27b assets missing). [belief: cc]
   - [ ] **AKU-28** LIVE GPU leg: GPU clearance review and fresh generation telemetry from a real serving-owner run; needs serving-owner grant (no park of :8083 by this session). Parent box stays open.
+        · class: non-inference
+        · done when: the GPU clearance review and fresh generation telemetry from a real serving-owner run are recorded on this box
 - **[declined: ws58 2026-11-03 content-review: custody residue]** Publish the ROOT-reviewed exact original35 corpus and new native verification record at the owned paused boundary, retaining original failures and grade qualifications.
 
 Earlier checkpoint entries retain their original dated scope.
@@ -7701,6 +7703,8 @@ was changed or promoted.
 - [ ] **AKU-16** **Complete runtime fast-path admission and continuation**: finish interrupted-owner recovery; use original applicable calibration/evidence and
   retain/select/resume an accepted runtime recipe without a source promotion. Runtime
   observations alone do not complete AK-AUTO-07 or the runtime champion requirement.
+      · class: non-inference
+      · done when: interrupted-owner recovery is finished and an accepted runtime recipe is retained, selected and resumed without a source promotion, using the original applicable calibration/evidence
 
 
 
@@ -8323,6 +8327,8 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       · done when: the row is filed CALIBRATED, CALIBRATED_CONTENDED or DROP(<clauses>) at 24 valid pairs, or on a FUTILITY_* stop
 - [x] **GPU-LAUNCH-VAR-COVARIATE — Investigate the source of between-launch variance on the champion** (page-cache/NUMA placement, THP ✅ 2026-11-19 [belief: cc] [no-belief: cross-reference] [no-belief: triage] [no-belief: row preparation] _(detail → completed ledger)_
 - [ ] **AKU-18** Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
+      · class: non-inference
+      · done when: a per-surface fire decision exists and the dashboard shows one accumulator card per surface, the product-of-solos value labelled ESTIMATE
 - [x]  — Research `2f047a7b1a1a47f30d97e27ddd4c4153d11f911f`; [354-test committed-source suite](https://github.com/pestopoppa/epyc-inference-research/blob/f7061c0cecfc279cf1a1436227ef00285fd2c306/artifacts/engineering/aku-stale-baseline-20261101/README.md).  **Re-baseline on cor advance**: … ✅ 2026-11-01 [belief: cc] _(detail → completed ledger)_
 - [x] **S3-AKU-07 — promotion evidence from held-out launches.** The promotion record's compounded gain, and ✅ 2026-11-17 [no-belief: tooling landing, no measurement] _(detail → completed ledger)_
 - [ ] **S3-AKU-13 — Goodharted-keep count at PROMOTE.** Beside each LOO arm (R23-48) record that keep's
@@ -8358,7 +8364,11 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 
 ##### P4 — broker + budgets (U4)  · exit: 10 consecutive iterations mixing surfaces with zero unlocked builds and foreign load under bound on every arm
 - [ ] **AKU-20** Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap
+      · class: non-inference
+      · done when: builds run in a pinned slot with bounded `jobs`, under region lock role `build`, with a per-lane concurrency cap
 - [ ] **AKU-21** CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock
+      · class: non-inference (lock-acquisition code; no measurement)
+      · done when: the CPU arm acquires `cpu_region_lock` role `bench` and the GPU arm keeps the existing flock
 - [ ] **P4-0a (filed 2026-09-07, derived from the P4-0 merge)** — the shared, un-lane-owned research clone
   - 2026-11-22 (autokernel triage; NOT closed): premise still alive but smaller: the shared research clone is now 29 commits behind `origin/main` with 1 dirty tracked file (was 187 / 9). Still needs an operator-assigned owner or sweep session; do not reset it. [no-belief: triage observation]
       `/mnt/raid0/llm/epyc-inference-research` is **187 commits behind `origin/main` with 9 dirty tracked
@@ -8367,7 +8377,11 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       an operator-assigned owner or a scheduled sweep session before it grows further.
 - [ ] **AKU-22** Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas)
 - [ ] **AKU-23** Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
+      · class: non-inference (accounting code; no measurement)
+      · done when: budgets are counted in arm-seconds and every row records utilisation (held vs idle-while-claimed)
 - [ ] **AKU-24** Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
+      · class: non-inference
+      · done when: the bilateral hold protocol is retired with INF-70 (OP-41) and the broker replaces it
 
 ##### P5 — single monitoring session (U5)  · exit: one roster entry monitors both surfaces; CPU session files hypotheses, measures nothing by hand
 - **[declined: ws58 2026-11-03 content-review: bookkeeping]** Roster/ownership update; inbox is the CPU session's output surface
@@ -9570,12 +9584,16 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-02 — resolved runtime recipes and no-build arms** (AK-AUTO-06/07): explicit unsets,
   effective environment/dispatch witnesses, option compatibility, same-binary arms and canonical CPU
   adapter; established runtime combinations skip critic calls. Hardware execution follows its gate.
+      · class: non-inference
+      · done when: runtime recipes resolve with explicit unsets, effective environment/dispatch witnesses, option compatibility, same-binary arms and the canonical CPU adapter, and established runtime combinations skip critic calls
   - [x] **AKU-02a — explicit environment-unset semantics**: inherited treatment is absent in the ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-02b — frozen launch resolution and CPU serving consumer**: explicit artifact identities, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-02c — canonical CPU/GPU launcher recipe adapter and existing serving conformance**: ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-03 — native journal and recovery** (AK-AUTO-02): current-loop event schemas, phase boundaries,
   integration intent/completion, original provenance and replayed projections. Missing/corrupt/stale
   bundle never silently certifies anchor; interrupted units and schema rollback follow §8.17.
+      · class: non-inference
+      · done when: current-loop event schemas, phase boundaries, integration intent/completion, original provenance and replayed projections are journaled natively, and a missing/corrupt/stale bundle never silently certifies the anchor
   - [x] **AKU-03a — durable derived JSON publication**: file fsync, atomic replace and directory fsync; ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-03b — journal-backed bundle recovery**: snapshot before projection; replay, explicitly ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-03c — serialized prospective arm-capture consumer**: native ✅ 2026-09-09 _(detail → completed ledger)_
@@ -10283,6 +10301,8 @@ Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`
 
 - [x] Deterministic FIFO-off control (barrier or fake-poll harness: the releaser re-requests while the waiter is provably parked), so the 3 starvation/barging xfails become strict. Required before default ON. ✅ 2026-10-31, orchestrator `9e1155a10f809d9c63a818fd95b5e02276d0e43a`; `tests/unit/test_lock_fifo_queue.py` (24 passed; original fairness negative control fails exactly 3 FIFO-off assertions); artifact `artifacts/engineering/autokernel-rebuild-s-batch-20261031/fifo-control/receipt.json`. [belief: cc]
 - [ ] **AKU-25** Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops (DS41, Q38FN) have restarted on the new code (old clients barge).
+      · class: non-inference
+      · done when: `EPYC_LOCK_FIFO` defaults ON, flipped only after both live AK loops (DS41, Q38FN) restarted on the new code
 
 2026-10-07 Codex checkpoint: deterministic controls are prepared in orchestrator `56fabf52`
 (`codex/ak-fifo-controls-20261007`); real tickets/flocks remain active and barriers control only
@@ -11206,8 +11226,13 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
 - [ ] **AK-SPLIT-CAMPAIGN-CONTROL — split operation settlement, A2 records and retention out of `CampaignController`.** [code, refactor] Candidates: the operation settlement block (`_operation_preview_locked`, `unified_driver_account_child`, `unified_driver_settle_v2`, and the v1 `unified_driver_settle` beside it), A2 unit/transition records, the retention catalog, and `_replay` (a 690-line method). The `_append_durable` helper (trim 2026-11-19) is the shared seam; the three sites still inline (A2 projection, native-record indexing, control-revision rollback) move with their owners. Bridge cap set by the 2026-11-19 ratchet.
 - [ ] **AK-SPLIT-SCHEDULING — move operation preview/cancel out of scheduling.py.** [code, refactor] `preview_operation_accounting`, `preview_operation_cancellation`, `apply_operation_preview`, `cancel_operation_before_launch` and `OperationPreview` go to their own module on top of the shared `_validate_issued` / `_check_slot` / `_consume_slot` / `_replace_seed_after_attempt` helpers (landed 2026-11-19). Bridge cap set by the 2026-11-19 ratchet.
 - [ ] **AK-SPLIT-ACTORS — split actors.py by responsibility.** [code, refactor] 4,605 physical lines, ~100 defs, 7 responsibilities. Cleanest seam: prompt/context rendering (~1,000 lines of pure functions) to its own module; then schema repair. actors.py's trim-or-split obligation.
+      · class: non-inference
+      · done when: prompt/context rendering lives in its own module and actors.py is at or under its ratified cap, or split
 - [ ] **AK-DEDUP-CROSS-CUTTING — remove the cross-cutting duplications the 2026-11-19 review lists.** [code, refactor] (1) The denial triplet: `worker_lifecycle.AdmissionDenied` and `actor_preparation.PreparationDenied` still each define a `denial_class` exception (actor_lifecycle's copy was removed 2026-11-19); give them one shared base. (2) `AccountingBinding.from_selection(... snapshot_version == 3 ...)` derived three times (worker_lifecycle, source_build_execution, driver_execution) and `settle_selected` hand-building the settlement dict `driver_execution` builds: one helper each. (3) The two inline llama-bench argvs in gates.py bypass `bench.llama_bench_argv`: route both through it (divergence risk, not only size).
+      · class: non-inference (code refactor; no measurement)
 - [ ] **AK-TRIM-GATE-PLUMBING — one gate-wrapper list instead of one kwarg per feature across run/pool/pipeline/loop.** [code, refactor] Each gate feature (`demote`, `make_exact_judge`, `make_isa_check`) threads the same optional callable through run.py, pool.py, pipeline.py, loop.py and serial_run.py/serving.py. A `GateWrappers`/`extra_gates` list cuts ~8 lines per future feature. Trim-or-split obligation of loop.py, pipeline.py, pool.py, serial_run.py and serving.py (each ratcheted twice).
+      · class: non-inference
+      · done when: gate features (`demote`, `make_exact_judge`, `make_isa_check`) travel as one `GateWrappers`/`extra_gates` list instead of one kwarg each through run.py, pool.py, pipeline.py, loop.py and serial_run.py/serving.py
 - [ ] **AK-TRIM-OR-SPLIT-GATES — move gates.py's CPU route table to data and drop the duplicate lexical refusal.** [code, refactor] 27 inline `CpuSourceRoute(...)` literals (~600 physical lines) go to `cpu_routes_table.py` or JSON; `_generated_route_refusal` stops re-running the `_lexical_refusal` that `_cpu_route_scope_refusal` already does. gates.py's trim-or-split obligation (the legacy KLD trio was deleted 2026-11-19).
 - [ ] **AK-TRIM-OR-SPLIT-SMALL-20261119 — trim each small twice-ratcheted file back under its ratified cap.** [code, refactor] Each file was ratcheted on 2026-11-09 and again on 2026-11-19; this box closes when each is trimmed or split. Tick a sub-item when its file is at or under its pre-ratchet cap, or when a split lands:
   - actor_metrics.py · actor_orchestrator.py (collapse `_scouts_from_env`) · archive.py · bench.py · claim.py · cpu_route_witness.py (one-element family loop) · dispatch_guard.py (double `in OUTCOME_STATUS_VALUES`) · gpu_serving_profile.py (`gap_histogram` to its own module) · lane_watchdog.py · planner_only.py · production.py · resolved_recipe.py · roofline_coverage.py · unified_driver.py
