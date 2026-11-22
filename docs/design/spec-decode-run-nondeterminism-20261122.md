@@ -155,3 +155,14 @@ fresh server per identity request. It filed **fail** (`DEFECT_ON_NONZERO`, early
 but has **no early stop**, so both A/A floors are measured. It needs a store built from bef2e4c7d. If ON reaches
 A/A = 0, the knob still needs a cheaper V5 reduction: per-WG partial scratch plus a fixed-order fixup, not a ticket
 chain. Only then is it worth folding.
+
+### 5a. Update (2026-11-22, row `ak-determ-knob-gpu-r2-20261122`, filed pass, KEEP_DETERMINISTIC)
+
+Atomics are **confirmed** as the run-to-run source. r2 ran fork bef2e4c7d on 27B DF2 linear np1, V5I env, fresh server
+per identity request, no early stop. OFF A/A diverged on 7/16 (top-2 margins 0.006-0.19 nat); ON A/A diverged on
+0/16; ON vs OFF differed on 6/24. This closes the "not established" items above: the divergence exists with fresh
+servers, so server-state reuse is not required to explain it, and the knob (V5 MF `unsafeAtomicAdd` made fixed-order
+plus the q8 skinny unordered atomic removed) eliminates it. Cost: ON is 2.415x slower (ms/round 107.0 vs 44.3, CI
+2.399-2.431), so the knob is for test gates only. Follow-up: a scratch-plus-fixup reduction (box
+GGML-DETERMINISTIC-REDUCE-SCRATCH, target <=1.1x OFF). RESULT.json SHA-256
+`f4054ba88073801070af4c44fc36b9b5e5908c7130b6f79fce4656fa649527bf`.
