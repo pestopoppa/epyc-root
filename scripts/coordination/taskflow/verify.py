@@ -56,8 +56,22 @@ def forbidden_hits(paths: list[str], task: dict) -> list[str]:
             and any(fnmatch.fnmatch(p, g) for g in task.get("forbidden") or [])]
 
 
-def outside_pathspec(paths: list[str], task: dict) -> list[str]:
-    allowed = set(task.get("inputs") or []) | set(task.get("outputs") or []) | brief_paths(task)
+_NAMED = re.compile(r"(?<![\w/.:-])((?:[\w.-]+/)+[\w.-]+\.[A-Za-z0-9]{1,6})(?![\w/])")
+
+
+def approach_new_paths(task: dict) -> set[str]:
+    """Repo-relative file paths the brief's approach (or acceptance) names. r8b TU-GR-1: the approach said "Add
+    scripts/.../harness/isolation.py" and the acceptance ran .../tests/test_grader_isolation.py; the worker wrote exactly
+    those two files and was rejected outside-pathspec because `where` omitted them (fix 4). Callers admit only paths
+    the lane ADDED -- an existing file named in prose stays out of the pathspec."""
+    txt = " ".join(str(task.get(k) or "") for k in ("approach", "acceptance"))
+    return {m.group(1) for m in _NAMED.finditer(txt) if not m.group(1).startswith((".", "/"))
+            or m.group(1).startswith((".claude/", ".github/"))}
+
+
+def outside_pathspec(paths: list[str], task: dict, added: set[str] | frozenset = frozenset()) -> list[str]:
+    allowed = (set(task.get("inputs") or []) | set(task.get("outputs") or []) | brief_paths(task)
+               | (approach_new_paths(task) & set(added)))
     dirs = tuple(a for a in allowed if a.endswith("/"))
     return [p for p in paths if p not in allowed and not p.startswith(dirs or ("\0",))
             and not (p.startswith("tests/") and Path(p).name.startswith("test_"))]
@@ -158,7 +172,8 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
     bad = forbidden_hits(paths, task)
     if not rec("forbidden", not bad, ",".join(bad)):
         return {"verdict": "rejected", "reason": "forbidden-path", "checks": checks, "evidence": ev}
-    out = outside_pathspec(paths, task)
+    added = {p for p in _git(lane, "diff", "--name-only", "--diff-filter=A", f"{base_ref}..HEAD").splitlines() if p.strip()}
+    out = outside_pathspec(paths, task, added)
     if not rec("pathspec", not out, ",".join(out)):
         return {"verdict": "rejected", "reason": "outside-pathspec", "checks": checks, "evidence": ev}
     cmds = list(task.get("test_cmds") or [])

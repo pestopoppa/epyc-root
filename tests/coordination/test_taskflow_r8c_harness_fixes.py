@@ -73,3 +73,23 @@ def test_worker_shell_allows_acceptance_shapes_seen_in_r8b(tmp_path, monkeypatch
     v = {"repo": "epyc-root", "budget": dict(schema.DEFAULT_BUDGET), "acceptance": "bash scripts/validate/validate_intake.sh"}
     bash = json.loads(L.write_config(tmp_path / "v", "http://x/v1", "m", v, lane="/mnt/raid0/llm/tf/4dab").read_text())["agent"][L.AGENT]["permission"]["bash"]
     assert ok('cd /mnt/raid0/llm/tf/4dab && bash scripts/validate/validate_intake.sh 2>&1; echo "EXIT: $?"')
+
+
+# ------------------------------------------------------------------------- fix 4: approach-named new files
+TUGR = {"repo": "epyc-orchestrator", "inputs": [], "outputs": [],
+        "where": ["epyc-orchestrator:scripts/autopilot/evals/dtap/harness/runner.py::JudgeApplication",
+                  "epyc-root:docs/design/tu-grader-isolation-boundary.md"],
+        "approach": "Add epyc-orchestrator scripts/autopilot/evals/dtap/harness/isolation.py with probe_grader_access(sentinel: Path, ...)",
+        "acceptance": "bash /mnt/raid0/llm/tmp/r/orch-py.sh -m pytest -q scripts/autopilot/evals/dtap/tests/test_grader_isolation.py"}
+
+
+def test_approach_named_new_files_are_in_the_pathspec():
+    new = ["scripts/autopilot/evals/dtap/harness/isolation.py", "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py"]
+    assert verify.outside_pathspec(new, TUGR) == new                     # r8b behaviour without the added set
+    assert verify.outside_pathspec(new, TUGR, set(new)) == []
+    assert "/mnt/raid0/llm/tmp/r/orch-py.sh" not in verify.approach_new_paths(TUGR)
+
+
+def test_approach_names_do_not_admit_modified_existing_files():
+    t = dict(TUGR, approach="Recreate tests/unit/test_c.py; do NOT touch src/concurrency.py")
+    assert verify.outside_pathspec(["src/concurrency.py"], t, {"tests/unit/test_c.py"}) == ["src/concurrency.py"]
