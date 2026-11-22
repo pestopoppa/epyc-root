@@ -4642,7 +4642,7 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **AK-BLOCKED-VS-FAILED** [non-inference] Audit the row verdict classifier so a run with no GPU, a residency failure or a missing host resource is recorded as blocked (host fact) and never as a candidate failure (code fact) (intake-2746).
       · done when: the classifier source paths and their case table (GPU absent, residency fail, OOM, candidate wrong) are filed, with any mis-classifying branch fixed and tested
       · gate: none
-- [ ] **AMDSK-OCC-CALC-1** [non-inference] Add a gfx90a occupancy calculator (unified 512 VGPR+AGPR pool at granularity 8, 64 KB LDS, SGPR limit) fed by the static code-object register reader, validated against the a10 VGPR lever table (intake-2745).
+- [x] **AMDSK-OCC-CALC-1** [non-inference] Add a gfx90a occupancy calculator (unified 512 VGPR+AGPR pool at granularity 8, 64 KB LDS, SGPR limit) fed by the static code-object register reader, validated against the a10 VGPR lever table (intake-2745). ✅ 2026-11-22 epyc-inference-research e5f5ce06e: `gfx90a_isa_audit.occupancy_from_notes` (static note reader; unified 512 pool, granule 8, 64 KB LDS, SGPR limit) + `test_occupancy_from_notes_reproduces_a10_lever_table` reproduces 63->8, 78->6, 90->5, 125->4; 41 audit + 18 codegen tests green. [belief: cc]
       · done when: a test reproduces 63->8, 78->6, 90->5 and 125->4 waves per SIMD from a10_iq2_vgpr_lever_20260812.md
       · gate: none
 - [ ] **AMDSK-AUTOTUNE-CFG-1** [non-inference] Add a declared-config autotune pattern (config set, retrigger key args, cached best, proof that waves_per_eu and similar hints reached codegen) to the AutoKernel GPU knob sweeps (intake-2745).
