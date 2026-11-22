@@ -92,6 +92,47 @@ def _is_bin(name: str) -> bool:
     return bool(_BINARY.match(name)) and name not in _AMBIGUOUS
 
 
+# Tools that take an inference-binary name/path as an ARGUMENT without running it:
+# build-tool targets, compilers, copy/inspect utilities.
+_NON_LAUNCH_TOOLS = {
+    "cmake", "make", "gmake", "ninja", "ccache", "gcc", "g++", "cc", "c++", "clang",
+    "clang++", "ld", "ar", "strip", "cp", "mv", "ln", "install", "rsync", "rm", "ls",
+    "stat", "strings", "ldd", "file", "sha256sum", "sha1sum", "md5sum", "b2sum", "cat",
+    "readelf", "nm", "objdump", "du", "wc", "head", "tail", "grep", "rg", "test", "chmod",
+    "chown", "realpath", "readlink", "basename", "dirname", "tar", "touch", "mkdir",
+}
+_NUMERIC = re.compile(r"^(?:0x[0-9a-fA-F,\-]+|[0-9][0-9,\-]*[ksmhd]?)$")
+
+
+def _command_word(toks: list[str]) -> str | None:
+    """Basename of the first real command after runner prefixes (None if unclear).
+
+    Skips env assignments, runner words, their flags and numeric operands (`taskset -c
+    0-23`, `timeout 30s`, `nice -n 5`). A wrapper (`region-lock run ... --`) is skipped up
+    to its `--`; `flock` skips its lock operand. Anything we cannot place returns None,
+    which keeps the caller's fail-safe (treated as a launch)."""
+    i = 0
+    while i < len(toks):
+        t = toks[i]
+        b = _base(t)
+        if _ENV_ASSIGN.match(t) or t.startswith("-") or _NUMERIC.match(t):
+            i += 1
+        elif b in _WRAPPERS:
+            if "--" not in toks[i:]:
+                return None
+            i = toks.index("--", i) + 1
+        elif b == "flock":
+            i += 1
+            while i < len(toks) and toks[i].startswith("-"):
+                i += 1
+            i += 1
+        elif b in _RUNNERS:
+            i += 1
+        else:
+            return b
+    return None
+
+
 def launch_kind(command: str) -> str:
     """'clean', 'wrapped' (inside region-lock) or 'launch' (bare launch)."""
     for seg in lex(command):
@@ -102,7 +143,6 @@ def launch_kind(command: str) -> str:
         if _is_bin(first):
             idx, wrapped = 0, False
         elif first in _RUNNERS:
-            wrapped = first in _WRAPPERS
             idx = next(
                 (i for i, t in enumerate(toks[1:], 1)
                  if _is_bin(_base(t))),
@@ -110,7 +150,14 @@ def launch_kind(command: str) -> str:
             )
             if idx < 0:
                 continue
-            wrapped = wrapped or any(_base(t) in _WRAPPERS for t in toks[:idx])
+            # Syntactic exemption: the binary name sits in ARGUMENT position of a build /
+            # inspect tool (`nohup cmake --build b --target llama-server`, `time strings
+            # .../llama-server`). Decided by the first real command word after the runner
+            # prefixes, never by claim state. Unknown command words fall through (fail-safe).
+            cw = _command_word(toks[:idx])
+            if cw is not None and cw in _NON_LAUNCH_TOOLS:
+                continue
+            wrapped = any(_base(t) in _WRAPPERS for t in toks[:idx])
         else:
             continue
         if any(t in _INFO_FLAGS for t in toks[idx + 1:]):
