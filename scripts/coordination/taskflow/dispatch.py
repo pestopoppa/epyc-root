@@ -466,40 +466,63 @@ def phase1_or_skip(task: dict, lane: Path, tdir: Path, endpoint: str, family: st
 REVIEW_MAX_TOKENS = int(os.environ.get("TASKFLOW_REVIEW_MAX_TOKENS", "1024"))
 
 
+VERDICTS = ("done", "not_done", "drift")
+REVIEWER_ROLE_HEADER = "X-Taskflow-Role"     # a job proxy must not force enable_thinking onto this request (r8c fix 2)
+
+
+def template_echo(v: dict) -> bool:
+    """r8c NOFOLD-1 / WS4 think: the reviewer thought through its whole 1024 cap and the parser took the prompt's
+    own template `{"verdict":"done|not_done|drift","reason":"<=150 chars"}` as the verdict."""
+    verdict, reason = str(v.get("verdict") or ""), str(v.get("reason") or "")
+    return "|" in verdict or "done|not_done|drift" in reason or reason.strip() == "<=150 chars"
+
+
 def parse_review(msg: dict) -> dict:
     """JSON verdict from the reviewer's content, else from its reasoning content. r8b NOFOLD-1 (think arm): the
-    server runs --reasoning on, the 200-token cap was spent on reasoning and content came back empty (fix 6)."""
+    server runs --reasoning on, the 200-token cap was spent on reasoning and content came back empty (fix 6).
+    Only a real verdict (done|not_done|drift) that is not the prompt template counts (r8c fix 2)."""
     for txt in (msg.get("content") or "", msg.get("reasoning_content") or ""):
         if "{" in txt and "}" in txt:
-            for m in reversed(list(re.finditer(r"\{[^{}]*\"verdict\"[^{}]*\}", txt))):
+            cands = [m.group(0) for m in re.finditer(r"\{[^{}]*\"verdict\"[^{}]*\}", txt)][::-1]
+            for c in cands + [txt[txt.index("{"): txt.rindex("}") + 1]]:
                 try:
-                    return json.loads(m.group(0))
+                    d = json.loads(c)
                 except ValueError:
                     continue
-            try:
-                return json.loads(txt[txt.index("{"): txt.rindex("}") + 1])
-            except ValueError:
-                pass
-    return {"verdict": "unparseable", "reason": (msg.get("content") or "")[:150],
-            "empty": not (msg.get("content") or "").strip()}
+                if isinstance(d, dict) and d.get("verdict") in VERDICTS and not template_echo(d):
+                    return d
+    content = msg.get("content") or ""
+    echo = "done|not_done|drift" in content + (msg.get("reasoning_content") or "")
+    return {"verdict": "unparseable", "reason": content[:150], "empty": not content.strip(), "template_echo": echo}
 
 
 def reviewer_for(endpoint: str, model: str, max_tokens: int | None = None):
-    """Reviewer hook: ONE chat call, JSON verdict against the verbatim box text. Never edits."""
-    def review(task: dict, diff: str) -> dict:
-        msg = local_llm.POLICY + "\n" + verify.review_prompt(task, diff)
+    """Reviewer hook: ONE chat call (one retry on an unparseable / template-echo verdict, at twice the cap), JSON
+    verdict against the verbatim box text. Thinking is off for the reviewer (enable_thinking False plus the
+    X-Taskflow-Role header so a job proxy does not re-enable it). Never edits."""
+    def call(msg: str, cap: int) -> dict:
         body = {"model": model, "messages": [{"role": "user", "content": msg}],
-                "max_tokens": int(max_tokens or REVIEW_MAX_TOKENS), "temperature": 0,
+                "max_tokens": cap, "temperature": 0,
                 "cache_prompt": True, "response_format": {"type": "json_object"},
                 "chat_template_kwargs": {"enable_thinking": False}}
         req = urllib.request.Request(endpoint.rstrip("/") + "/chat/completions", json.dumps(body).encode(),
-                                     {"content-type": "application/json"})
+                                     {"content-type": "application/json", REVIEWER_ROLE_HEADER: "reviewer"})
         with urllib.request.urlopen(req, timeout=300) as r:
             resp = json.loads(r.read())
         ch = resp["choices"][0]
         v = parse_review(ch.get("message") or {})
         v["usage"] = resp.get("usage")
         v["finish_reason"] = ch.get("finish_reason")
+        return v
+
+    def review(task: dict, diff: str) -> dict:
+        msg = local_llm.POLICY + "\n" + verify.review_prompt(task, diff)
+        cap = int(max_tokens or REVIEW_MAX_TOKENS)
+        v = call(msg, cap)
+        if v.get("verdict") not in VERDICTS:
+            first = {k: v.get(k) for k in ("verdict", "reason", "template_echo", "finish_reason", "usage")}
+            v = call(msg, cap * 2)
+            v["retried"] = first
         return v
     return review
 

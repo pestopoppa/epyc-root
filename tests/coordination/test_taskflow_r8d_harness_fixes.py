@@ -84,3 +84,46 @@ def test_live_dispatcher_lane_is_not_reclaimed(tmp_path):
     with pytest.raises(dispatch.LaneRefused, match="alive"):
         dispatch.reclaim_resumed_lane(lane, bd, {"key": "MM-5"}, repo)
     assert lane.exists()
+
+
+# ------------------------------------------------------------------------------- fix 2: reviewer under thinking
+TEMPLATE = '{"verdict":"done|not_done|drift","reason":"<=150 chars"}'
+
+
+def test_template_echo_is_not_a_verdict():
+    """r8c NOFOLD-1 / WS4 think: reasoning echoed the prompt template and the parser returned it."""
+    r = dispatch.parse_review({"content": "", "reasoning_content": "The format is " + TEMPLATE + " so let me think..."})
+    assert r["verdict"] == "unparseable" and r["template_echo"]
+    ok = dispatch.parse_review({"content": "", "reasoning_content": "Format " + TEMPLATE + ' ok. {"verdict":"done","reason":"greps pass"}'})
+    assert ok["verdict"] == "done"
+    assert dispatch.template_echo({"verdict": "done|not_done|drift"}) and not dispatch.template_echo({"verdict": "done", "reason": "x"})
+
+
+def test_reviewer_disables_thinking_and_retries_once(monkeypatch):
+    sent = []
+
+    class R:
+        def __init__(self, body):
+            self.body = body
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return json.dumps(self.body).encode()
+
+    replies = [{"content": "", "reasoning_content": "think " + TEMPLATE}, {"content": '{"verdict":"done","reason":"ok"}'}]
+
+    def fake_open(req, timeout=0):
+        sent.append((json.loads(req.data), dict(req.header_items())))
+        return R({"choices": [{"message": replies[len(sent) - 1], "finish_reason": "stop"}], "usage": {}})
+
+    monkeypatch.setattr(dispatch.urllib.request, "urlopen", fake_open)
+    v = dispatch.reviewer_for("http://x/v1", "m", max_tokens=1024)({"goal": "g"}, "diff")
+    assert v["verdict"] == "done" and v["retried"]["template_echo"]
+    assert [b["max_tokens"] for b, _ in sent] == [1024, 2048]
+    assert all(b["chat_template_kwargs"]["enable_thinking"] is False for b, _ in sent)
+    assert all(h.get("X-taskflow-role") == "reviewer" for _, h in sent)
