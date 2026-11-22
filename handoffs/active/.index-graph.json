@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-22T11:43:25Z",
+  "generated_at": "2026-11-22T12:26:23Z",
   "nodes": [
     {
       "age_days": 12,
@@ -1770,15 +1770,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 234,
-      "dispatchable": 39,
+      "closed": 236,
+      "dispatchable": 37,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-22",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 41,
+      "open": 39,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1821,14 +1821,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 30,
+          "dispatchable": 28,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 872,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 31,
+          "open": 29,
           "readiness": "blocked"
         }
       ]
