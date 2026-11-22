@@ -128,7 +128,7 @@ nobody is moving.
 | pipeline-integration | 1 | 1 | 0 | 2026-11-17 |
 | research-evaluation | 4 | 239 | 1 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
-| routing-and-optimization | 9 | 471 | 12 | 2026-11-05 |
+| routing-and-optimization | 9 | 470 | 12 | 2026-11-05 |
 | user-facing-harness | 2 | 107 | 1 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 
