@@ -1145,7 +1145,7 @@ Step-by-step procedure to activate SkillBank in production.
 1. **Verify trajectory data volume**:
    ```bash
    cd /mnt/raid0/llm/epyc-orchestrator
-   sqlite3 /mnt/raid0/llm/tmp/episodic.db "SELECT COUNT(*) FROM memories WHERE created_at > datetime('now', '-25 days');"
+   sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db "SELECT COUNT(*) FROM memories WHERE created_at > datetime('now', '-25 days');"
    # Target: >= 500
    ```
 
@@ -1158,13 +1158,13 @@ Step-by-step procedure to activate SkillBank in production.
 
 3. **Verify `skills.db` populated**:
    ```bash
-   sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT skill_type, COUNT(*) FROM skills GROUP BY skill_type;"
+   sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db "SELECT skill_type, COUNT(*) FROM skills GROUP BY skill_type;"
    # Target: 30-80 initial skills across general/routing/failure_lesson/escalation
    ```
 
 4. **Spot-check sample skills**:
    ```bash
-   sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT title, principle FROM skills ORDER BY confidence DESC LIMIT 10;"
+   sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db "SELECT title, principle FROM skills ORDER BY confidence DESC LIMIT 10;"
    # Verify skills are actionable and accurate
    ```
 
@@ -1237,22 +1237,22 @@ python3 -m orchestration.repl_memory.distillation.pipeline --days 7 --teacher mo
 
 ```bash
 # Summary by type
-sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT skill_type, COUNT(*), AVG(confidence), AVG(effectiveness_score) FROM skills WHERE deprecated=0 GROUP BY skill_type;"
+sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db "SELECT skill_type, COUNT(*), AVG(confidence), AVG(effectiveness_score) FROM skills WHERE deprecated=0 GROUP BY skill_type;"
 
 # Low-confidence skills (deprecation candidates)
-sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT id, title, confidence, retrieval_count FROM skills WHERE confidence < 0.3 AND deprecated=0;"
+sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db "SELECT id, title, confidence, retrieval_count FROM skills WHERE confidence < 0.3 AND deprecated=0;"
 
 # Most-retrieved skills
-sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT id, title, retrieval_count, effectiveness_score FROM skills ORDER BY retrieval_count DESC LIMIT 10;"
+sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db "SELECT id, title, retrieval_count, effectiveness_score FROM skills ORDER BY retrieval_count DESC LIMIT 10;"
 
 # Unused skills (>7 days old, never retrieved)
-sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT id, title, created_at FROM skills WHERE retrieval_count=0 AND created_at < datetime('now', '-7 days') AND deprecated=0;"
+sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db "SELECT id, title, created_at FROM skills WHERE retrieval_count=0 AND created_at < datetime('now', '-7 days') AND deprecated=0;"
 ```
 
 ### Deprecate a bad skill
 
 ```bash
-sqlite3 /mnt/raid0/llm/tmp/skills.db "UPDATE skills SET deprecated=1, updated_at=datetime('now') WHERE id='<skill_id>';"
+sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db "UPDATE skills SET deprecated=1, updated_at=datetime('now') WHERE id='<skill_id>';"
 ```
 
 ### Rebuild FAISS index from SQLite
@@ -1261,7 +1261,7 @@ If the FAISS index becomes corrupted, it can be rebuilt from the SQLite embeddin
 
 ```python
 from orchestration.repl_memory.skill_bank import SkillBank
-bank = SkillBank(db_path="/mnt/raid0/llm/tmp/skills.db")
+bank = SkillBank(db_path="/workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db")
 bank.rebuild_faiss_index()
 ```
 
@@ -1271,7 +1271,7 @@ When swapping models in the stack, audit skills for model-specific references:
 
 ```bash
 # Find skills referencing specific model names
-sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT id, title, principle FROM skills WHERE principle LIKE '%Qwen2.5%' OR principle LIKE '%port 808%' AND deprecated=0;"
+sqlite3 /workspace/repos/epyc-orchestrator/orchestration/repl_memory/sessions/skills.db "SELECT id, title, principle FROM skills WHERE principle LIKE '%Qwen2.5%' OR principle LIKE '%port 808%' AND deprecated=0;"
 # Flag these for re-distillation after model swap
 ```
 
