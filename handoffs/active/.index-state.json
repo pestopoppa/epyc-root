@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 598
+      "open": 600
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -45,7 +45,7 @@
       "closed": 138,
       "guarded": 0,
       "last_advanced": "2026-11-22",
-      "open": 55,
+      "open": 56,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 194,
+      "total": 195,
       "tracks": [
         {
           "blocked": 0,
@@ -95,16 +95,16 @@
           "line": 812,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 47
+          "open": 48
         }
       ]
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 910,
+      "closed": 912,
       "guarded": 0,
       "last_advanced": "2026-11-22",
-      "open": 144,
+      "open": 145,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,11 +113,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1054,
+      "total": 1057,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 426,
+          "closed": 427,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,14 +128,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 59
+          "open": 60
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5235,
+          "line": 5245,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5320,
+          "line": 5330,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,21 +160,21 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5500,
+          "line": 5510,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 12
         },
         {
           "blocked": 0,
-          "closed": 263,
+          "closed": 264,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7381,
+          "line": 7391,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 36
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10560,
+          "line": 10575,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 13
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10805,
+          "line": 10820,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 21
