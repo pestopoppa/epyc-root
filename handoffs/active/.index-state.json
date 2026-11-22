@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 26,
+      "blocked": 27,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 612
+      "open": 610
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -100,11 +100,11 @@
       ]
     },
     "autokernel-loop.md": {
-      "blocked": 0,
-      "closed": 848,
+      "blocked": 1,
+      "closed": 857,
       "guarded": 0,
       "last_advanced": "2026-11-22",
-      "open": 148,
+      "open": 146,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 996,
+      "total": 1004,
       "tracks": [
         {
           "blocked": 0,
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5183,
+          "line": 5184,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5266,
+          "line": 5267,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,24 +160,24 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5443,
+          "line": 5444,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 12
         },
         {
-          "blocked": 0,
-          "closed": 218,
+          "blocked": 1,
+          "closed": 227,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7334,
+          "line": 7335,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 45
+          "open": 43
         },
         {
           "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10305,
+          "line": 10351,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10509,
+          "line": 10555,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20
