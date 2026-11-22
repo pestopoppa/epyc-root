@@ -23,6 +23,7 @@
 
 ### Backlog
 - [ ] **AKX-SOLSCORE-1** [non-inference] Add a descriptive bounded gap-closed column S = 1/(1 + (Tk - Tsol)/(Tb - Tsol)) to keep-gate reports, with Tb the champion anchor and Tsol computed from GGUF per-tensor bytes (active-expert bytes for MoE) over measured achievable bandwidth, a residency tag per graph and a BOUND-AUDIT status when Tk < Tsol (intake-2732, intake-2742).
+  - *(2026-11-22, p4)* CHECKPOINT (box stays open): epyc-inference-research 7fba55204 `autokernel/sol_score.py` (S column, GGUF active-expert bytes, residency tag, BOUND-AUDIT) + 19 tests. Retro over the 22 stored CPU keeps: 2 OK / 20 BOUND-AUDIT (spec-decode arms; anchor GGUF retired, proxy bytes tagged); no GPU keep carries absolute Tb/Tk, so the both-devices rank correlation is not computable. See `evidence/sol-score-retro-20261122.md`. [no-belief: checkpoint]
       · done when: the column is computed retroactively for the existing keep ledger rows on both devices, with the rank correlation of S against percent-vs-floor reported; the column is descriptive only and never enters a promotion number
       · gate: none
 
