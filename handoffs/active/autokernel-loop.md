@@ -9653,6 +9653,20 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Persist advice → authored patch → source commit → real build identity through native ownership,
     then refresh planner prerequisites from verified results. Never reuse a finished advice grant,
     invent patch bytes from prose or treat a forwarded build-runner return as verified build identity.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-06d1** [non-inference] acceptance through the real driver-issued actor/profile sequence
+          · done when: profile and actor acceptance run through the public driver-issued path with registered producer binding and no private seeding, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `51e7235fd`: profile start requires typed `SelectedProfileWork` + the registered producer; `record_verified_target_profile` binds admission producer + installed mechanism + exact terminal/held receipt/controller-read stdout (schema-valid caller events refused); settled actor transitions refuse new reservations; `test_target_profile_execution.py` and `test_actor_preparation_state.py` rewritten onto the installed path (no `_driver_issued` seeding), independent durable budget-drift test. 497 passed. [no-belief: code]
+    - [ ] **AKU-06d2** [non-inference] actor-only operation settlement policy (no build child)
+          · done when: an actor-only operation settles under an explicit policy outcome other than failed when its children are accepted, with tests
+          · gate: none
+    - [ ] **AKU-06d3** [non-inference] contained patch authoring from advice: fresh attempt/reservation, immutable source context, owner-assigned scope, authenticated bounded output to native manifest
+          · done when: authored patch bytes come only from authenticated bounded worker output and construct a native manifest bound to the advice, with tests
+          · gate: none
+    - [ ] **AKU-06d4** [non-inference] durable advice -> patch -> source commit -> real build identity chain and planner refresh from verified builds
+          · done when: a restart replays the advice->patch->commit->build chain and the planner refreshes prerequisites only from verified build results, with tests
+          · gate: none
   - [x] **AKU-06e — public exact selected-profile materialization**: immutable SelectedProfileWork ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-06f — contained actor/profile producer and durable preparation state**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-06g — bind selected advice to guarded source/build preparation**: public immutable ✅ 2026-09-09 _(detail → completed ledger)_
@@ -9694,6 +9708,21 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - 2026-11-18 operator decision (decision tool): OP-AKU-BIND approved as packaged (option A: additive versioned records, legacy preserved). [no-belief: operator decision]
     - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `768249e16` (with AKU-07k): `StageAdmission.denial_class` + `AdmissionDenied`; `SchedulerEngine.account_operation` (ordered original child receipts, one attempt, partition-checked overlap, no composite receipt, cross-role refusal) and `cancel_operation_before_launch` (explicit zero-cost no-receipt cancellation, additive `cancelled_operations`); `test_operation_accounting.py` 15 passed. Remaining: Journal `UNIFIED_DRIVER_CHILD_ACCOUNTED.v1`/`SETTLED.v2` kinds, persisting/replaying `cancelled_operations`, typed denial through `ActorAdmissionDenied`, wiring through actor/source/build/driver/standalone paths, and the installed-entrypoint proof (one contained fixture campaign, tiny child; stop when the transition settles as `prerequisite` with all original child costs durable, or on first refusal). [no-belief: tooling landing]
     - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `93445e31e`: new `loop/operation_accounting.py` with additive Journal kinds `UNIFIED_DRIVER_CHILD_ACCOUNTED.v1` and `UNIFIED_DRIVER_SETTLED.v2` (legacy kinds untouched, old readers refuse); atomic scheduler preview/apply; `cancelled_operations` persisted and replayed; `denial_class` carried through `ActorAdmissionDenied`/`PreparationDenied`; actor, source/build and runtime-driver paths account children/cancel; hermetic installed profile->planner->critic->build test settles `prerequisite` with three original child receipts durable, exact retry `duplicate`, restart digest identical. 20 new tests. Remaining: registered execution validator is still v1-only (v2 validated in the controller); one planner/critic per operation (fallback invocations land in `unaccounted_children`); `WORKER_HELD_RECEIPT.v1`/build-intent-before-launch events not added; standalone profile/runtime settlements stay v1; real actor/build/provider launch proof. Row `aku-wiring-hashseed-exercise-20261119` (model: none, pure-Python harness; stop-on-answer: all 10 hash-seed iterations of the new wiring tests run, outcome PASS; stop-on-futility: missing input or first failing iteration; gate-class futility-only) repeats the wiring tests at the pinned commit. [no-belief: code]
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-06l1** [non-inference] v2 settlement through the registered validator, fallback child attempts, build intent before launch
+          · done when: v2 settlements validate through the registered validator, fallback planner/critic invocations are accounted, and build intent is durable before launch, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `9195c8c0f`: `unified_driver_settle_v2` runs the registered validator outside the mutex (v1-only validators refuse v2); `_verify_settlement` handles v2; fallback planner/critic attempts as `child_accounted.v2` (attempt>=1, first invocation stays v1), up to 32 children; journal kind `UNIFIED_DRIVER_CHILD_INTENT` before `run_worker_stage`, replayed intent never relaunched (held receipt reuses `OWNED_HELD_RECEIPT_RETAINED`). 6 + 495 passed. [no-belief: code]
+    - [x] **AKU-06l2** [non-inference] single-stage standalone v2 settlements, enrollment reference, uncertain build-intent resolution
+          · done when: standalone settlements can emit single-stage v2, source-build prerequisites carry a checked enrollment_ref, and an uncertain build intent resolves to failed without relaunch, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `5adb253a5`: three single-stage operation kinds + `stage` role, opt-in `StandaloneRuntimeConfig.operation_settlement` (off = byte-identical v1); `enrollment_ref` must name the final accepted build child (controller + validator check); `UNIFIED_DRIVER_CHILD_INTENT_RESOLVED` via `unified_driver_resolve_uncertain_intent` settles only `failed` over the accounted prefix. 8 new; 1323 adjacent passed (8 failures identical on base). [no-belief: code]
+    - [ ] **AKU-06l3** [non-inference] expose operation_settlement in the startup manifest/CLI and default it on after migrating v1-asserting tests
+          · done when: operation_settlement is configurable from the startup manifest and on by default with the migrated tests green
+          · gate: none
+    - [ ] **AKU-06l4** [non-inference] candidate feedback consumes the v2 prerequisite settlement and its enrollment reference
+          · done when: planner/candidate feedback refreshes from a v2 prerequisite settlement through its enrollment_ref, with tests
+          · gate: none
   - [x] **AKU-06n — specify original multi-child accounting and denial recovery**: ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
@@ -9737,6 +9766,24 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     durable held-cost restart settlement (07j), all selected work-kind dispatch and native-v2
     scientific adapter configuration. A source-level runtime_factory is not standalone acceptance.
     - 2026-11-18 (autokernel, AKU bulk pass): unblocked in part by AKU-07j's lifecycle record (`82bbc6e92`); still needs the installed provider bindings, the service-owned run thread and the restart settlement consumer. Not done in this pass.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-07h1** [non-inference] bounded restart-recovery retry, stop-responsive backoff, single run owner, service restart recovery
+          · done when: restart recovery retries the retained transition with bounded stop-responsive backoff and the service settles before listening, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `6bf0ef55c`: `standalone_runtime.recover_with_backoff` retries the same retained transition after WaitingAuthority/DriverExecutionUncertain/DriverTransactionUncertain (no second child, ownership rechecked, nothing new selected); typed `RuntimeTickResult.terminal` (key only when set); backoff waits on stop/control events; second concurrent `run()` refused; `campaign_service` startup recovers before the listener; fixed `validate_snapshot_v2` rejecting `terminal_pending_result`. 10 new tests; 89 + 340 adjacent passed. [no-belief: code]
+    - [x] **AKU-07h2** [non-inference] settle a durably ACCEPTED result and a crashed profile child once on restart
+          · done when: a crash after WORKER_RESULT_ACCEPTED and a crashed profile child each settle exactly once after restart, with typed fences on bad artifacts
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `210af0fa6`: result reference written content-addressed before WORKER_RESULT_RETAINED, `ArtifactStore.read_addressed`, `reopen_retained_result` through `reopen_deferred_result`; settles once with original held cost as `failed` + lifecycle ref (never a measurement); `RetainedResultFenced` codes `retained_prepared_differs`/`_reference_missing`/`_reference_digest_mismatch`/`_result_refused`; `profile_preparation.recover_issued` uses the held index; fixed profile-crash START state (`waiting_prerequisite`). 508 adjacent passed. [no-belief: code]
+    - [ ] **AKU-07h3** [non-inference] restart settlement cites native records the first run already wrote
+          · done when: a restart settlement after a crash that followed native record writes cites those records, with a test
+          · gate: none
+    - [ ] **AKU-07h4** [non-inference] dispatch every selected work kind (actor, continuous feed) through the standalone runtime
+          · done when: the standalone runtime dispatches actor and continuous-feed selections through their owners with restart tests
+          · gate: none
+    - [ ] **AKU-07h5** [non-inference] native-v2 scientific adapter configuration in startup manifests
+          · done when: a startup manifest carries native-v2 scientific adapter configuration that the runtime installs, with a round-trip test
+          · gate: none
   - [x] **AKU-07p — compose bounded runtime, startup parser and service ownership**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07i — native-v2 actual-descendant binding and replay**: published the narrowly ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07j — persist provider-held cost for process-restart settlement**: add the exact
@@ -9766,6 +9813,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `0ceb376cb`: frozen-prompt v2 (seed/ignore_eos/return_tokens) already existed in `planned_serving.py`; added a pinned v1 byte test, old-reader refusal of v2, and `loop/native_server_token_evidence.py` joining v2 fields to reopened responses and a same-server repeat-token witness (identical/diverged/unknown; always `is_t0_pass: False`). 14 new tests. Remaining: feed the witness into `NativeServerT0WitnessAdapter._observe` (re-pin source identities; fix the `top_p` KeyError in `_generation` for v2 requests that omit it), purpose/contention/GPU witnesses, actual scheduling and ROOT receipt consumption; a real same-server v2 planned unit (greedy, seed fixed, >=2 repeats per prompt) is the eventual evidence run. [no-belief: tooling landing]
     - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `74e09ab48`, `2a208a221`: same-server repeat-token witness fed into `NativeServerT0WitnessAdapter` (v1 receipts byte-identical; diverged -> scope defect, never PASS; 7th source pin, historical 6 accepted); `top_p` KeyError fixed with a reproducing regression test; `native_observation_witnesses.ObservationWitnessAdapter` derives contention and GPU/CPU residency from the sealed in-window observation (registry schema v3, v1/v2 unchanged). Remaining: purpose (a policy decision, not a sealed fact), foreign GPU consumers, node bandwidth/LLC stay `unknown` (listed in `UNCAPTURED`); ROOT consumption is BLOCKED on a root-side change to `scripts/vidya/adapters/autokernel_unified_arm.py` (read per-witness statuses incl. `same_server_token_witness`, accept registry v3 and the 7-module pin set); real same-server v2 unit and real GPU unit are live evidence runs. [no-belief: code]
     - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): the ROOT-side change that blocked consumption is DONE in `scripts/vidya/adapters/autokernel_final_trial.py` (root commit of this edit): per-witness readback (each parent finding must equal the issued witness status/reference; a concrete contention/residency receipt must reopen, rehash and mirror its finding and recorded adapter source; an unconfigured slot may only be unknown), registry schema v3 accepted (additive; purpose never concrete; observation sources only under v3), the historical 6- and current 7-module owning pin sets accepted, and the optional `same_server_token_witness` reopened (verdicts rederived from its own rows, `is_t0_pass` must be false, divergence must be a recorded failure, requires the 7th pin). Adapter projects only; `claim_tuple.grade()` unchanged, no new ladder. Tests in `tests/vidya/test_autokernel_final_trial.py` (34 hermetic grammar/mutation tests plus the existing actual-producer conformance against research `origin/main`). Still open (box NOT ticked): purpose witness (policy decision), foreign GPU consumers and node bandwidth/LLC (stay unknown), actual same-server v2 scheduling and a real GPU unit (live evidence runs), mixed CPU/GPU acceptance; a v3-registry final trial with real contention/residency receipts has not been produced by the actual producer, so ROOT's v3 path is exercised on synthetic records only. [no-belief: code]
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-07o1** [non-inference] foreign GPU consumer witness and declared purpose input
+          · done when: the observation adapter derives foreign_gpu_consumers none/present/unknown from in-window KFD censuses and exposes declared purpose as unsealed input, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `937ec73bb`: lifecycle sample schema v2 adds `kfd_consumers` (per-process VRAM on held devices via injectable reader of `/sys/class/kfd/kfd/proc/<pid>/vram_<gpu_id>`), v1 unchanged and v1 readers refuse v2; `derive_foreign_gpu_consumers` excludes owner PID, ignores out-of-window samples, `none` needs >=2 in-window censuses; contention FAILs on `present`, no PASS unless `none`; bandwidth/LLC stay unknown (no sealed uncore source; UNCAPTURED names the needed PMUs); purpose shown as `declared_plan_input_not_sealed`. 25 + 522 passed. [no-belief: code]
+    - [ ] **AKU-07o2** [non-inference] wire the production KFD reader and device-to-gpu_id mapping into startup
+          · done when: the startup factory installs the KFD consumer reader with the held device's gpu_id mapping, with a test
+          · gate: none
+    - [ ] **AKU-07o3** [non-inference] ROOT final-trial adapter hardening: foreign GPU consumers present forces contention fail
+          · done when: the ROOT adapter refuses a contention pass when foreign_gpu_consumers is not none, with tests
+          · gate: none
   - [x] **AKU-07r — retain original parent T0 and complete model identity issuance**:
     ✅ 2026-09-09 research f6e0cfe1 / main e495de82. Closed configured registry retains
     immutable original inputs, raw captures and full 17-gate reports; post-teardown replay
@@ -9831,6 +9889,21 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     typed receipt eligibility, owning comparison/validation decisions and incremental feedback.
     Keep experimental champion selection
     separate from deployment authority; always-Unavailable adapters do not complete this task.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-08c1** [non-inference] typed canonical receipt eligibility discharging only the missing-adapter refusal
+          · done when: experiment_plan.eligibility consumes RegisteredClaimGradeEligibility and discharges only the missing-adapter refusal for warranted qualified receipts, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `d170cd496`: `RegisteredClaimGradeEligibility` reprojects receipts through the registered ROOT projector + sole ClaimTuple grader at eligibility; removes only the missing-adapter refusal for AKU-08g-warranted Witnessed/Attested pairs; deployment uses stay `policy_undefined`; typed codes `producer_provenance_unwarranted`, `claim_grade_receipt_unqualified`/`_unverified`/`_unregistered`. 29 + 146 passed. [no-belief: code]
+    - [x] **AKU-08c2** [non-inference] historical consumer v4 eligibility disposition and receipt-backed feed finding projector
+          · done when: validation_native_pair.v4 records typed eligibility and the feed advances once per eligible receipt with invalidation and restart determinism, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `9642e526f`: `ValidationConsumer._historical_body` passes the typed eligibility; new rows `validation_native_pair.v4` (`eligibility {disposition, receipt_codes}`), v3 replays unchanged, v3 reader refuses v4; `ReceiptBackedFindingProjector` + `RegisteredComparisonReceipt` interface: advance once, ACK after durable projection, restart/replay same digest, supersession invalidates (fixture comparison receipt labelled). 32 + 2 passed. [no-belief: code]
+    - [ ] **AKU-08c3** [non-inference] producer journals a real RegisteredComparisonReceipt from the comparison estimator before the run
+          · done when: a pre-run content-addressed comparison receipt binding the exact receipt pair to a pre-registered ClaimKey is journaled by the producer and consumed by the feed projector, with tests
+          · gate: none
+    - [ ] **AKU-08c4** [non-inference] install the receipt projector and real gate in InstalledFeedBinding/startup with the current invalidation generation
+          · done when: the installed feed binding uses ReceiptBackedFindingProjector with real scope/use/result verifiers and the current invalidation generation, with tests
+          · gate: none
   - [x] **AKU-08i — connect bounded continuous evidence to actual standalone planning**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-08d — execute exactly the pinned canonical source bytes**: stable bounded no-follow, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-08e — reopen native-v2 artifacts through the existing registered ROOT projector**: ✅ 2026-09-09 _(detail → completed ledger)_
@@ -9869,6 +9942,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     supply original qualified calibration/control and measurement evidence through the same
     registered verifier/evaluator; prove actual required-row completion and restart. Diagnostic
     receipt replay alone does not authorize ranking, validation, or production promotion.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-08m1** [non-inference] qualified serving decision through the registered semantic evaluator passes required rows
+          · done when: a v5 native row passes only with reprojected eligible receipts plus applicable calibration and admitted bound control, and replays identically after restart, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `c8e942e61`: `RegisteredServingDecision` attaches calibration (`ep.calibration_applicability`) and control (`ControlAdmission`, production owner `runtime_admission_control` over `RuntimeAdmission.reopen_admission`) to `RegisteredServingSemanticEvaluator`; `QualifiedReceiptRowEvidence` seals additive `validation_native_pair.v5`; required-row completion digest identical after restart; diagnostic receipts get no rank/validate authority; deployment stays `policy_undefined`. 15 new; 85 + 12 passed (fixture pair labelled). [no-belief: code]
+    - [ ] **AKU-08m2** [non-inference] producer writes real direct-runtime-admission control references and CalibrationReceipts beside canonical receipt pairs, and the live authority installs RegisteredServingDecision
+          · done when: the producer emits control refs and calibration receipts with its pairs and the installed authority evaluates v5 rows through them, with tests
+          · gate: none
+    - [ ] **AKU-08m3** [non-inference] fix feed_runtime test-order pollution from the ROOT projector loaded by test_validation_semantic_adapter
+          · done when: test_validation_semantic_adapter.py followed by test_feed_runtime.py passes in one process
+          · gate: none
   - [x] **AKU-07y — prevent lifecycle sampling-budget starvation**: . ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
@@ -9944,6 +10028,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     complete fresh admission and real execution using the native catalog and provider below.
     The durable ownership/replay slice is published as AKU-10e; absence of the remaining roots
     or actual provider must continue to refuse fresh cleanup, not become an eligibility bypass.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-10d1** [non-inference] fresh maintenance admission from complete owner coverage and broker-settled recovery
+          · done when: fresh admission requires complete current owner coverage and a broker-settled-complete recovery writes COMPLETED without re-running, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `6a55cf91c`: bind/admit require every owner class registered, current on re-derivation and gap-free, with no uncertain scopes; `maintenance_recover_completed` writes COMPLETED under a chained recovery token when the broker already settled complete (no rerun, bytes once); recovery INTENT carries only aborted/no-hold proof; no provider -> refused before INTENT; unprovable resolve stays UNRESOLVED. 364 passed. [no-belief: code]
+    - [ ] **AKU-10d2** [non-inference] wire build_native_view -> bind -> execute into an actual maintenance caller gated on the real provider
+          · done when: the controller's maintenance caller runs view->bind->execute end to end with an injected provider and refuses without one, with tests
+          · gate: none
   - [x] **AKU-10e — durable maintenance ownership, replay and shutdown fences**: short controller ✅ 2026-09-09 _(detail → completed ledger)_
   - [ ] **AKU-10f — connect complete native retained-artifact/dependency catalog**: populate the
     controller-owned catalog from existing worker/evidence/candidate/DSO/RUNPATH/physical-root
@@ -9968,6 +10060,14 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     hold/refresh/settlement provider and concrete controller backend, preserving bounded unlocked
     I/O, exact abort/completion receipts and uncertain replay. Default execution remains unavailable;
     source publication does not authorize live deletion or provider activation.
+        · roll-up: non-dispatchable — children carry the work
+    - [x] **AKU-10g1** [non-inference] broker hold/refresh/settlement interface, bounded unlocked calls and concrete controller backend
+          · done when: the controller backend settles holds exactly once through a bounded unlocked provider interface and default execution stays unavailable, with tests
+          · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `36cf901ef`: `BrokerHoldProvider` (acquire/refresh/settle exactly-once/resolve), `BoundedHoldProvider` refuses calls under the controller mutex and enforces deadlines, `HoldSettlement.held_ms` with accounting digest, `CampaignMaintenanceBackend`; maintenance events v3 carry settlements (v2 byte-identical without); re-admission over UNRESOLVED needs broker resolve first; fixture-only in-memory broker; no factory registered. 48 + 196 passed. [no-belief: code]
+    - [ ] **AKU-10g2** [non-inference] real OP-41 maintenance broker implementing BrokerHoldProvider plus factory enrolment
+          · done when: a registered, activation-gated broker factory passes the BrokerHoldProvider contract tests against the real lock service in a fake-backend test
+          · gate: none
   - [x] **AKU-10h — installed native retention catalog and dependency frontier**: . ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-10i — prospective source/build/evaluation expiry authority**: install the actual [no-belief: operator decision] [no-belief: tooling landing] [no-belief: code] _(detail → completed ledger)_
   - [x] **AKU-10j — bound retired serial build-cache retention**:  — startup now ✅ 2026-09-15 _(detail → completed ledger)_
@@ -9978,6 +10078,17 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   now transports exact selections and the final v6 owner demonstrated live CPU/GPU rotation with
   exact held-resource settlement. The remaining broad finalise/promote/reboot scope is separate from
   the completed unified-loop trial and did not authorize production mutation.
+      · roll-up: non-dispatchable — children carry the work
+  - [x] **AKU-11a** [non-inference] host-claim lifecycle provider and activation-gated registered factory
+        · done when: a registered host_claim_v1 factory implements the lifecycle provider over the existing claim primitives and stays unavailable without its activation record, with fake-backend tests
+        · gate: none
+        · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `5983d9272`: `loop/host_claim_provider.HostClaimProvider` (7 lifecycle methods) over `claim.hold_cpu(role="bench")` / MI210 device flock; grant id from acquired kernel flocks; provider-held `held_claim_receipt.v2` inside the charged interval; `inspect()` present/absent_released/unknown; deadline-bounded calls; cgroup2 `OwnedCgroup`; `provider_factories` registers `host_claim_v1` bound to file SHA-256, explicit `--provider-factory` only, empty registry without the 0600 activation record named by `AUTOKERNEL_HOST_CLAIM_PROVIDER_ACTIVATION`. 9 + 98 passed. Live activation needs that operator activation record and AKU-12 compute authority. [no-belief: code]
+  - [ ] **AKU-11b** [non-inference] real-manifest standalone dry run with --provider-factory host_claim_v1
+        · done when: the AKU-07n-b real startup manifest dry-runs with host_claim_v1 named and reports the provider as gated-unavailable, never fabricated
+        · gate: none
+  - [ ] **AKU-11c** [non-inference] build and GPU host-CPU claim specs in the host-claim provider (build role + jobs cap, gpu-quiet exclusive phase receipts)
+        · done when: host_claim_v1 grants build-role and GPU-phase claims with their receipts in fake-backend tests
+        · gate: none
 - [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
   compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
   and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.
