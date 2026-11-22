@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-22T10:49:53Z",
+  "generated_at": "2026-11-22T11:11:21Z",
   "nodes": [
     {
       "age_days": 12,
@@ -1044,14 +1044,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
-      "dispatchable": 32,
+      "dispatchable": 33,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "benchmark-suites.md",
       "id": "EVL-08",
       "last_advanced": "2026-11-20",
       "next_action": "Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation",
-      "open": 32,
+      "open": 33,
       "priority": 0.7283,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): CJ-2d. Wire a representative sample \u2014 reuse the existing hard-slice construction (n=53",
@@ -1082,18 +1082,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [],
           "line": 1058,
           "name": "agent-world-env-synthesis",
-          "open": 4,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1370,
+          "line": 1374,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1102,7 +1102,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1577,
+          "line": 1581,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1111,7 +1111,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1903,
+          "line": 1907,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1120,7 +1120,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2138,
+          "line": 2142,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1208,14 +1208,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 215,
-      "dispatchable": 42,
+      "dispatchable": 43,
       "domain": "research-evaluation",
       "guarded": 1,
       "handoff": "eval-tower-program.md",
       "id": "EVL-14",
       "last_advanced": "2026-11-03",
       "next_action": "Retain EV-PROTO and live calibration acceptance",
-      "open": 43,
+      "open": 44,
       "priority": 0.5376,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EV-4 \u2014 Complete the decision-grade HE-R+ calibration baseline through the inference-batch ",
@@ -1316,11 +1316,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 8,
           "gates": [],
           "line": 3097,
           "name": "scoring-infra-standardization",
-          "open": 7,
+          "open": 8,
           "readiness": "ready"
         }
       ]
@@ -1373,14 +1373,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 821,
-      "dispatchable": 137,
+      "dispatchable": 138,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-22",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 138,
+      "open": 139,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1417,7 +1417,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 53,
+          "dispatchable": 54,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1426,14 +1426,14 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 54,
+          "open": 55,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 4881,
+          "line": 4884,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1442,7 +1442,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 4964,
+          "line": 4967,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1461,7 +1461,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5141,
+          "line": 5144,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1478,7 +1478,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7030,
+          "line": 7033,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1491,7 +1491,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 9998,
+          "line": 10001,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1525,7 +1525,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10201,
+          "line": 10204,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -1770,7 +1770,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 233,
+      "closed": 234,
       "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
@@ -3564,14 +3564,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 268,
-      "dispatchable": 97,
+      "dispatchable": 100,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-21",
       "next_action": "Land CODEMODE-AB-V2 r2 rows, then CODEMODE-REL-FLIP; measure CM-2..CM-5; then UFH-TE-2 dispatch guard, HIL-RE-1",
-      "open": 98,
+      "open": 101,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3623,18 +3623,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 30,
+          "dispatchable": 33,
           "gates": [],
           "line": 444,
           "name": "repl-turn-efficiency",
-          "open": 30,
+          "open": 33,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 929,
+          "line": 938,
           "name": "qwen-chat-template-evaluation",
           "open": 6,
           "readiness": "ready"
@@ -3647,7 +3647,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1710,
+          "line": 1719,
           "name": "harness-improvement-loop",
           "open": 9,
           "readiness": "blocked"
@@ -3660,7 +3660,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2415,
+          "line": 2424,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3681,7 +3681,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2504,
+          "line": 2513,
           "name": "repl-embedding-retrieval",
           "open": 16,
           "readiness": "blocked"
@@ -3696,7 +3696,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2983,
+          "line": 2992,
           "name": "agentic-serving-harness-fixes",
           "open": 27,
           "readiness": "blocked"
@@ -3707,7 +3707,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3913,
+          "line": 3922,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"

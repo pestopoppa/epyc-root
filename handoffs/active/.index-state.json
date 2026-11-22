@@ -4,7 +4,7 @@
       "blocked": 27,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 596
+      "open": 597
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 1,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 237
+      "open": 239
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -34,7 +34,7 @@
       "blocked": 1,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 104
+      "open": 107
     }
   },
   "duplicates": {},
@@ -104,7 +104,7 @@
       "closed": 821,
       "guarded": 0,
       "last_advanced": "2026-11-22",
-      "open": 137,
+      "open": 138,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 959,
+      "total": 960,
       "tracks": [
         {
           "blocked": 1,
@@ -128,14 +128,14 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 53
+          "open": 54
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 4881,
+          "line": 4884,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 4964,
+          "line": 4967,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5141,
+          "line": 5144,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 13
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7030,
+          "line": 7033,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 45
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 9998,
+          "line": 10001,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10201,
+          "line": 10204,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20
@@ -426,7 +426,7 @@
       "closed": 75,
       "guarded": 0,
       "last_advanced": "2026-11-20",
-      "open": 32,
+      "open": 33,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -435,7 +435,7 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 107,
+      "total": 108,
       "tracks": [
         {
           "blocked": 0,
@@ -455,14 +455,14 @@
           "line": 1058,
           "markers": 1,
           "name": "agent-world-env-synthesis",
-          "open": 4
+          "open": 5
         },
         {
           "blocked": 0,
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1370,
+          "line": 1374,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1577,
+          "line": 1581,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1903,
+          "line": 1907,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 2138,
+          "line": 2142,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -940,7 +940,7 @@
       "closed": 215,
       "guarded": 1,
       "last_advanced": "2026-11-03",
-      "open": 42,
+      "open": 43,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -949,7 +949,7 @@
       },
       "row_id": "EVL-14",
       "state": "active",
-      "total": 258,
+      "total": 259,
       "tracks": [
         {
           "blocked": 0,
@@ -1049,7 +1049,7 @@
           "line": 3097,
           "markers": 1,
           "name": "scoring-infra-standardization",
-          "open": 7
+          "open": 8
         }
       ]
     },
@@ -1060,7 +1060,7 @@
       "guarded": 0,
       "last_advanced": "2026-11-21",
       "needs_owner": 8,
-      "open": 97,
+      "open": 100,
       "owner_index": "user-facing-harness-index.md",
       "proposals_pending": 8,
       "prune": {
@@ -1070,7 +1070,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 380,
+      "total": 383,
       "tracks": [
         {
           "blocked": 0,
@@ -1100,14 +1100,14 @@
           "line": 444,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 30
+          "open": 33
         },
         {
           "blocked": 0,
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 929,
+          "line": 938,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 6
@@ -1119,7 +1119,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1710,
+          "line": 1719,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 8
@@ -1131,7 +1131,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2415,
+          "line": 2424,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1148,7 +1148,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2504,
+          "line": 2513,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 16
@@ -1161,7 +1161,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2983,
+          "line": 2992,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 27
@@ -1171,7 +1171,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3913,
+          "line": 3922,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -2351,7 +2351,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 233,
+      "closed": 234,
       "guarded": 0,
       "last_advanced": "2026-11-22",
       "open": 39,
@@ -2363,7 +2363,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 274,
+      "total": 275,
       "tracks": [
         {
           "blocked": 1,
@@ -2377,7 +2377,7 @@
         },
         {
           "blocked": 1,
-          "closed": 112,
+          "closed": 113,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
