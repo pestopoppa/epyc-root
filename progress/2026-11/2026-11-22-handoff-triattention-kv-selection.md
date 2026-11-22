@@ -19,3 +19,7 @@ EA-POOL-SCREEN: prior row ak-ea-pool-screen-gpu-20261121 ended rc=75 at its wind
 ## 08:35Z — File inconclusive EA pooling screen continuation
 
 EA-POOL-SCREEN: filed ak-ea-pool-screen-gpu-20261122-r2 inconclusive (rc=0, FUTILITY_INPUT, RemoteDisconnected); server log ends with second interrupt during item 7 CE10. Per-arm n=7–8, insufficient for registered verdict; no box tick. RESULT.json SHA-256 2cb48c9a12423f2e16dc33cf877b22d426fa41a61cf4505fa5684b68feed8f3c; results.jsonl SHA-256 c34551e60eff87a0e3f96296fcf9b5a862dbc6bf7a4c968c433fa67ded8f35b1. Filed with no reclaim to preserve checkpoint.
+
+## 09:57Z — Handle stopped EA pooling screen row and continuation collision
+
+EA-POOL-SCREEN: r3 stopped rc=75 during i7-CE10 and was auto-filed WITHDRAWN; no scientific verdict. A separate publisher had already published r4 and started its smoke when this session attempted continuation; left its live row intact. r4 smoke PASS remains unconfirmed.
