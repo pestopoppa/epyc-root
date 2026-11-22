@@ -4956,8 +4956,9 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
 - [x] **C15-EPI-Q8** [inference] Producer-epilogue q8_1 write for MI210 decode (from INF48-GATEUP-PROBE: standalone quantize_q8_1 = 3.56% of 27B Q8_0 decode). RMSNorm+mul and gated-unary+mul fused kernels also write the q8_1 block their Q8_0/Q6_K MMVQ consumer needs, pre-registering the … [no-belief: planning] ✅ 2026-11-19 [belief: cc] [no-belief: row verdict filed by agent] [no-belief: source estimate] _(detail → completed ledger)_
 - [ ] **RKA-A3B-ROUTER-MMVF** [inference] [origin: autokernel-session self-scouting 2026-11-18, NOT backlog-mandated; boxed per operator so it is documented] A3B router F32/BF16 matmuls kept on MMVF up to ne11=8 on CDNA (knob GGML_HIP_MMVF_CDNA_MAX_NE11, 79650eeab; carried default-off in C16 13d6fc150). Measured: rka-a3b-n4-trace-gpu-20261118 removes 76-95% of the n3->4 step; rka-a3b-mmvf8-e2e-gpu-20261118-r2 KEEP (D4 +14%, D2 0%). model: Qwen3.6-35B-A3B MTP Q8_0 on MI210. Remaining: default-on decision at C16 fold (operator). stop-on-answer: C16 fold gate verdict; stop-on-futility: n/a (KEEP measured); gate-class = futility-only. Parent: RKA-A3B-N4-STEP. [no-belief: planning]
 - [ ] **RKA-A3B-ROUTER-WIDE** [inference] [origin: autokernel-session self-scouting 2026-11-18, NOT backlog-mandated; boxed per operator so it is documented] extend the MMVF router path to ne11 9..64 by column-tiling 8-wide launches (knob GGML_HIP_ROUTER_WIDE=1, branch llama.cpp-experimental-c15-a3b-router-wide-20261118 @ bb3294c71) so multi-session verify batches benefit. model: Qwen3.6-35B-A3B MTP Q8_0 on MI210. Row rka-a3b-router-wide-gpu-20261118. stop-on-answer: KEEP iff np4 or np8 D2 aggregate >= +3% with no cell < -1%; stop-on-futility: F32 op gain < 5% at n=12 and n=24; gate-class = futility-only. Parent: RKA-A3B-N4-STEP. [no-belief: planning] 2026-11-19 row rka-a3b-router-wide-gpu-20261118 INCONCLUSIVE (FUTILITY_INSTRUMENT): baseline test rc=0, 16/16 passed; parser counted 12 because warmup diagnostics split four case/OK lines. WIDE and timing did not run. Repair parser and republish. RESULT.json SHA-256 c457fa71b45950a43423e9b29c6ba9c5d3fa887e2fc4a6edf88e323649d1196b. [no-belief: instrument failure]
+      · history: notes moved to autokernel-loop-box-history-20261122.md
       · est 2400 s. 2026-11-21: rebased on C17 (fork d36eb9d88, store gpu-20261121-d36eb9d88-c17-routerwide); perf parser fixed (16/16 cells); row rka-a3b-router-wide-gpu-20261121.
-      · 2026-11-22 (autokernel) FILED **inconclusive** (row `rka-a3b-router-wide-gpu-20261121-r2`, rc 0, build 94d5bb376): FUTILITY_INPUT why=invalid-requests at cell r1-np8-D2-UNSET (baseline arm; one reasoning request returned 70/256 tokens), a harness fault, not an answer. Op data before the fault: WIDE f32 op_gain n12 +181%, n16 +139%, n24 -55%; bf16 n12 +144%, n32 -12%. `rowflow resume` refused (row ended complete), so a rerun needs a republish with the invalid-request check fixed. [no-belief: harness fault, no verdict]
+      · done when: a row (republished after the invalid-request check fix) files KEEP / DROP per the stop-on-answer rule, or stops on the F32 op-gain futility rule
 
 - [x] **AK-ISA-FAMILIES** [non-inference] Add fattn_vec, fattn_tile and classifier families for the gqa-verify (gv_*) and qsa-sparse (k_qsa_sparse_*) kernels to the gfx90a_isa_audit default family set and to the pre-timing ISA gate invocation, so a VGPR increase or occupancy drop in the served decode/verify FA kernels fails before timing; add to AK actor guidance that a feature bit in an FA hot loop must be a template parameter, not a runtime branch (upstream #32740 measured ~25% loss and 181->202 registers for the runtime-branch form on NVIDIA) (intake-2797#record).
       · done when: gfx90a_isa_audit lists vec/tile/gv/qsa kernels with VGPR/occupancy on the champion libggml-hip, and diff exits 1 on a synthetic +VGPR variant
@@ -8274,7 +8275,7 @@ sequencing: measurement first, authoring later).
       computed the old way is inflated — the corrected statistic is an arm-level permutation test; any magnitude the
       bundle ingests must carry which statistic produced it; (iii) linear within-block drift is ruled out (slope
       +0.03%/slot, R² 0.004), so CPU-surface scatter is contention (OP-40), not drift.
-      2026-11-18 (autokernel, box note, NOT ticked): Research `d3b512b74` adds `loop/cpu_keep_bundle.py` + `test_cpu_keep_bundle.py` (13 tests): schema `epyc.autokernel.cpu_accumulator_bundle.v1`, file `accumulator-bundle.cpu.<recipe>.json` (`filename`/`write`, atomic), each keep carries `magnitude` (provisional|settled), `contention_label` (`pre-hook` can never be settled) and the producing `statistic` (only `arm_level_permutation` can settle; an effect at or below its floor cannot), strict reader re-derives the compounded figure, `cpu_keeps_in_fold` filters a fold by explicit surface. **Remaining for the tick:** write the actual per-recipe bundles for the CPU keeps currently in the fold (needs each keep's effect, label and statistic read from the journal; none invented). [no-belief: code]
+      · history: notes moved to autokernel-loop-box-history-20261122.md
 
 ##### P1b — consolidation phase 2: rescued-ref candidates (each behind its own gate; measurement that serves consolidation is allowed)
 
@@ -9607,6 +9608,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-04 — shared ExperimentPlan and evidence-use validator** (AK-AUTO-06/07): phase/category/
   protocol/use, independent-unit view, immutable stopping plan and applicability checks; A2 discovery
   never becomes a keep/release claim; calibration provenance, replay and n/unit/interval requirements.
+      · roll-up: more than 6 child boxes carry the work; this parent closes when they do
   - [x] **AKU-04a — immutable structural plan/unit view and calibration applicability API**: strict ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-04b — frozen planned-serving launcher consumer**: distinct resolved recipes, exact ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-04c — prospective sealed arm producer and shared immutable store**: actual planned ✅ 2026-09-09 _(detail → completed ledger)_
@@ -9655,6 +9657,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-06 — bounded scheduler and mechanism routes** (AK-AUTO-07/09): pure accounting/coverage model,
   bounded seed boost/opportunity, reservations and rejection audits; directed transfer and noncomposable
   coexistence evidence. Live admission/coexistence waits for AKU-11, not a fake-provider pass.
+      · roll-up: more than 6 child boxes carry the work; this parent closes when they do
   - [x] **AKU-06a — indexed scheduler/accounting and resolved-campaign inspection consumer**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-06b — mechanism-scoped planner and prepared runtime-recipe consumer**: production
     CPU/GPU profiles, exact scoped evidence, runtime dimensions and persistent scheduler selection
@@ -9792,6 +9795,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
   test worker/provider faults hermetically before attaching real compute.
+      · roll-up: more than 6 child boxes carry the work; this parent closes when they do
   - [x] **AKU-07a — durable management-only campaign controller and service**: full resolved-config
     identity, lifetime store/named-lock ownership, native fsynced START/control events, strict replay,
     monotonic incarnation/stream/revision and idempotent pause/resume/drain acknowledgments.
@@ -9944,6 +9948,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
   before writing new measurements; reuse SC75, shared grader and existing journal/cursors; mandatory
   pre-top-k conflicts, local invalidation generations and bounded asynchronous projection/outage recovery.
+      · roll-up: more than 6 child boxes carry the work; this parent closes when they do
   - [x] **AKU-08a — scoped retrieval/route contracts and offline evidence consumer**: exact claim keys, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-08b — strict prospective arm reader and existing corpus consumer**: full closed ✅ 2026-09-09 _(detail → completed ledger)_
   - [ ] **AKU-08c — connect canonical v2 grade receipts and bounded live evidence feedback**:
@@ -10031,6 +10036,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-09 — coherent existing dashboard/control surface** (AK-AUTO-11): producer-owned authenticated
   commands, ordered full snapshots, separate heartbeat/activity/science clocks, lifecycle-aware semantic
   health, hub registry/probes/freshness; no hub proxy or second dashboard.
+      · roll-up: more than 6 child boxes carry the work; this parent closes when they do
   - [x] **AKU-09a — stop/join worker heartbeat before terminal publication**: no late `running` state; ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-09b — current versus historical accumulator rendering**: both existing hub render sites ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-09l — follow the current serial run, not a stale hub environment pin**:  _(detail → completed ledger)_
@@ -10084,6 +10090,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-10 — reproducible migration and artifact retention** (AK-AUTO-12): versioned import without
   invented provenance, unsupported-schema rollback refusal, retained ref/build closure, budgeted storage
   maintenance and documented validated CLI/config examples.
+      · roll-up: more than 6 child boxes carry the work; this parent closes when they do
   - [x] **AKU-10a — retained-artifact closure and truthful legacy cleanup consumer**: immutable
     root/dependency snapshots, deterministic expiry previews through the existing storage policy,
     and exact owned-path legacy pruning with recoverable failure reporting.
@@ -10172,6 +10179,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
 - [ ] **AKU-12 — live cutover and unattended acceptance** (AK-AUTO-12): separate research-relaunch and
   compute authority; applicable post-BIOS calibration and owning serving protocol. Bounded mixed campaign
   and eventual soak demonstrate the actual CPU/GPU/candidate paths, not only helpers or fixtures.
+      · roll-up: more than 6 child boxes carry the work; this parent closes when they do
   - [x] **AKU-12a — complete standalone dry run**:  — exercise the installed unified entrypoint, ✅ 2026-09-10 _(detail → completed ledger)_
   - [x] **AKU-12b — five-loop monitored acceptance and bug-fix rerun**: ✅ 2026-09-11 — after applicable real
     resource and operator gates, complete five monitored unified research iterations through the
