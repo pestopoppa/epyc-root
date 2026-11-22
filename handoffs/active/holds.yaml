@@ -5,6 +5,9 @@
 # Scope semantics PER READER:
 #   dispatcher (handoff_sessions launch gate, taskflow/select, generated index rows, backlog_row_check):
 #       EVERY scope holds -- a held session is never spawned, a held handoff/box is never selected.
+#       EXCEPT `launch_only: true` (loop-launch only): the hold gates launching/relaunching the loop -- its sessions
+#       and any launch box named in `boxes` -- and does NOT propagate to the boxes of its handoffs/rows/files
+#       (provenance only). Boxes keep their own [operator] / gate. (operator ruling 2026-11-22, AK holds)
 #   rowflow publish_row (F4): loop-launch admits a row by its OWN owner (refused only when the owner is a held
 #       session, or the row names no owner); all-rows also refuses every row whose handoff/id/box is a target;
 #       row_prefixes refuse any matching row id whatever its scope. Release: operator-ratify/<hold id>.json.
@@ -27,6 +30,7 @@ holds:
   - kernel-champion-and-promotion.md
   by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
 - id: autokernel-all-devices-all-dimensions
+  launch_only: true  # operator ruling 2026-11-22: hold covers free running of the loop only
   sessions:
   - autokernel-all-devices-all-dimensions
   - handoff-autokernel-all-devices-all-dimensions
@@ -39,6 +43,7 @@ holds:
   - autokernel-akx-program.md
   by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
 - id: autokernel-cross-workload-keep-gate
+  launch_only: true  # operator ruling 2026-11-22: hold covers free running of the loop only
   sessions:
   - autokernel-cross-workload-keep-gate
   - handoff-autokernel-cross-workload-keep-gate
@@ -51,6 +56,7 @@ holds:
   - autokernel-akx-program.md
   by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
 - id: autokernel-rebuild
+  launch_only: true  # operator ruling 2026-11-22: hold covers free running of the loop only
   sessions:
   - autokernel-rebuild
   - handoff-autokernel-rebuild
@@ -63,6 +69,7 @@ holds:
   - autokernel-loop.md
   by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
 - id: autokernel-research-loop
+  launch_only: true  # operator ruling 2026-11-22: hold covers free running of the loop only
   sessions:
   - autokernel-research-loop
   - handoff-autokernel-research-loop
@@ -75,6 +82,7 @@ holds:
   - autokernel-loop.md
   by: migrate_operator_gates_to_holds (registry operator_gate, 2026-11-20)
 - id: autokernel-unified-surface
+  launch_only: true  # operator ruling 2026-11-22: hold covers free running of the loop only
   sessions:
   - autokernel-unified-surface
   - handoff-autokernel-unified-surface

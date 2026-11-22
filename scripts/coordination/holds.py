@@ -27,6 +27,9 @@ HEADER = """# Operator holds -- the single exclusion source (handoff standard de
 # Scope semantics PER READER:
 #   dispatcher (handoff_sessions launch gate, taskflow/select, generated index rows, backlog_row_check):
 #       EVERY scope holds -- a held session is never spawned, a held handoff/box is never selected.
+#       EXCEPT `launch_only: true` (loop-launch only): the hold gates launching/relaunching the loop -- its sessions
+#       and any launch box named in `boxes` -- and does NOT propagate to the boxes of its handoffs/rows/files
+#       (provenance only). Boxes keep their own [operator] / gate. (operator ruling 2026-11-22, AK holds)
 #   rowflow publish_row (F4): loop-launch admits a row by its OWN owner (refused only when the owner is a held
 #       session, or the row names no owner); all-rows also refuses every row whose handoff/id/box is a target;
 #       row_prefixes refuse any matching row id whatever its scope. Release: operator-ratify/<hold id>.json.
@@ -102,6 +105,13 @@ def validate(holds: list[dict] | None) -> list[str]:
             errs.append(f"hold {hid}: scope {h.get('scope')!r} not in {SCOPES}")
         if not any(h.get(k) for k in TARGET_KEYS) and not h.get("row_prefixes"):
             errs.append(f"hold {hid}: no targets")
+        lo = h.get("launch_only")
+        if lo is not None and not isinstance(lo, bool):
+            errs.append(f"hold {hid}: launch_only must be a bool")
+        if lo is True and str(h.get("scope") or "loop-launch") != "loop-launch":
+            errs.append(f"hold {hid}: launch_only requires scope loop-launch")
+        if lo is True and not (h.get("sessions") or h.get("boxes")):
+            errs.append(f"hold {hid}: launch_only needs sessions or launch boxes to gate")
         for k in TARGET_KEYS + ("row_prefixes",):
             if h.get(k) is not None and not isinstance(h.get(k), list):
                 errs.append(f"hold {hid}: {k} must be a list")

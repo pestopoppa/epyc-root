@@ -249,7 +249,8 @@ def c_holds(c):
         hid = h["id"]
         sess = {slug_of(s) for s in h.get("sessions") or []}
         by_session = bool(sess & c.o.aliases)
-        by_file = any(f.endswith("/" + x) or f == x for f in c.o.files for x in (h.get("handoffs") or []))
+        launch_only = h.get("launch_only") is True   # gates loop launch only; its handoffs are provenance, not targets
+        by_file = not launch_only and any(f.endswith("/" + x) or f == x for f in c.o.files for x in (h.get("handoffs") or []))
         held = [(k, b) for k, b in sorted(boxes.items())
                 if hid in (b.get("holds") or []) and b.get("state") != "done" and c.o.owns_box(b)]
         if not (by_session or by_file or held):
@@ -257,8 +258,11 @@ def c_holds(c):
         evid = [ref("handoffs/active/holds.yaml", _hold_line(c.root, hid), note=str(h.get("reason") or "")[:140], hold=hid,
                     scope=h.get("scope"), since=str(h.get("since") or ""))]
         evid += [ref(b["file"], b.get("line"), box=k) for k, b in held[:6]]
-        out.append(ev("hold-hit", c.o.id, hid, f"hold `{hid}` ({h.get('scope')}) stops {len(held)} open box(es) / the owner's sessions",
-                      evid, hold=hid, scope=h.get("scope"), held_boxes=len(held), reason=h.get("reason"), since=str(h.get("since") or "")))
+        out.append(ev("hold-hit", c.o.id, hid, (f"hold `{hid}` (loop-launch, launch-only) gates launching/relaunching the owner's loop sessions; "
+                       f"{len(held)} open box(es) held" if launch_only else
+                       f"hold `{hid}` ({h.get('scope')}) stops {len(held)} open box(es) / the owner's sessions"),
+                      evid, hold=hid, scope=h.get("scope"), held_boxes=len(held), reason=h.get("reason"), since=str(h.get("since") or ""),
+                      launch_only=launch_only))
     return out
 
 

@@ -159,10 +159,17 @@ def load_holds(root: Path) -> list[dict] | None:
             if not (isinstance(h, dict) and h.get("id")):
                 continue
             src = {**h, **(h.get("targets") if isinstance(h.get("targets"), dict) else {})}
-            t = {str(x) for k in ("handoffs", "rows", "boxes", "files") for x in (src.get(k) or [])}
-            t |= {Path(x).name for x in (src.get("handoffs") or []) + (src.get("files") or [])}
+            if src.get("launch_only") is True:
+                # launch-only hold (operator ruling 2026-11-22, AK): it gates launching/relaunching the loop -- the
+                # held SESSIONS plus any launch box named explicitly in `boxes` -- and never propagates to the boxes
+                # of its `handoffs`/`rows`/`files` (those stay as provenance only).
+                t = {str(x) for x in (src.get("boxes") or [])}
+            else:
+                t = {str(x) for k in ("handoffs", "rows", "boxes", "files") for x in (src.get(k) or [])}
+                t |= {Path(x).name for x in (src.get("handoffs") or []) + (src.get("files") or [])}
             t |= {f"session:{_OWNER_PREFIX.sub('', str(x))}" for x in (src.get("sessions") or src.get("owners") or [])}
-            out.append({"id": str(h["id"]), "scope": str(h.get("scope") or "loop-launch"), "targets": t})
+            out.append({"id": str(h["id"]), "scope": str(h.get("scope") or "loop-launch"), "targets": t,
+                        "launch_only": src.get("launch_only") is True})
         return out
     return None
 
