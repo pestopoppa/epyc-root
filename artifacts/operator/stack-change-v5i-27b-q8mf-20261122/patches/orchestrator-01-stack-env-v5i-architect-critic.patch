@@ -1,0 +1,74 @@
+From 8fd386d0aab2be4885620aaf6d6abc9e3ed44a1a Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Sun, 22 Nov 2026 15:08:20 +0000
+Subject: [PATCH] stack_env: V5I Q8MF env for the 27B DFlash2 :8083 process
+ only (stack-change V5I-27B-Q8MF, unsigned lane)
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01F1v5qCZ3QJbHavUMsZnzEM
+---
+ scripts/server/stack_env.py  | 17 +++++++++++++++++
+ tests/unit/test_stack_env.py | 22 ++++++++++++++++++++++
+ 2 files changed, 39 insertions(+)
+
+diff --git a/scripts/server/stack_env.py b/scripts/server/stack_env.py
+index 347d8f70..84b7d507 100644
+--- a/scripts/server/stack_env.py
++++ b/scripts/server/stack_env.py
+@@ -114,6 +114,23 @@ _ROLE_ENV_BLOCKS: dict[str, dict[str, str]] = {
+     # MI210 27B on :8083 (now architect_critic) has no block, as it had none while it
+     # was architect_general. BINDING follows the PROCESS.
+     "architect_general": {},
++    # 2026-11-22 STACK-CHANGE V5I-27B-Q8MF (operator-signed package,
++    # epyc-root artifacts/operator/stack-change-v5i-27b-q8mf-20261122/): the MI210
++    # 27B DFlash2 process on :8083 (architect_critic; also hosts the coder_escalation
++    # and ingest_long_context aliases) runs the V5I matrix-core Q8_0 small-M path.
++    # Served KEEP (V5I-SERVED-27B): np1 1.0995x [1.078, 1.121], np2 1.161x, KLD passed.
++    # A3B (frontdoor) LOSES at 0.988x [0.983, 0.992] and must NOT receive these.
++    # KERNEL: production v10 (ffc1bac82) reads none of these knobs (0 strings in its
++    # libggml-hip.so). They act only on a kernel carrying a8cb3a839 (DTREE-0-Q8MF-V5)
++    # + in-place repack (C18 champion lineage), where all default OFF, so the env is
++    # REQUIRED after promotion and inert before it.
++    "architect_critic": {
++        "GGML_HIP_Q8_MF": "6",
++        "GGML_HIP_Q8_MF_MIN": "1",
++        "GGML_HIP_Q8_MF_INPLACE": "1",
++        "GGML_HIP_Q8_MF_SLC": "1",
++        "GGML_HIP_Q8_WVSK_MAX": "16",
++    },
+     # Hybrid SSM dense (Nemotron-9B-v2-class) — c3 = CPU1 stack + mbind off.
+     # Activate when a hybrid_ssm_dense model is rostered.
+     # 2026-06-26 v6 cutover: removed GGML_CCD_POOLS / GGML_CCD_WORK_DIST /
+diff --git a/tests/unit/test_stack_env.py b/tests/unit/test_stack_env.py
+index c19b28d0..a71d0863 100644
+--- a/tests/unit/test_stack_env.py
++++ b/tests/unit/test_stack_env.py
+@@ -131,3 +131,25 @@ def test_dead_numa_repack_interleave_knob_is_not_emitted() -> None:
+     assert registry["architect_critic"]["device"] == "ROCm0"
+     gpu_env = build_launch_env("architect_critic", base_env={})
+     assert "GGML_NUMA_REPACK_INTERLEAVE" not in gpu_env
++
++
++_V5I_ENV = {
++    "GGML_HIP_Q8_MF": "6",
++    "GGML_HIP_Q8_MF_MIN": "1",
++    "GGML_HIP_Q8_MF_INPLACE": "1",
++    "GGML_HIP_Q8_MF_SLC": "1",
++    "GGML_HIP_Q8_WVSK_MAX": "16",
++}
++
++
++def test_v5i_env_scoped_to_27b_dflash2_process() -> None:
++    """V5I (stack-change V5I-27B-Q8MF): the 27B :8083 process and its aliases only."""
++    for role in ("architect_critic", "coder_escalation", "ingest_long_context"):
++        env = build_launch_env(role, base_env={})
++        for key, value in _V5I_ENV.items():
++            assert env.get(key) == value, (role, key)
++    # A3B loses at 0.988x; no other role may carry any V5I knob.
++    for role in ("frontdoor", "worker_summarize", "worker_general", "architect_general",
++                 "worker_vision", "vision_escalation", "toolrunner"):
++        env = build_launch_env(role, base_env={})
++        assert not set(_V5I_ENV) & set(env), role
+-- 
+2.56.0
+
