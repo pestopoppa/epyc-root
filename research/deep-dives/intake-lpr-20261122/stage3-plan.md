@@ -1,6 +1,6 @@
-# Stage-3 plan — llama.cpp PR batch + Inkling 2 Mini (intake-lpr-20261122) — AWAITING OPERATOR APPROVAL
+# Stage-3 plan — llama.cpp PR batch + Inkling 2 Mini (intake-lpr-20261122) — APPROVED 2026-11-22 with operator edits
 
-Entries intake-2792..intake-2823 (32: 9 submitted, 23 Stage-2b across 4 waves), all dive-verified. Subagents: 2 opus/medium (GPU FA dives, CDNA/QSA sparse wave), 12 sonnet (dives and composers). No compute was used; every [inference] box below is a separately booked row, not run by intake. Nothing here is filed until approval.
+Entries intake-2792..intake-2823 (32: 9 submitted, 23 Stage-2b across 4 waves), all dive-verified. Subagents: 2 opus/medium (GPU FA dives, CDNA/QSA sparse wave), 12 sonnet (dives and composers). No compute was used; every [inference] box below is a separately booked row, not run by intake. Operator edits applied: (1) H12 band, H12 union and Q8_0 two-stream screens became AutoKernel seed hypotheses (K3), not boxes; (2) INK2-MINI-1 reframed to the 35B-A3B replacement role; (3) FOLD-CENSUS-1 gained a gain-or-ours-faster question.
 
 ## Work packets
 
@@ -8,15 +8,13 @@ Entries intake-2792..intake-2823 (32: 9 submitted, 23 Stage-2b across 4 waves), 
 |---|---|---|---|
 | P1 | Port #29638/ed1254a EOG stop and #32771 trim with tests | handoffs/active/speculative-decoding.md | SPEC-STALE-1 |
 | P2 | Read existing probes/smaps/launchers, then decide the #30137 port | handoffs/active/harness-program.md | PFXC-SAVE-1 |
-| P3 | Band measurement row and union-fraction gate | handoffs/active/autokernel-loop.md | H12-BAND-1, H12-UNION-0 |
 | P4 | Fold guard test + slot move; conflict census and recipe | handoffs/active/kernel-champion-and-promotion.md | FOLD-GUARD-H12, FOLD-CENSUS-1 |
 | P5 | Extend ISA families + guidance; GDN op baseline + tests | handoffs/active/autokernel-loop.md | AK-ISA-FAMILIES, GDN-VERIFY-BASE |
 | P6 | Addendum + port-cost estimate (code reading) | handoffs/active/model-evaluation-queue.md | INK2-MINI-1 |
-| P7 | One-matrix Q8_0 microbench row | handoffs/active/cpu-decode-roofline-program.md | Q8-2STREAM-1 |
 
-Safe concurrency: P1, P2, P4, P5 (ISA part) and P6 are independent code/doc work. P3, P5 (GDN) and P7 are GPU/CPU rows needing bookings; H12-UNION-0 follows H12-BAND-1 only by sharing the H12 shapes, not by dependency.
+Safe concurrency: P1, P2, P4, P5 (ISA part) and P6 are independent code/doc work; P5 (GDN) is a GPU row needing a booking.
 
-Minimum-rigor: measurement boxes (H12-BAND-1, H12-UNION-0, GDN-VERIFY-BASE, Q8-2STREAM-1) each name question, expected effect vs noise, A/A floor or bit-identity, fixed shapes, stop-on-answer and stop-on-futility, futility-only gate class. Code boxes (SPEC-STALE-1, FOLD-GUARD-H12, AK-ISA-FAMILIES) replace the six controls with red/green tests and a synthetic-regression check. PFXC-SAVE-1 and FOLD-CENSUS-1 read existing evidence only.
+Minimum-rigor: the measurement box GDN-VERIFY-BASE and the K3 seeds name question, expected effect vs noise, A/A floor or bit-identity, fixed shapes, stop-on-answer and stop-on-futility, futility-only gate class. Code boxes (SPEC-STALE-1, FOLD-GUARD-H12, AK-ISA-FAMILIES) replace the six controls with red/green tests and a synthetic-regression check. PFXC-SAVE-1 and FOLD-CENSUS-1 read existing evidence only.
 
 ## Monitors and knowledge-only (durable prose, no checkbox)
 
@@ -29,7 +27,8 @@ Minimum-rigor: measurement boxes (H12-BAND-1, H12-UNION-0, GDN-VERIFY-BASE, Q8-2
 | M5 | ZMM IQ3_S 2-8 rows / ZMM IQ2_S: reopen if a served IQ2_S/IQ3_S-heavy model profile shows the dot as bottleneck. |
 | M6 | LDS-staged iq3s_grid on HIP: reopen if a profile shows constant-cache serialisation in IQ3_S mmvq. |
 | M7 | CDNA sparse-FA break-even prior: reopen when a DSA/indexer model enters the GPU roster. |
-| K1 | IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793; no IQ3_XXS model served. |
+| K1 | IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793#record; no IQ3_XXS model served. |
+| K3 | H12 ratio band, H12 group-union and Q8_0 two-stream screens are filed as AutoKernel seed hypotheses in epyc-inference-research scripts/kernel_rnd/autokernel/loop/seeds/hypotheses/20-intake-lpr-h12-band-union-q8-2stream-20261122.md (operator edit 2026-11-22); design_prior grade, futility-only. |
 | K2 | Stop-inside-accepted-draft frequency on served traffic is already counted: 0 of 41 v10 turns (harness-program.md:3031 @ 860023c); no new count. |
 
 ## Complete recommendation mapping
@@ -45,12 +44,12 @@ Minimum-rigor: measurement boxes (H12-BAND-1, H12-UNION-0, GDN-VERIFY-BASE, Q8-2
 | LPR-07 | intake-2800 #32758 dive | Adopt the restore-retry fix (draft restore failure keeps the target buffer) | P2 / PFXC-SAVE-1 |
 | LPR-08 | intake-2800 #32758 + intake-2804 #32478 + intake-2810 tensward dives | THP opt-in flag or GLIBC_TUNABLES=glibc.malloc.hugetlb=1 | decline: host THP is always, so the madvise flag and the glibc tunable are no-ops on this host |
 | LPR-09 | intake-2821 #31391 + intake-2822 #30881 dives | Port the batched tensor copy API and CUDA gather | M1 |
-| LPR-10 | intake-2792 #32741 + intake-2819 #28770 dives | Measure the H12 ratio band 5-8 and a token-count-aware gate | P3 / H12-BAND-1 |
-| LPR-11 | intake-2819 #28770 dive | Group-union H12 variant for verify batches | P3 / H12-UNION-0 |
+| LPR-10 | intake-2792 #32741 + intake-2819 #28770 dives | Measure the H12 ratio band 5-8 and a token-count-aware gate | K3 |
+| LPR-11 | intake-2819 #28770 dive | Group-union H12 variant for verify batches | K3 |
 | LPR-12 | intake-2808 #27970 + intake-2818 #31259 dives | Move FA n_seq off slot 4 and assert H12 fusion survives a fold | P4 / FOLD-GUARD-H12 |
 | LPR-13 | intake-2816 #32016 dive | Merge-tree conflict census and whole-fold recipe for the DFlash refactor; launcher --spec-type audit | P4 / FOLD-CENSUS-1 |
 | LPR-14 | intake-2795 #30846 dive | Resolve #30846 against our Q8_0 nrc==2 branch at fold time with a bit-equality test | P4 / FOLD-CENSUS-1 |
-| LPR-15 | intake-2795 #30846 dive | Q8_0 split-stream microbench on Zen 5 | P7 / Q8-2STREAM-1 |
+| LPR-15 | intake-2795 #30846 dive | Q8_0 split-stream microbench on Zen 5 | K3 |
 | LPR-16 | intake-2797 #32740 dive | Add served FA families to the ISA gate and template-not-branch AK guidance | P5 / AK-ISA-FAMILIES |
 | LPR-17 | intake-2796 #32456 dive | GDN verify-shape op baseline, mild-gate tests, conditional fused reduction | P5 / GDN-VERIFY-BASE |
 | LPR-18 | intake-2796 #32456 dive | Column-width (1 vs 4 per wave) knob | M2 |
@@ -70,46 +69,41 @@ Minimum-rigor: measurement boxes (H12-BAND-1, H12-UNION-0, GDN-VERIFY-BASE, Q8-2
 ## Proposed handoff edits (Stage 4 only, after approval)
 
 handoffs/active/speculative-decoding.md:
-- [ ] **SPEC-STALE-1** [code] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.
+- [ ] **SPEC-STALE-1** [non-inference] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.
       · done when: both commits on the branch, all four tests green on CPU (pre-fix red where applicable), PR-style note with the commit SHAs in this box
+      · gate: none
 
 handoffs/active/harness-program.md:
 - [ ] **PFXC-SAVE-1** [non-inference] Price the prompt-cache save path from evidence we already have before any port (intake-2800#record, intake-2823#record, intake-2809#record, intake-2810#record): (1) read the retained LLAMA_LB7_PROBES lines (alloc_us, idle_save_us, n_ranges, checkpoint-list size, prompt_save/prompt_load ms) for :8083 and :8070 and report P50/P95 save and restore ms and their share of TTFT; (2) read /proc/<pid>/smaps AnonHugePages for one live :8083 server during a served window (read-only); (3) grep launchers and stack configs for GGML_NOHUGEPAGE_PROCESS=1. Then decide: if save P95 >= 50 ms or >= 1% of the TTFT tail, open the port box (upstream #30137 reference-counted checkpoints + no-zero-fill buffers + #32758's restore-retry fix, with checkpoint accounting deduped by pointer); otherwise close as no-gain. THP flag and glibc.malloc.hugetlb are not adopted (host THP is `always`).
       · done when: a dated note under this box with the three readings (file paths + numbers) and the decision (port box filed, or closed no-gain)
-
-handoffs/active/autokernel-loop.md:
-- [ ] **H12-BAND-1** [inference] Measure AK-ASM-H12 fused QSA vs dense FA on the MI210 at n_kv/width 5, 6 and 8 for 1, 4, 8 and 16 query tokens (op-level test-backend-ops perf, Q38FN QSA shape hd256 gqa12, OFF/OFF A/A floor, 3 repeats), and decide whether GGML_CUDA_QSA_SPARSE_MIN_KV_RATIO=8 should drop or become token-count-aware (min(nq, cap) form) (intake-2792#record, intake-2819#record). Question: does the unmeasured 4-8 band win; expected effect >= 3% op time vs A/A noise ~1%. Stop-on-answer when every cell has a paired median; stop-on-futility if the 5x and 6x cells both lose at nq 1 and 16; keep 8 if the 6x result is < 1.03x at either nq; gate-class = futility-only.
-      · done when: a row result with per-cell medians and the chosen ratio/rule, cited by row id
-
-handoffs/active/autokernel-loop.md:
-- [ ] **H12-UNION-0** [code then inference] Decide whether a group-union H12 variant is worth writing (intake-2819#record): from a Q38FN top-k dump at verify batches of 2/4/8/16 tokens and n_kv/width 4/8/16, compute the union fraction |union of the batch's top-k lists| / (tokens x top_k) per kv head (zero kernel work; dump via the existing H12 debug path or a one-off test hook). If the union fraction is <= 0.6 at 16 tokens and ratio 4 (where H12 loses, 0.78x), write the variant (gather each union row once into a tokens x G MFMA tile, mask per token) and screen it vs H12 at those cells; KEEP if geomean >= 1.10 and no cell < 0.97. Stop-on-futility if the union fraction > 0.6.
-      · done when: union-fraction table committed under this box, and either a NO-GO note or a KEEP/DROP row result for the variant
+      · gate: none
 
 handoffs/active/kernel-champion-and-promotion.md:
-- [ ] **FOLD-GUARD-H12** [code] Upstream-fold guard for our FA slots (intake-2808#record, intake-2818#record): at the next fresh-from-champion fold that crosses upstream #27970 (8e93a9773) or the fused TOP_K_MASK work, (a) move our FA op_params n_seq from slot 4 to slot 5 behind the accessor (readers fattn-gqa-verify.cu:682/:739, fattn-common.cuh:1079, ggml-cpu/ops.cpp:10428 @ eee3da8) and (b) add a test that asserts H12 still fuses the Q38FN QSA node with n_kv_max set and with the fused top-k-mask op present, failing loudly instead of silently falling back to dense FA.
+- [ ] **FOLD-GUARD-H12** [non-inference] Upstream-fold guard for our FA slots (intake-2808#record, intake-2818#record): at the next fresh-from-champion fold that crosses upstream #27970 (8e93a9773) or the fused TOP_K_MASK work, (a) move our FA op_params n_seq from slot 4 to slot 5 behind the accessor (readers fattn-gqa-verify.cu:682/:739, fattn-common.cuh:1079, ggml-cpu/ops.cpp:10428 @ eee3da8) and (b) add a test that asserts H12 still fuses the Q38FN QSA node with n_kv_max set and with the fused top-k-mask op present, failing loudly instead of silently falling back to dense FA.
       · done when: fold branch carries the slot move and the H12 fusion test, test green on ROCm0 and CPU
+      · gate: none
 
 handoffs/active/kernel-champion-and-promotion.md:
-- [ ] **FOLD-CENSUS-1** [code/doc] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; and audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently).
-      · done when: census output path, conflict-count table and the fold recipe recorded under this box
+- [ ] **FOLD-CENSUS-1** [non-inference] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently); and (operator question 2026-11-22) for each censused upstream change -- the DFlash split into dflash/dflash2/dspark/lilicorr, and the fused TOP_K_MASK work #30640/#30965/#31243 -- state with evidence whether we would GAIN from adopting it or whether our own path (DFlash2, H12 fused QSA) is faster.
+      · done when: census output path, conflict-count table, the fold recipe and a gain-or-ours-faster verdict with evidence per censused change recorded under this box
+      · gate: none
 
 handoffs/active/autokernel-loop.md:
-- [ ] **AK-ISA-FAMILIES** [code] Add fattn_vec, fattn_tile and classifier families for the gqa-verify (gv_*) and qsa-sparse (k_qsa_sparse_*) kernels to the gfx90a_isa_audit default family set and to the pre-timing ISA gate invocation, so a VGPR increase or occupancy drop in the served decode/verify FA kernels fails before timing; add to AK actor guidance that a feature bit in an FA hot loop must be a template parameter, not a runtime branch (upstream #32740 measured ~25% loss and 181->202 registers for the runtime-branch form on NVIDIA) (intake-2797#record).
+- [ ] **AK-ISA-FAMILIES** [non-inference] Add fattn_vec, fattn_tile and classifier families for the gqa-verify (gv_*) and qsa-sparse (k_qsa_sparse_*) kernels to the gfx90a_isa_audit default family set and to the pre-timing ISA gate invocation, so a VGPR increase or occupancy drop in the served decode/verify FA kernels fails before timing; add to AK actor guidance that a feature bit in an FA hot loop must be a template parameter, not a runtime branch (upstream #32740 measured ~25% loss and 181->202 registers for the runtime-branch form on NVIDIA) (intake-2797#record).
       · done when: gfx90a_isa_audit lists vec/tile/gv/qsa kernels with VGPR/occupancy on the champion libggml-hip, and diff exits 1 on a synthetic +VGPR variant
+      · gate: none
 
 handoffs/active/autokernel-loop.md:
 - [ ] **GDN-VERIFY-BASE** [inference] Measure the recurrent GATED_DELTA_NET op on ROCm0 at verify shapes (F32 and bf16 state, S_v 128 and 64, H*n_seqs 48x1 and 48x4, n_tokens 1/4/8/16, 3 repeats, A/A floor) to supply the missing verify-regime GDN share, and port upstream #32456's mild-gate (g_min -0.05) GATED_DELTA_NET test cases into the fork's test-backend-ops set (intake-2796#record). Stop with NO-GO if the 8-row 48-head op is < 3% of measured per-round verify ms; only if >= 3%, author the fused float2-reduction variant (attn = g*(S^T q) + delta*(k.q)) and screen it at these shapes (KEEP if >= 10% op time at 8 rows); gate-class = futility-only.
       · done when: row result with us/layer per shape and share of verify ms, mild-gate cases green on CPU and ROCm0, and a NO-GO or variant decision
+      · gate: none
 
 handoffs/active/model-evaluation-queue.md:
-- [ ] **INK2-MINI-1** [code-reading/doc] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); compare the vendor card scores against Qwen3.8-27B in our lineup; recommend go/no-go for a port box.
-      · done when: addendum + port-cost table committed under this box with a go/no-go recommendation for the operator
+- [ ] **INK2-MINI-1** [non-inference] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); reframed by the operator 2026-11-22: the candidate role is replacing the 35B-A3B lineup model (same active-parameter class; Qwen4-27B is expected for the 27B category), so compare Inkling 2 Mini against the 35B-A3B model AND Qwen3.8-27B on per-token bytes (CPU, MI210), vendor scores where both publish them, and serving fit on CPU and on the MI210 (weights, KV at 32k/128k, concurrency); recommend go/no-go for a port box.
+      · done when: addendum + port-cost table (vs 35B-A3B and Qwen3.8-27B) committed under this box with a go/no-go recommendation for the operator
+      · gate: none
 
-handoffs/active/cpu-decode-roofline-program.md:
-- [ ] **Q8-2STREAM-1** [inference] One-matrix microbench of upstream #30846's split-stream mul_mat_one_chunk on Q8_0 (27B-shaped ffn tensor, 24 threads on one quarter q0-q2, ne11 in {2,4,8,16}, adjacent-pair vs split-stream, hot, bit-identical output check) (intake-2795#record). Question: does the Grace two-stream effect exist on Zen 5; expected effect +2.6% (bandwidth-saturated) to +15-30% (not saturated) per the source. Stop-on-futility if < 1.5% at ne11 2..8; stop-on-answer when 4 ne11 x 3 reps are done; only a pass opens an e2e 27B DFlash2 CPU verify row.
-      · done when: row result table (ne11 x median gain, bit-identity) and a pass/futility verdict
-
-Durable trigger prose (no checkbox), one line each under the owner's current track: M1 -> handoffs/active/harness-program.md; M2 -> handoffs/active/autokernel-loop.md; M3 -> handoffs/active/speculative-decoding.md; M4 -> handoffs/active/speculative-decoding.md; M5 -> handoffs/active/autokernel-loop.md; M6 -> handoffs/active/autokernel-loop.md; M7 -> handoffs/active/long-context-program.md; K1 -> handoffs/active/cpu-decode-roofline-program.md; K2 -> handoffs/active/harness-program.md.
+Durable trigger prose (no checkbox), one line each under the owner's current track: M1 -> handoffs/active/harness-program.md; M2 -> handoffs/active/autokernel-loop.md; M3 -> handoffs/active/speculative-decoding.md; M4 -> handoffs/active/speculative-decoding.md; M5 -> handoffs/active/autokernel-loop.md; M6 -> handoffs/active/autokernel-loop.md; M7 -> handoffs/active/long-context-program.md; K1 -> handoffs/active/cpu-decode-roofline-program.md; K3 -> handoffs/active/autokernel-loop.md; K2 -> handoffs/active/harness-program.md.
 
 Index rows: none. Every box lands in a handoff that already has an index row; no new stubs.
 
@@ -137,7 +131,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): H12-BAND-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): AutoKernel seed hypothesis AK-H12-BAND (seeds/hypotheses/20; K3 pointer in autokernel-loop.md)"
    ]
   },
   {
@@ -146,7 +140,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): LPR-22 decline; M5/M6 monitors"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): LPR-22 decline; M5/M6 monitors"
    ]
   },
   {
@@ -155,19 +149,18 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): LPR-22 decline (iqk displaces the function)"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): LPR-22 decline (iqk displaces the function)"
    ]
   },
   {
    "id": "intake-2795",
    "integration_disposition": "integrated",
    "handoffs_updated": [
-    "kernel-champion-and-promotion.md",
-    "cpu-decode-roofline-program.md"
+    "kernel-champion-and-promotion.md"
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): FOLD-CENSUS-1 + Q8-2STREAM-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): FOLD-CENSUS-1 + AutoKernel seed hypothesis AK-CPU-Q8-2STREAM"
    ]
   },
   {
@@ -178,7 +171,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): GDN-VERIFY-BASE"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): GDN-VERIFY-BASE"
    ]
   },
   {
@@ -190,7 +183,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): AK-ISA-FAMILIES; bias path sized in INK2-MINI-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): AK-ISA-FAMILIES; bias path sized in INK2-MINI-1"
    ]
   },
   {
@@ -201,7 +194,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): INK2-MINI-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1"
    ]
   },
   {
@@ -212,7 +205,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): SPEC-STALE-1 (b)"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 (b)"
    ]
   },
   {
@@ -223,7 +216,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): PFXC-SAVE-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): PFXC-SAVE-1"
    ]
   },
   {
@@ -234,7 +227,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): SPEC-STALE-1 (a)"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 (a)"
    ]
   },
   {
@@ -245,7 +238,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): SPEC-STALE-1 tests (48-EOG tail, EOG at row 0)"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 tests (48-EOG tail, EOG at row 0)"
    ]
   },
   {
@@ -256,7 +249,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): SPEC-STALE-1 (a)"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 (a)"
    ]
   },
   {
@@ -265,7 +258,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): LPR-08 decline; fault counts inform PFXC-SAVE-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): LPR-08 decline; fault counts inform PFXC-SAVE-1"
    ]
   },
   {
@@ -276,7 +269,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): INK2-MINI-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1 (35B-A3B replacement framing)"
    ]
   },
   {
@@ -285,7 +278,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): superseded by #32694/#32704 (INK2-MINI-1 scope)"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): superseded by #32694/#32704 (INK2-MINI-1 scope)"
    ]
   },
   {
@@ -294,7 +287,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): M3"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): M3"
    ]
   },
   {
@@ -305,7 +298,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): FOLD-GUARD-H12"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): FOLD-GUARD-H12"
    ]
   },
   {
@@ -316,7 +309,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): PFXC-SAVE-1 (idle_save_us read)"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): PFXC-SAVE-1 (idle_save_us read)"
    ]
   },
   {
@@ -325,7 +318,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): LPR-08 decline (THP=always)"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): LPR-08 decline (THP=always)"
    ]
   },
   {
@@ -336,7 +329,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): SPEC-STALE-1 (a) rejection loop"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 (a) rejection loop"
    ]
   },
   {
@@ -347,7 +340,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): INK2-MINI-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1"
    ]
   },
   {
@@ -358,7 +351,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): INK2-MINI-1 scope"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1 scope"
    ]
   },
   {
@@ -369,7 +362,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): INK2-MINI-1 scope"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1 scope"
    ]
   },
   {
@@ -380,7 +373,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): INK2-MINI-1 scope"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1 scope"
    ]
   },
   {
@@ -391,7 +384,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): FOLD-CENSUS-1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): FOLD-CENSUS-1"
    ]
   },
   {
@@ -400,7 +393,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): M4"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): M4"
    ]
   },
   {
@@ -411,7 +404,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): FOLD-GUARD-H12"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): FOLD-GUARD-H12"
    ]
   },
   {
@@ -422,7 +415,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): H12-BAND-1 + H12-UNION-0"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): AutoKernel seed hypotheses AK-H12-BAND + AK-H12-UNION (seeds/hypotheses/20; K3 pointer in autokernel-loop.md)"
    ]
   },
   {
@@ -431,7 +424,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): No CDNA/QSA behaviour; fold notes in FOLD-GUARD-H12"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): No CDNA/QSA behaviour; fold notes in FOLD-GUARD-H12"
    ]
   },
   {
@@ -440,7 +433,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): M1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): M1"
    ]
   },
   {
@@ -449,7 +442,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "handoffs_updated": [],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): M1"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): M1"
    ]
   },
   {
@@ -460,7 +453,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-lpr-20261122 Stage-3 plan (pending operator approval): PFXC-SAVE-1 port decision"
+    "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): PFXC-SAVE-1 port decision"
    ]
   }
  ],
@@ -484,16 +477,6 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "owner": "handoffs/active/harness-program.md",
    "execution_conditions": "Zero compute first; port box only on the decision rule",
    "closure_basis": "Immediate evidence read; port gated"
-  },
-  "P3": {
-   "project_objective": "H12 sparse QSA dispatch and verify-batch efficiency on gfx90a",
-   "implementation_ref": "ggml/src/ggml-cuda/qsa-sparse.cu:248/:454-600 @ eee3da8",
-   "gap": "Ratio 4-8 band unmeasured; H12 shares nothing across verify tokens and loses 0.78x at ratio 4 x 16 tokens",
-   "operational_change": "Band measurement row and union-fraction gate",
-   "benefit_direction": "Faster Q38FN long-context verify; numerics unchanged",
-   "owner": "handoffs/active/autokernel-loop.md",
-   "execution_conditions": "GPU rows booked separately; kernel only after the union gate",
-   "closure_basis": "Immediate measurement; variant gated"
   },
   "P4": {
    "project_objective": "Safe next upstream bundle fold",
@@ -524,16 +507,6 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "owner": "handoffs/active/model-evaluation-queue.md",
    "execution_conditions": "Doc/code-reading only; port and rows need operator go",
    "closure_basis": "Immediate doc; port gated on operator"
-  },
-  "P7": {
-   "project_objective": "CPU verify-batch matmul bandwidth on Zen 5",
-   "implementation_ref": "ggml-cpu.c:1439-1688 @ eee3da8 (one_chunk path for Q8_0 nrc==2)",
-   "gap": "#30846's two-stream effect never measured on x86",
-   "operational_change": "One-matrix Q8_0 microbench row",
-   "benefit_direction": "Know if the fold brings speed on EPYC; bit-identical output",
-   "owner": "handoffs/active/cpu-decode-roofline-program.md",
-   "execution_conditions": "CPU quarter q0-q2, short window, booked separately",
-   "closure_basis": "Immediate measurement; e2e row gated on pass"
   },
   "M1": {
    "project_objective": "Batched copy API / CUDA gather (#30881/#31391): reopen with the existing cache-idle-slots reopen trigger (harness-program.md:3842) or if PFXC-SAVE-1 shows restore transfer count dominating with idle saves off.",
@@ -606,14 +579,24 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "closure_basis": "CDNA sparse-FA break-even prior: reopen when a DSA/indexer model enters the GPU roster."
   },
   "K1": {
-   "project_objective": "IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793; no IQ3_XXS model served.",
+   "project_objective": "IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793#record; no IQ3_XXS model served.",
    "implementation_ref": "see recommendation basis",
    "gap": "trigger not fired",
    "operational_change": "none now",
    "benefit_direction": "n/a until trigger",
    "owner": "handoffs/active/cpu-decode-roofline-program.md",
-   "execution_conditions": "IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793; no IQ3_XXS model served.",
-   "closure_basis": "IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793; no IQ3_XXS model served."
+   "execution_conditions": "IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793#record; no IQ3_XXS model served.",
+   "closure_basis": "IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793#record; no IQ3_XXS model served."
+  },
+  "K3": {
+   "project_objective": "H12 ratio band, H12 group-union and Q8_0 two-stream screens are filed as AutoKernel seed hypotheses in epyc-inference-research scripts/kernel_rnd/autokernel/loop/seeds/hypotheses/20-intake-lpr-h12-band-union-q8-2stream-20261122.md (operator edit 2026-11-22); design_prior grade, futility-only.",
+   "implementation_ref": "see recommendation basis",
+   "gap": "trigger not fired",
+   "operational_change": "none now",
+   "benefit_direction": "n/a until trigger",
+   "owner": "handoffs/active/autokernel-loop.md",
+   "execution_conditions": "H12 ratio band, H12 group-union and Q8_0 two-stream screens are filed as AutoKernel seed hypotheses in epyc-inference-research scripts/kernel_rnd/autokernel/loop/seeds/hypotheses/20-intake-lpr-h12-band-union-q8-2stream-20261122.md (operator edit 2026-11-22); design_prior grade, futility-only.",
+   "closure_basis": "H12 ratio band, H12 group-union and Q8_0 two-stream screens are filed as AutoKernel seed hypotheses in epyc-inference-research scripts/kernel_rnd/autokernel/loop/seeds/hypotheses/20-intake-lpr-h12-band-union-q8-2stream-20261122.md (operator edit 2026-11-22); design_prior grade, futility-only."
   },
   "K2": {
    "project_objective": "Stop-inside-accepted-draft frequency on served traffic is already counted: 0 of 41 v10 turns (harness-program.md:3031 @ 860023c); no new count.",
@@ -685,13 +668,13 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "ledger_id": "LPR-10",
    "source": "intake-2792 #32741 + intake-2819 #28770 dives",
    "action": "Measure the H12 ratio band 5-8 and a token-count-aware gate",
-   "terminal_mapping": "P3 / H12-BAND-1"
+   "terminal_mapping": "K3"
   },
   {
    "ledger_id": "LPR-11",
    "source": "intake-2819 #28770 dive",
    "action": "Group-union H12 variant for verify batches",
-   "terminal_mapping": "P3 / H12-UNION-0"
+   "terminal_mapping": "K3"
   },
   {
    "ledger_id": "LPR-12",
@@ -715,7 +698,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "ledger_id": "LPR-15",
    "source": "intake-2795 #30846 dive",
    "action": "Q8_0 split-stream microbench on Zen 5",
-   "terminal_mapping": "P7 / Q8-2STREAM-1"
+   "terminal_mapping": "K3"
   },
   {
    "ledger_id": "LPR-16",
@@ -928,6 +911,38 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
    "disposition": "context-only",
    "plan_ref": null,
    "reason": "Report format; applied to the final hand-back."
+  },
+  {
+   "seq": 16,
+   "stage": 3,
+   "verbatim": "H12-BAND-1, H12-UNION-0 and Q8-2STREAM-1: do not file them as handoff boxes. File them as AutoKernel loop hypotheses instead, in whatever hypothesis/candidate register the AutoKernel loop uses (grep autokernel-loop.md and the AK loop dir /mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/autokernel/loop for the hypothesis-queue format). Keep their question, expected effect and stop rules.",
+   "disposition": "planned",
+   "plan_ref": "K3",
+   "reason": "Applied as seeds/hypotheses/20 in the AK loop seed register."
+  },
+  {
+   "seq": 17,
+   "stage": 3,
+   "verbatim": "INK2-MINI-1 is approved, with a reframe: the candidate role is replacing the Qwen3.5-35B-A3B model (similar active-parameter class), not the 27B. Qwen4-27B is expected soon for the 27B category. The port-cost estimate must compare Inkling 2 Mini against A3B as well as Qwen3.8-27B: per-token bytes, vendor scores where available, and serving fit on CPU and on the MI210.",
+   "disposition": "planned",
+   "plan_ref": "P6",
+   "reason": "INK2-MINI-1 text reframed."
+  },
+  {
+   "seq": 18,
+   "stage": 3,
+   "verbatim": "FOLD-CENSUS-1 gets one added question: for each upstream change it censuses (the DFlash split into dflash/dflash2/dspark/lilicorr, and the fused TOP_K_MASK work #30640/#30965/#31243), state whether we would GAIN from adopting it or whether our own path (DFlash2, H12 fused QSA) is faster, with evidence.",
+   "disposition": "planned",
+   "plan_ref": "P4",
+   "reason": "FOLD-CENSUS-1 text extended."
+  },
+  {
+   "seq": 19,
+   "stage": 3,
+   "verbatim": "Everything else is approved as written: SPEC-STALE-1, PFXC-SAVE-1, AK-ISA-FAMILIES, GDN-VERIFY-BASE, FOLD-GUARD-H12, the monitors and the knowledge items.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Approval of the remaining plan; applied as written."
   }
  ],
  "opportunity_scan": [
@@ -1175,7 +1190,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/speculative-decoding.md",
      "task_id": "SPEC-STALE-1",
-     "task_text": "- [ ] **SPEC-STALE-1** [code] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.",
+     "task_text": "- [ ] **SPEC-STALE-1** [non-inference] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.",
      "acceptance": "SPEC-STALE-1 part (a) and its unit test"
     }
    ]
@@ -1188,7 +1203,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/speculative-decoding.md",
      "task_id": "SPEC-STALE-1",
-     "task_text": "- [ ] **SPEC-STALE-1** [code] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.",
+     "task_text": "- [ ] **SPEC-STALE-1** [non-inference] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.",
      "acceptance": "SPEC-STALE-1 part (b) and the parity test"
     }
    ]
@@ -1201,7 +1216,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/speculative-decoding.md",
      "task_id": "SPEC-STALE-1",
-     "task_text": "- [ ] **SPEC-STALE-1** [code] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.",
+     "task_text": "- [ ] **SPEC-STALE-1** [non-inference] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.",
      "acceptance": "SPEC-STALE-1 test list"
     }
    ]
@@ -1258,29 +1273,15 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
   },
   "LPR-10": {
    "required_outcome": "H12 dispatch threshold set from measurement, not post hoc",
-   "review_status": "preserved",
-   "review_basis": "H12-BAND-1",
-   "task_refs": [
-    {
-     "owner": "handoffs/active/autokernel-loop.md",
-     "task_id": "H12-BAND-1",
-     "task_text": "- [ ] **H12-BAND-1** [inference] Measure AK-ASM-H12 fused QSA vs dense FA on the MI210 at n_kv/width 5, 6 and 8 for 1, 4, 8 and 16 query tokens (op-level test-backend-ops perf, Q38FN QSA shape hd256 gqa12, OFF/OFF A/A floor, 3 repeats), and decide whether GGML_CUDA_QSA_SPARSE_MIN_KV_RATIO=8 should drop or become token-count-aware (min(nq, cap) form) (intake-2792#record, intake-2819#record). Question: does the unmeasured 4-8 band win; expected effect >= 3% op time vs A/A noise ~1%. Stop-on-answer when every cell has a paired median; stop-on-futility if the 5x and 6x cells both lose at nq 1 and 16; keep 8 if the 6x result is < 1.03x at either nq; gate-class = futility-only.",
-     "acceptance": "H12-BAND-1"
-    }
-   ]
+   "review_status": "closed-with-basis",
+   "review_basis": "Filed as AutoKernel seed hypothesis AK-H12-BAND (operator edit 2026-11-22); question, expected effect and stop rules preserved there",
+   "task_refs": []
   },
   "LPR-11": {
    "required_outcome": "H12 wins at ratio 4 x 16 tokens where it now loses",
-   "review_status": "preserved",
-   "review_basis": "H12-UNION-0 union-fraction gate then variant",
-   "task_refs": [
-    {
-     "owner": "handoffs/active/autokernel-loop.md",
-     "task_id": "H12-UNION-0",
-     "task_text": "- [ ] **H12-UNION-0** [code then inference] Decide whether a group-union H12 variant is worth writing (intake-2819#record): from a Q38FN top-k dump at verify batches of 2/4/8/16 tokens and n_kv/width 4/8/16, compute the union fraction |union of the batch's top-k lists| / (tokens x top_k) per kv head (zero kernel work; dump via the existing H12 debug path or a one-off test hook). If the union fraction is <= 0.6 at 16 tokens and ratio 4 (where H12 loses, 0.78x), write the variant (gather each union row once into a tokens x G MFMA tile, mask per token) and screen it vs H12 at those cells; KEEP if geomean >= 1.10 and no cell < 0.97. Stop-on-futility if the union fraction > 0.6.",
-     "acceptance": "H12-UNION-0 union-fraction gate then variant"
-    }
-   ]
+   "review_status": "closed-with-basis",
+   "review_basis": "Filed as AutoKernel seed hypothesis AK-H12-UNION (operator edit 2026-11-22); union-fraction gate and stop rules preserved there",
+   "task_refs": []
   },
   "LPR-12": {
    "required_outcome": "An upstream fold cannot silently disable H12 or corrupt n_seq",
@@ -1290,7 +1291,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/kernel-champion-and-promotion.md",
      "task_id": "FOLD-GUARD-H12",
-     "task_text": "- [ ] **FOLD-GUARD-H12** [code] Upstream-fold guard for our FA slots (intake-2808#record, intake-2818#record): at the next fresh-from-champion fold that crosses upstream #27970 (8e93a9773) or the fused TOP_K_MASK work, (a) move our FA op_params n_seq from slot 4 to slot 5 behind the accessor (readers fattn-gqa-verify.cu:682/:739, fattn-common.cuh:1079, ggml-cpu/ops.cpp:10428 @ eee3da8) and (b) add a test that asserts H12 still fuses the Q38FN QSA node with n_kv_max set and with the fused top-k-mask op present, failing loudly instead of silently falling back to dense FA.",
+     "task_text": "- [ ] **FOLD-GUARD-H12** [non-inference] Upstream-fold guard for our FA slots (intake-2808#record, intake-2818#record): at the next fresh-from-champion fold that crosses upstream #27970 (8e93a9773) or the fused TOP_K_MASK work, (a) move our FA op_params n_seq from slot 4 to slot 5 behind the accessor (readers fattn-gqa-verify.cu:682/:739, fattn-common.cuh:1079, ggml-cpu/ops.cpp:10428 @ eee3da8) and (b) add a test that asserts H12 still fuses the Q38FN QSA node with n_kv_max set and with the fused top-k-mask op present, failing loudly instead of silently falling back to dense FA.",
      "acceptance": "FOLD-GUARD-H12"
     }
    ]
@@ -1303,7 +1304,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/kernel-champion-and-promotion.md",
      "task_id": "FOLD-CENSUS-1",
-     "task_text": "- [ ] **FOLD-CENSUS-1** [code/doc] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; and audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently).",
+     "task_text": "- [ ] **FOLD-CENSUS-1** [non-inference] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently); and (operator question 2026-11-22) for each censused upstream change -- the DFlash split into dflash/dflash2/dspark/lilicorr, and the fused TOP_K_MASK work #30640/#30965/#31243 -- state with evidence whether we would GAIN from adopting it or whether our own path (DFlash2, H12 fused QSA) is faster.",
      "acceptance": "FOLD-CENSUS-1"
     }
    ]
@@ -1316,23 +1317,16 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/kernel-champion-and-promotion.md",
      "task_id": "FOLD-CENSUS-1",
-     "task_text": "- [ ] **FOLD-CENSUS-1** [code/doc] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; and audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently).",
+     "task_text": "- [ ] **FOLD-CENSUS-1** [non-inference] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently); and (operator question 2026-11-22) for each censused upstream change -- the DFlash split into dflash/dflash2/dspark/lilicorr, and the fused TOP_K_MASK work #30640/#30965/#31243 -- state with evidence whether we would GAIN from adopting it or whether our own path (DFlash2, H12 fused QSA) is faster.",
      "acceptance": "FOLD-CENSUS-1 #30846 clause"
     }
    ]
   },
   "LPR-15": {
    "required_outcome": "Know whether the two-stream effect exists on EPYC before folding it for speed",
-   "review_status": "preserved",
-   "review_basis": "Q8-2STREAM-1",
-   "task_refs": [
-    {
-     "owner": "handoffs/active/cpu-decode-roofline-program.md",
-     "task_id": "Q8-2STREAM-1",
-     "task_text": "- [ ] **Q8-2STREAM-1** [inference] One-matrix microbench of upstream #30846's split-stream mul_mat_one_chunk on Q8_0 (27B-shaped ffn tensor, 24 threads on one quarter q0-q2, ne11 in {2,4,8,16}, adjacent-pair vs split-stream, hot, bit-identical output check) (intake-2795#record). Question: does the Grace two-stream effect exist on Zen 5; expected effect +2.6% (bandwidth-saturated) to +15-30% (not saturated) per the source. Stop-on-futility if < 1.5% at ne11 2..8; stop-on-answer when 4 ne11 x 3 reps are done; only a pass opens an e2e 27B DFlash2 CPU verify row.",
-     "acceptance": "Q8-2STREAM-1"
-    }
-   ]
+   "review_status": "closed-with-basis",
+   "review_basis": "Filed as AutoKernel seed hypothesis AK-CPU-Q8-2STREAM (operator edit 2026-11-22); bench design and stop rules preserved there",
+   "task_refs": []
   },
   "LPR-16": {
    "required_outcome": "VGPR/occupancy regressions in served FA kernels fail before timing",
@@ -1342,7 +1336,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/autokernel-loop.md",
      "task_id": "AK-ISA-FAMILIES",
-     "task_text": "- [ ] **AK-ISA-FAMILIES** [code] Add fattn_vec, fattn_tile and classifier families for the gqa-verify (gv_*) and qsa-sparse (k_qsa_sparse_*) kernels to the gfx90a_isa_audit default family set and to the pre-timing ISA gate invocation, so a VGPR increase or occupancy drop in the served decode/verify FA kernels fails before timing; add to AK actor guidance that a feature bit in an FA hot loop must be a template parameter, not a runtime branch (upstream #32740 measured ~25% loss and 181->202 registers for the runtime-branch form on NVIDIA) (intake-2797#record).",
+     "task_text": "- [ ] **AK-ISA-FAMILIES** [non-inference] Add fattn_vec, fattn_tile and classifier families for the gqa-verify (gv_*) and qsa-sparse (k_qsa_sparse_*) kernels to the gfx90a_isa_audit default family set and to the pre-timing ISA gate invocation, so a VGPR increase or occupancy drop in the served decode/verify FA kernels fails before timing; add to AK actor guidance that a feature bit in an FA hot loop must be a template parameter, not a runtime branch (upstream #32740 measured ~25% loss and 181->202 registers for the runtime-branch form on NVIDIA) (intake-2797#record).",
      "acceptance": "AK-ISA-FAMILIES"
     }
    ]
@@ -1374,7 +1368,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/model-evaluation-queue.md",
      "task_id": "INK2-MINI-1",
-     "task_text": "- [ ] **INK2-MINI-1** [code-reading/doc] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); compare the vendor card scores against Qwen3.8-27B in our lineup; recommend go/no-go for a port box.",
+     "task_text": "- [ ] **INK2-MINI-1** [non-inference] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); reframed by the operator 2026-11-22: the candidate role is replacing the 35B-A3B lineup model (same active-parameter class; Qwen4-27B is expected for the 27B category), so compare Inkling 2 Mini against the 35B-A3B model AND Qwen3.8-27B on per-token bytes (CPU, MI210), vendor scores where both publish them, and serving fit on CPU and on the MI210 (weights, KV at 32k/128k, concurrency); recommend go/no-go for a port box.",
      "acceptance": "INK2-MINI-1"
     }
    ]
@@ -1435,7 +1429,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/model-evaluation-queue.md",
      "task_id": "INK2-MINI-1",
-     "task_text": "- [ ] **INK2-MINI-1** [code-reading/doc] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); compare the vendor card scores against Qwen3.8-27B in our lineup; recommend go/no-go for a port box.",
+     "task_text": "- [ ] **INK2-MINI-1** [non-inference] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); reframed by the operator 2026-11-22: the candidate role is replacing the 35B-A3B lineup model (same active-parameter class; Qwen4-27B is expected for the 27B category), so compare Inkling 2 Mini against the 35B-A3B model AND Qwen3.8-27B on per-token bytes (CPU, MI210), vendor scores where both publish them, and serving fit on CPU and on the MI210 (weights, KV at 32k/128k, concurrency); recommend go/no-go for a port box.",
      "acceptance": "INK2-MINI-1 sizes the bias path (per-head mask refused by our FA gates)"
     }
    ]
@@ -1454,7 +1448,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
     {
      "owner": "handoffs/active/model-evaluation-queue.md",
      "task_id": "INK2-MINI-1",
-     "task_text": "- [ ] **INK2-MINI-1** [code-reading/doc] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); compare the vendor card scores against Qwen3.8-27B in our lineup; recommend go/no-go for a port box.",
+     "task_text": "- [ ] **INK2-MINI-1** [non-inference] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); reframed by the operator 2026-11-22: the candidate role is replacing the 35B-A3B lineup model (same active-parameter class; Qwen4-27B is expected for the 27B category), so compare Inkling 2 Mini against the 35B-A3B model AND Qwen3.8-27B on per-token bytes (CPU, MI210), vendor scores where both publish them, and serving fit on CPU and on the MI210 (weights, KV at 32k/128k, concurrency); recommend go/no-go for a port box.",
      "acceptance": "INK2-MINI-1 includes them in the port scope"
     }
    ]
@@ -1463,31 +1457,23 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
  "proposed_tasks": [
   {
    "owner": "handoffs/active/speculative-decoding.md",
-   "task_text": "- [ ] **SPEC-STALE-1** [code] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path."
+   "task_text": "- [ ] **SPEC-STALE-1** [non-inference] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path."
   },
   {
    "owner": "handoffs/active/harness-program.md",
    "task_text": "- [ ] **PFXC-SAVE-1** [non-inference] Price the prompt-cache save path from evidence we already have before any port (intake-2800#record, intake-2823#record, intake-2809#record, intake-2810#record): (1) read the retained LLAMA_LB7_PROBES lines (alloc_us, idle_save_us, n_ranges, checkpoint-list size, prompt_save/prompt_load ms) for :8083 and :8070 and report P50/P95 save and restore ms and their share of TTFT; (2) read /proc/<pid>/smaps AnonHugePages for one live :8083 server during a served window (read-only); (3) grep launchers and stack configs for GGML_NOHUGEPAGE_PROCESS=1. Then decide: if save P95 >= 50 ms or >= 1% of the TTFT tail, open the port box (upstream #30137 reference-counted checkpoints + no-zero-fill buffers + #32758's restore-retry fix, with checkpoint accounting deduped by pointer); otherwise close as no-gain. THP flag and glibc.malloc.hugetlb are not adopted (host THP is `always`)."
   },
   {
-   "owner": "handoffs/active/autokernel-loop.md",
-   "task_text": "- [ ] **H12-BAND-1** [inference] Measure AK-ASM-H12 fused QSA vs dense FA on the MI210 at n_kv/width 5, 6 and 8 for 1, 4, 8 and 16 query tokens (op-level test-backend-ops perf, Q38FN QSA shape hd256 gqa12, OFF/OFF A/A floor, 3 repeats), and decide whether GGML_CUDA_QSA_SPARSE_MIN_KV_RATIO=8 should drop or become token-count-aware (min(nq, cap) form) (intake-2792#record, intake-2819#record). Question: does the unmeasured 4-8 band win; expected effect >= 3% op time vs A/A noise ~1%. Stop-on-answer when every cell has a paired median; stop-on-futility if the 5x and 6x cells both lose at nq 1 and 16; keep 8 if the 6x result is < 1.03x at either nq; gate-class = futility-only."
-  },
-  {
-   "owner": "handoffs/active/autokernel-loop.md",
-   "task_text": "- [ ] **H12-UNION-0** [code then inference] Decide whether a group-union H12 variant is worth writing (intake-2819#record): from a Q38FN top-k dump at verify batches of 2/4/8/16 tokens and n_kv/width 4/8/16, compute the union fraction |union of the batch's top-k lists| / (tokens x top_k) per kv head (zero kernel work; dump via the existing H12 debug path or a one-off test hook). If the union fraction is <= 0.6 at 16 tokens and ratio 4 (where H12 loses, 0.78x), write the variant (gather each union row once into a tokens x G MFMA tile, mask per token) and screen it vs H12 at those cells; KEEP if geomean >= 1.10 and no cell < 0.97. Stop-on-futility if the union fraction > 0.6."
+   "owner": "handoffs/active/kernel-champion-and-promotion.md",
+   "task_text": "- [ ] **FOLD-GUARD-H12** [non-inference] Upstream-fold guard for our FA slots (intake-2808#record, intake-2818#record): at the next fresh-from-champion fold that crosses upstream #27970 (8e93a9773) or the fused TOP_K_MASK work, (a) move our FA op_params n_seq from slot 4 to slot 5 behind the accessor (readers fattn-gqa-verify.cu:682/:739, fattn-common.cuh:1079, ggml-cpu/ops.cpp:10428 @ eee3da8) and (b) add a test that asserts H12 still fuses the Q38FN QSA node with n_kv_max set and with the fused top-k-mask op present, failing loudly instead of silently falling back to dense FA."
   },
   {
    "owner": "handoffs/active/kernel-champion-and-promotion.md",
-   "task_text": "- [ ] **FOLD-GUARD-H12** [code] Upstream-fold guard for our FA slots (intake-2808#record, intake-2818#record): at the next fresh-from-champion fold that crosses upstream #27970 (8e93a9773) or the fused TOP_K_MASK work, (a) move our FA op_params n_seq from slot 4 to slot 5 behind the accessor (readers fattn-gqa-verify.cu:682/:739, fattn-common.cuh:1079, ggml-cpu/ops.cpp:10428 @ eee3da8) and (b) add a test that asserts H12 still fuses the Q38FN QSA node with n_kv_max set and with the fused top-k-mask op present, failing loudly instead of silently falling back to dense FA."
-  },
-  {
-   "owner": "handoffs/active/kernel-champion-and-promotion.md",
-   "task_text": "- [ ] **FOLD-CENSUS-1** [code/doc] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; and audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently)."
+   "task_text": "- [ ] **FOLD-CENSUS-1** [non-inference] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently); and (operator question 2026-11-22) for each censused upstream change -- the DFlash split into dflash/dflash2/dspark/lilicorr, and the fused TOP_K_MASK work #30640/#30965/#31243 -- state with evidence whether we would GAIN from adopting it or whether our own path (DFlash2, H12 fused QSA) is faster."
   },
   {
    "owner": "handoffs/active/autokernel-loop.md",
-   "task_text": "- [ ] **AK-ISA-FAMILIES** [code] Add fattn_vec, fattn_tile and classifier families for the gqa-verify (gv_*) and qsa-sparse (k_qsa_sparse_*) kernels to the gfx90a_isa_audit default family set and to the pre-timing ISA gate invocation, so a VGPR increase or occupancy drop in the served decode/verify FA kernels fails before timing; add to AK actor guidance that a feature bit in an FA hot loop must be a template parameter, not a runtime branch (upstream #32740 measured ~25% loss and 181->202 registers for the runtime-branch form on NVIDIA) (intake-2797#record)."
+   "task_text": "- [ ] **AK-ISA-FAMILIES** [non-inference] Add fattn_vec, fattn_tile and classifier families for the gqa-verify (gv_*) and qsa-sparse (k_qsa_sparse_*) kernels to the gfx90a_isa_audit default family set and to the pre-timing ISA gate invocation, so a VGPR increase or occupancy drop in the served decode/verify FA kernels fails before timing; add to AK actor guidance that a feature bit in an FA hot loop must be a template parameter, not a runtime branch (upstream #32740 measured ~25% loss and 181->202 registers for the runtime-branch form on NVIDIA) (intake-2797#record)."
   },
   {
    "owner": "handoffs/active/autokernel-loop.md",
@@ -1495,11 +1481,7 @@ Index rows: none. Every box lands in a handoff that already has an index row; no
   },
   {
    "owner": "handoffs/active/model-evaluation-queue.md",
-   "task_text": "- [ ] **INK2-MINI-1** [code-reading/doc] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); compare the vendor card scores against Qwen3.8-27B in our lineup; recommend go/no-go for a port box."
-  },
-  {
-   "owner": "handoffs/active/cpu-decode-roofline-program.md",
-   "task_text": "- [ ] **Q8-2STREAM-1** [inference] One-matrix microbench of upstream #30846's split-stream mul_mat_one_chunk on Q8_0 (27B-shaped ffn tensor, 24 threads on one quarter q0-q2, ne11 in {2,4,8,16}, adjacent-pair vs split-stream, hot, bit-identical output check) (intake-2795#record). Question: does the Grace two-stream effect exist on Zen 5; expected effect +2.6% (bandwidth-saturated) to +15-30% (not saturated) per the source. Stop-on-futility if < 1.5% at ne11 2..8; stop-on-answer when 4 ne11 x 3 reps are done; only a pass opens an e2e 27B DFlash2 CPU verify row."
+   "task_text": "- [ ] **INK2-MINI-1** [non-inference] Inkling 2 Mini addendum and port-cost estimate (intake-2805#record, intake-2812#record, intake-2798#record): record that the 2026-08-03 Inkling NO (12B active) does not cover Inkling 2 Mini (3.4B active per pass, about 5.4B effective over 3 passes, Apache-2.0), with the per-token byte estimate (~3.2 GB at IQ4_NL experts + Q8_0 rest on CPU) and the KV table (8 full + 40 SWA@1024 visit caches); size the forward-port of upstream base inkling2 (#32217) + #32694 + #32704 + #32752 + #32799 onto the champion (files, conflicts with our FA src[5]/src[6], per-head-mask FA refused by iqk CPU ops.cpp:10390 and HIP fattn.cu:591 @ eee3da8); reframed by the operator 2026-11-22: the candidate role is replacing the 35B-A3B lineup model (same active-parameter class; Qwen4-27B is expected for the 27B category), so compare Inkling 2 Mini against the 35B-A3B model AND Qwen3.8-27B on per-token bytes (CPU, MI210), vendor scores where both publish them, and serving fit on CPU and on the MI210 (weights, KV at 32k/128k, concurrency); recommend go/no-go for a port box."
   }
  ]
 }

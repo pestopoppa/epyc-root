@@ -595,6 +595,8 @@ The operational YARN-128K-MI210 checkbox remains open until CPU-v3 shard withdra
 
 - [x] Reconcile S0/v27 adopted qualification notification. ✅ 2026-11-01 The [receipt](../../artifacts/compute/yarn-s0-v27-adopted-receipt-20261101/PASS.json) explicitly records an old-flow adoption at 17:09:13Z, not a new native dry run. `rowflow.py status` reported `done`; its earlier October 30 rc75 result is already filed above. No fresh inference result or grant is implied. Current E1 and S2 successor drafts remain disabled; the former still needs source binding and native qualification, and the latter has a reproduced parent-death custody defect. A2 is the 27B GPU negative-control arm despite the generated backlog's CPU label; its launcher must be bound to the correct lane and recipe before publication. [no-belief: receipt and queue state only]
 
+- M7 monitor (intake-lpr-20261122, operator-approved 2026-11-22): CDNA sparse-FA break-even prior: reopen when a DSA/indexer model enters the GPU roster.
+
 
 ### Done
 

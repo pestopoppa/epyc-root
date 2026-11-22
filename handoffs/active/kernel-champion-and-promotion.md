@@ -1823,6 +1823,13 @@ Open kernel-fix boxes re-homed by INF48-FOLD-PLAN (moved from INF-48 2026-11-17;
       · metric(dir): gather share of step time · rule: >= 3% of verify step opens the follow-on · region: gpu-q3 (numactl --membind=3, host threads 184-191) · est: 700 s + 25%
       · stop rule: question = is the gather copy a lever? checkpoint after the first request; stop-on-answer after 5 requests; stop-on-futility if the share is < 1% after the first request
 
+- [ ] **FOLD-GUARD-H12** [non-inference] Upstream-fold guard for our FA slots (intake-2808#record, intake-2818#record): at the next fresh-from-champion fold that crosses upstream #27970 (8e93a9773) or the fused TOP_K_MASK work, (a) move our FA op_params n_seq from slot 4 to slot 5 behind the accessor (readers fattn-gqa-verify.cu:682/:739, fattn-common.cuh:1079, ggml-cpu/ops.cpp:10428 @ eee3da8) and (b) add a test that asserts H12 still fuses the Q38FN QSA node with n_kv_max set and with the fused top-k-mask op present, failing loudly instead of silently falling back to dense FA.
+      · done when: fold branch carries the slot move and the H12 fusion test, test green on ROCm0 and CPU
+      · gate: none
+- [ ] **FOLD-CENSUS-1** [non-inference] Conflict census for the next upstream bundle fold, before any fold branch is cut (intake-2816#record, intake-2795#record): run a merge-tree census of upstream #32016 (DFlash split into dflash/dflash2/dspark/lilicorr, merge 32bdc3a89) against our dflash.cpp/speculative.cpp fork commits (DFlash2 0262f0f92/8f609e10d, sinks d0f9fab7b, NVFP4 f7cbe3a35, per-token rows affe1097f, LiLiCorr c5c61e5ab, DS41 990213088) and record the plan (fold #32016 whole, re-apply features per head class, gate on greedy drafted/accepted identity at np1/np4 for 27B DFlash2 and the DS41 GGUF); record that upstream #30846 (660be5506) rewrites mul_mat_one_chunk and collides with our Q8_0 nrc==2 branch (ggml-cpu.c:1414-1418), so the fold needs an explicit resolution plus a test-backend-ops MUL_MAT Q8_0 n=2/4/8 bit-equality check; audit launchers for --spec-type values that #32016 starts refusing (draft-dspark on a DFlash2 GGUF disables speculation silently); and (operator question 2026-11-22) for each censused upstream change -- the DFlash split into dflash/dflash2/dspark/lilicorr, and the fused TOP_K_MASK work #30640/#30965/#31243 -- state with evidence whether we would GAIN from adopting it or whether our own path (DFlash2, H12 fused QSA) is faster.
+      · done when: census output path, conflict-count table, the fold recipe and a gain-or-ours-faster verdict with evidence per censused change recorded under this box
+      · gate: none
+
 
 ### Done
 

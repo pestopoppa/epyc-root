@@ -14,3 +14,15 @@
   intake-2678..2690.
 
 Next: operator approves or edits the Stage-3 plan; then Stage 4 files the 10 boxes (owner: the research-intake lane).
+
+## Stage 4 (operator-approved 2026-11-22 with three edits)
+- Seven boxes filed:
+  - speculative-decoding.md: SPEC-STALE-1.
+  - harness-program.md: PFXC-SAVE-1.
+  - autokernel-loop.md: AK-ISA-FAMILIES and GDN-VERIFY-BASE.
+  - kernel-champion-and-promotion.md: FOLD-GUARD-H12 and FOLD-CENSUS-1 (FOLD-CENSUS-1 also asks, per upstream change, whether we gain from adopting it or our path is faster).
+  - model-evaluation-queue.md: INK2-MINI-1, reframed to the 35B-A3B replacement role.
+- H12 band, H12 union and Q8_0 two-stream screens are AutoKernel seed hypotheses: epyc-inference-research
+  `scripts/kernel_rnd/autokernel/loop/seeds/hypotheses/20-intake-lpr-h12-band-union-q8-2stream-20261122.md`.
+- Monitor and knowledge prose (M1-M7, K1-K3) placed in the owner handoffs. Dispositions are on all 32 entries.
+- No index rows needed. validate_intake --plan-file and index_state.py --check both exit 0.

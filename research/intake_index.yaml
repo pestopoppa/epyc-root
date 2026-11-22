@@ -404522,8 +404522,12 @@
     - rocm-kernel-authoring.md
     intake_entries:
     - intake-2749
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): AutoKernel seed hypothesis AK-H12-BAND (seeds/hypotheses/20; K3 pointer in autokernel-loop.md)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for the outside CDNA (gfx908) sparse-gather break-even rule as a prior and for the selector/launcher gate-consistency lesson. Do not conclude it should be ported: AK-ASM-H12 reads top-k indices directly and skips the compaction step, and the upstream n_kv_max plumbing collides with our op_params slot 4 (n_seq) and src[5].'
@@ -404702,6 +404706,9 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): LPR-22 decline; M5/M6 monitors"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite for the scale-byte-pair table and 2-block interleave ideas only, and as an example of a cache-hot microbenchmark that cannot predict a DDR5-bound decode. Do not conclude the AVX-512/VBMI kernel helps Zen 5 or our served path; the claimed VBMI is absent and iqk already serves IQ3_S.
@@ -404821,6 +404828,9 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: declined
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): LPR-22 decline (iqk displaces the function)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite only as evidence that a cache-hot 11-block iq2_s dot gains 1.15x on an Intel Xeon with AVX-512. Do not conclude it helps our stack: iqk displaces this function in served runs (successor: iqk IQ2_S kernels), and no served model carries meaningful IQ2_S bytes.'
@@ -404947,8 +404957,12 @@
     - numa-placement-and-contention.md
     - autokernel-akx-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - kernel-champion-and-promotion.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): FOLD-CENSUS-1 + AutoKernel seed hypothesis AK-CPU-Q8-2STREAM"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite for the exact nr0_split two-stream change, the mis-normalised improvement column, and the integration hazard with our champion's Q8_0 nrc==2 branch at the next upstream fold. Do not cite the Grace numbers as EPYC priors; the change is a no-op at n=1 decode.
@@ -405084,8 +405098,12 @@
     - kv-cache-program.md
     - rocm-kernel-authoring.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): GDN-VERIFY-BASE"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite for the fused-reduction pattern (and the new mild-gate GDN test shapes) as an op-level screen candidate on MI210, and for the correct reading of the 1024-warp rule. Do not conclude the +7.25% pp gain or 3.08x transfers to our served decode/verify path, or that SYCL is served.
@@ -405232,8 +405250,13 @@
     intake_entries:
     - intake-941
     - intake-955
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
+  - model-evaluation-queue.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): AK-ISA-FAMILIES; bias path sized in INK2-MINI-1"
   verification: dive-verified
   read_depth: PARTIAL
   reader_should_conclude: Cite for the feature-bit-as-template discipline and the VGPR-pressure lesson for flash_attn_ext_vec (the served decode kernel sits outside our default ISA register gate). Do not conclude Inkling 2 is runnable here, that Vulkan or ROCm are covered, or that the intake-941 graph-reuse defect is fixed.
@@ -405389,8 +405412,12 @@
     - intake-955
     - intake-737
     - intake-738
-  handoffs_updated: []
+  handoffs_updated:
+  - model-evaluation-queue.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite for the first-party architecture facts (48 visits, per-visit KV, 5:1 SWA, DSpark capture points) and as the trigger to re-open the Inkling evaluation for the 3B-active Mini. Do not carry over the earlier Inkling Apache-2.0 licence, do not treat any speed or quality claim as measured, and do not assume a runnable llama.cpp arch exists in our tree.
@@ -405552,8 +405579,12 @@
     intake_entries:
     - intake-737
     - intake-738
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 (b)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite for the invariant that the cache after a stopped speculative round must equal the non-speculative cache, and for the one-trim-per-round pattern on recurrent targets. Do not conclude it fixes checkpoint-restore rounds or that the champion silently corrupts state; port the idea with our own use_ckpt_tgt definition, not the diff verbatim.
@@ -405686,8 +405717,12 @@
     - harness-program.md
     - cpu-decode-roofline-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): PFXC-SAVE-1"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite for the restore-retry correctness fix and the no-zero-fill save-buffer idea, both of which apply to our champion. Do not conclude MADV_HUGEPAGE helps on our host (THP is already always) or that the H100 numbers isolate the THP effect.
@@ -405810,8 +405845,12 @@
     - kv-cache-program.md
     - harness-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 (a)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite as the motivating report for the stale-post-EOG-token defect and its hybrid cost model (answer length + 4 tokens). Do not conclude the champion loses that much: harness-program.md:3251 says an end-of-generation checkpoint may already shorten the loss, and the evidence is minutes-scale on one machine.'
@@ -405912,8 +405951,12 @@
     handoffs:
     - speculative-decoding.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 tests (48-EOG tail, EOG at row 0)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for the checkpoint-round edge case (EOG as the first accepted row with an empty valid prefix, replay-loop risk) to test against our champion''s use_ckpt_tgt branch. Do not port its server-level EOG scan: PR #29638''s sampler-level fix achieves the EOG case with a smaller diff.'
@@ -406009,8 +406052,12 @@
     handoffs:
     - speculative-decoding.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 (a)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite as the merged upstream fix for post-EOG stale tokens and the template to port into all three of our accept loops (plain, greedy-fast, rejection) with a test, since upstream dropped its own. Do not conclude it covers stop strings or checkpoint-round empty-prefix cases.
@@ -406127,6 +406174,9 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): LPR-08 decline; fault counts inform PFXC-SAVE-1"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite only as the origin of the huge-page-for-save-buffers request that PR #32758 implements. Do not conclude the 124K-fault figure applies to our host (THP is already always) or that the hugetlb tunable helps here.'
@@ -406240,8 +406290,12 @@
     - kv-cache-program.md
     intake_entries:
     - intake-941
-  handoffs_updated: []
+  handoffs_updated:
+  - model-evaluation-queue.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1 (35B-A3B replacement framing)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite this entry for first-party Inkling 2 Mini architecture numbers (per-pass 3.4B, 5.4B effective, taps 5/23/41/48, 8 full + 40 SWA visits, Apache 2.0). Do not cite the vendor benchmark table as an in-house measurement, and do not assume a served path exists; our build lacks the arch.
@@ -406419,6 +406473,9 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): superseded by #32694/#32704 (INK2-MINI-1 scope)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for how a loop maps onto llama.cpp memory (per-visit KV, shared per-physical-layer weights) and the NVFP4-native converter design. Do not port this PR; forward-port mainline #32694 + #32704 instead, and do not read any perplexity or speed claim from it (none measured).'
@@ -406563,6 +406620,9 @@
     - intake-738
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): M3"
   verification: dive-verified
   read_depth: PARTIAL
   reader_should_conclude: Cite for the Inkling 2 Mini DSpark drafter structure (RNN head, taps, block 8) and the O(V) rejection fix pattern. Do not cite any acceptance length or speedup (none exist) and do not adopt the in-graph per-position head as a general design (serial, n_seqs==1).
@@ -406707,8 +406767,12 @@
     - autokernel-loop.md
     - long-context-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - kernel-champion-and-promotion.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): FOLD-GUARD-H12"
   verification: dive-verified
   read_depth: PARTIAL
   reader_should_conclude: Cite for the upstream n_kv_max op contract and the op_params slot 4 collision with our n_seq (move ours to slot 5 before the next upstream fold). Do not port the NVIDIA compaction kernel (our H12 consumes top-k directly) and do not read the 'CPU' table label as a CPU result.
@@ -406864,8 +406928,12 @@
     handoffs:
     - kv-cache-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): PFXC-SAVE-1 (idle_save_us read)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for the mechanism (per-cell device reads on the server thread with interleaved -kvu cells) and the #31391 fix as the reference. Do not conclude our servers stall: our CPU KV is host memory, and only GPU-KV multi-slot -kvu launchers are exposed, which a read of existing LB7 probe logs would settle.'
@@ -406999,6 +407067,9 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): LPR-08 decline (THP=always)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite for the page-fault-counting diagnostic (ps min_flt, AnonHugePages in smaps_rollup) on prompt-cache snapshot buffers. Do not adopt glibc.malloc.hugetlb=1 as a recipe for our host (THP=always makes it a no-op) and do not import any NUMA claim; the doc has none.
@@ -407140,8 +407211,12 @@
     handoffs:
     - speculative-decoding.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): SPEC-STALE-1 (a) rejection loop"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: Cite for the three-line EOG-stop fix and test shape for a rejection loop. Do not conclude it applies as a patch (hand port needed after the out_dists capture) or that it changes final text (server stops at the first EOG; harm is stats and KV advance, not verified).
@@ -407246,8 +407321,12 @@
     - model-evaluation-queue.md
     - kv-cache-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - model-evaluation-queue.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1"
   verification: dive-verified
   read_depth: PARTIAL
   reader_should_conclude: 'Cite for: first mainline looped-layer arch (shared weights, per-visit slots) and the dense per-head mask cost shape. Do not conclude an import is wanted: no in-house serving path, a large multi-PR base-arch port, and no CPU or gfx90a numbers.'
@@ -407399,8 +407478,12 @@
     handoffs:
     - model-evaluation-queue.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - model-evaluation-queue.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1 scope"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for: the load-order rule that shared-slot layer copies must run after optional per-tensor scale attachment. Do not treat it as a standalone port item or as a verified PPL result; it only matters if inkling2_loop is imported.'
@@ -407527,8 +407610,12 @@
     - model-evaluation-queue.md
     - kv-cache-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - model-evaluation-queue.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1 scope"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for: the dense per-head mask memory formula and the chunked-build mitigation shape. Do not conclude it fixes mask scaling or that it helps CPU serving; it is open, unreviewed, and only bounds transient F32 buffers.'
@@ -407639,8 +407726,12 @@
     handoffs:
     - model-evaluation-queue.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - model-evaluation-queue.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): INK2-MINI-1 scope"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for: Inkling 2 tokenization needs ignore_merges true. Do not conclude any quality or perplexity effect, and do not file a standalone box; it folds into any Inkling import.'
@@ -407736,8 +407827,12 @@
     - kernel-champion-and-promotion.md
     - speculative-decoding.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - kernel-champion-and-promotion.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): FOLD-CENSUS-1"
   verification: dive-verified
   read_depth: PARTIAL
   reader_should_conclude: 'Cite for: fold hazard. Our fork edits ~all of the regions this refactor rewrites (textual conflict HIGH), and launchers passing draft-dspark against a DFlash2/LiliCorr GGUF will silently lose speculation after the fold. Do not conclude any speed benefit; none is claimed.'
@@ -407857,6 +407952,9 @@
     - intake-738
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): M4"
   verification: dive-verified
   read_depth: PARTIAL
   reader_should_conclude: 'Cite for: a design map of three drafter-head families (Markov, Inkling recurrent, DFlash2 lattice) and one hypothesis (full-block padding on our DFlash2 drafter). Do not conclude any speedup or acceptance gain, and do not adopt the in-graph per-slot ticket sampler.'
@@ -407985,8 +408083,12 @@
     - kernel-champion-and-promotion.md
     - long-context-program.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - kernel-champion-and-promotion.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): FOLD-GUARD-H12"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for: upstream sparse FA on CDNA is DeepSeek-576-only and compiles an unused hd256 (8,8) kernel, so QSA on gfx90a stays on H12 or dense after a fold. Do not cite the qwen4exp MI100 table as a gfx90a result.'
@@ -408138,8 +408240,12 @@
     - kernel-champion-and-promotion.md
     - rocm-kernel-authoring.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - autokernel-loop.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): AutoKernel seed hypotheses AK-H12-BAND + AK-H12-UNION (seeds/hypotheses/20; K3 pointer in autokernel-loop.md)"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for: the group-union gather across verify rows as the principled answer to H12 small-ratio nb=16 losses, and the nq-dependent break-even shape. Do not port the kernel (not selected on gfx90a at hd256) and do not transfer the NVIDIA 2x bytes-only constant to gfx90a.'
@@ -408298,6 +408404,9 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): No CDNA/QSA behaviour; fold notes in FOLD-GUARD-H12"
   verification: dive-verified
   read_depth: PARTIAL
   reader_should_conclude: 'Cite for: the min(nq, cap) gate shape and wide-union preference as priors for an nq-dependent H12 gate. Do not port it (NVIDIA-only, H12 has no mask scan) and do not expect gains for qwen4exp.'
@@ -408452,6 +408561,9 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): M1"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for: the gather-into-mapped-host design and its dispatch thresholds. Do not conclude any MI210 gain: it is disabled on HIP, measured only on NVIDIA idle-save-heavy configs, and our :8083 server runs cache_idle_slots false.'
@@ -408565,6 +408677,9 @@
     intake_entries: []
   handoffs_updated: []
   handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): M1"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for: the batched copy API surface and that it removes N-1 syncs but not N-1 submissions. Do not conclude a restore speedup on MI210: count-bound restore is the measured cost and needs run-coalesced restore, not this API.'
@@ -408688,8 +408803,12 @@
     - harness-program.md
     - kernel-champion-and-promotion.md
     intake_entries: []
-  handoffs_updated: []
+  handoffs_updated:
+  - harness-program.md
   handoffs_created: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - "intake-lpr-20261122 Stage 4 (operator-approved 2026-11-22 with edits): PFXC-SAVE-1 port decision"
   verification: dive-verified
   read_depth: FULL
   reader_should_conclude: 'Cite for: ref-counted checkpoint sharing plus no-init buffers as a latency fix for hybrid-model checkpoint save, to be folded as one commit with the cache-ram accounting fix. Do not cite the RAM saving for our 1.1 TB hosts; only the copy and zero-fill latency matters, and no MI210/CPU number exists.'

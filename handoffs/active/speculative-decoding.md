@@ -868,6 +868,12 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 
 - Monitor (ak-intake-20261121, operator-approved): NVIDIA Qwen3.5-4B-Qwen3.8-27B-Draft (intake-2757#record) — probe it only if a CPU-served 27B lane opens (self-convert; check vocab compatibility and recurrent draft rollback; acceptance at temp 1 must pass SPEC-PIT.1), or revisit on the MI210 if the verify slope falls below 1 ms/row.
 
+- [ ] **SPEC-STALE-1** [non-inference] Port two upstream spec-accept fixes to a fresh llama.cpp-experimental branch from champion eee3da8, one feature per commit (intake-2803#record, intake-2811#record, intake-2799#record): (a) stop accepting draft tokens at an EOG that is not the last draft token in all three accept loops of common/sampling.cpp (plain ~:708, greedy-fast ~:928, rejection ~:960-1035; #29638 + philippesic ed1254a shape); (b) when a stop string or n_predict ends generation inside an accepted draft, trim the tokens after the stop from slot.prompt.tokens and the memory once per round (#32771 shape) using OUR use_ckpt_tgt (server-context.cpp:5976, n_rollback-based). Tests: unit test {eog,eog}->1, {eog}->2; the 48-EOG ngram tail case from #28232; an EOG at accepted row 0 on the checkpoint-restore round must terminate in one extra round; spec-on vs spec-off tokens_cached parity over 20 stop words on DFlash2 and MTP types, -np 1 and -np 2. No inference row unless the parity test shows stale tokens on our accept path.
+      · done when: both commits on the branch, all four tests green on CPU (pre-fix red where applicable), PR-style note with the commit SHAs in this box
+      · gate: none
+- M3 monitor (intake-lpr-20261122, operator-approved 2026-11-22): Inkling 2 DSpark drafter alpha vs MTP: reopen when an Inkling-capable build exists and a GGUF drafter is published.
+- M4 monitor (intake-lpr-20261122, operator-approved 2026-11-22): Full-block padding of the DFlash2/DSpark draft block: add a pad arm when the next DFlash2 X-sweep row is booked.
+
 
 ## Track: dflash2-block-drafter-experimental-build
 <!-- gate: INF-06#autokernel-research-loop, INF-50#speculative-decoding-mtp-refresh -->

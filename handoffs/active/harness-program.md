@@ -3917,6 +3917,12 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
 
 Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
 
+- [ ] **PFXC-SAVE-1** [non-inference] Price the prompt-cache save path from evidence we already have before any port (intake-2800#record, intake-2823#record, intake-2809#record, intake-2810#record): (1) read the retained LLAMA_LB7_PROBES lines (alloc_us, idle_save_us, n_ranges, checkpoint-list size, prompt_save/prompt_load ms) for :8083 and :8070 and report P50/P95 save and restore ms and their share of TTFT; (2) read /proc/<pid>/smaps AnonHugePages for one live :8083 server during a served window (read-only); (3) grep launchers and stack configs for GGML_NOHUGEPAGE_PROCESS=1. Then decide: if save P95 >= 50 ms or >= 1% of the TTFT tail, open the port box (upstream #30137 reference-counted checkpoints + no-zero-fill buffers + #32758's restore-retry fix, with checkpoint accounting deduped by pointer); otherwise close as no-gain. THP flag and glibc.malloc.hugetlb are not adopted (host THP is `always`).
+      · done when: a dated note under this box with the three readings (file paths + numbers) and the decision (port box filed, or closed no-gain)
+      · gate: none
+- M1 monitor (intake-lpr-20261122, operator-approved 2026-11-22): Batched copy API / CUDA gather (#30881/#31391): reopen with the existing cache-idle-slots reopen trigger (harness-program.md:3842) or if PFXC-SAVE-1 shows restore transfer count dominating with idle saves off.
+- K2 knowledge-only (intake-lpr-20261122, operator-approved 2026-11-22): Stop-inside-accepted-draft frequency on served traffic is already counted: 0 of 41 v10 turns (harness-program.md:3031 @ 860023c); no new count.
+
 
 
 ## Track: research-intake-harness-inference-2026-11-06

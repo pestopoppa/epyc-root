@@ -2022,6 +2022,8 @@ real gap, since **knowing WHICH arm was contended is exactly what a hot session 
       · metric(dir): share of round wall time · rule: port iff sampler (top-k plus sort) >= 3% of the round · region: CPU quarters q0-q2 only (never threads 88-95, the MI210 host threads) · est: one profile pass, from the Q38FN per-op profile run time + 25%
       · stop rule: question = is CPU sampling a lever? expected small (the round is 87-90% target forward); checkpoint after one pass; stop-on-answer after the pass; stop-on-futility if the whole non-forward share is < 3%
 
+- K1 knowledge-only (intake-lpr-20261122, operator-approved 2026-11-22): IQ3_XXS wide verify falls to native vec_dot: knowledge in intake-2793#record; no IQ3_XXS model served.
+
 ### ★★★★★ CHAMPION-3 — THE CURRENT CHAMPION. `inf70/champion3` @ `9c4f73e29`, build 10241. 2026-09-07.
 
 Committed, not pushed. Frozen tree untouched at `0db32c06e`.
