@@ -455,10 +455,13 @@ def test_trajectory_is_first_surface_and_absorbs_redundant_panels() -> None:
     main = page.split("<main>", 1)[1]
     assert '<section id="sec-champion"' not in main
     assert '<section id="sec-tiles"' not in main
+    # akflow-sec (AK at-a-glance, 9fd8dc351) opens the page; trajectory follows.
+    assert main.index('id="akflow-sec"') < main.index('id="sec-trajectory"')
     assert main.index('id="sec-trajectory"') < main.index('id="sec-capabilities"')
     assert main.index('id="sec-capabilities"') < main.index('id="sec-accumulator"')
     assert main.index('id="sec-accumulator"') < main.index('id="sec-serial"')
-    trajectory = main[main.index('id="sec-trajectory"'):main.index('</section>')]
+    trajectory = main[main.index('id="sec-trajectory"'):]
+    trajectory = trajectory[:trajectory.index('</section>')]
     assert 'id="trajectory"' in trajectory
     for retired_host in ('id="champ"', 'id="champ-badge"', 'id="tiles"'):
         assert retired_host not in main

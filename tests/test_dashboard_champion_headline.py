@@ -1491,8 +1491,10 @@ class Wiring(unittest.TestCase):
         """Position is part of the ruling: nothing competes for this slot."""
         html = PAGE.read_text(encoding="utf-8")
         body = html[html.index("<main>"):]
-        first = re.search(r'<section id="([a-z-]+)"', body)
-        self.assertEqual(first.group(1), "sec-trajectory")
+        ids = re.findall(r'<section id="([a-z-]+)"', body)
+        # akflow-sec (AK at-a-glance, 9fd8dc351) is the operator-ruled first
+        # slot; the trajectory is the first champion section after it.
+        self.assertEqual(ids[:2], ["akflow-sec", "sec-trajectory"])
         self.assertLess(body.index('id="sec-trajectory"'),
                         body.index('id="sec-opgate"'),
                         "the operator-gated card outranks the champion trajectory")

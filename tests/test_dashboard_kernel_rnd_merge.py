@@ -618,10 +618,11 @@ class TestThePageOpensWithTheHeadline(unittest.TestCase):
         self.assertNotIn("three producers", visible,
                          "the producer-taxonomy lecture is still rendered")
         main = html.split("<main>", 1)[1]
-        first_section = re.search(r'<section[^>]*id="([A-Za-z0-9_-]+)"', main)
-        self.assertIsNotNone(first_section)
-        self.assertEqual(first_section.group(1), "sec-trajectory",
-                         "the page no longer opens with the unified champion trajectory")
+        ids = re.findall(r'<section[^>]*id="([A-Za-z0-9_-]+)"', main)
+        # Operator ruling (pipeline-mgmt 9fd8dc351): the AK at-a-glance strip
+        # opens the page; the champion trajectory is the first section after it.
+        self.assertEqual(ids[:2], ["akflow-sec", "sec-trajectory"],
+                         "the page no longer opens with akflow then the unified champion trajectory")
         # Nothing VISIBLE sits between the (empty-by-default) freshness banner
         # and the headline section.
         between = main.split('id="banner"', 1)[1].split("<section", 1)[0]
