@@ -696,10 +696,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-21T23:39:30Z",
+  "generated_at": "2026-11-22T00:11:40Z",
   "nodes": [
     {
-      "age_days": 11,
+      "age_days": 12,
       "blocked": 1,
       "blocked_by": [],
       "closed": 132,
@@ -1040,7 +1040,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
@@ -1128,7 +1128,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 139,
@@ -1204,7 +1204,7 @@
       ]
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 0,
       "blocked_by": [],
       "closed": 215,
@@ -1326,7 +1326,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 485,
@@ -1369,7 +1369,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 820,
@@ -1433,7 +1433,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 4852,
+          "line": 4855,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1442,7 +1442,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 4935,
+          "line": 4938,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1461,7 +1461,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5112,
+          "line": 5115,
           "name": "autokernel-rebuild-program",
           "open": 13,
           "readiness": "blocked"
@@ -1478,7 +1478,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7001,
+          "line": 7004,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1491,7 +1491,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 9969,
+          "line": 9972,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1525,7 +1525,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10172,
+          "line": 10175,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -1533,7 +1533,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 245,
@@ -1649,7 +1649,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "EVL-47",
@@ -1767,7 +1767,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 228,
@@ -1834,7 +1834,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 118,
@@ -1915,7 +1915,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 240,
@@ -2044,7 +2044,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 156,
@@ -2135,7 +2135,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2176,7 +2176,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 19,
       "blocked_by": [],
       "closed": 121,
@@ -2226,7 +2226,7 @@
       ]
     },
     {
-      "age_days": 14,
+      "age_days": 15,
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
@@ -2285,7 +2285,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [
         "INF-06#autokernel-rebuild-program",
@@ -2372,7 +2372,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2398,7 +2398,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": 14,
+      "age_days": 15,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2424,7 +2424,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 149,
@@ -2521,7 +2521,7 @@
       ]
     },
     {
-      "age_days": 18,
+      "age_days": 19,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2621,7 +2621,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [],
       "closed": 296,
@@ -2850,7 +2850,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 208,
@@ -2963,7 +2963,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [],
       "closed": 183,
@@ -3107,7 +3107,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3133,7 +3133,7 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 311,
@@ -3228,7 +3228,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 359,
@@ -3369,7 +3369,7 @@
       ]
     },
     {
-      "age_days": 16,
+      "age_days": 17,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3485,7 +3485,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 6,
       "blocked_by": [],
       "closed": 444,
@@ -3560,7 +3560,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 268,
@@ -3715,7 +3715,7 @@
       ]
     },
     {
-      "age_days": 49,
+      "age_days": 50,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
