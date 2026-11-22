@@ -180,7 +180,7 @@ def publish_findings(txt, ch=0):
                                         'gate-class = futility-only` (inference task must say stop-on-answer / stop-on-futility)')
     if r['rollup']: warn.append('roll-up is non-dispatchable')
     if 'h' in r['fails'] or r['decision_kind'] == 'pending-choice': warn.append('pending operator choice (field h) — route to the operator queue first')
-    if 'd' in r['fails']: warn.append(f"untestable prose prerequisite: {r['named_prereq']!r}")
+    if 'd' in r['fails']: warn.append(f"untestable prose prerequisite: {r['named_prereq']!r} - name the prerequisite box on a continuation line (`· gate: BOX-ID[, BOX-ID]`) or cite its ID within 160 chars; do not reword the identity line")
     if r['decision_kind'] == 'standing-constraint': warn.append('standing constraint / operator hold named in the box')
     return refuse, warn
 

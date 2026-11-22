@@ -235,6 +235,64 @@ def section_context(lines, i, radius=60):
     return lo, hi
 
 
+# Rule d false-positive guards (AutoKernel report 2026-11-20). A match is NOT a prose prerequisite when it is:
+#  - `after [the] <ISO date>`: a past/calendar reference, testable, not prose (RKA-A3B48-D-REMEASURE);
+#  - `only if` + a comparator (>= 3%, < 5, ~2x): a decision rule inside the deliverable (GDN-VERIFY-BASE);
+#  - `prerequisite` used as a noun after a determiner ("the v2 prerequisite settlement") (AKU-06l4);
+#  - `after round N` / `stop-on-answer after ...`: stop rules; `no longer gated on X`: lifted prerequisite;
+#  - `when ... lands/completes` inside a tick/close/done-when clause: the box's own completion condition
+#    (AK-TRIM-OR-SPLIT-SMALL-20261119).
+_FP_AFTER_DATE = re.compile(r'after\s+(?:the\s+)?\d{4}-\d{2}-\d{2}', re.I)
+_FP_ONLY_IF_CMP = re.compile(r'only if\s*(?:the\s+\S+\s+(?:is|are)\s+)?[<>=~\u2265\u2264]', re.I)
+_FP_PREREQ_NOUN = re.compile(r'(?:the|its|their|a|an|this|that|these|v\d+)\s+(?:\w+\s+)?prereq\w*\s+(?!is\b|are\b|must\b|not\b|:)[a-z]', re.I)
+_FP_COMPLETION = re.compile(r'\b(?:tick|ticks|closes?|done|complete[sd]?|finished)\b', re.I)
+# Handoff-standard way to state a prerequisite without rewording the identity line: a continuation line
+# `· gate: <BOX-ID>[, <BOX-ID>...]` (or `gate:` bare) naming the prerequisite box(es). `gate: none` does not count.
+_GATE_LINE = re.compile(r'^\s*(?:[-*\u00b7]\s*)?\u00b7?\s*gate:\s*(\S.*?)\s*$', re.I | re.M)
+_GATE_ID = re.compile(r'[A-Za-z][A-Za-z0-9._]*-[A-Za-z0-9._]*\d[A-Za-z0-9._#-]*')
+
+
+def GATE_LINE_OK(t):
+    for m in _GATE_LINE.finditer(t):
+        v = m.group(1)
+        if v.lower().startswith('none'):
+            continue
+        if _GATE_ID.search(v):
+            return True
+    return False
+
+
+_FP_NEGATED = re.compile(r"(?:no longer|not|never|n't|nothing|no)\s+(?:\w+\s+)?$", re.I)
+_FP_STOP_RULE = re.compile(r'stop[- ]on[- ](?:answer|futility)\s+$|stop(?:s|ping)?\s+$', re.I)
+
+
+def _is_fp(t, m):
+    w = m.group(0).lower()
+    if _FP_NEGATED.search(t[max(0, m.start() - 20):m.start()]):   # "no longer gated on X": the prerequisite is lifted
+        return True
+    if w == 'after':
+        if _FP_STOP_RULE.search(t[max(0, m.start() - 24):m.start()]) or re.match(r'after\s+(?:round|rounds|run|runs|cell|cells)\s+\d', t[m.start():m.start() + 24], re.I):
+            return True                                           # a stop rule ("stop-on-answer after round 4"), not a wait
+        return bool(_FP_AFTER_DATE.match(t, m.start()))
+    if w == 'only if':
+        return bool(_FP_ONLY_IF_CMP.match(t, m.start()))
+    if w.startswith('prereq'):
+        return bool(_FP_PREREQ_NOUN.search(t[max(0, m.start() - 40):m.end() + 30]))
+    if w.startswith('when'):
+        sent = t[:m.start()]
+        sent = sent[max(sent.rfind('. '), sent.rfind('\n')) + 1:]
+        return bool(_FP_COMPLETION.search(sent))
+    return False
+
+
+def prose_prereq(t):
+    """First PROSE_PREREQ match that is not a known false-positive pattern (see guards above), else None."""
+    for m in PROSE_PREREQ.finditer(t):
+        if not _is_fp(t, m):
+            return m
+    return None
+
+
 def score(text, children=0, owner=True, nested=False):
     t = text
     f = {}
@@ -258,8 +316,8 @@ def score(text, children=0, owner=True, nested=False):
         miss = [k for k, rx in SUB.items() if not rx.search(t)]
     f['c'] = bool(miss)
     # d
-    pm = PROSE_PREREQ.search(t)
-    f['d'] = bool(pm) and not TID.search(t[pm.start():pm.start() + 160])
+    pm = prose_prereq(t)
+    f['d'] = bool(pm) and not TID.search(t[pm.start():pm.start() + 160]) and not GATE_LINE_OK(t)
     # e
     steps = len(re.findall(r'(?:^|\s)\(?(?:\d{1,2}|[a-h])[).]\s', t)) + len(re.findall(r'; then|, then', t))
     f['e'] = len(t) > 1500 or children > 6 or steps >= 6 or bool(re.search(r'\(ongoing\)|\[too-big|~?\d+ days|split across', t, re.I))
