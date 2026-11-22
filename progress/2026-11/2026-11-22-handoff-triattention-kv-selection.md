@@ -35,3 +35,7 @@ EA-POOL-SCREEN: continuation ak-ea-pool-screen-gpu-20261122-r5 was published and
 ## 22:31Z — Resume EA-POOL-SCREEN after filed partial r5
 
 EA-POOL-SCREEN r5 ended rc=75 and was filed partial. Its 111 banked records have SHA-256 3a713e8262b3a42fc3056c16047a7af8decb98c5f4ae23b773078bcf6b753136. Prepared r6 from that checkpoint and started publication and smoke; the screen has no final scientific verdict.
+
+## 22:46Z — Complete publication of EA-POOL-SCREEN r6
+
+EA-POOL-SCREEN r6 publication smoke passed at 2026-11-22T22:45:00Z; row ak-ea-pool-screen-gpu-20261122-r6 is grantable. PASS evidence: /mnt/raid0/llm/tmp/compute-flags/dryrun/ak-ea-pool-screen-gpu-20261122-r6/PASS.json; full scientific verdict awaits its result.
