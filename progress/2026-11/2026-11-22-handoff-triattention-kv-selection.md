@@ -27,3 +27,7 @@ EA-POOL-SCREEN: r3 stopped rc=75 during i7-CE10 and was auto-filed WITHDRAWN; no
 ## 15:07Z — Resume EA-POOL-SCREEN after filed partial r4
 
 EA-POOL-SCREEN: r4 ended rc=75 after its window and was filed partial (results SHA-256 1adc0bf3e0b40848f18a552fb4060c0508e7b3f778495f52cb4dc81c7b0200ed); the registered screen is incomplete. Prepared r5 using the saved item results and started publish/smoke; no scientific verdict yet. Exact top-k remains unavailable on this build.
+
+## 15:10Z — Publish EA-POOL-SCREEN r5 continuation and pass smoke
+
+EA-POOL-SCREEN: continuation ak-ea-pool-screen-gpu-20261122-r5 was published and passed its smoke on 2026-11-22 15:09:35Z (PASS.json SHA-256 832c2a53177242b6f1517bfafaf3ef839a74480f0fdc1ef9e62448f10774a11b); it is grantable. Its 88 banked result records match r4 (SHA-256 1adc0bf3e0b40848f18a552fb4060c0508e7b3f778495f52cb4dc81c7b0200ed). The scientific screen remains incomplete.
