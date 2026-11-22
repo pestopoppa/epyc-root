@@ -4118,6 +4118,7 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
         · done when: the planner reply schema carries expected_outcome and diagnosis-accuracy coverage is above 0% on new rows (this changes what the planner is asked, so the prompt change is reviewed).
         · gate: none
     - 2026-11-22 (WP4, epyc-inference-research `a2a247f15`; box stays OPEN): the planner prompt now asks for `expected_outcome` {direction, min_effect_fraction} and says it is scored as diagnosis accuracy and never changes gating; pinned prompt digests in test_actor_context updated deliberately (prompt change for review). Remaining: coverage above 0% on new rows (needs a campaign). [no-belief: code change]
+    - operator 2026-11-22: keep in the planner for the next loop launch (prompt digest change accepted) [no-belief: operator decision]
   - [x] **AK-PM-17-S2 — wire `broadcast_view(rows)` into the worker prompts for the next round** [non-inference] ✅ 2026-11-22
         · done when: workers receive the broadcast digest in their next-round prompt, with a test showing the digest present.
         · gate: AK-PM-17-S1
@@ -4375,6 +4376,7 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
     · done when: typed planner schema with conditions (a)-(c) is committed in the research repo and an offline replay on stored history reports keep-candidate yield per hour against free text (falsifier: lower yield per hour than free text)
     · gate: none
     - 2026-11-22 (WP4) epyc-inference-research `85f53e2fa` `loop/typed_planner.py` + 5 tests: closed Choice over portfolio rows, (a) typed `exhausted` distinct from `explore`, (b) reserved explore share >= 25% enforced at parse, (c) retired/DNR rows selectable with `premise_superseded`. Offline replay on `/mnt/raid0/llm/tmp/ak-eff-p2-replay-20261107/RESULT.json` (output `/mnt/raid0/llm/tmp/wp4-20261122/typed_planner_replay.jsonl`): keep-candidate yield per hour UNDETERMINED for both arms (0 keep-candidates among the 30 metered calls), so the falsifier is not triggered; typed planner hours 6.36 vs 9.71 free text [inferred, 5 min/choice]; reachable keeps 24/24 with (a)(b)(c), 18/24 without (b), 16/24 with none. Yield is S2's live A/B question. [belief: cc]
+    - operator 2026-11-22: keep ticked; keep-candidate yield/hour UNDETERMINED offline (0 keeps in 30 calls), the yield question moves to the S2 live A/B [no-belief: operator decision]
   - [ ] **AK-EFF-P2-TYPED-PLANNER-S2 — live A/B of typed versus free-text planner in a granted window** [non-inference] campaign-level A/B (planner decode tokens per call, wall per call, keep-candidate yield per hour); runs only in a granted AK window and only if the S1 replay does not trip its falsifier; the A/B futility line is proposal-only saving < 20%; gate-class = futility-only.
     · done when: the A/B result is filed with per-call decode tokens, wall per call and yield per hour for both arms, and a typed-planner KEEP or DROP verdict
     · gate: AK-EFF-P2-TYPED-PLANNER-S1
@@ -4946,6 +4948,8 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
 
 > Self-scouted A3B / C15 boxes moved verbatim (text, notes and tick state unchanged) from `rocm-kernel-authoring.md` (INF-48), which they were never part of. Rowflow `handoff_task` pointers for unstarted rows were re-pointed to this file.
 
+### Backlog
+
   - [ ] **RKA-A3B48-D-REMEASURE** [inference] Contention-controlled re-measure of A3B CPU MTP draft length after the 2026-11-18 inversion analysis (research/deep-dives/a3b-cpu-d-depth-inversion-20261118.md: the a3b48 row was bimodal, ~24 vs ~50 ms/token per cell, likely host contention). model: Qwen3.6-35B-A3B MTP Q8_0, 48t CPU half instance, production v10 CPU store. Row rka-a3b48-d-remeasure-20261118: D in {2,4} at 4k/16k/32k, ABBA x4 rounds, foreign-CPU busy sampled per decode window, cells with p95 foreign busy >= 25% invalid (one rerun). stop-on-answer after round 4: RECOMMEND_D2 iff gain >= 5% at 4k and 32k with CI lower bound > 0 in every valid round (>= 3 valid); DEPTH_ADAPTIVE / KEEP_D4 / NO_RECOMMENDATION otherwise; stop-on-futility: < 3 valid rounds possible (FUTILITY_CONTENDED) or KEEP_D4 at round 3; gate-class = futility-only. Measure only: any recipe change goes to the operator. [no-belief: planning]
     - 2026-11-19: r4 ended rc=75 before verdict; five VALID cells (rounds 1–2 complete, round 3 D4 only). No depth recommendation; resume remaining cells under the preregistered rule. results.jsonl SHA-256 71ccc863d8462f18a361f286ccfbe444ab19ddf7e870cc545a3b2a6978cb5cc3; row keep list retains results and launcher in the scratch vault on reclaim. [no-belief: interrupted run]
     - 2026-11-18 (autokernel) the a3b48 e2e result above (NO_RECOMMENDATION, keep D=4) is later judged contaminated (bimodal cells, foreign CPU load unsampled), so it is not evidence for or against D=2. Contention-controlled row `rka-a3b48-d-remeasure-20261118-r2` is PUBLISHED at rank 110 (below GPU work). Box stays OPEN. [no-belief: row published]
@@ -5269,6 +5273,8 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-09-17). Sources dive-
 
 **Implementation boundary:** at most three eligible, existing configurations on the same actor/model/backend. Reuse completed-batch continuation (`serial_run.py`), actor-call capture and native journals. Give each configuration its own experimental worktree/store/continuation; pooled lanes sharing one advancing champion are not independent trajectories. Bind exact argv/effective configuration, prefix-visible score, cumulative cost, continuation reference and alive/pruned state. No arbitrary mid-call checkpoint system. OAB-9b forbids an unchanged inline-versus-variable rerun; DS41-C20 already covers plain-versus-bounded. Do not disguise either as a new portfolio. Use supported recorded trajectories or configurations with an actual changed eligibility condition; if fewer than two eligible comparable arms exist, return unsupported rather than launch a new campaign. An actor-seat change is not a stable-resume exclusion: maintain separate continuations instead of assuming it can be switched in place.
 
+### Backlog
+
 - [ ] **AC-CHECKPOINT-ALLOC — Implement and screen prefix-visible checkpoint-pruned allocation over a small frozen R&D harness pool.** PROPOSED, not execution/activation approval. The September 17 mapping assigned this outcome to AC-branch-per-agent, but a collaboration spec does not compare allocations. At the existing candidate/run-record and selector-replay seams, compare the pruned pool with matched incumbent repetition, unpruned diversity and simple repeated sampling on one nonpromotable workload. Freeze only presently supported actor/selector/context configurations, current evaluator/model/policy revisions and paired run/input identities; change allocation, not each arm's internal policy. Decisions may inspect only checkpoint-prefix progress. Use complete recorded continuations where available; missing or scheduler-dependent counterfactual continuations remain unsupported, never inferred from a selected parent's outcome. If the recorded pool cannot support the comparison, report the exact missing native fields and capture the smallest prospective paired pool through the existing isolated run harness rather than creating a new framework or fabricating a replay. Bind matched model-call, token, evaluator and wall budgets; charge failures, invalids, abstentions and pruning overhead. Retain per-run raw outputs and all dispatched outcomes; separate endpoint quality from anytime frontier. Choose checkpoints/pruning on a calibration prefix and freeze an untouched later seed/run holdout before scoring. Predeclare the stopping rule: no follow-on without correctness-preserving held-out improvement beyond local uncertainty at matched cost; incomplete support returns unavailable. Implement against fixtures first; any prospective inference/hardware run requires the normal campaign/resource authorization and VB-RI-OPS-WIRE's write-side capture. A positive screen warrants a separately reviewed bounded follow-on, not live allocation or kernel promotion. [Evidence and counter-coverage](../../docs/reviews/research-intake-earlier-applications-20261004.md); record discussion: intake-1444#record.
 
 #### Research Intake Update — 2026-09-25 (ALE private evaluation)
@@ -5329,6 +5335,9 @@ within seconds — clean, no crash.
   ⇒ multi-day). Monitor wakes the owning session on a science increase, a crash, or a genuine
   stall. No action needed unless it wakes.
 - [x] **Re-screen the 19 historically proposed deletion modules individually and strip only proven-safe files** (10,500 LOC + 19 test files ~4,870 LOC + ✅ 2026-10-25 [no-belief: committed conclusion prepared; register capture not yet applied] [no-belief: tooling] _(detail → completed ledger)_
+
+### Backlog
+
 - [ ] **AKU-15** **Add build/runtime disk expiry.** `deployments/*/builds/` (14 G) + `runtime/` (4.4 G) are
   pinned by `materialization.json` digests; `storage.expire_artifact` has zero callers. Also run
   `_recover_incomplete_attempt` at controller start for ALL incomplete attempts, not only on
@@ -6090,6 +6099,9 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       list. Coordinate with **R21-3** (the retirement decision) — if the operator retires the
       branch, the `NOTES-attribution.md` half lands at the tag instead; the `loop/program.md` half
       is doable now either way.
+
+### Backlog
+
 - [ ] **R18-D — recalibrate `bench.MEASURED_FLOOR_PCT["pp512"]`; until then no prefill verdict is
       backed.** `loop/bench.py:43`. The prefill row is still the superseded construction (p95
       |median effect| over subsets of ONE fixed 20-pair sample, which cannot exceed that sample's
@@ -7544,6 +7556,8 @@ The original DS41 native full16 **G3 attempt completed all sixteen real masks**,
 The genuine NI08 owner acknowledged the new capacity request at **14:44:24Z**, message `msg-20261007T144424Z-5-codex-ni-main`, correlated to ROOT's `msg-20261007T143714Z-6-codex-ak-main-01a11473`. The owner reports workers instructed to avoid bulk materialization and is reviewing owner-only reversible sparse recovery. This acknowledgment does not prove another recovery: any claimed owner recovery needs its separate custody receipt. ROOT can independently establish admission capacity with fresh stable samples. The unchanged native admission floor is 107,374,182,400 bytes. No foreign process was signalled or foreign source/outbox changed.
 
 ROOT accepted the prospective GPU generator reader rebind at `ROOT_GPU_GENERATION_READER_REBIND_SOURCE_REVIEW.json` (SHA256 `29ad9aa4ed1ac6115e8b6c85ad2cfc6961415e537c03d3fd5ce3bc71000ba806`). Final whole-candidate approval, actual full-runtime wait 0 and fresh generated-launcher telemetry controls remain prerequisites. The original ten GPU assets, prior revocation and failed generations remain unchanged; no installation, dry-run, live GPU, production park/reload, owner grant, wide CPU v2 activation or corpus publication is claimed.
+
+### Backlog
 
 - **[declined: ws58 2026-11-03 content-review: launcher/custody residue]** Freeze the complete normally merged r6 source/reader/runner, obtain actual whole native runtime wait 0, and then review GPU clearance and fresh generation telemetry.
   - source a3bdc4860 merged; native/materialization still unapproved
@@ -9771,7 +9785,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - [ ] **AKU-06l4** [non-inference] candidate feedback consumes the v2 prerequisite settlement and its enrollment reference
           · done when: planner/candidate feedback refreshes from a v2 prerequisite settlement through its enrollment_ref, with tests
           · gate: none
-          · note: gated by the parent AKU-06l's OP-AKU-BIND operator approval, so it is skipped until that approval exists.
+          · note: parent AKU-06l's OP-AKU-BIND operator approval exists (approved 2026-11-18, option A); no longer gated on it. (corrected 2026-11-22)
   - [x] **AKU-06n — specify original multi-child accounting and denial recovery**: ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
@@ -10542,6 +10556,8 @@ This is a documentation checkpoint. Do not interpret open implementation tasks b
 
 ##### Review checklist
 
+### Backlog
+
 - [ ] **AKU-26** CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session. (parked 2026-10-29 (operator): deferred with the AutoKernel hold; not blocked on the operator until the AK hold lifts) The implementation sequence (absorbed: CTC-1..8, CTC-Q-D, CTC-Q-F) stays in the proposal document and is filed as boxes only if the operator authorizes the implementation session.
 
 ##### Proposed implementation sequence (gated by CTC-REVIEW)
@@ -10838,6 +10854,8 @@ DS41-C20d — doubted 2026-09-24: the cache measures 1.3 s per uncached call, se
 dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because opencode's context is append-only.
 
 #### Tasks
+
+### Backlog
 
 - [ ] **OAB-4 — A/B against the bounded seat on the same driver.** Extend
   `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py` with an `orch` arm; same prompt, same 27B :8083 (via the
