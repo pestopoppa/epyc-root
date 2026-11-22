@@ -23,3 +23,7 @@ EA-POOL-SCREEN: filed ak-ea-pool-screen-gpu-20261122-r2 inconclusive (rc=0, FUTI
 ## 09:57Z — Handle stopped EA pooling screen row and continuation collision
 
 EA-POOL-SCREEN: r3 stopped rc=75 during i7-CE10 and was auto-filed WITHDRAWN; no scientific verdict. A separate publisher had already published r4 and started its smoke when this session attempted continuation; left its live row intact. r4 smoke PASS remains unconfirmed.
+
+## 15:07Z — Resume EA-POOL-SCREEN after filed partial r4
+
+EA-POOL-SCREEN: r4 ended rc=75 after its window and was filed partial (results SHA-256 1adc0bf3e0b40848f18a552fb4060c0508e7b3f778495f52cb4dc81c7b0200ed); the registered screen is incomplete. Prepared r5 using the saved item results and started publish/smoke; no scientific verdict yet. Exact top-k remains unavailable on this build.
