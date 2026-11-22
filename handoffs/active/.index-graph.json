@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-22T16:43:03Z",
+  "generated_at": "2026-11-22T17:16:06Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1372,15 +1372,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 828,
-      "dispatchable": 167,
+      "closed": 847,
+      "dispatchable": 149,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-22",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 167,
+      "open": 149,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1417,7 +1417,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 83,
+          "dispatchable": 66,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1426,14 +1426,14 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 83,
+          "open": 66,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5155,
+          "line": 5183,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1442,7 +1442,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5238,
+          "line": 5266,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1454,16 +1454,16 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "dispatchable": 13,
+          "dispatchable": 12,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5415,
+          "line": 5443,
           "name": "autokernel-rebuild-program",
-          "open": 13,
+          "open": 12,
           "readiness": "blocked"
         },
         {
@@ -1478,7 +1478,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7304,
+          "line": 7334,
           "name": "autokernel-unified-surface-program",
           "open": 45,
           "readiness": "blocked"
@@ -1491,7 +1491,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10274,
+          "line": 10305,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1525,7 +1525,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10478,
+          "line": 10509,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20,
           "readiness": "blocked"
@@ -2285,7 +2285,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "INF-06#autokernel-rebuild-program",
@@ -2297,15 +2297,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 133,
-      "dispatchable": 59,
+      "closed": 135,
+      "dispatchable": 57,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
-      "last_advanced": "2026-11-21",
+      "last_advanced": "2026-11-22",
       "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
-      "open": 60,
+      "open": 58,
       "priority": 0.0011,
       "priority_basis": {
         "campaign": 0,
@@ -2355,7 +2355,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 51,
+          "dispatchable": 49,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2364,9 +2364,9 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 810,
+          "line": 812,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 52,
+          "open": 50,
           "readiness": "blocked"
         }
       ]
