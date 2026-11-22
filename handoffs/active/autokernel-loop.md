@@ -193,11 +193,11 @@ planner logs; it currently reports `active=false` because no campaign is running
 **Live next work:**
 
 - [ ] **AK-RSM-1 — make stop/resume an explicit controller contract before the next long campaign.** [non-inference]
-      · history: notes moved to autokernel-loop-box-history-20261122.md
       Persist content-addressed stage receipts for assignment → planner → critic → authorization →
       build → correctness → attribution → runner → classification; add a graceful stop latch and
       same-graph restart tests proving completed stages never repeat. Graph upgrades use a
       versioned carry-forward receipt rather than copying state or weakening deployment identity.
+      · history: notes moved to autokernel-loop-box-history-20261122.md
       · done when: live executors run through `StageRunner`, the stop latch is checked in `UnifiedCampaignDriver.tick`, and a versioned carry-forward receipt exists for graph upgrades.
 - [x] ~~**AK-V20-LIVE — monitor the fresh v20 receipt chain through its next terminal or safe boundary.**~~ (closed 2026-10-29 audit: OBSOLETE → watch target PID 469246 is dead (ps), v20 deployment dir last touched 2026-08-20, campaign moved to v27/DS41 (handoff:Status header 2026-09-27); no live …  _(detail → completed ledger)_
 - [x] **AK-ADM-1 — promote the six planner-memory limitations into typed pre-model enforcement.** ✅ 2026-11-10 [no-belief: code change, no measurement] _(detail → completed ledger)_
@@ -4165,8 +4165,8 @@ _Via /research-intake Stage 4 (operator-approved plan 2026-09-17; Stage-2/2b/2b2
       · done when: replay spread and BO headroom are filed as a report with no promotion-path change.
       · gate: none
 - [ ] **AK-integrity pack — evaluator hardening + AIChilles divergence probes.** Import SimpleTES's fresh-input recheck-per-timed-run + static blocklist into the C6 verify path (source intake-1454 @ `47d3413d`), and scope an evaluator-derived shape-grammar + divergence-guided regression search vs the sealed anchor for §9.5 (source intake-1447), recording the §V-D tradeoff (robust gating may zero a champion's gain) as pre-registered cost.
-  · history: notes moved to autokernel-loop-box-history-20261122.md
   Done when: the fresh-input recheck + static blocklist are in the C6 verify path, the §9.5 shape-grammar/divergence search is scoped, and the §V-D tradeoff is recorded as pre-registered cost.
+  · history: notes moved to autokernel-loop-box-history-20261122.md
   · class: non-inference (code: verify-path wiring and a scoping write-up; no measurement)
 
 **2026-09-17 implementation checkpoint (rows remain open).** The epoch-local observed-momentum diagnostic already exists (`b86fd838`, `5e8179ba`); the archive retains final attempts/round counts but not per-idea contexts or summaries, so a five-idea cap, summarize-every-20 comparison, and ancestor-revert A/B cannot be scored retrospectively. Do not turn those into a live search-policy change by default. Capture prospective per-idea state with an explicit nonpromotable-lane comparison first. The C6 pre-build scanner now refuses explicit benchmark/capture-phase probes (`84aaaf8d`, 46 focused tests on the isolated patch); legitimate counter-derived state continues to require held-out confirmation rather than blanket refusal. Fresh-input checks are opt-in/report-only, not live C6 authority; the sealed-anchor shape grammar and divergence search remain unimplemented. No retrospective same-prompt replay or counterfactual adaptive/cost-policy score is claimed from incomplete archives.
@@ -4950,8 +4950,7 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
 ### Backlog
 
   - [ ] **RKA-A3B48-D-REMEASURE** [inference] Contention-controlled re-measure of A3B CPU MTP draft length after the 2026-11-18 inversion analysis (research/deep-dives/a3b-cpu-d-depth-inversion-20261118.md: the a3b48 row was bimodal, ~24 vs ~50 ms/token per cell, likely host contention). model: Qwen3.6-35B-A3B MTP Q8_0, 48t CPU half instance, production v10 CPU store. Row rka-a3b48-d-remeasure-20261118: D in {2,4} at 4k/16k/32k, ABBA x4 rounds, foreign-CPU busy sampled per decode window, cells with p95 foreign busy >= 25% invalid (one rerun). stop-on-answer after round 4: RECOMMEND_D2 iff gain >= 5% at 4k and 32k with CI lower bound > 0 in every valid round (>= 3 valid); DEPTH_ADAPTIVE / KEEP_D4 / NO_RECOMMENDATION otherwise; stop-on-futility: < 3 valid rounds possible (FUTILITY_CONTENDED) or KEEP_D4 at round 3; gate-class = futility-only. Measure only: any recipe change goes to the operator. [no-belief: planning]
-    - 2026-11-19: r4 ended rc=75 before verdict; five VALID cells (rounds 1–2 complete, round 3 D4 only). No depth recommendation; resume remaining cells under the preregistered rule. results.jsonl SHA-256 71ccc863d8462f18a361f286ccfbe444ab19ddf7e870cc545a3b2a6978cb5cc3; row keep list retains results and launcher in the scratch vault on reclaim. [no-belief: interrupted run]
-    - 2026-11-18 (autokernel) the a3b48 e2e result above (NO_RECOMMENDATION, keep D=4) is later judged contaminated (bimodal cells, foreign CPU load unsampled), so it is not evidence for or against D=2. Contention-controlled row `rka-a3b48-d-remeasure-20261118-r2` is PUBLISHED at rank 110 (below GPU work). Box stays OPEN. [no-belief: row published]
+      · history: notes moved to autokernel-loop-box-history-20261122.md
 - [x] **C15-EPI-Q8** [inference] Producer-epilogue q8_1 write for MI210 decode (from INF48-GATEUP-PROBE: standalone quantize_q8_1 = 3.56% of 27B Q8_0 decode). RMSNorm+mul and gated-unary+mul fused kernels also write the q8_1 block their Q8_0/Q6_K MMVQ consumer needs, pre-registering the … [no-belief: planning] ✅ 2026-11-19 [belief: cc] [no-belief: row verdict filed by agent] [no-belief: source estimate] _(detail → completed ledger)_
 - [ ] **RKA-A3B-ROUTER-MMVF** [inference] [origin: autokernel-session self-scouting 2026-11-18, NOT backlog-mandated; boxed per operator so it is documented] A3B router F32/BF16 matmuls kept on MMVF up to ne11=8 on CDNA (knob GGML_HIP_MMVF_CDNA_MAX_NE11, 79650eeab; carried default-off in C16 13d6fc150). Measured: rka-a3b-n4-trace-gpu-20261118 removes 76-95% of the n3->4 step; rka-a3b-mmvf8-e2e-gpu-20261118-r2 KEEP (D4 +14%, D2 0%). model: Qwen3.6-35B-A3B MTP Q8_0 on MI210. Remaining: default-on decision at C16 fold (operator). stop-on-answer: C16 fold gate verdict; stop-on-futility: n/a (KEEP measured); gate-class = futility-only. Parent: RKA-A3B-N4-STEP. [no-belief: planning]
 - [ ] **RKA-A3B-ROUTER-WIDE** [inference] [origin: autokernel-session self-scouting 2026-11-18, NOT backlog-mandated; boxed per operator so it is documented] extend the MMVF router path to ne11 9..64 by column-tiling 8-wide launches (knob GGML_HIP_ROUTER_WIDE=1, branch llama.cpp-experimental-c15-a3b-router-wide-20261118 @ bb3294c71) so multi-session verify batches benefit. model: Qwen3.6-35B-A3B MTP Q8_0 on MI210. Row rka-a3b-router-wide-gpu-20261118. stop-on-answer: KEEP iff np4 or np8 D2 aggregate >= +3% with no cell < -1%; stop-on-futility: F32 op gain < 5% at n=12 and n=24; gate-class = futility-only. Parent: RKA-A3B-N4-STEP. [no-belief: planning] 2026-11-19 row rka-a3b-router-wide-gpu-20261118 INCONCLUSIVE (FUTILITY_INSTRUMENT): baseline test rc=0, 16/16 passed; parser counted 12 because warmup diagnostics split four case/OK lines. WIDE and timing did not run. Repair parser and republish. RESULT.json SHA-256 c457fa71b45950a43423e9b29c6ba9c5d3fa887e2fc4a6edf88e323649d1196b. [no-belief: instrument failure]
@@ -6109,10 +6108,10 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       +0.090% effect. The driver exists —
       `scripts/benchmark/autokernel_recalibrate_floor.py` has an `--apply` mode that rewrites the
       table. Needs a GPU window; **do not run it against run 19.**
+      · history: notes moved to autokernel-loop-box-history-20261122.md
   - **2026-11-02 OBSERVATION (row `autokernel-r18d-pp512-v10-private-20261102`, `out/COMPLETE` + `out/results.jsonl`; NOT a decision-grade keep, box stays open):** the private v10 pp512 A/A campaign ran to completion (DeepSeek-R1-Distill-Qwen-1.5B Q4_K_M, anchor `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, research `99301fa149af86a6f9743d2b0405c9234ba39586`, 20 pairs per condition, 40/40 invocations GPU-resident in each, peak VRAM 8.87 GB, 2 KFD processes). A/A median-over-median effects: SETTLED +0.274%, PREHEATED -1.329%, POST_BUILD +0.220%. Bootstrap floor by pair count: 1 pair 8.246%, 3: 5.926%, 5: 4.533%, 9: 3.598%, 20: 2.731% (vs the stale table row 0.029% for 20 pairs). Caveats that travel with it: (1) `clock_stable=False` in the residency record of every condition (sclk 800-1700 MHz observed), so the instrument was not clock-stable and the decision rule's "successful POST_BUILD" is not met; (2) POST_BUILD arm-a drift permutation p = 0.0095 (below 0.05; the other five arm tests were p = 0.35-0.99), i.e. arm A drifted by more than chance in that condition; (3) `calibrated=false` on all conditions, effect/floor unit = process; (4) the campaign self-declares `instrument_characterisation_not_a_claim`. The 2.731% floor is therefore a CANDIDATE value for review and re-adjudication, not a floor verdict, and `bench.MEASURED_FLOOR_PCT["pp512"]` is NOT updated. Next step stays: a clock-stable repeat (pin sclk or reject unstable windows) before any `--apply`. Evidence: `/mnt/raid0/llm/tmp/autokernel-rebuild/r18d-v10-candidate/out/{results.jsonl,aa-campaign.json}`. [belief: cc]
   - **2026-11-09 apr2 decided-rows (operator: re-run with clocks stabilised, stability check NOT loosened):** the Qwen3.8-27B Q8_0 capture row `vidya-r18d-aa-wire-20261104` also ended with `clock_stable=false` on all 136 invocations (sclk 800-1700 MHz, the card at `power_dpm_force_performance_level=auto`). Re-run row `vidya-r18d-aa-wire-20261109-r2` published at rank 35 (GPU, estimate 14,400 s, RAM 48 GiB, disk about 60 MB; smoke queued, not yet PASS). Its job (`/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261109-r2/job.py`) fails closed (precondition rc=5, re-checked at measurement start) unless the host policy reads `high`; the pin is root-owned and currently `auto`, so **the operator must pin it before the grant runs** (`echo high > /sys/class/drm/card2/device/power_dpm_force_performance_level`, as root; the pin is lost on reboot). Proof stays the existing instrument: `residency.sclk_mhz()` reads the achieved clock from hwmon `freq1_input`, `clock_stable` = min equals max. Stop-on-answer when all three conditions finish 20 clock-stable pairs and the sealed capture rederives; stop-on-futility on STOP/deadline, missing own-PID residency or an absent pin; gate-class = futility-only. [no-belief: row publication, nothing measured]
   - **2026-11-09 apr2 decided-rows, SUPERSEDES the r2 paragraph above (operator approved ONE sudo use for this row only):** row `vidya-r18d-aa-wire-20261109-r3` (rank 35, `--class gpu --gpu-quiet exclusive --claim-cpus 184-191`, shape gpu-q3, est 14,400 s, disk about 60 MB) replaces r2, so nobody pins by hand. Job `/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261109-r3/job.py`: refuses unless the level reads `auto` (exit 6; anything else means an earlier restore failed) and `sudo -n` works (exit 5); sets `high` inside the grant with the single write `sudo -n /usr/bin/tee <power_dpm_force_performance_level>` (fixed argv, read back, exit 7 on failure); restores `auto` via finally, atexit and INT/TERM handlers (exit 8 if the restore does not read back); records before/during/after in `out/clock-level.json` and one `CLOCK-POLICY before=.. during=.. after=.. restored=..` log line, which is the final level for the filing line. Smoke: `sudo -n` probe only, no clock change (the one approved use is the real run). Residual risk: SIGKILL, OOM or a crash skips the trap and leaks `high`; the next r3 start refuses on non-auto, and `/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261109-r3/check_clock_leak.sh` (read-only, exit 1 = leaked) must be run after the row's `.ended`/`.complete` and after any kill. A reboot resets the level to auto. [no-belief: row publication, nothing measured]
-  - 2026-11-22 REFIT CHECK (autokernel WP2; box stays OPEN, table NOT changed): no stored pairs can refit the floor. The built-in row is keyed to DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M, whose only fresh A/A (`autokernel-r18d-pp512-v10-private-20261102`) is unpinned (sclk 800-1700 MHz), has a POST_BUILD arm-drift p 0.0095 and n=20, below the n>=24 the floor reader demands. The 27B captures (r3, r4) are a different workload, and both were refused under the operator's rules: r3 has no clock trace; r4 failed the predeclared band rule on 1 of 120 scored invocations (SETTLED pair 5, candidate, 1575 MHz against the 1580 floor; re-graded today with the job's pinned `clock_policy.band_verdict`: 119/120 scored plus 16/16 warmup in band). The brief's fallback (a CPU quarter row) was NOT published: this floor belongs to the GPU lane (`bench.CPU_LIST` 184-191, HIP llama-bench), so a CPU A/A would measure a different instrument and could not back a pp512 verdict. What remains: either the operator re-rules on r4's single 5 MHz dip (decision package), or one GPU A/A row on the 1.5B with the r4 pin, trace and band at n>=24. Meanwhile `calibrated=False` keeps prefill verdicts undecided. [no-belief: data audit, no new measurement]
 - [x] **R18-E — instrument the tail, and stop under-counting device busy-time.** Three parts, one
       change:
       1. Add a `time.monotonic()` pair around `gates.run_all` (`loop/gates.py:140`) and an
@@ -6163,11 +6162,11 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       reviews before injection (run starts and inbox writes stay operator-gated). Zero compute
       until the loop itself elects a seed. **Piloted 2026-08-31 — the pipeline stays open as
       STANDING; the pilot sub-items below are done:**
+      · history: notes moved to autokernel-loop-box-history-20261122.md
   - [x] Pilot sweep (a) — qwen38-mtp . BW-utilization arithmetic: MI210 production ✅ 2026-08-31 _(detail → completed ledger)_
   - [x] Pilot sweep (b) — upstream llama.cpp v0.2.0 delta since the 0db32c06 freeze ✅ 2026-08-31 _(detail → completed ledger)_
   - [x] All 13 seeds from the two sweeps injected into the live hypothesis inbox ✅ 2026-08-31 _(detail → completed ledger)_
   - [x] Decide the upstream-rebase cadence for the experimental branch (filed 2026-08-31): the ✅ 2026-11-18 [no-belief: operator decision] _(detail → completed ledger)_
-  - 2026-11-19 R21-5: STANDING by design. All pilot sub-items are done and the upstream-rebase cadence was decided 2026-11-18 (port-as-hypothesis is the standing answer); the row stays open only as the standing pipeline, with nothing left to build.
 - [x] ~~**R21-6 — BOUNDARY tonight, 2026-08-31 22:00Z (operator-ordered).** Driver~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists R21-6 stale by event (boundary 2026-08-31 22:00Z passed; driver scripts/benchmark/boundary_20260831.sh exists; later runs …  _(detail → completed ledger)_
 - [x] **R22-6 — Harden `read_inbox` (3-line fix, coordinate with R22-3's lane work).**  (audit: research 68557dac8 (2026-09-01) "R22-6: operator injection channel no longer a kill switch": controller/inbox.py per-file try/except + inbox_file_unreadable note; tests test_inbox.py:69,81) ✅ 2026-10-29 [no-belief: audit-reconciliation] _(detail → completed ledger)_
 - [x] **R23-2 — Demote/annotate the two benign-but-alarming DFlash2 load warnings.** "failed  — IMPLEMENTS llama.cpp-experimental `2d4e3225e13178674d27ef57b899f0255f15bf40`; [source, controls and … ✅ 2026-10-31 [no-belief: software implementation and model-free controls] _(detail → completed ledger)_
@@ -6190,17 +6189,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
   - 2026-11-02 operator decision: File upstream (decisions-batch2-4-20261102.json)
   - 2026-11-19 R23-1 finding: upstream llama.cpp already fixed this independently, `b04642061` "cli: exit on stdin EOF ..." (#29722, 2026-09-30), so there is nothing to file; the recorded decision "File upstream" is moot. That commit is in neither frozen v10 (`ffc1bac82`) nor the experimental branch (`experimental-v9-autokernel-t1-integrity-v2`). Admission into the lineage is therefore "carry the peer patch (`artifacts/operator/llama-cli-eof-fix-20260901.patch`) or take upstream's commit" on the next fresh-production pull of `llama.cpp-experimental`; that is a kernel-tree change and stays with the champion lineage owner. The harness's `-st` belt stays.
 - [ ] **R22-5 — Boundary-length correctness matrix in the oracle (screen upgrade, from the
-  - 2026-11-04 PARTIAL: `autokernel-r225-hip-build-only-20261104` PASS rc0 at `8f26e4f3`: test-backend-ops.cpp object (sha 6d6b1ee3) and gfx90a acc.cu HIP object (sha 52af2f65) built, binary sha 5e6928f0, HIP lib sha 541f4fda, build-only boundary marker present. Closes the 'complete claimed clean build' step; no execution, no numerical validation. Box stays open. Next: run the selected boundary corpus (M in 33..2048) on CPU and gfx90a against the ggml reference. [no-belief: build-only]
-      M4-prefill intake relay, H5).** Validate kernels at M ∈ {33, 127, 128, 129, 512, 1023,
-      1024, 2047, 2048} — off-by-one probes around tile boundaries — in `gates.op_correctness`.
-      Rationale from our own record: nearly every INF-67 fused-decoder defect (span overflow,
-      conv-window layout, copy-back overrun, scratch overflows) was a boundary condition; the
-      dominant defect class that kernel-isolated perf tests miss. Cheap; loop-budget cost is
-      near zero if the case list lives in controller/. Source: intake-1295#record.
-  - 2026-11-02 proposed source only: experimental kernel `8f26e4f3a46cb79a09ed796b82f16daed3ecda63` ([proposal branch](https://github.com/pestopoppa/llama.cpp/tree/codex/r22-5-boundary-proposal-20261102)) and research `fa620eaa32677745fafdb062ed133d3838941241` ([proposal branch](https://github.com/pestopoppa/epyc-inference-research/tree/codex/r22-5-boundary-proposal-20261102)). Six op families have proposed case generators and an explicitly selected gate; unmapped CPU graph operations refuse explicit matrix requests and legacy gates remain unchanged. No complete build or test ran: two CPU builds were stopped after their region owners reported live workloads behind lost lock wrappers. No binary freshness proof, CPU/GPU numerical validation or universal coverage exists. R22-5 remains OPEN; review source, complete claimed clean build and validate the selected corpus before adoption. [no-belief: unvalidated source proposal]
-  - 2026-11-19 R22-5: the gate source (`boundary_matrix_correctness`, explicit requests only, unmapped ops refuse `oracle_unavailable`) was rebased onto research main as `d2f84e997` (conflict was one `strip_ansi` line; `test_r22_5_boundary.py` 6 passed, `test_gates*.py` 169 passed). Still open: run the M in {33..2048} corpus on CPU and gfx90a against the ggml reference on the experimental build `8f26e4f3` (needs a CPU region claim and a GPU window).
-  - 2026-11-19 R22-5 row (autokernel): `r22-5-boundary-gpu-20261119`. model: none (op-level corpus, no weights); build identity: experimental `8f26e4f3a46cb79a09ed796b82f16daed3ecda63` (v10 `ffc1bac82` + the `r22-5-v1` case set), in-row HIP gfx90a build. 18 units = {CPU backend, ROCm0, ROCm0 reference-mode (`--suite-seed 71 --autokernel-properties`)} x {MUL_MAT 36, MUL_MAT_ID 36, GATED_DELTA_NET 9, RMS_NORM 9, RMS_NORM_MUL_ADD 9, FLASH_ATTN_EXT 9} cases of M/length 33..2048. The CPU leg compares the CPU backend to tbo's sibling CPU reference, so it proves execution and agreement, not an independent CPU cross-check. Stop-on-answer: verdict after the 18th unit (PASS / FAIL(correctness) / DROP(incomplete)). Stop-on-futility: build, proof or residency failure (FUTILITY_*) stops with nothing claimed; rc 75 only on STOP or deadline. Gate-class futility-only.
-  - 2026-11-19 R22-5 filed FAIL_CORRECTNESS (`r22-5-boundary-gpu-20261119`): one build only (8f26e4f3a = v10 source + corpus), so `rocm` and `rocmref` are the same v10-source binary. CPU 6/6 units pass; GPU all pass except q8_0 MUL_MAT_ID n=1 k=256 at m%4!=0 (rocm: 33,127,2047; rocmref: 33,127,129,1023,2047; ERR 0.0006..1.0, set differs run to run = race). Real kernel defect, root-caused and tracked as **MMID-Q8-N1-ODDM** in kernel-champion-and-promotion.md. `rocmref` 'incomplete' is a harness defect: `tbo_parse.py` counts OK with `:\s*OK$`, but `--autokernel-properties` lines end `oracle=ggml_cpu_reference/v1 OK`, so n_ok=0 while the logs print 36/36, 9/9 x4 and 31/36. Open here: fix the n_ok regex (also accept AK_REF_V1 ... OK) in the gate/row parser, then rerun the corpus after the MMID fix lands. [belief: cc]
+    · history: notes moved to autokernel-loop-box-history-20261122.md
 - [x] **R22-3 — Guard robustness, post-trim (spec from R21-10, budget-gated on R21-7):**  (audit: research 3e895c4bd (2026-09-01) "R22-3: anchor-guard robustness triad - hash pre-check, persisted evidence, heal-once" (controller/anchor_integrity.py) covers (1)(2)(3)) ✅ 2026-10-29 [no-belief: audit-reconciliation] _(detail → completed ledger)_
 - [x] ~~**R22-4 — Next-boundary device experiment (builds staged at `/mnt/raid0/llm/tmp/r2110-build-{a,b,parent}`):**~~ **SUPERSEDED 2026-11-17 (autokernel, INF-06 code pass): it audits the run-21 "4th keep" on its 2026-08 pre-v10 parent. Only the build half ran (`autokernel-r22-4-rebuild-20261102` …** [no-belief: superseded] _(detail → completed ledger)_
 - [x] ~~**R21-7 — the loop code budget is BINDING AGAIN: 2100/2100, zero headroom** (run-22 prep~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists R21-7 stale by event; budget since raised 2100->3000->3400->3450 (check_regrowth_guards.py:34-66))  _(detail → completed ledger)_
@@ -6211,12 +6200,9 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       (R21-L8); `llama-batched-bench` expresses parallel decode natively and is closer to the
       serving shape. Needs its own floor calibration (`--calibrate-surface` method) before any
       verdict may cite it; zero compute until then.
+      · history: notes moved to autokernel-loop-box-history-20261122.md
   - **[declined: ws58 2026-11-03 content-review: merged into R22-2]** **R22-2-CUSTODY-QUAL — finish the guarded native calibration.** Review and integrate the source-bound custody-fence repair in `artifacts/compute/codex3-r22-custody-fence-review-20261101/`, rerun the complete project CI on final bytes, establish managed predecessor exclusion and drain, activate versioned keeper routing at its single-writer boundary, then obtain real normal/cutoff keeper qualification. The 71 qualifier controls pass; no GPU floor or qualification is claimed. The older full-CI candidate had belief/index/dashboard green and one existing main ratification-check failure; it does not validate the revised guard. Preserve every started or incomplete shape as UNKNOWN and do not redraw.
   - **[declined: ws58 2026-11-03 content-review: merged into R22-2]** **R22-2-CI-RATIFICATION — resolve the existing main-branch receipt-check failure before source publication.** The full local run on base `216abe3679857941bb90bfdd8ef15355b65004d3` failed the trust-boundary scanner on the pinned `artifacts/engineering/pbqcost-deadline-contract-20261101/candidate-source/kpf18_gate.py`: its docstring names a boundary path and its caller-selected output is writable. Determine the correct treatment while preserving detection of real boundary writes and the byte-pinned source evidence; do not weaken the checker, edit protected documents, or invent a receipt. Re-run the exact workflow on the final revised patch.
-    - 2026-11-02: the original docstring case is fixed on root main `b7e4a225c`; with both custody patches applied, the exact gate reported 66 passed / 1 failed on two newer byte-pinned, actively consumed source snapshots containing boundary references and caller-directed writes. Archiving their executable bytes to evade the scanner would weaken its invariant. The protected exemption list was not changed; resolve those findings under the existing human-only boundary, then rerun the gate. Log: `/mnt/raid0/llm/tmp/inf66-ci-ratification-check.log`. [no-belief: test result only]
-  - 2026-11-19 R22-2: still needs the `--calibrate-surface` floor calibration of `llama-batched-bench` (a GPU window) before any verdict may cite it; the CUSTODY-QUAL and CI-RATIFICATION children are merged here and sit behind the human-only boundary exemption list. No code left to write.
-  - 2026-11-19 R22-2 row (autokernel): `r22-2-batched-floor-gpu-20261119`. model: DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M (the loop's keyed calibration workload); build identity: production v10 `ffc1bac82` GPU store `llama-batched-bench` (sha 3a13b19f, HIP lib f26a166b). Same-binary A/A floor per parallel shape npl 1/2/4/8 (pp128/tg128, -fa off, -t/-tb 8): SETTLED (300 s settle, 1 warm-up) and PREHEATED (6 warm-ups), 20 measured pairs each, bootstrap p95 at k 1/3/5/9/20, residency sampler in-window at the loop's 0.25 s. The D8 post-build condition is NOT run (recorded adaptation). Raw floors land in the row's out/ only; promotion into `bench.py` stays a reviewed step. Stop-on-answer: RESULT CALIBRATED after the 4th shape. Stop-on-futility: first residency/digest/parse failure (FUTILITY_*) stops with nothing claimed; rc 75 only on STOP or deadline. Gate-class futility-only.
-  - 2026-11-20 (autokernel box audit) row `r22-2-batched-floor-gpu-20261119` filed **pass, CALIBRATED** (2026-11-19T02:09Z): all four npl shapes settled + preheated, 20 A/A pairs each, pinned binary/HIP digests; k=1 p95 floors settled/preheated npl1 15.61/16.41%, npl2 10.79/10.42%, npl4 7.67/8.17%, npl8 4.50/4.80%. NOT ticked: the box evaluates llama-batched-bench as the parallel-sequence surface; remaining = the reviewed promotion of these floors into `bench.py` (no post-build floor claimed). [no-belief: row verdict filed by agent]
 - [x] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.**  <!-- evidence-integrity: Research `bebe42b9a56d9cf6c951fc75a227c8666a194080`; artifact: artifacts/compute/task-evidence-repair-20261031/r21-1/EVIDENCE.json; hygiene, not quota --> ✅ 2026-10-30 [no-belief: code and test
       closure; no performance measurement] _(detail → completed ledger)_
 - **[declined: ws58 2026-11-03 content-review: bookkeeping]** **R21-2b — re-point the published bundle's evidence paths at the repo copy** at the next
@@ -6347,13 +6333,13 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         `artifacts/operator/ratify_p_kld_divergence_protocol_20260915.sh` (it pins the annex plus the
         MEASUREMENT.md pre-state `45c7e3a3…`; only `bash -n` has been run) and the decision package
         `artifacts/operator/op38-pkld-decision-20260915.md`.
+        · history: notes moved to autokernel-loop-box-history-20261122.md
         - **Source.** The README was re-fetched at the intake's pinned commit `44e817b` (sha256
           `b1501772…`).
         - **Instrument facts read from frozen v9 `0db32c06e` `tools/perplexity/perplexity.cpp`:**
           - `--kl-divergence` stores the reference as a lossy `uint16` window 16 nats wide (`:79-106`);
           - it drops reference entries below −16 nats from the sum (`:221-231`);
           - its `±` is a per-token SE (`:1769-1776`).
-        - 2026-11-02 operator decision: Ratify [approved, pending ratify script] (decisions-batch2-4-20261102.json)
 
           So "37.9σ" is not an interval under the annex.
         - **Correction to this row.** The 0.0649 is **B7's PLE IQ4_NL→Q8_0 swap measured against the
@@ -6875,7 +6861,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         second stack sub-additive). Not applicable: page-cache eviction (models are VRAM-resident) and
         hot-server arm switching (reload is cheap on GPU). Evidence: `handoffs/active/cpu-decode-roofline-
         program.md` (CHAMP-2, SYNC-15), `wiki/benchmark-methodology.md` → *Measure the stack, not the parts*.
-        - 2026-11-19 R23-48: the pure half is on research main (`a4eec04cb`: `controller/loo_arms.py` plans one arm per accumulated keep per promotion, a floor-gated judge where no floor or no effect is INCONCLUSIVE never a drop, and the `retracted_by_loo` row carrying both sample vectors; 10 tests). Open: the driver that does `git revert --no-commit <keep>` in a detached worktree, builds, and runs the paired A/B (needs builds and a GPU window), then runs it at the next champion-of-record advance.
+        · history: notes moved to autokernel-loop-box-history-20261122.md
       - [x] **Run 30 launched**  16:31Z — run 29 stopped (opencode `event` change-feed grew the ✅ 2026-09-07 _(detail → completed ledger)_
       - [x] **Headline freeze (R23-44 defect) fixed** : moving `publish_headline()` to the ✅ 2026-09-07 _(detail → completed ledger)_
       - [x] **Accumulator observability** : the loop status now carries the two-tier ✅ 2026-09-04 _(detail → completed ledger)_
@@ -6991,7 +6977,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       provenance mismatch (rc=2) and uncalibrated surface (rc=3, proven against dec-b8 while its
       calibration was still running). Baseline reuses the cached `v9v-build-base` (no rebuild).
       SEAM ORDER: DFlash2 smoke first (~10 min, gating for run 24), then this (~1 h, dec-b4).
-  - 2026-11-19 R23-25: the classification is on research main (`531cea64a`: `controller/rung_routing.py`, size-dependent families launch geometry / occupancy / tiling go to the confirm rung, size-independent screen first, UNCLASSIFIED keeps today's screen-first; 8 tests). Not yet wired: the screen-rung selector in `loop/run.py` does not call `rung_routing.skips_screen`; wiring it spends loop-code budget (guard already reports a baseline violation) and needs the confirm-rung-only path exercised on a GPU window.
+      · history: notes moved to autokernel-loop-box-history-20261122.md
 - [x] ~~**R23-21 — decide whether the confirm-rung headline also gets measured on dec-b8** — dec-b4~~ (closed 2026-10-29 audit: SUPERSEDED → dec-b4 confirm-rung scope abandoned: run 29 pivoted to tg128 (R23-42, autokernel-rebuild-program.md:1620, commit 6e4f00599); dec-b8 decision never recorded)  _(detail → completed ledger)_
 
 ---
@@ -7012,6 +6998,7 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       **Action:** ONE stateless actor call. It reads only `experiments.md`/db, hotspots, `program.md`, the champion
       diff, gate-parameter history and (when landed) AK-PM-17 records. It writes a plan artifact into
       `hypotheses/inbox/` containing:
+      · history: notes moved to autokernel-loop-box-history-20261122.md
       - a diagnosis against the checklist {repetition, wrong bottleneck, instrument/anchor broken, surface
         anti-correlated with production, exhausted rung};
       - ranked actions;
@@ -7022,7 +7009,6 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       **Warrant:** the auto-gpu-kernel loop's research agent fired on exactly these conditions and produced 4 of its
       largest late wins. That evidence is uncontrolled: 6/19 keeps is about the base rate (intake-1425#record).
       Zero compute.
-  - 2026-11-19 R24-7: the detector is on research main (`4322ddb85`: `controller/keep_drought.py` K=10 pre-registered, consecutive non-keeps or window-best inside the floor, read-only experiments.db loader, plan-artifact validator, mechanical half of the 20-non-keep retrodiction bound; 10 tests). The exit criterion is NOT met: no run-18 or run-24 store is on disk (only synthetic fixtures), so the real retrodiction and the defect-naming half stay open, and no actor call is built. Resume: point `retrodict` at those stores' experiments.db.
 - [x] **R24-8 — no-measurement streak alarm and keep-rate alarm, beside `MAX_CONSECUTIVE_ERRORS`.**  CLOSED (autokernel, INF-06 sweep). Both alarms landed (research `991033729`: `NO_MEASUREMENT_ALARM_N`, `KEEP_RATE_ALARM_WINDOW`, planner evidence line; ROOT `844689e0a` /loop render). Retrodicted on … ✅ 2026-11-17 [no-belief: tooling + retrodiction capsule] [no-belief: source/control evidence; retrospective coverage incomplete] _(detail → completed ledger)_
 - [x] **R24-9 — same-code re-measurement tripwire (rider on R22-3 (2)).** When a candidate's code-section hash   <!-- evidence-integrity: Research `8b1cdb6fb8dd2255acf3f4194e690d1a23465510`, `5412cae12ec806514f27f510eadf4206d4b0f9be`; artifact: … ✅ 2026-10-30 [no-belief: source regression guard] [no-belief: backend dispatch source fix] _(detail → completed ledger)_
 
@@ -7031,8 +7017,7 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       record a mismatch rate. A 3-draw oracle misses a p=0.015 failure 95.6 % of the time. LLM-CUDA's agent-assisted
       top-k passed its 3-trial check and then failed 2 workloads in the contest's own evaluation (intake-1427#record).
       This is the same defect class as our `-funsafe-math` greedy-argmax flip (:1021-1023). Cost: test-backend-ops scale.
-  - 2026-11-19 R24-10: the arithmetic and per-case runner are on research main (`27e2d6221`: `controller/multi_draw.py`, seed schedule, miss probability (3 draws miss p=0.015 95.6% of the time), draws-needed, mismatch rate with an upper bound, refusal-safe; 7 tests). Open: the physical run through `test-backend-ops --suite-seed/--repeat-suite` on ARGMAX/TOP_K at N>=100 draws per boundary case (needs the R22-5 corpus run first).
-  - 2026-11-19 R24-10 row (autokernel): `r24-10-multidraw-gpu-20261119`. model: none (op-level); instrument: production v10 store `test-backend-ops` (carries `--suite-seed`/`--repeat-suite`, no build) on ROCm0. 100 fresh `--suite-seed` draws (research `controller/multi_draw.seed_schedule(20261119, 100)`), one process per draw, over the default-corpus ARGMAX (7) and TOP_K (incl. 1023..2049 boundary lengths) cases; `--repeat-suite 2` once as a same-seed control, since it repeats the SAME seed and cannot draw fresh inputs. The R22-5 `r22-5-v1` set has no ARGMAX/TOP_K cases, so no claim about it is made. Stop-on-answer: verdict after draw 100 (PASS with per-case upper 95% bound, 0/100 -> 2.95%), or early FAIL at 3 mismatches in one case. Stop-on-futility: residency failure, no parsed cases, or >= 10 refused draws (FUTILITY_*); rc 75 only on STOP or deadline. Gate-class futility-only.
+      · history: notes moved to autokernel-loop-box-history-20261122.md
       - Note 2026-11-19 (autokernel): row `r24-10-multidraw-gpu-20261119` PASS: 100 fresh-input draws x 177 ARGMAX/TOP_K default-corpus cases on production v10 (ROCm0 vs CPU), 0 mismatches, 0 refused, rate_upper_95 = 0.0295 per case. NOT ticked: sampler paths and the R22-5 boundary cases are not covered (R22-5 set has no ARGMAX/TOP_K); remaining = a multi-draw arm for sampler paths. [belief: cc]
 - **[declined: ws58 2026-11-03 content-review: its own text: fold into R23-13/R23-43, do not open a new row]** **R24-11 — production dispatch-shape census rendered to the planner.** Fold this into R23-13 / R23-43; do not
       open a new program. R23-13 already produces production dispatch tables.
@@ -8022,12 +8007,8 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
       log ratio of candidate/anchor downside semideviation, one-sided paired-bootstrap 95% upper bound < 0,
       n ≥ 14 launches/arm, plus throughput 95% lower bound above minus the applicable session-unit floor.
       Keep p95 deviation as reporting only.
-  - 2026-11-18 operator decision (decision tool): OP-AKU-U3 approved as packaged (option A: additive versioned records, legacy preserved). Estimand/test/N/multiplicity/mean-guard are now fixed as above; p95 deviation stays reporting-only. [no-belief: operator decision]
-  - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `4676c07b6` implements the approved rule (seeded B=10000 paired session-unit bootstrap, n>=14 else `insufficient_n`, floor and unit as inputs, one test per candidate, typed KEEP_VARIANCE/REFUSE, never overrides an effect decision). Remaining: a producer that emits `variance_input` from real paired-launch RUNTIME_CONFIG session units, and real-launch false-keep calibration (CPU A/A row `ak-cpu-aa-calibration-20261118`, unpublished). Synthetic size/power row `u3-variance-keep-size-power-20261118` published for this box. model: none (pure-Python harness row). Stop-on-answer: all 60 units (6 cells x 100 sets) give per-cell false-keep/keep rates. Stop-on-futility: missing input, or a null cell above 25% false keeps at >= 30 sets (rule too liberal). Gate-class futility-only. [no-belief: tooling landing]
+      · history: notes moved to autokernel-loop-box-history-20261122.md
   - [x] **S3-AKU-08 (U3-PROPOSER) — write the RUNTIME_CONFIG proposer ownership split into U3-SEED.** (a) ✅ 2026-09-15 _(detail → completed ledger)_
-  - 2026-11-19 U3-SEED: no code possible until OP-AKU-U3 is decided (variance estimand/test, alpha/N/multiplicity, mean-throughput guard); `_spread()` stays reporting-only. The recommended narrow rule above stands as the proposal.
-  - 2026-11-19 (autokernel) PARTIAL (code-only; box stays OPEN): research `epyc-inference-research` `ee4149f75` `loop/variance_input_producer.py` `produce(record, candidate_id=, floor=, unit=)` emits the closed `variance_input.v1` from the `serving_runtime_ab.v1` record of paired RUNTIME_CONFIG launches (pairing from `launch_membership`), refusing typed (unpaired, recipe-hash/unit mismatch, missing floor, bad value, unsupported schema), n<14 through `variance_keep`'s own `insufficient_n`; end-to-end test on SYNTHETIC launches (19 tests with variance_keep). Remaining: >=14 real paired RUNTIME_CONFIG launches with a session-unit floor record for a real verdict (CPU A/A calibration row `ak-cpu-aa-calibration-20261118`). [no-belief: code]
-  - 2026-11-20 (autokernel) RESULT `u3-variance-keep-size-power-20261118` rc=0 complete, MEASURED **SIZE_OK_POWER_LOW** (synthetic, 100 sets x 14 units/cell): null false-keep Wilson UB95 sd1 0.070 (2/100), sd2 0.085 (3/100), sd5 0.054 (1/100), heavy-tail 0.098 (4/100), all <= 10%; power keep rate sd0.5x 0.26, sd0.2x 0.59, both < 0.8. The rule is conservative at n=14; box stays OPEN (real-launch calibration = CPU A/A row). [belief: cc]
 > ### THE RECIPE FORMAT — NOT THE KERNELS — IS THE BINDING CONSTRAINT ON WHAT THIS CAMPAIGN CAN ASK
 >
 > **Three expressiveness gaps in the recipe schema were found and fixed on ONE DAY, 2026-09-08.** Each one
@@ -8073,7 +8054,7 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
       one recipe per champion, which is now demonstrably under-specified. Extend the record to key the
       recipe by surface, and make the gate refuse a measurement whose (surface, recipe_hash) pair does not
       match. Ties to R23-59 and R23-55 (`unit`). Blocked on nothing.
-  - 2026-11-19 U3-DEFAULTS-b: partial. `controller/surface_recipes.py` on research main (`0b12baae7`): `SurfaceRecipes` keys the recipe hash by surface (CPU shim ON vs GPU not set), canonical digest, and refuses a mismatched (surface, recipe_hash) pair, an unknown surface or a missing pin; 9 tests. Not yet done: carrying it on the champion record / Bundle schema (journal `LOOP_BUNDLE_SNAPSHOT_SCHEMA`) and calling `require_match` at the measurement gate.
+      · history: notes moved to autokernel-loop-box-history-20261122.md
 
 ##### 3.4 Track U4 — resource broker and per-surface budgets
 
@@ -8348,12 +8329,8 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       bench effect at keep time. Count keeps whose LOO arm is at least as fast as the full bundle on the
       serving surface or any re-baselined surface, and report the count on the promotion record.
       intake-1378#record. Consumed by INF-75 AKX-P3b.
-      - 2026-11-17 PARTIAL (autokernel, code-only; box stays OPEN): `epyc-inference-research` `f6e09036a` `goodhart_count.count_goodharted` takes the R23-48 LOO arms (keep-time effect + per-surface leave-one-out throughput) against full-bundle throughput per surface, counts keeps whose LOO arm is >= the full bundle on any surface (tie counts), records the keep-time effect beside each arm, and refuses malformed input or a surface with no full-bundle value. Tests in `test_promotion_goodhart.py` (5 cases). Remaining: feed it the real LOO arms and put `goodharted_count` on the promotion record (needs a promotion run). [no-belief: tooling landing]
-      - 2026-11-18 (autokernel, AKU bulk pass) PARTIAL (code-only; box stays OPEN): research `64fc1cfc1` `promotion_evidence.compound_from_heldout(goodhart=...)` validates a `goodhart_count.v1` result and records `goodharted_count`/`goodhart` on the promotion record beside the unchanged gain (None = not measured, never 0); `test_promotion_goodhart.py` 12 passed. Needs a RUN: the real R23-48 leave-one-out arms measured on the serving and re-baselined surfaces, then fed through `count_goodharted`. [no-belief: tooling landing]
-  - 2026-11-19 (autokernel) real LOO row `s3-aku-13-loo-cpu-c14-20261118` published: C14 `eee3da838` full bundle F vs five CPU LOO arms (L1-L4 `git apply -R` own builds, L5 `GGML_CPY_BALANCE=0`), paired ABBA x2 per arm on P4K and P32K. model: Qwen3.8-Flash-Next UD-IQ4_XS (Q38FN) + shared MTP Q8_0. Stop-on-answer: all 40 visits -> RESULT.json arms/full_bundle in the `count_goodharted` input shape (verdict computed by the owning session, tie counts). Stop-on-futility: missing input/proof failure, or L/F < 0.90 on both surfaces in block 1 skips that arm's block 2. Gate-class futility-only; other re-baselined surfaces (GPU) not in this row. [no-belief: tooling landing]
-  - 2026-11-19 (autokernel) FILED `s3-aku-13-loo-cpu-c14-20261118` **inconclusive** (box stays OPEN). `count_goodharted` = 4/5 (0d270f99b, 7a5db485e, a331665d4, 4348de400 goodharted; 8b9bf3031 not). loo/full P4K/P32K: L1 1.059/1.046, L2 1.029/0.984, L3 1.077/1.004, L4 1.014/1.014, L5 0.809/0.873 (block-1 futility). Only 2 blocks/arm, no arm clears the 3.84% floor on every block and surface, and host foreign busy_p50 was 35-52% on every visit (spikes on F visits inflate L1/L3). Greedy outputs byte-identical F vs every arm. L5 (GGML_CPY_BALANCE) clearly positive. Confirmation: AK-LOO-CONFIRM-C14. [no-belief: inconclusive row verdict]
+      · history: notes moved to autokernel-loop-box-history-20261122.md
   - [x] **AK-LOO-CONFIRM-C14 — contention-gated confirmation of the C14 CPU LOO signal.** model: Q38FN Q8 CPU (Qwen3.8-Flash-Next UD-IQ4_XS + MTP Q8_0), 48t pinned 24-71, booked q0-q2. Row `ak-loo-confirm-cpu-c14-20261119`: arms full C14 vs R1 (-0d270f99b), R3 (-a331665d4), R1234 (-L1..L4), >= 8 … ✅ 2026-11-19 [no-belief: row verdict filed by agent] _(detail → completed ledger)_
-  - 2026-11-22 (WP4, epyc-inference-research `55fea1913`; box stays OPEN): `promotion_evidence.compound_from_heldout(loo_record=)` now refuses a promotion record whose TOUCHED-scoped LOO block lacks the count, LOO receipts or plan, or whose count differs from the goodhart block. Remaining: a conclusive real LOO count (the C14 row was inconclusive), which needs granted rows, not loop free-running. [no-belief: code change]
 - [ ] **AKU-19** First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
 
   - 2026-11-01 codex3 acceptance: Staleness is derived from the existing shared-COR authority and checked by already-loaded readers, status/quotes and decision entry points. The explicit own-surface rebaseline runs the existing native CPU/GPU harness after resource admission, binds intent before measurement, retains native failure/aborted raw records, then checks COR, tip and the original surface-journal snapshot under the existing authority lock before saving a current measurement. Only a complete typed native comparison clears the stale state. Late initialization and seed cannot erase existing state or bypass recovery; incompatible recovery flags refuse. The final frozen eight-file suite passed 354 with original source hashes and drained processes. No actual COR promotion, model execution, deployment, threshold/grade change or planning-canary claim. [belief: cc]
@@ -10318,39 +10295,12 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
 **Starvation evidence**: a region-lock build claim on cpu 0-3 waited 3872 s behind a live AK loop on 2026-10-05.
 
 - [ ] **AKU-RED-LOOP — triage the red research AutoKernel loop suites** (filed 2026-09-17; handed over by
-  - 2026-11-01 narrow recovery-fixture checkpoint: Research `99b9622f2780eb2b5d0ea5906e274ced7f7d07ea` gives the real interrupted-owner fixture a declared 300 s stage/1,000 s campaign bound before scheduler selection. Its retained actual held receipt was 13.493 s, exceeding the generic 10 s test budget; the scheduler correctly fenced the old fixture. Authentic non-scratch before/after controls now pass all five recovery tests without weakening ownership, receipt accounting or no-old-sample-mix checks. [Raw logs and original/new receipts](https://github.com/pestopoppa/epyc-inference-research/tree/99b9622f2780eb2b5d0ea5906e274ced7f7d07ea/artifacts/engineering/akx-runtime-recovery-20261101). The scratch-location refusal remains a valid historical-evidence gate. This parent remains open for measurement-granularity pause/yield; no production, model or deployment change and no new parent completion credit. [no-belief: fixture repair and native controls]
   `sub-redtests`, see `progress/2026-09/2026-09-16-sub-redtests.md` → *Handover*). Under python3,
   `scripts/kernel_rnd/autokernel/loop` shows 30 failed and 30 errors. Clusters: the `test_serial_run.py`
   settlement refusal; `ProducerSourceRefused` in 13 errors; `test_seed.py` prompt text; missing
   `samples_ts`/`n_threads`/`build_commit`; and one test path in a removed worktree. Classify each by reason
   (stale test, code bug, environment), then fix or delete.
-  - 2026-10-07: **re-measured, much larger now** — `python3 -m pytest autokernel/loop -q` on research
-    origin/main (`de02a21d`) shows **376 failed, 75 errors, 4556 passed** in 998s (one foreground pass).
-    Triage: `/mnt/raid0/llm/tmp/ak-test-triage-20261007/TRIAGE.md` (worktree
-    `research-ak-triage-20261007`). **357 of 451 (79%) collapse to ONE root cause**: commit `440b5b5c`
-    ("fix disk-leak sources") changed `test_unified_planner.py`'s `runtime_anchor(target, recipe,
-    tmp_path)` signature and fixed the 9 call sites inside its own file, but 7 other test modules
-    (`test_cpu_profile_runtime.py`, `test_native_retention_catalog.py`,
-    `test_profile_preparation_runtime.py`, `test_standalone_inputs.py`, `test_unified_driver.py`,
-    `test_unified_driver_plan_versions.py`, `test_unified_worker.py`) still call the 2-arg form.
-    Mechanical fix, ~30 min, test-helper only, zero production impact. Remaining ~94 split into: a
-    12-error producer-source schema-drift cluster (fixture vs `native_producer_source.py`'s closed-set
-    schema, v1/v2 split from `f6e0cfe1`); two **UNCLEAR, possibly-real** clusters flagged for priority
-    follow-up — `test_existing_cpu_run.py`'s per-iteration decision-sequence assertions
-    (`measured_null`/`kept`/`regression`, touches `run.py` core) and
-    `pool.prune_anchor_generations` call-count during legacy-keep pruning (touches `pool.py`/`run.py`
-    kernel-lineage retention); two confirmed stale-mock clusters (`gpu_quiet_path` kwarg added by
-    `0cb215c3`, and `test_heartbeat.py`'s brittle string-slice source guards); and an unexamined
-    ~62-count long tail, largest single file `test_campaign_service.py` (13). No evidence found of an
-    actual production bug in `serving.py`, `gates.py`, `longctx.py`, `model_identity.py`, or
-    `serial_run.py`.
-  - 2026-10-07 (later): cluster 1 + cluster 4 (gpu `hold()` stub) **fixed** — research `58c86506`
-    ("thread tmp_path through runtime_anchor() call sites; fix stale hold() stub"), epyc-root
-    `fedc411f3`. Per-file rerun: 172 pass, 5 fail — 4x
-    `test_existing_gpu_pool_uses_selected_requests_and_original_keep_owners` now fail on
-    `"keep_candidate"` vs `"kept"` after the R23-44 keep-gate change (`run.py:5876`, needs an owner
-    call, not a mechanical fix), plus 1 ordering flake in `test_unified_worker.py`. The full-suite
-    rerun (`pytest autokernel/loop -q`, ~5000+ tests) was not completed this session.
+  · history: notes moved to autokernel-loop-box-history-20261122.md
   - [x] Full-suite rerun of `autokernel/loop` on origin/main (post-`58c86506`) for a clean count. Final bdb52d951 published; original full5,281 passed,11 skipped,two xfailed,284 subtests andzero failures (ROOT acceptance fd9043db).
   - [x] Validate the existing CPU/GPU keep and pruning paths against original kernel-coverage  _(detail → completed ledger)_
   - [x] Triage clusters 2, 3, 5, 6 (3 and 5 flagged lane-affecting) plus the ~62-item long tail —  _(detail → completed ledger)_
@@ -10358,15 +10308,6 @@ or FIFO default changed. Both current CPU placements still own q0–q3, so timin
     not one batch — a batch is ≈3.4h). 2026-10-07 03:03Z: a control-endpoint pause for an EC GPU
     window only lands at batch boundaries; `SIGTERM` did not stop the batch child within minutes and
     `SIGKILL` was needed (operator-authorized). The window was cancelled anyway, but the gap is real.
-  - 2026-10-07 Codex follow-up: cluster 2 is a real producer/consumer mismatch, rather than a
-    fixture-only repair. Research `62f1ac58` gives expanded raw source identity a separate v2 grammar
-    while preserving exact historical v1 and unchanged response payload v1. Independent Astra
-    source review PASS; old-parent live FF compatibility FAIL. Keep this writer out of the pinned
-    lane worktree until a coordinated fresh parent/worker epoch; OP80's separately authorized
-    next-batch FF must target its exact validated commit before v2 lands. Focused tests are queued.
-    Heartbeat source guards are repaired in `52d871f9` and queued. Campaign-service long-tail
-    tracing found another stale helper caller and a possible deployment package-path defect;
-    those are being fixed and checked without changing grading or historical evidence.
 
   - 2026-10-07 06:40Z source checkpoint: all 451 original failed/error IDs (376 failures, 75
     errors) are mapped to exact owners and prerequisites in `/mnt/raid0/llm/tmp/ak-codex-handover-20261007/runtime-statistics-triage/ORIGINAL_FAILURE_MAP.json`
@@ -10882,7 +10823,7 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   N KB before rendering; measure prompt tokens before/after on one DS41 planner prompt (the seat's
   trims took the run-7 prompt 95.7k → 75.9k chars). Acceptance: byte-identical output when nothing
   repeats; a unit test on the DS41 prompt shows the reduction. Zero inference.
-  - 2026-11-19 OAB-6: the utility is on orchestrator main (`10556542`: `src/prompt_builders/json_diet.py`, dedupe >=200-char repeated subtrees to `<same as $.path>`, clip prose at 500 chars, drop id fields; identity when under 4 KB or nothing repeats; 5 tests). Open: apply it where the orchestrator renders JSON context blocks (inline sections in the root prompt) and measure before/after on the DS41 planner prompt (fixture `loop/fixtures/ds41-run8-planner-prompt.txt` in research). The renderer call site is a behaviour change, so it was not flipped here.
+  · history: notes moved to autokernel-loop-box-history-20261122.md
 
 - [ ] **OAB-7 — the context bundle is a REPL variable, not an inlined prompt.** The rendered context is ~38k tokens
   of the 98k slot before step 1 (75.9k chars after the seat's diet). In the orchestrator REPL it becomes a `context`
@@ -11142,7 +11083,6 @@ Not measured:
   First, have the metrics exporter derive per-section pull counts and bytes from the export's tool parts. Then
   make it a first-class orchestrator feature: exact pulls logged per call, and a byte cap per call. Acceptance:
   OAB-9's report carries per-section pull bytes; OAB-7's orchestrator design names the cap.
-  - 2026-10-31 source partial: Research 6a3981e4bd23379d57f791379f64ad07f7d334a2 publishes the prospective metrics writer extension; Git proof artifacts/autokernel_oab12_20261031/ records 34 passing controls. The exact published tree has an integrity-true private-Git native PII receipt; host-native PII capture was unavailable. Original acceptance remains open because the four OAB-9 exports are absent from recorded paths/current DB; no historical bytes are reconstructed.
   **Progress 2026-09-25.** OAB-9 ran without this. The A/B driver derived per-section read COUNTS from the tool
   parts (`bundle.access`: every file-only section read once, `INDEX.md` never re-read), plus total
   `tool_output_chars`, but no per-section bytes. The seat exporter (`actor_call_metrics.v1`) carries only
@@ -11152,8 +11092,8 @@ Not measured:
   (`epyc.orchestrator.context_pulls.v1`) logs offered vs pulled bytes, unique coverage and per-turn records for
   each section, and `context_pull_budget_bytes` is the per-call cap. Still open: the seat exporter's per-section
   pull bytes.
+  · history: notes moved to autokernel-loop-box-history-20261122.md
   - PARKED 2026-09-27 (operator): the orchestrator half is done (`88e22777`: `ChatResponse.context_pulls` with per-section offered and pulled bytes, plus the `context_pull_budget_bytes` cap). The seat exporter (`actor_call_metrics.v1`) still carries only `bundle_tool_calls`, with no per-section pull bytes; resume by deriving per-section pull counts and bytes from the export's `read`/`grep` tool parts in the seat metrics exporter.
-  - 2026-11-19 OAB-12 (2026-11-19): the exporter extension is on research main (6a3981e4). Acceptance still cannot be met: the four OAB-9 exports are not on disk (`artifacts/autokernel_ctx_ab_20260925/result-*.json` carry driver metrics, no tool parts), and no historical bytes are reconstructed. Resume on the next orchestrator-arm run, whose export will carry per-section pull bytes.
 
 ##### Tasks filed 2026-09-25 (integration, opencode store, planner timeline)
 
@@ -11176,8 +11116,8 @@ Not measured:
   DS41 control prompt, 27,803 → 6,555 uncached tokens per turn with the bundle, and 122 → 1,201 with the flag on
   (`88e22777`). On :8083 that is ~92 s of prefill per turn. Acceptance: a scoped OAB-4 call shows per-turn
   uncached prefill near the flag-on number, with unchanged replies on the REPL suites.
+  · history: notes moved to autokernel-loop-box-history-20261122.md
   - PARKED 2026-09-27 (operator): `PREFIX_STABLE_ORDER` is still OFF in production (`src/features.py`, `prefix_stable_order` defaults to False). The only data is the `88e22777` DS41 control-prompt measurement quoted above. No scoped OAB-4 call and no REPL-suite reply check has run; resume by enabling the flag for scoped REPL calls and verifying per-turn uncached prefill and unchanged REPL-suite replies.
-  - 2026-11-19 OAB-18: needs the run: enable `prefix_stable_order` for scoped REPL calls, run one scoped OAB-4 call to read per-turn uncached prefill, and compare the REPL-suite replies flag-on vs off. No code is missing; the flag exists in `src/features.py`.
 - [x] **OAB-19 — the compaction worker summarizes text no prompt shows.** Compaction measures and summarizes [no-belief: code change and tests, no run] [no-belief: operator decision] _(detail → completed ledger)_
 - [x] **OAB-21 — fix reasoning-token accounting in `actor_call_metrics`.**   `tokens.reasoning` reads 0 while the <!-- evidence-integrity: Research `3e9c00e534ae29f138d13ec8962fe0d44fd86b41`; artifact: artifacts/compute/task-evidence-repair-20261031/oab-21/EVIDENCE.json; hygiene, not quota --> ✅ 2026-10-30 [belief: cc] ✅ 2026-10-29 [no-belief: parser implementation and fixture correctness] _(detail → completed ledger)_
 
@@ -11207,12 +11147,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   before long reasoning; or salvage the last complete JSON block. Acceptance: the cap-hit rate per role is recorded
   here, and the chosen fix drives `output_capped_empty` to ~0 over the next batches without raising
   `budget_exhausted`. Tie the per-role budget to OAB-32.
-  - 2026-09-28 (DS41-C70): DS41 hit `output_capped_empty` again at 11:23Z (batch 8, a 45.8k-char pure-reasoning
-    step, `finish=length`, 0-char report). Fix applied for DS41 only: `DEFAULT_PLANNER_OUTPUT_LIMIT` raised
-    16,384 → 32,000 (research `9a64aec8`, opencode's own ceiling). This changes OAB-34's premise for the
-    planner role — its default output cap is no longer 16,384 — but the cap-hit-rate measurement and the
-    cross-role disposition called for above are still open.
-  - 2026-11-19 OAB-34 (2026-11-19): `actor_metrics` summaries now carry `output_capped_empty_rate` and `output_capped_steps_total` per role (research `a8171c0ea`). Measured on the four actor-calls logs still on disk: 0 capped of 14 calls (planner 7, author 4, critic 3). Too sparse to pick a fix; the DS41 logs behind the original report are not retained. Planner cap is already 32,000 (DS41-C70). Resume after the next batches, using `python3 -m autokernel.loop.actor_metrics <state_dir>`.
+  · history: notes moved to autokernel-loop-box-history-20261122.md
 - [x] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** (research 93c01b3c7; 106 units + 15/15 native PASS on current main a5310d94; code-budget guard pre-existing FAIL carried, see INF78-CODE-BUDGET-RATCHET)  Add a scripted [no-belief: verifier/correctness, native-wire belief wiring tracked as VB-AK-NATIVE-WIRE-WRITE] _(detail → completed ledger)_
 - [x] **INF78-CODE-BUDGET-RATCHET** (research cc82bb19c; 25 tests pass, guard 0 violations)  (T3, directed by ws58 2026-10-26T00:16:57Z) — replace the unenforceable global 2560 code budget with a reviewed ratcheted per-file baseline in research … [no-belief: tooling] _(detail → completed ledger)_
 - [x] **OAB-30 — a stub end-to-end dry iteration, including continuation after a keep.**  (research bdef2d014 + fixture cdf6faa44; 12 tests pass)  Add a fast campaign [no-belief: tooling] _(detail → completed ledger)_
