@@ -404141,3 +404141,325 @@
   - entry: intake-2787
     claim_index: 1
     why: the design doc's 64-token GDN alignment is the serving configuration of the kernel capability this PDF describes
+
+- id: intake-2789
+  arxiv_id: null
+  url: https://github.com/nanocodexyz/nanocode
+  source_type: repo
+  title: 'nanocode: SDK for frontier embedded agents (Rust; Codex/Claude harnesses, Code Mode, durable sessions, Hands)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-22'
+  authors:
+  - nanocodexyz (organization)
+  key_claims:
+  - Every model call and tool call is journaled so a turn finishes after its process dies; a nested call interrupted mid-cell is reported with an unknown outcome and not auto-repeated (at-most-once, not exactly-once).
+  - 'Code Mode: the model writes one JavaScript program calling every tool and only its result enters the context; cells run in a QuickJS worker pool, one fresh context per cell, no Node/filesystem/network/console.'
+  - Per-tool call cap in a cell (CellGuard.calls_per_tool) refuses excess calls with a structured non-retryable call_limit error; cell output is middle-truncated with a token-count marker; a compact and a full exec prompt variant exist.
+  - A custom endpoint path exists (NANOCODE_OPENAI_BASE_URL in bin/nanocode/src/custom_endpoint.rs) but speaks the OpenAI Responses API, not chat completions.
+  techniques:
+  - Code Mode (single-program tool orchestration)
+  - per-tool call cap with structured refusal
+  - middle truncation of cell output
+  - compact vs full tool-catalog prompt
+  - durable journaled turns with unknown outcome
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - harness-program.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: Cite intake-2789 for nanocode's Code Mode design patterns (QuickJS cells, per-tool call cap, middle truncation, compact prompt) and for the Responses-only custom endpoint. It carries no measured results.
+  notes: 'Stage 1+2 (pm-intake-nanocode-20261122). Submitted URL was the org page https://github.com/nanocodexyz (12 repos at 2026-11-22: nanocode, nanocode-ts, nanocode-swift, libnanocode, durable-cloudflare, durable-vercel, egress, nds, nanoeval, harnesslang, libkrun, .github); entries minted for the three with EPYC-relevant technique content (this, intake-2790 harnesslang, intake-2791 nanoeval). Clone pinned at d489c209fd4bf27ab218fc33c07d3b75b0fa0762. Read: README, crates/README, code-mode-engine README, description.rs L1-140, call-limit regions of code_mode/mod.rs, custom_endpoint.rs, chat.rs, hands target.rs/auto.rs, subagents durable.rs head. Not read: replay/durable state machines, docs/board.md, build-critical-path.md, RELEASE-CHAIN.md, output.rs budgets, MCP SEARCH.md. Dive report research/deep-dives/pm-intake-nanocode-20261122/README.md.'
+  dive_corrections: '2026-11-22 (pm-intake-nanocode Stage 2): durability is at-most-once with explicit unknown outcome; TOOLS_MARK named in harnesslang docs was NOT found as a symbol in nanocode (nearest ALL_TOOLS / DEFERRED_NESTED_TOOLS_GUIDANCE); local endpoint path is Responses-API only. Stage-2b wave 1 (same session): nanocode.xyz/experiments publishes NO Code Mode vs direct-tool numbers (its Code Mode page says earlier comparisons lacked public run records and are not repeated; the one measured page uses fixed local replies, not models; all self-reported). nanocode-ts @ 97df28cae6e6 runs under Node 22+ outside Workers and applies a free-form endpoint as API base URL; its DECISIONS.md L72 (2026-11-15) self-reports that direct tools beat Code Mode on their Codex pair in TB2.1 (no n, unpublished run) and adds a claude_orchestration switch: hypothesis only, not citable. Declined after wave 1: nanocode at newer pin d16fb837 (already dived), nanocode.xyz/docs/guides/code-mode and the Tempo gateway code-mode guide (restatements of the dived design).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md:L13 @ d489c20
+    quote: Every model call and tool call is journaled, so a turn finishes after its process dies.
+    quote_sha256: c2e0dc501d72f052a21c9cc822afe6f88c17a3bbcfcb9950ff0aa8aaf40084f4
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 72010f4a97ea5ccd914041f40dc0c9e4e7becfb81b3acddc3b2f3c7cdb584af6, found: true}
+    source_revision: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/README.md
+    source_artifact:
+      entry_url: https://github.com/nanocodexyz/nanocode
+      requested_url: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/README.md
+      effective_url: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/README.md
+      retrieved_at_utc: '2026-11-22T10:19:14.681224Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72010f4a97ea5ccd914041f40dc0c9e4e7becfb81b3acddc3b2f3c7cdb584af6
+      relative_path: sha256/72/72010f4a97ea5ccd914041f40dc0c9e4e7becfb81b3acddc3b2f3c7cdb584af6.raw
+      raw_sha256: 72010f4a97ea5ccd914041f40dc0c9e4e7becfb81b3acddc3b2f3c7cdb584af6
+      byte_length: 2338
+    verified_by: research-intake/stage2 (pm-intake-nanocode-20261122)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: README.md:L14 @ d489c20
+    quote: The model writes one program that calls every tool, and only its result enters the context.
+    quote_sha256: c937f15d092fe97487b3dc3ac4ad49e8b6a926dac21f3bbb75fec200bc1ca5b5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 72010f4a97ea5ccd914041f40dc0c9e4e7becfb81b3acddc3b2f3c7cdb584af6, found: true}
+    source_revision: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/README.md
+    source_artifact:
+      entry_url: https://github.com/nanocodexyz/nanocode
+      requested_url: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/README.md
+      effective_url: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/README.md
+      retrieved_at_utc: '2026-11-22T10:19:14.681224Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:72010f4a97ea5ccd914041f40dc0c9e4e7becfb81b3acddc3b2f3c7cdb584af6
+      relative_path: sha256/72/72010f4a97ea5ccd914041f40dc0c9e4e7becfb81b3acddc3b2f3c7cdb584af6.raw
+      raw_sha256: 72010f4a97ea5ccd914041f40dc0c9e4e7becfb81b3acddc3b2f3c7cdb584af6
+      byte_length: 2338
+    verified_by: research-intake/stage2 (pm-intake-nanocode-20261122)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: crates/README.md:L51 @ d489c20
+    quote: The QuickJS cell worker pool (native) and stepped execution (WASM)
+    quote_sha256: d2f4d8cdfc4b67129d056b71fa9bdd3676028fdfc644e055b950ebffd76cc297
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 84a93eabba0151574e5a1e39398caeb3e9c6c12505e8e59a17f061f20f7ae5c7, found: true}
+    source_revision: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/crates/README.md
+    source_artifact:
+      entry_url: https://github.com/nanocodexyz/nanocode
+      requested_url: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/crates/README.md
+      effective_url: https://raw.githubusercontent.com/nanocodexyz/nanocode/d489c209fd4bf27ab218fc33c07d3b75b0fa0762/crates/README.md
+      retrieved_at_utc: '2026-11-22T10:19:14.939756Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:84a93eabba0151574e5a1e39398caeb3e9c6c12505e8e59a17f061f20f7ae5c7
+      relative_path: sha256/84/84a93eabba0151574e5a1e39398caeb3e9c6c12505e8e59a17f061f20f7ae5c7.raw
+      raw_sha256: 84a93eabba0151574e5a1e39398caeb3e9c6c12505e8e59a17f061f20f7ae5c7
+      byte_length: 9555
+    verified_by: research-intake/stage2 (pm-intake-nanocode-20261122)
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: README says every call is journaled; code shows interrupted nested calls get UNKNOWN_OUTCOME (at-most-once), not a guaranteed finish; replay logic not read.
+  - claim_index: 2
+    effect: unaffected
+    note: calls_per_tool default value not quantified (CellGuard defaults unread).
+  - claim_index: 3
+    effect: unaffected
+    note: found by the dive at custom_endpoint.rs:4-5,55-58; llama-server /v1/responses support not checked.
+- id: intake-2790
+  arxiv_id: null
+  url: https://github.com/nanocodexyz/harnesslang
+  source_type: repo
+  title: 'harnesslang: a language for durable agent harnesses compiled to each platform''s durability guarantees'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-22'
+  authors:
+  - nanocodexyz (organization)
+  key_claims:
+  - An external effect's result type includes unknown (maybe<T>); recovery never re-dispatches an external call a crash left open and reports it unknown; none/idempotent tools rerun (idempotent with the same key).
+  - hl check/prove proves durable-before-external, finish-once, no overflow/full-list traps and worst-case outbound requests per handler and target, over a model of each target's lowering; the target models and plan-equals-code are assumed, not proved.
+  - Five targets (native-jsonl, native-sqlite, server-postgres, cloudflare, vercel) each with a seeded simulator fault model and planted-bug mutations.
+  - Code mode nested external calls are journaled so they are never dispatched twice; replay checks each step against the journal and finishes the cell unknown on divergence.
+  - Platform limits in src/target come from summaries of vendor docs and are marked unverified.
+  techniques:
+  - effect classes none/idempotent/external
+  - unknown outcome type
+  - write-ahead call record before external dispatch
+  - bounded loops with compiler-checked worst case
+  - seeded fault-injection simulation with planted mutations
+  - cell replay divergence check
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - harness-program.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: Cite intake-2790 for the effect-class / unknown-outcome / write-ahead-call-record pattern and the seeded fault-sim-with-planted-mutations method. Do not cite its proofs as covering generated code or real platform limits.
+  notes: 'Stage 1+2 (pm-intake-nanocode-20261122), clone pinned f6b132b379fce210dbef44fc13c5ad14fde81cf6. Read: README, docs/GAPS.md, DECISIONS.md L1-56, ARCHITECTURE.md Effects/Durability/Proofs, CODE_MODE.md L10-24, L138-240. Not read: LANGUAGE.md, SELFHOST.md, rest of DECISIONS.md, src/. EPYC check (grep, epyc-orchestrator src/): tool_registry.py:88-149 has a SideEffect enum and destructive flag used for approval, but no retry-safety (idempotent vs external) axis and no unknown-outcome on crash replay; session_log.py is append-only without open-call recovery.'
+  dive_corrections: '2026-11-22 (pm-intake-nanocode Stage 2): proof scope narrowed to a model of the lowering (see claim_corrections). Dive-surfaced sources: tempolang (named in DECISIONS.md:5, URL not located), workflow-sdk.dev errors-and-retries (would verify the assumed Vercel attempt-number durability). Both declined at the wave cap: tempolang has no locatable URL; the Vercel retry semantics bear only on a target EPYC does not use.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md:L83 @ f6b132b
+    quote: '- **Durable before external.** An external effect runs only after its call'
+    quote_sha256: fcd6c4373306d45c2945ca44fb0c229c49f9e881ee6c6ae39ecc67b6b7480f72
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7e27080173e4617e217e748e6cd866a9ef8737a839f79fe6fa9947e70bf56a13, found: true}
+    source_revision: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/README.md
+    source_artifact:
+      entry_url: https://github.com/nanocodexyz/harnesslang
+      requested_url: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/README.md
+      effective_url: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/README.md
+      retrieved_at_utc: '2026-11-22T10:19:13.897828Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:7e27080173e4617e217e748e6cd866a9ef8737a839f79fe6fa9947e70bf56a13
+      relative_path: sha256/7e/7e27080173e4617e217e748e6cd866a9ef8737a839f79fe6fa9947e70bf56a13.raw
+      raw_sha256: 7e27080173e4617e217e748e6cd866a9ef8737a839f79fe6fa9947e70bf56a13
+      byte_length: 10840
+    verified_by: research-intake/stage2 (pm-intake-nanocode-20261122)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: docs/CODE_MODE.md:L14 @ f6b132b
+    quote: 1. A dispatched nested `external` call is never dispatched again. Its call
+    quote_sha256: d0d5aa6e284a9835a40d1465cf7eb96f09ca19f3c7a410a7e4927706da2ed5b6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: eda35d1da70086e1de967c88a608d435fedab53110c73c4457129d8f38df3a8d, found: true}
+    source_revision: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/docs/CODE_MODE.md
+    source_artifact:
+      entry_url: https://github.com/nanocodexyz/harnesslang
+      requested_url: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/docs/CODE_MODE.md
+      effective_url: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/docs/CODE_MODE.md
+      retrieved_at_utc: '2026-11-22T10:19:14.159022Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:eda35d1da70086e1de967c88a608d435fedab53110c73c4457129d8f38df3a8d
+      relative_path: sha256/ed/eda35d1da70086e1de967c88a608d435fedab53110c73c4457129d8f38df3a8d.raw
+      raw_sha256: eda35d1da70086e1de967c88a608d435fedab53110c73c4457129d8f38df3a8d
+      byte_length: 30099
+    verified_by: research-intake/stage2 (pm-intake-nanocode-20261122)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: README.md:L127 @ f6b132b
+    quote: limits in `src/target/` come from summaries of vendor documentation and are
+    quote_sha256: 6b3a620c82d3821cb483344be6abddc75215afefd2e85bf82e8ecb38ab4ca3fd
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 7e27080173e4617e217e748e6cd866a9ef8737a839f79fe6fa9947e70bf56a13, found: true}
+    source_revision: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/README.md
+    source_artifact:
+      entry_url: https://github.com/nanocodexyz/harnesslang
+      requested_url: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/README.md
+      effective_url: https://raw.githubusercontent.com/nanocodexyz/harnesslang/f6b132b379fce210dbef44fc13c5ad14fde81cf6/README.md
+      retrieved_at_utc: '2026-11-22T10:19:13.897828Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:7e27080173e4617e217e748e6cd866a9ef8737a839f79fe6fa9947e70bf56a13
+      relative_path: sha256/7e/7e27080173e4617e217e748e6cd866a9ef8737a839f79fe6fa9947e70bf56a13.raw
+      raw_sha256: 7e27080173e4617e217e748e6cd866a9ef8737a839f79fe6fa9947e70bf56a13
+      byte_length: 10840
+    verified_by: research-intake/stage2 (pm-intake-nanocode-20261122)
+  claim_corrections:
+  - claim_index: 1
+    effect: narrowed
+    note: proofs are over a model of the lowering; ARCHITECTURE.md lists assumptions (target models true, plan equals generated code) and omissions (WASM hosts, torn checkpoint recovery, memory/wall time).
+  - claim_index: 0
+    effect: unaffected
+    note: confirmed in ARCHITECTURE Effects; Vercel recovers in-step by attempt number.
+- id: intake-2791
+  arxiv_id: null
+  url: https://github.com/nanocodexyz/nanoeval
+  source_type: repo
+  title: 'nanoeval: durable evaluations for agents (digest-pinned eval versions, claim/lease runners, typed outcomes, stratified regression verdict, Harbor/ATIF export)'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-22'
+  authors:
+  - nanocodexyz (organization)
+  key_claims:
+  - An attempt is passed, failed or errored; errored attempts are excluded from pass rates and tallied by class, so an infrastructure failure is never a score of zero.
+  - An eval version is named by a SHA-256 digest over its tasks and never changes; runs reference NAME@DIGEST.
+  - Runners claim rows under leases; a lost runner's rows are re-claimed (capped by --claims) without scoring twice.
+  - Per-task lost/gained uses a one-sided Fisher exact test; the run verdict is an exact one-sided test stratified by task over all tasks, so one task flipping 3/3 to 0/3 is lost but by itself no regression.
+  - Tasks are Harbor (Terminal-Bench 2.x) directories and runs export as Harbor jobs with ATIF-v1.7 trajectories; unsound.json lists 7 Terminal-Bench 2.1 tasks whose own solution or verifier fails, and summaries report a sound-subset rate.
+  techniques:
+  - typed errored outcome with failure classes
+  - digest-pinned immutable eval versions
+  - claim/lease row runners
+  - stratified exact regression test
+  - unsound-task list with oracle check
+  - Harbor/ATIF export
+  reported_results: []
+  credibility_score: null
+  contradicting_evidence: []
+  cross_references:
+    handoffs:
+    - eval-tower-program.md
+    - benchmark-suites.md
+    intake_entries:
+    - intake-726
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: Cite intake-2791 for the typed-errored-outcome, digest-pinned eval version and stratified regression-verdict patterns, and for the 7-task TB2.1 unsound list. No model results are claimed.
+  notes: 'Stage 1+2 (pm-intake-nanocode-20261122), clone pinned c2a11ddbdc250d758a7eb5994563f7a8d470e26d. Read: README excerpts (L1-56, 410-428, 611-635, 765), DESIGN.md L96-105/170/645-656, unsound.json in full. Not read: DECISIONS.md, ledger code, local-Worker networking. Supports ANTHROPIC_BASE_URL/OPENAI_BASE_URL for installed agents; the nanocode-ts harness runs in a (local workerd) Cloudflare Worker. Related: intake-726 (Harbor/Terminal-Bench).'
+  dive_corrections: '2026-11-22 (pm-intake-nanocode Stage 2): filing confirmed. Stage-2b wave 1 (same session, GitHub API 2026-11-22T10:24Z): TB2.1 issue 233 confirms qemu-startup and qemu-alpine-ssh verifier rot (Debian index expired, apt 404); issue 240 confirms build-cython-ext reference solution scores 0 (unpinned pyknotid deps); PR 247 covers protein-assembly (oracle 0, one-line fix). mcmc-sampling-stan, torch-tensor-parallelism, crack-7z-hash not found in these items (nanoeval-reported only). Declined after wave 1: nanoeval DECISIONS.md power sections (same repo, already pinned; read when P4 is implemented).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README.md:L20 @ c2a11dd
+    quote: '- **Typed outcomes.** An attempt is `passed`, `failed` or `errored`, and an infrastructure failure is never a score of zero.'
+    quote_sha256: c543bf48048cb3fa968c145245415766ecd4725badbd18e48e8386c2826e1c98
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9af3ba578008bbdac4dee3c472f90284ce8eb3116c06a14efc0f7e41752bb64e, found: true}
+    source_revision: https://raw.githubusercontent.com/nanocodexyz/nanoeval/c2a11ddbdc250d758a7eb5994563f7a8d470e26d/README.md
+    source_artifact:
+      entry_url: https://github.com/nanocodexyz/nanoeval
+      requested_url: https://raw.githubusercontent.com/nanocodexyz/nanoeval/c2a11ddbdc250d758a7eb5994563f7a8d470e26d/README.md
+      effective_url: https://raw.githubusercontent.com/nanocodexyz/nanoeval/c2a11ddbdc250d758a7eb5994563f7a8d470e26d/README.md
+      retrieved_at_utc: '2026-11-22T10:19:14.421043Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9af3ba578008bbdac4dee3c472f90284ce8eb3116c06a14efc0f7e41752bb64e
+      relative_path: sha256/9a/9af3ba578008bbdac4dee3c472f90284ce8eb3116c06a14efc0f7e41752bb64e.raw
+      raw_sha256: 9af3ba578008bbdac4dee3c472f90284ce8eb3116c06a14efc0f7e41752bb64e
+      byte_length: 341180
+    verified_by: research-intake/stage2 (pm-intake-nanocode-20261122)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: README.md:L19 @ c2a11dd
+    quote: '- **Harbor in, Harbor out.** Tasks are Harbor task directories (Terminal-Bench 2.x layout). A run exports as a Harbor job with ATIF-v1.7 trajectories.'
+    quote_sha256: 9881a11e874f24f8771e333d89a00894e427d253ae6d17d12be5f07a1e6beb0a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9af3ba578008bbdac4dee3c472f90284ce8eb3116c06a14efc0f7e41752bb64e, found: true}
+    source_revision: https://raw.githubusercontent.com/nanocodexyz/nanoeval/c2a11ddbdc250d758a7eb5994563f7a8d470e26d/README.md
+    source_artifact:
+      entry_url: https://github.com/nanocodexyz/nanoeval
+      requested_url: https://raw.githubusercontent.com/nanocodexyz/nanoeval/c2a11ddbdc250d758a7eb5994563f7a8d470e26d/README.md
+      effective_url: https://raw.githubusercontent.com/nanocodexyz/nanoeval/c2a11ddbdc250d758a7eb5994563f7a8d470e26d/README.md
+      retrieved_at_utc: '2026-11-22T10:19:14.421043Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9af3ba578008bbdac4dee3c472f90284ce8eb3116c06a14efc0f7e41752bb64e
+      relative_path: sha256/9a/9af3ba578008bbdac4dee3c472f90284ce8eb3116c06a14efc0f7e41752bb64e.raw
+      raw_sha256: 9af3ba578008bbdac4dee3c472f90284ce8eb3116c06a14efc0f7e41752bb64e
+      byte_length: 341180
+    verified_by: research-intake/stage2 (pm-intake-nanocode-20261122)
+  claim_corrections:
+  - claim_index: 2
+    effect: unaffected
+    note: no-double-score claimed as tested end to end; ledger code not read.
+  - claim_index: 3
+    effect: unaffected
+    note: confirmed in README regression section; at 3 attempts per task only 3/3 vs 0/3 can be a per-task lost call.
