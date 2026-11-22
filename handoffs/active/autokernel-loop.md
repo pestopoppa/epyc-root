@@ -9733,9 +9733,27 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: operation_settlement is configurable from the startup manifest and on by default with the migrated tests green
           · gate: none
             · 2026-11-22 (autokernel, AKU lane) PARTIAL: research `fab29994e` makes operation_settlement configurable from the startup manifest/factory (round-trip + runtime install tests). Default-on NOT done: flipping it fails 14 restart/retry tests because v2 lacks restart recovery — account_child cannot resolve an old-incarnation terminal ("terminal lookup is ambiguous across worker generations"), trusted operation verification refuses restored attempts, profile restart settlement stays unresolved, and v1-mocking retry tests need migration. Next: restored-index proof in account_child + restored v2 verification, then flip. [no-belief: code]
+            · roll-up: the default flip lands only when 06l3a-d are done and all 14 restart/retry tests plus the targeted suites pass with v2 on. A first attempt at (a) alone (fall back to the restored accounting index) was reverted because (b)-(d) remained, so the four share one design: a single child-proof helper in a new small module, with thin hooks in the controller and the verifier.
+      - [ ] **AKU-06l3a** [non-inference] child accounting resolves a pre-restart terminal through the restored held-accounting index
+            · done when: `unified_driver_account_child` takes an earlier-incarnation terminal only when it exactly matches the restored accounting-index entry (terminal, held receipt, and binding digest or legacy None), refuses any mismatch, and no longer fails "terminal lookup is ambiguous across worker generations" on restart with v2 on, with tests
+            · gate: none
+            · brief: new module `operation_child_proof.py`. The current lifecycle terminal wins. The restored index (`restored_stale_held_accounting`, already the AKU-07j/07h accounting-only authority) is used only when the lifecycle has no current-binding terminal for that exact key. No change to `terminal_for_request` semantics or to the child record schema.
+      - [ ] **AKU-06l3b** [non-inference] the registered v2 verifier accepts restored children and restored single-stage attempts
+            · done when: `_verify_operation_settlement` proves each child through the same helper (current terminal, or the exact restored-index entry), restored single-stage attempts pass the owner v1 check, and a tampered restored receipt or binding refuses, with tests
+            · gate: none
+            · brief: controller exposes one thin read-only method over the helper; the verifier calls it instead of `worker_terminal_for_request` + `worker_held_claim_receipt`. The skip for a prior lifetime's child stays.
+      - [ ] **AKU-06l3c** [non-inference] profile restart settlement resolves under v2
+            · done when: crashed/restarted profile children (index and reconciled sources) settle once as single-stage v2 with the original held receipt, and a further restart is idempotent, with v2 on
+            · gate: none
+            · brief: `profile_preparation._settle` goes through `settle_single_stage`, so it rides on 06l3a/b; close any profile-specific gap (held receipt source, restored attempt verification) found once those land.
+      - [ ] **AKU-06l3d** [non-inference] migrate retry and restart tests that patch or assert the v1 settle call
+            · done when: lost-reply / crash-before-settlement tests inject faults on the settle entry point the runtime actually uses (v1 or v2) and assert v2 SETTLED payloads (child receipts) when v2 is on, and all 14 pass with the default on
+            · gate: none
+            · brief: one shared test helper for "patch settle" and "read the settled receipt", used by test_standalone_runtime / test_profile_preparation_runtime / test_campaign_service; no production behaviour changes.
     - [ ] **AKU-06l4** [non-inference] candidate feedback consumes the v2 prerequisite settlement and its enrollment reference
           · done when: planner/candidate feedback refreshes from a v2 prerequisite settlement through its enrollment_ref, with tests
           · gate: none
+          · note: gated by the parent AKU-06l's OP-AKU-BIND operator approval, so it is skipped until that approval exists.
   - [x] **AKU-06n — specify original multi-child accounting and denial recovery**: ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-07 — standalone campaign lifecycle** (AK-AUTO-11): fenced single writer, durable controls,
   launch intent before spawn, owned-child reconciliation, exact resume membership and expiry handling;
