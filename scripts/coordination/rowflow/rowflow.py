@@ -6255,7 +6255,8 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
     drain_reserved = frozenset(expand(set(drain_reserved)) | expand(set(demand_reserved)))
     placed = []
     qs = sorted(glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE-QUEUED.json")),
-                key=lambda p: ((load_json(p) or {}).get("queued_at") or "", p))   # FIFO: pockets make order moot
+                key=lambda p: (row_rank(load_json(ready_path(flags, os.path.basename(os.path.dirname(p)))) or (load_json(p) or {}).get("spec")),
+                               (load_json(p) or {}).get("queued_at") or "", p))   # PM-SMOKEFIX: priority_rank, then FIFO
     for q in qs:
         rid = os.path.basename(os.path.dirname(q))
         pl = load_json(smoke_placed_path(flags, rid)) or {}
@@ -6947,6 +6948,36 @@ def gpu_foreign(occ, own=frozenset()):
     return sorted(f), sum(f.values())
 
 
+def running_smoke_gpu_occupants(flags, occ=None):
+    """PM-SMOKEFIX 2026-11-22 (ak-ea-pool-screen-gpu-20261122-r3: the keeper's OWN GPU smoke, filler_run15 -> job.py ->
+    llama-server, was reported "foreign KFD pids ... hold 26.9 GiB" and blocked every GPU grant). {smoke id: {"pids": the
+    KFD pids of its tree, "until": window end or None}} for every LIVE smoke that holds the gpu: its dryrun/<id>/RUNNING.json
+    pid (+ its pgid and harness_pid) and its SMOKE.lock sidecar pid, each with its descendants (harness_tree). A smoke counts
+    as an occupant when its tree owns a KFD pid or its regions name the MI210; a CPU-only smoke is not a gpu-quiet holder."""
+    occ_pids = (occ or {}).get("pids") or {}
+    out = {}
+    for rp in glob.glob(os.path.join(flags, "dryrun", "*", "RUNNING.json")) + glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE.lock")):
+        rid = os.path.basename(os.path.dirname(rp))
+        d = load_json(rp) or {}
+        roots = [int(x) for x in (d.get("pid"), d.get("pgid"), d.get("harness_pid")) if str(x or "").isdigit() and proc_alive(x)]
+        if not roots:
+            continue
+        tree = set()
+        for r in roots:
+            try:
+                tree |= {int(r)} | set(harness_tree(int(r), {}))
+            except Exception:  # noqa: BLE001 - an unreadable /proc entry never hides a live root
+                tree.add(int(r))
+        mine = sorted(p for p in occ_pids if p in tree)
+        rr = load_json(running_path(flags, rid)) or {}
+        if not mine and "mi210" not in str(rr.get("regions") or ""):
+            continue
+        e = out.setdefault(rid, {"pids": [], "until": None})
+        e["pids"] = sorted(set(e["pids"]) | set(mine))
+        e["until"] = e["until"] or rr.get("deadline")
+    return out
+
+
 SMOKE_EXIT_FRESH_S = 1800   # the one-sample path is for a smoke that JUST exited; every PASSed row keeps a record, so age must bound it
 
 
@@ -7016,8 +7047,9 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None)
     last_kfd = now_iso() if occ.get("pids") else st.get("last_kfd_at")   # absent: none sighted since receipts began
     kfd_rec = {"last_kfd_at": last_kfd} if last_kfd else {}
     if not held:
-        pids, v = gpu_foreign(occ)
-        n = int(st.get("quiet_n") or 0) + 1 if v < GPU_FOREIGN_VRAM_MAX else 0
+        sm = running_smoke_gpu_occupants(flags, occ)   # a running smoke's own tree is an occupant, never foreign
+        pids, v = gpu_foreign(occ, {p for e in sm.values() for p in e["pids"]})
+        n = int(st.get("quiet_n") or 0) + 1 if v < GPU_FOREIGN_VRAM_MAX and not sm else 0
         # own-exit fast path (2026-11-07): our grant ended + its tree dead -> one quiet sample; any foreign sighting drops the record
         lo = st.get("last_owner") or {}
         own_exit = bool(lo.get("ids")) and n >= 1 and all(
@@ -7026,7 +7058,10 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None)
         need = 1 if own_exit else GPU_QUIET_SAMPLES
         keep = {"last_owner": lo} if lo and 1 <= n < need else {}
         atomic_json(sp, {"quiet_n": n, "at": now_iso(), "foreign_pids": pids[:20], "foreign_vram": v, **keep, **kfd_rec})
+        smoke_why = "; ".join(f"held by smoke {i} until {e['until'] or '?'}" for i, e in sorted(sm.items()))
         why = None if n >= need else (
+            (smoke_why + (f"; plus foreign KFD pids {','.join(map(str, pids[:8]))} hold {v / (1 << 30):.1f} GiB"
+                          if v >= GPU_FOREIGN_VRAM_MAX else "")) if sm else
             f"device not quiet (host view): foreign KFD pids {','.join(map(str, pids[:8])) or '-'} hold {v / (1 << 30):.1f} GiB"
             if v >= GPU_FOREIGN_VRAM_MAX else f"device quiet {n}/{GPU_QUIET_SAMPLES} samples")
         if why and n == 1 and one_sample is not None:

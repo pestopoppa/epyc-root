@@ -1134,6 +1134,18 @@ def queue_order_key(flags, q):
     return (rf.row_rank(row), str(at), rid)
 
 
+def queued_smoke_ahead(flags, rid, spec):
+    """PM-SMOKEFIX 2026-11-22 (ak-ea-pool-screen-gpu-20261122-r3, rank 200, smoked ahead of five queued rank 20-30 GPU rows):
+    an idle GPU is not permission to smoke inline past the queue. True when another queued GPU smoke sorts at or before
+    this one by (priority_rank, FIFO): the queue is older, so an equal rank goes first. A strictly better rank may go now."""
+    mine = rf.row_rank(spec)
+    return any(rf.row_rank((rf.load_json(unpublished_path(flags, os.path.basename(os.path.dirname(q)))) or
+                            rf.load_json(rf.ready_path(flags, os.path.basename(os.path.dirname(q)))) or
+                            (rf.load_json(q) or {}).get("spec") or {})) <= mine
+               for q in glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))
+               if os.path.basename(os.path.dirname(q)) != rid)
+
+
 def alert_queued_nonpass(flags, rid, verdict, msg):
     """Operator 2026-11-06: a queued smoke that is not a PASS always reaches the owner; there is no silent drop. A FAIL with a
     FAIL-N.json re-emits smoke-fail for the newest one (idempotent per file). Any other end (WAIT, an exception, a FAIL that
@@ -1192,7 +1204,14 @@ def run_gpu_queue(flags):
     concurrent smoke is using, never leaves an unsmoked row in ready/); only the QUEUED_WAIT_MAX-th WAIT alerts
     queued-smoke-dropped and removes the marker."""
     n = 0
-    for q in sorted(glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")), key=lambda x: queue_order_key(flags, x)):
+    done = set()
+    while True:   # PM-SMOKEFIX: re-pick the best-ranked marker each time, so a row queued mid-batch is ordered by rank too
+        todo = [x for x in glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))
+                if os.path.basename(os.path.dirname(x)) not in done]
+        if not todo:
+            break
+        q = min(todo, key=lambda x: queue_order_key(flags, x))
+        done.add(os.path.basename(os.path.dirname(q)))
         qd = rf.load_json(q) or {}
         rid = os.path.basename(os.path.dirname(q))
         up = unpublished_path(flags, rid)
@@ -1433,7 +1452,7 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     retire_old_verdicts(flags, rid)
     supersede_prior_attempts(flags, rid)
     smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
-    if spec.get("lane") == "gpu" and gpu_busy(flags):
+    if spec.get("lane") == "gpu" and (gpu_busy(flags) or queued_smoke_ahead(flags, rid, spec)):
         unpublish(flags, rid)
         rf.atomic_json(queued_path(flags, rid), {"id": rid, "regions": spec.get("regions") or "mi210_0,184-191", "smoke_s": smoke_s, "spec": spec,
                                                  "queued_at": rf.now_iso()})
