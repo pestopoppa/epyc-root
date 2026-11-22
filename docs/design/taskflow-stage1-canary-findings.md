@@ -91,3 +91,37 @@ that, which fits their equal hit rates. The r8 job renders both bodies through `
 **Status:** CPU row s1b (q1+q2, superseding s1, whose q0-q2 shape was blocked 2 days by codex-bfcl-cj3d) passed its smoke but was
 withdrawn before any grant (operator: free resources for AutoKernel). The CPU per-task rate is therefore still unmeasured, and r8 is
 unpublished. To resume: republish s1b (or r8 directly, resumable on q1,q2), take the measured rate, and book r8 as measured per-task rate × 26 task-runs (5+8 tasks × 2 arms) at np2, plus 4 server loads, plus 25%.
+
+## r8b (2026-11-22): CPU canary, hand-audited — verdict FIX-HARNESS
+Row `tf1-cpu-r8b-canary-35b-q0q2-20261122`, rc=0, CPU q1, C14 CPU build `cpu-20261118-eee3da838-c14`, Qwen3.6-35B-A3B-MTP-Q8_0, np1.
+canary-nothink verified 1/8, canary-think 0/8. Decode median 17.4 tok/s, prefill median 111 tok/s, MTP acceptance 0.875, prefix hit 90%.
+Packet fixes from r8 were in place: worktree-relative acceptance, orch-py.sh, LOOP-62 re-scoped. Easy arm r8a verified 5/5.
+
+The dispatcher classifier said model-limitation 11, harness 2, task 2. A hand read of every transcript reverses this:
+
+| task | nothink: audited (classifier) | think: audited (classifier) |
+|---|---|---|
+| INTAKE-VALIDATE-86 | b: the edit target `.claude/skills/research-intake/...` is in the packet's FORBIDDEN `.claude/**` (model) | b: same, plus a 600 s timeout after 4 steps (model) |
+| TU-GR-1 | b: wrote exactly the two files the approach names, rejected outside-pathspec because `where` omits them. Its "tests pass" claim was unrun because pytest is denied in the shell (model) | a: timed out at 6 steps on prefill plus thinking, no edit (model) |
+| NUMA-DECOUPLE-1 | a: self-brief phase forced despite a fresh hand brief, hit its 7-turn/150 s cap (task) | a: same (task) |
+| LOOP-62 | **c**: rewrote `src/__init__.py` and 15 shims against the explicit non-goal (model) | a: 600 s timeout at 6 steps, no edit (model) |
+| NOFOLD-1 | verified | a: the diff passes all 4 acceptance greps; the reviewer returned empty content in its 200-token cap (reviewer-unparseable) (model) |
+| WS4-WAKE-IMPERATIVE | a: 5 requests, 75.9k uncached prefill at ~136 tok/s ≈ the whole 600 s (model) | a: 3 requests, 78k prefill, timeout (model) |
+| MM-5 | a: on-track edits per the approach, killed at 600 s before the test; the verifier also runs `python3 -m pytest` (rc=4) instead of the orch-py.sh acceptance (model) | a: wrote the code and the test; the verifier's `python3 -m pytest` gave rc=4 (no fastapi in system python) (model) |
+| UFH-21 | a: the work tree `/mnt/raid0/llm/harness/opencode` is outside the lane (external_directory denied); the approach also edits forbidden `handoffs/` (harness) | a: same, plus a junk `test-write.txt` probe (harness) |
+
+**Counts (16 runs):** (a) harness/env 11, (b) packet 3, (c) model 1, verified 1. The classifier's 11 model-limitation labels hold for 1.
+(a)+(b) = 14/16, so the result is **FIX-HARNESS**. TRY-27B is not supported: the only (c) is LOOP-62, which Sonnet also failed before the re-scope.
+STAY-35B is not supported either, at 1/16.
+
+**Harness fixes before r8c:**
+1. Scale `wall_s` to the CPU rate. 600 s was sized for the GPU; CPU prefill of 77-284 tok/s on 30-80k-token requests uses it up. At least 6 of the 16 runs died on time.
+2. The verifier must run the packet's `acceptance`. It ran `python3 -m pytest` for MM-5.
+3. Allow each packet's acceptance command in the worker shell. Workers could not run their tests.
+4. Derive the pathspec from the approach's new files as well as from `where`.
+5. Skip self-brief when a fresh hand brief exists. The cross-repo NUMA case lost it.
+6. Under thinking, raise the reviewer cap or read its reasoning content.
+7. Packet: move INTAKE-VALIDATE-86's target out of forbidden, or allow it. Keep UFH-21 out until its tree can be a lane.
+
+With 1, 2 and 6 alone, NOFOLD-think would have passed and TU-GR-1/MM-5 would have reached a real test.
+Next: r8c with these fixes on CPU q0-q2. The 27B arm runs only on tasks still classed (c) after r8c.
