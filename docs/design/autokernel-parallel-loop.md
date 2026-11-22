@@ -18,7 +18,7 @@
     (stage job bodies, polar RESULTs, hard-rule guards) and `loop/tailsplit.py` (lanes emit candidate records via
     `EmittingTail`; `rebase_recheck` for stale bases; `--legacy-tail` / `--workers 1` rollback); root `chain.py` jobs
     drive the pinned stage driver, `akloop/ak_runend.py` runs on ENDED from `watch_rows.sh`, `failclass` wired into
-    `rowflow.record_fail`. Offline simulation: `scripts/coordination/tests/test_akloop_p3_sim.py`. Open on one
+    `rowflow.record_fail`. **DET step 4 of ak_runend (2026-11-22): `census_update`** — research `loop/census_update.py`, deterministic, no LLM. It re-ranks the MI210 bandwidth census (`loop/census/mi210_bandwidth_census.json`) into `/mnt/raid0/llm/tmp/ak-bw-census/`. It is idempotent per RESULT sha, writes journal lines and seed stubs, and marks seeds done. Offline simulation: `scripts/coordination/tests/test_akloop_p3_sim.py`. Open on one
     clause: device-busy fraction above 15.8% on a measured campaign. Single-MI210 caveat: oracle-kld rows hold
     `mi210_0`, so GPU gates serialize with timing; concurrency comes from CPU-quarter builds.
 - **Hard limits that hold at every phase**: production kernels frozen, promotion operator-only, all scheduling

@@ -10,6 +10,10 @@
   3. a C-fold composite / fold row (c<N>-fold-*, c<N>-composite-*) that ended: the P4 lineage manager regenerates the
      keep ledger / fold list (`autokernel.lineage generate`, research origin/main extracted with `git archive` --
      never the research clone's tree). A chain fold-check KEEP already triggered it in-process (stage_bodies).
+  4. every AK row with a RESULT.json: the DETERMINISTIC bandwidth census updater (research
+     `autokernel/loop/census_update.py`, from the same origin/main snapshot) re-ranks the MI210 served-kernel census
+     in CENSUS_STATE (census JSON seeded from the committed copy, generated table, journal lines, seed stubs).
+     Idempotent per RESULT sha256; a session folds CENSUS_STATE back into the research repo (no shared-clone writes here).
 
 Prints ONE line (`AK-RUNEND <id> filed=[...] class=<side>/<klass> lineage=<dir|->`). Exit 0 always: a watcher hook
 reports, it never blocks the watcher. --dry-run prints what it would run and runs nothing.
@@ -33,6 +37,7 @@ FLAGS = "/mnt/raid0/llm/tmp/compute-flags"
 RESEARCH_REPO = "/mnt/raid0/llm/epyc-inference-research"
 RESEARCH_CACHE = "/mnt/raid0/llm/tmp/akchain-research"
 LINEAGE_OUT = "/mnt/raid0/llm/tmp/akchain-lineage"
+CENSUS_STATE = "/mnt/raid0/llm/tmp/ak-bw-census"
 COMPOSITE_RX = re.compile(r"^c\d+-(fold|composite)-")
 sys.path.insert(0, HERE)
 
@@ -96,8 +101,30 @@ def lineage_generate(rid: str, *, kernel_rnd: str | None = None, out_root: str =
     return out
 
 
+def census_update(rid: str, result_path: str, *, kernel_rnd: str | None = None, state: str = CENSUS_STATE,
+                  run=subprocess.run) -> str:
+    """Deterministic census step (no LLM). Returns the updater's BW-CENSUS line."""
+    if not result_path or not os.path.exists(result_path):
+        return "-"
+    kr = kernel_rnd or research_snapshot()
+    os.makedirs(state, exist_ok=True)
+    census = os.path.join(state, "mi210_bandwidth_census.json")
+    if not os.path.exists(census):
+        seed = os.path.join(kr, "autokernel", "loop", "census", "mi210_bandwidth_census.json")
+        if os.path.exists(seed):
+            with open(seed) as f, open(census, "w") as g:
+                g.write(f.read())
+    journal = os.path.join(state, "journal.md")
+    if not os.path.exists(journal):
+        open(journal, "w").write("# AK bandwidth census journal (deterministic; fold into loop/program.md)\n")
+    r = run([sys.executable, "-s", "-B", "-m", "autokernel.loop.census_update", "--result", result_path, "--row", rid,
+             "--census", census, "--program", journal, "--doc", os.path.join(state, "census-table.md"),
+             "--seeds-out", os.path.join(state, "seed-stubs")], cwd=kr, capture_output=True, text=True, timeout=120)
+    return ((r.stdout or "").strip().splitlines() or [f"rc={r.returncode} {(r.stderr or '')[-200:]}"])[-1][:300]
+
+
 def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=subprocess.run,
-           lineage=lineage_generate, notify_mod=None) -> dict:
+           lineage=lineage_generate, notify_mod=None, census=census_update) -> dict:
     man = manifest(flags, rid)
     rep: dict = {"row": rid}
     if rid.startswith("akc-"):
@@ -119,13 +146,21 @@ def handle(rid: str, flags: str = FLAGS, *, dry_run: bool = False, runend_run=su
                 rep["lineage"] = lineage(rid)
             except Exception as e:  # noqa: BLE001
                 rep["lineage"] = f"error {type(e).__name__}: {e}"
+    rp = str(man.get("result_path") or "")
+    if dry_run:
+        rep["census"] = f"dry-run: census_update --result {rp or '-'}"
+    else:
+        try:
+            rep["census"] = census(rid, rp)
+        except Exception as e:  # noqa: BLE001
+            rep["census"] = f"error {type(e).__name__}: {e}"
     return rep
 
 
 def line(rep: dict) -> str:
     c = rep.get("class") or {}
     return (f"AK-RUNEND {rep['row']} filed=[{rep.get('filed', '-')}] class={c.get('side')}/{c.get('klass')}"
-            f"{' routed' if c.get('routed') else ''} lineage={rep.get('lineage', '-')}")
+            f"{' routed' if c.get('routed') else ''} lineage={rep.get('lineage', '-')} census={rep.get('census', '-')}")
 
 
 def main(argv=None) -> int:

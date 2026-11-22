@@ -37,7 +37,7 @@ def test_chain_row_files_with_gate_eval_and_routes_harness(tmp_path):
     flags = _row(tmp_path, "akc-x-oracle-kld-20261121", {"complete": True, "verdict": "FUTILITY_RESIDENCY (proof)"})
     seen, nm = [], FakeNotify()
     run = lambda argv, **k: seen.append(argv) or SimpleNamespace(stdout="AUTO-FILE akc-x: FAIL\n", returncode=0)
-    rep = AR.handle("akc-x-oracle-kld-20261121", flags, runend_run=run, notify_mod=nm)
+    rep = AR.handle("akc-x-oracle-kld-20261121", flags, runend_run=run, notify_mod=nm, census=lambda r, p: "c")
     assert seen and seen[0][-3:] == ["akc-x-oracle-kld-20261121", "--gate-eval", "--file"]
     assert rep["filed"].startswith("AUTO-FILE") and rep["class"]["side"] == "harness" and rep["class"]["routed"]
     assert nm.calls and nm.calls[0][0] == "ak-harness-failure"
@@ -48,7 +48,7 @@ def test_candidate_failure_is_not_routed(tmp_path):
     flags = _row(tmp_path, "akc-x-ab-timing-20261121", {"complete": True, "verdict": "FAIL_NO_GAIN", "polar": "FAIL"})
     nm = FakeNotify()
     rep = AR.handle("akc-x-ab-timing-20261121", flags, runend_run=lambda a, **k: SimpleNamespace(stdout="", returncode=0),
-                    notify_mod=nm)
+                    notify_mod=nm, census=lambda r, p: "c")
     assert rep["class"]["side"] == "candidate" and not nm.calls
 
 
@@ -56,9 +56,23 @@ def test_composite_row_triggers_lineage_and_no_filing(tmp_path):
     flags = _row(tmp_path, "c18-fold-gpu-20261121-r1", {"complete": True, "verdict": "PASS", "polar": "PASS"})
     got = []
     rep = AR.handle("c18-fold-gpu-20261121-r1", flags, runend_run=lambda *a, **k: (_ for _ in ()).throw(AssertionError),
-                    lineage=lambda rid: got.append(rid) or "/tmp/lin", notify_mod=FakeNotify())
+                    lineage=lambda rid: got.append(rid) or "/tmp/lin", notify_mod=FakeNotify(),
+                    census=lambda r, p: "c")
     assert got == ["c18-fold-gpu-20261121-r1"] and rep["lineage"] == "/tmp/lin" and "filed" not in rep
     assert "AK-RUNEND c18-fold-gpu-20261121-r1" in AR.line(rep)
+
+
+def test_census_step_fires_with_the_result_path(tmp_path):
+    flags = _row(tmp_path, "ak-x-op-gpu-20261122", {"complete": True, "verdict": "OP_PASS"})
+    got = []
+    rep = AR.handle("ak-x-op-gpu-20261122", flags, notify_mod=FakeNotify(),
+                    census=lambda r, p: got.append((r, p)) or "BW-CENSUS {}")
+    assert got == [("ak-x-op-gpu-20261122", str(tmp_path / "ak-x-op-gpu-20261122.RESULT.json"))]
+    assert "census=BW-CENSUS" in AR.line(rep)
+
+
+def test_census_update_skips_missing_result(tmp_path):
+    assert AR.census_update("r", str(tmp_path / "nope.json"), kernel_rnd="/nonexistent") == "-"
 
 
 def test_dry_run_runs_nothing(tmp_path):
