@@ -359,6 +359,14 @@ def _brief_lane(task: dict, tdir: Path) -> tuple[Path, Path]:
     return repo, blane
 
 
+def fresh_hand_brief(task: dict) -> bool:
+    """The packet already carries a fresh, complete, non-self brief for the box (r8b NUMA-DECOUPLE-1, fix 5): the
+    cross-repo path re-resolved the brief at origin/main, found none there, and forced a self-brief that hit its 7-turn
+    / 150 s cap on both arms although a fresh hand brief was in the packet."""
+    return (task.get("brief_state") == "fresh" and bool(task.get("where")) and bool(task.get("approach"))
+            and bool(task.get("acceptance")) and str(task.get("brief_author") or "") != "self")
+
+
 def phase1_or_skip(task: dict, lane: Path, tdir: Path, endpoint: str, family: str, spawn=None) -> dict | None:
     """Run phase 1 when needed and re-merge the brief into the task. None = nothing to do; a dict with ok False =
     the run ends NEEDS-BRIEF. A lane of another repo (the brief lives in epyc-root) resolves the box's brief in a
@@ -366,6 +374,8 @@ def phase1_or_skip(task: dict, lane: Path, tdir: Path, endpoint: str, family: st
     self-brief is written and committed there (`brief_branch`, never pushed here) before phase 2."""
     if task.get("brief_mode") == "off":         # A/B no-brief arm: no brief merge, no self-brief, ever
         return None
+    if fresh_hand_brief(task):                  # fix 5: the packet's fresh hand brief wins; no re-merge, no phase 1
+        return {"ok": True, "skipped": "fresh-hand-brief"}
     if task["repo"] == "epyc-root":
         if not needs_phase1(task, family):
             return None

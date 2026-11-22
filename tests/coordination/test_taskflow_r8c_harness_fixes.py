@@ -93,3 +93,23 @@ def test_approach_named_new_files_are_in_the_pathspec():
 def test_approach_names_do_not_admit_modified_existing_files():
     t = dict(TUGR, approach="Recreate tests/unit/test_c.py; do NOT touch src/concurrency.py")
     assert verify.outside_pathspec(["src/concurrency.py"], t, {"tests/unit/test_c.py"}) == ["src/concurrency.py"]
+
+
+# ------------------------------------------------------------------------- fix 5: skip self-brief
+def test_fresh_hand_brief_skips_phase1_and_remerge(tmp_path, monkeypatch):
+    t = {"key": "NUMA-DECOUPLE-1", "id": "NUMA-DECOUPLE-1", "repo": "epyc-inference-research", "brief_state": "fresh",
+         "brief_author": "owner", "where": ["epyc-inference-research:scripts/benchmark/server_numa_np_sweep.py::summarize_cell"],
+         "approach": "In summarize_cell ...", "acceptance": "python3 -m pytest -q scripts/benchmark/tests/test_x.py",
+         "budget": dict(schema.DEFAULT_BUDGET)}
+    monkeypatch.setattr(dispatch, "_brief_lane", lambda *a: (_ for _ in ()).throw(AssertionError("no brief lane")))
+    monkeypatch.setattr(dispatch, "self_brief", lambda *a, **k: (_ for _ in ()).throw(AssertionError("no self-brief")))
+    assert dispatch.phase1_or_skip(t, tmp_path, tmp_path, "http://x/v1", "local") == {"ok": True, "skipped": "fresh-hand-brief"}
+    assert dispatch.phase1_or_skip(dict(t, repo="epyc-root"), tmp_path, tmp_path, "http://x/v1", "local")["skipped"]
+
+
+def test_self_or_stale_brief_still_runs_phase1():
+    base = {"brief_state": "fresh", "where": ["x"], "approach": "a", "acceptance": "pytest -q t.py", "brief_author": "owner"}
+    assert dispatch.fresh_hand_brief(base)
+    assert not dispatch.fresh_hand_brief(dict(base, brief_author="self"))
+    assert not dispatch.fresh_hand_brief(dict(base, brief_state="stale"))
+    assert not dispatch.fresh_hand_brief(dict(base, acceptance=None))
