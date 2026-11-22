@@ -4,7 +4,7 @@
       "blocked": 28,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 595
+      "open": 594
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 4861,
+          "line": 4862,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 4944,
+          "line": 4945,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5121,
+          "line": 5122,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 13
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7010,
+          "line": 7011,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 45
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 9978,
+          "line": 9979,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10181,
+          "line": 10182,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 20
@@ -2351,10 +2351,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 229,
+      "closed": 230,
       "guarded": 0,
       "last_advanced": "2026-11-22",
-      "open": 40,
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2377,7 +2377,7 @@
         },
         {
           "blocked": 1,
-          "closed": 108,
+          "closed": 109,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2386,7 +2386,7 @@
           "line": 872,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 31
+          "open": 30
         }
       ]
     },
