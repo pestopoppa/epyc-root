@@ -59,19 +59,47 @@ def forbidden_hits(paths: list[str], task: dict) -> list[str]:
 _NAMED = re.compile(r"(?<![\w/.:-])((?:[\w.-]+/)+[\w.-]+\.[A-Za-z0-9]{1,6})(?![\w/])")
 
 
+_NEGATED = re.compile(r"\b(?:not|never|don'?t|avoid|without|non-goal|leave\s+\S+\s+(?:alone|untouched))\b", re.I)
+
+
 def approach_new_paths(task: dict) -> set[str]:
     """Repo-relative file paths the brief's approach (or acceptance) names. r8b TU-GR-1: the approach said "Add
     scripts/.../harness/isolation.py" and the acceptance ran .../tests/test_grader_isolation.py; the worker wrote exactly
-    those two files and was rejected outside-pathspec because `where` omitted them (fix 4). Callers admit only paths
-    the lane ADDED -- an existing file named in prose stays out of the pathspec."""
+    those two files and was rejected outside-pathspec because `where` omitted them (fix 4). A path named only in a
+    negated clause ("do NOT touch src/x.py") or in non_goals is not admitted."""
     txt = " ".join(str(task.get(k) or "") for k in ("approach", "acceptance"))
-    return {m.group(1) for m in _NAMED.finditer(txt) if not m.group(1).startswith((".", "/"))
-            or m.group(1).startswith((".claude/", ".github/"))}
+    clauses = [c for c in re.split(r"[.;\n]\s|\n", txt) if not _NEGATED.search(c)]
+    ng = " ".join(str(x) for x in task.get("non_goals") or [])
+    banned = {m.group(1) for m in _NAMED.finditer(ng)}
+    return {m.group(1) for c in clauses for m in _NAMED.finditer(c)
+            if (not m.group(1).startswith((".", "/")) or m.group(1).startswith((".claude/", ".github/")))
+            and m.group(1) not in banned}
 
 
-def outside_pathspec(paths: list[str], task: dict, added: set[str] | frozenset = frozenset()) -> list[str]:
+_BARE = re.compile(r"(?<![\w/.-])([\w-]+(?:\.[\w-]+)*\.(?:py|sh|md|json|ya?ml|toml|txt|js|ts))(?![\w/])")
+
+
+def approach_bare_names(task: dict) -> set[str]:
+    """Bare file names (no directory) the approach names outside negated clauses / non_goals. r8c NUMA-DECOUPLE-1:
+    "New test_decision_grade_decouple.py" next to the `where` test file."""
+    txt = " ".join(str(task.get(k) or "") for k in ("approach", "acceptance"))
+    ng = " ".join(str(x) for x in task.get("non_goals") or [])
+    banned = {m.group(1) for m in _BARE.finditer(ng)}
+    return {m.group(1) for c in re.split(r"[.;\n]\s|\n", txt) if not _NEGATED.search(c)
+            for m in _BARE.finditer(c) if m.group(1) not in banned}
+
+
+def outside_pathspec(paths: list[str], task: dict, added: set[str] | frozenset = frozenset(),
+                     modified: set[str] | frozenset = frozenset()) -> list[str]:
+    """`added` / `modified`: the lane's A / M paths. An approach-named path is admitted when the lane added it (r8b
+    fix 4) or modified a file that already exists in base (r8c fix 4, NUMA-DECOUPLE-1: the decouple test the approach
+    names existed in base and was rejected). Unnamed junk (r8c `tmp_extract_refs.py`) stays out."""
     allowed = (set(task.get("inputs") or []) | set(task.get("outputs") or []) | brief_paths(task)
-               | (approach_new_paths(task) & set(added)))
+               | (approach_new_paths(task) & (set(added) | set(modified))))
+    touched = set(added) | set(modified)
+    sib = {str(Path(a).parent) for a in allowed if not a.endswith("/")}
+    bare = approach_bare_names(task)
+    allowed |= {p for p in touched if Path(p).name in bare and str(Path(p).parent) in sib}   # named sibling file
     dirs = tuple(a for a in allowed if a.endswith("/"))
     return [p for p in paths if p not in allowed and not p.startswith(dirs or ("\0",))
             and not (p.startswith("tests/") and Path(p).name.startswith("test_"))]
@@ -173,7 +201,8 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
     if not rec("forbidden", not bad, ",".join(bad)):
         return {"verdict": "rejected", "reason": "forbidden-path", "checks": checks, "evidence": ev}
     added = {p for p in _git(lane, "diff", "--name-only", "--diff-filter=A", f"{base_ref}..HEAD").splitlines() if p.strip()}
-    out = outside_pathspec(paths, task, added)
+    modified = {p for p in _git(lane, "diff", "--name-only", "--diff-filter=M", f"{base_ref}..HEAD").splitlines() if p.strip()}
+    out = outside_pathspec(paths, task, added, modified)
     if not rec("pathspec", not out, ",".join(out)):
         return {"verdict": "rejected", "reason": "outside-pathspec", "checks": checks, "evidence": ev}
     cmds = list(task.get("test_cmds") or [])

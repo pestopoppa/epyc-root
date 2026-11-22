@@ -177,3 +177,41 @@ def test_run_skips_stale_packet_before_the_model(tmp_path, monkeypatch):
     task = {"key": "NUMA-DECOUPLE-1", "handoff": "h.md", "repo": "epyc-root", "budget": {"wall_s": 600}}
     row = dispatch.run([task], "http://x/v1", tmp_path / "out", apply=False, use_reviewer=False, gnx_trigger=False)[0]
     assert (row["verdict"], row["reason"], row["failure_class"]) == ("skipped", "stale-packet", "task") and dropped
+
+
+# ------------------------------------------------------------------------------- fix 4: pathspec
+NUMA = {"repo": "epyc-inference-research",
+        "where": ["epyc-inference-research:scripts/benchmark/server_numa_np_sweep.py::summarize_cell",
+                  "epyc-inference-research:scripts/benchmark/tests/test_server_numa_np_sweep.py"],
+        "approach": "Update the two existing asserts in test_server_numa_np_sweep.py.\nNew test_decision_grade_decouple.py: "
+                    "copy the fixture pattern. Also edit scripts/benchmark/sweep_report.py to print it.\n"
+                    "Do NOT touch scripts/benchmark/trim.py.",
+        "acceptance": "python3 -m pytest -q scripts/benchmark/tests/test_decision_grade_decouple.py",
+        "non_goals": ["do not change scripts/benchmark/cache_reset.py"],
+        "inputs": ["scripts/benchmark/server_numa_np_sweep.py"], "outputs": []}
+
+
+def test_pathspec_admits_approach_named_existing_files():
+    """r8c NUMA-DECOUPLE-1: the decouple test existed in base; fix 4 only admitted ADDED approach files."""
+    from taskflow import verify
+    t = "scripts/benchmark/tests/test_decision_grade_decouple.py"
+    assert verify.outside_pathspec([t], NUMA, modified={t}) == []                      # acceptance-named, existing
+    rep = "scripts/benchmark/sweep_report.py"
+    assert verify.outside_pathspec([rep], NUMA) == [rep]
+    assert verify.outside_pathspec([rep], NUMA, modified={rep}) == []                 # approach-named, existing
+
+
+def test_pathspec_named_sibling_by_basename():
+    from taskflow import verify
+    t = dict(NUMA, acceptance="python3 -m pytest -q x")
+    p = "scripts/benchmark/tests/test_decision_grade_decouple.py"
+    assert verify.outside_pathspec([p], t, added={p}) == []
+    assert verify.outside_pathspec(["other/test_decision_grade_decouple.py"], t, added={"other/test_decision_grade_decouple.py"})
+
+
+def test_pathspec_still_rejects_junk_and_negated_paths():
+    """r8c INTAKE-VALIDATE-86: `tmp_extract_refs.py` was a correct reject."""
+    from taskflow import verify
+    assert verify.outside_pathspec(["tmp_extract_refs.py"], NUMA, added={"tmp_extract_refs.py"}) == ["tmp_extract_refs.py"]
+    for p in ("scripts/benchmark/trim.py", "scripts/benchmark/cache_reset.py"):
+        assert verify.outside_pathspec([p], NUMA, modified={p}) == [p]
