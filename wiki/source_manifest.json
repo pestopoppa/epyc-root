@@ -1,46 +1,31 @@
 {
   "by_type": {
-    "docs": 509,
+    "docs": 510,
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 380,
-    "progress": 1426,
+    "progress": 1427,
     "research": 366
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-18T15:49:03Z",
   "last_touch": {
     "advanced": {
-      "added": 39,
-      "changed": 7,
+      "added": 2,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-20T12:56:49Z",
+    "at": "2026-11-22T20:51:09Z",
     "scope_paths": [
-      "docs/reports/df2-dtree-p5-27b-20261120.md",
-      "docs/reports/df2-dtree-p5-a3b-20261120.md",
-      "docs/reports/df2-dtree-scheduler-diag-20261120.md",
-      "docs/reports/df2-wvsk-opgate-verdict-20261120.md",
-      "handoffs/active/autokernel-akx-program.md",
-      "handoffs/active/autokernel-loop.md",
-      "handoffs/active/kernel-champion-and-promotion.md",
-      "handoffs/active/long-context-program.md",
-      "handoffs/active/rocm-kernel-authoring.md",
-      "handoffs/active/speculative-decoding.md",
-      "handoffs/completed/autokernel-akx-program-completed-through-2026-11-20.md",
-      "handoffs/completed/autokernel-loop-completed-through-2026-11-20.md",
-      "handoffs/completed/speculative-decoding-ak-dtree-completed-through-2026-11-20.md",
-      "progress/2026-11/2026-11-19-autokernel.md",
-      "progress/2026-11/2026-11-20-autokernel.md",
-      "research/deep-dives/intake-digests/2026-11-20-ids-2718-2746.md",
-      "research/deep-dives/intake-kspec-20261120"
+      "docs/design/spec-decode-run-nondeterminism-20261122.md",
+      "progress/2026-11/2026-11-22-autokernel.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-20T12:56:49Z",
+  "scan_time": "2026-11-22T20:51:09Z",
   "schema_version": 1,
-  "source_set_hash": "96b77409190e2203ca61b21a220ba23d5751cf3fe7d6895fe1894a0da9a5902a",
+  "source_set_hash": "832a8db47a0e1d7f2c5d9a29128b5b80143b51d0ee318b4c4fc8642d1e2ccb93",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -17539,6 +17524,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "592e11ac5ef423d40d9fed46686f6ac09218193494a91a433818f4c50d0aa1eb",
+      "modified": "2026-11-22T20:41:16Z",
+      "path": "progress/2026-11/2026-11-22-autokernel.md",
+      "size": 4732,
+      "title": "2026-11-22 \u2014 autokernel (operator-invoked /wrap-up)",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-18T15:37:08Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -18704,6 +18697,14 @@
       "path": "docs/design/rowflow2-20261105.md",
       "size": 14905,
       "title": "rowflow2 \u2014 minimal keeper, shadow week and cutover (2026-11-05)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "483660b38a3ae59966eded9da84a70d460f95bfad0482ac145ca127a27a8bf3b",
+      "modified": "2026-11-22T20:40:01Z",
+      "path": "docs/design/spec-decode-run-nondeterminism-20261122.md",
+      "size": 12959,
+      "title": "Run-to-run nondeterminism in 27B DFlash2 (GPU) and Q38FN MTP (CPU) \u2014 mechanism and identity-gate protocol",
       "type": "docs"
     },
     {
@@ -21763,7 +21764,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2715,
+  "total_new": 2717,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
