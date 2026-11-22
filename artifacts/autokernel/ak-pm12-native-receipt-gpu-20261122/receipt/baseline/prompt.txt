@@ -1,0 +1,1 @@
+AK-PM-12 receipt workload: speed up the Qwen3.8-27B Q8_0 dense MUL_MAT verify at n=16 rows on the MI210 (C17 1b83c6967) without changing results.

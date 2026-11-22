@@ -1,0 +1,1 @@
+{"baseline_ns": 59098400.0, "candidate_ns": 24921920.0, "correctness": true, "protocol_id": "ak-pm12-native-27b-q8-dense-n16-v1"}

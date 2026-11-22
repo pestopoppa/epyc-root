@@ -1,0 +1,47 @@
+/usr/bin/numactl --membind=3 -- /usr/bin/taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261121-1b83c6967-c17/bin/test-backend-ops test -b ROCm0 -o MUL_MAT -p type_a=q8_0,type_b=f32,m=(17408|5120|10240|6144|12288),n=16,k=(5120|17408|6144),bs=\[1,1\],nr=\[1,1\]
+ggml_cuda_init: found 1 ROCm devices (Total VRAM: 65520 MiB):
+  Device 0: AMD Instinct MI210, gfx90a:sramecc+:xnack- (0x90a), VMM: no, Wave Size: 64, VRAM: 65520 MiB
+ggml_cuda_install_gemm_down_override: GGML_HIP_GEMM_DOWN_TILE rocBLAS override installed (27B down MT160x256x64)
+ggml_cuda_q8ip: in-place Q8_0 stage-contiguous repack enabled (GGML_HIP_Q8_MF_INPLACE=2, MF=6)
+ggml_cuda_q8ip: packed 1 Q8_0 tensors in place (31.9 MiB; last a 5120x6144)
+ggml_cuda_q8_mf: V5 4-WG/CU half-tile packed path ran (call 1, GGML_HIP_Q8_MF=6, P=2, slc=1, ggml-cuda: V5 4-WG/CU half-tile packed Q8_0 small-M kernel (GGML_HIP_Q8_MF=6))
+Testing 2 devices
+
+Backend 1/2: ROCm0
+  Device description: AMD Instinct MI210
+  Device memory: 65520 MB (65432 MB free)
+
+  MUL_MAT(type_a=q8_0,type_b=f32,m=6144,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): ggml_cuda_q8ip: packed 2 Q8_0 tensors in place (63.8 MiB; last a 6144x5120)
+OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=5120,n=16,k=6144,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=12288,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): ggml_cuda_q8ip: packed 4 Q8_0 tensors in place (180.6 MiB; last a 5120x10240)
+OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=10240,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=5120,n=16,k=17408,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=17408,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=6144,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): ggml_cuda_q8ip: packed 8 Q8_0 tensors in place (431.4 MiB; last a 6144x6144)
+OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=6144,n=16,k=6144,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=6144,n=16,k=17408,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=10240,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=10240,n=16,k=6144,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=10240,n=16,k=17408,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=17408,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=17408,n=16,k=6144,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=17408,n=16,k=17408,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): ggml_cuda_q8ip: packed 16 Q8_0 tensors in place (1406.8 MiB; last a 5120x12288)
+OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=12288,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=5120,n=16,k=6144,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=5120,n=16,k=17408,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=6144,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=5120,n=16,k=17408,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=17408,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=12288,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=5120,n=16,k=6144,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  MUL_MAT(type_a=q8_0,type_b=f32,m=6144,n=16,k=5120,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1): OK
+  24/24 tests passed
+  Backend ROCm0: OK
+Backend 2/2: CPU
+  Skipping
+2/2 backends passed
+OK

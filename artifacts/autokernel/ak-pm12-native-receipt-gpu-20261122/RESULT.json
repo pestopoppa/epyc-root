@@ -1,0 +1,44 @@
+{
+ "admit_rule_met": false,
+ "at": "2026-11-22T23:03:01Z",
+ "baseline_ns": 57496800.0,
+ "bytes_moved_per_forward": 25669140480,
+ "candidate_ns": 24988000.0,
+ "cap": "UNKNOWN (S2 builds the deriver)",
+ "captures": {
+  "baseline": "9d0a635d5108db29161099bf7d53e345d19e84d4503a2e312331052f5f651a77",
+  "verification": "912d365bea229c10b2546b880fcb06c473ca7c0fdd4485c484111e524be89a47"
+ },
+ "complete": true,
+ "implied_baseline_gbps": 446.4446800517594,
+ "proofs": {
+  "build_identity_sha": true,
+  "evaluator_sha256": "2d6cfe27bfd0b849405e24b8ed10c6e58b2b540ac60a3e74d8596c5e2455cb95",
+  "final": true,
+  "libggml_hip_sha256": "c83ed079541ec1d410c5004d5ea0de6eb3a300a47cac91db965c66d04de0001f",
+  "linkage_rc0": true,
+  "pass": true,
+  "producer_module_sha256": {
+   "controller/loop_experiment_runner.py": "9f0b4770ba43602398c0a63417a7990316e9a50c57cd78ae3e422c7247d89e62",
+   "lesson_admission.py": "7c832ad90b6b0738377a82e437bf3624ff2c978906cb241e2026a56bdfa8b0d4",
+   "lesson_native.py": "473f9d4334ac81fac9d025dba985685c99ed0123937526d63320f7cfd1b8545c",
+   "loop/keep_lesson.py": "f74f41f2de3f2c52afae7ec479ab9e917955b76c3efd2f6bc44f551c69535734"
+  },
+  "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+  "research_head": true,
+  "tbo_sha256": "d56e87dcbcf3f04a018c840542a29a099d6eeab358b5ada79247971ee7d06652",
+  "unit_id": "proofs",
+  "v5_witness_in_libggml_hip": true
+ },
+ "protocol_id": "ak-pm12-native-27b-q8-dense-n16-v1",
+ "r_1": 2.3009764687049783,
+ "r_verify": 2.37134217588372,
+ "receipt_root": "/mnt/raid0/llm/tmp/ak-pm12-native-receipt-gpu-20261122/out/receipt",
+ "research_commit": "f71dc7ab520d0c0b4b61911dbc0f7d15e631b3cd",
+ "row": "ak-pm12-native-receipt-gpu-20261122",
+ "smoke": false,
+ "source_commit": "1b83c69671a3fc0193fdf5baf929e27240478e40",
+ "store": "/mnt/raid0/llm/kernels/builds/gpu-20261121-1b83c6967-c17",
+ "task": "handoffs/active/autokernel-loop.md:AK-PM-12-S3",
+ "verdict": "RECEIPT_OK"
+}

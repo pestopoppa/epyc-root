@@ -1,0 +1,5 @@
+LESSON (injected before the first turn):
+Route the 27B Q8_0 dense verify GEMMs (M 1..16) through the V5I int8 MFMA path (GGML_HIP_Q8_MF=6 MF_MIN=1 MF_INPLACE=1 MF_SLC=1 WVSK_MAX=16) instead of q8wv/MMQ (falsifier: dense ns/forward at n=16 not below OFF, or tbo FAIL).
+
+TASK:
+AK-PM-12 receipt workload: speed up the Qwen3.8-27B Q8_0 dense MUL_MAT verify at n=16 rows on the MI210 (C17 1b83c6967) without changing results.
