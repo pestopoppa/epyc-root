@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-22T22:58:13Z",
+  "generated_at": "2026-11-22T23:19:47Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1371,15 +1371,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 908,
-      "dispatchable": 146,
+      "closed": 910,
+      "dispatchable": 144,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-22",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 146,
+      "open": 144,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1416,7 +1416,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 61,
+          "dispatchable": 59,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1425,14 +1425,14 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 61,
+          "open": 59,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5233,
+          "line": 5235,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1441,7 +1441,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5318,
+          "line": 5320,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1460,7 +1460,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5498,
+          "line": 5500,
           "name": "autokernel-rebuild-program",
           "open": 12,
           "readiness": "blocked"
@@ -1477,7 +1477,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7379,
+          "line": 7381,
           "name": "autokernel-unified-surface-program",
           "open": 36,
           "readiness": "blocked"
@@ -1490,7 +1490,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10558,
+          "line": 10560,
           "name": "autokernel-concurrent-target-coordination",
           "open": 13,
           "readiness": "blocked"
@@ -1524,7 +1524,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10803,
+          "line": 10805,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 21,
           "readiness": "blocked"
@@ -1767,15 +1767,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 252,
-      "dispatchable": 37,
+      "closed": 253,
+      "dispatchable": 36,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-22",
       "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
-      "open": 39,
+      "open": 38,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1818,14 +1818,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 27,
+          "dispatchable": 26,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 896,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 28,
+          "open": 27,
           "readiness": "blocked"
         }
       ]
