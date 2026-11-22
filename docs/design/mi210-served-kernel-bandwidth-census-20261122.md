@@ -69,7 +69,7 @@ The reference step is 34 ms of busy time at n=4 (C14, h-18 profile). Busy fracti
 
 | # | Lever | Model | ms/round | % of round | Covered by |
 |---|---|---|---|---|---|
-| 1 | Router F32 GEMV for [2048,256] at n≥2: a single fused router+topk kernel with 64-row tiles and one launch per layer | A3B | ≈4.5 | ≈13% | A3B router MMVF knob ("in flight" per hotspots 11-18). **Confirm it is in C18**; otherwise new |
+| 1 | Router F32 GEMV for [2048,256] at n≥2: a single fused router+topk kernel with 64-row tiles and one launch per layer | A3B | ≤4.5 (C14 figure, **pre-knob**) | ≤13% | **Largely covered**: MMVF CDNA cap knob `GGML_HIP_MMVF_CDNA_MAX_NE11` (`79650eeab`, KEEP, A3B D=4 +13.6%) landed in C16, after the C14 trace. Residual on C18 unknown until BW-3 trace |
 | 2 | 27B dense V5I M=8..16: stay ≥1.15 TB/s. Use split-K for the 33 MB 6144-class shapes (fewer CUs are idle on the tail) and fuse gate+up into one 189 MB launch | 27B | 3.3-4.4 | 7-10% | V5I covers the base. Split16 is FAIL_CORRECTNESS (r3) and is superseded by V5I at n≥12. Gate+up fusion is new |
 | 3 | A3B dense MMVQ, if the 224 GB/s holds: route n=3 dense through V5I/q8wv or the MMVQ wide-row path | A3B | ≤7 (unverified) | ≤20% | V5I (A3B 0.988 is mostly noise). Needs the trace row below first |
 | 4 | MUL_MAT_ID bandwidth: group slots by expert, use 128-bit loads, keep one q8_1 activation for the gate+up pair. Target ≥1.0-1.2 TB/s at n 3-16 | A3B | 1.4-1.6 | 4-5% | **4297a2caa** (row `ak-mmid-mf-gpu-20261122`, pending, no `out/` yet); split16 covers n 9-16 only |
@@ -89,6 +89,8 @@ bandwidth-bound. Fusion work (EPI-Q8, add+rms_norm) recovers more there than any
 3. test-backend-ops perf on C18 for `MUL_MAT q8_0 m=248320 k=5120 n=1..16` and `m=1024 k=5120` (lm_head, k/v), V5I
    ON. Fold it into row 1 as one extra unit.
 4. `ak-mmid-mf-gpu-20261122` results for lever 4. It is still pending.
+
+**Correction (same day):** the A3B router row is a C14 measurement that predates the MMVF cap knob, which is now in C16/C18. Treat lever 1 as residual-only. Ranking by confidence: 2, 4, 5, 3, 1. AutoKernel seeds: research `scripts/kernel_rnd/autokernel/loop/seeds/hypotheses/21-bw-census-mi210-20261122.md`.
 
 ## Draft handoff box text (for the operator to file; not added)
 
