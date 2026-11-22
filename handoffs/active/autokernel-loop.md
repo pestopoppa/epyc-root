@@ -9663,9 +9663,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: an actor-only operation settles under an explicit policy outcome other than failed when its children are accepted, with tests
           · gate: none
             · 2026-11-22 (autokernel, AKU lane) DONE: research `b0e3ecdc4`: `actor_settlement_policy.py` — actor_preparation chain with accepted final planner+critic settles `abstained`; operation_accounting routes it through the policy, settled-v2 validator admits it; denials/enrollment/uncertain/diagnostic/source-build refused. Controller settle + replay test and refusal test. 35 passed. [no-belief: code]
-    - [ ] **AKU-06d3** [non-inference] contained patch authoring from advice: fresh attempt/reservation, immutable source context, owner-assigned scope, authenticated bounded output to native manifest
+    - [x] **AKU-06d3** [non-inference] contained patch authoring from advice: fresh attempt/reservation, immutable source context, owner-assigned scope, authenticated bounded output to native manifest
           · done when: authored patch bytes come only from authenticated bounded worker output and construct a native manifest bound to the advice, with tests
           · gate: none
+          · 2026-11-22 (autokernel, AKU lane) DONE: research `f503cf187`: `contained_authoring.ContainedAuthoringOwner` issues a fresh attempt (random id + private worker key) per accepted source advice, freezes source context and assigns scope from the controller assignment/proposal; only bounded HMAC-authenticated worker stdout yields patch bytes, the owner builds the native `SourcePatchManifest` and binds it via `bind_source_preparation`; finished/refused advice never re-reserved. 9 new tests (47 with source_build_preparation) passed. [no-belief: code]
     - [ ] **AKU-06d4** [non-inference] durable advice -> patch -> source commit -> real build identity chain and planner refresh from verified builds
           · done when: a restart replays the advice->patch->commit->build chain and the planner refreshes prerequisites only from verified build results, with tests
           · gate: none
