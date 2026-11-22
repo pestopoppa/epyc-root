@@ -400,23 +400,43 @@ def phase1_or_skip(task: dict, lane: Path, tdir: Path, endpoint: str, family: st
         drop_lane(repo, blane)                      # a committed brief keeps its branch (drop_lane only deletes empty ones)
 
 
-def reviewer_for(endpoint: str, model: str):
+REVIEW_MAX_TOKENS = int(os.environ.get("TASKFLOW_REVIEW_MAX_TOKENS", "1024"))
+
+
+def parse_review(msg: dict) -> dict:
+    """JSON verdict from the reviewer's content, else from its reasoning content. r8b NOFOLD-1 (think arm): the
+    server runs --reasoning on, the 200-token cap was spent on reasoning and content came back empty (fix 6)."""
+    for txt in (msg.get("content") or "", msg.get("reasoning_content") or ""):
+        if "{" in txt and "}" in txt:
+            for m in reversed(list(re.finditer(r"\{[^{}]*\"verdict\"[^{}]*\}", txt))):
+                try:
+                    return json.loads(m.group(0))
+                except ValueError:
+                    continue
+            try:
+                return json.loads(txt[txt.index("{"): txt.rindex("}") + 1])
+            except ValueError:
+                pass
+    return {"verdict": "unparseable", "reason": (msg.get("content") or "")[:150],
+            "empty": not (msg.get("content") or "").strip()}
+
+
+def reviewer_for(endpoint: str, model: str, max_tokens: int | None = None):
     """Reviewer hook: ONE chat call, JSON verdict against the verbatim box text. Never edits."""
     def review(task: dict, diff: str) -> dict:
         msg = local_llm.POLICY + "\n" + verify.review_prompt(task, diff)
-        body = {"model": model, "messages": [{"role": "user", "content": msg}], "max_tokens": 200, "temperature": 0,
+        body = {"model": model, "messages": [{"role": "user", "content": msg}],
+                "max_tokens": int(max_tokens or REVIEW_MAX_TOKENS), "temperature": 0,
                 "cache_prompt": True, "response_format": {"type": "json_object"},
                 "chat_template_kwargs": {"enable_thinking": False}}
         req = urllib.request.Request(endpoint.rstrip("/") + "/chat/completions", json.dumps(body).encode(),
                                      {"content-type": "application/json"})
         with urllib.request.urlopen(req, timeout=300) as r:
             resp = json.loads(r.read())
-        txt = resp["choices"][0]["message"]["content"]
-        try:
-            v = json.loads(txt[txt.index("{"): txt.rindex("}") + 1])
-        except ValueError:
-            v = {"verdict": "unparseable", "reason": txt[:150]}
+        ch = resp["choices"][0]
+        v = parse_review(ch.get("message") or {})
         v["usage"] = resp.get("usage")
+        v["finish_reason"] = ch.get("finish_reason")
         return v
     return review
 

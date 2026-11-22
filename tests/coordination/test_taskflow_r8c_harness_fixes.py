@@ -113,3 +113,16 @@ def test_self_or_stale_brief_still_runs_phase1():
     assert not dispatch.fresh_hand_brief(dict(base, brief_author="self"))
     assert not dispatch.fresh_hand_brief(dict(base, brief_state="stale"))
     assert not dispatch.fresh_hand_brief(dict(base, acceptance=None))
+
+
+# ------------------------------------------------------------------------- fix 6: reviewer under thinking
+def test_review_parsed_from_reasoning_when_content_empty():
+    r = dispatch.parse_review({"content": "", "reasoning_content": 'All 4 greps pass. {"verdict":"done","reason":"meets done-when"}'})
+    assert r["verdict"] == "done"
+    assert dispatch.parse_review({"content": '{"verdict":"not_done","reason":"x"}'})["verdict"] == "not_done"
+    e = dispatch.parse_review({"content": "", "reasoning_content": "thinking about it"})
+    assert e["verdict"] == "unparseable" and e["empty"]
+
+
+def test_reviewer_cap_raised():
+    assert dispatch.REVIEW_MAX_TOKENS >= 1024
