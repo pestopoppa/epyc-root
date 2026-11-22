@@ -123,7 +123,7 @@ standalone_runtime.py	742	ratchet
 startup_factory.py	522	ratchet	
 tail_timing.py	328	ratchet	
 tailsplit.py	156	new	
-trial_lifecycle.py	117	ratchet	
+trial_lifecycle.py	118	ratchet	
 typed_planner.py	116	new	
 validation_consumer.py	621	ratchet	
 validation_projection_source.py	247	ratchet	
