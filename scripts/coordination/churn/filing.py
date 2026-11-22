@@ -287,8 +287,19 @@ CAPCUT_SLACK_S = 1800   # mirrors rowflow.CAPCUT_SLACK_S
 
 
 def capcut_pending(flags, rid):
-    """Cut at our own drain cap AND not filed/superseded (capcut_closed)."""
-    return capcut_cut(flags, rid) and not capcut_closed(flags, rid)
+    """Cut at our own drain cap AND not filed/superseded (capcut_closed), OR a resumable partial end the keeper will
+    auto-requeue under the same id (rowflow.autorequeue_pending, operator 2026-11-21; bounded at AUTOREQUEUE_MAX)."""
+    return (capcut_cut(flags, rid) and not capcut_closed(flags, rid)) or _autorequeue_pending(flags, rid)
+
+
+def _autorequeue_pending(flags, rid):
+    """Delegates to the keeper's own predicate so the two never drift; unimportable -> False (filing files it, and the
+    keeper then sees it filed and does not requeue - safe either way)."""
+    try:
+        import rowflow as _rf  # noqa: PLC0415
+        return bool(_rf.autorequeue_pending(flags, rid))
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def capcut_closed(flags, rid):

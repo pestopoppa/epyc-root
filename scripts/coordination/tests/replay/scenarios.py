@@ -1046,7 +1046,48 @@ def sc_cpu_quarter_prefers_q0_over_q3(path):
     return write(path, [(rows, world)] * 3), check
 
 
+def sc_sticky_drain_e5_overnight(path):
+    """PM-DRAINFIX 2026-11-22 (inf45-e5v2-stageb-r7-20261121, rank 25 quiet-host): the drain formed at 21:58Z "until
+    00:01Z", then each better-ranked rank-20 AK GPU row that became placeable dropped it for a tick (DRAIN-HELD), the
+    drain_state was overwritten with {} and every later drain recomputed T from the newest backfill end: 00:55Z, 01:46Z,
+    ... 05:14Z; rank-35 lsa q0-q2 rows were granted in those gaps too. A drain once formed is STICKY: T only moves
+    earlier, and every row - better-ranked ones included - that would end after T stays off its regions (gpu-quiet
+    included); rows that end by T still backfill."""
+    e5 = row("e5-stageb-qh", lane="gpu", regions="mi210_0,0-95", cls="cpu+gpu", gpu_quiet="exclusive", claim="0-95",
+             role="bench", extra="llama-server -t 48 --port 8099", est=3600, rank=25,
+             man={"shape": "quiet-host", "declared_shape": "quiet-host", "admission_class": "block-timing-quiet",
+                  "baseline_ref": "replay fixture: E5 stage-B", "resumable": True})
+    q1 = row("busy-q1", regions="any-of q1", extra="make -j 24", est=3600, rank=50)
+    q2 = row("busy-q2", regions="any-of q2", extra="make -j 24", est=3600, rank=50)
+    ak_long = row("ak-gpu-r20-long", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, role="bench",
+                  extra="llama-server -t 8", est=4 * 3600, rank=20, man={"min_window_s": 3 * 3600})
+    ak_short = row("ak-gpu-r20-short", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, role="bench",
+                   extra="llama-server -t 8", est=900, rank=20)
+    lsa = row("lsa-r35-q0", regions="any-of q0", extra="make -j 24", est=3 * 3600, rank=35, man={"min_window_s": 3 * 3600})
+    held = {"busy-q1": q1, "busy-q2": q2}
+    first = dict(held, **{"e5-stageb-qh": e5})
+    rows = dict(first, **{"ak-gpu-r20-long": ak_long, "ak-gpu-r20-short": ak_short, "lsa-r35-q0": lsa})
+    ticks = [(held, {}), (first, {}), (first, {})] + [(rows, {})] * 50
+
+    def check(d):
+        out = []
+        if len(_granted(d, "busy-q1")) != 1 or len(_granted(d, "busy-q2")) != 1:
+            return ["fixture: q1/q2 rows not granted on tick 0"]
+        ge = _granted(d, "e5-stageb-qh")
+        if not ge:
+            return ["e5-stageb-qh never granted: its drain was starved"]
+        e5_tick = ge[0][0]
+        for rid in ("ak-gpu-r20-long", "lsa-r35-q0"):
+            out += [f"{rid} (ends after the drain target) granted at tick {i}, before the drained row (tick {e5_tick})"
+                    for i, _ in _granted(d, rid) if i < e5_tick]
+        if not _granted(d, "ak-gpu-r20-short"):
+            out.append("ak-gpu-r20-short (ends by T) never backfilled")
+        return out
+    return write(path, ticks), check
+
+
 SCENARIOS = {
+    "sched-sticky-drain-e5-overnight": sc_sticky_drain_e5_overnight,
     "cpu-quarter-prefers-q0-over-q3": sc_cpu_quarter_prefers_q0_over_q3,
     "sched-foreign-hold-keeps-drain": sc_foreign_hold_keeps_drain,
     "sched-race-eqv-books-by-estimate": sc_race_eqv_books_by_estimate,

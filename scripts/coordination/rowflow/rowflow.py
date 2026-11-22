@@ -2497,7 +2497,10 @@ def drain_outranks(c, drain):
     """PM-INVERSION 2026-11-20: a drain reserved for row `drain` never binds a row with a STRICTLY better rank (lower
     number) - better-ranked rows always take precedence and the drain re-forms after them. Only rows of equal or worse
     rank are drain-late (the whole-host starvation protection the replay gate checks)."""
-    return drain is not None and c is not drain and float(c["rank"]) >= float(drain["rank"])
+    # PM-DRAINFIX 2026-11-22: a STICKY drain (formed on an earlier tick, T still ahead) binds EVERY row, better-ranked
+    # ones included: once formed, T is fixed and only moves earlier (inf45-e5v2-stageb-r7: a stream of rank-20 GPU rows
+    # each re-formed the drain later, 00:01Z -> 05:14Z, and the rank-25 quiet-host row lost the whole night)
+    return drain is not None and c is not drain and (bool(drain.get("drain_sticky")) or float(c["rank"]) >= float(drain["rank"]))
 
 
 def drain_blocker(c, pending, free=None, ram=None, gpu_grant_open=False, held_ports=()):
@@ -2768,8 +2771,17 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     plan.rank_skips = []   # [(lower row, better row, reason)]: a lower row took regions a better row wants (own block)
     plan.caps = []         # [(row id, regions, T)]: admitted by estimate ahead of T on these regions -> grant end capped at T
     plan.hard_end = {}     # {row id: T}: the placed row's grant must end by T (DRAIN-BY-ESTIMATE safety)
-    for c in pending:
+    def _prev_T(c):
+        v = (drain_prev or {}).get(c["id"])
+        try:
+            return float(v) if v is not None and float(v) > now else None
+        except (TypeError, ValueError):
+            return None
+    # PM-DRAINFIX 2026-11-22: a drain formed on an earlier tick (persisted T still ahead) is considered FIRST and is not
+    # dropped for a better-ranked row (drain_blocker), so its T can never slide later
+    for c in sorted(pending, key=lambda c: _prev_T(c) is None):
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
+        sticky_T = _prev_T(c)
         if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
             if row_busy(c) < DRAIN_MIN_BUSY:   # operator 2026-11-03: a mostly idle row never books a quiet/whole host
                 plan.drain_lowbusy.append(c)
@@ -2777,7 +2789,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             # PM-INVERSION 2026-11-20: build-pocket-held rows still outrank a drain target - they are off the plan only
             # for the build claim, so the drain must not form for a worse row and lock them out once the claim clears
             # (22:50Z: rank-22/40 q0-q2 rows build-held, invisible here; the rank-110 host row drained q0-q2 for 2.75 h)
-            blocker = drain_blocker(c, pending + held, free, ram, gpu_grant_open, ports)
+            blocker = None if sticky_T is not None else drain_blocker(c, pending + held, free, ram, gpu_grant_open, ports)
             if blocker is not None:   # ws58 2026-11-02: a better-ranked row wants these regions; no promotion, no drain
                 plan.drain_held.append((c, blocker))
                 continue
@@ -2787,7 +2799,10 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 prev = (drain_prev or {}).get(c["id"])
                 if S is not None and prev and now < float(prev) < S:   # T only moves earlier; an EXPIRED T never blocks
                     S = float(prev)
-                if S is not None and S - now > DRAIN_RESERVE_HORIZON_S and drain_horizon_applies(c):   # D9 2026-11-18: partial-host only
+                if sticky_T is not None:   # PM-DRAINFIX: a sticky T never moves later and never lapses to "unknown"
+                    S = sticky_T if S is None else min(S, sticky_T)
+                    c["drain_sticky"] = True
+                if S is not None and sticky_T is None and S - now > DRAIN_RESERVE_HORIZON_S and drain_horizon_applies(c):   # D9 2026-11-18: partial-host only
                     plan.drain_deferred.append((c, S))
                     # PM-CAP 2026-11-21: backfill onto a deferred target's regions is bounded by its REAL earliest start S
                     # (a row ending by S cannot delay it), not by the 2 h horizon (which cut a 3.8 h single-quarter row at 7260 s
@@ -4711,6 +4726,150 @@ def capcut_requeue(flags, log=print, now=None):
     return out
 
 
+# ---------------------------------------------------------------- AUTO-REQUEUE (operator approved 2026-11-21)
+# A RESUMABLE row whose window ended rc=75 reason=partial-* is made grantable again under the SAME id (the capcut
+# mechanism: .ended/.grant archived, manifest and PASS untouched), at most AUTOREQUEUE_MAX times per row; then the row
+# ends normally (filed) and its owner gets one alert. A PERSISTENT environmental refusal is never retried: the job
+# declares it via FILLER_BLOCKED_FILE (filler_run15.sh -> reason=partial-blocked-*, blocked_on=/requeue=false lines in
+# .ended) or a top-level "requeue": false / "blocked_on" in its RESULT json. (Mirrored in churn/filing.py.)
+AUTOREQUEUE_MAX = 3
+
+
+def autorequeue_dir(flags):
+    return os.path.join(flags, "grants", ".autorequeue")
+
+
+def _ended_text(flags, rid):
+    try:
+        with open(os.path.join(flags, "grants", rid + ".ended"), errors="replace") as fh:
+            return fh.read(8192)
+    except OSError:
+        return ""
+
+
+def _result_json(d):
+    rp = str((d or {}).get("result_path") or "")
+    if not rp:
+        return {}
+    if not os.path.isabs(rp):
+        rp = os.path.join(str((d or {}).get("workdir") or ""), rp)
+    if not rp.endswith(".json") or not os.path.isfile(rp):
+        return {}
+    try:
+        with open(rp, errors="replace") as fh:
+            r = json.load(fh)
+    except (OSError, ValueError):
+        return {}
+    return r if isinstance(r, dict) else {}
+
+
+def autorequeue_blocked(text, result=None):
+    """The job's declared persistent blocker ("" = none): reason=partial-blocked-*, a blocked_on=/requeue=false line in
+    .ended, or RESULT {"requeue": false} / {"blocked_on": ...}."""
+    m = re.search(r"(?:^|\s)reason=(partial-blocked\S*)", text)
+    b = re.search(r"(?m)^blocked_on=(.*)$", text)
+    if b and b.group(1).strip():
+        return b.group(1).strip()
+    if m:
+        return m.group(1)
+    if re.search(r"(?m)^requeue=(false|0|no)\s*$", text):
+        return "requeue=false"
+    r = result or {}
+    if r.get("blocked_on"):
+        return str(r["blocked_on"])[:200]
+    if r.get("requeue") is False:
+        return "RESULT requeue=false"
+    return ""
+
+
+def autorequeue_history(flags, rid):
+    return [float(x) for x in ((load_json(os.path.join(autorequeue_dir(flags), rid + ".history.json")) or {})
+                               .get("requeued_at") or [])]
+
+
+def autorequeue_decision(flags, rid):
+    """(kind, why): kind 'requeue' | 'blocked' | 'limit' | 'stop' | None (not an auto-requeue end at all)."""
+    G = os.path.join(flags, "grants")
+    if os.path.exists(os.path.join(G, rid + ".complete")):
+        return None, ""
+    text = _ended_text(flags, rid)
+    first = text.splitlines()[0] if text else ""
+    if not (re.search(r"(^|\s)rc=75(\s|$)", first) and re.search(r"(^|\s)reason=partial-\S+", first)):
+        return None, ""
+    d = load_json(ready_path(flags, rid))
+    if not d or not d.get("resumable"):
+        return None, ""
+    if capcut_closed(flags, rid):
+        return None, ""
+    why = autorequeue_blocked(text, _result_json(d))
+    if why:
+        return "blocked", why
+    sf = resolve_stop_path(d)
+    if sf and os.path.exists(sf):
+        return "stop", f"STOP file {sf} present"
+    n = len(autorequeue_history(flags, rid))
+    if n >= AUTOREQUEUE_MAX:
+        return "limit", f"auto-requeue limit {AUTOREQUEUE_MAX} reached"
+    return "requeue", f"{n + 1}/{AUTOREQUEUE_MAX}"
+
+
+def autorequeue_pending(flags, rid):
+    """Filing must not file this end: the keeper requeues it under the same id."""
+    return autorequeue_decision(flags, rid)[0] == "requeue"
+
+
+def autorequeue(flags, log=print, now=None, emit=None):
+    """Each tick, next to capcut_requeue. Returns the requeued ids."""
+    now = time.time() if now is None else now
+    emit = emit or notify.emit
+    G = os.path.join(flags, "grants")
+    out = []
+    for e in sorted(glob.glob(os.path.join(G, "*.ended"))):
+        rid = os.path.basename(e)[:-6]
+        if rid.startswith(".") or capcut_cut(flags, rid):
+            continue
+        kind, why = autorequeue_decision(flags, rid)
+        if kind is None:
+            continue
+        ad = autorequeue_dir(flags)
+        os.makedirs(ad, exist_ok=True)
+        hp = os.path.join(ad, rid + ".history.json")
+        hj = load_json(hp) or {}
+        head = (_ended_text(flags, rid).splitlines() or [""])[0]
+        if kind != "requeue":
+            if hj.get("final_for") == head:
+                continue   # decided once for this end; filing files it
+            owner = str((load_json(ready_path(flags, rid)) or {}).get("owner") or "")
+            sev = "warning"
+            if kind == "limit":
+                summary = (f"AUTOREQUEUE-LIMIT {rid}: ended {head!r} after {AUTOREQUEUE_MAX} auto-requeues; not requeued again, "
+                           f"filed as partial - owner: fix the cause and republish")
+            elif kind == "blocked":
+                summary = (f"AUTOREQUEUE-BLOCKED {rid}: ended {head!r}, job declared a persistent blocker ({why}); "
+                           f"not requeued - owner: clear the blocker and republish")
+            else:
+                summary, sev = f"AUTOREQUEUE-END {rid}: {why}; ends normally", "info"
+            log(summary)
+            if kind in ("limit", "blocked"):
+                try:
+                    emit(flags, f"autorequeue-{kind}", rid, head[:80], summary, sev, owner=owner)
+                except Exception as ex:  # noqa: BLE001 - an alert failure never stops allocation
+                    log(f"AUTOREQUEUE alert failed: {type(ex).__name__}: {ex}")
+            atomic_json(hp, dict(hj, id=rid, final_for=head, requeued_at=hj.get("requeued_at") or []))
+            continue
+        ts = dt.datetime.fromtimestamp(now, dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        for suf in (".ended", ".grant"):
+            src = os.path.join(G, rid + suf)
+            if os.path.exists(src):
+                shutil.move(src, os.path.join(ad, f"{rid}.{ts}{suf}"))
+        hist = autorequeue_history(flags, rid) + [now]
+        atomic_json(hp, {"id": rid, "requeued_at": hist})
+        log(f"AUTO-REQUEUE {rid}: {head}; resumable partial end, .ended/.grant archived to .autorequeue/{rid}.{ts}.*, "
+            f"same id grantable again ({len(hist)}/{AUTOREQUEUE_MAX})")
+        out.append(rid)
+    return out
+
+
 # ---------------------------------------------------------------- invariants (self-healing, every tick)
 def state_dir(flags):
     p = os.path.join(flags, "ws58-keeper-state", "allocator")
@@ -5964,6 +6123,30 @@ def timing_quarters(flags, grants, allrows):
         if bench:
             out |= {q for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
     return frozenset(out)
+def drain_live(state, now=None):
+    """drain_state.json entries whose T is still ahead ({row id: T})."""
+    now = time.time() if now is None else now
+    out = {}
+    for k, v in (state or {}).items():
+        try:
+            if float(v) > now:
+                out[k] = float(v)
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
+def drain_state_next(last_drain, drain_prev, live_ids, assigned_ids, now=None):
+    """PM-DRAINFIX 2026-11-22: the drain state persisted for the next tick. The planner's drain when it formed one;
+    otherwise a previous drain is CARRIED while its T is ahead and its row is still waiting (a candidate or a
+    WAIT-FOR-SMOKE row, not granted this tick). It was overwritten with {} on every tick without a drain (DRAIN-HELD,
+    WAIT-FOR-SMOKE, a placed row), so the next drain recomputed T from the latest backfill end and slid later."""
+    if last_drain:
+        return {last_drain[0]["id"]: float(last_drain[1])}
+    live, done = set(live_ids), set(assigned_ids)
+    return {k: v for k, v in drain_live(drain_prev, now).items() if k in live and k not in done}
+
+
 def quiet_host_drain_target(cands, drain_prev):
     """The quiet-host candidate the planner is draining for (drain_state.json), or None."""
     for c in cands:
@@ -6362,6 +6545,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             capcut_requeue(flags, log)
         except Exception as e:  # noqa: BLE001 - never stops allocation
             log(f"CAPCUT-REQUEUE failed: {type(e).__name__}: {e}")
+        try:   # operator 2026-11-21: bounded auto-requeue of resumable partial ends (same id, AUTOREQUEUE_MAX)
+            autorequeue(flags, log)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"AUTO-REQUEUE failed: {type(e).__name__}: {e}")
         try:
             finish_withdrawals(flags, log)
         except Exception as e:  # noqa: BLE001 - never stops allocation
@@ -6448,8 +6635,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     wait_lines = {}
     if qr is not None:
         # a held quiet-host row is exempt: its smoke-hold already keeps the queued batch off the GPU for it
+        _dp = drain_live(load_json(os.path.join(flags, "drain_state.json")))
+        # PM-DRAINFIX 2026-11-22: a row with a live drain is exempt too - removing it dropped the drain and its T slid
         worse = [c for c in cands if any(GPU in o for o in c["options"]) and c["rank"] > qr
-                 and not (qh_hold and c["id"] == qh_hold[0]["id"])]
+                 and not (qh_hold and c["id"] == qh_hold[0]["id"]) and c["id"] not in _dp]
         if worse:
             smoke_waits += [(c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT-FOR-SMOKE: "
                                 f"queued GPU smoke rank {qr:g} runs first") for c in worse]
@@ -6564,7 +6753,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             log(f"BUILD-POCKET-HELD {rid_h}: long q0-q2 row not booked while a build claim waits "
                 f"({'; '.join(w['who'] for w in bw)}); declare whole_host_need to opt out")
         if not dry:
-            atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
+            atomic_json(dfile, drain_state_next(plan.last_drain, drain_prev, [c["id"] for c in cands if c["id"] not in excluded]
+                                                + [c["id"] for c, _ in smoke_waits], [c["id"] for c, _ in assigned]))
         for hc, bc in plan.drain_held:
             log(f"DRAIN-HELD {hc['id']} (rank {hc['rank']:g}, {hc.get('shape')}): better-ranked {bc['id']} (rank {bc['rank']:g}) wants its regions; no drain")
         for lc in plan.drain_lowbusy:
