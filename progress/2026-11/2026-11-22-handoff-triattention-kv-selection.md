@@ -7,3 +7,7 @@ Row lsa-cpu-sparse-e2e-20261121-r2 ended rc=75 at deadline; auto-filed partial. 
 ## 03:13Z — Handle filed r3 partial and initiate r4 continuation
 
 LSA-CPU-SPARSE-E2E: r3 ended rc=75 at the grant window boundary and was automatically filed partial; no final RESULT.json. Checkpoint has five valid f16 gate pairs and two q8 pairs; the third q8 dense cell was interrupted. q0/q2 were intentionally idle contention controls, with valid q8 cell p50 1.13–1.29%; contamination alerts do not by themselves invalidate those cells under the registered p50 <=15% rule. Initiated r4 publication using the same checkpoint and registered three-quarter shape; smoke completion remains to be handled. Evidence: filing-done/lsa-cpu-sparse-e2e-20261122-r3.verdict.json; out/results.jsonl in /mnt/raid0/llm/tmp/lsa-cpu-sparse-e2e-20261121-r2.
+
+## 04:38Z — File completed LSA CPU sparse end-to-end quality-gated verdict
+
+LSA-CPU-SPARSE-E2E: filed r4 rc=0 DROP_QUALITY; f16 32k 5-pair geomean 1.09172 (95% CI 1.07211–1.11169), speed gate passed but greedy differs at token 56 of 64; KLD mean 0.001919, p99 0.008681. q8 descriptive geomean 1.34605 (3 pairs); no 64k measurement. RESULT.json SHA-256 3cf11edd4607947d59b01be56ecd03f0a3f54a09b0b4efda9603ba6849fa3edb. Contention alerts acknowledged: q0/q2 are registered idle controls and cells passed p50 gate.
