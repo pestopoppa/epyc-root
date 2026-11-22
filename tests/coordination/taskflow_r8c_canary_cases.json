@@ -1,0 +1,2227 @@
+[
+ {
+  "unit_id": "canary-nothink:INTAKE-VALIDATE-86",
+  "audited": "task",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "INTAKE-VALIDATE-86",
+   "id": "INTAKE-VALIDATE-86",
+   "text_sha": "7d492f20c44aa2e4",
+   "handoff": "handoffs/active/engineering-hygiene-backlog.md",
+   "line_hint": 2225,
+   "owner_slug": "engineering-hygiene-backlog",
+   "track": "repo-readiness-scorer",
+   "class": "non-inference",
+   "goal": "- [ ] **INTAKE-VALIDATE-86 \u2014 `bash scripts/validate/validate_intake.sh` reports 86 dangling cross-reference errors in `research/intake_index.yaml` (found 2026-11-09).** They pre-date and are unchanged by the class C correction verdicts (same 86 with and without that change). Resolve or explicitly decline each dangling reference; DONE WHEN the validator exits 0. [no-belief: tooling-repair]\n      \u00b7 section: 2026-11-05 operator-adhoc follow-ups (operator-adhoc-ops-20261105 wrap-up)",
+   "done_when": "the validator exits 0",
+   "test_cmds": [
+    "bash scripts/validate/validate_intake.sh"
+   ],
+   "inputs": [
+    "research/intake_index.yaml",
+    "scripts/validate/validate_intake.sh"
+   ],
+   "outputs": [
+    ".claude/skills/research-intake/scripts/tests/test_folded_resolve.py",
+    ".claude/skills/research-intake/scripts/validate_intake.py"
+   ],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**",
+    ".claude/settings*.json",
+    ".claude/hooks/**",
+    ".claude/agents/**"
+   ],
+   "repo": "epyc-root",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-root:.claude/skills/research-intake/scripts/validate_intake.py::_HandoffReferences",
+    "epyc-root:research/intake_index.yaml",
+    "epyc-root:.claude/skills/research-intake/scripts/tests/test_folded_resolve.py"
+   ],
+   "approach": "The 218 errors (was 86) are fold targets that later moved, not bad intake entries. In _HandoffReferences.resolve, when a redirected destination file is missing, relocate its basename with self._locate_handoff (frontier-lab-automation.md now lives in handoffs/completed/).\nmodel-architecture-readiness.md was renamed to handoffs/completed/model-architecture-readiness-completed-20261107.md: add a basename alias map with that one entry, used by resolve and _locate_handoff.\nWhen the redirected '## Track:' is missing in the destination (dynamic-stack-concurrency, within-role-placement-state-machine were split out of numa-placement-and-contention.md on 2026-11-10), fall back to the original source basename via _locate_handoff (handoffs/completed/dynamic-stack-concurrency.md exists).\nAdd a case for each fallback to test_folded_resolve.py. Do not edit intake_index.yaml entries unless one still fails after this; decline those with a note.",
+   "acceptance": "bash scripts/validate/validate_intake.sh",
+   "non_goals": [
+    "do not rewrite the 218 cross-refs in research/intake_index.yaml by hand",
+    "do not change fold-list-1a/1b.json or .folded.json targets",
+    "do not loosen other validator checks"
+   ],
+   "inputs_ext": [],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "auto",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/INTAKE-VALIDATE-86.md",
+   "kind": "code",
+   "r8c_packet_note": "r8c 2026-11-22: edit targets moved out of forbidden (.claude/** narrowed; targets named in outputs); read-only .folded.json dropped from where (non-goal keeps it unchanged)",
+   "stale_packet": "acceptance already passes on base (r8c audit: validate_intake.sh exits 0 in the lane)"
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 30
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell"
+   ],
+   "tools": [
+    "read",
+    "shell",
+    "shell",
+    "read",
+    "read",
+    "grep",
+    "read",
+    "shell",
+    "shell",
+    "shell",
+    "grep",
+    "grep",
+    "read",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "write",
+    "write",
+    "shell"
+   ],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "outside-pathspec",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 690fdf0ce985"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": false,
+     "why": "tmp_extract_refs.py"
+    }
+   ],
+   "evidence": {
+    "paths": [
+     "tmp_extract_refs.py"
+    ]
+   }
+  },
+  "r8c_classifier": "harness"
+ },
+ {
+  "unit_id": "canary-nothink:TU-GR-1",
+  "audited": null,
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "TU-GR-1",
+   "id": "TU-GR-1",
+   "text_sha": "7ed41a4520d860f6",
+   "handoff": "handoffs/active/benchmark-suites.md",
+   "line_hint": 2800,
+   "owner_slug": "benchmark-suites",
+   "track": "tool-use-eval-contract",
+   "class": "non-inference",
+   "goal": "- [ ] **TU-GR-1 \u2014 Grader isolation clause.** Add a test to the tool-use harness proving graders and reference artifacts are structurally unreachable from the agent (container mount or separate uid, outside any git worktree the agent can read); done when the test exists and fails on a deliberately reachable grader.\n  - [x] **TU-GR-1a \u2014 Specify the agent/worker/grader boundary and genuine denial acceptance.** \u2705 2026-10-06 \u2014 MAIN accepts [boundary specification](../../docs/design/tu-grader-isolation-boundary.md) after reopening 25 pinned source blobs. Existing scorer test-source visibility, OS-denial matrix, bounded exports and JEV/trace limits are explicit. No sandbox selected/activated, mocked tests executed, judge/denominator change or isolation claim; TU-GR-1/2a-iv enforcement remains open.",
+   "done_when": "the test exists and fails on a deliberately reachable grader",
+   "test_cmds": [],
+   "inputs": [],
+   "outputs": [],
+   "refs": [
+    {
+     "repo": "epyc-root",
+     "path": "docs/design/tu-grader-isolation-boundary.md"
+    }
+   ],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-orchestrator",
+   "tier": "sol",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-orchestrator:scripts/autopilot/evals/dtap/harness/runner.py::JudgeApplication",
+    "epyc-orchestrator:scripts/autopilot/evals/dtap/tests/conftest.py",
+    "epyc-orchestrator:scripts/autopilot/evals/dtap/judges",
+    "epyc-root:docs/design/tu-grader-isolation-boundary.md"
+   ],
+   "approach": "Add epyc-orchestrator scripts/autopilot/evals/dtap/harness/isolation.py with probe_grader_access(sentinel: Path, launcher: list[str]) -> dict. It launches a child via the launcher argv; the child tries open(sentinel) and os.listdir(sentinel.parent) and reports ok/errno, uid, and /proc/self/mountinfo hash as JSON on stdout. Add assert_grader_unreachable(result), which raises GraderReachable on any successful read.\nUse a tmp_path sentinel holding a random token, outside any git worktree.\nNew test test_grader_isolation.py has two cases. (1) test_reachable_grader_is_flagged: launcher=[] (plain subprocess), and assert_grader_unreachable must raise. This is the 'fails on a deliberately reachable grader' control. (2) test_isolated_launch_denies: launcher=['unshare','--user','--map-root-user','--mount','sh','-c','mount -t tmpfs none <dir> && exec \"$@\"','--'] must yield ENOENT/EACCES; if unshare is not permitted, pytest.skip with the errno. Never pass vacuously (bwrap is not installed on this host).",
+   "acceptance": "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122/orch-py.sh -m pytest -q scripts/autopilot/evals/dtap/tests/test_grader_isolation.py",
+   "non_goals": [
+    "no isolation or security claim from this test; it proves the check, not a production sandbox",
+    "do not wire the launcher into runner.py or change judges, cases.json or denominators",
+    "do not touch code_exec_scorer.py (eval-tower 2a-iv owns it)"
+   ],
+   "inputs_ext": [
+    {
+     "path": "scripts/autopilot/evals/dtap/harness/runner.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "scripts/autopilot/evals/dtap/tests/conftest.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "scripts/autopilot/evals/dtap/judges",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    }
+   ],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "owner",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/TU-GR-1.md",
+   "repo_from_box": "epyc-root",
+   "kind": "design",
+   "packet_fixes": [
+    "r8 2026-11-22: acceptance worktree-relative + orch-py.sh interpreter"
+   ]
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 14
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "glob",
+    "glob",
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "shell",
+    "write",
+    "write",
+    "shell",
+    "edit",
+    "shell",
+    "edit",
+    "shell",
+    "read",
+    "read"
+   ],
+   "errors": [],
+   "result": {
+    "claimed_done": true,
+    "summary": "Created harness/isolation.py (probe_grader_access, assert_grader_unreachable, GraderReachable) and tests/test_grader_isolation.py with two cases: test_reachable_grader_is_flagged (control \u2014 plain subprocess reads sentinel, assert_grader_unreachable raises) and test_isolated_launch_denies (unshare mount-ns denies access or pytest.skip).",
+    "paths": [
+     "scripts/autopilot/evals/dtap/harness/isolation.py",
+     "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py"
+    ]
+   }
+  },
+  "verify": {
+   "verdict": "verified",
+   "reason": "reviewer-done",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 52df680dbaeb"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "tests",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "done_when",
+     "ok": true,
+     "why": "unchecked: free-text done-when (reviewer judges it)"
+    },
+    {
+     "check": "reviewer",
+     "ok": true,
+     "why": "done: Test exists, passes, and proves the check works by failing on a reachable grader (test_reachable_grader_is_flagged)."
+    }
+   ]
+  },
+  "r8c_classifier": null
+ },
+ {
+  "unit_id": "canary-nothink:NUMA-DECOUPLE-1",
+  "audited": "task",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "NUMA-DECOUPLE-1",
+   "id": "NUMA-DECOUPLE-1",
+   "text_sha": "301913b8a35fbe93",
+   "handoff": "handoffs/active/numa-placement-and-contention.md",
+   "line_hint": 2452,
+   "owner_slug": "numa-placement-and-contention",
+   "track": "batched-decode-measurement",
+   "class": "non-inference",
+   "goal": "    - [ ] **NUMA-DECOUPLE-1** Implement the signed decouple: stop gating `decision_grade` on the trimmed window (research `scripts/benchmark/server_numa_np_sweep.py:1501`), surface `trimmed_window_empty` via `_apply_basis_caveat`, re-grade the 5 listed cells; banked numbers unchanged.",
+   "done_when": null,
+   "test_cmds": [],
+   "inputs": [
+    "scripts/benchmark/server_numa_np_sweep.py"
+   ],
+   "outputs": [],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-inference-research",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-inference-research:scripts/benchmark/server_numa_np_sweep.py::summarize_cell",
+    "epyc-inference-research:scripts/benchmark/server_numa_np_sweep.py::_apply_basis_caveat",
+    "epyc-inference-research:scripts/benchmark/tests/test_server_numa_np_sweep.py"
+   ],
+   "approach": "In summarize_cell (server_numa_np_sweep.py ~L1501), delete the 'empty_trimmed_window' entry from decision_grade_blockers. Add row key 'trimmed_window_empty': (not trimmed_window_ready) and a 'caveats' list carrying the same text. Leave trimmed_aggregate, tasks_per_hour_trimmed and TRIM_DEFINITION untouched.\nIn _apply_basis_caveat (~L2469), also demote status decision_grade -> decision_grade_caveated when any member cell has trimmed_window_empty, appending a reason.\nUpdate the two existing asserts in test_server_numa_np_sweep.py (~L1045, ~L1240) to the new blocker lists.\nNew test_decision_grade_decouple.py: copy the fixture pattern of test_empty_trimmed_window_demotes_decision_grade_cell and assert decision_grade True, trimmed_window_empty True, tasks_per_hour_trimmed == 0.0. Add one _apply_basis_caveat case.\nRe-grading the 5 banked cells is an offline re-summarize of the existing run dirs, done after the code lands; it is not part of acceptance.",
+   "acceptance": "python3 -m pytest -q scripts/benchmark/tests/test_decision_grade_decouple.py scripts/benchmark/tests/test_server_numa_np_sweep.py",
+   "non_goals": [
+    "do not amend TRIM_DEFINITION or change any banked throughput number",
+    "no new measurement runs or inference",
+    "do not touch capture-failure or cache-reset blockers"
+   ],
+   "inputs_ext": [
+    {
+     "path": "scripts/benchmark/server_numa_np_sweep.py",
+     "repo": "epyc-inference-research",
+     "rev": null
+    },
+    {
+     "path": "scripts/benchmark/server_numa_np_sweep.py",
+     "repo": "epyc-inference-research",
+     "rev": null
+    },
+    {
+     "path": "scripts/benchmark/tests/test_server_numa_np_sweep.py",
+     "repo": "epyc-inference-research",
+     "rev": null
+    }
+   ],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "owner",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/NUMA-DECOUPLE-1.md",
+   "kind": "code",
+   "packet_fixes": [
+    "r8 2026-11-22: acceptance worktree-relative"
+   ],
+   "stale_packet": "acceptance already passes on base (r8c audit: landed as a56df365b)"
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 30
+   },
+   "tool_errors": [
+    "write: The tool call was not executed because the output token limit (stop reason: length) was reached before you could complet",
+    "write: The tool call was not executed because the output token limit (stop reason: length) was reached before you could complet",
+    "write: The tool call was not executed because the output token limit (stop reason: length) was reached before you could complet",
+    "write: The tool call was not executed because the output token limit (stop reason: length) was reached before you could complet"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "read",
+    "grep",
+    "read",
+    "grep",
+    "read",
+    "grep",
+    "grep",
+    "read",
+    "grep",
+    "read",
+    "grep",
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "shell",
+    "read",
+    "grep",
+    "read",
+    "write",
+    "write",
+    "grep",
+    "read",
+    "write",
+    "write",
+    "write",
+    "shell",
+    "edit",
+    "shell",
+    "read",
+    "shell"
+   ],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "outside-pathspec",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 974cfb8c079b"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": false,
+     "why": "scripts/benchmark/tests/test_decision_grade_decouple.py"
+    }
+   ],
+   "evidence": {
+    "paths": [
+     "scripts/benchmark/tests/test_decision_grade_decouple.py"
+    ]
+   }
+  },
+  "r8c_classifier": "task"
+ },
+ {
+  "unit_id": "canary-nothink:LOOP-62",
+  "audited": null,
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "LOOP-62",
+   "id": "LOOP-62",
+   "text_sha": "30b14a416639d001",
+   "handoff": "handoffs/active/engineering-hygiene-backlog.md",
+   "line_hint": 1588,
+   "owner_slug": "engineering-hygiene-backlog",
+   "track": "refactoring-multirepo-2026-10",
+   "class": "non-inference",
+   "goal": "- [ ] **LOOP-62** RESUME-7: fix the separate mixed-alias cold-import cycle. Randomized 16 aliases fail when imported concurrently at orchestrator baseline `84f6f6f1` and O3; same-alias 24-thread races and canonical identity tests pass. Original mixed test is at orchestrator `5886e5ae:tests/unit/test_inference_lock_concurrent_import.py`; existing O3 tests do not establish cross-module cold-import safety.\n      \u00b7 class: non-inference\n      \u00b7 section: Resumed execution (2026-10-24, session 01a16fc3)",
+   "done_when": "the recreated test file exists with 16 aliases; the identity test passes, the mixed concurrent test is xfail, and the existing inference_lock tests still pass",
+   "test_cmds": [],
+   "inputs": [
+    "tests/unit/test_inference_lock_concurrent_import.py"
+   ],
+   "outputs": [
+    "tests/unit/test_compat_alias_cold_import.py"
+   ],
+   "refs": [
+    {
+     "repo": "epyc-orchestrator",
+     "path": "tests/unit/test_inference_lock_concurrent_import.py",
+     "rev": "5886e5ae"
+    }
+   ],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-orchestrator",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-orchestrator:src/__init__.py::_InferenceLockAliasFinder",
+    "epyc-orchestrator:src/dispatcher.py",
+    "epyc-orchestrator:tests/unit/test_inference_lock_concurrent_import.py@5886e5aeb273fd4a8aaf1447bb3d8bc163d5c082",
+    "epyc-orchestrator:tests/unit/test_inference_lock_concurrent_import.py"
+   ],
+   "approach": "RE-SCOPED r8 2026-11-22 (packet-only calibration: the full fix is not doable under the non-goals; a real target-level import cycle through the src.dispatcher alias remains). Scope = reproducer only. Recreate tests/unit/test_compat_alias_cold_import.py from 5886e5ae:tests/unit/test_inference_lock_concurrent_import.py (git show), keeping _COMPAT_ALIASES exactly as the source has it (16 entries; the earlier '21' was wrong), test_compat_alias_is_the_unrenamed_target_module, and test_all_compat_aliases_concurrent_first_import_is_safe marked @pytest.mark.xfail(strict=False, reason='LOOP-62: mixed-alias cold-import cycle via src.dispatcher, open'). Do NOT edit src/ in this task.",
+   "acceptance": "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122/orch-py.sh -m pytest -q tests/unit/test_compat_alias_cold_import.py tests/unit/test_inference_lock_concurrent_import.py",
+   "non_goals": [
+    "do not rename or move any target module under src/runtime, src/orchestration, src/inference or src/registry",
+    "do not edit callers to drop the old alias imports",
+    "do not reduce the stress parameters (24 threads, 20 subprocesses) to make it pass",
+    "do not edit src/__init__.py or any shim in this re-scoped task (the finder rework is a separate design decision)"
+   ],
+   "inputs_ext": [
+    {
+     "path": "src/__init__.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "src/dispatcher.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "tests/unit/test_inference_lock_concurrent_import.py",
+     "repo": "epyc-orchestrator",
+     "rev": "5886e5aeb273fd4a8aaf1447bb3d8bc163d5c082"
+    },
+    {
+     "path": "tests/unit/test_inference_lock_concurrent_import.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    }
+   ],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "owner",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/LOOP-62.md",
+   "kind": "code",
+   "packet_fixes": [
+    "r8 2026-11-22: acceptance worktree-relative + orch-py.sh interpreter",
+    "r8 2026-11-22: LOOP-62 re-scoped to reproducer-only (16 aliases, xfail mixed test, no src edits)"
+   ]
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 19
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "read",
+    "glob",
+    "grep",
+    "glob",
+    "write",
+    "shell",
+    "grep",
+    "read",
+    "glob",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "read",
+    "read",
+    "edit",
+    "shell",
+    "read"
+   ],
+   "errors": [],
+   "result": {
+    "claimed_done": true,
+    "summary": "Created tests/unit/test_compat_alias_cold_import.py with 16 aliases, identity test passes (16 params), mixed concurrent test xfail (LOOP-62), existing inference_lock tests pass",
+    "paths": [
+     "tests/unit/test_compat_alias_cold_import.py"
+    ]
+   }
+  },
+  "verify": {
+   "verdict": "verified",
+   "reason": "reviewer-done",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 52df680dbaeb"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "tests",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "done_when",
+     "ok": true,
+     "why": "unchecked: free-text done-when (reviewer judges it)"
+    },
+    {
+     "check": "reviewer",
+     "ok": true,
+     "why": "done: Diff creates the test file with 16 aliases, marks mixed import as xfail, and acceptance test passed (18 passed, 1 xfailed)."
+    }
+   ]
+  },
+  "r8c_classifier": null
+ },
+ {
+  "unit_id": "canary-nothink:NOFOLD-1",
+  "audited": null,
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "NOFOLD-1",
+   "id": "NOFOLD-1",
+   "text_sha": "3f033531d18aa7b3",
+   "handoff": "handoffs/active/cpu-decode-roofline-program.md",
+   "line_hint": 152,
+   "owner_slug": "cpu-decode-roofline-program",
+   "track": "cpu-decode-roofline-program",
+   "class": "non-inference",
+   "goal": "- [ ] **\u2605\u2605 NOFOLD-1 \u2014 `feature/tree-draft-v6` MUST NOT FOLD. Record the no-fold list where the fold checklist reads it.** Add to `docs/reference/kernel-manifests/README.md` (presence gates) a NO-FOLD section: (a) `feature/tree-draft-v6` must not fold \u2014 the champion carries a later contradicting decision; (b) `inf70/sync17-fix2` @ 2516c9807 and `inf70/retest1-fix1` must not fold as-is \u2014 `GGML_SCALE_SPLIT` and `GGML_SOLO_YIELD_ROWCOL` default ON are the -2.136% regression and must be flipped OFF first; retest1-fix1 is a measurement instrument, not a lever. Done when the kernel-promotion skill's fold step cites that section.\n      \u00b7 section: Tasks filed from the 2026-09-08 findings",
+   "done_when": "the kernel-promotion skill's fold step cites that section",
+   "test_cmds": [],
+   "inputs": [
+    ".claude/skills/kernel-promotion/",
+    "docs/reference/kernel-manifests/README.md"
+   ],
+   "outputs": [],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-root",
+   "tier": "luna",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-root:docs/reference/kernel-manifests/README.md",
+    "epyc-root:.claude/skills/kernel-promotion/SKILL.md",
+    "epyc-root:docs/reference/kernel-manifests/llama-v11-manifest.md"
+   ],
+   "approach": "In docs/reference/kernel-manifests/README.md, add a section '## NO-FOLD list' directly after '## Rules (operator directive 2026-10-20)' (before the 'Production trees stay frozen' line is fine) with two bullets copied from the box:\n(a) feature/tree-draft-v6 must not fold, because the champion carries a later contradicting decision;\n(b) inf70/sync17-fix2 @ 2516c9807 and inf70/retest1-fix1 must not fold as-is: GGML_SCALE_SPLIT and GGML_SOLO_YIELD_ROWCOL default ON is the -2.136% regression, so flip both OFF first; retest1-fix1 is a measurement instrument, not a lever.\nIn .claude/skills/kernel-promotion/SKILL.md, in the 'Presence gates first' paragraph (~L196-199), add one sentence: no branch on the NO-FOLD list may enter the candidate, linking ../../../docs/reference/kernel-manifests/README.md#no-fold-list.",
+   "acceptance": "grep -q '^## NO-FOLD list' docs/reference/kernel-manifests/README.md && grep -q 'GGML_SOLO_YIELD_ROWCOL' docs/reference/kernel-manifests/README.md && grep -q 'feature/tree-draft-v6' docs/reference/kernel-manifests/README.md && grep -q 'kernel-manifests/README.md#no-fold-list' .claude/skills/kernel-promotion/SKILL.md",
+   "non_goals": [
+    "do not touch any kernel branch, build or the frozen llama.cpp tree",
+    "do not edit manifest table rows in llama-v11-manifest.md",
+    "do not reword other promotion steps"
+   ],
+   "inputs_ext": [],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "auto",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/NOFOLD-1.md",
+   "kind": "docs"
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 12
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "edit",
+    "edit",
+    "shell",
+    "grep",
+    "grep",
+    "grep",
+    "grep",
+    "shell",
+    "edit",
+    "edit",
+    "shell",
+    "edit",
+    "edit",
+    "read"
+   ],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "verified",
+   "reason": "reviewer-done",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 329a31293e01"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "tests",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "done_when",
+     "ok": true,
+     "why": "unchecked: free-text done-when (reviewer judges it)"
+    },
+    {
+     "check": "reviewer",
+     "ok": true,
+     "why": "done: Diff adds the required NO-FOLD section to README.md and updates SKILL.md to cite it. Acceptance grep checks pass."
+    }
+   ]
+  },
+  "r8c_classifier": null
+ },
+ {
+  "unit_id": "canary-nothink:WS4-WAKE-IMPERATIVE",
+  "audited": "model-limitation",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "WS4-WAKE-IMPERATIVE",
+   "id": "WS4-WAKE-IMPERATIVE",
+   "text_sha": "981cc458be2d1514",
+   "handoff": "handoffs/active/churn-pipeline.md",
+   "line_hint": 236,
+   "owner_slug": "churn-pipeline",
+   "track": null,
+   "class": "non-inference",
+   "goal": "- [ ] **WS4-WAKE-IMPERATIVE** [non-inference] WS-4 caveat: a woken session ignores a wake whose message has no imperative; make dispatcher wake messages and bus nudges always carry an imperative line.\n      \u00b7 done when: a test shows every wake/nudge builder in handoff_sessions.py and session_bus emits an imperative line, and a live woken session acts on one\n      \u00b7 gate: none\n      \u00b7 owner: pipeline-mgmt",
+   "done_when": "a test shows every wake/nudge builder in handoff_sessions.py and session_bus emits an imperative line, and a live woken session acts on one",
+   "test_cmds": [],
+   "inputs": [],
+   "outputs": [],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-root",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-root:scripts/coordination/handoff_sessions.py::end_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::idle_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::continue_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::transfer_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::awaiting_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::proposals_prompt",
+    "epyc-root:scripts/coordination/tmux_adapter.py::cmd_nudge",
+    "epyc-root:scripts/coordination/tests/test_handoff_sessions_turn_end.py"
+   ],
+   "approach": "Add IMPERATIVE_RE = r'(?m)^(Do|Run|Take|Read|Resolve|Act|File|Publish|Wrap)\\b' and ensure_imperative(text, line) -> str in handoff_sessions.py. It returns text unchanged if IMPERATIVE_RE matches; otherwise it inserts line as the 2nd line, right after the '[VERSION]' header.\nWrap the return of the 6 builders (end/idle/continue/transfer/awaiting/proposals_prompt) with it. The default line is 'Do the next task in your handoff now; do not wait for further instructions.'\nIn tmux_adapter.cmd_nudge, pass the typed text through the same helper (import it) before typing.\nNew test test_wake_imperative.py: parametrize the 6 builders with a tmp flags dir and a minimal e dict, using the fixture pattern in test_handoff_sessions_turn_end.py. Assert IMPERATIVE_RE matches each output and that a text with no imperative gets one. The 'live woken session acts' half of done-when is a manual check outside this acceptance.",
+   "acceptance": "python3 -m pytest -q scripts/coordination/tests/test_wake_imperative.py",
+   "non_goals": [
+    "do not reword existing prompt bodies beyond inserting the imperative line",
+    "do not change alert_wake rate limiting or dispatch logic",
+    "do not send real tmux keystrokes in tests"
+   ],
+   "inputs_ext": [],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "owner",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/WS4-WAKE-IMPERATIVE.md",
+   "kind": "code"
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 30
+   },
+   "tool_errors": [
+    "edit: Could not find oldString in /mnt/raid0/llm/tf/604e/scripts/coordination/handoff_sessions.py. It must match exactly, incl"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "read",
+    "grep",
+    "read",
+    "read",
+    "grep",
+    "grep",
+    "grep",
+    "glob",
+    "grep",
+    "read",
+    "edit",
+    "edit",
+    "read",
+    "read",
+    "edit",
+    "read",
+    "edit",
+    "edit",
+    "read",
+    "read",
+    "edit",
+    "grep",
+    "read",
+    "edit",
+    "read",
+    "read",
+    "edit",
+    "read",
+    "edit",
+    "edit",
+    "read",
+    "read"
+   ],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "tests-fail",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 329a31293e01"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "tests",
+     "ok": false,
+     "why": "python3 -m pytest -q scripts/coordination/tests/test_wake_imperative.py rc=4"
+    }
+   ],
+   "evidence": {
+    "paths": [
+     "scripts/coordination/handoff_sessions.py",
+     "scripts/coordination/tmux_adapter.py"
+    ]
+   }
+  },
+  "r8c_classifier": "harness"
+ },
+ {
+  "unit_id": "canary-nothink:MM-5",
+  "audited": "model-limitation",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "MM-5",
+   "id": "MM-5",
+   "text_sha": "1b785876f77d2df9",
+   "handoff": "handoffs/active/speech-and-multimodal.md",
+   "line_hint": 1144,
+   "owner_slug": "speech-and-multimodal",
+   "track": "multimodal-pipeline",
+   "class": "non-inference",
+   "goal": "- [ ] **MM-5 \u2014 Dynamic-resolution normalisation for our own VL path (independent of the above).**\n  **Verified gap**: `src/vision/analyzers/vl_describe.py:163` base64-encodes the raw file bytes with\n  **no resize at all** (`base64.b64encode(image_path.read_bytes())`; zero resize/thumbnail call sites\n  in the module). The only resize we have is a max-side clamp on a *different* path. A large screenshot\n  therefore consumes an unbounded number of vision tokens, and two runs on differently-sized copies of\n  the same image are not comparable. **Gate this on a zero-inference prompt-token probe** \u2014 measure\n  tokens-in as a function of input pixels first, before spending an MMMU-class evaluation window on a\n  normalisation whose magnitude we have not measured.\n      \u00b7 section: 2026-08-10 \u2014 Vendor MM plugin suite: repoint at our own endpoint (research-intake Stage-3)",
+   "done_when": null,
+   "test_cmds": [],
+   "inputs": [
+    "src/vision/analyzers/vl_describe.py"
+   ],
+   "outputs": [],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-orchestrator",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-orchestrator:src/vision/analyzers/vl_describe.py::VLDescribeAnalyzer",
+    "epyc-orchestrator:src/vision/analyzers/vl_describe.py::VLDescribeAnalyzer._analyze_with_server",
+    "epyc-orchestrator:src/vision/pipeline.py::create_thumbnail"
+   ],
+   "approach": "Add a max_pixels: int | None = None kwarg to VLDescribeAnalyzer.__init__ (env ORCHESTRATOR_VL_MAX_PIXELS, default None = today's behaviour, byte-identical).\nAdd a module function encode_image_for_vl(path, max_pixels) -> (b64, mime, (w,h)). With max_pixels set and w*h > max_pixels, PIL-resize keeping aspect ratio, round each side down to a multiple of 28 (the Qwen-VL patch merge), and re-encode PNG. Otherwise return the raw bytes.\nUse it at _analyze_with_server L178 in place of the raw b64encode.\nAlso add vision_token_estimate(w, h, patch=28) and log it in _record_server_call. This is the zero-inference tokens-vs-pixels probe the box gates on.\nNew test: a 4000x3000 PIL image gets resized to <= max_pixels with sides % 28 == 0; max_pixels=None returns base64 of the original bytes exactly; estimate(896,896) == 1024.",
+   "acceptance": "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122/orch-py.sh -m pytest -q tests/unit/test_vl_describe_resize.py",
+   "non_goals": [
+    "do not turn normalisation on by default (that waits on the probe result)",
+    "no MMMU or other eval run, no server launch",
+    "do not touch the CLI fallback path or VLOCR/VLStructured prompts"
+   ],
+   "inputs_ext": [
+    {
+     "path": "src/vision/analyzers/vl_describe.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "src/vision/analyzers/vl_describe.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "src/vision/pipeline.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    }
+   ],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "pending",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/MM-5.md",
+   "kind": "code",
+   "packet_fixes": [
+    "r8 2026-11-22: acceptance worktree-relative + orch-py.sh interpreter"
+   ]
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 30
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell"
+   ],
+   "tools": [
+    "read",
+    "glob",
+    "read",
+    "glob",
+    "glob",
+    "glob",
+    "glob",
+    "read",
+    "edit",
+    "edit",
+    "edit",
+    "edit",
+    "grep",
+    "read",
+    "read",
+    "edit",
+    "edit",
+    "write",
+    "edit",
+    "edit",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "edit",
+    "edit",
+    "edit",
+    "shell",
+    "shell",
+    "shell"
+   ],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "tests-fail",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 52df680dbaeb"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "tests",
+     "ok": false,
+     "why": "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122/orch-py.sh -m pytest -q tests/unit/test_vl_describe_resize.py rc=1"
+    }
+   ],
+   "evidence": {
+    "paths": [
+     "src/vision/analyzers/vl_describe.py",
+     "tests/unit/test_vl_describe_resize.py"
+    ]
+   }
+  },
+  "r8c_classifier": "model-limitation"
+ },
+ {
+  "unit_id": "canary-think:INTAKE-VALIDATE-86",
+  "audited": "task",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "INTAKE-VALIDATE-86",
+   "id": "INTAKE-VALIDATE-86",
+   "text_sha": "7d492f20c44aa2e4",
+   "handoff": "handoffs/active/engineering-hygiene-backlog.md",
+   "line_hint": 2225,
+   "owner_slug": "engineering-hygiene-backlog",
+   "track": "repo-readiness-scorer",
+   "class": "non-inference",
+   "goal": "- [ ] **INTAKE-VALIDATE-86 \u2014 `bash scripts/validate/validate_intake.sh` reports 86 dangling cross-reference errors in `research/intake_index.yaml` (found 2026-11-09).** They pre-date and are unchanged by the class C correction verdicts (same 86 with and without that change). Resolve or explicitly decline each dangling reference; DONE WHEN the validator exits 0. [no-belief: tooling-repair]\n      \u00b7 section: 2026-11-05 operator-adhoc follow-ups (operator-adhoc-ops-20261105 wrap-up)",
+   "done_when": "the validator exits 0",
+   "test_cmds": [
+    "bash scripts/validate/validate_intake.sh"
+   ],
+   "inputs": [
+    "research/intake_index.yaml",
+    "scripts/validate/validate_intake.sh"
+   ],
+   "outputs": [
+    ".claude/skills/research-intake/scripts/tests/test_folded_resolve.py",
+    ".claude/skills/research-intake/scripts/validate_intake.py"
+   ],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**",
+    ".claude/settings*.json",
+    ".claude/hooks/**",
+    ".claude/agents/**"
+   ],
+   "repo": "epyc-root",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-root:.claude/skills/research-intake/scripts/validate_intake.py::_HandoffReferences",
+    "epyc-root:research/intake_index.yaml",
+    "epyc-root:.claude/skills/research-intake/scripts/tests/test_folded_resolve.py"
+   ],
+   "approach": "The 218 errors (was 86) are fold targets that later moved, not bad intake entries. In _HandoffReferences.resolve, when a redirected destination file is missing, relocate its basename with self._locate_handoff (frontier-lab-automation.md now lives in handoffs/completed/).\nmodel-architecture-readiness.md was renamed to handoffs/completed/model-architecture-readiness-completed-20261107.md: add a basename alias map with that one entry, used by resolve and _locate_handoff.\nWhen the redirected '## Track:' is missing in the destination (dynamic-stack-concurrency, within-role-placement-state-machine were split out of numa-placement-and-contention.md on 2026-11-10), fall back to the original source basename via _locate_handoff (handoffs/completed/dynamic-stack-concurrency.md exists).\nAdd a case for each fallback to test_folded_resolve.py. Do not edit intake_index.yaml entries unless one still fails after this; decline those with a note.",
+   "acceptance": "bash scripts/validate/validate_intake.sh",
+   "non_goals": [
+    "do not rewrite the 218 cross-refs in research/intake_index.yaml by hand",
+    "do not change fold-list-1a/1b.json or .folded.json targets",
+    "do not loosen other validator checks"
+   ],
+   "inputs_ext": [],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "auto",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/INTAKE-VALIDATE-86.md",
+   "kind": "code",
+   "r8c_packet_note": "r8c 2026-11-22: edit targets moved out of forbidden (.claude/** narrowed; targets named in outputs); read-only .folded.json dropped from where (non-goal keeps it unchanged)",
+   "stale_packet": "acceptance already passes on base (r8c audit: validate_intake.sh exits 0 in the lane)"
+  },
+  "worker": {
+   "timed_out": true,
+   "usage": {
+    "steps": 24
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "grep",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "grep",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "grep",
+    "grep",
+    "glob",
+    "grep",
+    "grep",
+    "grep",
+    "read",
+    "grep",
+    "read",
+    "read",
+    "read",
+    "grep",
+    "grep",
+    "glob",
+    "read",
+    "read",
+    "read"
+   ],
+   "errors": [
+    "{\"type\": \"unknown\", \"message\": \"Transport: ECONNRESET: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()\"}"
+   ],
+   "result": null
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "no-change",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": false,
+     "why": "0 commit(s) over acf507de7d68"
+    }
+   ]
+  },
+  "r8c_classifier": "harness"
+ },
+ {
+  "unit_id": "canary-think:TU-GR-1",
+  "audited": "harness",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "TU-GR-1",
+   "id": "TU-GR-1",
+   "text_sha": "7ed41a4520d860f6",
+   "handoff": "handoffs/active/benchmark-suites.md",
+   "line_hint": 2800,
+   "owner_slug": "benchmark-suites",
+   "track": "tool-use-eval-contract",
+   "class": "non-inference",
+   "goal": "- [ ] **TU-GR-1 \u2014 Grader isolation clause.** Add a test to the tool-use harness proving graders and reference artifacts are structurally unreachable from the agent (container mount or separate uid, outside any git worktree the agent can read); done when the test exists and fails on a deliberately reachable grader.\n  - [x] **TU-GR-1a \u2014 Specify the agent/worker/grader boundary and genuine denial acceptance.** \u2705 2026-10-06 \u2014 MAIN accepts [boundary specification](../../docs/design/tu-grader-isolation-boundary.md) after reopening 25 pinned source blobs. Existing scorer test-source visibility, OS-denial matrix, bounded exports and JEV/trace limits are explicit. No sandbox selected/activated, mocked tests executed, judge/denominator change or isolation claim; TU-GR-1/2a-iv enforcement remains open.",
+   "done_when": "the test exists and fails on a deliberately reachable grader",
+   "test_cmds": [],
+   "inputs": [],
+   "outputs": [],
+   "refs": [
+    {
+     "repo": "epyc-root",
+     "path": "docs/design/tu-grader-isolation-boundary.md"
+    }
+   ],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-orchestrator",
+   "tier": "sol",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-orchestrator:scripts/autopilot/evals/dtap/harness/runner.py::JudgeApplication",
+    "epyc-orchestrator:scripts/autopilot/evals/dtap/tests/conftest.py",
+    "epyc-orchestrator:scripts/autopilot/evals/dtap/judges",
+    "epyc-root:docs/design/tu-grader-isolation-boundary.md"
+   ],
+   "approach": "Add epyc-orchestrator scripts/autopilot/evals/dtap/harness/isolation.py with probe_grader_access(sentinel: Path, launcher: list[str]) -> dict. It launches a child via the launcher argv; the child tries open(sentinel) and os.listdir(sentinel.parent) and reports ok/errno, uid, and /proc/self/mountinfo hash as JSON on stdout. Add assert_grader_unreachable(result), which raises GraderReachable on any successful read.\nUse a tmp_path sentinel holding a random token, outside any git worktree.\nNew test test_grader_isolation.py has two cases. (1) test_reachable_grader_is_flagged: launcher=[] (plain subprocess), and assert_grader_unreachable must raise. This is the 'fails on a deliberately reachable grader' control. (2) test_isolated_launch_denies: launcher=['unshare','--user','--map-root-user','--mount','sh','-c','mount -t tmpfs none <dir> && exec \"$@\"','--'] must yield ENOENT/EACCES; if unshare is not permitted, pytest.skip with the errno. Never pass vacuously (bwrap is not installed on this host).",
+   "acceptance": "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122/orch-py.sh -m pytest -q scripts/autopilot/evals/dtap/tests/test_grader_isolation.py",
+   "non_goals": [
+    "no isolation or security claim from this test; it proves the check, not a production sandbox",
+    "do not wire the launcher into runner.py or change judges, cases.json or denominators",
+    "do not touch code_exec_scorer.py (eval-tower 2a-iv owns it)"
+   ],
+   "inputs_ext": [
+    {
+     "path": "scripts/autopilot/evals/dtap/harness/runner.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "scripts/autopilot/evals/dtap/tests/conftest.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "scripts/autopilot/evals/dtap/judges",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    }
+   ],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "owner",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/TU-GR-1.md",
+   "repo_from_box": "epyc-root",
+   "kind": "design",
+   "packet_fixes": [
+    "r8 2026-11-22: acceptance worktree-relative + orch-py.sh interpreter"
+   ]
+  },
+  "worker": {
+   "timed_out": null,
+   "usage": {
+    "steps": 0
+   },
+   "tool_errors": [],
+   "tools": [],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "error",
+   "reason": "lane",
+   "checks": []
+  },
+  "r8c_classifier": "harness"
+ },
+ {
+  "unit_id": "canary-think:NUMA-DECOUPLE-1",
+  "audited": "task",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "NUMA-DECOUPLE-1",
+   "id": "NUMA-DECOUPLE-1",
+   "text_sha": "301913b8a35fbe93",
+   "handoff": "handoffs/active/numa-placement-and-contention.md",
+   "line_hint": 2452,
+   "owner_slug": "numa-placement-and-contention",
+   "track": "batched-decode-measurement",
+   "class": "non-inference",
+   "goal": "    - [ ] **NUMA-DECOUPLE-1** Implement the signed decouple: stop gating `decision_grade` on the trimmed window (research `scripts/benchmark/server_numa_np_sweep.py:1501`), surface `trimmed_window_empty` via `_apply_basis_caveat`, re-grade the 5 listed cells; banked numbers unchanged.",
+   "done_when": null,
+   "test_cmds": [],
+   "inputs": [
+    "scripts/benchmark/server_numa_np_sweep.py"
+   ],
+   "outputs": [],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-inference-research",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-inference-research:scripts/benchmark/server_numa_np_sweep.py::summarize_cell",
+    "epyc-inference-research:scripts/benchmark/server_numa_np_sweep.py::_apply_basis_caveat",
+    "epyc-inference-research:scripts/benchmark/tests/test_server_numa_np_sweep.py"
+   ],
+   "approach": "In summarize_cell (server_numa_np_sweep.py ~L1501), delete the 'empty_trimmed_window' entry from decision_grade_blockers. Add row key 'trimmed_window_empty': (not trimmed_window_ready) and a 'caveats' list carrying the same text. Leave trimmed_aggregate, tasks_per_hour_trimmed and TRIM_DEFINITION untouched.\nIn _apply_basis_caveat (~L2469), also demote status decision_grade -> decision_grade_caveated when any member cell has trimmed_window_empty, appending a reason.\nUpdate the two existing asserts in test_server_numa_np_sweep.py (~L1045, ~L1240) to the new blocker lists.\nNew test_decision_grade_decouple.py: copy the fixture pattern of test_empty_trimmed_window_demotes_decision_grade_cell and assert decision_grade True, trimmed_window_empty True, tasks_per_hour_trimmed == 0.0. Add one _apply_basis_caveat case.\nRe-grading the 5 banked cells is an offline re-summarize of the existing run dirs, done after the code lands; it is not part of acceptance.",
+   "acceptance": "python3 -m pytest -q scripts/benchmark/tests/test_decision_grade_decouple.py scripts/benchmark/tests/test_server_numa_np_sweep.py",
+   "non_goals": [
+    "do not amend TRIM_DEFINITION or change any banked throughput number",
+    "no new measurement runs or inference",
+    "do not touch capture-failure or cache-reset blockers"
+   ],
+   "inputs_ext": [
+    {
+     "path": "scripts/benchmark/server_numa_np_sweep.py",
+     "repo": "epyc-inference-research",
+     "rev": null
+    },
+    {
+     "path": "scripts/benchmark/server_numa_np_sweep.py",
+     "repo": "epyc-inference-research",
+     "rev": null
+    },
+    {
+     "path": "scripts/benchmark/tests/test_server_numa_np_sweep.py",
+     "repo": "epyc-inference-research",
+     "rev": null
+    }
+   ],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "owner",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/NUMA-DECOUPLE-1.md",
+   "kind": "code",
+   "packet_fixes": [
+    "r8 2026-11-22: acceptance worktree-relative"
+   ],
+   "stale_packet": "acceptance already passes on base (r8c audit: landed as a56df365b)"
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 30
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "grep",
+    "read",
+    "shell",
+    "grep",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell"
+   ],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "no-change",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": false,
+     "why": "0 commit(s) over 974cfb8c079b"
+    }
+   ]
+  },
+  "r8c_classifier": "model-limitation"
+ },
+ {
+  "unit_id": "canary-think:LOOP-62",
+  "audited": "model-limitation",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "LOOP-62",
+   "id": "LOOP-62",
+   "text_sha": "30b14a416639d001",
+   "handoff": "handoffs/active/engineering-hygiene-backlog.md",
+   "line_hint": 1588,
+   "owner_slug": "engineering-hygiene-backlog",
+   "track": "refactoring-multirepo-2026-10",
+   "class": "non-inference",
+   "goal": "- [ ] **LOOP-62** RESUME-7: fix the separate mixed-alias cold-import cycle. Randomized 16 aliases fail when imported concurrently at orchestrator baseline `84f6f6f1` and O3; same-alias 24-thread races and canonical identity tests pass. Original mixed test is at orchestrator `5886e5ae:tests/unit/test_inference_lock_concurrent_import.py`; existing O3 tests do not establish cross-module cold-import safety.\n      \u00b7 class: non-inference\n      \u00b7 section: Resumed execution (2026-10-24, session 01a16fc3)",
+   "done_when": "the recreated test file exists with 16 aliases; the identity test passes, the mixed concurrent test is xfail, and the existing inference_lock tests still pass",
+   "test_cmds": [],
+   "inputs": [
+    "tests/unit/test_inference_lock_concurrent_import.py"
+   ],
+   "outputs": [
+    "tests/unit/test_compat_alias_cold_import.py"
+   ],
+   "refs": [
+    {
+     "repo": "epyc-orchestrator",
+     "path": "tests/unit/test_inference_lock_concurrent_import.py",
+     "rev": "5886e5ae"
+    }
+   ],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-orchestrator",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-orchestrator:src/__init__.py::_InferenceLockAliasFinder",
+    "epyc-orchestrator:src/dispatcher.py",
+    "epyc-orchestrator:tests/unit/test_inference_lock_concurrent_import.py@5886e5aeb273fd4a8aaf1447bb3d8bc163d5c082",
+    "epyc-orchestrator:tests/unit/test_inference_lock_concurrent_import.py"
+   ],
+   "approach": "RE-SCOPED r8 2026-11-22 (packet-only calibration: the full fix is not doable under the non-goals; a real target-level import cycle through the src.dispatcher alias remains). Scope = reproducer only. Recreate tests/unit/test_compat_alias_cold_import.py from 5886e5ae:tests/unit/test_inference_lock_concurrent_import.py (git show), keeping _COMPAT_ALIASES exactly as the source has it (16 entries; the earlier '21' was wrong), test_compat_alias_is_the_unrenamed_target_module, and test_all_compat_aliases_concurrent_first_import_is_safe marked @pytest.mark.xfail(strict=False, reason='LOOP-62: mixed-alias cold-import cycle via src.dispatcher, open'). Do NOT edit src/ in this task.",
+   "acceptance": "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122/orch-py.sh -m pytest -q tests/unit/test_compat_alias_cold_import.py tests/unit/test_inference_lock_concurrent_import.py",
+   "non_goals": [
+    "do not rename or move any target module under src/runtime, src/orchestration, src/inference or src/registry",
+    "do not edit callers to drop the old alias imports",
+    "do not reduce the stress parameters (24 threads, 20 subprocesses) to make it pass",
+    "do not edit src/__init__.py or any shim in this re-scoped task (the finder rework is a separate design decision)"
+   ],
+   "inputs_ext": [
+    {
+     "path": "src/__init__.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "src/dispatcher.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "tests/unit/test_inference_lock_concurrent_import.py",
+     "repo": "epyc-orchestrator",
+     "rev": "5886e5aeb273fd4a8aaf1447bb3d8bc163d5c082"
+    },
+    {
+     "path": "tests/unit/test_inference_lock_concurrent_import.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    }
+   ],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "owner",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/LOOP-62.md",
+   "kind": "code",
+   "packet_fixes": [
+    "r8 2026-11-22: acceptance worktree-relative + orch-py.sh interpreter",
+    "r8 2026-11-22: LOOP-62 re-scoped to reproducer-only (16 aliases, xfail mixed test, no src edits)"
+   ]
+  },
+  "worker": {
+   "timed_out": true,
+   "usage": {
+    "steps": 13
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell",
+    "shell: Permission denied: shell",
+    "shell: Permission denied: external_directory",
+    "read: File not found: /mnt/raid0/llm/tf/3144/src/runtime/dispatcher.py"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "write",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "shell",
+    "read",
+    "read",
+    "read",
+    "shell",
+    "shell",
+    "read",
+    "read",
+    "glob",
+    "read",
+    "read",
+    "shell"
+   ],
+   "errors": [
+    "{\"type\": \"unknown\", \"message\": \"Transport: ECONNRESET: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()\"}"
+   ],
+   "result": null
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "tests-fail",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 52df680dbaeb"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "tests",
+     "ok": false,
+     "why": "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122/orch-py.sh -m pytest -q tests/unit/test_compat_alias_cold_import.py tests/unit/test_inference_lock_concurrent_import.py rc=1"
+    }
+   ],
+   "evidence": {
+    "paths": [
+     "tests/unit/test_compat_alias_cold_import.py"
+    ]
+   }
+  },
+  "r8c_classifier": "harness"
+ },
+ {
+  "unit_id": "canary-think:NOFOLD-1",
+  "audited": "harness",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "NOFOLD-1",
+   "id": "NOFOLD-1",
+   "text_sha": "3f033531d18aa7b3",
+   "handoff": "handoffs/active/cpu-decode-roofline-program.md",
+   "line_hint": 152,
+   "owner_slug": "cpu-decode-roofline-program",
+   "track": "cpu-decode-roofline-program",
+   "class": "non-inference",
+   "goal": "- [ ] **\u2605\u2605 NOFOLD-1 \u2014 `feature/tree-draft-v6` MUST NOT FOLD. Record the no-fold list where the fold checklist reads it.** Add to `docs/reference/kernel-manifests/README.md` (presence gates) a NO-FOLD section: (a) `feature/tree-draft-v6` must not fold \u2014 the champion carries a later contradicting decision; (b) `inf70/sync17-fix2` @ 2516c9807 and `inf70/retest1-fix1` must not fold as-is \u2014 `GGML_SCALE_SPLIT` and `GGML_SOLO_YIELD_ROWCOL` default ON are the -2.136% regression and must be flipped OFF first; retest1-fix1 is a measurement instrument, not a lever. Done when the kernel-promotion skill's fold step cites that section.\n      \u00b7 section: Tasks filed from the 2026-09-08 findings",
+   "done_when": "the kernel-promotion skill's fold step cites that section",
+   "test_cmds": [],
+   "inputs": [
+    ".claude/skills/kernel-promotion/",
+    "docs/reference/kernel-manifests/README.md"
+   ],
+   "outputs": [],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-root",
+   "tier": "luna",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-root:docs/reference/kernel-manifests/README.md",
+    "epyc-root:.claude/skills/kernel-promotion/SKILL.md",
+    "epyc-root:docs/reference/kernel-manifests/llama-v11-manifest.md"
+   ],
+   "approach": "In docs/reference/kernel-manifests/README.md, add a section '## NO-FOLD list' directly after '## Rules (operator directive 2026-10-20)' (before the 'Production trees stay frozen' line is fine) with two bullets copied from the box:\n(a) feature/tree-draft-v6 must not fold, because the champion carries a later contradicting decision;\n(b) inf70/sync17-fix2 @ 2516c9807 and inf70/retest1-fix1 must not fold as-is: GGML_SCALE_SPLIT and GGML_SOLO_YIELD_ROWCOL default ON is the -2.136% regression, so flip both OFF first; retest1-fix1 is a measurement instrument, not a lever.\nIn .claude/skills/kernel-promotion/SKILL.md, in the 'Presence gates first' paragraph (~L196-199), add one sentence: no branch on the NO-FOLD list may enter the candidate, linking ../../../docs/reference/kernel-manifests/README.md#no-fold-list.",
+   "acceptance": "grep -q '^## NO-FOLD list' docs/reference/kernel-manifests/README.md && grep -q 'GGML_SOLO_YIELD_ROWCOL' docs/reference/kernel-manifests/README.md && grep -q 'feature/tree-draft-v6' docs/reference/kernel-manifests/README.md && grep -q 'kernel-manifests/README.md#no-fold-list' .claude/skills/kernel-promotion/SKILL.md",
+   "non_goals": [
+    "do not touch any kernel branch, build or the frozen llama.cpp tree",
+    "do not edit manifest table rows in llama-v11-manifest.md",
+    "do not reword other promotion steps"
+   ],
+   "inputs_ext": [],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "auto",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/NOFOLD-1.md",
+   "kind": "docs"
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 6
+   },
+   "tool_errors": [
+    "shell: Permission denied: shell",
+    "opencode_worktree_remove: Unable to remove worktree /mnt/raid0/llm/tf/0631: it has modified or untracked files."
+   ],
+   "tools": [
+    "read",
+    "read",
+    "edit",
+    "edit",
+    "shell",
+    "grep",
+    "grep",
+    "grep",
+    "grep",
+    "opencode_worktree_remove"
+   ],
+   "errors": [],
+   "result": {
+    "claimed_done": true,
+    "summary": "Added NO-FOLD list section to README.md and linked it in kernel-promotion SKILL.md presence gates paragraph.",
+    "paths": [
+     "docs/reference/kernel-manifests/README.md",
+     ".claude/skills/kernel-promotion/SKILL.md"
+    ]
+   }
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "reviewer-done|not_done|drift",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 9fc972db8c89"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "tests",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "done_when",
+     "ok": true,
+     "why": "unchecked: free-text done-when (reviewer judges it)"
+    },
+    {
+     "check": "reviewer",
+     "ok": false,
+     "why": "done|not_done|drift: <=150 chars"
+    }
+   ],
+   "evidence": {
+    "paths": [
+     ".claude/skills/kernel-promotion/SKILL.md",
+     "docs/reference/kernel-manifests/README.md"
+    ]
+   }
+  },
+  "r8c_classifier": "model-limitation"
+ },
+ {
+  "unit_id": "canary-think:WS4-WAKE-IMPERATIVE",
+  "audited": "harness",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "WS4-WAKE-IMPERATIVE",
+   "id": "WS4-WAKE-IMPERATIVE",
+   "text_sha": "981cc458be2d1514",
+   "handoff": "handoffs/active/churn-pipeline.md",
+   "line_hint": 236,
+   "owner_slug": "churn-pipeline",
+   "track": null,
+   "class": "non-inference",
+   "goal": "- [ ] **WS4-WAKE-IMPERATIVE** [non-inference] WS-4 caveat: a woken session ignores a wake whose message has no imperative; make dispatcher wake messages and bus nudges always carry an imperative line.\n      \u00b7 done when: a test shows every wake/nudge builder in handoff_sessions.py and session_bus emits an imperative line, and a live woken session acts on one\n      \u00b7 gate: none\n      \u00b7 owner: pipeline-mgmt",
+   "done_when": "a test shows every wake/nudge builder in handoff_sessions.py and session_bus emits an imperative line, and a live woken session acts on one",
+   "test_cmds": [],
+   "inputs": [],
+   "outputs": [],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-root",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-root:scripts/coordination/handoff_sessions.py::end_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::idle_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::continue_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::transfer_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::awaiting_prompt",
+    "epyc-root:scripts/coordination/handoff_sessions.py::proposals_prompt",
+    "epyc-root:scripts/coordination/tmux_adapter.py::cmd_nudge",
+    "epyc-root:scripts/coordination/tests/test_handoff_sessions_turn_end.py"
+   ],
+   "approach": "Add IMPERATIVE_RE = r'(?m)^(Do|Run|Take|Read|Resolve|Act|File|Publish|Wrap)\\b' and ensure_imperative(text, line) -> str in handoff_sessions.py. It returns text unchanged if IMPERATIVE_RE matches; otherwise it inserts line as the 2nd line, right after the '[VERSION]' header.\nWrap the return of the 6 builders (end/idle/continue/transfer/awaiting/proposals_prompt) with it. The default line is 'Do the next task in your handoff now; do not wait for further instructions.'\nIn tmux_adapter.cmd_nudge, pass the typed text through the same helper (import it) before typing.\nNew test test_wake_imperative.py: parametrize the 6 builders with a tmp flags dir and a minimal e dict, using the fixture pattern in test_handoff_sessions_turn_end.py. Assert IMPERATIVE_RE matches each output and that a text with no imperative gets one. The 'live woken session acts' half of done-when is a manual check outside this acceptance.",
+   "acceptance": "python3 -m pytest -q scripts/coordination/tests/test_wake_imperative.py",
+   "non_goals": [
+    "do not reword existing prompt bodies beyond inserting the imperative line",
+    "do not change alert_wake rate limiting or dispatch logic",
+    "do not send real tmux keystrokes in tests"
+   ],
+   "inputs_ext": [],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "owner",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/WS4-WAKE-IMPERATIVE.md",
+   "kind": "code"
+  },
+  "worker": {
+   "timed_out": false,
+   "usage": {
+    "steps": 30
+   },
+   "tool_errors": [
+    "edit: Could not find oldString in /mnt/raid0/llm/tf/7884/scripts/coordination/handoff_sessions.py. It must match exactly, incl"
+   ],
+   "tools": [
+    "read",
+    "read",
+    "read",
+    "grep",
+    "grep",
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "read",
+    "grep",
+    "edit",
+    "edit",
+    "read",
+    "edit",
+    "shell",
+    "edit",
+    "edit",
+    "edit",
+    "edit",
+    "edit",
+    "edit",
+    "read",
+    "edit",
+    "edit",
+    "grep",
+    "grep",
+    "read",
+    "read",
+    "write",
+    "edit",
+    "shell",
+    "shell",
+    "grep"
+   ],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "rejected",
+   "reason": "reviewer-done|not_done|drift",
+   "checks": [
+    {
+     "check": "commit",
+     "ok": true,
+     "why": "1 commit(s) over 9fc972db8c89"
+    },
+    {
+     "check": "nonempty",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "forbidden",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "pathspec",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "tests",
+     "ok": true,
+     "why": ""
+    },
+    {
+     "check": "done_when",
+     "ok": true,
+     "why": "unchecked: free-text done-when (reviewer judges it)"
+    },
+    {
+     "check": "reviewer",
+     "ok": false,
+     "why": "done|not_done|drift: <=150 chars"
+    }
+   ],
+   "evidence": {
+    "paths": [
+     "scripts/coordination/handoff_sessions.py",
+     "scripts/coordination/tests/test_wake_imperative.py",
+     "scripts/coordination/tmux_adapter.py"
+    ]
+   }
+  },
+  "r8c_classifier": "model-limitation"
+ },
+ {
+  "unit_id": "canary-think:MM-5",
+  "audited": "harness",
+  "task": {
+   "schema": "epyc.task.v1",
+   "key": "MM-5",
+   "id": "MM-5",
+   "text_sha": "1b785876f77d2df9",
+   "handoff": "handoffs/active/speech-and-multimodal.md",
+   "line_hint": 1144,
+   "owner_slug": "speech-and-multimodal",
+   "track": "multimodal-pipeline",
+   "class": "non-inference",
+   "goal": "- [ ] **MM-5 \u2014 Dynamic-resolution normalisation for our own VL path (independent of the above).**\n  **Verified gap**: `src/vision/analyzers/vl_describe.py:163` base64-encodes the raw file bytes with\n  **no resize at all** (`base64.b64encode(image_path.read_bytes())`; zero resize/thumbnail call sites\n  in the module). The only resize we have is a max-side clamp on a *different* path. A large screenshot\n  therefore consumes an unbounded number of vision tokens, and two runs on differently-sized copies of\n  the same image are not comparable. **Gate this on a zero-inference prompt-token probe** \u2014 measure\n  tokens-in as a function of input pixels first, before spending an MMMU-class evaluation window on a\n  normalisation whose magnitude we have not measured.\n      \u00b7 section: 2026-08-10 \u2014 Vendor MM plugin suite: repoint at our own endpoint (research-intake Stage-3)",
+   "done_when": null,
+   "test_cmds": [],
+   "inputs": [
+    "src/vision/analyzers/vl_describe.py"
+   ],
+   "outputs": [],
+   "refs": [],
+   "forbidden": [
+    "handoffs/**",
+    "agents/shared/**",
+    "CLAUDE.md",
+    "**/CLAUDE.md",
+    ".claude/**",
+    "coordination/session-bus/**",
+    "scripts/coordination/rowflow/**",
+    "scripts/coordination/keeper*",
+    "scripts/coordination/taskflow/**",
+    "scripts/hooks/**",
+    "artifacts/**",
+    "docs/reports/**",
+    "kernels/**",
+    "progress/**",
+    "MEASUREMENT.md",
+    "measurement/**",
+    ".git/**"
+   ],
+   "repo": "epyc-orchestrator",
+   "tier": "terra",
+   "budget": {
+    "turns": 30,
+    "tokens": 120000,
+    "wall_s": 600,
+    "excerpt_chars": 9000
+   },
+   "where": [
+    "epyc-orchestrator:src/vision/analyzers/vl_describe.py::VLDescribeAnalyzer",
+    "epyc-orchestrator:src/vision/analyzers/vl_describe.py::VLDescribeAnalyzer._analyze_with_server",
+    "epyc-orchestrator:src/vision/pipeline.py::create_thumbnail"
+   ],
+   "approach": "Add a max_pixels: int | None = None kwarg to VLDescribeAnalyzer.__init__ (env ORCHESTRATOR_VL_MAX_PIXELS, default None = today's behaviour, byte-identical).\nAdd a module function encode_image_for_vl(path, max_pixels) -> (b64, mime, (w,h)). With max_pixels set and w*h > max_pixels, PIL-resize keeping aspect ratio, round each side down to a multiple of 28 (the Qwen-VL patch merge), and re-encode PNG. Otherwise return the raw bytes.\nUse it at _analyze_with_server L178 in place of the raw b64encode.\nAlso add vision_token_estimate(w, h, patch=28) and log it in _record_server_call. This is the zero-inference tokens-vs-pixels probe the box gates on.\nNew test: a 4000x3000 PIL image gets resized to <= max_pixels with sides % 28 == 0; max_pixels=None returns base64 of the original bytes exactly; estimate(896,896) == 1024.",
+   "acceptance": "bash /mnt/raid0/llm/tmp/taskflow-stage1-cpu-r8c-20261122/orch-py.sh -m pytest -q tests/unit/test_vl_describe_resize.py",
+   "non_goals": [
+    "do not turn normalisation on by default (that waits on the probe result)",
+    "no MMMU or other eval run, no server launch",
+    "do not touch the CLI fallback path or VLOCR/VLStructured prompts"
+   ],
+   "inputs_ext": [
+    {
+     "path": "src/vision/analyzers/vl_describe.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "src/vision/analyzers/vl_describe.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    },
+    {
+     "path": "src/vision/pipeline.py",
+     "repo": "epyc-orchestrator",
+     "rev": null
+    }
+   ],
+   "brief_state": "fresh",
+   "stale": [],
+   "brief_accepted": "pending",
+   "brief_author": "owner",
+   "brief_review": null,
+   "acceptance_matches_done_when": false,
+   "blast_radius": {},
+   "brief_path": "handoffs/active/briefs/MM-5.md",
+   "kind": "code",
+   "packet_fixes": [
+    "r8 2026-11-22: acceptance worktree-relative + orch-py.sh interpreter"
+   ]
+  },
+  "worker": {
+   "timed_out": null,
+   "usage": {
+    "steps": 0
+   },
+   "tool_errors": [],
+   "tools": [],
+   "errors": [],
+   "result": null
+  },
+  "verify": {
+   "verdict": "error",
+   "reason": "lane",
+   "checks": []
+  },
+  "r8c_classifier": "harness"
+ }
+]

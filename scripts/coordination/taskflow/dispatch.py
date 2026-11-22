@@ -138,6 +138,8 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     root.mkdir(parents=True, exist_ok=True)
     lane = root / hashlib.sha1(str(base_dir).encode()).hexdigest()[:4]
     if lane.exists():
+        reclaim_resumed_lane(lane, base_dir, task, repo)     # r8c fix 1: raises LaneRefused unless it is ours
+    if lane.exists():
         raise LaneRefused(f"{lane} exists: one worker per worktree")
     live = [m for m in root.glob("*.lane.json")]
     if len(live) >= MAX_LANES:
@@ -150,7 +152,8 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
     base = _git(repo, "rev-parse", "origin/main").stdout.strip()
     _git(repo, "worktree", "add", "-q", "-b", branch, str(lane), base)
     _meta(lane).write_text(json.dumps({"lane": str(lane), "repo": str(repo), "branch": branch, "base": base,
-                                       "created": time.time(), "state": "live", "task": task.get("key")}))
+                                       "created": time.time(), "state": "live", "task": task.get("key"),
+                                       "owner": _proc_id(os.getpid())}))
     for r in task.get("refs") or []:
         dst = lane / REFS / (r["repo"] + (f"@{r['rev']}" if r.get("rev") else "")) / r["path"]
         data = (schema.git_show(schema.REPOS[r["repo"]], r["rev"], r["path"]) if r.get("rev")
@@ -164,6 +167,66 @@ def make_lane(task: dict, base_dir: Path, branch: str) -> tuple[Path, Path, str]
 
 
 REFS = ".taskflow-refs"
+
+
+def guarded_rm_path() -> str:
+    for c in (os.environ.get("GUARDED_RM"), str(ROOT / "scripts/safety/guarded_rm.sh"), "/workspace/scripts/safety/guarded_rm.sh"):
+        if c and Path(c).is_file():
+            return c
+    raise LaneRefused("guarded_rm.sh not found")
+
+
+def _proc_id(pid: int) -> str | None:
+    """`<pid>:<starttime>` from /proc (a recycled pid has another start time). None when the process is gone."""
+    try:
+        return f"{pid}:{Path(f'/proc/{pid}/stat').read_text().rsplit(')', 1)[1].split()[19]}"
+    except (OSError, IndexError):
+        return None
+
+
+def _owner_alive(meta: dict) -> bool:
+    own = str(meta.get("owner") or "")
+    if not own or ":" not in own:
+        return False                    # pre-r8d lanes carry no owner; their dispatcher is gone
+    return _proc_id(int(own.split(":")[0])) == own
+
+
+def _registered_worktree(repo: Path, lane: Path) -> bool:
+    out = _git(repo, "worktree", "list", "--porcelain", check=False).stdout
+    want = {str(lane), os.path.realpath(lane)}
+    return any(ln[len("worktree "):] in want for ln in out.splitlines() if ln.startswith("worktree "))
+
+
+def reclaim_resumed_lane(lane: Path, base_dir: Path, task: dict, repo: Path) -> str:
+    """r8c fix 1 (TU-GR-1 think, MM-5 think): a unit killed by an rc=75 yield leaves its lane at the deterministic
+    /mnt/raid0/llm/tf/<sha1(base_dir)[:4]>, and the resumed unit was refused "exists: one worker per worktree".
+    The leftover is reclaimed only when it is provably the SAME unit's (base_dir/lane.path names it, or its metadata
+    names the same task key) AND the dispatcher that made it is dead (owner pid:starttime); a registered worktree goes through drop_lane (WIP committed on its branch, plain
+    `git worktree remove`), anything else through guarded_rm.sh (trash, recoverable). Never --force, never prune."""
+    meta = {}
+    try:
+        meta = json.loads(_meta(lane).read_text()) if _meta(lane).exists() else {}
+    except ValueError:
+        meta = {}
+    lp = base_dir / "lane.path"
+    ours = (lp.exists() and lp.read_text().strip() == str(lane)) or (meta.get("task") and meta.get("task") == task.get("key"))
+    if not ours:
+        raise LaneRefused(f"{lane} exists and is not this unit's leftover: one worker per worktree")
+    if _owner_alive(meta):
+        raise LaneRefused(f"{lane} exists and its dispatcher {meta.get('owner')} is alive: one worker per worktree")
+    mrepo = Path(meta["repo"]) if meta.get("repo") else repo
+    for r in dict.fromkeys([mrepo, repo]):
+        if _registered_worktree(r, lane):
+            if not drop_lane(r, lane):
+                raise LaneRefused(f"{lane}: leftover worktree could not be removed (git worktree remove failed)")
+            _sweep_log(f"reclaimed resumed lane {lane} (worktree remove) task {task.get('key')}")
+            return "worktree-remove"
+    cp = subprocess.run(["bash", guarded_rm_path(), str(lane)], capture_output=True, text=True, timeout=600)
+    if cp.returncode != 0:
+        raise LaneRefused(f"{lane}: guarded_rm rc={cp.returncode}: {(cp.stderr or cp.stdout).strip()[-200:]}")
+    _meta(lane).unlink(missing_ok=True)
+    _sweep_log(f"reclaimed resumed lane {lane} (guarded_rm) task {task.get('key')}")
+    return "guarded_rm"
 
 
 def commit_lane(lane: Path, task: dict) -> bool:
@@ -403,40 +466,63 @@ def phase1_or_skip(task: dict, lane: Path, tdir: Path, endpoint: str, family: st
 REVIEW_MAX_TOKENS = int(os.environ.get("TASKFLOW_REVIEW_MAX_TOKENS", "1024"))
 
 
+VERDICTS = ("done", "not_done", "drift")
+REVIEWER_ROLE_HEADER = "X-Taskflow-Role"     # a job proxy must not force enable_thinking onto this request (r8c fix 2)
+
+
+def template_echo(v: dict) -> bool:
+    """r8c NOFOLD-1 / WS4 think: the reviewer thought through its whole 1024 cap and the parser took the prompt's
+    own template `{"verdict":"done|not_done|drift","reason":"<=150 chars"}` as the verdict."""
+    verdict, reason = str(v.get("verdict") or ""), str(v.get("reason") or "")
+    return "|" in verdict or "done|not_done|drift" in reason or reason.strip() == "<=150 chars"
+
+
 def parse_review(msg: dict) -> dict:
     """JSON verdict from the reviewer's content, else from its reasoning content. r8b NOFOLD-1 (think arm): the
-    server runs --reasoning on, the 200-token cap was spent on reasoning and content came back empty (fix 6)."""
+    server runs --reasoning on, the 200-token cap was spent on reasoning and content came back empty (fix 6).
+    Only a real verdict (done|not_done|drift) that is not the prompt template counts (r8c fix 2)."""
     for txt in (msg.get("content") or "", msg.get("reasoning_content") or ""):
         if "{" in txt and "}" in txt:
-            for m in reversed(list(re.finditer(r"\{[^{}]*\"verdict\"[^{}]*\}", txt))):
+            cands = [m.group(0) for m in re.finditer(r"\{[^{}]*\"verdict\"[^{}]*\}", txt)][::-1]
+            for c in cands + [txt[txt.index("{"): txt.rindex("}") + 1]]:
                 try:
-                    return json.loads(m.group(0))
+                    d = json.loads(c)
                 except ValueError:
                     continue
-            try:
-                return json.loads(txt[txt.index("{"): txt.rindex("}") + 1])
-            except ValueError:
-                pass
-    return {"verdict": "unparseable", "reason": (msg.get("content") or "")[:150],
-            "empty": not (msg.get("content") or "").strip()}
+                if isinstance(d, dict) and d.get("verdict") in VERDICTS and not template_echo(d):
+                    return d
+    content = msg.get("content") or ""
+    echo = "done|not_done|drift" in content + (msg.get("reasoning_content") or "")
+    return {"verdict": "unparseable", "reason": content[:150], "empty": not content.strip(), "template_echo": echo}
 
 
 def reviewer_for(endpoint: str, model: str, max_tokens: int | None = None):
-    """Reviewer hook: ONE chat call, JSON verdict against the verbatim box text. Never edits."""
-    def review(task: dict, diff: str) -> dict:
-        msg = local_llm.POLICY + "\n" + verify.review_prompt(task, diff)
+    """Reviewer hook: ONE chat call (one retry on an unparseable / template-echo verdict, at twice the cap), JSON
+    verdict against the verbatim box text. Thinking is off for the reviewer (enable_thinking False plus the
+    X-Taskflow-Role header so a job proxy does not re-enable it). Never edits."""
+    def call(msg: str, cap: int) -> dict:
         body = {"model": model, "messages": [{"role": "user", "content": msg}],
-                "max_tokens": int(max_tokens or REVIEW_MAX_TOKENS), "temperature": 0,
+                "max_tokens": cap, "temperature": 0,
                 "cache_prompt": True, "response_format": {"type": "json_object"},
                 "chat_template_kwargs": {"enable_thinking": False}}
         req = urllib.request.Request(endpoint.rstrip("/") + "/chat/completions", json.dumps(body).encode(),
-                                     {"content-type": "application/json"})
+                                     {"content-type": "application/json", REVIEWER_ROLE_HEADER: "reviewer"})
         with urllib.request.urlopen(req, timeout=300) as r:
             resp = json.loads(r.read())
         ch = resp["choices"][0]
         v = parse_review(ch.get("message") or {})
         v["usage"] = resp.get("usage")
         v["finish_reason"] = ch.get("finish_reason")
+        return v
+
+    def review(task: dict, diff: str) -> dict:
+        msg = local_llm.POLICY + "\n" + verify.review_prompt(task, diff)
+        cap = int(max_tokens or REVIEW_MAX_TOKENS)
+        v = call(msg, cap)
+        if v.get("verdict") not in VERDICTS:
+            first = {k: v.get(k) for k in ("verdict", "reason", "template_echo", "finish_reason", "usage")}
+            v = call(msg, cap * 2)
+            v["retried"] = first
         return v
     return review
 
@@ -456,6 +542,39 @@ def _env_test_failure(v: dict) -> bool:
             if c.get("check") == "tests" and not c.get("ok"):
                 rcs = [int(x) for x in re.findall(r"rc=(\d+)", str(c.get("why") or ""))]
     return bool(_ENV_FAIL.search(tail)) or (bool(rcs) and all(r in _ENV_RC for r in rcs))
+
+
+_TEST_FILE = re.compile(r"(?<![\w/.-])((?:[\w.-]+/)*test_[\w-]+\.py)\b")
+_NOT_FOUND = re.compile(r"file or directory not found|no such file or directory", re.I)
+
+
+def missing_test_file(v: dict, task: dict | None) -> bool:
+    """r8c WS4 nothink: rc=4 was pytest's "file or directory not found" for the acceptance test the worker never
+    wrote -- the model's failure, not the environment. True when the failing run names test files none of which the
+    worker's diff touched and none of which is an existing input of the packet (or the tail says not found)."""
+    if v.get("reason") != "tests-fail":
+        return False
+    rcs = [c.get("rc") for c in (v.get("evidence") or {}).get("commands") or [] if c.get("rc")]
+    cmds = [c.get("cmd") or "" for c in (v.get("evidence") or {}).get("commands") or [] if c.get("rc")]
+    if not rcs:
+        for c in v.get("checks") or []:
+            if c.get("check") == "tests" and not c.get("ok"):
+                for part in str(c.get("why") or "").split("; "):
+                    m = re.search(r"^(.*) rc=(\d+)$", part.strip())
+                    if m:
+                        cmds.append(m.group(1))
+                        rcs.append(int(m.group(2)))
+    if not rcs or not all(r in (4, 5) for r in rcs):
+        return False
+    if _NOT_FOUND.search(str(v.get("test_tail") or "")) and not _ENV_FAIL.search(str(v.get("test_tail") or "").replace(
+            "No such file or directory", "")):
+        return True
+    if "paths" not in (v.get("evidence") or {}):
+        return False            # no record of what the worker changed: cannot tell, leave it to the env rules
+    named = {m.group(1) for c in cmds for m in _TEST_FILE.finditer(c)}
+    touched = set((v.get("evidence") or {}).get("paths") or [])
+    existing = set((task or {}).get("inputs") or [])
+    return bool(named) and not (named & touched) and not (named & existing)
 
 
 def packet_contradiction(task: dict | None) -> list[str]:
@@ -480,6 +599,8 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
         return None
     if packet_contradiction(task):
         return "task"           # r8b INTAKE-VALIDATE-86: the packet forbids its own target
+    if task and task.get("stale_packet"):
+        return "task"           # r8c fix 5: a done packet (INTAKE-VALIDATE-86, NUMA-DECOUPLE-1): no-change / rewrite
     if w.get("errors") and not w["usage"]["steps"]:
         return "harness"
     if w.get("result") and w["result"].get("claimed_done") is False:
@@ -490,10 +611,17 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
         named = verify.approach_new_paths(task)
         if out and all(p in named for p in out):
             return "task"       # r8b TU-GR-1: the approach named the files, the pathspec omitted them
+    if missing_test_file(v, task):
+        return "model-limitation"   # r8c WS4 nothink: rc=4 = the acceptance test was never written, not env
+    real_test_fail = reason == "tests-fail" and not _env_test_failure(v)
     if w.get("timed_out"):
+        if real_test_fail and (v.get("evidence") or {}).get("paths"):
+            return "model-limitation"   # r8c LOOP-62 think: wrote asserts that fail 15/16; the clock did not write them
         return "harness"        # r8b: 600 s GPU-sized budget on CPU prefill (WS4, MM-5, TU-GR-1 / LOOP-62 think)
-    if reason in ("reviewer-unparseable", "reviewer-None") or (v.get("review") or {}).get("empty"):
-        return "harness"        # r8b NOFOLD-1 think: empty reviewer content
+    rv = v.get("review") or {}
+    if (reason in ("reviewer-unparseable", "reviewer-None") or rv.get("empty") or rv.get("template_echo")
+            or (str(reason or "").startswith("reviewer-") and "|" in str(reason))):
+        return "harness"        # r8b NOFOLD-1 think: empty reviewer content; r8c NOFOLD/WS4 think: template echo
     if reason == "tests-fail" and _env_test_failure(v):
         return "harness"        # r8b MM-5: bare python3 -m pytest without fastapi, rc=4
     errs = [str(e) for e in w.get("tool_errors") or []]
@@ -580,6 +708,44 @@ def _push_tag(lane: Path) -> str:
     return "ok" if r.returncode == 0 else f"rc={r.returncode}"
 
 
+def box_state_at_base(task: dict) -> str | None:
+    """"open" | "ticked" | "gone" for the task's box in its handoff at epyc-root origin/main, resolved by TEXT
+    (text_sha); None when that cannot be read (no handoff, no text_sha, git failure) -- unknown never skips."""
+    if not task.get("handoff") or not task.get("text_sha"):
+        return None
+    try:
+        r = subprocess.run(["git", "-C", str(schema.REPOS["epyc-root"]), "show", f"origin/main:{task['handoff']}"],
+                           capture_output=True, text=True, timeout=30)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if r.returncode != 0:
+        return None
+    state = "gone"
+    for ln in r.stdout.splitlines():
+        m = re.match(r"\s*[-*] \[(.)\] ", ln)
+        if m and schema.text_sha(ln) == task["text_sha"]:
+            if m.group(1) not in "xX":
+                return "open"           # [ ] and partial / blocked checkpoint states are still open
+            state = "ticked"
+    return state
+
+
+def stale_packet(task: dict, lane: Path) -> str | None:
+    """r8c fix 3 (INTAKE-VALIDATE-86, NUMA-DECOUPLE-1): the packet was already done -- the validator exited 0 on the
+    lane and the decouple work had landed as a56df365b -- so the worker either found nothing to do (no-change) or
+    rewrote landed code. Checked at selection time, before any model call: the box is ticked / gone at origin/main,
+    or the packet's runnable acceptance already passes on the unchanged lane. Returns the reason, or None."""
+    st = box_state_at_base(task)
+    if st in ("ticked", "gone"):
+        return f"box {st} at origin/main"
+    acc = verify.acceptance_cmd(task)
+    if acc:
+        pre = verify.run_tests(lane, [acc])[0]
+        if pre["rc"] == 0:
+            return f"acceptance already passes on base: `{acc[:160]}`"
+    return None
+
+
 class _EndRun(Exception):
     """Phase 1 ended the run (needs-brief); the row is already filled."""
 
@@ -612,7 +778,7 @@ def gitnexus_trigger(batch_id: str, enabled: bool = True, script: Path | None = 
 
 
 def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: bool, family: str = "local", gnx_trigger: bool = True,
-        wall_budget: dict | None = None) -> list[dict]:
+        wall_budget: dict | None = None, check_fresh: bool = True) -> list[dict]:
     out.mkdir(parents=True, exist_ok=True)
     run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     gitnexus_trigger(run_id, gnx_trigger)
@@ -634,6 +800,10 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
             continue
         pkt_acc = task.get("acceptance") if task.get("brief_state") == "fresh" else None
         try:
+            why = stale_packet(task, lane) if check_fresh else None
+            if why:                                              # r8c fix 3: done packets never reach the model
+                row.update(verdict="skipped", reason="stale-packet", failure_class="task", detail=why)
+                raise _EndRun()
             p1 = phase1_or_skip(task, lane, tdir, endpoint, family)
             if pkt_acc and task.get("acceptance") != pkt_acc:   # fix 2 (r8b MM-5): a re-merged origin/main brief
                 row["acceptance_restored"] = {"merged": task.get("acceptance"), "packet": pkt_acc}

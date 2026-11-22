@@ -58,6 +58,11 @@ class AutoRequeue(unittest.TestCase):
         self.assertTrue(os.path.exists(rf.ready_path(self.f, RID)))
         self.assertIn("AUTO-REQUEUE", self.logs[-1])
 
+    def test_job_own_rc75_partial_native_stopped_requeued(self):
+        self.manifest(); self.end("rc=75 time=2026-11-22T18:39:00Z reason=partial-native-stopped")
+        self.assertEqual(self.tick(), [RID])
+        self.assertFalse(os.path.exists(os.path.join(self.G, RID + ".ended")))
+
     def test_capped_at_three_then_owner_alert(self):
         self.manifest()
         for i in range(3):
@@ -177,13 +182,22 @@ class PerRowMax(unittest.TestCase):
 
 
 class LauncherBlockedHook(unittest.TestCase):
-    @unittest.skip("engine hook (FILLER_BLOCKED_FILE) withheld: filler_run15.sh is FROZEN, needs operator --emergency")
     def test_engine_exports_and_maps_blocked_file(self):
         with open(os.path.join(HERE, "..", "rowflow", "filler_run15.sh")) as fh:
             src = fh.read()
         self.assertIn("FILLER_BLOCKED_FILE=$STATE/$ID.blocked", src)
         self.assertIn("reason=partial-blocked-", src)
         self.assertIn("blocked_on=%s\\nrequeue=false", src)
+
+    def test_job_own_rc75_maps_to_partial_native_stopped(self):
+        with open(os.path.join(HERE, "..", "rowflow", "filler_run15.sh")) as fh:
+            src = fh.read()
+        self.assertIn('if [ "$rc" -eq 75 ] && [ "$reason" = exited ]; then reason=partial-native-stopped; fi', src)
+        # existing mappings unchanged
+        self.assertIn('if [ "$rc" -eq 0 ]; then rc=75; reason=partial-native-incomplete; fi', src)
+        self.assertIn("case $reason in hard-end|disk-floor|stopped) rc=75;; esac", src)
+        # blocker mapping comes after the rc75 mapping, so a declared blocker wins
+        self.assertLess(src.index("reason=partial-native-stopped"), src.index("reason=partial-blocked-"))
 
 
 if __name__ == "__main__":

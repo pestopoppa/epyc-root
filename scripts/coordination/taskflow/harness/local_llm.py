@@ -46,13 +46,23 @@ READ_ONLY = ["ls*", "cat *", "head *", "tail *", "wc *", "grep *", "rg *", "sed 
 # Pipe/redirect tails the model composes onto an allowed command (r7d: `cat f | head -100`, `cmd 2>&1`).
 PIPE_TAILS = [" 2>&1", " | head *", " | tail *", " | wc *", " | grep *", " 2>&1 | head *", " 2>&1 | tail *",
               " 2>&1 | grep *"]
+# r8c canary (fix 6): INTAKE-VALIDATE-86 composed `grep … | sed 's/…//' | sort -u`, `| awk '{print $2}'`, `| cut -d- -f2-`
+# and every one was denied. These stream filters are allowed as pipe stages (both as a stage pattern and as a tail on
+# every allowed command); their file-writing / command-running forms stay on BASH_DENY, which still wins.
+PIPE_FILTERS = ["sed *", "sort", "sort *", "awk *", "cut *"]
+PIPE_TAILS += [f" | {f}" for f in PIPE_FILTERS] + [f" 2>&1 | {f}" for f in PIPE_FILTERS]
 # Task-brief layer P3 (§7): retrieval tools for locating code and for self-briefing (read-only, zero cloud tokens).
 RETRIEVAL = ["gitnexus query *", "gitnexus context *", "gitnexus impact *",
              "/workspace/repos/epyc-orchestrator/.venv/bin/python /workspace/repos/epyc-orchestrator/scripts/kb_rag/cli.py query *"]
 KB_SEARCH = RETRIEVAL[-1][:-2]
 BASH_DENY = ["sed *-i*", "sed *--in-place*", "find *-delete*", "find *-exec*", "* > *", "* >> *", "* | sh*", "* | bash*",
              "sudo*", "rm -rf*", "git push*", "git reset*", "git checkout*", "git stash*", "git restore*",
-             "git commit*", "curl*", "wget*", "systemctl*", "reboot*", "shutdown*"]
+             "git commit*", "curl*", "wget*", "systemctl*", "reboot*", "shutdown*",
+             # r8c fix 6: the writing / executing forms of the pipe filters (sed -i / w FILE, awk system / getline /
+             # redirect, sort -o)
+             "* | sed *-i*", "* | sed *--in-place*", "sed */w *", "* | sed */w *",
+             "awk *system*", "* | awk *system*", "awk *getline*", "* | awk *getline*", "awk *>*", "* | awk *>*",
+             "sort *-o*", "* | sort *-o*", "sort *--output*", "* | sort *--output*"]
 
 POLICY = """\
 # taskflow worker contract (identical for every task)
@@ -63,7 +73,7 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 4. Every turn must call a tool until you finish. Never describe a plan without calling a tool in the same turn.
 5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
 6. The shell runs only the ALLOWED COMMANDS plus read-only helpers (ls, cat, head, tail, wc, grep, sed -n, find, pwd,
-   git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc or grep. No `>` files, no && chains, no cd.
+   git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc, grep, sed, sort, awk or cut. No `>` files, no && chains, no cd.
 10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
     Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
@@ -374,6 +384,8 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
     for ro in READ_ONLY:
         bash[ro] = "allow"
     for ro in RETRIEVAL:
+        bash[ro] = "allow"
+    for ro in PIPE_FILTERS:
         bash[ro] = "allow"
     acc_pats = acceptance_patterns(task, lane)
     for c in acc_pats:
