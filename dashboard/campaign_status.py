@@ -27,6 +27,7 @@ SNAPSHOT_SCHEMA_V3 = "epyc.autokernel.campaign_snapshot.v3"
 UNIFIED_PROJECTION_SCHEMA = "epyc.autokernel.unified_campaign_projection.v1"
 UNIFIED_PROJECTION_SCHEMA_V2 = "epyc.autokernel.unified_campaign_projection.v2"
 UNIFIED_PROJECTION_SCHEMA_V3 = "epyc.autokernel.unified_campaign_projection.v3"
+UNIFIED_PROJECTION_SCHEMA_V4 = "epyc.autokernel.unified_campaign_projection.v4"
 HEALTH_SCHEMA = "epyc.autokernel.campaign_transport_health.v1"
 SNAPSHOT_FILENAME = "campaign-snapshot.json"
 STORE_ROOT_ENV = "AUTOKERNEL_CAMPAIGN_STORE_ROOT"
@@ -546,7 +547,121 @@ def _validate_aggregates(unified):
         raise CampaignStatusError("combined aggregate bound exceeded")
 
 
+# Projection v4 (AKU-09g) = v3 + report-only resource/candidate sections. A recorded
+# grant is not a live grant; a validated pointer is not validation authority.
+_AGGREGATE_PROJECTIONS = {UNIFIED_PROJECTION_SCHEMA_V3: 3, UNIFIED_PROJECTION_SCHEMA_V4: 4}
+_V4_SECTION_BYTES, _V4_DEBT_ROWS, _V4_GPU_ROWS = 8192, 16, 8
+_RESOURCE_V2_PARTS = {
+    "requested": frozenset({"worker_id", "worker_generation", "request_digest", "occurred_at",
+                            "authorization_remaining_seconds", "clock_known"}),
+    "granted": frozenset({"worker_id", "worker_generation", "grant_id", "grant_generation", "recorded_at"}),
+    "held": frozenset({"lifecycle_event_count", "active_worker_count", "held_receipt_count"}),
+    "used": frozenset({"receipt_count", "held_seconds", "physical_region_seconds", "memory_byte_seconds",
+                       "gpu_device_seconds", "gpu_devices_total", "view_digest"}),
+}
+_CANDIDATE_V2_FIELDS = frozenset({
+    "schema", "status", "reason", "accumulated_identity", "validated_identity",
+    "frozen_production_identity", "validation_debt", "gate_due", "pending_phase",
+    "projection_lag_events", "replay_verified"})
+_V4_LEGACY_CARRIERS = {
+    "resources": {"schema": "epyc.autokernel.unified_resource_status.v1", "status": "not_connected",
+                  "reason": "v4 carrier", "requested": None, "granted": None, "held": None, "used": None},
+    "candidate": {"schema": "epyc.autokernel.unified_candidate_status.v1", "status": "not_connected",
+                  "reason": "v4 carrier", "accumulated_identity": None, "validated_identity": None,
+                  "frozen_production_identity": None, "validation_debt": None},
+}
+
+
+def _v4_bounded(value: Any, label: str) -> None:
+    if len(json.dumps(value, allow_nan=False, separators=(",", ":")).encode()) > _V4_SECTION_BYTES:
+        raise CampaignStatusError(f"v4 {label} byte bound exceeded")
+
+
+def _validate_resources_v2(value: Any) -> None:
+    _exact(value, frozenset({"schema", "status", "reason", *_RESOURCE_V2_PARTS}), "v4 resources")
+    _v4_bounded(value, "resources")
+    if (value["schema"] != "epyc.autokernel.unified_resource_status.v2"
+            or value["status"] not in {"available", "not_connected"}):
+        raise CampaignStatusError("v4 resources schema/status differs")
+    _aggregate_text(value["reason"])
+    connected = value["status"] == "available"
+    for part, fields in _RESOURCE_V2_PARTS.items():
+        item = value[part]
+        if item is None:
+            if part == "used" or (connected and part == "held"):
+                raise CampaignStatusError(f"v4 resources {part} owner value is missing")
+            continue
+        if not connected and part != "used":
+            raise CampaignStatusError("absent lifecycle owner cannot report requests, grants or holds")
+        _exact(item, fields, f"v4 resources {part}")
+        for key, field in item.items():
+            if key == "gpu_device_seconds":
+                if not isinstance(field, Mapping) or len(field) > _V4_GPU_ROWS:
+                    raise CampaignStatusError("v4 resource GPU usage bound exceeded")
+                for device, seconds in field.items():
+                    _aggregate_text(device, maximum=128)
+                    _aggregate_number(seconds)
+            elif key.endswith(("_generation", "_count", "_total")):
+                _aggregate_number(field, integer=True)
+            elif key == "clock_known":
+                if type(field) is not bool:
+                    raise CampaignStatusError("v4 resource clock flag is invalid")
+            elif key in {"occurred_at", "recorded_at"}:
+                _aggregate_text(field, maximum=64)
+                _timestamp(field, f"v4 resources {part} {key}")
+            else:
+                _aggregate_scalar(key, field)
+    if value["used"]["gpu_devices_total"] < len(value["used"]["gpu_device_seconds"]):
+        raise CampaignStatusError("v4 resource GPU usage completeness differs")
+    requested = value["requested"]
+    if requested is not None and requested["clock_known"] != (
+            requested["authorization_remaining_seconds"] is not None):
+        raise CampaignStatusError("v4 authorization remainder requires the original clock")
+
+
+def _validate_candidate_v2(value: Any) -> None:
+    _exact(value, _CANDIDATE_V2_FIELDS, "v4 candidate")
+    _v4_bounded(value, "candidate")
+    if (value["schema"] != "epyc.autokernel.unified_candidate_status.v2"
+            or value["status"] not in _UNIFIED_STATUSES):
+        raise CampaignStatusError("v4 candidate schema/status differs")
+    _aggregate_text(value["reason"])
+    for name in ("accumulated_identity", "validated_identity", "frozen_production_identity"):
+        if value[name] is not None:
+            _digest(value[name], f"v4 candidate {name}")
+    _aggregate_number(value["projection_lag_events"], integer=True)
+    if (value["pending_phase"] not in {None, "INTENT", "PREPARED"}
+            or (value["gate_due"] is not None and type(value["gate_due"]) is not bool)
+            or type(value["replay_verified"]) is not bool):
+        raise CampaignStatusError("v4 candidate pending phase/gate flag differs")
+    debt = value["validation_debt"]
+    if debt is not None:
+        _exact(debt, frozenset({"count", "items", "truncated"}), "v4 candidate validation debt")
+        if not isinstance(debt["items"], list) or len(debt["items"]) > _V4_DEBT_ROWS \
+                or type(debt["truncated"]) is not bool:
+            raise CampaignStatusError("v4 candidate validation debt bound exceeded")
+        _aggregate_number(debt["count"], integer=True)
+        for item in debt["items"]:
+            _aggregate_text(item, maximum=128)
+        if debt["count"] < len(debt["items"]) or debt["truncated"] != (debt["count"] > len(debt["items"])):
+            raise CampaignStatusError("v4 candidate validation debt completeness differs")
+    known = value["accumulated_identity"] is not None
+    if (any(known != (item is not None) for item in (value["frozen_production_identity"], debt, value["gate_due"]))
+            or (value["validated_identity"] is not None or value["replay_verified"]) and not known):
+        raise CampaignStatusError("v4 candidate state identities are partial")
+    expected = ("available" if known else
+                "unknown" if value["projection_lag_events"] or value["pending_phase"] else "not_connected")
+    if value["status"] != expected:
+        raise CampaignStatusError("v4 candidate status contradicts its replayed state")
+
+
 def _validate_unified(value: Any) -> dict[str, Any]:
+    if isinstance(value, Mapping) and value.get("schema") == UNIFIED_PROJECTION_SCHEMA_V4:
+        _exact(value, _UNIFIED_FIELDS | {"runtime", "worker_timing"}, "unified v4 projection")
+        _validate_resources_v2(value["resources"])
+        _validate_candidate_v2(value["candidate"])
+        _validate_unified(dict(value, schema=UNIFIED_PROJECTION_SCHEMA_V3, **_V4_LEGACY_CARRIERS))
+        return copy.deepcopy(dict(value))
     if isinstance(value, Mapping) and value.get("schema") == UNIFIED_PROJECTION_SCHEMA_V3:
         _exact(value, _UNIFIED_FIELDS | {"runtime", "worker_timing"}, "unified aggregate projection")
         _validate_aggregates(value)
@@ -764,7 +879,15 @@ def validate_snapshot(value: Any) -> dict[str, Any]:
     row["command_results"] = results
     if version == 3:
         row["unified"] = _validate_unified(row["unified"])
-        if row["unified"]["schema"] == UNIFIED_PROJECTION_SCHEMA_V3:
+        if row["unified"]["schema"] == UNIFIED_PROJECTION_SCHEMA_V4:
+            resources, accounting = row["unified"]["resources"], row["unified"]["scheduler"]["accounting"]
+            if any(resources["used"][key] != accounting[key] for key in ("receipt_count", "view_digest")):
+                raise CampaignStatusError("v4 resource usage differs from scheduler accounting")
+            for part, key in (("requested", "occurred_at"), ("granted", "recorded_at")):
+                if resources[part] is not None and datetime.fromisoformat(
+                        resources[part][key].replace("Z", "+00:00")).timestamp() > generated:
+                    raise CampaignStatusError("v4 resource record is newer than snapshot")
+        if row["unified"]["schema"] in _AGGREGATE_PROJECTIONS:
             for aggregate in _aggregate_rows(row["unified"]).values():
                 for field in ("observed_at", "attempted_at"):
                     if aggregate[field] is not None and datetime.fromisoformat(aggregate[field].replace("Z", "+00:00")).timestamp() > generated:
@@ -941,9 +1064,18 @@ def advance_snapshot(previous: Mapping[str, Any] | None,
             raise CampaignStatusError("new worker does not advance worker generation")
     old_runtime = (old.get("unified") or {}).get("runtime")
     new_runtime = (new.get("unified") or {}).get("runtime")
-    if (old.get("unified") or {}).get("schema") == UNIFIED_PROJECTION_SCHEMA_V3:
-        if (new.get("unified") or {}).get("schema") != UNIFIED_PROJECTION_SCHEMA_V3:
+    old_projection = (old.get("unified") or {}).get("schema")
+    new_projection = (new.get("unified") or {}).get("schema")
+    if old_projection in _AGGREGATE_PROJECTIONS:
+        if _AGGREGATE_PROJECTIONS.get(new_projection, 0) < _AGGREGATE_PROJECTIONS[old_projection]:
             raise CampaignStatusError("same campaign cannot downgrade aggregate projection")
+        if new["supervisor_incarnation"] == old["supervisor_incarnation"] \
+                and old_projection == new_projection == UNIFIED_PROJECTION_SCHEMA_V4:
+            before, after = old["unified"]["resources"], new["unified"]["resources"]
+            if after["used"]["receipt_count"] < before["used"]["receipt_count"] or (
+                    before["held"] is not None and after["held"] is not None
+                    and after["held"]["lifecycle_event_count"] < before["held"]["lifecycle_event_count"]):
+                raise CampaignStatusError("v4 resource accounting/lifecycle count rolled back")
         if new["supervisor_incarnation"] == old["supervisor_incarnation"]:
             before, after = _aggregate_rows(old["unified"]), _aggregate_rows(new["unified"])
             for kind in before:
@@ -1175,7 +1307,7 @@ def runtime_freshness(body: Mapping[str, Any], *, now: float) -> dict[str, Any] 
 
 def aggregate_freshness(body: Mapping[str, Any], *, now: float) -> dict[str, Any] | None:
     unified = body.get("unified") or {}
-    if unified.get("schema") != UNIFIED_PROJECTION_SCHEMA_V3:
+    if unified.get("schema") not in _AGGREGATE_PROJECTIONS:
         return None
     result = {}
     for kind, row in _aggregate_rows(unified).items():
@@ -1274,7 +1406,7 @@ __all__ = [
     "CAMPAIGN_ID_ENV", "CONFIG_DIGEST_ENV", "CONFIG_GENERATION_ENV",
     "GATEWAY_URL_ENV", "HEALTH_SCHEMA", "HEALTH_TIMEOUT_S", "HUB_ORIGIN_ENV",
     "SNAPSHOT_FILENAME", "SNAPSHOT_SCHEMA", "SNAPSHOT_SCHEMA_V2", "SNAPSHOT_SCHEMA_V3",
-    "STORE_ROOT_ENV", "UNIFIED_PROJECTION_SCHEMA",
+    "STORE_ROOT_ENV", "UNIFIED_PROJECTION_SCHEMA", "UNIFIED_PROJECTION_SCHEMA_V4",
     "CampaignStatusError",
     "advance_snapshot", "observe_health", "read", "snapshot", "validate_health",
     "validate_snapshot",

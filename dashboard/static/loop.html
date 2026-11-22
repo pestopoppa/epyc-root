@@ -764,6 +764,56 @@ function campaignValidateRuntime(value){
 }
 
 const campaignAggregateSchema="epyc.autokernel.unified_campaign_projection.v3";
+const campaignV4Schema="epyc.autokernel.unified_campaign_projection.v4";
+const campaignAggregateRank={[campaignAggregateSchema]:3,[campaignV4Schema]:4};
+/* Projection v4 (AKU-09g): report-only resource/candidate sections. A recorded grant
+   is not a live grant; a validated pointer is not validation authority. */
+function campaignValidateV4Sections(u){
+  const fail=m=>{throw new Error("campaign v4 "+m)};
+  const text=(v,max=512)=>typeof v==="string"&&[...v].length>0&&[...v].length<=max;
+  const number=(v,integer=false)=>typeof v==="number"&&Number.isFinite(v)&&v>=0&&v<=2**63-1&&(!integer||Number.isInteger(v));
+  const date=v=>text(v,64)&&/(Z|[+-]\d\d:\d\d)$/.test(v)&&Number.isFinite(Date.parse(v));
+  const bounded=(v,label)=>{if(new TextEncoder().encode(JSON.stringify(v).replace(/[\u0080-\uffff]/g,c=>"\\u"+c.charCodeAt(0).toString(16).padStart(4,"0"))).length>8192)fail(label+" byte bound exceeded")};
+  const r=u.resources,parts={requested:"worker_id worker_generation request_digest occurred_at authorization_remaining_seconds clock_known",
+    granted:"worker_id worker_generation grant_id grant_generation recorded_at",
+    held:"lifecycle_event_count active_worker_count held_receipt_count",
+    used:"receipt_count held_seconds physical_region_seconds memory_byte_seconds gpu_device_seconds gpu_devices_total view_digest"};
+  campaignExact(r,["schema","status","reason",...Object.keys(parts)],"v4 resources");bounded(r,"resources");
+  if(r.schema!=="epyc.autokernel.unified_resource_status.v2"||!["available","not_connected"].includes(r.status)||!text(r.reason))fail("resources schema/status differs");
+  const connected=r.status==="available";
+  for(const [part,fields] of Object.entries(parts)){
+    const item=r[part];
+    if(item===null){if(part==="used"||connected&&part==="held")fail(`resources ${part} owner value is missing`);continue;}
+    if(!connected&&part!=="used")fail("absent lifecycle owner cannot report requests, grants or holds");
+    campaignExact(item,fields.split(" "),`v4 resources ${part}`);
+    for(const [k,v] of Object.entries(item)){
+      const ok=k==="gpu_device_seconds"?v&&typeof v==="object"&&!Array.isArray(v)&&Object.keys(v).length<=8&&Object.entries(v).every(([d,s])=>text(d,128)&&number(s)):
+        /_(generation|count|total)$/.test(k)?number(v,true):k==="clock_known"?typeof v==="boolean":
+        ["occurred_at","recorded_at"].includes(k)?date(v):/_digest$/.test(k)?v===null||campaignDigestValue(v):
+        k.endsWith("seconds")?v===null||number(v):v===null||text(v);
+      if(!ok)fail(`resources ${part} ${k} is malformed`);
+    }
+  }
+  if(r.used.gpu_devices_total<Object.keys(r.used.gpu_device_seconds).length)fail("resource GPU usage completeness differs");
+  if(r.requested&&r.requested.clock_known!==(r.requested.authorization_remaining_seconds!==null))fail("authorization remainder requires the original clock");
+  const c=u.candidate;
+  campaignExact(c,["schema","status","reason","accumulated_identity","validated_identity","frozen_production_identity",
+    "validation_debt","gate_due","pending_phase","projection_lag_events","replay_verified"],"v4 candidate");bounded(c,"candidate");
+  if(c.schema!=="epyc.autokernel.unified_candidate_status.v2"||!["available","unknown","not_connected"].includes(c.status)||!text(c.reason)||
+     ![c.accumulated_identity,c.validated_identity,c.frozen_production_identity].every(v=>v===null||campaignDigestValue(v))||
+     !number(c.projection_lag_events,true)||![null,"INTENT","PREPARED"].includes(c.pending_phase)||
+     !(c.gate_due===null||typeof c.gate_due==="boolean")||typeof c.replay_verified!=="boolean")fail("candidate fields are malformed");
+  const debt=c.validation_debt;
+  if(debt!==null){
+    campaignExact(debt,["count","items","truncated"],"v4 candidate validation debt");
+    if(!Array.isArray(debt.items)||debt.items.length>16||typeof debt.truncated!=="boolean"||!number(debt.count,true)||
+       !debt.items.every(v=>text(v,128))||debt.count<debt.items.length||debt.truncated!==(debt.count>debt.items.length))fail("candidate validation debt differs");
+  }
+  const known=c.accumulated_identity!==null;
+  if([c.frozen_production_identity,debt,c.gate_due].some(v=>known!==(v!==null))||(c.validated_identity!==null||c.replay_verified)&&!known)
+    fail("candidate state identities are partial");
+  if(c.status!==(known?"available":c.projection_lag_events||c.pending_phase?"unknown":"not_connected"))fail("candidate status contradicts its replayed state");
+}
 const campaignAggregateRows=u=>({evidence:u.evidence,actor:u.actors.actor,profile:u.actors.profile,calibration:u.actors.calibration});
 function campaignValidateAggregates(u){
   const text=(v,nullable=false,max=512)=>nullable&&v===null || typeof v==="string"&&[...v].length>0&&[...v].length<=max;
@@ -819,6 +869,14 @@ function campaignValidateAggregates(u){
      count>64||new TextEncoder().encode(JSON.stringify(rows)).length>32768)fail();
 }
 function campaignValidateUnified(value){
+  if(value?.schema===campaignV4Schema){
+    campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets","runtime","worker_timing"],"v4 unified projection");
+    campaignValidateV4Sections(value);
+    campaignValidateUnified({...value,schema:campaignAggregateSchema,
+      resources:{schema:"epyc.autokernel.unified_resource_status.v1",status:"not_connected",reason:"v4 carrier",requested:null,granted:null,held:null,used:null},
+      candidate:{schema:"epyc.autokernel.unified_candidate_status.v1",status:"not_connected",reason:"v4 carrier",accumulated_identity:null,validated_identity:null,frozen_production_identity:null,validation_debt:null}});
+    return value;
+  }
   if(value?.schema===campaignAggregateSchema){
     campaignExact(value,["schema","scheduler","resources","actors","evidence","candidate","targets","runtime","worker_timing"],"aggregate unified projection");
     campaignValidateAggregates(value);
@@ -995,7 +1053,15 @@ function campaignValidateSnapshot(value){
   }
   if(v3){
     campaignValidateUnified(value.unified);
-    if(value.unified.schema===campaignAggregateSchema)
+    if(value.unified.schema===campaignV4Schema){
+      const r=value.unified.resources,a=value.unified.scheduler.accounting;
+      if(r.used.receipt_count!==a.receipt_count||r.used.view_digest!==a.view_digest)
+        throw new Error("v4 resource usage differs from scheduler accounting");
+      for(const [part,key] of [["requested","occurred_at"],["granted","recorded_at"]])
+        if(r[part]&&Date.parse(r[part][key])>Date.parse(value.generated_at))
+          throw new Error("v4 resource record is newer than snapshot");
+    }
+    if(campaignAggregateRank[value.unified.schema])
       for(const row of Object.values(campaignAggregateRows(value.unified)))
         for(const field of ["observed_at","attempted_at"])
           if(row[field]!==null&&Date.parse(row[field])>Date.parse(value.generated_at))
@@ -1065,8 +1131,14 @@ function campaignAcceptSnapshot(next, explicitSwitch=false){
       {campaignStreamError = "campaign stream epoch/incarnation relationship is invalid";
        throw new Error(campaignStreamError);}
     const oldRuntime=campaignAccepted.unified?.runtime,newRuntime=next.unified?.runtime;
-    if(campaignAccepted.unified?.schema===campaignAggregateSchema){
-      if(next.unified?.schema!==campaignAggregateSchema)throw new Error("same campaign cannot downgrade aggregate projection");
+    const oldRank=campaignAggregateRank[campaignAccepted.unified?.schema];
+    if(oldRank){
+      if((campaignAggregateRank[next.unified?.schema]||0)<oldRank)throw new Error("same campaign cannot downgrade aggregate projection");
+      if(next.supervisor_incarnation===campaignAccepted.supervisor_incarnation&&oldRank===4&&next.unified.schema===campaignV4Schema){
+        const before=campaignAccepted.unified.resources,after=next.unified.resources;
+        if(after.used.receipt_count<before.used.receipt_count||before.held&&after.held&&after.held.lifecycle_event_count<before.held.lifecycle_event_count)
+          throw new Error("v4 resource accounting/lifecycle count rolled back");
+      }
       if(next.supervisor_incarnation===campaignAccepted.supervisor_incarnation){
         const before=campaignAggregateRows(campaignAccepted.unified),after=campaignAggregateRows(next.unified);
         for(const kind of Object.keys(before)){
@@ -1357,6 +1429,33 @@ function campaignRenderAggregates(u,clocks){
   }
   return html;
 }
+function campaignRenderV4Resources(r){
+  const none=v=>v===null?"none recorded":null;
+  const q=r.requested,g=r.granted,h=r.held,u=r.used;
+  return `<dt>requested (pending acquisition intent)</dt><dd>${esc(none(q)??
+      `${q.worker_id} gen ${q.worker_generation} at ${q.occurred_at}; original authorization remainder `+
+      (q.clock_known?`${q.authorization_remaining_seconds} s`:"unknown (different clock/incarnation)"))}</dd>`+
+    `<dt>granted (recorded, not live)</dt><dd>${esc(none(g)??
+      `${g.grant_id} gen ${g.grant_generation} for ${g.worker_id} gen ${g.worker_generation}, recorded ${g.recorded_at}`)}`+
+      `; a recorded grant is not a live grant and confers no execution authority</dd>`+
+    `<dt>held (lifecycle events / active workers / held receipts)</dt><dd>${esc(h===null?"unknown / not connected":
+      `${h.lifecycle_event_count} / ${h.active_worker_count} / ${h.held_receipt_count}`)}</dd>`+
+    `<dt>used (scheduler accounting)</dt><dd>${esc(u.receipt_count)} receipts; held ${esc(u.held_seconds)} s; `+
+      `CPU-region ${esc(u.physical_region_seconds)} s; memory-byte ${esc(u.memory_byte_seconds)} s; GPUs `+
+      `${esc(Object.entries(u.gpu_device_seconds).map(([d,s])=>`${d} ${s} s`).join(", ")||"none")} `+
+      `(${esc(Object.keys(u.gpu_device_seconds).length)} shown of ${esc(u.gpu_devices_total)})</dd>`;
+}
+function campaignRenderV4Candidate(c){
+  const id=v=>v===null?"unknown / not connected":v,d=c.validation_debt;
+  return `<dt>accumulated tip</dt><dd class="mono">${esc(id(c.accumulated_identity))}</dd>`+
+    `<dt>validated pointer (not validation authority)</dt><dd class="mono">${esc(c.validated_identity===null?"none":c.validated_identity)}</dd>`+
+    `<dt>frozen production ref</dt><dd class="mono">${esc(id(c.frozen_production_identity))}</dd>`+
+    `<dt>validation debt (exact count / sample)</dt><dd>${esc(d===null?"unknown / not connected":
+      `${d.count}${d.items.length?": "+d.items.join(", "):""}${d.truncated?` (${d.items.length} shown)`:""}`)}</dd>`+
+    `<dt>gate due</dt><dd>${esc(c.gate_due===null?"unknown":c.gate_due)}</dd>`+
+    `<dt>pending transaction phase</dt><dd>${esc(c.pending_phase||"none")}</dd>`+
+    `<dt>replayer lag (events) / replay verified</dt><dd>${esc(c.projection_lag_events)} / ${esc(c.replay_verified)}</dd>`;
+}
 function campaignRenderUnified(snapshot,runtimeClock=null,aggregateClocks=null){
   if(snapshot.schema!=="epyc.autokernel.campaign_snapshot.v3") return "";
   const u=snapshot.unified,s=u.scheduler,c=s.capacity,a=s.accounting,t=u.targets;
@@ -1390,21 +1489,23 @@ function campaignRenderUnified(snapshot,runtimeClock=null,aggregateClocks=null){
         `${esc(a.physical_region_seconds)} s; memory-byte ${esc(a.memory_byte_seconds)} s</dd>`+
       `<dt>projection / config / policy digests</dt><dd class="mono">${esc(s.projection_digest)} / `+
         `${esc(s.config_digest)} / ${esc(s.policy_digest)}</dd>`)+
+    (u.schema===campaignV4Schema?section("resources",u.resources,campaignRenderV4Resources(u.resources)):
     section("resources",u.resources,
       `<dt>requested / granted / held / used</dt><dd>${esc(unknown(u.resources.requested))} / `+
         `${esc(unknown(u.resources.granted))} / ${esc(unknown(u.resources.held))} / `+
-        `${esc(unknown(u.resources.used))}</dd>`)+
-    (u.schema===campaignAggregateSchema?campaignRenderAggregates(u,aggregateClocks):section("actors",u.actors,
+        `${esc(unknown(u.resources.used))}</dd>`))+
+    (campaignAggregateRank[u.schema]?campaignRenderAggregates(u,aggregateClocks):section("actors",u.actors,
       `<dt>actor items</dt><dd>${u.actors.items.length ? esc(u.actors.items.length) : "none reported"}</dd>`+
       `<dt>clock semantics</dt><dd>${esc(u.actors.clock_semantics)}</dd>`)+
     section("evidence",u.evidence,
       `<dt>frontier / projection lag</dt><dd>${esc(unknown(u.evidence.frontier_digest))} / `+
         `${esc(unknown(u.evidence.lag_seconds))}</dd>`))+
+    (u.schema===campaignV4Schema?section("candidate",u.candidate,campaignRenderV4Candidate(u.candidate)):
     section("candidate",u.candidate,
       `<dt>accumulated</dt><dd>${esc(unknown(u.candidate.accumulated_identity))}</dd>`+
       `<dt>validated</dt><dd>${esc(unknown(u.candidate.validated_identity))}</dd>`+
       `<dt>frozen production</dt><dd>${esc(unknown(u.candidate.frozen_production_identity))}</dd>`+
-      `<dt>validation debt</dt><dd>${esc(unknown(u.candidate.validation_debt))}</dd>`)+
+      `<dt>validation debt</dt><dd>${esc(unknown(u.candidate.validation_debt))}</dd>`))+
     section("targets",t,
       `<dt>enrollment ready / prerequisite / total (not execution readiness)</dt><dd>${esc(t.ready)} / ${esc(t.prerequisite)} / `+
         `${esc(t.total)}</dd><dt>production / seed enrolled</dt><dd>${esc(t.production_enrolled)} / `+
