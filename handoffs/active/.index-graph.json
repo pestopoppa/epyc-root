@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-22T17:57:59Z",
+  "generated_at": "2026-11-22T18:51:32Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1370,17 +1370,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 2,
       "blocked_by": [],
-      "closed": 857,
-      "dispatchable": 146,
+      "closed": 874,
+      "dispatchable": 150,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-22",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 147,
+      "open": 152,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1472,7 +1472,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 43,
+          "dispatchable": 46,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1480,7 +1480,7 @@
           ],
           "line": 7335,
           "name": "autokernel-unified-surface-program",
-          "open": 44,
+          "open": 48,
           "readiness": "blocked"
         },
         {
@@ -1491,7 +1491,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10351,
+          "line": 10467,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1509,7 +1509,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 20,
+          "dispatchable": 21,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1525,9 +1525,9 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 10555,
+          "line": 10671,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 20,
+          "open": 21,
           "readiness": "blocked"
         }
       ]
