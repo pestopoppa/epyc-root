@@ -256,3 +256,9 @@ python3 scripts/coordination/rowflow/rowflow.py release <row-or-build-id> --by <
 - **Refused while the job runs**: a live engine/poller/dry-run pid (a zombie is dead) refuses. It never kills; preemption stays drain-only.
 - **Whole release** writes `grants/<id>.ended rc=75 reason=released-early`, renames `.grant` to `.grant.released-early` and logs `GRANT-RELEASED`; the cores free on the keeper's next tick. **`--regions`** (quarters the grant holds, not all of them) shrinks the grant to the rest.
 - `open_grants` treats any grant with a `.ended` receipt as released, so a hand-release that leaves `.grant` or `.build.json` behind holds nothing. Hand-editing `grants/` is no longer needed.
+
+## Lessons from 2026-11-22 (AutoKernel)
+
+- **Champion GPU gate rows on C17 or later must not exclude `LIGHTNING_INDEXER*`.** The flake fix (`066e81796`, on C17 as `d53d75550`) passed 0/10 vs C14 10/10 (`c15-lightning-idx-fix-gpu-20261121`). Do not copy the `LI = 'LIGHTNING_INDEXER'` / `fails_core` split from an older fold row's job.py; a LIGHTNING_INDEXER failure is a core failure.
+- **A row's prompts must fit the slot context in every np cell.** `rka-a3b-router-wide-gpu-20261121-r2` failed its validity check when one prompt (8121 tokens) overflowed an 8192-token slot and was truncated at 70/256 tokens. np4 used only prompts 0-7, so only the np8 cell reached it. Size `-c` from the largest prompt plus `n_predict`, not from the median.
+- **Do not compare `ctime` in a pre-grant identity check.** Arm and keep paths change file attributes but not contents. `vidya-r18d-aa-1p5b-20261122-r1` died at 5 s on a ctime-only change. Compare dev/ino/size/mtime and sha256.
