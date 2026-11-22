@@ -441,23 +441,78 @@ def reviewer_for(endpoint: str, model: str, max_tokens: int | None = None):
     return review
 
 
-def failure_class(w: dict, v: dict) -> str | None:
-    """model-limitation | harness | task | None (verified)."""
+# r8b canary (FIX-HARNESS 2026-11-22, fix 8): the classifier said model-limitation 11/16; a hand audit found 1.
+# Timeouts, environment test failures, denied paths, empty reviewer output and packet contradictions are not the model.
+_ENV_FAIL = re.compile(r"ModuleNotFoundError|No module named|command not found|ImportError while loading conftest|"
+                       r"error: unrecognized arguments|ERROR: usage|Permission denied|No such file or directory: '[^']*python")
+_ENV_RC = (4, 5, 126, 127)      # pytest usage error / no tests collected; shell not-executable / not-found
+
+
+def _env_test_failure(v: dict) -> bool:
+    tail = str(v.get("test_tail") or "")
+    rcs = [c.get("rc") for c in (v.get("evidence") or {}).get("commands") or [] if c.get("rc")]
+    if not rcs:
+        for c in v.get("checks") or []:
+            if c.get("check") == "tests" and not c.get("ok"):
+                rcs = [int(x) for x in re.findall(r"rc=(\d+)", str(c.get("why") or ""))]
+    return bool(_ENV_FAIL.search(tail)) or (bool(rcs) and all(r in _ENV_RC for r in rcs))
+
+
+def packet_contradiction(task: dict | None) -> list[str]:
+    """`where` targets the packet itself forbids (r8b INTAKE-VALIDATE-86: target under the forbidden `.claude/**`)."""
+    if not task:
+        return []
+    import fnmatch
+    named = set(task.get("inputs") or []) | set(task.get("outputs") or [])
+    dirs = tuple(n for n in named if n.endswith("/")) or ("\0",)
+    tgt = [p for p in verify.brief_paths(task) if p not in named and not p.startswith(dirs)]   # as verify.forbidden_hits
+    return sorted(p for p in tgt if any(fnmatch.fnmatch(p, g) for g in task.get("forbidden") or []))
+
+
+def _check_why(v: dict, name: str) -> list[str]:
+    return [x for c in v.get("checks") or [] if c.get("check") == name for x in str(c.get("why") or "").split(",") if x]
+
+
+def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
+    """model-limitation | harness | task | None (verified). Order: packet defects (task) before harness/env, and the
+    model is charged only when none of those explains the failure."""
     if v.get("verdict") == "verified":
         return None
+    if packet_contradiction(task):
+        return "task"           # r8b INTAKE-VALIDATE-86: the packet forbids its own target
     if w.get("errors") and not w["usage"]["steps"]:
         return "harness"
-    te = len(w.get("tool_errors") or [])
-    if te and te * 2 >= max(1, len(w.get("tools") or [])):
-        return "harness"        # r1 canary: denied shell / JS-sandbox errors were mislabelled model-limitation
     if w.get("result") and w["result"].get("claimed_done") is False:
         return "task"           # the worker reported blocked/unclear: the box, not the model
-    if v.get("reason") in ("forbidden-path", "outside-pathspec", "tests-fail", "reviewer-not_done", "reviewer-drift",
-                           "done-when-fail"):
+    reason = v.get("reason")
+    if reason == "outside-pathspec" and task:
+        out = _check_why(v, "pathspec")
+        named = verify.approach_new_paths(task)
+        if out and all(p in named for p in out):
+            return "task"       # r8b TU-GR-1: the approach named the files, the pathspec omitted them
+    if w.get("timed_out"):
+        return "harness"        # r8b: 600 s GPU-sized budget on CPU prefill (WS4, MM-5, TU-GR-1 / LOOP-62 think)
+    if reason in ("reviewer-unparseable", "reviewer-None") or (v.get("review") or {}).get("empty"):
+        return "harness"        # r8b NOFOLD-1 think: empty reviewer content
+    if reason == "tests-fail" and _env_test_failure(v):
+        return "harness"        # r8b MM-5: bare python3 -m pytest without fastapi, rc=4
+    errs = [str(e) for e in w.get("tool_errors") or []]
+    if any("external_directory" in e for e in errs):
+        return "harness"        # r8b UFH-21: the work tree is outside the lane
+    te = len(errs)
+    if te and te * 2 >= max(1, len(w.get("tools") or [])):
+        return "harness"        # r1 canary: denied shell / JS-sandbox errors were mislabelled model-limitation
+    if reason in ("forbidden-path", "outside-pathspec", "tests-fail", "reviewer-not_done", "reviewer-drift",
+                  "done-when-fail"):
         return "model-limitation"
-    if v.get("reason") == "no-change":
+    if reason == "no-change":
         return "model-limitation" if w["usage"]["steps"] else "harness"
-    return "harness" if w.get("timed_out") and not w["usage"]["steps"] else "model-limitation"
+    return "model-limitation"
+
+
+def needs_brief_class(task: dict) -> str:
+    """NEEDS-BRIEF is the box's fault unless a fresh hand brief existed (then the harness forced phase 1)."""
+    return "harness" if fresh_hand_brief(task) else "task"
 
 
 def apply_tick(task: dict, lane: Path, v: dict, w: dict) -> str:
@@ -588,7 +643,7 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                                                              "skipped")}
                 if not p1["ok"] and not p1.get("skipped"):
                     row.update(verdict="needs-brief", reason="NEEDS-BRIEF:" + ";".join(p1.get("missing") or [])[:200],
-                               failure_class="task")
+                               failure_class=needs_brief_class(task))
                     row["tag"] = tag_needs_brief(task, tdir, row["reason"], apply)   # box_index then skips the box
                     raise _EndRun()
             w = local_llm.spawn(task, lane, tdir / "worker", endpoint, family=family)
@@ -603,7 +658,7 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                                "uncached": u["input"], "output": u["output"]},  # opencode `input` excludes cache reads
                        review_tokens=(v.get("review") or {}).get("usage"), claimed=w.get("result"),
                        verdict=v["verdict"], reason=v["reason"], checks=v["checks"],
-                       failure_class=failure_class(w, v), worker_wall_s=w["wall_s"], tools=w["tools"][:40], edits=w.get("edits"), nudged=w.get("nudged"),
+                       failure_class=failure_class(w, v, task), worker_wall_s=w["wall_s"], tools=w["tools"][:40], edits=w.get("edits"), nudged=w.get("nudged"),
                        tool_errors=(w.get("tool_errors") or [])[:5],
                        errors=w["errors"][:3])
             if v.get("hold"):

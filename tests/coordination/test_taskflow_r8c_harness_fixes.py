@@ -126,3 +126,33 @@ def test_review_parsed_from_reasoning_when_content_empty():
 
 def test_reviewer_cap_raised():
     assert dispatch.REVIEW_MAX_TOKENS >= 1024
+
+
+# ------------------------------------------------------------------------- fix 8: failure classifier
+def test_classifier_matches_the_r8b_hand_audit():
+    """16 real r8b runs (results.jsonl + TASKS.json, tf1-cpu-r8b-canary-35b-q0q2-20261122). The old classifier said
+    model-limitation 11; the hand audit (findings doc r8b table) says harness 11, task (packet) 3, model 1, verified 1."""
+    import json
+    cases = json.loads((Path(__file__).parent / "taskflow_r8b_canary_cases.json").read_text())
+    got = {}
+    for c in cases:
+        if c["verify"]["verdict"] == "needs-brief":
+            got[c["unit_id"]] = dispatch.needs_brief_class(c["task"])
+        else:
+            got[c["unit_id"]] = dispatch.failure_class(c["worker"], c["verify"], c["task"])
+    assert got == {c["unit_id"]: c["audited"] for c in cases}
+    vals = list(got.values())
+    assert (vals.count("harness"), vals.count("task"), vals.count("model-limitation"), vals.count(None)) == (11, 3, 1, 1)
+    assert sum(c["r8b_classifier"] == "model-limitation" for c in cases) == 11       # the defect being fixed
+
+
+def test_classifier_env_test_failure_and_empty_reviewer():
+    w = {"timed_out": False, "usage": {"steps": 9}, "tool_errors": [], "tools": ["edit"] * 9, "errors": []}
+    env = {"verdict": "rejected", "reason": "tests-fail", "test_tail": "ModuleNotFoundError: No module named 'fastapi'",
+           "checks": [{"check": "tests", "ok": False, "why": "x rc=1"}]}
+    assert dispatch.failure_class(w, env) == "harness"
+    real = {"verdict": "rejected", "reason": "tests-fail", "test_tail": "AssertionError: 3 != 4",
+            "checks": [{"check": "tests", "ok": False, "why": "pytest -q t.py rc=1"}]}
+    assert dispatch.failure_class(w, real) == "model-limitation"
+    assert dispatch.failure_class(w, {"verdict": "rejected", "reason": "reviewer-not_done", "review": {"empty": True}}) == "harness"
+    assert dispatch.failure_class(w, {"verdict": "rejected", "reason": "reviewer-not_done", "review": {}}) == "model-limitation"
