@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T20:25:49Z",
+  "generated_at": "2026-11-23T20:36:29Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2680,7 +2680,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1195,
+          "line": 1196,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 2,
           "readiness": "ready"
@@ -2689,7 +2689,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1605,
+          "line": 1606,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1,
           "readiness": "ready"
@@ -2698,7 +2698,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2303,
+          "line": 2304,
           "name": "batched-edit-parallel-apply",
           "open": 2,
           "readiness": "ready"
@@ -2707,7 +2707,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2440,
+          "line": 2441,
           "name": "bep-dcp-falsification-harness",
           "open": 1,
           "readiness": "ready"
@@ -2716,7 +2716,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2510,
+          "line": 2511,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2,
           "readiness": "ready"
@@ -2725,7 +2725,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2704,
+          "line": 2705,
           "name": "evidence-plane-instrument-repair",
           "open": 3,
           "readiness": "ready"
@@ -2734,7 +2734,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2864,
+          "line": 2865,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1,
           "readiness": "ready"
@@ -2743,7 +2743,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 3249,
+          "line": 3250,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1,
           "readiness": "ready"
@@ -2752,7 +2752,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 3641,
+          "line": 3642,
           "name": "objective-task-rate-goodput",
           "open": 5,
           "readiness": "ready"
@@ -2761,7 +2761,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3986,
+          "line": 3987,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4,
           "readiness": "ready"
@@ -2770,7 +2770,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 4241,
+          "line": 4242,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7,
           "readiness": "ready"
@@ -2805,7 +2805,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4475,
+          "line": 4476,
           "name": "autopilot-sequential-allocation",
           "open": 4,
           "readiness": "blocked"
@@ -2840,7 +2840,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4938,
+          "line": 4939,
           "name": "promptforge-mutation-safety-contract",
           "open": 1,
           "readiness": "blocked"
@@ -2849,7 +2849,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": null,
-          "line": 5215,
+          "line": 5216,
           "name": "lab-reliability-ladder",
           "open": 1,
           "readiness": "ready"
