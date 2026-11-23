@@ -42,7 +42,7 @@ def test_pass_reused_only_for_same_spec_and_code(tmp_path, monkeypatch):
     monkeypatch.setattr(pr, "supersede_prior_attempts", lambda *a: None)
     monkeypatch.setattr(pr.rf, "supersede", lambda *a: None)
     monkeypatch.setattr(pr, "file_if_complete", lambda *a: False)
-    passed = {"smoke_identity": pr.smoke_identity(spec, row)}
+    passed = {"smoke_identity": pr.smoke_identity(spec, row), "smoke_measure": "/measured"}
     pr.rf.atomic_json(pr.rf.pass_path(flags, rid), passed)
     assert pr.publish_smoked(spec, flags, "src", queue_cpu=True)["id"] == rid
     assert not Path(pr.rf.smoke_queued_path(flags, rid)).exists()
@@ -71,3 +71,39 @@ def test_same_recorded_failure_is_not_counted_twice(tmp_path):
     pr.rf.atomic_json(str(fail.with_name("FAIL-2.json")), {"reason": "broken"})
     pr.record_smoke_outcome(flags, rid, "FAIL", "broken")
     assert pr.smoke_strikes(flags, rid)["count"] == 2
+
+
+def test_old_pass_without_measure_is_not_reused(tmp_path, monkeypatch):
+    flags, rid = str(tmp_path), "row-old"
+    launcher = tmp_path / "launch.sh"
+    launcher.write_text("code")
+    spec = {"id": rid, "launcher": str(launcher), "lane": "cpu"}
+    row = {"id": rid, "launcher": {"path": str(launcher)}}
+    monkeypatch.setattr(pr.rf, "job_sha", lambda p: pr.rf.sha256(p))
+    def publish(s, f, source=None):
+        pr.rf.atomic_json(pr.rf.ready_path(f, rid), row)
+        return dict(row)
+    monkeypatch.setattr(pr.rf, "publish", publish)
+    monkeypatch.setattr(pr, "supersede_prior_attempts", lambda *a: None)
+    pr.rf.atomic_json(pr.rf.pass_path(flags, rid), {"smoke_identity": pr.smoke_identity(spec, row)})
+    assert pr.publish_smoked(spec, flags, "src", queue_cpu=True) is None
+    assert Path(pr.rf.smoke_queued_path(flags, rid)).exists()
+
+
+def test_gpu_reuse_needs_residency_proof(tmp_path, monkeypatch):
+    flags, rid = str(tmp_path), "row-gpu"
+    launcher = tmp_path / "launch.sh"
+    launcher.write_text("code")
+    spec = {"id": rid, "launcher": str(launcher), "lane": "gpu"}
+    row = {"id": rid, "launcher": {"path": str(launcher)}}
+    monkeypatch.setattr(pr.rf, "job_sha", lambda p: pr.rf.sha256(p))
+    def publish(s, f, source=None):
+        pr.rf.atomic_json(pr.rf.ready_path(f, rid), row)
+        return dict(row)
+    monkeypatch.setattr(pr.rf, "publish", publish)
+    monkeypatch.setattr(pr, "supersede_prior_attempts", lambda *a: None)
+    monkeypatch.setattr(pr, "gpu_busy", lambda flags: True)
+    pr.rf.atomic_json(pr.rf.pass_path(flags, rid), {"smoke_identity": pr.smoke_identity(spec, row),
+                                                  "smoke_measure": "/measured", "residency_evidence": {"kfd_pids": []}})
+    assert pr.publish_smoked(spec, flags, "src") is None
+    assert Path(pr.queued_path(flags, rid)).exists()
