@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 480
+      "open": 479
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -101,7 +101,7 @@
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 972,
+      "closed": 973,
       "guarded": 0,
       "last_advanced": "2026-11-23",
       "open": 120,
@@ -113,11 +113,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 1092,
+      "total": 1093,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 445,
+          "closed": 446,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5395,
+          "line": 5400,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5480,
+          "line": 5485,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5661,
+          "line": 5666,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 10
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7545,
+          "line": 7550,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 19
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10788,
+          "line": 10793,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11035,
+          "line": 11040,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -219,10 +219,10 @@
     },
     "autopilot-program.md": {
       "blocked": 1,
-      "closed": 304,
+      "closed": 305,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 86,
+      "open": 85,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -245,20 +245,20 @@
         },
         {
           "blocked": 0,
-          "closed": 7,
+          "closed": 8,
           "gates": [],
           "guarded": 0,
           "line": 21,
           "markers": 1,
           "name": "autopilot-program",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 1,
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1194,
+          "line": 1195,
           "markers": 1,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 1
@@ -268,7 +268,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1604,
+          "line": 1605,
           "markers": 1,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1
@@ -278,7 +278,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2302,
+          "line": 2303,
           "markers": 1,
           "name": "batched-edit-parallel-apply",
           "open": 2
@@ -288,7 +288,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2439,
+          "line": 2440,
           "markers": 1,
           "name": "bep-dcp-falsification-harness",
           "open": 1
@@ -298,7 +298,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2509,
+          "line": 2510,
           "markers": 1,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2
@@ -308,7 +308,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2703,
+          "line": 2704,
           "markers": 1,
           "name": "evidence-plane-instrument-repair",
           "open": 3
@@ -318,7 +318,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 2863,
+          "line": 2864,
           "markers": 1,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1
@@ -328,7 +328,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 3248,
+          "line": 3249,
           "markers": 1,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1
@@ -338,7 +338,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 3640,
+          "line": 3641,
           "markers": 1,
           "name": "objective-task-rate-goodput",
           "open": 5
@@ -348,7 +348,7 @@
           "closed": 47,
           "gates": [],
           "guarded": 0,
-          "line": 3985,
+          "line": 3986,
           "markers": 1,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4
@@ -358,7 +358,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 4240,
+          "line": 4241,
           "markers": 1,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7
@@ -381,7 +381,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4474,
+          "line": 4475,
           "markers": 1,
           "name": "autopilot-sequential-allocation",
           "open": 4
@@ -404,7 +404,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4937,
+          "line": 4938,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 1
@@ -414,7 +414,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 5214,
+          "line": 5215,
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1

@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T20:04:40Z",
+  "generated_at": "2026-11-23T20:25:49Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1378,7 +1378,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 972,
+      "closed": 973,
       "dispatchable": 120,
       "domain": "inference-research",
       "guarded": 0,
@@ -1439,7 +1439,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5395,
+          "line": 5400,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1448,7 +1448,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5480,
+          "line": 5485,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1467,7 +1467,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 5661,
+          "line": 5666,
           "name": "autokernel-rebuild-program",
           "open": 10,
           "readiness": "blocked"
@@ -1484,7 +1484,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 7545,
+          "line": 7550,
           "name": "autokernel-unified-surface-program",
           "open": 19,
           "readiness": "blocked"
@@ -1497,7 +1497,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10788,
+          "line": 10793,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1531,7 +1531,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11035,
+          "line": 11040,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -2629,15 +2629,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 304,
-      "dispatchable": 86,
+      "closed": 305,
+      "dispatchable": 85,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
       "last_advanced": "2026-11-23",
       "next_action": "Run AP-POSTREBOOT-LH-RIGOR (R1-R5 accept for the Life-Harness run); smoke after reboot; hold-lift review last",
-      "open": 87,
+      "open": 86,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -2669,18 +2669,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 21,
           "name": "autopilot-program",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1194,
+          "line": 1195,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 2,
           "readiness": "ready"
@@ -2689,7 +2689,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1604,
+          "line": 1605,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1,
           "readiness": "ready"
@@ -2698,7 +2698,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2302,
+          "line": 2303,
           "name": "batched-edit-parallel-apply",
           "open": 2,
           "readiness": "ready"
@@ -2707,7 +2707,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2439,
+          "line": 2440,
           "name": "bep-dcp-falsification-harness",
           "open": 1,
           "readiness": "ready"
@@ -2716,7 +2716,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2509,
+          "line": 2510,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2,
           "readiness": "ready"
@@ -2725,7 +2725,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2703,
+          "line": 2704,
           "name": "evidence-plane-instrument-repair",
           "open": 3,
           "readiness": "ready"
@@ -2734,7 +2734,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2863,
+          "line": 2864,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1,
           "readiness": "ready"
@@ -2743,7 +2743,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 3248,
+          "line": 3249,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1,
           "readiness": "ready"
@@ -2752,7 +2752,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 3640,
+          "line": 3641,
           "name": "objective-task-rate-goodput",
           "open": 5,
           "readiness": "ready"
@@ -2761,7 +2761,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3985,
+          "line": 3986,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4,
           "readiness": "ready"
@@ -2770,7 +2770,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 4240,
+          "line": 4241,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7,
           "readiness": "ready"
@@ -2805,7 +2805,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4474,
+          "line": 4475,
           "name": "autopilot-sequential-allocation",
           "open": 4,
           "readiness": "blocked"
@@ -2840,7 +2840,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4937,
+          "line": 4938,
           "name": "promptforge-mutation-safety-contract",
           "open": 1,
           "readiness": "blocked"
@@ -2849,7 +2849,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": null,
-          "line": 5214,
+          "line": 5215,
           "name": "lab-reliability-ladder",
           "open": 1,
           "readiness": "ready"
