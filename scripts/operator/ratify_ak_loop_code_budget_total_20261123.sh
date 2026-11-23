@@ -4,9 +4,9 @@
 # /mnt/raid0/llm/tmp/code-budget-audit-20261123/REPORT.md §5).
 #
 # WHAT YOU ARE SIGNING (research scripts/kernel_rnd/autokernel/loop_code_budget_baseline.json, nothing else):
-#   1. "total_ceiling" = max(126300, measured loop/ code total at signing + CENSUS allowance), where the
-#      allowance is the code-line delta of the unlanded local branch lane/pm-census-extract-fixes (floor 163,
-#      measured 2026-11-23; 0 once loop/census_extract.py is on origin/main), so that branch lands unsigned.
+#   1. "total_ceiling" = max(126300, ceil(measured loop/ code total at signing x 1.02)) -- operator ruling
+#      2026-11-23: "measured + 2% headroom". Measured with the guard's own code-only metric
+#      (composition_by_file over loop/); the census branch has landed, so there is no census allowance.
 #   2. "total_ceiling_approval" = this gate id.
 #   3. The per-file "exceptions" block is retired (per-file numbers are advisory after research 48997f7f0).
 #   The guard (research 48997f7f0+) then fails only when loop/ total > total_ceiling; raising it again needs
@@ -43,9 +43,8 @@ AK="scripts/kernel_rnd/autokernel"
 BASELINE="$AK/loop_code_budget_baseline.json"
 GUARD_MOD="scripts.kernel_rnd.autokernel.check_regrowth_guards"
 FLOOR_TOTAL=126300
-CENSUS_REF="${CENSUS_REF:-lane/pm-census-extract-fixes}"
-CENSUS_FLOOR=163
-RULING='2026-11-23 operator: "Adopt the total-budget redesign." (code-budget audit REPORT.md §5)'
+HEADROOM_PCT=2   # operator ruling 2026-11-23: total = measured + 2%
+RULING='2026-11-23 operator: "Adopt the total-budget redesign." (code-budget audit REPORT.md §5); sizing ruling 2026-11-23: total = measured + 2% headroom'
 
 MODE="review"; ATTEST=""; DO_PUSH=1
 while [ "$#" -gt 0 ]; do
@@ -100,7 +99,7 @@ cleanup() {
   if [ "$KEEP_STAGE" -eq 0 ]; then
     [ "$RWT_ADDED" -eq 0 ] || g "$RES" worktree remove "$RWT" >/dev/null 2>&1 || say "WARN: could not remove $RWT"
     [ "$WT_ADDED" -eq 0 ] || g "$ROOT" worktree remove "$WT" >/dev/null 2>&1 || say "WARN: could not remove $WT"
-    rm -f "${STAGE:?}/new_baseline.json" "${STAGE:?}/plan.json" "${STAGE:?}/after.txt" "${STAGE:?}/x.py"
+    rm -f "${STAGE:?}/new_baseline.json" "${STAGE:?}/plan.json" "${STAGE:?}/after.txt"
     rmdir "${STAGE:?}" 2>/dev/null || true
   fi
   exit "$rc"
@@ -111,41 +110,8 @@ g "$ROOT" worktree add -q --detach "$WT" "$ROOT_BASE" || die "could not stage a 
 grep -q 'def effective_total_ceiling' "$RWT/$AK/check_regrowth_guards.py" \
   || die "research origin/main does not carry the total-budget guard (48997f7f0); land it first"
 
-# ---- census allowance: code delta of the unlanded census branch (guard metric), floor CENSUS_FLOOR
-CENSUS_TIP=""; CENSUS_MB=""
-if [ -e "$RWT/$AK/loop/census_extract.py" ]; then
-  ALLOW=0; ALLOW_WHY="census_extract.py already on origin/main (counted in the measured total)"
-else
-  if CENSUS_TIP="$(g "$RES" rev-parse -q --verify "$CENSUS_REF^{commit}" 2>/dev/null)"; then
-    CENSUS_MB="$(g "$RES" merge-base "$CENSUS_TIP" "$RES_BASE")"
-  fi
-  ALLOW="$CENSUS_FLOOR"; ALLOW_WHY="floor $CENSUS_FLOOR (measured 2026-11-23 on $CENSUS_REF @052fab374)"
-  if [ -n "$CENSUS_MB" ]; then
-    DELTA="$(cd "$RWT" && RES="$RES" MB="$CENSUS_MB" TIP="$CENSUS_TIP" X="$STAGE/x.py" "$SYS_PY" - <<'PYEOF'
-import os, subprocess
-from pathlib import Path
-import scripts.kernel_rnd.autokernel.check_regrowth_guards as g
-e = os.environ; loop = "scripts/kernel_rnd/autokernel/loop/"
-git = ["git", "-c", "safe.directory=*", "-C", e["RES"]]
-names = subprocess.run(git + ["diff", "--name-only", e["MB"], e["TIP"], "--", loop],
-                       capture_output=True, text=True, check=True).stdout.split()
-def cnt(rev, n):
-    r = subprocess.run(git + ["show", f"{rev}:{n}"], capture_output=True, text=True)
-    if r.returncode:
-        return 0
-    Path(e["X"]).write_text(r.stdout, encoding="utf-8")
-    return g.file_composition(Path(e["X"]))[0]
-print(sum(cnt(e["TIP"], n) - cnt(e["MB"], n) for n in names
-          if n.endswith(".py") and not Path(n).name.startswith("test_")))
-PYEOF
-)" || die "could not measure $CENSUS_REF"
-    if [ "$DELTA" -gt "$ALLOW" ]; then ALLOW="$DELTA"; ALLOW_WHY="measured delta of $CENSUS_REF @${CENSUS_TIP:0:12}"; fi
-    say "== $CENSUS_REF @${CENSUS_TIP:0:12}: loop/ code delta $DELTA vs merge-base ${CENSUS_MB:0:12} =="
-  fi
-fi
-
 # ---- plan
-( cd "$RWT" && FLOOR="$FLOOR_TOTAL" ALLOW="$ALLOW" GATE="$GATE_ID" B="$BASELINE" OUT="$STAGE/new_baseline.json" PLAN="$STAGE/plan.json" "$SYS_PY" - <<'PYEOF'
+( cd "$RWT" && FLOOR="$FLOOR_TOTAL" PCT="$HEADROOM_PCT" GATE="$GATE_ID" B="$BASELINE" OUT="$STAGE/new_baseline.json" PLAN="$STAGE/plan.json" "$SYS_PY" - <<'PYEOF'
 import json, os
 import scripts.kernel_rnd.autokernel.check_regrowth_guards as g
 from pathlib import Path
@@ -155,7 +121,10 @@ if raw.get("total_ceiling_approval") == e["GATE"]:
     print("ALREADY"); raise SystemExit(0)
 measured = sum(g.composition_by_file(Path("scripts/kernel_rnd/autokernel/loop")).values())
 old, old_src = g.effective_total_ceiling(raw)
-new_total = max(int(e["FLOOR"]), measured + int(e["ALLOW"]))
+pct = int(e["PCT"])
+new_total_raw = -(-measured * (100 + pct) // 100)   # ceil(measured * 1.02), integer-exact
+headroom = new_total_raw - measured
+new_total = max(int(e["FLOOR"]), new_total_raw)
 new = {k: v for k, v in raw.items() if k not in ("exceptions", "total_ceiling", "total_ceiling_approval")}
 new["total_ceiling"] = new_total
 new["total_ceiling_approval"] = e["GATE"]
@@ -165,7 +134,8 @@ plan = {"old_total_ceiling": old, "old_total_ceiling_source": old_src,
         "old_total_ceiling_field": raw.get("total_ceiling"),
         "old_exceptions_count": len(raw.get("exceptions", {})),
         "old_exceptions_ceiling_sum": sum(x["ceiling"] for x in raw.get("exceptions", {}).values()),
-        "measured_total": measured, "census_allowance": int(e["ALLOW"]),
+        "measured_total": measured, "headroom_pct": pct, "headroom_lines": headroom,
+        "ceil_measured_x_1_02": new_total_raw,
         "floor": int(e["FLOOR"]), "new_total_ceiling": new_total,
         "files_entries_unchanged": len(raw["files"])}
 Path(e["PLAN"]).write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
@@ -174,7 +144,7 @@ PYEOF
 ) >"$STAGE/plan.out" || die "could not plan"
 if grep -qx ALREADY "$STAGE/plan.out"; then rm -f "$STAGE/plan.out"; say "ALREADY RATIFIED: total_ceiling carries $GATE_ID. Nothing to do."; exit 0; fi
 rm -f "$STAGE/plan.out"
-say "== plan (census allowance: $ALLOW_WHY) =="; cat "$STAGE/plan.json"
+say "== plan (total = max($FLOOR_TOTAL, ceil(measured x 1.02))) =="; cat "$STAGE/plan.json"
 
 # ---- postflight: only the three intended changes, and the guard is green on the new baseline
 "$SYS_PY" - "$RWT/$BASELINE" "$STAGE/new_baseline.json" <<'PYEOF' || die "postflight failed; nothing committed"
@@ -231,7 +201,7 @@ fi
 WT="$WT" RECEIPT_REL="$RECEIPT_REL" INDEX_REL="$INDEX_REL" GATE_ID="$GATE_ID" OPERATOR="$RATIFY_OPERATOR" \
 TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)" BASE="$ROOT_BASE" RES_BASE="$RES_BASE" RES_COMMIT="$RES_COMMIT" \
 SCRIPT_SHA="$(sha "$SCRIPT_PATH")" SCRIPT_REL="$SCRIPT_REL" PLAN_JSON="$STAGE/plan.json" BASELINE="$BASELINE" \
-RULING="$RULING" ALLOW_WHY="$ALLOW_WHY" "$SYS_PY" - <<'PYEOF' || die "could not write the receipts. Re-run."
+RULING="$RULING" "$SYS_PY" - <<'PYEOF' || die "could not write the receipts. Re-run."
 import json, os
 e = os.environ
 plan = json.load(open(e["PLAN_JSON"]))
@@ -247,9 +217,12 @@ doc = {
             "exceptions_count": plan["old_exceptions_count"],
             "exceptions_ceiling_sum": plan["old_exceptions_ceiling_sum"]},
     "new": {"total_ceiling": plan["new_total_ceiling"], "total_ceiling_approval": e["GATE_ID"], "exceptions": None},
-    "sizing": {"rule": "max(floor, measured + census allowance)", "floor": plan["floor"],
-               "measured_total": plan["measured_total"], "census_allowance": plan["census_allowance"],
-               "census_allowance_basis": e["ALLOW_WHY"]},
+    "sizing": {"rule": "total_ceiling = max(floor, ceil(measured_total_at_signing * 1.02))",
+               "formula": "ceil(measured_total * 1.02)", "floor": plan["floor"],
+               "metric": "guard code-only metric: sum(composition_by_file(loop/)) in check_regrowth_guards",
+               "measured_total": plan["measured_total"], "headroom_pct": plan["headroom_pct"],
+               "headroom_lines": plan["headroom_lines"], "ceil_measured_x_1_02": plan["ceil_measured_x_1_02"],
+               "operator_ruling": "2026-11-23 operator: set total code-line ceiling to measured + 2% headroom"},
     "unsigned_entries_ratified_here": {
         "cpu_fold_record.py": {"files_ceiling": 69, "research_commit": "3f49fb474",
                                "note": "added unsigned 2026-11-23, ratified here (counted in measured_total)"},
