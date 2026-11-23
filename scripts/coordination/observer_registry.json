@@ -433,6 +433,12 @@
       "script": "scripts/coordination/rowflow/filler_run15.sh",
       "contract": "exempt",
       "reason": "keeper-hotfix 2026-11-05: the engine observes only processes of its OWN run - its captured setsid group/session (pgid/sid from ps), their ps descendants, and orphans whose /proc environ carries BOTH this run's FILLER_ID and FILLER_STOPFILE (exported by the engine itself). It never matches a process name or argv pattern, never watches a foreign daemon, and verifies death by ps (zombie = dead). Not a watchdog: the observation exists only to stop the run it launched."
+    },
+    {
+      "id": "rowflow_hold_orphan",
+      "script": "scripts/coordination/rowflow/rowflow.py",
+      "contract": "exempt",
+      "reason": "HOLD-ORPHAN (AK audit B2, 2026-11-23) observes only the processes of a grant's OWN row: its launcher/ARMED/RUNNING pids and their trees, its cgroup leaf, pgids recorded while the row lived, and one `ps` listing for argv naming the row id or workdir. It never kills or signals anything and never matches a foreign daemon by name. Polarity is fail-closed: an unanswerable ps or unreadable attribution returns None (three-valued) and the grant is NOT released; release needs 5 minutes of continuous observed absence, zombies excluded. Covered by tests/test_rowflow_ak_audit_keeper.py::B2HoldOrphan and replay scenario b2-orphan-grant-released."
     }
   ]
 }

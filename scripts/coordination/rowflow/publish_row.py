@@ -843,7 +843,7 @@ def preflight_env(spec, flags):
     env = dict(os.environ, FILLER_DRYRUN="1", FILLER_DRYRUN_DIR=dd, FILLER_STATE_DIR=os.path.join(dd, "state"),
                FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=os.path.join(dd, "grants"), FILLER_POLL="5",
                FILLER_OWNER=str(spec.get("owner") or ""), FILLER_EST_WALL_S=str(spec.get("estimate_s") or ""),
-               FILLER_DRYRUN_ONE_QUARTER="0", WS58_REGIONS=ws or "", FILLER_ID=rid,
+               FILLER_DRYRUN_ONE_QUARTER="0", WS58_REGIONS=rf.ws58_cpu_list(ws), WS58_CPUS=rf.ws58_cpu_list(ws), FILLER_ID=rid,
                FILLER_RESIDENCY_FILE=os.path.join(dd, rf.SMOKE_RESIDENCY_FILE))
     return {k: v for k, v in env.items() if not k.startswith("FILLER_SMOKE")}
 
@@ -1094,6 +1094,7 @@ def retire_old_verdicts(flags, rid):
     (codex-ni-s18: a 00:07Z FAIL was re-reported at 10:4xZ), so earlier verdicts move to dryrun/<id>/superseded/<ts>/."""
     dd = rf.dry_dir(flags, rid)
     old = rf.fail_paths(flags, rid) + ([rf.pass_path(flags, rid)] if os.path.exists(rf.pass_path(flags, rid)) else [])
+    rf.rotate_launcher_out(flags, rid)   # AK audit B13: the superseded attempt keeps its launcher.out (launcher.out.<attempt>)
     if not old:
         return
     dst = os.path.join(dd, "superseded", dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))

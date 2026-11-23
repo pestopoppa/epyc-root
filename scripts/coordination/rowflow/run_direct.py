@@ -126,7 +126,7 @@ def build(flags, rid, d, regions, gpu_quiet, window_s, timeout_s, rl=None):
            "FILLER_PORTS": ",".join(str(p) for p in (d.get("ports") or [])), "FILLER_PIDFILE": os.path.join(state, rid + ".pids"),
            "FILLER_LIB": os.path.join(_HERE, "filler_lib.sh"),
            "FILLER_FLAGS_DIR": flags, "FILLER_GRANTS_DIR": os.path.join(flags, "grants"), "FILLER_OWNER": str(d.get("owner", "")),
-           "FILLER_EST_WALL_S": str(d.get("estimate_s", "")), "FILLER_DIRECT": "1", "WS58_REGIONS": cpus}
+           "FILLER_EST_WALL_S": str(d.get("estimate_s", "")), "FILLER_DIRECT": "1", "WS58_REGIONS": cpus, "WS58_CPUS": rf.ws58_cpu_list(cpus)}
     argv = [rl or rf.RL, "run", "--cpu-list", cpus, "--role", "bench", "--timeout-s", str(int(timeout_s)), "--tag", f"filler-{rid}"]
     if mode != "none":
         argv += ["--gpu-quiet", mode]

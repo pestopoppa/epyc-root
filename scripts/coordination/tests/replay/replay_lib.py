@@ -210,6 +210,7 @@ class World:
         self.alive = set()
         self.kfd = {}
         self.infer = []
+        self.ps = None   # tick "ps": [[pid, pgid, stat, args]...] host process listing; None = ps unanswerable (HOLD-ORPHAN fails closed)
         self.stack = {}
         self.rl = {}
         self.util = {"q0": 0.0, "q1": 0.0, "q2": 0.0, "q3": 0.0, "gpu": {"busy": 0, "vram_pct": 0.0, "vram_gib": 0.0}}
@@ -336,6 +337,7 @@ def load_candidate(rowflow_dir, flags, tmp):
     patch("cpu_sample", lambda *a, **k: {})
     patch("armed_engine_ok", lambda pid, rid, proc="/proc": bool(pid) and _int(pid) in W.alive)
     patch("row_orphans", lambda rid: [])
+    patch("ps_listing", lambda: None if W.ps is None else [tuple(x) for x in W.ps])
     def admit(flags, rid, d, pid, regions, window_s):
         """Admission as the trace scripts it: blob["admit"] = {"refuse": line, "complete_marker": bool, "pid_dies": bool}
         (pass-4 fixtures: a --precond-cmd refusal every tick; a poller that finished the job and died before admit)."""
@@ -596,6 +598,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
         W.vram = int(tick.get("vram_bytes") or 0)
         W.kfd = dict(tick.get("kfd") or {})   # host-view KFD clients {pid: vram bytes} (foreign containers included)
         W.disk = float(tick.get("disk_free_gib") or 400.0)
+        W.ps = tick.get("ps")
         W.infer = list(tick.get("infer_procs") or [])   # [{pid, ppid, pgid, birth, comm, cmd}] host-view inference servers
         W.stack = {int(k): v for k, v in (tick.get("stack_pids") or {}).items()}
         for q in glob.glob(os.path.join(sb.flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
@@ -659,7 +662,7 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             "kills": W.kills[kills0:], "fails_new": sorted(set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json"))) - fails0),
             "running_json": running, "cands": int(mc.group(1)) if mc else None, "assigned": int(mc.group(2)) if mc else None,
             "snapshot_busy": mb.group(1) if mb else "",
-            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET", "BUILD"))][:400],
+            "lines": [l for l in lines if _kind(l) != "OTHER" or l.startswith(("SMOKE", "IDLE", "DRAIN", "GPU-CONTAMINATED", "WAIT", "SUPERSEDED", "QUIET", "BUILD", "HOLD-ORPHAN", "SHORT-ROW"))][:400],
             "foreign": tick.get("foreign") or {},
         })
     with open(os.path.join(out_dir, "decisions.jsonl"), "w") as f:

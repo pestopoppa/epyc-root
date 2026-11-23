@@ -4,6 +4,8 @@
 #
 #   deploy_rowflow.sh [--ref origin/main] [--repo /workspace] [--check-only] [--allow-open-grants] [--no-rollback]
 #   deploy_rowflow.sh --parity [--ref origin/main] [--repo /workspace]
+#   Takes a deploy flock (<flags>/.deploy_rowflow.lock; a second deploy is refused, rc 79) and a LIGHT claim on 84-87 (--by <owner>,
+#   default $USER; retried every 60 s up to 15 tries) under which both test gates run (nice -n 19 taskset -c 84-87); released on exit.
 #
 # WHAT is installed: every line of scripts/coordination/INSTALL.manifest at <ref> (published path under compute-flags/,
 # repo source path, class) - bin/rowflow, bin/churn, bin/job_templates, bin/ helpers and the keeper/loop scripts. There is
@@ -41,6 +43,8 @@ FLAGS=${ROWFLOW_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}
 BIN="$FLAGS/bin/rowflow"
 LOG="$FLAGS/ws58-calendar-keeper.log"
 CHECK_ONLY=0; PARITY=0; ALLOW_OPEN=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
+BY=${DEPLOY_BY:-${USER:-pipeline-mgmt}}; NO_LIGHT=${DEPLOY_NO_LIGHT:-0}; SELFTEST_CLAIM=0
+LOCK_FILE=${DEPLOY_LOCK_FILE:-$FLAGS/.deploy_rowflow.lock}
 FROZEN=(bin/rowflow/filler_run15.sh)   # operator 2026-11-10: rowflow.py/publish_row.py unfrozen
 FROZEN_AT=9218dffd131008117a5f341848dce572b4669486
 MANIFEST_REL=scripts/coordination/INSTALL.manifest
@@ -55,6 +59,9 @@ while [ $# -gt 0 ]; do
     --allow-open-grants) ALLOW_OPEN=1; shift ;;
     --no-rollback) ROLLBACK=0; shift ;;
     --verify-s) VERIFY_S=$2; shift 2 ;;
+    --by) BY=$2; shift 2 ;;
+    --no-light-claim) NO_LIGHT=1; shift ;;
+    --selftest-claim) SELFTEST_CLAIM=1; shift ;;
     --emergency) EMERGENCY=${2:-}; shift 2
       [ -n "${EMERGENCY// /}" ] || { echo "REFUSED: --emergency needs a non-empty reason" >&2; exit 64; } ;;
     -h|--help) sed -n 2,37p "$0"; exit 0 ;;
@@ -81,6 +88,36 @@ if [ "$PARITY" = 1 ]; then
   exit "$DRIFT"
 fi
 
+# ---- 0. one deploy at a time (2026-11-23: two ran concurrently) + the test gate runs on a LIGHT claim (84-87, <= 15 min, retried
+# every 60 s), never on the cores a quiet row or a build holds. The flock is released by the kernel when this shell exits.
+mkdir -p "$(dirname "$LOCK_FILE")"
+exec 9>"$LOCK_FILE"
+if ! flock -n 9; then
+  echo "REFUSED: another deploy_rowflow.sh holds $LOCK_FILE (two deploys must never run at once); retry when it ends" >&2; exit 79
+fi
+LIGHT_GID=""; GATE_PREFIX=()
+release_light() {
+  if [ -n "$LIGHT_GID" ]; then
+    nice -n 19 taskset -c 84-87 python3 "$BIN/rowflow.py" --flags "$FLAGS" release "$LIGHT_GID" --by "$BY" --reason deploy-gate-done >/dev/null 2>&1 || true
+    LIGHT_GID=""
+  fi
+}
+take_light() {
+  [ "$NO_LIGHT" = 1 ] && return 0
+  local i out
+  for i in $(seq 1 ${DEPLOY_LIGHT_TRIES:-15}); do
+    if out=$(nice -n 19 taskset -c 84-87 python3 "$BIN/rowflow.py" --flags "$FLAGS" claim --build --light --owner "$BY" --cpus 84-87 --minutes 15 2>&1); then
+      LIGHT_GID=$(printf '%s\n' "$out" | awk '/^BUILD-GRANT/ {print $2; exit}')
+      [ -n "$LIGHT_GID" ] && { GATE_PREFIX=(nice -n 19 taskset -c 84-87); echo "deploy_rowflow: light claim $LIGHT_GID on 84-87 (owner $BY)"; return 0; }
+    fi
+    echo "deploy_rowflow: light claim refused (${out##*$'\n'}); retry in ${DEPLOY_LIGHT_RETRY_S:-60}s ($i/${DEPLOY_LIGHT_TRIES:-15})" >&2
+    sleep "${DEPLOY_LIGHT_RETRY_S:-60}"
+  done
+  echo "REFUSED: no light claim on 84-87 within the retry budget; nothing installed" >&2; exit 80
+}
+trap release_light EXIT
+if [ "$SELFTEST_CLAIM" = 1 ]; then take_light; echo "GATE_PREFIX=${GATE_PREFIX[*]:-}"; exit 0; fi
+
 TS=$(date -u +%Y%m%dT%H%M%SZ)
 mkdir -p "$SCRATCH"
 STAGE=$(mktemp -d "$SCRATCH/deploy-$TS-XXXX")
@@ -88,7 +125,8 @@ SHA=$(git -C "$REPO" rev-parse --verify "$REF^{commit}")
 echo "deploy_rowflow: ref=$REF sha=$SHA stage=$STAGE"
 rmdir "$STAGE"
 git -C "$REPO" worktree add --detach -q "$STAGE" "$SHA"
-trap 'git -C "$REPO" worktree remove --force "$STAGE" >/dev/null 2>&1 || true' EXIT
+trap 'git -C "$REPO" worktree remove --force "$STAGE" >/dev/null 2>&1 || true; release_light' EXIT
+take_light
 CAND="$STAGE/scripts/coordination/rowflow"
 [ -f "$CAND/rowflow.py" ] || { echo "REFUSED: $SHA has no scripts/coordination/rowflow/rowflow.py" >&2; exit 65; }
 [ -f "$STAGE/$MANIFEST_REL" ] || { echo "REFUSED: $SHA has no $MANIFEST_REL" >&2; exit 65; }
@@ -123,7 +161,7 @@ for t in "$STAGE"/scripts/coordination/tests/test_rowflow*.py "$STAGE"/scripts/c
   [ -f "$t" ] && UNIT+=("$t")
 done
 echo "deploy_rowflow: unit tests (${#UNIT[@]} files)"
-if ! (cd "$STAGE" && python3 -m pytest -q -p no:cacheprovider "${UNIT[@]}" > "$SCRATCH/deploy-$TS-unit.log" 2>&1); then
+if ! (cd "$STAGE" && "${GATE_PREFIX[@]}" python3 -m pytest -q -p no:cacheprovider "${UNIT[@]}" > "$SCRATCH/deploy-$TS-unit.log" 2>&1); then
   tail -30 "$SCRATCH/deploy-$TS-unit.log"; echo "REFUSED: unit tests failed ($SCRATCH/deploy-$TS-unit.log); nothing installed" >&2; exit 1
 fi
 tail -1 "$SCRATCH/deploy-$TS-unit.log"
@@ -136,7 +174,7 @@ for pub in "${ENTRIES[@]}"; do
   fi
 done
 echo "deploy_rowflow: replay gate (harness $REPLAY_DIR)"
-if ! ROWFLOW_CANDIDATE="$CAND" REPLAY_SCRATCH="$SCRATCH/deploy-$TS-replay" python3 -m pytest -q -p no:cacheprovider "$REPLAY_DIR/test_replay_gate.py" > "$SCRATCH/deploy-$TS-replay.log" 2>&1; then
+if ! ROWFLOW_CANDIDATE="$CAND" REPLAY_SCRATCH="$SCRATCH/deploy-$TS-replay" "${GATE_PREFIX[@]}" python3 -m pytest -q -p no:cacheprovider "$REPLAY_DIR/test_replay_gate.py" > "$SCRATCH/deploy-$TS-replay.log" 2>&1; then
   sed -n "/^\(FAILED\|E  \)/p" "$SCRATCH/deploy-$TS-replay.log" | sed -n 1,30p; echo "REFUSED: replay gate failed ($SCRATCH/deploy-$TS-replay.log); nothing installed" >&2; exit 1
 fi
 tail -1 "$SCRATCH/deploy-$TS-replay.log"

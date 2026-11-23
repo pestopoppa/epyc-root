@@ -1337,8 +1337,93 @@ def sc_build_lane_holds_quiet_grants(path):
     return write(path, ticks), check
 
 
+def _e5_cpu_row(rid="e5-r8-cpu", rank=25, est=3600, man=None):
+    """E5 r8 shape: lane cpu, regions 0-95, class cpu, --role bench --gpu-quiet exclusive --claim-cpus 0-95, threads 80."""
+    return row(rid, regions="0-95", cls="cpu", claim="0-95", gpu_quiet="exclusive", role="bench", extra="llama-server -t 80 --port 8099",
+               est=est, rank=rank, man=dict({"shape": "quiet-host", "declared_shape": "quiet-host", "baseline_ref": "replay fixture: E5 r8",
+                                             "resumable": True}, **(man or {})))
+
+
+def sc_b1_quiet_host_drain_leaves_gpu(path):
+    """AK audit B1 2026-11-23 (E5 r8 drain 02:19-04:44Z held gpu-quiet + q3 for 145 GPU-min; GPU rows queued): a CPU-only quiet-host
+    row drains / holds the CPU quarters only. A long GPU row ending after the drain target must still be granted on the idle GPU."""
+    e5 = _e5_cpu_row()
+    q0 = row("busy-q0", regions="any-of q0", extra="make -j 24", est=3600, rank=50)
+    q1 = row("busy-q1", regions="any-of q1", extra="make -j 24", est=3600, rank=50)
+    gpu = row("ak-gpu-long", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, role="bench", extra="llama-server -t 8",
+              est=3 * 3600, rank=20, man={"min_window_s": 3600})
+    held = {"busy-q0": q0, "busy-q1": q1}
+    first = dict(held, **{"e5-r8-cpu": e5})
+    rows = dict(first, **{"ak-gpu-long": gpu})
+    ticks = [(held, {})] + [(first, {})] * 2 + [(rows, {})] * 6
+
+    def check(d):
+        g = _granted(d, "ak-gpu-long")
+        if not g:
+            return ["GPU row never granted while the quiet-host CPU row drained (GPU held by the drain)"]
+        out = []
+        for i, gg in _granted(d, "e5-r8-cpu"):
+            if "gpu-quiet" in gg["holds"] or any(h in gg["holds"] for h in ("t184", "c88")):
+                out.append(f"CPU-only quiet-host grant held the GPU / its host threads at tick {i}: {gg['holds']}")
+        return out
+    return write(path, ticks), check
+
+
+def sc_b2_orphan_grant_released(path):
+    """AK audit B2: a GPU grant whose processes are all gone (ps lists none of its pid/pgid/row id/workdir) for >= 5 min is released
+    (HOLD-ORPHAN) so the next GPU row is granted before the window ends; while ps is unanswerable (tick without `ps`) it never is."""
+    a = row("ak-gpu-a", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=7200, rank=20, extra="llama-server -t 8",
+            man={"min_window_s": 3600})
+    b = row("ak-gpu-b", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=1200, rank=30, extra="llama-server -t 8")
+    rows1 = {"ak-gpu-a": a}
+    rows2 = {"ak-gpu-a": a, "ak-gpu-b": b}
+    other = [[4242, 4242, "S", "/usr/bin/python3 unrelated.py"]]
+    ticks = [(rows1, {})] + [(rows2, {})] * 2 + [(rows2, {"ps": other})] * 5
+
+    def check(d):
+        out = []
+        ev = _lines(d, "HOLD-ORPHAN ak-gpu-a")
+        if not ev:
+            return ["orphaned GPU grant never released (no HOLD-ORPHAN line)"]
+        if ev[0][0] < 3 + 2:
+            out.append(f"released after only {ev[0][0] - 3} ticks of absence (< 5 min)")
+        if any(i < 3 for i, _ in _lines(d, "HOLD-ORPHAN")):
+            out.append("released while ps was unanswerable (must fail closed)")
+        if not _granted(d, "ak-gpu-b"):
+            out.append("next GPU row not granted after the orphan release")
+        return out
+    return write(path, ticks), check
+
+
+def sc_b4_short_row_slot(path):
+    """AK audit B4 (ak-bw-gdn-gate-fold-trace-gpu, rank 100, estimate 300 s, never granted while a rank-20 smoke stayed queued): the
+    queued smoke cannot start (GPU still free after the batch attempt), so the SHORT worse-ranked GPU row is granted in the gap
+    (SHORT-ROW-SLOT, grant end capped), while a long worse-ranked row keeps waiting for the smoke."""
+    short = row("ak-gpu-short", lane="gpu", regions="mi210_0,88-95,184-191", cls="gpu", nofold=True, role="bench", extra="llama-server -t 8",
+                est=300, rank=100, man={"shape": "gpu-q3"})
+    long_ = row("ak-gpu-long", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, role="bench", extra="llama-server -t 8",
+                est=4 * 3600, rank=100, man={"min_window_s": 3 * 3600})
+    rows = {"ak-gpu-short": short, "ak-gpu-long": long_}
+    world = {"gpu_smoke_queued": {"smoke-x": 20}}
+    ticks = [(rows, world)] * 6
+
+    def check(d):
+        out = []
+        if not _granted(d, "ak-gpu-short"):
+            out.append("short GPU row never granted in the gap (SHORT-ROW-SLOT)")
+        if _granted(d, "ak-gpu-long"):
+            out.append("a long worse-ranked row jumped the queued smoke")
+        if not _lines(d, "SHORT-ROW-SLOT ak-gpu-short"):
+            out.append("no SHORT-ROW-SLOT line")
+        return out
+    return write(path, ticks), check
+
+
 SCENARIOS = {
     "build-lane-holds-quiet-grants": sc_build_lane_holds_quiet_grants,
+    "b1-quiet-host-drain-leaves-gpu": sc_b1_quiet_host_drain_leaves_gpu,
+    "b2-orphan-grant-released": sc_b2_orphan_grant_released,
+    "b4-short-row-slot": sc_b4_short_row_slot,
     "quiet-rows-serialize-shortest-first": sc_quiet_rows_serialize_shortest_first,
     "heavy-row-held-while-quiet-waits": sc_heavy_row_held_while_quiet_waits,
     "quiet-row-granted-beside-gpu-grant": sc_quiet_row_granted_beside_gpu_grant,
@@ -1773,7 +1858,41 @@ def claim_light_beside_quiet(root, rf):
     return out
 
 
-CLAIM_SCENARIOS = {"light-test-claim-beside-quiet": claim_light_beside_quiet}
+def claim_q3_build_yields_to_gpu_row(root, rf):
+    """AK audit B3: a NEW non-light q3 build claim yields to a grantable GPU row waiting only on q3 host cores; q0-q2 builds, a light
+    claim on 84-87 (no overlap) and an already-open build are unaffected."""
+    import tempfile
+    flags = tempfile.mkdtemp(prefix="b3-replay-", dir=root)
+    os.makedirs(os.path.join(flags, "grants"))
+    if not hasattr(rf, "gpu_rows_waiting_on_q3"):
+        return ["candidate has no B3 (gpu_rows_waiting_on_q3)"]
+    opt = frozenset(rf.GPU_Q3_TOKENS)
+    rf.runnable, rf.status = (lambda st: True), (lambda *a, **k: {})
+    rf.contract_of = lambda d, o=None, flags=None: {"options": [opt]}
+    busy = {f"c{k}" for k in range(88, 96)}
+    free = (set(rf.REGIONS) | set(rf.CORES) | set(rf.THREADS)) - busy
+    rf.host_snapshot = lambda f, g: (None, set(free), None)
+    allrows = {"gpu-row": {"id": "gpu-row", "lane": "gpu"}}
+    kw = dict(log=lambda m: None, allrows=allrows)
+    out = []
+    try:
+        rf.claim_build(flags, "autokernel", "72-87", 10, **kw)
+        out.append("a new q3 build claim was granted while a GPU row waited only on q3 host cores")
+    except rf.Refused:
+        pass
+    try:
+        rf.claim_build(flags, "autokernel", "84-87", 5, light=True, **kw)
+    except rf.Refused as e:
+        out.append(f"light claim 84-87 (no overlap) refused: {e}")
+    try:
+        rf.claim_build(flags, "autokernel", "24", 10, **kw)
+    except rf.Refused as e:
+        out.append(f"q0-q2 build refused: {e}")
+    return out
+
+
+CLAIM_SCENARIOS = {"light-test-claim-beside-quiet": claim_light_beside_quiet,
+                   "b3-q3-build-yields-to-gpu-row": claim_q3_build_yields_to_gpu_row}
 
 
 def build_all(out_dir):

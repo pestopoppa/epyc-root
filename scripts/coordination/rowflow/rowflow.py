@@ -1625,6 +1625,53 @@ def ws58_cpus(regions):
     return ",".join(t for t in str(regions or "").split(",") if re.fullmatch(r"\d+(-\d+)?", t.strip()))
 
 
+def ws58_cpu_list(regions):
+    """AK audit B12 (2026-11-23): a DIGIT-ONLY, comma-separated cpu list ('mi210_0,88-95 ,184-191,q3' -> '88-95,184-191'), the
+    form filler_run15.sh:93 accepts for --claim-cpus (^[0-9]+(-[0-9]+)?(,...)*$). Region tokens (mi210_0, gpu-quiet, qN,
+    any-cpu-quarter), blanks and duplicates are dropped; '' when the regions name no literal cpus."""
+    out = []
+    for t in str(regions or "").split(","):
+        t = t.strip()
+        if re.fullmatch(r"\d+(-\d+)?", t) and t not in out:
+            out.append(t)
+    return ",".join(out)
+
+
+def ws58_cpus_env(env, regions):
+    """Set WS58_REGIONS and WS58_CPUS in `env` from `regions`, both digit-only (B12). With no literal cpus both are REMOVED (an
+    inherited non-digit value must never reach a launcher's `--claim-cpus \"$C\"`). Returns env."""
+    v = ws58_cpu_list(regions)
+    for k in ("WS58_REGIONS", "WS58_CPUS"):
+        if v:
+            env[k] = v
+        else:
+            env.pop(k, None)
+    return env
+
+
+def rotate_launcher_out(flags, rid, attempt=None):
+    """AK audit B13 (2026-11-23): keep launcher.out per superseded / requeued attempt. A non-empty dryrun/<id>/launcher.out
+    moves to launcher.out.<attempt> (UTC stamp, unique) so the next smoke starts a fresh file. Never raises; returns the new
+    path or None (absent / empty / a live smoke holds the dir / rename failed)."""
+    dd = dry_dir(flags, rid)
+    src = os.path.join(dd, "launcher.out")
+    try:
+        if not os.path.isfile(src) or os.path.getsize(src) == 0:
+            return None
+        run = load_json(running_path(flags, rid))
+        if run and alive(run.get("pid")):
+            return None   # a live smoke still writes it
+        stamp = attempt or dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        dst, n = f"{src}.{stamp}", 0
+        while os.path.exists(dst):
+            n += 1
+            dst = f"{src}.{stamp}-{n}"
+        os.replace(src, dst)
+        return dst
+    except OSError:
+        return None
+
+
 
 
 CORES = tuple(f"c{n}" for n in range(96))   # ws58 2026-11-02 sub-quarter packing: one token per physical core
@@ -2036,7 +2083,7 @@ def contract_of(d, o=None, flags=None):
     whole = ((len(quarters_of(cc or decl_cpus, fold=True)) >= 4 or (threads or 0) > 72 or dshape in ("host", "quiet-host"))
              and (evidence or gib > 3 * QUARTER_RAM_GIB))
     gpu_tok = {GPU} if (gpu_row or gq == "exclusive" or gpu_touch(d, o)) and not cpu_declared(d, o) else set()
-    lock_tokens, floored = set(), False
+    lock_tokens, floored, cpu_only = set(), False, False
     if gpu_use and not whole:
         # GPU work: gpu-quiet + its host threads; a GPU-timing row also holds the host threads' SMT-sibling cores 88-95
         # (gpu-q3 NARROW, operator 2026-11-05: never the rest of q3 - 72-87 stay grantable); q0-q2 only with evidence
@@ -2057,6 +2104,13 @@ def contract_of(d, o=None, flags=None):
     elif whole:
         shape = "quiet-host" if (gq == "exclusive" or gpu_row) else "host"
         opts = [frozenset(set(QUARTERS) | gpu_tok)]
+        # AK audit B1 (2026-11-23): a quiet / whole-host CPU row holds the CPU quarters ONLY - q0-q2 plus q3's cores 72-87 - and
+        # takes the GPU and its host threads (88-95 / 184-191) only when it declares bandwidth_heavy: true or uses the GPU. The
+        # E5 r8 drain (02:19-04:44Z, ran 5 min) held gpu-quiet + q3 for 145 GPU-min. Only for an engine that locks the grant's
+        # own lock= cpus (CONTRACT_LOCK): a legacy engine locks its --claim-cpus (0-95) whatever the grant says.
+        if (honours and not gpu_row and not gpu_work_evidence(d, o) and not _kfd_capable(d, o) and d.get("bandwidth_heavy") is not True
+                and (threads is None or threads <= 88)):
+            opts, gpu_tok, cpu_only = [frozenset(set(QUARTERS[:3]) | Q3_NARROW)], set(), True
     else:
         pinned = bool(decl_cpus) and not (cpu_tokens(decl_cpus) & set(QUARTERS))   # concrete sub-quarter regions
         legacy = len(_cpu_set(cc) & set(range(96))) if (cc and not honours) else 0
@@ -2148,7 +2202,7 @@ def contract_of(d, o=None, flags=None):
             widened = (f"{nmq} quarters for {threads} threads: " + ("declared shape floor" if floored else
                        f"RAM {gib} GiB > {QUARTER_RAM_GIB} GiB/quarter" if gib > QUARTER_RAM_GIB else "unknown"))
     return {"shape": shape, "options": opts, "bench": gq == "exclusive", "widened": widened, "threads": threads, "gpu_use": gpu_use,
-            "timing": timing, "evidence": evidence, "lock": honours, "need": need_cores, "held": held,
+            "timing": timing, "cpu_only": cpu_only, "evidence": evidence, "lock": honours, "need": need_cores, "held": held,
             "claim": cc if cls != "gpu" else "", "explicit_cpus": decl_cpus if explicit else ""}
 
 
@@ -2188,6 +2242,9 @@ def grant_regions(d, option):
     qs = sorted(q for q in option if q in QUARTERS)
     if not qs and any(t in CORES for t in option):
         return tokens_cpus(option)   # sub-quarter grant: the exact cpu list
+    extra = {t for t in option if t in CORES or t in THREADS}
+    if qs and extra and not (extra & GPU_Q3_TOKENS):   # B1: whole quarters + q3's 72-87 cores (a CPU-only whole-host grant)
+        return ",".join([cpu_list(q) for q in qs] + [tokens_cpus(extra)])
     if regs == "any-cpu-quarter" or regs.startswith("any-of") or quarters_of(ws58_cpus(regs)) != set(qs):
         return ",".join(cpu_list(q) for q in qs) if qs else regs
     return regs
@@ -2266,6 +2323,7 @@ def drain_horizon_applies(c):
     """True when the drain target's contract shape is a partial host (quarter, sub-quarter, multi-quarter(n))."""
     shape = str(c.get("shape") or "")
     return shape in ("quarter", "sub-quarter") or bool(re.fullmatch(r"multi-quarter\(\d\)", shape))
+SHORT_ROW_GAP_S = 1800    # B4: the gap assumed when no booked event bounds it (a short GPU row may use it)
 URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank below this beats lane starvation (21:25Z
                           # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
 
@@ -2678,7 +2736,7 @@ def stop_reserved(c, contenders, free, stopping, ram, gpu_grant_open, ports, hor
 
 def _fits(c, free, ram, gpu_grant_open):
     opts = [o for o in c["options"] if o and o <= free]
-    if c.get("bench") and gpu_grant_open:
+    if c.get("bench") and gpu_grant_open and not c.get("cpu_only"):   # B1: a CPU-only whole-host row holds q3's 72-87 only
         opts = [o for o in opts if not (o & expand({"q3"}))]
     if ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
         return []
@@ -2816,7 +2874,7 @@ def gpu_q3_guard(c):
 
 
 def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None,
-         region_ends=None, region_holders=None, gpu_queued=False, build_waiting=False, build_policy=None, stopping=()):
+         region_ends=None, region_holders=None, gpu_queued=False, build_waiting=False, build_policy=None, stopping=(), gap_rows=None):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
@@ -3010,6 +3068,9 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             caps.append(T)
         if dfr_T is not None and (now + hold_s(c) > dfr_T or now + book_s(c) > dfr_T) and o & dfr_r:
             caps.append(dfr_T)
+        ge = (gap_rows or {}).get(c["id"])   # B4 SHORT-ROW-SLOT: the grant ends where the gap ends
+        if ge and GPU in o and now + hold_s(c) > ge:
+            caps.append(ge)
         if c.get("resumable") and long_q012_cand(c, bp) and {"q0", "q1", "q2"} <= set(o) and GPU not in o:
             # BUILD-POCKET (b): a resumable long row yields its pocket at a checkpoint; anticipatory, so it never cuts
             # below the launcher's gate (min_window_s + MARGIN_S): max(max_hold_s, min_window_s + 300) (2026-11-21 MIN-CAP)
@@ -4168,7 +4229,7 @@ def _dryrun_run_locked(flags, rid, regions, one_quarter=False, smoke_s=None):
                FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=G,
                FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0",
-               WS58_REGIONS=ws58_cpus(regions), **({"FILLER_SMOKE": "1", "FILLER_DISK_FLOOR_GIB": "20",
+               WS58_REGIONS=ws58_cpu_list(regions), WS58_CPUS=ws58_cpu_list(regions), **({"FILLER_SMOKE": "1", "FILLER_DISK_FLOOR_GIB": "20",
                                                                   **({} if d.get("smoke_predicate") else {"FILLER_SMOKE_UNITS": "1"})} if smoke_s else {}))  # a smoke writes little: only a near-full disk stops it  # ws58 2026-11-01: launchers written for the v8 keeper read it
     if d.get("dryrun_native_result"):
         env["FILLER_DRYRUN_RESULT_PATH"] = result_path
@@ -4512,8 +4573,7 @@ def arm_one(flags, rid, d, regions=None, log=print):
     before = sum(1 for l in tail(log, 100000) if "launcher up pid=" in l)
     env = dict(os.environ, FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_STATE_DIR=os.path.join(dd, "state"), FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=os.path.join(flags, "grants"))
-    if regions and ws58_cpus(regions):
-        env["WS58_REGIONS"] = ws58_cpus(regions)
+    ws58_cpus_env(env, regions)   # B12: WS58_REGIONS + WS58_CPUS digit-only (or absent)
     ram_fence_env(d, env)
     for k in ("FILLER_DRYRUN", "FILLER_DRYRUN_DIR", "FILLER_DRYRUN_ONE_QUARTER", "FILLER_ENGINE_SNAPSHOT", "FILLER_ENGINE_HOME"):
         env.pop(k, None)
@@ -4527,16 +4587,23 @@ def arm_one(flags, rid, d, regions=None, log=print):
         say(f"ENGINE-SNAPSHOT {rid} failed ({type(e).__name__}: {e}); armed on the live engine (legacy)")
     with open(log, "a") as out:
         out.write(f"\n==== arm {now_iso()}{' engine-snapshot ' + snap if snap else ''}\n")
-        subprocess.Popen(["bash", d["launcher"]["path"]], cwd=flags, env=env, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
+        proc = subprocess.Popen(["bash", d["launcher"]["path"]], cwd=flags, env=env, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
     pid = None
     for _ in range(30):
         time.sleep(1)
         pids = [int(m.group(1)) for l in tail(log, 100000) for m in [re.search(r"launcher up pid=(\d+)", l)] if m]
         if len(pids) > before:
             pid = pids[-1]; break
+        if proc.poll() is not None:   # the launcher died before the engine came up: no point waiting out the 30 s
+            break
     if not pid:
-        n = record_arm_fail(flags, rid, d, "arm", "poller did not log 'launcher up pid=' within 30 s of arming", log)
-        return None, f"fail: no launcher pid within 30 s ({n} consecutive since the PASS; parked at {MAX_FAILS})"
+        why = "poller did not log 'launcher up pid=' within 30 s of arming"
+        rc = proc.poll()
+        if rc is not None:   # B-arm 2026-11-23 (c20: a silent `sha256sum --check --status` exit in launch.sh showed only "no launcher up")
+            lines = [l.rstrip() for l in tail(log, 400) if l.strip()][-5:]
+            why = f"launcher exited rc={rc} before the engine came up; last lines: " + " | ".join(lines)[:600]
+        n = record_arm_fail(flags, rid, d, "arm", why, log)
+        return None, f"fail: {why[:240] if rc is not None else 'no launcher pid within 30 s'} ({n} consecutive since the PASS; parked at {MAX_FAILS})"
     with open(os.path.join(flags, "ws58-armed.queue"), "a") as f:   # id|pid|window_s|gib|regions: backlog_gen's pid lookup
         f.write(f"{rid}|{pid}|{d['window_s']}|{d['gib']}|{d['regions']}\n")
     eng_sha = _engine_sha(d)
@@ -5010,6 +5077,47 @@ def complete_suspect(flags, rid, text=None):
     return f"ended {el}s after grant start with a PASS result but no first-progress marker (no artifact written by the run)"
 
 
+STOP_FINAL_MARKERS = ("STOP-FINAL", "WITHDRAW")   # AK audit B8: the owner's "do not requeue" markers beside the STOP file
+
+
+def stop_final_marker(d):
+    """The marker proving the owner's STOP is final ("" = none): a file STOP-FINAL / WITHDRAW in the STOP file's directory or
+    the row's workdir, `<stop>-FINAL` / `<stop>.final`, or those words inside the STOP file itself."""
+    sf = resolve_stop_path(d or {})
+    dirs = [x for x in {os.path.dirname(sf) if sf else "", str((d or {}).get("workdir") or "")} if x]
+    for base in dirs:
+        for m in STOP_FINAL_MARKERS:
+            if os.path.exists(os.path.join(base, m)):
+                return os.path.join(base, m)
+    for sfx in ("-FINAL", ".final"):
+        if sf and os.path.exists(sf + sfx):
+            return sf + sfx
+    try:
+        if sf and os.path.isfile(sf):
+            with open(sf, errors="replace") as fh:
+                txt = fh.read(4096)
+            hit = re.search(r"STOP-FINAL|WITHDRAW", txt)
+            if hit:
+                return f"{sf} ({hit.group(0)})"
+    except OSError:
+        pass
+    return ""
+
+
+def keeper_stop_file(d):
+    """True when the row's STOP file was written by the keeper itself (idle-after-crash, drain, disk floor: JSON `by` rowflow*)
+    rather than by the owner: such a stop is never an owner STOP and is not auto-requeued."""
+    sf = resolve_stop_path(d or {})
+    try:
+        with open(sf, errors="replace") as fh:
+            for line in fh.read(4096).splitlines():
+                if line.strip().startswith("{") and str((json.loads(line) or {}).get("by") or "").startswith("rowflow"):
+                    return True
+    except (OSError, ValueError, AttributeError, TypeError):
+        pass
+    return False
+
+
 def autorequeue_decision(flags, rid):
     """(kind, why): kind 'requeue' | 'blocked' | 'limit' | 'stop' | 'suspect' | 'suspect-requeue' | None (not an auto-requeue end at all)."""
     G = os.path.join(flags, "grants")
@@ -5027,7 +5135,11 @@ def autorequeue_decision(flags, rid):
     if os.path.exists(os.path.join(G, rid + ".complete")):
         return None, ""
     first = text.splitlines()[0] if text else ""
-    if not (re.search(r"(^|\s)rc=75(\s|$)", first) and re.search(r"(^|\s)reason=partial-\S+", first)):
+    # AK audit B8 (2026-11-23): an OWNER STOP on a resumable row (rc=75 reason=stopped) is a requeue, not a terminal end; the
+    # owner writes STOP-FINAL / WITHDRAW beside the STOP file to make it final. Before, only reason=partial-* requeued and a
+    # STOPped row (~210 CPU quarter-min) ended with no result until its owner remembered `rowflow resume`.
+    stopped = bool(re.search(r"(^|\s)rc=75(\s|$)", first) and re.search(r"(^|\s)reason=stopped(\s|$)", first))
+    if not (stopped or (re.search(r"(^|\s)rc=75(\s|$)", first) and re.search(r"(^|\s)reason=partial-\S+", first))):
         return None, ""
     d = load_json(ready_path(flags, rid))
     if not d or not d.get("resumable"):
@@ -5037,9 +5149,22 @@ def autorequeue_decision(flags, rid):
     why = autorequeue_blocked(text, _result_json(d))
     if why:
         return "blocked", why
-    sf = resolve_stop_path(d)
-    if sf and os.path.exists(sf):
-        return "stop", f"STOP file {sf} present"
+    if stopped:
+        fin = stop_final_marker(d)
+        if fin:
+            return "stop", f"owner STOP is final ({fin})"
+        if keeper_stop_file(d):
+            return "stop", "STOP written by the keeper (not an owner STOP)"
+        if superseded_by(flags, rid):
+            return "stop", f"superseded by {superseded_by(flags, rid)}"
+        lp = (d.get("launcher") or {}).get("path") or ""
+        p = load_json(pass_path(flags, rid))
+        if not (p and os.path.isfile(lp) and p.get("launcher_sha256") == sha256(lp)):
+            return "stop", "no PASS.json matching the current launcher (republish re-smokes)"
+    else:
+        sf = resolve_stop_path(d)
+        if sf and os.path.exists(sf):
+            return "stop", f"STOP file {sf} present"
     n = len(autorequeue_history(flags, rid))
     mx = autorequeue_max_for(d)
     if n >= mx:
@@ -5117,9 +5242,17 @@ def autorequeue(flags, log=print, now=None, emit=None):
             src = os.path.join(G, rid + suf)
             if os.path.exists(src):
                 shutil.move(src, os.path.join(ad, f"{rid}.{ts}{suf}"))
+        if "reason=stopped" in head:   # B8: the owner's STOP file would stop the requeued attempt at once: clear it (as resume does)
+            sfp = resolve_stop_path(load_json(ready_path(flags, rid)) or {})
+            try:
+                if sfp and os.path.exists(sfp):
+                    os.unlink(sfp)
+            except OSError as ex:
+                log(f"AUTO-REQUEUE {rid}: could not remove STOP {sfp}: {ex}")
+        rotate_launcher_out(flags, rid, ts)   # B13: the finished attempt keeps its launcher.out
         hist = autorequeue_history(flags, rid) + [now]
         atomic_json(hp, {"id": rid, "requeued_at": hist, **({"suspect_requeued": "partial-blocked-stale-complete"} if kind == "suspect-requeue" else {})})
-        log(f"AUTO-REQUEUE {rid}: {head}; resumable partial end, .ended/.grant archived to .autorequeue/{rid}.{ts}.*, "
+        log(f"AUTO-REQUEUE {rid}: {head}; resumable {'owner STOP' if 'reason=stopped' in head else 'partial end'}, .ended/.grant archived to .autorequeue/{rid}.{ts}.*, "
             f"same id grantable again ({len(hist)}/{autorequeue_max_for(load_json(ready_path(flags, rid)))})")
         out.append(rid)
     return out
@@ -5172,6 +5305,114 @@ def heal_grants(flags, grants, rl, log, seen, allrows=None):
             seen.add(f"conflict:{rid}")
         keep.append(g)
     return keep
+
+
+# ---------------------------------------------------------------- HOLD-ORPHAN (AK audit B2, 2026-11-23)
+# A grant whose processes are ALL gone keeps its regions until the window ends (GPU host cores 88-95/184-191 idle 120 GPU-min).
+# Fail closed: a grant is released only after HOLD_ORPHAN_S of CONTINUOUS observation with no live process of the row - not its
+# launcher / ARMED / RUNNING pid or their trees, not a cgroup leaf member, not any process in a process group recorded while it
+# lived, not any process whose argv names the row id or its workdir (one `ps` listing, zombies excluded).
+HOLD_ORPHAN_S = 300
+
+
+def hold_orphan_state_path(flags):
+    return os.path.join(state_dir(flags), "hold_orphan.json")
+
+
+def ps_listing():
+    """[(pid, pgid, stat, args)] from `ps -eo pid=,pgid=,stat=,args=`; None when ps could not answer (callers fail closed)."""
+    try:
+        r = subprocess.run(["ps", "-eo", "pid=,pgid=,stat=,args="], capture_output=True, text=True, timeout=20)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if r.returncode != 0:
+        return None
+    out = []
+    for line in r.stdout.splitlines():
+        m = re.match(r"\s*(\d+)\s+(\d+)\s+(\S+)\s*(.*)$", line)
+        if m:
+            out.append((int(m.group(1)), int(m.group(2)), m.group(3), m.group(4)))
+    return out
+
+
+def row_live_procs(flags, g, d, pgids=(), ps=None):
+    """The live (non-zombie) pids that still belong to grant g's row, by every attribution above ([] = all gone); None when
+    the answer is unknown (ps failed): the caller must not release."""
+    ps = ps_listing() if ps is None else ps
+    if ps is None:
+        return None
+    rid = g["id"]
+    live = set()
+    pids = [g.get("pid"), (load_json(armed_path(flags, rid)) or {}).get("pid"), (load_json(running_path(flags, rid)) or {}).get("pid")]
+    try:
+        live |= {q for q in own_pids(flags, g) if proc_alive(q)}
+    except Exception:  # noqa: BLE001 - unknown attribution never releases
+        return None
+    live |= {int(x) for x in pids if str(x or "").isdigit() and proc_alive(int(x))}
+    wd = str((d or {}).get("workdir") or (d or {}).get("scratch_root") or "").rstrip("/")
+    for pid, pgid, stat, args in ps:
+        if stat.startswith("Z") or pid == os.getpid():
+            continue
+        if pgid in pgids or rid in args or (len(wd) >= 12 and wd in args):
+            live.add(pid)
+    return sorted(live)
+
+
+def hold_orphans(flags, grants, log, now=None, emit=None, ps=None, act=True):
+    """Release (grants/<id>.ended `rc=75 reason=hold-orphan`, .grant -> .grant.hold-orphan, HOLD-ORPHAN logged, owner alerted)
+    every started non-dry-run, non-build grant whose processes have all been gone for HOLD_ORPHAN_S. Returns [released ids]."""
+    now = time.time() if now is None else now
+    emit = emit or notify.emit
+    sp = hold_orphan_state_path(flags)
+    st = load_json(sp) or {}
+    new, out = {}, []
+    ps = ps_listing() if ps is None else ps
+    for g in grants:
+        rid = g["id"]
+        if rid.startswith(BUILD_PREFIX) or g.get("dryrun"):
+            continue
+        d = load_json(ready_path(flags, rid)) or {}
+        prev = st.get(rid) or {}
+        pgids = set(int(x) for x in prev.get("pgids") or [])
+        live = row_live_procs(flags, g, d, pgids, ps)
+        if live is None:
+            new[rid] = prev   # unknown: keep the clock as it was, never release
+            continue
+        if live:
+            for q in live:
+                try:
+                    pgids.add(os.getpgid(q))
+                except OSError:
+                    pass
+            new[rid] = {"pgids": sorted(pgids), "dead_since": None}
+            continue
+        since = float(prev.get("dead_since") or now)
+        new[rid] = {"pgids": sorted(pgids), "dead_since": since}
+        if now - since < HOLD_ORPHAN_S or not act:
+            continue
+        G = os.path.join(flags, "grants")
+        gp = os.path.join(G, rid + ".grant")
+        if not os.path.exists(gp) or any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete")):
+            continue
+        with open(os.path.join(G, rid + ".ended"), "w") as f:
+            f.write(f"rc=75 time={now_iso()} reason=hold-orphan note=no_process_of_row_for_{int(now - since)}s\njob_id={rid}\n")
+        os.replace(gp, gp + ".hold-orphan")
+        regs = ",".join(compress(g["holds"] & (set(REGIONS) | set(CORES) | set(THREADS))))
+        log(f"HOLD-ORPHAN {rid}: every process of the row gone for {int(now - since)}s (pids/pgids/argv/workdir checked); grant released, "
+            f"{regs or '-'} free next tick")
+        try:
+            emit(flags, "hold-orphan", rid, g.get("start") or "", f"HOLD-ORPHAN {rid}: no process of the row for {int(now - since)} s; "
+                 f"its grant was released (rc=75 reason=hold-orphan)", "warning", str(d.get("owner") or ""),
+                 {"holds": sorted(g["holds"]), "logs": dry_dir(flags, rid)})
+        except Exception as ex:  # noqa: BLE001
+            log(f"HOLD-ORPHAN {rid}: notify failed: {type(ex).__name__}: {ex}")
+        new.pop(rid, None)
+        out.append(rid)
+    try:
+        atomic_json(sp, new)
+    except OSError as ex:
+        log(f"HOLD-ORPHAN state write failed ({sp}): {ex}")
+    return out
 
 
 def cpu_sample():
@@ -5923,6 +6164,30 @@ def contended_try_age(flags, rid, d, now):
     return None if newest is None else now - newest
 
 
+def gpu_rows_waiting_on_q3(flags, grants, allrows, free):
+    """AK audit B3: {row id: tokens} of grantable GPU-lane rows (not running, not ended) that wait ONLY on q3 cores / host threads:
+    some option's missing tokens are a non-empty subset of q3's. A new non-light q3 build claim yields to them."""
+    q3t = expand({"q3"}) | Q3_GUARD
+    running = {g["id"] for g in grants}
+    G = os.path.join(flags, "grants")
+    out = {}
+    for rid, d in (allrows or {}).items():
+        if (d or {}).get("lane") != "gpu" or rid in running or any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete")):
+            continue
+        try:
+            if not runnable(status(flags, rid, allrows)):
+                continue
+            for o in contract_of(d, flags=flags)["options"]:
+                eo = expand(set(o))
+                miss = eo - set(free)
+                if miss and miss <= q3t:
+                    out[rid] = eo
+                    break
+        except Exception:  # noqa: BLE001 - an unreadable row never blocks a claim
+            continue
+    return out
+
+
 def _claim_light_locked(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None):
     """LIGHT claim (see LIGHT TEST CLAIM). Refusals raise Refused('LIGHT-REFUSED <reason>') and are logged to the keeper log."""
     def refuse(why):
@@ -5965,6 +6230,13 @@ def _claim_light_locked(flags, owner, cpus, minutes, log=print, now=None, grants
         refuse(f"cores {compress_cpus({int(c[1:]) for c in miss})} are held by {', '.join(by) or 'another job'}")
     part = partial_tokens(wc, free)
     want_tokens = expand(set(part))
+    try:   # AK audit B3: a light claim yields only when it actually overlaps a grantable GPU row's cores
+        hit = {r: t & want_tokens for r, t in gpu_rows_waiting_on_q3(flags, grants, allrows, free).items() if t & want_tokens}
+    except Exception:  # noqa: BLE001
+        hit = {}
+    if hit:
+        refuse(f"GPU row {','.join(sorted(hit))} is grantable and needs cores {compress_cpus({int(x[1:]) % 96 for x in set().union(*hit.values()) if x[0] in 'ct'})} "
+               "of this claim; retry when it has started")
     for g in open_grants(flags):   # on-disk truth under the claim lock
         both = want_tokens & expand(g["holds"])
         if both:
@@ -6102,6 +6374,10 @@ def _claim_build_locked(flags, owner, cpus, minutes, log=print, now=None, grants
             miss = sorted(want - free)
             if want and not miss:
                 part = want
+    if "q3" in qs or (part and part & COEXIST_Q3):   # AK audit B3: a new q3 build claim yields to a grantable GPU row
+        wait = gpu_rows_waiting_on_q3(flags, grants, allrows, free)
+        need(not wait, f"BUILD-REFUSED: GPU row {','.join(sorted(wait)[:3])} is grantable and waiting only on q3 host cores; a new q3 build "
+                       "claim yields to it (running builds are never pre-empted) - retry when it has started")
     pocket = bool(part) and qs == ["q3"]   # a q3-pocket build holds only 72-87/168-183: a GPU timing grant's 88-95 is not its quarter
     for q in qs:
         need(pocket or q not in tq, f"BUILD-REFUSED: {q} is held by timing grant {holder.get(q, '?')}; a build there would perturb "
@@ -7526,6 +7802,13 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         except Exception as e:  # noqa: BLE001
             log(f"BUILD-END failed: {type(e).__name__}: {e}")
     grants = open_grants(flags) if dry else heal_grants(flags, open_grants(flags), rl, log, seen, allrows)
+    if not dry:
+        try:   # AK audit B2: a grant whose processes are all gone for 5 min is released (fail closed)
+            released = hold_orphans(flags, grants, log)
+            if released:
+                grants = [g for g in grants if g["id"] not in released]
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"HOLD-ORPHAN check failed: {type(e).__name__}: {e}")
     gids = {g["id"] for g in grants}
     busy, free, holders = host_snapshot(flags, grants, rl)
     gpu_open = any(GPU in g["holds"] for g in grants)
@@ -7559,10 +7842,15 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                       "book_s": int(book_s(d)), "resumable": bool(d.get("resumable")), "whole_host_need": bool(d.get("whole_host_need")),
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "lock": k["lock"],
-                      "claim": k["claim"], "threads": k["threads"], "explicit": bool(k["explicit_cpus"])})
+                      "claim": k["claim"], "threads": k["threads"], "explicit": bool(k["explicit_cpus"]), "cpu_only": bool(k.get("cpu_only"))})
     log_transition(flags, "superseded-block", sup_blocked, log, persist=not dry)
     if admit_hold:
         cands = []   # operator 2026-11-07: nothing new is granted; the reason was logged once on its transition
+    elif not dry:
+        try:   # B14: an unacked IDLE-VIOLATION-X6 keeps the owner's same-shape rows off a running grant of that shape
+            cands = idle_violation_hold(flags, cands, grants, allrows, log)
+        except Exception as e:  # noqa: BLE001
+            log(f"IDLE-VIOLATION-HOLD failed: {type(e).__name__}: {e}")
     qh_hold = None
     # 2026-11-21 (GPU idle 05:50-06:0xZ, queued smokes unrun): a DISK-PAUSE set admit_hold and gated the smoke batch too. A
     # queued smoke is not a new admission the pause protects against; only an operator HOLD file stops the batch.
@@ -7609,6 +7897,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         except Exception as e:  # noqa: BLE001
             log(f"SMOKE-SLOT check failed: {type(e).__name__}: {e}")
     log_transition(flags, "smoke-slot", slot, log, persist=not dry)
+    gap_rows = {}      # B4: {row id: gap end epoch} rows admitted by SHORT-ROW-SLOT (grant end capped at the gap end)
     smoke_waits = []   # [(row, reason)]: ready rows taken out of the planner by WAIT-FOR-SMOKE; still named in IDLE-WHY
     qr = queued_gpu_min_rank(flags)   # operator 2026-11-06: a queued smoke competes by its OWN rank against ready rows
     wait_lines = {}
@@ -7619,6 +7908,20 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         worse = [c for c in cands if any(GPU in o for o in c["options"]) and c["rank"] > qr
                  and not (qh_hold and c["id"] == qh_hold[0]["id"]) and c["id"] not in _dp]
         # E5 fix B 2026-11-23: a quiet-host row never waits behind queued smokes indefinitely; past the limit its drain forms
+        # AK audit B4 SHORT-ROW-SLOT (2026-11-23): the queued smokes could not take the GPU this tick (it is still free after the
+        # batch attempt: smoke hold / operator hold / batch refused), so a worse-ranked GPU row whose booking plus margin fits
+        # in the gap before the next booked event (a held quiet-host row's start, else SHORT_ROW_GAP_S) is granted now
+        # instead of idling the device; its grant end is capped at the gap end (plan gap_rows).
+        if worse and GPU in free and not dry:
+            g_end = (qh_hold[1] if qh_hold else time.time() + SHORT_ROW_GAP_S)
+            fit = [c for c in worse if time.time() + book_s(c) + CAP_SLACK_S <= g_end]
+            for c in fit:
+                gap_rows[c["id"]] = g_end
+            if fit:
+                worse = [c for c in worse if c not in fit]
+                log_transition(flags, "short-row-slot", {c["id"]: f"SHORT-ROW-SLOT {c['id']} (rank {float(c['rank']):g}, book {int(book_s(c))}s): "
+                               f"GPU free with queued smokes not startable; fits the gap until {dt.datetime.fromtimestamp(g_end, dt.timezone.utc):%H:%MZ}"
+                               for c in fit}, log, persist=True)
         starved = set(smoke_wait_starved(flags, worse, persist=not dry))
         log_transition(flags, "smoke-starved", {rid: f"SMOKE-WAIT-LIMIT {rid}: quiet-host row waited > "
                        f"{int(qh_smoke_wait_max_s(flags))}s behind queued GPU smokes (rank {qr:g}); it enters planning and "
@@ -7768,7 +8071,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                                         grant_ends=[e for e in ends if e], quiet_ok=quiet_ok, held_ports=held_ports,
                                         drain_prev=drain_prev, region_ends=r_ends, region_holders=holders,
                                         gpu_queued=gpu_queued, build_waiting=bool(bw), build_policy=bpol,
-                                        stopping=stopping_tokens(flags, grants, allrows))
+                                        stopping=stopping_tokens(flags, grants, allrows), gap_rows=gap_rows)
         _srl = {}
         for lc, hc, res in plan.stop_reserves:
             _srl.setdefault(hc["id"], set()).update(res)
@@ -7898,9 +8201,16 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     for r, why in idle_partial_quarters(flags, free, busy, grants, holders).items():   # idle CPU quarters too
         log(f"IDLE-WHY {r}: {why}")
     left = plan_free - expand(set().union(*[o for _, o in assigned])) if assigned else plan_free
+    iv = []
     for c in pending:
         if c["kind"] == "grant" and any(o <= left for o in c["options"]) and not (c.get("bench") and gpu_open):
             seen.add(f"idle-violation:{c['id']}"); log(f"IDLE-VIOLATION {c['id']} fits {','.join(compress(free))} but was not placed")
+            iv.append(c)
+    if not dry:
+        try:   # B14: six in a row feeds placement
+            idle_violation_rows(flags, iv, allrows, log)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"IDLE-VIOLATION-X6 check failed: {type(e).__name__}: {e}")
     if not dry:
         try:  # host disk floor: ONE alert per crossing (hysteresis), naming the rows it blocks; never deletes
             blocked = sorted(gids | {c["id"] for c in cands})
@@ -8187,6 +8497,86 @@ def route_alert(kind, message, evidence, log=print):
     except (OSError, subprocess.TimeoutExpired) as e:
         log(f"ALERT-ROUTE {kind}: {type(e).__name__}: {e}")
         return False
+
+
+# ---------------------------------------------------------------- B14 IDLE-VIOLATION x6 -> placement (AK audit, 2026-11-23)
+# 324 IDLE-VIOLATION lines on 11-23, zero placements: nothing fed back. A row that is reported "fits but was not placed" for
+# IDLE_VIOLATION_ROW_TICKS consecutive ticks is logged, its owner alerted (notify.emit, key printed), and while that alert is
+# UNACKNOWLEDGED (`rowflow.py alerts --ack <key>`) the owner's other rows of the SAME shape are not granted on top of a grant of
+# that owner and shape that is already running. Least disruptive: nothing else changes; nothing running is touched; with no such
+# running grant nothing is held; an ack (or the owner's stack of that shape ending) lifts it.
+IDLE_VIOLATION_ROW_TICKS = 6
+
+
+def idle_viol_rows_path(flags): return os.path.join(state_dir(flags), "idle_violation_rows.json")
+def idle_viol_hold_path(flags): return os.path.join(state_dir(flags), "idle_violation_hold.json")
+
+
+def idle_violation_rows(flags, flagged, allrows, log, emit=None):
+    """flagged: [cand] reported IDLE-VIOLATION this tick. Counts consecutive ticks per row; at IDLE_VIOLATION_ROW_TICKS logs
+    IDLE-VIOLATION-X6, alerts the owner and records the placement hold. Returns the ids that reached the threshold this tick."""
+    emit = emit or notify.emit
+    sp = idle_viol_rows_path(flags)
+    old = load_json(sp) or {}
+    new, hit = {}, []
+    hold = load_json(idle_viol_hold_path(flags)) or {}
+    for c in flagged:
+        rid = c["id"]
+        n = int(old.get(rid) or 0) + 1
+        new[rid] = n
+        if n != IDLE_VIOLATION_ROW_TICKS:
+            continue
+        d = allrows.get(rid) or {}
+        owner, shape = str(d.get("owner") or ""), str(c.get("shape") or "")
+        key = notify.event_key("idle-violation-x6", rid, shape)
+        msg = (f"IDLE-VIOLATION-X6 {rid}: reported 'fits but not placed' {n} ticks in a row (shape {shape}, owner {owner or '?'}); "
+               f"until acked (`rowflow.py alerts --ack {key}`) no other {shape} row of {owner or 'this owner'} is granted on top of a running one")
+        log(msg)
+        try:
+            emit(flags, "idle-violation-x6", rid, shape, msg, "warning", owner, {"shape": shape, "ack_key": key})
+        except Exception as ex:  # noqa: BLE001
+            log(f"IDLE-VIOLATION-X6 {rid}: notify failed: {type(ex).__name__}: {ex}")
+        if owner:
+            hold[f"{owner}|{shape}"] = {"row": rid, "key": key, "at": now_iso()}
+        hit.append(rid)
+    atomic_json(sp, new)
+    if hit:
+        atomic_json(idle_viol_hold_path(flags), hold)
+    return hit
+
+
+def idle_violation_hold(flags, cands, grants, allrows, log):
+    """Drop (and log once per change) the candidates an unacknowledged IDLE-VIOLATION-X6 hold keeps off: same owner and shape as
+    a RUNNING grant, and not the flagged row itself. Returns the kept candidates."""
+    hold = load_json(idle_viol_hold_path(flags)) or {}
+    if not hold:
+        return cands
+    acked = notify.acked_keys(flags)
+    live = {k: v for k, v in hold.items() if v.get("key") not in acked}
+    if len(live) != len(hold):
+        atomic_json(idle_viol_hold_path(flags), live)
+    if not live:
+        return cands
+    running = set()
+    for g in grants:
+        if g["id"].startswith(BUILD_PREFIX):
+            continue
+        d = allrows.get(g["id"]) or {}
+        try:
+            running.add(f"{d.get('owner') or ''}|{contract_of(d, flags=flags)['shape']}")
+        except Exception:  # noqa: BLE001
+            continue
+    kept, held = [], {}
+    for c in cands:
+        k = f"{(allrows.get(c['id']) or {}).get('owner') or ''}|{c.get('shape') or ''}"
+        h = live.get(k)
+        if h and k in running and c["id"] != h.get("row"):
+            held[c["id"]] = f"IDLE-VIOLATION-HOLD {c['id']}: not granted on top of a running {k.split('|')[1]} row of {k.split('|')[0]} until " \
+                            f"{h.get('row')}'s IDLE-VIOLATION-X6 alert is acked (rowflow.py alerts --ack {h.get('key')})"
+            continue
+        kept.append(c)
+    log_transition(flags, "idle-violation-hold", held, log)
+    return kept
 
 
 def idle_violation(flags, free, cands, granted, ram_gib, gpu_open=False, held_ports=(), log=print, util=None):
