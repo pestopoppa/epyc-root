@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 584
+      "open": 581
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 475
+      "open": 480
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 0,
-      "closed": 969,
+      "closed": 972,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 123,
+      "open": 120,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 444,
+          "closed": 445,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,7 +128,7 @@
           "line": 31,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 63
+          "open": 62
         },
         {
           "blocked": 0,
@@ -167,7 +167,7 @@
         },
         {
           "blocked": 0,
-          "closed": 286,
+          "closed": 288,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -177,7 +177,7 @@
           "line": 7545,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 21
+          "open": 19
         },
         {
           "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10786,
+          "line": 10788,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 11033,
+          "line": 11035,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -629,7 +629,7 @@
       "closed": 359,
       "guarded": 0,
       "last_advanced": "2026-11-21",
-      "open": 1,
+      "open": 6,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -638,7 +638,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 360,
+      "total": 365,
       "tracks": [
         {
           "blocked": 0,
@@ -648,14 +648,14 @@
           "line": 21,
           "markers": 1,
           "name": "coordination-and-churn-pipeline",
-          "open": 0
+          "open": 5
         },
         {
           "blocked": 0,
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2469,
+          "line": 2489,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 0
@@ -665,7 +665,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 2477,
+          "line": 2497,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 0
@@ -675,7 +675,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2949,
+          "line": 2969,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -690,7 +690,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3394,
+          "line": 3414,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0
@@ -706,7 +706,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4910,
+          "line": 4930,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -722,7 +722,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5570,
+          "line": 5590,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 1
@@ -738,7 +738,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5778,
+          "line": 5798,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -748,7 +748,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6334,
+          "line": 6354,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -2840,7 +2840,7 @@
       "id": "RTG-100",
       "index": "routing-and-optimization-index.md",
       "line": 18,
-      "next_action": "Compute paused for AK; resume TASKFLOW-STAGE1-CANARY at r8 calibration (CPU q1q2), then packet fixes \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
+      "next_action": "Resume taskflow canary r8g (rowflow resume, CPU q0-q2; fixes 1-6 landed) \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
       "track": "churn pipeline"
     },
     "RTG-22": {

@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T19:43:30Z",
+  "generated_at": "2026-11-23T20:04:40Z",
   "nodes": [
     {
       "age_days": 1,
@@ -991,6 +991,7 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
+            "RTG-34#coordination-and-churn-pipeline",
             "UFH-01"
           ],
           "dispatchable": 1,
@@ -1377,15 +1378,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 969,
-      "dispatchable": 123,
+      "closed": 972,
+      "dispatchable": 120,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-23",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 123,
+      "open": 120,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1422,7 +1423,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 63,
+          "dispatchable": 62,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1431,7 +1432,7 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 63,
+          "open": 62,
           "readiness": "blocked"
         },
         {
@@ -1477,7 +1478,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 21,
+          "dispatchable": 19,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1485,7 +1486,7 @@
           ],
           "line": 7545,
           "name": "autokernel-unified-surface-program",
-          "open": 21,
+          "open": 19,
           "readiness": "blocked"
         },
         {
@@ -1496,7 +1497,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10786,
+          "line": 10788,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1530,7 +1531,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11033,
+          "line": 11035,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1609,6 +1610,7 @@
             "INF-45#batched-decode-measurement",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
+            "RTG-34#coordination-and-churn-pipeline",
             "UFH-01"
           ],
           "dispatchable": 0,
@@ -3124,7 +3126,7 @@
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-23",
-      "next_action": "Compute paused for AK; resume TASKFLOW-STAGE1-CANARY at r8 calibration (CPU q1q2), then packet fixes \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
+      "next_action": "Resume taskflow canary r8g (rowflow resume, CPU q0-q2; fixes 1-6 landed) \u2192 35B saturation \u2192 27B arm \u2192 brief backfill",
       "open": 49,
       "priority": 0.0394,
       "priority_basis": {
@@ -3237,14 +3239,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 359,
-      "dispatchable": 1,
+      "dispatchable": 6,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-21",
       "next_action": "FM-4 Phase C: collect 30 prospective dispatch_with_gate records per arm plus one native canary; futility check 2026-12-03; then close and move to completed/",
-      "open": 1,
+      "open": 6,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3269,18 +3271,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 0,
+          "dispatchable": 5,
           "gates": [],
           "line": 21,
           "name": "coordination-and-churn-pipeline",
-          "open": 0,
-          "readiness": "no_open"
+          "open": 5,
+          "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2469,
+          "line": 2489,
           "name": "churn-pipeline",
           "open": 0,
           "readiness": "no_open"
@@ -3289,7 +3291,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2477,
+          "line": 2497,
           "name": "dashboard-architecture-restructure",
           "open": 0,
           "readiness": "no_open"
@@ -3298,13 +3300,15 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2949,
+          "line": 2969,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
         },
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "RTG-34#coordination-and-churn-pipeline"
+          ],
           "dispatchable": 0,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -3312,13 +3316,15 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3394,
+          "line": 3414,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0,
           "readiness": "no_open"
         },
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "RTG-34#coordination-and-churn-pipeline"
+          ],
           "dispatchable": 0,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -3327,13 +3333,15 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4910,
+          "line": 4930,
           "name": "loop-owned-fleet-implementation",
           "open": 0,
           "readiness": "no_open"
         },
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "RTG-34#coordination-and-churn-pipeline"
+          ],
           "dispatchable": 1,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -3342,13 +3350,15 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5570,
+          "line": 5590,
           "name": "fleet-fanout-measurement",
           "open": 1,
-          "readiness": "ready"
+          "readiness": "blocked"
         },
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "RTG-34#coordination-and-churn-pipeline"
+          ],
           "dispatchable": 0,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -3357,7 +3367,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5778,
+          "line": 5798,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3366,7 +3376,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6334,
+          "line": 6354,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
