@@ -9834,11 +9834,12 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   - [x] **AKU-02a — explicit environment-unset semantics**: inherited treatment is absent in the ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-02b — frozen launch resolution and CPU serving consumer**: explicit artifact identities, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-02c — canonical CPU/GPU launcher recipe adapter and existing serving conformance**: ✅ 2026-09-09 _(detail → completed ledger)_
-- [ ] **AKU-03 — native journal and recovery** (AK-AUTO-02): current-loop event schemas, phase boundaries,
+- [x] **AKU-03 — native journal and recovery** (AK-AUTO-02): current-loop event schemas, phase boundaries,
   integration intent/completion, original provenance and replayed projections. Missing/corrupt/stale
   bundle never silently certifies anchor; interrupted units and schema rollback follow §8.17.
       · class: non-inference
       · done when: current-loop event schemas, phase boundaries, integration intent/completion, original provenance and replayed projections are journaled natively, and a missing/corrupt/stale bundle never silently certifies the anchor
+      · ✅ 2026-11-23 [no-belief: software] 66483b07fdec — pooled phase events use the existing journal and exclusive owner lease; unresolved integration is fenced until a store-local reconciliation receipt verifies it. Newer unsupported bundle history is read-only; restored-tip regression remains stale. Focused fixtures: 43 passed.
   - [x] **AKU-03a — durable derived JSON publication**: file fsync, atomic replace and directory fsync; ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-03b — journal-backed bundle recovery**: snapshot before projection; replay, explicitly ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-03c — serialized prospective arm-capture consumer**: native ✅ 2026-09-09 _(detail → completed ledger)_
