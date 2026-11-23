@@ -8588,6 +8588,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] **AKU-24** Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
       · class: non-inference
       · done when: the bilateral hold protocol is retired with INF-70 (OP-41) and the broker replaces it
+      · 2026-11-23 (pipeline-mgmt) NOT TICKED: AKU-10g2 landed (research `e8641d2ed`) but the broker is inert until the operator's OP-41 activation record exists, so nothing is migrated. Callers of the bilateral protocol that remain: (1) INF-70 bounded-hold requests (session-to-session messages; no code path to migrate); (2) cooperative CPU region-lock holders (`claim.hold_cpu` role `bench`) and the MI210 device flock (`claim.hold`) used directly by the loop; (3) `host_claim_provider` lifecycle holds (AKU-11). Retiring needs the operator's OP-41 gates (finalise, promote, reboot) and INF-70 agreement.
 
 ##### P5 — single monitoring session (U5)  · exit: one roster entry monitors both surfaces; CPU session files hypotheses, measures nothing by hand
 - **[declined: ws58 2026-11-03 content-review: bookkeeping]** Roster/ownership update; inbox is the CPU session's output surface
@@ -10349,9 +10350,10 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
           · done when: the controller backend settles holds exactly once through a bounded unlocked provider interface and default execution stays unavailable, with tests
           · gate: none
           · 2026-11-22 (autokernel, AKU lane) DONE: research `epyc-inference-research` `36cf901ef`: `BrokerHoldProvider` (acquire/refresh/settle exactly-once/resolve), `BoundedHoldProvider` refuses calls under the controller mutex and enforces deadlines, `HoldSettlement.held_ms` with accounting digest, `CampaignMaintenanceBackend`; maintenance events v3 carry settlements (v2 byte-identical without); re-admission over UNRESOLVED needs broker resolve first; fixture-only in-memory broker; no factory registered. 48 + 196 passed. [no-belief: code]
-    - [ ] **AKU-10g2** [non-inference] real OP-41 maintenance broker implementing BrokerHoldProvider plus factory enrolment
+    - [x] **AKU-10g2** [non-inference] real OP-41 maintenance broker implementing BrokerHoldProvider plus factory enrolment ✅ 2026-11-23 [no-belief: software] e8641d2ed
           · done when: a registered, activation-gated broker factory passes the BrokerHoldProvider contract tests against the real lock service in a fake-backend test
           · gate: none
+          · 2026-11-23 (pipeline-mgmt) DONE: research `epyc-inference-research` `e8641d2ed`: `loop/maintenance_broker.py` `LockServiceMaintenanceBroker(BrokerHoldProvider)` — a hold is one exclusive host claim over the `HostLockBackend` seam (grant id = hold id), exactly-once `settle` releases the claim, `resolve` aborts a live hold or proves a dead holder absent from the lock table, one hold at a time; factory `maintenance_broker_v1` registered in `provider_factories` (SHA-256 pinned), inert (unavailable `BrokerHoldProvider`) without an operator activation record. `test_maintenance_lock_broker.py` runs the full `me.execute` path and the contract against a fake lock service; 110 passed adjacent; regrowth guards 0 violations. Live: `OrchestratorHostLockBackend` and activation not exercised (OP-41 operator gate).
   - [x] **AKU-10h — installed native retention catalog and dependency frontier**: . ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-10i — prospective source/build/evaluation expiry authority**: install the actual [no-belief: operator decision] [no-belief: tooling landing] [no-belief: code] _(detail → completed ledger)_
   - [x] **AKU-10j — bound retired serial build-cache retention**:  — startup now ✅ 2026-09-15 _(detail → completed ledger)_
