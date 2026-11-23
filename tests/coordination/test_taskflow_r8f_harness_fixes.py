@@ -278,3 +278,61 @@ def test_vacuity_guard_empty_stdout_branch_shape_without_token():
             "diff --git a/x/test_p.py b/x/test_p.py\nnew file mode 100644\n--- /dev/null\n+++ b/x/test_p.py\n@@ -0,0 +1,2 @@\n"
             "+def test_a():\n+    assert not probe(1)['ok']\n")
     assert verify.vacuity_hits(diff)
+
+
+# ------------------------------------------------------------------------- r8g fix 2: worktree tools cut, lane destroyed reported
+def test_proxy_strips_worktree_tools_from_the_request():
+    body = {"tools": [{"function": {"name": n}} for n in
+                      ("read", "edit", "opencode_worktree_remove", "opencode_worktree_create", "opencode_worktree_list")]}
+    gone = L.strip_worker_tools(body)
+    assert gone == ["opencode_worktree_remove", "opencode_worktree_create", "opencode_worktree_list"]
+    assert [t["function"]["name"] for t in body["tools"]] == ["read", "edit"]
+    assert L.strip_worker_tools({"messages": []}) == []
+
+
+def test_edit_permission_denies_the_lane_directory_itself(tmp_path, monkeypatch):
+    monkeypatch.setattr(L, "POLICY_DIR", tmp_path / "pol")
+    t = {"repo": "epyc-orchestrator", "budget": dict(schema.DEFAULT_BUDGET), "acceptance": None}
+    perm = json.loads(L.write_config(tmp_path, "http://x/v1", "m", t, lane=LANE).read_text())["agent"][L.AGENT]["permission"]
+    assert perm["edit"]["*"] == "allow" and perm["edit"][LANE] == "deny" and perm["edit"][LANE + "/"] == "deny"
+    for k in ("opencode_worktree_remove", "opencode_worktree_list", "opencode_*", "opencode.*"):
+        assert perm[k] == "deny"
+    perm2 = json.loads(L.write_config(tmp_path, "http://x/v1", "m", t).read_text())["agent"][L.AGENT]["permission"]
+    assert perm2["edit"] == "allow"                               # no lane given: unchanged
+
+
+def test_lane_destroyed_by_worker_is_a_harness_row_not_calledprocesserror(tmp_path, monkeypatch):
+    import subprocess
+    from taskflow import dispatch
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    g = lambda *a: subprocess.run(["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@t", *a],
+                                  check=True, capture_output=True, text=True)
+    g("init", "-q")
+    (repo / "a.txt").write_text("x")
+    g("add", "a.txt")
+    g("commit", "-q", "-m", "i")
+    lane = tmp_path / "lane1"
+    g("worktree", "add", "-q", "--detach", str(lane))
+    assert not dispatch.lane_destroyed(lane)
+    import shutil
+    shutil.rmtree(lane)                                           # what opencode_worktree_remove(force) did
+    assert dispatch.lane_destroyed(lane)
+
+    task = {"key": "MM-5", "handoff": "h.md", "repo": "epyc-orchestrator", "budget": dict(schema.DEFAULT_BUDGET),
+            "text_sha": "ab", "id": "MM-5"}
+    lane2 = tmp_path / "lane2"
+    monkeypatch.setattr(dispatch, "make_lane", lambda *a, **k: (repo, lane2, "base"))
+    monkeypatch.setattr(dispatch, "gitnexus_trigger", lambda *a, **k: "")
+    monkeypatch.setattr(dispatch, "phase1_or_skip", lambda *a, **k: None)
+    monkeypatch.setattr(dispatch, "sweep_lanes", lambda *a, **k: {})
+    g("worktree", "add", "-q", "--detach", str(lane2))
+
+    def fake_spawn(*a, **k):
+        shutil.rmtree(lane2)
+        return {"usage": {"steps": 3, "input": 0, "output": 0, "cache_read": 0}, "errors": [], "tools": ["opencode_worktree_remove"],
+                "model": "m", "rc": 0, "timed_out": False, "result": None, "wall_s": 1, "tool_errors": []}
+    monkeypatch.setattr(dispatch.local_llm, "spawn", fake_spawn)
+    rows = dispatch.run([task], "http://x", tmp_path / "out", apply=False, use_reviewer=False, check_fresh=False)
+    assert rows[0]["reason"] == "lane-destroyed-by-worker" and rows[0]["failure_class"] == "harness", rows[0]
+    assert "opencode_worktree_remove" in rows[0]["detail"]

@@ -118,6 +118,29 @@ def cap_max_tokens(body: dict, cap: int = MAX_TOKENS_CAP) -> bool:
     return False
 
 
+# r8g fix 2 (r8f MM-5 nothink): opencode 2 ships built-in `opencode_worktree_{create,list,remove}` tools. They assert the
+# `edit` permission on the DIRECTORY, so the name-keyed deny entries in the agent permission never applied: the worker
+# called opencode_worktree_remove(force) on its own lane, the diff was gone, and `git status` failed rc=128. The worker
+# tool set is cut at the proxy (the model never sees the tools) and, as defence in depth, the edit permission denies the
+# lane directory itself (write_config).
+WORKER_DENIED_TOOLS = ("opencode_worktree_remove", "opencode_worktree_create", "opencode_worktree_list")
+
+
+def strip_worker_tools(body: dict, denied=WORKER_DENIED_TOOLS) -> list[str]:
+    """Proxy guard: drop worktree-mutating opencode tools from a request's `tools`. Returns the removed names."""
+    tools = body.get("tools")
+    if not isinstance(tools, list):
+        return []
+    gone = [t.get("function", {}).get("name") for t in tools
+            if (t.get("function", {}).get("name") or "").startswith(tuple(denied))]
+    if gone:
+        body["tools"] = [t for t in tools if t.get("function", {}).get("name") not in gone]
+        if not body["tools"]:
+            body.pop("tools", None)
+            body.pop("tool_choice", None)
+    return gone
+
+
 class DegenerationGuard:
     """Proxy-side abort for degenerate decoding (canary r3/r4: capped runaways decoding repetitive garbage at
     ~46 tok/s with ~0 MTP acceptance carried 44% of np1 drafted tokens).
@@ -431,6 +454,11 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
             bash[base + tail] = "allow"
     for d in BASH_DENY + SCRATCH_DENY + RM_DENY:
         bash[d] = "deny"
+    edit_perm: str | dict = "allow"
+    if lane:                    # r8g fix 2: the built-in worktree_remove asserts `edit` on the lane directory itself
+        lp = str(lane).rstrip("/")
+        rp = os.path.realpath(lp)
+        edit_perm = {"*": "allow", **{v: "deny" for q in dict.fromkeys([lp, rp]) for v in (q, q + "/", q + "/.")}}
     cfg = {
         "$schema": "https://opencode.ai/config.json",
         "snapshot": False,
@@ -455,10 +483,11 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         "agent": {"title": {"disable": True}, "summary": {"disable": True}, AGENT: {
             "description": "taskflow single-box worker", "mode": "primary",
             "steps": int(task["budget"]["turns"]),
-            "permission": {"read": "allow", "edit": "allow", "glob": "allow", "grep": "allow", "list": "allow",
+            "permission": {"read": "allow", "edit": edit_perm, "glob": "allow", "grep": "allow", "list": "allow",
                            "bash": bash, "shell": bash, "question": "deny",
                            # r1 canary: the JS `execute` sandbox ate 13 of 14 steps on syntax errors; image tool is noise
-                           "execute": "deny", "experimental_image_generate": "deny", "opencode_*": "deny", "opencode_worktree_remove": "deny", "opencode_worktree_create": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny",
+                           "execute": "deny", "experimental_image_generate": "deny", "opencode_*": "deny", "opencode_worktree_remove": "deny", "opencode_worktree_create": "deny",
+                           "opencode_worktree_list": "deny", "opencode.*": "deny", "webfetch": "deny", "websearch": "deny", "task": "deny",
                            "todowrite": "deny", "todoread": "deny", "skill": "deny",
                            "external_directory": "deny"},
         }},

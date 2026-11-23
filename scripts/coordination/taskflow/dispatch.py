@@ -308,6 +308,13 @@ def tidy_lane(lane: Path, task: dict) -> dict:
     return rep
 
 
+def lane_destroyed(lane: Path) -> bool:
+    """True when the lane directory is gone or is no longer a git worktree (the worker deleted it)."""
+    if not lane.is_dir() or not (lane / ".git").exists():
+        return True
+    return _git(lane, "rev-parse", "--is-inside-work-tree", check=False).returncode != 0
+
+
 def commit_lane(lane: Path, task: dict) -> bool:
     rep = tidy_lane(lane, task)
     if rep["restored"] or rep["dropped_empty"]:
@@ -972,6 +979,13 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
                     row["tag"] = tag_needs_brief(task, tdir, row["reason"], apply)   # box_index then skips the box
                     raise _EndRun()
             w = local_llm.spawn(task, lane, tdir / "worker", endpoint, family=family)
+            if lane_destroyed(lane):                            # r8g fix 2 (r8f MM-5): the worker removed its own lane
+                row.update(verdict="error", reason="lane-destroyed-by-worker", failure_class="harness",
+                           detail=f"{lane} is gone or no longer a git worktree after the worker ran; tools: "
+                                  + ",".join(sorted({t for t in w.get("tools") or [] if "worktree" in t}) or ["?"]),
+                           model=w.get("model"), rc=w.get("rc"), timed_out=w.get("timed_out"),
+                           steps=(w.get("usage") or {}).get("steps"), tools=(w.get("tools") or [])[:40])
+                raise _EndRun()
             committed = commit_lane(lane, task)
             if str(lane) in COMMIT_REPORTS:
                 row["commit_tidy"] = COMMIT_REPORTS.pop(str(lane))      # r8e fix 2: reported, never silent
@@ -998,7 +1012,9 @@ def run(tasks: list[dict], endpoint: str, out: Path, apply: bool, use_reviewer: 
             row.update(verdict="error", reason=type(e).__name__, failure_class="harness", detail=str(e)[:300])
         finally:
             failed_with_work = row.get("verdict") in ("rejected", "error", "unchecked") and row.get("reason") != "no-change"
-            if failed_with_work:
+            if row.get("reason") == "lane-destroyed-by-worker":
+                drop_lane(repo, lane)                           # nothing to keep; clears the lane meta (never prune)
+            elif failed_with_work:
                 keep_lane(lane, f"{row.get('verdict')}:{row.get('reason')}")
                 row["lane_kept"] = str(lane)
             else:
