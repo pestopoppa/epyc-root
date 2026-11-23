@@ -24,3 +24,8 @@ transcript with tool-output text exists. AgentDiet `artifact.zip` downloaded and
 `/mnt/raid0/llm/tmp/ak1123-agentdiet/dl/`; `trajs.7z` extraction was refused by the permission classifier and
 not retried, so that class is unreplayed. Box left open with a checkpoint. Details:
 `docs/reports/toc-supersede-1-20261123/README.md`. [belief: cc]
+
+## RTG-ASK-1 log replay (ak1123)
+
+- Logs only: 126 progress JSONL files (digest c01b6b49...586c), 167,076 episodes, 127,966 escalation-eligible. Script `scripts/analysis/rtg_ask1_log_replay.py`, results `research/deep-dives/intake-ak-1123/rtg-ask-1-results.md`.
+- Counts: 3,154 policy escalations, 0 logged model-initiated `escalate()`, 1,632 plan_reviewed consults. Entropy-only baseline unavailable (entropy never logged); ask-time probe holdout AUROC 0.593 (n=37,503). M4 did not fire (not evaluable). Budget-price replay invalid (selection-confounded uplift). Box ticked as counts-plus-stop; needs entropy and escalate/consult telemetry.
