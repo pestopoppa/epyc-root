@@ -454,3 +454,34 @@ def test_two_capped_thinking_requests_never_consume_the_wall():
     assert schema.request_token_cap(dict(arm, request_cap={"max_request_wall_frac": None}), wall_s=600) == 6144   # disabled
 
 
+# ------------------------------------------------------------------------- r8g fix 6: where line ranges (WS4)
+def test_where_accepts_line_ranges_and_checks_them(tmp_path):
+    from taskflow import brief
+    pw = brief.parse_where("epyc-root:scripts/coordination/handoff_sessions.py#L530-613")
+    assert pw["path"] == "scripts/coordination/handoff_sessions.py" and pw["lines"] == (530, 613) and pw["sym"] is None
+    assert brief.parse_where("epyc-root:a/b.py::f#L3")["lines"] == (3, 3)
+    assert brief.parse_where("epyc-root:a/b.py::f")["lines"] is None
+    (tmp_path / "x.py").write_text("a\nb\nc\n")
+    ok = brief.parse_where("epyc-root:x.py#L1-3")
+    assert brief._lines_in_file(tmp_path, ok)
+    assert not brief._lines_in_file(tmp_path, brief.parse_where("epyc-root:x.py#L2-9"))     # beyond the file
+    assert not brief._lines_in_file(tmp_path, brief.parse_where("epyc-root:x.py#L3-1"))     # reversed
+
+
+def test_where_ranges_reach_the_worker_prompt():
+    t = {"where": ["epyc-root:scripts/coordination/handoff_sessions.py#L530-613", "epyc-root:a.py::f"]}
+    sec = L.brief_sections(t)[0]
+    assert "#L530-613" in sec and "read ONLY those lines" in sec
+    assert "read ONLY" not in L.brief_sections({"where": ["epyc-root:a.py::f"]})[0]
+
+
+def test_ws4_brief_points_at_line_ranges_not_the_whole_file():
+    from taskflow import brief
+    root = Path(__file__).resolve().parents[2]
+    doc = brief.parse_text((root / "handoffs/active/briefs/WS4-WAKE-IMPERATIVE.md").read_text())
+    hs = [w for w in doc["where"] if "handoff_sessions.py" in w]
+    assert hs and all("#L" in w for w in hs), hs
+    for w in hs:
+        assert brief._lines_in_file(root, brief.parse_where(w)), w
+
+

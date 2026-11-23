@@ -102,7 +102,7 @@ REPOS = {"epyc-root": None,  # None = the root the brief lives in
          "epyc-llama": Path("/mnt/raid0/llm/llama.cpp")}
 GITNEXUS_ENV = "EPYC_BRIEF_GITNEXUS"     # path to the gitnexus binary ("" or missing -> unavailable -> weak)
 _WHERE = re.compile(r"^(?:(?P<repo>[A-Za-z0-9_.-]+):)?(?P<path>[^@:]+?)(?:@(?P<rev>[0-9A-Za-z_./-]+))?"
-                    r"(?:::(?P<sym>[A-Za-z_][A-Za-z0-9_.]*))?$")
+                    r"(?:::(?P<sym>[A-Za-z_][A-Za-z0-9_.]*))?(?:#L(?P<l0>\d+)(?:-(?P<l1>\d+))?)?$")   # r8g fix 6: optional #L<a>-<b>
 
 
 def _handoff_libs():
@@ -199,9 +199,26 @@ def find_box(root: Path, bid: str) -> dict | None:
 def parse_where(w: str) -> dict:
     m = _WHERE.match(w.strip())
     if not m:
-        return {"raw": w, "repo": None, "path": w, "rev": None, "sym": None}
+        return {"raw": w, "repo": None, "path": w, "rev": None, "sym": None, "lines": None}
+    l0 = int(m.group("l0")) if m.group("l0") else None
     return {"raw": w, "repo": m.group("repo") or "epyc-root", "path": m.group("path"), "rev": m.group("rev"),
-            "sym": m.group("sym")}
+            "sym": m.group("sym"), "lines": (l0, int(m.group("l1") or l0)) if l0 else None}
+
+
+def _lines_in_file(rd: Path, pw: dict) -> bool:
+    """r8g fix 6: a `#L<a>-<b>` where-range must be ordered and inside the file (HEAD, or the pinned rev)."""
+    a, b = pw["lines"]
+    if a > b:
+        return False
+    if pw["rev"]:
+        r = _git(rd, "show", f"{pw['rev']}:{pw['path']}")
+        text = r.stdout if r.returncode == 0 else ""
+    else:
+        try:
+            text = (rd / pw["path"]).read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            return False
+    return b <= len(text.splitlines())
 
 
 def repo_dir(root: Path, repo: str) -> Path | None:
@@ -466,6 +483,8 @@ def compile_brief(bid: str, root: Path = REPO_ROOT, use_cache: bool = True, box:
             c.update(detail="new test named by the brief (not yet written)")
         elif blob_sha(rd, pw["path"], pw["rev"]) is None:
             c.update(ok=False, detail=f"path missing at {pw['rev'] or 'HEAD'}")
+        elif pw["lines"] and not _lines_in_file(rd, pw):
+            c.update(ok=False, detail=f"line range {pw['lines'][0]}-{pw['lines'][1]} is outside the file")
         elif pw["sym"]:
             s = check_symbol(rd, pw["path"], pw["rev"], pw["sym"])
             c.update(ok=s["ok"], strength=s["strength"], detail=s["how"] + ("" if s["ok"] else ": symbol not found"))

@@ -21,7 +21,8 @@ approach: 'Add epyc-orchestrator scripts/autopilot/evals/dtap/harness/isolation.
   assert_grader_unreachable must raise. This is the ''fails on a deliberately reachable grader'' control. (2) test_isolated_launch_denies:
   launcher=[''unshare'',''--user'',''--map-root-user'',''--mount'',''sh'',''-c'',''mount -t tmpfs none <dir> && exec "$@"'',''--'']
   must yield ENOENT/EACCES; if unshare is not permitted, pytest.skip with the errno. Never pass vacuously (bwrap is not installed
-  on this host).
+  on this host). Empty child stdout is an error, never a denial: raise or return launcher_error, and assert a real errno (ENOENT/EACCES)
+  in the isolation test.
 
   '
 acceptance: cd /workspace/repos/epyc-orchestrator && python3 -m pytest -q scripts/autopilot/evals/dtap/tests/test_grader_isolation.py
@@ -33,7 +34,7 @@ non_goals:
 - do not touch code_exec_scorer.py (eval-tower 2a-iv owns it)
 tier: terra
 grounded:
-  at: '2026-11-20'
+  at: '2026-11-23'
   blobs:
     epyc-orchestrator:scripts/autopilot/evals/dtap/harness/runner.py: 6a53438e66722922565d1df650424ec779d5606a
     epyc-orchestrator:scripts/autopilot/evals/dtap/tests/conftest.py: 19bd13c42448227ad93a37918044172af829476f

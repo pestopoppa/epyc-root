@@ -314,9 +314,11 @@ def brief_sections(task: dict) -> list[str]:
     out = []
     if task.get("where"):
         blast = task.get("blast_radius") or {}
-        out.append("## WHERE\n" + "\n".join(
-            f"- {w}" + (f"  (blast radius {blast[w.split('::')[-1]]}: change with care)"
-                        if "::" in w and str(blast.get(w.split("::")[-1], "")).upper() in ("HIGH", "CRITICAL") else "")
+        ranged = any("#L" in str(w) for w in task["where"])
+        out.append("## WHERE\n" + ("Entries with `#L<a>-<b>` are line ranges: read ONLY those lines (read offset/limit), never the whole file.\n"
+                                   if ranged else "") + "\n".join(
+            f"- {w}" + (f"  (blast radius {blast[w.split('::')[-1].split('#L')[0]]}: change with care)"
+                        if "::" in w and str(blast.get(w.split("::")[-1].split("#L")[0], "")).upper() in ("HIGH", "CRITICAL") else "")
             for w in task["where"]))
     if task.get("approach"):
         out.append("## APPROACH\n" + str(task["approach"]).strip())
@@ -444,14 +446,14 @@ def scratch_patterns(task: dict, lane: Path | str | None = None) -> list[str]:
 # `rm <lane-relative path>` is allowed; flags, absolute, `..`, `~` and .git paths are denied. A TRACKED file the worker
 # deletes anyway is restored by dispatch.commit_lane, so only untracked (scratch) files can actually go.
 RM_ALLOW = ["rm *"]
-RM_DENY = ["rm -*", "rm * -*", "rm /*", "rm * /*", "rm *..*", "rm ~*", "rm * ~*", "rm *.git*", "rm *;*", "rm *&*",
-           "rm *|*", "rm *$*", "rm *`*"]
 # r8g fix 4 (r8f think TU-GR-1): bare `python3 -c` and `mv` were denied and drove 30 steps of flailing. `mv <rel> <rel>`
 # is allowed on the same terms as rm (relative paths only; flags, absolute, `..`, `~`, .git and shell metacharacters are
 # denied). A TRACKED file it moves away is restored by dispatch.tidy_lane, so only untracked lane files really move.
 MV_ALLOW = ["mv *"]
 MV_DENY = ["mv -*", "mv * -*", "mv /*", "mv * /*", "mv *..*", "mv ~*", "mv * ~*", "mv *.git*", "mv *;*", "mv *&*",
            "mv *|*", "mv *$*", "mv *`*"]
+RM_DENY = ["rm -*", "rm * -*", "rm /*", "rm * /*", "rm *..*", "rm ~*", "rm * ~*", "rm *.git*", "rm *;*", "rm *&*",
+           "rm *|*", "rm *$*", "rm *`*"]
 
 
 def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 65536,
