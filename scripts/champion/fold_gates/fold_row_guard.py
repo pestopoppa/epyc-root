@@ -18,6 +18,17 @@ Usage (launch.sh / spec):
 import argparse, hashlib, json, os, shutil, subprocess, sys, time
 
 TERMINAL = ('PASS', 'FAIL', 'FUTILITY', 'INCONCLUSIVE', 'ATTRIBUTED', 'MIXED', 'UNATTRIBUTED', 'CLEAN', 'DEFECT')
+
+
+def is_terminal(v):
+    """A verdict is terminal if it starts with a terminal word, or is a compound '<name>:<answer>|<name>:<answer>' whose every
+    answer does (c19mtp-a3b-gpu-20261123-r3: 'mtp:ATTRIBUTED_H15|np4mtp:ATTRIBUTED_H15' was not recognised, so its completion
+    check failed and the launcher re-ran a finished job 3 times)."""
+    v = str(v or '')
+    if v.startswith(TERMINAL + ('NO_LOSS', 'LOCATED', 'GRAPH_CACHE', 'C18_TOO', 'UNLOCATED', 'TEARDOWN')):
+        return True
+    parts = [x.split(':', 1)[1] if ':' in x else '' for x in v.split('|')]
+    return bool(parts) and all(x.startswith(TERMINAL + ('NO_LOSS',)) for x in parts)
 SMOKE_ENV = ('FILLER_SMOKE', 'FILLER_DRYRUN')
 
 # source path prefix -> library (or binary) in the store's bin/. First match wins; order is most specific first.
@@ -116,7 +127,7 @@ def check(d):
         return False, 'RESULT.json was not written by the guarded run (sha mismatch)'
     complete = res.get('complete') is True or res.get('status') == 'complete'
     v = str(res.get('verdict') or '')
-    if not complete or not v.startswith(TERMINAL):
+    if not complete or not is_terminal(v):
         return False, 'RESULT not complete/terminal: %r' % v
     return True, 'ok run_id=%s verdict=%s' % (run['run_id'], v)
 

@@ -79,7 +79,10 @@ def main():
             open(b + '/libggml-cpu.so', 'wb').write(b'1')
             if fg.libs_differ(repo, base, tip, a, b)['ok']:
                 fails.append('libs_differ passed with the touched lib identical')
-    print('FAIL\n' + '\n'.join(fails) if fails else 'OK 7 checks')
+    # 8. compound per-recipe verdicts are terminal; a compound with a non-terminal part is not
+    if not fg.is_terminal('mtp:ATTRIBUTED_H15|np4mtp:NO_LOSS') or fg.is_terminal('mtp:ATTRIBUTED_H15|np4mtp:RUNNING'):
+        fails.append('is_terminal wrong on compound verdicts')
+    print('FAIL\n' + '\n'.join(fails) if fails else 'OK 8 checks')
     return 1 if fails else 0
 
 
