@@ -2465,6 +2465,26 @@ on this host, and no row above depends on it. `intake-1333#record`, `intake-1113
 The old install decision's premise is stale. `core.hooksPath` selects `/workspace/.git/hooks`; its executable `pre-push` chains `scripts/hooks/pre_push_serialization_guard.sh` and Git LFS, and records the operator-approved Phase-0 installation on 2026-08-12. The guard source's statement that it does not install itself describes the separate installation step, not the current hook state. Do not request installation approval again or duplicate the local guard.
 
 This verifies local installation only. A client-side hook can be bypassed and does not supply server-side structural enforcement; no new server-side implementation or inference result is claimed. Original task text and checkbox are preserved as audit identity, with this source recheck governing its still-needed premise.
+- [ ] **PM-AKAUDIT-B1-B14** [non-inference] Land the pipeline-mgmt half of the 2026-11-23 AutoKernel row-failure audit (B1-B14; ak_row_lint wired into publish_row as a refusal is done 009c15e3d; B1 quiet drains hold CPU only is done b45c9efd6): remaining B2 GPU host-core release on server exit plus HOLD-ORPHAN, B3 build claims yield q3 (658c64cec, deploy pending), B4 SHORT-ROW-SLOT, B5/B6 smoke ordering and 3-strike park, B7 PASS needs fresh smoke_measure and GPU residency, B8 owner STOP on resumable rows auto-requeues, B9 same-RESULT re-run guard, B10 refuse missing store, B11 estimate_basis on GPU rows, B12 digit-only WS58_CPUS, B13 keep launcher.out per superseded attempt, B14 IDLE-VIOLATION to placement (IN PROGRESS 2026-11-23, none of B2/B4-B14 landed)
+      · done when: each of B1-B14 is a landed rowflow commit with a unit test or a written decline appended to /mnt/raid0/llm/tmp/ak-failure-audit-20261123/REPORT.md
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-REAPER-RULES** [non-inference] Fix the disk-reaper rules found by the 2026-11-23 tmp stale sweep (reaper pins only on unfiled ready rows, FILLERS rows, claims and dryrun logs; 397 LIVE-but-idle-7d dirs / 65 GB pinned) so FILED and STALE-ORPHAN dirs are reaped per each row's declared keep list (IN PROGRESS 2026-11-23, branch pm/reaper-rules-20261123)
+      · done when: reaper simulation (/mnt/raid0/llm/tmp/tmp-stale-sweep-20261123/reapsim.py) shows the LIVE-but-idle-7d pinned set reaped except KEEP-marked dirs, with unit tests, deployed
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-PII-CAPSULE-RATIFY** [operator-decision] Operator signs the PII capture capsule diet and 2-day retention package RATIFY-PII-CAPSULE-20261123 (custody_format 2; capsule 29.9 MB/4222 files to 1.6 MB/14 files; hook 9.1 s to 0.45 s), then drains the backlog with the prune command in its README
+      · done when: scripts/hooks/pii_staged_capture.py on origin/main carries custody_format 2 and 'pytest scripts/hooks/tests -k pii' passes
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-BUILDLANE-DEPLOY-VERIFY** [non-inference] Finish and verify the live deploy of rowflow BUILD LANE 658c64cec (deploy_rowflow log /mnt/raid0/llm/tmp/pm-deploy-buildlane.log; unit tests 1188 passed, replay gate was running at wrap-up)
+      · done when: deploy_rowflow reports success for sha 658c64cec and the live keeper process start time postdates the deploy
+      · gate: none
+      · owner: pipeline-mgmt
+- [ ] **PM-CX8-SPECPIT-PUSH** [non-inference] Land Codex cx8 SPEC-PIT.1 temperature-gate integration (research local branch cx8-epyc-inference-research bfd15695b, root cx8-epyc-root 14dd32bfc); push is blocked by check_regrowth_guards: 127623 code lines vs the protected 127259 total ceiling (origin/main already 338 over; the change adds 26), so reduce loop code by at least 364 lines or get the operator-signed ceiling corrected; never edit the baseline
+      · done when: check_regrowth_guards.py exits 0 on the branch and cx8 commits are PUSH VERIFIED on origin/main
+      · gate: none
+      · owner: pipeline-mgmt
 
 ## Track: churn-pipeline
 <!-- gate: none -->

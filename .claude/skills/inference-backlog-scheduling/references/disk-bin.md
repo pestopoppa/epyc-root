@@ -45,3 +45,28 @@ will write (`budget_gib`) and where (`scratch_root`). `template_lint.py` WARNs a
 `budget_gib` or the raw declaration is missing; `file_result.py` refuses to file a row with no
 `scratch_root`. A KEEP marker at ANY depth keeps its entry (`scratch_cleanup.py`, negative
 control in `tests/test_scratch_cleanup.py`).
+
+## 2026-11-23 lessons — root `.git` bloat and the `/mnt/raid0` reclaim (pipeline-mgmt)
+
+`/mnt/raid0` fell to 154G free; a day of reclaim brought it to about 440G. Measured causes, in order of size:
+
+- **PII pre-commit capsules never expire.** `scripts/hooks/pii_staged_capture.py` wrote one capsule per commit
+  under `.git/epyc-private/pii-gates/`, each copying ~4,000 HEAD-subtree files (`comparison-tree-N.bin`) plus the
+  full index: ~30 MB and 4,222 files per capsule, with no retention. 9,095 clean capsules (25.4M files, 98.6 GB
+  du) were deleted; findings (exit!=0 260, not-passed 425), receipt-less (65) and recent (719) capsules were
+  kept. `.git` went 223G to 38G with a safe repack (no `gc`). The fix is `RATIFY-PII-CAPSULE-20261123`
+  (custody_format 2: record HEAD + tree id, re-derive from the object store, pack the index, delete clean
+  capsules older than 2 days). Until it is signed the hook still writes ~30 MB per commit.
+- **Pack history of whole-file rewrites.** The largest history paths are `research/intake_index.yaml` (616 MB
+  packed, 377 versions) and the big handoffs (`autokernel-loop.md` 281 MB, `vidya-belief-substrate-program.md`
+  235 MB): generated or append-heavy files committed in full every time. Not rewritten (history surgery needs
+  an operator decision); the lever is to stop committing generated files and to compact handoffs.
+- **Worktrees and `tmp/`.** ~33 worktrees removed through `worktree_gate.py`. The stale sweep
+  (`/mnt/raid0/llm/tmp/tmp-stale-sweep-20261123/REPORT.md`): 530 GB in 4,757 top-level entries, 93 GB FILED or
+  STALE-ORPHAN, and 397 dirs / 65 GB LIVE-but-idle-7d pinned only by an unfiled row, a FILLERS row, a claim or a
+  dryrun log. A reaper that pins on those never reclaims them (PM-REAPER-RULES).
+- Rowflow disk hardening now in place (`0514eecda`): DISK-WARN at floor+40G, 2 h idle reap under 200G free,
+  `LARGE-DERIVED` flag, `worktree_gate.py by-owner`.
+
+Rule: any per-commit hook that copies tree content must carry its own retention at creation. A growth path with
+no reaper is a disk leak waiting for the next incident.

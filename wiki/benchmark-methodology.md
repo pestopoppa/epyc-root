@@ -7913,3 +7913,12 @@ Sources: [progress 2026-11-23 autokernel](../progress/2026-11/2026-11-23-autoker
 
 #### Source References (2026-11-23, operator wiki sweep)
 - [digest 2026-11-22 ids 2789-2791](../research/deep-dives/intake-digests/2026-11-22-ids-2789-2791.md), [nanocode org dive](../research/deep-dives/pm-intake-nanocode-20261122/nanocode-org-dive.md), [nanocode stage3 plan](../research/deep-dives/pm-intake-nanocode-20261122/stage3-plan.md)
+
+### Compiled Update — 2026-11-23 (operator wiki sweep, pipeline-mgmt): quiet-host scheduling, row-failure audit, canary harness audit
+
+- **Scheduling, not job bugs, dominated wasted compute.** The 2026-11-23 AutoKernel row-failure audit measured GPU idle while GPU rows were queued for ~424 of 1,151 min (37%), ~360 CPU quarter-minutes lost to STOP rows republished instead of resumed, and ~300 on rows filed INCONCLUSIVE for contention; 0 of 53 specs carried an `estimate_basis`. Rowflow responses now live: complete-suspect guard (`487e9903f`), quiet-host gate with GPU rows not bandwidth-heavy by default (`bafa78f11`, `b45c9efd6`), QUIET-RESERVE and QUIET-SERIAL (`eda64e372`, `09e637670`), build lane (`658c64cec`). A quiet-host measurement row is only as valid as its quiet window, so the keeper reserves and serializes the window rather than hoping for one.
+- **Hand audit beats the classifier on harness canaries.** Taskflow canary r8b-r8f hand audits found the classifier mislabelled harness/env failures as model failures (r8b: classifier model 11/16, hand audit model 1/16) and missed vacuous-test false verifies; r8f was filed FIX-HARNESS at 4/10 verified. The r8g fixes (`9d7e102c6`..`ccb51d59e`) target the shapes found: vacuity guard on empty-stdout probes, a destroyed lane reported as harness, a contention classifier on every timed-out row.
+- **Disk is a measurement resource.** The root `.git` held 223G because per-commit PII capsules (~30 MB / 4,222 files each) had no retention; 9,095 were reaped (98.6 GB) and the hook fix ships as a ratify package. Rule: a per-commit artifact carries its retention at creation (`.claude/skills/inference-backlog-scheduling/references/disk-bin.md`).
+
+#### Source References (2026-11-23, operator wiki sweep, pipeline-mgmt)
+- [pipeline-mgmt progress 2026-11-23](../progress/2026-11/2026-11-23-pipeline-mgmt.md), [churn-pipeline](../handoffs/active/churn-pipeline.md), [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md), [autokernel-loop](../handoffs/active/autokernel-loop.md)

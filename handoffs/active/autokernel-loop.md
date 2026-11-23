@@ -8625,10 +8625,10 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [x] Known-good and known-null config patches classify correctly ✅ 2026-11-19 (autokernel, code-only): the P1d fixtures are the pair. Known-good: `GGML_FIXTURE_KNOB` OFF->ON default flip classifies TOUCHED on every workload (`test_knob_set_in_effective_env_is_touched`, `exercised_knob_flips`). Known-null: a knob read with no default change is not an exercised change and is INERT only through a T1 witness (`test_unset_knob_inert_only_with_t1_witness`, `test_knob_read_no_default_change_inert_where_unset`). 27 passed, research `93445e31e`. [no-belief: code]
 
 ##### P4 — broker + budgets (U4)  · exit: 10 consecutive iterations mixing surfaces with zero unlocked builds and foreign load under bound on every arm
-- [ ] **AKU-20** Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap ✅ 2026-11-23 [no-belief: software] research 20381b8eb
+- [x] **AKU-20** Build slot: pinned + `jobs` bounded + region lock role `build`; per-lane concurrency cap ✅ 2026-11-23 [no-belief: software] research 20381b8eb
       · class: non-inference
       · done when: builds run in a pinned slot with bounded `jobs`, under region lock role `build`, with a per-lane concurrency cap
-- [ ] **AKU-21** CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock ✅ 2026-11-23 [no-belief: software] research 20381b8eb
+- [x] **AKU-21** CPU arm: acquire `cpu_region_lock` role `bench`; GPU arm: existing flock ✅ 2026-11-23 [no-belief: software] research 20381b8eb
       · class: non-inference (lock-acquisition code; no measurement)
       · done when: the CPU arm acquires `cpu_region_lock` role `bench` and the GPU arm keeps the existing flock
 - [ ] **P4-0a (filed 2026-09-07, derived from the P4-0 merge)** — the shared, un-lane-owned research clone
@@ -8640,6 +8640,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [x] **AKU-22** Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas) ✅ 2026-11-23 [no-belief: software] 0a794ee63
 - [x] **AKU-23** Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row ✅ 2026-11-23 [no-belief: software] 6fcf16370
       · note (2026-11-23, pipeline-mgmt) [no-belief: annotation]: modules landed in research `0a794ee63` (`arm_accounting.py`, `foreign_residency.py` + tests). Still open: wiring into the run.py gpu_reading, the bench.py compare/measure rows and the CPU arm rows.
+      · note (2026-11-23 wrap-up, pipeline-mgmt) [no-belief: annotation]: the tick above OVERCLAIMS the first clause. Utilisation (held vs idle-while-claimed) is wired onto every row (`6fcf16370`: gpu_reading, compare/measure rows); the ARM-SECONDS BUDGET wiring is still OPEN: budgets are not yet counted in arm-seconds anywhere. Do not cite AKU-23 as closing arm-seconds budgeting.
       · class: non-inference (accounting code; no measurement)
       · done when: budgets are counted in arm-seconds and every row records utilisation (held vs idle-while-claimed)
 - [ ] **AKU-24** Retire the bilateral hold protocol with INF-70 (OP-41) — the broker replaces it
