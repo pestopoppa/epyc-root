@@ -1,4 +1,12 @@
-# Stage-3 plan — HIP ISA/MMQ PRs, AITER v0.1.30, BPE, spec-decoding, context and harness papers (intake-ak-1123) — AWAITING OPERATOR APPROVAL
+# Stage-3 plan — HIP ISA/MMQ PRs, AITER v0.1.30, BPE, spec-decoding, context and harness papers (intake-ak-1123) — REVISION 1, AWAITING OPERATOR APPROVAL
+
+## Revision 1 (operator review 2026-11-23)
+
+- New box SPEC-DTREE-DICE (P7): step 1 logs and measures the sampled (T > 0) share of served traffic; step 2 replays DICE node selection offline. The existing DTREE dumps are greedy with no target probabilities, so step 2a captures first (A3B MTP on a CPU quarter; 27B DFlash2 is an MI210 capture-only row, OD-5). The falsifier compares Gumbel-max coupling with pre-sampled randomness (V2, V3) against our rejection sampling (V0) and recursive rejection on the same tree (V1), with a futility rule; a GPU build row only on replay gains.
+- K1 rewritten: the 1 - TV result (intake-2845) is a single-draft, per-position bound. It does not cover tree or multi-candidate verification, where k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00). Production serves at T > 0 (role defaults 0.1-0.3; :8083 direct agent traffic at 1.0), so T = 0 parity closes nothing. AKI-51/52 now map to SPEC-DTREE-DICE; M6 keeps only the calibration refit (AKI-68); multi-draft verifiers moved out of the AKI-54 decline into SPEC-DTREE-DICE (AKI-69); Stage 4 appends a scope line to intake-2845.
+- SPEC-COUPLE-MTP-1 corrected: MTP at T > 0 is sample-and-compare against an argmax draft (common/sampling.cpp:693-711 @ a6a32c1), not rejection sampling, so the box stays open; it now tests routing MTP through the rejection path with a softmax top-10 draft, at every served T including 1.0, on the shared capture.
+- AITER v0.1.30 reverse-engineered for gfx90a (source @ 77ba72b7061a, diffed against the 2026-11-05 clone): new P10 with AK-BW-GDN-GATE-FOLD (GDN beta/alpha projection and gate fold, about 1.5-2.5 ms of a 40.07 ms 27B verify in the C18 trace) and AK-ASM-I8GEMM-PERCHANNEL-GEMV (unmeasured verify half of the per-channel int8 lever, low confidence); AKI-23 upgraded from knowledge to AK-BW-GDN-GATE-FOLD; K4 replaced; other families declined (AKI-72).
+- Operator answers OD-1 A, OD-2 B, OD-3 A, OD-4 A recorded (session file, e64c3bc13); new decision OD-5.
 
 Entries intake-2824..intake-2862 (39): 13 submitted, 23 in Stage-2b wave 1, 3 in wave 2 (wave 2 surfaced nothing further, so the close-out gate is closed). 37 dive-verified; intake-2830 (Vega-Fafnir) and intake-2848 (ReTrace) are PDF-only and stay stage1-unverified, so no number or mechanism from them is used below. Subagents: 3 opus (MMQ dive, spec-decoding dive, determinism wave), 8 sonnet (dives and waves), 3 haiku/low (second readers over 409 anchors: 147 yes, 244 partial, 18 no; partials are mostly multi-part claims with one anchor per part). No compute was used; every [inference] box is a separately booked row.
 
@@ -10,10 +18,10 @@ Entries intake-2824..intake-2862 (39): 13 submitted, 23 in Stage-2b wave 1, 3 in
 | intake-2825 | PR #32839 readlane | worth_investigating | low | Only one served uniform-lane site (mmid.cu:92); topk/GDN hunks absent in our tree |
 | intake-2826 | PR #32840 ballot reduce (draft) | worth_investigating | low | Needs wrappers we lack; only prefill mask kernel is reachable |
 | intake-2827 | PR #32841 mbcnt rank | worth_investigating | low | Code owner pushback; no site in our tree |
-| intake-2828 | AITER v0.1.30 | adopt_patterns | medium | gfx942/gfx950 wheels; zero-timing and provider-record patterns adopted |
+| intake-2828 | AITER v0.1.30 | adopt_patterns | medium | gfx942/gfx950 wheels; zero-timing and provider-record patterns adopted; source reverse-engineered: GDN gate fold and per-channel verify GEMV filed (P10) |
 | intake-2829 | PR #32859 BPE | worth_investigating | low | Hardware not stated; under 0.1% of cold prefill |
 | intake-2830 | Vega-Fafnir | adopt_patterns | high | PDF-only, stage1-unverified; cited only as #record |
-| intake-2831 | DICE | worth_investigating | medium | No gain at T=0; H200; lossless needs Gumbel-max target |
+| intake-2831 | DICE | worth_investigating | medium | H200; gain grows with T and is zero at T=0; lossless needs Gumbel-max target sampling; open for trees under SPEC-DTREE-DICE |
 | intake-2832 | CoPyro | worth_investigating | medium | Needs drafter retraining; no training-free result |
 | intake-2833 | Contexture | adopt_patterns | high | Supersession rule and cold-commit cost model; headline numbers narrowed |
 | intake-2834 | CreditFilter | worth_investigating | low | Qwen3-8B-Base only; needs an RL lane we do not have |
@@ -27,8 +35,8 @@ Entries intake-2824..intake-2862 (39): 13 submitted, 23 in Stage-2b wave 1, 3 in
 | intake-2842 | VERGE | worth_investigating | medium | Abstract only; anchorable divergence rate |
 | intake-2843 | LLM-42 | adopt_patterns | medium | No-atomics premise fails on MI210 paths |
 | intake-2844 | Batch spec forensics | adopt_patterns | medium | 95% at batch 8 overturned for v4; cache-drift signature |
-| intake-2845 | Daliri coupling | adopt_patterns | low | Coupling cannot beat 1-TV |
-| intake-2846 | Kobus ERSD | already_integrated | low | Standard verifier optimal for single drafts |
+| intake-2845 | Daliri coupling | adopt_patterns | low | Coupling cannot beat 1-TV per position for a single draft; trees not covered |
+| intake-2846 | Kobus ERSD | already_integrated | low | Standard verifier optimal for single drafts; race verifier wins for k >= 3 (tree arm V4) |
 | intake-2847 | SAM-Decoding | worth_investigating | low | ngram-mod is not an equivalent index |
 | intake-2848 | ReTrace | worth_investigating | medium | PDF-only, stage1-unverified |
 | intake-2849 | Leyline | adopt_patterns | medium | MLA-only; hybrids cannot use it |
@@ -56,11 +64,12 @@ Entries intake-2824..intake-2862 (39): 13 submitted, 23 in Stage-2b wave 1, 3 in
 | P4 | Measure supersession share offline and build an evict-cost probe before any eviction arm | handoffs/active/context-and-token-economy.md | TOC-SUPERSEDE-1, KV-EVICT-COST-1 |
 | P5 | Calibrate ask/escalation from logs: counts, residual-risk probe, budget-priced penalty | handoffs/active/routing-program.md | RTG-ASK-1 |
 | P6 | Harden harness-evolution acceptance (disjoint tasks, fresh parent, sealed test, decision records) | handoffs/active/autopilot-program.md | AP-BSV2-ACCEPT-RIGOR, HIL-EVO-CASES-1 |
-| P7 | Offline screens before copy-proposal or coupled-draw drafter work | handoffs/active/speculative-decoding.md | SPEC-COPY-COV-1, SPEC-COUPLE-MTP-1 |
+| P7 | Offline screens before copy-proposal, coupled-draw and sampled-tree (DICE) drafter work | handoffs/active/speculative-decoding.md | SPEC-COPY-COV-1, SPEC-COUPLE-MTP-1, SPEC-DTREE-DICE |
+| P10 | AITER v0.1.30 reverse-engineering for gfx90a: GDN gate fold and per-channel int8 verify GEMV | handoffs/active/autokernel-loop.md | AK-BW-GDN-GATE-FOLD, AK-ASM-I8GEMM-PERCHANNEL-GEMV |
 | P9 | Fix the stale DGX premise | handoffs/active/eval-tower-program.md | EVT-DGX-PREMISE-FIX |
 | P8 | Small kernel/host follow-ups: readlane arm, trace shares, tokenizer timing | handoffs/active/kernel-champion-and-promotion.md | MMID-HELPER-READLANE, RKA-TRACE-SHARES-1, TOK-BPE-TIME-1 |
 
-Nine packets: eight independent units (different owners, no shared code) plus P9, a one-line text fix; none was split to reach a target and none could be merged without mixing owners. Safe concurrency: P3, P4, P5, P6, P7 (SPEC-COPY-COV-1) and P8 (RKA-TRACE-SHARES-1, TOK-BPE-TIME-1) are independent code/doc work. Ordered: SPEC-ID-RAGGED-1 before the C18 bisect row; SPEC-ID-GATE-1 before SPEC-ID-NOISE-1 is judged; AK-MMQ-SK2 step 1 before step 3; MMID-HELPER-READLANE before the MMID-HELPER-N10-GATE row runs.
+Ten packets: nine independent units (different owners, no shared code) plus P9, a one-line text fix; none was split to reach a target and none could be merged without mixing owners. Safe concurrency: P3, P4, P5, P6, P7 (SPEC-COPY-COV-1, SPEC-DTREE-DICE step 1), P10 step 1 and P8 (RKA-TRACE-SHARES-1, TOK-BPE-TIME-1) are independent code/doc work. Ordered: SPEC-ID-RAGGED-1 before the C18 bisect row; SPEC-ID-GATE-1 before SPEC-ID-NOISE-1 is judged; AK-MMQ-SK2 step 1 before step 3; MMID-HELPER-READLANE before the MMID-HELPER-N10-GATE row runs.
 
 Minimum rigor: the measurement boxes (SPEC-ID-NOISE-1, AK-MMQ-SK2 step 3, TOC-SUPERSEDE-1, RTG-ASK-1, SPEC-COUPLE-MTP-1) state the six controls (frozen input with digest, incumbent baseline, per-item outputs, holdout, complete denominator, predeclared rule) and stop-on-answer / stop-on-futility rules; formal-gate cells are futility-only. KV-EVICT-COST-1's smoke is a deterministic conformance check (19/20 exact token counts), so holdout is replaced by synthetic cuts not used to fit a + b x cells. Code boxes (SPEC-ID-RAGGED-1, GGML-DET-POSINV-TEST, AK-TIMING-ZERO-1, AK-RECEIPT-ARMS-1) replace the empirical controls with red/green tests and mutation cases (0, -1, NaN, inf; missing arm; partial block). Doc boxes (SPEC-ID-GATE-1, RKA-DECISION-RECORD-1, HIL-EVO-CASES-1) have no empirical step.
 
@@ -68,10 +77,11 @@ Consumer discovery (searched: lane handoffs, epyc-inference-research loop/, llam
 
 ## Operator decisions (each blocks only its own item)
 
-- **OD-1** — Open a post-training lane on the MI210? Context: CreditFilter (intake-2834) and AgentRL (intake-2856) both need a pinned gfx90a training env; the only MI210 training box (model-evaluation-queue.md:1259) is marked declined by the ws58 content-review as 'training, out of scope' and countermanded until E5 Stage-B releases the host. Options: (A, recommended) reopen the smoke as a pinned-env build after E5 Stage-B, 0.6B then 1.7B, CreditFilter off/on, 3 steps, no quality claim; (B) keep training out of scope and mark intake-2834/2854 knowledge-only; (C) reopen now on CPU unit tests only (no GPU).
-- **OD-2** — Extend the 2026-10-22 HIL-6 pilot-only loop allowance to one Life-Harness evolve-from-scratch run (6 rounds, ALFWorld, local improver behind a loopback proxy, about 710 solver episodes) and the ALFWorld-only AgentBench smoke? Options: (A) yes, as two booked rows; (B, recommended until P6 lands) no, revisit after AP-BSV2-ACCEPT-RIGOR so the run uses the hardened accept rule.
-- **OD-3** — Approve the lineage_capture producer at keep_the_diff behind a default-off flag (module comment requires operator approval)? Options: (A, recommended) approve default-off; (B) keep unwired.
-- **OD-4** — Second-reader disagreements: 18 of 409 anchors were judged 'no' (quote does not support its claim): intake-2825#4, 2826#2, 2834#4, 2835#4, 2836#3, 2837#2, 2840#1, 2841#3, 2844#0, 2846#2, 2850#3, 2852#4, 2854#4, 2855#4, 2857#2, 2857#3, 2857#5, 2859#1. Several are in-house-state claims an external quote cannot carry. Options: (A, recommended) at Stage 4, drop those 18 anchors from claim_anchors (claims stay, unanchored at that index) and cite only anchored claims; (B) leave as is.
+- **OD-1** (ANSWERED 2026-11-23: A) — Open a post-training lane on the MI210? Context: CreditFilter (intake-2834) and AgentRL (intake-2856) both need a pinned gfx90a training env; the only MI210 training box (model-evaluation-queue.md:1259) is marked declined by the ws58 content-review as 'training, out of scope' and countermanded until E5 Stage-B releases the host. Options: (A, recommended) reopen the smoke as a pinned-env build after E5 Stage-B, 0.6B then 1.7B, CreditFilter off/on, 3 steps, no quality claim; (B) keep training out of scope and mark intake-2834/2854 knowledge-only; (C) reopen now on CPU unit tests only (no GPU).
+- **OD-2** (ANSWERED 2026-11-23: B) — Extend the 2026-10-22 HIL-6 pilot-only loop allowance to one Life-Harness evolve-from-scratch run (6 rounds, ALFWorld, local improver behind a loopback proxy, about 710 solver episodes) and the ALFWorld-only AgentBench smoke? Options: (A) yes, as two booked rows; (B, recommended until P6 lands) no, revisit after AP-BSV2-ACCEPT-RIGOR so the run uses the hardened accept rule.
+- **OD-3** (ANSWERED 2026-11-23: A) — Approve the lineage_capture producer at keep_the_diff behind a default-off flag (module comment requires operator approval)? Options: (A, recommended) approve default-off; (B) keep unwired.
+- **OD-5** (OPEN) — SPEC-DTREE-DICE step 2a: the existing DTREE dumps are greedy with no target probabilities, so the offline replay needs a capture first. The A3B MTP capture runs on a CPU quarter; the 27B DFlash2 capture needs one MI210 capture-only row (no timing claim) before any replay gain exists, which departs from 'GPU row only on replay gains'. Options: (A, recommended) allow the 27B capture-only MI210 row only after the A3B CPU replay is not futile; (B) A3B only, no 27B capture until a further decision; (C) allow both captures now.
+- **OD-4** (ANSWERED 2026-11-23: A) — Second-reader disagreements: 18 of 409 anchors were judged 'no' (quote does not support its claim): intake-2825#4, 2826#2, 2834#4, 2835#4, 2836#3, 2837#2, 2840#1, 2841#3, 2844#0, 2846#2, 2850#3, 2852#4, 2854#4, 2855#4, 2857#2, 2857#3, 2857#5, 2859#1. Several are in-house-state claims an external quote cannot carry. Options: (A, recommended) at Stage 4, drop those 18 anchors from claim_anchors (claims stay, unanchored at that index) and cite only anchored claims; (B) leave as is.
 
 ## Monitors and knowledge-only (durable prose, no checkbox)
 
@@ -82,7 +92,7 @@ Consumer discovery (searched: lane handoffs, epyc-inference-research loop/, llam
 | M3 | handoffs/active/kv-cache-program.md | When KPF-62.6 runs its G3 harness, add a removed-span case (Leyline forget versus amortize) for dense-attention roles only; a default-off kv_splice request field follows only if that case passes. Rotate-only splice for GDN hybrids is declined. |
 | M4 | handoffs/active/routing-program.md | RTG-ASK-1 probe beating entropy-only by >= 0.05 AUROC on holdout fires J17 ask-calibration readouts (entropy-only, heuristic, oracle-timing ceiling) in eval-tower-program.md and a design note for a trained ask policy costed from consultant_device_seconds. |
 | M5 | handoffs/active/speculative-decoding.md | SPEC-COPY-COV-1 above threshold fires: an exact longest-match index as the proposal source for a default-off training-free copy-proposal probe on the DFlash2 weights (one GPU row), and a CoPyro arm in DF2-FT-1. |
-| M6 | handoffs/active/speculative-decoding.md | DTREE-GDN-BATCH making T16 beat linear fires: a DICE-style sampled tree selection screen and a first-order DTREE acceptance-calibration refit on the dump. |
+| M6 | handoffs/active/speculative-decoding.md | DTREE-GDN-BATCH making T16 beat linear fires: a first-order DTREE acceptance-calibration refit on the dump (intake-2846). The DICE sampled-tree question is no longer gated here; it is SPEC-DTREE-DICE. |
 | M7 | handoffs/active/speculative-decoding.md | intake-2848 (ReTrace) and intake-2830 (Vega-Fafnir) are PDF-only and stage1-unverified; when an HTML render appears or an operator hand-check passes, re-dive and reconsider a rejected-trajectory arm in DF2-FT-1 and the cache-rebuild findings. |
 | M8 | handoffs/active/kernel-champion-and-promotion.md | At MMID-HELPER-N10-GATE close, if the helper is still >= 3% of Q38FN pp2048 after the fold, port the mbcnt-based ballot rank (#32841 shape) to any ballot site that remains. |
 | M9 | handoffs/active/model-evaluation-queue.md | MI210 post-training smoke (gfx90a venv, CreditFilter and AgentRL as consumers) waits on OD-1 and on E5 Stage-B releasing the host (the box at model-evaluation-queue.md:1259 is countermanded until then). |
@@ -90,10 +100,10 @@ Consumer discovery (searched: lane handoffs, epyc-inference-research loop/, llam
 | M13 | handoffs/active/autokernel-loop.md | Operator approval of OD-3 fires: wire lineage_capture at keep_the_diff behind a default-off flag. |
 | M11 | handoffs/active/context-and-token-economy.md | When RTE-LOG-1 (harness-program.md:519) lands prompt-structure logs: prefix-stability audit over all block kinds and a counterfactual batching B in {1,3,5} for the clearing pass. |
 | M12 | handoffs/active/memory-program.md | When the M-23 SkillBank A/B is next booked: add an executable-guard arm beside the text-skill arm (HookEvo scope C finding). |
-| K1 | handoffs/active/speculative-decoding.md | DICE gains nothing at T=0 and its lossless proof needs Gumbel-max target sampling; on DFlash2 our T>0 path is already rejection sampling at the 1-TV ceiling (intake-2845#01), so the DFlash2 half of DICE is closed by theorem; SPEC-RNG.1 DO-NOT-CARRY records the keyed-RNG variant. |
+| K1 | handoffs/active/speculative-decoding.md | The 1 - TV ceiling (intake-2845#record) is a single-draft, per-position bound. It closes coupled-draw verification only on single-path chains, where the served DFlash2 rejection path at T > 0 already reaches it (common/sampling.cpp:1020-1128 @ a6a32c1). It does not close tree or multi-candidate verification, where k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00), so DICE on DFlash2/MTP trees at served T is open under SPEC-DTREE-DICE. Production serves at T > 0 (role defaults 0.1-0.3; :8083 direct agent traffic at 1.0), so 'no gain at T = 0' closes nothing. SPEC-RNG.1 DO-NOT-CARRY still records the keyed-RNG drafter-invariance variant. |
 | K2 | handoffs/active/kernel-champion-and-promotion.md | #30022's own author found no CDNA gain and #30553's cap is a no-op on our dense served shapes (nwork 160-2720 versus 104 blocks); both are inputs to AK-MMQ-SK2, not separate ports. |
 | K3 | handoffs/active/context-and-token-economy.md | Contexture's +20-73% headline and energy figure are H100/H200 vLLM numbers and do not transfer; only the supersession rule and the cold-commit cost model are used. |
-| K4 | handoffs/active/autokernel-loop.md | AITER v0.1.30 ships wheels for gfx942/gfx950 only; nothing in it targets gfx90a; its split-K reduce idea was already tried as GGML_HIP_FA_TAIL_SPLIT (FUTILITY). |
+| K4 | handoffs/active/autokernel-loop.md | AITER v0.1.30's wheels and new kernels target gfx942/gfx950/gfx1250, and every CDNA2-portable family was already retargeted and timed on the MI210 (AK-ASM-H1..H15, AK-ASM-PORT-*, AK-MMID-MF, C8-6); its split-K reduce widening was tried as GGML_HIP_FA_TAIL_SPLIT (FUTILITY). The new served-path ideas are its GDN input fold and per-channel int8 weights, filed as AK-BW-GDN-GATE-FOLD and AK-ASM-I8GEMM-PERCHANNEL-GEMV; FP8/MX/NVFP4, MLA, gfx950 MTP4 tiles and kernarg preload do not map to gfx90a. |
 | K6 | handoffs/active/vidya-belief-substrate-program.md | Second-reader disagreements: 18 of 409 anchors judged no (listed in OD-4); never auto-overturned. |
 | K5 | handoffs/active/model-evaluation-queue.md | CreditFilter's gains are single-turn math, full-parameter RL on Qwen3-8B-Base, three data-order seeds, MATH500 margin carried by one collapsed DAPO run (intake-2834). |
 
@@ -123,7 +133,7 @@ Consumer discovery (searched: lane handoffs, epyc-inference-research loop/, llam
 | AKI-20 | intake-2828 row 2 + intake-2839 rows 2,4 | Spec a uniform fast-path decision record and a no-fallback-after-launch audit | P3 / RKA-DECISION-RECORD-1 |
 | AKI-21 | intake-2839 row 5 | HIP-graph first-call note | P3 / RKA-DECISION-RECORD-1 |
 | AKI-22 | intake-2828 row 4 | Check test-backend-ops id-compare exactness | P2 / AK-MMQ-SK2 |
-| AKI-23 | intake-2828 row 5 | Add the folded split-K reduce idea to DTREE-GDN-BATCH notes | K4 |
+| AKI-23 | intake-2828 row 5 + rev-1 AITER source read | Folded split-K ba partials summed inside the GDN kernel (concrete AITER design, fused_gdn_decode_qkvz.py:61) | P10 / AK-BW-GDN-GATE-FOLD |
 | AKI-24 | intake-2828/2839 decline | Provider registry with enable-order priority or measured selection among providers | decline: one champion is the single source of dispatch truth |
 | AKI-25 | intake-2841 rows 1-2 | CU-mask concurrent stress arm; actor-context ablation | decline: no current AK candidate has inter-workgroup waits; the ablation is a loop launch under the operator hold |
 | AKI-26 | intake-2841 row 4 | Wire lineage_capture at keep_the_diff behind a flag | M13 |
@@ -150,11 +160,17 @@ Consumer discovery (searched: lane handoffs, epyc-inference-research loop/, llam
 | AKI-47 | intake-2836 H4 + intake-2857 HR5/HR6 + intake-2858 LH5 + intake-2859 PR5 + intake-2861 LH4d + intake-2862 PR6 | Reproduce headline numbers, vendor packages, copy slot/quota-hold | decline: they measure other harnesses; rowflow already covers slots |
 | AKI-48 | intake-2847 S1 + intake-2832 A1 gate | Exact longest-suffix coverage curve over COPYSPEC P1 outputs | P7 / SPEC-COPY-COV-1 |
 | AKI-49 | intake-2832 A1/A2 + intake-2847 S2 | Training-free copy-proposal probe and CoPyro arm in DF2-FT-1 | M5 |
-| AKI-50 | intake-2845 D2 + intake-2831 A1 | Bound coupled-draw gain on A3B MTP at T 0.2/0.3 | P7 / SPEC-COUPLE-MTP-1 |
-| AKI-51 | intake-2845 D1/D3 + intake-2831 A2 | Close the DFlash2 half of DICE by theorem; note keyed Gumbel under SPEC-RNG.1 | K1 |
-| AKI-52 | intake-2831 decline + intake-2846 K1 | DICE tree selection now; DTREE calibration refit | M6 |
+| AKI-50 | intake-2845 D2 + intake-2831 A1 + rev-1 code read | Bound the MTP gap (draft distribution via the rejection path, or coupling) at every served T including 1.0 | P7 / SPEC-COUPLE-MTP-1 |
+| AKI-51 | intake-2845 D1/D3 + intake-2831 A2 + operator review 2026-11-23 | The 1-TV theorem closes coupled-draw CHAIN verification only; DICE and Gumbel-max target sampling on trees at served T are falsified offline | P7 / SPEC-DTREE-DICE |
+| AKI-52 | intake-2831 A1 + operator review 2026-11-23 | Measure the sampled share of served traffic, then replay DICE node selection offline for acceptance gains; GPU row only on gains | P7 / SPEC-DTREE-DICE |
+| AKI-68 | intake-2846 K1 | First-order DTREE acceptance-calibration refit | M6 |
+| AKI-69 | intake-2846#02 + rev-1 theory read | Exponential-race verifier for k >= 3 siblings and multi-draft coupling on trees | P7 / SPEC-DTREE-DICE |
+| AKI-70 | rev-1 AITER source read (fused_gdn_decode_qkvz.py, fused_gemm_a16w16_dual_splitk.py) | Fold GDN beta/alpha projections and gate math into the recurrence kernel | P10 / AK-BW-GDN-GATE-FOLD |
+| AKI-71 | rev-1 AITER source read (per-channel int8 GEMMs) + AK-ASM-I8GEMM-PERCHANNEL | Per-channel int8 weights on the bandwidth-bound verify GEMV | P10 / AK-ASM-I8GEMM-PERCHANNEL-GEMV |
+| AKI-72 | rev-1 AITER non-candidates | Port the remaining v0.1.30 families (FP8/MX/NVFP4, MLA, gfx950 MTP4 tile, kernarg preload, gfx1201 small-m fmoe, sort pad-id fix) | decline: FP8/MX hardware absent on gfx90a, gfx940+ ISA, or already retargeted, tried or absent from our path |
+| AKI-73 | rev-1 theory read | Scope intake-2845's 'never beats rejection sampling' claim to per position, single draft | K1 |
 | AKI-53 | intake-2848 R1/R2 | ReTrace rank-coverage probe and arm | M7 |
-| AKI-54 | intake-2832/2846/2847 declines | Revive n-gram composition, ERSD verifier, standalone SAM-Decoding, multi-draft coupling | decline: composition measured a loss on the 27B MI210 and the others cannot exceed the standard verifier for single drafts |
+| AKI-54 | intake-2832/2847 declines | Revive n-gram composition or serve SAM-Decoding standalone | decline: composition measured a loss on the 27B MI210 and the registry bans it |
 | AKI-55 | intake-2834 C5 | Entropy-rank bands of DFlash2 rejections | decline: hypothesis with no source support |
 | AKI-56 | intake-2825 row 1 | Readlane arm at mmid.cu:92 in the MMID-HELPER-N10-GATE build | P8 / MMID-HELPER-READLANE |
 | AKI-57 | intake-2825 rows 2-3 + intake-2826 row 2 + intake-2827 row 2 | Port the topk-moe, GDN-MMA, mm_ids_helper<16 or 32> hunks or a standalone mbcnt helper | decline: none of these sites exists on our served path |
@@ -242,8 +258,23 @@ handoffs/active/speculative-decoding.md (Track speculative-decoding-mtp-refresh,
       · gate: none
 
 handoffs/active/speculative-decoding.md (Track speculative-decoding-mtp-refresh, ### Backlog):
-- [ ] **SPEC-COUPLE-MTP-1** [inference] Bound what coupled-draw verification could add on the A3B MTP path at production temperatures (intake-2845#00, intake-2845#record, intake-2831#01). First read common/sampling.cpp @ a6a32c1: if the MTP verify path at T > 0 already uses rejection sampling, close this box with no row (coupling cannot exceed the 1 - TV ceiling that rejection sampling already reaches, intake-2845#record). Otherwise capture target top-k probabilities and draft tokens at T 0.2 and 0.3 on Qwen3.6-35B-A3B + MTP (frozen 64-prompt set, digest recorded; baseline = current exact-match acceptance; per-position outputs kept; holdout = second half of the prompts; every position counted) and compute offline the gap (1 - TV) minus the observed acceptance rate. Stop if the holdout gap is under 1%; file a build box if it is 2% or more; gate-class futility-only.
-      · done when: either the close note with the sampling.cpp line, or the per-temperature holdout gap and the decision recorded under this box
+- [ ] **SPEC-COUPLE-MTP-1** [inference] Bound what a draft distribution plus rejection sampling, or coupled draws, could add on the A3B MTP chain at served temperatures (intake-2845#00, intake-2845#record, intake-2831#01). MTP at T > 0 verifies by sample-and-compare against an argmax draft (common/sampling.cpp:693-711, common/speculative.cpp:2116-2119 @ a6a32c1), so per-position acceptance is p(argmax q), below the single-draft 1 - TV ceiling (a per-position, single-draft bound, intake-2845#record) that the DFlash2 rejection path already reaches. Using the SPEC-DTREE-DICE step-2a capture (MTP top-10 drafter logits plus target candidates at every verified row; frozen 64-prompt set with digest; baseline = current sample-and-compare; per-position outputs kept; holdout = second half of the prompts; every position counted), compute offline per served T from SPEC-DTREE-DICE step 1 (expect 0.1/0.2/0.3 and 1.0): the gap 1 - TV(q, p) - p(argmax q) for q = softmax(logit/T) over the MTP top-10, i.e. routing MTP through the existing rejection path. Stop if the holdout gap is under 1% at every served T; file a build box (MTP fills draft distributions, rejection path) if it is 2% or more at any served T with >= 20% token share; gate-class futility-only.
+      · done when: per-temperature holdout gap and the decision (close or build box filed) recorded under this box
+      · gate: none
+
+handoffs/active/speculative-decoding.md (Track dflash2-block-drafter-experimental-build, AK-DTREE program plan (near DTREE-A, line 2375)):
+- [ ] **SPEC-DTREE-DICE** [non-inference then inference] Falsify or confirm that pre-sampled target randomness raises expected accepted length on SAMPLED trees at served temperatures (intake-2831#00, intake-2831#03, intake-2831#05), where the single-draft 1 - TV ceiling (intake-2845#record) does not apply and k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00, intake-2717#01). Today DTREE is greedy-only (spec_tree_nodes_for returns 0 at temp > 0, tools/server/server-context.cpp:5586-5590 @ a6a32c1) and the DTREE dumps are greedy with no target probabilities, so they cannot be replayed at T > 0. Step 1 (code only): log the resolved temperature/top_k/top_p/min_p per request in the inference-tap start event (orchestrator llama_server.py:1739-1747 payload site) and poll /slots on the speculative ports for direct clients; report the token-weighted temperature histogram per drafter (27B DFlash2, A3B MTP) over a declared window; close if the T > 0 share is under 5% on both, else the served T set is its modes. Step 2a (capture): a dump-knob-only fork from the current champion, at served T with keyed draws (seed, position, vocab id), logging per round the drafter lattice/candidates and the target post-sampler candidates plus top-64 logits at every verified row; for DFlash2 force a superset tree (prob-greedy W32 + DICE W16 + chain) into the verify batch while committing through the unchanged chain. A3B MTP first on a CPU quarter q0-q2; the 27B DFlash2 capture is an MI210 capture-only row (see OD-5). Step 2b (offline replay, CPU) at equal node budget W in {1,4,8,12,16}: V0 served path, V1 same tree with recursive rejection without replacement, V2 Gumbel-max walk with pre-sampled draws and draw-blind selection, V3 DICE draw-informed selection ((alpha, sigma) fitted on the calibration half only), optional V4 exponential-race verifier for k >= 3 siblings (intake-2846#02); metric expected tokens per target pass per served T. Controls: frozen capture and replay script with sha256, baseline V0, per-round per-arm results.jsonl, holdout = second prompt half, every verify round counted, PREDECLARATION.md sealed before replay. Falsifier H1: V3 raises expected accepted length over V0 and over V1 at equal W. Futility: close if holdout V3/V1 < 1.02 at every served T and W <= 16 and V3/V0 stays below the verify-cost break-even; stop-on-answer at a prompt-clustered 95% CI half-width <= 1% on V3/V1 at the highest-share T; gate-class futility-only. A GPU build row (keyed Gumbel-max target sampler, DICE node selection, Gumbel tree walk, T > 0 guard lifted; ABBA np1/np4; KEEP iff tok/s CI-lower > 1.0 and an emitted-token distribution check passes) is filed only if the replay clears break-even; if only V1 clears it, file the sampled recursive-rejection tree row (DTREE-A) instead.
+      · done when: step-1 temperature-share table and decision filed; then the capture digest and a RESULT.json with holdout tokens per pass per arm x T x W and a verdict CLOSE_FUTILITY / FILE_GPU_ROW / FILE_RRS_ROW
+      · gate: none
+
+handoffs/active/autokernel-loop.md (next to AK-BW-27B-ACTQUANT-FUSE (line 4976)):
+- [ ] **AK-BW-GDN-GATE-FOLD** [non-inference then inference] Fold the GDN beta/alpha projections and gate math into the recurrence kernel on 27B/A3B verify, after AITER v0.1.30 `aiter/ops/triton/gated_delta_net/fused_gdn_decode_qkvz.py` (read at 77ba72b7061a; gfx950 Triton as written, the gate math is scalar and portable): it computes sigmoid(b) and exp(-exp(A_log) * softplus(a + dt_bias)) inside the GDN kernel from the raw projection and sums ba as fp32 split-K partials in-kernel with no zero-init or atomics (`:61`), with the ba projection emitted by the qkvz GEMM launch (`fused_gemm_a16w16_dual_splitk.py:47-60`, tuned for N1=16384 N2=96 K=5120, our 27B shape) (intake-2828#record). In-house budget, C18 27B DFlash2 verify trace ak-c18-27b-df2-v5i-trace-gpu-20261122 (40.07 ms GPU per verify): 96 small q8sk_mul_mat launches for beta/alpha (0.63 ms) and four unfused gate ops x 48 layers (0.88 ms), plus norm/z gate (0.42 ms) and the state gather k_get_rows (0.53 ms); the existing softplus fusion (ggml-cuda.cu:4252 @ a6a32c1) does not engage there (cause unknown). Arms in order: (a) row-concat ssm_beta|ssm_alpha into one Q8_0 tensor at load and one launch writing [KS, T, 2*H_v] fp32 partials without atomics; (b) a fusion from that output to GATED_DELTA_NET passing raw b/a, ssm_dt and ssm_a to the C19 fused K=T and rows kernels, which sum the partials and apply the gate in their prologue; (c) and (d) (norm + silu(z) epilogue; state pool by slot) only after (a)+(b). Side effect: removes the unordered atomic split-K on ssm_ab. Step 1 (no GPU): from the 27B trace above and ak-c18-a3b-mtp-trace-gpu-20261122, list the launches each arm removes with their ms and confirm from C19 source how the GDN kernels read g/beta; stop-on-futility if (a)+(b) remove < 0.8 ms per 27B verify. Then one op/trace row: stop-on-answer when GDN-input ms per verify <= 0.4 ms with test-backend-ops GATED_DELTA_NET parity and 27B KLD vs C19 <= 0.003; then 27B DFlash2 np1 e2e, 8 ABBA pairs, KEEP iff CI lower > +1% and no cell < -1%; futility if the first variant saves < 0.6 ms per verify; gate-class futility-only. Build: experimental branch from C19 a6a32c1, knob default off, region-lock claim; coordinate with AK-BW-27B-ACTQUANT-FUSE and AK-BW-A3B-DENSE-STEP2 (b) (same concat).
+      · done when: step-1 launch/ms table filed, then an op/trace verdict and a 27B e2e KEEP/DROP for arms (a)+(b); A3B runs only after a 27B KEEP
+      · gate: none
+
+handoffs/active/autokernel-loop.md (child of AK-ASM-I8GEMM-PERCHANNEL (line 4324)):
+- [ ] **AK-ASM-I8GEMM-PERCHANNEL-GEMV** [non-inference then inference] Measure the verify-GEMV half of AK-ASM-I8GEMM-PERCHANNEL that no row has measured (the port row measured only prefill, dispatch at ne11 >= 129, 0.821x). On the 27B verify trace ak-c18-27b-df2-v5i-trace-gpu-20261122 q8mf6_mul_mat is 25.2 of 40.07 ms at 1071 GB/s (71% of the 1.498 TB/s measured peak); a dense per-row int8 layout (32 B per 32 weights plus one scale per row versus Q8_0's 34 B) reads 1/17 fewer weight bytes and drops the per-block scale load; the 27B weight half already passed (AK-ASM-I8GEMM-PERCHANNEL-KLD: KLD 0.001015, dPPL +0.082%). Layout source: AITER per-channel 8-bit weight GEMMs (intake-2828#record). Step 1 (no GPU): from C19 mmq-q8-mf.cu record how the MF_INPLACE layout streams per-block scales and the bytes per weight q8mf6 reads; ceiling = bytes saved / bytes streamed x q8mf6 share of verify; stop-on-futility if the ceiling is < 3% of verify GPU time. Step 2 (GPU, timing only): a speed-of-light knob in q8mf6 that skips the per-block weight scales (numerically wrong, timing only) at the 27B shapes, n 1/4/8/16; futility if it saves < 3% of q8mf6 ms at n=8; at >= 3%, the real layout behind a default-off knob gated by 27B KLD <= 0.003 and |dPPL| <= 0.5%, then 8 ABBA pairs, KEEP iff CI lower > +1%; gate-class futility-only. Confidence low: at 71% of peak the kernel is not purely byte-bound.
+      · done when: step-1 ceiling filed, and either a futility close or a step-2 timing verdict (plus, at >= 3%, an e2e KEEP/DROP)
       · gate: none
 
 handoffs/active/kernel-champion-and-promotion.md (next to MMID-HELPER-N10-GATE (line 1861)):
@@ -275,7 +306,7 @@ Index rows: none. Every box lands in a handoff that already owns an index row; n
 All recommended sources were ingested and dived in waves 1-2 under the operator pre-authorisation; every declined source is named in its bearing entry's dive_corrections (Stage-2 close-out lines).
 
 ## Steering ledger
-16 operator rows: 13 planned (P1-P8, M8, M9), 3 context-only (pre-authorisation, stop-at-Stage-3, session context). Full verbatim rows are in the payload.
+20 operator rows: 16 planned (P1-P8, P10, M8, M9), 4 context-only (pre-authorisation, stop-at-Stage-3, session context, OD answers). Rows 17-20 are Stage-3 operator comments carried in this plan and persisted at Stage 4. Full verbatim rows are in the payload.
 
 ## Stage-3 filing payload
 
@@ -334,7 +365,7 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-ak-1123 Stage 4 (operator-approved plan): AK-TIMING-ZERO-1, AK-RECEIPT-ARMS-1, RKA-DECISION-RECORD-1"
+    "intake-ak-1123 Stage 4 (operator-approved plan): AK-TIMING-ZERO-1, AK-RECEIPT-ARMS-1, RKA-DECISION-RECORD-1, AK-BW-GDN-GATE-FOLD, AK-ASM-I8GEMM-PERCHANNEL-GEMV"
    ]
   },
   {
@@ -362,11 +393,13 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
   },
   {
    "id": "intake-2831",
-   "integration_disposition": "knowledge_only",
-   "handoffs_updated": [],
+   "integration_disposition": "integrated",
+   "handoffs_updated": [
+    "speculative-decoding.md"
+   ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-ak-1123 Stage 4 (operator-approved plan): K1; SPEC-COUPLE-MTP-1 carries the remaining coupling question"
+    "intake-ak-1123 Stage 4 (operator-approved plan): SPEC-DTREE-DICE; K1 rewritten to single-draft scope"
    ]
   },
   {
@@ -525,16 +558,18 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
    ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-ak-1123 Stage 4 (operator-approved plan): SPEC-COUPLE-MTP-1; K1"
+    "intake-ak-1123 Stage 4 (operator-approved plan): SPEC-COUPLE-MTP-1, SPEC-DTREE-DICE; K1; dive_corrections scope line: the 1-TV result is per position, single draft"
    ]
   },
   {
    "id": "intake-2846",
-   "integration_disposition": "knowledge_only",
-   "handoffs_updated": [],
+   "integration_disposition": "integrated",
+   "handoffs_updated": [
+    "speculative-decoding.md"
+   ],
    "handoffs_created": [],
    "disposition_evidence": [
-    "intake-ak-1123 Stage 4 (operator-approved plan): K1/AKI-54; M6"
+    "intake-ak-1123 Stage 4 (operator-approved plan): SPEC-DTREE-DICE optional V4 arm; M6 calibration refit"
    ]
   },
   {
@@ -771,12 +806,22 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
   "P7": {
    "project_objective": "Spend drafter work only where copy matches or coupling can still add acceptance",
    "implementation_ref": "common/speculative.cpp:2651-2812 @ a6a32c1 (ngram-mod); common/sampling.cpp:1020-1128 @ a6a32c1 (rejection sampling); artifacts/copyspec-20261006",
-   "gap": "No exact longest-suffix coverage measurement; MTP T>0 acceptance gap to 1-TV unmeasured",
-   "operational_change": "Offline screens before copy-proposal or coupled-draw drafter work",
+   "gap": "No exact longest-suffix coverage measurement; MTP T>0 acceptance gap unmeasured; no tree verification at T>0 and no served-temperature log",
+   "operational_change": "Offline screens before copy-proposal, coupled-draw and sampled-tree (DICE) drafter work",
    "benefit_direction": "Close or open two drafter lanes on evidence; no serving change",
    "owner": "handoffs/active/speculative-decoding.md",
-   "execution_conditions": "SPEC-COPY-COV-1 offline; SPEC-COUPLE-MTP-1 one GPU capture row only if the sampling.cpp read leaves it open",
-   "closure_basis": "Immediate; CoPyro arm, training-free copy probe, DICE tree and ReTrace arm are trigger-gated (M5-M7)"
+   "execution_conditions": "SPEC-COPY-COV-1 offline; SPEC-DTREE-DICE step 1 is an orchestrator logging change, step 2a a CPU capture (A3B) then an MI210 capture-only row (27B, OD-5), step 2b offline; SPEC-COUPLE-MTP-1 reuses the step-2a capture; any GPU build row only on replay gains",
+   "closure_basis": "Immediate; CoPyro arm, training-free copy probe, DTREE calibration refit and ReTrace arm are trigger-gated (M5-M7)"
+  },
+  "P10": {
+   "project_objective": "Port the AITER v0.1.30 ideas that map to CDNA2 onto the served 27B/A3B verify path",
+   "implementation_ref": "C18 27B DF2 verify trace ak-c18-27b-df2-v5i-trace-gpu-20261122 (40.07 ms/verify); ggml-cuda.cu:4252 @ a6a32c1; AITER @ 77ba72b7061a fused_gdn_decode_qkvz.py:61",
+   "gap": "GDN beta/alpha projections and gate ops run as ~1.5 ms of small launches per 27B verify; per-channel int8 never measured on the verify GEMV",
+   "operational_change": "AITER v0.1.30 reverse-engineering for gfx90a: GDN gate fold and per-channel int8 verify GEMV",
+   "benefit_direction": "Lower 27B verify GPU time (trace budget 1.5-2.5 ms of 40 ms for the fold); KLD-gated numerics",
+   "owner": "handoffs/active/autokernel-loop.md",
+   "execution_conditions": "Step 1 of each is trace arithmetic and source reads; GPU rows only past their step-1 futility gates; experimental branch, default-off knobs, promotion operator-only",
+   "closure_basis": "Immediate; every other v0.1.30 family is FP8/MX/gfx950-only or already retargeted (K4)"
   },
   "P9": {
    "project_objective": "Handoff premises match hardware",
@@ -849,14 +894,14 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
    "closure_basis": "SPEC-COPY-COV-1 above threshold fires: an exact longest-match index as the proposal source for a default-off training-free copy-proposal probe on the DFlash2 weights (one GPU row), and a CoPyro arm in DF2-FT-1."
   },
   "M6": {
-   "project_objective": "DTREE-GDN-BATCH making T16 beat linear fires: a DICE-style sampled tree selection screen and a first-order DTREE acceptance-calibration refit on the dump.",
+   "project_objective": "DTREE-GDN-BATCH making T16 beat linear fires: a first-order DTREE acceptance-calibration refit on the dump (intake-2846). The DICE sampled-tree question is no longer gated here; it is SPEC-DTREE-DICE.",
    "implementation_ref": "see the recommendation basis and cited entries",
    "gap": "trigger not fired",
    "operational_change": "none now",
    "benefit_direction": "n/a until the trigger fires",
    "owner": "handoffs/active/speculative-decoding.md",
-   "execution_conditions": "DTREE-GDN-BATCH making T16 beat linear fires: a DICE-style sampled tree selection screen and a first-order DTREE acceptance-calibration refit on the dump.",
-   "closure_basis": "DTREE-GDN-BATCH making T16 beat linear fires: a DICE-style sampled tree selection screen and a first-order DTREE acceptance-calibration refit on the dump."
+   "execution_conditions": "DTREE-GDN-BATCH making T16 beat linear fires: a first-order DTREE acceptance-calibration refit on the dump (intake-2846). The DICE sampled-tree question is no longer gated here; it is SPEC-DTREE-DICE.",
+   "closure_basis": "DTREE-GDN-BATCH making T16 beat linear fires: a first-order DTREE acceptance-calibration refit on the dump (intake-2846). The DICE sampled-tree question is no longer gated here; it is SPEC-DTREE-DICE."
   },
   "M7": {
    "project_objective": "intake-2848 (ReTrace) and intake-2830 (Vega-Fafnir) are PDF-only and stage1-unverified; when an HTML render appears or an operator hand-check passes, re-dive and reconsider a rejected-trajectory arm in DF2-FT-1 and the cache-rebuild findings.",
@@ -929,14 +974,14 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
    "closure_basis": "When the M-23 SkillBank A/B is next booked: add an executable-guard arm beside the text-skill arm (HookEvo scope C finding)."
   },
   "K1": {
-   "project_objective": "DICE gains nothing at T=0 and its lossless proof needs Gumbel-max target sampling; on DFlash2 our T>0 path is already rejection sampling at the 1-TV ceiling (intake-2845#01), so the DFlash2 half of DICE is closed by theorem; SPEC-RNG.1 DO-NOT-CARRY records the keyed-RNG variant.",
+   "project_objective": "The 1 - TV ceiling (intake-2845#record) is a single-draft, per-position bound. It closes coupled-draw verification only on single-path chains, where the served DFlash2 rejection path at T > 0 already reaches it (common/sampling.cpp:1020-1128 @ a6a32c1). It does not close tree or multi-candidate verification, where k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00), so DICE on DFlash2/MTP trees at served T is open under SPEC-DTREE-DICE. Production serves at T > 0 (role defaults 0.1-0.3; :8083 direct agent traffic at 1.0), so 'no gain at T = 0' closes nothing. SPEC-RNG.1 DO-NOT-CARRY still records the keyed-RNG drafter-invariance variant.",
    "implementation_ref": "see the recommendation basis and cited entries",
    "gap": "none: knowledge retained",
    "operational_change": "none now",
    "benefit_direction": "informs planning",
    "owner": "handoffs/active/speculative-decoding.md",
-   "execution_conditions": "DICE gains nothing at T=0 and its lossless proof needs Gumbel-max target sampling; on DFlash2 our T>0 path is already rejection sampling at the 1-TV ceiling (intake-2845#01), so the DFlash2 half of DICE is closed by theorem; SPEC-RNG.1 DO-NOT-CARRY records the keyed-RNG variant.",
-   "closure_basis": "DICE gains nothing at T=0 and its lossless proof needs Gumbel-max target sampling; on DFlash2 our T>0 path is already rejection sampling at the 1-TV ceiling (intake-2845#01), so the DFlash2 half of DICE is closed by theorem; SPEC-RNG.1 DO-NOT-CARRY records the keyed-RNG variant."
+   "execution_conditions": "The 1 - TV ceiling (intake-2845#record) is a single-draft, per-position bound. It closes coupled-draw verification only on single-path chains, where the served DFlash2 rejection path at T > 0 already reaches it (common/sampling.cpp:1020-1128 @ a6a32c1). It does not close tree or multi-candidate verification, where k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00), so DICE on DFlash2/MTP trees at served T is open under SPEC-DTREE-DICE. Production serves at T > 0 (role defaults 0.1-0.3; :8083 direct agent traffic at 1.0), so 'no gain at T = 0' closes nothing. SPEC-RNG.1 DO-NOT-CARRY still records the keyed-RNG drafter-invariance variant.",
+   "closure_basis": "The 1 - TV ceiling (intake-2845#record) is a single-draft, per-position bound. It closes coupled-draw verification only on single-path chains, where the served DFlash2 rejection path at T > 0 already reaches it (common/sampling.cpp:1020-1128 @ a6a32c1). It does not close tree or multi-candidate verification, where k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00), so DICE on DFlash2/MTP trees at served T is open under SPEC-DTREE-DICE. Production serves at T > 0 (role defaults 0.1-0.3; :8083 direct agent traffic at 1.0), so 'no gain at T = 0' closes nothing. SPEC-RNG.1 DO-NOT-CARRY still records the keyed-RNG drafter-invariance variant."
   },
   "K2": {
    "project_objective": "#30022's own author found no CDNA gain and #30553's cap is a no-op on our dense served shapes (nwork 160-2720 versus 104 blocks); both are inputs to AK-MMQ-SK2, not separate ports.",
@@ -959,14 +1004,14 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
    "closure_basis": "Contexture's +20-73% headline and energy figure are H100/H200 vLLM numbers and do not transfer; only the supersession rule and the cold-commit cost model are used."
   },
   "K4": {
-   "project_objective": "AITER v0.1.30 ships wheels for gfx942/gfx950 only; nothing in it targets gfx90a; its split-K reduce idea was already tried as GGML_HIP_FA_TAIL_SPLIT (FUTILITY).",
+   "project_objective": "AITER v0.1.30's wheels and new kernels target gfx942/gfx950/gfx1250, and every CDNA2-portable family was already retargeted and timed on the MI210 (AK-ASM-H1..H15, AK-ASM-PORT-*, AK-MMID-MF, C8-6); its split-K reduce widening was tried as GGML_HIP_FA_TAIL_SPLIT (FUTILITY). The new served-path ideas are its GDN input fold and per-channel int8 weights, filed as AK-BW-GDN-GATE-FOLD and AK-ASM-I8GEMM-PERCHANNEL-GEMV; FP8/MX/NVFP4, MLA, gfx950 MTP4 tiles and kernarg preload do not map to gfx90a.",
    "implementation_ref": "see the recommendation basis and cited entries",
    "gap": "none: knowledge retained",
    "operational_change": "none now",
    "benefit_direction": "informs planning",
    "owner": "handoffs/active/autokernel-loop.md",
-   "execution_conditions": "AITER v0.1.30 ships wheels for gfx942/gfx950 only; nothing in it targets gfx90a; its split-K reduce idea was already tried as GGML_HIP_FA_TAIL_SPLIT (FUTILITY).",
-   "closure_basis": "AITER v0.1.30 ships wheels for gfx942/gfx950 only; nothing in it targets gfx90a; its split-K reduce idea was already tried as GGML_HIP_FA_TAIL_SPLIT (FUTILITY)."
+   "execution_conditions": "AITER v0.1.30's wheels and new kernels target gfx942/gfx950/gfx1250, and every CDNA2-portable family was already retargeted and timed on the MI210 (AK-ASM-H1..H15, AK-ASM-PORT-*, AK-MMID-MF, C8-6); its split-K reduce widening was tried as GGML_HIP_FA_TAIL_SPLIT (FUTILITY). The new served-path ideas are its GDN input fold and per-channel int8 weights, filed as AK-BW-GDN-GATE-FOLD and AK-ASM-I8GEMM-PERCHANNEL-GEMV; FP8/MX/NVFP4, MLA, gfx950 MTP4 tiles and kernarg preload do not map to gfx90a.",
+   "closure_basis": "AITER v0.1.30's wheels and new kernels target gfx942/gfx950/gfx1250, and every CDNA2-portable family was already retargeted and timed on the MI210 (AK-ASM-H1..H15, AK-ASM-PORT-*, AK-MMID-MF, C8-6); its split-K reduce widening was tried as GGML_HIP_FA_TAIL_SPLIT (FUTILITY). The new served-path ideas are its GDN input fold and per-channel int8 weights, filed as AK-BW-GDN-GATE-FOLD and AK-ASM-I8GEMM-PERCHANNEL-GEMV; FP8/MX/NVFP4, MLA, gfx950 MTP4 tiles and kernarg preload do not map to gfx90a."
   },
   "K6": {
    "project_objective": "Second-reader disagreements: 18 of 409 anchors judged no (listed in OD-4); never auto-overturned.",
@@ -1124,9 +1169,9 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
   },
   {
    "ledger_id": "AKI-23",
-   "source": "intake-2828 row 5",
-   "action": "Add the folded split-K reduce idea to DTREE-GDN-BATCH notes",
-   "terminal_mapping": "K4"
+   "source": "intake-2828 row 5 + rev-1 AITER source read",
+   "action": "Folded split-K ba partials summed inside the GDN kernel (concrete AITER design, fused_gdn_decode_qkvz.py:61)",
+   "terminal_mapping": "P10 / AK-BW-GDN-GATE-FOLD"
   },
   {
    "ledger_id": "AKI-24",
@@ -1286,21 +1331,57 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
   },
   {
    "ledger_id": "AKI-50",
-   "source": "intake-2845 D2 + intake-2831 A1",
-   "action": "Bound coupled-draw gain on A3B MTP at T 0.2/0.3",
+   "source": "intake-2845 D2 + intake-2831 A1 + rev-1 code read",
+   "action": "Bound the MTP gap (draft distribution via the rejection path, or coupling) at every served T including 1.0",
    "terminal_mapping": "P7 / SPEC-COUPLE-MTP-1"
   },
   {
    "ledger_id": "AKI-51",
-   "source": "intake-2845 D1/D3 + intake-2831 A2",
-   "action": "Close the DFlash2 half of DICE by theorem; note keyed Gumbel under SPEC-RNG.1",
-   "terminal_mapping": "K1"
+   "source": "intake-2845 D1/D3 + intake-2831 A2 + operator review 2026-11-23",
+   "action": "The 1-TV theorem closes coupled-draw CHAIN verification only; DICE and Gumbel-max target sampling on trees at served T are falsified offline",
+   "terminal_mapping": "P7 / SPEC-DTREE-DICE"
   },
   {
    "ledger_id": "AKI-52",
-   "source": "intake-2831 decline + intake-2846 K1",
-   "action": "DICE tree selection now; DTREE calibration refit",
+   "source": "intake-2831 A1 + operator review 2026-11-23",
+   "action": "Measure the sampled share of served traffic, then replay DICE node selection offline for acceptance gains; GPU row only on gains",
+   "terminal_mapping": "P7 / SPEC-DTREE-DICE"
+  },
+  {
+   "ledger_id": "AKI-68",
+   "source": "intake-2846 K1",
+   "action": "First-order DTREE acceptance-calibration refit",
    "terminal_mapping": "M6"
+  },
+  {
+   "ledger_id": "AKI-69",
+   "source": "intake-2846#02 + rev-1 theory read",
+   "action": "Exponential-race verifier for k >= 3 siblings and multi-draft coupling on trees",
+   "terminal_mapping": "P7 / SPEC-DTREE-DICE"
+  },
+  {
+   "ledger_id": "AKI-70",
+   "source": "rev-1 AITER source read (fused_gdn_decode_qkvz.py, fused_gemm_a16w16_dual_splitk.py)",
+   "action": "Fold GDN beta/alpha projections and gate math into the recurrence kernel",
+   "terminal_mapping": "P10 / AK-BW-GDN-GATE-FOLD"
+  },
+  {
+   "ledger_id": "AKI-71",
+   "source": "rev-1 AITER source read (per-channel int8 GEMMs) + AK-ASM-I8GEMM-PERCHANNEL",
+   "action": "Per-channel int8 weights on the bandwidth-bound verify GEMV",
+   "terminal_mapping": "P10 / AK-ASM-I8GEMM-PERCHANNEL-GEMV"
+  },
+  {
+   "ledger_id": "AKI-72",
+   "source": "rev-1 AITER non-candidates",
+   "action": "Port the remaining v0.1.30 families (FP8/MX/NVFP4, MLA, gfx950 MTP4 tile, kernarg preload, gfx1201 small-m fmoe, sort pad-id fix)",
+   "terminal_mapping": "decline: FP8/MX hardware absent on gfx90a, gfx940+ ISA, or already retargeted, tried or absent from our path"
+  },
+  {
+   "ledger_id": "AKI-73",
+   "source": "rev-1 theory read",
+   "action": "Scope intake-2845's 'never beats rejection sampling' claim to per position, single draft",
+   "terminal_mapping": "K1"
   },
   {
    "ledger_id": "AKI-53",
@@ -1310,9 +1391,9 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
   },
   {
    "ledger_id": "AKI-54",
-   "source": "intake-2832/2846/2847 declines",
-   "action": "Revive n-gram composition, ERSD verifier, standalone SAM-Decoding, multi-draft coupling",
-   "terminal_mapping": "decline: composition measured a loss on the 27B MI210 and the others cannot exceed the standard verifier for single drafts"
+   "source": "intake-2832/2847 declines",
+   "action": "Revive n-gram composition or serve SAM-Decoding standalone",
+   "terminal_mapping": "decline: composition measured a loss on the 27B MI210 and the registry bans it"
   },
   {
    "ledger_id": "AKI-55",
@@ -1537,6 +1618,42 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
    "disposition": "context-only",
    "plan_ref": null,
    "reason": "Grounding facts checked against the lane and C19 a6a32c1; used in P1, P2 and P7 implementation refs."
+  },
+  {
+   "seq": 17,
+   "stage": 3,
+   "ts": "2026-11-23T12:40:00Z",
+   "verbatim": "Operator answers (2026-11-23): OD-1 A, OD-2 B, OD-3 A, OD-4 A, all as recommended. Record them in the session file. Do NOT apply Stage 4 yet: the operator is reviewing the full plan and is questioning the DICE gating (M6/K1) for the tree-drafting track. Stand by for plan approval.",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Recorded in .research-session.json operator_decisions (commit e64c3bc13): OD-1 A, OD-2 B, OD-3 A, OD-4 A; applied at Stage 4; the DICE question is answered by seq 18-19."
+  },
+  {
+   "seq": 18,
+   "stage": 3,
+   "ts": "2026-11-23T13:00:00Z",
+   "verbatim": "DICE: open a box now (SPEC-DTREE-DICE in speculative-decoding.md), offline first. Step 1: measure the sampled (T>0) share of served traffic. Step 2: replay DICE node selection offline on existing DTREE tree dumps for acceptance gains. A GPU row follows only if the replay shows gains. M6's calibration refit can stay trigger-gated.",
+   "disposition": "planned",
+   "plan_ref": "P7",
+   "reason": "Folded into P7; claimed numbers checked by the dives (see dive_corrections)."
+  },
+  {
+   "seq": 19,
+   "stage": 3,
+   "ts": "2026-11-23T13:00:00Z",
+   "verbatim": "Re-examine K1. The operator states production runs at NONZERO temperature; greedy is only for research reproducibility. So \"no gain at T=0\" is not a reason to close anything. Check whether the 1-TV optimality theorem (intake-2845) really covers TREE (multi-candidate) verification, or only single-path drafts. If it covers only single-path, K1 is overstated for DFlash2 trees and DTREE: rewrite it. Also, the operator asks: if implementing Gumbel-max target sampling (DICE's lossless condition) could yield a gain, we should explore or falsify it, not decline it. Add an explicit falsification step (offline: does Gumbel-max coupling plus pre-sampled randomness raise expected accepted length over our rejection sampling on the tree dumps at served temperatures?), with a futility rule.",
+   "disposition": "planned",
+   "plan_ref": "P7",
+   "reason": "Folded into P7; claimed numbers checked by the dives (see dive_corrections)."
+  },
+  {
+   "seq": 20,
+   "stage": 3,
+   "ts": "2026-11-23T13:00:00Z",
+   "verbatim": "AITER: the operator asks whether, as on previous AITER tracks, anything in v0.1.30 is worth REVERSE-ENGINEERING for the MI210 (gfx90a), beyond the binary wheels. Look at the kernel sources and algorithms (asm or CK kernels, MoE sorting and fused MoE, paged attention, quant GEMM, split-K or partition planners, the #7700 planner) for ideas portable to CDNA2: what maps, what needs MFMA/LDS differences, and what we already have. Check previous AITER intake entries and boxes first so nothing is repeated. Turn any real candidates into boxes (likely autokernel-loop.md or rocm-kernel-authoring.md), and replace K4 if it no longer holds.",
+   "disposition": "planned",
+   "plan_ref": "P10",
+   "reason": "Folded into P10; claimed numbers checked by the dives (see dive_corrections)."
   }
  ],
  "opportunity_scan": [
@@ -2016,6 +2133,76 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
     "AKI-67"
    ],
    "basis": "18 no rows"
+  },
+  {
+   "scan_id": "S35",
+   "source_ref": "intake-2846#02 k>=3 race verifier (page) + intake-2715#00",
+   "implementation_ref": "tools/server/server-context.cpp:5586-5590 @ a6a32c1",
+   "mechanism": "multi-candidate verification beats single-draft at T>0",
+   "consumer": "DTREE / DFlash2 trees",
+   "application": "offline replay",
+   "disposition": "actionable",
+   "ledger_ids": [
+    "AKI-51",
+    "AKI-52",
+    "AKI-69",
+    "AKI-73"
+   ],
+   "basis": "DTREE greedy-only; dumps lack target probs"
+  },
+  {
+   "scan_id": "S36",
+   "source_ref": "intake-2831#05 draw-informed selection (page)",
+   "implementation_ref": "orchestrator llama_server.py:1739-1747 (0a88d7bc)",
+   "mechanism": "tree covers the sampled continuation more often",
+   "consumer": "served temperature mix",
+   "application": "log T then replay",
+   "disposition": "actionable",
+   "ledger_ids": [
+    "AKI-52"
+   ],
+   "basis": "per-request temperature not logged"
+  },
+  {
+   "scan_id": "S37",
+   "source_ref": "intake-2828#record AITER fused_gdn_decode_qkvz.py:61 @ 77ba72b",
+   "implementation_ref": "ggml-cuda.cu:4252 @ a6a32c1; C18 27B trace",
+   "mechanism": "GDN gate math and split-K ba partials in-kernel",
+   "consumer": "27B/A3B verify",
+   "application": "fold",
+   "disposition": "actionable",
+   "ledger_ids": [
+    "AKI-23",
+    "AKI-70"
+   ],
+   "basis": "~1.5 ms of small launches"
+  },
+  {
+   "scan_id": "S38",
+   "source_ref": "intake-2828#record AITER per-channel int8 GEMMs",
+   "implementation_ref": "mmq-q8-mf.cu @ a6a32c1; AK-ASM-I8GEMM-PERCHANNEL-ROW",
+   "mechanism": "per-row int8 layout",
+   "consumer": "27B verify GEMV",
+   "application": "ceiling then timing knob",
+   "disposition": "actionable",
+   "ledger_ids": [
+    "AKI-71"
+   ],
+   "basis": "only prefill measured"
+  },
+  {
+   "scan_id": "S39",
+   "source_ref": "rev-1 AITER non-candidates",
+   "implementation_ref": "aiter-gfx90a-ops-20261105.md op map",
+   "mechanism": "FP8/MX/gfx950 kernels",
+   "consumer": "AK",
+   "application": "decline",
+   "disposition": "declined",
+   "ledger_ids": [
+    "AKI-72",
+    "AKI-68"
+   ],
+   "basis": "already retargeted or no hardware"
   }
  ],
  "outcome_reviews": {
@@ -2250,10 +2437,17 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
    ]
   },
   "AKI-23": {
-   "required_outcome": "Idea recorded",
-   "review_status": "closed-with-basis",
-   "review_basis": "Knowledge-only K4: already tried as GGML_HIP_FA_TAIL_SPLIT, FUTILITY",
-   "task_refs": []
+   "required_outcome": "The GDN input fold is screened on the 27B verify trace",
+   "review_status": "preserved",
+   "review_basis": "AK-BW-GDN-GATE-FOLD arm (b)",
+   "task_refs": [
+    {
+     "owner": "handoffs/active/autokernel-loop.md",
+     "task_id": "AK-BW-GDN-GATE-FOLD",
+     "task_text": "- [ ] **AK-BW-GDN-GATE-FOLD** [non-inference then inference] Fold the GDN beta/alpha projections and gate math into the recurrence kernel on 27B/A3B verify, after AITER v0.1.30 `aiter/ops/triton/gated_delta_net/fused_gdn_decode_qkvz.py` (read at 77ba72b7061a; gfx950 Triton as written, the gate math is scalar and portable): it computes sigmoid(b) and exp(-exp(A_log) * softplus(a + dt_bias)) inside the GDN kernel from the raw projection and sums ba as fp32 split-K partials in-kernel with no zero-init or atomics (`:61`), with the ba projection emitted by the qkvz GEMM launch (`fused_gemm_a16w16_dual_splitk.py:47-60`, tuned for N1=16384 N2=96 K=5120, our 27B shape) (intake-2828#record). In-house budget, C18 27B DFlash2 verify trace ak-c18-27b-df2-v5i-trace-gpu-20261122 (40.07 ms GPU per verify): 96 small q8sk_mul_mat launches for beta/alpha (0.63 ms) and four unfused gate ops x 48 layers (0.88 ms), plus norm/z gate (0.42 ms) and the state gather k_get_rows (0.53 ms); the existing softplus fusion (ggml-cuda.cu:4252 @ a6a32c1) does not engage there (cause unknown). Arms in order: (a) row-concat ssm_beta|ssm_alpha into one Q8_0 tensor at load and one launch writing [KS, T, 2*H_v] fp32 partials without atomics; (b) a fusion from that output to GATED_DELTA_NET passing raw b/a, ssm_dt and ssm_a to the C19 fused K=T and rows kernels, which sum the partials and apply the gate in their prologue; (c) and (d) (norm + silu(z) epilogue; state pool by slot) only after (a)+(b). Side effect: removes the unordered atomic split-K on ssm_ab. Step 1 (no GPU): from the 27B trace above and ak-c18-a3b-mtp-trace-gpu-20261122, list the launches each arm removes with their ms and confirm from C19 source how the GDN kernels read g/beta; stop-on-futility if (a)+(b) remove < 0.8 ms per 27B verify. Then one op/trace row: stop-on-answer when GDN-input ms per verify <= 0.4 ms with test-backend-ops GATED_DELTA_NET parity and 27B KLD vs C19 <= 0.003; then 27B DFlash2 np1 e2e, 8 ABBA pairs, KEEP iff CI lower > +1% and no cell < -1%; futility if the first variant saves < 0.6 ms per verify; gate-class futility-only. Build: experimental branch from C19 a6a32c1, knob default off, region-lock claim; coordinate with AK-BW-27B-ACTQUANT-FUSE and AK-BW-A3B-DENSE-STEP2 (b) (same concat).",
+     "acceptance": "step-1 launch/ms table filed, then an op/trace verdict and a 27B e2e KEEP/DROP for arms (a)+(b); A3B runs only after a 27B KEEP"
+    }
+   ]
   },
   "AKI-24": {
    "required_outcome": "Dispatch selection",
@@ -2468,28 +2662,99 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
    "task_refs": []
   },
   "AKI-50": {
-   "required_outcome": "Coupling lane opened or closed on a measured gap",
+   "required_outcome": "MTP T>0 lane opened or closed on a measured gap",
    "review_status": "preserved",
-   "review_basis": "SPEC-COUPLE-MTP-1",
+   "review_basis": "SPEC-COUPLE-MTP-1 (MTP is sample-and-compare at T>0, not rejection)",
    "task_refs": [
     {
      "owner": "handoffs/active/speculative-decoding.md",
      "task_id": "SPEC-COUPLE-MTP-1",
-     "task_text": "- [ ] **SPEC-COUPLE-MTP-1** [inference] Bound what coupled-draw verification could add on the A3B MTP path at production temperatures (intake-2845#00, intake-2845#record, intake-2831#01). First read common/sampling.cpp @ a6a32c1: if the MTP verify path at T > 0 already uses rejection sampling, close this box with no row (coupling cannot exceed the 1 - TV ceiling that rejection sampling already reaches, intake-2845#record). Otherwise capture target top-k probabilities and draft tokens at T 0.2 and 0.3 on Qwen3.6-35B-A3B + MTP (frozen 64-prompt set, digest recorded; baseline = current exact-match acceptance; per-position outputs kept; holdout = second half of the prompts; every position counted) and compute offline the gap (1 - TV) minus the observed acceptance rate. Stop if the holdout gap is under 1%; file a build box if it is 2% or more; gate-class futility-only.",
-     "acceptance": "either the close note with the sampling.cpp line, or the per-temperature holdout gap and the decision recorded under this box"
+     "task_text": "- [ ] **SPEC-COUPLE-MTP-1** [inference] Bound what a draft distribution plus rejection sampling, or coupled draws, could add on the A3B MTP chain at served temperatures (intake-2845#00, intake-2845#record, intake-2831#01). MTP at T > 0 verifies by sample-and-compare against an argmax draft (common/sampling.cpp:693-711, common/speculative.cpp:2116-2119 @ a6a32c1), so per-position acceptance is p(argmax q), below the single-draft 1 - TV ceiling (a per-position, single-draft bound, intake-2845#record) that the DFlash2 rejection path already reaches. Using the SPEC-DTREE-DICE step-2a capture (MTP top-10 drafter logits plus target candidates at every verified row; frozen 64-prompt set with digest; baseline = current sample-and-compare; per-position outputs kept; holdout = second half of the prompts; every position counted), compute offline per served T from SPEC-DTREE-DICE step 1 (expect 0.1/0.2/0.3 and 1.0): the gap 1 - TV(q, p) - p(argmax q) for q = softmax(logit/T) over the MTP top-10, i.e. routing MTP through the existing rejection path. Stop if the holdout gap is under 1% at every served T; file a build box (MTP fills draft distributions, rejection path) if it is 2% or more at any served T with >= 20% token share; gate-class futility-only.",
+     "acceptance": "per-temperature holdout gap and the decision (close or build box filed) recorded under this box"
     }
    ]
   },
   "AKI-51": {
-   "required_outcome": "Closure recorded",
-   "review_status": "closed-with-basis",
-   "review_basis": "Knowledge-only K1",
-   "task_refs": []
+   "required_outcome": "Gumbel-max coupling with pre-sampled randomness on trees at served T is confirmed or falsified, never declined",
+   "review_status": "preserved",
+   "review_basis": "SPEC-DTREE-DICE falsifier H1 (V2/V3 versus V0/V1); K1 rewritten to the single-draft scope",
+   "task_refs": [
+    {
+     "owner": "handoffs/active/speculative-decoding.md",
+     "task_id": "SPEC-DTREE-DICE",
+     "task_text": "- [ ] **SPEC-DTREE-DICE** [non-inference then inference] Falsify or confirm that pre-sampled target randomness raises expected accepted length on SAMPLED trees at served temperatures (intake-2831#00, intake-2831#03, intake-2831#05), where the single-draft 1 - TV ceiling (intake-2845#record) does not apply and k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00, intake-2717#01). Today DTREE is greedy-only (spec_tree_nodes_for returns 0 at temp > 0, tools/server/server-context.cpp:5586-5590 @ a6a32c1) and the DTREE dumps are greedy with no target probabilities, so they cannot be replayed at T > 0. Step 1 (code only): log the resolved temperature/top_k/top_p/min_p per request in the inference-tap start event (orchestrator llama_server.py:1739-1747 payload site) and poll /slots on the speculative ports for direct clients; report the token-weighted temperature histogram per drafter (27B DFlash2, A3B MTP) over a declared window; close if the T > 0 share is under 5% on both, else the served T set is its modes. Step 2a (capture): a dump-knob-only fork from the current champion, at served T with keyed draws (seed, position, vocab id), logging per round the drafter lattice/candidates and the target post-sampler candidates plus top-64 logits at every verified row; for DFlash2 force a superset tree (prob-greedy W32 + DICE W16 + chain) into the verify batch while committing through the unchanged chain. A3B MTP first on a CPU quarter q0-q2; the 27B DFlash2 capture is an MI210 capture-only row (see OD-5). Step 2b (offline replay, CPU) at equal node budget W in {1,4,8,12,16}: V0 served path, V1 same tree with recursive rejection without replacement, V2 Gumbel-max walk with pre-sampled draws and draw-blind selection, V3 DICE draw-informed selection ((alpha, sigma) fitted on the calibration half only), optional V4 exponential-race verifier for k >= 3 siblings (intake-2846#02); metric expected tokens per target pass per served T. Controls: frozen capture and replay script with sha256, baseline V0, per-round per-arm results.jsonl, holdout = second prompt half, every verify round counted, PREDECLARATION.md sealed before replay. Falsifier H1: V3 raises expected accepted length over V0 and over V1 at equal W. Futility: close if holdout V3/V1 < 1.02 at every served T and W <= 16 and V3/V0 stays below the verify-cost break-even; stop-on-answer at a prompt-clustered 95% CI half-width <= 1% on V3/V1 at the highest-share T; gate-class futility-only. A GPU build row (keyed Gumbel-max target sampler, DICE node selection, Gumbel tree walk, T > 0 guard lifted; ABBA np1/np4; KEEP iff tok/s CI-lower > 1.0 and an emitted-token distribution check passes) is filed only if the replay clears break-even; if only V1 clears it, file the sampled recursive-rejection tree row (DTREE-A) instead.",
+     "acceptance": "step-1 temperature-share table and decision filed; then the capture digest and a RESULT.json with holdout tokens per pass per arm x T x W and a verdict CLOSE_FUTILITY / FILE_GPU_ROW / FILE_RRS_ROW"
+    }
+   ]
   },
   "AKI-52": {
-   "required_outcome": "Revisit when a tree is served",
+   "required_outcome": "DICE on sampled trees decided on served-temperature evidence",
+   "review_status": "preserved",
+   "review_basis": "SPEC-DTREE-DICE steps 1, 2a, 2b and the GPU gate",
+   "task_refs": [
+    {
+     "owner": "handoffs/active/speculative-decoding.md",
+     "task_id": "SPEC-DTREE-DICE",
+     "task_text": "- [ ] **SPEC-DTREE-DICE** [non-inference then inference] Falsify or confirm that pre-sampled target randomness raises expected accepted length on SAMPLED trees at served temperatures (intake-2831#00, intake-2831#03, intake-2831#05), where the single-draft 1 - TV ceiling (intake-2845#record) does not apply and k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00, intake-2717#01). Today DTREE is greedy-only (spec_tree_nodes_for returns 0 at temp > 0, tools/server/server-context.cpp:5586-5590 @ a6a32c1) and the DTREE dumps are greedy with no target probabilities, so they cannot be replayed at T > 0. Step 1 (code only): log the resolved temperature/top_k/top_p/min_p per request in the inference-tap start event (orchestrator llama_server.py:1739-1747 payload site) and poll /slots on the speculative ports for direct clients; report the token-weighted temperature histogram per drafter (27B DFlash2, A3B MTP) over a declared window; close if the T > 0 share is under 5% on both, else the served T set is its modes. Step 2a (capture): a dump-knob-only fork from the current champion, at served T with keyed draws (seed, position, vocab id), logging per round the drafter lattice/candidates and the target post-sampler candidates plus top-64 logits at every verified row; for DFlash2 force a superset tree (prob-greedy W32 + DICE W16 + chain) into the verify batch while committing through the unchanged chain. A3B MTP first on a CPU quarter q0-q2; the 27B DFlash2 capture is an MI210 capture-only row (see OD-5). Step 2b (offline replay, CPU) at equal node budget W in {1,4,8,12,16}: V0 served path, V1 same tree with recursive rejection without replacement, V2 Gumbel-max walk with pre-sampled draws and draw-blind selection, V3 DICE draw-informed selection ((alpha, sigma) fitted on the calibration half only), optional V4 exponential-race verifier for k >= 3 siblings (intake-2846#02); metric expected tokens per target pass per served T. Controls: frozen capture and replay script with sha256, baseline V0, per-round per-arm results.jsonl, holdout = second prompt half, every verify round counted, PREDECLARATION.md sealed before replay. Falsifier H1: V3 raises expected accepted length over V0 and over V1 at equal W. Futility: close if holdout V3/V1 < 1.02 at every served T and W <= 16 and V3/V0 stays below the verify-cost break-even; stop-on-answer at a prompt-clustered 95% CI half-width <= 1% on V3/V1 at the highest-share T; gate-class futility-only. A GPU build row (keyed Gumbel-max target sampler, DICE node selection, Gumbel tree walk, T > 0 guard lifted; ABBA np1/np4; KEEP iff tok/s CI-lower > 1.0 and an emitted-token distribution check passes) is filed only if the replay clears break-even; if only V1 clears it, file the sampled recursive-rejection tree row (DTREE-A) instead.",
+     "acceptance": "step-1 temperature-share table and decision filed; then the capture digest and a RESULT.json with holdout tokens per pass per arm x T x W and a verdict CLOSE_FUTILITY / FILE_GPU_ROW / FILE_RRS_ROW"
+    }
+   ]
+  },
+  "AKI-68": {
+   "required_outcome": "Refit when a tree is served",
    "review_status": "closed-with-basis",
-   "review_basis": "Trigger M6 on DTREE-GDN-BATCH",
+   "review_basis": "Trigger M6 on DTREE-GDN-BATCH (operator: the calibration refit may stay trigger-gated)",
+   "task_refs": []
+  },
+  "AKI-69": {
+   "required_outcome": "k-candidate verifiers tested as replay arms, not declined",
+   "review_status": "preserved",
+   "review_basis": "SPEC-DTREE-DICE optional V4 arm",
+   "task_refs": [
+    {
+     "owner": "handoffs/active/speculative-decoding.md",
+     "task_id": "SPEC-DTREE-DICE",
+     "task_text": "- [ ] **SPEC-DTREE-DICE** [non-inference then inference] Falsify or confirm that pre-sampled target randomness raises expected accepted length on SAMPLED trees at served temperatures (intake-2831#00, intake-2831#03, intake-2831#05), where the single-draft 1 - TV ceiling (intake-2845#record) does not apply and k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00, intake-2717#01). Today DTREE is greedy-only (spec_tree_nodes_for returns 0 at temp > 0, tools/server/server-context.cpp:5586-5590 @ a6a32c1) and the DTREE dumps are greedy with no target probabilities, so they cannot be replayed at T > 0. Step 1 (code only): log the resolved temperature/top_k/top_p/min_p per request in the inference-tap start event (orchestrator llama_server.py:1739-1747 payload site) and poll /slots on the speculative ports for direct clients; report the token-weighted temperature histogram per drafter (27B DFlash2, A3B MTP) over a declared window; close if the T > 0 share is under 5% on both, else the served T set is its modes. Step 2a (capture): a dump-knob-only fork from the current champion, at served T with keyed draws (seed, position, vocab id), logging per round the drafter lattice/candidates and the target post-sampler candidates plus top-64 logits at every verified row; for DFlash2 force a superset tree (prob-greedy W32 + DICE W16 + chain) into the verify batch while committing through the unchanged chain. A3B MTP first on a CPU quarter q0-q2; the 27B DFlash2 capture is an MI210 capture-only row (see OD-5). Step 2b (offline replay, CPU) at equal node budget W in {1,4,8,12,16}: V0 served path, V1 same tree with recursive rejection without replacement, V2 Gumbel-max walk with pre-sampled draws and draw-blind selection, V3 DICE draw-informed selection ((alpha, sigma) fitted on the calibration half only), optional V4 exponential-race verifier for k >= 3 siblings (intake-2846#02); metric expected tokens per target pass per served T. Controls: frozen capture and replay script with sha256, baseline V0, per-round per-arm results.jsonl, holdout = second prompt half, every verify round counted, PREDECLARATION.md sealed before replay. Falsifier H1: V3 raises expected accepted length over V0 and over V1 at equal W. Futility: close if holdout V3/V1 < 1.02 at every served T and W <= 16 and V3/V0 stays below the verify-cost break-even; stop-on-answer at a prompt-clustered 95% CI half-width <= 1% on V3/V1 at the highest-share T; gate-class futility-only. A GPU build row (keyed Gumbel-max target sampler, DICE node selection, Gumbel tree walk, T > 0 guard lifted; ABBA np1/np4; KEEP iff tok/s CI-lower > 1.0 and an emitted-token distribution check passes) is filed only if the replay clears break-even; if only V1 clears it, file the sampled recursive-rejection tree row (DTREE-A) instead.",
+     "acceptance": "step-1 temperature-share table and decision filed; then the capture digest and a RESULT.json with holdout tokens per pass per arm x T x W and a verdict CLOSE_FUTILITY / FILE_GPU_ROW / FILE_RRS_ROW"
+    }
+   ]
+  },
+  "AKI-70": {
+   "required_outcome": "27B verify drops the small GDN-input launches if the trace budget holds",
+   "review_status": "preserved",
+   "review_basis": "AK-BW-GDN-GATE-FOLD",
+   "task_refs": [
+    {
+     "owner": "handoffs/active/autokernel-loop.md",
+     "task_id": "AK-BW-GDN-GATE-FOLD",
+     "task_text": "- [ ] **AK-BW-GDN-GATE-FOLD** [non-inference then inference] Fold the GDN beta/alpha projections and gate math into the recurrence kernel on 27B/A3B verify, after AITER v0.1.30 `aiter/ops/triton/gated_delta_net/fused_gdn_decode_qkvz.py` (read at 77ba72b7061a; gfx950 Triton as written, the gate math is scalar and portable): it computes sigmoid(b) and exp(-exp(A_log) * softplus(a + dt_bias)) inside the GDN kernel from the raw projection and sums ba as fp32 split-K partials in-kernel with no zero-init or atomics (`:61`), with the ba projection emitted by the qkvz GEMM launch (`fused_gemm_a16w16_dual_splitk.py:47-60`, tuned for N1=16384 N2=96 K=5120, our 27B shape) (intake-2828#record). In-house budget, C18 27B DFlash2 verify trace ak-c18-27b-df2-v5i-trace-gpu-20261122 (40.07 ms GPU per verify): 96 small q8sk_mul_mat launches for beta/alpha (0.63 ms) and four unfused gate ops x 48 layers (0.88 ms), plus norm/z gate (0.42 ms) and the state gather k_get_rows (0.53 ms); the existing softplus fusion (ggml-cuda.cu:4252 @ a6a32c1) does not engage there (cause unknown). Arms in order: (a) row-concat ssm_beta|ssm_alpha into one Q8_0 tensor at load and one launch writing [KS, T, 2*H_v] fp32 partials without atomics; (b) a fusion from that output to GATED_DELTA_NET passing raw b/a, ssm_dt and ssm_a to the C19 fused K=T and rows kernels, which sum the partials and apply the gate in their prologue; (c) and (d) (norm + silu(z) epilogue; state pool by slot) only after (a)+(b). Side effect: removes the unordered atomic split-K on ssm_ab. Step 1 (no GPU): from the 27B trace above and ak-c18-a3b-mtp-trace-gpu-20261122, list the launches each arm removes with their ms and confirm from C19 source how the GDN kernels read g/beta; stop-on-futility if (a)+(b) remove < 0.8 ms per 27B verify. Then one op/trace row: stop-on-answer when GDN-input ms per verify <= 0.4 ms with test-backend-ops GATED_DELTA_NET parity and 27B KLD vs C19 <= 0.003; then 27B DFlash2 np1 e2e, 8 ABBA pairs, KEEP iff CI lower > +1% and no cell < -1%; futility if the first variant saves < 0.6 ms per verify; gate-class futility-only. Build: experimental branch from C19 a6a32c1, knob default off, region-lock claim; coordinate with AK-BW-27B-ACTQUANT-FUSE and AK-BW-A3B-DENSE-STEP2 (b) (same concat).",
+     "acceptance": "step-1 launch/ms table filed, then an op/trace verdict and a 27B e2e KEEP/DROP for arms (a)+(b); A3B runs only after a 27B KEEP"
+    }
+   ]
+  },
+  "AKI-71": {
+   "required_outcome": "The unmeasured verify half of the per-channel lever is decided",
+   "review_status": "preserved",
+   "review_basis": "AK-ASM-I8GEMM-PERCHANNEL-GEMV",
+   "task_refs": [
+    {
+     "owner": "handoffs/active/autokernel-loop.md",
+     "task_id": "AK-ASM-I8GEMM-PERCHANNEL-GEMV",
+     "task_text": "- [ ] **AK-ASM-I8GEMM-PERCHANNEL-GEMV** [non-inference then inference] Measure the verify-GEMV half of AK-ASM-I8GEMM-PERCHANNEL that no row has measured (the port row measured only prefill, dispatch at ne11 >= 129, 0.821x). On the 27B verify trace ak-c18-27b-df2-v5i-trace-gpu-20261122 q8mf6_mul_mat is 25.2 of 40.07 ms at 1071 GB/s (71% of the 1.498 TB/s measured peak); a dense per-row int8 layout (32 B per 32 weights plus one scale per row versus Q8_0's 34 B) reads 1/17 fewer weight bytes and drops the per-block scale load; the 27B weight half already passed (AK-ASM-I8GEMM-PERCHANNEL-KLD: KLD 0.001015, dPPL +0.082%). Layout source: AITER per-channel 8-bit weight GEMMs (intake-2828#record). Step 1 (no GPU): from C19 mmq-q8-mf.cu record how the MF_INPLACE layout streams per-block scales and the bytes per weight q8mf6 reads; ceiling = bytes saved / bytes streamed x q8mf6 share of verify; stop-on-futility if the ceiling is < 3% of verify GPU time. Step 2 (GPU, timing only): a speed-of-light knob in q8mf6 that skips the per-block weight scales (numerically wrong, timing only) at the 27B shapes, n 1/4/8/16; futility if it saves < 3% of q8mf6 ms at n=8; at >= 3%, the real layout behind a default-off knob gated by 27B KLD <= 0.003 and |dPPL| <= 0.5%, then 8 ABBA pairs, KEEP iff CI lower > +1%; gate-class futility-only. Confidence low: at 71% of peak the kernel is not purely byte-bound.",
+     "acceptance": "step-1 ceiling filed, and either a futility close or a step-2 timing verdict (plus, at >= 3%, an e2e KEEP/DROP)"
+    }
+   ]
+  },
+  "AKI-72": {
+   "required_outcome": "No repeat of prior AITER work",
+   "review_status": "closed-with-basis",
+   "review_basis": "Declined: per-family reasons in /mnt/raid0/llm/tmp/dive-ak-1123/rev1/aiter_re.md section 5 (AK-MMID-MF FUTILITY_OP, H8/H8b DROP, GGML_HIP_FA_TAIL_SPLIT FUTILITY)",
+   "task_refs": []
+  },
+  "AKI-73": {
+   "required_outcome": "The entry no longer over-reads the theorem",
+   "review_status": "closed-with-basis",
+   "review_basis": "Knowledge-only K1; Stage 4 appends a scope line to intake-2845 dive_corrections",
    "task_refs": []
   },
   "AKI-53": {
@@ -2501,7 +2766,7 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
   "AKI-54": {
    "required_outcome": "Drafting variants",
    "review_status": "closed-with-basis",
-   "review_basis": "Declined: COPYSPEC-27B 46.95 vs 59.32 tok/s; standard verification is optimal for single drafts (intake-2846#01)",
+   "review_basis": "Declined: COPYSPEC-27B 46.95 vs 59.32 tok/s on the MI210; the exact-index question is SPEC-COPY-COV-1. (Multi-draft verifiers moved to SPEC-DTREE-DICE; the single-draft optimality result does not cover trees.)",
    "task_refs": []
   },
   "AKI-55": {
@@ -2670,7 +2935,19 @@ All recommended sources were ingested and dived in waves 1-2 under the operator 
   },
   {
    "owner": "handoffs/active/speculative-decoding.md",
-   "task_text": "- [ ] **SPEC-COUPLE-MTP-1** [inference] Bound what coupled-draw verification could add on the A3B MTP path at production temperatures (intake-2845#00, intake-2845#record, intake-2831#01). First read common/sampling.cpp @ a6a32c1: if the MTP verify path at T > 0 already uses rejection sampling, close this box with no row (coupling cannot exceed the 1 - TV ceiling that rejection sampling already reaches, intake-2845#record). Otherwise capture target top-k probabilities and draft tokens at T 0.2 and 0.3 on Qwen3.6-35B-A3B + MTP (frozen 64-prompt set, digest recorded; baseline = current exact-match acceptance; per-position outputs kept; holdout = second half of the prompts; every position counted) and compute offline the gap (1 - TV) minus the observed acceptance rate. Stop if the holdout gap is under 1%; file a build box if it is 2% or more; gate-class futility-only."
+   "task_text": "- [ ] **SPEC-COUPLE-MTP-1** [inference] Bound what a draft distribution plus rejection sampling, or coupled draws, could add on the A3B MTP chain at served temperatures (intake-2845#00, intake-2845#record, intake-2831#01). MTP at T > 0 verifies by sample-and-compare against an argmax draft (common/sampling.cpp:693-711, common/speculative.cpp:2116-2119 @ a6a32c1), so per-position acceptance is p(argmax q), below the single-draft 1 - TV ceiling (a per-position, single-draft bound, intake-2845#record) that the DFlash2 rejection path already reaches. Using the SPEC-DTREE-DICE step-2a capture (MTP top-10 drafter logits plus target candidates at every verified row; frozen 64-prompt set with digest; baseline = current sample-and-compare; per-position outputs kept; holdout = second half of the prompts; every position counted), compute offline per served T from SPEC-DTREE-DICE step 1 (expect 0.1/0.2/0.3 and 1.0): the gap 1 - TV(q, p) - p(argmax q) for q = softmax(logit/T) over the MTP top-10, i.e. routing MTP through the existing rejection path. Stop if the holdout gap is under 1% at every served T; file a build box (MTP fills draft distributions, rejection path) if it is 2% or more at any served T with >= 20% token share; gate-class futility-only."
+  },
+  {
+   "owner": "handoffs/active/speculative-decoding.md",
+   "task_text": "- [ ] **SPEC-DTREE-DICE** [non-inference then inference] Falsify or confirm that pre-sampled target randomness raises expected accepted length on SAMPLED trees at served temperatures (intake-2831#00, intake-2831#03, intake-2831#05), where the single-draft 1 - TV ceiling (intake-2845#record) does not apply and k-candidate verifiers beat the standard one at T > 0 (intake-2846#02, intake-2715#00, intake-2717#01). Today DTREE is greedy-only (spec_tree_nodes_for returns 0 at temp > 0, tools/server/server-context.cpp:5586-5590 @ a6a32c1) and the DTREE dumps are greedy with no target probabilities, so they cannot be replayed at T > 0. Step 1 (code only): log the resolved temperature/top_k/top_p/min_p per request in the inference-tap start event (orchestrator llama_server.py:1739-1747 payload site) and poll /slots on the speculative ports for direct clients; report the token-weighted temperature histogram per drafter (27B DFlash2, A3B MTP) over a declared window; close if the T > 0 share is under 5% on both, else the served T set is its modes. Step 2a (capture): a dump-knob-only fork from the current champion, at served T with keyed draws (seed, position, vocab id), logging per round the drafter lattice/candidates and the target post-sampler candidates plus top-64 logits at every verified row; for DFlash2 force a superset tree (prob-greedy W32 + DICE W16 + chain) into the verify batch while committing through the unchanged chain. A3B MTP first on a CPU quarter q0-q2; the 27B DFlash2 capture is an MI210 capture-only row (see OD-5). Step 2b (offline replay, CPU) at equal node budget W in {1,4,8,12,16}: V0 served path, V1 same tree with recursive rejection without replacement, V2 Gumbel-max walk with pre-sampled draws and draw-blind selection, V3 DICE draw-informed selection ((alpha, sigma) fitted on the calibration half only), optional V4 exponential-race verifier for k >= 3 siblings (intake-2846#02); metric expected tokens per target pass per served T. Controls: frozen capture and replay script with sha256, baseline V0, per-round per-arm results.jsonl, holdout = second prompt half, every verify round counted, PREDECLARATION.md sealed before replay. Falsifier H1: V3 raises expected accepted length over V0 and over V1 at equal W. Futility: close if holdout V3/V1 < 1.02 at every served T and W <= 16 and V3/V0 stays below the verify-cost break-even; stop-on-answer at a prompt-clustered 95% CI half-width <= 1% on V3/V1 at the highest-share T; gate-class futility-only. A GPU build row (keyed Gumbel-max target sampler, DICE node selection, Gumbel tree walk, T > 0 guard lifted; ABBA np1/np4; KEEP iff tok/s CI-lower > 1.0 and an emitted-token distribution check passes) is filed only if the replay clears break-even; if only V1 clears it, file the sampled recursive-rejection tree row (DTREE-A) instead."
+  },
+  {
+   "owner": "handoffs/active/autokernel-loop.md",
+   "task_text": "- [ ] **AK-BW-GDN-GATE-FOLD** [non-inference then inference] Fold the GDN beta/alpha projections and gate math into the recurrence kernel on 27B/A3B verify, after AITER v0.1.30 `aiter/ops/triton/gated_delta_net/fused_gdn_decode_qkvz.py` (read at 77ba72b7061a; gfx950 Triton as written, the gate math is scalar and portable): it computes sigmoid(b) and exp(-exp(A_log) * softplus(a + dt_bias)) inside the GDN kernel from the raw projection and sums ba as fp32 split-K partials in-kernel with no zero-init or atomics (`:61`), with the ba projection emitted by the qkvz GEMM launch (`fused_gemm_a16w16_dual_splitk.py:47-60`, tuned for N1=16384 N2=96 K=5120, our 27B shape) (intake-2828#record). In-house budget, C18 27B DFlash2 verify trace ak-c18-27b-df2-v5i-trace-gpu-20261122 (40.07 ms GPU per verify): 96 small q8sk_mul_mat launches for beta/alpha (0.63 ms) and four unfused gate ops x 48 layers (0.88 ms), plus norm/z gate (0.42 ms) and the state gather k_get_rows (0.53 ms); the existing softplus fusion (ggml-cuda.cu:4252 @ a6a32c1) does not engage there (cause unknown). Arms in order: (a) row-concat ssm_beta|ssm_alpha into one Q8_0 tensor at load and one launch writing [KS, T, 2*H_v] fp32 partials without atomics; (b) a fusion from that output to GATED_DELTA_NET passing raw b/a, ssm_dt and ssm_a to the C19 fused K=T and rows kernels, which sum the partials and apply the gate in their prologue; (c) and (d) (norm + silu(z) epilogue; state pool by slot) only after (a)+(b). Side effect: removes the unordered atomic split-K on ssm_ab. Step 1 (no GPU): from the 27B trace above and ak-c18-a3b-mtp-trace-gpu-20261122, list the launches each arm removes with their ms and confirm from C19 source how the GDN kernels read g/beta; stop-on-futility if (a)+(b) remove < 0.8 ms per 27B verify. Then one op/trace row: stop-on-answer when GDN-input ms per verify <= 0.4 ms with test-backend-ops GATED_DELTA_NET parity and 27B KLD vs C19 <= 0.003; then 27B DFlash2 np1 e2e, 8 ABBA pairs, KEEP iff CI lower > +1% and no cell < -1%; futility if the first variant saves < 0.6 ms per verify; gate-class futility-only. Build: experimental branch from C19 a6a32c1, knob default off, region-lock claim; coordinate with AK-BW-27B-ACTQUANT-FUSE and AK-BW-A3B-DENSE-STEP2 (b) (same concat)."
+  },
+  {
+   "owner": "handoffs/active/autokernel-loop.md",
+   "task_text": "- [ ] **AK-ASM-I8GEMM-PERCHANNEL-GEMV** [non-inference then inference] Measure the verify-GEMV half of AK-ASM-I8GEMM-PERCHANNEL that no row has measured (the port row measured only prefill, dispatch at ne11 >= 129, 0.821x). On the 27B verify trace ak-c18-27b-df2-v5i-trace-gpu-20261122 q8mf6_mul_mat is 25.2 of 40.07 ms at 1071 GB/s (71% of the 1.498 TB/s measured peak); a dense per-row int8 layout (32 B per 32 weights plus one scale per row versus Q8_0's 34 B) reads 1/17 fewer weight bytes and drops the per-block scale load; the 27B weight half already passed (AK-ASM-I8GEMM-PERCHANNEL-KLD: KLD 0.001015, dPPL +0.082%). Layout source: AITER per-channel 8-bit weight GEMMs (intake-2828#record). Step 1 (no GPU): from C19 mmq-q8-mf.cu record how the MF_INPLACE layout streams per-block scales and the bytes per weight q8mf6 reads; ceiling = bytes saved / bytes streamed x q8mf6 share of verify; stop-on-futility if the ceiling is < 3% of verify GPU time. Step 2 (GPU, timing only): a speed-of-light knob in q8mf6 that skips the per-block weight scales (numerically wrong, timing only) at the 27B shapes, n 1/4/8/16; futility if it saves < 3% of q8mf6 ms at n=8; at >= 3%, the real layout behind a default-off knob gated by 27B KLD <= 0.003 and |dPPL| <= 0.5%, then 8 ABBA pairs, KEEP iff CI lower > +1%; gate-class futility-only. Confidence low: at 71% of peak the kernel is not purely byte-bound."
   },
   {
    "owner": "handoffs/active/kernel-champion-and-promotion.md",
