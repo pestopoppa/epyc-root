@@ -13,3 +13,14 @@ Amended the BSV-2 accept design in `handoffs/active/autopilot-program.md` (R1 di
 - Built the read-only evict-cost probe and the 20-cut smoke harness in epyc-orchestrator (branch `ak1123/kv-evict-cost-probe`, worktree `/mnt/raid0/llm/worktrees/ak1123-kvevict`): `scripts/autopilot/kv_evict_cost.py`, `scripts/autopilot/kv_evict_cost_smoke.py`, `tests/unit/test_kv_evict_cost.py` (12 fake-only tests pass).
 - Predicts re-prefilled tokens = T' - p* and seconds = a + b*cells, classifies alignment, and marks hybrid/recurrent models cannot_shift.
 - Not run against any server. Box stays unticked: smoke (k/20, pass >= 19) and the MI210 plus CPU-quarter device table are pending.
+
+## TOC-SUPERSEDE-1 offline supersession replay (partial)
+
+Built `scripts/analysis/toc_supersede_replay.py` (+12 tests) and replayed 78 Claude Code transcripts and 61
+architect-bench bash-loop trajectories (manifest digest `18b94214...d86c53`, 139 files, 5 CPU-seconds).
+Candidate share of history: Claude Code primary 0.74%, worktree/tmp 0.0%, bench loop 23.8%, pooled 1.2%.
+The 15% gate is split (pooled/Claude Code under, autonomous-loop proxy over); M2 not opened. No recorded REPL
+transcript with tool-output text exists. AgentDiet `artifact.zip` downloaded and md5-verified to
+`/mnt/raid0/llm/tmp/ak1123-agentdiet/dl/`; `trajs.7z` extraction was refused by the permission classifier and
+not retried, so that class is unreplayed. Box left open with a checkpoint. Details:
+`docs/reports/toc-supersede-1-20261123/README.md`. [belief: cc]
