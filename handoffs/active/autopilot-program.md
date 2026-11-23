@@ -57,7 +57,7 @@ Operator agreed 2026-11-23, after OD-2 was answered B ("wait for AP-BSV2-ACCEPT-
 
 Independent non-inference prep that does not wait on any of this: AP-BSV2-RIGOR-GATE-CODE (R1-R5 in the `AUTOPILOT_BSV2_ACCEPT_GATE` path; default-off code and unit tests).
 
-Open ordering question, recorded not decided: W-11 and W-13 (below) still say the hold is lifted AFTER the next production kernel promotion and PIP02-PADDLE-STACK-ENTRY; the 2026-11-23 sequence is silent on both. Steps 1-3 do not depend on them (they run on the current v10 stack); step 5 still does until the operator says otherwise.
+Ordering DECIDED (operator, 2026-11-23): W-11 and W-13 stay as written. The hold lifts only AFTER the v11 production kernel promotion and PIP02-PADDLE-STACK-ENTRY, so autopilot relaunches on the new kernel with a fresh baseline. Steps 1-4 run now on the v10 stack and do not wait on either.
 
 ### Audit: every track waiting on the Autopilot hold or relaunch (2026-11-23)
 
@@ -75,7 +75,7 @@ Timing: BEFORE = non-inference prep that can be done now; WITH = runs as part of
 | AP-DGM-PROV, AP-DGM-SEL, SEQ-SHINKA-1 | ~970, ~977, ~4802 | prospective write-side capture during a model-producing run (flags in W-21) | Yes; options A and C code already shipped default-off | flags set at launch WITH; replay AFTER |
 | AP-55-ARM, BEP-2, DCP-6, W8, W8b, W6f, W5, BT-5b, real_suite_v1 discriminability | ~1049, ~2246, ~2364, ~2707, ~3106, ~3766, ~3800, (see AP-HOLD-RELEASE-REVIEW list) | live run / new-era baseline | Yes; W6f and W5 are era-dependent, re-derive under the new era | WITH / AFTER |
 | W-36 SEQ-3c | ~4578 | relaunch, new era, fresh pool | Yes | AFTER |
-| W-11..W-22 restart preconditions | AP-HOLD-RELEASE-REVIEW sub-list | each re-proved at the lift | W-11 and W-13 need the ordering question above answered | at the lift |
+| W-11..W-22 restart preconditions | AP-HOLD-RELEASE-REVIEW sub-list | each re-proved at the lift | W-11 and W-13 kept: lift waits on v11 + PIP02 (operator 2026-11-23) | at the lift |
 | TD-36/37/38/42 (DAR-LAT-1/2/3/3i), TD-39 (LRC-1) | routing-program.md ~483-563, ~2279 | FROZEN: "autopilot has trained on the swapped stack AND UFH-13 re-opened" (operator 2026-09-29) | Yes; they cannot start earlier than the relaunch | AFTER |
 | TD-41 (TD-28 typed routing as advice) | routing-program.md ~3287 | v11 promotion AND trained autopilot AND UFH-13 | Yes | AFTER |
 | P3-3, P3-4, P4-2 | routing-program.md ~862, ~866, ~883 | P3-3 runs through the Autopilot `consult_gate_probe` action; P3-4 needs a week of its shadow data; P4-2 needs P3-3 calibration | Yes | P3-3 WITH; P3-4, P4-2 AFTER |
