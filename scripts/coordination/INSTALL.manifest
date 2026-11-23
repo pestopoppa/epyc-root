@@ -20,6 +20,8 @@ bin/rowflow/filler_run15.sh          scripts/coordination/rowflow/filler_run15.s
 bin/rowflow/filler_lib.sh            scripts/coordination/rowflow/filler_lib.sh           engine
 bin/rowflow/run_direct.py            scripts/coordination/rowflow/run_direct.py           hot
 bin/rowflow/run_direct.sh            scripts/coordination/rowflow/run_direct.sh           hot
+bin/rowflow/ak_row_harness.py        scripts/coordination/rowflow/ak_row_harness.py       hot
+bin/rowflow/ak_row_lint.py           scripts/coordination/rowflow/ak_row_lint.py          hot
 bin/rowflow/task_lint.py             scripts/handoffs/task_lint.py                        hot
 bin/rowflow/task_lint_core.py        scripts/handoffs/task_lint_core.py                   hot
 bin/rowflow/handoff_ref.py           scripts/coordination/handoff_ref.py                  hot

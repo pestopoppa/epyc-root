@@ -224,6 +224,22 @@ def gpu_quiet_guard_conflicts(spec, read=None, info=None):
     return []
 
 
+def check_smoke_estimate(spec):
+    """AK harness 2026-11-23 (ak-rsreplay-q4x-singleslot-repro-cpu-20261123 r1, estimate guessed): a spec with an
+    estimate_basis (a smoke_measure.json from ak_row_harness.write_smoke_measure + units) is REFUSED when estimate_s is below
+    ceil((unit_s x units + loads_s) x margin). An autokernel row without one gets a WARNING (publish continues)."""
+    try:
+        import ak_row_harness as H
+    except ImportError:
+        return
+    try:
+        _, warns = H.check_spec_estimate(spec)
+    except ValueError as e:
+        raise rf.Refused(f"estimate_s: {e}. FIX: set estimate_s >= the derived value (ak_row_harness.py estimate ...)")
+    if warns and str(spec.get("owner") or "").startswith("autokernel"):
+        _warn(spec, "estimate-unmeasured: " + warns[0] + " (publish continues)")
+
+
 def lint(spec):
     """Rewrite the known spec defects in place; returns the LINT notes. Everything else is rowflow.publish's job."""
     notes = []
@@ -290,6 +306,7 @@ def lint(spec):
     # start) + the result; the keeper's reaper protects both and keep globs only add to them.
     rf.check_busy_fraction(spec)   # before the smoke: a bad value costs no compute
     rf.check_quiet_guard(spec)     # likewise: guard quarters must be a subset of the booked regions
+    check_smoke_estimate(spec)     # AK harness (c): estimate_s below the smoke-derived value is refused
     if not spec.get("kind"):
         spec["kind"] = "compute"
         notes.append("kind=compute")
