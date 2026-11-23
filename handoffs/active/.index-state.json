@@ -4,7 +4,7 @@
       "blocked": 25,
       "handoffs": 13,
       "oldest_advance": "2026-11-07",
-      "open": 596
+      "open": 597
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5367,
+          "line": 5368,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5452,
+          "line": 5453,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 5633,
+          "line": 5634,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 11
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 7516,
+          "line": 7517,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 28
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 10747,
+          "line": 10750,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 10994,
+          "line": 10997,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14
@@ -2354,7 +2354,7 @@
       "frozen": 1,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 38,
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2363,7 +2363,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 310,
+      "total": 311,
       "tracks": [
         {
           "blocked": 1,
@@ -2374,7 +2374,7 @@
           "line": 15,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 14
+          "open": 15
         },
         {
           "blocked": 1,
@@ -2384,7 +2384,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 924,
+          "line": 931,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 24
