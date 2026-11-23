@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T21:19:20Z",
+  "generated_at": "2026-11-23T21:51:26Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1379,14 +1379,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 975,
-      "dispatchable": 118,
+      "dispatchable": 121,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-23",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 118,
+      "open": 121,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1478,7 +1478,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 18,
+          "dispatchable": 21,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1486,7 +1486,7 @@
           ],
           "line": 7550,
           "name": "autokernel-unified-surface-program",
-          "open": 18,
+          "open": 21,
           "readiness": "blocked"
         },
         {
@@ -1497,7 +1497,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 10797,
+          "line": 10812,
           "name": "autokernel-concurrent-target-coordination",
           "open": 12,
           "readiness": "blocked"
@@ -1531,7 +1531,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 11044,
+          "line": 11059,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 14,
           "readiness": "blocked"
@@ -1775,15 +1775,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 280,
-      "dispatchable": 33,
+      "closed": 279,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-23",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 35,
+      "open": 36,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1826,14 +1826,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 23,
+          "dispatchable": 24,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 971,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 24,
+          "open": 25,
           "readiness": "blocked"
         }
       ]
