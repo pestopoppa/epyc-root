@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-AK-LOOP-CODE-BUDGET-CONSOLIDATED-20261122",
+  "indexed_by": "ratify",
+  "receipt": "artifacts/operator/ratify_ak_loop_code_budget_consolidated_20261122.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

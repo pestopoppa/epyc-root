@@ -1,0 +1,590 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-LOOP-CODE-BUDGET-CONSOLIDATED-20261122",
+  "status": "ratified",
+  "ratified_at": "2026-11-23T08:00:40Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-11-19 OP-AK-CODEBUDGET-43 procedure (trim first, then ratchet; twice-ratcheted => trim-or-split obligation; no third ratchet)",
+    "2": "2026-11-22 operator choice: sign the code-budget package and allow module splits; obligation-carrying files split back under their existing ceilings",
+    "3": "2026-11-22 consolidated package: every unbaselined module admitted at its signing size; remaining overruns ratcheted once more"
+  },
+  "items": {
+    "1": "research scripts/kernel_rnd/autokernel/loop_code_budget_baseline.json: ratchet ceilings for the listed existing files (raise to cap only)"
+  },
+  "metric": "python_nonblank_noncomment_nondocstring_physical_lines.v1",
+  "files": {
+    "a2_unit_transport.py": {
+      "old_ceiling": 52,
+      "ratchet_cap": 126,
+      "size_at_signing": 126,
+      "size_at_prep": 126,
+      "kind": "ratchet"
+    },
+    "actor_budgets.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 33,
+      "size_at_signing": 33,
+      "size_at_prep": 33,
+      "kind": "new"
+    },
+    "actor_context.py": {
+      "old_ceiling": 511,
+      "ratchet_cap": 517,
+      "size_at_signing": 517,
+      "size_at_prep": 517,
+      "kind": "ratchet",
+      "trim_or_split_obligation": "AK-TRIM-OR-SPLIT-SMALL-20261122"
+    },
+    "actor_settlement_policy.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 20,
+      "size_at_signing": 20,
+      "size_at_prep": 20,
+      "kind": "new"
+    },
+    "authoring_chain.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 173,
+      "size_at_signing": 173,
+      "size_at_prep": 173,
+      "kind": "new"
+    },
+    "campaign_build_identity.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 89,
+      "size_at_signing": 89,
+      "size_at_prep": 89,
+      "kind": "new"
+    },
+    "campaign_command_validation.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 45,
+      "size_at_signing": 45,
+      "size_at_prep": 45,
+      "kind": "new"
+    },
+    "campaign_service.py": {
+      "old_ceiling": 714,
+      "ratchet_cap": 718,
+      "size_at_signing": 718,
+      "size_at_prep": 718,
+      "kind": "ratchet",
+      "trim_or_split_obligation": "AK-TRIM-OR-SPLIT-SMALL-20261122"
+    },
+    "campaign_snapshot_validation.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 406,
+      "size_at_signing": 406,
+      "size_at_prep": 406,
+      "kind": "new"
+    },
+    "candidate_startup_replay.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 10,
+      "size_at_signing": 10,
+      "size_at_prep": 10,
+      "kind": "new"
+    },
+    "census_update.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 294,
+      "size_at_signing": 294,
+      "size_at_prep": 294,
+      "kind": "new"
+    },
+    "comparison_receipt_journal.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 129,
+      "size_at_signing": 129,
+      "size_at_prep": 129,
+      "kind": "new"
+    },
+    "contained_authoring.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 171,
+      "size_at_signing": 171,
+      "size_at_prep": 171,
+      "kind": "new"
+    },
+    "cpu_stage_elapsed.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 43,
+      "size_at_signing": 43,
+      "size_at_prep": 43,
+      "kind": "new"
+    },
+    "critic_provenance.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 93,
+      "size_at_signing": 93,
+      "size_at_prep": 93,
+      "kind": "new"
+    },
+    "direct_historical_control.py": {
+      "old_ceiling": 582,
+      "ratchet_cap": 587,
+      "size_at_signing": 587,
+      "size_at_prep": 587,
+      "kind": "ratchet"
+    },
+    "driver_config.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 115,
+      "size_at_signing": 115,
+      "size_at_prep": 115,
+      "kind": "new"
+    },
+    "driver_execution_receipt.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 180,
+      "size_at_signing": 180,
+      "size_at_prep": 180,
+      "kind": "new"
+    },
+    "elf_retention.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 102,
+      "size_at_signing": 102,
+      "size_at_prep": 102,
+      "kind": "new"
+    },
+    "experiment_plan.py": {
+      "old_ceiling": 922,
+      "ratchet_cap": 933,
+      "size_at_signing": 933,
+      "size_at_prep": 933,
+      "kind": "ratchet",
+      "trim_or_split_obligation": "AK-TRIM-OR-SPLIT-SMALL-20261122"
+    },
+    "feed_runtime.py": {
+      "old_ceiling": 439,
+      "ratchet_cap": 506,
+      "size_at_signing": 506,
+      "size_at_prep": 506,
+      "kind": "ratchet"
+    },
+    "gate_eval.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 281,
+      "size_at_signing": 281,
+      "size_at_prep": 281,
+      "kind": "new"
+    },
+    "gate_eval_replay.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 173,
+      "size_at_signing": 173,
+      "size_at_prep": 173,
+      "kind": "new"
+    },
+    "gate_graph_kld_policy.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 43,
+      "size_at_signing": 43,
+      "size_at_prep": 43,
+      "kind": "new"
+    },
+    "gate_identity_checks.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 41,
+      "size_at_signing": 41,
+      "size_at_prep": 41,
+      "kind": "new"
+    },
+    "gcn_gym.py": {
+      "old_ceiling": 133,
+      "ratchet_cap": 135,
+      "size_at_signing": 135,
+      "size_at_prep": 135,
+      "kind": "ratchet"
+    },
+    "guard_bands.py": {
+      "old_ceiling": 117,
+      "ratchet_cap": 131,
+      "size_at_signing": 131,
+      "size_at_prep": 131,
+      "kind": "ratchet"
+    },
+    "host_blocked.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 31,
+      "size_at_signing": 31,
+      "size_at_prep": 31,
+      "kind": "new"
+    },
+    "host_claim_provider.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 385,
+      "size_at_signing": 385,
+      "size_at_prep": 385,
+      "kind": "new"
+    },
+    "installed_receipt_feed.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 80,
+      "size_at_signing": 80,
+      "size_at_prep": 80,
+      "kind": "new"
+    },
+    "integrity.py": {
+      "old_ceiling": 368,
+      "ratchet_cap": 369,
+      "size_at_signing": 369,
+      "size_at_prep": 369,
+      "kind": "ratchet",
+      "trim_or_split_obligation": "AK-TRIM-OR-SPLIT-SMALL-20261122"
+    },
+    "integrity_pack.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 140,
+      "size_at_signing": 140,
+      "size_at_prep": 140,
+      "kind": "new"
+    },
+    "keep_lesson.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 59,
+      "size_at_signing": 59,
+      "size_at_prep": 59,
+      "kind": "new"
+    },
+    "kfd_topology.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 55,
+      "size_at_signing": 55,
+      "size_at_prep": 55,
+      "kind": "new"
+    },
+    "lifecycle_observation.py": {
+      "old_ceiling": 1651,
+      "ratchet_cap": 1707,
+      "size_at_signing": 1707,
+      "size_at_prep": 1707,
+      "kind": "ratchet"
+    },
+    "lineage_taxonomy_wire.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 72,
+      "size_at_signing": 72,
+      "size_at_prep": 72,
+      "kind": "new"
+    },
+    "loo_touched.py": {
+      "old_ceiling": 76,
+      "ratchet_cap": 91,
+      "size_at_signing": 91,
+      "size_at_prep": 91,
+      "kind": "ratchet"
+    },
+    "maintenance_caller.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 21,
+      "size_at_signing": 21,
+      "size_at_prep": 21,
+      "kind": "new"
+    },
+    "maintenance_execution.py": {
+      "old_ceiling": 630,
+      "ratchet_cap": 839,
+      "size_at_signing": 839,
+      "size_at_prep": 839,
+      "kind": "ratchet"
+    },
+    "measurement_capture.py": {
+      "old_ceiling": 701,
+      "ratchet_cap": 721,
+      "size_at_signing": 721,
+      "size_at_prep": 721,
+      "kind": "ratchet"
+    },
+    "native_observation_witnesses.py": {
+      "old_ceiling": 135,
+      "ratchet_cap": 187,
+      "size_at_signing": 187,
+      "size_at_prep": 187,
+      "kind": "ratchet"
+    },
+    "native_retention_catalog.py": {
+      "old_ceiling": 613,
+      "ratchet_cap": 775,
+      "size_at_signing": 775,
+      "size_at_prep": 775,
+      "kind": "ratchet"
+    },
+    "native_witness_source_pins.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 24,
+      "size_at_signing": 24,
+      "size_at_prep": 24,
+      "kind": "new"
+    },
+    "operation_accounting.py": {
+      "old_ceiling": 216,
+      "ratchet_cap": 386,
+      "size_at_signing": 386,
+      "size_at_prep": 386,
+      "kind": "ratchet"
+    },
+    "operation_child_proof.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 51,
+      "size_at_signing": 51,
+      "size_at_prep": 51,
+      "kind": "new"
+    },
+    "pipeline_budget.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 20,
+      "size_at_signing": 20,
+      "size_at_prep": 20,
+      "kind": "new"
+    },
+    "pool_commit_message.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 19,
+      "size_at_signing": 19,
+      "size_at_prep": 19,
+      "kind": "new"
+    },
+    "profile_preparation_receipt.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 102,
+      "size_at_signing": 102,
+      "size_at_prep": 102,
+      "kind": "new"
+    },
+    "promotion_evidence.py": {
+      "old_ceiling": 47,
+      "ratchet_cap": 57,
+      "size_at_signing": 57,
+      "size_at_prep": 57,
+      "kind": "ratchet"
+    },
+    "provider_factories.py": {
+      "old_ceiling": 34,
+      "ratchet_cap": 37,
+      "size_at_signing": 37,
+      "size_at_prep": 37,
+      "kind": "ratchet"
+    },
+    "qualified_serving_producer.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 72,
+      "size_at_signing": 72,
+      "size_at_prep": 72,
+      "kind": "new"
+    },
+    "restart_native_citations.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 23,
+      "size_at_signing": 23,
+      "size_at_prep": 23,
+      "kind": "new"
+    },
+    "retention_owner_journal.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 40,
+      "size_at_signing": 40,
+      "size_at_prep": 40,
+      "kind": "new"
+    },
+    "run_actor_config.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 78,
+      "size_at_signing": 78,
+      "size_at_prep": 78,
+      "kind": "new"
+    },
+    "run_author_plan.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 65,
+      "size_at_signing": 65,
+      "size_at_prep": 65,
+      "kind": "new"
+    },
+    "runtime_admission.py": {
+      "old_ceiling": 784,
+      "ratchet_cap": 799,
+      "size_at_signing": 799,
+      "size_at_prep": 799,
+      "kind": "ratchet"
+    },
+    "runtime_aggregates.py": {
+      "old_ceiling": 173,
+      "ratchet_cap": 302,
+      "size_at_signing": 302,
+      "size_at_prep": 302,
+      "kind": "ratchet"
+    },
+    "scientific_adapter_selection.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 34,
+      "size_at_signing": 34,
+      "size_at_prep": 34,
+      "kind": "new"
+    },
+    "serial_run_resume_option.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 21,
+      "size_at_signing": 21,
+      "size_at_prep": 21,
+      "kind": "new"
+    },
+    "serial_scheduling.py": {
+      "old_ceiling": 598,
+      "ratchet_cap": 599,
+      "size_at_signing": 599,
+      "size_at_prep": 599,
+      "kind": "ratchet"
+    },
+    "settlement_test_support.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 11,
+      "size_at_signing": 11,
+      "size_at_prep": 11,
+      "kind": "new"
+    },
+    "source_build_log.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 58,
+      "size_at_signing": 58,
+      "size_at_prep": 58,
+      "kind": "new"
+    },
+    "source_loo.py": {
+      "old_ceiling": 197,
+      "ratchet_cap": 205,
+      "size_at_signing": 205,
+      "size_at_prep": 205,
+      "kind": "ratchet"
+    },
+    "stage_admission.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 119,
+      "size_at_signing": 119,
+      "size_at_prep": 119,
+      "kind": "new"
+    },
+    "stage_bodies.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 376,
+      "size_at_signing": 376,
+      "size_at_prep": 376,
+      "kind": "new"
+    },
+    "stage_coordination.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 214,
+      "size_at_signing": 214,
+      "size_at_prep": 214,
+      "kind": "new"
+    },
+    "stage_footprint.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 146,
+      "size_at_signing": 146,
+      "size_at_prep": 146,
+      "kind": "new"
+    },
+    "standalone_dispatch.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 43,
+      "size_at_signing": 43,
+      "size_at_prep": 43,
+      "kind": "new"
+    },
+    "standalone_installed_adapters.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 37,
+      "size_at_signing": 37,
+      "size_at_prep": 37,
+      "kind": "new"
+    },
+    "standalone_runtime.py": {
+      "old_ceiling": 673,
+      "ratchet_cap": 742,
+      "size_at_signing": 742,
+      "size_at_prep": 742,
+      "kind": "ratchet"
+    },
+    "startup_factory.py": {
+      "old_ceiling": 432,
+      "ratchet_cap": 535,
+      "size_at_signing": 535,
+      "size_at_prep": 535,
+      "kind": "ratchet"
+    },
+    "tail_timing.py": {
+      "old_ceiling": 273,
+      "ratchet_cap": 328,
+      "size_at_signing": 328,
+      "size_at_prep": 328,
+      "kind": "ratchet"
+    },
+    "tailsplit.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 156,
+      "size_at_signing": 156,
+      "size_at_prep": 156,
+      "kind": "new"
+    },
+    "trial_lifecycle.py": {
+      "old_ceiling": 116,
+      "ratchet_cap": 117,
+      "size_at_signing": 117,
+      "size_at_prep": 117,
+      "kind": "ratchet"
+    },
+    "typed_planner.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 116,
+      "size_at_signing": 116,
+      "size_at_prep": 116,
+      "kind": "new"
+    },
+    "validation_consumer.py": {
+      "old_ceiling": 568,
+      "ratchet_cap": 621,
+      "size_at_signing": 621,
+      "size_at_prep": 621,
+      "kind": "ratchet"
+    },
+    "validation_projection_source.py": {
+      "old_ceiling": 225,
+      "ratchet_cap": 247,
+      "size_at_signing": 247,
+      "size_at_prep": 247,
+      "kind": "ratchet"
+    },
+    "validation_semantic_adapter.py": {
+      "old_ceiling": 487,
+      "ratchet_cap": 607,
+      "size_at_signing": 607,
+      "size_at_prep": 607,
+      "kind": "ratchet"
+    },
+    "worker_planned_result.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 152,
+      "size_at_signing": 152,
+      "size_at_prep": 152,
+      "kind": "new"
+    },
+    "worker_recovery_inspection.py": {
+      "old_ceiling": 0,
+      "ratchet_cap": 78,
+      "size_at_signing": 78,
+      "size_at_prep": 78,
+      "kind": "new"
+    }
+  },
+  "overruns_left_out_of_scope": {},
+  "base_origin_main": "42620ac85578f7fbf50ef2c22b0e25abcf5cff5a",
+  "research_measured_at_signing": "661e12432c2d40b8d2c0f15aa4b72f773cd9eb40",
+  "research_commit": "88a2f2d33d79f38e64ef6b97e5818ed7d6989bc6",
+  "applied_by": "scripts/operator/ratify_ak_loop_code_budget_consolidated_20261122.sh",
+  "ratify_script_sha256": "939a7e2fb2356a64eecb70119ff81b261ad3c3536c720bfa2c920306581b05a1",
+  "processes_touched": []
+}
