@@ -7871,11 +7871,12 @@ was changed or promoted.
 
 
 
-- [ ] **AKU-16** **Complete runtime fast-path admission and continuation**: finish interrupted-owner recovery; use original applicable calibration/evidence and
+- [x] **AKU-16** **Complete runtime fast-path admission and continuation**: finish interrupted-owner recovery; use original applicable calibration/evidence and
   retain/select/resume an accepted runtime recipe without a source promotion. Runtime
   observations alone do not complete AK-AUTO-07 or the runtime champion requirement.
       · class: non-inference
       · done when: interrupted-owner recovery is finished and an accepted runtime recipe is retained, selected and resumed without a source promotion, using the original applicable calibration/evidence
+      · 2026-11-23: extended the existing synthetic child/flock recovery fixture to test retention, selection and restoration using original calibration, without remeasurement or source promotion; 5 targeted tests passed. Choice: reuse that fixture rather than introduce another execution path. ✅ 2026-11-23 [no-belief: software] c87099686af3
 
 
 
