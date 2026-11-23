@@ -73,3 +73,27 @@ Lessons were recorded in research program.md (*Learnings 2026-11-23 evening*) an
 5. Never quote a one-quarter CPU tok/s figure as a served number.
 
 Next: autokernel. Run the C19 27B ASan diagnostic, file the SPEC-DISTS-TRUNC served A/B, and run the 27B DFlash2 replay before v2.
+
+## Overnight push, 19:00-20:00Z (operator-invoked /wrap-up; E5 deferred to tomorrow by the operator)
+
+| Item | Result | Where |
+|---|---|---|
+| SPEC-ID-GATE-1 | Ticked. Protocol doc `docs/guides/agent-workflows/spec-identity-gate-protocol.md`. | `ff2ac0710` |
+| SPEC-PIT.1 | Gate module landed (research `608c7050a`, `ea27de554`). Server `pit_probs` flag on fork `21bd77019` (store `cpu-20261123-21bd77019-specpit`). Row t1p100 passed its smoke and is held; t1p095 and t4p095 are prepared for tomorrow. Cost note: MTP ON 7.0 versus OFF 10.2 tok/s at top_k 0. | `c346926f8` |
+| 27B DICE replay | PROJECTED_LOSS: V1/V0 is 1.02-1.07 against break-evens 1.10/1.26/1.34. SPEC-DTREE-ACCEPT-GAP ticked. The 27B tree is parked on verify cost. | `affe2a601`, research `8f9ab7256`, `76df2d6fa` |
+| A3B GPU p-min | DROP, -13 % / -9 %. | `6e0c2da7c` |
+| A3B verify-cost analysis | `/mnt/raid0/llm/tmp/ak-a3b-verify-cost-20261123/ANALYSIS.md`. The router-chunk knob is on fork `b582006fe`/`09c67f530`; 3 GPU rows published. | pointer `89254c8b8`, boxes `1cebc0adc` |
+| COPYSPEC-WIDTH | Already folded into C19. G3-longctx repaired and passed. | `741c4ac0d`, `861a83bb0` |
+| DTREE-GDN-BATCH | Batching is not the lever. The fused-tree port is `a78cc156f`/`4db0106be`/`2d5afc217`; its row is republished. | `898968ef3` |
+| Failure audit | `/mnt/raid0/llm/tmp/ak-failure-audit-20261123/REPORT.md`. AK half done; the pipeline half is in progress. | `0de4e80ed` |
+| r10 Q4X replay gate | FAIL_CORRECTNESS, so the re-allow is excluded from C20. | `0679dbbf3` |
+| DSpine served-T | DROP; research negatives filed. | `bcd7810d0`, `f4c50dbc2` |
+| CAFE-3 | Controller on fork `ebc8e7ed2`; row published and smoke-passed. | box `21e00d77d` |
+| gv_fattn | Occupancy analysis and box; split-sweep row `ak-gvfattn-splits-gpu-20261123`. | `c9165f7fb` |
+| AK-MMQ-SK2 | Built; its row passed its smoke. | autokernel-loop.md |
+| Build window 19:32Z | Quiet rows were STOPped because QUIET-RESERVE starved the build claims; the pipeline is adding a build priority lane. Lesson recorded in memory. | — |
+| C20 | Assembly and gates in progress: fold-cpu inc/c19 fix, QDEC seal-rewrite cause. | kernel-champion-and-promotion.md |
+
+Checkbox sync: SPEC-ID-GATE-1 and SPEC-DTREE-ACCEPT-GAP were already ticked by their agents; the boxes for SPEC-PIT.1, CAFE-3, AK-MMQ-SK2, DTREE-GDN-BATCH and AK-GVFATTN-LONGCTX stay open because their rows have not produced verdicts, so no new tick was written here.
+
+Next: autokernel. Run the held SPEC-PIT t1p100/t1p095/t4p095 rows, then the C19 27B ASan diagnostic.
