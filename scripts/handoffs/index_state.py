@@ -1620,7 +1620,10 @@ def citation_check() -> list[str]:
     if diff.returncode != 0:
         return [f"cite-check: `git diff --name-only HEAD` failed (exit {diff.returncode}): "
                 + (diff.stdout or diff.stderr).rstrip()]
-    changed = [line for line in diff.stdout.splitlines() if line.startswith(SCANNED_PREFIXES)]
+    # Prose only: data files (e.g. wiki/source_manifest.json) list source filenames such as
+    # `intake-2792-...md` that read as bare citations but assert nothing (operator 2026-11-23).
+    changed = [line for line in diff.stdout.splitlines()
+               if line.startswith(SCANNED_PREFIXES) and line.endswith(".md")]
     if not changed:
         print("cite-check: no scanned paths changed, skipping")
         return []
