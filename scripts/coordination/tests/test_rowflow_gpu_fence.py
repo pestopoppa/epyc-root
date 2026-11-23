@@ -30,6 +30,20 @@ KFD_OPEN_C = r"""
 int main(int c, char **v){ int fd = open("/dev/kfd", O_RDWR); FILE *o = fopen(v[1], "w");
   fprintf(o, "fd=%d errno=%d\n", fd, fd < 0 ? errno : 0); fclose(o); return 0; }
 """
+# Last in the preload chain: even a broken fence cannot reach the physical device.
+SAFE_OPEN_C = r"""
+#define _GNU_SOURCE
+#include <dlfcn.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdarg.h>
+#include <string.h>
+int open(const char *p, int f, ...) {
+  if (!strcmp(p, "/dev/kfd")) { errno = ENOENT; return -1; }
+  mode_t m = 0; if (f & O_CREAT) { va_list a; va_start(a, f); m = va_arg(a, int); va_end(a); }
+  int (*next)(const char *, int, ...) = dlsym(RTLD_NEXT, "open"); return next(p, f, m);
+}
+"""
 FAKE_RL = """#!/bin/bash
 while [ $# -gt 0 ] && [ "$1" != -- ]; do shift; done; shift
 "$@"
@@ -55,6 +69,9 @@ class EngineFence(unittest.TestCase):
         os.makedirs(self.grants)
         self.opener = os.path.join(self.d, "kfdopen")
         subprocess.run([GCC, "-x", "c", "-o", self.opener, "-"], input=KFD_OPEN_C, text=True, check=True)
+        self.safe_open = os.path.join(self.d, "safe-open.so")
+        subprocess.run([GCC, "-x", "c", "-shared", "-fPIC", "-o", self.safe_open, "-", "-ldl"],
+                       input=SAFE_OPEN_C, text=True, check=True)
         self.proc = None
 
     def tearDown(self):
@@ -75,7 +92,9 @@ class EngineFence(unittest.TestCase):
         env = dict(os.environ, FILLER_RL=self.rl, FILLER_FLAGS_DIR=self.d, FILLER_GRANTS_DIR=self.grants,
                    FILLER_STATE_DIR=os.path.join(self.d, "state"), FILLER_POLL="1", FILLER_DISK_FLOOR_GIB="0",
                    FILLER_GPU_LOCK=os.path.join(self.d, "gpu.lock"))
-        env.pop("LD_PRELOAD", None)
+        env["LD_PRELOAD"] = self.safe_open
+        env.pop("ROCR_VISIBLE_DEVICES", None)
+        env.pop("HIP_VISIBLE_DEVICES", None)
         argv = ["bash", os.path.join(self.bin, "filler_run15.sh"), "--id", rid, "--class", cls, "--cmd", job,
                 "--min-window", "60", "--stop", os.path.join(self.d, "STOP"), "--complete-cmd", "false",
                 "--workdir", self.d, *extra]
@@ -105,7 +124,8 @@ class EngineFence(unittest.TestCase):
         res, envs, out = self.run_row("gpu-row", "gpu", "mi210_0,184-191", "gpu-quiet,t184")
         self.assertNotIn("errno=13", res)
         self.assertEqual(envs.get("FILLER_GPU_FENCE"), "0")
-        for k in ("LD_PRELOAD", "ROCR_VISIBLE_DEVICES", "HIP_VISIBLE_DEVICES"):
+        self.assertEqual(envs.get("LD_PRELOAD"), self.safe_open)
+        for k in ("ROCR_VISIBLE_DEVICES", "HIP_VISIBLE_DEVICES"):
             self.assertNotIn(k, envs)
 
     def test_cpu_row_holding_gpu_quiet_unchanged(self):

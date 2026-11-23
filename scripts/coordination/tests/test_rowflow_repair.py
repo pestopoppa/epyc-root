@@ -59,7 +59,10 @@ class RepairTests(unittest.TestCase):
             pr.lint(fx.spec(rid, d, result_path=os.path.join(d, "out", "RUN_COMPLETE.txt")))
         # the CLI path: lint + rowflow.publish; LINT lines precede PUBLISHED
         sp = os.path.join(d, "spec.json")
-        rf.atomic_json(sp, fx.spec(rid, d, result_path=os.path.join(d, "out", "COMPLETE.json"), result_format="json"))
+        measurement = os.path.join(d, "smoke_measure.json")
+        rf.atomic_json(measurement, {"unit_s": 1, "units_measured": 1, "loads_s": 0})
+        rf.atomic_json(sp, fx.spec(rid, d, result_path=os.path.join(d, "out", "COMPLETE.json"), result_format="json",
+                                   estimate_basis={"smoke_measure": measurement, "units": 1}))
         rc, out = run([sp, "--flags", fx.flags])
         self.assertEqual(rc, 0, out)  # operator 2026-11-05: the CLI queues the smoke for the keeper and returns at once
         self.assertIn("LINT result_path=", out)
@@ -82,7 +85,9 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(rc, 2, out)
         self.assertIn("<file>.md:<ROW-ID>", out)
         self.assertNotIn(rid, rf.rows(fx.flags))
-        rf.atomic_json(sp, fx.spec(rid, d))
+        measurement = os.path.join(d, "smoke_measure.json")
+        rf.atomic_json(measurement, {"unit_s": 1, "units_measured": 1, "loads_s": 0})
+        rf.atomic_json(sp, fx.spec(rid, d, estimate_basis={"smoke_measure": measurement, "units": 1}))
         rc, out = run([sp, "--flags", fx.flags])
         self.assertEqual(rc, 0, out)
         self.assertIn("queued for smoke", out)
