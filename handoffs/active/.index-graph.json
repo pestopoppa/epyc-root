@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T20:36:29Z",
+  "generated_at": "2026-11-23T20:57:53Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1378,15 +1378,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 973,
-      "dispatchable": 120,
+      "closed": 974,
+      "dispatchable": 119,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-23",
       "next_action": "AK-BW-GDN-GATE-FOLD 27B A/B (0dd6e71de); Q4X-REPLAY-VS-SNAPSHOT; SPEC-DISTS-TRUNC served A/B; fold Q0_RM4/GDNPROJ_FUSE into C20",
-      "open": 120,
+      "open": 119,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1423,7 +1423,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 62,
+          "dispatchable": 61,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1432,7 +1432,7 @@
           ],
           "line": 31,
           "name": "autokernel-research-loop",
-          "open": 62,
+          "open": 61,
           "readiness": "blocked"
         },
         {
@@ -1775,15 +1775,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 278,
-      "dispatchable": 35,
+      "closed": 279,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-23",
       "next_action": "27B DFlash2 replay V0 vs served (gates sampled-tree v2 8bbc8a26e); SPEC-DISTS-TRUNC served A/B; apply CAFE-1 p-min 0.5",
-      "open": 37,
+      "open": 36,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1814,11 +1814,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 10,
           "gates": [],
           "line": 15,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 12,
+          "open": 11,
           "readiness": "ready"
         },
         {
@@ -1831,7 +1831,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 969,
+          "line": 971,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 25,
           "readiness": "blocked"
