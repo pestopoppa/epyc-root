@@ -8605,7 +8605,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       so nobody syncs it. Do NOT `checkout`/`reset` it (destroys other sessions' uncommitted work) — needs
       an operator-assigned owner or a scheduled sweep session before it grows further.
 - [x] **AKU-22** Foreign-load sampler wired into residency (reuse `foreign.py`; sibling-expanded; live deltas) ✅ 2026-11-23 [no-belief: software] 0a794ee63
-- [ ] **AKU-23** Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row
+- [x] **AKU-23** Budgets by arm-seconds; utilisation (held vs idle-while-claimed) on every row ✅ 2026-11-23 [no-belief: software] 6fcf16370
       · note (2026-11-23, pipeline-mgmt) [no-belief: annotation]: modules landed in research `0a794ee63` (`arm_accounting.py`, `foreign_residency.py` + tests). Still open: wiring into the run.py gpu_reading, the bench.py compare/measure rows and the CPU arm rows.
       · class: non-inference (accounting code; no measurement)
       · done when: budgets are counted in arm-seconds and every row records utilisation (held vs idle-while-claimed)
