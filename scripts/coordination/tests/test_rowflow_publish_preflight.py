@@ -359,8 +359,11 @@ class Preflight(unittest.TestCase):
     def test_cli_refuses_before_publishing(self):
         open(os.path.join(self.d, "out", "COMPLETE"), "w").close()
         sp = os.path.join(self.d, "spec.json")
+        measurement = os.path.join(self.d, "smoke_measure.json")
+        rf.atomic_json(measurement, {"unit_s": 1, "units_measured": 1, "loads_s": 0})
+        spec = self.spec(estimate_basis={"smoke_measure": measurement, "units": 1})
         with open(sp, "w") as f:
-            json.dump(self.spec(), f)
+            json.dump(spec, f)
         saved = (pr.check_handoff, pr.check_task_lint)
         pr.check_handoff = pr.check_task_lint = lambda spec, repo=None: []
         out = io.StringIO()

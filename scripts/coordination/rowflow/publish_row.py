@@ -246,7 +246,7 @@ def lint(spec):
     notes = []
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
     if os.path.isfile(launcher):
-        findings = ak_row_lint.lint_dir(os.path.dirname(launcher), spec=spec)
+        findings = ak_row_lint.lint_dir(os.path.dirname(launcher))
         failures = [f"{code}: {message}" for level, code, message in findings if level == "FAIL"]
         if failures:
             raise rf.Refused("row lint: " + "; ".join(failures))

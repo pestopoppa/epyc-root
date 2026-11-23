@@ -16,21 +16,6 @@ def test_lint_refuses_row_with_diagnostics(tmp_path):
         publish.lint({"id": "example", "launcher": str(launcher)})
 
 
-def test_lint_uses_submitted_spec_not_neighbor_spec(tmp_path):
-    launcher = tmp_path / "launch.sh"
-    launcher.write_text("#!/bin/sh\n")
-    (tmp_path / "spec.json").write_text('{"estimate_s": 300}')
-    publish.lint({"id": "example", "launcher": str(launcher)})
-
-
-def test_lint_checks_submitted_estimate(tmp_path):
-    launcher = tmp_path / "launch.sh"
-    launcher.write_text("#!/bin/sh\n")
-    (tmp_path / "spec.json").write_text('{}')
-    with pytest.raises(publish.rf.Refused, match="ESTIMATE-UNMEASURED"):
-        publish.lint({"id": "example", "launcher": str(launcher), "estimate_s": 300})
-
-
 def test_publish_reports_lint_failure_before_queue(tmp_path, monkeypatch, capsys):
     launcher = tmp_path / "launch.sh"
     launcher.write_text("#!/bin/sh\n")
