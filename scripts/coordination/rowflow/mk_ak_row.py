@@ -23,6 +23,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import sys
 
@@ -33,18 +34,18 @@ import ak_row_lint as LINT  # noqa: E402
 
 ROOT = "/mnt/raid0/llm/tmp"
 FILLER = "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh"
+CLAIM_RX = re.compile(r"^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$")
 SEALED = ("job.py", "check_complete.py", "launch.sh", "ak_row_harness.py")
 
 LAUNCH = """#!/bin/bash
 # {id} (autokernel; {task}). Scaffolded by mk_ak_row.py.
 set -euo pipefail
 D={d}
-C=${{WS58_CPUS:-{claim}}}
-cd "$D"
+{claim_line}cd "$D"
 ulimit -c 0
 /usr/bin/sha256sum --check --status SOURCE.sha256
 exec /bin/bash {filler} --id {id} \\
-  --class {lane} --claim-cpus "$C" --role bench --min-window {min_window}{port_arg} \\
+  --class {lane}{claim_arg} --role bench --min-window {min_window}{port_arg} \\
   --cmd "/usr/bin/python3 -I -B $D/job.py" \\
   --complete-cmd "/usr/bin/python3 -I -B $D/check_complete.py" \\
   --stop "$D/STOP" --workdir "$D"
@@ -208,8 +209,19 @@ def _sha(p):
 
 
 def seal(d):
-    """SOURCE.sha256 over the row's code, never spec.json."""
+    """SOURCE.sha256 over the row's code, never spec.json. Keeps every file the existing SOURCE.sha256 already lists
+    (own_port_proof.py, lp_common.py, ...) plus the defaults."""
     files = [f for f in SEALED if os.path.exists(os.path.join(d, f))]
+    try:
+        with open(os.path.join(d, "SOURCE.sha256")) as f:
+            for ln in f:
+                q = ln.strip().split(None, 1)
+                if len(q) == 2:
+                    n = q[1].lstrip("*")
+                    if n not in files and os.path.basename(n) != "spec.json" and os.path.isfile(os.path.join(d, n)):
+                        files.append(n)
+    except OSError:
+        pass
     with open(os.path.join(d, "SOURCE.sha256"), "w") as f:
         f.write("".join(f"{_sha(os.path.join(d, x))}  {x}\n" for x in files))
 
@@ -228,9 +240,15 @@ def scaffold(a):
     os.makedirs(d)
     port_list = H.alloc_ports(a.id, a.servers) if a.servers else []
     port_arg = f" --port {','.join(map(str, port_list))}" if port_list else ""
+    if a.claim is not None and not CLAIM_RX.match(a.claim):
+        raise SystemExit(f"mk_ak_row: --claim {a.claim!r} must be a digit/range list like 184-191 or 0-3,8")
+    # CPU lane without an explicit --claim: no C= and no --claim-cpus, so the launcher defaults to the grant's cpus
     claim = a.claim or ("any-of q0,q1,q2" if a.lane == "cpu" else "184-191")
+    pin = a.claim is not None or a.lane != "cpu"
+    claim_line = "C=${WS58_CPUS:-%s}\n" % claim if pin else ""
+    claim_arg = ' --claim-cpus "$C"' if pin else ""
     with open(os.path.join(d, "launch.sh"), "w") as f:
-        f.write(LAUNCH.format(id=a.id, task=a.task, d=d, claim=claim, filler=FILLER, lane=a.lane,
+        f.write(LAUNCH.format(id=a.id, task=a.task, d=d, claim_line=claim_line, claim_arg=claim_arg, filler=FILLER, lane=a.lane,
                               min_window=a.min_window, port_arg=port_arg))
     os.chmod(os.path.join(d, "launch.sh"), 0o755)
     with open(os.path.join(d, "job.py"), "w") as f:

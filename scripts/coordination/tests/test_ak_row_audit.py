@@ -6,6 +6,8 @@ import os
 import sys
 import time
 
+import pytest
+
 _TESTS = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(_TESTS), "rowflow"))
 import ak_row_harness as H  # noqa: E402
@@ -84,8 +86,42 @@ def test_py_compile_and_selftest(tmp_path):
 def test_claim_parse(tmp_path):
     d = _row(tmp_path, launch='W=$(printf %s "$WS58_REGIONS" | tr , "\\n" | grep -E "^[0-9]" | paste -sd, -)\n')
     assert "CLAIM-PARSE" in codes(d, "FAIL")
-    (d / "launch.sh").write_text('C=${WS58_CPUS:-any-of q0,q1}\n')
+    (d / "launch.sh").write_text('C=${WS58_CPUS:-184-191}\nexec f --claim-cpus "$C" --role bench\n')
     assert "CLAIM-PARSE" not in codes(d)
+
+
+def test_claim_parse_rejects_non_digit_claim(tmp_path):
+    d = _row(tmp_path, launch='C=${WS58_CPUS:-any-of q0,q1,q2}\nexec f --claim-cpus "$C" --role bench\n')
+    assert "CLAIM-PARSE" in codes(d, "FAIL")                          # the C= default
+    (d / "launch.sh").write_text('exec f --claim-cpus "any-of q0,q1" --role bench\n')
+    assert "CLAIM-PARSE" in codes(d, "FAIL")                          # a literal --claim-cpus
+    (d / "launch.sh").write_text('exec f --claim-cpus 0-3,8 --role bench\n')
+    assert "CLAIM-PARSE" not in codes(d)
+    (d / "launch.sh").write_text('exec f --class cpu --role bench\n')   # no claim at all (grant default)
+    assert "CLAIM-PARSE" not in codes(d)
+
+
+def test_sha_cwd_job_py(tmp_path):
+    d = _row(tmp_path)
+    store = tmp_path / "store"
+    (store / "bin").mkdir(parents=True)
+    (store / "bin" / "llama-server").write_text("x")
+    (store / "BIN.sha256").write_text("00  bin/llama-server\n")
+    job = ("import subprocess\nSTORE = %r\nBIN = STORE + '/bin'\n"
+           "subprocess.run(['/usr/bin/sha256sum', '--check', '--status', STORE + '/BIN.sha256'], cwd=%s)\n")
+    (d / "job.py").write_text(job % (str(store), "BIN"))
+    assert "SHA-CWD" in codes(d, "FAIL")                              # bin/llama-server does not resolve from store/bin
+    (d / "job.py").write_text(job % (str(store), "STORE"))
+    assert "SHA-CWD" not in codes(d)
+    (d / "job.py").write_text("import subprocess, os\nsubprocess.run(['sha256sum', '--check', os.environ['L']], cwd=os.environ['C'])\n")
+    assert "SHA-CWD" in codes(d, "WARN") and "SHA-CWD" not in codes(d, "FAIL")
+
+
+def test_quiet_guard_regex_ignores_contended_verdict_names(tmp_path):
+    d = _row(tmp_path, job="VERDICTS = ['KEEP', 'DROP', 'CONTENDED-INCONCLUSIVE', 'contended']\n")
+    assert "QUIET-NO-BACKOFF" not in codes(d)
+    (d / "job.py").write_text("ref = bench_readbw()\n")
+    assert "QUIET-NO-BACKOFF" in codes(d, "FAIL")
 
 
 def test_smoke_warns(tmp_path):
@@ -126,6 +162,39 @@ def test_mk_ak_row_scaffold_is_lint_clean(tmp_path):
     assert ",".join(map(str, H.expected_ports(rid, 2))) in launch
     # estimate_basis comes from the smoke, so ESTIMATE-UNMEASURED is the only expected FAIL before it
     assert [r[1] for r in LINT.lint_dir(str(d)) if r[0] == "FAIL"] == ["ESTIMATE-UNMEASURED"]   # incl. --selftest
+
+
+def test_mk_ak_row_cpu_default_has_no_claim(tmp_path):
+    rid = "ak-mk-cpu-20261124"
+    assert MK.main(["--id", rid, "--task", "t", "--rule", "r", "--lane", "cpu", "--root", str(tmp_path)]) == 0
+    launch = (tmp_path / rid / "launch.sh").read_text()
+    assert "C=" not in launch and "--claim-cpus" not in launch and "any-of" not in launch
+    assert "--class cpu --role bench" in launch
+    rid2 = "ak-mk-cpu2-20261124"
+    assert MK.main(["--id", rid2, "--task", "t", "--rule", "r", "--claim", "0-3,8", "--root", str(tmp_path)]) == 0
+    assert "C=${WS58_CPUS:-0-3,8}" in (tmp_path / rid2 / "launch.sh").read_text()
+    for bad in ("any-of q0,q1,q2", "q0", "1-", ""):
+        with pytest.raises(SystemExit):
+            MK.main(["--id", "ak-mk-bad2-20261124", "--task", "t", "--rule", "r", "--claim", bad,
+                     "--root", str(tmp_path)])
+
+
+def test_reseal_preserves_extra_sealed_files(tmp_path):
+    rid = "ak-mk-reseal-20261124"
+    assert MK.main(["--id", rid, "--task", "t", "--rule", "r", "--root", str(tmp_path)]) == 0
+    d = tmp_path / rid
+    for n in ("own_port_proof.py", "lp_common.py"):
+        (d / n).write_text("x = 1\n")
+    sums = (d / "SOURCE.sha256")
+    sums.write_text(sums.read_text() + "".join(f"{MK._sha(str(d / n))}  {n}\n" for n in ("own_port_proof.py", "lp_common.py"))
+                    + "00  spec.json\n00  gone.py\n")
+    MK.main(["--reseal", str(d)])
+    names = [ln.split()[1] for ln in sums.read_text().splitlines()]
+    assert {"own_port_proof.py", "lp_common.py", "job.py", "check_complete.py", "launch.sh", "ak_row_harness.py"} <= set(names)
+    assert "spec.json" not in names and "gone.py" not in names
+    (d / "lp_common.py").write_text("x = 2\n")
+    MK.main(["--reseal", str(d)])
+    assert f"{MK._sha(str(d / 'lp_common.py'))}  lp_common.py" in sums.read_text()
 
 
 def test_mk_ak_row_refuses_existing_and_withholds_spec_on_fail(tmp_path, monkeypatch):

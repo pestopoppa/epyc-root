@@ -10,19 +10,22 @@ Flags (one line each, exit 1 when any FAIL):
 2026-11-23 failure audit (ak-failure-audit-20261123/REPORT.md, A2-A12). FAIL = clear defect, WARN = advisory (existing rows
 would mass-fail; tighten once mk_ak_row.py rows dominate):
   SHA-CWD            FAIL  a `sha256sum --check <list>` whose entries do not resolve against the cwd it runs in
+                     (job.py: `sha256sum --check` with cwd=X whose entries do not resolve from X: FAIL; unresolvable: WARN)
   SEALED-SPEC        FAIL  SOURCE.sha256 (or SOURCES.sha256 / SOURCE-SHA256SUMS) lists spec.json
   STALE-OUT          FAIL  out/ or out-smoke/ files older than SOURCE.sha256 (left by an earlier attempt)
   SERVER-NO-TRAP     FAIL  a script that starts a server in the background with no trap ... EXIT (shell) or no
                            atexit/finally/signal cleanup (python)
   PY-COMPILE         FAIL  a row .py that does not compile
   SELFTEST           FAIL  job.py --selftest (when job.py supports it) exits non-zero or exceeds 60 s
-  CLAIM-PARSE        FAIL  launch.sh parses WS58_REGIONS with tr/grep/paste/sed/awk; use C=${WS58_CPUS:-<claim>}
+  CLAIM-PARSE        FAIL  launch.sh parses WS58_REGIONS with tr/grep/paste/sed/awk, or its --claim-cpus / C= default is not a
+                           digit/comma/dash list; use C=${WS58_CPUS:-<digits>} or omit both (CPU rows: grant's cpus)
   SMOKE-FAIL-SILENT  WARN  smoke code with no ak_row_harness.end_smoke(verdict, rc, reason)
   SMOKE-NO-MEASURE   WARN  smoke code with no ak_row_harness.write_smoke_measure(...)
   NO-WITNESS         WARN  the decision rule names a GGML_/LLAMA_ knob and no row code records a witness key
   REPLAY-NO-BASELINE WARN  a replay row with no baseline validation (baseline_ok / validate_baseline / replay_baseline)
 Usage: ak_row_lint.py [--no-selftest] <row_dir> [<row_dir> ...]   (read-only, except job.py --selftest when present)
 """
+import ast
 import io
 import json
 import os
@@ -34,7 +37,7 @@ import tokenize
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ak_row_harness as H  # noqa: E402
 
-GUARD_RX = re.compile(r"bench_readbw|read_sum|class\s+Probe|probe_p50|MAX_TRIES|contended", re.I)
+GUARD_RX = re.compile(r"bench_readbw|read_sum|class\s+Probe|probe_p50|MAX_TRIES", re.I)
 BACKOFF_RX = re.compile(r"backoff|ak_row_harness|time\.sleep\(\s*(?:[2-9]\d|\d{3,})", re.I)
 PORT_ARG_RX = re.compile(r"--port[ =]+([\d,]+)")
 PORT_LIT_RX = re.compile(r"\bport\w*\s*[=:]\s*(\d{4,5})\b", re.I)
@@ -44,6 +47,9 @@ DERIVED_RX = re.compile(r"touched_libs|libs_differ|fold_row_guard")
 SHA_CHECK_RX = re.compile(r"sha256sum\s+(?:--\w+\s+|-c\s+)*(?:--check|-c)\b(?:\s+--\w+)*\s+(\"[^\"]+\"|'[^']+'|[^\s<|;&]+)")
 CD_RX = re.compile(r"^\s*cd\s+(\"[^\"]+\"|'[^']+'|\S+)", re.M)
 VAR_RX = re.compile(r"^\s*(?:export\s+)?([A-Za-z_]\w*)=(\"[^\"$`]*\"|'[^']*'|[^\s;$`\"']+)\s*$", re.M)
+CLAIM_VAL_RX = re.compile(r"^[0-9]+(-[0-9]+)?(,[0-9]+(-[0-9]+)?)*$")
+CLAIM_ARG_RX = re.compile(r"--claim-cpus[ =]+(\"[^\"]*\"|'[^']*'|[^\s\\]+)")
+CLAIM_DEF_RX = re.compile(r"^\s*(?:export\s+)?C=(?:\$\{WS58_CPUS:-([^}]*)\}|(\"[^\"$`]*\"|'[^']*'|[^\s$`\"']+))\s*$", re.M)
 SEAL_FILES = ("SOURCE.sha256", "SOURCES.sha256", "SOURCE-SHA256SUMS")
 SERVER_RX = re.compile(r"llama-server|sd-server|whisper-server|qwentts-server|llama-cli")
 SH_BG_SERVER_RX = re.compile(r"(?:llama-server|sd-server|whisper-server|qwentts-server)[^\n#]*&\s*(?:#.*)?$", re.M)
@@ -139,6 +145,102 @@ def sha_cwd(d, launch):
         if miss:
             out.append(("FAIL", "SHA-CWD", f"launch.sh: sha256sum --check {arg} run from cwd {base}: {len(miss)} entr"
                                             f"{'y' if len(miss) == 1 else 'ies'} do not resolve there ({miss[:3]})"))
+    return out
+
+
+def claim_parse(launch):
+    """CLAIM-PARSE: a literal --claim-cpus value, or the C= default it expands to, must be a digit/comma/dash list."""
+    out = []
+    defaults = [(m.group(1) if m.group(1) is not None else _unq(m.group(2))) for m in CLAIM_DEF_RX.finditer(launch)]
+    for v in defaults:
+        if v and "$" not in v and not CLAIM_VAL_RX.match(v):
+            out.append(("FAIL", "CLAIM-PARSE", f"launch.sh: C= default {v!r} is not a digit/comma/dash cpu list "
+                                               "(filler_run15.sh rejects it as 'bad --claim-cpus'); omit C= and "
+                                               "--claim-cpus on a CPU row to use the grant's cpus"))
+    for m in CLAIM_ARG_RX.finditer(launch):
+        v = _unq(m.group(1))
+        if v in ("$C", "${C}") or ("$" in v):
+            continue                                    # expands to the C= default, judged above
+        if not CLAIM_VAL_RX.match(v):
+            out.append(("FAIL", "CLAIM-PARSE", f"launch.sh: --claim-cpus {v!r} is not a digit/comma/dash cpu list"))
+    return out
+
+
+def _const(node, env, seen=()):
+    """Statically evaluate a str/Path expression from literals and module-level constants; None when not resolvable."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if isinstance(node, ast.Name) and node.id in env and node.id not in seen:
+        return _const(env[node.id], env, seen + (node.id,))
+    if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Div)):
+        a, b = _const(node.left, env, seen), _const(node.right, env, seen)
+        if a is None or b is None:
+            return None
+        return a + b if isinstance(node.op, ast.Add) else a.rstrip("/") + "/" + b.lstrip("/")
+    if isinstance(node, ast.Call) and not node.keywords:
+        fn = ast.unparse(node.func)
+        vals = [_const(x, env, seen) for x in node.args]
+        if None in vals or not vals:
+            return None
+        if fn in ("str", "Path", "pathlib.Path"):
+            return vals[0] if len(vals) == 1 else None
+        if fn == "os.path.join":
+            return os.path.join(*vals)
+        if fn == "os.path.normpath" and len(vals) == 1:
+            return os.path.normpath(vals[0])
+    return None
+
+
+def sha_cwd_py(d, code):
+    """SHA-CWD (job.py): subprocess `sha256sum --check <list>` run with cwd=X; FAIL when the list's entries do not resolve
+    from X (e.g. cwd=BIN with `bin/llama-server` entries); WARN when the paths cannot be resolved statically."""
+    out = []
+    for f, t in sorted(code.items()):
+        if f in VENDORED or "sha256sum" not in t:
+            continue
+        try:
+            tree = ast.parse(t)
+        except (SyntaxError, ValueError):
+            continue
+        env = {}
+        for n in tree.body:
+            if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+                env.setdefault(n.targets[0].id, n.value)
+        for n in ast.walk(tree):
+            if not (isinstance(n, ast.Call) and n.args and isinstance(n.args[0], (ast.List, ast.Tuple))):
+                continue
+            el = n.args[0].elts
+            if not (el and isinstance(el[0], ast.Constant) and str(el[0].value).endswith("sha256sum")):
+                continue
+            flags = [x.value for x in el[1:] if isinstance(x, ast.Constant) and isinstance(x.value, str)]
+            if not ({"--check", "-c"} & set(flags)):
+                continue
+            rest = [x for x in el[1:] if not (isinstance(x, ast.Constant) and str(x.value).startswith("-"))]
+            if not rest:
+                continue                                # list from stdin
+            kw = {k.arg: k.value for k in n.keywords}
+            lst = _const(rest[-1], env)
+            cwd = _const(kw["cwd"], env) if "cwd" in kw else d
+            if lst is None or cwd is None:
+                out.append(("WARN", "SHA-CWD", f"{f}:{n.lineno}: sha256sum --check list/cwd not statically resolvable; "
+                                               "confirm its entries resolve from the cwd it runs in"))
+                continue
+            lst = lst if os.path.isabs(lst) else os.path.join(cwd, lst)
+            if not os.path.isfile(lst):
+                out.append(("WARN", "SHA-CWD", f"{f}:{n.lineno}: sums file {lst} not on disk; cannot check its entries "
+                                               f"against cwd {cwd}"))
+                continue
+            miss = []
+            for ln in _read(lst).splitlines():
+                q = ln.strip().split(None, 1)
+                if len(q) == 2:
+                    e = q[1].lstrip("*")
+                    if not os.path.exists(e if os.path.isabs(e) else os.path.join(cwd, e)):
+                        miss.append(e)
+            if miss:
+                out.append(("FAIL", "SHA-CWD", f"{f}:{n.lineno}: sha256sum --check {os.path.basename(lst)} run with "
+                                               f"cwd={cwd}: {len(miss)} entr{'y' if len(miss) == 1 else 'ies'} do not "
+                                               f"resolve there ({miss[:3]})"))
     return out
 
 
@@ -252,10 +354,12 @@ def lint_dir(d, selftest=True):
                                                  "fold_row_guard.touched_libs/libs_differ"))
 
     out += sha_cwd(d, launch)
+    out += sha_cwd_py(d, code)
     out += sealed_spec(d)
     out += stale_out(d)
     out += server_no_trap(d, code)
     out += py_compile_and_selftest(d, code, selftest)
+    out += claim_parse(launch)
     if CLAIM_PARSE_RX.search(launch):
         out.append(("FAIL", "CLAIM-PARSE", "launch.sh parses WS58_REGIONS with tr/grep/paste/sed; use "
                                            "C=${WS58_CPUS:-<claim>} (keeper exports digit-only WS58_CPUS)"))
