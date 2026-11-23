@@ -9824,12 +9824,13 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       · ✅ 2026-11-23 [no-belief: software] 5c6977d3a779 — native controller-owned enrollment and resolution replay; resolve each request against its own frozen prior projection, including after later enrollment. Focused fixtures: 63 passed; no resource authority granted.
   - [x] **AKU-01a — explicit-snapshot enrollment and offline CLI**: immutable typed CPU/GPU targets, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-01b — canonical production exporter and local-model seed enrollment consumer**: ✅ 2026-09-09 _(detail → completed ledger)_
-- [ ] **AKU-02 — resolved runtime recipes and no-build arms** (AK-AUTO-06/07): explicit unsets,
+- [x] **AKU-02 — resolved runtime recipes and no-build arms** (AK-AUTO-06/07): explicit unsets,
   effective environment/dispatch witnesses, option compatibility, same-binary arms and canonical CPU
   adapter; established runtime combinations skip critic calls. Hardware execution follows its gate.
       · class: non-inference
       · done when: runtime recipes resolve with explicit unsets, effective environment/dispatch witnesses, option compatibility, same-binary arms and the canonical CPU adapter, and established runtime combinations skip critic calls
       · 2026-11-23 (pipeline-mgmt/codex): existing recipe/unset/CPU launcher fixtures verified at research `8cc78558d` (154 recipe and scratch tests passed); no new implementation landed. Open: define which established multi-option combinations qualify for critic bypass and verify that path with its effective dispatch witness; the existing bypass in `loop.py` selects individual runtime dimensions.
+      · ✅ 2026-11-23 [no-belief: software] f55fe0b8ff09 — two to sixteen distinct installed dimensions qualify when each passes existing eligibility; incompatible combinations refuse and A2 remains single-factor. Synthetic child witnesses effective dispatch; 31 focused tests passed. Hardware execution remains gated.
   - [x] **AKU-02a — explicit environment-unset semantics**: inherited treatment is absent in the ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-02b — frozen launch resolution and CPU serving consumer**: explicit artifact identities, ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-02c — canonical CPU/GPU launcher recipe adapter and existing serving conformance**: ✅ 2026-09-09 _(detail → completed ledger)_
