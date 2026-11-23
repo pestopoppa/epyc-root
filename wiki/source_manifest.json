@@ -11,22 +11,27 @@
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 43,
-      "changed": 3,
+      "added": 0,
+      "changed": 8,
       "removed": 0
     },
-    "at": "2026-11-23T18:10:12Z",
-    "scope_paths": [],
-    "scope_types": [
-      "docs",
-      "progress",
-      "research"
-    ]
+    "at": "2026-11-23T18:31:08Z",
+    "scope_paths": [
+      "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/cpu-decode-roofline-program.md",
+      "handoffs/active/kernel-champion-and-promotion.md",
+      "handoffs/active/rocm-kernel-authoring.md",
+      "handoffs/active/speculative-decoding.md",
+      "progress/2026-11/2026-11-23-autokernel.md",
+      "research/deep-dives/intake-ak-1123/stage3-plan.md"
+    ],
+    "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-23T18:10:12Z",
+  "scan_time": "2026-11-23T18:31:08Z",
   "schema_version": 1,
-  "source_set_hash": "5d3903cd9194e4f26882c13a372c7b4bbe7ff8eefbe9cef3ed623a1eaef680ca",
+  "source_set_hash": "69985a3add163f9ccdabb197f54b39216c158c4a0efe70f11511a704f676cd23",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -37,18 +42,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9be0748fb3ba6545f3f629e91ed6970f1b17b04f2249461039e1e91a528e4c75",
-      "modified": "2026-11-23T09:36:21Z",
+      "content_hash": "c50898e1544a78cbd6365abd83920293ae2290609d05d970a591b7023b41f353",
+      "modified": "2026-11-23T18:25:24Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 439805,
+      "size": 439991,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
     {
-      "content_hash": "d68e2443523f690b7c920a1df995b6f51f4d403db236aa5a77f626f9b37347fd",
-      "modified": "2026-11-23T10:07:51Z",
+      "content_hash": "181aecac271eab6865e85ea83ee94156850ec25b32441e047fc8464e7d4d0954",
+      "modified": "2026-11-23T18:26:15Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1496835,
+      "size": 1528046,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -93,10 +98,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a80b029dd5197c19132aab229738052a4ecebd594da2bcdd11cada0c4395b11d",
-      "modified": "2026-11-23T09:36:21Z",
+      "content_hash": "0cc3f376d2705e313e1ea3ff4269a184859a47fcec316f86757c07a90c2b1b7c",
+      "modified": "2026-11-23T18:25:25Z",
       "path": "handoffs/active/cpu-decode-roofline-program.md",
-      "size": 630614,
+      "size": 631360,
       "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
       "type": "handoff-active"
     },
@@ -133,10 +138,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "888455c20cdfd6596d20bdd33de551e2a9464332720fe014a7f9d60ee6970d20",
-      "modified": "2026-11-23T10:07:46Z",
+      "content_hash": "bbc40155b2937cf2065577469265b5144c35841354ea29bb9a5bac8688afd8ef",
+      "modified": "2026-11-23T18:25:25Z",
       "path": "handoffs/active/kernel-champion-and-promotion.md",
-      "size": 792511,
+      "size": 816870,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -205,10 +210,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d0612c5be0a4917fc12876600651642935aa4026ac9ee0aa2602f76699764452",
-      "modified": "2026-11-23T09:36:21Z",
+      "content_hash": "fcf084370300892e29bfee8c6e9a64415c2db008ca111506c2a142e63794dd4f",
+      "modified": "2026-11-23T18:25:25Z",
       "path": "handoffs/active/rocm-kernel-authoring.md",
-      "size": 486425,
+      "size": 487979,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -221,10 +226,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "00f3d19301d0d9c87ac52f3428039ee2188123765c4afa2fd897fdff848e5d89",
-      "modified": "2026-11-23T10:07:46Z",
+      "content_hash": "aa86461f2037707b9fb89446aaf3211b1900894c8f3747400cf1dbc4faeb784a",
+      "modified": "2026-11-23T18:31:07Z",
       "path": "handoffs/active/speculative-decoding.md",
-      "size": 695121,
+      "size": 736622,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -4821,10 +4826,10 @@
       "type": "research"
     },
     {
-      "content_hash": "18898cfca32fcd17c917ab43d495cf240d3342ab033d6e23f9a6f6e6c9b7d87b",
-      "modified": "2026-11-23T18:02:41Z",
+      "content_hash": "695ee767a28388149496315013890df35c90d5157bcf82582c6d866c13e82258",
+      "modified": "2026-11-23T18:25:25Z",
       "path": "research/deep-dives/intake-ak-1123/stage3-plan.md",
-      "size": 235568,
+      "size": 235686,
       "title": "Stage-3 plan \u2014 HIP ISA/MMQ PRs, AITER v0.1.30, BPE, spec-decoding, context and harness papers (intake-ak-1123) \u2014 REVISION 1, APPROVED 2026-11-23 (OD-5 = C)",
       "type": "research"
     },
@@ -18925,10 +18930,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "ba54cd811c7692c13ff047f4daec15e6d4f3fb6bd47e3c98d49070b686126382",
-      "modified": "2026-11-23T18:02:41Z",
+      "content_hash": "73e48ec33b569177ca51ccc39bbdcc0fe81187e12fa3fd56ffd8fe90dc899ed0",
+      "modified": "2026-11-23T18:26:31Z",
       "path": "progress/2026-11/2026-11-23-autokernel.md",
-      "size": 5127,
+      "size": 8567,
       "title": "2026-11-23 \u2014 autokernel (covers 2026-11-22 20:00Z \u2192 2026-11-23 ~09:30Z)",
       "type": "progress"
     },
