@@ -37,3 +37,11 @@ not retried, so that class is unreplayed. Box left open with a checkpoint. Detai
 - KV-EVICT-COST-1 smoke, both telemetry boxes and the sampler-tap commit (orch e21a312e7049) join the STACK-UP-RELOAD-QUEUE.
 - Taskflow r6c/r7d (pipeline-mgmt): 0/8 verified either arm; briefs move failures from "never edits" to "edits but fails". Lesson for WORKER-TASK-BRIEF: give the 35B relative paths, resolve in the harness. Orchestrator already parses reasoning_content (llama_server.py:1027/2144); measured-rate wall budgets to fold into the WORKER-TASK-BRIEF plan.
 - Wrap-up: index --check rc=0; belief ledger fresh (lag 0); wiki delta 63 sources and research README (60 days) dispatched to subagents.
+
+## Post-reboot Autopilot sequence and hold audit (ap-postreboot-audit)
+
+- Recorded the operator-agreed sequence (reboot, ALFWorld smoke, Life-Harness run with R1-R5 accept, fold-in decision, journal-staleness audit LAST, operator lifts hold) as "2026-11-23 post-reboot sequence" in `handoffs/active/autopilot-program.md`, with the full audit table of every box waiting on the hold or relaunch (BEFORE / WITH / AFTER).
+- Filed AP-POSTREBOOT-LH-RIGOR, AP-POSTREBOOT-ALF-SMOKE, AP-POSTREBOOT-LH-RUN, AP-POSTREBOOT-FOLDIN-DECISION and AP-BSV2-RIGOR-GATE-CODE; AP-JOURNAL-STALENESS-AUDIT now gated on AP-POSTREBOOT-FOLDIN-DECISION.
+- Fixed stale text in place: BSV-2 "R1-R5 waits on the audit" (code does not need the loop), M10 trigger in `eval-tower-program.md`; pointers added at HIL-6, STACK-UP-RELOAD-QUEUE and stage-3 AKI-45.
+- Open ordering question recorded (not decided): W-11/W-13 still require the v11 promotion and PIP02-PADDLE-STACK-ENTRY before the lift; the agreed sequence is silent on both.
+- No inference, no process started. [no-belief: documentation and audit]

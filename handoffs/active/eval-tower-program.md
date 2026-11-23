@@ -160,6 +160,7 @@ From Aletheia (intake-370, TU Darmstadt):
       · done when: sentence replaced and the 'when DGX Spark available' roadmap heading at :161 re-pointed to the OD-1 outcome
       · gate: none
   - *Trigger (intake-ak-1123 M10, no checkbox):* Operator approval of OD-2 fires the ALFWorld-only AgentBench smoke (AgentRL controller plus one worker, no Redis, local role via llama-server tool calls, 5 episodes) and the Life-Harness local-improver run.
+  - *2026-11-23 update (post-reboot audit):* OD-2 was answered B (wait for AP-BSV2-ACCEPT-RIGOR) and that box is now DONE, so the M10 conditions are met subject to the operator-agreed sequence: after the host reboot, the 5-episode smoke, then the Life-Harness run (solver Qwen3.6-35B-A3B, improver the served architect through the loopback proxy, accept step enforcing R1-R5) BEFORE the Autopilot hold lifts. Canonical text and boxes (AP-POSTREBOOT-ALF-SMOKE, AP-POSTREBOOT-LH-RIGOR, AP-POSTREBOOT-LH-RUN, AP-POSTREBOOT-FOLDIN-DECISION): [`autopilot-program.md` post-reboot sequence](autopilot-program.md). [no-belief: pointer]
 
 **For our CPU-only environment**: The 1.5B scale is the sweet spot for verification model inference. Training requires a GPU (GRPO needs 16 rollouts/step); the DGX Spark path is closed and the MI210 is present, so a post-training lane is an operator decision (intake-ak-1123 OD-1; intake-2834#record). Pre-trained ThinkPRM-1.5B or Aletheia-1.5B models can be downloaded and quantized today.
 
