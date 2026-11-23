@@ -92,7 +92,13 @@ REAP_MAX_GIB=${REAP_MAX_GIB:-50}; REAP_MAX_DIRS=${REAP_MAX_DIRS:-200}; REAP_IDLE
 # DISK PRESSURE (2026-11-23): free < REAP_PRESSURE_FREE_GIB (200) on the data disk shortens the idle window to REAP_IDLE_DAYS_PRESSURE
 # (default 0.0833 d = 2 h). Every other idle-rule guard (no process, no handoff/FILLERS/manifest reference, clean landed .git, vault, rescan) still applies.
 _free_gib=$(df -BG --output=avail /mnt/raid0 2>/dev/null | tail -1 | tr -dc 0-9); _free_gib=${_free_gib:-9999}
-if [ "$_free_gib" -lt "${REAP_PRESSURE_FREE_GIB:-200}" ] 2>/dev/null; then REAP_IDLE_DAYS=${REAP_IDLE_DAYS_PRESSURE:-0.0833}; fi
+REAP_PRESSURE=0
+if [ "$_free_gib" -lt "${REAP_PRESSURE_FREE_GIB:-200}" ] 2>/dev/null; then
+  REAP_IDLE_DAYS=${REAP_IDLE_DAYS_PRESSURE:-0.0833}; REAP_PRESSURE=1
+  # pipeline-mgmt 2026-11-23 (operator): under pressure order by GB x idle-days and lift the per-pass caps to 200 GiB / 1000 dirs.
+  # The python side floors every idle window at REAP_IDLE_FLOOR_DAYS (1 d): nothing younger than 24 h is ever touched.
+  REAP_MAX_GIB=${REAP_MAX_GIB_PRESSURE:-200}; REAP_MAX_DIRS=${REAP_MAX_DIRS_PRESSURE:-1000}
+fi
 # SCRATCH LEASE (operator-directed scratch-leak structural fix 2026-11-04, Phase 1): a KEEP marker with an EXPIRED lease
 # (scripts/system/scratch_lease.py; leases in tmp/.scratch-leases/) no longer blocks; a marker WITHOUT a lease keeps the old
 # never-auto behaviour; lease module unloadable => every marker blocks (fail closed).
@@ -105,13 +111,16 @@ reap_filed() {   # called only by --reap-now / --reap-dry-run / --backfill-repor
   if [ $DRY = 1 ]; then mode=dry; else
     touch "${S}reap-last"; mkdir -p "${S}reap"   # disk_janitor.sh reads this stamp so a manual --reap-now and its own pass never double up
   fi
-  REAP_MODE=$mode REAP_LEGACY=$REAP_LEGACY REAP_DAYS=$REAP_DAYS REAP_MAX_GIB=$REAP_MAX_GIB REAP_MAX_DIRS=$REAP_MAX_DIRS REAP_IDLE=$REAP_IDLE REAP_IDLE_DAYS=$REAP_IDLE_DAYS REAP_WORKTREES=$REAP_WORKTREES REAP_STATE="${S}reap/" REAP_REPORT="${REAP_REPORT:-0}" \
+  REAP_MODE=$mode REAP_LEGACY=$REAP_LEGACY REAP_DAYS=$REAP_DAYS REAP_MAX_GIB=$REAP_MAX_GIB REAP_MAX_DIRS=$REAP_MAX_DIRS REAP_PRESSURE=$REAP_PRESSURE REAP_IDLE=$REAP_IDLE REAP_IDLE_DAYS=$REAP_IDLE_DAYS REAP_WORKTREES=$REAP_WORKTREES REAP_STATE="${S}reap/" REAP_REPORT="${REAP_REPORT:-0}" \
   hk python3 -I - <<'PY' | while IFS= read -r ln; do log "$ln"; done
 import os, sys, re, json, glob, time, hashlib, tarfile, subprocess, fnmatch, shutil, datetime as dt
 E = os.environ; MODE = E['REAP_MODE']; LEGACY = E['REAP_LEGACY'] == '1'; DAYS = float(E['REAP_DAYS'])
 ST = E['REAP_STATE']; REPORT = E['REAP_REPORT'] == '1'
 MAXB = float(E['REAP_MAX_GIB']) * 2**30; MAXDIRS = int(E['REAP_MAX_DIRS'])
 IDLE = E.get('REAP_IDLE', '1') == '1'; IDLE_DAYS = float(E.get('REAP_IDLE_DAYS', '1'))
+PRESSURE = E.get('REAP_PRESSURE', '0') == '1'
+IDLE_DAYS = max(IDLE_DAYS, float(E.get('REAP_IDLE_FLOOR_DAYS', '1')))   # operator 2026-11-23: nothing younger than 24 h is touched, pressure or not
+ORPHAN_TTL_DAYS = float(E.get('REAP_ORPHAN_TTL_DAYS', '7')); STALE_ROW_DAYS = float(E.get('REAP_STALE_ROW_DAYS', '14')); STALE_RELEASE_H = float(E.get('REAP_STALE_RELEASE_H', '48'))
 IDLE_MAX = 10 << 20; IDLE_EXT = ('.json', '.md', '.txt', '.tsv', '.csv', '.yaml', '.yml', '.log', '.sh', '.py', '.patch', '.diff', '.jinja', '.toml', '.ini', '.cfg', '.c', '.cc', '.cpp', '.h', '.hpp', '.rs', '.go', '.js', '.ts', '.cmake', 'makefile', 'dockerfile')
 RECENT_S = 3600   # any write inside a root within the last hour blocks deletion (proxy for processes /proc cannot show us)
 budget = dict(b=0, n=0)   # bytes and dirs reaped (or would-be reaped) this pass
@@ -123,6 +132,82 @@ MARKERS = ('.epyc-keep', '.epyc-load-bearing', 'KEEP', 'LOAD-BEARING')
 PROTECT = {'compute-flags', 'disk-audit-20261028', 'ws58-loop-audit'}
 EVID = re.compile(r'(VERDICT|receipt|attest|RESULT|SUMMARY|MANIFEST|\.sha256$|ENDED|COMPLETE|FILED)', re.I)
 now = time.time()
+# <<REAP-RULES-BEGIN>> pure helpers (pipeline-mgmt 2026-11-23); unit-tested by extraction (tests/test_keeper_reap_rules_20261123.py). Every one fails CLOSED.
+FUTURE_SLOP_S = 3600
+FUTURE = dict(n=0)
+def etime(st, now):
+    """Effective last-write time of an lstat result. An mtime more than 1 h in the future (a fixture stamped 2030) is not evidence of
+    activity: use ctime (the kernel sets it at the real change time; utime cannot forge it). If ctime is also in the future => now (keep)."""
+    m = st.st_mtime
+    if m <= now + FUTURE_SLOP_S: return m
+    FUTURE['n'] += 1
+    c = st.st_ctime
+    return now if c > now + FUTURE_SLOP_S else min(c, now)
+FILL_DONE = re.compile(r'(COMPLETE|DONE|RETIRED|CANCELLED|CANCELED|SKIPPED|WITHDRAWN)\b')
+BOX_RE = re.compile(r'^(\s*)(?:[-*+]|\d+[.)])\s+\[( |x|X)\]')
+HARD_RE = re.compile(r'(\bLEAN\b|\bKEEP\b|(?i:\b(?:keep|retain)\s*:|do not (?:delete|remove|reap|reclaim)))')
+WAIT_RE = re.compile(r'reboot|hold|park|wait|gated|prepp?ed|retain|retention|keep|pending|QUEUED|armed|BOOKED', re.I)   # superset of the stale-sweep's WAITKW (substring on purpose: over-matching only keeps more)
+_RANK = {'cite': 1, 'pin': 2, 'hard': 3}
+def mention_class(text, pat):
+    """Strongest class of any line naming the ROOT ITSELF (pat group 1 empty): 'hard' (LEAN/KEEP/keep:/retain:/do-not-delete),
+    'pin' (inside an OPEN box, or hold/reboot/waiting/keep wording), 'cite' (anything else, incl. a ticked box and its continuation
+    lines), None (no mention). Any error => 'hard'. Only handoffs/active text is ever passed in (completed/progress never pin)."""
+    try:
+        best = None; stack = []; lines = text.splitlines()
+        for li, line in enumerate(lines):
+            if not line.strip(): continue
+            ind = len(line) - len(line.lstrip()); m = BOX_RE.match(line)
+            if m:
+                stack = [x for x in stack if x[0] < len(m.group(1))]; stack.append((len(m.group(1)), m.group(2) == ' '))
+            else:
+                stack = [x for x in stack if x[0] < ind]
+            if not any(not (mm.lastindex and mm.group(1) and mm.group(1) != '/') for mm in pat.finditer(line)): continue
+            c = 'hard' if HARD_RE.search(line) else ('pin' if ((stack and stack[-1][1]) or WAIT_RE.search(line)) else 'cite')
+            if c == 'cite' and WAIT_RE.search(' '.join(lines[max(0, li - 2):li + 3])): c = 'pin'   # waiting wording within 2 lines of a mention (stale-sweep parity; over-matching only keeps more)
+            if best is None or _RANK[c] > _RANK[best]: best = c
+        return best
+    except Exception:
+        return 'hard'
+def stronger(a, b):
+    return a if (b is None or (a is not None and _RANK[a] >= _RANK[b])) else b
+def name_pat(root):
+    """the bare directory name as a whole token: the stale-sweep matches references by name, so the guards do too (over-matching only keeps more)"""
+    return re.compile(r'(?<![A-Za-z0-9_-])' + re.escape(os.path.basename(root)) + r'(?![A-Za-z0-9_-])')
+def handoff_blocks(cls, filed):
+    """a filing-done/<id>.FILED receipt (filed=True) releases open-box/waiting pins, never hard ones."""
+    return cls == 'hard' or (cls == 'pin' and not filed)
+def stale_released(rid, F, now, release_h=48.0):
+    """CLOSED-STALE marker older than release_h and no owner objection (closed-stale/<id>.KEEP). Any doubt => False."""
+    try:
+        mk = F + 'closed-stale/' + rid + '.CLOSED-STALE'
+        return (os.path.exists(mk) and not os.path.exists(F + 'closed-stale/' + rid + '.KEEP')
+                and now - os.path.getmtime(mk) >= release_h * 3600)
+    except OSError: return False
+def ready_row_pins(rid, F, now, release_h=48.0):
+    """does a ready/ manifest without grants/<id>.complete still pin its dirs? Not once filing-done/<id>.FILED exists, nor once its
+    CLOSED-STALE marker is older than release_h. Any doubt => pins."""
+    try:
+        if os.path.exists(F + 'filing-done/' + rid + '.FILED'): return False
+    except OSError: return True
+    return not stale_released(rid, F, now, release_h)
+def stale_candidate(rid, manifest_path, F, G, now, days):
+    """rule 8: a ready/ row with no grant record of any kind for > days, not filed, not already marked or objected to."""
+    try:
+        if os.path.basename(manifest_path) != rid + '.json' or now - os.path.getmtime(manifest_path) < days * 86400: return False
+        if glob.glob(G + rid + '.*') or os.path.exists(F + 'filing-done/' + rid + '.FILED'): return False
+        return not os.path.exists(F + 'closed-stale/' + rid + '.CLOSED-STALE') and not os.path.exists(F + 'closed-stale/' + rid + '.KEEP')
+    except OSError: return False
+def vault_subset(sized, cap, evid):
+    """sized: [(path, bytes)]. Top-N up to cap: evidence-named first, then smallest first. -> (chosen, left out)"""
+    chosen, left, tot = [], [], 0
+    for pth, sz in sorted(sized, key=lambda x: (not evid.search(os.path.basename(x[0])), x[1], x[0])):
+        if tot + sz <= cap: chosen.append(pth); tot += sz
+        else: left.append(pth)
+    return chosen, left
+def safe_owner(o):
+    o = re.sub(r'[^A-Za-z0-9_.-]', '_', str(o or 'unknown'))[:60]
+    return o if o and not o.startswith('.') else 'unknown'
+# <<REAP-RULES-END>>
 DEDUP = E.get('REAP_LOG_DEDUP', '1') == '1' and MODE == 'live'
 ALWAYS = ('PASS-SUMMARY', 'IDLE-SUMMARY', 'SWEPT')   # carry changing numbers; a handful of lines per pass
 LOGGED_P = ST + 'logged.json'
@@ -161,7 +246,24 @@ for d in (R, R + 'armed/', R + 'refused/'):
     for p in glob.glob(d + '*.json'):
         try: m = json.load(open(p))
         except Exception: continue
-        if isinstance(m, dict) and m.get('id'): mans[m['id']] = (m, p)
+        if isinstance(m, dict) and m.get('id') and not (d == R and stale_released(str(m['id']), F, now, STALE_RELEASE_H)): mans[m['id']] = (m, p)
+# ---- rule 8 (operator 2026-11-23): a ready/ row with no grant record for > STALE_ROW_DAYS gets a dated CLOSED-STALE marker and a line in
+# the owner's log; ONLY the marker is written (the row itself is untouched). Its dirs stop being pinned STALE_RELEASE_H later unless the owner
+# objects (touch closed-stale/<id>.KEEP) or republishes. Any parse error => row skipped.
+for p in sorted(glob.glob(R + '*.json')):
+    try:
+        m = json.load(open(p)); rid = m.get('id') if isinstance(m, dict) else None
+        if not isinstance(rid, str) or not rid or not stale_candidate(rid, p, F, G, now, STALE_ROW_DAYS): continue
+        owner = safe_owner(m.get('owner') or m.get('created_by') or m.get('session'))
+        age = (now - os.path.getmtime(p)) / 86400
+        if MODE == 'dry': out('WOULD-CLOSE-STALE', rid, 'ready row, no grant for %.0fd, owner=%s' % (age, owner)); continue
+        os.makedirs(F + 'closed-stale', exist_ok=True)
+        rec = dict(id=rid, owner=owner, closed_stale_at=dt.datetime.fromtimestamp(now, dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                   idle_days=round(age, 1), releases_after_h=STALE_RELEASE_H, object_by='touch closed-stale/%s.KEEP or republish the row' % rid)
+        tmpf = F + 'closed-stale/.%s.tmp%d' % (rid, os.getpid()); json.dump(rec, open(tmpf, 'w')); os.replace(tmpf, F + 'closed-stale/' + rid + '.CLOSED-STALE')
+        with open(F + 'closed-stale/%s.owner.log' % owner, 'a') as lf: lf.write(json.dumps(rec) + '\n')
+        out('CLOSED-STALE', rid, 'ready row, no grant for %.0fd, owner=%s; dirs released in %gh unless closed-stale/%s.KEEP exists' % (age, owner, STALE_RELEASE_H, rid))
+    except Exception: continue
 groups = {}   # root -> dict(ids, keep, src)
 for rid, (m, p) in mans.items():
     sr = m.get('scratch_root'); kp = m.get('keep'); bad = valid_root(sr) if sr else 'no scratch_root'
@@ -227,8 +329,10 @@ FILL = []
 for l in FILLTXT.splitlines():
     c = l.split('|')
     if len(c) > 18: FILL.append((c[1].strip(), c[8].strip(), l))
-def cited(root, ids):
-    """-> (root_blockers, set of cited paths under root to protect in place)"""
+def cited(root, ids, filed=False):
+    """-> (root_blockers, set of cited paths under root to protect in place). A handoff mention of the ROOT blocks only when it is a
+    pin (open box / hold / reboot / waiting / keep wording) or hard (LEAN / KEEP / keep: / retain:), see mention_class; filed=True (every
+    id has its filing-done FILED receipt) releases open-box/waiting pins, never LEAN/KEEP ones. Cited files under the root stay in place."""
     b, prot = [], set()
     pat = re.compile(re.escape(root) + r'(/[^\s`|;,\)\]\'"<>]*)?')
     for p, t in HOFF.items():
@@ -236,21 +340,47 @@ def cited(root, ids):
             if mm.group(1) and mm.group(1) != '/':
                 fp = (root + mm.group(1)).rstrip('.:')
                 if os.path.exists(fp): prot.add(fp)
-            else:
-                b.append('handoff-live:' + os.path.basename(p)); break
+        npat = name_pat(root)
+        if not (pat.search(t) or npat.search(t)): continue   # cheap prefilter: mention_class walks every line
+        if handoff_blocks(stronger(mention_class(t, pat), mention_class(t, npat)), filed): b.append('handoff-live:' + os.path.basename(p))
     for rid, stt, l in FILL:
-        if rid in ids or re.match(r'(COMPLETE|DONE|RETIRED)', stt): continue
-        if re.search(re.escape(root) + r'(?![A-Za-z0-9_.-])', l): b.append('FILLERS-live:' + rid)
+        if rid in ids or FILL_DONE.match(stt): continue
+        if re.search(re.escape(root) + r'(?![A-Za-z0-9_.-])', l) or name_pat(root).search(l): b.append('FILLERS-live:' + rid)
     return sorted(set(b)), prot
+MJ = {}   # json.dumps(manifest) cache: other_refs runs once per dir
 def other_refs(root, ids):
+    npat = name_pat(root)
     b = []
     for gf in glob.glob(G + '*.grant'):
         gid = os.path.basename(gf)[:-6]
         if gid not in ids and root in sread(gf): b.append('open-grant:' + gid)
     for rid, (m, p) in mans.items():
-        if rid in ids or os.path.exists(G + rid + '.complete'): continue
-        if root in json.dumps(m): b.append('ready-manifest:' + rid)
+        if rid in ids or os.path.exists(G + rid + '.complete') or not ready_row_pins(rid, F, now, STALE_RELEASE_H): continue
+        mj = MJ.get(rid)
+        if mj is None: mj = MJ[rid] = json.dumps(m)
+        if root in mj or npat.search(mj): b.append('ready-manifest:' + rid)
     return sorted(set(b))
+# ---- flag-plane references (operator 2026-11-23, fail closed): held/ bookings/ claims/ prep-locks/ build-wait/ files and dryrun/ files written <3 d ago
+# that name a root keep it (the stale-sweep classifies these LIVE). An unreadable entry blocks every deletion this pass (GUARD_ERR).
+FLAGTXT = []
+def _flag_err(e): global GUARD_ERR; GUARD_ERR = GUARD_ERR or 'flag-plane unreadable: %r' % (e,)
+for _sub in ('held', 'bookings', 'claims', 'prep-locks', 'build-wait', 'dryrun'):
+    for _dp, _dn, _fn in (os.walk(F + _sub, onerror=_flag_err) if os.path.isdir(F + _sub) else []):
+        try:
+            if _sub == 'dryrun' and _dp != F + _sub and now - os.lstat(_dp).st_mtime < 3 * 86400: FLAGTXT.append((_dp, os.path.basename(_dp)))   # a recent dryrun/<id> dir names its row
+        except OSError as _e: _flag_err(_e)
+        for _f in _fn:
+            _fp = os.path.join(_dp, _f)
+            try:
+                _st = os.lstat(_fp)
+                if not os.path.isfile(_fp) or os.path.islink(_fp): continue
+                if _sub == 'dryrun' and now - _st.st_mtime >= 3 * 86400: continue
+                FLAGTXT.append((_fp, open(_fp, errors='replace').read(1 << 20)))
+            except OSError as _e: _flag_err(_e)
+def flag_refs(root):
+    # the full path OR the bare directory name (the stale-sweep matches by name): over-matching only keeps more
+    pat = re.compile(re.escape(root) + r'(?![A-Za-z0-9_-])|' + name_pat(root).pattern)
+    return sorted({'flag-ref:' + os.path.relpath(fp, F).split('/')[0] for fp, t in FLAGTXT if pat.search(t)})
 SYSDIR = E.get('SCRATCH_LEASE_SYSDIR', '/workspace/scripts/system')
 try:
     import importlib.util as _ilu
@@ -336,6 +466,7 @@ def vault_key(name, root):
     rp = os.path.realpath(root)
     if os.path.dirname(rp.rstrip('/')) + '/' == TMP: return name
     return '%s-%s' % (name, hashlib.sha256(rp.encode()).hexdigest()[:8])
+VAULT_NOTE = ['']
 VAULT_KEEP = int(E.get('REAP_VAULT_KEEP', '2'))   # policy data: newest N versions kept per vault key
 def vault(name, root, files, filed_at):
     """returns (ok, msg). dry: only sizes."""
@@ -347,7 +478,17 @@ def vault(name, root, files, filed_at):
         tot += sz
         if sz > FMAX: big.append(os.path.relpath(f, root))
     if big: return False, 'keep file(s) >512MiB (narrow the glob): %s' % big[:3]
-    if tot > VMAX: return False, 'keep set %s > 2GiB vault cap' % gib(tot)
+    VAULT_NOTE[0] = ''
+    if tot > VMAX:   # operator 2026-11-23: vault the top-N files up to the cap instead of refusing the dir; the rest stay in place (keep set is never deleted)
+        sized = []
+        for f in files:
+            try:
+                if os.path.isfile(f) and not os.path.islink(f): sized.append((f, os.lstat(f).st_size))
+            except OSError: pass
+        chosen, left = vault_subset(sized, VMAX, EVID)
+        if not chosen: return False, 'keep set %s > 2GiB vault cap and no file fits' % gib(tot)
+        VAULT_NOTE[0] = ' [PARTIAL: %d of %d keep files (%s over the cap) not vaulted; they stay in place]' % (len(left), len(sized), gib(tot))
+        cs = set(chosen); files = chosen; tot = sum(sz for f, sz in sized if f in cs)
     idx = []
     for f in files:
         try:
@@ -451,14 +592,50 @@ def input_set(root, cutoff):
             if x in dn and not os.path.islink(fp) and os.listdir(fp): continue   # a non-empty dir: its entries decide
             if st.st_mtime < lim: ins.add(fp)
     return ins
+def declared_input_set(root, ids):
+    """rule 6 (operator 2026-11-23): inputs are ONLY what the row manifests list: declared scratch_inputs (never the derived git-worktree
+    guesses), the launcher/workdir when under the root; keep globs and result_path protect separately. A repo checkout under the root
+    is dropped only when provably landed (git_reapable). -> (set, why) or (None, why) => caller falls back to the old mtime rule
+    (fail closed: nothing is newly released on a parse error, a missing helper or any git doubt)."""
+    try:
+        if SREL is None: return None, 'scratch_release unavailable'
+        keep = set()
+        for i in sorted(ids):
+            m = mans[i][0]
+            for d in SREL.row_inputs(m):
+                if d.get('derived'): continue
+                if not SREL.valid_rel(d.get('path')): return None, 'bad declared input path'
+                keep.add(os.path.join(root, d['path']))
+            for key in ('launcher', 'workdir'):
+                v = m.get(key); v = v.get('path') if isinstance(v, dict) else v
+                if isinstance(v, str) and os.path.normpath(v).startswith(root + '/'): keep.add(os.path.normpath(v))
+        if any('.git' in dn or '.git' in fn for dp, dn, fn in os.walk(root, onerror=_raise)):
+            ok, why = git_reapable(root)
+            if not ok: return None, why
+        return {x for x in keep if os.path.lexists(x)}, 'declared'
+    except Exception as e:
+        return None, 'declared-input derivation failed: %r' % (e,)
+def remove_worktrees(root, keep):
+    """registered linked worktrees under root (not inside a kept path) leave through `git worktree remove` (never --force). -> failures"""
+    bad = []
+    for dp, dn, fn in os.walk(root):
+        if '.git' in fn and os.path.isdir(dp):
+            if any(dp == k or dp.startswith(k + '/') for k in keep): dn[:] = []; continue
+            c = subprocess.run(['git', '-c', 'safe.directory=*', '-C', dp, 'rev-parse', '--path-format=absolute', '--git-common-dir'], capture_output=True, text=True, timeout=120)
+            common = c.stdout.strip()
+            if c.returncode or not common: bad.append(dp + ': no common dir'); continue
+            r = subprocess.run(['git', '-c', 'safe.directory=*', '--git-dir=' + common, 'worktree', 'remove', dp], capture_output=True, text=True, timeout=600)
+            if r.returncode: bad.append('%s: %s' % (dp, (r.stderr or r.stdout).strip()[:100]))
+            else: dn[:] = []
+    return bad
 def scan_tree(p):
     '''-> (newest mtime of the root and anything inside it, bytes, holds .git); any walk error raises'''
-    newest = os.lstat(p).st_mtime; size = 0; git = False
+    newest = etime(os.lstat(p), now); size = 0; git = False
     for dp, dn, fn in os.walk(p, onerror=_raise):
         if '.git' in dn or '.git' in fn: git = True
         for x in dn + fn:
             st = os.lstat(os.path.join(dp, x))
-            if st.st_mtime > newest: newest = st.st_mtime
+            if etime(st, now) > newest: newest = etime(st, now)
             if x in fn: size += st.st_size
     return newest, size, git
 def git_reapable(p):
@@ -489,7 +666,7 @@ def git_reapable(p):
 def recent(root):
     for dp, dn, fn in os.walk(root, onerror=_raise):
         for x in dn + fn:
-            if now - os.lstat(os.path.join(dp, x)).st_mtime < RECENT_S: return True
+            if now - etime(os.lstat(os.path.join(dp, x)), now) < RECENT_S: return True
     return False
 def idle_keep(root):
     ks = set()
@@ -521,7 +698,14 @@ def really_delete(tag, root, dels, dbytes, note=''):
     out('FREED', tag, '%d trash entries deleted, %d failed, ~%s' % (freed, bad, gib(dbytes)))
 # ---- group decisions ----
 ALLIDS |= set(mans) | {os.path.basename(x)[:-6] for x in glob.glob(G + '*.ended')}
-for root in sorted(groups):
+def pressure_key(path, name):
+    """GB x idle-days, biggest first, under pressure; alphabetical otherwise (any error => sorts last)."""
+    if not PRESSURE: return (0, name)
+    try:
+        newest, size, _g = scan_tree(path)
+        return (-(size / 2**30) * max(0.0, (now - newest) / 86400), name)
+    except Exception: return (0, name)
+for root in sorted(groups, key=lambda r: pressure_key(r, r)):
   g = groups[root]; ids = g['ids']; name = os.path.basename(root); tag = '%s[%s]' % (name, g['src'])
   try:
     if not os.path.isdir(root): out('GONE', tag, 'scratch_root does not exist'); continue
@@ -540,29 +724,39 @@ for root in sorted(groups):
     filed_at = max(filed)
     fm = os.path.join(root, "FILED")
     if os.path.exists(fm): filed_at = max(filed_at, os.path.getmtime(fm))
-    cutoff, csrc = first_start(ids)
-    if cutoff is None:
-        out('INPUT-ONLY', tag, '%s, so every file counts as input and nothing is deleted; fix: bash /workspace/scripts/safety/guarded_rm.sh <the job-written paths under %s>' % (csrc, root)); continue
-    ins = input_set(root, cutoff)
-    inote = 'inputs kept=%d (mtime before %s %s)' % (len(ins), csrc, dt.datetime.fromtimestamp(cutoff, dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'))
+    ins, imode = declared_input_set(root, ids)
+    if ins is not None:
+        inote = 'inputs kept=%d (manifest-declared only)' % len(ins)
+    else:
+        imode = 'mtime'; cutoff, csrc = first_start(ids)
+        if cutoff is None:
+            out('INPUT-ONLY', tag, '%s, so every file counts as input and nothing is deleted (declared-input rule unavailable: %s); fix: bash /workspace/scripts/safety/guarded_rm.sh <the job-written paths under %s>' % (csrc, imode, root)); continue
+        ins = input_set(root, cutoff)
+        inote = 'inputs kept=%d (mtime before %s %s)' % (len(ins), csrc, dt.datetime.fromtimestamp(cutoff, dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'))
     ks = keepset(root, g['keep']); blockers = []
-    bl, prot = cited(root, ids); ks |= prot
+    bl, prot = cited(root, ids, filed=True); ks |= prot
     files = [f for f in keepfiles(ks) if f not in ins]   # inputs stay in place and are never deleted: nothing to vault
     vok, vmsg = vault(name, root, files, filed_at)
-    out('VAULT' if vok else 'VAULT-REFUSED', tag, vmsg)
+    out('VAULT' if vok else 'VAULT-REFUSED', tag, vmsg + VAULT_NOTE[0])
     age_d = (now - filed_at) / 86400
     dels = delplan(root, ks, prot | ins); dbytes = sum(du(x) if os.path.isdir(x) and not os.path.islink(x) else (os.lstat(x).st_size if os.path.lexists(x) else 0) for x in dels)
     if not vok: out('BLOCKED', tag, 'vault not verified; nothing deleted (%d entries, %s waiting)' % (len(dels), gib(dbytes))); continue
     if not dels: out('CLEAN', tag, 'nothing outside keep set and inputs; ' + inote); continue
     sup = SREL is not None and SREL.all_superseded(ids, ALLIDS)   # superseded + filed: no idle wait
     if age_d < DAYS and not sup: out('HOLD', tag, 'filed %.1fd ago, reap in %.1fh (%d entries, %s)' % (age_d, (DAYS - age_d) * 24, len(dels), gib(dbytes))); continue
-    blockers += keepmarkers(root) + bl + other_refs(root, ids)
+    blockers += keepmarkers(root) + bl + other_refs(root, ids) + flag_refs(root)
     if proc_uses(root): blockers.append('process-uses-root')
     if blockers: out('BLOCKED', tag, '%s (would free %s)' % (','.join(blockers), gib(dbytes))); continue
     if recent(root): out('BLOCKED', tag, 'write inside root within %ds' % RECENT_S); continue
+    if (now - scan_tree(root)[0]) < IDLE_DAYS * 86400: out('BLOCKED', tag, 'written inside root within %gd (24 h floor)' % IDLE_DAYS); continue
     if GUARD_ERR: out('SKIP-ERR', tag, GUARD_ERR); continue
     if not take_budget(tag, dbytes): continue
     if MODE == 'dry': out('WOULD-REAP', tag, '%d entries, %s, filed %.1fd ago, keep=%d files, %s (unreadable procs=%d)' % (len(dels), gib(dbytes), age_d, len(files), inote, unread)); continue
+    if imode == 'declared':
+        wf = remove_worktrees(root, ins)
+        if wf: out('SKIP-ERR', tag, 'git worktree remove refused: %s; nothing deleted' % '; '.join(wf)[:300]); continue
+        dels = delplan(root, ks, prot | ins); dbytes = sum(du(x) if os.path.isdir(x) and not os.path.islink(x) else (os.lstat(x).st_size if os.path.lexists(x) else 0) for x in dels)
+        if not dels: out('CLEAN', tag, 'only worktrees were left; ' + inote); continue
     really_delete(tag, root, dels, dbytes, inote)
   except Exception as e:
     out('SKIP-ERR', tag, 'guard/plan error %r; item skipped' % (e,))
@@ -575,7 +769,7 @@ if IDLE or LEGACY:
             if isinstance(v, str) and v.startswith(TMP): manifested.add(TMP + v[len(TMP):].split('/')[0])
     cnt = {}
     def tally(c, b): x = cnt.setdefault(c, [0, 0]); x[0] += 1; x[1] += b
-    for d in sorted(os.scandir(TMP), key=lambda e: e.name):
+    for d in sorted(os.scandir(TMP), key=lambda e: pressure_key(e.path, e.name) if e.is_dir(follow_symlinks=False) else (0, e.name)):
         p = d.path; name = d.name; tag = name + '[idle]'
         try:
             if not d.is_dir(follow_symlinks=False) or name in PROTECT or name.startswith('.'): continue
@@ -591,14 +785,21 @@ if IDLE or LEGACY:
             if GUARD_ERR: tally('SKIP-ERR', size); out('SKIP-ERR', tag, GUARD_ERR); continue
             bl = []
             if proc_uses(p): bl.append('process-uses-root')
-            bl += other_refs(p, set())
+            bl += other_refs(p, set()) + flag_refs(p)
             pat = re.compile(re.escape(p) + r'(?![A-Za-z0-9_.-])')
-            bl += ['handoff-live:' + os.path.basename(h) for h, t in HOFF.items() if pat.search(t)]
-            bl += ['FILLERS-live:' + rid for rid, stt, l in FILL if not re.match(r'(COMPLETE|DONE|RETIRED)', stt) and pat.search(l)]
+            hpat = re.compile(re.escape(p) + r'(?![A-Za-z0-9_-])')   # a sentence-ending '.' still counts as a mention (conservative)
+            cite_only = False
+            for h, t in HOFF.items():
+                if not (hpat.search(t) or name_pat(p).search(t)): continue
+                c = stronger(mention_class(t, hpat), mention_class(t, name_pat(p)))   # an ambiguous or unparseable mention classifies 'hard'
+                if handoff_blocks(c, False): bl.append('handoff-live:' + os.path.basename(h))
+                else: cite_only = True
+            if cite_only and not bl and idle_d < ORPHAN_TTL_DAYS: bl.append('cite-only<%gd-orphan-TTL' % ORPHAN_TTL_DAYS)
+            bl += ['FILLERS-live:' + rid for rid, stt, l in FILL if not FILL_DONE.match(stt) and (pat.search(l) or name_pat(p).search(l))]
             if bl: tally('BLOCKED-referenced', size); out('BLOCKED', tag, '%s (idle %.0fd, %s)' % (','.join(sorted(set(bl))[:4]), idle_d, gib(size))); continue
-            ks = idle_keep(p); files = sorted(ks)
+            ks = idle_keep(p) | cited(p, set())[1]; files = sorted(ks)   # files a handoff cites are vaulted first and stay in place
             vok, vmsg = vault(name, p, files, newest)
-            out('VAULT' if vok else 'VAULT-REFUSED', tag, vmsg)
+            out('VAULT' if vok else 'VAULT-REFUSED', tag, vmsg + VAULT_NOTE[0])
             if not vok: tally('VAULT-REFUSED', size); continue
             dels = delplan(p, ks, set())
             dbytes = sum(du(x) if os.path.isdir(x) and not os.path.islink(x) else (os.lstat(x).st_size if os.path.lexists(x) else 0) for x in dels)
@@ -630,6 +831,7 @@ if E.get('REAP_WORKTREES', '0') == '1':
             out('REMOVED-WT' if rm.returncode == 0 else 'WT-REFUSED', tag, (rm.stdout.strip() or rm.stderr.strip())[:200])
         except Exception as e:
             out('SKIP-ERR', tag, 'worktree guard error %r; item skipped' % (e,))
+if FUTURE['n']: out('FUTURE-MTIME', 'all', '%d entries had an mtime >1h in the future; aged by ctime instead (kept when ctime is also in the future)' % FUTURE['n'])
 out('PASS-SUMMARY', MODE, 'reaped-or-would %d dirs, %s (caps %d dirs / %s)' % (budget['n'], gib(budget['b']), MAXDIRS, gib(MAXB)))
 if MODE == 'live' and os.path.isdir(TRASH):
     r = subprocess.run(['bash', '/workspace/scripts/safety/trash-sweep.sh', '--older-than', '1'], env=dict(os.environ, TRASH_ROOT=TRASH), capture_output=True, text=True)

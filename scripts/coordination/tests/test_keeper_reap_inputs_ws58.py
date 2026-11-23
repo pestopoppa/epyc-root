@@ -31,6 +31,9 @@ def iso(t):
 
 
 class ReapInputs(unittest.TestCase):
+    # these tests pin the OLD mtime rule, which is the fallback when the declared-input rule (2026-11-23) is unavailable: no scratch_release
+    sysdir = "/nonexistent-sysdir-for-the-mtime-fallback"
+
     def setUp(self):
         self._td = tempfile.TemporaryDirectory()
         td = self.td = self._td.name
@@ -88,7 +91,8 @@ class ReapInputs(unittest.TestCase):
             src, n = re.subn(pat, lambda _m, r=rep: r, src, flags=re.M)
             self.assertEqual(n, 1, pat)
         env = dict(os.environ, REAP_MODE="live", REAP_LEGACY="0", REAP_DAYS="1", REAP_MAX_GIB="50", REAP_MAX_DIRS="200",
-                   REAP_IDLE="0", REAP_IDLE_DAYS="1", REAP_STATE=self.flags + "state/reap/", REAP_REPORT="0")
+                   REAP_IDLE="0", REAP_IDLE_DAYS="1", REAP_STATE=self.flags + "state/reap/", REAP_REPORT="0",
+                   SCRATCH_LEASE_SYSDIR=self.sysdir)
         r = subprocess.run(["python3", "-I", "-"], input=src, capture_output=True, text=True, env=env, timeout=300)
         self.assertEqual(r.returncode, 0, r.stderr)
         handed = sorted(os.path.relpath(x, self.root) for x in open(self.calls).read().split()) if os.path.exists(self.calls) else []
