@@ -29,6 +29,16 @@ per-claim `ok`/`detail`/`proof`. Exit 0 = VERIFIED, 1 = UNVERIFIED, 2 = usage. T
 `built <lib> with <symbol>`, `branch <b> contains <sha>`); structured JSON is the reliable path and what a brief should
 ask subagents to append. Wiring it into the brief report shape is a follow-up for the owner of `brief.py` (not touched here).
 
+### Automatic stamping (2026-11-23)
+
+`akloop/handback_auto.py` runs the verifier on every AK subagent hand-back, called from the existing PostToolUse(Agent|Task)
+hook `scripts/hooks/posttool_handback_sweep.py` (no settings.json change). An AK hand-back is one whose dispatch prompt
+carries the brief.py CLAIMS contract or whose report has a `CLAIMS:` line; other subagents are untouched. The stamp reaches
+the dispatching model as additionalContext (stamp, reason, failed claim TYPES only, never subagent text) and every stamp is
+appended to `/mnt/raid0/llm/tmp/handback-stamps/stamps.jsonl` (`HANDBACK_STAMP_LEDGER` overrides). No CLAIMS block = UNVERIFIED.
+Why this hook: already registered for the event and fed the returned text; a file watcher has no hand-back file to watch;
+wrapping brief.py would cover only owner-generated briefs, not the returning report. Tests: tests/coordination/test_akloop_handback_auto.py.
+
 ## (b) Failure classifier
 
 `failclass.py --fail FAIL-N.json | --result RESULT.json [--launcher launcher.out] [--route]`

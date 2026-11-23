@@ -20,6 +20,7 @@ age-based staleness of ListAgents rows (the hook cannot see the agent list; that
 step).
 """
 import json
+import os
 import re
 import sys
 
@@ -80,6 +81,17 @@ def survivors(path):
     return [(t, cmd) for t, cmd in started.items() if t not in ended]
 
 
+def _handback_stamp(payload):
+    """AKPL-P5: VERIFIED/UNVERIFIED stamp for an AK subagent hand-back (akloop/handback_auto.py); None otherwise."""
+    try:
+        here = os.path.dirname(os.path.abspath(__file__))
+        sys.path.insert(0, os.path.join(here, "..", "coordination", "akloop"))
+        import handback_auto
+        return handback_auto.stamp_payload(payload)
+    except Exception:
+        return None
+
+
 def main():
     try:
         payload = json.load(sys.stdin)
@@ -90,9 +102,12 @@ def main():
     event = payload.get("hook_event_name")
     if event == "PostToolUse" and payload.get("tool_name") not in ("Agent", "Task"):
         return 0
+    stamp = _handback_stamp(payload)
     path = payload.get("agent_transcript_path") or (payload.get("transcript_path") if event == "SubagentStop" else None)
     alive = survivors(path) if path else []
     if not alive:
+        if stamp:
+            json.dump({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": stamp}}, sys.stdout)
         return 0
     # P5-1: only harness-issued task ids go into context, never subagent-authored command text
     # (a relayed statement must not reach the dispatching model through a hook channel).
@@ -102,6 +117,7 @@ def main():
     if event == "SubagentStop":
         out = {"systemMessage": msg}
     else:
+        msg = f"{stamp} {msg}" if stamp else msg
         out = {"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": msg}}
     json.dump(out, sys.stdout)
     return 0
