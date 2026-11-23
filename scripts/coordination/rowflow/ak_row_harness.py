@@ -18,6 +18,9 @@ closed by scripts/champion/fold_gates/fold_row_guard.py touched_libs/libs_differ
         -> alloc_ports(row_id, n): sha256(row_id) into PORT_LO..PORT_HI, excluding every ancestor id's ports
            (-r1..-r(N-1) and the bare id), bind-tested free.
 
+  (e) a smoke that exited rc=3 with no reason (12/21 smoke failures unrecoverable, 2026-11-23 failure audit A5/A6)
+        -> end_smoke(verdict, rc, reason): writes TERMINAL-smoke.json {verdict, rc, reason, ok} and logs one line to stderr.
+
 No process management: readbw is a bounded subprocess.run of the sealed bench_readbw binary; nothing is killed.
 Rows run `python3 -I`, so copy this file into the row dir (seal it in SOURCE.sha256) or sys.path.insert the installed
 compute-flags/bin/rowflow dir. CLI: `ak_row_harness.py ports <row_id> <n>` | `estimate --unit-s S --units N --loads-s L`.
@@ -329,6 +332,29 @@ def write_smoke_measure(out_dir, unit_s, units_measured, loads_s, unit_name="uni
            "utc": now(), **(extra or {})}
     p.write_text(json.dumps(rec, indent=1))
     return str(p)
+
+
+TERMINAL_SMOKE = "TERMINAL-smoke.json"
+
+
+def end_smoke(verdict, rc, reason, out_dir="out", extra=None, stream=None):
+    """The ONE way a smoke ends: writes <out_dir>/TERMINAL-smoke.json {verdict, rc, reason, ok, utc} and logs
+    `SMOKE <verdict> rc=<rc>: <reason>` to stderr, so a failed smoke always says why. Returns rc (sys.exit(end_smoke(...))).
+    A non-PASS verdict or non-zero rc with an empty reason is recorded as reason 'UNSPECIFIED ...' (and still written)."""
+    verdict = str(verdict or "FAIL").upper()
+    rc = int(rc)
+    reason = str(reason or "").strip()
+    ok = verdict == "PASS" and rc == 0
+    if not reason:
+        reason = "ok" if ok else "UNSPECIFIED (end_smoke called without a reason)"
+    p = Path(out_dir) / TERMINAL_SMOKE
+    p.parent.mkdir(parents=True, exist_ok=True)
+    rec = {"verdict": verdict, "rc": rc, "reason": reason, "ok": ok, "utc": now(), **(extra or {})}
+    tmp = p.with_name(p.name + ".tmp")
+    tmp.write_text(json.dumps(rec, indent=1))
+    os.replace(tmp, p)
+    print(f"SMOKE {verdict} rc={rc}: {reason} ({p})", file=stream or sys.stderr, flush=True)
+    return rc
 
 
 def check_spec_estimate(spec):

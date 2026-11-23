@@ -92,3 +92,15 @@ if __name__ == '__main__':
 
 def test_all() -> None:
     assert main() == 0
+
+
+def test_move_stale_covers_out_smoke(tmp_path) -> None:
+    d = str(tmp_path)
+    os.makedirs(d + '/out-smoke/stale-old'); os.makedirs(d + '/out')
+    for p in ('/out-smoke/RESULT.json', '/out-smoke/log.txt', '/out/TERMINAL-smoke.json', '/out/RESULT.json'):
+        open(d + p, 'w').write('{}')
+    dst = fg.move_stale(d + '/out-smoke', smoke=True)
+    assert sorted(os.listdir(d + '/out-smoke')) == sorted(['stale-old', os.path.basename(dst)])
+    assert sorted(os.listdir(dst)) == ['RESULT.json', 'log.txt', 'out.TERMINAL-smoke.json']
+    assert os.path.exists(d + '/out/RESULT.json')          # the real RESULT is not a smoke file
+    assert fg.move_stale(d + '/out-smoke', smoke=True) is None

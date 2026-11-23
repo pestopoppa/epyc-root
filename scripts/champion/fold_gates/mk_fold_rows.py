@@ -176,4 +176,12 @@ if __name__ == '__main__':
             fold_row_guard.install_guard(dst, GUARD)
         else:
             seal(dst)
+            # 2026-11-23 failure audit: lint the sealed row (SHA-CWD, SEALED-SPEC, STALE-OUT, SERVER-NO-TRAP, ...)
+            sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'coordination', 'rowflow'))
+            import ak_row_lint
+            res = ak_row_lint.lint_dir(dst)
+            for lvl, code, msg in res:
+                print(f'{lvl} {code} {dst}: {msg}')
+            if any(r[0] == 'FAIL' for r in res):
+                sys.exit(f'seal: {dst} fails ak_row_lint; fix before publishing')
         print(phase, dst)

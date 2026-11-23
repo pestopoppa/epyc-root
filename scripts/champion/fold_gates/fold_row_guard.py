@@ -69,8 +69,27 @@ def run_id(env=None):
     return env.get('FILLER_ID') or env.get('FILLER_GRANT_ID') or ('pid-%d-%s' % (os.getpid(), now()))
 
 
-def move_stale(out):
-    """Move a pre-existing out/RESULT.json (and RUN.json) aside. Returns the stale dir or None."""
+SMOKE_FILES = ('TERMINAL-smoke.json', 'smoke_measure.json')
+
+
+def move_stale(out, smoke=False):
+    """Move a pre-existing out/RESULT.json (and RUN.json) aside. Returns the stale dir or None.
+    smoke=True (2026-11-23 audit A4): `out` is the row's out-smoke/ dir; move EVERY entry in it (except earlier stale-*
+    dirs) plus the sibling out/TERMINAL-smoke.json and out/smoke_measure.json, so a smoke predicate can never be satisfied
+    by a previous attempt's (or a cloned row's) smoke output."""
+    if smoke:
+        names = [n for n in (os.listdir(out) if os.path.isdir(out) else []) if not n.startswith('stale-')]
+        sib = os.path.join(os.path.dirname(os.path.normpath(out)), 'out')
+        sibs = [os.path.join(sib, n) for n in SMOKE_FILES if os.path.exists(os.path.join(sib, n))]
+        if not names and not sibs:
+            return None
+        dst = os.path.join(out, 'stale-' + now())
+        os.makedirs(dst, exist_ok=True)
+        for n in names:
+            shutil.move(os.path.join(out, n), os.path.join(dst, n))
+        for p in sibs:
+            shutil.move(p, os.path.join(dst, 'out.' + os.path.basename(p)))
+        return dst
     res = os.path.join(out, 'RESULT.json')
     if not os.path.exists(res):
         return None
@@ -87,6 +106,7 @@ def cmd_run(a):
     out = os.path.join(a.dir, 'out')
     os.makedirs(out, exist_ok=True)
     if is_smoke():
+        move_stale(os.path.join(a.dir, 'out-smoke'), smoke=True)   # no stale smoke output can satisfy the predicate
         os.execv(a.cmd[0], a.cmd)   # smoke writes its own TERMINAL-smoke file; RESULT/RUN are untouched
     rid = run_id()
     stale = move_stale(out)
