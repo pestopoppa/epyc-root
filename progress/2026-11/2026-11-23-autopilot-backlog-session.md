@@ -59,3 +59,11 @@ not retried, so that class is unreplayed. Box left open with a checkpoint. Detai
 - PIN: both BSV-2 flags moved from `HOT_SWAP_FEATURES` into `PINNED_OBSERVE_ONLY_FLAGS` (the proposer's propose/apply paths refuse them); FeatureSpec, `runtime_flags.spec.yaml` and operator settability kept; `program.md` says observe-only; `test_flag_surface.py` pinned-set assertions updated.
 - STATE: `dispatch_action` populates `state["bsv2_rigor"]` (proposal batch = previous eval qids, sealed hash split, budget unit/limit) when gate+rigor are on, and `EvalTower.bsv2_exclude_qids` partitions the T1 accept draw away from proposal and sealed qids. Unit tests: valid accept passes, overlapping and sealed accepts refused, unknown batch fails closed, inert when off.
 - Tests: 153 pass (rigor, flag_surface, repl_child_lane_full); 234 pass on actions/config_applicator/eval_tower hybrid+partitions/structural_lab neighbours. Autopilot not started; nothing pushed. [no-belief: build/landing]
+
+## AP-POSTREBOOT-LH-RIGOR built (ap-lh-rigor-20261123)
+
+- Built the R1-R5 accept enforcement, loopback proxies, improver-conformance replay and launcher for the Life-Harness ALFWorld run in `scripts/harness/life_harness/` with `tests/harness/test_life_harness_glue.py` (39 pass, fakes only); box ticked `[no-belief: build/landing]`.
+- Design: the shipped round accepts on the same 50 tasks that fed the proposer, so each round now evaluates the incumbent on P_n, then a fresh parent and the candidate on a disjoint accept batch A_n; 1010 solver episodes (shipped 710).
+- Stood up the native ALFWorld env without Docker (venv, extracted data, `smoke_alfworld.py` passed); AgentRL controller binary downloaded and SHA-verified but not executed (controller/worker step classifier-denied, not retried).
+- Found and worked around eight upstream defects without editing the clone; the list and the launch recipe are under the box in `handoffs/active/autopilot-program.md`.
+- No inference, no model server; network use was package, tokenizer and controller-release downloads only. [no-belief: build/landing]
