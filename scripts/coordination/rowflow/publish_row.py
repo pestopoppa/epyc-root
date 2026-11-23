@@ -56,6 +56,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import rowflow as rf  # noqa: E402
+import ak_row_lint  # noqa: E402
 try:
     import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
 except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
@@ -245,6 +246,10 @@ def lint(spec):
     notes = []
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
     if os.path.isfile(launcher):
+        findings = ak_row_lint.lint_dir(os.path.dirname(launcher), spec=spec)
+        failures = [f"{code}: {message}" for level, code, message in findings if level == "FAIL"]
+        if failures:
+            raise rf.Refused("row lint: " + "; ".join(failures))
         errs = gpu_quiet_guard_conflicts(dict(spec, launcher=launcher))
         if errs:
             raise rf.Refused("gpu-quiet guard: " + "; ".join(errs))

@@ -209,13 +209,14 @@ def py_compile_and_selftest(d, code, selftest=True, timeout=SELFTEST_TIMEOUT_S):
     return out
 
 
-def lint_dir(d, selftest=True):
+def lint_dir(d, selftest=True, spec=None):
     out = []
-    spec = {}
-    try:
-        spec = json.loads(_read(os.path.join(d, "spec.json")) or "{}")
-    except ValueError:
-        out.append(("FAIL", "SPEC", "spec.json is not JSON"))
+    if spec is None:
+        try:
+            spec = json.loads(_read(os.path.join(d, "spec.json")) or "{}")
+        except ValueError:
+            spec = {}
+            out.append(("FAIL", "SPEC", "spec.json is not JSON"))
     rid = spec.get("id") or os.path.basename(os.path.normpath(d))
     pys = sorted(f for f in os.listdir(d) if f.endswith(".py") and f != "ak_row_harness.py")
     code = {f: _read(os.path.join(d, f)) for f in pys}

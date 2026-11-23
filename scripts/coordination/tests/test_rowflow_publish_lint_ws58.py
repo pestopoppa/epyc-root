@@ -134,7 +134,11 @@ class PublishLintTests(unittest.TestCase):
             rid = "t-warn-20261103"
             d = fx.job(rid)
             sp = os.path.join(d, "spec.json")
-            rf.atomic_json(sp, fx.spec(rid, d, handoff_task="h.md:T-OWNER"))
+            measurement = os.path.join(d, "smoke_measure.json")
+            rf.atomic_json(measurement, {"unit_s": 1, "units_measured": 1, "loads_s": 0})
+            spec = fx.spec(rid, d, handoff_task="h.md:T-OWNER")
+            spec["estimate_basis"] = {"smoke_measure": measurement, "units": 1}
+            rf.atomic_json(sp, spec)
             out = io.StringIO()
             with contextlib.redirect_stdout(out):
                 try:
