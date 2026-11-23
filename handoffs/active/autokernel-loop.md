@@ -11535,6 +11535,11 @@ Source: the independent review `/mnt/raid0/llm/tmp/codebudget-bloat-review-20261
       · rule: AutoKernel confirms the list before deletion; anything with dynamic/indirect use stays
       · candidates: `/mnt/raid0/llm/tmp/ak-deadcode-20261123/CANDIDATES.md` (+ `candidates.json`): 101 modules / 38,818 code lines (C2-01 56 / 34,320 + 45 other DEAD / 4,498); tier A (34 modules, 5,040 lines) deletable now, tier B (67 modules, 33,778 lines) needs the C2-03/C2-05 bridges re-homed first
       · 2026-11-23: scope = Tier A only. Tier B (C2-01) is live AKU code (operator ruling, LOOP-79 superseded). These 9 are KEEP: promotion_evidence, gcn_replay, stage_receipts, installed_receipt_feed, contained_authoring, variance_input_producer, maintenance_caller, qualified_serving_producer, arm_accounting. The remaining Tier A modules are checked individually (TIER-A-FINAL.md) and confirmed by AutoKernel before any deletion.
+- [x] **AK-PARETO-RETAIN-WIRE** [non-inference] Wire pareto_retain's retained front into cross_target.eligible() so cross-workload screening uses Pareto retention (AKX-PARETO-RETAIN was ticked but the module has no importer). ✅ 2026-11-23 [no-belief: software] 0961ed848 (epyc-inference-research); 243 passed/10 skipped under taskset 80-87
+      · class: non-inference
+      · owner-exec: pipeline-mgmt (operator 2026-11-23)
+      · gate: none
+      · done when: cross_target.eligible receives pareto_retain's front on the live code path, with a test proving a dominated candidate is screened out
 
 #### Loop/controller test-suite health on research main — 2026-11-19 (autokernel wrap-up 3)
 
