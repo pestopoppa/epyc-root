@@ -10142,6 +10142,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - [ ] **AKU-07n-b** [non-inference] real export-backed startup manifest and AKU-12a installed dry run (blocked on AKU-12c export repair)
           · done when: a real sealed export produces startup.json plus startup-record.json and the AKU-12a installed dry run passes on it
           · gate: none
+          · 2026-11-23 (pipeline-mgmt, AK loop-infra ruling) NOT TICKED, live clause: no real sealed export exists. The orchestrator exporter (`scripts/server/autokernel_enrollment.py --instance-mode both`) refuses today on the master registry (hand-carried LEGACY drafter fields on architect_general/frontdoor/coder_escalation/ingest_long_context vs DRAFT-SEL-1, plus the stale descriptor/priors provenance listed under AKU-12c, routed to bb). Factory + CLI (`47c8ad540`, 34 tests) already cover everything downstream; once bb lands the AKU-12c repair, run `--production-export --resolved-export --startup-config --out-dir`, then the recorded `--dry-run` command, and tick. [no-belief: software]
   - [x] **AKU-07q — construct pinned startup bundles through the enrollment factory**: ✅ 2026-09-09 _(detail → completed ledger)_
   - [x] **AKU-07z — restart a reused factory from the original scheduler seed**: ✅ 2026-09-09 _(detail → completed ledger)_
 - [ ] **AKU-08 — prospective Vidya and scoped retrieval** (AK-AUTO-08): register current-loop source
@@ -10283,6 +10284,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     - [ ] **AKU-09g5** [non-inference] service configuration, health/freshness/control acceptance and monitored reliability for the v4 producer (executes under AKU-12, HELD with it)
           · done when: the AKU-12 monitored run shows hub health/freshness/control acceptance for the v4 producer
           · gate: none
+          · 2026-11-23 (pipeline-mgmt, AK loop-infra ruling) NOT TICKED, live clause: done-when is observed hub health/freshness/control acceptance for the v4 producer inside the AKU-12 monitored run (needs compute authority, a running service and the hub reloaded onto 09g2). Producer (09g1/09g3/09g4) and hub (09g2) code are all landed with tests; nothing further is buildable offline without faking the monitored run. [no-belief: software]
   - [x] **AKU-09i — label the displayed noise threshold without inventing its estimator**: ✅ 2026-09-10 _(detail → completed ledger)_
   - [x] **AKU-09j — publish separately attributed champion capabilities without rewriting the** ✅ 2026-09-10 _(detail → completed ledger)_
   - [x] **AKU-09k — headline the measured champion trajectory against frozen production**: ✅ 2026-09-14 _(detail → completed ledger)_
@@ -10372,6 +10374,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
   - [ ] **AKU-11b** [non-inference] real-manifest standalone dry run with --provider-factory host_claim_v1
         · done when: the AKU-07n-b real startup manifest dry-runs with host_claim_v1 named and reports the provider as gated-unavailable, never fabricated
         · gate: none
+        · 2026-11-23 (pipeline-mgmt, AK loop-infra ruling) NOT TICKED (needs the real AKU-07n-b manifest). Offline part built: research `8561c8217` `startup_factory.provider_debt` now reads `host_claim_provider.activation()` (never constructs) and reports `--provider-factory host_claim_v1` as `gated_unavailable` + `gate_reason` (`activation_absent` by default), `launchable:false`; `test_host_claim_v1_named_is_gated_unavailable_never_fabricated` runs it end to end on the fixture export incl. the dry-run command (35 passed). Remaining clause: rerun on the real manifest after AKU-07n-b. [no-belief: software]
   - [x] **AKU-11c** [non-inference] build and GPU host-CPU claim specs in the host-claim provider (build role + jobs cap, gpu-quiet exclusive phase receipts)
         · done when: host_claim_v1 grants build-role and GPU-phase claims with their receipts in fake-backend tests
         · gate: none
