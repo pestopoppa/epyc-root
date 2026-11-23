@@ -100,3 +100,81 @@ def test_commit_tidy_only_empty_scratch_means_no_commit(tmp_path):
     (r / "scratch.py").write_text("")
     assert dispatch.commit_lane(r, {"id": "T", "text_sha": "x"}) is False
     assert dispatch.COMMIT_REPORTS.pop(str(r))["dropped_empty"] == ["scratch.py"]
+
+
+# ------------------------------------------------------------------------- fix 3: reviewer input + vacuity guard
+TUGR1_THINK_DIFF = (Path(__file__).parent / "taskflow_r8e_tugr1_think_diff.patch").read_text()
+TUGR1 = {"key": "TU-GR-1", "goal": "- [ ] **TU-GR-1 — Grader isolation clause.** ...",
+         "done_when": "the test exists and fails on a deliberately reachable grader",
+         "approach": ("Add isolation.py with probe_grader_access(sentinel, launcher). (2) test_isolated_launch_denies: "
+                      "launcher=[...] must yield ENOENT/EACCES; if unshare is not permitted, pytest.skip with the errno. "
+                      "Never pass vacuously (bwrap is not installed on this host)."),
+         "non_goals": ["no isolation or security claim from this test"],
+         "acceptance": "bash /r/orch-py.sh -m pytest -q scripts/autopilot/evals/dtap/tests/test_grader_isolation.py"}
+
+
+def test_vacuity_guard_flags_the_r8e_tugr1_think_transcript():
+    from taskflow import verify
+    hits = verify.vacuity_hits(TUGR1_THINK_DIFF)
+    assert len(hits) == 1 and hits[0].startswith("launcher_error:")
+    assert "test_grader_isolation.py" in hits[0]
+
+
+def test_vacuity_guard_passes_a_test_that_checks_the_errno():
+    from taskflow import verify
+    fixed = TUGR1_THINK_DIFF.replace(
+        '+    assert result.get("ok") is False\n',
+        '+    assert "launcher_error" not in result, result\n+    assert result.get("open_errno") in (errno.ENOENT, errno.EACCES)\n')
+    assert fixed != TUGR1_THINK_DIFF
+    assert verify.vacuity_hits(fixed) == []
+
+
+def test_vacuity_guard_ignores_docstrings_and_comments():
+    from taskflow import verify
+    # the r8e test file mentions ENOENT only in its docstring and a comment: that is not a check
+    assert "ENOENT" in TUGR1_THINK_DIFF
+    assert verify.vacuity_hits(TUGR1_THINK_DIFF)
+    assert verify.vacuity_hits("diff --git a/x.py b/x.py\n+++ b/x.py\n+y = 1\n") == []
+
+
+def test_vacuity_guard_rejects_before_the_reviewer(tmp_path, monkeypatch):
+    from taskflow import verify, dispatch
+    r = tmp_path / "lane"
+    r.mkdir()
+    _g(r.parent, "init", "-q", "-b", "main", str(r))
+    (r / "a.txt").write_text("a\n")
+    _g(r, "add", "a.txt")
+    _g(r, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "init")
+    base = _g(r, "rev-parse", "HEAD").strip()
+    _g(r, "apply", str(Path(__file__).parent / "taskflow_r8e_tugr1_think_diff.patch"))
+    _g(r, "add", "-A")
+    _g(r, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "w")
+    called = []
+    t = dict(TUGR1, acceptance=None, test_cmds=[], forbidden=[], where=[],
+             outputs=["scripts/autopilot/evals/dtap/harness/isolation.py",
+                      "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py"], inputs=[])
+    v = verify.verify(t, r, base, reviewer=lambda *a: called.append(a) or {"verdict": "done"})
+    assert v["verdict"] == "rejected" and v["reason"] == "vacuous-acceptance", v
+    assert not called
+    w = {"usage": {"steps": 12}, "errors": [], "tools": ["edit"] * 12, "tool_errors": [], "timed_out": False}
+    assert dispatch.failure_class(w, v, t) == "model-limitation"
+
+
+def test_review_prompt_carries_ra_log_and_vacuity_clauses():
+    from taskflow import verify
+    log = ("..s\nPASSED tests/t.py::test_reachable_grader_is_flagged\n"
+           "SKIPPED [1] tests/t.py:40: unshare not available\n=== 1 passed, 1 skipped ===\n")
+    ra = verify.ra_lines(log)
+    assert ra == ["PASSED tests/t.py::test_reachable_grader_is_flagged", "SKIPPED [1] tests/t.py:40: unshare not available"]
+    p = verify.review_prompt(dict(TUGR1, acceptance_result={"rc": 0, "tail": "2 passed", "ra": ra}), "diff")
+    assert "ACCEPTANCE LOG (pytest -rA" in p and "SKIPPED [1]" in p
+    assert "MUST NOT PASS VACUOUSLY" in p and "Never pass vacuously" in p and "pytest.skip with the errno" in p
+    assert "launcher error counted as a denial" in p
+    assert "no isolation or security claim" in p          # non-goals still there
+
+
+def test_acceptance_runs_with_ra():
+    from taskflow import verify
+    assert verify.with_ra("bash /r/orch-py.sh -m pytest -q t.py") == "bash /r/orch-py.sh -m pytest -q t.py -rA"
+    assert verify.with_ra("pytest -q -rfE t.py") == "pytest -q -rfE t.py"
+    assert verify.with_ra("bash scripts/validate.sh") == "bash scripts/validate.sh"

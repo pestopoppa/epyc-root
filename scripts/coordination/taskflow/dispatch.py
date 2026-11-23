@@ -715,6 +715,8 @@ def failure_class(w: dict, v: dict, task: dict | None = None) -> str | None:
         named = verify.approach_new_paths(task)
         if out and all(p in named for p in out):
             return "task"       # r8b TU-GR-1: the approach named the files, the pathspec omitted them
+    if reason == "vacuous-acceptance":
+        return "model-limitation"   # r8e fix 3 (TU-GR-1 think): the worker's test passes on a launcher error
     if missing_test_file(v, task):
         return "model-limitation"   # r8c WS4 nothink: rc=4 = the acceptance test was never written, not env
     real_test_fail = reason == "tests-fail" and not _env_test_failure(v)

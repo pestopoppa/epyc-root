@@ -105,12 +105,29 @@ def outside_pathspec(paths: list[str], task: dict, added: set[str] | frozenset =
             and not (p.startswith("tests/") and Path(p).name.startswith("test_"))]
 
 
+_RA_LINE = re.compile(r"^(PASSED|SKIPPED|XFAIL|XPASS|FAILED|ERROR) .*$", re.M)
+
+
+def ra_lines(text: str, cap: int = 40) -> list[str]:
+    """pytest `-rA` short-summary lines (pass / skip / xfail / ...) -- r8e fix 3: the reviewer sees which tests ran."""
+    return [m.group(0)[:200] for m in _RA_LINE.finditer(text or "")][:cap]
+
+
+def with_ra(cmd: str) -> str:
+    """Append `-rA` to a pytest command that does not already pick its own -r report chars."""
+    toks = cmd.split()
+    if "pytest" in cmd and not any(t.startswith("-r") for t in toks):
+        return cmd + " -rA"
+    return cmd
+
+
 def run_tests(lane: Path, cmds: list[str]) -> list[dict]:
     out = []
     for c in cmds:
         try:
             r = subprocess.run(c, shell=True, cwd=str(lane), capture_output=True, text=True, timeout=TEST_TIMEOUT_S)
-            out.append({"cmd": c, "rc": r.returncode, "tail": (r.stdout + r.stderr)[-600:]})
+            out.append({"cmd": c, "rc": r.returncode, "tail": (r.stdout + r.stderr)[-600:],
+                        "ra": ra_lines(r.stdout + r.stderr)})
         except subprocess.TimeoutExpired:
             out.append({"cmd": c, "rc": 124, "tail": "timeout"})
     return out
@@ -151,21 +168,104 @@ def acceptance_cmd(task: dict) -> str | None:
     return a if a and _RUNNABLE.match(a) else None
 
 
+_GUARD = re.compile(r"vacuous|never pass|must (?:yield|fail|raise|report|deny|skip)|pytest\.skip|skip with", re.I)
+
+
+def approach_guards(task: dict) -> list[str]:
+    """The approach's "never pass vacuously" clauses (r8e fix 3: TU-GR-1 think passed a vacuous isolation test)."""
+    txt = str(task.get("approach") or "")
+    return [c.strip() for c in re.split(r"(?<=[.;])\s+|\n", txt) if c.strip() and _GUARD.search(c)][:8]
+
+
+# r8e fix 3 (TU-GR-1 think, false verify): the probe returned {"ok": False, "launcher_error": "json-parse-failed"} because
+# the launcher exec'd the sentinel dir as $0, and the "isolated launch denies" test asserted only ok is False. A probe
+# that errored is not a denial. Deterministic guard: the diff's code produces a launcher_error-shaped result, a test
+# asserts a denial through ok/unreachable, and no test line distinguishes a real denial (errno / ENOENT / EACCES /
+# launcher_error) from the error.
+_LAUNCHER_ERR = re.compile(r"""["'](?:launcher_error|probe_error)["']\s*:|json-parse-failed""")
+_DENIAL_ASSERT = re.compile(r"""assert\s+not\s+[\w.\[\]"'()]*ok\b|\.get\(\s*["']ok["']\s*\)\s*(?:is\s+False|==\s*False)|"""
+                            r"""\[\s*["']ok["']\s*\]\s*(?:is\s+False|==\s*False)|assert_\w*unreachable\s*\(""")
+_DISCRIMINATES = re.compile(r"\berrno\b|\bE(?:NOENT|ACCES|PERM)\b|launcher_error|probe_error|open_errno")
+
+
+def _diff_files(diff: str) -> dict[str, tuple[bool, list[str]]]:
+    """{path: (new_file, added_lines)} from a unified git diff."""
+    out: dict[str, tuple[bool, list[str]]] = {}
+    cur, new = None, False
+    for ln in diff.splitlines():
+        if ln.startswith("diff --git "):
+            cur, new = None, False
+        elif ln.startswith("new file mode"):
+            new = True
+        elif ln.startswith("+++ "):
+            cur = ln[6:] if ln.startswith("+++ b/") else None
+            if cur:
+                out[cur] = (new, [])
+        elif cur and ln.startswith("+") and not ln.startswith("+++"):
+            out[cur][1].append(ln[1:])
+    return out
+
+
+def _code_only(src: str, whole: bool) -> str:
+    """Source without comments and docstrings (ast for a whole new file; comment strip for a partial hunk)."""
+    if whole:
+        try:
+            import ast
+            tree = ast.parse(src)
+            for node in ast.walk(tree):
+                body = getattr(node, "body", None)
+                if isinstance(body, list) and body and isinstance(body[0], ast.Expr) \
+                        and isinstance(getattr(body[0], "value", None), ast.Constant) and isinstance(body[0].value.value, str):
+                    body.pop(0)
+                    if not body:
+                        body.append(ast.Pass())
+            return ast.unparse(tree)
+        except (SyntaxError, ValueError):
+            pass
+    return "\n".join(re.sub(r"\s#.*$|^\s*#.*$", "", ln) for ln in src.splitlines())
+
+
+def vacuity_hits(diff: str) -> list[str]:
+    """Reasons the acceptance can pass without exercising the thing under test ([] = no finding)."""
+    files = _diff_files(diff)
+    src, tests = [], []
+    for p, (new, lines) in files.items():
+        if not p.endswith(".py"):
+            continue
+        code = _code_only("\n".join(lines), new)
+        (tests if Path(p).name.startswith("test_") else src).append((p, code))
+    hits = []
+    err = [p for p, c in src + tests if _LAUNCHER_ERR.search(c)]
+    deny = [p for p, c in tests if _DENIAL_ASSERT.search(c)]
+    disc = [p for p, c in tests if _DISCRIMINATES.search(c)]
+    if err and deny and not disc:
+        hits.append(f"launcher_error: {','.join(err)} returns an error-shaped probe result and {','.join(deny)} "
+                    "asserts a denial without checking errno / launcher_error, so a launcher failure passes as a denial")
+    return hits
+
+
 def review_prompt(task: dict, diff: str) -> str:
     """Reviewer input (P4, §7): verbatim box + done-when + acceptance and its result + non-goals + the diff."""
     acc = task.get("acceptance")
     res = task.get("acceptance_result")
     res_txt = ("(not run: not a runnable command)" if res is None else
                f"rc={res.get('rc')}\n{str(res.get('tail') or '')[-400:]}")
+    if res is not None and res.get("ra"):
+        res_txt += "\n\n## ACCEPTANCE LOG (pytest -rA: every test's outcome)\n" + "\n".join(res["ra"])
     ng = task.get("non_goals") or []
+    guards = approach_guards(task)
     return ("# REVIEW\nYou review a worker's diff for the box below. Answer ONLY JSON "
             '{"verdict":"done|not_done|drift","reason":"<=150 chars"}. done = the diff fully does what the box '
             "asks AND meets its DONE WHEN; not_done = partial, wrong, or the DONE WHEN is not met; drift = changes "
-            "things the box did not ask for, or does any NON-GOAL. Check the DONE WHEN clause item by item.\n\n## BOX\n"
+            "things the box did not ask for, or does any NON-GOAL. Check the DONE WHEN clause item by item. A test that "
+            "passes without exercising what it claims (a SKIPPED case, or a probe/launcher error counted as a denial) "
+            "does not meet the DONE WHEN: answer not_done.\n\n## BOX\n"
             + task["goal"] + "\n\n## DONE WHEN\n" + str(task.get("done_when") or "(see box)")
             + "\n\n## ACCEPTANCE\n" + (str(acc) if acc else "(no brief acceptance)")
             + "\n\n## ACCEPTANCE RESULT\n" + res_txt
             + "\n\n## NON-GOALS\n" + ("\n".join(f"- {g}" for g in ng) if ng else "(none stated)")
+            + ("\n\n## MUST NOT PASS VACUOUSLY (from the approach)\n" + "\n".join(f"- {g}" for g in guards)
+               if guards else "")
             + "\n\n## DIFF\n" + diff[:12000])
 
 
@@ -209,7 +309,11 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
     acc = acceptance_cmd(task)
     if acc and acc not in [" ".join(c.split()) for c in cmds]:
         cmds.append(acc)
-    runs = run_tests(lane, cmds)
+    acc_ra = with_ra(acc) if acc else None              # r8e fix 3: the acceptance runs with -rA for the reviewer
+    runs = run_tests(lane, [acc_ra if acc and " ".join(c.split()) == acc else c for c in cmds])
+    for r in runs:                                      # evidence / done_when see the command as the packet wrote it
+        if acc and " ".join(r["cmd"].split()) == acc_ra:
+            r["cmd"], r["ran"] = acc, acc_ra
     ev["commands"] = [{"cmd": r["cmd"], "rc": r["rc"]} for r in runs]
     acc_run = next((r for r in runs if acc and " ".join(r["cmd"].split()) == acc), None)
     if acc_run:
@@ -218,6 +322,10 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
     if not rec("tests", not failed, "; ".join(f"{r['cmd']} rc={r['rc']}" for r in failed)):
         return {"verdict": "rejected", "reason": "tests-fail", "checks": checks, "evidence": ev,
                 "test_tail": failed[0]["tail"]}
+    diff = _git(lane, "diff", f"{base_ref}..HEAD", "--", ".", *([f":(exclude){own_brief}"] if own_brief else []))
+    vac = vacuity_hits(diff)                            # r8e fix 3: deterministic, before done_when and the reviewer
+    if not rec("vacuity", not vac, "; ".join(vac)[:300]):
+        return {"verdict": "rejected", "reason": "vacuous-acceptance", "checks": checks, "evidence": ev}
     res, why = _done_when().check(task.get("done_when"), ev, str(lane))
     rec("done_when", res != "fail", f"{res}: {why}")
     if res == "fail":
@@ -227,7 +335,6 @@ def verify(task: dict, lane: Path, base_ref: str, evidence: dict | None = None, 
         return {"verdict": "verified", "reason": "mechanical", "checks": checks, "evidence": ev, **hold}
     if reviewer is None:
         return {"verdict": "unchecked", "reason": "no-machine-done-when", "checks": checks, "evidence": ev}
-    diff = _git(lane, "diff", f"{base_ref}..HEAD", "--", ".", *([f":(exclude){own_brief}"] if own_brief else []))
     rv = reviewer(dict(task, acceptance_result=acc_run), diff) or {}
     rec("reviewer", rv.get("verdict") == "done", f"{rv.get('verdict')}: {str(rv.get('reason', ''))[:200]}")
     ok = rv.get("verdict") == "done"

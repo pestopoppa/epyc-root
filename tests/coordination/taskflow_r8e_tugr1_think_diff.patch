@@ -1,0 +1,201 @@
+diff --git a/scripts/autopilot/evals/dtap/harness/isolation.py b/scripts/autopilot/evals/dtap/harness/isolation.py
+new file mode 100644
+index 00000000..0f35e15c
+--- /dev/null
++++ b/scripts/autopilot/evals/dtap/harness/isolation.py
+@@ -0,0 +1,126 @@
++"""Grader-isolation probe for the DTAP tool-use harness.
++
++Launches a child process that attempts to read a sentinel file representing
++a grader / reference artifact and reports the OS-level result (ok or errno).
++Provides ``assert_grader_unreachable`` that raises ``GraderReachable`` when
++the probe indicates successful access.
++
++Intended use: ``probe_grader_access(sentinel, launcher)`` where ``launcher``
++is an argv prefix (e.g. ``['unshare', '--user', '--mount', 'sh', '-c',
++'mount -t tmpfs none <dir> && exec "$@"', '--']``) or ``[]`` to probe in
++the current process as a control.
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++import os
++import subprocess
++import uuid
++from pathlib import Path
++
++
++class GraderReachable(Exception):
++    """Raised when the isolation probe found the grader artifact accessible."""
++
++    def __init__(self, probe_result: dict) -> None:
++        self.probe_result = probe_result
++        super().__init__(
++            "Grader artifact reachable: "
++            f"open ok={probe_result.get('open_ok')}, errno={probe_result.get('open_errno')}, "
++            f"uid={probe_result.get('uid')}"
++        )
++
++
++def _child_probe(sentinel: Path) -> dict:
++    """Probe inside the child: try open + listdir parent, report JSON."""
++    result: dict = {
++        "open_ok": False,
++        "open_errno": None,
++        "listdir_ok": False,
++        "listdir_errno": None,
++        "uid": os.getuid(),
++        "gid": os.getgid(),
++    }
++    try:
++        with open(sentinel, "rb") as fh:
++            content = fh.read()
++            result["open_ok"] = True
++            result["open_sha256"] = hashlib.sha256(content).hexdigest()
++    except OSError as exc:
++        result["open_errno"] = exc.errno
++
++    parent = sentinel.parent
++    try:
++        entries = os.listdir(parent)
++        result["listdir_ok"] = True
++        result["listdir_count"] = len(entries)
++    except OSError as exc:
++        result["listdir_errno"] = exc.errno
++
++    try:
++        with open("/proc/self/mountinfo", "r") as fh:
++            raw = fh.read()
++            result["mountinfo_sha256"] = hashlib.sha256(raw.encode()).hexdigest()
++    except OSError:
++        result["mountinfo_sha256"] = None
++
++    return result
++
++
++def probe_grader_access(
++    sentinel: Path, launcher: list[str] | None = None
++) -> dict:
++    """Probe whether *sentinel* is reachable from a launched child process.
++
++    Parameters
++    ----------
++    sentinel : Path
++        Path to a file containing a unique token (the grader sentinel).
++        The parent directory must already exist.
++    launcher : list[str] | None
++        Extra argv prefix prepended to the child probe command.  Pass
++        ``[]`` to run the probe in the current process (no isolation).
++
++    Returns
++    -------
++    dict  with keys ``ok``, ``open_ok``, ``open_errno``, ``listdir_ok``,
++          ``listdir_errno``, ``uid``, ``gid``, ``mountinfo_sha256``.
++    """
++    sentinel = Path(sentinel)
++    child_args = [str(sentinel), str(sentinel.parent)]
++
++    if launcher is not None and len(launcher) > 0:
++        cmd = launcher + child_args
++    else:
++        # No launcher: probe in the current process directly.
++        result = _child_probe(sentinel)
++        result["ok"] = result["open_ok"]
++        result["launcher"] = "current-process"
++        return result
++
++    proc = subprocess.run(
++        cmd,
++        stdout=subprocess.PIPE,
++        stderr=subprocess.PIPE,
++        timeout=10,
++        text=False,
++    )
++    try:
++        result = json.loads(proc.stdout.decode(errors="replace").strip())
++    except (json.JSONDecodeError, ValueError):
++        result = {"ok": False, "launcher_error": "json-parse-failed"}
++
++    result["ok"] = result.get("open_ok", False)
++    result["launcher"] = " ".join(launcher) if launcher else "current-process"
++    return result
++
++
++def assert_grader_unreachable(result: dict) -> None:
++    """Raise ``GraderReachable`` when the probe found the artifact accessible.
++
++    The sentinel file was reachable (open succeeded or the parent directory
++    was traversable).  This signals that the isolation boundary has failed.
++    """
++    if result.get("ok") or result.get("open_ok"):
++        raise GraderReachable(result)
+diff --git a/scripts/autopilot/evals/dtap/tests/test_grader_isolation.py b/scripts/autopilot/evals/dtap/tests/test_grader_isolation.py
+new file mode 100644
+index 00000000..fd494bb4
+--- /dev/null
++++ b/scripts/autopilot/evals/dtap/tests/test_grader_isolation.py
+@@ -0,0 +1,63 @@
++"""Grader-isolation tests for the DTAP tool-use harness.
++
++Proves that the ``probe_grader_access`` + ``assert_grader_unreachable``
++infrastructure works by:
++
++1. Running a probe with ``launcher=[]`` (current process) where a sentinel
++   file deliberately placed on-disk is reachable -- the assertion must raise.
++2. Running a probe inside a user/mount namespace via ``unshare`` where the
++   sentinel directory is remounted as an empty tmpfs -- the probe must report
++   denial (ENOENT).
++"""
++import os
++import subprocess
++import tempfile
++import uuid
++from pathlib import Path
++
++import pytest
++
++from harness.isolation import GraderReachable, probe_grader_access, assert_grader_unreachable
++
++
++def test_reachable_grader_is_flagged(tmp_path: Path) -> None:
++    """Probe with launcher=[] in the current process: sentinel is reachable, so the
++    assertion must raise GraderReachable."""
++    token = uuid.uuid4().hex
++    sentinel = tmp_path / token
++    sentinel.touch()
++
++    result = probe_grader_access(sentinel, launcher=[])
++    assert result.get("ok") is True
++    with pytest.raises(GraderReachable) as exc_info:
++        assert_grader_unreachable(result)
++    assert isinstance(exc_info.value.probe_result, dict)
++
++
++def test_isolated_launch_denies(tmp_path: Path) -> None:
++    """Probe inside an unshare namespace: the sentinel directory is remounted
++    as an empty tmpfs, so the file is not found.  If unshare is not available
++    the test is skipped."""
++    token = uuid.uuid4().hex
++    sentinel = tmp_path / token
++    sentinel.touch()
++
++    # unshare flags; directory substitution
++    sentinel_dir = str(sentinel.parent)
++    mount_cmd = f"mount -t tmpfs none {sentinel_dir} && exec $0 {sentinel}"
++    launcher = [
++        "unshare", "--user", "--map-root-user", "--mount",
++        "sh", "-c", mount_cmd,
++        sentinel_dir,  # becomes $0 for exec; rest is $@
++    ]
++
++    # Skip if unshare is not available (never pass vacuously).
++    try:
++        subprocess.run(["unshare", "--help"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
++    except (FileNotFoundError, subprocess.TimeoutExpired):
++        pytest.skip("unshare not available on this host")
++
++    result = probe_grader_access(sentinel, launcher=launcher)
++    # The mount hides the sentinel file; open should report ENOENT.
++    assert result.get("ok") is False
++    assert_grader_unreachable(result)  # should pass silently (no exception)
