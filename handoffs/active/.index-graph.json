@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T12:35:19Z",
+  "generated_at": "2026-11-23T13:19:23Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1371,15 +1371,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 949,
-      "dispatchable": 126,
+      "closed": 951,
+      "dispatchable": 124,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-23",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 126,
+      "open": 124,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1508,7 +1508,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 16,
+          "dispatchable": 14,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1526,7 +1526,7 @@
           ],
           "line": 10972,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 16,
+          "open": 14,
           "readiness": "blocked"
         }
       ]
