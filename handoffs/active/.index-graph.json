@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T14:44:23Z",
+  "generated_at": "2026-11-23T14:55:47Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1371,15 +1371,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 951,
-      "dispatchable": 130,
+      "closed": 953,
+      "dispatchable": 129,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-23",
       "next_action": "DTREE P2 27B T9 oracle fix + identity row; Q38FN-DRAFT-FA-WINDOW; SCLK-CAPT re-run; GAP-1-SAMPLE/IDSORT row; AA-bisect r4; TESTS-RED",
-      "open": 130,
+      "open": 129,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1471,7 +1471,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 29,
+          "dispatchable": 28,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1479,7 +1479,7 @@
           ],
           "line": 7516,
           "name": "autokernel-unified-surface-program",
-          "open": 29,
+          "open": 28,
           "readiness": "blocked"
         },
         {
