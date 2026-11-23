@@ -1,0 +1,45 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-LOOP-CODE-BUDGET-TOTAL-RAISE-20261123",
+  "status": "ratified",
+  "ratified_at": "2026-11-23T10:43:01Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "reason": "corrects stale-clone execution of the 2026-11-23 total ratify; operator ruling measured+2%",
+  "operator_decisions": {
+    "1": "2026-11-23 operator: total code-line ceiling = measured + 2% headroom (correction of a stale-clone execution)"
+  },
+  "items": {
+    "1": "research scripts/kernel_rnd/autokernel/loop_code_budget_baseline.json: total_ceiling 126598 -> 129130"
+  },
+  "old": {
+    "total_ceiling": 126598,
+    "total_ceiling_approval": "RATIFY-AK-LOOP-CODE-BUDGET-TOTAL-20261123",
+    "research_commit": "dab0660a7"
+  },
+  "new": {
+    "total_ceiling": 129130,
+    "total_ceiling_approval": "RATIFY-AK-LOOP-CODE-BUDGET-TOTAL-RAISE-20261123"
+  },
+  "sizing": {
+    "rule": "total_ceiling = max(floor, ceil(measured_total_at_signing * 1.02))",
+    "formula": "ceil(measured_total * 1.02)",
+    "floor": 129130,
+    "metric": "guard code-only metric: sum(composition_by_file(loop/)) in check_regrowth_guards",
+    "measured_total": 126618,
+    "headroom_pct": 2,
+    "headroom_lines": 2512,
+    "ceil_measured_x_1_02": 129151
+  },
+  "fields_changed": [
+    "total_ceiling",
+    "total_ceiling_approval"
+  ],
+  "obligation": "any later raise of total_ceiling is a new operator ratify; lowering is ordinary code (--tighten-total)",
+  "base_origin_main": "1173776a81373c16c46f07e454cbdf1bb052aaab",
+  "research_base": "76e285db2997a5ec3f4f1cd303455ea71bc15a2a",
+  "research_commit_new": "b6693b287e2e73b1fa9b6bb0fd807dd2591ee4d5",
+  "applied_by": "scripts/operator/ratify_ak_loop_code_budget_total_raise_20261123.sh",
+  "ratify_script_sha256": "cdc7e170c9d2baf6e23fbdf45d3df758ff2fbe131d8789652b70d814bbbb2e14",
+  "processes_touched": []
+}
