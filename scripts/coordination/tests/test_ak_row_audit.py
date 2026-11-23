@@ -197,6 +197,21 @@ def test_reseal_preserves_extra_sealed_files(tmp_path):
     assert f"{MK._sha(str(d / 'lp_common.py'))}  lp_common.py" in sums.read_text()
 
 
+def test_server_stays_in_job_session_and_kill_tree_reaps_children(tmp_path):
+    import subprocess
+    job = MK.JOB
+    assert "start_new_session" not in job and "killpg" not in job and "H.kill_tree(p)" in job
+    # a "server" that forks a child; same session/pgrp as this test process, as the template now starts it
+    p = subprocess.Popen(["/bin/sh", "-c", "sleep 300 & sleep 300 & wait"])
+    time.sleep(0.5)
+    assert os.getsid(p.pid) == os.getsid(0) and os.getpgid(p.pid) == os.getpgid(0)
+    kids = H.descendants(p.pid)
+    assert len(kids) >= 2
+    assert H.kill_tree(p, term_wait=5) == []
+    assert p.poll() is not None
+    assert not [k for k in kids if os.path.exists(f"/proc/{k}") and not open(f"/proc/{k}/stat").read().split(")")[-1].split()[0] == "Z"]
+
+
 def test_mk_ak_row_refuses_existing_and_withholds_spec_on_fail(tmp_path, monkeypatch):
     rid = "ak-mk-bad-20261124"
     monkeypatch.setattr(MK, "lint", lambda d: [("FAIL", "X", "y")])

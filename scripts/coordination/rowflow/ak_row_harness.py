@@ -48,6 +48,49 @@ SMOKE_MEASURE = "smoke_measure.json"
 RID_RX = re.compile(r"^(?P<base>.+?)-r(?P<n>\d+)$")
 
 
+def descendants(pid):
+    """Pids of every live descendant of `pid` (via /proc ppid links), deepest first. The server is NOT started in its own
+    session (start_new_session=True hides the job's GPU/KFD use from the keeper), so reaping its children is done here
+    by captured pid, never by killpg."""
+    kids = {}
+    for e in os.listdir("/proc"):
+        if e.isdigit():
+            try:
+                st = open(f"/proc/{e}/stat").read()
+                kids.setdefault(int(st[st.rindex(")") + 2:].split()[1]), []).append(int(e))
+            except (OSError, ValueError, IndexError):
+                pass
+    out, stack = [], [pid]
+    while stack:
+        for c in kids.get(stack.pop(), []):
+            out.append(c)
+            stack.append(c)
+    return out[::-1]
+
+
+def kill_tree(p, term_wait=30):
+    """TERM then KILL the captured Popen `p` and all of its descendants (collected first, before the parent exits and the
+    children are reparented); wait for p; return the descendant pids still alive afterwards (empty = fully reaped)."""
+    import signal as _sig
+    kids = descendants(p.pid) if p.poll() is None else []
+    for sig, wait in ((_sig.SIGTERM, term_wait), (_sig.SIGKILL, 30)):
+        for pid in kids + ([p.pid] if p.poll() is None else []):
+            try:
+                os.kill(pid, sig)
+            except OSError:
+                pass
+        t0 = time.time()
+        while time.time() - t0 < wait:
+            if p.poll() is not None and not [k for k in kids if os.path.exists(f"/proc/{k}")]:
+                return []
+            time.sleep(0.1)
+    try:
+        p.wait(1)
+    except subprocess.TimeoutExpired:
+        pass
+    return [k for k in kids if os.path.exists(f"/proc/{k}")]
+
+
 def now():
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 

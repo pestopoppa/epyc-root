@@ -83,16 +83,10 @@ def ports():
 
 
 def _kill_servers(*_a):
-    """Kill only the servers this job started (captured Popen handles), TERM then KILL, and confirm they are gone."""
+    """Kill only the servers this job started (captured Popen handles) and their children, TERM then KILL, by pid."""
     while _SERVERS:
         p = _SERVERS.pop()
-        if p.poll() is None:
-            p.terminate()
-            try:
-                p.wait(30)
-            except subprocess.TimeoutExpired:
-                p.kill()
-                p.wait(30)
+        H.kill_tree(p)
 
 
 def _on_term(signum, _frame):
@@ -108,7 +102,7 @@ def start_server(argv, log_path, env=None):
     """Start a server process owned (and killed at exit) by this job."""
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
     log = open(log_path, "ab")
-    p = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, env=env, start_new_session=True)
+    p = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, env=env)   # same session/pgrp as the job: the keeper attributes GPU/KFD use to the grant
     _SERVERS.append(p)
     return p
 
