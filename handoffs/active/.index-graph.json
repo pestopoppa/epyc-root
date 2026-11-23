@@ -321,7 +321,7 @@
       "from": "INF-50",
       "kind": "ref",
       "to": "INF-65",
-      "weight": 11
+      "weight": 12
     },
     {
       "from": "INF-59",
@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-23T17:46:24Z",
+  "generated_at": "2026-11-23T17:57:02Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1973,7 +1973,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1922,
+          "line": 1923,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1982,7 +1982,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2050,
+          "line": 2051,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1991,7 +1991,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2382,
+          "line": 2383,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2000,7 +2000,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2483,
+          "line": 2484,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2009,7 +2009,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3037,
+          "line": 3038,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2021,7 +2021,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3175,
+          "line": 3176,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2033,7 +2033,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3182,
+          "line": 3183,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
