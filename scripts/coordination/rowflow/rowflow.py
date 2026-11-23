@@ -3554,6 +3554,10 @@ def own_pids(flags, g, cand=()):
             if str(x or "").isdigit():
                 pids |= tree_pids(int(x)) | {int(x)}
     rest = [q for q in (cand or ()) if q not in pids]
+    if rest:   # c20-fold 2026-11-23: AK jobs start llama-server with start_new_session; FILLER_ID survives in its env
+        envd = {q for q in rest if pid_cgroup_row(q) in (None, g["id"]) and pid_filler_id(q) == g["id"]}
+        pids |= envd
+        rest = [q for q in rest if q not in envd]
     return pids | row_container_pids(g["id"], rest) if rest else pids
 
 
@@ -5598,20 +5602,75 @@ def gpu_idle_state_path(flags):
     return os.path.join(state_dir(flags), "gpu_idle.json")
 
 
-def gpu_grant_busy(flags, g, util, occ):
-    """(busy, why) of a GPU-token grant by GPU SIGNALS only - its own KFD clients (and their VRAM) and the device
-    busy %. Busy when the grant's process tree holds any KFD client OR the device reads >= IDLE_PCT; quiet only when
-    both are silent. CPU % is never consulted (ak-asm-t1-harness: a running GPU harness read IDLE-HELD by CPU %)."""
-    own = own_pids(flags, g, (occ.get("pids") or {}))
-    kfd = {p: v for p, v in (occ.get("pids") or {}).items() if p in own}
+GPU_OWN_VRAM_BUSY_B = 1 << 30   # own KFD clients holding more than this are busy (AK request 2026-11-23)
+GPU_RECENT_WRITE_S = 120         # a file written in the row's workdir/out dir this recently = busy (AK request 2026-11-23)
+
+
+def _environ_readable(pid):
+    try:
+        with open(f"/proc/{int(pid)}/environ", "rb"):
+            return True
+    except FileNotFoundError:
+        return True    # gone: nothing left to attribute
+    except (OSError, ValueError):
+        return False
+
+
+def row_last_write_age(flags, g, now=None, max_entries=4000):
+    """Seconds since the newest file write under the row's workdir (scratch_root) or its out dir (two levels deep,
+    bounded); None when no such dir is readable."""
+    now = time.time() if now is None else now
+    rid = g["id"]
+    spec = load_json(ready_path(flags, rid)) or {}
+    dirs = [os.path.normpath(spec.get("scratch_root") or TMP + rid)]   # never dryrun/<rid>: the keeper writes ARMED.json there
+    if spec.get("out_dir"):
+        dirs.append(spec["out_dir"])
+    newest, seen = None, 0
+    stack = [(d, 0) for d in dirs]
+    while stack and seen < max_entries:
+        d, depth = stack.pop()
+        try:
+            it = os.scandir(d)
+        except OSError:
+            continue
+        with it:
+            for e in it:
+                seen += 1
+                try:
+                    st = e.stat(follow_symlinks=False)
+                except OSError:
+                    continue
+                newest = st.st_mtime if newest is None else max(newest, st.st_mtime)
+                if depth < 2 and e.is_dir(follow_symlinks=False):
+                    stack.append((e.path, depth + 1))
+    return None if newest is None else max(0.0, now - newest)
+
+
+def gpu_grant_busy(flags, g, util, occ, now=None):
+    """(busy, why) of a GPU-token grant. Busy when ANY of: the grant's own processes (cgroup leaf, process tree, or
+    FILLER_ID=<rid> in the environ of a KFD client - AK servers run under start_new_session) are KFD clients (any VRAM;
+    > GPU_OWN_VRAM_BUSY_B is reported as such); a KFD client's environ is unreadable and it is in no other row's cgroup
+    (fail closed); the row's workdir/out dir saw a write in the last GPU_RECENT_WRITE_S; the device reads >= IDLE_PCT;
+    the device is unreadable. Quiet only when all are silent. CPU % is never consulted (ak-asm-t1-harness)."""
+    cands = occ.get("pids") or {}
+    own = own_pids(flags, g, cands)
+    kfd = {p: v for p, v in cands.items() if p in own}
     busy_pct = (util.get("gpu") or {}).get("busy") if isinstance(util, dict) else None
     if kfd:
-        return True, f"{len(kfd)} own KFD client(s) {','.join(map(str, sorted(kfd)[:4]))} hold {sum(kfd.values()) / (1 << 30):.1f} GiB"
+        tot = sum(kfd.values())
+        tag = "> 1 GiB VRAM" if tot > GPU_OWN_VRAM_BUSY_B else "KFD"
+        return True, f"{len(kfd)} own KFD client(s) {','.join(map(str, sorted(kfd)[:4]))} hold {tot / (1 << 30):.1f} GiB ({tag})"
+    opaque = [p for p in cands if p not in own and pid_cgroup_row(p) is None and not _environ_readable(p)]
+    if opaque:
+        return True, f"KFD client(s) {','.join(map(str, sorted(opaque)[:4]))} unattributable (environ unreadable; never idle on no evidence)"
     if busy_pct is not None and busy_pct >= hostutil.IDLE_PCT:
         return True, f"device {busy_pct:.0f}% busy"
-    if busy_pct is None and not (occ.get("pids") or {}) and occ.get("vram_used") is None:
+    age = row_last_write_age(flags, g, now)
+    if age is not None and age <= GPU_RECENT_WRITE_S:
+        return True, f"row dir written {age:.0f}s ago"
+    if busy_pct is None and not cands and occ.get("vram_used") is None:
         return True, "device unreadable (never idle on no evidence)"
-    return False, f"no own KFD client, device {busy_pct if busy_pct is not None else '?'}% busy"
+    return False, f"no own KFD client, device {busy_pct if busy_pct is not None else '?'}% busy, last row write {'?' if age is None else f'{age:.0f}s'} ago"
 
 
 def log_transition(flags, kind, current, log, persist=True):

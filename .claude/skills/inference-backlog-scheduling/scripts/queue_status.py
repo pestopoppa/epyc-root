@@ -85,6 +85,20 @@ def _hostutil():
     return hostutil
 
 
+def _gpu_idle(flags, rid, util):
+    """["gpu-quiet"] only when rowflow.gpu_grant_busy() (own KFD clients incl. FILLER_ID env, VRAM, recent row-dir
+    writes, device %) calls the grant quiet; any error reads busy (a sample between short server loads is not idle)."""
+    try:
+        rf = _rowflow()
+        g = next((g for g in rf.open_grants(flags) if g["id"] == rid), None)
+        if g is None:
+            return []
+        busy, _ = rf.gpu_grant_busy(flags, g, util, rf.gpu_occupancy())
+        return [] if busy else ["gpu-quiet"]
+    except Exception:  # noqa: BLE001 - fail closed toward busy
+        return []
+
+
 def _rowflow():
     """scripts/coordination/rowflow/rowflow.py: status()/runnable() are THE keeper predicate; this page never re-derives it."""
     _hostutil()   # puts the rowflow dir on sys.path
@@ -290,6 +304,8 @@ def main(argv=None) -> int:
             if guard:
                 x["guard"] = guard   # idle on purpose (pre-registered contention guard): GUARD, never IDLE-HELD
             idle = [t for t in idle if t not in guard]
+            if "gpu-quiet" in idle and x.get("id"):   # GPU token: the keeper's own predicate, never device % alone
+                idle = [t for t in idle if t != "gpu-quiet"] + _gpu_idle(a.flags, x["id"], util)
             if idle:
                 x["idle_held"] = idle
     if a.json:
