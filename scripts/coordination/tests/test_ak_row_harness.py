@@ -156,7 +156,7 @@ def _row(tmp_path, rid, job, launch, spec):
 
 def test_lint_flags_all_four(tmp_path):
     d = _row(tmp_path, "ak-bad-20261123-r2",
-             "MAX_TRIES=3\nref=readbw(); x = ref['read_sum']\nPORT = 18941\nlibs = ['libllama.so']  # must differ\n",
+             "MAX_TRIES=3\nref=readbw(); x = ref['read_sum']\nPORT = 18941\nlibs = ['libllama.so']\ndiffers = any(sha(a, l) != sha(b, l) for l in libs)\n",
              "exec filler --port 18941,18942 --cmd x\n", {"estimate_s": 3600})
     codes = {c for _, c, _ in LINT.lint_dir(d)}
     assert codes == {"QUIET-NO-BACKOFF", "HARDCODED-PORT", "ESTIMATE-UNMEASURED", "DIFFERS-FIXED"}
@@ -174,3 +174,30 @@ def test_lint_clean_row(tmp_path):
              {"estimate_s": 1000, "estimate_basis": {"smoke_measure": m, "units": 10}})
     assert LINT.lint_dir(d) == []
     assert LINT.main([d]) == 0
+
+
+def test_lint_differs_ignores_vendored_gpu_common_and_prose(tmp_path):
+    rid = "ak-gpu-20261123-r2"
+    ports = H.expected_ports(rid, 2)
+    m = H.write_smoke_measure(tmp_path / "sm", 5.0, 1, 30)
+    d = _row(tmp_path, rid,
+             "import ak_row_harness as H\ng = H.quiet_guard(cpus, rb, OUT)\n"
+             "# prompt_n differs across launches; libggml-hip.so is checked elsewhere\n"
+             "\"\"\"prompt_n differs across launches (libllama.so)\"\"\"\n",
+             f"exec filler --port {ports[0]},{ports[1]} --cmd x\n",
+             {"estimate_s": 1000, "estimate_basis": {"smoke_measure": m, "units": 10}})
+    (tmp_path / os.path.basename(d) / "gpu_common.py").write_text(
+        "LIBS = ['libggml-hip.so']\ndef libs_differs_fixed(a, b):\n    return any(a[l] != b[l] for l in LIBS)\n")
+    assert LINT.lint_dir(d) == []
+
+
+def test_lint_differs_still_flags_fixed_list_proof(tmp_path):
+    rid = "ak-fx-20261123-r2"
+    ports = H.expected_ports(rid, 2)
+    m = H.write_smoke_measure(tmp_path / "sm", 5.0, 1, 30)
+    d = _row(tmp_path, rid,
+             "import ak_row_harness as H\ng = H.quiet_guard(cpus, rb, OUT)\n"
+             "libs = ['libggml-hip.so']\nlibs_differ_ok = any(sha(a, l) != sha(b, l) for l in libs)\n".replace("libs_differ_ok", "lib_differs"),
+             f"exec filler --port {ports[0]},{ports[1]} --cmd x\n",
+             {"estimate_s": 1000, "estimate_basis": {"smoke_measure": m, "units": 10}})
+    assert [c for _, c, _ in LINT.lint_dir(d)] == ["DIFFERS-FIXED"]

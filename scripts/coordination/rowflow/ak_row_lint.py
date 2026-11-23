@@ -6,13 +6,15 @@ Flags (one line each, exit 1 when any FAIL):
                      ak_row_harness import
   HARDCODED-PORT     launch.sh --port values (or job.py port literals) that are not ak_row_harness.expected_ports(id, n)
   ESTIMATE-UNMEASURED spec.json estimate_s with no estimate_basis (smoke measurement), or below the derived value
-  DIFFERS-FIXED      a "differs" library proof with no touched_libs/libs_differ (fold_row_guard.py) derivation
+  DIFFERS-FIXED      a code-level "differs" library proof (not prose/comments; vendored pinned helpers skipped) with no touched_libs/libs_differ (fold_row_guard.py) derivation
 Usage: ak_row_lint.py <row_dir> [<row_dir> ...]     (read-only; never touches a row)
 """
+import io
 import json
 import os
 import re
 import sys
+import tokenize
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ak_row_harness as H  # noqa: E402
@@ -24,6 +26,27 @@ PORT_LIT_RX = re.compile(r"\bport\w*\s*[=:]\s*(\d{4,5})\b", re.I)
 DIFFERS_RX = re.compile(r"differ", re.I)
 LIB_RX = re.compile(r"lib[\w-]+\.so")
 DERIVED_RX = re.compile(r"touched_libs|libs_differ|fold_row_guard")
+# vendored, sha-pinned helper copies (own SOURCE/BIN pin): never linted for row-authoring defects
+VENDORED = {"gpu_common.py", "gpuproof_row.py", "lp_common.py", "base.py", "fold_row_guard.py"}
+
+
+def _differs_proof(t):
+    """True only for a CODE construct: a NAME token containing 'differ' plus a lib*.so string literal.
+    Comments, docstrings and message strings are ignored."""
+    try:
+        toks = list(tokenize.generate_tokens(io.StringIO(t).readline))
+    except (tokenize.TokenError, IndentationError, SyntaxError):
+        return False
+    has_name = any(k.type == tokenize.NAME and DIFFERS_RX.search(k.string) for k in toks)
+    has_lib = False
+    prev = tokenize.NEWLINE
+    for k in toks:
+        if k.type == tokenize.STRING and prev not in (tokenize.NEWLINE, tokenize.INDENT, tokenize.DEDENT, tokenize.NL) \
+                and LIB_RX.search(k.string):
+            has_lib = True
+        if k.type not in (tokenize.COMMENT,):
+            prev = k.type
+    return has_name and has_lib
 
 
 def _read(p):
@@ -69,7 +92,7 @@ def lint_dir(d):
             out.append(("FAIL", "ESTIMATE-UNMEASURED", str(e)))
 
     for f, t in code.items():
-        if DIFFERS_RX.search(t) and LIB_RX.search(t) and not DERIVED_RX.search(t):
+        if f not in VENDORED and _differs_proof(t) and not DERIVED_RX.search(t):
             out.append(("FAIL", "DIFFERS-FIXED", f"{f}: library 'differs' proof over a fixed list; derive it with "
                                                  "fold_row_guard.touched_libs/libs_differ"))
     return out
