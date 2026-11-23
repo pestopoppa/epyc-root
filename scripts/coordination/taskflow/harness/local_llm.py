@@ -74,6 +74,8 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 5. Never touch FORBIDDEN files. Never edit handoffs/, progress/, agents/, CLAUDE.md, .claude/.
 6. The shell runs only the ALLOWED COMMANDS plus read-only helpers (ls, cat, head, tail, wc, grep, sed -n, find, pwd,
    git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc, grep, sed, sort, awk or cut. No `>` files, no && chains, no cd.
+   When an ALLOWED COMMAND runs through orch-py.sh, the same orch-py.sh also runs `-c "<python>"` and a .py file
+   inside your cwd (relative path).
 10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
     Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
@@ -373,6 +375,29 @@ def acceptance_patterns(task: dict, lane: Path | str | None = None) -> list[str]
     return out
 
 
+# r8e canary (FIX-HARNESS 2026-11-23, fix 1): TU-GR-1 / LOOP-62 nothink spent ~15 of 30 steps on denied one-line
+# probes (`orch-py.sh -c ...`) and wrote scratch files to get around it. Inside the lane the row's own orch-py.sh may
+# run `-c <code>` and a lane-relative .py file. An absolute, `..` or `~` script path stays denied (deny list wins).
+_ORCH = re.compile(r"^(?:bash\s+)?(\S*orch-py\.sh)\b")
+SCRATCH_DENY = ["*orch-py.sh /*", "*orch-py.sh ..*", "*orch-py.sh ~*", "*orch-py.sh *../*"]
+
+
+def scratch_patterns(task: dict, lane: Path | str | None = None) -> list[str]:
+    """Allow patterns for the row's orch-py.sh with `-c` / a lane .py, derived from the task's own runner path."""
+    out: list[str] = []
+    for c in allowed_commands(task):
+        m = _ORCH.match(c)
+        if not m:
+            continue
+        orch = m.group(1)
+        for pre in (f"bash {orch}", orch):
+            for p in (f"{pre} -c *", f"{pre} *.py", f"{pre} *.py *"):
+                for q in ([p] + ([f"cd {lane} && {p}"] if lane else [])):
+                    if q not in out:
+                        out.append(q)
+    return out
+
+
 def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 65536,
                  out_tokens: int = 4096, lane: Path | str | None = None) -> Path:
     """Per-run opencode config (XDG_CONFIG_HOME/opencode/opencode.json) + the POLICY instructions file.
@@ -387,7 +412,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         bash[ro] = "allow"
     for ro in PIPE_FILTERS:
         bash[ro] = "allow"
-    acc_pats = acceptance_patterns(task, lane)
+    acc_pats = acceptance_patterns(task, lane) + scratch_patterns(task, lane)
     for c in acc_pats:
         bash[c] = "allow"
     for base in [k for k, v in bash.items() if v == "allow"]:
@@ -396,7 +421,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
     for base in acc_pats:
         for tail in EXIT_TAILS:
             bash[base + tail] = "allow"
-    for d in BASH_DENY:
+    for d in BASH_DENY + SCRATCH_DENY:
         bash[d] = "deny"
     cfg = {
         "$schema": "https://opencode.ai/config.json",
