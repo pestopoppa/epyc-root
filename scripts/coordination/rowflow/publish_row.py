@@ -1540,6 +1540,26 @@ def smoke_in_flight(flags, rid):
     return None
 
 
+def hold_prior_pass(flags, rid):
+    """Hide the old PASS before replacing READY, so a new spec is never granted by it."""
+    path = rf.pass_path(flags, rid)
+    held = os.path.join(rf.dry_dir(flags, rid), f".PASS-republish-{os.getpid()}-{os.urandom(8).hex()}.json")
+    try:
+        os.replace(path, held)
+    except FileNotFoundError:
+        return None, {}
+    return held, rf.load_json(held) or {}
+
+
+def archive_held_pass(flags, rid, held):
+    if not held:
+        return
+    folder = os.path.join(rf.dry_dir(flags, rid), "superseded",
+                          dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + "-" + os.urandom(4).hex())
+    os.makedirs(folder, exist_ok=False)
+    os.replace(held, os.path.join(folder, "PASS.json"))
+
+
 def publish_smoked(spec, flags, source, queue_cpu=False):
     """Publish, then THE dry run (rowflow.dryrun_run writes PASS.json or the FAIL memo). queue_cpu=True (the CLI default,
     operator 2026-11-05): a CPU row's smoke is QUEUED for the keeper (returns None). A GPU row whose GPU is busy is QUEUED
@@ -1558,9 +1578,23 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     rid = str(spec.get("id") or "")
     strikes = smoke_strikes(flags, rid)
     rf.need(int(strikes.get("count") or 0) < 3, strikes.get("reason") or "PARKED-3STRIKE")
-    previous_pass = rf.load_json(rf.pass_path(flags, rid)) or {}
     want = smoke_cpus_of(spec)   # refused before anything is published
-    row = rf.publish(spec, flags, source=source)
+    ready = rf.ready_path(flags, rid)
+    old_ready = rf.sha256(ready) if os.path.isfile(ready) else None
+    held_pass, previous_pass = hold_prior_pass(flags, rid)
+    try:
+        row = rf.publish(spec, flags, source=source)
+    except BaseException:
+        # If publication changed READY before failing, withdraw it before restoring an old PASS.
+        current_ready = rf.sha256(ready) if os.path.isfile(ready) else None
+        if current_ready is not None and current_ready != old_ready:
+            unpublish(flags, rid)
+        if held_pass:
+            if not os.path.exists(rf.pass_path(flags, rid)):
+                os.replace(held_pass, rf.pass_path(flags, rid))
+            else:
+                archive_held_pass(flags, rid, held_pass)
+        raise
     rid = row["id"]
     identity = smoke_identity(spec, row)
     if identity:
@@ -1569,6 +1603,7 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     if want > rf.SMOKE_CPUS:
         held = int(rf.contract_of(row, flags=flags).get("held") or 0)
         if want > held:
+            archive_held_pass(flags, rid, held_pass)
             unpublish(flags, rid)
             raise rf.Refused(f"smoke_cpus {want} exceeds the row's own contract width ({held} cores); a smoke never runs wider "
                              "than its row. FIX: lower smoke_cpus (plumbing only: latency pre-check plus one answered request)")
@@ -1578,13 +1613,19 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     vram = previous_pass.get("vram_used_max_bytes")
     gpu_proof = (isinstance(evidence, dict) and bool(evidence.get("kfd_pids"))) or (
         isinstance(vram, (int, float)) and not isinstance(vram, bool) and vram > 0)
-    if identity and previous_pass.get("smoke_identity") == identity and measured_pass and (spec.get("lane") != "gpu" or gpu_proof):
+    if held_pass and identity and previous_pass.get("smoke_identity") == identity and measured_pass and (spec.get("lane") != "gpu" or gpu_proof):
+        if os.path.exists(rf.pass_path(flags, rid)):
+            archive_held_pass(flags, rid, held_pass)
+            unpublish(flags, rid)
+            raise rf.Refused(f"concurrent PASS appeared for {rid}; retry publish")
+        os.replace(held_pass, rf.pass_path(flags, rid))
         print(f"SMOKE PASS REUSED {rid}: identical spec and code sha")
         supersede_prior_attempts(flags, rid)
         rf.supersede(flags, row)
         if file_if_complete(flags, rid, row):
             return None
         return row
+    archive_held_pass(flags, rid, held_pass)
     retire_old_verdicts(flags, rid)
     supersede_prior_attempts(flags, rid)
     smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)

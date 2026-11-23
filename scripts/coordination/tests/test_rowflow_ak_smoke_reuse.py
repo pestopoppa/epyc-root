@@ -107,3 +107,50 @@ def test_gpu_reuse_needs_residency_proof(tmp_path, monkeypatch):
                                                   "smoke_measure": "/measured", "residency_evidence": {"kfd_pids": []}})
     assert pr.publish_smoked(spec, flags, "src") is None
     assert Path(pr.queued_path(flags, rid)).exists()
+
+
+def test_old_pass_hidden_while_new_manifest_is_published(tmp_path, monkeypatch):
+    flags, rid = str(tmp_path), "row-race"
+    launcher = tmp_path / "launch.sh"
+    launcher.write_text("code")
+    spec = {"id": rid, "launcher": str(launcher), "lane": "cpu"}
+    row = {"id": rid, "launcher": {"path": str(launcher)}}
+    monkeypatch.setattr(pr.rf, "job_sha", lambda p: pr.rf.sha256(p))
+    pr.rf.atomic_json(pr.rf.pass_path(flags, rid), {"smoke_identity": {"spec_sha256": "old"}, "smoke_measure": "old"})
+    def publish(s, f, source=None):
+        assert not Path(pr.rf.pass_path(f, rid)).exists()
+        pr.rf.atomic_json(pr.rf.ready_path(f, rid), row)
+        return dict(row)
+    monkeypatch.setattr(pr.rf, "publish", publish)
+    monkeypatch.setattr(pr, "supersede_prior_attempts", lambda *a: None)
+    assert pr.publish_smoked(spec, flags, "src", queue_cpu=True) is None
+    assert not Path(pr.rf.pass_path(flags, rid)).exists()
+    assert list((Path(pr.rf.dry_dir(flags, rid)) / "superseded").glob("*/PASS.json"))
+
+
+def test_publish_refusal_restores_prior_pass(tmp_path, monkeypatch):
+    flags, rid = str(tmp_path), "row-race"
+    old = {"passed_at": "before"}
+    pr.rf.atomic_json(pr.rf.pass_path(flags, rid), old)
+    def refuse(*a, **kw):
+        assert not Path(pr.rf.pass_path(flags, rid)).exists()
+        raise pr.rf.Refused("bad spec")
+    monkeypatch.setattr(pr.rf, "publish", refuse)
+    with pytest.raises(pr.rf.Refused, match="bad spec"):
+        pr.publish_smoked({"id": rid}, flags, "src")
+    assert pr.rf.load_json(pr.rf.pass_path(flags, rid)) == old
+
+
+def test_publish_failure_after_ready_write_withdraws_new_manifest(tmp_path, monkeypatch):
+    flags, rid = str(tmp_path), "row-race"
+    old = {"passed_at": "before"}
+    pr.rf.atomic_json(pr.rf.pass_path(flags, rid), old)
+    pr.rf.atomic_json(pr.rf.ready_path(flags, rid), {"id": rid, "revision": "old"})
+    def refuse(s, f, source=None):
+        pr.rf.atomic_json(pr.rf.ready_path(f, rid), {"id": rid, "revision": "new"})
+        raise pr.rf.Refused("late failure")
+    monkeypatch.setattr(pr.rf, "publish", refuse)
+    with pytest.raises(pr.rf.Refused, match="late failure"):
+        pr.publish_smoked({"id": rid}, flags, "src")
+    assert not Path(pr.rf.ready_path(flags, rid)).exists()
+    assert pr.rf.load_json(pr.rf.pass_path(flags, rid)) == old
