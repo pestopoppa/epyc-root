@@ -1695,6 +1695,61 @@ PUBLISH_SCENARIOS = {"publish-override-multiquarter-persisted": pub_override_mul
                      "publish-inf75-c6-r2-explicit-override-verbatim": pub_inf75_c6_r2_explicit_override}
 
 
+# ---------------------------------------------------------------------------------------------- CLAIM-path scenarios
+# `claim --build --light` (AutoKernel 2026-11-23) is not an allocator decision, so like the PUBLISH family it runs the
+# candidate's own code (claim_build + quiet_gate) on a temp tree: fn(root, rf) -> [violations].
+def claim_light_beside_quiet(root, rf):
+    import json
+    import tempfile
+    flags = tempfile.mkdtemp(prefix="light-replay-", dir=root)
+    os.makedirs(os.path.join(flags, "grants"))
+    quiet = {"id": "quiet-a", "requires_quiet_host": True, "shape": "quarter", "result_path": os.path.join(flags, "q", "results.jsonl")}
+    rf.write_grant(flags, "quiet-a", "q0", {"q0"}, 3600)   # a quiet row running on q0
+
+    def snap(flags_, grants):
+        all_ = set(rf.REGIONS) | set(rf.CORES) | set(rf.THREADS)
+        busy = set()
+        for g in grants:
+            busy |= rf.expand(set(g["holds"]))
+        busy |= {q for q in rf.QUARTERS if rf.expand({q}) & busy}
+        return None, all_ - busy, None
+    rf.host_snapshot = snap
+    out = []
+    if not hasattr(rf, "_claim_light_locked"):
+        return ["candidate has no light claim (claim_build(..., light=True))"]
+    kw = dict(log=lambda m: None, allrows={"quiet-a": quiet})
+    try:
+        gid, _ = rf.claim_build(flags, "autokernel", "84-87", 10, light=True, **kw)
+    except rf.Refused as e:
+        return [f"light claim refused beside a running quiet row: {e}"]
+    bj = json.load(open(os.path.join(flags, "grants", gid + ".build.json")))
+    if bj.get("bandwidth_class") != "light":
+        out.append(f"grant record lacks bandwidth_class: light ({bj})")
+    kl = open(os.path.join(flags, "ws58-calendar-keeper.log")).read()
+    if f"LIGHT-CLAIM {gid} cpus=84-87 beside quiet quiet-a" not in kl:
+        out.append("keeper log lacks the LIGHT-CLAIM line")
+    cand = {"id": "q-next", "options": [{"q3"}], "rank": 1, "kind": "row", "shape": "quarter"}
+    g = [x for x in rf.open_grants(flags) if x["id"] == gid]
+    kept, _, _ = rf.quiet_gate([cand], {"q-next": {"requires_quiet_host": True}}, g, {"q3": 0.0}, flags=flags)
+    if kept != [cand]:
+        out.append("a light claim delayed a quiet candidate in quiet_gate (it must not be bandwidth-heavy)")
+    for label, args in (("second light claim", ("86", 5)), ):
+        try:
+            rf.claim_build(flags, "other", args[0], args[1], light=True, **kw)
+            out.append(f"{label} was granted")
+        except rf.Refused:
+            pass
+    try:
+        rf.claim_build(flags, "autokernel", "72-87", 10, **kw)
+        out.append("a non-light claim was granted beside a running quiet row")
+    except rf.Refused:
+        pass
+    return out
+
+
+CLAIM_SCENARIOS = {"light-test-claim-beside-quiet": claim_light_beside_quiet}
+
+
 def build_all(out_dir):
     os.makedirs(out_dir, exist_ok=True)
     return {name: fn(os.path.join(out_dir, name + ".trace.jsonl")) for name, fn in SCENARIOS.items()}

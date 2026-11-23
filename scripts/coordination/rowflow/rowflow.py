@@ -5822,7 +5822,133 @@ def q3_pocket_claim(flags, free, n, want=None):
     return toks if toks >= set(cores) else None
 
 
-def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None):
+# LIGHT TEST CLAIM (AutoKernel approved 2026-11-23): `claim --build --light` - a tiny, short, single-process test lane on cores
+# 84-87 that is NOT bandwidth-heavy, so it never blocks or delays a quiet row (quiet_gate skips it; the PM-KEEPER3 and QUIET-RESERVE
+# build refusals do not apply to it). The advisory rules below are not enforced; they are the contract and are printed with the grant.
+LIGHT_CORES = frozenset(range(84, 88))
+LIGHT_MAX_CPUS = 4
+LIGHT_MAX_MINUTES = 15
+LIGHT_CONTENDED_WINDOW_S = 600
+LIGHT_ADVISORY = ("prefix commands with `nice -n 19 taskset -c <granted cpus>`", "run single-process pytest",
+                  "no model or GGUF loads", "no compiles, prebuilt only")
+
+
+def is_light_build(flags, gid):
+    """True when grants/<gid>.build.json records bandwidth_class: light (a LIGHT test claim)."""
+    if not flags or not str(gid).startswith(BUILD_PREFIX):
+        return False
+    return (load_json(os.path.join(flags, "grants", gid + ".build.json")) or {}).get("bandwidth_class") == "light"
+
+
+def _keeper_log_line(flags, line):
+    try:
+        with open(os.path.join(flags, "ws58-calendar-keeper.log"), "a") as f:
+            f.write(f"{now_iso()} {line}\n")
+    except OSError:
+        pass
+
+
+def contended_try_age(flags, rid, d, now):
+    """Seconds since the newest contended-launch marker a RUNNING quiet row wrote (AutoKernel ak_row_harness.run_quiet appends
+    a JSON line with `utc` to <out_dir>/contended.jsonl on every contended try), or None. Looked for beside the row's
+    result_path, its launcher dir and their out/ subdirs."""
+    dirs = []
+    rp = str((d or {}).get("result_path") or "").split("*")[0]
+    if rp:
+        dirs.append(rp if rp.endswith("/") else os.path.dirname(rp))
+    lp = str(((d or {}).get("launcher") or {}).get("path") or "")
+    if lp:
+        dirs.append(os.path.dirname(lp))
+    newest = None
+    seen = set()
+    for base in dirs:
+        for pat in ("contended.jsonl", "*/contended.jsonl", "out/*/contended.jsonl"):
+            for f in glob.glob(os.path.join(base, pat)):
+                if f in seen:
+                    continue
+                seen.add(f)
+                ts = None
+                try:
+                    for line in reversed(tail(f, 20)):
+                        try:
+                            u = json.loads(line).get("utc")
+                        except (ValueError, AttributeError):
+                            continue
+                        if u:
+                            ts = iso_epoch(u)
+                            break
+                    if ts is None:
+                        ts = os.path.getmtime(f)
+                except (OSError, ValueError, TypeError):
+                    continue
+                newest = ts if newest is None else max(newest, ts)
+    return None if newest is None else now - newest
+
+
+def _claim_light_locked(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None):
+    """LIGHT claim (see LIGHT TEST CLAIM). Refusals raise Refused('LIGHT-REFUSED <reason>') and are logged to the keeper log."""
+    def refuse(why):
+        msg = f"LIGHT-REFUSED {why}"
+        _keeper_log_line(flags, msg)
+        raise Refused(msg)
+    need(owner and re.fullmatch(r"[\w.-]+", owner), "claim --build --light needs --owner <roster id>")
+    if not isinstance(minutes, int) or not 1 <= minutes <= LIGHT_MAX_MINUTES:
+        refuse(f"--minutes {minutes}: a light claim is 1..{LIGHT_MAX_MINUTES} minutes")
+    s = str(cpus).strip()
+    if not re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", s):
+        refuse(f"--cpus {s!r}: a light claim names a cpu list within 84-87")
+    cset = build_cpu_set(s)
+    if not cset <= LIGHT_CORES:
+        refuse(f"--cpus {s} names {compress_cpus(cset - LIGHT_CORES)} outside cores 84-87 (a light claim never leaves 84-87)")
+    if len(cset) > LIGHT_MAX_CPUS:
+        refuse(f"--cpus {s} is {len(cset)} cores; a light claim is at most {LIGHT_MAX_CPUS}")
+    grants = open_grants(flags) if grants is None else grants
+    allrows = rows(flags) if allrows is None else allrows
+    t_now = time.time() if now is None else now
+    held = [g["id"] for g in grants if is_light_build(flags, g["id"])]
+    if held:
+        refuse(f"another light claim is open ({held[0]}); one light claim at a time host-wide")
+    for g in grants:   # AutoKernel run_quiet rejects contended launches and retries after 90 s: a marker < 10 min old = hands off
+        if g["id"].startswith(BUILD_PREFIX):
+            continue
+        d = allrows.get(g["id"]) or load_json(ready_path(flags, g["id"])) or {}
+        if not quiet_required(d) or set(QUARTERS) <= (g.get("holds") or set()) or str(d.get("shape") or "") in ("host", "quiet-host"):
+            continue   # whole-host / quiet-host grants already refuse everything through the core-overlap check below
+        age = contended_try_age(flags, g["id"], d, t_now)
+        if age is not None and age < LIGHT_CONTENDED_WINDOW_S:
+            refuse(f"running quiet row {g['id']} logged a contended launch attempt {age:.0f}s ago "
+                   f"(< {LIGHT_CONTENDED_WINDOW_S // 60} min); its run_quiet is retrying - retry later")
+    if free is None:
+        _, free, _ = host_snapshot(flags, grants)
+    wc = {f"c{x}" for x in cset}
+    miss = sorted(wc - free)
+    if miss:
+        by = sorted({g["id"] for g in grants if g["holds"] & expand(set(miss))})
+        refuse(f"cores {compress_cpus({int(c[1:]) for c in miss})} are held by {', '.join(by) or 'another job'}")
+    part = partial_tokens(wc, free)
+    want_tokens = expand(set(part))
+    for g in open_grants(flags):   # on-disk truth under the claim lock
+        both = want_tokens & expand(g["holds"])
+        if both:
+            refuse(f"{compress_cpus({int(x[1:]) % 96 for x in both if x[0] in 'ct'})} already held by {g['id']}")
+    t = dt.datetime.now(dt.timezone.utc) if now is None else dt.datetime.fromtimestamp(now, dt.timezone.utc)
+    gid = _new_build_id(flags, owner, t)
+    cl = tokens_cpus(part)
+    line = write_grant(flags, gid, cl, set(part), minutes * 60)
+    rec = {"id": gid, "owner": owner, "kind": "build", "bandwidth_class": "light", "quarters": ["q3"], "cpus": cl,
+           "minutes": minutes, "at": now_iso(), "partial": sorted(part), "pocket": "q3", "taskset_cpus": compress_cpus(cset)}
+    atomic_json(os.path.join(flags, "grants", gid + ".build.json"), rec)
+    quiet = sorted(g["id"] for g in grants if not g["id"].startswith(BUILD_PREFIX)
+                   and quiet_required(allrows.get(g["id"]) or load_json(ready_path(flags, g["id"])) or {}))
+    msg = f"LIGHT-CLAIM {gid} cpus={compress_cpus(cset)} beside quiet {','.join(quiet) or '-'}"
+    _keeper_log_line(flags, msg)
+    log(msg)
+    log(f"LIGHT-GRANT {gid}: cores {compress_cpus(cset)} for {minutes} min (owner={owner}, bandwidth_class=light). Advisory, not enforced: "
+        + "; ".join(a.replace("<granted cpus>", compress_cpus(cset)) for a in LIGHT_ADVISORY))
+    return gid, line
+
+
+def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, allrows=None, free=None, wait_pid=None, light=False):
     """CLAIM-ID 2026-11-21 (AK, D9 standing ack): two concurrent `claim --build --cpus 72-87` calls in the same UTC second both
     read the same free snapshot, both passed the checks, both minted build-<owner>-<second> and the second write_grant
     os.replace()d the first's grant: one id, two claimants, and the first release freed cores the second was still building on.
@@ -5834,6 +5960,8 @@ def claim_build(flags, owner, cpus, minutes, log=print, now=None, grants=None, a
     fd = os.open(os.path.join(G, ".claim.lock"), os.O_CREAT | os.O_RDWR, 0o644)
     try:
         fcntl.flock(fd, fcntl.LOCK_EX)   # blocking: claims are short; serialising them is the point
+        if light:
+            return _claim_light_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free)
         return _claim_build_locked(flags, owner, cpus, minutes, log, now, grants, allrows, free, wait_pid)
     finally:
         os.close(fd)   # closing releases the flock
@@ -6703,8 +6831,9 @@ def quiet_gate(cands, allrows, grants, util, flags=None, reserve=None):
             continue
         if not g["id"].startswith(BUILD_PREFIX) and quiet_required(d):
             running_quiet.append(g["id"])
-        if g["id"].startswith(BUILD_PREFIX):   # a build claim is bandwidth-heavy (AK addendum)
-            loud |= gq
+        if g["id"].startswith(BUILD_PREFIX):   # a build claim is bandwidth-heavy (AK addendum) - except a LIGHT test claim
+            if not is_light_build(flags, g["id"]):
+                loud |= gq
             continue
         if bandwidth_heavy(d) or set(QUARTERS) <= gq or str(d.get("shape") or "") in ("host", "quiet-host"):
             loud |= gq
@@ -8205,6 +8334,9 @@ def main(argv=None):
     s.add_argument("--build", action="store_true", required=True); s.add_argument("--owner", required=True)
     s.add_argument("--cpus", required=True); s.add_argument("--minutes", type=int, required=True)
     s.add_argument("--wait-pid", type=int, default=None, help="pid whose liveness keeps a refused claim's build-wait record live (default: the invoking parent)")
+    s.add_argument("--light", action="store_true", help="LIGHT test claim: --cpus a subset of 84-87 (<= 4 cores), --minutes <= 15, one light claim host-wide, "
+                   "not bandwidth-heavy (never blocks a quiet row); refused while a running quiet row logged a contended launch in the last 10 min. "
+                   "ADVISORY contract (not enforced): " + "; ".join(LIGHT_ADVISORY).replace("%", "%%"))
     s = sub.add_parser("deploy-guard", help="deploy_rowflow step 3: rc 75 when a changed engine file would reach LEGACY open grants")
     s.add_argument("--changed", nargs="*", default=[]); s.add_argument("--allow-open-grants", action="store_true")
     sub.add_parser("legacy-grants", help="ids of open grants whose poller still reads the live engine path (one per line)")
@@ -8272,7 +8404,7 @@ def main(argv=None):
             supersede(a.flags, row)
             return 0
         if a.cmd == "claim":
-            gid, line = claim_build(a.flags, a.owner, a.cpus, a.minutes, wait_pid=a.wait_pid)
+            gid, line = claim_build(a.flags, a.owner, a.cpus, a.minutes, wait_pid=a.wait_pid, light=a.light)
             print(f"BUILD-GRANT {gid} {line}")
             return 0
         if a.cmd == "withdraw":

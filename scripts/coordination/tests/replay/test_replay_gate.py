@@ -142,6 +142,21 @@ def test_publish_scenario(name, tmp_path):
     v = check(row, err, rf) if len(inspect.signature(check).parameters) >= 3 else check(row, err)
     assert not v, "\n".join(v)
 
+
+# ------------------------------------------------------------------ deploy-blocking: CLAIM-path scenarios
+@pytest.mark.parametrize("name", sorted(SC.CLAIM_SCENARIOS))
+def test_claim_scenario(name, tmp_path):
+    import importlib.util
+    spec_ = importlib.util.spec_from_file_location("rowflow_cand_claim", os.path.join(CAND, "rowflow.py"))
+    sys.path.insert(0, CAND)
+    try:
+        rf = importlib.util.module_from_spec(spec_)
+        spec_.loader.exec_module(rf)
+    finally:
+        sys.path.remove(CAND)
+    v = SC.CLAIM_SCENARIOS[name](str(tmp_path), rf)
+    assert not v, "\n".join(v)
+
 # ------------------------------------------------------------------ negative controls: friction pass-4 fixes (2026-11-06)
 # A fix still guarded by a module flag: a copy of the candidate with the flag OFF (the pre-fix keeper) must FAIL the
 # scenario that the fix is deployed for - proving the scenario detects the incident class, not a tautology. The
