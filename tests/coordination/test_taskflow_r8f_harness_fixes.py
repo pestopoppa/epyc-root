@@ -410,3 +410,28 @@ def test_no_change_timeout_rc130_does_not_default_to_harness():
     assert dispatch.failure_class(w, v, {}) == "model-limitation"
 
 
+# ------------------------------------------------------------------------- r8g fix 4: mv + refusal message names allowed forms
+def test_mv_of_lane_relative_files_allowed_and_escapes_denied(tmp_path, monkeypatch):
+    b = _bash(tmp_path, monkeypatch)
+    assert _ok(b, "mv tests/unit/_debug.py tests/unit/test_x.py")
+    assert _ok(b, "mv _debug_result.json /dev/null".replace(" /dev/null", " old.json"))
+    for bad in ("mv -f a b", "mv a /etc/b", "mv /x/a b", "mv ../a b", "mv a ../b", "mv a ~/b", "mv .git/HEAD x",
+                "mv a b; rm -rf x", "mv a b && ls", "mv a b | sh", "mv a $HOME/b", "mv a b `id`"):
+        assert not _ok(b, bad), bad
+
+
+def test_policy_names_mv_and_the_allowed_forms():
+    assert "mv <relative src> <relative dst>" in L.POLICY and "orch-py.sh -c" in L.POLICY
+
+
+def test_denied_shell_result_gets_the_allowed_forms_idempotently():
+    body = {"messages": [{"role": "user", "content": "x"},
+                         {"role": "tool", "tool_call_id": "1", "content": "Permission denied: shell"},
+                         {"role": "tool", "tool_call_id": "2", "content": "ok output"}]}
+    assert L.annotate_denials(body) == 1
+    c = body["messages"][1]["content"]
+    assert c.startswith("Permission denied: shell") and "orch-py.sh -c" in c and "`rm <relative path>`" in c
+    assert body["messages"][2]["content"] == "ok output"
+    assert L.annotate_denials(body) == 0 and body["messages"][1]["content"] == c          # idempotent: stable prefix
+
+

@@ -75,7 +75,8 @@ You are a code worker on ONE handoff box in a disposable git worktree (your cwd)
 6. The shell runs only the ALLOWED COMMANDS plus read-only helpers (ls, cat, head, tail, wc, grep, sed -n, find, pwd,
    git diff/status/log/show). You may append `2>&1` and pipe into head, tail, wc, grep, sed, sort, awk or cut. No `>` files, no && chains, no cd.
    When an ALLOWED COMMAND runs through orch-py.sh, the same orch-py.sh also runs `-c "<python>"` and a .py file
-   inside your cwd (relative path). `rm <relative path>` deletes a scratch file you created (never tracked files).
+   inside your cwd (relative path). `rm <relative path>` deletes a scratch file you created (never tracked files); `mv <relative src> <relative dst>`
+   moves one. A denied shell call means the form is not on this list: switch to `orch-py.sh -c`, `rm` or `mv`.
 10. ALWAYS use paths relative to your cwd (e.g. src/x.py). Never type an absolute path.
     Read-only reference files from other repos are under .taskflow-refs/ (read them, never edit them).
 7. Do not commit, push, stash, reset or checkout. Do not kill processes. No network.
@@ -124,6 +125,24 @@ def cap_max_tokens(body: dict, cap: int = MAX_TOKENS_CAP) -> bool:
 # tool set is cut at the proxy (the model never sees the tools) and, as defence in depth, the edit permission denies the
 # lane directory itself (write_config).
 WORKER_DENIED_TOOLS = ("opencode_worktree_remove", "opencode_worktree_create", "opencode_worktree_list")
+
+
+SHELL_DENIAL_HINT = (" Allowed shell forms: the ALLOWED COMMANDS, read-only helpers (ls cat head tail wc grep sed -n find git diff/status/log), "
+                     "`bash <row>/orch-py.sh -c \"<python>\"`, `bash <row>/orch-py.sh <relative .py>`, `rm <relative path>`, "
+                     "`mv <relative src> <relative dst>`. Bare `python3`, `cd`, `&&` and `>` are not allowed; use orch-py.sh -c.")
+
+
+def annotate_denials(body: dict, hint: str = SHELL_DENIAL_HINT) -> int:
+    """Proxy guard (r8g fix 4): opencode's refusal text is just `Permission denied: shell`, which names no alternative.
+    Append the allowed forms to every such tool result in the request history. Deterministic and idempotent, so the
+    rewritten history is byte-identical on the next request (prefix cache). Returns the number of messages touched."""
+    n = 0
+    for m in body.get("messages") or []:
+        c = m.get("content")
+        if m.get("role") == "tool" and isinstance(c, str) and c.startswith("Permission denied") and hint not in c:
+            m["content"] = c.rstrip() + hint
+            n += 1
+    return n
 
 
 def strip_worker_tools(body: dict, denied=WORKER_DENIED_TOOLS) -> list[str]:
@@ -427,6 +446,12 @@ def scratch_patterns(task: dict, lane: Path | str | None = None) -> list[str]:
 RM_ALLOW = ["rm *"]
 RM_DENY = ["rm -*", "rm * -*", "rm /*", "rm * /*", "rm *..*", "rm ~*", "rm * ~*", "rm *.git*", "rm *;*", "rm *&*",
            "rm *|*", "rm *$*", "rm *`*"]
+# r8g fix 4 (r8f think TU-GR-1): bare `python3 -c` and `mv` were denied and drove 30 steps of flailing. `mv <rel> <rel>`
+# is allowed on the same terms as rm (relative paths only; flags, absolute, `..`, `~`, .git and shell metacharacters are
+# denied). A TRACKED file it moves away is restored by dispatch.tidy_lane, so only untracked lane files really move.
+MV_ALLOW = ["mv *"]
+MV_DENY = ["mv -*", "mv * -*", "mv /*", "mv * /*", "mv *..*", "mv ~*", "mv * ~*", "mv *.git*", "mv *;*", "mv *&*",
+           "mv *|*", "mv *$*", "mv *`*"]
 
 
 def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: int = 65536,
@@ -441,7 +466,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
         bash[ro] = "allow"
     for ro in RETRIEVAL:
         bash[ro] = "allow"
-    for ro in PIPE_FILTERS + RM_ALLOW:
+    for ro in PIPE_FILTERS + RM_ALLOW + MV_ALLOW:
         bash[ro] = "allow"
     acc_pats = acceptance_patterns(task, lane) + scratch_patterns(task, lane)
     for c in acc_pats:
@@ -452,7 +477,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
     for base in acc_pats:
         for tail in EXIT_TAILS:
             bash[base + tail] = "allow"
-    for d in BASH_DENY + SCRATCH_DENY + RM_DENY:
+    for d in BASH_DENY + SCRATCH_DENY + RM_DENY + MV_DENY:
         bash[d] = "deny"
     edit_perm: str | dict = "allow"
     if lane:                    # r8g fix 2: the built-in worktree_remove asserts `edit` on the lane directory itself
