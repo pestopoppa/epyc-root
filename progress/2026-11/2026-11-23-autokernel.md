@@ -49,3 +49,27 @@ AK-CENSUS-UPDATE-SHAPES (census_update.apply parses none of this session's RESUL
 
 - AKU-17: research `3f49fb474`, `5b34a1c71`. `loop/cpu_fold_record.py` derives `accumulator-bundle.cpu.<recipe>.<hash8>.json` from kept experiment rows (effect, floor, floor unit, contention, statistic read from the row, none invented). The v11 manifest cites 20 kept rows across three campaign stores; all 20 resolve into 4 bundles (`data/aku17-cpu-bundles-20261123/`), every magnitude `provisional`, contention `unproven` (new label; never settles). Recipe name alone collided across two recipe hashes, so bundles are keyed name.hash8.
 - AKU-18: research `1be8120bf` (contract `loop/accumulator_surfaces.py`, fail-closed fire decision mirroring `accumulate.gate_trigger`; estimate fires on cadence only), root `3ac61766c` (hub panel `accumulator_surfaces`, `/api/accumulator_surfaces` + `/health`, card inside `akflow-sec`). The record is published by CLI to `/mnt/raid0/llm/tmp/ak-accumulator-surfaces/`; both surfaces read `cannot_decide` because no calibrated serving floor was passed, which is the fail-closed answer, not a verdict. Hub verified on :8100.
+
+## Evening wrap-up (operator-invoked /wrap-up, 2026-11-23)
+
+The session's results were filed in handoffs by subagents. This wrap-up checked each one against origin/main `62dc7d5ea` and filled the two gaps it found.
+
+| Area | Result | Where |
+|---|---|---|
+| C19 A3B GPU gate r2 | INCONCLUSIVE on A3B-mtp. np4 at 1.20 is diagnostic only (unserved, no spec). The mtp attribution is UNATTRIBUTED (~0.9 %, not GDN-fused). A later r3 attributed the loss to H15 (`5671b53b8`). | kernel-champion-and-promotion.md C19-FOLD-GATES (`8a97c7cf0`, `328e96218`) |
+| C19 27B GPU gate r2 | FAIL in phase 0: heap corruption in test-dtree-device-accept on ROCm, 2 of 8 runs. The ASan diagnostic is pending. C19 is not promotable. Fork commits `37c3322d0` (K1 default 0), `bafa9cf28`, `ea14b3cd7`. | `30f8adc44` |
+| C20 fold candidates | GGML_Q0_RM4: +9.5/+10.4 % at N=2/3, default-on candidate (`9cc0611d7`). GDNPROJ_FUSE: +0.87 % decode, default off (`148f56bbb`). SPEC-DISTS-TRUNC (`3cc4ab91b`): served A/B running. | kernel-champion-and-promotion.md |
+| Spec decode | DICE replay: sampled trees gain +7-11 % acceptance, and DICE selection adds nothing. The sampled-tree v1 LOSS was invalid because no siblings were drafted (`78c415e19`). A3B is parked on verify cost. v2 (`8bbc8a26e`) is built and held for the 27B replay. CAFE-1-SERVED-T p-min 0.5 is a KEEP (+22/+28 % at one CPU quarter); the stack package was signed (`62dc7d5ea`). SPEC-COUPLE-MTP-1 is futile. The greedy re-tests (`da6e2f5ae`) leave most parks standing. | speculative-decoding.md, autokernel-loop.md |
+| Identity/noise | SPEC-ID-NOISE-1 on CPU and GPU: a single request on the same server is deterministic, while batched and DFlash2 cross-launch runs diverge on near-ties, so judge identity by margin. Ragged rollback is clean on both devices. Position in the batch has no effect on CPU, and on GPU only with deterministic mode off; batch SIZE breaks invariance. Q4X R9 is FAIL_CORRECTNESS on a single event inside cross-server noise (`3bf33fa6c`); Q4X-REPLAY-VS-SNAPSHOT is queued (`665238796`). | speculative-decoding.md |
+| Other | GDN gate-fold built (`0dd6e71de`), 13/13 correct, A/B queued (note added here). MMID-MF: futility. lineage_capture wired (`121ab3bba`). intake-ak-1123 Stage 4 applied plus rev1 and OD-1..5. AK-TEMP-AXIS audit handed to Pipeline. 9 dead modules deleted (`c87401f58`). LOOP-79 superseded by AKU (operator). Infra: run helper + lint (D9 acks `a6ac0a157`), quiet-host gate (QUIET-RESERVE, then QUIET-SERIAL one per socket), light claims, disk hardening. 28.5 GB reclaimed with operator approval. | — |
+
+Gaps filled by this wrap-up: a note on the GDN gate-fold build under AK-BW-GDN-GATE-FOLD, and a note on the sampled-tree v2 build held under SPEC-DTREE-ACCEPT-GAP.
+
+Lessons were recorded in research program.md (*Learnings 2026-11-23 evening*) and in memory:
+1. Do not trust an offline replay's baseline until it reproduces the measured served acceptance.
+2. A STOP ending is terminal; use `rowflow resume` when the row supports it.
+3. Quiet rows must be mutually exclusive, because they contaminate each other (CAFE-1 r1 was contaminated by r9).
+4. GPU speculative decoding is not reproducible across launches, so identity gates use margin classes.
+5. Never quote a one-quarter CPU tok/s figure as a served number.
+
+Next: autokernel. Run the C19 27B ASan diagnostic, file the SPEC-DISTS-TRUNC served A/B, and run the 27B DFlash2 replay before v2.
